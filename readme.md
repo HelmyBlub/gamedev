@@ -1,3 +1,6 @@
+code found on:
+https://github.com/HelmyBlub/gamedev
+
 Setup steps:
 - install GIT
 - install IDE. I use visual studio code
