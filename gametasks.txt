@@ -3,7 +3,4 @@
 - somehow should be randomized content for much replayability
 
 
-
 Today tasks:
-- setup GIT
-- some kind of enemy and fighting ability

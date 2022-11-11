@@ -1,29 +1,4 @@
-type GameData = {
-    canvasElement: HTMLCanvasElement,
-    ctx: CanvasRenderingContext2D,
-    player:PlayerData,
-    keysPressed: KeysPressed,
-}
-
-type PlayerData = {
-    x: number,
-    y: number,
-    size: number,
-    color: string,
-    moveSpeed: number,
-    moveDirection: number,
-    isMoving: boolean
-}
-
-type KeysPressed = {
-    a: boolean,
-    s: boolean,
-    d: boolean,
-    w: boolean
-}
-
-
-var gameData: GameData; 
+var gameData: Game; 
 
 function start(){
     document.addEventListener('keydown', keyDown, false);
@@ -33,87 +8,66 @@ function start(){
     let ctx: CanvasRenderingContext2D | null = c.getContext("2d");
     if(ctx == null) throw new DOMException("CanvasRenderingContext2D element not found");
 
-    gameData = {
-        canvasElement: c,
-        ctx: ctx,
-        player: {
-            x: 100,
-            y: 100,
-            size: 10,
-            color: "blue",
-            moveSpeed: 2,
-            moveDirection: 0,
-            isMoving: false,
-        },
-        keysPressed: {
-            a: false,
-            s: false,
-            d: false,
-            w: false
-        }
-    }
-    
+    gameData = createDefaultGameData(c, ctx);
     setTimeout(tick, 16);
 }
 
 function tick(){
-    movePlayerTick();
-    paintAll();
+    if(!gameData.ended){
+        spawnEnemy();
+        tickCharacters();
+        tickProjectiles(gameData.projectiles);
+        detectProjectileToCharacterHit(gameData);    
+        if(gameData.startTime + gameData.maxTime - performance.now() < 0){
+            gameData.ended = true;
+            gameData.highscore.scores.push(gameData.killCounter);
+            gameData.highscore.scores.sort((a,b)=>b-a);
+            if(gameData.highscore.scores.length > gameData.highscore.maxLength){
+                gameData.highscore.scores.pop();
+            }
+        }
+    }
 
+    paintAll(gameData.ctx);
     setTimeout(tick, 16);
 }
 
-function movePlayerTick(){
-    determinePlayerMoveDirection();
-    let player = gameData.player;
-    if(player.isMoving){
-        player.x += Math.cos(player.moveDirection) * player.moveSpeed;
-        player.y += Math.sin(player.moveDirection) * player.moveSpeed;
+function paintAll(ctx: CanvasRenderingContext2D){
+    paintBackground(ctx);
+    paintCharacters(ctx);
+    paintProjectiles(ctx, gameData.projectiles);
+    paintKillCounter(ctx);
+    if(gameData.ended){
+        paintHighscoreBoard(gameData.ctx);
+    }else{
+        paintTimeLeft(ctx);
     }
 }
 
-function determinePlayerMoveDirection(){
-    let keys = gameData.keysPressed;
-    gameData.player.isMoving = true;
-    if(keys.a && !keys.w){
-        if(!keys.s){
-            gameData.player.moveDirection = Math.PI;
-        }else{
-            gameData.player.moveDirection = Math.PI * 0.75;
-        }
-    } else if(keys.s){
-        if(!keys.d){
-            gameData.player.moveDirection = Math.PI * 0.5;
-        }else{
-            gameData.player.moveDirection = Math.PI * 0.25;
-        }
-    } else if(keys.d){
-        if(!keys.w){
-            gameData.player.moveDirection = 0;
-        }else{
-            gameData.player.moveDirection = Math.PI * 1.75;
-        }
-    } else if(keys.w){
-        if(!keys.a){
-            gameData.player.moveDirection = Math.PI * 1.5;
-        }else{
-            gameData.player.moveDirection = Math.PI * 1.25;
-        }
-    } else {
-        gameData.player.isMoving = false;
+function paintHighscoreBoard(ctx: CanvasRenderingContext2D){
+    ctx.fillStyle = "white";
+    ctx.font = "18px Arial";
+
+    ctx.fillText("Restart with Key \"R\" ", 150, 20);
+    ctx.fillText("Scores: ", 150, 60);
+    for(let i = 0; i < gameData.highscore.scores.length; i++){
+        ctx.fillText((i+1) + ": " + gameData.highscore.scores[i], 150, 80 + 20*i);
     }
 }
 
-function paintAll(){
-    paintBackground(gameData.ctx);
-    paintPlayer(gameData.ctx);
+
+
+function paintTimeLeft(ctx: CanvasRenderingContext2D){
+    ctx.fillStyle = "white";
+    ctx.font = "18px Arial";
+    let timeLeft = Math.round((gameData.startTime + gameData.maxTime - performance.now()) / 1000);
+    ctx.fillText("Timer: " + timeLeft, 10, 40);
 }
 
-function paintPlayer(ctx: CanvasRenderingContext2D){
-    ctx.fillStyle = gameData.player.color;
-    ctx.beginPath();
-    ctx.arc(gameData.player.x, gameData.player.y, gameData.player.size, 0, 2 * Math.PI);
-    ctx.fill();
+function paintKillCounter(ctx: CanvasRenderingContext2D){
+    ctx.fillStyle = "white";
+    ctx.font = "18px Arial";
+    ctx.fillText("Kills: " + gameData.killCounter, 10, 20);
 }
 
 function paintBackground(ctx: CanvasRenderingContext2D){
@@ -121,40 +75,23 @@ function paintBackground(ctx: CanvasRenderingContext2D){
     ctx.fillRect(0, 0, 400, 300);
 }
 
-function keyDown(event: KeyboardEvent){
-    var name = event.key;
-    switch(name){
-        case "a":
-            gameData.keysPressed.a = true;
-            break;
-        case "s":
-            gameData.keysPressed.s = true;
-            break;
-        case "d":
-            gameData.keysPressed.d = true;
-            break;
-        case "w":
-            gameData.keysPressed.w = true;
-            break;
-        default:
-            console.log(`Key pressed ${name}`, event);            
-    }
-}
+function detectProjectileToCharacterHit(gameData: Game){
+    let characters: Character[] = gameData.enemies;
 
-function keyUp(event: KeyboardEvent){
-    var name = event.key;
-    switch(name){
-        case "a":
-            gameData.keysPressed.a = false;
-            break;
-        case "s":
-            gameData.keysPressed.s = false;
-            break;
-        case "d":
-            gameData.keysPressed.d = false;
-            break;
-        case "w":
-            gameData.keysPressed.w = false;
-            break;
+    for(let projIt = 0; projIt < gameData.projectiles.length; projIt++){
+        let projectile = gameData.projectiles[projIt];
+        for(let charIt = characters.length - 1; charIt >= 0; charIt--){
+            let c = characters[charIt];
+            let xDiff = c.x - projectile.x;        
+            let yDiff = c.y - projectile.y;
+            let distance = Math.sqrt(xDiff * xDiff + yDiff * yDiff);
+            if(distance < projectile.size + c.size){
+                c.hp -= projectile.damage;
+                if(c.hp < 0){
+                    gameData.enemies.splice(charIt, 1);
+                    gameData.killCounter++;
+                }
+            }
+        }
     }
 }
