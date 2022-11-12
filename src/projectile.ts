@@ -6,10 +6,11 @@ type Projectile = {
     moveSpeed: number,
     moveDirection: number,
     isMoving: boolean,
-    damage: number
+    damage: number,
+    faction: string,
 }
 
-function createProjectile(x: number, y: number, moveDirection: number, damage: number) {
+function createProjectile(x: number, y: number, moveDirection: number, damage: number, faction: string) {
     return {
         x: x,
         y: y,
@@ -18,7 +19,8 @@ function createProjectile(x: number, y: number, moveDirection: number, damage: n
         moveSpeed: 4,
         moveDirection: moveDirection,
         isMoving: true,
-        damage: damage
+        damage: damage,
+        faction: faction,
     }
 }
 
@@ -39,7 +41,7 @@ function moveProjectilesTick(projectiles: Projectile[]) {
         moveProjectileTick(projectiles[i]);
         if (projectiles[i].x < 0 || projectiles[i].y < 0
             || projectiles[i].x > 400 || projectiles[i].y > 300) {
-            gameData.projectiles.splice(i, 1);
+            projectiles.splice(i, 1);
         }
     }
 }
