@@ -5,6 +5,15 @@ type ActionsPressed = {
     up: boolean
 }
 
+function createActionsPressed(){
+    return {
+        left: false,
+        down: false,
+        right: false,
+        up: false
+    }
+}
+
 function determinePlayerMoveDirection(player: Character, actionsPressed: ActionsPressed) {
     player.isMoving = true;
     if (actionsPressed.left && !actionsPressed.up) {
@@ -36,45 +45,32 @@ function determinePlayerMoveDirection(player: Character, actionsPressed: Actions
     }
 }
 
+function playerInputChange(event: KeyboardEvent){
+    const keycode = event.code;
+    const isKeydown = event.type === "keydown" ? true : false;
+
+    let players = gameData.players;
+    for(let i = 0; i< players.length; i++){
+        let action = players[i].keyCodeToActionPressed.get(keycode);
+        if(action !== undefined){
+            players[i].actionsPressed[action] = isKeydown;
+            determinePlayerMoveDirection(gameData.characters[players[i].playerCharacterIndex],players[i].actionsPressed);
+        }
+    }
+}
+
 function keyDown(event: KeyboardEvent){
-    var name = event.key;
-    switch(name){
-        case "a":
-            gameData.actionsPressed.left = true;
-            break;
-        case "s":
-            gameData.actionsPressed.down = true;
-            break;
-        case "d":
-            gameData.actionsPressed.right = true;
-            break;
-        case "w":
-            gameData.actionsPressed.up = true;
-            break;
-        case "r":
+    playerInputChange(event);
+
+    switch(event.code){
+        case "KeyR":
             gameRestart(gameData);
             break;
         default:
-            console.log(`Key pressed ${name}`, event);            
+            break;
     }
-    determinePlayerMoveDirection(gameData.characters[gameData.playerCharacterIndex],gameData.actionsPressed);
 }
 
 function keyUp(event: KeyboardEvent){
-    var name = event.key;
-    switch(name){
-        case "a":
-            gameData.actionsPressed.left = false;
-            break;
-        case "s":
-            gameData.actionsPressed.down = false;
-            break;
-        case "d":
-            gameData.actionsPressed.right = false;
-            break;
-        case "w":
-            gameData.actionsPressed.up = false;
-            break;
-    }
-    determinePlayerMoveDirection(gameData.characters[gameData.playerCharacterIndex],gameData.actionsPressed);
+    playerInputChange(event);
 }

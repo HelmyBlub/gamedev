@@ -1,6 +1,23 @@
-- want to make a simple web browser game
-- want to try online play 
-- somehow should be randomized content for much replayability
 
 
 Today tasks:
+
+future tasks:
+- create backend, e.g. with WebSocketNode
+- two player different "connections" still one computer
+
+thoughts:
+    Multiplayer:
+    - backend for online multiplayer
+    - TCP, websocket
+        -https://github.com/theturtle32/WebSocket-Node
+
+    - UDP browser? probably still no option
+
+
+
+game ideas:
+- want to make a simple web browser game
+- want to try online/multiplayer play 
+- somehow should be randomized content for much replayability
+    - rogue like

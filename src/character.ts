@@ -69,10 +69,10 @@ function createEnemy(x: number, y:number){
     }
 }
 
-function createPlayer(){
+function createPlayerCharacter(x: number, y:number){
     return {
-        x: 100,
-        y: 100,
+        x: x,
+        y: y,
         size: 10,
         color: "blue",
         moveSpeed: 2,
