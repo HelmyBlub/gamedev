@@ -45,10 +45,33 @@ function determinePlayerMoveDirection(player: Character, actionsPressed: Actions
     }
 }
 
-function playerInputChange(event: KeyboardEvent) {
+function websocketMessage(data: any){
+    const command = data.command;
+    switch(command){
+        case "restart":
+            gameRestart(gameData);
+            break;
+        case "playerInput":
+            playerInputChange(data.keycode, data.isKeydown);
+            break;
+        default:
+            console.log("unkown command" + command, data);
+    }
+}
+
+function playerInputChangeEvent(event: KeyboardEvent) {
     const keycode = event.code;
     const isKeydown = event.type === "keydown" ? true : false;
+    if (gameData.multiplayer.websocket === null) {
+        playerInputChange(keycode, isKeydown);
+    }else{
+        gameData.multiplayer.websocket.send(JSON.stringify(
+            {command: "playerInput", keycode:keycode, isKeydown:isKeydown}
+        ));
+    }
+}
 
+function playerInputChange(keycode: string, isKeydown: boolean){
     let players = gameData.players;
     for (let i = 0; i < players.length; i++) {
         let action = players[i].keyCodeToActionPressed.get(keycode);
@@ -60,11 +83,15 @@ function playerInputChange(event: KeyboardEvent) {
 }
 
 function keyDown(event: KeyboardEvent) {
-    playerInputChange(event);
+    playerInputChangeEvent(event);
 
     switch (event.code) {
         case "KeyR":
-            gameRestart(gameData);
+            if (gameData.multiplayer.websocket === null) {
+                gameRestart(gameData);
+            }else{
+                gameData.multiplayer.websocket.send(JSON.stringify({command:"restart"}));
+            }
             break;
         default:
             break;
@@ -72,5 +99,5 @@ function keyDown(event: KeyboardEvent) {
 }
 
 function keyUp(event: KeyboardEvent) {
-    playerInputChange(event);
+    playerInputChangeEvent(event);
 }

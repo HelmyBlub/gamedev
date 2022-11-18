@@ -24,7 +24,7 @@ function paintHighscoreBoard(ctx: CanvasRenderingContext2D) {
 function paintTimeLeft(ctx: CanvasRenderingContext2D) {
     ctx.fillStyle = "white";
     ctx.font = "18px Arial";
-    let timeLeft = Math.round((gameData.startTime + gameData.maxTime - performance.now()) / 1000);
+    let timeLeft = Math.round((gameData.maxTime - gameData.time) / 1000);
     ctx.fillText("Timer: " + timeLeft, 10, 40);
 }
 

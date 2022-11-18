@@ -5,13 +5,20 @@ type Game = {
     players: Player[],
     projectiles: Projectile[],
     killCounter: number,
-    startTime: number,
     maxTime: number,
+    time: number;
+    realStartTime: number;
     ended: boolean,
+    multiplayer:{
+        websocket: WebSocket | null
+    },
     highscore: {
         scores: number[],
         maxLength: 10,
     },
+    randumNumberGenerator: {
+        seed: number
+    }
 }
 
 function gameRestart(game: Game) {
@@ -23,8 +30,9 @@ function gameInit(game: Game) {
     game.characters = [];
     game.players = [];
     game.killCounter = 0;
-    game.startTime = performance.now();
     game.ended = false;
+    game.time = 0;
+    game.realStartTime = performance.now();
 
     addPlayer(game, 100, 100, createDefaultKeyBindings1());
     addPlayer(game, 200, 100, createDefaultKeyBindings2());
@@ -43,12 +51,19 @@ function createDefaultGameData(c: HTMLCanvasElement, ctx: CanvasRenderingContext
         characters: [],
         players: [],
         killCounter: 0,
-        startTime: 0,
         ended: false,
-        maxTime: 5000,
+        maxTime: 30000,
+        time: 0,
+        realStartTime: 0,
         highscore: {
             scores: [],
             maxLength: 10,
+        },
+        multiplayer:{
+            websocket: null
+        },
+        randumNumberGenerator:{
+            seed: 0
         }
     }
 }

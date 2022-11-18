@@ -11,20 +11,29 @@ function start(){
 
     gameData = createDefaultGameData(c, ctx);
     gameInit(gameData);
-    setTimeout(tick, 16);
+    gameData.time = gameData.maxTime + 1;
+    runner();
 }
 
-function tick(){
+function runner(){
+    const tickInterval = 16;
+    const timeNow = performance.now();
+    while(!gameData.ended && timeNow > gameData.realStartTime + gameData.time){
+        tick(tickInterval);
+    }
+    paintAll(gameData.ctx);
+    setTimeout(runner, tickInterval);
+}
+
+function tick(gameTimePassed: number){
     if(!gameData.ended){
+        gameData.time += gameTimePassed;
         gameData.characters.push(createRandomEnemy());
         tickCharacters(gameData.characters);
         tickProjectiles(gameData.projectiles);
         detectProjectileToCharacterHit(gameData);    
         if(gameEndedCheck(gameData)) endGame(gameData);
     }
-
-    paintAll(gameData.ctx);
-    setTimeout(tick, 16);
 }
 
 function endGame(game: Game){
@@ -37,7 +46,7 @@ function endGame(game: Game){
 }
 
 function gameEndedCheck(game: Game){
-    return game.startTime + game.maxTime - performance.now() < 0;
+    return game.time > game.maxTime;
 }
 
 function detectProjectileToCharacterHit(gameData: Game){

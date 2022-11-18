@@ -49,8 +49,8 @@ function movePlayerTick(character: Character) {
 }
 
 function createRandomEnemy() {
-    let x = Math.random() * gameData.canvasElement.width;
-    let y = Math.random() * gameData.canvasElement.height;
+    let x = nextRandom() * gameData.canvasElement.width;
+    let y = nextRandom() * gameData.canvasElement.height;
     return createEnemy(x, y);
 }
 

@@ -24,13 +24,7 @@ server.listen(8080, function() {
      connections.push(connection);
  
      console.log(connection.remoteAddress + "#Con" + connections.length);
-     
-     // Send all the existing canvas commands to the new client
-     connection.sendUTF(JSON.stringify({
-         msg: "initCommands",
-         data: "hello world"
-     }));
-     
+          
      // Handle closed connections
      connection.on('close', function() {
          console.log(connection.remoteAddress + " disconnected");
@@ -47,13 +41,11 @@ server.listen(8080, function() {
          if (message.type === 'utf8') {
              try {
                  connections.forEach(function(destination: any) {
-                    console.log("message send");
                     destination.sendUTF(message.utf8Data);
                  });
              }
              catch(e) {
-                 // do nothing if there's an error.
-                 console.log("message send error");
+                 console.log("message send error" + e);
              }
          }else{
             console.log("wrong type:" + message.type);
