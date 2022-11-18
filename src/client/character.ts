@@ -30,7 +30,7 @@ function shoot(character: Character) {
 
 function tickCharacters(characters: Character[]) {
     for (let i = 0; i < characters.length; i++) {
-        if(characters[i].faction === "player"){
+        if (characters[i].faction === "player") {
             tickCharacter(characters[i]);
             movePlayerTick(characters[i]);
         }
@@ -54,7 +54,7 @@ function createRandomEnemy() {
     return createEnemy(x, y);
 }
 
-function createEnemy(x: number, y:number){
+function createEnemy(x: number, y: number) {
     return {
         x: x,
         y: y,
@@ -69,7 +69,7 @@ function createEnemy(x: number, y:number){
     }
 }
 
-function createPlayerCharacter(x: number, y:number){
+function createPlayerCharacter(x: number, y: number) {
     return {
         x: x,
         y: y,

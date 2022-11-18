@@ -1,6 +1,7 @@
 var gameData: Game; 
 
 function start(){
+    websocketConnect();
     document.addEventListener('keydown', keyDown, false);
     document.addEventListener('keyup', keyUp, false);
     let c: HTMLCanvasElement | null = document.getElementById("myCanvas") as HTMLCanvasElement;

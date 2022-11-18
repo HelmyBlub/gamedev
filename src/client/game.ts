@@ -26,11 +26,11 @@ function gameInit(game: Game) {
     game.startTime = performance.now();
     game.ended = false;
 
-    addPlayer(game, 100,100, createDefaultKeyBindings1());
-    addPlayer(game, 200,100, createDefaultKeyBindings2());
+    addPlayer(game, 100, 100, createDefaultKeyBindings1());
+    addPlayer(game, 200, 100, createDefaultKeyBindings2());
 }
 
-function addPlayer(game: Game, x:number, y:number, keyCodeToActionPressed: Map<string, keyof ActionsPressed>){
+function addPlayer(game: Game, x: number, y: number, keyCodeToActionPressed: Map<string, keyof ActionsPressed>) {
     game.characters.push(createPlayerCharacter(x, y));
     game.players.push(createPlayer(game.characters.length - 1, keyCodeToActionPressed));
 }

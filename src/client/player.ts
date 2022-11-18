@@ -4,7 +4,7 @@ type Player = {
     keyCodeToActionPressed: Map<string, keyof ActionsPressed>,
 }
 
-function createPlayer(characterIndex: number, keyCodeToActionPressed: Map<string, keyof ActionsPressed>){
+function createPlayer(characterIndex: number, keyCodeToActionPressed: Map<string, keyof ActionsPressed>) {
     return {
         playerCharacterIndex: characterIndex,
         actionsPressed: createActionsPressed(),
@@ -12,7 +12,7 @@ function createPlayer(characterIndex: number, keyCodeToActionPressed: Map<string
     }
 }
 
-function createDefaultKeyBindings1(){
+function createDefaultKeyBindings1() {
     let keyBindings = new Map<string, keyof ActionsPressed>();
     keyBindings.set("KeyA", "left");
     keyBindings.set("KeyS", "down");
@@ -22,7 +22,7 @@ function createDefaultKeyBindings1(){
     return keyBindings;
 }
 
-function createDefaultKeyBindings2(){
+function createDefaultKeyBindings2() {
     let keyBindings = new Map<string, keyof ActionsPressed>();
     keyBindings.set("ArrowLeft", "left");
     keyBindings.set("ArrowDown", "down");

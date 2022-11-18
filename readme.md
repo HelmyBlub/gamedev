@@ -17,8 +17,7 @@ Setup steps:
 
 
 Development:
-npx tsc -w
-node ./public/js/server/server.js
+npm run dev
 
 in Browser call (replace with your path):
-file:///home/helmi/gamedev/index.html
+file:///home/helmi/gamedev/public/index.html

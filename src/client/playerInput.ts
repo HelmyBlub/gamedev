@@ -5,7 +5,7 @@ type ActionsPressed = {
     up: boolean
 }
 
-function createActionsPressed(){
+function createActionsPressed() {
     return {
         left: false,
         down: false,
@@ -45,24 +45,24 @@ function determinePlayerMoveDirection(player: Character, actionsPressed: Actions
     }
 }
 
-function playerInputChange(event: KeyboardEvent){
+function playerInputChange(event: KeyboardEvent) {
     const keycode = event.code;
     const isKeydown = event.type === "keydown" ? true : false;
 
     let players = gameData.players;
-    for(let i = 0; i< players.length; i++){
+    for (let i = 0; i < players.length; i++) {
         let action = players[i].keyCodeToActionPressed.get(keycode);
-        if(action !== undefined){
+        if (action !== undefined) {
             players[i].actionsPressed[action] = isKeydown;
-            determinePlayerMoveDirection(gameData.characters[players[i].playerCharacterIndex],players[i].actionsPressed);
+            determinePlayerMoveDirection(gameData.characters[players[i].playerCharacterIndex], players[i].actionsPressed);
         }
     }
 }
 
-function keyDown(event: KeyboardEvent){
+function keyDown(event: KeyboardEvent) {
     playerInputChange(event);
 
-    switch(event.code){
+    switch (event.code) {
         case "KeyR":
             gameRestart(gameData);
             break;
@@ -71,6 +71,6 @@ function keyDown(event: KeyboardEvent){
     }
 }
 
-function keyUp(event: KeyboardEvent){
+function keyUp(event: KeyboardEvent) {
     playerInputChange(event);
 }

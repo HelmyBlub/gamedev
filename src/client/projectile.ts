@@ -33,11 +33,10 @@ function moveProjectileTick(projectile: Projectile) {
         projectile.x += Math.cos(projectile.moveDirection) * projectile.moveSpeed;
         projectile.y += Math.sin(projectile.moveDirection) * projectile.moveSpeed;
     }
-
 }
 
 function moveProjectilesTick(projectiles: Projectile[]) {
-    for (let i = projectiles.length -1; i >= 0; i--) {
+    for (let i = projectiles.length - 1; i >= 0; i--) {
         moveProjectileTick(projectiles[i]);
         if (projectiles[i].x < 0 || projectiles[i].y < 0
             || projectiles[i].x > 400 || projectiles[i].y > 300) {
