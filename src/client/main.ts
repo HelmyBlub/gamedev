@@ -17,9 +17,16 @@ function start() {
 
 function runner() {
     const tickInterval = 16;
-    const timeNow = performance.now();
-    while (!gameData.state.ended && timeNow > gameData.realStartTime + gameData.state.time) {
-        tick(tickInterval);
+
+    if(gameData.multiplayer.websocket === null){
+        const timeNow = performance.now();
+        while (!gameData.state.ended && timeNow > gameData.realStartTime + gameData.state.time) {
+            tick(tickInterval);
+        }    
+    }else{
+        while (!gameData.state.ended && gameData.multiplayer.serverGameTime >= gameData.state.time + tickInterval) {
+            tick(tickInterval);
+        }    
     }
     paintAll(gameData.ctx);
     setTimeout(runner, tickInterval);
@@ -46,7 +53,7 @@ function tickPlayerInputs(playerInputs: PlayerInput[], currentTime: number) {
                 if (playerInputs[i].executeTime <= currentTime - 16) {
                     console.log("playerAction to late", currentTime - playerInputs[i].executeTime, playerInputs[i]);
                 }
-                playerInputChange(playerInputs[i].data.keycode, playerInputs[i].data.isKeydown);
+                playerAction(playerInputs[i].data.playerIndex, playerInputs[i].data.action, playerInputs[i].data.isKeydown);
                 playerInputs.splice(i,1);
             }
         }

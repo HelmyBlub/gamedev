@@ -1,19 +1,18 @@
 
 
-Today tasks:
+next tasks:
+- multiplayer 
+    - gamesync
+        - try with different client delays
+
 
 future tasks:
-- create backend, e.g. with WebSocketNode
-- two player different "connections" still one computer
+    - every one controlls their own character
+        - currently has to wait on gamerestart, could make it to be in on join
 
 thoughts:
     Multiplayer:
     - backend for online multiplayer
-    - TCP, websocket
-        -https://github.com/theturtle32/WebSocket-Node
-
-    - UDP browser? probably still no option
-
 
 
 game ideas:

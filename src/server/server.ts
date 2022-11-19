@@ -17,20 +17,20 @@ var wsServer = new WebSocketServer({
     autoAcceptConnections: false
 });
 
-var connections: any = [];
+var connections: {clientId: number, con: any}[] = [];
+var clientIdCounter = 0;
+var startTime = process.hrtime.bigint();
 
 wsServer.on('request', function (request: any) {
     var connection = request.accept('gamedev', request.origin);
+    connection.sendUTF(JSON.stringify({ command: "connectInfo", clientId: clientIdCounter}));
 
-    for (let i = 0; i < connections.length; i++) {
-        if(i === 0){
-            connections[i].sendUTF(JSON.stringify({ command: "sendGameState" }));
-        }else{
-            connections[i].sendUTF(JSON.stringify({ command: "playerJoined" }));
-        }
+    if(connections.length > 0){
+        connections[0].con.sendUTF(JSON.stringify({ command: "sendGameState", clientId: clientIdCounter}));
     }
 
-    connections.push(connection);
+    connections.push({clientId: clientIdCounter, con:connection});
+    clientIdCounter++;
 
     console.log(connection.remoteAddress + "#Con" + connections.length);
 
@@ -44,7 +44,7 @@ wsServer.on('request', function (request: any) {
             connections.splice(index, 1);
         }
         for (let i = 0; i < connections.length; i++) {
-            connections[i].sendUTF(JSON.stringify({ command: "playerLeft" }));
+            connections[i].con.sendUTF(JSON.stringify({ command: "playerLeft", clientId: connection.clientId}));
         }
     });
 
@@ -52,8 +52,16 @@ wsServer.on('request', function (request: any) {
     connection.on('message', function (message: any) {
         if (message.type === 'utf8') {
             try {
+                const command = JSON.parse(message.utf8Data).command;
+                if(command === "restart"){
+                    startTime = process.hrtime.bigint();
+                }else if(command === "playerInput"){
+                    const data = JSON.parse(message.utf8Data);
+                    data.executeTime = getCurrentMS();
+                    message.utf8Data = JSON.stringify(data);
+                }
                 connections.forEach(function (destination: any) {
-                    destination.sendUTF(message.utf8Data);
+                    destination.con.sendUTF(message.utf8Data);
                 });
             }
             catch (e) {
@@ -65,5 +73,18 @@ wsServer.on('request', function (request: any) {
     });
 });
 
+function getCurrentMS(){
+    return Number(process.hrtime.bigint() - startTime) / 1000000;
+}
 
-console.log("Whiteboard test app ready");
+function gameTimeTicker(){
+    const currentTime = getCurrentMS();
+    connections.forEach(function (destination: any) {
+        destination.con.sendUTF(JSON.stringify({command:"timeUpdate", time: currentTime}));
+    });
+    setTimeout(gameTimeTicker,16);
+}
+gameTimeTicker();
+
+//asd
+console.log("gamedev backend ready");

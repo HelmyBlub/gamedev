@@ -62,41 +62,62 @@ function websocketMessage(data: any) {
             gameData.state.playerInputs.push(data);
             break;
         case "sendGameState":
-            gameData.multiplayer.websocket!.send(JSON.stringify({command: "gameState", data: gameData.state}));
+            gameData.state.clientIds.push(data.clientId);
+            gameData.multiplayer.websocket!.send(JSON.stringify({ command: "gameState", data: gameData.state }));
             break;
         case "gameState":
             gameData.state = data.data;
             gameData.realStartTime = performance.now() - gameData.state.time;
+            for (let i = 0; i < gameData.state.clientIds.length; i++) {
+                if (gameData.multiplayer.myClientId === gameData.state.clientIds[i]) {
+                    gameData.clientKeyBindings = [{
+                        playerIndex: i,
+                        keyCodeToActionPressed: createDefaultKeyBindings1()
+                    }];
+                }
+            }           
+            break;
+        case "connectInfo":
+            gameData.multiplayer.myClientId = data.clientId;
+            gameData.state.clientIds = [data.clientId];
+            break;
+        case "playerLeft":
+            break;
+        case "timeUpdate":
+            gameData.multiplayer.serverGameTime = data.time;
             break;
         default:
-            console.log("unkown command" + command, data);
+            console.log("unkown command: " + command, data);
     }
 }
 
 function playerInputChangeEvent(event: KeyboardEvent) {
     const keycode = event.code;
     const isKeydown = event.type === "keydown" ? true : false;
-    if (gameData.multiplayer.websocket === null) {
-        playerInputChange(keycode, isKeydown);
-    } else {
-        gameData.multiplayer.websocket.send(JSON.stringify(
-            {
-                command: "playerInput",
-                data: { keycode: keycode, isKeydown: isKeydown },
-                executeTime: gameData.state.time + 100
+
+    for (let i = 0; i < gameData.clientKeyBindings.length; i++) {
+        let action = gameData.clientKeyBindings[i].keyCodeToActionPressed.get(keycode);
+        if (action !== undefined && gameData.clientKeyBindings[i].playerIndex < gameData.state.players.length) {
+            const playerIndex = gameData.clientKeyBindings[i].playerIndex;
+            if (gameData.multiplayer.websocket === null) {
+                playerAction(playerIndex, action, isKeydown);
+            } else {
+                gameData.multiplayer.websocket.send(JSON.stringify(
+                    {
+                        command: "playerInput",
+                        data: {playerIndex: playerIndex, action: action, isKeydown: isKeydown },
+                    }
+                ));
             }
-        ));
+        }
     }
 }
 
-function playerInputChange(keycode: string, isKeydown: boolean) {
-    let players = gameData.players;
-    for (let i = 0; i < players.length; i++) {
-        let action = players[i].keyCodeToActionPressed.get(keycode);
-        if (action !== undefined) {
-            players[i].actionsPressed[action] = isKeydown;
-            determinePlayerMoveDirection(gameData.state.characters[players[i].playerCharacterIndex], players[i].actionsPressed);
-        }
+function playerAction(playerIndex: number, action: keyof ActionsPressed, isKeydown: boolean) {
+    const player = gameData.state.players[playerIndex];
+    if (action !== undefined) {
+        player.actionsPressed[action] = isKeydown;
+        determinePlayerMoveDirection(gameData.state.characters[player.playerCharacterIndex], player.actionsPressed);
     }
 }
 

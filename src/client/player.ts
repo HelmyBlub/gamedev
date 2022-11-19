@@ -1,14 +1,12 @@
 type Player = {
     playerCharacterIndex: number,
     actionsPressed: ActionsPressed,
-    keyCodeToActionPressed: Map<string, keyof ActionsPressed>,
 }
 
-function createPlayer(characterIndex: number, keyCodeToActionPressed: Map<string, keyof ActionsPressed>) {
+function createPlayer(characterIndex: number) {
     return {
         playerCharacterIndex: characterIndex,
         actionsPressed: createActionsPressed(),
-        keyCodeToActionPressed: keyCodeToActionPressed,
     }
 }
 

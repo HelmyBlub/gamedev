@@ -1,8 +1,9 @@
 type GameState = {
     characters: Character[],
     projectiles: Projectile[],
+    players: Player[],
     killCounter: number,
-    time: number;        
+    time: number;
     ended: boolean,
     randumNumberGenerator: {
         seed: number
@@ -12,17 +13,23 @@ type GameState = {
         scores: number[],
         maxLength: 10,
     },
+    clientIds: number[],
 }
 
 type Game = {
     canvasElement: HTMLCanvasElement,
     ctx: CanvasRenderingContext2D,
     state: GameState,
-    players: Player[],
     maxTime: number,
-    realStartTime: number;
+    realStartTime: number,
+    clientKeyBindings: {
+        playerIndex: number,
+        keyCodeToActionPressed: Map<string, keyof ActionsPressed>,
+    }[],
     multiplayer: {
+        myClientId: number,
         websocket: WebSocket | null,
+        serverGameTime: number,
     },
 }
 
@@ -33,27 +40,44 @@ function gameRestart(game: Game) {
 function gameInit(game: Game) {
     game.state.projectiles = [];
     game.state.characters = [];
-    game.players = [];
+    game.state.players = [];
     game.state.killCounter = 0;
     game.state.ended = false;
     game.state.time = 0;
     game.realStartTime = performance.now();
     game.state.playerInputs = [];
+    game.clientKeyBindings = [];
 
-    addPlayer(game, 100, 100, createDefaultKeyBindings1());
-    addPlayer(game, 200, 100, createDefaultKeyBindings2());
+    if (gameData.multiplayer.websocket !== null) {
+        game.multiplayer.serverGameTime = 0;
+        for (let i = 0; i < gameData.state.clientIds.length; i++) {
+            addPlayer(game, 100, 100 + i * 50);
+            if (gameData.multiplayer.myClientId === gameData.state.clientIds[i]) {
+                game.clientKeyBindings.push({
+                    playerIndex: i,
+                    keyCodeToActionPressed: createDefaultKeyBindings1()
+                });
+            }
+        }
+    } else {
+        addPlayer(game, 100, 100);
+        game.clientKeyBindings.push({
+            playerIndex: 0,
+            keyCodeToActionPressed: createDefaultKeyBindings1()
+        });
+    }
 }
 
-function addPlayer(game: Game, x: number, y: number, keyCodeToActionPressed: Map<string, keyof ActionsPressed>) {
+function addPlayer(game: Game, x: number, y: number) {
     game.state.characters.push(createPlayerCharacter(x, y));
-    game.players.push(createPlayer(game.state.characters.length - 1, keyCodeToActionPressed));
+    game.state.players.push(createPlayer(game.state.characters.length - 1));
 }
 
 function createDefaultGameData(c: HTMLCanvasElement, ctx: CanvasRenderingContext2D): Game {
     return {
         canvasElement: c,
         ctx: ctx,
-        state:{
+        state: {
             projectiles: [],
             characters: [],
             killCounter: 0,
@@ -66,13 +90,17 @@ function createDefaultGameData(c: HTMLCanvasElement, ctx: CanvasRenderingContext
             },
             randumNumberGenerator: {
                 seed: 0
-            }
+            },
+            players: [],
+            clientIds: [],
         },
-        players: [],
+        clientKeyBindings: [],
         maxTime: 30000,
         realStartTime: 0,
         multiplayer: {
-            websocket: null
+            myClientId: -1,
+            websocket: null,
+            serverGameTime: 0,
         },
     }
 }
