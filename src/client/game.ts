@@ -9,7 +9,8 @@ type Game = {
     time: number;
     realStartTime: number;
     ended: boolean,
-    multiplayer:{
+    playerInputs: PlayerInput[],
+    multiplayer: {
         websocket: WebSocket | null
     },
     highscore: {
@@ -33,6 +34,7 @@ function gameInit(game: Game) {
     game.ended = false;
     game.time = 0;
     game.realStartTime = performance.now();
+    game.playerInputs = [];
 
     addPlayer(game, 100, 100, createDefaultKeyBindings1());
     addPlayer(game, 200, 100, createDefaultKeyBindings2());
@@ -55,14 +57,15 @@ function createDefaultGameData(c: HTMLCanvasElement, ctx: CanvasRenderingContext
         maxTime: 30000,
         time: 0,
         realStartTime: 0,
+        playerInputs: [],
         highscore: {
             scores: [],
             maxLength: 10,
         },
-        multiplayer:{
+        multiplayer: {
             websocket: null
         },
-        randumNumberGenerator:{
+        randumNumberGenerator: {
             seed: 0
         }
     }

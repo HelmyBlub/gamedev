@@ -5,6 +5,13 @@ type ActionsPressed = {
     up: boolean
 }
 
+
+type PlayerInput = {
+    executeTime: number,
+    command: string,
+    data: any
+}
+
 function createActionsPressed() {
     return {
         left: false,
@@ -45,14 +52,14 @@ function determinePlayerMoveDirection(player: Character, actionsPressed: Actions
     }
 }
 
-function websocketMessage(data: any){
+function websocketMessage(data: any) {
     const command = data.command;
-    switch(command){
+    switch (command) {
         case "restart":
             gameRestart(gameData);
             break;
         case "playerInput":
-            playerInputChange(data.keycode, data.isKeydown);
+            gameData.playerInputs.push(data);
             break;
         default:
             console.log("unkown command" + command, data);
@@ -64,14 +71,18 @@ function playerInputChangeEvent(event: KeyboardEvent) {
     const isKeydown = event.type === "keydown" ? true : false;
     if (gameData.multiplayer.websocket === null) {
         playerInputChange(keycode, isKeydown);
-    }else{
+    } else {
         gameData.multiplayer.websocket.send(JSON.stringify(
-            {command: "playerInput", keycode:keycode, isKeydown:isKeydown}
+            {
+                command: "playerInput",
+                data: { keycode: keycode, isKeydown: isKeydown },
+                executeTime: gameData.time + 60
+            }
         ));
     }
 }
 
-function playerInputChange(keycode: string, isKeydown: boolean){
+function playerInputChange(keycode: string, isKeydown: boolean) {
     let players = gameData.players;
     for (let i = 0; i < players.length; i++) {
         let action = players[i].keyCodeToActionPressed.get(keycode);
@@ -89,8 +100,8 @@ function keyDown(event: KeyboardEvent) {
         case "KeyR":
             if (gameData.multiplayer.websocket === null) {
                 gameRestart(gameData);
-            }else{
-                gameData.multiplayer.websocket.send(JSON.stringify({command:"restart"}));
+            } else {
+                gameData.multiplayer.websocket.send(JSON.stringify({ command: "restart" }));
             }
             break;
         default:
