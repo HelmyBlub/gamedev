@@ -59,7 +59,14 @@ function websocketMessage(data: any) {
             gameRestart(gameData);
             break;
         case "playerInput":
-            gameData.playerInputs.push(data);
+            gameData.state.playerInputs.push(data);
+            break;
+        case "sendGameState":
+            gameData.multiplayer.websocket!.send(JSON.stringify({command: "gameState", data: gameData.state}));
+            break;
+        case "gameState":
+            gameData.state = data.data;
+            gameData.realStartTime = performance.now() - gameData.state.time;
             break;
         default:
             console.log("unkown command" + command, data);
@@ -76,7 +83,7 @@ function playerInputChangeEvent(event: KeyboardEvent) {
             {
                 command: "playerInput",
                 data: { keycode: keycode, isKeydown: isKeydown },
-                executeTime: gameData.time + 60
+                executeTime: gameData.state.time + 100
             }
         ));
     }
@@ -88,7 +95,7 @@ function playerInputChange(keycode: string, isKeydown: boolean) {
         let action = players[i].keyCodeToActionPressed.get(keycode);
         if (action !== undefined) {
             players[i].actionsPressed[action] = isKeydown;
-            determinePlayerMoveDirection(gameData.characters[players[i].playerCharacterIndex], players[i].actionsPressed);
+            determinePlayerMoveDirection(gameData.state.characters[players[i].playerCharacterIndex], players[i].actionsPressed);
         }
     }
 }

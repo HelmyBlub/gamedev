@@ -25,7 +25,7 @@ function paintCharacters(ctx: CanvasRenderingContext2D, characters: Character[])
 }
 
 function shoot(character: Character) {
-    gameData.projectiles.push(createProjectile(character.x, character.y, character.moveDirection, character.damage, character.faction));
+    gameData.state.projectiles.push(createProjectile(character.x, character.y, character.moveDirection, character.damage, character.faction));
 }
 
 function tickCharacters(characters: Character[]) {

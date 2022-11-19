@@ -1,25 +1,29 @@
-type Game = {
-    canvasElement: HTMLCanvasElement,
-    ctx: CanvasRenderingContext2D,
+type GameState = {
     characters: Character[],
-    players: Player[],
     projectiles: Projectile[],
     killCounter: number,
-    maxTime: number,
-    time: number;
-    realStartTime: number;
+    time: number;        
     ended: boolean,
+    randumNumberGenerator: {
+        seed: number
+    }
     playerInputs: PlayerInput[],
-    multiplayer: {
-        websocket: WebSocket | null
-    },
     highscore: {
         scores: number[],
         maxLength: 10,
     },
-    randumNumberGenerator: {
-        seed: number
-    }
+}
+
+type Game = {
+    canvasElement: HTMLCanvasElement,
+    ctx: CanvasRenderingContext2D,
+    state: GameState,
+    players: Player[],
+    maxTime: number,
+    realStartTime: number;
+    multiplayer: {
+        websocket: WebSocket | null,
+    },
 }
 
 function gameRestart(game: Game) {
@@ -27,46 +31,48 @@ function gameRestart(game: Game) {
 }
 
 function gameInit(game: Game) {
-    game.projectiles = [];
-    game.characters = [];
+    game.state.projectiles = [];
+    game.state.characters = [];
     game.players = [];
-    game.killCounter = 0;
-    game.ended = false;
-    game.time = 0;
+    game.state.killCounter = 0;
+    game.state.ended = false;
+    game.state.time = 0;
     game.realStartTime = performance.now();
-    game.playerInputs = [];
+    game.state.playerInputs = [];
 
     addPlayer(game, 100, 100, createDefaultKeyBindings1());
     addPlayer(game, 200, 100, createDefaultKeyBindings2());
 }
 
 function addPlayer(game: Game, x: number, y: number, keyCodeToActionPressed: Map<string, keyof ActionsPressed>) {
-    game.characters.push(createPlayerCharacter(x, y));
-    game.players.push(createPlayer(game.characters.length - 1, keyCodeToActionPressed));
+    game.state.characters.push(createPlayerCharacter(x, y));
+    game.players.push(createPlayer(game.state.characters.length - 1, keyCodeToActionPressed));
 }
 
 function createDefaultGameData(c: HTMLCanvasElement, ctx: CanvasRenderingContext2D): Game {
     return {
         canvasElement: c,
         ctx: ctx,
-        projectiles: [],
-        characters: [],
-        players: [],
-        killCounter: 0,
-        ended: false,
-        maxTime: 30000,
-        time: 0,
-        realStartTime: 0,
-        playerInputs: [],
-        highscore: {
-            scores: [],
-            maxLength: 10,
+        state:{
+            projectiles: [],
+            characters: [],
+            killCounter: 0,
+            ended: false,
+            time: 0,
+            playerInputs: [],
+            highscore: {
+                scores: [],
+                maxLength: 10,
+            },
+            randumNumberGenerator: {
+                seed: 0
+            }
         },
+        players: [],
+        maxTime: 30000,
+        realStartTime: 0,
         multiplayer: {
             websocket: null
         },
-        randumNumberGenerator: {
-            seed: 0
-        }
     }
 }
