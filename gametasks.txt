@@ -1,22 +1,47 @@
 
 
-next tasks:
-- multiplayer 
-    - gamesync
-        - try with different client delays
+next functional tasks:
+- enemys move towards player, player takes melee damage, player can lose
+- xp, level up to become stronger
+    - randomized 3 options to choose on level up
+- enemies get stronger over time
 
+next technical tasks:
+- static files from server, not from filesystem
+- host game for others to join
 
 future tasks:
+    - multiplayer 
+        - gamesync
+            - try with different client delays
+            - need real users to compare how it behaves
     - every one controlls their own character
         - currently has to wait on gamerestart, could make it to be in on join
 
-thoughts:
-    Multiplayer:
-    - backend for online multiplayer
+    - make the game look descent as soon as it fun
+    - deployment pipeline to a real server
 
 
 game ideas:
+- endless map, the further from the middle the stronger the enemies
+    - different directions from the center -> different types of enemies
+    - bosses after certain amount of distance of center -> bosses give better rewards but challenging
+    - map middle is safe area, could be a base area
+
 - want to make a simple web browser game
 - want to try online/multiplayer play 
 - somehow should be randomized content for much replayability
     - rogue like
+- a lot of different "classes" to choose from
+    - melee
+        - big slow weapon, warrior
+        - fast, rogue
+    - range
+        - gun, bow
+    - caster
+        - either level just one "explosion" spell for ever, or many spells
+    - tamer
+        - tame enemies
+        - revive dead enemies
+- some upgrade system to be stronger for each new run, or for different start options
+- gathering some ressources for a upgrade system

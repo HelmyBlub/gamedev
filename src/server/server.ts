@@ -38,10 +38,12 @@ wsServer.on('request', function (request: any) {
     connection.on('close', function () {
         console.log(connection.remoteAddress + " disconnected");
 
-        var index = connections.indexOf(connection);
-        if (index !== -1) {
-            // remove the connection from the pool
-            connections.splice(index, 1);
+
+        for(let i = 0; i< connections.length; i++){
+            if(connections[i].con === connection){
+                connections.splice(i, 1);
+                break;
+            }
         }
         for (let i = 0; i < connections.length; i++) {
             connections[i].con.sendUTF(JSON.stringify({ command: "playerLeft", clientId: connection.clientId}));
