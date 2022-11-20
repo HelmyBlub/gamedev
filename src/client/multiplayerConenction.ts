@@ -51,6 +51,13 @@ function websocketMessage(game: Game, data: any) {
             game.state.clientIds = [data.clientId];
             break;
         case "playerLeft":
+            for (let i = 0; i < game.state.clientIds.length; i++) {
+                if (game.state.clientIds[i] === data.clientId) {
+                    console.log("client removed", game.state.clientIds[i]);
+                    game.state.clientIds.splice(i, 1);
+                    break;
+                }
+            }
             break;
         case "timeUpdate":
             game.multiplayer.serverGameTime = data.time;

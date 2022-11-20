@@ -17,19 +17,19 @@ var wsServer = new WebSocketServer({
     autoAcceptConnections: false
 });
 
-var connections: {clientId: number, con: any}[] = [];
+var connections: { clientId: number, con: any }[] = [];
 var clientIdCounter = 0;
 var startTime = process.hrtime.bigint();
 
 wsServer.on('request', function (request: any) {
     var connection = request.accept('gamedev', request.origin);
-    connection.sendUTF(JSON.stringify({ command: "connectInfo", clientId: clientIdCounter}));
+    connection.sendUTF(JSON.stringify({ command: "connectInfo", clientId: clientIdCounter }));
 
-    if(connections.length > 0){
-        connections[0].con.sendUTF(JSON.stringify({ command: "sendGameState", clientId: clientIdCounter}));
+    if (connections.length > 0) {
+        connections[0].con.sendUTF(JSON.stringify({ command: "sendGameState", clientId: clientIdCounter }));
     }
 
-    connections.push({clientId: clientIdCounter, con:connection});
+    connections.push({ clientId: clientIdCounter, con: connection });
     clientIdCounter++;
 
     console.log(connection.remoteAddress + "#Con" + connections.length);
@@ -37,16 +37,17 @@ wsServer.on('request', function (request: any) {
     // Handle closed connections
     connection.on('close', function () {
         console.log(connection.remoteAddress + " disconnected");
+        let clientId = -1;
 
-
-        for(let i = 0; i< connections.length; i++){
-            if(connections[i].con === connection){
+        for (let i = 0; i < connections.length; i++) {
+            if (connections[i].con === connection) {
+                clientId = connections[i].clientId;
                 connections.splice(i, 1);
                 break;
             }
         }
         for (let i = 0; i < connections.length; i++) {
-            connections[i].con.sendUTF(JSON.stringify({ command: "playerLeft", clientId: connection.clientId}));
+            connections[i].con.sendUTF(JSON.stringify({ command: "playerLeft", clientId: clientId }));
         }
     });
 
@@ -55,9 +56,9 @@ wsServer.on('request', function (request: any) {
         if (message.type === 'utf8') {
             try {
                 const command = JSON.parse(message.utf8Data).command;
-                if(command === "restart"){
+                if (command === "restart") {
                     startTime = process.hrtime.bigint();
-                }else if(command === "playerInput"){
+                } else if (command === "playerInput") {
                     const data = JSON.parse(message.utf8Data);
                     data.executeTime = getCurrentMS();
                     message.utf8Data = JSON.stringify(data);
@@ -75,16 +76,16 @@ wsServer.on('request', function (request: any) {
     });
 });
 
-function getCurrentMS(){
+function getCurrentMS() {
     return Number(process.hrtime.bigint() - startTime) / 1000000;
 }
 
-function gameTimeTicker(){
+function gameTimeTicker() {
     const currentTime = getCurrentMS();
     connections.forEach(function (destination: any) {
-        destination.con.sendUTF(JSON.stringify({command:"timeUpdate", time: currentTime}));
+        destination.con.sendUTF(JSON.stringify({ command: "timeUpdate", time: currentTime }));
     });
-    setTimeout(gameTimeTicker,16);
+    setTimeout(gameTimeTicker, 16);
 }
 gameTimeTicker();
 
