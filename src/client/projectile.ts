@@ -26,6 +26,7 @@ function createProjectile(x: number, y: number, moveDirection: number, damage: n
 
 function tickProjectiles(projectiles: Projectile[]) {
     moveProjectilesTick(projectiles);
+    removeOutOfBoundsProjectiles(projectiles);
 }
 
 function moveProjectileTick(projectile: Projectile) {
@@ -38,6 +39,11 @@ function moveProjectileTick(projectile: Projectile) {
 function moveProjectilesTick(projectiles: Projectile[]) {
     for (let i = projectiles.length - 1; i >= 0; i--) {
         moveProjectileTick(projectiles[i]);
+    }
+}
+
+function removeOutOfBoundsProjectiles(projectiles: Projectile[]) {
+    for (let i = projectiles.length - 1; i >= 0; i--) {
         if (projectiles[i].x < 0 || projectiles[i].y < 0
             || projectiles[i].x > 400 || projectiles[i].y > 300) {
             projectiles.splice(i, 1);

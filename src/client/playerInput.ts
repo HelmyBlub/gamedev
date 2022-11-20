@@ -5,7 +5,6 @@ type ActionsPressed = {
     up: boolean
 }
 
-
 type PlayerInput = {
     executeTime: number,
     command: string,
@@ -52,57 +51,18 @@ function determinePlayerMoveDirection(player: Character, actionsPressed: Actions
     }
 }
 
-function websocketMessage(data: any) {
-    const command = data.command;
-    switch (command) {
-        case "restart":
-            gameRestart(gameData);
-            break;
-        case "playerInput":
-            gameData.state.playerInputs.push(data);
-            break;
-        case "sendGameState":
-            gameData.state.clientIds.push(data.clientId);
-            gameData.multiplayer.websocket!.send(JSON.stringify({ command: "gameState", data: gameData.state }));
-            break;
-        case "gameState":
-            gameData.state = data.data;
-            gameData.realStartTime = performance.now() - gameData.state.time;
-            for (let i = 0; i < gameData.state.clientIds.length; i++) {
-                if (gameData.multiplayer.myClientId === gameData.state.clientIds[i]) {
-                    gameData.clientKeyBindings = [{
-                        playerIndex: i,
-                        keyCodeToActionPressed: createDefaultKeyBindings1()
-                    }];
-                }
-            }           
-            break;
-        case "connectInfo":
-            gameData.multiplayer.myClientId = data.clientId;
-            gameData.state.clientIds = [data.clientId];
-            break;
-        case "playerLeft":
-            break;
-        case "timeUpdate":
-            gameData.multiplayer.serverGameTime = data.time;
-            break;
-        default:
-            console.log("unkown command: " + command, data);
-    }
-}
-
-function playerInputChangeEvent(event: KeyboardEvent) {
+function playerInputChangeEvent(event: KeyboardEvent, game:Game) {
     const keycode = event.code;
     const isKeydown = event.type === "keydown" ? true : false;
 
-    for (let i = 0; i < gameData.clientKeyBindings.length; i++) {
-        let action = gameData.clientKeyBindings[i].keyCodeToActionPressed.get(keycode);
-        if (action !== undefined && gameData.clientKeyBindings[i].playerIndex < gameData.state.players.length) {
-            const playerIndex = gameData.clientKeyBindings[i].playerIndex;
-            if (gameData.multiplayer.websocket === null) {
-                playerAction(playerIndex, action, isKeydown);
+    for (let i = 0; i < game.clientKeyBindings.length; i++) {
+        let action = game.clientKeyBindings[i].keyCodeToActionPressed.get(keycode);
+        if (action !== undefined && game.clientKeyBindings[i].playerIndex < game.state.players.length) {
+            const playerIndex = game.clientKeyBindings[i].playerIndex;
+            if (game.multiplayer.websocket === null) {
+                playerAction(playerIndex, action, isKeydown, game.state);
             } else {
-                gameData.multiplayer.websocket.send(JSON.stringify(
+                game.multiplayer.websocket.send(JSON.stringify(
                     {
                         command: "playerInput",
                         data: {playerIndex: playerIndex, action: action, isKeydown: isKeydown },
@@ -113,23 +73,23 @@ function playerInputChangeEvent(event: KeyboardEvent) {
     }
 }
 
-function playerAction(playerIndex: number, action: keyof ActionsPressed, isKeydown: boolean) {
-    const player = gameData.state.players[playerIndex];
+function playerAction(playerIndex: number, action: keyof ActionsPressed, isKeydown: boolean, state: GameState) {
+    const player = state.players[playerIndex];
     if (action !== undefined) {
         player.actionsPressed[action] = isKeydown;
-        determinePlayerMoveDirection(gameData.state.characters[player.playerCharacterIndex], player.actionsPressed);
+        determinePlayerMoveDirection(state.characters[player.playerCharacterIndex], player.actionsPressed);
     }
 }
 
-function keyDown(event: KeyboardEvent) {
-    playerInputChangeEvent(event);
+function keyDown(event: KeyboardEvent, game: Game) {
+    playerInputChangeEvent(event, game);
 
     switch (event.code) {
         case "KeyR":
-            if (gameData.multiplayer.websocket === null) {
-                gameRestart(gameData);
+            if (game.multiplayer.websocket === null) {
+                gameRestart(game);
             } else {
-                gameData.multiplayer.websocket.send(JSON.stringify({ command: "restart" }));
+                game.multiplayer.websocket.send(JSON.stringify({ command: "restart" }));
             }
             break;
         default:
@@ -137,6 +97,6 @@ function keyDown(event: KeyboardEvent) {
     }
 }
 
-function keyUp(event: KeyboardEvent) {
-    playerInputChangeEvent(event);
+function keyUp(event: KeyboardEvent, game: Game) {
+    playerInputChangeEvent(event, game);
 }

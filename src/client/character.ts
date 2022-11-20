@@ -24,62 +24,55 @@ function paintCharacters(ctx: CanvasRenderingContext2D, characters: Character[])
     }
 }
 
-function shoot(character: Character) {
-    gameData.state.projectiles.push(createProjectile(character.x, character.y, character.moveDirection, character.damage, character.faction));
+function shoot(character: Character, projectiles: Projectile[]) {
+    projectiles.push(createProjectile(character.x, character.y, character.moveDirection, character.damage, character.faction));
 }
 
-function tickCharacters(characters: Character[]) {
+function tickCharacters(characters: Character[], projectiles: Projectile[]) {
     for (let i = 0; i < characters.length; i++) {
         if (characters[i].faction === "player") {
-            tickCharacter(characters[i]);
-            movePlayerTick(characters[i]);
+            tickCharacter(characters[i], projectiles);
+            moveCharacterTick(characters[i]);
         }
     }
 }
 
-function tickCharacter(character: Character) {
-    shoot(character);
+function tickCharacter(character: Character, projectiles: Projectile[]) {
+    shoot(character, projectiles);
 }
 
-function movePlayerTick(character: Character) {
+function moveCharacterTick(character: Character) {
     if (character.isMoving) {
         character.x += Math.cos(character.moveDirection) * character.moveSpeed;
         character.y += Math.sin(character.moveDirection) * character.moveSpeed;
     }
 }
 
-function createRandomEnemy() {
-    let x = nextRandom() * gameData.canvasElement.width;
-    let y = nextRandom() * gameData.canvasElement.height;
+function createRandomEnemy(game: Game): Character {
+    let x = nextRandom(game.state) * game.canvasElement.width;
+    let y = nextRandom(game.state) * game.canvasElement.height;
     return createEnemy(x, y);
 }
 
-function createEnemy(x: number, y: number) {
-    return {
-        x: x,
-        y: y,
-        size: 5,
-        color: "black",
-        moveSpeed: 1,
-        moveDirection: 0,
-        isMoving: false,
-        hp: 10,
-        damage: 5,
-        faction: "enemy"
-    }
+function createEnemy(x: number, y: number): Character {
+    return createCharacter(x, y, 5, "black", 1, 10, 5, "enemy");
 }
 
-function createPlayerCharacter(x: number, y: number) {
+function createPlayerCharacter(x: number, y: number): Character {
+    return createCharacter(x, y, 10, "blue", 2, 100, 10, "player");
+}
+
+function createCharacter(x: number, y: number, size: number, color: string, moveSpeed: number, hp: number, damage: number, faction: string): Character {
     return {
         x: x,
         y: y,
-        size: 10,
-        color: "blue",
-        moveSpeed: 2,
+        size: size,
+        color: color,
+        moveSpeed: moveSpeed,
         moveDirection: 0,
         isMoving: false,
-        hp: 100,
-        damage: 10,
-        faction: "player",
+        hp: hp,
+        damage: damage,
+        faction: faction,
     };
 }

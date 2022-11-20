@@ -9,11 +9,13 @@ type GameState = {
         seed: number
     }
     playerInputs: PlayerInput[],
-    highscore: {
-        scores: number[],
-        maxLength: 10,
-    },
+    highscores: Highscores,
     clientIds: number[],
+}
+
+type Highscores = {
+    scores: number[],
+    maxLength: 10,
 }
 
 type Game = {
@@ -47,30 +49,7 @@ function gameInit(game: Game) {
     game.realStartTime = performance.now();
     game.state.playerInputs = [];
     game.clientKeyBindings = [];
-
-    if (gameData.multiplayer.websocket !== null) {
-        game.multiplayer.serverGameTime = 0;
-        for (let i = 0; i < gameData.state.clientIds.length; i++) {
-            addPlayer(game, 100, 100 + i * 50);
-            if (gameData.multiplayer.myClientId === gameData.state.clientIds[i]) {
-                game.clientKeyBindings.push({
-                    playerIndex: i,
-                    keyCodeToActionPressed: createDefaultKeyBindings1()
-                });
-            }
-        }
-    } else {
-        addPlayer(game, 100, 100);
-        game.clientKeyBindings.push({
-            playerIndex: 0,
-            keyCodeToActionPressed: createDefaultKeyBindings1()
-        });
-    }
-}
-
-function addPlayer(game: Game, x: number, y: number) {
-    game.state.characters.push(createPlayerCharacter(x, y));
-    game.state.players.push(createPlayer(game.state.characters.length - 1));
+    gameInitPlayers(game);
 }
 
 function createDefaultGameData(c: HTMLCanvasElement, ctx: CanvasRenderingContext2D): Game {
@@ -84,7 +63,7 @@ function createDefaultGameData(c: HTMLCanvasElement, ctx: CanvasRenderingContext
             ended: false,
             time: 0,
             playerInputs: [],
-            highscore: {
+            highscores: {
                 scores: [],
                 maxLength: 10,
             },
