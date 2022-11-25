@@ -1,7 +1,6 @@
 
 
 next functional tasks:
-- enemys move towards player, player takes melee damage, player can lose
 - xp, level up to become stronger
     - randomized 3 options to choose on level up
 - enemies get stronger over time
@@ -9,6 +8,9 @@ next functional tasks:
 next technical tasks:
 - static files from server, not from filesystem
 - host game for others to join
+
+bugs:
+- one client reload and websocket recconect order of client changes ending up in controlling different character
 
 future tasks:
     - multiplayer 

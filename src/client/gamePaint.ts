@@ -6,7 +6,7 @@ function paintAll(ctx: CanvasRenderingContext2D, game: Game) {
     if (game.state.ended) {
         paintHighscoreBoard(game.ctx, game.state.highscores);
     } else {
-        paintTimeLeft(ctx, game.maxTime, game.state.time);
+        paintPlayerHp(ctx, game.state.characters[0]);
     }
 }
 
@@ -21,17 +21,16 @@ function paintHighscoreBoard(ctx: CanvasRenderingContext2D, highscores: Highscor
     }
 }
 
-function paintTimeLeft(ctx: CanvasRenderingContext2D, maxTime: number, time: number) {
-    ctx.fillStyle = "white";
-    ctx.font = "18px Arial";
-    let timeLeft = Math.round((maxTime - time) / 1000);
-    ctx.fillText("Timer: " + timeLeft, 10, 40);
-}
-
 function paintKillCounter(ctx: CanvasRenderingContext2D, killCounter: number) {
     ctx.fillStyle = "white";
     ctx.font = "18px Arial";
     ctx.fillText("Kills: " + killCounter, 10, 20);
+}
+
+function paintPlayerHp(ctx: CanvasRenderingContext2D, character: Character) {
+    ctx.fillStyle = "white";
+    ctx.font = "18px Arial";
+    ctx.fillText("HP: " + character.hp, 100, 20);
 }
 
 function paintBackground(ctx: CanvasRenderingContext2D, canvasElement: HTMLCanvasElement) {

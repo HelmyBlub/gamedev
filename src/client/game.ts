@@ -22,7 +22,6 @@ type Game = {
     canvasElement: HTMLCanvasElement,
     ctx: CanvasRenderingContext2D,
     state: GameState,
-    maxTime: number,
     realStartTime: number,
     clientKeyBindings: {
         playerIndex: number,
@@ -74,7 +73,6 @@ function createDefaultGameData(c: HTMLCanvasElement, ctx: CanvasRenderingContext
             clientIds: [],
         },
         clientKeyBindings: [],
-        maxTime: 30000,
         realStartTime: 0,
         multiplayer: {
             myClientId: -1,

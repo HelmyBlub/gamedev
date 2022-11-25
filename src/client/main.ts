@@ -23,7 +23,7 @@ function createGame(canvasElementId: string){
     document.addEventListener('keyup', (e) => keyUp(e, game), false);
 
     gameInit(game);
-    game.state.time = game.maxTime + 1;
+    game.state.characters[0].hp = 0;
     runner(game);
 
     websocketConnect(game);
@@ -56,7 +56,19 @@ function tick(gameTimePassed: number, game: Game) {
         tickCharacters(game.state.characters, game.state.projectiles);
         tickProjectiles(game.state.projectiles);
         detectProjectileToCharacterHit(game.state);
+        detectCharacterDeath(game.state.characters, game.state);
         if (gameEndedCheck(game)) endGame(game.state);
+    }
+}
+
+function detectCharacterDeath(characters: Character[], state: GameState){
+    for (let charIt = characters.length - 1; charIt >= 0; charIt--) {
+        if (characters[charIt].hp <= 0) {
+            if(characters[charIt].faction === "enemy"){
+                state.killCounter++;
+            }
+            characters.splice(charIt, 1);
+        }
     }
 }
 
@@ -84,7 +96,19 @@ function endGame(state: GameState) {
 }
 
 function gameEndedCheck(game: Game) {
-    return game.state.time > game.maxTime;
+    let alivePlayersCount = countAlivePlayers(game.state.characters)
+    if(alivePlayersCount === 0){
+        return true;
+    }
+    return false;
+}
+
+function countAlivePlayers(characters: Character[]){
+    let counter = 0;
+    for (let charIt = characters.length - 1; charIt >= 0; charIt--) {
+        if(characters[charIt].faction === "player") counter++;
+    }
+    return counter;
 }
 
 function detectProjectileToCharacterHit(state: GameState) {
@@ -95,16 +119,16 @@ function detectProjectileToCharacterHit(state: GameState) {
         for (let charIt = characters.length - 1; charIt >= 0; charIt--) {
             let c = characters[charIt];
             if (c.faction === projectile.faction) continue;
-            let xDiff = c.x - projectile.x;
-            let yDiff = c.y - projectile.y;
-            let distance = Math.sqrt(xDiff * xDiff + yDiff * yDiff);
+            let distance = calculateDistance(c, projectile);
             if (distance < projectile.size + c.size) {
                 c.hp -= projectile.damage;
-                if (c.hp < 0) {
-                    state.characters.splice(charIt, 1);
-                    state.killCounter++;
-                }
             }
         }
     }
+}
+
+function calculateDistance(objectA: {x:number, y:number}, objectB: {x:number, y:number}){
+    let xDiff = objectA.x - objectB.x;
+    let yDiff = objectA.y - objectB.y;
+    return Math.sqrt(xDiff * xDiff + yDiff * yDiff);
 }
