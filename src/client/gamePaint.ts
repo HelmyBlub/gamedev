@@ -6,7 +6,7 @@ function paintAll(ctx: CanvasRenderingContext2D, game: Game) {
     if (game.state.ended) {
         paintHighscoreBoard(game.ctx, game.state.highscores);
     } else {
-        paintPlayerHp(ctx, game.state.characters[0]);
+        paintPlayerStats(ctx, game.state.characters[0] as LevelingCharacter);
     }
 }
 
@@ -27,10 +27,17 @@ function paintKillCounter(ctx: CanvasRenderingContext2D, killCounter: number) {
     ctx.fillText("Kills: " + killCounter, 10, 20);
 }
 
-function paintPlayerHp(ctx: CanvasRenderingContext2D, character: Character) {
+function paintPlayerStats(ctx: CanvasRenderingContext2D, character: LevelingCharacter) {
     ctx.fillStyle = "white";
     ctx.font = "18px Arial";
+    ctx.fillText("Level: " + character.level
+            + "  SkillPoints:" + character.availableSkillPoints,
+        200, 20);
     ctx.fillText("HP: " + character.hp, 100, 20);
+
+    if(character.availableSkillPoints > 0){
+        ctx.fillText(`1=${character.upgradeOptions[0].name} Up, 2=${character.upgradeOptions[1].name}, 3=${character.upgradeOptions[2].name}`, 10, 300);
+    }
 }
 
 function paintBackground(ctx: CanvasRenderingContext2D, canvasElement: HTMLCanvasElement) {

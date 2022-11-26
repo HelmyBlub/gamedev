@@ -11,16 +11,20 @@ function createPlayer(characterIndex: number) {
 }
 
 function createDefaultKeyBindings1() {
-    let keyBindings = new Map<string, keyof ActionsPressed>();
+    let keyBindings = new Map<string, keyof MoveActions| keyof UpgradeActions>();
     keyBindings.set("KeyA", "left");
     keyBindings.set("KeyS", "down");
     keyBindings.set("KeyD", "right");
     keyBindings.set("KeyW", "up");
+
+    keyBindings.set("Digit1", "upgrade1");
+    keyBindings.set("Digit2", "upgrade2");
+    keyBindings.set("Digit3", "upgrade3");
     return keyBindings;
 }
 
 function createDefaultKeyBindings2() {
-    let keyBindings = new Map<string, keyof ActionsPressed>();
+    let keyBindings = new Map<string, keyof MoveActions | keyof UpgradeActions>();
     keyBindings.set("ArrowLeft", "left");
     keyBindings.set("ArrowDown", "down");
     keyBindings.set("ArrowRight", "right");

@@ -49,22 +49,35 @@ function runner(game: Game) {
 function tick(gameTimePassed: number, game: Game) {
     if (!game.state.ended) {
         game.state.time += gameTimePassed;
-        tickPlayerInputs(game.state.playerInputs, game.state.time, game.state);
+        tickPlayerInputs(game.state.playerInputs, game.state.time, game);
         if(game.state.characters.length < 100){
             game.state.characters.push(createRandomEnemy(game));
         }
         tickCharacters(game.state.characters, game.state.projectiles);
         tickProjectiles(game.state.projectiles);
         detectProjectileToCharacterHit(game.state);
-        detectCharacterDeath(game.state.characters, game.state);
+        detectCharacterDeath(game.state.characters, game.state, game.avaialbleUpgrades);
         if (gameEndedCheck(game)) endGame(game.state);
     }
 }
 
-function detectCharacterDeath(characters: Character[], state: GameState){
+function playerCharacterXpGain(state: GameState, killedCharacter: Character, upgradeOptions: Map<string, UpgradeOption>){
+    let playerCharacters: LevelingCharacter[] = getPlayerCharacters(state.characters) as LevelingCharacter[];
+    for(let i = 0; i<playerCharacters.length; i++){
+        if(playerCharacters[i].experience !== undefined){
+            playerCharacters[i].experience += killedCharacter.experienceWorth;
+            if(playerCharacters[i].experience >= playerCharacters[i].experienceForLevelUp){
+                levelingCharacterLevelUp(playerCharacters[i], state, upgradeOptions);
+            }
+        }
+    }
+}
+
+function detectCharacterDeath(characters: Character[], state: GameState,  upgradeOptions: Map<string, UpgradeOption>){
     for (let charIt = characters.length - 1; charIt >= 0; charIt--) {
         if (characters[charIt].hp <= 0) {
             if(characters[charIt].faction === "enemy"){
+                playerCharacterXpGain(state, characters[charIt], upgradeOptions);
                 state.killCounter++;
             }
             characters.splice(charIt, 1);
@@ -72,14 +85,14 @@ function detectCharacterDeath(characters: Character[], state: GameState){
     }
 }
 
-function tickPlayerInputs(playerInputs: PlayerInput[], currentTime: number, state: GameState) {
+function tickPlayerInputs(playerInputs: PlayerInput[], currentTime: number, game: Game) {
     for (let i = playerInputs.length - 1; i >= 0; i--) {
         if (playerInputs[i].executeTime <= currentTime) {
             if (playerInputs[i].command === "playerInput") {
                 if (playerInputs[i].executeTime <= currentTime - 16) {
                     console.log("playerAction to late", currentTime - playerInputs[i].executeTime, playerInputs[i]);
                 }
-                playerAction(playerInputs[i].data.playerIndex, playerInputs[i].data.action, playerInputs[i].data.isKeydown, state);
+                playerAction(playerInputs[i].data.playerIndex, playerInputs[i].data.action, playerInputs[i].data.isKeydown, game);
                 playerInputs.splice(i,1);
             }
         }

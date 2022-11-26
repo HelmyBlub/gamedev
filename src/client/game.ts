@@ -25,13 +25,14 @@ type Game = {
     realStartTime: number,
     clientKeyBindings: {
         playerIndex: number,
-        keyCodeToActionPressed: Map<string, keyof ActionsPressed>,
+        keyCodeToActionPressed: Map<string, keyof MoveActions | keyof UpgradeActions>,
     }[],
     multiplayer: {
         myClientId: number,
         websocket: WebSocket | null,
         serverGameTime: number,
     },
+    avaialbleUpgrades: Map<string, UpgradeOption>,
 }
 
 function gameRestart(game: Game) {
@@ -79,5 +80,6 @@ function createDefaultGameData(c: HTMLCanvasElement, ctx: CanvasRenderingContext
             websocket: null,
             serverGameTime: 0,
         },
+        avaialbleUpgrades: createDefaultUpgradeOptions(),
     }
 }

@@ -7,8 +7,10 @@ type Character = {
     moveDirection: number,
     isMoving: boolean,
     hp: number,
+    maxHp: number,
     damage: number,
-    faction: string
+    faction: string,
+    experienceWorth: number,
 }
 
 function paintCharacter(ctx: CanvasRenderingContext2D, character: Character) {
@@ -25,7 +27,7 @@ function paintCharacters(ctx: CanvasRenderingContext2D, characters: Character[])
 }
 
 function shoot(character: Character, projectiles: Projectile[]) {
-    projectiles.push(createProjectile(character.x, character.y, character.moveDirection, character.damage, character.faction));
+    projectiles.push(createProjectile(character.x, character.y, character.moveDirection, character.damage, character.faction, character.moveSpeed+2));
 }
 
 function tickCharacters(characters: Character[], projectiles: Projectile[]) {
@@ -110,6 +112,7 @@ function moveCharacterTick(character: Character) {
 
 function createRandomEnemy(game: Game): Character {
     let x,y;
+    let hp = Math.floor(game.state.time / 100);
 
     if(nextRandom(game.state) < 0.5){
         x = Math.round(nextRandom(game.state)) * game.canvasElement.width;
@@ -118,15 +121,15 @@ function createRandomEnemy(game: Game): Character {
         x = nextRandom(game.state) * game.canvasElement.width;
         y = Math.round(nextRandom(game.state)) * game.canvasElement.height;    
     }
-    return createEnemy(x, y);
+    return createEnemy(x, y, hp);
 }
 
-function createEnemy(x: number, y: number): Character {
-    return createCharacter(x, y, 5, "black", 1, 10, 1, "enemy", true);
+function createEnemy(x: number, y: number, hp: number): Character {
+    return createCharacter(x, y, 5, "black", 1, hp, 1, "enemy", true);
 }
 
 function createPlayerCharacter(x: number, y: number): Character {
-    return createCharacter(x, y, 10, "blue", 2, 200, 10, "player");
+    return createLevelingCharacter(x, y, 10, "blue", 2, 200, 10, "player");
 }
 
 function createCharacter(
@@ -138,7 +141,7 @@ function createCharacter(
     hp: number,
     damage: number,
     faction: string,
-    isMoving: boolean = false
+    isMoving: boolean = false,
 ): Character {
     return {
         x: x,
@@ -149,7 +152,9 @@ function createCharacter(
         moveDirection: 0,
         isMoving: isMoving,
         hp: hp,
+        maxHp: hp,
         damage: damage,
         faction: faction,
+        experienceWorth: 1,        
     };
 }

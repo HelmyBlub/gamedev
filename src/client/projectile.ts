@@ -10,13 +10,13 @@ type Projectile = {
     faction: string,
 }
 
-function createProjectile(x: number, y: number, moveDirection: number, damage: number, faction: string) {
+function createProjectile(x: number, y: number, moveDirection: number, damage: number, faction: string, moveSpeed: number) {
     return {
         x: x,
         y: y,
         size: 2,
         color: "white",
-        moveSpeed: 4,
+        moveSpeed: moveSpeed,
         moveDirection: moveDirection,
         isMoving: true,
         damage: damage,

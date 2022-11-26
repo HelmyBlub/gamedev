@@ -1,9 +1,7 @@
 
 
 next functional tasks:
-- xp, level up to become stronger
-    - randomized 3 options to choose on level up
-- enemies get stronger over time
+
 
 next technical tasks:
 - static files from server, not from filesystem
