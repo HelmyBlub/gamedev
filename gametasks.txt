@@ -1,11 +1,19 @@
 
 
 next functional tasks:
-
+- infinite map
+    - map tiles:
+        - grass
+        - stone (blocking)
+        - tree (blooking but destroyable)
+    - procedural map generation
+- add more variety of upgrades
 
 next technical tasks:
 - static files from server, not from filesystem
 - host game for others to join
+- use javascript modules
+- think: is automated testing already usefull? ()
 
 bugs:
 - one client reload and websocket recconect order of client changes ending up in controlling different character
@@ -23,7 +31,7 @@ future tasks:
 
 
 game ideas:
-- endless map, the further from the middle the stronger the enemies
+- infinite map, the further from the middle the stronger the enemies
     - different directions from the center -> different types of enemies
     - bosses after certain amount of distance of center -> bosses give better rewards but challenging
     - map middle is safe area, could be a base area
