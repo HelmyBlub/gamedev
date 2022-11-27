@@ -1,3 +1,5 @@
+const PLAYER_FACTION = "player";
+const ENEMY_FACTION = "enemy";
 type Character = {
     x: number,
     y: number,
@@ -32,9 +34,9 @@ function shoot(character: Character, projectiles: Projectile[]) {
 
 function tickCharacters(characters: Character[], projectiles: Projectile[]) {
     for (let i = 0; i < characters.length; i++) {
-        if (characters[i].faction === "player") {
+        if (characters[i].faction === PLAYER_FACTION) {
             tickPlayerCharacter(characters[i], projectiles);
-        }else if(characters[i].faction === "enemy"){
+        }else if(characters[i].faction === ENEMY_FACTION){
             tickEnemyCharacter(characters[i], getPlayerCharacters(characters));
         }
         moveCharacterTick(characters[i]);
@@ -44,7 +46,7 @@ function tickCharacters(characters: Character[], projectiles: Projectile[]) {
 function getPlayerCharacters(characters: Character[]){
     let playerCharacters = [];
     for (let i = 0; i < characters.length; i++) {
-        if (characters[i].faction === "player") {
+        if (characters[i].faction === PLAYER_FACTION) {
             playerCharacters.push(characters[i]);
         }
     }
@@ -125,11 +127,11 @@ function createRandomEnemy(game: Game): Character {
 }
 
 function createEnemy(x: number, y: number, hp: number): Character {
-    return createCharacter(x, y, 5, "black", 1, hp, 1, "enemy", true);
+    return createCharacter(x, y, 5, "black", 0.1, hp, 1, ENEMY_FACTION, true);
 }
 
 function createPlayerCharacter(x: number, y: number): Character {
-    return createLevelingCharacter(x, y, 10, "blue", 2, 200, 10, "player");
+    return createLevelingCharacter(x, y, 10, "blue", 2, 200, 10, PLAYER_FACTION);
 }
 
 function createCharacter(
@@ -157,4 +159,24 @@ function createCharacter(
         faction: faction,
         experienceWorth: 1,        
     };
+}
+
+function detectCharacterDeath(characters: Character[], state: GameState,  upgradeOptions: Map<string, UpgradeOption>){
+    for (let charIt = characters.length - 1; charIt >= 0; charIt--) {
+        if (characters[charIt].hp <= 0) {
+            if(characters[charIt].faction === ENEMY_FACTION){
+                levelingCharacterXpGain(state, characters[charIt], upgradeOptions);
+                state.killCounter++;
+            }
+            characters.splice(charIt, 1);
+        }
+    }
+}
+
+function countAlivePlayers(characters: Character[]){
+    let counter = 0;
+    for (let charIt = characters.length - 1; charIt >= 0; charIt--) {
+        if(characters[charIt].faction === PLAYER_FACTION) counter++;
+    }
+    return counter;
 }

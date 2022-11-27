@@ -6,7 +6,13 @@ function paintAll(ctx: CanvasRenderingContext2D, game: Game) {
     if (game.state.ended) {
         paintHighscoreBoard(game.ctx, game.state.highscores);
     } else {
-        paintPlayerStats(ctx, game.state.characters[0] as LevelingCharacter);
+        if(game.multiplayer.myClientId !== -1){
+            let playerIndex = game.state.clientIds.indexOf(game.multiplayer.myClientId);
+            let characterIndex = game.state.players[playerIndex].playerCharacterIndex;
+            paintPlayerStats(ctx, game.state.characters[characterIndex] as LevelingCharacter);
+        }else{
+            paintPlayerStats(ctx, game.state.characters[0] as LevelingCharacter);
+        }
     }
 }
 

@@ -86,17 +86,8 @@ function playerAction(playerIndex: number, action: string, isKeydown: boolean, g
 
 function upgradeLevelingCharacter(character: LevelingCharacter, action: string, upgradeOptions: Map<string, UpgradeOption>, state: GameState){
     if(character.availableSkillPoints > 0){
-        switch(action){
-            case "upgrade1":
-                upgradeOptions.get(character.upgradeOptions[0].name)?.upgrade(character);
-                break;
-            case "upgrade2":
-                upgradeOptions.get(character.upgradeOptions[1].name)?.upgrade(character);
-                break;
-            case "upgrade3":
-                upgradeOptions.get(character.upgradeOptions[2].name)?.upgrade(character);
-                break;
-        }
+        let index = UPGRADE_ACTIONS.indexOf(action);
+        upgradeOptions.get(character.upgradeOptions[index].name)?.upgrade(character);
         character.availableSkillPoints--;
         character.upgradeOptions = [];
         if(character.availableSkillPoints > 0){
@@ -119,4 +110,18 @@ function keyDown(event: KeyboardEvent, game: Game) {
 
 function keyUp(event: KeyboardEvent, game: Game) {
     playerInputChangeEvent(event, game);
+}
+
+function tickPlayerInputs(playerInputs: PlayerInput[], currentTime: number, game: Game) {
+    for (let i = playerInputs.length - 1; i >= 0; i--) {
+        if (playerInputs[i].executeTime <= currentTime) {
+            if (playerInputs[i].command === "playerInput") {
+                if (playerInputs[i].executeTime <= currentTime - 16) {
+                    console.log("playerAction to late", currentTime - playerInputs[i].executeTime, playerInputs[i]);
+                }
+                playerAction(playerInputs[i].data.playerIndex, playerInputs[i].data.action, playerInputs[i].data.isKeydown, game);
+                playerInputs.splice(i,1);
+            }
+        }
+    }
 }

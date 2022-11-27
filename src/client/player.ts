@@ -23,15 +23,6 @@ function createDefaultKeyBindings1() {
     return keyBindings;
 }
 
-function createDefaultKeyBindings2() {
-    let keyBindings = new Map<string, string>();
-    keyBindings.set("ArrowLeft", "left");
-    keyBindings.set("ArrowDown", "down");
-    keyBindings.set("ArrowRight", "right");
-    keyBindings.set("ArrowUp", "up");
-    return keyBindings;
-}
-
 function addPlayer(characters: Character[], players: Player[], x: number, y: number) {
     characters.push(createPlayerCharacter(x, y));
     players.push(createPlayer(characters.length - 1));

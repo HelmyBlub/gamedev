@@ -31,50 +31,50 @@ wsServer.on('request', function (request: any) {
 
     connections.push({ clientId: clientIdCounter, con: connection });
     clientIdCounter++;
-
     console.log(connection.remoteAddress + "#Con" + connections.length);
 
-    // Handle closed connections
-    connection.on('close', function () {
-        console.log(connection.remoteAddress + " disconnected");
-        let clientId = -1;
-
-        for (let i = 0; i < connections.length; i++) {
-            if (connections[i].con === connection) {
-                clientId = connections[i].clientId;
-                connections.splice(i, 1);
-                break;
-            }
-        }
-        for (let i = 0; i < connections.length; i++) {
-            connections[i].con.sendUTF(JSON.stringify({ command: "playerLeft", clientId: clientId }));
-        }
-    });
-
-    // Handle incoming messages
-    connection.on('message', function (message: any) {
-        if (message.type === 'utf8') {
-            try {
-                const command = JSON.parse(message.utf8Data).command;
-                if (command === "restart") {
-                    startTime = process.hrtime.bigint();
-                } else if (command === "playerInput") {
-                    const data = JSON.parse(message.utf8Data);
-                    data.executeTime = getCurrentMS();
-                    message.utf8Data = JSON.stringify(data);
-                }
-                connections.forEach(function (destination: any) {
-                    destination.con.sendUTF(message.utf8Data);
-                });
-            }
-            catch (e) {
-                console.log("message send error" + e);
-            }
-        } else {
-            console.log("wrong type:" + message.type);
-        }
-    });
+    connection.on('close', () => onConnectionClose(connection));
+    connection.on('message', onMessage);
 });
+
+function onConnectionClose(connection: any) {
+    console.log(connection.remoteAddress + " disconnected");
+    let clientId = -1;
+
+    for (let i = 0; i < connections.length; i++) {
+        if (connections[i].con === connection) {
+            clientId = connections[i].clientId;
+            connections.splice(i, 1);
+            break;
+        }
+    }
+    for (let i = 0; i < connections.length; i++) {
+        connections[i].con.sendUTF(JSON.stringify({ command: "playerLeft", clientId: clientId }));
+    }
+}
+
+function onMessage(message: any) {
+    if (message.type === 'utf8') {
+        try {
+            const command = JSON.parse(message.utf8Data).command;
+            if (command === "restart") {
+                startTime = process.hrtime.bigint();
+            } else if (command === "playerInput") {
+                const data = JSON.parse(message.utf8Data);
+                data.executeTime = getCurrentMS();
+                message.utf8Data = JSON.stringify(data);
+            }
+            connections.forEach(function (destination: any) {
+                destination.con.sendUTF(message.utf8Data);
+            });
+        }
+        catch (e) {
+            console.log("message send error" + e);
+        }
+    } else {
+        console.log("wrong type:" + message.type);
+    }
+}
 
 function getCurrentMS() {
     return Number(process.hrtime.bigint() - startTime) / 1000000;
@@ -89,5 +89,4 @@ function gameTimeTicker() {
 }
 gameTimeTicker();
 
-//asd
 console.log("gamedev backend ready");
