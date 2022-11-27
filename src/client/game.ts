@@ -50,6 +50,9 @@ function gameInit(game: Game) {
     game.state.playerInputs = [];
     game.clientKeyBindings = [];
     gameInitPlayers(game);
+    if(game.multiplayer.websocket !== null){
+        game.multiplayer.serverGameTime = 0;
+    }
 }
 
 function createDefaultGameData(c: HTMLCanvasElement, ctx: CanvasRenderingContext2D): Game {

@@ -38,22 +38,14 @@ function addPlayer(characters: Character[], players: Player[], x: number, y: num
 }
 
 function gameInitPlayers(game: Game){
-    if (game.multiplayer.websocket !== null) {
-        game.multiplayer.serverGameTime = 0;
-        for (let i = 0; i < game.state.clientIds.length; i++) {
-            addPlayer(game.state.characters, game.state.players, 100, 100 + i * 50);
-            if (game.multiplayer.myClientId === game.state.clientIds[i]) {
-                game.clientKeyBindings.push({
-                    playerIndex: i,
-                    keyCodeToActionPressed: createDefaultKeyBindings1()
-                });
-            }
+    let numberPlayers = Math.max(game.state.clientIds.length, 1);
+    for (let i = 0; i < numberPlayers; i++) {
+        addPlayer(game.state.characters, game.state.players, 100, 100 + i * 50);
+        if (game.multiplayer.myClientId === -1 || game.multiplayer.myClientId === game.state.clientIds[i]) {
+            game.clientKeyBindings.push({
+                playerIndex: i,
+                keyCodeToActionPressed: createDefaultKeyBindings1()
+            });
         }
-    } else {
-        addPlayer(game.state.characters, game.state.players, 100, 100);
-        game.clientKeyBindings.push({
-            playerIndex: 0,
-            keyCodeToActionPressed: createDefaultKeyBindings1()
-        });
     }
 }

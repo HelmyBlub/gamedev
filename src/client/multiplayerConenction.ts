@@ -10,7 +10,7 @@ function websocketConnect(game: Game) {
     };
 
     socket.onmessage = function (message: any) {
-        websocketMessage(game, JSON.parse(message.data));
+        executeCommand(game, JSON.parse(message.data));
     };
     socket.onclose = function () {
         console.log("onclose");
@@ -19,50 +19,4 @@ function websocketConnect(game: Game) {
     socket.onerror = function (error) {
         console.log("weboscket error", error);
     };
-}
-
-function websocketMessage(game: Game, data: any) {
-    const command = data.command;
-    switch (command) {
-        case "restart":
-            gameRestart(game);
-            break;
-        case "playerInput":
-            game.state.playerInputs.push(data);
-            break;
-        case "sendGameState":
-            game.state.clientIds.push(data.clientId);
-            game.multiplayer.websocket!.send(JSON.stringify({ command: "gameState", data: game.state }));
-            break;
-        case "gameState":
-            game.state = data.data;
-            game.realStartTime = performance.now() - game.state.time;
-            for (let i = 0; i < game.state.clientIds.length; i++) {
-                if (game.multiplayer.myClientId === game.state.clientIds[i]) {
-                    game.clientKeyBindings = [{
-                        playerIndex: i,
-                        keyCodeToActionPressed: createDefaultKeyBindings1()
-                    }];
-                }
-            }
-            break;
-        case "connectInfo":
-            game.multiplayer.myClientId = data.clientId;
-            game.state.clientIds = [data.clientId];
-            break;
-        case "playerLeft":
-            for (let i = 0; i < game.state.clientIds.length; i++) {
-                if (game.state.clientIds[i] === data.clientId) {
-                    console.log("client removed", game.state.clientIds[i]);
-                    game.state.clientIds.splice(i, 1);
-                    break;
-                }
-            }
-            break;
-        case "timeUpdate":
-            game.multiplayer.serverGameTime = data.time;
-            break;
-        default:
-            console.log("unkown command: " + command, data);
-    }
 }

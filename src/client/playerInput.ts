@@ -62,16 +62,10 @@ function playerInputChangeEvent(event: KeyboardEvent, game:Game) {
         let action = game.clientKeyBindings[i].keyCodeToActionPressed.get(keycode);
         if (action !== undefined && game.clientKeyBindings[i].playerIndex < game.state.players.length) {
             const playerIndex = game.clientKeyBindings[i].playerIndex;
-            if (game.multiplayer.websocket === null) {
-                playerAction(playerIndex, action, isKeydown, game);
-            } else {
-                game.multiplayer.websocket.send(JSON.stringify(
-                    {
-                        command: "playerInput",
-                        data: {playerIndex: playerIndex, action: action, isKeydown: isKeydown },
-                    }
-                ));
-            }
+            handleCommand(game, {
+                command: "playerInput",
+                data: {playerIndex: playerIndex, action: action, isKeydown: isKeydown },
+            });
         }
     }
 }
@@ -116,11 +110,7 @@ function keyDown(event: KeyboardEvent, game: Game) {
 
     switch (event.code) {
         case "KeyR":
-            if (game.multiplayer.websocket === null) {
-                gameRestart(game);
-            } else {
-                game.multiplayer.websocket.send(JSON.stringify({ command: "restart" }));
-            }
+            handleCommand(game, { command: "restart" });
             break;
         default:
             break;
