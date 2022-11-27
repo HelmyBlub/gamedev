@@ -25,7 +25,7 @@ type Game = {
     realStartTime: number,
     clientKeyBindings: {
         playerIndex: number,
-        keyCodeToActionPressed: Map<string, keyof MoveActions | keyof UpgradeActions>,
+        keyCodeToActionPressed: Map<string, string>,
     }[],
     multiplayer: {
         myClientId: number,

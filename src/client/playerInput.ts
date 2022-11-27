@@ -1,19 +1,8 @@
-type MoveActions = {
-    left: boolean,
-    down: boolean,
-    right: boolean,
-    up: boolean
-}
-
-type UpgradeActions = {
-    upgrade1: boolean,
-    upgrade2: boolean,
-    upgrade3: boolean,
-}
+const MOVE_ACTIONS = ["left", "down", "right", "up"];
+const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3"];
 
 type ActionsPressed = {
-    moveActions:MoveActions,
-    upgradeActions:UpgradeActions,
+    [key: string]: boolean;
 }
 
 type PlayerInput = {
@@ -24,42 +13,38 @@ type PlayerInput = {
 
 function createActionsPressed() {
     return {
-        moveActions:{
-            left: false,
-            down: false,
-            right: false,
-            up: false,
-        },
-        upgradeActions:{
-            upgrade1: false,
-            upgrade2: false,
-            upgrade3: false,
-        }
+        left: false,
+        down: false,
+        right: false,
+        up: false,
+        upgrade1: false,
+        upgrade2: false,
+        upgrade3: false,
     }
 }
 
 function determinePlayerMoveDirection(player: Character, actionsPressed: ActionsPressed) {
     player.isMoving = true;
-    if (actionsPressed.moveActions.left && !actionsPressed.moveActions.up) {
-        if (!actionsPressed.moveActions.down) {
+    if (actionsPressed.left && !actionsPressed.up) {
+        if (!actionsPressed.down) {
             player.moveDirection = Math.PI;
         } else {
             player.moveDirection = Math.PI * 0.75;
         }
-    } else if (actionsPressed.moveActions.down) {
-        if (!actionsPressed.moveActions.right) {
+    } else if (actionsPressed.down) {
+        if (!actionsPressed.right) {
             player.moveDirection = Math.PI * 0.5;
         } else {
             player.moveDirection = Math.PI * 0.25;
         }
-    } else if (actionsPressed.moveActions.right) {
-        if (!actionsPressed.moveActions.up) {
+    } else if (actionsPressed.right) {
+        if (!actionsPressed.up) {
             player.moveDirection = 0;
         } else {
             player.moveDirection = Math.PI * 1.75;
         }
-    } else if (actionsPressed.moveActions.up) {
-        if (!actionsPressed.moveActions.left) {
+    } else if (actionsPressed.up) {
+        if (!actionsPressed.left) {
             player.moveDirection = Math.PI * 1.5;
         } else {
             player.moveDirection = Math.PI * 1.25;
@@ -91,19 +76,21 @@ function playerInputChangeEvent(event: KeyboardEvent, game:Game) {
     }
 }
 
-function playerAction(playerIndex: number, action: keyof MoveActions | keyof UpgradeActions, isKeydown: boolean, game: Game) {
+function playerAction(playerIndex: number, action: string, isKeydown: boolean, game: Game) {
     const player = game.state.players[playerIndex];
     if (action !== undefined) {
-        if(Object.keys({left:1, right:1, up:1, down:1}).indexOf(action) !== -1){
-            player.actionsPressed.moveActions[action] = isKeydown;
+        if(MOVE_ACTIONS.indexOf(action) !== -1){
+            player.actionsPressed[action] = isKeydown;
             determinePlayerMoveDirection(game.state.characters[player.playerCharacterIndex], player.actionsPressed);
-        }else if(isKeydown){
-            upgradeLevelingCharacter(game.state.characters[player.playerCharacterIndex], action, game.avaialbleUpgrades, game.state);
+        }else if(UPGRADE_ACTIONS.indexOf(action) !== -1){
+            if(isKeydown){
+                upgradeLevelingCharacter(game.state.characters[player.playerCharacterIndex] as LevelingCharacter, action, game.avaialbleUpgrades, game.state);
+            }
         }
     }
 }
 
-function upgradeLevelingCharacter(character: LevelingCharacter, action: keyof UpgradeActions, upgradeOptions: Map<string, UpgradeOption>, state: GameState){
+function upgradeLevelingCharacter(character: LevelingCharacter, action: string, upgradeOptions: Map<string, UpgradeOption>, state: GameState){
     if(character.availableSkillPoints > 0){
         switch(action){
             case "upgrade1":

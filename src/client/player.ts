@@ -11,7 +11,7 @@ function createPlayer(characterIndex: number) {
 }
 
 function createDefaultKeyBindings1() {
-    let keyBindings = new Map<string, keyof MoveActions| keyof UpgradeActions>();
+    let keyBindings = new Map<string, string>();
     keyBindings.set("KeyA", "left");
     keyBindings.set("KeyS", "down");
     keyBindings.set("KeyD", "right");
@@ -24,7 +24,7 @@ function createDefaultKeyBindings1() {
 }
 
 function createDefaultKeyBindings2() {
-    let keyBindings = new Map<string, keyof MoveActions | keyof UpgradeActions>();
+    let keyBindings = new Map<string, string>();
     keyBindings.set("ArrowLeft", "left");
     keyBindings.set("ArrowDown", "down");
     keyBindings.set("ArrowRight", "right");
