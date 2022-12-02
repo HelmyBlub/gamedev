@@ -21,3 +21,5 @@ npm run dev
 
 in Browser call (replace with your path):
 file:///home/helmi/gamedev/public/index.html
+or
+http://localhost:8080/

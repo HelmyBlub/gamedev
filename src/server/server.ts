@@ -1,40 +1,31 @@
 #!/usr/bin/env node
-var WebSocketServer = require('websocket').server;
-var http = require('http');
+const express = require('express');
+const app = express();
+const expressWs = require('express-ws')(app);
+const port = 8080;
+const connections: { clientId: number, con: any }[] = [];
+let clientIdCounter = 0;
+let startTime = process.hrtime.bigint();
 
-var server = http.createServer(function (request: any, response: any) {
-    console.log((new Date()) + ' Received request for ' + request.url);
-    response.writeHead(404);
-    response.end();
-});
+app.use(express.static('public'));
 
-server.listen(8080, function () {
-    console.log((new Date()) + ' Server is listening on port 8080');
-});
-
-var wsServer = new WebSocketServer({
-    httpServer: server,
-    autoAcceptConnections: false
-});
-
-var connections: { clientId: number, con: any }[] = [];
-var clientIdCounter = 0;
-var startTime = process.hrtime.bigint();
-
-wsServer.on('request', function (request: any) {
-    var connection = request.accept('gamedev', request.origin);
-    connection.sendUTF(JSON.stringify({ command: "connectInfo", clientId: clientIdCounter }));
+app.ws('/ws', function(ws:any, req:any) {
+    ws.send(JSON.stringify({ command: "connectInfo", clientId: clientIdCounter }));
 
     if (connections.length > 0) {
-        connections[0].con.sendUTF(JSON.stringify({ command: "sendGameState", clientId: clientIdCounter }));
+        connections[0].con.send(JSON.stringify({ command: "sendGameState", clientId: clientIdCounter }));
     }
 
-    connections.push({ clientId: clientIdCounter, con: connection });
+    connections.push({ clientId: clientIdCounter, con: ws });
     clientIdCounter++;
-    console.log(connection.remoteAddress + "#Con" + connections.length);
+    console.log(clientIdCounter + "#Con" + connections.length);
 
-    connection.on('close', () => onConnectionClose(connection));
-    connection.on('message', onMessage);
+    ws.on('close', () => onConnectionClose(ws));
+    ws.on('message', onMessage);
+});
+
+app.listen(port, () => {
+    console.log(`GameDev started ${port}`);
 });
 
 function onConnectionClose(connection: any) {
@@ -49,30 +40,26 @@ function onConnectionClose(connection: any) {
         }
     }
     for (let i = 0; i < connections.length; i++) {
-        connections[i].con.sendUTF(JSON.stringify({ command: "playerLeft", clientId: clientId }));
+        connections[i].con.send(JSON.stringify({ command: "playerLeft", clientId: clientId }));
     }
 }
 
 function onMessage(message: any) {
-    if (message.type === 'utf8') {
-        try {
-            const command = JSON.parse(message.utf8Data).command;
-            if (command === "restart") {
-                startTime = process.hrtime.bigint();
-            } else if (command === "playerInput") {
-                const data = JSON.parse(message.utf8Data);
-                data.executeTime = getCurrentMS();
-                message.utf8Data = JSON.stringify(data);
-            }
-            connections.forEach(function (destination: any) {
-                destination.con.sendUTF(message.utf8Data);
-            });
+    try {
+        const command = JSON.parse(message).command;
+        if (command === "restart") {
+            startTime = process.hrtime.bigint();
+        } else if (command === "playerInput") {
+            const data = JSON.parse(message);
+            data.executeTime = getCurrentMS();
+            message = JSON.stringify(data);
         }
-        catch (e) {
-            console.log("message send error" + e);
-        }
-    } else {
-        console.log("wrong type:" + message.type);
+        connections.forEach(function (destination: any) {
+            destination.con.send(message);
+        });
+    }
+    catch (e) {
+        console.log("message send error: " + e);
     }
 }
 
@@ -83,10 +70,8 @@ function getCurrentMS() {
 function gameTimeTicker() {
     const currentTime = getCurrentMS();
     connections.forEach(function (destination: any) {
-        destination.con.sendUTF(JSON.stringify({ command: "timeUpdate", time: currentTime }));
+        destination.con.send(JSON.stringify({ command: "timeUpdate", time: currentTime }));
     });
     setTimeout(gameTimeTicker, 16);
 }
 gameTimeTicker();
-
-console.log("gamedev backend ready");

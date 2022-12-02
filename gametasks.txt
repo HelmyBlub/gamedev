@@ -1,5 +1,12 @@
 
 
+next technical tasks or bugs:
+- static files from server, not from filesystem
+- fix:
+    - client death screws up the character index for a player
+    - one client reload and websocket recconect order of client changes ending up in controlling different character
+- use javascript modules
+
 next functional tasks:
 - infinite map
     - map tiles:
@@ -10,13 +17,10 @@ next functional tasks:
 - add more variety of upgrades
 
 next technical tasks:
-- static files from server, not from filesystem
 - host game for others to join
-- use javascript modules
 - think: is automated testing already usefull?
 
 bugs:
-- one client reload and websocket recconect order of client changes ending up in controlling different character
 - movedirection bug: sometimes still moves after keyup, bug in code?
 
 future tasks:

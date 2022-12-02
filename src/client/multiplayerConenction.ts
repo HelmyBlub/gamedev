@@ -1,8 +1,7 @@
 
 function websocketConnect(game: Game) {
-    //var url = "ws://" + document.URL.substr(7).split('/')[0];
-    var url = "ws://localhost:8080/"; //TODO should not be static
-    let socket = new WebSocket(url, 'gamedev');
+    const url = `ws://${window.location.host}/ws`;
+    const socket = new WebSocket(url, 'gamedev');
 
     socket.onopen = function (e) {
         console.log("websocket open");
