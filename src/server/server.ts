@@ -4,16 +4,17 @@ const app = express();
 const expressWs = require('express-ws')(app);
 const port = 8080;
 const connections: { clientId: number, con: any }[] = [];
+const updateInterval: number = 80;
 let clientIdCounter = 0;
 let startTime = process.hrtime.bigint();
 
 app.use(express.static('public'));
 
 app.ws('/ws', function(ws:any, req:any) {
-    ws.send(JSON.stringify({ command: "connectInfo", clientId: clientIdCounter }));
+    ws.send(JSON.stringify({ command: "connectInfo", clientId: clientIdCounter, updateInterval: updateInterval}));
 
     if (connections.length > 0) {
-        connections[0].con.send(JSON.stringify({ command: "sendGameState", clientId: clientIdCounter }));
+        connections[0].con.send(JSON.stringify({ command: "sendGameState", clientId: clientIdCounter}));
     }
 
     connections.push({ clientId: clientIdCounter, con: ws });
@@ -72,6 +73,6 @@ function gameTimeTicker() {
     connections.forEach(function (destination: any) {
         destination.con.send(JSON.stringify({ command: "timeUpdate", time: currentTime }));
     });
-    setTimeout(gameTimeTicker, 16);
+    setTimeout(gameTimeTicker, updateInterval);
 }
 gameTimeTicker();

@@ -30,7 +30,13 @@ type Game = {
     multiplayer: {
         myClientId: number,
         websocket: WebSocket | null,
-        serverGameTime: number,
+        maxServerGameTime: number,
+        smoothedGameTime: number,
+        delay: number,
+        maxDelay: number,
+        minDelay: number,
+        lastSendTime: number[],
+        updateInterval: number,
     },
     avaialbleUpgrades: Map<string, UpgradeOption>,
 }
@@ -50,8 +56,9 @@ function gameInit(game: Game) {
     game.state.playerInputs = [];
     game.clientKeyBindings = [];
     gameInitPlayers(game);
-    if(game.multiplayer.websocket !== null){
-        game.multiplayer.serverGameTime = 0;
+    if (game.multiplayer.websocket !== null) {
+        game.multiplayer.maxServerGameTime = 0;
+        game.multiplayer.smoothedGameTime = 0;
     }
 }
 
@@ -81,7 +88,13 @@ function createDefaultGameData(c: HTMLCanvasElement, ctx: CanvasRenderingContext
         multiplayer: {
             myClientId: -1,
             websocket: null,
-            serverGameTime: 0,
+            maxServerGameTime: 0,
+            smoothedGameTime: 0,
+            delay: 0,
+            maxDelay: 0,
+            minDelay: 0,
+            lastSendTime: [],
+            updateInterval: -1,
         },
         avaialbleUpgrades: createDefaultUpgradeOptions(),
     }
@@ -103,7 +116,7 @@ function detectProjectileToCharacterHit(state: GameState) {
     }
 }
 
-function calculateDistance(objectA: {x:number, y:number}, objectB: {x:number, y:number}){
+function calculateDistance(objectA: { x: number, y: number }, objectB: { x: number, y: number }) {
     let xDiff = objectA.x - objectB.x;
     let yDiff = objectA.y - objectB.y;
     return Math.sqrt(xDiff * xDiff + yDiff * yDiff);
@@ -111,7 +124,7 @@ function calculateDistance(objectA: {x:number, y:number}, objectB: {x:number, y:
 
 function gameEndedCheck(game: Game) {
     let alivePlayersCount = countAlivePlayers(game.state.characters)
-    if(alivePlayersCount === 0){
+    if (alivePlayersCount === 0) {
         return true;
     }
     return false;
@@ -128,16 +141,20 @@ function endGame(state: GameState) {
 
 function runner(game: Game) {
     const tickInterval = 16;
+    const timeNow = performance.now();
 
-    if(game.multiplayer.websocket === null){
-        const timeNow = performance.now();
+    if (game.multiplayer.websocket === null) {
         while (!game.state.ended && timeNow > game.realStartTime + game.state.time) {
             tick(tickInterval, game);
-        }    
-    }else{
-        while (!game.state.ended && game.multiplayer.serverGameTime >= game.state.time + tickInterval) {
+        }
+    } else {
+        while (!game.state.ended && game.multiplayer.maxServerGameTime >= game.state.time + tickInterval) {
+            let delayDiff = game.multiplayer.delay - game.multiplayer.minDelay;
+            if(timeNow < game.realStartTime + game.state.time + game.multiplayer.updateInterval + delayDiff){
+                break;
+            }
             tick(tickInterval, game);
-        }    
+        }
     }
     paintAll(game.ctx, game);
     setTimeout(() => runner(game), tickInterval);
@@ -147,7 +164,7 @@ function tick(gameTimePassed: number, game: Game) {
     if (!game.state.ended) {
         game.state.time += gameTimePassed;
         tickPlayerInputs(game.state.playerInputs, game.state.time, game);
-        if(game.state.characters.length < 100){
+        if (game.state.characters.length < 100) {
             game.state.characters.push(createRandomEnemy(game));
         }
         tickCharacters(game.state.characters, game.state.projectiles);

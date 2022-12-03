@@ -3,7 +3,7 @@ function handleCommand(game: Game, data: any){
         data.executeTime = game.state.time+1;
         executeCommand(game, data);
     } else {
-        game.multiplayer.websocket.send(JSON.stringify(data));
+        sendMultiplayer(data, game);
     }    
 }
 
@@ -35,6 +35,7 @@ function executeCommand(game: Game, data: any) {
         case "connectInfo":
             game.multiplayer.myClientId = data.clientId;
             game.state.clientIds = [data.clientId];
+            game.multiplayer.updateInterval = data.updateInterval;
             break;
         case "playerLeft":
             for (let i = 0; i < game.state.clientIds.length; i++) {
@@ -46,7 +47,7 @@ function executeCommand(game: Game, data: any) {
             }
             break;
         case "timeUpdate":
-            game.multiplayer.serverGameTime = data.time;
+            game.multiplayer.maxServerGameTime = data.time;
             break;
         default:
             console.log("unkown command: " + command, data);
