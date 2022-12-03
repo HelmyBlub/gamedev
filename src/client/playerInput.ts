@@ -113,15 +113,16 @@ function keyUp(event: KeyboardEvent, game: Game) {
 }
 
 function tickPlayerInputs(playerInputs: PlayerInput[], currentTime: number, game: Game) {
-    for (let i = playerInputs.length - 1; i >= 0; i--) {
-        if (playerInputs[i].executeTime <= currentTime) {
-            if (playerInputs[i].command === "playerInput") {
-                if (playerInputs[i].executeTime <= currentTime - 16) {
-                    console.log("playerAction to late", currentTime - playerInputs[i].executeTime, playerInputs[i]);
-                }
-                playerAction(playerInputs[i].data.playerIndex, playerInputs[i].data.action, playerInputs[i].data.isKeydown, game);
-                playerInputs.splice(i,1);
+    while(playerInputs.length > 0 && playerInputs[0].executeTime <= currentTime){        
+        if (playerInputs[0].command === "playerInput") {
+            if (playerInputs[0].executeTime <= currentTime - 16) {
+                console.log("playerAction to late", currentTime - playerInputs[0].executeTime, playerInputs[0]);
             }
+            playerAction(playerInputs[0].data.playerIndex, playerInputs[0].data.action, playerInputs[0].data.isKeydown, game);
+            playerInputs.shift();
+        }else{
+            console.log(playerInputs[0]);
+            throw new Error("invalid command in inputs");
         }
     }
 }

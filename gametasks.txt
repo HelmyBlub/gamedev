@@ -1,8 +1,6 @@
 
 
 next technical tasks or bugs:
-- host game for others to join
-    - smooth out network
 - fix:
     - client death screws up the character index for a player
     - one client reload and websocket recconect order of client changes ending up in controlling different character
@@ -18,12 +16,11 @@ next functional tasks:
 - add more variety of upgrades
 
 future technical tasks:
+- host game for others to join
+    - multiplayer connection delay is too bad, try other options?
 - think: is automated testing already usefull?
 - https/ssl websocket
     - https://www.nginx.com/blog/websocket-nginx/, where goes the config?
-
-bugs:
-- movedirection bug: sometimes still moves after keyup, bug in code?
 
 future tasks:
     - multiplayer 

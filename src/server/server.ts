@@ -4,7 +4,7 @@ const app = express();
 const expressWs = require('express-ws')(app);
 const port = 8080;
 const connections: { clientId: number, con: any }[] = [];
-const updateInterval: number = 80;
+const updateInterval: number = 100;
 let clientIdCounter = 0;
 let startTime = process.hrtime.bigint();
 
