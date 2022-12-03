@@ -1,7 +1,8 @@
 
 
 next technical tasks or bugs:
-- static files from server, not from filesystem
+- host game for others to join
+    - smooth out network
 - fix:
     - client death screws up the character index for a player
     - one client reload and websocket recconect order of client changes ending up in controlling different character
@@ -16,9 +17,10 @@ next functional tasks:
     - procedural map generation
 - add more variety of upgrades
 
-next technical tasks:
-- host game for others to join
+future technical tasks:
 - think: is automated testing already usefull?
+- https/ssl websocket
+    - https://www.nginx.com/blog/websocket-nginx/, where goes the config?
 
 bugs:
 - movedirection bug: sometimes still moves after keyup, bug in code?

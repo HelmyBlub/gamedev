@@ -1,6 +1,8 @@
 
 function websocketConnect(game: Game) {
-    const url = `ws://${window.location.host}/ws`;
+    const protocol = window.location.protocol === "http:"? "ws" : "wss";
+    
+    const url = `${protocol}://${window.location.host}/ws`;
     const socket = new WebSocket(url, 'gamedev');
 
     socket.onopen = function (e) {
