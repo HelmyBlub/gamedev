@@ -1,9 +1,6 @@
 
 
 next technical tasks or bugs:
-- fix:
-    - client death screws up the character index for a player
-    - one client reload and websocket recconect order of client changes ending up in controlling different character
 - use javascript modules
 
 next functional tasks:

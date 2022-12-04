@@ -1,6 +1,7 @@
 const PLAYER_FACTION = "player";
 const ENEMY_FACTION = "enemy";
 type Character = {
+    id: number,
     x: number,
     y: number,
     size: number,
@@ -30,6 +31,15 @@ function paintCharacters(ctx: CanvasRenderingContext2D, characters: Character[])
 
 function shoot(character: Character, projectiles: Projectile[]) {
     projectiles.push(createProjectile(character.x, character.y, character.moveDirection, character.damage, character.faction, character.moveSpeed+2));
+}
+
+function findCharacterById(characters: Character[], id: number): Character | null{
+    for(let i = 0; i< characters.length; i++){
+        if(characters[i].id === id){
+            return characters[i];
+        }
+    }
+    return null;
 }
 
 function tickCharacters(characters: Character[], projectiles: Projectile[]) {
@@ -123,18 +133,19 @@ function createRandomEnemy(game: Game): Character {
         x = nextRandom(game.state) * game.canvasElement.width;
         y = Math.round(nextRandom(game.state)) * game.canvasElement.height;    
     }
-    return createEnemy(x, y, hp);
+    return createEnemy(game, x, y, hp);
 }
 
-function createEnemy(x: number, y: number, hp: number): Character {
-    return createCharacter(x, y, 5, "black", 0.1, hp, 1, ENEMY_FACTION, true);
+function createEnemy(game: Game, x: number, y: number, hp: number): Character {
+    return createCharacter(game, x, y, 5, "black", 0.1, hp, 1, ENEMY_FACTION, true);
 }
 
-function createPlayerCharacter(x: number, y: number): Character {
-    return createLevelingCharacter(x, y, 10, "blue", 2, 200, 10, PLAYER_FACTION);
+function createPlayerCharacter(game: Game, x: number, y: number): Character {
+    return createLevelingCharacter(game, x, y, 10, "blue", 2, 200, 10, PLAYER_FACTION);
 }
 
 function createCharacter(
+    game: Game,
     x: number,
     y: number,
     size: number,
@@ -146,6 +157,7 @@ function createCharacter(
     isMoving: boolean = false,
 ): Character {
     return {
+        id: getNextId(game.state),
         x: x,
         y: y,
         size: size,

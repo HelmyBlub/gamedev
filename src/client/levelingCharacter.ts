@@ -14,6 +14,7 @@ type UpgradeOption = {
 }
 
 function createLevelingCharacter(
+    game: Game,
     x: number,
     y: number,
     size: number,
@@ -25,6 +26,7 @@ function createLevelingCharacter(
     isMoving: boolean = false
 ): LevelingCharacter {
     return {
+        id: getNextId(game.state),
         x: x,
         y: y,
         size: size,

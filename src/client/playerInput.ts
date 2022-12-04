@@ -60,25 +60,31 @@ function playerInputChangeEvent(event: KeyboardEvent, game:Game) {
 
     for (let i = 0; i < game.clientKeyBindings.length; i++) {
         let action = game.clientKeyBindings[i].keyCodeToActionPressed.get(keycode);
-        if (action !== undefined && game.clientKeyBindings[i].playerIndex < game.state.players.length) {
-            const playerIndex = game.clientKeyBindings[i].playerIndex;
+        if (action !== undefined) {
+            const clientId = game.clientKeyBindings[i].clientIdRef;
             handleCommand(game, {
                 command: "playerInput",
-                data: {playerIndex: playerIndex, action: action, isKeydown: isKeydown },
+                data: {clientId: clientId, action: action, isKeydown: isKeydown },
             });
         }
     }
 }
 
-function playerAction(playerIndex: number, action: string, isKeydown: boolean, game: Game) {
-    const player = game.state.players[playerIndex];
+function playerAction(clientId: number, action: string, isKeydown: boolean, game: Game) {
+    const player = findPlayerById(game.state.players, clientId);
+    if (player === null) return;
+    let character = findCharacterById(game.state.characters, player.characterIdRef);
+    if (character === null) return;
+
     if (action !== undefined) {
         if(MOVE_ACTIONS.indexOf(action) !== -1){
             player.actionsPressed[action] = isKeydown;
-            determinePlayerMoveDirection(game.state.characters[player.playerCharacterIndex], player.actionsPressed);
+            if(character !== null){
+                determinePlayerMoveDirection(character, player.actionsPressed);
+            }
         }else if(UPGRADE_ACTIONS.indexOf(action) !== -1){
             if(isKeydown){
-                upgradeLevelingCharacter(game.state.characters[player.playerCharacterIndex] as LevelingCharacter, action, game.avaialbleUpgrades, game.state);
+                upgradeLevelingCharacter(character as LevelingCharacter, action, game.avaialbleUpgrades, game.state);
             }
         }
     }
@@ -118,7 +124,7 @@ function tickPlayerInputs(playerInputs: PlayerInput[], currentTime: number, game
             if (playerInputs[0].executeTime <= currentTime - 16) {
                 console.log("playerAction to late", currentTime - playerInputs[0].executeTime, playerInputs[0]);
             }
-            playerAction(playerInputs[0].data.playerIndex, playerInputs[0].data.action, playerInputs[0].data.isKeydown, game);
+            playerAction(playerInputs[0].data.clientId, playerInputs[0].data.action, playerInputs[0].data.isKeydown, game);
             playerInputs.shift();
         }else{
             console.log(playerInputs[0]);

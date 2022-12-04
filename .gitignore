@@ -2,3 +2,4 @@ node_modules/
 public/js/
 cert.pem
 key.pem
+test.txt

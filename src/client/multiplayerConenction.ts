@@ -1,7 +1,7 @@
 
 function websocketConnect(game: Game) {
-    const protocol = window.location.protocol === "http:"? "ws" : "wss";
-    
+    const protocol = window.location.protocol === "http:" ? "ws" : "wss";
+
     const url = `${protocol}://${window.location.host}/ws`;
     const socket = new WebSocket(url, 'gamedev');
 
@@ -26,32 +26,32 @@ function websocketConnect(game: Game) {
     };
 }
 
-function sendMultiplayer(data: any, game: Game){
-    if(data.command === "playerInput"){
+function sendMultiplayer(data: any, game: Game) {
+    if (data.command === "playerInput") {
         game.multiplayer.lastSendTime.push(performance.now());
     }
     game.multiplayer.websocket?.send(JSON.stringify(data));
 }
 
-function determineDelay(messageObj: any, game: Game){
-    if(game.multiplayer.myClientId === -1) return;
-    const playerIndex = game.clientKeyBindings[0].playerIndex;
-    if(messageObj.command === "playerInput" && messageObj.data.playerIndex === playerIndex){
+function determineDelay(messageObj: any, game: Game) {
+    if (game.multiplayer.myClientId === -1) return;
+    const clientId = game.multiplayer.myClientId;
+    if (messageObj.command === "playerInput" && messageObj.data.clientId === clientId) {
         const lastSendTime = game.multiplayer.lastSendTime.shift();
-        if(lastSendTime === undefined){
+        if (lastSendTime === undefined) {
             console.log("error: lastSendTime missing");
             return;
-        } 
+        }
         const currDelay = (performance.now() - lastSendTime);
-        if(game.multiplayer.delay < currDelay){
+        if (game.multiplayer.delay < currDelay) {
             game.multiplayer.delay = (game.multiplayer.delay + currDelay) / 2;
-        }else{
+        } else {
             game.multiplayer.delay = (game.multiplayer.delay * 7 + currDelay) / 8;
         };
 
-        if(game.multiplayer.minDelay < currDelay){
+        if (game.multiplayer.minDelay < currDelay) {
             game.multiplayer.minDelay = (game.multiplayer.minDelay * 7 + currDelay) / 8;
-        }else{
+        } else {
             game.multiplayer.minDelay = (game.multiplayer.minDelay + currDelay) / 2;
         };
         let delayDiff = game.multiplayer.delay - game.multiplayer.minDelay!;

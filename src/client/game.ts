@@ -1,4 +1,5 @@
 type GameState = {
+    idCounter: number,
     characters: Character[],
     projectiles: Projectile[],
     players: Player[],
@@ -24,7 +25,7 @@ type Game = {
     state: GameState,
     realStartTime: number,
     clientKeyBindings: {
-        playerIndex: number,
+        clientIdRef: number,
         keyCodeToActionPressed: Map<string, string>,
     }[],
     multiplayer: {
@@ -39,6 +40,10 @@ type Game = {
         updateInterval: number,
     },
     avaialbleUpgrades: Map<string, UpgradeOption>,
+}
+
+function getNextId(state: GameState){
+    return state.idCounter++;
 }
 
 function gameRestart(game: Game) {
@@ -67,6 +72,7 @@ function createDefaultGameData(c: HTMLCanvasElement, ctx: CanvasRenderingContext
         canvasElement: c,
         ctx: ctx,
         state: {
+            idCounter: 0,
             projectiles: [],
             characters: [],
             killCounter: 0,

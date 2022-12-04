@@ -26,7 +26,7 @@ function executeCommand(game: Game, data: any) {
             for (let i = 0; i < game.state.clientIds.length; i++) {
                 if (game.multiplayer.myClientId === game.state.clientIds[i]) {
                     game.clientKeyBindings = [{
-                        playerIndex: i,
+                        clientIdRef: game.multiplayer.myClientId,
                         keyCodeToActionPressed: createDefaultKeyBindings1()
                     }];
                 }

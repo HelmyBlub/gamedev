@@ -7,9 +7,12 @@ function paintAll(ctx: CanvasRenderingContext2D, game: Game) {
         paintHighscoreBoard(game.ctx, game.state.highscores);
     } else {
         if(game.multiplayer.myClientId !== -1){
-            let playerIndex = game.state.clientIds.indexOf(game.multiplayer.myClientId);
-            let characterIndex = game.state.players[playerIndex].playerCharacterIndex;
-            paintPlayerStats(ctx, game.state.characters[characterIndex] as LevelingCharacter);
+            let player = findPlayerById(game.state.players, game.multiplayer.myClientId)
+            if(player === null) return;
+            let character = findCharacterById(game.state.characters, player.characterIdRef);
+            if(character !== null) paintPlayerStats(ctx, character as LevelingCharacter);
+            ctx.fillText("Ping: " + Math.round(game.multiplayer.delay), 10, 40);
+
         }else{
             paintPlayerStats(ctx, game.state.characters[0] as LevelingCharacter);
         }
