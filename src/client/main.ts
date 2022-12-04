@@ -1,10 +1,14 @@
-var gameDatas: Game[] = [];
+import { createDefaultGameData, Game, gameInit, runner } from "./game.js";
+import { websocketConnect } from "./multiplayerConenction.js";
+import { keyDown, keyUp } from "./playerInput.js";
 
-function start() {
+export var gameDatas: Game[] = [];
+
+export function start() {
     createGame("myCanvas");
 }
 
-function startMore(){
+export function startMore(){
     let nextCssId = "myCanvas_" + gameDatas.length.toString();
     let canvasHTML = `<canvas id="${nextCssId}" width="400" height="300" style="border:1px solid #000000;"></canvas>`;
     document.body.insertAdjacentHTML("beforeend", canvasHTML);
@@ -28,3 +32,5 @@ function createGame(canvasElementId: string){
 
     websocketConnect(game);
 }
+
+start();

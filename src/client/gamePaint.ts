@@ -1,4 +1,10 @@
-function paintAll(ctx: CanvasRenderingContext2D, game: Game) {
+import { findCharacterById, paintCharacters } from "./character.js";
+import { Game, Highscores } from "./game.js";
+import { LevelingCharacter } from "./levelingCharacter.js";
+import { findPlayerById } from "./player.js";
+import { paintProjectiles } from "./projectile.js";
+
+export function paintAll(ctx: CanvasRenderingContext2D, game: Game) {
     paintBackground(ctx, game.canvasElement);
     paintCharacters(ctx, game.state.characters);
     paintProjectiles(ctx, game.state.projectiles);

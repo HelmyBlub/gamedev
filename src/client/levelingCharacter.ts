@@ -1,4 +1,8 @@
-type LevelingCharacter = Character & {
+import { Character, getPlayerCharacters } from "./character.js";
+import { Game, GameState, getNextId } from "./game.js";
+import { nextRandom } from "./randomNumberGenerator.js";
+
+export type LevelingCharacter = Character & {
     experience: number,
     experienceForLevelUp: number,
     level: number,
@@ -8,12 +12,12 @@ type LevelingCharacter = Character & {
     }[],
 }
 
-type UpgradeOption = {
+export type UpgradeOption = {
     name: string,
     upgrade: (character: Character) => void,
 }
 
-function createLevelingCharacter(
+export function createLevelingCharacter(
     game: Game,
     x: number,
     y: number,
@@ -54,7 +58,7 @@ function levelingCharacterLevelUp(character: LevelingCharacter, state: GameState
     fillRandomUpgradeOptions(character, state, upgradeOptions);
 }
 
-function fillRandomUpgradeOptions(character: LevelingCharacter, state: GameState, upgradeOptions: Map<string, UpgradeOption>){
+export function fillRandomUpgradeOptions(character: LevelingCharacter, state: GameState, upgradeOptions: Map<string, UpgradeOption>){
     if (character.upgradeOptions.length === 0) {
         let setOfUsedUpgrades = new Set<number>();
         for (let i = 0; i < 3; i++) {
@@ -68,7 +72,7 @@ function fillRandomUpgradeOptions(character: LevelingCharacter, state: GameState
     }
 }
 
-function createDefaultUpgradeOptions(): Map<string, UpgradeOption> {
+export function createDefaultUpgradeOptions(): Map<string, UpgradeOption> {
     let upgradeOptions = new Map<string, UpgradeOption>();
     upgradeOptions.set("Health+50", {
         name: "Health+50", upgrade: (c: Character) => {
@@ -89,7 +93,7 @@ function createDefaultUpgradeOptions(): Map<string, UpgradeOption> {
     return upgradeOptions;
 }
 
-function levelingCharacterXpGain(state: GameState, killedCharacter: Character, upgradeOptions: Map<string, UpgradeOption>){
+export function levelingCharacterXpGain(state: GameState, killedCharacter: Character, upgradeOptions: Map<string, UpgradeOption>){
     let playerCharacters: LevelingCharacter[] = getPlayerCharacters(state.characters) as LevelingCharacter[];
     for(let i = 0; i<playerCharacters.length; i++){
         if(playerCharacters[i].experience !== undefined){

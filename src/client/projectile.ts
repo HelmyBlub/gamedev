@@ -1,4 +1,4 @@
-type Projectile = {
+export type Projectile = {
     x: number,
     y: number,
     size: number,
@@ -10,7 +10,7 @@ type Projectile = {
     faction: string,
 }
 
-function createProjectile(x: number, y: number, moveDirection: number, damage: number, faction: string, moveSpeed: number) {
+export function createProjectile(x: number, y: number, moveDirection: number, damage: number, faction: string, moveSpeed: number) {
     return {
         x: x,
         y: y,
@@ -24,7 +24,7 @@ function createProjectile(x: number, y: number, moveDirection: number, damage: n
     }
 }
 
-function tickProjectiles(projectiles: Projectile[]) {
+export function tickProjectiles(projectiles: Projectile[]) {
     moveProjectilesTick(projectiles);
     removeOutOfBoundsProjectiles(projectiles);
 }
@@ -51,7 +51,7 @@ function removeOutOfBoundsProjectiles(projectiles: Projectile[]) {
     }
 }
 
-function paintProjectiles(ctx: CanvasRenderingContext2D, projectiles: Projectile[]) {
+export function paintProjectiles(ctx: CanvasRenderingContext2D, projectiles: Projectile[]) {
     for (let i = 0; i < projectiles.length; i++) {
         paintProjectile(ctx, projectiles[i]);
     }

@@ -1,17 +1,23 @@
-const MOVE_ACTIONS = ["left", "down", "right", "up"];
-const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3"];
+import { Character, findCharacterById } from "./character.js";
+import { handleCommand } from "./commands.js";
+import { Game, GameState } from "./game.js";
+import { fillRandomUpgradeOptions, LevelingCharacter, UpgradeOption } from "./levelingCharacter.js";
+import { findPlayerById } from "./player.js";
 
-type ActionsPressed = {
+export const MOVE_ACTIONS = ["left", "down", "right", "up"];
+export const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3"];
+
+export type ActionsPressed = {
     [key: string]: boolean;
 }
 
-type PlayerInput = {
+export type PlayerInput = {
     executeTime: number,
     command: string,
     data: any
 }
 
-function createActionsPressed() {
+export function createActionsPressed() {
     return {
         left: false,
         down: false,
@@ -102,7 +108,7 @@ function upgradeLevelingCharacter(character: LevelingCharacter, action: string, 
     }
 }
 
-function keyDown(event: KeyboardEvent, game: Game) {
+export function keyDown(event: KeyboardEvent, game: Game) {
     playerInputChangeEvent(event, game);
 
     switch (event.code) {
@@ -114,11 +120,11 @@ function keyDown(event: KeyboardEvent, game: Game) {
     }
 }
 
-function keyUp(event: KeyboardEvent, game: Game) {
+export function keyUp(event: KeyboardEvent, game: Game) {
     playerInputChangeEvent(event, game);
 }
 
-function tickPlayerInputs(playerInputs: PlayerInput[], currentTime: number, game: Game) {
+export function tickPlayerInputs(playerInputs: PlayerInput[], currentTime: number, game: Game) {
     while(playerInputs.length > 0 && playerInputs[0].executeTime <= currentTime){        
         if (playerInputs[0].command === "playerInput") {
             if (playerInputs[0].executeTime <= currentTime - 16) {

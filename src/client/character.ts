@@ -1,6 +1,11 @@
-const PLAYER_FACTION = "player";
-const ENEMY_FACTION = "enemy";
-type Character = {
+import { calculateDistance, Game, GameState, getNextId } from "./game.js";
+import { createLevelingCharacter, levelingCharacterXpGain, UpgradeOption } from "./levelingCharacter.js";
+import { createProjectile, Projectile } from "./projectile.js";
+import { nextRandom } from "./randomNumberGenerator.js";
+
+export const PLAYER_FACTION = "player";
+export const ENEMY_FACTION = "enemy";
+export type Character = {
     id: number,
     x: number,
     y: number,
@@ -23,7 +28,7 @@ function paintCharacter(ctx: CanvasRenderingContext2D, character: Character) {
     ctx.fill();
 }
 
-function paintCharacters(ctx: CanvasRenderingContext2D, characters: Character[]) {
+export function paintCharacters(ctx: CanvasRenderingContext2D, characters: Character[]) {
     for (let i = 0; i < characters.length; i++) {
         paintCharacter(ctx, characters[i]);
     }
@@ -33,7 +38,7 @@ function shoot(character: Character, projectiles: Projectile[]) {
     projectiles.push(createProjectile(character.x, character.y, character.moveDirection, character.damage, character.faction, character.moveSpeed+2));
 }
 
-function findCharacterById(characters: Character[], id: number): Character | null{
+export function findCharacterById(characters: Character[], id: number): Character | null{
     for(let i = 0; i< characters.length; i++){
         if(characters[i].id === id){
             return characters[i];
@@ -42,7 +47,7 @@ function findCharacterById(characters: Character[], id: number): Character | nul
     return null;
 }
 
-function tickCharacters(characters: Character[], projectiles: Projectile[]) {
+export function tickCharacters(characters: Character[], projectiles: Projectile[]) {
     for (let i = 0; i < characters.length; i++) {
         if (characters[i].faction === PLAYER_FACTION) {
             tickPlayerCharacter(characters[i], projectiles);
@@ -53,7 +58,7 @@ function tickCharacters(characters: Character[], projectiles: Projectile[]) {
     }
 }
 
-function getPlayerCharacters(characters: Character[]){
+export function getPlayerCharacters(characters: Character[]){
     let playerCharacters = [];
     for (let i = 0; i < characters.length; i++) {
         if (characters[i].faction === PLAYER_FACTION) {
@@ -122,7 +127,7 @@ function moveCharacterTick(character: Character) {
     }
 }
 
-function createRandomEnemy(game: Game): Character {
+export function createRandomEnemy(game: Game): Character {
     let x,y;
     let hp = Math.floor(game.state.time / 100);
 
@@ -140,7 +145,7 @@ function createEnemy(game: Game, x: number, y: number, hp: number): Character {
     return createCharacter(game, x, y, 5, "black", 0.1, hp, 1, ENEMY_FACTION, true);
 }
 
-function createPlayerCharacter(game: Game, x: number, y: number): Character {
+export function createPlayerCharacter(game: Game, x: number, y: number): Character {
     return createLevelingCharacter(game, x, y, 10, "blue", 2, 200, 10, PLAYER_FACTION);
 }
 
@@ -173,7 +178,7 @@ function createCharacter(
     };
 }
 
-function detectCharacterDeath(characters: Character[], state: GameState,  upgradeOptions: Map<string, UpgradeOption>){
+export function detectCharacterDeath(characters: Character[], state: GameState,  upgradeOptions: Map<string, UpgradeOption>){
     for (let charIt = characters.length - 1; charIt >= 0; charIt--) {
         if (characters[charIt].hp <= 0) {
             if(characters[charIt].faction === ENEMY_FACTION){
@@ -185,7 +190,7 @@ function detectCharacterDeath(characters: Character[], state: GameState,  upgrad
     }
 }
 
-function countAlivePlayers(characters: Character[]){
+export function countAlivePlayers(characters: Character[]){
     let counter = 0;
     for (let charIt = characters.length - 1; charIt >= 0; charIt--) {
         if(characters[charIt].faction === PLAYER_FACTION) counter++;

@@ -1,4 +1,8 @@
-function handleCommand(game: Game, data: any){
+import { Game, gameRestart } from "./game.js";
+import { sendMultiplayer } from "./multiplayerConenction.js";
+import { createDefaultKeyBindings1 } from "./player.js";
+
+export function handleCommand(game: Game, data: any){
     if (game.multiplayer.websocket === null) {
         data.executeTime = game.state.time+1;
         executeCommand(game, data);
@@ -7,7 +11,7 @@ function handleCommand(game: Game, data: any){
     }    
 }
 
-function executeCommand(game: Game, data: any) {
+export function executeCommand(game: Game, data: any) {
     const command = data.command;
     switch (command) {
         case "restart":

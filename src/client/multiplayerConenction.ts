@@ -1,5 +1,7 @@
+import { executeCommand } from "./commands.js";
+import { Game } from "./game.js";
 
-function websocketConnect(game: Game) {
+export function websocketConnect(game: Game) {
     const protocol = window.location.protocol === "http:" ? "ws" : "wss";
 
     const url = `${protocol}://${window.location.host}/ws`;
@@ -26,7 +28,7 @@ function websocketConnect(game: Game) {
     };
 }
 
-function sendMultiplayer(data: any, game: Game) {
+export function sendMultiplayer(data: any, game: Game) {
     if (data.command === "playerInput") {
         game.multiplayer.lastSendTime.push(performance.now());
     }

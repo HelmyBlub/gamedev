@@ -1,4 +1,11 @@
-type GameState = {
+import { Character, countAlivePlayers, createRandomEnemy, detectCharacterDeath, tickCharacters } from "./character.js";
+import { paintAll } from "./gamePaint.js";
+import { createDefaultUpgradeOptions, UpgradeOption } from "./levelingCharacter.js";
+import { gameInitPlayers, Player } from "./player.js";
+import { PlayerInput, tickPlayerInputs } from "./playerInput.js";
+import { Projectile, tickProjectiles } from "./projectile.js";
+
+export type GameState = {
     idCounter: number,
     characters: Character[],
     projectiles: Projectile[],
@@ -14,12 +21,12 @@ type GameState = {
     clientIds: number[],
 }
 
-type Highscores = {
+export type Highscores = {
     scores: number[],
     maxLength: 10,
 }
 
-type Game = {
+export type Game = {
     canvasElement: HTMLCanvasElement,
     ctx: CanvasRenderingContext2D,
     state: GameState,
@@ -42,15 +49,15 @@ type Game = {
     avaialbleUpgrades: Map<string, UpgradeOption>,
 }
 
-function getNextId(state: GameState){
+export function getNextId(state: GameState){
     return state.idCounter++;
 }
 
-function gameRestart(game: Game) {
+export function gameRestart(game: Game) {
     gameInit(game);
 }
 
-function gameInit(game: Game) {
+export function gameInit(game: Game) {
     game.state.projectiles = [];
     game.state.characters = [];
     game.state.players = [];
@@ -67,7 +74,7 @@ function gameInit(game: Game) {
     }
 }
 
-function createDefaultGameData(c: HTMLCanvasElement, ctx: CanvasRenderingContext2D): Game {
+export function createDefaultGameData(c: HTMLCanvasElement, ctx: CanvasRenderingContext2D): Game {
     return {
         canvasElement: c,
         ctx: ctx,
@@ -122,7 +129,7 @@ function detectProjectileToCharacterHit(state: GameState) {
     }
 }
 
-function calculateDistance(objectA: { x: number, y: number }, objectB: { x: number, y: number }) {
+export function calculateDistance(objectA: { x: number, y: number }, objectB: { x: number, y: number }) {
     let xDiff = objectA.x - objectB.x;
     let yDiff = objectA.y - objectB.y;
     return Math.sqrt(xDiff * xDiff + yDiff * yDiff);
@@ -145,7 +152,7 @@ function endGame(state: GameState) {
     }
 }
 
-function runner(game: Game) {
+export function runner(game: Game) {
     const tickInterval = 16;
     const timeNow = performance.now();
 
