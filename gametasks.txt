@@ -8,8 +8,6 @@ next functional tasks:
         - stone (blocking)
         - tree (blooking but destroyable)
     - procedural map generation
-- add more variety of upgrades
-- improve on shooting mechanism
 
 next technical tasks or bugs:
 - use same code files for backend and frontend

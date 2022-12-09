@@ -9,9 +9,10 @@ export type Projectile = Position & {
     damage: number,
     faction: string,
     deleteTime: number,
+    pierceCount: number,
 }
 
-export function createProjectile(x: number, y: number, moveDirection: number, damage: number, faction: string, moveSpeed: number, gameTime: number) {
+export function createProjectile(x: number, y: number, moveDirection: number, damage: number, faction: string, moveSpeed: number, gameTime: number, pierceCount: number, timeToLive: number) {
     return {
         x: x,
         y: y,
@@ -22,7 +23,8 @@ export function createProjectile(x: number, y: number, moveDirection: number, da
         isMoving: true,
         damage: damage,
         faction: faction,
-        deleteTime: gameTime + 3000,
+        deleteTime: gameTime + timeToLive,
+        pierceCount: pierceCount,
     }
 }
 
@@ -46,7 +48,7 @@ function moveProjectilesTick(projectiles: Projectile[]) {
 
 function removeProjectiles(projectiles: Projectile[], gameTime: number) {
     for (let i = projectiles.length - 1; i >= 0; i--) {
-        if (projectiles[i].deleteTime <= gameTime) {
+        if (projectiles[i].deleteTime <= gameTime || projectiles[i].pierceCount < 0) {
             projectiles.splice(i, 1);
         }
     }

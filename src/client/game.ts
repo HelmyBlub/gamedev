@@ -58,7 +58,7 @@ export type Game = {
     }
 }
 
-export function getNextId(state: GameState){
+export function getNextId(state: GameState) {
     return state.idCounter++;
 }
 
@@ -136,6 +136,8 @@ function detectProjectileToCharacterHit(state: GameState) {
             let distance = calculateDistance(c, projectile);
             if (distance < projectile.size + c.size) {
                 c.hp -= projectile.damage;
+                projectile.pierceCount--;
+                if (projectile.pierceCount < 0) break;
             }
         }
     }
@@ -173,12 +175,17 @@ export function runner(game: Game) {
             tick(tickInterval, game);
         }
     } else {
-        while (!game.state.ended && game.multiplayer.maxServerGameTime >= game.state.time + tickInterval) {
+        let counter = 0;
+        while (!game.state.ended && game.multiplayer.maxServerGameTime >= game.state.time + tickInterval && counter < 50) {
+            counter++;
             let delayDiff = game.multiplayer.delay - game.multiplayer.minDelay;
-            if(timeNow < game.realStartTime + game.state.time + game.multiplayer.updateInterval + delayDiff){
+            if (timeNow < game.realStartTime + game.state.time + game.multiplayer.updateInterval + delayDiff) {
                 break;
             }
             tick(tickInterval, game);
+        }
+        if(counter >= 50){
+            console.log("game can not keep up");
         }
     }
     paintAll(game.ctx, game);
@@ -190,7 +197,7 @@ function tick(gameTimePassed: number, game: Game) {
         game.state.time += gameTimePassed;
         tickPlayerInputs(game.state.playerInputs, game.state.time, game);
         createRandomEnemy(game);
-        tickCharacters(game.state.characters, game.state.projectiles, game.state.time);
+        tickCharacters(game.state.characters, game.state.projectiles, game.state.time, game);
         tickProjectiles(game.state.projectiles, game.state.time);
         detectProjectileToCharacterHit(game.state);
         detectCharacterDeath(game.state.characters, game.state, game.avaialbleUpgrades);
@@ -198,11 +205,11 @@ function tick(gameTimePassed: number, game: Game) {
     }
 }
 
-export function getCameraPosition(game: Game): Position{
-    let cameraPosition: Position = {x: 0, y: 0};
-    if(game.camera.characterId !== undefined){
+export function getCameraPosition(game: Game): Position {
+    let cameraPosition: Position = { x: 0, y: 0 };
+    if (game.camera.characterId !== undefined) {
         let character = findCharacterById(game.state.characters, game.camera.characterId);
-        if(character !== null) cameraPosition = character;
+        if (character !== null) cameraPosition = character;
     }
 
     return cameraPosition;
