@@ -1,7 +1,5 @@
 
 
-next technical tasks or bugs:
-- use javascript modules
 
 next functional tasks:
 - infinite map
@@ -11,13 +9,11 @@ next functional tasks:
         - tree (blooking but destroyable)
     - procedural map generation
 - add more variety of upgrades
+- improve on shooting mechanism
 
-future technical tasks:
-- host game for others to join
-    - multiplayer connection delay is too bad, try other options?
-- think: is automated testing already usefull?
-- https/ssl websocket
-    - https://www.nginx.com/blog/websocket-nginx/, where goes the config?
+next technical tasks or bugs:
+- use same code files for backend and frontend
+    - understand require vs import in backend vs frontend
 
 future tasks:
     - multiplayer 
@@ -30,27 +26,10 @@ future tasks:
     - make the game look descent as soon as it fun
     - deployment pipeline to a real server
 
+future technical tasks:
+- multiplayer connection delay with localtunnel is too bad, try other options?
+- think: is automated testing already usefull?
+- https/ssl websocket
+    - https://www.nginx.com/blog/websocket-nginx/, where goes the config?
 
-game ideas:
-- infinite map, the further from the middle the stronger the enemies
-    - different directions from the center -> different types of enemies
-    - bosses after certain amount of distance of center -> bosses give better rewards but challenging
-    - map middle is safe area, could be a base area
 
-- want to make a simple web browser game
-- want to try online/multiplayer play 
-- somehow should be randomized content for much replayability
-    - rogue like
-- a lot of different "classes" to choose from
-    - melee
-        - big slow weapon, warrior
-        - fast, rogue
-    - range
-        - gun, bow
-    - caster
-        - either level just one "explosion" spell for ever, or many spells
-    - tamer
-        - tame enemies
-        - revive dead enemies
-- some upgrade system to be stronger for each new run, or for different start options
-- gathering some ressources for a upgrade system

@@ -43,6 +43,7 @@ export function gameInitPlayers(game: Game){
                 clientIdRef: game.multiplayer.myClientId,
                 keyCodeToActionPressed: createDefaultKeyBindings1()
             });
+            game.camera.characterId = game.state.characters[game.state.characters.length - 1].id;
         }
     }
 }

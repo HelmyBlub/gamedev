@@ -1,14 +1,12 @@
-import { calculateDistance, Game, GameState, getNextId } from "./game.js";
+import { calculateDistance, Game, GameState, getCameraPosition, getNextId, Position } from "./game.js";
 import { createLevelingCharacter, levelingCharacterXpGain, UpgradeOption } from "./levelingCharacter.js";
 import { createProjectile, Projectile } from "./projectile.js";
 import { nextRandom } from "./randomNumberGenerator.js";
 
 export const PLAYER_FACTION = "player";
 export const ENEMY_FACTION = "enemy";
-export type Character = {
+export type Character = Position & {
     id: number,
-    x: number,
-    y: number,
     size: number,
     color: string,
     moveSpeed: number,
@@ -21,21 +19,24 @@ export type Character = {
     experienceWorth: number,
 }
 
-function paintCharacter(ctx: CanvasRenderingContext2D, character: Character) {
+function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position) {
     ctx.fillStyle = character.color;
     ctx.beginPath();
-    ctx.arc(character.x, character.y, character.size, 0, 2 * Math.PI);
+    ctx.arc(
+        character.x - cameraPosition.x + 200,
+        character.y - cameraPosition.y + 150,
+        character.size, 0, 2 * Math.PI);
     ctx.fill();
 }
 
-export function paintCharacters(ctx: CanvasRenderingContext2D, characters: Character[]) {
+export function paintCharacters(ctx: CanvasRenderingContext2D, characters: Character[], cameraPosition: Position) {
     for (let i = 0; i < characters.length; i++) {
-        paintCharacter(ctx, characters[i]);
+        paintCharacter(ctx, characters[i], cameraPosition);
     }
 }
 
-function shoot(character: Character, projectiles: Projectile[]) {
-    projectiles.push(createProjectile(character.x, character.y, character.moveDirection, character.damage, character.faction, character.moveSpeed+2));
+function shoot(character: Character, projectiles: Projectile[], gameTime: number) {
+    projectiles.push(createProjectile(character.x, character.y, character.moveDirection, character.damage, character.faction, character.moveSpeed+2, gameTime));
 }
 
 export function findCharacterById(characters: Character[], id: number): Character | null{
@@ -47,10 +48,10 @@ export function findCharacterById(characters: Character[], id: number): Characte
     return null;
 }
 
-export function tickCharacters(characters: Character[], projectiles: Projectile[]) {
+export function tickCharacters(characters: Character[], projectiles: Projectile[], gameTime: number) {
     for (let i = 0; i < characters.length; i++) {
         if (characters[i].faction === PLAYER_FACTION) {
-            tickPlayerCharacter(characters[i], projectiles);
+            tickPlayerCharacter(characters[i], projectiles, gameTime);
         }else if(characters[i].faction === ENEMY_FACTION){
             tickEnemyCharacter(characters[i], getPlayerCharacters(characters));
         }
@@ -68,8 +69,8 @@ export function getPlayerCharacters(characters: Character[]){
     return playerCharacters;
 }
 
-function tickPlayerCharacter(character: Character, projectiles: Projectile[]) {
-    shoot(character, projectiles);
+function tickPlayerCharacter(character: Character, projectiles: Projectile[], gameTime: number) {
+    shoot(character, projectiles, gameTime);
 }
 
 function tickEnemyCharacter(character: Character, playerCharacters: Character[]){
@@ -127,18 +128,26 @@ function moveCharacterTick(character: Character) {
     }
 }
 
-export function createRandomEnemy(game: Game): Character {
+export function createRandomEnemy(game: Game) {
+    if (game.state.characters.length > 100) return;
+
     let x,y;
     let hp = Math.floor(game.state.time / 100);
+    let spawnDistance = 150;
+    let playerCharacter = getPlayerCharacters(game.state.characters);
 
-    if(nextRandom(game.state) < 0.5){
-        x = Math.round(nextRandom(game.state)) * game.canvasElement.width;
-        y = nextRandom(game.state) * game.canvasElement.height;        
-    }else{
-        x = nextRandom(game.state) * game.canvasElement.width;
-        y = Math.round(nextRandom(game.state)) * game.canvasElement.height;    
+    for(let i = 0; i < playerCharacter.length; i++){
+        let center: Position = playerCharacter[i];
+
+        if(nextRandom(game.state) < 0.5){
+            x = center.x + (Math.round(nextRandom(game.state)) * 2 - 1) * spawnDistance;
+            y = center.y + (nextRandom(game.state) - 0.5) * spawnDistance * 2;        
+        }else{
+            x = center.x + (nextRandom(game.state) - 0.5) * spawnDistance * 2;        
+            y = center.y + (Math.round(nextRandom(game.state)) * 2 - 1) * spawnDistance;
+        }
+        game.state.characters.push(createEnemy(game, x, y, hp));    
     }
-    return createEnemy(game, x, y, hp);
 }
 
 function createEnemy(game: Game, x: number, y: number, hp: number): Character {

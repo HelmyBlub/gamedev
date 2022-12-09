@@ -1,9 +1,14 @@
-import { Character, countAlivePlayers, createRandomEnemy, detectCharacterDeath, tickCharacters } from "./character.js";
+import { Character, countAlivePlayers, createRandomEnemy, detectCharacterDeath, findCharacterById, tickCharacters } from "./character.js";
 import { paintAll } from "./gamePaint.js";
 import { createDefaultUpgradeOptions, UpgradeOption } from "./levelingCharacter.js";
 import { gameInitPlayers, Player } from "./player.js";
 import { PlayerInput, tickPlayerInputs } from "./playerInput.js";
 import { Projectile, tickProjectiles } from "./projectile.js";
+
+export type Position = {
+    x: number,
+    y: number
+}
 
 export type GameState = {
     idCounter: number,
@@ -47,6 +52,10 @@ export type Game = {
         updateInterval: number,
     },
     avaialbleUpgrades: Map<string, UpgradeOption>,
+    camera: {
+        type: string,
+        characterId?: number,
+    }
 }
 
 export function getNextId(state: GameState){
@@ -110,6 +119,9 @@ export function createDefaultGameData(c: HTMLCanvasElement, ctx: CanvasRendering
             updateInterval: -1,
         },
         avaialbleUpgrades: createDefaultUpgradeOptions(),
+        camera: {
+            type: "follow character"
+        }
     }
 }
 
@@ -177,13 +189,21 @@ function tick(gameTimePassed: number, game: Game) {
     if (!game.state.ended) {
         game.state.time += gameTimePassed;
         tickPlayerInputs(game.state.playerInputs, game.state.time, game);
-        if (game.state.characters.length < 100) {
-            game.state.characters.push(createRandomEnemy(game));
-        }
-        tickCharacters(game.state.characters, game.state.projectiles);
-        tickProjectiles(game.state.projectiles);
+        createRandomEnemy(game);
+        tickCharacters(game.state.characters, game.state.projectiles, game.state.time);
+        tickProjectiles(game.state.projectiles, game.state.time);
         detectProjectileToCharacterHit(game.state);
         detectCharacterDeath(game.state.characters, game.state, game.avaialbleUpgrades);
         if (gameEndedCheck(game)) endGame(game.state);
     }
+}
+
+export function getCameraPosition(game: Game): Position{
+    let cameraPosition: Position = {x: 0, y: 0};
+    if(game.camera.characterId !== undefined){
+        let character = findCharacterById(game.state.characters, game.camera.characterId);
+        if(character !== null) cameraPosition = character;
+    }
+
+    return cameraPosition;
 }

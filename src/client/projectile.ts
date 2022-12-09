@@ -1,6 +1,6 @@
-export type Projectile = {
-    x: number,
-    y: number,
+import { Position } from "./game";
+
+export type Projectile = Position & {
     size: number,
     color: string,
     moveSpeed: number,
@@ -8,9 +8,10 @@ export type Projectile = {
     isMoving: boolean,
     damage: number,
     faction: string,
+    deleteTime: number,
 }
 
-export function createProjectile(x: number, y: number, moveDirection: number, damage: number, faction: string, moveSpeed: number) {
+export function createProjectile(x: number, y: number, moveDirection: number, damage: number, faction: string, moveSpeed: number, gameTime: number) {
     return {
         x: x,
         y: y,
@@ -21,12 +22,13 @@ export function createProjectile(x: number, y: number, moveDirection: number, da
         isMoving: true,
         damage: damage,
         faction: faction,
+        deleteTime: gameTime + 3000,
     }
 }
 
-export function tickProjectiles(projectiles: Projectile[]) {
+export function tickProjectiles(projectiles: Projectile[], gameTime: number) {
     moveProjectilesTick(projectiles);
-    removeOutOfBoundsProjectiles(projectiles);
+    removeProjectiles(projectiles, gameTime);
 }
 
 function moveProjectileTick(projectile: Projectile) {
@@ -42,24 +44,27 @@ function moveProjectilesTick(projectiles: Projectile[]) {
     }
 }
 
-function removeOutOfBoundsProjectiles(projectiles: Projectile[]) {
+function removeProjectiles(projectiles: Projectile[], gameTime: number) {
     for (let i = projectiles.length - 1; i >= 0; i--) {
-        if (projectiles[i].x < 0 || projectiles[i].y < 0
-            || projectiles[i].x > 400 || projectiles[i].y > 300) {
+        if (projectiles[i].deleteTime <= gameTime) {
             projectiles.splice(i, 1);
         }
     }
 }
 
-export function paintProjectiles(ctx: CanvasRenderingContext2D, projectiles: Projectile[]) {
+export function paintProjectiles(ctx: CanvasRenderingContext2D, projectiles: Projectile[], cameraPosition: Position) {
     for (let i = 0; i < projectiles.length; i++) {
-        paintProjectile(ctx, projectiles[i]);
+        paintProjectile(ctx, projectiles[i], cameraPosition);
     }
 }
 
-function paintProjectile(ctx: CanvasRenderingContext2D, projectile: Projectile) {
+function paintProjectile(ctx: CanvasRenderingContext2D, projectile: Projectile, cameraPosition: Position) {
     ctx.fillStyle = projectile.color;
     ctx.beginPath();
-    ctx.arc(projectile.x, projectile.y, projectile.size, 0, 2 * Math.PI);
+    ctx.arc(
+        projectile.x - cameraPosition.x + 200,
+        projectile.y - cameraPosition.y + 150,
+        projectile.size, 0, 2 * Math.PI
+    );
     ctx.fill();
 }
