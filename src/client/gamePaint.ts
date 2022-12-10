@@ -1,12 +1,13 @@
 import { findCharacterById, paintCharacters } from "./character.js";
 import { Game, getCameraPosition, Highscores, Position } from "./game.js";
 import { LevelingCharacter } from "./levelingCharacter.js";
+import { paintMap } from "./map.js";
 import { findPlayerById } from "./player.js";
 import { paintProjectiles } from "./projectile.js";
 
 export function paintAll(ctx: CanvasRenderingContext2D, game: Game) {
     let cameraPosition: Position = getCameraPosition(game);
-    paintBackground(ctx, game.canvasElement);
+    paintMap(ctx, cameraPosition, game.state.map, game);
     paintCharacters(ctx, game.state.characters, cameraPosition);
     paintProjectiles(ctx, game.state.projectiles, cameraPosition);
     paintKillCounter(ctx, game.state.killCounter);

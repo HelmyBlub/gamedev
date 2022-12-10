@@ -1,6 +1,7 @@
 import { Character, countAlivePlayers, createRandomEnemy, detectCharacterDeath, findCharacterById, tickCharacters } from "./character.js";
 import { paintAll } from "./gamePaint.js";
 import { createDefaultUpgradeOptions, UpgradeOption } from "./levelingCharacter.js";
+import { createMap, GameMap } from "./map.js";
 import { gameInitPlayers, Player } from "./player.js";
 import { PlayerInput, tickPlayerInputs } from "./playerInput.js";
 import { Projectile, tickProjectiles } from "./projectile.js";
@@ -24,6 +25,7 @@ export type GameState = {
     playerInputs: PlayerInput[],
     highscores: Highscores,
     clientIds: number[],
+    map: GameMap,
 }
 
 export type Highscores = {
@@ -104,6 +106,7 @@ export function createDefaultGameData(c: HTMLCanvasElement, ctx: CanvasRendering
             },
             players: [],
             clientIds: [],
+            map: createMap(),
         },
         clientKeyBindings: [],
         realStartTime: 0,
