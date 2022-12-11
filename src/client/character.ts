@@ -20,11 +20,13 @@ export type Character = Position & {
 }
 
 function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position) {
+    let centerX = ctx.canvas.width / 2;
+    let centerY = ctx.canvas.height / 2;
     ctx.fillStyle = character.color;
     ctx.beginPath();
     ctx.arc(
-        character.x - cameraPosition.x + 200,
-        character.y - cameraPosition.y + 150,
+        character.x - cameraPosition.x + centerX,
+        character.y - cameraPosition.y + centerY,
         character.size, 0, 2 * Math.PI);
     ctx.fill();
 }

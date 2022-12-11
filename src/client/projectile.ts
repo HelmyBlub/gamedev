@@ -61,11 +61,14 @@ export function paintProjectiles(ctx: CanvasRenderingContext2D, projectiles: Pro
 }
 
 function paintProjectile(ctx: CanvasRenderingContext2D, projectile: Projectile, cameraPosition: Position) {
+    let centerX = ctx.canvas.width / 2;
+    let centerY = ctx.canvas.height / 2;
+
     ctx.fillStyle = projectile.color;
     ctx.beginPath();
     ctx.arc(
-        projectile.x - cameraPosition.x + 200,
-        projectile.y - cameraPosition.y + 150,
+        projectile.x - cameraPosition.x + centerX,
+        projectile.y - cameraPosition.y + centerY,
         projectile.size, 0, 2 * Math.PI
     );
     ctx.fill();

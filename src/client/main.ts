@@ -8,14 +8,14 @@ export function start() {
     createGame("myCanvas");
 }
 
-export function startMore(){
+export function startMore() {
     let nextCssId = "myCanvas_" + gameDatas.length.toString();
     let canvasHTML = `<canvas id="${nextCssId}" width="400" height="300" style="border:1px solid #000000;"></canvas>`;
     document.body.insertAdjacentHTML("beforeend", canvasHTML);
     createGame(nextCssId);
 }
 
-function createGame(canvasElementId: string){
+function createGame(canvasElementId: string) {
     let c: HTMLCanvasElement | null = document.getElementById(canvasElementId) as HTMLCanvasElement;
     if (c == null) throw new DOMException("canvas element not found");
     let ctx: CanvasRenderingContext2D | null = c.getContext("2d");
@@ -25,6 +25,12 @@ function createGame(canvasElementId: string){
     gameDatas.push(game);
     document.addEventListener('keydown', (e) => keyDown(e, game), false);
     document.addEventListener('keyup', (e) => keyUp(e, game), false);
+    addEventListener("resize", (event) => {
+        c!.height = window.innerHeight - 2;
+        c!.width = window.innerWidth - 2;
+    });
+    c.height = window.innerHeight - 2;
+    c.width = window.innerWidth - 2;
 
     gameInit(game);
     game.state.characters[0].hp = 0;
