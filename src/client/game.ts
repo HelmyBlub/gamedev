@@ -102,7 +102,7 @@ export function createDefaultGameData(c: HTMLCanvasElement, ctx: CanvasRendering
                 maxLength: 10,
             },
             randumNumberGenerator: {
-                seed: 0
+                seed: Math.random(),
             },
             players: [],
             clientIds: [],

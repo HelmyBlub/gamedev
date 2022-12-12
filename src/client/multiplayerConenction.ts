@@ -29,10 +29,10 @@ export function websocketConnect(game: Game) {
 }
 
 export function sendMultiplayer(data: any, game: Game) {
-    if (data.command === "playerInput") {
+    if (data.command === "playerInput" && data.data.clientId === game.multiplayer.myClientId) {
         game.multiplayer.lastSendTime.push(performance.now());
     }
-    game.multiplayer.websocket?.send(JSON.stringify(data));
+    game.multiplayer.websocket!.send(JSON.stringify(data));
 }
 
 function determineDelay(messageObj: any, game: Game) {
