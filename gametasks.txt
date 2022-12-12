@@ -1,13 +1,8 @@
 next functional tasks:
-- infinite map
-    - map tiles:
-        - stone (blocking)
-        - tree (blooking but destroyable)
-    - procedural map generation
-        - currently looks just like random
-        - perlin noise https://joeiddon.github.io/projects/javascript/perlin.html
-        - unity example https://gamedevacademy.org/procedural-2d-maps-unity-tutorial/
-        - https://javascript.plainenglish.io/procedural-generation-of-an-infinite-world-aaea8e70ef4a
+- map tiles:
+    - tiles can block player movement
+    - stone (blocking)
+    - tree (blooking but destroyable)
 - some balancing, currenlty player gets overwhelming strong, enemies can not keep up
     - leveling up requires more xp each level
     - shootspeed upgrade change to linear instead of exponetial (perfromance lmit will not be reached as fast)
@@ -20,6 +15,9 @@ next technical tasks or bugs:
     - understand require vs import in backend vs frontend
 
 future functional tasks:
+    - procedural map generation
+        - add more map features for orientation like a path
+        - unity example https://gamedevacademy.org/procedural-2d-maps-unity-tutorial/
     - multiplayer 
         - gamesync
             - try with different client delays

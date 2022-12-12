@@ -1,5 +1,6 @@
 import { calculateDistance, Game, GameState, getCameraPosition, getNextId, Position } from "./game.js";
 import { createLevelingCharacter, LevelingCharacter, levelingCharacterXpGain, UpgradeOption } from "./levelingCharacter.js";
+import { GameMap, isPositionBlocking } from "./map.js";
 import { createProjectile, Projectile } from "./projectile.js";
 import { nextRandom } from "./randomNumberGenerator.js";
 
@@ -70,7 +71,7 @@ export function tickCharacters(characters: Character[], projectiles: Projectile[
         } else if (characters[i].faction === ENEMY_FACTION) {
             tickEnemyCharacter(characters[i], getPlayerCharacters(characters));
         }
-        moveCharacterTick(characters[i]);
+        moveCharacterTick(characters[i], game.state.map);
     }
 }
 
@@ -139,10 +140,15 @@ function determineEnemyMoveDirection(character: Character, closestPlayer: Charac
     }
 }
 
-function moveCharacterTick(character: Character) {
+function moveCharacterTick(character: Character, map: GameMap) {
     if (character.isMoving) {
-        character.x += Math.cos(character.moveDirection) * character.moveSpeed;
-        character.y += Math.sin(character.moveDirection) * character.moveSpeed;
+        let x = character.x + Math.cos(character.moveDirection) * character.moveSpeed;
+        let y = character.y + Math.sin(character.moveDirection) * character.moveSpeed;
+        let blocking = isPositionBlocking({ x, y }, map);
+        if (!blocking) {
+            character.x = x;
+            character.y = y;
+        }
     }
 }
 

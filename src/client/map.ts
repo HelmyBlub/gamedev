@@ -1,10 +1,22 @@
 import { Game, GameState, Position } from "./game.js"
 import { nextRandom } from "./randomNumberGenerator.js";
 
-let TILE_VALUES: { [key: number]: { name: string, color?: string, imagePath?: string, imageRef?: HTMLImageElement } } = {
-    0: { name: "grass", imagePath: "/images/grass.png" },
-    1: { name: "tree", imagePath: "/images/tree.png" },
-    2: { name: "rock", imagePath: "/images/rock.png" },
+type MapTiles = {
+    [key: number]: MapTile,
+}
+
+type MapTile = {
+    name: string,
+    color?: string,
+    imagePath?: string,
+    imageRef?: HTMLImageElement,
+    blocking: boolean,
+}
+
+let TILE_VALUES: MapTiles = {
+    0: { name: "grass", imagePath: "/images/grass.png", blocking: false },
+    1: { name: "tree", imagePath: "/images/tree.png", blocking: true },
+    2: { name: "rock", imagePath: "/images/rock.png", blocking: true },
 }
 
 export type GameMap = {
@@ -22,12 +34,41 @@ export function createMap(): GameMap {
     }
 }
 
+export function isPositionBlocking(pos: Position, map: GameMap) {
+    let tile = getMapTile(pos, map);
+    if(!tile) return false;
+    return tile.blocking;
+}
+
+function getMapTile(pos: Position, map: GameMap): MapTile {
+    let chunkSize = map.tileSize * map.chunkLength;
+    let chunkI = Math.floor(pos.y / chunkSize);
+    let chunkJ = Math.floor(pos.x / chunkSize);
+    let chunk = map.chunks[`${chunkI}_${chunkJ}`];
+    if (chunk) {
+        let i = Math.floor((pos.y / map.tileSize) % map.chunkLength);
+        if(i < 0) i += map.chunkLength;
+        let j = Math.floor((pos.x / map.tileSize) % map.chunkLength);
+        if(j < 0) j += map.chunkLength;
+        if(i >= 0 && j >= 0 && chunk.length > i && chunk[i].length > j){
+            return TILE_VALUES[chunk[i][j]];
+        }else{
+            console.log("invalid chunk", i,j, chunk);
+        }
+    }
+
+    //console.log("chunk does not exist", pos, chunkI, chunkJ, map.chunks);
+    return TILE_VALUES[0];
+}
+
 export function paintMap(ctx: CanvasRenderingContext2D, cameraPosition: Position, map: GameMap, game: Game) {
     let chunkSize = map.tileSize * map.chunkLength;
     let width = ctx.canvas.width;
     let height = ctx.canvas.height;
-    let startChunkI = Math.floor(cameraPosition.y / chunkSize);
-    let startChunkJ = Math.floor(cameraPosition.x / chunkSize);
+    let startX = (cameraPosition.x - width/2);
+    let startY = (cameraPosition.y - height/2);
+    let startChunkI = Math.floor( startY / chunkSize);
+    let startChunkJ = Math.floor( startX / chunkSize);
 
     for (let i = 0; i < Math.ceil(height / chunkSize) + 1; i++) {
         let chunkI = startChunkI + i;
@@ -35,12 +76,12 @@ export function paintMap(ctx: CanvasRenderingContext2D, cameraPosition: Position
             let chunkJ = startChunkJ + j;
             let chunk = map.chunks[`${chunkI}_${chunkJ}`];
             if (!chunk) {
-                if(map.seed === undefined) map.seed = nextRandom(game.state);
+                if (map.seed === undefined) map.seed = nextRandom(game.state);
                 chunk = createNewChunk(map.chunkLength, game.state, chunkI, chunkJ, map.seed);
                 map.chunks[`${chunkI}_${chunkJ}`] = chunk;
             }
-            let x = chunkJ * chunkSize - cameraPosition.x;
-            let y = chunkI * chunkSize - cameraPosition.y;
+            let x = chunkJ * chunkSize - startX;
+            let y = chunkI * chunkSize - startY;
             paintChunk(ctx, { x, y }, chunk, map.tileSize);
         }
     }
