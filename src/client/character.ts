@@ -93,7 +93,7 @@ function tickPlayerCharacter(character: LevelingCharacter, projectiles: Projecti
 }
 
 function tickEnemyCharacter(character: Character, playerCharacters: Character[]) {
-    let closestPlayer = determineClosestPlayer(character, playerCharacters)
+    let closestPlayer = determineClosestCharacter(character, playerCharacters).minDistanceCharacter;
     determineEnemyMoveDirection(character, closestPlayer);
     determineEnemyHitsPlayer(character, closestPlayer);
 }
@@ -107,18 +107,18 @@ function determineEnemyHitsPlayer(character: Character, closestPlayer: Character
     }
 }
 
-function determineClosestPlayer(character: Character, playerCharacters: Character[]) {
+export function determineClosestCharacter(character: Character, characters: Character[]) {
     let minDistance: number = 0;
-    let minDistancePlayerCharacter: Character | null = null;
+    let minDistanceCharacter: Character | null = null;
 
-    for (let i = 0; i < playerCharacters.length; i++) {
-        let distance = calculateDistance(character, playerCharacters[i]);
-        if (minDistancePlayerCharacter === null || minDistance > distance) {
+    for (let i = 0; i < characters.length; i++) {
+        let distance = calculateDistance(character, characters[i]);
+        if (minDistanceCharacter === null || minDistance > distance) {
             minDistance = distance;
-            minDistancePlayerCharacter = playerCharacters[i];
+            minDistanceCharacter = characters[i];
         }
     }
-    return minDistancePlayerCharacter;
+    return {minDistanceCharacter, minDistance};
 }
 
 function determineEnemyMoveDirection(character: Character, closestPlayer: Character | null) {

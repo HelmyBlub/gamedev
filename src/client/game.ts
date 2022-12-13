@@ -1,4 +1,4 @@
-import { Character, countAlivePlayers, createRandomEnemy, detectCharacterDeath, findCharacterById, tickCharacters } from "./character.js";
+import { Character, countAlivePlayers, createRandomEnemy, detectCharacterDeath, determineClosestCharacter, findCharacterById, getPlayerCharacters, tickCharacters } from "./character.js";
 import { paintAll } from "./gamePaint.js";
 import { createDefaultUpgradeOptions, UpgradeOption } from "./levelingCharacter.js";
 import { createMap, GameMap } from "./map.js";
@@ -187,7 +187,7 @@ export function runner(game: Game) {
             }
             tick(tickInterval, game);
         }
-        if(counter >= 50){
+        if (counter >= 50) {
             console.log("game can not keep up");
         }
     }
@@ -204,7 +204,17 @@ function tick(gameTimePassed: number, game: Game) {
         tickProjectiles(game.state.projectiles, game.state.time);
         detectProjectileToCharacterHit(game.state);
         detectCharacterDeath(game.state.characters, game.state, game.avaialbleUpgrades);
+        despawnFarEnemies(game.state.characters);
         if (gameEndedCheck(game)) endGame(game.state);
+    }
+}
+
+function despawnFarEnemies(characters: Character[]) {
+    for (let i = characters.length - 1; i >= 0; i--) {
+        let minDistance = determineClosestCharacter(characters[i], getPlayerCharacters(characters)).minDistance;
+        if(minDistance > 500){
+            characters.splice(i,1);
+        }
     }
 }
 

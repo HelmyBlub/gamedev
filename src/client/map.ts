@@ -60,7 +60,6 @@ export function findNearNonBlockingPosition(pos: Position, map: GameMap): Positi
         }
     }
 
-    console.log(pos, currentPosition);
     return currentPosition;
 }
 
@@ -69,6 +68,10 @@ function getMapTile(pos: Position, map: GameMap): MapTile {
     let chunkI = Math.floor(pos.y / chunkSize);
     let chunkJ = Math.floor(pos.x / chunkSize);
     let chunk = map.chunks[`${chunkI}_${chunkJ}`];
+    if(chunk === undefined){
+        chunk = createNewChunk(map.chunkLength, chunkI, chunkJ, map.seed!);
+    }
+
     if (chunk) {
         let i = Math.floor((pos.y / map.tileSize) % map.chunkLength);
         if (i < 0) i += map.chunkLength;
@@ -81,7 +84,6 @@ function getMapTile(pos: Position, map: GameMap): MapTile {
         }
     }
 
-    //console.log("chunk does not exist", pos, chunkI, chunkJ, map.chunks);
     return TILE_VALUES[0];
 }
 
@@ -101,7 +103,7 @@ export function paintMap(ctx: CanvasRenderingContext2D, cameraPosition: Position
             let chunk = map.chunks[`${chunkI}_${chunkJ}`];
             if (!chunk) {
                 if (map.seed === undefined) map.seed = nextRandom(game.state);
-                chunk = createNewChunk(map.chunkLength, game.state, chunkI, chunkJ, map.seed);
+                chunk = createNewChunk(map.chunkLength, chunkI, chunkJ, map.seed);
                 map.chunks[`${chunkI}_${chunkJ}`] = chunk;
             }
             let x = chunkJ * chunkSize - startX;
@@ -123,7 +125,7 @@ function paintChunk(ctx: CanvasRenderingContext2D, paintTopLeftPosition: Positio
     }
 }
 
-function createNewChunk(chunkLength: number, state: GameState, chunkI: number, chunkJ: number, seed: number): number[][] {
+function createNewChunk(chunkLength: number, chunkI: number, chunkJ: number, seed: number): number[][] {
     let chunk: number[][] = [];
     for (let i = 0; i < chunkLength; i++) {
         chunk.push([]);

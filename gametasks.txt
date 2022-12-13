@@ -1,7 +1,4 @@
 next functional tasks:
-- improve spawning
-    - despawn enemies which are to far away
-    - spawn enemies constantly to always have something to fight
 - enemy pathing, find to player
 - map tiles:
     - destroyable tiles
