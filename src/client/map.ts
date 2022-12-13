@@ -36,8 +36,32 @@ export function createMap(): GameMap {
 
 export function isPositionBlocking(pos: Position, map: GameMap) {
     let tile = getMapTile(pos, map);
-    if(!tile) return false;
+    if (!tile) return false;
     return tile.blocking;
+}
+
+export function findNearNonBlockingPosition(pos: Position, map: GameMap): Position {
+    let currentPosition: Position = { x: pos.x, y: pos.y };
+    let distance = 1;
+    let counterX = -distance;
+    let counterY = -distance;
+    while (isPositionBlocking(currentPosition, map)) {
+        currentPosition.x = pos.x + counterX * map.tileSize;
+        currentPosition.y = pos.y + counterY * map.tileSize;
+        if(Math.abs(counterY) === distance){
+            counterX++;
+        }else{
+            if (counterX >= distance) {
+                counterX = -distance;
+                counterY++;
+            }else{
+                counterX = distance;
+            }
+        }
+    }
+
+    console.log(pos, currentPosition);
+    return currentPosition;
 }
 
 function getMapTile(pos: Position, map: GameMap): MapTile {
@@ -47,13 +71,13 @@ function getMapTile(pos: Position, map: GameMap): MapTile {
     let chunk = map.chunks[`${chunkI}_${chunkJ}`];
     if (chunk) {
         let i = Math.floor((pos.y / map.tileSize) % map.chunkLength);
-        if(i < 0) i += map.chunkLength;
+        if (i < 0) i += map.chunkLength;
         let j = Math.floor((pos.x / map.tileSize) % map.chunkLength);
-        if(j < 0) j += map.chunkLength;
-        if(i >= 0 && j >= 0 && chunk.length > i && chunk[i].length > j){
+        if (j < 0) j += map.chunkLength;
+        if (i >= 0 && j >= 0 && chunk.length > i && chunk[i].length > j) {
             return TILE_VALUES[chunk[i][j]];
-        }else{
-            console.log("invalid chunk", i,j, chunk);
+        } else {
+            console.log("invalid chunk", i, j, chunk);
         }
     }
 
@@ -65,10 +89,10 @@ export function paintMap(ctx: CanvasRenderingContext2D, cameraPosition: Position
     let chunkSize = map.tileSize * map.chunkLength;
     let width = ctx.canvas.width;
     let height = ctx.canvas.height;
-    let startX = (cameraPosition.x - width/2);
-    let startY = (cameraPosition.y - height/2);
-    let startChunkI = Math.floor( startY / chunkSize);
-    let startChunkJ = Math.floor( startX / chunkSize);
+    let startX = (cameraPosition.x - width / 2);
+    let startY = (cameraPosition.y - height / 2);
+    let startChunkI = Math.floor(startY / chunkSize);
+    let startChunkJ = Math.floor(startX / chunkSize);
 
     for (let i = 0; i < Math.ceil(height / chunkSize) + 1; i++) {
         let chunkI = startChunkI + i;

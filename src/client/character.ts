@@ -1,6 +1,6 @@
 import { calculateDistance, Game, GameState, getCameraPosition, getNextId, Position } from "./game.js";
 import { createLevelingCharacter, LevelingCharacter, levelingCharacterXpGain, UpgradeOption } from "./levelingCharacter.js";
-import { GameMap, isPositionBlocking } from "./map.js";
+import { findNearNonBlockingPosition, GameMap, isPositionBlocking } from "./map.js";
 import { createProjectile, Projectile } from "./projectile.js";
 import { nextRandom } from "./randomNumberGenerator.js";
 
@@ -155,7 +155,7 @@ function moveCharacterTick(character: Character, map: GameMap) {
 export function createRandomEnemy(game: Game) {
     if (game.state.characters.length > 100) return;
 
-    let x, y;
+    let pos: Position = {x:0, y:0};
     let hp = Math.ceil(game.state.time / 1000);
     let spawnDistance = 150;
     let playerCharacter = getPlayerCharacters(game.state.characters);
@@ -164,22 +164,24 @@ export function createRandomEnemy(game: Game) {
         let center: Position = playerCharacter[i];
 
         if (nextRandom(game.state) < 0.5) {
-            x = center.x + (Math.round(nextRandom(game.state)) * 2 - 1) * spawnDistance;
-            y = center.y + (nextRandom(game.state) - 0.5) * spawnDistance * 2;
+            pos.x = center.x + (Math.round(nextRandom(game.state)) * 2 - 1) * spawnDistance;
+            pos.y = center.y + (nextRandom(game.state) - 0.5) * spawnDistance * 2;
         } else {
-            x = center.x + (nextRandom(game.state) - 0.5) * spawnDistance * 2;
-            y = center.y + (Math.round(nextRandom(game.state)) * 2 - 1) * spawnDistance;
+            pos.x = center.x + (nextRandom(game.state) - 0.5) * spawnDistance * 2;
+            pos.y = center.y + (Math.round(nextRandom(game.state)) * 2 - 1) * spawnDistance;
         }
-        game.state.characters.push(createEnemy(game, x, y, hp));
+        if(!isPositionBlocking(pos, game.state.map)){
+            game.state.characters.push(createEnemy(game, pos.x, pos.y, hp));
+        }
     }
 }
 
 function createEnemy(game: Game, x: number, y: number, hp: number): Character {
-    return createCharacter(game, x, y, 5, "black", 0.1, hp, 1, ENEMY_FACTION, true);
+    return createCharacter(game, x, y, 5, "black", 0.5, hp, 1, ENEMY_FACTION, true);
 }
 
-export function createPlayerCharacter(game: Game, x: number, y: number): Character {
-    return createLevelingCharacter(game, x, y, 10, "blue", 2, 200, 10, PLAYER_FACTION);
+export function createPlayerCharacter(game: Game, pos: Position): Character {
+    return createLevelingCharacter(game, pos.x, pos.y, 10, "blue", 2, 200, 10, PLAYER_FACTION);
 }
 
 function createCharacter(

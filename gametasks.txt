@@ -1,8 +1,10 @@
 next functional tasks:
+- improve spawning
+    - despawn enemies which are to far away
+    - spawn enemies constantly to always have something to fight
+- enemy pathing, find to player
 - map tiles:
-    - tiles can block player movement
-    - stone (blocking)
-    - tree (blooking but destroyable)
+    - destroyable tiles
 - some balancing, currenlty player gets overwhelming strong, enemies can not keep up
     - leveling up requires more xp each level
     - shootspeed upgrade change to linear instead of exponetial (perfromance lmit will not be reached as fast)
