@@ -108,18 +108,18 @@ export function paintMap(ctx: CanvasRenderingContext2D, cameraPosition: Position
             }
             let x = chunkJ * chunkSize - startX;
             let y = chunkI * chunkSize - startY;
-            paintChunk(ctx, { x, y }, chunk, map.tileSize);
+            paintChunk(ctx, { x, y }, chunk, map.tileSize, {x: chunkJ, y: chunkI});
         }
     }
 }
 
-function paintChunk(ctx: CanvasRenderingContext2D, paintTopLeftPosition: Position, chunk: number[][], tileSize: number) {
+function paintChunk(ctx: CanvasRenderingContext2D, paintTopLeftPosition: Position, chunk: number[][], tileSize: number, chunkIJ: Position) {
     if (chunk) {
         for (let i = 0; i < chunk.length; i++) {
             for (let j = 0; j < chunk[i].length; j++) {
                 let x = paintTopLeftPosition.x + j * tileSize;
                 let y = paintTopLeftPosition.y + i * tileSize;
-                paintTile(ctx, { x, y }, tileSize, chunk[i][j]);
+                paintTile(ctx, { x, y }, tileSize, chunk[i][j], {x:chunkIJ.x * chunk.length + j, y:chunkIJ.y * chunk.length + i});
             }
         }
     }
@@ -154,7 +154,7 @@ function testFixedRandom(x: number, y: number, seed: number) {
     return (Math.sin((x * 112.01716 + y * 718.233 + seed * 1234.1234) * 437057.545323) * 1000000) & 255;
 }
 
-function paintTile(ctx: CanvasRenderingContext2D, paintPosition: Position, tileSize: number, tileId: number) {
+function paintTile(ctx: CanvasRenderingContext2D, paintPosition: Position, tileSize: number, tileId: number, posIJ: Position) {
     if (paintPosition.x + tileSize < 0 || paintPosition.x > ctx.canvas.width
         || paintPosition.y + tileSize < 0 || paintPosition.y > ctx.canvas.height) {
         return;
@@ -168,9 +168,11 @@ function paintTile(ctx: CanvasRenderingContext2D, paintPosition: Position, tileS
                 image.src = TILE_VALUES[tileId].imagePath!;
                 ctx.drawImage(image, paintPosition.x, paintPosition.y);
                 TILE_VALUES[tileId].imageRef = image;
-                console.log("image load");
             } else {
                 ctx.drawImage(TILE_VALUES[tileId].imageRef!, paintPosition.x, paintPosition.y);
+//                ctx.fillStyle = "Black";
+//                ctx.font = "8px Arial";
+//                ctx.fillText(`${posIJ.x}_${posIJ.y}`, paintPosition.x + 10, paintPosition.y + 20);
             }
         } else if (TILE_VALUES[tileId].color !== undefined) {
             ctx.fillStyle = TILE_VALUES[tileId].color!;

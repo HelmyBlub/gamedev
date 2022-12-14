@@ -69,7 +69,7 @@ export function tickCharacters(characters: Character[], projectiles: Projectile[
         if (characters[i].faction === PLAYER_FACTION) {
             tickPlayerCharacter(characters[i] as LevelingCharacter, projectiles, gameTime, game);
         } else if (characters[i].faction === ENEMY_FACTION) {
-            tickEnemyCharacter(characters[i], getPlayerCharacters(characters));
+            tickEnemyCharacter(characters[i], getPlayerCharacters(characters), game.state.map);
         }
         moveCharacterTick(characters[i], game.state.map);
     }
@@ -92,9 +92,9 @@ function tickPlayerCharacter(character: LevelingCharacter, projectiles: Projecti
     }
 }
 
-function tickEnemyCharacter(character: Character, playerCharacters: Character[]) {
+function tickEnemyCharacter(character: Character, playerCharacters: Character[], map: GameMap) {
     let closestPlayer = determineClosestCharacter(character, playerCharacters).minDistanceCharacter;
-    determineEnemyMoveDirection(character, closestPlayer);
+    determineEnemyMoveDirection(character, closestPlayer, map);
     determineEnemyHitsPlayer(character, closestPlayer);
 }
 
@@ -118,26 +118,139 @@ export function determineClosestCharacter(character: Character, characters: Char
             minDistanceCharacter = characters[i];
         }
     }
-    return {minDistanceCharacter, minDistance};
+    return { minDistanceCharacter, minDistance };
 }
 
-function determineEnemyMoveDirection(character: Character, closestPlayer: Character | null) {
+function determineEnemyMoveDirection(character: Character, closestPlayer: Character | null, map: GameMap) {
     if (closestPlayer === null) {
         character.isMoving = false;
         return;
     }
     character.isMoving = true;
+    let nextWayPoint: Position | null = getNextWaypoint(character, closestPlayer, map);
+    if (nextWayPoint === null) {
+        character.isMoving = false;
+        return;
+    }
+    character.moveDirection = calculateDirection(character, nextWayPoint);
+}
 
-    let yDiff = (character.y - closestPlayer.y);
-    let xDiff = (character.x - closestPlayer.x);
+function getNextWaypoint(characterPos: Position, targetPos: Position, map: GameMap): Position | null {
+    let openNodes: Position[] = [];
+    let targetIJ: Position = calculatePosToTileIJ(targetPos, map);
+    let startIJ: Position = calculatePosToTileIJ(characterPos, map);
+    let cameFrom: Map<string, Position> = new Map<string, Position>();
+    let gScore: Map<string, number> = new Map<string, number>();
+    gScore.set(`${startIJ.x}_${startIJ.y}`, 0);
+    let fScore: Map<string, number> = new Map<string, number>();
+    fScore.set(`${startIJ.x}_${startIJ.y}`, calculateDistance(startIJ, targetIJ));
+
+    openNodes.push(startIJ);
+
+    while (openNodes.length > 0) {
+        let currentLowestValue = -1;
+        let currentIndex = -1;       
+        for(let i = 0; i < openNodes.length; i++){
+            let currKey = `${openNodes[i].x}_${openNodes[i].y}`;
+            if(currentIndex === -1 || fScore.get(currKey)! < currentLowestValue){
+                currentLowestValue = fScore.get(currKey)!;
+                currentIndex = i;
+            }
+        }
+        let currentNode = openNodes.splice(currentIndex, 1)[0]!;
+
+        if (currentNode.x === targetIJ.x && currentNode.y === targetIJ.y) {
+            let lastPosition = reconstruct_path(cameFrom, currentNode);
+            if (lastPosition.x === targetIJ.x && lastPosition.y === targetIJ.y) {
+                return targetPos;
+            } else {
+                return { x: lastPosition.x * map.tileSize + map.tileSize/2, y: lastPosition.y * map.tileSize + map.tileSize/2 };
+            }
+        }
+
+        let neighborsIJ = getPathNeighborsIJ(currentNode, map);
+        for (let i = 0; i < neighborsIJ.length; i++) {
+            let currentNodKey: string = `${currentNode.x}_${currentNode.y}`;
+            let neighborKey = `${neighborsIJ[i].x}_${neighborsIJ[i].y}`;
+            let tentativeScore = gScore.get(currentNodKey)! + calculateDistance(neighborsIJ[i], currentNode);
+
+            if (!gScore.has(neighborKey) || tentativeScore < gScore.get(neighborKey)!){
+                cameFrom.set(neighborKey, currentNode);
+                gScore.set(neighborKey, tentativeScore);
+                fScore.set(neighborKey, tentativeScore + calculateDistance(neighborsIJ[i], targetIJ));
+                if(!openNodes.find((curr: Position) => curr.x === neighborsIJ[i].x && curr.y === neighborsIJ[i].y)){
+                   openNodes.push(neighborsIJ[i]); 
+                }
+            }
+        }
+    }
+
+    return null;
+}
+
+function getPathNeighborsIJ(posIJ: Position, map: GameMap): Position[] {
+    let result: Position[] = [];
+
+    let tempIJ = { x: posIJ.x, y: posIJ.y - 1 };
+    if (!isPositionBlocking({ x: tempIJ.x * map.tileSize, y: tempIJ.y * map.tileSize }, map)) {
+        result.push(tempIJ);
+    }
+    tempIJ = { x: posIJ.x, y: posIJ.y + 1 };
+    if (!isPositionBlocking({ x: tempIJ.x * map.tileSize, y: tempIJ.y * map.tileSize }, map)) {
+        result.push(tempIJ);
+    }
+    tempIJ = { x: posIJ.x - 1, y: posIJ.y };
+    if (!isPositionBlocking({ x: tempIJ.x * map.tileSize, y: tempIJ.y * map.tileSize }, map)) {
+        result.push(tempIJ);
+    }
+    tempIJ = { x: posIJ.x + 1, y: posIJ.y };
+    if (!isPositionBlocking({ x: tempIJ.x * map.tileSize, y: tempIJ.y * map.tileSize }, map)) {
+        result.push(tempIJ);
+    }
+
+    return result;
+}
+
+function reconstruct_path(cameFrom: Map<string, Position>, current: Position) {
+    let second: Position = current;
+    let last: Position = current;
+    while (cameFrom.has(`${last.x}_${last.y}`)) {
+        second = last;
+        last = cameFrom.get(`${last.x}_${last.y}`)!;
+    }
+    return second
+}
+
+function calculatePosToTileIJ(pos: Position, map: GameMap): Position {
+    let chunkSize = map.tileSize * map.chunkLength;
+    let startChunkI = Math.floor(pos.y / chunkSize);
+    let startChunkJ = Math.floor(pos.x / chunkSize);
+    let tileI = Math.floor((pos.y / map.tileSize) % map.chunkLength);
+    if (tileI < 0) tileI += map.chunkLength;
+    let tileJ = Math.floor((pos.x / map.tileSize) % map.chunkLength);
+    if (tileJ < 0) tileJ += map.chunkLength;
+
+    return {
+        x: startChunkJ * map.chunkLength + tileJ,
+        y: startChunkI * map.chunkLength + tileI,
+    };
+}
+
+export function calculateDirection(startPos: Position, targetPos: Position): number {
+    let direction = 0;
+
+    let yDiff = (startPos.y - targetPos.y);
+    let xDiff = (startPos.x - targetPos.x);
 
     if (xDiff >= 0) {
-        character.moveDirection = - Math.PI + Math.atan(yDiff / xDiff);
+        direction = - Math.PI + Math.atan(yDiff / xDiff);
     } else if (yDiff <= 0) {
-        character.moveDirection = - Math.atan(xDiff / yDiff) + Math.PI / 2;
+        direction = - Math.atan(xDiff / yDiff) + Math.PI / 2;
     } else {
-        character.moveDirection = - Math.atan(xDiff / yDiff) - Math.PI / 2;
+        direction = - Math.atan(xDiff / yDiff) - Math.PI / 2;
     }
+
+    return direction;
 }
 
 function moveCharacterTick(character: Character, map: GameMap) {
@@ -155,7 +268,7 @@ function moveCharacterTick(character: Character, map: GameMap) {
 export function createRandomEnemy(game: Game) {
     if (game.state.characters.length > 100) return;
 
-    let pos: Position = {x:0, y:0};
+    let pos: Position = { x: 0, y: 0 };
     let hp = Math.ceil(game.state.time / 1000);
     let spawnDistance = 150;
     let playerCharacter = getPlayerCharacters(game.state.characters);
@@ -170,7 +283,7 @@ export function createRandomEnemy(game: Game) {
             pos.x = center.x + (nextRandom(game.state) - 0.5) * spawnDistance * 2;
             pos.y = center.y + (Math.round(nextRandom(game.state)) * 2 - 1) * spawnDistance;
         }
-        if(!isPositionBlocking(pos, game.state.map)){
+        if (!isPositionBlocking(pos, game.state.map)) {
             game.state.characters.push(createEnemy(game, pos.x, pos.y, hp));
         }
     }
