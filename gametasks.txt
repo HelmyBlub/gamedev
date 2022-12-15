@@ -14,6 +14,7 @@ next technical tasks or bugs:
 - upgrade versions
 - use same code files for backend and frontend
     - understand require vs import in backend vs frontend
+- holding key down creates a lot of keyDown events, always sending over network although nothing changed
 
 future functional tasks:
     - procedural map generation

@@ -65,12 +65,12 @@ export function createRandomEnemy(game: Game) {
     for (let i = 0; i < playerCharacter.length; i++) {
         let center: Position = playerCharacter[i];
 
-        if (nextRandom(game.state) < 0.5) {
-            pos.x = center.x + (Math.round(nextRandom(game.state)) * 2 - 1) * spawnDistance;
-            pos.y = center.y + (nextRandom(game.state) - 0.5) * spawnDistance * 2;
+        if (nextRandom(game.state.randomSeed) < 0.5) {
+            pos.x = center.x + (Math.round(nextRandom(game.state.randomSeed)) * 2 - 1) * spawnDistance;
+            pos.y = center.y + (nextRandom(game.state.randomSeed) - 0.5) * spawnDistance * 2;
         } else {
-            pos.x = center.x + (nextRandom(game.state) - 0.5) * spawnDistance * 2;
-            pos.y = center.y + (Math.round(nextRandom(game.state)) * 2 - 1) * spawnDistance;
+            pos.x = center.x + (nextRandom(game.state.randomSeed) - 0.5) * spawnDistance * 2;
+            pos.y = center.y + (Math.round(nextRandom(game.state.randomSeed)) * 2 - 1) * spawnDistance;
         }
         if (!isPositionBlocking(pos, game.state.map)) {
             game.state.characters.push(createEnemy(game, pos.x, pos.y, hp));

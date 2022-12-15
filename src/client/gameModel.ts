@@ -5,6 +5,7 @@ import { createMap, GameMap } from "./map/map.js";
 import { Player } from "./player.js";
 import { PlayerInput } from "./playerInput.js";
 import { Projectile } from "./projectile.js";
+import { RandomSeed } from "./randomNumberGenerator.js";
 
 export type Position = {
     x: number,
@@ -19,9 +20,7 @@ export type GameState = {
     killCounter: number,
     time: number;
     ended: boolean,
-    randumNumberGenerator: {
-        seed: number
-    }
+    randomSeed: RandomSeed,
     playerInputs: PlayerInput[],
     highscores: Highscores,
     clientIds: number[],
@@ -76,7 +75,7 @@ export function createDefaultGameData(c: HTMLCanvasElement, ctx: CanvasRendering
                 scores: [],
                 maxLength: 10,
             },
-            randumNumberGenerator: {
+            randomSeed: {
                 seed: Math.random(),
             },
             players: [],

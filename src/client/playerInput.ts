@@ -4,7 +4,8 @@ import { fillRandomUpgradeOptions } from "./character/levelingCharacter.js";
 import { findPlayerById } from "./player.js";
 import { Character } from "./character/characterModel.js";
 import { LevelingCharacter, UpgradeOption } from "./character/levelingCharacterModel.js";
-import { Game, GameState } from "./gameModel.js";
+import { Game } from "./gameModel.js";
+import { RandomSeed } from "./randomNumberGenerator.js";
 
 export const MOVE_ACTIONS = ["left", "down", "right", "up"];
 export const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3"];
@@ -28,6 +29,37 @@ export function createActionsPressed() {
         upgrade1: false,
         upgrade2: false,
         upgrade3: false,
+    }
+}
+
+export function keyDown(event: KeyboardEvent, game: Game) {
+    playerInputChangeEvent(event, game);
+
+    switch (event.code) {
+        case "KeyR":
+            handleCommand(game, { command: "restart" });
+            break;
+        default:
+            break;
+    }
+}
+
+export function keyUp(event: KeyboardEvent, game: Game) {
+    playerInputChangeEvent(event, game);
+}
+
+export function tickPlayerInputs(playerInputs: PlayerInput[], currentTime: number, game: Game) {
+    while (playerInputs.length > 0 && playerInputs[0].executeTime <= currentTime) {
+        if (playerInputs[0].command === "playerInput") {
+            if (playerInputs[0].executeTime <= currentTime - 16) {
+                console.log("playerAction to late", currentTime - playerInputs[0].executeTime, playerInputs[0]);
+            }
+            playerAction(playerInputs[0].data.clientId, playerInputs[0].data.action, playerInputs[0].data.isKeydown, game);
+            playerInputs.shift();
+        } else {
+            console.log(playerInputs[0]);
+            throw new Error("invalid command in inputs");
+        }
     }
 }
 
@@ -62,7 +94,7 @@ function determinePlayerMoveDirection(player: Character, actionsPressed: Actions
     }
 }
 
-function playerInputChangeEvent(event: KeyboardEvent, game:Game) {
+function playerInputChangeEvent(event: KeyboardEvent, game: Game) {
     const keycode = event.code;
     const isKeydown = event.type === "keydown" ? true : false;
 
@@ -72,7 +104,7 @@ function playerInputChangeEvent(event: KeyboardEvent, game:Game) {
             const clientId = game.clientKeyBindings[i].clientIdRef;
             handleCommand(game, {
                 command: "playerInput",
-                data: {clientId: clientId, action: action, isKeydown: isKeydown },
+                data: { clientId: clientId, action: action, isKeydown: isKeydown },
             });
         }
     }
@@ -85,58 +117,27 @@ function playerAction(clientId: number, action: string, isKeydown: boolean, game
     if (character === null) return;
 
     if (action !== undefined) {
-        if(MOVE_ACTIONS.indexOf(action) !== -1){
+        if (MOVE_ACTIONS.indexOf(action) !== -1) {
             player.actionsPressed[action] = isKeydown;
-            if(character !== null){
+            if (character !== null) {
                 determinePlayerMoveDirection(character, player.actionsPressed);
             }
-        }else if(UPGRADE_ACTIONS.indexOf(action) !== -1){
-            if(isKeydown){
-                upgradeLevelingCharacter(character as LevelingCharacter, action, game.avaialbleUpgrades, game.state);
+        } else if (UPGRADE_ACTIONS.indexOf(action) !== -1) {
+            if (isKeydown) {
+                upgradeLevelingCharacter(character as LevelingCharacter, action, game.avaialbleUpgrades, game.state.randomSeed);
             }
         }
     }
 }
 
-function upgradeLevelingCharacter(character: LevelingCharacter, action: string, upgradeOptions: Map<string, UpgradeOption>, state: GameState){
-    if(character.availableSkillPoints > 0){
+function upgradeLevelingCharacter(character: LevelingCharacter, action: string, upgradeOptions: Map<string, UpgradeOption>, randomSeed: RandomSeed) {
+    if (character.availableSkillPoints > 0) {
         let index = UPGRADE_ACTIONS.indexOf(action);
         upgradeOptions.get(character.upgradeOptions[index].name)?.upgrade(character);
         character.availableSkillPoints--;
         character.upgradeOptions = [];
-        if(character.availableSkillPoints > 0){
-            fillRandomUpgradeOptions(character, state, upgradeOptions);
-        }
-    }
-}
-
-export function keyDown(event: KeyboardEvent, game: Game) {
-    playerInputChangeEvent(event, game);
-
-    switch (event.code) {
-        case "KeyR":
-            handleCommand(game, { command: "restart" });
-            break;
-        default:
-            break;
-    }
-}
-
-export function keyUp(event: KeyboardEvent, game: Game) {
-    playerInputChangeEvent(event, game);
-}
-
-export function tickPlayerInputs(playerInputs: PlayerInput[], currentTime: number, game: Game) {
-    while(playerInputs.length > 0 && playerInputs[0].executeTime <= currentTime){        
-        if (playerInputs[0].command === "playerInput") {
-            if (playerInputs[0].executeTime <= currentTime - 16) {
-                console.log("playerAction to late", currentTime - playerInputs[0].executeTime, playerInputs[0]);
-            }
-            playerAction(playerInputs[0].data.clientId, playerInputs[0].data.action, playerInputs[0].data.isKeydown, game);
-            playerInputs.shift();
-        }else{
-            console.log(playerInputs[0]);
-            throw new Error("invalid command in inputs");
+        if (character.availableSkillPoints > 0) {
+            fillRandomUpgradeOptions(character, randomSeed, upgradeOptions);
         }
     }
 }

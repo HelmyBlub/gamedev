@@ -1,17 +1,17 @@
 import { getPlayerCharacters } from "./character.js";
-import { Game, GameState } from "../gameModel.js";
-import { nextRandom } from "../randomNumberGenerator.js";
+import { GameState } from "../gameModel.js";
+import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
 import { Character } from "./characterModel.js";
 import { createProjectile, Projectile } from "../projectile.js";
 import { LevelingCharacter, UpgradeOption } from "./levelingCharacterModel.js";
 
-export function fillRandomUpgradeOptions(character: LevelingCharacter, state: GameState, upgradeOptions: Map<string, UpgradeOption>) {
+export function fillRandomUpgradeOptions(character: LevelingCharacter, randomSeed: RandomSeed, upgradeOptions: Map<string, UpgradeOption>) {
     if (character.upgradeOptions.length === 0) {
         let setOfUsedUpgrades = new Set<number>();
         for (let i = 0; i < 3; i++) {
-            let randomOption = Math.floor(nextRandom(state) * upgradeOptions.size);
+            let randomOption = Math.floor(nextRandom(randomSeed) * upgradeOptions.size);
             while (setOfUsedUpgrades.has(randomOption) && upgradeOptions.size > setOfUsedUpgrades.size) {
-                randomOption = Math.floor(nextRandom(state) * upgradeOptions.size);
+                randomOption = Math.floor(nextRandom(randomSeed) * upgradeOptions.size);
             }
             setOfUsedUpgrades.add(randomOption);
             character.upgradeOptions.push({ name: Array.from(upgradeOptions.keys())[randomOption] });
@@ -61,22 +61,22 @@ export function levelingCharacterXpGain(state: GameState, killedCharacter: Chara
         if (playerCharacters[i].experience !== undefined) {
             playerCharacters[i].experience += killedCharacter.experienceWorth;
             if (playerCharacters[i].experience >= playerCharacters[i].experienceForLevelUp) {
-                levelingCharacterLevelUp(playerCharacters[i], state, upgradeOptions);
+                levelingCharacterLevelUp(playerCharacters[i], state.randomSeed, upgradeOptions);
             }
         }
     }
 }
 
-export function tickPlayerCharacter(character: LevelingCharacter, projectiles: Projectile[], gameTime: number, game: Game) {
+export function tickPlayerCharacter(character: LevelingCharacter, projectiles: Projectile[], gameTime: number, randomSeed: RandomSeed) {
     while (character.shooting.nextShotTime <= gameTime) {
-        shoot(character, projectiles, gameTime, game);
+        shoot(character, projectiles, gameTime, randomSeed);
         character.shooting.nextShotTime += character.shooting.frequency;
     }
 }
 
-function shoot(character: LevelingCharacter, projectiles: Projectile[], gameTime: number, game: Game) {
+function shoot(character: LevelingCharacter, projectiles: Projectile[], gameTime: number, randomSeed: RandomSeed) {
     for (let i = 0; i <= character.shooting.multiShot; i++) {
-        let shotSpread: number = (nextRandom(game.state) - 0.5) / 10 * character.shooting.multiShot;
+        let shotSpread: number = (nextRandom(randomSeed) - 0.5) / 10 * character.shooting.multiShot;
         projectiles.push(createProjectile(
             character.x,
             character.y,
@@ -91,9 +91,9 @@ function shoot(character: LevelingCharacter, projectiles: Projectile[], gameTime
     }
 }
 
-function levelingCharacterLevelUp(character: LevelingCharacter, state: GameState, upgradeOptions: Map<string, UpgradeOption>) {
+function levelingCharacterLevelUp(character: LevelingCharacter, randomSeed: RandomSeed, upgradeOptions: Map<string, UpgradeOption>) {
     character.level++;
     character.availableSkillPoints += 1;
     character.experience -= character.experienceForLevelUp;
-    fillRandomUpgradeOptions(character, state, upgradeOptions);
+    fillRandomUpgradeOptions(character, randomSeed, upgradeOptions);
 }

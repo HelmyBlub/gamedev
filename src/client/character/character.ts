@@ -25,7 +25,7 @@ export function findCharacterById(characters: Character[], id: number): Characte
 export function tickCharacters(characters: Character[], projectiles: Projectile[], gameTime: number, game: Game) {
     for (let i = 0; i < characters.length; i++) {
         if (characters[i].faction === PLAYER_FACTION) {
-            tickPlayerCharacter(characters[i] as LevelingCharacter, projectiles, gameTime, game);
+            tickPlayerCharacter(characters[i] as LevelingCharacter, projectiles, gameTime, game.state.randomSeed);
         } else if (characters[i].faction === ENEMY_FACTION) {
             tickEnemyCharacter(characters[i], getPlayerCharacters(characters), game.state.map);
         }

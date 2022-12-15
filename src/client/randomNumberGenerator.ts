@@ -1,7 +1,9 @@
-import { GameState } from "./gameModel.js";
+export type RandomSeed = {
+    seed: number,
+}
 
-export function nextRandom(state: GameState) {
-    state.randumNumberGenerator.seed++;
-    let a = state.randumNumberGenerator.seed * 15485863;
+export function nextRandom(seed: RandomSeed) {
+    seed.seed++;
+    let a = seed.seed * 15485863;
     return (a * a * a % 2038074743) / 2038074743;
 }
