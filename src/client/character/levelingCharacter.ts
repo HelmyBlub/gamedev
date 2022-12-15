@@ -1,6 +1,8 @@
-import { Character, getPlayerCharacters } from "./character.js";
-import { Game, GameState, getNextId } from "./game.js";
-import { nextRandom } from "./randomNumberGenerator.js";
+import { getPlayerCharacters } from "./character.js";
+import { Game, GameState, getNextId } from "../game.js";
+import { nextRandom } from "../randomNumberGenerator.js";
+import { Character } from "./characterModel.js";
+import { createProjectile, Projectile } from "../projectile.js";
 
 export type LevelingCharacter = Character & {
     experience: number,
@@ -133,3 +135,28 @@ export function levelingCharacterXpGain(state: GameState, killedCharacter: Chara
         }
     }
 }
+
+export function tickPlayerCharacter(character: LevelingCharacter, projectiles: Projectile[], gameTime: number, game: Game) {
+    while (character.shooting.nextShotTime <= gameTime) {
+        shoot(character, projectiles, gameTime, game);
+        character.shooting.nextShotTime += character.shooting.frequency;
+    }
+}
+
+function shoot(character: LevelingCharacter, projectiles: Projectile[], gameTime: number, game: Game) {
+    for (let i = 0; i <= character.shooting.multiShot; i++) {
+        let shotSpread: number = (nextRandom(game.state) - 0.5) / 10 * character.shooting.multiShot;
+        projectiles.push(createProjectile(
+            character.x,
+            character.y,
+            character.moveDirection + shotSpread,
+            character.damage,
+            character.faction,
+            character.moveSpeed + 2,
+            gameTime,
+            character.shooting.pierceCount,
+            character.shooting.timeToLive
+        ));
+    }
+}
+

@@ -1,10 +1,11 @@
-import { Character, countAlivePlayers, createRandomEnemy, detectCharacterDeath, determineClosestCharacter, findCharacterById, getPlayerCharacters, tickCharacters } from "./character.js";
+import { countAlivePlayerCharacters, detectCharacterDeath, determineClosestCharacter, findCharacterById, getPlayerCharacters, tickCharacters } from "./character/character.js";
 import { paintAll } from "./gamePaint.js";
-import { createDefaultUpgradeOptions, UpgradeOption } from "./levelingCharacter.js";
+import { createDefaultUpgradeOptions, UpgradeOption } from "./character/levelingCharacter.js";
 import { createMap, GameMap } from "./map.js";
 import { gameInitPlayers, Player } from "./player.js";
 import { PlayerInput, tickPlayerInputs } from "./playerInput.js";
 import { Projectile, tickProjectiles } from "./projectile.js";
+import { Character, createRandomEnemy } from "./character/characterModel.js";
 
 export type Position = {
     x: number,
@@ -58,6 +59,23 @@ export type Game = {
         type: string,
         characterId?: number,
     }
+}
+
+export function calculateDirection(startPos: Position, targetPos: Position): number {
+    let direction = 0;
+
+    let yDiff = (startPos.y - targetPos.y);
+    let xDiff = (startPos.x - targetPos.x);
+
+    if (xDiff >= 0) {
+        direction = - Math.PI + Math.atan(yDiff / xDiff);
+    } else if (yDiff <= 0) {
+        direction = - Math.atan(xDiff / yDiff) + Math.PI / 2;
+    } else {
+        direction = - Math.atan(xDiff / yDiff) - Math.PI / 2;
+    }
+
+    return direction;
 }
 
 export function getNextId(state: GameState) {
@@ -153,7 +171,7 @@ export function calculateDistance(objectA: { x: number, y: number }, objectB: { 
 }
 
 function gameEndedCheck(game: Game) {
-    let alivePlayersCount = countAlivePlayers(game.state.characters)
+    let alivePlayersCount = countAlivePlayerCharacters(game.state.characters)
     if (alivePlayersCount === 0) {
         return true;
     }
