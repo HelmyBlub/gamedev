@@ -15,10 +15,10 @@ export function getNextWaypoint(sourcePos: Position, targetPos: Position, map: G
 
     while (openNodes.length > 0) {
         let currentLowestValue = -1;
-        let currentIndex = -1;       
-        for(let i = 0; i < openNodes.length; i++){
+        let currentIndex = -1;
+        for (let i = 0; i < openNodes.length; i++) {
             let currKey = `${openNodes[i].x}_${openNodes[i].y}`;
-            if(currentIndex === -1 || fScore.get(currKey)! < currentLowestValue){
+            if (currentIndex === -1 || fScore.get(currKey)! < currentLowestValue) {
                 currentLowestValue = fScore.get(currKey)!;
                 currentIndex = i;
             }
@@ -30,7 +30,7 @@ export function getNextWaypoint(sourcePos: Position, targetPos: Position, map: G
             if (lastPosition.x === targetIJ.x && lastPosition.y === targetIJ.y) {
                 return targetPos;
             } else {
-                return { x: lastPosition.x * map.tileSize + map.tileSize/2, y: lastPosition.y * map.tileSize + map.tileSize/2 };
+                return { x: lastPosition.x * map.tileSize + map.tileSize / 2, y: lastPosition.y * map.tileSize + map.tileSize / 2 };
             }
         }
 
@@ -40,12 +40,12 @@ export function getNextWaypoint(sourcePos: Position, targetPos: Position, map: G
             let neighborKey = `${neighborsIJ[i].x}_${neighborsIJ[i].y}`;
             let tentativeScore = gScore.get(currentNodKey)! + calculateDistance(neighborsIJ[i], currentNode);
 
-            if (!gScore.has(neighborKey) || tentativeScore < gScore.get(neighborKey)!){
+            if (!gScore.has(neighborKey) || tentativeScore < gScore.get(neighborKey)!) {
                 cameFrom.set(neighborKey, currentNode);
                 gScore.set(neighborKey, tentativeScore);
                 fScore.set(neighborKey, tentativeScore + calculateDistance(neighborsIJ[i], targetIJ));
-                if(!openNodes.find((curr: Position) => curr.x === neighborsIJ[i].x && curr.y === neighborsIJ[i].y)){
-                   openNodes.push(neighborsIJ[i]); 
+                if (!openNodes.find((curr: Position) => curr.x === neighborsIJ[i].x && curr.y === neighborsIJ[i].y)) {
+                    openNodes.push(neighborsIJ[i]);
                 }
             }
         }

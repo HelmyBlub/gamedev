@@ -2,7 +2,7 @@ import { Game, getNextId, Position } from "../game.js";
 import { isPositionBlocking } from "../map.js";
 import { nextRandom } from "../randomNumberGenerator.js";
 import { getPlayerCharacters } from "./character.js";
-import { createLevelingCharacter } from "./levelingCharacter.js";
+import { createLevelingCharacter } from "./levelingCharacterModel.js";
 
 export const PLAYER_FACTION = "player";
 export const ENEMY_FACTION = "enemy";
@@ -49,10 +49,6 @@ function createCharacter(
     };
 }
 
-function createEnemy(game: Game, x: number, y: number, hp: number): Character {
-    return createCharacter(game, x, y, 5, "black", 0.5, hp, 1, ENEMY_FACTION, true);
-}
-
 export function createPlayerCharacter(game: Game, pos: Position): Character {
     return createLevelingCharacter(game, pos.x, pos.y, 10, "blue", 2, 200, 10, PLAYER_FACTION);
 }
@@ -79,4 +75,8 @@ export function createRandomEnemy(game: Game) {
             game.state.characters.push(createEnemy(game, pos.x, pos.y, hp));
         }
     }
+}
+
+function createEnemy(game: Game, x: number, y: number, hp: number): Character {
+    return createCharacter(game, x, y, 5, "black", 0.5, hp, 1, ENEMY_FACTION, true);
 }

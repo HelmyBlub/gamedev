@@ -1,11 +1,12 @@
 import { countAlivePlayerCharacters, detectCharacterDeath, determineClosestCharacter, findCharacterById, getPlayerCharacters, tickCharacters } from "./character/character.js";
 import { paintAll } from "./gamePaint.js";
-import { createDefaultUpgradeOptions, UpgradeOption } from "./character/levelingCharacter.js";
+import { createDefaultUpgradeOptions } from "./character/levelingCharacter.js";
 import { createMap, GameMap } from "./map.js";
 import { gameInitPlayers, Player } from "./player.js";
 import { PlayerInput, tickPlayerInputs } from "./playerInput.js";
 import { Projectile, tickProjectiles } from "./projectile.js";
 import { Character, createRandomEnemy } from "./character/characterModel.js";
+import { UpgradeOption } from "./character/levelingCharacterModel.js";
 
 export type Position = {
     x: number,
