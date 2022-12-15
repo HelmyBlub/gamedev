@@ -2,7 +2,7 @@ import { findCharacterById, paintCharacters } from "./character/character.js";
 import { LevelingCharacter } from "./character/levelingCharacterModel.js";
 import { getCameraPosition } from "./game.js";
 import { Game, Position, Highscores } from "./gameModel.js";
-import { paintMap } from "./map.js";
+import { paintMap } from "./map/mapPaint.js";
 import { findPlayerById } from "./player.js";
 import { paintProjectiles } from "./projectile.js";
 
@@ -15,21 +15,21 @@ export function paintAll(ctx: CanvasRenderingContext2D, game: Game) {
     if (game.state.ended) {
         paintHighscoreBoard(game.ctx, game.state.highscores);
     } else {
-        if(game.multiplayer.myClientId !== -1){
+        if (game.multiplayer.myClientId !== -1) {
             let player = findPlayerById(game.state.players, game.multiplayer.myClientId)
-            if(player === null) return;
+            if (player === null) return;
             let character = findCharacterById(game.state.characters, player.characterIdRef);
-            if(character !== null) paintPlayerStats(ctx, character as LevelingCharacter);
+            if (character !== null) paintPlayerStats(ctx, character as LevelingCharacter);
             ctx.fillText("Ping: " + Math.round(game.multiplayer.delay), 10, 40);
 
-        }else{
+        } else {
             paintPlayerStats(ctx, game.state.characters[0] as LevelingCharacter);
         }
     }
 }
 
 function paintHighscoreBoard(ctx: CanvasRenderingContext2D, highscores: Highscores) {
-    ctx.fillStyle = "white";
+    ctx.fillStyle = "black";
     ctx.font = "18px Arial";
 
     ctx.fillText("Restart with Key \"R\" ", 150, 20);
@@ -40,26 +40,20 @@ function paintHighscoreBoard(ctx: CanvasRenderingContext2D, highscores: Highscor
 }
 
 function paintKillCounter(ctx: CanvasRenderingContext2D, killCounter: number) {
-    ctx.fillStyle = "white";
+    ctx.fillStyle = "black";
     ctx.font = "18px Arial";
     ctx.fillText("Kills: " + killCounter, 10, 20);
 }
 
 function paintPlayerStats(ctx: CanvasRenderingContext2D, character: LevelingCharacter) {
-    ctx.fillStyle = "white";
+    ctx.fillStyle = "black";
     ctx.font = "18px Arial";
     ctx.fillText("Level: " + character.level
-            + "  SkillPoints:" + character.availableSkillPoints,
+        + "  SkillPoints:" + character.availableSkillPoints,
         200, 20);
     ctx.fillText("HP: " + character.hp, 100, 20);
 
-    if(character.availableSkillPoints > 0){
+    if (character.availableSkillPoints > 0) {
         ctx.fillText(`1=${character.upgradeOptions[0].name} Up, 2=${character.upgradeOptions[1].name}, 3=${character.upgradeOptions[2].name}`, 10, 300);
     }
 }
-
-function paintBackground(ctx: CanvasRenderingContext2D, canvasElement: HTMLCanvasElement) {
-    ctx.fillStyle = "green";
-    ctx.fillRect(0, 0, canvasElement.width, canvasElement.height);
-}
-

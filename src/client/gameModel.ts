@@ -1,7 +1,7 @@
 import { Character } from "./character/characterModel.js";
 import { createDefaultUpgradeOptions } from "./character/levelingCharacter.js";
 import { UpgradeOption } from "./character/levelingCharacterModel.js";
-import { createMap, GameMap } from "./map.js";
+import { createMap, GameMap } from "./map/map.js";
 import { Player } from "./player.js";
 import { PlayerInput } from "./playerInput.js";
 import { Projectile } from "./projectile.js";

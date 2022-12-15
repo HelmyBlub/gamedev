@@ -1,6 +1,6 @@
 import { Character, createPlayerCharacter } from "./character/characterModel.js";
 import { Game, Position } from "./gameModel.js";
-import { findNearNonBlockingPosition } from "./map.js";
+import { findNearNonBlockingPosition } from "./map/map.js";
 import { ActionsPressed, createActionsPressed } from "./playerInput.js";
 
 export type Player = {

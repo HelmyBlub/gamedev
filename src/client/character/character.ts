@@ -1,5 +1,5 @@
 import { levelingCharacterXpGain, tickPlayerCharacter } from "./levelingCharacter.js";
-import { GameMap, isPositionBlocking } from "../map.js";
+import { GameMap, isPositionBlocking } from "../map/map.js";
 import { Projectile } from "../projectile.js";
 import { Character, ENEMY_FACTION, PLAYER_FACTION } from "./characterModel.js";
 import { getNextWaypoint } from "./pathing.js";

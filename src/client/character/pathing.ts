@@ -1,6 +1,6 @@
 import { calculateDistance } from "../game.js";
 import { Position } from "../gameModel.js";
-import { GameMap, isPositionBlocking } from "../map.js";
+import { GameMap, isPositionBlocking } from "../map/map.js";
 
 export function getNextWaypoint(sourcePos: Position, targetPos: Position, map: GameMap): Position | null {
     let openNodes: Position[] = [];

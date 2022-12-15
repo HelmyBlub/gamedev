@@ -1,6 +1,6 @@
 import { getNextId } from "../game.js";
 import { Position, Game } from "../gameModel.js";
-import { isPositionBlocking } from "../map.js";
+import { isPositionBlocking } from "../map/map.js";
 import { nextRandom } from "../randomNumberGenerator.js";
 import { getPlayerCharacters } from "./character.js";
 import { createLevelingCharacter } from "./levelingCharacterModel.js";
