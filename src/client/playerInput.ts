@@ -1,10 +1,10 @@
 import { findCharacterById } from "./character/character.js";
 import { handleCommand } from "./commands.js";
-import { Game, GameState } from "./game.js";
 import { fillRandomUpgradeOptions } from "./character/levelingCharacter.js";
 import { findPlayerById } from "./player.js";
 import { Character } from "./character/characterModel.js";
 import { LevelingCharacter, UpgradeOption } from "./character/levelingCharacterModel.js";
+import { Game, GameState } from "./gameModel.js";
 
 export const MOVE_ACTIONS = ["left", "down", "right", "up"];
 export const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3"];

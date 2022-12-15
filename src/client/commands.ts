@@ -1,4 +1,5 @@
-import { Game, gameRestart } from "./game.js";
+import { gameRestart } from "./game.js";
+import { Game } from "./gameModel.js";
 import { sendMultiplayer } from "./multiplayerConenction.js";
 import { createDefaultKeyBindings1 } from "./player.js";
 

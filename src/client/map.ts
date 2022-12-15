@@ -1,4 +1,4 @@
-import { Game, GameState, Position } from "./game.js"
+import { Game, Position } from "./gameModel.js"
 import { nextRandom } from "./randomNumberGenerator.js";
 
 type MapTiles = {

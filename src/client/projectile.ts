@@ -1,4 +1,4 @@
-import { Position } from "./game";
+import { Position } from "./gameModel.js";
 
 export type Projectile = Position & {
     size: number,

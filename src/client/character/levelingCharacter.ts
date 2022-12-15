@@ -1,5 +1,5 @@
 import { getPlayerCharacters } from "./character.js";
-import { Game, GameState, getNextId } from "../game.js";
+import { Game, GameState } from "../gameModel.js";
 import { nextRandom } from "../randomNumberGenerator.js";
 import { Character } from "./characterModel.js";
 import { createProjectile, Projectile } from "../projectile.js";

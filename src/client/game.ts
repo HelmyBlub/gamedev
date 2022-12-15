@@ -1,66 +1,10 @@
 import { countAlivePlayerCharacters, detectCharacterDeath, determineClosestCharacter, findCharacterById, getPlayerCharacters, tickCharacters } from "./character/character.js";
 import { paintAll } from "./gamePaint.js";
-import { createDefaultUpgradeOptions } from "./character/levelingCharacter.js";
-import { createMap, GameMap } from "./map.js";
-import { gameInitPlayers, Player } from "./player.js";
-import { PlayerInput, tickPlayerInputs } from "./playerInput.js";
-import { Projectile, tickProjectiles } from "./projectile.js";
+import { gameInitPlayers } from "./player.js";
+import { tickPlayerInputs } from "./playerInput.js";
+import { tickProjectiles } from "./projectile.js";
 import { Character, createRandomEnemy } from "./character/characterModel.js";
-import { UpgradeOption } from "./character/levelingCharacterModel.js";
-
-export type Position = {
-    x: number,
-    y: number
-}
-
-export type GameState = {
-    idCounter: number,
-    characters: Character[],
-    projectiles: Projectile[],
-    players: Player[],
-    killCounter: number,
-    time: number;
-    ended: boolean,
-    randumNumberGenerator: {
-        seed: number
-    }
-    playerInputs: PlayerInput[],
-    highscores: Highscores,
-    clientIds: number[],
-    map: GameMap,
-}
-
-export type Highscores = {
-    scores: number[],
-    maxLength: 10,
-}
-
-export type Game = {
-    canvasElement: HTMLCanvasElement,
-    ctx: CanvasRenderingContext2D,
-    state: GameState,
-    realStartTime: number,
-    clientKeyBindings: {
-        clientIdRef: number,
-        keyCodeToActionPressed: Map<string, string>,
-    }[],
-    multiplayer: {
-        myClientId: number,
-        websocket: WebSocket | null,
-        maxServerGameTime: number,
-        smoothedGameTime: number,
-        delay: number,
-        maxDelay: number,
-        minDelay: number,
-        lastSendTime: number[],
-        updateInterval: number,
-    },
-    avaialbleUpgrades: Map<string, UpgradeOption>,
-    camera: {
-        type: string,
-        characterId?: number,
-    }
-}
+import { Position, GameState, Game } from "./gameModel.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -104,88 +48,20 @@ export function gameInit(game: Game) {
     }
 }
 
-export function createDefaultGameData(c: HTMLCanvasElement, ctx: CanvasRenderingContext2D): Game {
-    return {
-        canvasElement: c,
-        ctx: ctx,
-        state: {
-            idCounter: 0,
-            projectiles: [],
-            characters: [],
-            killCounter: 0,
-            ended: false,
-            time: 0,
-            playerInputs: [],
-            highscores: {
-                scores: [],
-                maxLength: 10,
-            },
-            randumNumberGenerator: {
-                seed: Math.random(),
-            },
-            players: [],
-            clientIds: [],
-            map: createMap(),
-        },
-        clientKeyBindings: [],
-        realStartTime: 0,
-        multiplayer: {
-            myClientId: -1,
-            websocket: null,
-            maxServerGameTime: 0,
-            smoothedGameTime: 0,
-            delay: 0,
-            maxDelay: 0,
-            minDelay: 0,
-            lastSendTime: [],
-            updateInterval: -1,
-        },
-        avaialbleUpgrades: createDefaultUpgradeOptions(),
-        camera: {
-            type: "follow character"
-        }
+export function getCameraPosition(game: Game): Position {
+    let cameraPosition: Position = { x: 0, y: 0 };
+    if (game.camera.characterId !== undefined) {
+        let character = findCharacterById(game.state.characters, game.camera.characterId);
+        if (character !== null) cameraPosition = character;
     }
-}
 
-function detectProjectileToCharacterHit(state: GameState) {
-    let characters: Character[] = state.characters;
-
-    for (let projIt = 0; projIt < state.projectiles.length; projIt++) {
-        let projectile = state.projectiles[projIt];
-        for (let charIt = characters.length - 1; charIt >= 0; charIt--) {
-            let c = characters[charIt];
-            if (c.faction === projectile.faction) continue;
-            let distance = calculateDistance(c, projectile);
-            if (distance < projectile.size + c.size) {
-                c.hp -= projectile.damage;
-                projectile.pierceCount--;
-                if (projectile.pierceCount < 0) break;
-            }
-        }
-    }
+    return cameraPosition;
 }
 
 export function calculateDistance(objectA: { x: number, y: number }, objectB: { x: number, y: number }) {
     let xDiff = objectA.x - objectB.x;
     let yDiff = objectA.y - objectB.y;
     return Math.sqrt(xDiff * xDiff + yDiff * yDiff);
-}
-
-function gameEndedCheck(game: Game) {
-    let alivePlayersCount = countAlivePlayerCharacters(game.state.characters)
-    if (alivePlayersCount === 0) {
-        return true;
-    }
-    return false;
-}
-
-function endGame(state: GameState) {
-    state.ended = true;
-    state.highscores.scores.push(state.killCounter);
-    state.highscores.scores.sort((a, b) => b - a);
-    if (state.highscores.scores.length > state.highscores.maxLength) {
-        state.highscores.scores.pop();
-    }
 }
 
 export function runner(game: Game) {
@@ -214,6 +90,23 @@ export function runner(game: Game) {
     setTimeout(() => runner(game), tickInterval);
 }
 
+function gameEndedCheck(game: Game) {
+    let alivePlayersCount = countAlivePlayerCharacters(game.state.characters)
+    if (alivePlayersCount === 0) {
+        return true;
+    }
+    return false;
+}
+
+function endGame(state: GameState) {
+    state.ended = true;
+    state.highscores.scores.push(state.killCounter);
+    state.highscores.scores.sort((a, b) => b - a);
+    if (state.highscores.scores.length > state.highscores.maxLength) {
+        state.highscores.scores.pop();
+    }
+}
+
 function tick(gameTimePassed: number, game: Game) {
     if (!game.state.ended) {
         game.state.time += gameTimePassed;
@@ -231,18 +124,26 @@ function tick(gameTimePassed: number, game: Game) {
 function despawnFarEnemies(characters: Character[]) {
     for (let i = characters.length - 1; i >= 0; i--) {
         let minDistance = determineClosestCharacter(characters[i], getPlayerCharacters(characters)).minDistance;
-        if(minDistance > 500){
-            characters.splice(i,1);
+        if (minDistance > 500) {
+            characters.splice(i, 1);
         }
     }
 }
 
-export function getCameraPosition(game: Game): Position {
-    let cameraPosition: Position = { x: 0, y: 0 };
-    if (game.camera.characterId !== undefined) {
-        let character = findCharacterById(game.state.characters, game.camera.characterId);
-        if (character !== null) cameraPosition = character;
-    }
+function detectProjectileToCharacterHit(state: GameState) {
+    let characters: Character[] = state.characters;
 
-    return cameraPosition;
+    for (let projIt = 0; projIt < state.projectiles.length; projIt++) {
+        let projectile = state.projectiles[projIt];
+        for (let charIt = characters.length - 1; charIt >= 0; charIt--) {
+            let c = characters[charIt];
+            if (c.faction === projectile.faction) continue;
+            let distance = calculateDistance(c, projectile);
+            if (distance < projectile.size + c.size) {
+                c.hp -= projectile.damage;
+                projectile.pierceCount--;
+                if (projectile.pierceCount < 0) break;
+            }
+        }
+    }
 }

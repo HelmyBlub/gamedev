@@ -1,6 +1,7 @@
 import { findCharacterById, paintCharacters } from "./character/character.js";
 import { LevelingCharacter } from "./character/levelingCharacterModel.js";
-import { Game, getCameraPosition, Highscores, Position } from "./game.js";
+import { getCameraPosition } from "./game.js";
+import { Game, Position, Highscores } from "./gameModel.js";
 import { paintMap } from "./map.js";
 import { findPlayerById } from "./player.js";
 import { paintProjectiles } from "./projectile.js";

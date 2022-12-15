@@ -1,15 +1,17 @@
-import { createDefaultGameData, Game, gameInit, runner } from "./game.js";
+import { gameInit, runner } from "./game.js";
+import { createDefaultGameData } from "./gameModel.js";
 import { websocketConnect } from "./multiplayerConenction.js";
 import { keyDown, keyUp } from "./playerInput.js";
 
-export var gameDatas: Game[] = [];
+var gameCount: number = 0;
 
 export function start() {
     createGame("myCanvas");
 }
 
 export function startMore() {
-    let nextCssId = "myCanvas_" + gameDatas.length.toString();
+    let nextCssId = "myCanvas_" + gameCount;
+    gameCount++;
     let canvasHTML = `<canvas id="${nextCssId}" width="400" height="300" style="border:1px solid #000000;"></canvas>`;
     document.body.insertAdjacentHTML("beforeend", canvasHTML);
     createGame(nextCssId);
@@ -22,7 +24,6 @@ function createGame(canvasElementId: string) {
     if (ctx == null) throw new DOMException("CanvasRenderingContext2D element not found");
 
     const game = createDefaultGameData(c, ctx);
-    gameDatas.push(game);
     document.addEventListener('keydown', (e) => keyDown(e, game), false);
     document.addEventListener('keyup', (e) => keyUp(e, game), false);
     addEventListener("resize", (event) => {

@@ -1,4 +1,4 @@
-import { GameState } from "./game";
+import { GameState } from "./gameModel.js";
 
 export function nextRandom(state: GameState) {
     state.randumNumberGenerator.seed++;

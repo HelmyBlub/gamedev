@@ -1,4 +1,5 @@
-import { Game, getNextId } from "../game.js";
+import { getNextId } from "../game.js";
+import { Game } from "../gameModel.js";
 import { Character } from "./characterModel.js";
 
 export type LevelingCharacter = Character & {

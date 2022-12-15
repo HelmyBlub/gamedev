@@ -1,4 +1,5 @@
-import { Game, getNextId, Position } from "../game.js";
+import { getNextId } from "../game.js";
+import { Position, Game } from "../gameModel.js";
 import { isPositionBlocking } from "../map.js";
 import { nextRandom } from "../randomNumberGenerator.js";
 import { getPlayerCharacters } from "./character.js";

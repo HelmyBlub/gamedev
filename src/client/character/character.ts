@@ -1,10 +1,11 @@
-import { calculateDirection, calculateDistance, Game, GameState, Position } from "../game.js";
 import { levelingCharacterXpGain, tickPlayerCharacter } from "./levelingCharacter.js";
 import { GameMap, isPositionBlocking } from "../map.js";
 import { Projectile } from "../projectile.js";
 import { Character, ENEMY_FACTION, PLAYER_FACTION } from "./characterModel.js";
 import { getNextWaypoint } from "./pathing.js";
 import { LevelingCharacter, UpgradeOption } from "./levelingCharacterModel.js";
+import { calculateDistance, calculateDirection } from "../game.js";
+import { Position, Game, GameState } from "../gameModel.js";
 
 export function paintCharacters(ctx: CanvasRenderingContext2D, characters: Character[], cameraPosition: Position) {
     for (let i = 0; i < characters.length; i++) {

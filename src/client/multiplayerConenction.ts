@@ -1,5 +1,5 @@
 import { executeCommand } from "./commands.js";
-import { Game } from "./game.js";
+import { Game } from "./gameModel.js";
 
 export function websocketConnect(game: Game) {
     const protocol = window.location.protocol === "http:" ? "ws" : "wss";

@@ -1,5 +1,5 @@
 import { Character, createPlayerCharacter } from "./character/characterModel.js";
-import { Game, Position } from "./game.js";
+import { Game, Position } from "./gameModel.js";
 import { findNearNonBlockingPosition } from "./map.js";
 import { ActionsPressed, createActionsPressed } from "./playerInput.js";
 
