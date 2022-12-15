@@ -6,6 +6,7 @@ import { Character } from "./character/characterModel.js";
 import { LevelingCharacter, UpgradeOption } from "./character/levelingCharacterModel.js";
 import { Game } from "./gameModel.js";
 import { RandomSeed } from "./randomNumberGenerator.js";
+import { testPathingPerformance } from "./character/tests/pathingPerformanceTest.js";
 
 export const MOVE_ACTIONS = ["left", "down", "right", "up"];
 export const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3"];
@@ -38,6 +39,9 @@ export function keyDown(event: KeyboardEvent, game: Game) {
     switch (event.code) {
         case "KeyR":
             handleCommand(game, { command: "restart" });
+            break;
+        case "KeyT":
+            testPathingPerformance(); 
             break;
         default:
             break;
