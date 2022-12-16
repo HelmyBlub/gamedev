@@ -2,7 +2,7 @@ import { levelingCharacterXpGain, tickPlayerCharacter } from "./levelingCharacte
 import { GameMap, isPositionBlocking } from "../map/map.js";
 import { Projectile } from "../projectile.js";
 import { Character, ENEMY_FACTION, PLAYER_FACTION } from "./characterModel.js";
-import { getNextWaypoint } from "./pathing.js";
+import { createPathingCache, getNextWaypoint, PathingCache } from "./pathing.js";
 import { LevelingCharacter, UpgradeOption } from "./levelingCharacterModel.js";
 import { calculateDistance, calculateDirection } from "../game.js";
 import { Position, Game, GameState } from "../gameModel.js";
@@ -23,11 +23,12 @@ export function findCharacterById(characters: Character[], id: number): Characte
 }
 
 export function tickCharacters(characters: Character[], projectiles: Projectile[], gameTime: number, game: Game) {
+    let pathingCache =  createPathingCache();
     for (let i = 0; i < characters.length; i++) {
         if (characters[i].faction === PLAYER_FACTION) {
             tickPlayerCharacter(characters[i] as LevelingCharacter, projectiles, gameTime, game.state.randomSeed);
         } else if (characters[i].faction === ENEMY_FACTION) {
-            tickEnemyCharacter(characters[i], getPlayerCharacters(characters), game.state.map);
+            tickEnemyCharacter(characters[i], getPlayerCharacters(characters), game.state.map,pathingCache);
         }
         moveCharacterTick(characters[i], game.state.map);
     }
@@ -89,13 +90,13 @@ function moveCharacterTick(character: Character, map: GameMap) {
     }
 }
 
-function determineEnemyMoveDirection(enemy: Character, closestPlayer: Character | null, map: GameMap) {
+function determineEnemyMoveDirection(enemy: Character, closestPlayer: Character | null, map: GameMap, pathingCache: PathingCache) {
     if (closestPlayer === null) {
         enemy.isMoving = false;
         return;
     }
     enemy.isMoving = true;
-    let nextWayPoint: Position | null = getNextWaypoint(enemy, closestPlayer, map);
+    let nextWayPoint: Position | null = getNextWaypoint(enemy, closestPlayer, map, pathingCache);
     if (nextWayPoint === null) {
         enemy.isMoving = false;
         return;
@@ -115,9 +116,9 @@ function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cam
     ctx.fill();
 }
 
-function tickEnemyCharacter(enemy: Character, playerCharacters: Character[], map: GameMap) {
+function tickEnemyCharacter(enemy: Character, playerCharacters: Character[], map: GameMap, pathingCache: PathingCache) {
     let closestPlayer = determineClosestCharacter(enemy, playerCharacters).minDistanceCharacter;
-    determineEnemyMoveDirection(enemy, closestPlayer, map);
+    determineEnemyMoveDirection(enemy, closestPlayer, map, pathingCache);
     determineEnemyHitsPlayer(enemy, closestPlayer);
 }
 

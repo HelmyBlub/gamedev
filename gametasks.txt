@@ -1,7 +1,4 @@
 next functional tasks:
-- enemy pathing, find to player
-    - too slow, improvement ideas
-        - remember calculated pathes for other enemies for same tick
 - map tiles:
     - destroyable tiles
 - some balancing, currenlty player gets overwhelming strong, enemies can not keep up

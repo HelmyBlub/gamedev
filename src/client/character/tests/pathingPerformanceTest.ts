@@ -1,21 +1,43 @@
+import { Position } from "../../gameModel.js";
 import { createMap, findNearNonBlockingPosition, GameMap } from "../../map/map.js";
-import { getNextWaypoint } from "../pathing.js";
+import { nextRandom, RandomSeed } from "../../randomNumberGenerator.js";
+import { createPathingCache, getNextWaypoint } from "../pathing.js";
 
 
-// time on 15.12.2022: 3427.29ms, 4000 iterations
+// time 0.33556666666672874 1006.7000000001863
+// time 0.2317333333332402 695.1999999997206, with diagonal routing
+// time 0.2614000000000621 784.2000000001863, reversed routing
+// time 0.2620333333335196 786.1000000005588, reversed + removed one map
+// time 0.0005 1.5 with caching
+// time 0.0023666666665424904 7.099999999627471 after putting cache into a type and as function parameter
 export function testPathingPerformance() {
     let map: GameMap = createMap();
+    let iterations = 3000;
+    let numberEnemies = 100;
+    let numberPlayers = 2;
+    let randomSeed: RandomSeed = {seed: 0};
+    let width = 24 * map.tileSize;
+    let height = 12 * map.tileSize;
+    let pathingCache = createPathingCache();
     map.seed = 0;
 
-    let sourcePosition = { x: 1 * map.tileSize, y: 1 * map.tileSize};
-    let targetPosition = { x: 12 * map.tileSize, y: 6 * map.tileSize};
-    sourcePosition = findNearNonBlockingPosition(sourcePosition, map);
-    targetPosition = findNearNonBlockingPosition(targetPosition, map);
+    let sourcePositions = createRandomPositions(numberEnemies, randomSeed, width, height, map);
+    let targetPositions = createRandomPositions(numberPlayers, randomSeed, width, height, map);
 
     let startTime = performance.now();
-    for(let i = 0; i < 4000; i++){
-        getNextWaypoint(sourcePosition, targetPosition, map);
+    for (let i = 0; i < iterations; i++) {
+        getNextWaypoint(sourcePositions[i%numberEnemies], targetPositions[i%numberPlayers], map, pathingCache);
     }
     let time = performance.now() - startTime;
-    console.log("time", time);
+    console.log("time", time / iterations, time);
+}
+
+function createRandomPositions(amount: number, randomSeed: RandomSeed, width: number, height: number, map: GameMap): Position[] {
+    let positions: Position[] = [];
+    for (let i = 0; i < amount; i++) {
+        let tempPos = { x: nextRandom(randomSeed) * width, y: nextRandom(randomSeed) * height };
+        tempPos = findNearNonBlockingPosition(tempPos, map);
+        positions.push(tempPos);
+    }
+    return positions;
 }

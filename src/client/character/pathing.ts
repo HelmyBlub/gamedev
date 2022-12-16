@@ -2,49 +2,85 @@ import { calculateDistance } from "../game.js";
 import { Position } from "../gameModel.js";
 import { GameMap, isPositionBlocking } from "../map/map.js";
 
-export function getNextWaypoint(sourcePos: Position, targetPos: Position, map: GameMap): Position | null {
-    let openNodes: Position[] = [];
-    let targetIJ: Position = calculatePosToTileIJ(targetPos, map);
-    let startIJ: Position = calculatePosToTileIJ(sourcePos, map);
-    let cameFrom: Map<string, Position> = new Map<string, Position>();
-    let gScore: Map<string, number> = new Map<string, number>();
-    gScore.set(`${startIJ.x}_${startIJ.y}`, 0);
-    let fScore: Map<string, number> = new Map<string, number>();
-    fScore.set(`${startIJ.x}_${startIJ.y}`, calculateDistance(startIJ, targetIJ));
+export type PathingCache = {
+    cameFromCache: Map<string, Map<string, Position>>,
+    openNodesCache: Map<string, Position[]>,
+    alreadyTraveledDistanceCache: Map<string, Map<string, number>>,
+}
 
-    openNodes.push(startIJ);
+export function createPathingCache(): PathingCache{
+    return {
+        cameFromCache: new Map<string, Map<string, Position>>(),
+        openNodesCache: new Map<string, Position[]>(),
+        alreadyTraveledDistanceCache: new Map<string, Map<string, number>>()
+    }
+}
+
+export function getNextWaypoint(
+    sourcePos: Position,
+    targetPos: Position,
+    map: GameMap,
+    pathingCache: PathingCache | null = null,
+): Position | null {
+    let targetIJ: Position = calculatePosToTileIJ(sourcePos, map);
+    let startIJ: Position = calculatePosToTileIJ(targetPos, map);
+    if (startIJ.x === targetIJ.x && startIJ.y === targetIJ.y) {
+        return targetPos;
+    }
+
+    let openNodes: Position[] = [];
+    let cameFrom: Map<string, Position> = new Map<string, Position>();
+    let alreadyTraveledDistance: Map<string, number> = new Map<string, number>();
+    alreadyTraveledDistance.set(`${startIJ.x}_${startIJ.y}`, 0);
+
+    let startKey = `${startIJ.x}_${startIJ.y}`;
+    let targetKey = `${targetIJ.x}_${targetIJ.y}`;
+    if (pathingCache !== null){
+        if (pathingCache.openNodesCache.has(startKey)) {
+            openNodes = pathingCache.openNodesCache.get(startKey)!;
+            cameFrom = pathingCache.cameFromCache.get(startKey)!;
+            alreadyTraveledDistance = pathingCache.alreadyTraveledDistanceCache.get(startKey)!;
+            if (cameFrom.has(targetKey)) {
+                let lastPosition = cameFrom.get(targetKey)!;
+                return { x: lastPosition.x * map.tileSize + map.tileSize / 2, y: lastPosition.y * map.tileSize + map.tileSize / 2 };
+            }
+        } else {
+            pathingCache.openNodesCache.set(startKey, openNodes);
+            pathingCache.cameFromCache.set(startKey, cameFrom);
+            pathingCache.alreadyTraveledDistanceCache.set(startKey, alreadyTraveledDistance);
+            openNodes.push(startIJ);
+        }
+    }else{
+        openNodes.push(startIJ);
+    }
 
     while (openNodes.length > 0) {
         let currentLowestValue = -1;
         let currentIndex = -1;
         for (let i = 0; i < openNodes.length; i++) {
             let currKey = `${openNodes[i].x}_${openNodes[i].y}`;
-            if (currentIndex === -1 || fScore.get(currKey)! < currentLowestValue) {
-                currentLowestValue = fScore.get(currKey)!;
+            let bestEstimatedTotalDistance = alreadyTraveledDistance.get(currKey)! + calculateDistance(openNodes[i], targetIJ);
+            if (currentIndex === -1 || bestEstimatedTotalDistance < currentLowestValue) {
+                currentLowestValue = bestEstimatedTotalDistance;
                 currentIndex = i;
             }
         }
         let currentNode = openNodes.splice(currentIndex, 1)[0]!;
 
         if (currentNode.x === targetIJ.x && currentNode.y === targetIJ.y) {
-            let lastPosition = reconstruct_path(cameFrom, currentNode);
-            if (lastPosition.x === targetIJ.x && lastPosition.y === targetIJ.y) {
-                return targetPos;
-            } else {
-                return { x: lastPosition.x * map.tileSize + map.tileSize / 2, y: lastPosition.y * map.tileSize + map.tileSize / 2 };
-            }
+            let lastPosition = cameFrom.get(`${targetIJ.x}_${targetIJ.y}`)!;
+            return { x: lastPosition.x * map.tileSize + map.tileSize / 2, y: lastPosition.y * map.tileSize + map.tileSize / 2 };
         }
 
         let neighborsIJ = getPathNeighborsIJ(currentNode, map);
         for (let i = 0; i < neighborsIJ.length; i++) {
             let currentNodKey: string = `${currentNode.x}_${currentNode.y}`;
             let neighborKey = `${neighborsIJ[i].x}_${neighborsIJ[i].y}`;
-            let tentativeScore = gScore.get(currentNodKey)! + calculateDistance(neighborsIJ[i], currentNode);
+            let tentativeScore = alreadyTraveledDistance.get(currentNodKey)! + calculateDistance(neighborsIJ[i], currentNode);
 
-            if (!gScore.has(neighborKey) || tentativeScore < gScore.get(neighborKey)!) {
+            if (!alreadyTraveledDistance.has(neighborKey) || tentativeScore < alreadyTraveledDistance.get(neighborKey)!) {
                 cameFrom.set(neighborKey, currentNode);
-                gScore.set(neighborKey, tentativeScore);
-                fScore.set(neighborKey, tentativeScore + calculateDistance(neighborsIJ[i], targetIJ));
+                alreadyTraveledDistance.set(neighborKey, tentativeScore);
                 if (!openNodes.find((curr: Position) => curr.x === neighborsIJ[i].x && curr.y === neighborsIJ[i].y)) {
                     openNodes.push(neighborsIJ[i]);
                 }
@@ -57,35 +93,55 @@ export function getNextWaypoint(sourcePos: Position, targetPos: Position, map: G
 
 function getPathNeighborsIJ(posIJ: Position, map: GameMap): Position[] {
     let result: Position[] = [];
+    let top, bottom, left, right: boolean = false;
+
 
     let tempIJ = { x: posIJ.x, y: posIJ.y - 1 };
     if (!isPositionBlocking({ x: tempIJ.x * map.tileSize, y: tempIJ.y * map.tileSize }, map)) {
+        top = true;
         result.push(tempIJ);
     }
     tempIJ = { x: posIJ.x, y: posIJ.y + 1 };
     if (!isPositionBlocking({ x: tempIJ.x * map.tileSize, y: tempIJ.y * map.tileSize }, map)) {
+        bottom = true;
         result.push(tempIJ);
     }
     tempIJ = { x: posIJ.x - 1, y: posIJ.y };
     if (!isPositionBlocking({ x: tempIJ.x * map.tileSize, y: tempIJ.y * map.tileSize }, map)) {
+        left = true;
         result.push(tempIJ);
     }
     tempIJ = { x: posIJ.x + 1, y: posIJ.y };
     if (!isPositionBlocking({ x: tempIJ.x * map.tileSize, y: tempIJ.y * map.tileSize }, map)) {
+        right = true;
         result.push(tempIJ);
+    }
+    if (top && right) {
+        tempIJ = { x: posIJ.x + 1, y: posIJ.y - 1 };
+        if (!isPositionBlocking({ x: tempIJ.x * map.tileSize, y: tempIJ.y * map.tileSize }, map)) {
+            result.push(tempIJ);
+        }
+    }
+    if (right && bottom) {
+        tempIJ = { x: posIJ.x + 1, y: posIJ.y + 1 };
+        if (!isPositionBlocking({ x: tempIJ.x * map.tileSize, y: tempIJ.y * map.tileSize }, map)) {
+            result.push(tempIJ);
+        }
+    }
+    if (bottom && left) {
+        tempIJ = { x: posIJ.x - 1, y: posIJ.y + 1 };
+        if (!isPositionBlocking({ x: tempIJ.x * map.tileSize, y: tempIJ.y * map.tileSize }, map)) {
+            result.push(tempIJ);
+        }
+    }
+    if (left && top) {
+        tempIJ = { x: posIJ.x - 1, y: posIJ.y - 1 };
+        if (!isPositionBlocking({ x: tempIJ.x * map.tileSize, y: tempIJ.y * map.tileSize }, map)) {
+            result.push(tempIJ);
+        }
     }
 
     return result;
-}
-
-function reconstruct_path(cameFrom: Map<string, Position>, current: Position) {
-    let second: Position = current;
-    let last: Position = current;
-    while (cameFrom.has(`${last.x}_${last.y}`)) {
-        second = last;
-        last = cameFrom.get(`${last.x}_${last.y}`)!;
-    }
-    return second
 }
 
 function calculatePosToTileIJ(pos: Position, map: GameMap): Position {

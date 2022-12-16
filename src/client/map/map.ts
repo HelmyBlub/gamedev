@@ -67,7 +67,8 @@ function getMapTile(pos: Position, map: GameMap): MapTile {
     let chunkSize = map.tileSize * map.chunkLength;
     let chunkI = Math.floor(pos.y / chunkSize);
     let chunkJ = Math.floor(pos.x / chunkSize);
-    let chunk = map.chunks[`${chunkI}_${chunkJ}`];
+    let key = `${chunkI}_${chunkJ}`;
+    let chunk = map.chunks[key];
     if(chunk === undefined){
         chunk = createNewChunk(map.chunkLength, chunkI, chunkJ, map.seed!);
         map.chunks[`${chunkI}_${chunkJ}`] = chunk;

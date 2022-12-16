@@ -55,7 +55,7 @@ export function createPlayerCharacter(game: Game, pos: Position): Character {
 }
 
 export function createRandomEnemy(game: Game) {
-    if (game.state.characters.length > 50) return;
+    if (game.state.characters.length > 100) return;
 
     let pos: Position = { x: 0, y: 0 };
     let hp = Math.ceil(game.state.time / 1000);
