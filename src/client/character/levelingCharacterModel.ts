@@ -8,7 +8,8 @@ export type LevelingCharacter = Character & {
     level: number,
     availableSkillPoints: number,
     shooting: {
-        frequency: number,
+        baseFrequency: number,
+        frequencyIncrease: number,
         nextShotTime: number,
         pierceCount: number,
         multiShot: number,
@@ -34,7 +35,8 @@ export function createLevelingCharacter(
     hp: number,
     damage: number,
     faction: string,
-    isMoving: boolean = false
+    spawnTime: number,
+    isMoving: boolean = false,
 ): LevelingCharacter {
     return {
         id: getNextId(game.state),
@@ -51,16 +53,18 @@ export function createLevelingCharacter(
         faction: faction,
         experienceWorth: 1,
         experience: 0,
-        experienceForLevelUp: 20,
+        experienceForLevelUp: 10,
         level: 0,
         availableSkillPoints: 0,
         upgradeOptions: [],
         shooting: {
-            frequency: 500,
+            baseFrequency: 500,
+            frequencyIncrease: 1,
             nextShotTime: 0,
             pierceCount: 0,
             multiShot: 0,
             timeToLive: 1000,
-        }
+        },
+        spawnTime: spawnTime,
     };
 }

@@ -28,7 +28,7 @@ export function tickCharacters(characters: Character[], projectiles: Projectile[
         if (characters[i].faction === PLAYER_FACTION) {
             tickPlayerCharacter(characters[i] as LevelingCharacter, projectiles, gameTime, game.state.randomSeed);
         } else if (characters[i].faction === ENEMY_FACTION) {
-            tickEnemyCharacter(characters[i], getPlayerCharacters(characters), game.state.map,pathingCache);
+            tickEnemyCharacter(characters[i], getPlayerCharacters(characters), game.state.map,pathingCache, gameTime);
         }
         moveCharacterTick(characters[i], game.state.map);
     }
@@ -116,10 +116,17 @@ function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cam
     ctx.fill();
 }
 
-function tickEnemyCharacter(enemy: Character, playerCharacters: Character[], map: GameMap, pathingCache: PathingCache) {
+function tickEnemyCharacter(enemy: Character, playerCharacters: Character[], map: GameMap, pathingCache: PathingCache, gameTime: number) {
     let closestPlayer = determineClosestCharacter(enemy, playerCharacters).minDistanceCharacter;
     determineEnemyMoveDirection(enemy, closestPlayer, map, pathingCache);
     determineEnemyHitsPlayer(enemy, closestPlayer);
+    increaseEnemyMovementSpeedAfterTime(enemy, gameTime);
+}
+
+function increaseEnemyMovementSpeedAfterTime(enemy: Character, gameTime: number){
+    if(enemy.spawnTime + 15000 < gameTime){
+        enemy.moveSpeed = (gameTime - enemy.spawnTime) / 15000;
+    }
 }
 
 function determineEnemyHitsPlayer(enemy: Character, closestPlayer: Character | null) {

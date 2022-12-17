@@ -3,8 +3,10 @@ import { paintAll } from "./gamePaint.js";
 import { gameInitPlayers } from "./player.js";
 import { tickPlayerInputs } from "./playerInput.js";
 import { tickProjectiles } from "./projectile.js";
-import { Character, createRandomEnemy } from "./character/characterModel.js";
+import { Character, createRandomEnemy, getSpawnPositionAroundPlayer } from "./character/characterModel.js";
 import { Position, GameState, Game } from "./gameModel.js";
+import { RandomSeed } from "./randomNumberGenerator.js";
+import { GameMap } from "./map/map.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -116,16 +118,20 @@ function tick(gameTimePassed: number, game: Game) {
         tickProjectiles(game.state.projectiles, game.state.time);
         detectProjectileToCharacterHit(game.state);
         detectCharacterDeath(game.state.characters, game.state, game.avaialbleUpgrades);
-        despawnFarEnemies(game.state.characters);
+        teleportFarEnemies(game.state.characters, game.state.randomSeed, game.state.map);
         if (gameEndedCheck(game)) endGame(game.state);
     }
 }
 
-function despawnFarEnemies(characters: Character[]) {
-    for (let i = characters.length - 1; i >= 0; i--) {
-        let minDistance = determineClosestCharacter(characters[i], getPlayerCharacters(characters)).minDistance;
-        if (minDistance > 500) {
-            characters.splice(i, 1);
+function teleportFarEnemies(enemies: Character[], randomSeed: RandomSeed, map: GameMap) {
+    for (let i = enemies.length - 1; i >= 0; i--) {
+        let closest = determineClosestCharacter(enemies[i], getPlayerCharacters(enemies));
+        if (closest.minDistanceCharacter && closest.minDistance > 500) {
+            let newPos = getSpawnPositionAroundPlayer(closest.minDistanceCharacter, randomSeed, map);
+            if(newPos){
+                enemies[i].x = newPos.x;
+                enemies[i].y = newPos.y;
+            }
         }
     }
 }

@@ -1,9 +1,9 @@
 import { getNextId } from "../game.js";
 import { Position, Game } from "../gameModel.js";
-import { isPositionBlocking } from "../map/map.js";
-import { nextRandom } from "../randomNumberGenerator.js";
+import { GameMap, isPositionBlocking } from "../map/map.js";
+import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
 import { getPlayerCharacters } from "./character.js";
-import { createLevelingCharacter } from "./levelingCharacterModel.js";
+import { createLevelingCharacter, LevelingCharacter } from "./levelingCharacterModel.js";
 
 export const PLAYER_FACTION = "player";
 export const ENEMY_FACTION = "enemy";
@@ -19,6 +19,7 @@ export type Character = Position & {
     damage: number,
     faction: string,
     experienceWorth: number,
+    spawnTime: number,
 }
 
 function createCharacter(
@@ -32,6 +33,7 @@ function createCharacter(
     damage: number,
     faction: string,
     isMoving: boolean = false,
+    spawnTime: number,
 ): Character {
     return {
         id: getNextId(game.state),
@@ -47,37 +49,48 @@ function createCharacter(
         damage: damage,
         faction: faction,
         experienceWorth: 1,
+        spawnTime: spawnTime,
     };
 }
 
 export function createPlayerCharacter(game: Game, pos: Position): Character {
-    return createLevelingCharacter(game, pos.x, pos.y, 10, "blue", 2, 200, 10, PLAYER_FACTION);
+    return createLevelingCharacter(game, pos.x, pos.y, 10, "blue", 2, 200, 10, PLAYER_FACTION, game.state.time);
 }
 
 export function createRandomEnemy(game: Game) {
-    if (game.state.characters.length > 100) return;
+    let maxEnemies = Math.min(Math.max(10, game.state.time / 2000), 100);
+    if (game.state.characters.length > maxEnemies) return;
 
-    let pos: Position = { x: 0, y: 0 };
-    let hp = Math.ceil(game.state.time / 1000);
-    let spawnDistance = 150;
+    let pos: Position | null = null;
+    let hpFactor = Math.pow(1.10, Math.ceil(game.state.time / 2500));
+    let hp = Math.max(1, 1 * hpFactor);
+
     let playerCharacter = getPlayerCharacters(game.state.characters);
 
     for (let i = 0; i < playerCharacter.length; i++) {
-        let center: Position = playerCharacter[i];
-
-        if (nextRandom(game.state.randomSeed) < 0.5) {
-            pos.x = center.x + (Math.round(nextRandom(game.state.randomSeed)) * 2 - 1) * spawnDistance;
-            pos.y = center.y + (nextRandom(game.state.randomSeed) - 0.5) * spawnDistance * 2;
-        } else {
-            pos.x = center.x + (nextRandom(game.state.randomSeed) - 0.5) * spawnDistance * 2;
-            pos.y = center.y + (Math.round(nextRandom(game.state.randomSeed)) * 2 - 1) * spawnDistance;
-        }
-        if (!isPositionBlocking(pos, game.state.map)) {
+        pos = getSpawnPositionAroundPlayer(playerCharacter[i], game.state.randomSeed, game.state.map);
+        if (pos) {
             game.state.characters.push(createEnemy(game, pos.x, pos.y, hp));
         }
     }
 }
 
+export function getSpawnPositionAroundPlayer(playerCharacter: Character, randomSeed: RandomSeed, map: GameMap): Position | null{
+    let spawnDistance = 150;
+    let pos: Position = {x: 0, y:0};
+    if (nextRandom(randomSeed) < 0.5) {
+        pos.x = playerCharacter.x + (Math.round(nextRandom(randomSeed)) * 2 - 1) * spawnDistance;
+        pos.y = playerCharacter.y + (nextRandom(randomSeed) - 0.5) * spawnDistance * 2;
+    } else {
+        pos.x = playerCharacter.x + (nextRandom(randomSeed) - 0.5) * spawnDistance * 2;
+        pos.y = playerCharacter.y + (Math.round(nextRandom(randomSeed)) * 2 - 1) * spawnDistance;
+    }
+    if (!isPositionBlocking(pos, map)) {
+        return pos;
+    }
+    return null;
+}
+
 function createEnemy(game: Game, x: number, y: number, hp: number): Character {
-    return createCharacter(game, x, y, 5, "black", 0.5, hp, 1, ENEMY_FACTION, true);
+    return createCharacter(game, x, y, 5, "black", 0.5, hp, 1, ENEMY_FACTION, true, game.state.time);
 }

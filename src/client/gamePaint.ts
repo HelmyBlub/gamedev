@@ -19,11 +19,11 @@ export function paintAll(ctx: CanvasRenderingContext2D, game: Game) {
             let player = findPlayerById(game.state.players, game.multiplayer.myClientId)
             if (player === null) return;
             let character = findCharacterById(game.state.characters, player.characterIdRef);
-            if (character !== null) paintPlayerStats(ctx, character as LevelingCharacter);
+            if (character !== null) paintPlayerStats(ctx, character as LevelingCharacter, game.state.time);
             ctx.fillText("Ping: " + Math.round(game.multiplayer.delay), 10, 40);
 
         } else {
-            paintPlayerStats(ctx, game.state.characters[0] as LevelingCharacter);
+            paintPlayerStats(ctx, game.state.characters[0] as LevelingCharacter, game.state.time);
         }
     }
 }
@@ -45,13 +45,14 @@ function paintKillCounter(ctx: CanvasRenderingContext2D, killCounter: number) {
     ctx.fillText("Kills: " + killCounter, 10, 20);
 }
 
-function paintPlayerStats(ctx: CanvasRenderingContext2D, character: LevelingCharacter) {
+function paintPlayerStats(ctx: CanvasRenderingContext2D, character: LevelingCharacter, gameTime: number) {
     ctx.fillStyle = "black";
     ctx.font = "18px Arial";
     ctx.fillText("Level: " + character.level
         + "  SkillPoints:" + character.availableSkillPoints,
         200, 20);
-    ctx.fillText("HP: " + character.hp, 100, 20);
+        ctx.fillText("HP: " + character.hp, 100, 20);
+        ctx.fillText("Time: " + Math.round(gameTime/1000), 400, 20);
 
     if (character.availableSkillPoints > 0) {
         ctx.fillText(`1=${character.upgradeOptions[0].name} Up, 2=${character.upgradeOptions[1].name}, 3=${character.upgradeOptions[2].name}`, 10, 300);

@@ -6,6 +6,7 @@ import { createPathingCache, getNextWaypoint } from "../pathing.js";
 export function testPathing(){
     console.log("started test");
     testPathingNotEndInInfiniteLoop();
+    testPathingPerformance();
     console.log("finished test");
 }
 

@@ -31,14 +31,14 @@ export function createDefaultUpgradeOptions(): Map<string, UpgradeOption> {
             c.moveSpeed += 0.2;
         }
     });
-    upgradeOptions.set("Damage+2", {
-        name: "Damage+2", upgrade: (c: LevelingCharacter) => {
-            c.damage += 2;
+    upgradeOptions.set("Damage+10", {
+        name: "Damage+10", upgrade: (c: LevelingCharacter) => {
+            c.damage += 10;
         }
     });
     upgradeOptions.set("ShootSpeed+20%", {
         name: "hootSpeed Up", upgrade: (c: LevelingCharacter) => {
-            c.shooting.frequency *= 0.8;
+            c.shooting.frequencyIncrease += 0.2;
         }
     });
     upgradeOptions.set("Pierce+1", {
@@ -70,7 +70,7 @@ export function levelingCharacterXpGain(state: GameState, killedCharacter: Chara
 export function tickPlayerCharacter(character: LevelingCharacter, projectiles: Projectile[], gameTime: number, randomSeed: RandomSeed) {
     while (character.shooting.nextShotTime <= gameTime) {
         shoot(character, projectiles, gameTime, randomSeed);
-        character.shooting.nextShotTime += character.shooting.frequency;
+        character.shooting.nextShotTime += character.shooting.baseFrequency / character.shooting.frequencyIncrease;
     }
 }
 
@@ -95,5 +95,6 @@ function levelingCharacterLevelUp(character: LevelingCharacter, randomSeed: Rand
     character.level++;
     character.availableSkillPoints += 1;
     character.experience -= character.experienceForLevelUp;
+    character.experienceForLevelUp += 1;
     fillRandomUpgradeOptions(character, randomSeed, upgradeOptions);
 }
