@@ -22,6 +22,9 @@ export function getNextWaypoint(
     map: GameMap,
     pathingCache: PathingCache | null = null,
 ): Position | null {
+    if(isPositionBlocking(sourcePos, map)){
+        throw new Error("idiot, can't find way to a blocking position");
+    }
     let targetIJ: Position = calculatePosToTileIJ(sourcePos, map);
     let startIJ: Position = calculatePosToTileIJ(targetPos, map);
     if (startIJ.x === targetIJ.x && startIJ.y === targetIJ.y) {
@@ -69,6 +72,7 @@ export function getNextWaypoint(
 
         if (currentNode.x === targetIJ.x && currentNode.y === targetIJ.y) {
             let lastPosition = cameFrom.get(`${targetIJ.x}_${targetIJ.y}`)!;
+            if(pathingCache !== null) openNodes.push(currentNode);
             return { x: lastPosition.x * map.tileSize + map.tileSize / 2, y: lastPosition.y * map.tileSize + map.tileSize / 2 };
         }
 

@@ -1,10 +1,14 @@
 next functional tasks:
 - map tiles:
     - destroyable tiles
+        - destroy trees to gather wood
 - some balancing, currenlty player gets overwhelming strong, enemies can not keep up
     - leveling up requires more xp each level
     - shootspeed upgrade change to linear instead of exponetial (perfromance lmit will not be reached as fast)
     - maybe change to enemies get stronger the further away from middle the player is
+- improve enemies?
+    - less enemies but some behaviour patterns?
+    - can use abilities?
 
 next technical tasks or bugs:
 - bug: on page reload somethime there is 2second lag until next page reload
