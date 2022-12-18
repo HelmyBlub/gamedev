@@ -1,6 +1,4 @@
 next functional tasks:
-- some balancing, currenlty player gets overwhelming strong, enemies can not keep up
-    - maybe change to enemies get stronger the further away from middle the player is
 - map tiles:
     - destroyable tiles
         - destroy trees to gather wood
@@ -8,9 +6,15 @@ next functional tasks:
     - sprites/ images
     - less enemies but some behaviour patterns?
     - can use abilities?
+- playerCharacters
+    - different playstyles
+    - more different upgradeOptions
+    - sprites/images for player
+- balancing
+    - maybe change to enemies get stronger the further away from middle the player is
 
 next technical tasks or bugs:
-- bug: on page reload somethime there is 2second lag until next page reload
+- find uses of "any" type and try to remove
 - upgrade versions
 - use same code files for backend and frontend
     - understand require vs import in backend vs frontend

@@ -29,7 +29,7 @@ export function websocketConnect(game: Game) {
 }
 
 export function sendMultiplayer(data: any, game: Game) {
-    if (data.command === "playerInput" && data.data.clientId === game.multiplayer.myClientId) {
+    if (data.command === "playerInput" && data.clientId === game.multiplayer.myClientId) {
         game.multiplayer.lastSendTime.push(performance.now());
     }
     game.multiplayer.websocket!.send(JSON.stringify(data));
@@ -38,7 +38,7 @@ export function sendMultiplayer(data: any, game: Game) {
 function determineDelay(messageObj: any, game: Game) {
     if (game.multiplayer.myClientId === -1) return;
     const clientId = game.multiplayer.myClientId;
-    if (messageObj.command === "playerInput" && messageObj.data.clientId === clientId) {
+    if (messageObj.command === "playerInput" && messageObj.clientId === clientId) {
         const lastSendTime = game.multiplayer.lastSendTime.shift();
         if (lastSendTime === undefined) {
             console.log("error: lastSendTime missing");

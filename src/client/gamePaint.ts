@@ -8,7 +8,7 @@ import { paintProjectiles } from "./projectile.js";
 
 export function paintAll(ctx: CanvasRenderingContext2D, game: Game) {
     let cameraPosition: Position = getCameraPosition(game);
-    paintMap(ctx, cameraPosition, game.state.map, game.state.randomSeed);
+    paintMap(ctx, cameraPosition, game.state.map);
     paintCharacters(ctx, game.state.characters, cameraPosition);
     paintProjectiles(ctx, game.state.projectiles, cameraPosition);
     paintKillCounter(ctx, game.state.killCounter);

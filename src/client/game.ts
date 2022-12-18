@@ -39,6 +39,8 @@ export function gameInit(game: Game) {
     game.state.players = [];
     game.state.killCounter = 0;
     game.state.ended = false;
+    game.state.triggerRestart = false;
+    game.state.restartAfterTick = false;
     game.state.time = 0;
     game.realStartTime = performance.now();
     game.state.playerInputs = [];
@@ -47,6 +49,8 @@ export function gameInit(game: Game) {
     if (game.multiplayer.websocket !== null) {
         game.multiplayer.maxServerGameTime = 0;
         game.multiplayer.smoothedGameTime = 0;
+        game.realStartTime = game.multiplayer.lastRestartReceiveTime!;
+        game.state.playerInputs = game.multiplayer.cachePlayerInputs!;
     }
 }
 
@@ -76,7 +80,7 @@ export function runner(game: Game) {
         }
     } else {
         let counter = 0;
-        while (!game.state.ended && game.multiplayer.maxServerGameTime >= game.state.time + tickInterval && counter < 50) {
+        while (!game.state.ended && (game.multiplayer.maxServerGameTime >= game.state.time + tickInterval || game.state.triggerRestart) && counter < 50) {
             counter++;
             let delayDiff = game.multiplayer.delay - game.multiplayer.minDelay;
             if (timeNow < game.realStartTime + game.state.time + game.multiplayer.updateInterval + delayDiff) {
@@ -88,7 +92,11 @@ export function runner(game: Game) {
             console.log("game can not keep up");
         }
     }
+
     paintAll(game.ctx, game);
+    if(game.state.ended && game.state.triggerRestart){
+        gameRestart(game);
+    }
     setTimeout(() => runner(game), tickInterval);
 }
 
@@ -120,6 +128,7 @@ function tick(gameTimePassed: number, game: Game) {
         detectCharacterDeath(game.state.characters, game.state, game.avaialbleUpgrades);
         teleportFarEnemies(game.state.characters, game.state.randomSeed, game.state.map);
         if (gameEndedCheck(game)) endGame(game.state);
+        if (game.state.restartAfterTick) gameRestart(game);
     }
 }
 
@@ -128,7 +137,7 @@ function teleportFarEnemies(enemies: Character[], randomSeed: RandomSeed, map: G
         let closest = determineClosestCharacter(enemies[i], getPlayerCharacters(enemies));
         if (closest.minDistanceCharacter && closest.minDistance > 500) {
             let newPos = getSpawnPositionAroundPlayer(closest.minDistanceCharacter, randomSeed, map);
-            if(newPos){
+            if (newPos) {
                 enemies[i].x = newPos.x;
                 enemies[i].y = newPos.y;
             }

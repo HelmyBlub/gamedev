@@ -5,7 +5,7 @@ import { createMap, GameMap } from "./map/map.js";
 import { Player } from "./player.js";
 import { PlayerInput } from "./playerInput.js";
 import { Projectile } from "./projectile.js";
-import { RandomSeed } from "./randomNumberGenerator.js";
+import { nextRandom, RandomSeed } from "./randomNumberGenerator.js";
 
 export type Position = {
     x: number,
@@ -20,6 +20,8 @@ export type GameState = {
     killCounter: number,
     time: number;
     ended: boolean,
+    triggerRestart: boolean,
+    restartAfterTick: boolean,
     randomSeed: RandomSeed,
     playerInputs: PlayerInput[],
     highscores: Highscores,
@@ -51,6 +53,8 @@ export type Game = {
         minDelay: number,
         lastSendTime: number[],
         updateInterval: number,
+        lastRestartReceiveTime?: number,
+        cachePlayerInputs?: PlayerInput[],
     },
     avaialbleUpgrades: Map<string, UpgradeOption>,
     camera: {
@@ -60,7 +64,7 @@ export type Game = {
 }
 
 export function createDefaultGameData(c: HTMLCanvasElement, ctx: CanvasRenderingContext2D): Game {
-    return {
+    let game: Game = {
         canvasElement: c,
         ctx: ctx,
         state: {
@@ -69,6 +73,8 @@ export function createDefaultGameData(c: HTMLCanvasElement, ctx: CanvasRendering
             characters: [],
             killCounter: 0,
             ended: false,
+            triggerRestart: false,
+            restartAfterTick: false,
             time: 0,
             playerInputs: [],
             highscores: {
@@ -100,4 +106,7 @@ export function createDefaultGameData(c: HTMLCanvasElement, ctx: CanvasRendering
             type: "follow character"
         }
     }
+
+    game.state.map.seed = nextRandom(game.state.randomSeed);
+    return game;
 }

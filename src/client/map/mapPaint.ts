@@ -1,9 +1,8 @@
 import { Position } from "../gameModel.js";
-import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
 import { GameMap, TILE_VALUES } from "./map.js";
 import { createNewChunk } from "./mapGeneration.js";
 
-export function paintMap(ctx: CanvasRenderingContext2D, cameraPosition: Position, map: GameMap, randomSeed: RandomSeed) {
+export function paintMap(ctx: CanvasRenderingContext2D, cameraPosition: Position, map: GameMap) {
     let chunkSize = map.tileSize * map.chunkLength;
     let width = ctx.canvas.width;
     let height = ctx.canvas.height;
@@ -18,8 +17,7 @@ export function paintMap(ctx: CanvasRenderingContext2D, cameraPosition: Position
             let chunkJ = startChunkJ + j;
             let chunk = map.chunks[`${chunkI}_${chunkJ}`];
             if (!chunk) {
-                if (map.seed === undefined) map.seed = nextRandom(randomSeed);
-                chunk = createNewChunk(map.chunkLength, chunkI, chunkJ, map.seed);
+                chunk = createNewChunk(map.chunkLength, chunkI, chunkJ, map.seed!);
                 map.chunks[`${chunkI}_${chunkJ}`] = chunk;
             }
             let x = chunkJ * chunkSize - startX;

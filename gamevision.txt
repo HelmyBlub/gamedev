@@ -23,3 +23,12 @@ game ideas:
         - revive dead enemies
 - some upgrade system to be stronger for each new run, or for different start options
 - gathering some ressources for a upgrade system
+- multiplayer ideas:
+    - parallel mind: multiple players same character
+- middle base area ideas:
+    - "died" characters become towns people
+        - name your character at the start of a run
+        - characters rember their "death" reason and say a line like "i used to be an adventurer like you, but <death reason>"
+    - wood to build buildings, only possible before run starts
+        - buildings for permanent buffs
+            - weapon & armor building

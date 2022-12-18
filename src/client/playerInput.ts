@@ -18,7 +18,8 @@ export type ActionsPressed = {
 export type PlayerInput = {
     executeTime: number,
     command: string,
-    data: any
+    clientId?: number,
+    data?: any
 }
 
 export function createActionsPressed() {
@@ -38,10 +39,10 @@ export function keyDown(event: KeyboardEvent, game: Game) {
 
     switch (event.code) {
         case "KeyR":
-            handleCommand(game, { command: "restart" });
+            handleCommand(game, { command: "restart", clientId: game.multiplayer.myClientId });
             break;
         case "KeyT":
-            testPathing(); 
+            testPathing();
             break;
         default:
             break;
@@ -58,8 +59,12 @@ export function tickPlayerInputs(playerInputs: PlayerInput[], currentTime: numbe
             if (playerInputs[0].executeTime <= currentTime - 16) {
                 console.log("playerAction to late", currentTime - playerInputs[0].executeTime, playerInputs[0]);
             }
-            playerAction(playerInputs[0].data.clientId, playerInputs[0].data.action, playerInputs[0].data.isKeydown, game);
+            playerAction(playerInputs[0].clientId!, playerInputs[0].data.action, playerInputs[0].data.isKeydown, game);
             playerInputs.shift();
+        } else if (playerInputs[0].command === "restart") {
+            playerInputs.shift();
+            game.state.restartAfterTick = true;
+            break;
         } else {
             console.log(playerInputs[0]);
             throw new Error("invalid command in inputs");
@@ -108,7 +113,8 @@ function playerInputChangeEvent(event: KeyboardEvent, game: Game) {
             const clientId = game.clientKeyBindings[i].clientIdRef;
             handleCommand(game, {
                 command: "playerInput",
-                data: { clientId: clientId, action: action, isKeydown: isKeydown },
+                clientId: clientId,
+                data: { action: action, isKeydown: isKeydown },
             });
         }
     }

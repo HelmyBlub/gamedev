@@ -47,17 +47,17 @@ function onConnectionClose(connection: any) {
 
 function onMessage(message: any) {
     try {
-        const command = JSON.parse(message).command;
-        if (command === "restart") {
-            startTime = process.hrtime.bigint();
-        } else if (command === "playerInput") {
-            const data = JSON.parse(message);
+        const data = JSON.parse(message);
+        if (data.command === "playerInput" || data.command === "restart") {
             data.executeTime = getCurrentMS();
             message = JSON.stringify(data);
         }
         connections.forEach(function (destination: any) {
             destination.con.send(message);
         });
+        if (data.command === "restart") {
+            startTime = process.hrtime.bigint();
+        } 
     }
     catch (e) {
         console.log("message send error: " + e);

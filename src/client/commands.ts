@@ -16,10 +16,17 @@ export function executeCommand(game: Game, data: any) {
     const command = data.command;
     switch (command) {
         case "restart":
-            gameRestart(game);
+            game.state.playerInputs.push(data);
+            game.state.triggerRestart = true;
+            game.multiplayer.lastRestartReceiveTime = performance.now();
+            game.multiplayer.cachePlayerInputs = [];
             break;
         case "playerInput":
-            game.state.playerInputs.push(data);
+            if(game.state.triggerRestart){
+                game.multiplayer.cachePlayerInputs!.push(data);
+            }else{
+                game.state.playerInputs.push(data);
+            }
             break;
         case "sendGameState":
             game.state.clientIds.push(data.clientId);
