@@ -22,7 +22,7 @@ export type Character = Position & {
     spawnTime: number,
 }
 
-function createCharacter(
+export function createCharacter(
     game: Game,
     x: number,
     y: number,
@@ -57,24 +57,6 @@ export function createPlayerCharacter(game: Game, pos: Position): Character {
     return createLevelingCharacter(game, pos.x, pos.y, 10, "blue", 2, 200, 10, PLAYER_FACTION, game.state.time);
 }
 
-export function createRandomEnemy(game: Game) {
-    let maxEnemies = Math.min(Math.max(10, game.state.time / 2000), 100);
-    if (game.state.characters.length > maxEnemies) return;
-
-    let pos: Position | null = null;
-    let hpFactor = Math.pow(1.10, Math.ceil(game.state.time / 2500));
-    let hp = Math.max(1, 1 * hpFactor);
-
-    let playerCharacter = getPlayerCharacters(game.state.characters);
-
-    for (let i = 0; i < playerCharacter.length; i++) {
-        pos = getSpawnPositionAroundPlayer(playerCharacter[i], game.state.randomSeed, game.state.map);
-        if (pos) {
-            game.state.characters.push(createEnemy(game, pos.x, pos.y, hp));
-        }
-    }
-}
-
 export function getSpawnPositionAroundPlayer(playerCharacter: Character, randomSeed: RandomSeed, map: GameMap): Position | null{
     let spawnDistance = 150;
     let pos: Position = {x: 0, y:0};
@@ -89,8 +71,4 @@ export function getSpawnPositionAroundPlayer(playerCharacter: Character, randomS
         return pos;
     }
     return null;
-}
-
-function createEnemy(game: Game, x: number, y: number, hp: number): Character {
-    return createCharacter(game, x, y, 5, "black", 0.5, hp, 1, ENEMY_FACTION, true, game.state.time);
 }

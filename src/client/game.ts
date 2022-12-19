@@ -3,10 +3,9 @@ import { paintAll } from "./gamePaint.js";
 import { gameInitPlayers } from "./player.js";
 import { tickPlayerInputs } from "./playerInput.js";
 import { tickProjectiles } from "./projectile.js";
-import { Character, createRandomEnemy, getSpawnPositionAroundPlayer } from "./character/characterModel.js";
+import { Character } from "./character/characterModel.js";
 import { Position, GameState, Game } from "./gameModel.js";
-import { RandomSeed } from "./randomNumberGenerator.js";
-import { GameMap } from "./map/map.js";
+import { createRandomEnemy } from "./character/enemy/randomSpawnFollowingEnemy.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -122,26 +121,12 @@ function tick(gameTimePassed: number, game: Game) {
         game.state.time += gameTimePassed;
         tickPlayerInputs(game.state.playerInputs, game.state.time, game);
         createRandomEnemy(game);
-        tickCharacters(game.state.characters, game.state.projectiles, game.state.time, game);
+        tickCharacters(game.state.characters, game.state.projectiles, game.state.time, game, game.state.randomSeed);
         tickProjectiles(game.state.projectiles, game.state.time);
         detectProjectileToCharacterHit(game.state);
         detectCharacterDeath(game.state.characters, game.state, game.avaialbleUpgrades);
-        teleportFarEnemies(game.state.characters, game.state.randomSeed, game.state.map);
         if (gameEndedCheck(game)) endGame(game.state);
         if (game.state.restartAfterTick) gameRestart(game);
-    }
-}
-
-function teleportFarEnemies(enemies: Character[], randomSeed: RandomSeed, map: GameMap) {
-    for (let i = enemies.length - 1; i >= 0; i--) {
-        let closest = determineClosestCharacter(enemies[i], getPlayerCharacters(enemies));
-        if (closest.minDistanceCharacter && closest.minDistance > 500) {
-            let newPos = getSpawnPositionAroundPlayer(closest.minDistanceCharacter, randomSeed, map);
-            if (newPos) {
-                enemies[i].x = newPos.x;
-                enemies[i].y = newPos.y;
-            }
-        }
     }
 }
 
