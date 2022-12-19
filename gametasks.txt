@@ -1,17 +1,19 @@
 next functional tasks:
-- map tiles:
-    - destroyable tiles
-        - destroy trees to gather wood
-- improve enemies?
-    - sprites/ images
-    - less enemies but some behaviour patterns?
-    - can use abilities?
-- playerCharacters
-    - different playstyles
-    - more different upgradeOptions
-    - sprites/images for player
-- balancing
-    - maybe change to enemies get stronger the further away from middle the player is
+- change enemy spawn and behaviour 
+    - enemy has 
+        - spawn position
+        - respawn time
+        - auto aggro range, range to the player at which the enemy automatically beginns running to the player
+        - max aggro range, range to the player at which an enemey stops following
+    - spawn enemies "everywhere"
+    - enemies only run to player ones hit or ones the player is close enough
+        - enemies stop following beeing to far away from player
+    - enemies are stronger the further away from the middle they where spawned
+        - depending on the direction they can be stronger in different ways
+    - enemies can respawn, but not close to the player
+    - spawn area does not spawn enemies
+- how to spawn enemies?
+    - 
 
 next technical tasks or bugs:
 - find uses of "any" type and try to remove
@@ -21,6 +23,17 @@ next technical tasks or bugs:
 - holding key down creates a lot of keyDown events, always sending over network although nothing changed
 
 future functional tasks:
+    - map tiles:
+        - destroyable tiles
+            - destroy trees to gather wood
+    - improve enemies?
+        - sprites/ images
+        - less enemies but some behaviour patterns?
+        - can use abilities?
+    - playerCharacters
+        - different playstyles
+        - more different upgradeOptions
+        - sprites/images for player
     - procedural map generation
         - add more map features for orientation like a path
         - unity example https://gamedevacademy.org/procedural-2d-maps-unity-tutorial/

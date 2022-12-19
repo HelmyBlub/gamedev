@@ -1,5 +1,5 @@
 import { getPlayerCharacters } from "./character.js";
-import { GameState } from "../gameModel.js";
+import { Game, GameState } from "../gameModel.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
 import { Character } from "./characterModel.js";
 import { createProjectile, Projectile } from "../projectile.js";
@@ -67,9 +67,9 @@ export function levelingCharacterXpGain(state: GameState, killedCharacter: Chara
     }
 }
 
-export function tickPlayerCharacter(character: LevelingCharacter, projectiles: Projectile[], gameTime: number, randomSeed: RandomSeed) {
-    while (character.shooting.nextShotTime <= gameTime) {
-        shoot(character, projectiles, gameTime, randomSeed);
+export function tickPlayerCharacter(character: LevelingCharacter, game: Game) {
+    while (character.shooting.nextShotTime <= game.state.time) {
+        shoot(character, game.state.projectiles, game.state.time, game.state.randomSeed);
         character.shooting.nextShotTime += character.shooting.baseFrequency / character.shooting.frequencyIncrease;
     }
 }

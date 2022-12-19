@@ -1,12 +1,11 @@
-import { calculateDistance, calculateDirection } from "../../game.js";
 import { Game, Position } from "../../gameModel.js";
 import { GameMap } from "../../map/map.js";
 import { RandomSeed } from "../../randomNumberGenerator.js";
-import { getPlayerCharacters, determineClosestCharacter } from "../character.js";
+import { getPlayerCharacters, determineClosestCharacter, determineEnemyHitsPlayer, determineEnemyMoveDirection } from "../character.js";
 import { getSpawnPositionAroundPlayer, Character, createCharacter, ENEMY_FACTION } from "../characterModel.js";
-import { getNextWaypoint, PathingCache } from "../pathing.js";
+import { PathingCache } from "../pathing.js";
 
-export function createRandomEnemy(game: Game) {
+export function createRandomSpawnFollowingEnemy(game: Game) {
     let maxEnemies = Math.min(Math.max(10, game.state.time / 2000), 100);
     if (game.state.characters.length > maxEnemies) return;
 
@@ -24,12 +23,13 @@ export function createRandomEnemy(game: Game) {
     }
 }
 
-export function tickEnemyCharacter(enemy: Character, playerCharacters: Character[], map: GameMap, pathingCache: PathingCache, gameTime: number, randomSeed: RandomSeed) {
+export function tickRandomSpawnFollowingEnemyCharacter(enemy: Character, game: Game, pathingCache:PathingCache) {
+    let playerCharacters = getPlayerCharacters(game.state.characters);
     let closestPlayer = determineClosestCharacter(enemy, playerCharacters).minDistanceCharacter;
-    determineEnemyMoveDirection(enemy, closestPlayer, map, pathingCache);
+    determineEnemyMoveDirection(enemy, closestPlayer, game.state.map, pathingCache);
     determineEnemyHitsPlayer(enemy, closestPlayer);
-    increaseEnemyMovementSpeedAfterTime(enemy, gameTime);
-    teleportFarEnemy(enemy, playerCharacters, randomSeed, map);
+    increaseEnemyMovementSpeedAfterTime(enemy, game.state.time);
+    teleportFarEnemy(enemy, playerCharacters, game.state.randomSeed, game.state.map);
 }
 
 
@@ -50,29 +50,7 @@ function increaseEnemyMovementSpeedAfterTime(enemy: Character, gameTime: number)
     }
 }
 
-function determineEnemyHitsPlayer(enemy: Character, closestPlayer: Character | null) {
-    if (closestPlayer === null) return;
-
-    let distance = calculateDistance(enemy, closestPlayer);
-    if (distance <= enemy.size + closestPlayer.size) {
-        closestPlayer.hp -= enemy.damage;
-    }
-}
-
-function determineEnemyMoveDirection(enemy: Character, closestPlayer: Character | null, map: GameMap, pathingCache: PathingCache) {
-    if (closestPlayer === null) {
-        enemy.isMoving = false;
-        return;
-    }
-    enemy.isMoving = true;
-    let nextWayPoint: Position | null = getNextWaypoint(enemy, closestPlayer, map, pathingCache);
-    if (nextWayPoint === null) {
-        enemy.isMoving = false;
-        return;
-    }
-    enemy.moveDirection = calculateDirection(enemy, nextWayPoint);
-}
 
 function createEnemy(game: Game, x: number, y: number, hp: number): Character {
-    return createCharacter(game, x, y, 5, "black", 0.5, hp, 1, ENEMY_FACTION, true, game.state.time);
+    return createCharacter(game, x, y, 5, "black", 0.5, hp, 1, ENEMY_FACTION, game.state.time, "randomSpawnFollowingEnemy", true);
 }

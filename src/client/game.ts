@@ -1,11 +1,12 @@
-import { countAlivePlayerCharacters, detectCharacterDeath, determineClosestCharacter, findCharacterById, getPlayerCharacters, tickCharacters } from "./character/character.js";
+import { countAlivePlayerCharacters, detectCharacterDeath, findCharacterById, tickCharacters } from "./character/character.js";
 import { paintAll } from "./gamePaint.js";
 import { gameInitPlayers } from "./player.js";
 import { tickPlayerInputs } from "./playerInput.js";
 import { tickProjectiles } from "./projectile.js";
 import { Character } from "./character/characterModel.js";
 import { Position, GameState, Game } from "./gameModel.js";
-import { createRandomEnemy } from "./character/enemy/randomSpawnFollowingEnemy.js";
+import { createRandomSpawnFollowingEnemy } from "./character/enemy/randomSpawnFollowingEnemy.js";
+import { createFixPositionRespawnEnemy } from "./character/enemy/fixPositionRespawnEnemy.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -120,7 +121,7 @@ function tick(gameTimePassed: number, game: Game) {
     if (!game.state.ended) {
         game.state.time += gameTimePassed;
         tickPlayerInputs(game.state.playerInputs, game.state.time, game);
-        createRandomEnemy(game);
+        createFixPositionRespawnEnemy(game);
         tickCharacters(game.state.characters, game.state.projectiles, game.state.time, game, game.state.randomSeed);
         tickProjectiles(game.state.projectiles, game.state.time);
         detectProjectileToCharacterHit(game.state);

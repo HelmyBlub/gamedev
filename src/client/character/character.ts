@@ -1,13 +1,13 @@
 import { levelingCharacterXpGain, tickPlayerCharacter } from "./levelingCharacter.js";
 import { GameMap, isPositionBlocking } from "../map/map.js";
 import { Projectile } from "../projectile.js";
-import { Character, ENEMY_FACTION, PLAYER_FACTION } from "./characterModel.js";
+import { Character, CHARACTER_TYPES_STUFF, ENEMY_FACTION, PLAYER_FACTION } from "./characterModel.js";
 import { createPathingCache, getNextWaypoint, PathingCache } from "./pathing.js";
 import { LevelingCharacter, UpgradeOption } from "./levelingCharacterModel.js";
-import { calculateDistance, calculateDirection } from "../game.js";
+import { calculateDirection, calculateDistance } from "../game.js";
 import { Position, Game, GameState } from "../gameModel.js";
-import { tickEnemyCharacter } from "./enemy/randomSpawnFollowingEnemy.js";
 import { RandomSeed } from "../randomNumberGenerator.js";
+import { tickRandomSpawnFollowingEnemyCharacter } from "./enemy/randomSpawnFollowingEnemy.js";
 
 export function paintCharacters(ctx: CanvasRenderingContext2D, characters: Character[], cameraPosition: Position) {
     for (let i = 0; i < characters.length; i++) {
@@ -27,11 +27,7 @@ export function findCharacterById(characters: Character[], id: number): Characte
 export function tickCharacters(characters: Character[], projectiles: Projectile[], gameTime: number, game: Game, randomSeed: RandomSeed) {
     let pathingCache =  createPathingCache();
     for (let i = 0; i < characters.length; i++) {
-        if (characters[i].faction === PLAYER_FACTION) {
-            tickPlayerCharacter(characters[i] as LevelingCharacter, projectiles, gameTime, game.state.randomSeed);
-        } else if (characters[i].faction === ENEMY_FACTION) {
-            tickEnemyCharacter(characters[i], getPlayerCharacters(characters), game.state.map,pathingCache, gameTime, randomSeed);
-        }
+        CHARACTER_TYPES_STUFF[characters[i].type].tickFunction(characters[i], game, pathingCache);
         moveCharacterTick(characters[i], game.state.map);
     }
 }
@@ -80,6 +76,29 @@ export function countAlivePlayerCharacters(characters: Character[]) {
     return counter;
 }
 
+export function determineEnemyHitsPlayer(enemy: Character, closestPlayer: Character | null) {
+    if (closestPlayer === null) return;
+
+    let distance = calculateDistance(enemy, closestPlayer);
+    if (distance <= enemy.size + closestPlayer.size) {
+        closestPlayer.hp -= enemy.damage;
+    }
+}
+
+export function determineEnemyMoveDirection(enemy: Character, closestPlayer: Character | null, map: GameMap, pathingCache: PathingCache) {
+    if (closestPlayer === null) {
+        enemy.isMoving = false;
+        return;
+    }
+    enemy.isMoving = true;
+    let nextWayPoint: Position | null = getNextWaypoint(enemy, closestPlayer, map, pathingCache);
+    if (nextWayPoint === null) {
+        enemy.isMoving = false;
+        return;
+    }
+    enemy.moveDirection = calculateDirection(enemy, nextWayPoint);
+}
+
 function moveCharacterTick(character: Character, map: GameMap) {
     if (character.isMoving) {
         let x = character.x + Math.cos(character.moveDirection) * character.moveSpeed;
@@ -95,11 +114,15 @@ function moveCharacterTick(character: Character, map: GameMap) {
 function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position) {
     let centerX = ctx.canvas.width / 2;
     let centerY = ctx.canvas.height / 2;
+    let paintX = character.x - cameraPosition.x + centerX;
+    let paintY = character.y - cameraPosition.y + centerY;
+    if(paintX < -character.size || paintX > ctx.canvas.width 
+        || paintY < -character.size || paintY > ctx.canvas.height) return;
     ctx.fillStyle = character.color;
     ctx.beginPath();
     ctx.arc(
-        character.x - cameraPosition.x + centerX,
-        character.y - cameraPosition.y + centerY,
+        paintX,
+        paintY,
         character.size, 0, 2 * Math.PI);
     ctx.fill();
 }

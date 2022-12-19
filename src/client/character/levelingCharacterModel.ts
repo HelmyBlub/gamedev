@@ -65,6 +65,7 @@ export function createLevelingCharacter(
             multiShot: 0,
             timeToLive: 1000,
         },
+        type: "levelingCharacter",
         spawnTime: spawnTime,
     };
 }

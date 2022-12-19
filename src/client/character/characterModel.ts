@@ -2,11 +2,31 @@ import { getNextId } from "../game.js";
 import { Position, Game } from "../gameModel.js";
 import { GameMap, isPositionBlocking } from "../map/map.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
-import { getPlayerCharacters } from "./character.js";
-import { createLevelingCharacter, LevelingCharacter } from "./levelingCharacterModel.js";
+import { createFixPositionRespawnEnemy, tickFixPositionRespawnEnemyCharacter } from "./enemy/fixPositionRespawnEnemy.js";
+import { createRandomSpawnFollowingEnemy, tickRandomSpawnFollowingEnemyCharacter } from "./enemy/randomSpawnFollowingEnemy.js";
+import { tickPlayerCharacter } from "./levelingCharacter.js";
+import { createLevelingCharacter } from "./levelingCharacterModel.js";
+
+export type CHARACTER_TYPES_STUFF = {
+    [key: string]: {
+        tickFunction: Function,
+    }
+}
 
 export const PLAYER_FACTION = "player";
 export const ENEMY_FACTION = "enemy";
+export const CHARACTER_TYPES_STUFF: CHARACTER_TYPES_STUFF = {
+    fixPositionRespawnEnemy: {
+        tickFunction: tickFixPositionRespawnEnemyCharacter
+    },
+    randomSpawnFollowingEnemy: {
+        tickFunction: tickRandomSpawnFollowingEnemyCharacter
+    },
+    levelingCharacter: {
+        tickFunction: tickPlayerCharacter
+    }
+}
+
 export type Character = Position & {
     id: number,
     size: number,
@@ -20,6 +40,7 @@ export type Character = Position & {
     faction: string,
     experienceWorth: number,
     spawnTime: number,
+    type: string,
 }
 
 export function createCharacter(
@@ -32,8 +53,9 @@ export function createCharacter(
     hp: number,
     damage: number,
     faction: string,
-    isMoving: boolean = false,
     spawnTime: number,
+    type: string,
+    isMoving: boolean = false,
 ): Character {
     return {
         id: getNextId(game.state),
@@ -50,6 +72,7 @@ export function createCharacter(
         faction: faction,
         experienceWorth: 1,
         spawnTime: spawnTime,
+        type: type,
     };
 }
 

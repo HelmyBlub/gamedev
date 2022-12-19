@@ -7,7 +7,7 @@ broad game goal:
 game ideas:
 - infinite map, the further from the middle the stronger the enemies
     - different directions from the center -> different types of enemies
-    - bosses after certain amount of distance of center -> bosses give better rewards but challenging
+    - bosses after cedrtain amount of distance of center -> bosses give better rewards but challenging
     - map middle is safe area, could be a base area
 
 - a lot of different "classes" to choose from
