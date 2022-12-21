@@ -1,4 +1,4 @@
-import { getPlayerCharacters } from "./character.js";
+import { getPlayerCharacters, moveCharacterTick } from "./character.js";
 import { Game, GameState } from "../gameModel.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
 import { Character } from "./characterModel.js";
@@ -72,6 +72,7 @@ export function tickPlayerCharacter(character: LevelingCharacter, game: Game) {
         shoot(character, game.state.projectiles, game.state.time, game.state.randomSeed);
         character.shooting.nextShotTime += character.shooting.baseFrequency / character.shooting.frequencyIncrease;
     }
+    moveCharacterTick(character, game.state.map);
 }
 
 function shoot(character: LevelingCharacter, projectiles: Projectile[], gameTime: number, randomSeed: RandomSeed) {

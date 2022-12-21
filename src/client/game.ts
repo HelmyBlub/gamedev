@@ -5,7 +5,6 @@ import { tickPlayerInputs } from "./playerInput.js";
 import { tickProjectiles } from "./projectile.js";
 import { Character } from "./character/characterModel.js";
 import { Position, GameState, Game } from "./gameModel.js";
-import { createRandomSpawnFollowingEnemy } from "./character/enemy/randomSpawnFollowingEnemy.js";
 import { createFixPositionRespawnEnemy } from "./character/enemy/fixPositionRespawnEnemy.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
@@ -45,6 +44,7 @@ export function gameInit(game: Game) {
     game.realStartTime = performance.now();
     game.state.playerInputs = [];
     game.clientKeyBindings = [];
+    game.performance = {};
     gameInitPlayers(game);
     if (game.multiplayer.websocket !== null) {
         game.multiplayer.maxServerGameTime = 0;
@@ -122,7 +122,8 @@ function tick(gameTimePassed: number, game: Game) {
         game.state.time += gameTimePassed;
         tickPlayerInputs(game.state.playerInputs, game.state.time, game);
         createFixPositionRespawnEnemy(game);
-        tickCharacters(game.state.characters, game.state.projectiles, game.state.time, game, game.state.randomSeed);
+        //createRandomSpawnFollowingEnemy(game);
+        tickCharacters(game.state.characters, game);
         tickProjectiles(game.state.projectiles, game.state.time);
         detectProjectileToCharacterHit(game.state);
         detectCharacterDeath(game.state.characters, game.state, game.avaialbleUpgrades);
@@ -138,10 +139,11 @@ function detectProjectileToCharacterHit(state: GameState) {
         let projectile = state.projectiles[projIt];
         for (let charIt = characters.length - 1; charIt >= 0; charIt--) {
             let c = characters[charIt];
-            if (c.faction === projectile.faction) continue;
+            if (c.isDead || c.faction === projectile.faction) continue;
             let distance = calculateDistance(c, projectile);
             if (distance < projectile.size + c.size) {
                 c.hp -= projectile.damage;
+                c.wasHitRecently = true;
                 projectile.pierceCount--;
                 if (projectile.pierceCount < 0) break;
             }

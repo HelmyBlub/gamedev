@@ -2,8 +2,8 @@ import { getNextId } from "../game.js";
 import { Position, Game } from "../gameModel.js";
 import { GameMap, isPositionBlocking } from "../map/map.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
-import { createFixPositionRespawnEnemy, tickFixPositionRespawnEnemyCharacter } from "./enemy/fixPositionRespawnEnemy.js";
-import { createRandomSpawnFollowingEnemy, tickRandomSpawnFollowingEnemyCharacter } from "./enemy/randomSpawnFollowingEnemy.js";
+import { tickFixPositionRespawnEnemyCharacter } from "./enemy/fixPositionRespawnEnemy.js";
+import { tickRandomSpawnFollowingEnemyCharacter } from "./enemy/randomSpawnFollowingEnemy.js";
 import { tickPlayerCharacter } from "./levelingCharacter.js";
 import { createLevelingCharacter } from "./levelingCharacterModel.js";
 
@@ -39,8 +39,9 @@ export type Character = Position & {
     damage: number,
     faction: string,
     experienceWorth: number,
-    spawnTime: number,
     type: string,
+    isDead: boolean,
+    wasHitRecently?: boolean,
 }
 
 export function createCharacter(
@@ -53,7 +54,6 @@ export function createCharacter(
     hp: number,
     damage: number,
     faction: string,
-    spawnTime: number,
     type: string,
     isMoving: boolean = false,
 ): Character {
@@ -71,8 +71,8 @@ export function createCharacter(
         damage: damage,
         faction: faction,
         experienceWorth: 1,
-        spawnTime: spawnTime,
         type: type,
+        isDead: false,
     };
 }
 

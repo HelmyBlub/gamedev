@@ -1,19 +1,6 @@
 next functional tasks:
-- change enemy spawn and behaviour 
-    - enemy has 
-        - spawn position
-        - respawn time
-        - auto aggro range, range to the player at which the enemy automatically beginns running to the player
-        - max aggro range, range to the player at which an enemey stops following
-    - spawn enemies "everywhere"
-    - enemies only run to player ones hit or ones the player is close enough
-        - enemies stop following beeing to far away from player
-    - enemies are stronger the further away from the middle they where spawned
-        - depending on the direction they can be stronger in different ways
-    - enemies can respawn, but not close to the player
-    - spawn area does not spawn enemies
-- how to spawn enemies?
-    - 
+- performance improvement when too many bullets with too many enemies
+- Bug: enemies on the left running away from player instead towards him
 
 next technical tasks or bugs:
 - find uses of "any" type and try to remove
@@ -23,6 +10,7 @@ next technical tasks or bugs:
 - holding key down creates a lot of keyDown events, always sending over network although nothing changed
 
 future functional tasks:
+     - depending on the direction of start, enemies can be stronger in different ways
     - map tiles:
         - destroyable tiles
             - destroy trees to gather wood

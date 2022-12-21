@@ -66,6 +66,6 @@ export function createLevelingCharacter(
             timeToLive: 1000,
         },
         type: "levelingCharacter",
-        spawnTime: spawnTime,
+        isDead: false,
     };
 }

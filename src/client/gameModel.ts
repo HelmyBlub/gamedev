@@ -61,6 +61,9 @@ export type Game = {
         type: string,
         characterId?: number,
     }
+    performance: {
+        [key: string]: any,
+    }
 }
 
 export function createDefaultGameData(c: HTMLCanvasElement, ctx: CanvasRenderingContext2D): Game {
@@ -104,7 +107,8 @@ export function createDefaultGameData(c: HTMLCanvasElement, ctx: CanvasRendering
         avaialbleUpgrades: createDefaultUpgradeOptions(),
         camera: {
             type: "follow character"
-        }
+        },
+        performance:{},
     }
 
     game.state.map.seed = nextRandom(game.state.randomSeed);
