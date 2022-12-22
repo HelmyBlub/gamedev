@@ -1,6 +1,7 @@
 next functional tasks:
 - performance improvement when too many bullets with too many enemies
 - Bug: enemies on the left running away from player instead towards him
+- Bug: enemy size not used for determineCharactersInDistance, but is relevant
 
 next technical tasks or bugs:
 - find uses of "any" type and try to remove

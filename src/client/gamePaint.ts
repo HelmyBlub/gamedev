@@ -1,4 +1,4 @@
-import { findCharacterById, paintCharacters } from "./character/character.js";
+import { getPlayerCharacters, paintCharacters } from "./character/character.js";
 import { LevelingCharacter } from "./character/levelingCharacterModel.js";
 import { getCameraPosition } from "./game.js";
 import { Game, Position, Highscores } from "./gameModel.js";
@@ -8,22 +8,22 @@ import { paintProjectiles } from "./projectile.js";
 
 export function paintAll(ctx: CanvasRenderingContext2D, game: Game) {
     let cameraPosition: Position = getCameraPosition(game);
-    paintMap(ctx, cameraPosition, game.state.map);
-    paintCharacters(ctx, game.state.characters, cameraPosition);
+    paintMap(ctx, cameraPosition, game.state.map, game.state.idCounter);
+    paintCharacters(ctx, getPlayerCharacters(game.state.players), cameraPosition);
     paintProjectiles(ctx, game.state.projectiles, cameraPosition);
     paintKillCounter(ctx, game.state.killCounter);
     if (game.state.ended) {
         paintHighscoreBoard(game.ctx, game.state.highscores);
     } else {
         if (game.multiplayer.myClientId !== -1) {
-            let player = findPlayerById(game.state.players, game.multiplayer.myClientId)
+            let player = findPlayerById(game.state.players, game.multiplayer.myClientId);
             if (player === null) return;
-            let character = findCharacterById(game.state.characters, player.characterIdRef);
+            let character = player.character;
             if (character !== null) paintPlayerStats(ctx, character as LevelingCharacter, game.state.time);
             ctx.fillText("Ping: " + Math.round(game.multiplayer.delay), 10, 40);
 
         } else {
-            paintPlayerStats(ctx, game.state.characters[0] as LevelingCharacter, game.state.time);
+            paintPlayerStats(ctx, game.state.players[0].character as LevelingCharacter, game.state.time);
         }
     }
 }

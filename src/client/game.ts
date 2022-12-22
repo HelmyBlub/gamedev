@@ -1,11 +1,12 @@
-import { countAlivePlayerCharacters, detectCharacterDeath, findCharacterById, tickCharacters } from "./character/character.js";
+import { countAlivePlayerCharacters, detectCharacterDeath, determineCharactersInDistance, findCharacterById, getPlayerCharacters, tickCharacters, tickMapCharacters } from "./character/character.js";
 import { paintAll } from "./gamePaint.js";
 import { gameInitPlayers } from "./player.js";
 import { tickPlayerInputs } from "./playerInput.js";
 import { Projectile, tickProjectiles } from "./projectile.js";
 import { Character } from "./character/characterModel.js";
-import { Position, GameState, Game } from "./gameModel.js";
-import { createFixPositionRespawnEnemy } from "./character/enemy/fixPositionRespawnEnemy.js";
+import { Position, GameState, Game, IdCounter } from "./gameModel.js";
+import { createFixPositionRespawnEnemies } from "./character/enemy/fixPositionRespawnEnemy.js";
+import { GameMap } from "./map/map.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -24,8 +25,8 @@ export function calculateDirection(startPos: Position, targetPos: Position): num
     return direction;
 }
 
-export function getNextId(state: GameState) {
-    return state.idCounter++;
+export function getNextId(idCounter: IdCounter) {
+    return idCounter.nextId++;
 }
 
 export function gameRestart(game: Game) {
@@ -34,7 +35,6 @@ export function gameRestart(game: Game) {
 
 export function gameInit(game: Game) {
     game.state.projectiles = [];
-    game.state.characters = [];
     game.state.players = [];
     game.state.killCounter = 0;
     game.state.ended = false;
@@ -45,6 +45,7 @@ export function gameInit(game: Game) {
     game.state.playerInputs = [];
     game.clientKeyBindings = [];
     game.performance = {};
+    removeAllMapCharacters(game.state.map);
     gameInitPlayers(game);
     if (game.multiplayer.websocket !== null) {
         game.multiplayer.maxServerGameTime = 0;
@@ -57,7 +58,7 @@ export function gameInit(game: Game) {
 export function getCameraPosition(game: Game): Position {
     let cameraPosition: Position = { x: 0, y: 0 };
     if (game.camera.characterId !== undefined) {
-        let character = findCharacterById(game.state.characters, game.camera.characterId);
+        let character = findCharacterById(getPlayerCharacters(game.state.players), game.camera.characterId);
         if (character !== null) cameraPosition = character;
     }
 
@@ -94,14 +95,21 @@ export function runner(game: Game) {
     }
 
     paintAll(game.ctx, game);
-    if(game.state.ended && game.state.triggerRestart){
+    if (game.state.ended && game.state.triggerRestart) {
         gameRestart(game);
     }
     setTimeout(() => runner(game), tickInterval);
 }
 
+function removeAllMapCharacters(map: GameMap) {
+    let key = Object.keys(map.chunks);
+    for (let i = 0; i < key.length; i++) {
+        map.chunks[key[i]].characters = [];
+    }
+}
+
 function gameEndedCheck(game: Game) {
-    let alivePlayersCount = countAlivePlayerCharacters(game.state.characters)
+    let alivePlayersCount = countAlivePlayerCharacters(game.state.players)
     if (alivePlayersCount === 0) {
         return true;
     }
@@ -121,20 +129,21 @@ function tick(gameTimePassed: number, game: Game) {
     if (!game.state.ended) {
         game.state.time += gameTimePassed;
         tickPlayerInputs(game.state.playerInputs, game.state.time, game);
-        createFixPositionRespawnEnemy(game);
         //createRandomSpawnFollowingEnemy(game);
-        tickCharacters(game.state.characters, game);
+        tickMapCharacters(game.state.map, game);
+        tickCharacters(getPlayerCharacters(game.state.players),game);
         tickProjectiles(game.state.projectiles, game.state.time);
-        detectProjectileToCharacterHit(game.state.characters, game.state.projectiles);
-        detectCharacterDeath(game.state.characters, game.state, game.avaialbleUpgrades);
+        detectProjectileToCharacterHit(game.state.map, game.state.projectiles);
+        detectCharacterDeath(game.state.map, game.state, game.avaialbleUpgrades);
         if (gameEndedCheck(game)) endGame(game.state);
         if (game.state.restartAfterTick) gameRestart(game);
     }
 }
 
-export function detectProjectileToCharacterHit(characters: Character[], projectiles: Projectile[]) {
+export function detectProjectileToCharacterHit(map: GameMap, projectiles: Projectile[]) {
     for (let projIt = 0; projIt < projectiles.length; projIt++) {
         let projectile = projectiles[projIt];
+        let characters = determineCharactersInDistance(projectile, map, projectile.size + 100);
         for (let charIt = characters.length - 1; charIt >= 0; charIt--) {
             let c = characters[charIt];
             if (c.isDead || c.faction === projectile.faction) continue;

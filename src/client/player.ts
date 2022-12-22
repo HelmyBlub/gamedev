@@ -1,18 +1,18 @@
 import { Character, createPlayerCharacter } from "./character/characterModel.js";
-import { Game, Position } from "./gameModel.js";
+import { Game, IdCounter, Position } from "./gameModel.js";
 import { findNearNonBlockingPosition } from "./map/map.js";
 import { ActionsPressed, createActionsPressed } from "./playerInput.js";
 
 export type Player = {
-    characterIdRef: number,
+    character: Character,
     clientId: number,
     actionsPressed: ActionsPressed,
 }
 
-export function createPlayer(clientId: number, characterId: number): Player {
+export function createPlayer(clientId: number, character: Character): Player {
     return {
         clientId: clientId,
-        characterIdRef: characterId,
+        character: character,
         actionsPressed: createActionsPressed(),
     }
 }
@@ -30,24 +30,24 @@ export function createDefaultKeyBindings1() {
     return keyBindings;
 }
 
-function addPlayer(game: Game, clientId: number, characters: Character[], players: Player[], pos: Position) {
-    characters.push(createPlayerCharacter(game, pos));
-    players.push(createPlayer(clientId, characters[characters.length - 1].id));
+function addPlayer(idCounter: IdCounter, clientId: number, players: Player[], pos: Position) {
+    let character = createPlayerCharacter(idCounter, pos);
+    players.push(createPlayer(clientId, character));
 }
 
 export function gameInitPlayers(game: Game) {
     let numberPlayers = Math.max(game.state.clientIds.length, 1);
     for (let i = 0; i < numberPlayers; i++) {
         let playerSpawn: Position = { x: 100, y: 100 + i * 50 };
-        playerSpawn = findNearNonBlockingPosition(playerSpawn, game.state.map);
+        playerSpawn = findNearNonBlockingPosition(playerSpawn, game.state.map, game.state.idCounter);
 
-        addPlayer(game, game.state.clientIds[i], game.state.characters, game.state.players, playerSpawn);
+        addPlayer(game.state.idCounter, game.state.clientIds[i], game.state.players, playerSpawn);
         if (game.multiplayer.myClientId === -1 || game.multiplayer.myClientId === game.state.clientIds[i]) {
             game.clientKeyBindings.push({
                 clientIdRef: game.multiplayer.myClientId,
                 keyCodeToActionPressed: createDefaultKeyBindings1()
             });
-            game.camera.characterId = game.state.characters[game.state.characters.length - 1].id;
+            game.camera.characterId = game.state.players[i].character.id;
         }
     }
 }

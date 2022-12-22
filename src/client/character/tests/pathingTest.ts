@@ -1,9 +1,9 @@
-import { Position } from "../../gameModel.js";
+import { Game, IdCounter, Position } from "../../gameModel.js";
 import { createMap, findNearNonBlockingPosition, GameMap } from "../../map/map.js";
 import { nextRandom, RandomSeed } from "../../randomNumberGenerator.js";
 import { createPathingCache, getNextWaypoint } from "../pathing.js";
 
-export function testPathing(){
+export function testPathing() {
     console.log("started test");
     testPathingNotEndInInfiniteLoop();
     testPathingPerformance();
@@ -21,54 +21,56 @@ function testPathingPerformance() {
     let iterations = 3000;
     let numberEnemies = 100;
     let numberPlayers = 2;
-    let randomSeed: RandomSeed = {seed: 0};
+    let randomSeed: RandomSeed = { seed: 0 };
     let width = 24 * map.tileSize;
     let height = 12 * map.tileSize;
     let pathingCache = createPathingCache();
+    let idCounter = { nextId: 0 };
     map.seed = 0;
 
-    let sourcePositions = createRandomPositions(numberEnemies, randomSeed, width, height, map);
-    let targetPositions = createRandomPositions(numberPlayers, randomSeed, width, height, map);
+    let sourcePositions = createRandomPositions(numberEnemies, randomSeed, width, height, map, idCounter);
+    let targetPositions = createRandomPositions(numberPlayers, randomSeed, width, height, map, idCounter);
 
     let startTime = performance.now();
     for (let i = 0; i < iterations; i++) {
-        getNextWaypoint(sourcePositions[i%numberEnemies], targetPositions[i%numberPlayers], map, pathingCache);
+        getNextWaypoint(sourcePositions[i % numberEnemies], targetPositions[i % numberPlayers], map, pathingCache, idCounter);
     }
     let time = performance.now() - startTime;
     console.log("time", time / iterations, time);
 }
 
 function testPathingNotEndInInfiniteLoop() {
+    let idCounter = { nextId: 0 };
     let map: GameMap = createMap();
-    map.chunks["0_0"] =[
-        [0,0,0,0,0,0,0,0],
-        [1,1,0,0,0,0,0,0],
-        [1,0,0,0,0,0,0,0],
-        [1,1,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0]
+    map.chunks["0_0"].tiles = [
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [1, 1, 0, 0, 0, 0, 0, 0],
+        [1, 0, 0, 0, 0, 0, 0, 0],
+        [1, 1, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0]
     ];
     let pathingCache = createPathingCache();
     map.seed = 0;
 
     let sourcePositions: Position[] = [];
-    sourcePositions.push({ x:  2 * map.tileSize, y: 2 * map.tileSize });
-    sourcePositions.push({ x:  1 * map.tileSize, y: 2 * map.tileSize });
+    sourcePositions.push({ x: 2 * map.tileSize, y: 2 * map.tileSize });
+    sourcePositions.push({ x: 1 * map.tileSize, y: 2 * map.tileSize });
 
-    let targetPosition:Position = { x:  5 * map.tileSize, y: 5 * map.tileSize };
+    let targetPosition: Position = { x: 5 * map.tileSize, y: 5 * map.tileSize };
 
     for (let i = 0; i < sourcePositions.length; i++) {
-        getNextWaypoint( sourcePositions[i], targetPosition, map, pathingCache);
+        getNextWaypoint(sourcePositions[i], targetPosition, map, pathingCache, idCounter);
     }
 }
 
-function createRandomPositions(amount: number, randomSeed: RandomSeed, width: number, height: number, map: GameMap): Position[] {
+function createRandomPositions(amount: number, randomSeed: RandomSeed, width: number, height: number, map: GameMap, idCounter: IdCounter): Position[] {
     let positions: Position[] = [];
     for (let i = 0; i < amount; i++) {
         let tempPos = { x: nextRandom(randomSeed) * width, y: nextRandom(randomSeed) * height };
-        tempPos = findNearNonBlockingPosition(tempPos, map);
+        tempPos = findNearNonBlockingPosition(tempPos, map, idCounter);
         positions.push(tempPos);
     }
     return positions;

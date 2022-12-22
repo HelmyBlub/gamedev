@@ -34,7 +34,7 @@ function createGame(canvasElementId: string) {
     c.width = window.innerWidth - 2;
 
     gameInit(game);
-    game.state.characters[0].isDead = true;
+    game.state.players[0].character.isDead = true;
     runner(game);
 
     websocketConnect(game);

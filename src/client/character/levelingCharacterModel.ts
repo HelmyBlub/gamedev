@@ -1,5 +1,5 @@
 import { getNextId } from "../game.js";
-import { Game } from "../gameModel.js";
+import { Game, IdCounter } from "../gameModel.js";
 import { Character } from "./characterModel.js";
 
 export type LevelingCharacter = Character & {
@@ -26,7 +26,7 @@ export type UpgradeOption = {
 }
 
 export function createLevelingCharacter(
-    game: Game,
+    idCounter: IdCounter,
     x: number,
     y: number,
     size: number,
@@ -38,7 +38,7 @@ export function createLevelingCharacter(
     isMoving: boolean = false,
 ): LevelingCharacter {
     return {
-        id: getNextId(game.state),
+        id: getNextId(idCounter),
         x: x,
         y: y,
         size: size,

@@ -1,5 +1,5 @@
 import { calculateDistance } from "../game.js";
-import { Position } from "../gameModel.js";
+import { IdCounter, Position } from "../gameModel.js";
 import { GameMap, isPositionBlocking } from "../map/map.js";
 
 export type PathingCache = {
@@ -21,8 +21,9 @@ export function getNextWaypoint(
     targetPos: Position,
     map: GameMap,
     pathingCache: PathingCache | null = null,
+    idCounter: IdCounter
 ): Position | null {
-    if(isPositionBlocking(sourcePos, map)){
+    if(isPositionBlocking(sourcePos, map, idCounter)){
         throw new Error("idiot, can't find way to a blocking position");
     }
     let targetIJ: Position = calculatePosToTileIJ(sourcePos, map);
@@ -76,7 +77,7 @@ export function getNextWaypoint(
             return { x: lastPosition.x * map.tileSize + map.tileSize / 2, y: lastPosition.y * map.tileSize + map.tileSize / 2 };
         }
 
-        let neighborsIJ = getPathNeighborsIJ(currentNode, map);
+        let neighborsIJ = getPathNeighborsIJ(currentNode, map, idCounter);
         for (let i = 0; i < neighborsIJ.length; i++) {
             let currentNodKey: string = `${currentNode.x}_${currentNode.y}`;
             let neighborKey = `${neighborsIJ[i].x}_${neighborsIJ[i].y}`;
@@ -95,52 +96,52 @@ export function getNextWaypoint(
     return null;
 }
 
-function getPathNeighborsIJ(posIJ: Position, map: GameMap): Position[] {
+function getPathNeighborsIJ(posIJ: Position, map: GameMap, idCounter: IdCounter): Position[] {
     let result: Position[] = [];
     let top, bottom, left, right: boolean = false;
 
 
     let tempIJ = { x: posIJ.x, y: posIJ.y - 1 };
-    if (!isPositionBlocking({ x: tempIJ.x * map.tileSize, y: tempIJ.y * map.tileSize }, map)) {
+    if (!isPositionBlocking({ x: tempIJ.x * map.tileSize, y: tempIJ.y * map.tileSize }, map, idCounter)) {
         top = true;
         result.push(tempIJ);
     }
     tempIJ = { x: posIJ.x, y: posIJ.y + 1 };
-    if (!isPositionBlocking({ x: tempIJ.x * map.tileSize, y: tempIJ.y * map.tileSize }, map)) {
+    if (!isPositionBlocking({ x: tempIJ.x * map.tileSize, y: tempIJ.y * map.tileSize }, map, idCounter)) {
         bottom = true;
         result.push(tempIJ);
     }
     tempIJ = { x: posIJ.x - 1, y: posIJ.y };
-    if (!isPositionBlocking({ x: tempIJ.x * map.tileSize, y: tempIJ.y * map.tileSize }, map)) {
+    if (!isPositionBlocking({ x: tempIJ.x * map.tileSize, y: tempIJ.y * map.tileSize }, map, idCounter)) {
         left = true;
         result.push(tempIJ);
     }
     tempIJ = { x: posIJ.x + 1, y: posIJ.y };
-    if (!isPositionBlocking({ x: tempIJ.x * map.tileSize, y: tempIJ.y * map.tileSize }, map)) {
+    if (!isPositionBlocking({ x: tempIJ.x * map.tileSize, y: tempIJ.y * map.tileSize }, map, idCounter)) {
         right = true;
         result.push(tempIJ);
     }
     if (top && right) {
         tempIJ = { x: posIJ.x + 1, y: posIJ.y - 1 };
-        if (!isPositionBlocking({ x: tempIJ.x * map.tileSize, y: tempIJ.y * map.tileSize }, map)) {
+        if (!isPositionBlocking({ x: tempIJ.x * map.tileSize, y: tempIJ.y * map.tileSize }, map, idCounter)) {
             result.push(tempIJ);
         }
     }
     if (right && bottom) {
         tempIJ = { x: posIJ.x + 1, y: posIJ.y + 1 };
-        if (!isPositionBlocking({ x: tempIJ.x * map.tileSize, y: tempIJ.y * map.tileSize }, map)) {
+        if (!isPositionBlocking({ x: tempIJ.x * map.tileSize, y: tempIJ.y * map.tileSize }, map, idCounter)) {
             result.push(tempIJ);
         }
     }
     if (bottom && left) {
         tempIJ = { x: posIJ.x - 1, y: posIJ.y + 1 };
-        if (!isPositionBlocking({ x: tempIJ.x * map.tileSize, y: tempIJ.y * map.tileSize }, map)) {
+        if (!isPositionBlocking({ x: tempIJ.x * map.tileSize, y: tempIJ.y * map.tileSize }, map, idCounter)) {
             result.push(tempIJ);
         }
     }
     if (left && top) {
         tempIJ = { x: posIJ.x - 1, y: posIJ.y - 1 };
-        if (!isPositionBlocking({ x: tempIJ.x * map.tileSize, y: tempIJ.y * map.tileSize }, map)) {
+        if (!isPositionBlocking({ x: tempIJ.x * map.tileSize, y: tempIJ.y * map.tileSize }, map, idCounter)) {
             result.push(tempIJ);
         }
     }

@@ -1,6 +1,6 @@
 import { calculateDistance, getCameraPosition, getNextId } from "../../game.js";
-import { Game, Position } from "../../gameModel.js";
-import { isPositionBlocking } from "../../map/map.js";
+import { Game, IdCounter, Position } from "../../gameModel.js";
+import { GameMap, isPositionBlocking, MapChunk } from "../../map/map.js";
 import { determineCharactersInDistance, determineClosestCharacter, determineEnemyHitsPlayer, determineEnemyMoveDirection, findCharacterById, getPlayerCharacters, moveCharacterTick } from "../character.js";
 import { Character, createCharacter } from "../characterModel.js";
 import { PathingCache } from "../pathing.js";
@@ -24,60 +24,40 @@ type CreatedEnemiesForChunk = {
     }
 }
 
-export function createFixPositionRespawnEnemy(game: Game) {
-    let performanceKey = "FixPositionRespawnEnemy";
-    let createdEnemiesForChunk: CreatedEnemiesForChunk;
-    if (game.performance[performanceKey] !== undefined) {
-        createdEnemiesForChunk = game.performance[performanceKey];
-    } else {
-        createdEnemiesForChunk = {
-            nextEnemyCreateTime: game.state.time,
-            enemyCreateInterval: 250,
-            chunks: {},
-        }
-        game.performance[performanceKey] = createdEnemiesForChunk;
-        determineChunksWithAlreadCreatedEnemies(game, createdEnemiesForChunk);
+export function createFixPositionRespawnEnemies(chunk: MapChunk, chunkI: number, chunkJ: number, map: GameMap, idCounter: IdCounter) {
+    if(chunk.characters.length > 0){
+        console.log("unexpected existence of characers in mapChunk", chunk, chunkI, chunkJ);
     }
-    if (createdEnemiesForChunk.nextEnemyCreateTime > game.state.time) return;
-    createdEnemiesForChunk.nextEnemyCreateTime = game.state.time + createdEnemiesForChunk.enemyCreateInterval;
 
-    let mapCenter = {x:0, y:0};
-    let map = game.state.map;
     let chunkSize = map.tileSize * map.chunkLength;
+    let mapCenter = {x:0, y:0};
     let minSpawnDistanceFromMapCenter = 400;
 
-    let mapKeys = Object.keys(map.chunks);
-    for (let mapIndex = 0; mapIndex < mapKeys.length; mapIndex++) {
-        let key = mapKeys[mapIndex];
-        if(createdEnemiesForChunk.chunks[key] === true) continue;
-        createdEnemiesForChunk.chunks[key] = true;
-        let topLeftMapKeyPos: Position = {
-            x: Number.parseInt(key.split('_')[0]) * chunkSize,
-            y: Number.parseInt(key.split('_')[1]) * chunkSize
-        }
-        let centerMapKeyPos: Position = {
-            x: topLeftMapKeyPos.x + chunkSize / 2,
-            y: topLeftMapKeyPos.y + chunkSize / 2
-        }
-        let distance = calculateDistance(mapCenter, centerMapKeyPos);
-        if (minSpawnDistanceFromMapCenter < distance) {
-            let chunk = map.chunks[key];
-            for (let i = 0; i < chunk.length; i++) {
-                for (let j = 0; j < chunk[i].length; j++) {
-                    let enemyPos: Position = {
-                        x: topLeftMapKeyPos.x + j * map.tileSize + map.tileSize / 2,
-                        y: topLeftMapKeyPos.y + i * map.tileSize + map.tileSize / 2
-                    }
-                    distance = calculateDistance(mapCenter, enemyPos);
-                    if (minSpawnDistanceFromMapCenter < distance) {
-                        if (!isPositionBlocking(enemyPos, map)) {
-                            let strenghFaktor = Math.max((distance - 100) / 100, 1);
-                            let hp = 1 * strenghFaktor;
-                            let moveSpeed = 1 + (Math.log10(strenghFaktor)/10);
-                            let size = 5 + Math.log10(strenghFaktor);
-                            let damage = 1 + Math.log10(strenghFaktor);
-                            game.state.characters.push(createEnemy(game, enemyPos.x, enemyPos.y, size, moveSpeed, hp, damage));
-                        }
+    let topLeftMapKeyPos: Position = {
+        x: chunkJ * chunkSize,
+        y: chunkI * chunkSize
+    }
+    let centerMapKeyPos: Position = {
+        x: topLeftMapKeyPos.x + chunkSize / 2,
+        y: topLeftMapKeyPos.y + chunkSize / 2
+    }
+    let distance = calculateDistance(mapCenter, centerMapKeyPos);
+    if (minSpawnDistanceFromMapCenter < distance) {
+        for (let i = 0; i < chunk.tiles.length; i++) {
+            for (let j = 0; j < chunk.tiles[i].length; j++) {
+                let enemyPos: Position = {
+                    x: topLeftMapKeyPos.x + j * map.tileSize + map.tileSize / 2,
+                    y: topLeftMapKeyPos.y + i * map.tileSize + map.tileSize / 2
+                }
+                distance = calculateDistance(mapCenter, enemyPos);
+                if (minSpawnDistanceFromMapCenter < distance) {
+                    if (!isPositionBlocking(enemyPos, map, idCounter)) {
+                        let strenghFaktor = Math.max((distance - 100) / 100, 1);
+                        let hp = 1 * strenghFaktor;
+                        let moveSpeed = 1 + (Math.log10(strenghFaktor)/10);
+                        let size = 5 + Math.log10(strenghFaktor);
+                        let damage = 1 + Math.log10(strenghFaktor);
+                        chunk.characters.push(createEnemy(idCounter, enemyPos.x, enemyPos.y, size, moveSpeed, hp, damage));
                     }
                 }
             }
@@ -94,7 +74,7 @@ export function tickFixPositionRespawnEnemyCharacter(enemy: FixPositionRespawnEn
         respawnLogic(enemy, game);
     } else {
         if (!enemy.nextTickTime || game.state.time >= enemy.nextTickTime || enemy.wasHitRecently) {
-            let playerCharacters = getPlayerCharacters(game.state.characters, game.state.players.length);
+            let playerCharacters = getPlayerCharacters(game.state.players);
             let closest = determineClosestCharacter(enemy, playerCharacters);
             let aggroed = closest.minDistance <= enemy.autoAggroRange
                 || (enemy.isAggroed && closest.minDistance <= enemy.maxAggroRange)
@@ -104,53 +84,27 @@ export function tickFixPositionRespawnEnemyCharacter(enemy: FixPositionRespawnEn
                 if (enemy.wasHitRecently) {
                     alertCloseEnemies(enemy, game);
                 }
-                determineEnemyMoveDirection(enemy, closest.minDistanceCharacter, game.state.map, pathingCache);
+                determineEnemyMoveDirection(enemy, closest.minDistanceCharacter, game.state.map, pathingCache, game.state.idCounter);
                 determineEnemyHitsPlayer(enemy, closest.minDistanceCharacter);
             } else {
                 let spawnDistance = calculateDistance(enemy, enemy.spawnPosition);
                 enemy.isAggroed = false;
                 if (spawnDistance > game.state.map.tileSize / 2) {
-                    determineEnemyMoveDirection(enemy, enemy.spawnPosition, game.state.map, pathingCache);
+                    determineEnemyMoveDirection(enemy, enemy.spawnPosition, game.state.map, pathingCache, game.state.idCounter);
                 } else {
                     enemy.nextTickTime = game.state.time + closest.minDistance;
                     enemy.isMoving = false;
                 }
             }
-            moveCharacterTick(enemy, game.state.map);
+            moveCharacterTick(enemy, game.state.map, game.state.idCounter);
             if (enemy.wasHitRecently) delete enemy.wasHitRecently;
-        }
-    }
-}
-
-function determineChunksWithAlreadCreatedEnemies(game: Game, createdEnemiesForChunk: CreatedEnemiesForChunk) {
-    let mapKeys = Object.keys(game.state.map.chunks);
-    let chunkSize = game.state.map.tileSize * game.state.map.chunkLength;
-    let characters = game.state.characters;
-    for (let mapIndex = 0; mapIndex < mapKeys.length; mapIndex++) {
-        let key = mapKeys[mapIndex];
-        for (let charIndex = 0; charIndex < characters.length; charIndex++) {
-            if(characters[charIndex].type === "fixPositionRespawnEnemy"){
-                let char = characters[charIndex] as FixPositionRespawnEnemyCharacter;
-                let topLeftMapKeyPos: Position = {
-                    x: Number.parseInt(key.split('_')[0]) * chunkSize,
-                    y: Number.parseInt(key.split('_')[1]) * chunkSize
-                }
-                if(char.spawnPosition.x > topLeftMapKeyPos.x 
-                    && char.spawnPosition.x < topLeftMapKeyPos.x + chunkSize
-                    && char.spawnPosition.y > topLeftMapKeyPos.y
-                    && char.spawnPosition.y < topLeftMapKeyPos.y + chunkSize
-                ){
-                    createdEnemiesForChunk.chunks[key] = true;
-                    break;
-                }
-            }
         }
     }
 }
 
 function alertCloseEnemies(enemy: FixPositionRespawnEnemyCharacter, game: Game) {
     if (enemy.alertEnemyRange === undefined) return;
-    let charactersInDistance = determineCharactersInDistance(enemy, game.state.characters, enemy.alertEnemyRange);
+    let charactersInDistance = determineCharactersInDistance(enemy, game.state.map, enemy.alertEnemyRange);
 
     for (let i = 0; i < charactersInDistance.length; i++) {
         if (charactersInDistance[i].type === enemy.type) {
@@ -166,7 +120,7 @@ function respawnLogic(enemy: FixPositionRespawnEnemyCharacter, game: Game) {
     if (!enemy.respawnOnTime) {
         enemy.respawnOnTime = game.state.time + enemy.respawnTime;
     } else if (enemy.respawnOnTime <= game.state.time) {
-        let closest = determineClosestCharacterToEnemySpawn(enemy, getPlayerCharacters(game.state.characters, game.state.players.length));
+        let closest = determineClosestCharacterToEnemySpawn(enemy, getPlayerCharacters(game.state.players));
         if (closest.minDistance > 500) {
             resetEnemy(enemy);
         }
@@ -196,7 +150,7 @@ function resetEnemy(enemy: FixPositionRespawnEnemyCharacter) {
 }
 
 function createEnemy(
-    game: Game,
+    idCounter: IdCounter,
     x: number,
     y: number,
     size: number,
@@ -204,7 +158,7 @@ function createEnemy(
     hp: number,
     damage: number
 ): FixPositionRespawnEnemyCharacter {
-    let enemy = createCharacter(getNextId(game.state), x, y, size, "black", moveSpeed, hp, damage, "enemy", "fixPositionRespawnEnemy");
+    let enemy = createCharacter(getNextId(idCounter), x, y, size, "black", moveSpeed, hp, damage, "enemy", "fixPositionRespawnEnemy");
     return {
         ...enemy,
         autoAggroRange: 200,

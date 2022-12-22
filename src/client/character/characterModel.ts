@@ -1,5 +1,5 @@
 import { getNextId } from "../game.js";
-import { Position, Game } from "../gameModel.js";
+import { Position, Game, IdCounter } from "../gameModel.js";
 import { GameMap, isPositionBlocking } from "../map/map.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
 import { tickFixPositionRespawnEnemyCharacter } from "./enemy/fixPositionRespawnEnemy.js";
@@ -76,11 +76,11 @@ export function createCharacter(
     };
 }
 
-export function createPlayerCharacter(game: Game, pos: Position): Character {
-    return createLevelingCharacter(game, pos.x, pos.y, 10, "blue", 2, 200, 10, PLAYER_FACTION);
+export function createPlayerCharacter(idCounter: IdCounter, pos: Position): Character {
+    return createLevelingCharacter(idCounter, pos.x, pos.y, 10, "blue", 2, 200, 10, PLAYER_FACTION);
 }
 
-export function getSpawnPositionAroundPlayer(playerCharacter: Character, randomSeed: RandomSeed, map: GameMap): Position | null{
+export function getSpawnPositionAroundPlayer(playerCharacter: Character, randomSeed: RandomSeed, map: GameMap, idCounter: IdCounter): Position | null{
     let spawnDistance = 150;
     let pos: Position = {x: 0, y:0};
     if (nextRandom(randomSeed) < 0.5) {
@@ -90,7 +90,7 @@ export function getSpawnPositionAroundPlayer(playerCharacter: Character, randomS
         pos.x = playerCharacter.x + (nextRandom(randomSeed) - 0.5) * spawnDistance * 2;
         pos.y = playerCharacter.y + (Math.round(nextRandom(randomSeed)) * 2 - 1) * spawnDistance;
     }
-    if (!isPositionBlocking(pos, map)) {
+    if (!isPositionBlocking(pos, map, idCounter)) {
         return pos;
     }
     return null;

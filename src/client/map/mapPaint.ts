@@ -1,8 +1,9 @@
-import { Position } from "../gameModel.js";
-import { GameMap, TILE_VALUES } from "./map.js";
+import { paintCharacters } from "../character/character.js";
+import { IdCounter, Position } from "../gameModel.js";
+import { GameMap, MapChunk, TILE_VALUES } from "./map.js";
 import { createNewChunk } from "./mapGeneration.js";
 
-export function paintMap(ctx: CanvasRenderingContext2D, cameraPosition: Position, map: GameMap) {
+export function paintMap(ctx: CanvasRenderingContext2D, cameraPosition: Position, map: GameMap, idCounter: IdCounter) {
     let chunkSize = map.tileSize * map.chunkLength;
     let width = ctx.canvas.width;
     let height = ctx.canvas.height;
@@ -17,25 +18,25 @@ export function paintMap(ctx: CanvasRenderingContext2D, cameraPosition: Position
             let chunkJ = startChunkJ + j;
             let chunk = map.chunks[`${chunkI}_${chunkJ}`];
             if (!chunk) {
-                chunk = createNewChunk(map.chunkLength, chunkI, chunkJ, map.seed!);
-                map.chunks[`${chunkI}_${chunkJ}`] = chunk;
+                chunk = createNewChunk(map, chunkI, chunkJ, idCounter);                
             }
             let x = chunkJ * chunkSize - startX;
             let y = chunkI * chunkSize - startY;
-            paintChunk(ctx, { x, y }, chunk, map.tileSize, {x: chunkJ, y: chunkI});
+            paintChunk(ctx, { x, y }, chunk, map.tileSize, {x: chunkJ, y: chunkI},cameraPosition);
         }
     }
 }
 
-function paintChunk(ctx: CanvasRenderingContext2D, paintTopLeftPosition: Position, chunk: number[][], tileSize: number, chunkIJ: Position) {
+function paintChunk(ctx: CanvasRenderingContext2D, paintTopLeftPosition: Position, chunk: MapChunk, tileSize: number, chunkIJ: Position, cameraPosition: Position) {
     if (chunk) {
-        for (let i = 0; i < chunk.length; i++) {
-            for (let j = 0; j < chunk[i].length; j++) {
+        for (let i = 0; i < chunk.tiles.length; i++) {
+            for (let j = 0; j < chunk.tiles[i].length; j++) {
                 let x = paintTopLeftPosition.x + j * tileSize;
                 let y = paintTopLeftPosition.y + i * tileSize;
-                paintTile(ctx, { x, y }, tileSize, chunk[i][j], {x:chunkIJ.x * chunk.length + j, y:chunkIJ.y * chunk.length + i});
+                paintTile(ctx, { x, y }, tileSize, chunk.tiles[i][j], {x:chunkIJ.x * chunk.tiles.length + j, y:chunkIJ.y * chunk.tiles.length + i});
             }
         }
+        paintCharacters(ctx, chunk.characters, cameraPosition);
     }
 }
 

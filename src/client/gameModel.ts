@@ -1,4 +1,3 @@
-import { Character } from "./character/characterModel.js";
 import { createDefaultUpgradeOptions } from "./character/levelingCharacter.js";
 import { UpgradeOption } from "./character/levelingCharacterModel.js";
 import { createMap, GameMap } from "./map/map.js";
@@ -12,9 +11,12 @@ export type Position = {
     y: number
 }
 
+export type IdCounter = {
+    nextId: number
+}
+
 export type GameState = {
-    idCounter: number,
-    characters: Character[],
+    idCounter: IdCounter,
     projectiles: Projectile[],
     players: Player[],
     killCounter: number,
@@ -71,9 +73,8 @@ export function createDefaultGameData(c: HTMLCanvasElement, ctx: CanvasRendering
         canvasElement: c,
         ctx: ctx,
         state: {
-            idCounter: 0,
+            idCounter: {nextId: 0},
             projectiles: [],
-            characters: [],
             killCounter: 0,
             ended: false,
             triggerRestart: false,

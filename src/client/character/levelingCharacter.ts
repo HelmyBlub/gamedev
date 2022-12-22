@@ -56,7 +56,7 @@ export function createDefaultUpgradeOptions(): Map<string, UpgradeOption> {
 }
 
 export function levelingCharacterXpGain(state: GameState, killedCharacter: Character, upgradeOptions: Map<string, UpgradeOption>) {
-    let playerCharacters: LevelingCharacter[] = getPlayerCharacters(state.characters, state.players.length) as LevelingCharacter[];
+    let playerCharacters: LevelingCharacter[] = getPlayerCharacters(state.players) as LevelingCharacter[];
     for (let i = 0; i < playerCharacters.length; i++) {
         if (playerCharacters[i].experience !== undefined) {
             playerCharacters[i].experience += killedCharacter.experienceWorth;
@@ -72,7 +72,7 @@ export function tickPlayerCharacter(character: LevelingCharacter, game: Game) {
         shoot(character, game.state.projectiles, game.state.time, game.state.randomSeed);
         character.shooting.nextShotTime += character.shooting.baseFrequency / character.shooting.frequencyIncrease;
     }
-    moveCharacterTick(character, game.state.map);
+    moveCharacterTick(character, game.state.map, game.state.idCounter);
 }
 
 function shoot(character: LevelingCharacter, projectiles: Projectile[], gameTime: number, randomSeed: RandomSeed) {

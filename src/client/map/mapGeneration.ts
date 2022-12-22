@@ -1,4 +1,15 @@
-export function createNewChunk(chunkLength: number, chunkI: number, chunkJ: number, seed: number): number[][] {
+import { createFixPositionRespawnEnemies } from "../character/enemy/fixPositionRespawnEnemy.js";
+import { IdCounter } from "../gameModel.js";
+import { GameMap, MapChunk } from "./map.js";
+
+export function createNewChunk(map: GameMap, chunkI: number, chunkJ: number, idCounter: IdCounter): MapChunk{
+    let newChunk = { tiles:createNewChunkTiles(map.chunkLength, chunkI, chunkJ, map.seed!), characters: []};
+    map.chunks[`${chunkI}_${chunkJ}`] = newChunk;
+    createFixPositionRespawnEnemies(newChunk, chunkI, chunkJ, map, idCounter);
+    return newChunk;
+}
+
+function createNewChunkTiles(chunkLength: number, chunkI: number, chunkJ: number, seed: number): number[][] {
     let chunk: number[][] = [];
     for (let i = 0; i < chunkLength; i++) {
         chunk.push([]);

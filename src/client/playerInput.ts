@@ -1,4 +1,3 @@
-import { findCharacterById } from "./character/character.js";
 import { handleCommand } from "./commands.js";
 import { fillRandomUpgradeOptions } from "./character/levelingCharacter.js";
 import { findPlayerById } from "./player.js";
@@ -6,8 +5,6 @@ import { Character } from "./character/characterModel.js";
 import { LevelingCharacter, UpgradeOption } from "./character/levelingCharacterModel.js";
 import { Game } from "./gameModel.js";
 import { RandomSeed } from "./randomNumberGenerator.js";
-import { testPathing } from "./character/tests/pathingTest.js";
-import { testCharacter } from "./character/tests/characterTest.js";
 import { testGame } from "./gameTest.js";
 
 export const MOVE_ACTIONS = ["left", "down", "right", "up"];
@@ -128,8 +125,7 @@ function playerInputChangeEvent(event: KeyboardEvent, game: Game) {
 function playerAction(clientId: number, action: string, isKeydown: boolean, game: Game) {
     const player = findPlayerById(game.state.players, clientId);
     if (player === null) return;
-    let character = findCharacterById(game.state.characters, player.characterIdRef);
-    if (character === null) return;
+    let character = player.character;
 
     if (action !== undefined) {
         if (MOVE_ACTIONS.indexOf(action) !== -1) {
