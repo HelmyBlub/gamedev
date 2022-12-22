@@ -56,7 +56,7 @@ export function createDefaultUpgradeOptions(): Map<string, UpgradeOption> {
 }
 
 export function levelingCharacterXpGain(state: GameState, killedCharacter: Character, upgradeOptions: Map<string, UpgradeOption>) {
-    let playerCharacters: LevelingCharacter[] = getPlayerCharacters(state.characters) as LevelingCharacter[];
+    let playerCharacters: LevelingCharacter[] = getPlayerCharacters(state.characters, state.players.length) as LevelingCharacter[];
     for (let i = 0; i < playerCharacters.length; i++) {
         if (playerCharacters[i].experience !== undefined) {
             playerCharacters[i].experience += killedCharacter.experienceWorth;

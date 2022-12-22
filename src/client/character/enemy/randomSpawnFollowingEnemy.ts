@@ -1,3 +1,4 @@
+import { getNextId } from "../../game.js";
 import { Game, Position } from "../../gameModel.js";
 import { GameMap } from "../../map/map.js";
 import { RandomSeed } from "../../randomNumberGenerator.js";
@@ -17,7 +18,7 @@ export function createRandomSpawnFollowingEnemy(game: Game) {
     let hpFactor = Math.pow(1.10, Math.ceil(game.state.time / 2500));
     let hp = Math.max(1, 1 * hpFactor);
 
-    let playerCharacter = getPlayerCharacters(game.state.characters);
+    let playerCharacter = getPlayerCharacters(game.state.characters, game.state.players.length);
 
     for (let i = 0; i < playerCharacter.length; i++) {
         pos = getSpawnPositionAroundPlayer(playerCharacter[i], game.state.randomSeed, game.state.map);
@@ -31,7 +32,7 @@ export function tickRandomSpawnFollowingEnemyCharacter(enemy: RandomSpawnFollowi
     if(enemy.isDead){
         removeEnemy(enemy, game.state.characters);
     } else {
-        let playerCharacters = getPlayerCharacters(game.state.characters);
+        let playerCharacters = getPlayerCharacters(game.state.characters, game.state.players.length);
         let closestPlayer = determineClosestCharacter(enemy, playerCharacters).minDistanceCharacter;
         determineEnemyMoveDirection(enemy, closestPlayer, game.state.map, pathingCache);
         determineEnemyHitsPlayer(enemy, closestPlayer);
@@ -69,7 +70,7 @@ function increaseEnemyMovementSpeedAfterTime(enemy: RandomSpawnFollowingEnemyCha
 }
 
 function createEnemy(game: Game, x: number, y: number, hp: number): RandomSpawnFollowingEnemyCharacter {
-    let enemy: Character = createCharacter(game, x, y, 5, "black", 0.5, hp, 1, ENEMY_FACTION, "randomSpawnFollowingEnemy", true);
+    let enemy: Character = createCharacter(getNextId(game.state), x, y, 5, "black", 0.5, hp, 1, ENEMY_FACTION, "randomSpawnFollowingEnemy", true);
     let randomEnemy = {...enemy, spawnTime: game.state.time};
     
     return randomEnemy;

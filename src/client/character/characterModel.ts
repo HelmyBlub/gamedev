@@ -45,7 +45,7 @@ export type Character = Position & {
 }
 
 export function createCharacter(
-    game: Game,
+    id: number,
     x: number,
     y: number,
     size: number,
@@ -58,7 +58,7 @@ export function createCharacter(
     isMoving: boolean = false,
 ): Character {
     return {
-        id: getNextId(game.state),
+        id: id,
         x: x,
         y: y,
         size: size,
@@ -77,7 +77,7 @@ export function createCharacter(
 }
 
 export function createPlayerCharacter(game: Game, pos: Position): Character {
-    return createLevelingCharacter(game, pos.x, pos.y, 10, "blue", 2, 200, 10, PLAYER_FACTION, game.state.time);
+    return createLevelingCharacter(game, pos.x, pos.y, 10, "blue", 2, 200, 10, PLAYER_FACTION);
 }
 
 export function getSpawnPositionAroundPlayer(playerCharacter: Character, randomSeed: RandomSeed, map: GameMap): Position | null{

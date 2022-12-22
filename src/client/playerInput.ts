@@ -7,6 +7,8 @@ import { LevelingCharacter, UpgradeOption } from "./character/levelingCharacterM
 import { Game } from "./gameModel.js";
 import { RandomSeed } from "./randomNumberGenerator.js";
 import { testPathing } from "./character/tests/pathingTest.js";
+import { testCharacter } from "./character/tests/characterTest.js";
+import { testGame } from "./gameTest.js";
 
 export const MOVE_ACTIONS = ["left", "down", "right", "up"];
 export const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3"];
@@ -42,7 +44,10 @@ export function keyDown(event: KeyboardEvent, game: Game) {
             handleCommand(game, { command: "restart", clientId: game.multiplayer.myClientId });
             break;
         case "KeyT":
-            testPathing();
+            testGame();
+            break;
+        case "KeyP":
+            game.multiplayer.websocket?.close();
             break;
         default:
             break;

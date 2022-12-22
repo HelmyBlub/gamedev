@@ -35,7 +35,6 @@ export function createLevelingCharacter(
     hp: number,
     damage: number,
     faction: string,
-    spawnTime: number,
     isMoving: boolean = false,
 ): LevelingCharacter {
     return {

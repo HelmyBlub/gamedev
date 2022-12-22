@@ -2,7 +2,7 @@ import { countAlivePlayerCharacters, detectCharacterDeath, findCharacterById, ti
 import { paintAll } from "./gamePaint.js";
 import { gameInitPlayers } from "./player.js";
 import { tickPlayerInputs } from "./playerInput.js";
-import { tickProjectiles } from "./projectile.js";
+import { Projectile, tickProjectiles } from "./projectile.js";
 import { Character } from "./character/characterModel.js";
 import { Position, GameState, Game } from "./gameModel.js";
 import { createFixPositionRespawnEnemy } from "./character/enemy/fixPositionRespawnEnemy.js";
@@ -125,18 +125,16 @@ function tick(gameTimePassed: number, game: Game) {
         //createRandomSpawnFollowingEnemy(game);
         tickCharacters(game.state.characters, game);
         tickProjectiles(game.state.projectiles, game.state.time);
-        detectProjectileToCharacterHit(game.state);
+        detectProjectileToCharacterHit(game.state.characters, game.state.projectiles);
         detectCharacterDeath(game.state.characters, game.state, game.avaialbleUpgrades);
         if (gameEndedCheck(game)) endGame(game.state);
         if (game.state.restartAfterTick) gameRestart(game);
     }
 }
 
-function detectProjectileToCharacterHit(state: GameState) {
-    let characters: Character[] = state.characters;
-
-    for (let projIt = 0; projIt < state.projectiles.length; projIt++) {
-        let projectile = state.projectiles[projIt];
+export function detectProjectileToCharacterHit(characters: Character[], projectiles: Projectile[]) {
+    for (let projIt = 0; projIt < projectiles.length; projIt++) {
+        let projectile = projectiles[projIt];
         for (let charIt = characters.length - 1; charIt >= 0; charIt--) {
             let c = characters[charIt];
             if (c.isDead || c.faction === projectile.faction) continue;

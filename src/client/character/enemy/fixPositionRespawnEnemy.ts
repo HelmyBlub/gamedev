@@ -94,7 +94,7 @@ export function tickFixPositionRespawnEnemyCharacter(enemy: FixPositionRespawnEn
         respawnLogic(enemy, game);
     } else {
         if (!enemy.nextTickTime || game.state.time >= enemy.nextTickTime || enemy.wasHitRecently) {
-            let playerCharacters = getPlayerCharacters(game.state.characters);
+            let playerCharacters = getPlayerCharacters(game.state.characters, game.state.players.length);
             let closest = determineClosestCharacter(enemy, playerCharacters);
             let aggroed = closest.minDistance <= enemy.autoAggroRange
                 || (enemy.isAggroed && closest.minDistance <= enemy.maxAggroRange)
@@ -166,7 +166,7 @@ function respawnLogic(enemy: FixPositionRespawnEnemyCharacter, game: Game) {
     if (!enemy.respawnOnTime) {
         enemy.respawnOnTime = game.state.time + enemy.respawnTime;
     } else if (enemy.respawnOnTime <= game.state.time) {
-        let closest = determineClosestCharacterToEnemySpawn(enemy, getPlayerCharacters(game.state.characters));
+        let closest = determineClosestCharacterToEnemySpawn(enemy, getPlayerCharacters(game.state.characters, game.state.players.length));
         if (closest.minDistance > 500) {
             resetEnemy(enemy);
         }
@@ -204,7 +204,7 @@ function createEnemy(
     hp: number,
     damage: number
 ): FixPositionRespawnEnemyCharacter {
-    let enemy = createCharacter(game, x, y, size, "black", moveSpeed, hp, damage, "enemy", "fixPositionRespawnEnemy");
+    let enemy = createCharacter(getNextId(game.state), x, y, size, "black", moveSpeed, hp, damage, "enemy", "fixPositionRespawnEnemy");
     return {
         ...enemy,
         autoAggroRange: 200,

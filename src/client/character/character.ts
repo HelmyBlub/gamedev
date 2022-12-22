@@ -28,11 +28,14 @@ export function tickCharacters(characters: Character[], game: Game) {
     }
 }
 
-export function getPlayerCharacters(characters: Character[]) {
+export function getPlayerCharacters(characters: Character[], numberExistingPlayers: number) {
     let playerCharacters = [];
     for (let i = 0; i < characters.length; i++) {
         if (characters[i].faction === PLAYER_FACTION) {
             playerCharacters.push(characters[i]);
+            if(playerCharacters.length === numberExistingPlayers){
+                break;
+            }
         }
     }
     return playerCharacters;
