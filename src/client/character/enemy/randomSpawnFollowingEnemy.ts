@@ -1,6 +1,6 @@
 import { getNextId } from "../../game.js";
 import { Game, IdCounter, Position } from "../../gameModel.js";
-import { GameMap } from "../../map/map.js";
+import { addEnemyToMap, GameMap } from "../../map/map.js";
 import { RandomSeed } from "../../randomNumberGenerator.js";
 import { getPlayerCharacters, determineClosestCharacter, determineEnemyHitsPlayer, determineEnemyMoveDirection, moveCharacterTick } from "../character.js";
 import { getSpawnPositionAroundPlayer, Character, createCharacter, ENEMY_FACTION } from "../characterModel.js";
@@ -23,7 +23,7 @@ export function createRandomSpawnFollowingEnemy(game: Game) {
     for (let i = 0; i < playerCharacter.length; i++) {
         pos = getSpawnPositionAroundPlayer(playerCharacter[i], game.state.randomSeed, game.state.map, game.state.idCounter);
         if (pos) {
-            game.state.characters.push(createEnemy(game, pos.x, pos.y, hp));
+            addEnemyToMap(game.state.map, createEnemy(game, pos.x, pos.y, hp));
         }
     }
 }

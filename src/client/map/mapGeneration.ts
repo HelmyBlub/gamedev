@@ -9,7 +9,7 @@ export function createNewChunk(map: GameMap, chunkI: number, chunkJ: number, idC
     return newChunk;
 }
 
-function createNewChunkTiles(chunkLength: number, chunkI: number, chunkJ: number, seed: number): number[][] {
+export function createNewChunkTiles(chunkLength: number, chunkI: number, chunkJ: number, seed: number): number[][] {
     let chunk: number[][] = [];
     for (let i = 0; i < chunkLength; i++) {
         chunk.push([]);

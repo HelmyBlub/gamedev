@@ -30,7 +30,7 @@ export type GameMap = {
     tileSize: number,
     chunkLength: number,
     activeChunkKeys: string[],
-    chunks: {[key:string]: MapChunk},
+    chunks: { [key: string]: MapChunk },
 }
 
 export function createMap(): GameMap {
@@ -42,7 +42,7 @@ export function createMap(): GameMap {
     }
 }
 
-export function addEnemyToMap(map: GameMap, character: Character){
+export function addEnemyToMap(map: GameMap, character: Character) {
     let chunkSize = map.tileSize * map.chunkLength;
     let chunkI = Math.floor(character.y / chunkSize);
     let chunkJ = Math.floor(character.x / chunkSize);
@@ -77,6 +77,11 @@ export function findNearNonBlockingPosition(pos: Position, map: GameMap, idCount
     }
 
     return currentPosition;
+}
+
+export function positionToMapKey(pos: Position, map: GameMap): string {
+    let chunkSize = map.tileSize * map.chunkLength;
+    return `${Math.floor(pos.y / chunkSize)}_${Math.floor(pos.x / chunkSize)}`;
 }
 
 function getMapTile(pos: Position, map: GameMap, idCounter: IdCounter): MapTile {

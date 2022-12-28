@@ -24,13 +24,15 @@ export function findCharacterById(characters: Character[], id: number): Characte
 
 export function tickMapCharacters(map: GameMap, game: Game) {
     let pathingCache = createPathingCache();
+    let allCharacters: Character[] = [];
     for (let i = 0; i < map.activeChunkKeys.length; i++) {
         let chunk = map.chunks[map.activeChunkKeys[i]];
-        tickCharacters(chunk.characters, game, pathingCache);
+        allCharacters = allCharacters.concat(chunk.characters);
     }
+    tickCharacters(allCharacters, game, pathingCache);
 }
 
-export function tickCharacters(characters: Character[], game: Game, pathingCache: PathingCache | null = null){
+export function tickCharacters(characters: Character[], game: Game, pathingCache: PathingCache | null = null) {
     for (let j = characters.length - 1; j >= 0; j--) {
         CHARACTER_TYPES_STUFF[characters[j].type].tickFunction(characters[j], game, pathingCache);
     }
@@ -64,7 +66,7 @@ export function determineCharactersInDistance(position: Position, map: GameMap, 
 
     for (let i = 0; i < mapKeysInDistance.length; i++) {
         let chunk = map.chunks[mapKeysInDistance[i]];
-        if(chunk === undefined) continue;
+        if (chunk === undefined) continue;
         let characters: Character[] = chunk.characters;
         for (let j = 0; j < characters.length; j++) {
             let distance = calculateDistance(position, characters[j]);
@@ -76,7 +78,7 @@ export function determineCharactersInDistance(position: Position, map: GameMap, 
     return result;
 }
 
-function determineMapKeysInDistance(position: Position, map: GameMap, maxDistance: number): string[] {
+export function determineMapKeysInDistance(position: Position, map: GameMap, maxDistance: number, addNotCreatedChunkKeys: boolean = true): string[] {
     let chunkSize = map.tileSize * map.chunkLength;
     let maxChunks = Math.ceil(maxDistance / chunkSize);
     let result: string[] = [];
@@ -84,6 +86,7 @@ function determineMapKeysInDistance(position: Position, map: GameMap, maxDistanc
         for (let j = - maxChunks; j <= maxChunks; j++) {
             let chunkI = Math.floor(position.y / chunkSize) + i;
             let chunkJ = Math.floor(position.x / chunkSize) + j;
+            if (!addNotCreatedChunkKeys && map.chunks[`${chunkI}_${chunkJ}`] === undefined) continue;
             let distance = calculateDistanceToMapChunk(chunkI, chunkJ, position, map);
             if (distance <= maxDistance) {
                 result.push(`${chunkI}_${chunkJ}`);
@@ -97,35 +100,35 @@ function calculateDistanceToMapChunk(chunkI: number, chunkJ: number, position: P
     let chunkSize = map.tileSize * map.chunkLength;
     let topChunk = chunkI * chunkSize;
     let leftChunk = chunkJ * chunkSize;
-    if (leftChunk <= position.y && leftChunk + chunkSize > position.y) {
-        if (topChunk + chunkSize > position.x) {
-            if (topChunk <= position.x) {
+    if (leftChunk <= position.x && leftChunk + chunkSize > position.x) {
+        if (topChunk + chunkSize > position.y) {
+            if (topChunk <= position.y) {
                 return 0;
             } else {
-                return topChunk - position.x;
+                return topChunk - position.y;
             }
         } else {
-            return position.x - topChunk + chunkSize;
+            return position.y - topChunk + chunkSize;
         }
-    } else if (topChunk <= position.x && topChunk + chunkSize > position.x) {
-        if (leftChunk + chunkSize > position.y) {
-            if (leftChunk <= position.y) {
+    } else if (topChunk <= position.y && topChunk + chunkSize > position.y) {
+        if (leftChunk + chunkSize > position.x) {
+            if (leftChunk <= position.x) {
                 return 0;
             } else {
-                return leftChunk - position.y;
+                return leftChunk - position.x;
             }
         } else {
-            return position.y - leftChunk + chunkSize;
+            return position.x - leftChunk + chunkSize;
         }
     } else {
-        if(topChunk > position.x && leftChunk > position.y){
-            return calculateDistance(position, {x:leftChunk, y: topChunk});
-        }else if(topChunk + chunkSize <= position.x && leftChunk > position.y){
-            return calculateDistance(position, {x:leftChunk + chunkSize, y: topChunk});
-        }else if(topChunk > position.x && leftChunk + chunkSize <= position.y){
-            return calculateDistance(position, {x:leftChunk, y: topChunk + chunkSize});
-        }else{
-            return calculateDistance(position, {x:leftChunk + chunkSize, y: topChunk + chunkSize});
+        if (topChunk > position.y && leftChunk > position.x) {
+            return calculateDistance(position, { x: leftChunk, y: topChunk });
+        } else if (topChunk + chunkSize <= position.y && leftChunk > position.x) {
+            return calculateDistance(position, { x: leftChunk, y: topChunk + chunkSize});
+        } else if (topChunk > position.y && leftChunk + chunkSize <= position.x) {
+            return calculateDistance(position, { x: leftChunk + chunkSize, y: topChunk});
+        } else {
+            return calculateDistance(position, { x: leftChunk + chunkSize, y: topChunk + chunkSize });
         }
     }
 }
@@ -141,6 +144,12 @@ export function detectCharacterDeath(map: GameMap, state: GameState, upgradeOpti
                 }
                 chunk.characters[charIt].isDead = true;
             }
+        }
+    }
+    for (let i = 0; i < state.players.length; i++) {
+        let char = state.players[i].character;        
+        if (char.hp <= 0 && !char.isDead) {
+            char.isDead = true;
         }
     }
 }
@@ -176,12 +185,25 @@ export function determineEnemyMoveDirection(enemy: Character, closestPlayerPosit
     enemy.moveDirection = calculateDirection(enemy, nextWayPoint);
 }
 
-export function moveCharacterTick(character: Character, map: GameMap, idCounter: IdCounter) {
+export function moveCharacterTick(character: Character, map: GameMap, idCounter: IdCounter, isPlayer: boolean) {
     if (character.isMoving) {
         let x = character.x + Math.cos(character.moveDirection) * character.moveSpeed;
         let y = character.y + Math.sin(character.moveDirection) * character.moveSpeed;
         let blocking = isPositionBlocking({ x, y }, map, idCounter);
         if (!blocking) {
+            if(!isPlayer){
+                let currentChunkI = Math.floor(character.y / (map.tileSize * map.chunkLength));
+                let newChunkI = Math.floor(y / (map.tileSize * map.chunkLength));
+                let currentChunkJ = Math.floor(character.x / (map.tileSize * map.chunkLength));
+                let newChunkJ = Math.floor(x / (map.tileSize * map.chunkLength));
+                if(currentChunkI !== newChunkI || currentChunkJ !== newChunkJ){
+                    let currentChunkKey = `${currentChunkI}_${currentChunkJ}`;
+                    let newChunkKey = `${newChunkI}_${newChunkJ}`;
+                    map.chunks[currentChunkKey].characters = map.chunks[currentChunkKey].characters.filter( el => el !== character );
+                    map.chunks[newChunkKey].characters.push(character);
+                }
+            }
+
             character.x = x;
             character.y = y;
         }
@@ -195,7 +217,7 @@ function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cam
     let paintX = character.x - cameraPosition.x + centerX;
     let paintY = character.y - cameraPosition.y + centerY;
     if (paintX < -character.size || paintX > ctx.canvas.width
-        || paintY < -character.size || paintY > ctx.canvas.height) return;
+      || paintY < -character.size || paintY > ctx.canvas.height) return;
     ctx.fillStyle = character.color;
     ctx.beginPath();
     ctx.arc(

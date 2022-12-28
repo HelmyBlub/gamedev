@@ -1,6 +1,7 @@
-import { Character, createCharacter, ENEMY_FACTION, PLAYER_FACTION } from "./character/characterModel.js";
+import { createCharacter, ENEMY_FACTION, PLAYER_FACTION } from "./character/characterModel.js";
 import { detectProjectileToCharacterHit } from "./game.js";
-import { addEnemyToMap, createMap, GameMap } from "./map/map.js";
+import { addEnemyToMap, createMap, GameMap, MapChunk } from "./map/map.js";
+import { createNewChunkTiles } from "./map/mapGeneration.js";
 import { createProjectile, Projectile } from "./projectile.js";
 import { nextRandom, RandomSeed } from "./randomNumberGenerator.js";
 
@@ -10,7 +11,7 @@ export function testGame() {
 
 
 function createTestCharacter(id: number, x: number, y: number) {
-    return createCharacter(id, x, y, 5, "black", 0.5, 1, 1, ENEMY_FACTION, "randomSpawnFollowingEnemy", true);
+    return createCharacter(id, x, y, 5, "black", 0.5, 1000, 1, ENEMY_FACTION, "randomSpawnFollowingEnemy", true);
 }
 
 function createTestProjectiles(x: number, y: number, pierceCount: number = 10, timeToLive: number = 1000) {
@@ -18,17 +19,20 @@ function createTestProjectiles(x: number, y: number, pierceCount: number = 10, t
 }
 
 
-// time 4520 4520, firefox
+// time 4520 4520, firefox, only 1 iteration
+// time 2.566000000005588 256.6000000005588, firefox, 100 iterations, 
 function testDetectProjectileToCharacterHitPerformance() {
-    let iterations = 1;
+    let iterations = 100;
     let numberEnemies = 1000000;
     let numberProjectiles = 100;
     let projectiles: Projectile[] = [];
-    let enemies: Character[] = [];
     let map: GameMap = createMap();
     let randomSeed: RandomSeed = { seed: 0 };
     for (let i = 0; i < numberEnemies; i++) {
-        addEnemyToMap(map, createTestCharacter(i, nextRandom(randomSeed) * 10000, nextRandom(randomSeed) * 10000));
+        let posX = nextRandom(randomSeed) * 10000;
+        let posY = nextRandom(randomSeed) * 10000;
+        createNewChunk(map, Math.floor(posY/(map.tileSize*map.chunkLength)), Math.floor(posX/(map.tileSize*map.chunkLength)));
+        addEnemyToMap(map, createTestCharacter(i, posX, posY));
     }
     for (let i = 0; i < numberProjectiles; i++) {
         projectiles.push(createTestProjectiles(nextRandom(randomSeed) * 200, nextRandom(randomSeed) * 200));
@@ -40,4 +44,11 @@ function testDetectProjectileToCharacterHitPerformance() {
     }
     let time = performance.now() - startTime;
     console.log("time", time / iterations, time);
+}
+
+function createNewChunk(map: GameMap, chunkI: number, chunkJ: number){
+    let key = `${chunkI}_${chunkJ}`;
+    if(map.chunks[key] !== undefined) return;
+    let newChunk = { tiles:createNewChunkTiles(map.chunkLength, chunkI, chunkJ, map.seed!), characters: []};
+    map.chunks[key] = newChunk;
 }

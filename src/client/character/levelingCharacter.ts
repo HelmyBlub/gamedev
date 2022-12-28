@@ -1,9 +1,10 @@
-import { getPlayerCharacters, moveCharacterTick } from "./character.js";
+import { determineMapKeysInDistance, getPlayerCharacters, moveCharacterTick } from "./character.js";
 import { Game, GameState } from "../gameModel.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
 import { Character } from "./characterModel.js";
 import { createProjectile, Projectile } from "../projectile.js";
 import { LevelingCharacter, UpgradeOption } from "./levelingCharacterModel.js";
+import { GameMap } from "../map/map.js";
 
 export function fillRandomUpgradeOptions(character: LevelingCharacter, randomSeed: RandomSeed, upgradeOptions: Map<string, UpgradeOption>) {
     if (character.upgradeOptions.length === 0) {
@@ -72,7 +73,13 @@ export function tickPlayerCharacter(character: LevelingCharacter, game: Game) {
         shoot(character, game.state.projectiles, game.state.time, game.state.randomSeed);
         character.shooting.nextShotTime += character.shooting.baseFrequency / character.shooting.frequencyIncrease;
     }
-    moveCharacterTick(character, game.state.map, game.state.idCounter);
+    moveCharacterTick(character, game.state.map, game.state.idCounter, true);
+    determineNearChunksForActiveChunk(character, game.state.map);
+}
+
+function determineNearChunksForActiveChunk(character: LevelingCharacter, map: GameMap){
+    let nearMapKeys = determineMapKeysInDistance(character, map, 1000, false);
+    map.activeChunkKeys = nearMapKeys;
 }
 
 function shoot(character: LevelingCharacter, projectiles: Projectile[], gameTime: number, randomSeed: RandomSeed) {

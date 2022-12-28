@@ -1,7 +1,11 @@
 next functional tasks:
 - performance improvement when too many bullets with too many enemies
+    - map.activeChunkKeys need to be determined
+        - if an enemy is aggroed in a chunk, it should be active
 - Bug: enemies on the left running away from player instead towards him
 - Bug: enemy size not used for determineCharactersInDistance, but is relevant
+- mapPainting should not create Enemies and MapTiles as painting is not synced with clients
+- Bug: infinte pathing problem if enemy surounded by blocking tiles
 
 next technical tasks or bugs:
 - find uses of "any" type and try to remove

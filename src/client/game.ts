@@ -3,9 +3,8 @@ import { paintAll } from "./gamePaint.js";
 import { gameInitPlayers } from "./player.js";
 import { tickPlayerInputs } from "./playerInput.js";
 import { Projectile, tickProjectiles } from "./projectile.js";
-import { Character } from "./character/characterModel.js";
 import { Position, GameState, Game, IdCounter } from "./gameModel.js";
-import { createFixPositionRespawnEnemies } from "./character/enemy/fixPositionRespawnEnemy.js";
+import { createFixPositionRespawnEnemiesOnInit } from "./character/enemy/fixPositionRespawnEnemy.js";
 import { GameMap } from "./map/map.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
@@ -46,6 +45,7 @@ export function gameInit(game: Game) {
     game.clientKeyBindings = [];
     game.performance = {};
     removeAllMapCharacters(game.state.map);
+    createFixPositionRespawnEnemiesOnInit(game);
     gameInitPlayers(game);
     if (game.multiplayer.websocket !== null) {
         game.multiplayer.maxServerGameTime = 0;

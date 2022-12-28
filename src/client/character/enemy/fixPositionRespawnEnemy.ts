@@ -1,6 +1,6 @@
-import { calculateDistance, getCameraPosition, getNextId } from "../../game.js";
+import { calculateDistance, getNextId } from "../../game.js";
 import { Game, IdCounter, Position } from "../../gameModel.js";
-import { GameMap, isPositionBlocking, MapChunk } from "../../map/map.js";
+import { GameMap, isPositionBlocking, MapChunk, positionToMapKey } from "../../map/map.js";
 import { determineCharactersInDistance, determineClosestCharacter, determineEnemyHitsPlayer, determineEnemyMoveDirection, findCharacterById, getPlayerCharacters, moveCharacterTick } from "../character.js";
 import { Character, createCharacter } from "../characterModel.js";
 import { PathingCache } from "../pathing.js";
@@ -16,11 +16,16 @@ export type FixPositionRespawnEnemyCharacter = Character & {
     respawnTime: number,
 }
 
-type CreatedEnemiesForChunk = {
-    nextEnemyCreateTime: number,
-    enemyCreateInterval: number,
-    chunks: {
-        [key: string]: boolean,
+export function createFixPositionRespawnEnemiesOnInit(game: Game){
+    let map = game.state.map;
+    let existingMapKeys = Object.keys(map.chunks);
+    for(let i = 0; i< existingMapKeys.length; i++){
+        let chunk = map.chunks[existingMapKeys[i]];
+        if(chunk.characters.length === 0){
+            let chunkI = parseInt(existingMapKeys[i].split("_")[0]);
+            let chunkJ = parseInt(existingMapKeys[i].split("_")[1]);        
+            createFixPositionRespawnEnemies(chunk, chunkI, chunkJ, map, game.state.idCounter);
+        }
     }
 }
 
@@ -96,7 +101,7 @@ export function tickFixPositionRespawnEnemyCharacter(enemy: FixPositionRespawnEn
                     enemy.isMoving = false;
                 }
             }
-            moveCharacterTick(enemy, game.state.map, game.state.idCounter);
+            moveCharacterTick(enemy, game.state.map, game.state.idCounter, false);
             if (enemy.wasHitRecently) delete enemy.wasHitRecently;
         }
     }
@@ -122,7 +127,7 @@ function respawnLogic(enemy: FixPositionRespawnEnemyCharacter, game: Game) {
     } else if (enemy.respawnOnTime <= game.state.time) {
         let closest = determineClosestCharacterToEnemySpawn(enemy, getPlayerCharacters(game.state.players));
         if (closest.minDistance > 500) {
-            resetEnemy(enemy);
+            resetEnemy(enemy, game.state.map);
         }
     }
 }
@@ -141,9 +146,15 @@ function determineClosestCharacterToEnemySpawn(character: FixPositionRespawnEnem
     return { minDistanceCharacter, minDistance };
 }
 
-function resetEnemy(enemy: FixPositionRespawnEnemyCharacter) {
+function resetEnemy(enemy: FixPositionRespawnEnemyCharacter, map: GameMap) {
     enemy.hp = enemy.maxHp;
     enemy.isDead = false;
+    let deathMapChunkKey = positionToMapKey(enemy, map);
+    let spawnMapChunkKey = positionToMapKey(enemy.spawnPosition, map);
+    if(deathMapChunkKey !== spawnMapChunkKey){
+        map.chunks[deathMapChunkKey].characters = map.chunks[deathMapChunkKey].characters.filter( char => char !== enemy);
+        map.chunks[spawnMapChunkKey].characters.push(enemy);
+    }
     enemy.x = enemy.spawnPosition.x;
     enemy.y = enemy.spawnPosition.y;
     delete enemy.respawnOnTime;
