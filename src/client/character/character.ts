@@ -51,6 +51,7 @@ export function determineClosestCharacter(character: Character, characters: Char
     let minDistanceCharacter: Character | null = null;
 
     for (let i = 0; i < characters.length; i++) {
+        if (characters[i].isDead) continue;
         let distance = calculateDistance(character, characters[i]);
         if (minDistanceCharacter === null || minDistance > distance) {
             minDistance = distance;
@@ -124,9 +125,9 @@ function calculateDistanceToMapChunk(chunkI: number, chunkJ: number, position: P
         if (topChunk > position.y && leftChunk > position.x) {
             return calculateDistance(position, { x: leftChunk, y: topChunk });
         } else if (topChunk + chunkSize <= position.y && leftChunk > position.x) {
-            return calculateDistance(position, { x: leftChunk, y: topChunk + chunkSize});
+            return calculateDistance(position, { x: leftChunk, y: topChunk + chunkSize });
         } else if (topChunk > position.y && leftChunk + chunkSize <= position.x) {
-            return calculateDistance(position, { x: leftChunk + chunkSize, y: topChunk});
+            return calculateDistance(position, { x: leftChunk + chunkSize, y: topChunk });
         } else {
             return calculateDistance(position, { x: leftChunk + chunkSize, y: topChunk + chunkSize });
         }
@@ -147,7 +148,7 @@ export function detectCharacterDeath(map: GameMap, state: GameState, upgradeOpti
         }
     }
     for (let i = 0; i < state.players.length; i++) {
-        let char = state.players[i].character;        
+        let char = state.players[i].character;
         if (char.hp <= 0 && !char.isDead) {
             char.isDead = true;
         }
@@ -191,15 +192,15 @@ export function moveCharacterTick(character: Character, map: GameMap, idCounter:
         let y = character.y + Math.sin(character.moveDirection) * character.moveSpeed;
         let blocking = isPositionBlocking({ x, y }, map, idCounter);
         if (!blocking) {
-            if(!isPlayer){
+            if (!isPlayer) {
                 let currentChunkI = Math.floor(character.y / (map.tileSize * map.chunkLength));
                 let newChunkI = Math.floor(y / (map.tileSize * map.chunkLength));
                 let currentChunkJ = Math.floor(character.x / (map.tileSize * map.chunkLength));
                 let newChunkJ = Math.floor(x / (map.tileSize * map.chunkLength));
-                if(currentChunkI !== newChunkI || currentChunkJ !== newChunkJ){
+                if (currentChunkI !== newChunkI || currentChunkJ !== newChunkJ) {
                     let currentChunkKey = `${currentChunkI}_${currentChunkJ}`;
                     let newChunkKey = `${newChunkI}_${newChunkJ}`;
-                    map.chunks[currentChunkKey].characters = map.chunks[currentChunkKey].characters.filter( el => el !== character );
+                    map.chunks[currentChunkKey].characters = map.chunks[currentChunkKey].characters.filter(el => el !== character);
                     map.chunks[newChunkKey].characters.push(character);
                 }
             }
@@ -217,7 +218,7 @@ function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cam
     let paintX = character.x - cameraPosition.x + centerX;
     let paintY = character.y - cameraPosition.y + centerY;
     if (paintX < -character.size || paintX > ctx.canvas.width
-      || paintY < -character.size || paintY > ctx.canvas.height) return;
+        || paintY < -character.size || paintY > ctx.canvas.height) return;
     ctx.fillStyle = character.color;
     ctx.beginPath();
     ctx.arc(

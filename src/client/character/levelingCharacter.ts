@@ -69,17 +69,12 @@ export function levelingCharacterXpGain(state: GameState, killedCharacter: Chara
 }
 
 export function tickPlayerCharacter(character: LevelingCharacter, game: Game) {
+    if(character.isDead) return;
     while (character.shooting.nextShotTime <= game.state.time) {
         shoot(character, game.state.projectiles, game.state.time, game.state.randomSeed);
         character.shooting.nextShotTime += character.shooting.baseFrequency / character.shooting.frequencyIncrease;
     }
     moveCharacterTick(character, game.state.map, game.state.idCounter, true);
-    determineNearChunksForActiveChunk(character, game.state.map);
-}
-
-function determineNearChunksForActiveChunk(character: LevelingCharacter, map: GameMap){
-    let nearMapKeys = determineMapKeysInDistance(character, map, 1000, false);
-    map.activeChunkKeys = nearMapKeys;
 }
 
 function shoot(character: LevelingCharacter, projectiles: Projectile[], gameTime: number, randomSeed: RandomSeed) {

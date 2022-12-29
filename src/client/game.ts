@@ -1,4 +1,4 @@
-import { countAlivePlayerCharacters, detectCharacterDeath, determineCharactersInDistance, findCharacterById, getPlayerCharacters, tickCharacters, tickMapCharacters } from "./character/character.js";
+import { countAlivePlayerCharacters, detectCharacterDeath, determineCharactersInDistance, determineMapKeysInDistance, findCharacterById, getPlayerCharacters, tickCharacters, tickMapCharacters } from "./character/character.js";
 import { paintAll } from "./gamePaint.js";
 import { gameInitPlayers } from "./player.js";
 import { tickPlayerInputs } from "./playerInput.js";
@@ -6,6 +6,8 @@ import { Projectile, tickProjectiles } from "./projectile.js";
 import { Position, GameState, Game, IdCounter } from "./gameModel.js";
 import { createFixPositionRespawnEnemiesOnInit } from "./character/enemy/fixPositionRespawnEnemy.js";
 import { GameMap } from "./map/map.js";
+import { LevelingCharacter } from "./character/levelingCharacterModel.js";
+import { Character } from "./character/characterModel.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -137,7 +139,20 @@ function tick(gameTimePassed: number, game: Game) {
         detectCharacterDeath(game.state.map, game.state, game.avaialbleUpgrades);
         if (gameEndedCheck(game)) endGame(game.state);
         if (game.state.restartAfterTick) gameRestart(game);
+        determineActiveChunks(getPlayerCharacters(game.state.players), game.state.map);
     }
+}
+
+function determineActiveChunks(characters: Character[], map: GameMap){
+    let keySet: Set<string> = new Set();
+    for(let i = 0; i< characters.length; i++){
+        if(characters[i].isDead) continue;
+        let nearMapKeys = determineMapKeysInDistance(characters[i], map, 1000, false);
+        for(const mapKey of nearMapKeys){
+            keySet.add(mapKey);
+        }
+    }
+    map.activeChunkKeys = [...keySet];
 }
 
 export function detectProjectileToCharacterHit(map: GameMap, projectiles: Projectile[]) {
