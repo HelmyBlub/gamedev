@@ -25,6 +25,15 @@ export function paintMap(ctx: CanvasRenderingContext2D, cameraPosition: Position
             paintChunk(ctx, { x, y }, chunk, map.tileSize, {x: chunkJ, y: chunkI},cameraPosition);
         }
     }
+
+    for (let i = 0; i < Math.ceil(height / chunkSize) + 1; i++) {
+        let chunkI = startChunkI + i;
+        for (let j = 0; j < Math.ceil(width / chunkSize) + 1; j++) {
+            let chunkJ = startChunkJ + j;
+            let chunk = map.chunks[`${chunkI}_${chunkJ}`];
+            paintCharacters(ctx, chunk.characters, cameraPosition);
+        }
+    }
 }
 
 function paintChunk(ctx: CanvasRenderingContext2D, paintTopLeftPosition: Position, chunk: MapChunk, tileSize: number, chunkIJ: Position, cameraPosition: Position) {
@@ -36,7 +45,6 @@ function paintChunk(ctx: CanvasRenderingContext2D, paintTopLeftPosition: Positio
                 paintTile(ctx, { x, y }, tileSize, chunk.tiles[i][j], {x:chunkIJ.x * chunk.tiles.length + j, y:chunkIJ.y * chunk.tiles.length + i});
             }
         }
-        paintCharacters(ctx, chunk.characters, cameraPosition);
     }
 }
 
