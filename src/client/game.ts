@@ -143,7 +143,10 @@ function tick(gameTimePassed: number, game: Game) {
 export function detectProjectileToCharacterHit(map: GameMap, projectiles: Projectile[]) {
     for (let projIt = 0; projIt < projectiles.length; projIt++) {
         let projectile = projectiles[projIt];
-        let characters = determineCharactersInDistance(projectile, map, projectile.size + 100);
+        let maxEnemySizeEstimate = 40;
+        let maxProjectileSizeEstimate = 20;
+
+        let characters = determineCharactersInDistance(projectile, map, projectile.size + maxEnemySizeEstimate + maxProjectileSizeEstimate);
         for (let charIt = characters.length - 1; charIt >= 0; charIt--) {
             let c = characters[charIt];
             if (c.isDead || c.faction === projectile.faction) continue;

@@ -2,7 +2,6 @@ next functional tasks:
 - performance improvement when too many bullets with too many enemies
     - map.activeChunkKeys need to be determined
         - if an enemy is aggroed in a chunk, it should be active
-- Bug: enemy size not used for determineCharactersInDistance, but is relevant
 - mapPainting should not create Enemies and MapTiles as painting is not synced with clients
 - Bug: infinte pathing problem if enemy surounded by blocking tiles
 - Perforamnce bug: pulling many enemies far away from spawn and than outranging them, they will move back to their own spawn and create a lot of lag
