@@ -6,6 +6,7 @@ import { LevelingCharacter, UpgradeOption } from "./character/levelingCharacterM
 import { Game } from "./gameModel.js";
 import { RandomSeed } from "./randomNumberGenerator.js";
 import { testGame } from "./gameTest.js";
+import { websocketConnect } from "./multiplayerConenction.js";
 
 export const MOVE_ACTIONS = ["left", "down", "right", "up"];
 export const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3"];
@@ -17,7 +18,7 @@ export type ActionsPressed = {
 export type PlayerInput = {
     executeTime: number,
     command: string,
-    clientId?: number,
+    clientId: number,
     data?: any
 }
 
@@ -40,11 +41,18 @@ export function keyDown(event: KeyboardEvent, game: Game) {
         case "KeyR":
             handleCommand(game, { command: "restart", clientId: game.multiplayer.myClientId });
             break;
+        case "KeyZ":
+            handleCommand(game, { command: "restart", clientId: game.multiplayer.myClientId, testing: true });
+            break;
         case "KeyT":
-            testGame();
+            testGame(game);
             break;
         case "KeyP":
-            game.multiplayer.websocket?.close();
+            if (game.multiplayer.websocket === null) {
+                if (game.state.ended) websocketConnect(game);
+            } else {
+                game.multiplayer.websocket?.close();
+            }
             break;
         default:
             break;
@@ -61,7 +69,7 @@ export function tickPlayerInputs(playerInputs: PlayerInput[], currentTime: numbe
             if (playerInputs[0].executeTime <= currentTime - 16) {
                 console.log("playerAction to late", currentTime - playerInputs[0].executeTime, playerInputs[0]);
             }
-            playerAction(playerInputs[0].clientId!, playerInputs[0].data.action, playerInputs[0].data.isKeydown, game);
+            playerAction(playerInputs[0].clientId, playerInputs[0].data.action, playerInputs[0].data.isKeydown, game);
             playerInputs.shift();
         } else if (playerInputs[0].command === "restart") {
             playerInputs.shift();

@@ -1,14 +1,34 @@
 import { createCharacter, ENEMY_FACTION, PLAYER_FACTION } from "./character/characterModel.js";
-import { detectProjectileToCharacterHit } from "./game.js";
-import { addEnemyToMap, createMap, GameMap, MapChunk } from "./map/map.js";
+import { handleCommand } from "./commands.js";
+import { detectProjectileToCharacterHit, gameRestart } from "./game.js";
+import { Game } from "./gameModel.js";
+import { addEnemyToMap, createMap, GameMap } from "./map/map.js";
 import { createNewChunkTiles } from "./map/mapGeneration.js";
 import { createProjectile, Projectile } from "./projectile.js";
 import { nextRandom, RandomSeed } from "./randomNumberGenerator.js";
+import { testInputs } from "./testInputs.js";
 
-export function testGame() {
-    testDetectProjectileToCharacterHitPerformance();
+export function testGame(game: Game) {
+    realTest(game);
 }
 
+//---------------------//
+
+function realTest(game: Game){
+    game.testing = {testingActive: true, maxSpeed: true};
+    gameRestart(game);
+    for(const input of testInputs){
+        handleCommand(game, input);
+    }
+}
+
+
+
+
+
+
+
+//---------------------//
 
 function createTestCharacter(id: number, x: number, y: number) {
     return createCharacter(id, x, y, 5, "black", 0.5, 1000, 1, ENEMY_FACTION, "randomSpawnFollowingEnemy", true);

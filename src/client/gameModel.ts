@@ -15,6 +15,11 @@ export type IdCounter = {
     nextId: number
 }
 
+export type TestingStuff = {
+    testingActive: boolean,
+    maxSpeed?: boolean,
+}
+
 export type GameState = {
     idCounter: IdCounter,
     projectiles: Projectile[],
@@ -66,6 +71,7 @@ export type Game = {
     performance: {
         [key: string]: any,
     }
+    testing?: TestingStuff,
 }
 
 export function createDefaultGameData(c: HTMLCanvasElement, ctx: CanvasRenderingContext2D): Game {
@@ -89,7 +95,7 @@ export function createDefaultGameData(c: HTMLCanvasElement, ctx: CanvasRendering
                 seed: Math.random(),
             },
             players: [],
-            clientIds: [],
+            clientIds: [-1],
             map: createMap(),
         },
         clientKeyBindings: [],

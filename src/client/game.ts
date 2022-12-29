@@ -5,8 +5,7 @@ import { tickPlayerInputs } from "./playerInput.js";
 import { Projectile, tickProjectiles } from "./projectile.js";
 import { Position, GameState, Game, IdCounter } from "./gameModel.js";
 import { createFixPositionRespawnEnemiesOnInit } from "./character/enemy/fixPositionRespawnEnemy.js";
-import { GameMap } from "./map/map.js";
-import { LevelingCharacter } from "./character/levelingCharacterModel.js";
+import { createMap, GameMap } from "./map/map.js";
 import { Character } from "./character/characterModel.js";
 import { createNewChunk } from "./map/mapGeneration.js";
 
@@ -32,7 +31,19 @@ export function getNextId(idCounter: IdCounter) {
 }
 
 export function gameRestart(game: Game) {
+    if(game.testing){
+        setTestSeeds(game);
+    }
     gameInit(game);
+    if(game.testing){
+        game.performance["collectTestInputs"] = [];
+    }
+}
+
+function setTestSeeds(game: Game){
+    game.state.randomSeed.seed = 0 ;
+    game.state.map = createMap();
+    game.state.map.seed = 0;
 }
 
 export function gameInit(game: Game) {
@@ -76,6 +87,7 @@ export function calculateDistance(objectA: { x: number, y: number }, objectB: { 
 
 export function runner(game: Game) {
     const tickInterval = 16;
+    let timeoutSleep = tickInterval;
     const timeNow = performance.now();
 
     if (game.multiplayer.websocket === null) {
@@ -101,7 +113,12 @@ export function runner(game: Game) {
     if (game.state.ended && game.state.triggerRestart) {
         gameRestart(game);
     }
-    setTimeout(() => runner(game), tickInterval);
+
+    if(game.testing?.maxSpeed){
+        game.realStartTime -= tickInterval;
+        timeoutSleep = 0;
+    } 
+    setTimeout(() => runner(game), timeoutSleep);
 }
 
 function removeAllMapCharacters(map: GameMap) {
@@ -139,7 +156,10 @@ function tick(gameTimePassed: number, game: Game) {
         tickProjectiles(game.state.projectiles, game.state.time);
         detectProjectileToCharacterHit(game.state.map, game.state.projectiles);
         detectCharacterDeath(game.state.map, game.state, game.avaialbleUpgrades);
-        if (gameEndedCheck(game)) endGame(game.state);
+        if (gameEndedCheck(game)){
+            endGame(game.state);
+            if(game.performance["collectTestInputs"]) console.log("testInputs", game.performance["collectTestInputs"]);
+        } 
         if (game.state.restartAfterTick) gameRestart(game);
         determineActiveChunks(getPlayerCharacters(game.state.players), game.state.map);
     }

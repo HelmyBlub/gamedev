@@ -1,6 +1,11 @@
 next tasks:
 - create test which plays the game
-
+    - test can run on original speed or as fast as CPU allows
+    - test easily to fix if gameplay changes, be able to record my own play and set for test
+        - max speed usable for perforamnce indication
+    - test does do a "real" play
+    - test can also do multiplayer
+- clean up errors of old enemy class
 - Bug: infinte pathing problem if enemy surounded by blocking tiles
 - Perforamnce bug: pulling many enemies far away from spawn and than outranging them, they will move back to their own spawn and create a lot of lag
 

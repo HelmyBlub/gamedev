@@ -36,8 +36,6 @@ function createGame(canvasElementId: string) {
     gameInit(game);
     game.state.players[0].character.isDead = true;
     runner(game);
-
-    websocketConnect(game);
 }
 
 start();
