@@ -15,7 +15,7 @@ export function calculateDirection(startPos: Position, targetPos: Position): num
 
     if (xDiff >= 0) {
         direction = - Math.PI + Math.atan(yDiff / xDiff);
-    } else if (yDiff <= 0) {
+    } else if (yDiff < 0) {
         direction = - Math.atan(xDiff / yDiff) + Math.PI / 2;
     } else {
         direction = - Math.atan(xDiff / yDiff) - Math.PI / 2;
