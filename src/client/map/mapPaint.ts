@@ -17,8 +17,9 @@ export function paintMap(ctx: CanvasRenderingContext2D, cameraPosition: Position
         for (let j = 0; j < Math.ceil(width / chunkSize) + 1; j++) {
             let chunkJ = startChunkJ + j;
             let chunk = map.chunks[`${chunkI}_${chunkJ}`];
-            if (!chunk) {
-                chunk = createNewChunk(map, chunkI, chunkJ, idCounter);                
+            if(chunk === undefined){
+                console.log("missing chunk creation", `${chunkI}_${chunkJ}`);
+                continue;
             }
             let x = chunkJ * chunkSize - startX;
             let y = chunkI * chunkSize - startY;
@@ -31,6 +32,7 @@ export function paintMap(ctx: CanvasRenderingContext2D, cameraPosition: Position
         for (let j = 0; j < Math.ceil(width / chunkSize) + 1; j++) {
             let chunkJ = startChunkJ + j;
             let chunk = map.chunks[`${chunkI}_${chunkJ}`];
+            if(chunk === undefined) continue;
             paintCharacters(ctx, chunk.characters, cameraPosition);
         }
     }

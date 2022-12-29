@@ -8,6 +8,7 @@ import { createFixPositionRespawnEnemiesOnInit } from "./character/enemy/fixPosi
 import { GameMap } from "./map/map.js";
 import { LevelingCharacter } from "./character/levelingCharacterModel.js";
 import { Character } from "./character/characterModel.js";
+import { createNewChunk } from "./map/mapGeneration.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -130,10 +131,11 @@ function endGame(state: GameState) {
 function tick(gameTimePassed: number, game: Game) {
     if (!game.state.ended) {
         game.state.time += gameTimePassed;
+        generateMissingChunks(game.state.map, getPlayerCharacters(game.state.players), game.state.idCounter);
         tickPlayerInputs(game.state.playerInputs, game.state.time, game);
         //createRandomSpawnFollowingEnemy(game);
         tickMapCharacters(game.state.map, game);
-        tickCharacters(getPlayerCharacters(game.state.players),game);
+        tickCharacters(getPlayerCharacters(game.state.players), game);
         tickProjectiles(game.state.projectiles, game.state.time);
         detectProjectileToCharacterHit(game.state.map, game.state.projectiles);
         detectCharacterDeath(game.state.map, game.state, game.avaialbleUpgrades);
@@ -143,12 +145,37 @@ function tick(gameTimePassed: number, game: Game) {
     }
 }
 
-function determineActiveChunks(characters: Character[], map: GameMap){
+
+function generateMissingChunks(map: GameMap, playerCharacters: Character[], idCounter: IdCounter) {
+    let chunkSize = map.tileSize * map.chunkLength;
+    let generationRadius = 1500;
+
+    for (const character of playerCharacters) {
+        let startX = (character.x - generationRadius);
+        let startY = (character.y - generationRadius);
+        let startChunkI = Math.floor(startY / chunkSize);
+        let startChunkJ = Math.floor(startX / chunkSize);
+
+        for (let i = 0; i < Math.ceil(generationRadius / chunkSize * 2); i++) {
+            let chunkI = startChunkI + i;
+            for (let j = 0; j < Math.ceil(generationRadius / chunkSize * 2); j++) {
+                let chunkJ = startChunkJ + j;
+                let chunk = map.chunks[`${chunkI}_${chunkJ}`];
+                if (chunk === undefined) {
+                    chunk = createNewChunk(map, chunkI, chunkJ, idCounter);
+                    map.chunks[`${chunkI}_${chunkJ}`] = chunk;
+                }
+            }
+        }
+    }
+}
+
+function determineActiveChunks(characters: Character[], map: GameMap) {
     let keySet: Set<string> = new Set();
-    for(let i = 0; i< characters.length; i++){
-        if(characters[i].isDead) continue;
+    for (let i = 0; i < characters.length; i++) {
+        if (characters[i].isDead) continue;
         let nearMapKeys = determineMapKeysInDistance(characters[i], map, 1000, false);
-        for(const mapKey of nearMapKeys){
+        for (const mapKey of nearMapKeys) {
             keySet.add(mapKey);
         }
     }
