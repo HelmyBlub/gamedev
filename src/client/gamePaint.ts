@@ -13,7 +13,7 @@ export function paintAll(ctx: CanvasRenderingContext2D, game: Game) {
     paintProjectiles(ctx, game.state.projectiles, cameraPosition);
     paintKillCounter(ctx, game.state.killCounter);
     if (game.state.ended) {
-        paintHighscoreBoard(game.ctx, game.state.highscores);
+        paintHighscoreBoard(ctx, game.state.highscores);
     } else {
         if (game.multiplayer.myClientId !== -1) {
             let player = findPlayerById(game.state.players, game.multiplayer.myClientId);

@@ -8,7 +8,6 @@ import { createFixPositionRespawnEnemiesOnInit } from "./character/enemy/fixPosi
 import { createMap, GameMap } from "./map/map.js";
 import { Character } from "./character/characterModel.js";
 import { createNewChunk } from "./map/mapGeneration.js";
-import test from "node:test";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -36,6 +35,14 @@ export function gameRestart(game: Game) {
         setTestSeeds(game);
     }
     gameInit(game);
+}
+
+export function closeGame(game: Game){
+    if(game.multiplayer.websocket){
+        game.multiplayer.websocket.close();
+    }
+    game.closeGame = true;
+    console.log("closing game");
 }
 
 function setTestSeeds(game: Game){
@@ -119,7 +126,8 @@ export function runner(game: Game) {
             game.testing.frameSkipCounter = game.testing.frameSkipAmount;
         }
     }
-    if(!skipFrame){
+    if(game.testing?.doNotPaint) skipFrame = true;
+    if(!skipFrame && game.ctx){
         paintAll(game.ctx, game);
     }
     if (game.state.ended && game.state.triggerRestart) {
@@ -130,7 +138,9 @@ export function runner(game: Game) {
         game.realStartTime -= tickInterval;
         timeoutSleep = 0;
     } 
-    setTimeout(() => runner(game), timeoutSleep);
+    if(!game.closeGame){
+        setTimeout(() => runner(game), timeoutSleep);
+    }
 }
 
 function removeAllMapCharacters(map: GameMap) {

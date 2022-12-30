@@ -49,7 +49,10 @@ function onMessage(message: any) {
     try {
         const data = JSON.parse(message);
         if (data.command === "playerInput" || data.command === "restart") {
-            data.executeTime = getCurrentMS();
+            const currentMs = getCurrentMS();
+            if(data.executeTime === undefined || data.executeTime < currentMs){
+                data.executeTime = currentMs;
+            }
             message = JSON.stringify(data);
         }
         connections.forEach(function (destination: any) {

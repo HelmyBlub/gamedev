@@ -1,6 +1,5 @@
 import { gameInit, runner } from "./game.js";
-import { createDefaultGameData } from "./gameModel.js";
-import { websocketConnect } from "./multiplayerConenction.js";
+import { createDefaultGameData, Game } from "./gameModel.js";
 import { keyDown, keyUp } from "./playerInput.js";
 
 var gameCount: number = 0;
@@ -17,25 +16,30 @@ export function startMore() {
     createGame(nextCssId);
 }
 
-function createGame(canvasElementId: string) {
-    let c: HTMLCanvasElement | null = document.getElementById(canvasElementId) as HTMLCanvasElement;
-    if (c == null) throw new DOMException("canvas element not found");
-    let ctx: CanvasRenderingContext2D | null = c.getContext("2d");
-    if (ctx == null) throw new DOMException("CanvasRenderingContext2D element not found");
-
-    const game = createDefaultGameData(c, ctx);
-    document.addEventListener('keydown', (e) => keyDown(e, game), false);
-    document.addEventListener('keyup', (e) => keyUp(e, game), false);
-    addEventListener("resize", (event) => {
-        c!.height = window.innerHeight - 2;
-        c!.width = window.innerWidth - 2;
-    });
-    c.height = window.innerHeight - 2;
-    c.width = window.innerWidth - 2;
+export function createGame(canvasElementId: string | undefined, forTesting: boolean = false): Game {
+    let game: Game;
+    if(!forTesting && canvasElementId){
+        let c: HTMLCanvasElement | null = document.getElementById(canvasElementId) as HTMLCanvasElement;
+        if (c == null) throw new DOMException("canvas element not found");
+        let ctx: CanvasRenderingContext2D | null = c.getContext("2d");
+        if (ctx == null) throw new DOMException("CanvasRenderingContext2D element not found");
+        game = createDefaultGameData(c, ctx);
+        document.addEventListener('keydown', (e) => keyDown(e, game), false);
+        document.addEventListener('keyup', (e) => keyUp(e, game), false);
+        addEventListener("resize", (event) => {
+            c!.height = window.innerHeight - 2;
+            c!.width = window.innerWidth - 2;
+        });
+        c.height = window.innerHeight - 2;
+        c.width = window.innerWidth - 2;
+    }else{
+        game = createDefaultGameData(undefined, undefined);
+    }
 
     gameInit(game);
     game.state.players[0].character.isDead = true;
     runner(game);
+    return game;
 }
 
 start();

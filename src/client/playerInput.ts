@@ -5,7 +5,7 @@ import { Character } from "./character/characterModel.js";
 import { LevelingCharacter, UpgradeOption } from "./character/levelingCharacterModel.js";
 import { Game } from "./gameModel.js";
 import { RandomSeed } from "./randomNumberGenerator.js";
-import { testGame } from "./gameTest.js";
+import { testGame } from "./test/gameTest.js";
 import { websocketConnect } from "./multiplayerConenction.js";
 
 export const MOVE_ACTIONS = ["left", "down", "right", "up"];

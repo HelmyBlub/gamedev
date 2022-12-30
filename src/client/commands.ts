@@ -5,7 +5,6 @@ import { createDefaultKeyBindings1 } from "./player.js";
 export function handleCommand(game: Game, data: any) {
     if (game.multiplayer.websocket === null) {
         if (data.executeTime === undefined) data.executeTime = game.state.time + 1;
-        if (game.testing?.collectedTestInputs !== undefined) game.testing.collectedTestInputs.push(data);
         executeCommand(game, data);
     } else {
         sendMultiplayer(data, game);
@@ -16,13 +15,21 @@ export function executeCommand(game: Game, data: any) {
     const command = data.command;
     switch (command) {
         case "restart":
+            if (game.testing?.collectedTestInputs !== undefined) game.testing.collectedTestInputs.push(data);
             game.state.playerInputs.push(data);
             game.state.triggerRestart = true;
             game.multiplayer.lastRestartReceiveTime = performance.now();
             game.multiplayer.cachePlayerInputs = [];
-            if (data.testing) game.testing = {testingActive: true, startTime: performance.now()};
+            if (data.testing){
+                if(game.testing){
+                    game.testing.startTime = performance.now();
+                }else{
+                    game.testing = {startTime: performance.now()};
+                }
+            } 
             break;
         case "playerInput":
+            if (game.testing?.collectedTestInputs !== undefined) game.testing.collectedTestInputs.push(data);
             if (game.state.triggerRestart) {
                 game.multiplayer.cachePlayerInputs!.push(data);
             } else {

@@ -16,8 +16,8 @@ export type IdCounter = {
 }
 
 export type TestingStuff = {
-    testingActive: boolean,
     zeroTimeout?: boolean,
+    doNotPaint?: boolean,
     frameSkipAmount?: number,
     frameSkipCounter?: number,
     startTime: number,
@@ -46,8 +46,8 @@ export type Highscores = {
 }
 
 export type Game = {
-    canvasElement: HTMLCanvasElement,
-    ctx: CanvasRenderingContext2D,
+    canvasElement?: HTMLCanvasElement,
+    ctx?: CanvasRenderingContext2D,
     state: GameState,
     realStartTime: number,
     clientKeyBindings: {
@@ -76,9 +76,10 @@ export type Game = {
         [key: string]: any,
     }
     testing?: TestingStuff,
+    closeGame?: boolean,
 }
 
-export function createDefaultGameData(c: HTMLCanvasElement, ctx: CanvasRenderingContext2D): Game {
+export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: CanvasRenderingContext2D | undefined): Game {
     let game: Game = {
         canvasElement: c,
         ctx: ctx,
