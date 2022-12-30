@@ -13,9 +13,15 @@ export function testGame(game: Game) {
 }
 
 //---------------------//
-
+// time: 8182.5999999996275, frameSkipAmount: 10
+// time: 9342.299999999814 , frameSkipAmount: 0
 function realTest(game: Game){
-    game.testing = {testingActive: true, maxSpeed: true};
+    game.testing = {
+        startTime: performance.now(),
+        frameSkipAmount: 0,
+        testingActive: true,
+        zeroTimeout: true
+    };
     gameRestart(game);
     for(const input of testInputs){
         handleCommand(game, input);

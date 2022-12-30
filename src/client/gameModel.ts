@@ -17,7 +17,11 @@ export type IdCounter = {
 
 export type TestingStuff = {
     testingActive: boolean,
-    maxSpeed?: boolean,
+    zeroTimeout?: boolean,
+    frameSkipAmount?: number,
+    frameSkipCounter?: number,
+    startTime: number,
+    collectedTestInputs?: PlayerInput[],
 }
 
 export type GameState = {

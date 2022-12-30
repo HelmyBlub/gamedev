@@ -3,11 +3,12 @@ import { paintAll } from "./gamePaint.js";
 import { gameInitPlayers } from "./player.js";
 import { tickPlayerInputs } from "./playerInput.js";
 import { Projectile, tickProjectiles } from "./projectile.js";
-import { Position, GameState, Game, IdCounter } from "./gameModel.js";
+import { Position, GameState, Game, IdCounter, TestingStuff } from "./gameModel.js";
 import { createFixPositionRespawnEnemiesOnInit } from "./character/enemy/fixPositionRespawnEnemy.js";
 import { createMap, GameMap } from "./map/map.js";
 import { Character } from "./character/characterModel.js";
 import { createNewChunk } from "./map/mapGeneration.js";
+import test from "node:test";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -35,15 +36,14 @@ export function gameRestart(game: Game) {
         setTestSeeds(game);
     }
     gameInit(game);
-    if(game.testing){
-        game.performance["collectTestInputs"] = [];
-    }
 }
 
 function setTestSeeds(game: Game){
     game.state.randomSeed.seed = 0 ;
     game.state.map = createMap();
     game.state.map.seed = 0;
+    if(game.testing) game.testing.collectedTestInputs = [];
+
 }
 
 export function gameInit(game: Game) {
@@ -109,12 +109,24 @@ export function runner(game: Game) {
         }
     }
 
-    paintAll(game.ctx, game);
+    let skipFrame = false;
+    if(game.testing?.frameSkipAmount){
+        if(game.testing?.frameSkipCounter === undefined) game.testing.frameSkipCounter = game.testing.frameSkipAmount;
+        game.testing.frameSkipCounter--;
+        skipFrame = true;
+        if(game.testing.frameSkipCounter === 0){
+            skipFrame = false;
+            game.testing.frameSkipCounter = game.testing.frameSkipAmount;
+        }
+    }
+    if(!skipFrame){
+        paintAll(game.ctx, game);
+    }
     if (game.state.ended && game.state.triggerRestart) {
         gameRestart(game);
     }
 
-    if(game.testing?.maxSpeed){
+    if(game.testing?.zeroTimeout){
         game.realStartTime -= tickInterval;
         timeoutSleep = 0;
     } 
@@ -136,7 +148,11 @@ function gameEndedCheck(game: Game) {
     return false;
 }
 
-function endGame(state: GameState) {
+function endGame(state: GameState, testing: TestingStuff | undefined) {
+    if(testing){
+        if(testing.collectedTestInputs) console.log("testInputs", testing.collectedTestInputs);
+        console.log("time:", performance.now() - testing.startTime);
+    }
     state.ended = true;
     state.highscores.scores.push(state.killCounter);
     state.highscores.scores.sort((a, b) => b - a);
@@ -156,10 +172,7 @@ function tick(gameTimePassed: number, game: Game) {
         tickProjectiles(game.state.projectiles, game.state.time);
         detectProjectileToCharacterHit(game.state.map, game.state.projectiles);
         detectCharacterDeath(game.state.map, game.state, game.avaialbleUpgrades);
-        if (gameEndedCheck(game)){
-            endGame(game.state);
-            if(game.performance["collectTestInputs"]) console.log("testInputs", game.performance["collectTestInputs"]);
-        } 
+        if (gameEndedCheck(game)) endGame(game.state, game.testing);
         if (game.state.restartAfterTick) gameRestart(game);
         determineActiveChunks(getPlayerCharacters(game.state.players), game.state.map);
     }
