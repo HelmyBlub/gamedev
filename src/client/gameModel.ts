@@ -50,6 +50,8 @@ export type Game = {
     ctx?: CanvasRenderingContext2D,
     state: GameState,
     realStartTime: number,
+    shouldTickTime?: number,
+    tickInterval: number,
     clientKeyBindings: {
         clientIdRef: number,
         keyCodeToActionPressed: Map<string, string>,
@@ -105,6 +107,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
         },
         clientKeyBindings: [],
         realStartTime: 0,
+        tickInterval: 16,
         multiplayer: {
             myClientId: -1,
             websocket: null,

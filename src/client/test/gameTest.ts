@@ -13,13 +13,11 @@ import { testInputs } from "./testInputs.js";
 import { testMultiplayerInputs } from "./testMultiplayerInputs.js";
 
 export function testGame(game: Game) {
-    //runGameWithPlayerInputs(game, testInputs);
-    runGameWithPlayerInputs(game, testMultiplayerInputs);
+    runGameWithPlayerInputs(game, testInputs);
+    //runGameWithPlayerInputs(game, testMultiplayerInputs);
 }
 
 //---------------------//
-// time: 8182.5999999996275, frameSkipAmount: 10
-// time: 9342.299999999814 , frameSkipAmount: 0
 function runGameWithPlayerInputs(game: Game, playerInputs: PlayerInput[]) {
     const playerIds = getClientIds(playerInputs);
     if(playerIds.length > 1){
@@ -79,11 +77,13 @@ async function runGameWithPlayerInputsMultiplayer(game: Game, playerInputs: Play
     }
 }
 
+// time: 8182.5999999996275, frameSkipAmount: 10
+// time: 9342.299999999814 , frameSkipAmount: 0
 function runGameWithPlayerInputsSinglePlayer(game: Game, playerInputs: PlayerInput[]){
     game.testing = {
         startTime: performance.now(),
         frameSkipAmount: 0,
-        zeroTimeout: false,
+        zeroTimeout: true,
     };
     game.state.ended = true;
     handleCommand(game, { command: "restart", clientId: game.multiplayer.myClientId, testing: true });

@@ -94,53 +94,59 @@ export function calculateDistance(objectA: { x: number, y: number }, objectB: { 
 }
 
 export function runner(game: Game) {
-    const tickInterval = 16;
-    let timeoutSleep = tickInterval;
     const timeNow = performance.now();
 
     if (game.multiplayer.websocket === null) {
-        while (!game.state.ended && timeNow > game.realStartTime + game.state.time) {
-            tick(tickInterval, game);
-        }
+        tick(game.tickInterval, game);
     } else {
         let counter = 0;
-        while (!game.state.ended && (game.multiplayer.maxServerGameTime >= game.state.time + tickInterval || game.state.triggerRestart) && counter < 50) {
+        while (!game.state.ended && (game.multiplayer.maxServerGameTime >= game.state.time + game.tickInterval || game.state.triggerRestart) && counter < 50) {
             counter++;
             let delayDiff = game.multiplayer.delay - game.multiplayer.minDelay;
             if (timeNow < game.realStartTime + game.state.time + game.multiplayer.updateInterval + delayDiff) {
                 break;
             }
-            tick(tickInterval, game);
+            tick(game.tickInterval, game);
         }
         if (counter >= 50) {
             console.log("game can not keep up");
         }
     }
 
-    let skipFrame = false;
-    if(game.testing?.frameSkipAmount){
-        if(game.testing?.frameSkipCounter === undefined) game.testing.frameSkipCounter = game.testing.frameSkipAmount;
-        game.testing.frameSkipCounter--;
-        skipFrame = true;
-        if(game.testing.frameSkipCounter === 0){
-            skipFrame = false;
-            game.testing.frameSkipCounter = game.testing.frameSkipAmount;
-        }
-    }
-    if(game.testing?.doNotPaint) skipFrame = true;
-    if(!skipFrame && game.ctx){
-        paintAll(game.ctx, game);
-    }
+    paintAll(game.ctx, game);
     if (game.state.ended && game.state.triggerRestart) {
         gameRestart(game);
     }
 
-    if(game.testing?.zeroTimeout){
-        game.realStartTime -= tickInterval;
-        timeoutSleep = 0;
-    } 
     if(!game.closeGame){
+        let timeoutSleep = determineRunnerTimeout(game);
         setTimeout(() => runner(game), timeoutSleep);
+    }
+}
+
+function determineRunnerTimeout(game: Game): number{
+    if(game.testing?.zeroTimeout){
+        return 0;
+    }else{
+        if (game.multiplayer.websocket === null) {
+            if(game.shouldTickTime === undefined){
+                game.shouldTickTime = performance.now();
+                return game.tickInterval;
+            }else{
+                let timeoutSleep;
+                game.shouldTickTime += game.tickInterval;
+                let timeEnd = performance.now();
+                timeoutSleep = game.shouldTickTime - timeEnd;
+                if(timeoutSleep < 0){
+                    game.shouldTickTime = timeEnd;
+                    timeoutSleep = 0;
+                    console.log("game slow down, can not keep up");
+                }
+                return timeoutSleep;
+            }    
+        }else{
+            return 5;
+        }
     }
 }
 

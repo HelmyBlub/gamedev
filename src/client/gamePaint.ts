@@ -1,12 +1,13 @@
 import { getPlayerCharacters, paintCharacters } from "./character/character.js";
 import { LevelingCharacter } from "./character/levelingCharacterModel.js";
 import { getCameraPosition } from "./game.js";
-import { Game, Position, Highscores } from "./gameModel.js";
+import { Game, Position, Highscores, TestingStuff } from "./gameModel.js";
 import { paintMap } from "./map/mapPaint.js";
 import { findPlayerById } from "./player.js";
 import { paintProjectiles } from "./projectile.js";
 
-export function paintAll(ctx: CanvasRenderingContext2D, game: Game) {
+export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) {
+    if(!ctx || skipPaint(game.testing)) return;
     let cameraPosition: Position = getCameraPosition(game);
     paintMap(ctx, cameraPosition, game.state.map, game.state.idCounter);
     paintCharacters(ctx, getPlayerCharacters(game.state.players), cameraPosition);
@@ -26,6 +27,22 @@ export function paintAll(ctx: CanvasRenderingContext2D, game: Game) {
             paintPlayerStats(ctx, game.state.players[0].character as LevelingCharacter, game.state.time);
         }
     }
+}
+
+function skipPaint(testing: TestingStuff | undefined): boolean{
+    if(testing?.doNotPaint) return true;
+
+    let skipFrame = false;
+    if(testing?.frameSkipAmount){
+        if(testing?.frameSkipCounter === undefined) testing.frameSkipCounter = testing.frameSkipAmount;
+        testing.frameSkipCounter--;
+        skipFrame = true;
+        if(testing.frameSkipCounter === 0){
+            skipFrame = false;
+            testing.frameSkipCounter = testing.frameSkipAmount;
+        }
+    }
+    return skipFrame;
 }
 
 function paintHighscoreBoard(ctx: CanvasRenderingContext2D, highscores: Highscores) {
