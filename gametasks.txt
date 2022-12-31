@@ -1,5 +1,6 @@
 next tasks:
 - multiplayer test speedup should also work
+- analyse and improve performance
 - clean up errors of old enemy class
 - Bug: infinte pathing problem if enemy surounded by blocking tiles
 - Perforamnce bug: pulling many enemies far away from spawn and than outranging them, they will move back to their own spawn and create a lot of lag

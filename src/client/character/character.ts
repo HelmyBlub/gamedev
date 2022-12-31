@@ -97,6 +97,17 @@ export function determineMapKeysInDistance(position: Position, map: GameMap, max
     return result;
 }
 
+export function countCharacters(map: GameMap): number{
+    let counter = 0;
+    let chunkKeys = Object.keys(map.chunks);
+
+    for(const key of chunkKeys){
+        counter += map.chunks[key].characters.length;
+    }
+    
+    return counter;
+}
+
 function calculateDistanceToMapChunk(chunkI: number, chunkJ: number, position: Position, map: GameMap): number {
     let chunkSize = map.tileSize * map.chunkLength;
     let topChunk = chunkI * chunkSize;

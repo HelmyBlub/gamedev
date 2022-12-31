@@ -1,8 +1,8 @@
 import { getNextId } from "../../game.js";
 import { Game, IdCounter, Position } from "../../gameModel.js";
-import { addEnemyToMap, GameMap } from "../../map/map.js";
+import { addEnemyToMap, GameMap, positionToMapKey } from "../../map/map.js";
 import { RandomSeed } from "../../randomNumberGenerator.js";
-import { getPlayerCharacters, determineClosestCharacter, determineEnemyHitsPlayer, determineEnemyMoveDirection, moveCharacterTick } from "../character.js";
+import { getPlayerCharacters, determineClosestCharacter, determineEnemyHitsPlayer, determineEnemyMoveDirection, moveCharacterTick, countCharacters } from "../character.js";
 import { getSpawnPositionAroundPlayer, Character, createCharacter, ENEMY_FACTION } from "../characterModel.js";
 import { PathingCache } from "../pathing.js";
 
@@ -12,7 +12,7 @@ export type RandomSpawnFollowingEnemyCharacter = Character & {
 
 export function createRandomSpawnFollowingEnemy(game: Game) {
     let maxEnemies = Math.min(Math.max(10, game.state.time / 2000), 100);
-    if (game.state.characters.length > maxEnemies) return;
+    if (countCharacters(game.state.map) > maxEnemies) return;
 
     let pos: Position | null = null;
     let hpFactor = Math.pow(1.10, Math.ceil(game.state.time / 2500));
@@ -38,11 +38,13 @@ export function tickRandomSpawnFollowingEnemyCharacter(enemy: RandomSpawnFollowi
         determineEnemyHitsPlayer(enemy, closestPlayer);
         increaseEnemyMovementSpeedAfterTime(enemy, game.state.time);
         teleportFarEnemy(enemy, playerCharacters, game.state.randomSeed, game.state.map, game.state.idCounter);
-        moveCharacterTick(enemy, game.state.map, game.state.idCounter);
+        moveCharacterTick(enemy, game.state.map, game.state.idCounter, false);
     }
 }
 
-function removeEnemy(enemy: RandomSpawnFollowingEnemyCharacter, characters: Character[]){
+function removeEnemy(enemy: RandomSpawnFollowingEnemyCharacter, map: GameMap){
+    const chunkKey = positionToMapKey(enemy, map);
+    let characters = map.chunks[chunkKey].characters;
     for(let i = 0; i<characters.length;i++){
         if(characters[i] === enemy){
             characters.splice(i,1);

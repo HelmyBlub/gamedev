@@ -1,5 +1,5 @@
 import { Character } from "../character/characterModel.js";
-import { Game, IdCounter, Position } from "../gameModel.js"
+import { IdCounter, Position } from "../gameModel.js"
 import { createNewChunk } from "./mapGeneration.js";
 
 type MapTiles = {

@@ -8,6 +8,7 @@ import { createFixPositionRespawnEnemiesOnInit } from "./character/enemy/fixPosi
 import { createMap, GameMap } from "./map/map.js";
 import { Character } from "./character/characterModel.js";
 import { createNewChunk } from "./map/mapGeneration.js";
+import { createRandomSpawnFollowingEnemy } from "./character/enemy/randomSpawnFollowingEnemy.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -176,7 +177,6 @@ function tick(gameTimePassed: number, game: Game) {
         game.state.time += gameTimePassed;
         generateMissingChunks(game.state.map, getPlayerCharacters(game.state.players), game.state.idCounter);
         tickPlayerInputs(game.state.playerInputs, game.state.time, game);
-        //createRandomSpawnFollowingEnemy(game);
         tickMapCharacters(game.state.map, game);
         tickCharacters(getPlayerCharacters(game.state.players), game);
         tickProjectiles(game.state.projectiles, game.state.time);
