@@ -121,6 +121,9 @@ function playerInputChangeEvent(event: KeyboardEvent, game: Game) {
         let action = game.clientKeyBindings[i].keyCodeToActionPressed.get(keycode);
         if (action !== undefined) {
             const clientId = game.clientKeyBindings[i].clientIdRef;
+            if(isKeydown && findPlayerById(game.state.players, clientId)!.actionsPressed[action]){
+                return;
+            }
             handleCommand(game, {
                 command: "playerInput",
                 clientId: clientId,

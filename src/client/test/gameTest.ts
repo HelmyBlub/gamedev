@@ -1,4 +1,3 @@
-import { TIMEOUT } from "node:dns";
 import { createCharacter, ENEMY_FACTION, PLAYER_FACTION } from "../character/characterModel.js";
 import { handleCommand } from "../commands.js";
 import { closeGame, detectProjectileToCharacterHit, gameRestart } from "../game.js";
@@ -14,6 +13,7 @@ import { testInputs } from "./testInputs.js";
 import { testMultiplayerInputs } from "./testMultiplayerInputs.js";
 
 export function testGame(game: Game) {
+    //runGameWithPlayerInputs(game, testInputs);
     runGameWithPlayerInputs(game, testMultiplayerInputs);
 }
 
@@ -57,12 +57,20 @@ async function runGameWithPlayerInputsMultiplayer(game: Game, playerInputs: Play
 
     game.state.ended = true;
     handleCommand(game, { command: "restart", clientId: game.multiplayer.myClientId, testing: true });
-    const waitForRestart = getUntilPromise(() => !game.state.ended, 50);
+    const waitForRestart = getUntilPromise(() => {
+        for(const tGame of games){
+            if(tGame.state.ended) return false;
+        }
+        return true;
+    }, 50);
     await waitForRestart;
 
     for (const input of playerInputs) {
         let playerIndex = playerIds.findIndex((value) => input.clientId === value);
         input.clientId = games[playerIndex].multiplayer.myClientId;
+        if(input.executeTime > games[playerIndex].state.time + 2000){
+            await getUntilPromise(() => input.executeTime < games[playerIndex].state.time + 2000, 50);
+        }
         handleCommand(games[playerIndex], input);
     }        
 
