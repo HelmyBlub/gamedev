@@ -27,7 +27,7 @@ export function tickMapCharacters(map: GameMap, game: Game) {
     let allCharacters: Character[] = [];
     for (let i = 0; i < map.activeChunkKeys.length; i++) {
         let chunk = map.chunks[map.activeChunkKeys[i]];
-        allCharacters = allCharacters.concat(chunk.characters);
+        allCharacters.push(...chunk.characters);
     }
     tickCharacters(allCharacters, game, pathingCache);
 }
