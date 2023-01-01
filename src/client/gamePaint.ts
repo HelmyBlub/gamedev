@@ -9,9 +9,8 @@ import { paintProjectiles } from "./projectile.js";
 export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) {
     if(!ctx || skipPaint(game.testing)) return;
     if(game.performance.mapChunkPaintCache === undefined) game.performance.mapChunkPaintCache = {};
-    if(game.performance.mapPaintCache === undefined) game.performance.mapPaintCache = {};
     let cameraPosition: Position = getCameraPosition(game);
-    paintMap(ctx, cameraPosition, game.state.map, game.performance.mapChunkPaintCache,game.performance.mapPaintCache);
+    paintMap(ctx, cameraPosition, game.state.map, game.performance.mapChunkPaintCache);
     paintCharacters(ctx, getPlayerCharacters(game.state.players), cameraPosition);
     paintProjectiles(ctx, game.state.projectiles, cameraPosition);
     paintKillCounter(ctx, game.state.killCounter);
