@@ -1,7 +1,7 @@
 next tasks:
-- improve runner function
-- multiplayer test speedup should also work
 - analyse and improve performance
+    - improving map paint with caching
+- multiplayer test speedup should also work
 - Bug: infinte pathing problem if enemy surounded by blocking tiles
 - Perforamnce bug: pulling many enemies far away from spawn and than outranging them, they will move back to their own spawn and create a lot of lag
 

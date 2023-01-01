@@ -24,6 +24,10 @@ export type TestingStuff = {
     collectedTestInputs?: PlayerInput[],
 }
 
+export type MapChunkPaintCache = {
+    [key: string]: CanvasRenderingContext2D
+}
+
 export type GameState = {
     idCounter: IdCounter,
     projectiles: Projectile[],
@@ -75,7 +79,7 @@ export type Game = {
         characterId?: number,
     }
     performance: {
-        [key: string]: any,
+        mapChunkPaintCache?: MapChunkPaintCache,
     }
     testing?: TestingStuff,
     closeGame?: boolean,

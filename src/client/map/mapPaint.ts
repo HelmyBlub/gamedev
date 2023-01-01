@@ -1,9 +1,9 @@
 import { paintCharacters } from "../character/character.js";
-import { IdCounter, Position } from "../gameModel.js";
+import { IdCounter, MapChunkPaintCache, Position } from "../gameModel.js";
 import { GameMap, MapChunk, TILE_VALUES } from "./map.js";
 import { createNewChunk } from "./mapGeneration.js";
 
-export function paintMap(ctx: CanvasRenderingContext2D, cameraPosition: Position, map: GameMap, idCounter: IdCounter) {
+export function paintMap(ctx: CanvasRenderingContext2D, cameraPosition: Position, map: GameMap, mapChunkPaintCache: MapChunkPaintCache) {
     let chunkSize = map.tileSize * map.chunkLength;
     let width = ctx.canvas.width;
     let height = ctx.canvas.height;
@@ -17,13 +17,13 @@ export function paintMap(ctx: CanvasRenderingContext2D, cameraPosition: Position
         for (let j = 0; j < Math.ceil(width / chunkSize) + 1; j++) {
             let chunkJ = startChunkJ + j;
             let chunk = map.chunks[`${chunkI}_${chunkJ}`];
-            if(chunk === undefined){
+            if (chunk === undefined) {
                 console.log("missing chunk creation", `${chunkI}_${chunkJ}`);
                 continue;
             }
             let x = chunkJ * chunkSize - startX;
             let y = chunkI * chunkSize - startY;
-            paintChunk(ctx, { x, y }, chunk, map.tileSize, {x: chunkJ, y: chunkI},cameraPosition);
+            paintChunk(ctx, { x, y }, chunk, map.tileSize, { x: chunkJ, y: chunkI }, mapChunkPaintCache);
         }
     }
 
@@ -32,44 +32,56 @@ export function paintMap(ctx: CanvasRenderingContext2D, cameraPosition: Position
         for (let j = 0; j < Math.ceil(width / chunkSize) + 1; j++) {
             let chunkJ = startChunkJ + j;
             let chunk = map.chunks[`${chunkI}_${chunkJ}`];
-            if(chunk === undefined) continue;
+            if (chunk === undefined) continue;
             paintCharacters(ctx, chunk.characters, cameraPosition);
         }
     }
 }
 
-function paintChunk(ctx: CanvasRenderingContext2D, paintTopLeftPosition: Position, chunk: MapChunk, tileSize: number, chunkIJ: Position, cameraPosition: Position) {
+function paintChunk(ctx: CanvasRenderingContext2D, paintTopLeftPosition: Position, chunk: MapChunk, tileSize: number, chunkIJ: Position, mapChunkPaintCache: MapChunkPaintCache) {
     if (chunk) {
-        for (let i = 0; i < chunk.tiles.length; i++) {
-            for (let j = 0; j < chunk.tiles[i].length; j++) {
-                let x = paintTopLeftPosition.x + j * tileSize;
-                let y = paintTopLeftPosition.y + i * tileSize;
-                paintTile(ctx, { x, y }, tileSize, chunk.tiles[i][j], {x:chunkIJ.x * chunk.tiles.length + j, y:chunkIJ.y * chunk.tiles.length + i});
+        let chunkSize = tileSize * chunk.tiles.length;
+        let chunkKey = `${chunkIJ.y}_${chunkIJ.x}`;
+        let readyForCache = true;
+        if (mapChunkPaintCache[chunkKey] === undefined) {
+            let canvas = document.createElement('canvas');
+            canvas.width = chunkSize;
+            canvas.height = chunkSize;
+            let cacheCtx: CanvasRenderingContext2D = canvas.getContext("2d")!;
+            for (let i = 0; i < chunk.tiles.length; i++) {
+                for (let j = 0; j < chunk.tiles[i].length; j++) {
+                    let x = j * tileSize;
+                    let y = i * tileSize;
+                    let tileReady = paintTile(cacheCtx, { x, y }, tileSize, chunk.tiles[i][j], { x: chunkIJ.x * chunk.tiles.length + j, y: chunkIJ.y * chunk.tiles.length + i });
+                    readyForCache = readyForCache && tileReady;
+                }
             }
+            if (readyForCache) mapChunkPaintCache[chunkKey] = cacheCtx;
+        }
+        if (readyForCache) {
+            ctx.drawImage(mapChunkPaintCache[chunkKey].canvas, paintTopLeftPosition.x, paintTopLeftPosition.y);
         }
     }
 }
 
 
-function paintTile(ctx: CanvasRenderingContext2D, paintPosition: Position, tileSize: number, tileId: number, posIJ: Position) {
-    if (paintPosition.x + tileSize < 0 || paintPosition.x > ctx.canvas.width
-        || paintPosition.y + tileSize < 0 || paintPosition.y > ctx.canvas.height) {
-        return;
-    }
-
-    ctx.fillStyle = "white";
+function paintTile(ctx: CanvasRenderingContext2D, paintPosition: Position, tileSize: number, tileId: number, posIJ: Position): boolean {
+    let imageReady = true;
     if (TILE_VALUES[tileId]) {
         if (TILE_VALUES[tileId].imagePath !== undefined) {
             if (TILE_VALUES[tileId].imageRef === undefined) {
                 let image = new Image();
                 image.src = TILE_VALUES[tileId].imagePath!;
+                if (!image.complete) {
+                    imageReady = false;
+                }
                 ctx.drawImage(image, paintPosition.x, paintPosition.y);
                 TILE_VALUES[tileId].imageRef = image;
             } else {
+                if (!TILE_VALUES[tileId].imageRef!.complete) {
+                    imageReady = false;
+                }
                 ctx.drawImage(TILE_VALUES[tileId].imageRef!, paintPosition.x, paintPosition.y);
-//                ctx.fillStyle = "Black";
-//                ctx.font = "8px Arial";
-//                ctx.fillText(`${posIJ.x}_${posIJ.y}`, paintPosition.x + 10, paintPosition.y + 20);
             }
         } else if (TILE_VALUES[tileId].color !== undefined) {
             ctx.fillStyle = TILE_VALUES[tileId].color!;
@@ -78,4 +90,5 @@ function paintTile(ctx: CanvasRenderingContext2D, paintPosition: Position, tileS
             console.log("missing tile color or image path", tileId);
         }
     }
+    return imageReady;
 }
