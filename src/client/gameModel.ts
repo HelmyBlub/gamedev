@@ -28,6 +28,12 @@ export type MapChunkPaintCache = {
     [key: string]: CanvasRenderingContext2D
 }
 
+export type MapPaintCache = {
+    startI?: number,
+    startJ?: number,
+    cacheCtx?: CanvasRenderingContext2D
+}
+
 export type GameState = {
     idCounter: IdCounter,
     projectiles: Projectile[],
@@ -80,6 +86,7 @@ export type Game = {
     }
     performance: {
         mapChunkPaintCache?: MapChunkPaintCache,
+        mapPaintCache?: MapPaintCache,
     }
     testing?: TestingStuff,
     closeGame?: boolean,
