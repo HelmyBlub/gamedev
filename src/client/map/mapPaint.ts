@@ -1,7 +1,6 @@
 import { paintCharacters } from "../character/character.js";
-import { IdCounter, MapChunkPaintCache, Position } from "../gameModel.js";
+import { MapChunkPaintCache, Position } from "../gameModel.js";
 import { GameMap, MapChunk, TILE_VALUES } from "./map.js";
-import { createNewChunk } from "./mapGeneration.js";
 
 export function paintMap(ctx: CanvasRenderingContext2D, cameraPosition: Position, map: GameMap, mapChunkPaintCache: MapChunkPaintCache) {
     let chunkSize = map.tileSize * map.chunkLength;
@@ -74,14 +73,16 @@ function paintTile(ctx: CanvasRenderingContext2D, paintPosition: Position, tileS
                 image.src = TILE_VALUES[tileId].imagePath!;
                 if (!image.complete) {
                     imageReady = false;
+                }else{
+                    ctx.drawImage(image, paintPosition.x, paintPosition.y);
                 }
-                ctx.drawImage(image, paintPosition.x, paintPosition.y);
                 TILE_VALUES[tileId].imageRef = image;
             } else {
                 if (!TILE_VALUES[tileId].imageRef!.complete) {
                     imageReady = false;
+                }else{
+                    ctx.drawImage(TILE_VALUES[tileId].imageRef!, paintPosition.x, paintPosition.y);
                 }
-                ctx.drawImage(TILE_VALUES[tileId].imageRef!, paintPosition.x, paintPosition.y);
             }
         } else if (TILE_VALUES[tileId].color !== undefined) {
             ctx.fillStyle = TILE_VALUES[tileId].color!;

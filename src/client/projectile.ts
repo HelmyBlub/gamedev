@@ -67,8 +67,8 @@ function paintProjectile(ctx: CanvasRenderingContext2D, projectile: Projectile, 
     ctx.fillStyle = projectile.color;
     ctx.beginPath();
     ctx.arc(
-        projectile.x - cameraPosition.x + centerX,
-        projectile.y - cameraPosition.y + centerY,
+        projectile.x - cameraPosition.x + centerX - projectile.size / 2,
+        projectile.y - cameraPosition.y + centerY - projectile.size / 2,
         projectile.size, 0, 2 * Math.PI
     );
     ctx.fill();

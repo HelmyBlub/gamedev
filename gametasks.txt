@@ -1,9 +1,12 @@
 next tasks:
-- analyse and improve performance
-    - improving map paint with caching
-- multiplayer test speedup should also work
-- Bug: infinte pathing problem if enemy surounded by blocking tiles
-- Perforamnce bug: pulling many enemies far away from spawn and than outranging them, they will move back to their own spawn and create a lot of lag
+    - enemy "levels"
+        - enemies scale in level every factor of x distance away from middle instead of linear, every level has different color
+    - enemy or projectile hit detection seems a bit off
+        - map collision also
+    - if enemy hp low than color changes?
+    - improve enemies
+        - currenly enemies scale linar by distance, not easy noticeable that they get stronger
+            - instead use enemy "level". So enemy strengh always jumps noticeable and give them different images
 
 technical tasks or bugs:
 - find uses of "any" type and try to remove
@@ -11,6 +14,9 @@ technical tasks or bugs:
 - use same code files for backend and frontend
     - understand require vs import in backend vs frontend
 - holding key down creates a lot of keyDown events, always sending over network although nothing changed
+- analyse and improve performance, still far to slow for so little stuff happening  
+    - unable to find an easy performance improvement
+- Perforamnce bug: pulling many enemies far away from spawn and than outranging them, they will move back to their own spawn and create a lot of lag
 
 future functional tasks:
     - if an enemy is aggroed in an inactive chunk, it should be active
@@ -41,6 +47,8 @@ future functional tasks:
     - projectiles hitting same enemy every tick
 
 future technical tasks:
+- multiplayer test speedup should also work
+- Bug: infinte pathing problem if enemy surounded by blocking tiles, currently only solved thorugh a max counter
 - multiplayer connection delay with localtunnel is too bad, try other options?
 - think: is automated testing already usefull?
 - https/ssl websocket

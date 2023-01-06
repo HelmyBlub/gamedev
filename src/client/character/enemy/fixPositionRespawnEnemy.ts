@@ -60,7 +60,7 @@ export function createFixPositionRespawnEnemies(chunk: MapChunk, chunkI: number,
                         let strenghFaktor = Math.max((distance - 100) / 100, 1);
                         let hp = 1 * strenghFaktor;
                         let moveSpeed = 1 + (Math.log10(strenghFaktor)/10);
-                        let size = 5 + Math.log10(strenghFaktor);
+                        let size = 20; //5 + Math.log10(strenghFaktor);
                         let damage = 1 + Math.log10(strenghFaktor);
                         chunk.characters.push(createEnemy(idCounter, enemyPos.x, enemyPos.y, size, moveSpeed, hp, damage));
                     }
@@ -78,7 +78,7 @@ export function tickFixPositionRespawnEnemyCharacter(enemy: FixPositionRespawnEn
         }
         respawnLogic(enemy, game);
     } else {
-        if (!enemy.nextTickTime || game.state.time >= enemy.nextTickTime || enemy.wasHitRecently) {
+        if (enemy.nextTickTime == undefined || game.state.time >= enemy.nextTickTime || enemy.wasHitRecently) {
             let playerCharacters = getPlayerCharacters(game.state.players);
             let closest = determineClosestCharacter(enemy, playerCharacters);
             let aggroed = closest.minDistance <= enemy.autoAggroRange

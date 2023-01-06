@@ -1,5 +1,4 @@
-import { getNextId } from "../game.js";
-import { Position, Game, IdCounter } from "../gameModel.js";
+import { Position, IdCounter } from "../gameModel.js";
 import { GameMap, isPositionBlocking } from "../map/map.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
 import { tickFixPositionRespawnEnemyCharacter } from "./enemy/fixPositionRespawnEnemy.js";
@@ -11,6 +10,29 @@ export type CHARACTER_TYPES_STUFF = {
     [key: string]: {
         tickFunction: Function,
     }
+}
+
+type EnemyImages = {
+    [key: string]: EnemyImage,
+}
+type ColorConversions = {
+    [key: string]: {r:number, g: number, b: number},
+}
+export type EnemyImage = {
+    baseColor: string,
+    imagePath?: string,
+    imageRef?: HTMLImageElement,
+    canvas?: HTMLCanvasElement,
+    colorToSprite?: string[];
+}
+
+export const ENEMY_IMAGES: EnemyImages = {
+    "slime": { baseColor: "green", imagePath: "/images/slimeEnemy.png" },
+}
+
+export const COLOR_CONVERSION: ColorConversions = {
+    "green": {r:0, g:255, b:0},
+    "black": {r:0, g:0, b:0},
 }
 
 export const PLAYER_FACTION = "player";
@@ -80,9 +102,9 @@ export function createPlayerCharacter(idCounter: IdCounter, pos: Position): Char
     return createLevelingCharacter(idCounter, pos.x, pos.y, 10, "blue", 2, 200, 10, PLAYER_FACTION);
 }
 
-export function getSpawnPositionAroundPlayer(playerCharacter: Character, randomSeed: RandomSeed, map: GameMap, idCounter: IdCounter): Position | null{
+export function getSpawnPositionAroundPlayer(playerCharacter: Character, randomSeed: RandomSeed, map: GameMap, idCounter: IdCounter): Position | null {
     let spawnDistance = 150;
-    let pos: Position = {x: 0, y:0};
+    let pos: Position = { x: 0, y: 0 };
     if (nextRandom(randomSeed) < 0.5) {
         pos.x = playerCharacter.x + (Math.round(nextRandom(randomSeed)) * 2 - 1) * spawnDistance;
         pos.y = playerCharacter.y + (nextRandom(randomSeed) - 0.5) * spawnDistance * 2;

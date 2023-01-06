@@ -78,11 +78,11 @@ async function runGameWithPlayerInputsMultiplayer(game: Game, playerInputs: Play
 }
 
 // time: 14172.899999999907
-// time: 12625.199999999953
+// time: 12625.199999999953, with chunkPaintCache
 function runGameWithPlayerInputsSinglePlayer(game: Game, playerInputs: PlayerInput[]){
     game.testing = {
         startTime: performance.now(),
-        frameSkipAmount: 0,
+        frameSkipAmount: 60,
         zeroTimeout: true,
     };
     game.state.ended = true;

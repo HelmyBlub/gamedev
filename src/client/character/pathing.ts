@@ -58,7 +58,12 @@ export function getNextWaypoint(
         openNodes.push(startIJ);
     }
 
+    let counter = 0;
+    let maxCounter = calculateDistance(startIJ, targetIJ) * 10;
     while (openNodes.length > 0) {
+        counter++;
+        if(counter > maxCounter) return null;
+
         let currentLowestValue = -1;
         let currentIndex = -1;
         for (let i = 0; i < openNodes.length; i++) {
