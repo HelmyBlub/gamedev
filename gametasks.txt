@@ -1,5 +1,4 @@
 next tasks:
-    - enemy size working again, currently bound to sprite size
     - different enemies depending on map direction based on map center
     - enemy animation, currenlty all move in sync
 
