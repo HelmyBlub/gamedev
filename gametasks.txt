@@ -1,4 +1,8 @@
 next tasks:
+    - enemy size working again, currently bound to sprite size
+    - different enemies depending on map direction based on map center
+    - enemy animation, currenlty all move in sync
+
     - enemy or projectile hit detection seems a bit off
         - map collision also
     - if enemy hp low than color changes?

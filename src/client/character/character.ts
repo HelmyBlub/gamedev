@@ -239,7 +239,8 @@ function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cam
             if (ENEMY_IMAGES[characterImageId].canvas) {
                 let spriteAnimation = Math.floor(performance.now()/250)%2;
                 let spriteColor = ENEMY_IMAGES[characterImageId].colorToSprite!.indexOf(character.color);
-                ctx.drawImage(ENEMY_IMAGES[characterImageId].canvas!, 0 + spriteAnimation * 20, 0 + spriteColor * 20 + 1, 20, 20, paintX, paintY, 20, 20);
+                let spriteSize = ENEMY_IMAGES[characterImageId].spriteSize;
+                ctx.drawImage(ENEMY_IMAGES[characterImageId].canvas!, 0 + spriteAnimation * spriteSize, 0 + spriteColor * spriteSize + 1, spriteSize, spriteSize, paintX, paintY, character.size, character.size);
             }
         } else {
             console.log("missing image path for enemy", characterImageId);

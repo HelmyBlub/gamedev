@@ -161,7 +161,7 @@ function createEnemyWithLevel(idCounter: IdCounter, enemyPos: Position, level: n
     let colors = ["black", "green", "blue", "red"];
     let hp = 5 * Math.pow(level, 3);
     let moveSpeed = Math.min(20, 1 + level/5);
-    let size = 20;
+    let size = Math.min(40, 10 + 5 * Math.floor(level/colors.length + 1));
     let damage = level;
     let color = colors[level%colors.length];
     let autoAggroRange = Math.min(750, 50 + level * 50); 

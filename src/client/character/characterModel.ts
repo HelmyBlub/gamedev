@@ -19,6 +19,7 @@ type ColorConversions = {
     [key: string]: {r:number, g: number, b: number},
 }
 export type EnemyImage = {
+    spriteSize: number,
     baseColor: string,
     imagePath?: string,
     imageRef?: HTMLImageElement,
@@ -27,7 +28,7 @@ export type EnemyImage = {
 }
 
 export const ENEMY_IMAGES: EnemyImages = {
-    "slime": { baseColor: "green", imagePath: "/images/slimeEnemy.png" },
+    "slime": { baseColor: "green", imagePath: "/images/slimeEnemy.png", spriteSize: 20 },
 }
 
 export const COLOR_CONVERSION: ColorConversions = {
