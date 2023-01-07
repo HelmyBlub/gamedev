@@ -33,6 +33,8 @@ export const ENEMY_IMAGES: EnemyImages = {
 export const COLOR_CONVERSION: ColorConversions = {
     "green": {r:0, g:255, b:0},
     "black": {r:0, g:0, b:0},
+    "red": {r:255, g:0, b:0},
+    "blue": {r:0, g:0, b:255},
 }
 
 export const PLAYER_FACTION = "player";

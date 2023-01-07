@@ -235,13 +235,11 @@ function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cam
     if(character.type === "levelingCharacter") characterImageId = "player";
     if (ENEMY_IMAGES[characterImageId]) {
         if (ENEMY_IMAGES[characterImageId].imagePath !== undefined) {
-            if (ENEMY_IMAGES[characterImageId].canvas === undefined) {
-                loadImage(ENEMY_IMAGES[characterImageId], character.color);
-            }
+            loadImage(ENEMY_IMAGES[characterImageId], character.color);
             if (ENEMY_IMAGES[characterImageId].canvas) {
                 let spriteAnimation = Math.floor(performance.now()/250)%2;
                 let spriteColor = ENEMY_IMAGES[characterImageId].colorToSprite!.indexOf(character.color);
-                ctx.drawImage(ENEMY_IMAGES[characterImageId].canvas!, 0 + spriteAnimation * 20, 0 + spriteColor * 20, 20, 20, paintX, paintY, 20, 20);
+                ctx.drawImage(ENEMY_IMAGES[characterImageId].canvas!, 0 + spriteAnimation * 20, 0 + spriteColor * 20 + 1, 20, 20, paintX, paintY, 20, 20);
             }
         } else {
             console.log("missing image path for enemy", characterImageId);
@@ -267,7 +265,7 @@ function loadImage(enemyImage: EnemyImage, color: string){
         if (enemyImage.imageRef!.complete) {
             let canvas = document.createElement('canvas');
             canvas.width = enemyImage.imageRef!.width;
-            canvas.height = enemyImage.imageRef!.height;
+            canvas.height = enemyImage.imageRef!.height * Object.keys(COLOR_CONVERSION).length;
             let imageCtx: CanvasRenderingContext2D = canvas.getContext("2d")!;
             imageCtx.drawImage(enemyImage.imageRef!, 0, 0);
             enemyImage.canvas = canvas;
@@ -276,9 +274,8 @@ function loadImage(enemyImage: EnemyImage, color: string){
     }
     if (enemyImage.canvas && enemyImage.colorToSprite?.indexOf(color) === -1) {
         if(color !== enemyImage.baseColor){
+            let paintY = enemyImage.imageRef!.height * enemyImage.colorToSprite.length;
             enemyImage.colorToSprite.push(color);
-            let paintY = enemyImage.canvas.height;
-            enemyImage.canvas.height += enemyImage.imageRef!.height;
             let imageCtx: CanvasRenderingContext2D = enemyImage.canvas.getContext("2d")!;
             imageCtx.drawImage(enemyImage.imageRef!, 0, paintY);
             let imageData = imageCtx.getImageData(0, paintY, enemyImage.canvas.width, enemyImage.imageRef!.height);

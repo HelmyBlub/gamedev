@@ -57,12 +57,8 @@ export function createFixPositionRespawnEnemies(chunk: MapChunk, chunkI: number,
                 distance = calculateDistance(mapCenter, enemyPos);
                 if (minSpawnDistanceFromMapCenter < distance) {
                     if (!isPositionBlocking(enemyPos, map, idCounter)) {
-                        let strenghFaktor = Math.max((distance - 100) / 100, 1);
-                        let hp = 1 * strenghFaktor;
-                        let moveSpeed = 1 + (Math.log10(strenghFaktor)/10);
-                        let size = 20; //5 + Math.log10(strenghFaktor);
-                        let damage = 1 + Math.log10(strenghFaktor);
-                        chunk.characters.push(createEnemy(idCounter, enemyPos.x, enemyPos.y, size, moveSpeed, hp, damage));
+                        let level = Math.max(Math.floor((distance - minSpawnDistanceFromMapCenter) / 1000), 0) + 1;
+                        chunk.characters.push(createEnemyWithLevel(idCounter, enemyPos, level));
                     }
                 }
             }
@@ -126,7 +122,7 @@ function respawnLogic(enemy: FixPositionRespawnEnemyCharacter, game: Game) {
         enemy.respawnOnTime = game.state.time + enemy.respawnTime;
     } else if (enemy.respawnOnTime <= game.state.time) {
         let closest = determineClosestCharacterToEnemySpawn(enemy, getPlayerCharacters(game.state.players));
-        if (closest.minDistance > 500) {
+        if (closest.minDistance > enemy.autoAggroRange + 100) {
             resetEnemy(enemy, game.state.map);
         }
     }
@@ -149,6 +145,7 @@ function determineClosestCharacterToEnemySpawn(character: FixPositionRespawnEnem
 function resetEnemy(enemy: FixPositionRespawnEnemyCharacter, map: GameMap) {
     enemy.hp = enemy.maxHp;
     enemy.isDead = false;
+    enemy.isAggroed = false;
     let deathMapChunkKey = positionToMapKey(enemy, map);
     let spawnMapChunkKey = positionToMapKey(enemy.spawnPosition, map);
     if(deathMapChunkKey !== spawnMapChunkKey){
@@ -160,6 +157,20 @@ function resetEnemy(enemy: FixPositionRespawnEnemyCharacter, map: GameMap) {
     delete enemy.respawnOnTime;
 }
 
+function createEnemyWithLevel(idCounter: IdCounter, enemyPos: Position, level: number){
+    let colors = ["black", "green", "blue", "red"];
+    let hp = 5 * Math.pow(level, 3);
+    let moveSpeed = Math.min(20, 1 + level/5);
+    let size = 20;
+    let damage = level;
+    let color = colors[level%colors.length];
+    let autoAggroRange = Math.min(750, 50 + level * 50); 
+    let alertEnemyRange = Math.min(500, 50 + level * 25);
+    let respawnTime = Math.max(1000, 30000 - level * 1000);
+
+    return createEnemy(idCounter, enemyPos.x, enemyPos.y, size, moveSpeed, hp, damage, color, autoAggroRange, alertEnemyRange, respawnTime);
+}
+
 function createEnemy(
     idCounter: IdCounter,
     x: number,
@@ -167,16 +178,20 @@ function createEnemy(
     size: number,
     moveSpeed: number,
     hp: number,
-    damage: number
+    damage: number,
+    color: string,
+    autoAggroRange: number,
+    alertEnemyRange: number,
+    respawnTime: number,
 ): FixPositionRespawnEnemyCharacter {
-    let enemy = createCharacter(getNextId(idCounter), x, y, size, "black", moveSpeed, hp, damage, "enemy", "fixPositionRespawnEnemy");
+    let enemy = createCharacter(getNextId(idCounter), x, y, size, color, moveSpeed, hp, damage, "enemy", "fixPositionRespawnEnemy");
     return {
         ...enemy,
-        autoAggroRange: 200,
+        autoAggroRange: autoAggroRange,
         spawnPosition: { x, y },
-        respawnTime: 30000,
+        respawnTime: respawnTime,
         isAggroed: false,
-        maxAggroRange: 400,
-        alertEnemyRange: 100,
+        maxAggroRange: Math.max(200, autoAggroRange * 1.5),
+        alertEnemyRange: alertEnemyRange,
     };
 }

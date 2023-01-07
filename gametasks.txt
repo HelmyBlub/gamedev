@@ -1,6 +1,4 @@
 next tasks:
-    - enemy "levels"
-        - enemies scale in level every factor of x distance away from middle instead of linear, every level has different color
     - enemy or projectile hit detection seems a bit off
         - map collision also
     - if enemy hp low than color changes?
