@@ -1,5 +1,6 @@
 import { createDefaultUpgradeOptions } from "./character/levelingCharacter.js";
 import { UpgradeOption } from "./character/levelingCharacterModel.js";
+import { generateMissingChunks } from "./game.js";
 import { createMap, GameMap } from "./map/map.js";
 import { Player } from "./player.js";
 import { PlayerInput } from "./playerInput.js";
@@ -93,7 +94,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             idCounter: {nextId: 0},
             projectiles: [],
             killCounter: 0,
-            ended: false,
+            ended: true,
             triggerRestart: false,
             restartAfterTick: false,
             time: 0,
@@ -131,5 +132,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
     }
 
     game.state.map.seed = nextRandom(game.state.randomSeed);
+    generateMissingChunks(game.state.map, [{x:0, y:0}], game.state.idCounter);
+
     return game;
 }

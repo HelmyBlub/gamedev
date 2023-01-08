@@ -1,4 +1,4 @@
-import { gameInit, runner } from "./game.js";
+import { runner } from "./game.js";
 import { createDefaultGameData, Game } from "./gameModel.js";
 import { keyDown, keyUp } from "./playerInput.js";
 
@@ -35,9 +35,6 @@ export function createGame(canvasElementId: string | undefined, forTesting: bool
     }else{
         game = createDefaultGameData(undefined, undefined);
     }
-
-    gameInit(game);
-    game.state.players[0].character.isDead = true;
     runner(game);
     return game;
 }

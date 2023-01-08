@@ -1,19 +1,20 @@
 import { getPlayerCharacters, paintCharacters } from "./character/character.js";
 import { LevelingCharacter } from "./character/levelingCharacterModel.js";
-import { getCameraPosition } from "./game.js";
+import { calculateDistance, getCameraPosition } from "./game.js";
 import { Game, Position, Highscores, TestingStuff } from "./gameModel.js";
 import { paintMap } from "./map/mapPaint.js";
 import { findPlayerById } from "./player.js";
 import { paintProjectiles } from "./projectile.js";
 
 export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) {
-    if(!ctx || skipPaint(game.testing)) return;
-    if(game.performance.mapChunkPaintCache === undefined) game.performance.mapChunkPaintCache = {};
+    if (!ctx || skipPaint(game.testing)) return;
+    if (game.performance.mapChunkPaintCache === undefined) game.performance.mapChunkPaintCache = {};
     let cameraPosition: Position = getCameraPosition(game);
     paintMap(ctx, cameraPosition, game.state.map, game.performance.mapChunkPaintCache);
     paintCharacters(ctx, getPlayerCharacters(game.state.players), cameraPosition);
     paintProjectiles(ctx, game.state.projectiles, cameraPosition);
     paintKillCounter(ctx, game.state.killCounter);
+
     if (game.state.ended) {
         paintHighscoreBoard(ctx, game.state.highscores);
     } else {
@@ -22,7 +23,7 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
             if (player === null) return;
             let character = player.character;
             if (character !== null) paintPlayerStats(ctx, character as LevelingCharacter, game.state.time);
-            ctx.fillText("Ping: " + Math.round(game.multiplayer.delay), 10, 40);
+            ctx.fillText("Ping: " + Math.round(game.multiplayer.delay), 10, 60);
 
         } else {
             paintPlayerStats(ctx, game.state.players[0].character as LevelingCharacter, game.state.time);
@@ -30,15 +31,15 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
     }
 }
 
-function skipPaint(testing: TestingStuff | undefined): boolean{
-    if(testing?.doNotPaint) return true;
+function skipPaint(testing: TestingStuff | undefined): boolean {
+    if (testing?.doNotPaint) return true;
 
     let skipFrame = false;
-    if(testing?.frameSkipAmount){
-        if(testing?.frameSkipCounter === undefined) testing.frameSkipCounter = testing.frameSkipAmount;
+    if (testing?.frameSkipAmount) {
+        if (testing?.frameSkipCounter === undefined) testing.frameSkipCounter = testing.frameSkipAmount;
         testing.frameSkipCounter--;
         skipFrame = true;
-        if(testing.frameSkipCounter === 0){
+        if (testing.frameSkipCounter === 0) {
             skipFrame = false;
             testing.frameSkipCounter = testing.frameSkipAmount;
         }
@@ -64,13 +65,16 @@ function paintKillCounter(ctx: CanvasRenderingContext2D, killCounter: number) {
 }
 
 function paintPlayerStats(ctx: CanvasRenderingContext2D, character: LevelingCharacter, gameTime: number) {
+    let distance = Math.round(calculateDistance(character, { x: 0, y: 0 }));
     ctx.fillStyle = "black";
     ctx.font = "18px Arial";
+
     ctx.fillText("Level: " + character.level
         + "  SkillPoints:" + character.availableSkillPoints,
         200, 20);
-        ctx.fillText("HP: " + character.hp, 100, 20);
-        ctx.fillText("Time: " + Math.round(gameTime/1000), 400, 20);
+    ctx.fillText("HP: " + character.hp, 100, 20);
+    ctx.fillText("Time: " + Math.round(gameTime / 1000), 400, 20);
+    ctx.fillText("Distance: " + distance, 10, 40);
 
     if (character.availableSkillPoints > 0) {
         ctx.fillText(`1=${character.upgradeOptions[0].name} Up, 2=${character.upgradeOptions[1].name}, 3=${character.upgradeOptions[2].name}`, 10, 300);

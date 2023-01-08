@@ -1,9 +1,5 @@
 next tasks:
-    - bug: enemy or projectile hit detection seems a bit off
-        - map collision also
-    - if enemy hp low than color changes or fill amount changes?
     - change scoring based on distance away from center instead of kill count
-    - enemy animation, currenlty all move in sync
 
 technical tasks or bugs:
 - find uses of "any" type and try to remove
@@ -42,6 +38,8 @@ future functional tasks:
     - make the game look descent as soon as it fun
     - deployment pipeline to a real server
     - projectiles hitting same enemy every tick
+    - enemy animation, currenlty all move in sync
+    - if enemy hp low than color changes or fill amount changes?
 
 future technical tasks:
 - multiplayer test speedup should also work

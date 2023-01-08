@@ -32,25 +32,25 @@ export function getNextId(idCounter: IdCounter) {
 }
 
 export function gameRestart(game: Game) {
-    if(game.testing){
+    if (game.testing) {
         setTestSeeds(game);
     }
     gameInit(game);
 }
 
-export function closeGame(game: Game){
-    if(game.multiplayer.websocket){
+export function closeGame(game: Game) {
+    if (game.multiplayer.websocket) {
         game.multiplayer.websocket.close();
     }
     game.closeGame = true;
     console.log("closing game");
 }
 
-function setTestSeeds(game: Game){
-    game.state.randomSeed.seed = 0 ;
+function setTestSeeds(game: Game) {
+    game.state.randomSeed.seed = 0;
     game.state.map = createMap();
     game.state.map.seed = 0;
-    if(game.testing) game.testing.collectedTestInputs = [];
+    if (game.testing) game.testing.collectedTestInputs = [];
 
 }
 
@@ -118,33 +118,33 @@ export function runner(game: Game) {
         gameRestart(game);
     }
 
-    if(!game.closeGame){
+    if (!game.closeGame) {
         let timeoutSleep = determineRunnerTimeout(game);
         setTimeout(() => runner(game), timeoutSleep);
     }
 }
 
-function determineRunnerTimeout(game: Game): number{
-    if(game.testing?.zeroTimeout){
+function determineRunnerTimeout(game: Game): number {
+    if (game.testing?.zeroTimeout) {
         return 0;
-    }else{
+    } else {
         if (game.multiplayer.websocket === null) {
-            if(game.shouldTickTime === undefined){
+            if (game.shouldTickTime === undefined) {
                 game.shouldTickTime = performance.now();
                 return game.tickInterval;
-            }else{
+            } else {
                 let timeoutSleep;
                 game.shouldTickTime += game.tickInterval;
                 let timeEnd = performance.now();
                 timeoutSleep = game.shouldTickTime - timeEnd;
-                if(timeoutSleep < 0){
+                if (timeoutSleep < 0) {
                     game.shouldTickTime = timeEnd;
                     timeoutSleep = 0;
                     console.log("game slow down, can not keep up");
                 }
                 return timeoutSleep;
-            }    
-        }else{
+            }
+        } else {
             return 5;
         }
     }
@@ -166,12 +166,17 @@ function gameEndedCheck(game: Game) {
 }
 
 function endGame(state: GameState, testing: TestingStuff | undefined) {
-    if(testing){
-        if(testing.collectedTestInputs) console.log("testInputs", testing.collectedTestInputs);
+    if (testing) {
+        if (testing.collectedTestInputs) console.log("testInputs", testing.collectedTestInputs);
         console.log("time:", performance.now() - testing.startTime);
     }
     state.ended = true;
-    state.highscores.scores.push(state.killCounter);
+    let newScore: number = 0;
+    for (const player of state.players) {
+        let distance = Math.round(calculateDistance(player.character, { x: 0, y: 0 }));
+        if (distance > newScore) newScore = distance;
+    }
+    state.highscores.scores.push(newScore);
     state.highscores.scores.sort((a, b) => b - a);
     if (state.highscores.scores.length > state.highscores.maxLength) {
         state.highscores.scores.pop();
@@ -195,13 +200,13 @@ function tick(gameTimePassed: number, game: Game) {
 }
 
 
-function generateMissingChunks(map: GameMap, playerCharacters: Character[], idCounter: IdCounter) {
+export function generateMissingChunks(map: GameMap, positions: Position[], idCounter: IdCounter) {
     let chunkSize = map.tileSize * map.chunkLength;
     let generationRadius = 1500;
 
-    for (const character of playerCharacters) {
-        let startX = (character.x - generationRadius);
-        let startY = (character.y - generationRadius);
+    for (const position of positions) {
+        let startX = (position.x - generationRadius);
+        let startY = (position.y - generationRadius);
         let startChunkI = Math.floor(startY / chunkSize);
         let startChunkJ = Math.floor(startX / chunkSize);
 
