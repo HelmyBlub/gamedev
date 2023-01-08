@@ -1,5 +1,12 @@
 next tasks:
-    - change scoring based on distance away from center instead of kill count
+    - Refactoring
+    - player Character
+        - images for player
+            - randomized character image, random head/body/legs/eyes/hair
+        - build one new player class: Melee
+            - sword as weapon
+            - upgrade option: bigger sword or more swords
+    - be able to choose player class at beginning of a round
 
 technical tasks or bugs:
 - find uses of "any" type and try to remove
