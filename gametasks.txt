@@ -1,7 +1,8 @@
 next tasks:
-    - enemy or projectile hit detection seems a bit off
+    - bug: enemy or projectile hit detection seems a bit off
         - map collision also
     - if enemy hp low than color changes or fill amount changes?
+    - change scoring based on distance away from center instead of kill count
     - enemy animation, currenlty all move in sync
 
 technical tasks or bugs:

@@ -226,12 +226,12 @@ function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cam
     if (character.isDead) return;
     let centerX = ctx.canvas.width / 2;
     let centerY = ctx.canvas.height / 2;
-    let paintX = character.x - cameraPosition.x + centerX - character.size / 2;
-    let paintY = character.y - cameraPosition.y + centerY - character.size / 2;
+    let paintX = character.x - cameraPosition.x + centerX;
+    let paintY = character.y - cameraPosition.y + centerY ;
     if (paintX < -character.size || paintX > ctx.canvas.width
         || paintY < -character.size || paintY > ctx.canvas.height) return;
 
-    let  characterImageId = "slime";
+    let characterImageId = "slime";
     if(character.type === "levelingCharacter") characterImageId = "player";
     if (ENEMY_IMAGES[characterImageId]) {
         if (ENEMY_IMAGES[characterImageId].imagePath !== undefined) {
@@ -240,7 +240,15 @@ function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cam
                 let spriteAnimation = Math.floor(performance.now()/250)%2;
                 let spriteColor = ENEMY_IMAGES[characterImageId].colorToSprite!.indexOf(character.color);
                 let spriteSize = ENEMY_IMAGES[characterImageId].spriteSize;
-                ctx.drawImage(ENEMY_IMAGES[characterImageId].canvas!, 0 + spriteAnimation * spriteSize, 0 + spriteColor * spriteSize + 1, spriteSize, spriteSize, paintX, paintY, character.size, character.size);
+                ctx.drawImage(
+                    ENEMY_IMAGES[characterImageId].canvas!,
+                    0 + spriteAnimation * spriteSize,
+                    0 + spriteColor * spriteSize + 1,
+                    spriteSize, spriteSize,
+                    paintX - character.size / 2,
+                    paintY - character.size / 2,
+                    character.size, character.size
+                );
             }
         } else {
             console.log("missing image path for enemy", characterImageId);
