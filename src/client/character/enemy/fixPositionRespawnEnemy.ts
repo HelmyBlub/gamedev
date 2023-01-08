@@ -74,12 +74,8 @@ export function createFixPositionRespawnEnemies(chunk: MapChunk, chunkI: number,
         enemyType = "default";
     }
     if (minSpawnDistanceFromMapCenter < chunkDistance + chunkSize) {
-        //        let spawnValue = 1;
         for (let i = 0; i < chunk.tiles.length; i++) {
             for (let j = 0; j < chunk.tiles[i].length; j++) {
-                //                spawnValue += ENEMY_TYPES[enemyType].spawnAmountFactor;
-                //                if(spawnValue >= 1){
-                //                    spawnValue -=1;
                 let spawnEnemy = fixedRandom(i + chunkI * chunk.tiles.length, j + chunkJ * chunk.tiles[i].length, map.seed!) / 256;
                 if (spawnEnemy <= ENEMY_TYPES[enemyType].spawnAmountFactor) {
                     let enemyPos: Position = {
