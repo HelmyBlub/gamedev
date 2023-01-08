@@ -34,7 +34,7 @@ export function createNewChunkTiles(chunkLength: number, chunkI: number, chunkJ:
     return chunk;
 }
 
-function testFixedRandom(x: number, y: number, seed: number) {
+export function fixedRandom(x: number, y: number, seed: number) {
     return (Math.sin((x * 112.01716 + y * 718.233 + seed * 1234.1234) * 437057.545323) * 1000000) & 255;
 }
 
@@ -58,7 +58,7 @@ function perlin_get(x: number, y: number, seed: number) {
 
 function dot_prod_grid(x: number, y: number, vx: number, vy: number, seed: number) {
     let d_vect = { x: x - vx, y: y - vy };
-    let random = testFixedRandom(vx, vy, seed) / 256 * 2 * Math.PI;
+    let random = fixedRandom(vx, vy, seed) / 256 * 2 * Math.PI;
     let vector = { x: Math.cos(random), y: Math.sin(random) };
 
     return d_vect.x * vector.x + d_vect.y * vector.y;

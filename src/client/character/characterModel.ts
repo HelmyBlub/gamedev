@@ -80,6 +80,7 @@ export function createCharacter(
     damage: number,
     faction: string,
     type: string,
+    experienceWorth: number,
     isMoving: boolean = false,
 ): Character {
     return {
@@ -95,7 +96,7 @@ export function createCharacter(
         maxHp: hp,
         damage: damage,
         faction: faction,
-        experienceWorth: 1,
+        experienceWorth: experienceWorth,
         type: type,
         isDead: false,
     };

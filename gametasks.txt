@@ -1,13 +1,8 @@
 next tasks:
-    - different enemies depending on map direction based on map center
-    - enemy animation, currenlty all move in sync
-
     - enemy or projectile hit detection seems a bit off
         - map collision also
-    - if enemy hp low than color changes?
-    - improve enemies
-        - currenly enemies scale linar by distance, not easy noticeable that they get stronger
-            - instead use enemy "level". So enemy strengh always jumps noticeable and give them different images
+    - if enemy hp low than color changes or fill amount changes?
+    - enemy animation, currenlty all move in sync
 
 technical tasks or bugs:
 - find uses of "any" type and try to remove

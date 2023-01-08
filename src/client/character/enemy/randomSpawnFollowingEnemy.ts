@@ -71,7 +71,7 @@ function increaseEnemyMovementSpeedAfterTime(enemy: RandomSpawnFollowingEnemyCha
 }
 
 function createEnemy(game: Game, x: number, y: number, hp: number): RandomSpawnFollowingEnemyCharacter {
-    let enemy: Character = createCharacter(getNextId(game.state.idCounter), x, y, 5, "black", 0.5, hp, 1, ENEMY_FACTION, "randomSpawnFollowingEnemy", true);
+    let enemy: Character = createCharacter(getNextId(game.state.idCounter), x, y, 5, "black", 0.5, hp, 1, ENEMY_FACTION, "randomSpawnFollowingEnemy", 1, true);
     let randomEnemy = {...enemy, spawnTime: game.state.time};
     
     return randomEnemy;
