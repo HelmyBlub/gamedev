@@ -2,8 +2,8 @@ import { getNextId } from "../../game.js";
 import { Game, IdCounter, Position } from "../../gameModel.js";
 import { addEnemyToMap, GameMap, positionToMapKey } from "../../map/map.js";
 import { RandomSeed } from "../../randomNumberGenerator.js";
-import { getPlayerCharacters, determineClosestCharacter, determineEnemyHitsPlayer, determineEnemyMoveDirection, moveCharacterTick, countCharacters } from "../character.js";
-import { getSpawnPositionAroundPlayer, Character, createCharacter, ENEMY_FACTION } from "../characterModel.js";
+import { getPlayerCharacters, determineClosestCharacter, determineEnemyHitsPlayer, determineEnemyMoveDirection, moveCharacterTick, countCharacters, getSpawnPositionAroundPlayer } from "../character.js";
+import { Character, createCharacter, ENEMY_FACTION } from "../characterModel.js";
 import { PathingCache } from "../pathing.js";
 
 export type RandomSpawnFollowingEnemyCharacter = Character & {

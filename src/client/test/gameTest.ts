@@ -25,8 +25,8 @@ function runGameWithPlayerInputs(game: Game, playerInputs: PlayerInput[]) {
     }else{
         runGameWithPlayerInputsSinglePlayer(game, playerInputs);
     }
-
 }
+
 async function runGameWithPlayerInputsMultiplayer(game: Game, playerInputs: PlayerInput[], playerIds: number[]){
     const playerCount = playerIds.length;
     const games: Game[] = [game];
@@ -77,8 +77,7 @@ async function runGameWithPlayerInputsMultiplayer(game: Game, playerInputs: Play
     }
 }
 
-// time: 14172.899999999907
-// time: 12625.199999999953, with chunkPaintCache
+// time: 14790.5, chrome&firefox, 60frameskip, kills:93, score: 1301
 function runGameWithPlayerInputsSinglePlayer(game: Game, playerInputs: PlayerInput[]){
     game.testing = {
         startTime: performance.now(),

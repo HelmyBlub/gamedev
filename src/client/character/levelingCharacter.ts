@@ -1,10 +1,10 @@
-import { determineMapKeysInDistance, getPlayerCharacters, moveCharacterTick } from "./character.js";
+import { getPlayerCharacters, moveCharacterTick } from "./character.js";
 import { Game, GameState } from "../gameModel.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
 import { Character } from "./characterModel.js";
 import { createProjectile, Projectile } from "../projectile.js";
 import { LevelingCharacter, UpgradeOption } from "./levelingCharacterModel.js";
-import { GameMap } from "../map/map.js";
+import { UPGRADE_ACTIONS } from "../playerInput.js";
 
 export function fillRandomUpgradeOptions(character: LevelingCharacter, randomSeed: RandomSeed, upgradeOptions: Map<string, UpgradeOption>) {
     if (character.upgradeOptions.length === 0) {
@@ -54,6 +54,17 @@ export function createDefaultUpgradeOptions(): Map<string, UpgradeOption> {
     });
 
     return upgradeOptions;
+}
+
+export function upgradeLevelingCharacter(character: LevelingCharacter, upgradeOptionIndex: number, upgradeOptions: Map<string, UpgradeOption>, randomSeed: RandomSeed) {
+    if (character.availableSkillPoints > 0) {
+        upgradeOptions.get(character.upgradeOptions[upgradeOptionIndex].name)?.upgrade(character);
+        character.availableSkillPoints--;
+        character.upgradeOptions = [];
+        if (character.availableSkillPoints > 0) {
+            fillRandomUpgradeOptions(character, randomSeed, upgradeOptions);
+        }
+    }
 }
 
 export function levelingCharacterXpGain(state: GameState, killedCharacter: Character, upgradeOptions: Map<string, UpgradeOption>) {

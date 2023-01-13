@@ -1,17 +1,12 @@
 import { levelingCharacterXpGain } from "./levelingCharacter.js";
-import { GameMap, isPositionBlocking } from "../map/map.js";
-import { Character, CHARACTER_TYPES_STUFF, COLOR_CONVERSION, EnemyImage, ENEMY_FACTION, ENEMY_IMAGES } from "./characterModel.js";
+import { determineMapKeysInDistance, GameMap, isPositionBlocking } from "../map/map.js";
+import { Character, CHARACTER_TYPES_STUFF, ENEMY_FACTION } from "./characterModel.js";
 import { createPathingCache, getNextWaypoint, PathingCache } from "./pathing.js";
 import { UpgradeOption } from "./levelingCharacterModel.js";
 import { calculateDirection, calculateDistance } from "../game.js";
 import { Position, Game, GameState, IdCounter } from "../gameModel.js";
 import { Player } from "../player.js";
-
-export function paintCharacters(ctx: CanvasRenderingContext2D, characters: Character[], cameraPosition: Position) {
-    for (let i = 0; i < characters.length; i++) {
-        paintCharacter(ctx, characters[i], cameraPosition);
-    }
-}
+import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
 
 export function findCharacterById(characters: Character[], id: number): Character | null {
     for (let i = 0; i < characters.length; i++) {
@@ -79,24 +74,6 @@ export function determineCharactersInDistance(position: Position, map: GameMap, 
     return result;
 }
 
-export function determineMapKeysInDistance(position: Position, map: GameMap, maxDistance: number, addNotCreatedChunkKeys: boolean = true): string[] {
-    let chunkSize = map.tileSize * map.chunkLength;
-    let maxChunks = Math.ceil(maxDistance / chunkSize);
-    let result: string[] = [];
-    for (let i = - maxChunks; i <= maxChunks; i++) {
-        for (let j = - maxChunks; j <= maxChunks; j++) {
-            let chunkI = Math.floor(position.y / chunkSize) + i;
-            let chunkJ = Math.floor(position.x / chunkSize) + j;
-            if (!addNotCreatedChunkKeys && map.chunks[`${chunkI}_${chunkJ}`] === undefined) continue;
-            let distance = calculateDistanceToMapChunk(chunkI, chunkJ, position, map);
-            if (distance <= maxDistance) {
-                result.push(`${chunkI}_${chunkJ}`);
-            }
-        }
-    }
-    return result;
-}
-
 export function countCharacters(map: GameMap): number{
     let counter = 0;
     let chunkKeys = Object.keys(map.chunks);
@@ -106,43 +83,6 @@ export function countCharacters(map: GameMap): number{
     }
     
     return counter;
-}
-
-function calculateDistanceToMapChunk(chunkI: number, chunkJ: number, position: Position, map: GameMap): number {
-    let chunkSize = map.tileSize * map.chunkLength;
-    let topChunk = chunkI * chunkSize;
-    let leftChunk = chunkJ * chunkSize;
-    if (leftChunk <= position.x && leftChunk + chunkSize > position.x) {
-        if (topChunk + chunkSize > position.y) {
-            if (topChunk <= position.y) {
-                return 0;
-            } else {
-                return topChunk - position.y;
-            }
-        } else {
-            return position.y - topChunk + chunkSize;
-        }
-    } else if (topChunk <= position.y && topChunk + chunkSize > position.y) {
-        if (leftChunk + chunkSize > position.x) {
-            if (leftChunk <= position.x) {
-                return 0;
-            } else {
-                return leftChunk - position.x;
-            }
-        } else {
-            return position.x - leftChunk + chunkSize;
-        }
-    } else {
-        if (topChunk > position.y && leftChunk > position.x) {
-            return calculateDistance(position, { x: leftChunk, y: topChunk });
-        } else if (topChunk + chunkSize <= position.y && leftChunk > position.x) {
-            return calculateDistance(position, { x: leftChunk, y: topChunk + chunkSize });
-        } else if (topChunk > position.y && leftChunk + chunkSize <= position.x) {
-            return calculateDistance(position, { x: leftChunk + chunkSize, y: topChunk });
-        } else {
-            return calculateDistance(position, { x: leftChunk + chunkSize, y: topChunk + chunkSize });
-        }
-    }
 }
 
 export function detectCharacterDeath(map: GameMap, state: GameState, upgradeOptions: Map<string, UpgradeOption>) {
@@ -164,6 +104,22 @@ export function detectCharacterDeath(map: GameMap, state: GameState, upgradeOpti
             char.isDead = true;
         }
     }
+}
+
+export function getSpawnPositionAroundPlayer(playerCharacter: Character, randomSeed: RandomSeed, map: GameMap, idCounter: IdCounter): Position | null {
+    let spawnDistance = 150;
+    let pos: Position = { x: 0, y: 0 };
+    if (nextRandom(randomSeed) < 0.5) {
+        pos.x = playerCharacter.x + (Math.round(nextRandom(randomSeed)) * 2 - 1) * spawnDistance;
+        pos.y = playerCharacter.y + (nextRandom(randomSeed) - 0.5) * spawnDistance * 2;
+    } else {
+        pos.x = playerCharacter.x + (nextRandom(randomSeed) - 0.5) * spawnDistance * 2;
+        pos.y = playerCharacter.y + (Math.round(nextRandom(randomSeed)) * 2 - 1) * spawnDistance;
+    }
+    if (!isPositionBlocking(pos, map, idCounter)) {
+        return pos;
+    }
+    return null;
 }
 
 export function countAlivePlayerCharacters(players: Player[]) {
@@ -218,97 +174,6 @@ export function moveCharacterTick(character: Character, map: GameMap, idCounter:
 
             character.x = x;
             character.y = y;
-        }
-    }
-}
-
-function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position) {
-    if (character.isDead) return;
-    let centerX = ctx.canvas.width / 2;
-    let centerY = ctx.canvas.height / 2;
-    let paintX = character.x - cameraPosition.x + centerX;
-    let paintY = character.y - cameraPosition.y + centerY ;
-    if (paintX < -character.size || paintX > ctx.canvas.width
-        || paintY < -character.size || paintY > ctx.canvas.height) return;
-
-    let characterImageId = "slime";
-    if(character.type === "levelingCharacter") characterImageId = "player";
-    if (ENEMY_IMAGES[characterImageId]) {
-        if (ENEMY_IMAGES[characterImageId].imagePath !== undefined) {
-            loadImage(ENEMY_IMAGES[characterImageId], character.color);
-            if (ENEMY_IMAGES[characterImageId].canvas) {
-                let spriteAnimation = Math.floor(performance.now()/250)%2;
-                let spriteColor = ENEMY_IMAGES[characterImageId].colorToSprite!.indexOf(character.color);
-                let spriteSize = ENEMY_IMAGES[characterImageId].spriteSize;
-                ctx.drawImage(
-                    ENEMY_IMAGES[characterImageId].canvas!,
-                    0 + spriteAnimation * spriteSize,
-                    0 + spriteColor * spriteSize + 1,
-                    spriteSize, spriteSize,
-                    paintX - character.size / 2,
-                    paintY - character.size / 2,
-                    character.size, character.size
-                );
-            }
-        } else {
-            console.log("missing image path for enemy", characterImageId);
-        }
-    } else{
-        ctx.fillStyle = character.color;
-        ctx.beginPath();
-        ctx.arc(
-            paintX,
-            paintY,
-            character.size, 0, 2 * Math.PI);
-        ctx.fill();
-    }       
-}
-
-function loadImage(enemyImage: EnemyImage, color: string){
-    if (enemyImage.canvas === undefined) {
-        if (enemyImage.imageRef === undefined) {
-            let image = new Image();
-            image.src = enemyImage.imagePath!;
-            enemyImage.imageRef = image;
-        }
-        if (enemyImage.imageRef!.complete) {
-            let canvas = document.createElement('canvas');
-            canvas.width = enemyImage.imageRef!.width;
-            canvas.height = enemyImage.imageRef!.height * Object.keys(COLOR_CONVERSION).length;
-            let imageCtx: CanvasRenderingContext2D = canvas.getContext("2d")!;
-            imageCtx.drawImage(enemyImage.imageRef!, 0, 0);
-            enemyImage.canvas = canvas;
-            enemyImage.colorToSprite = [enemyImage.baseColor];
-        }
-    }
-    if (enemyImage.canvas && enemyImage.colorToSprite?.indexOf(color) === -1) {
-        if(color !== enemyImage.baseColor){
-            let paintY = enemyImage.imageRef!.height * enemyImage.colorToSprite.length;
-            enemyImage.colorToSprite.push(color);
-            let imageCtx: CanvasRenderingContext2D = enemyImage.canvas.getContext("2d")!;
-            imageCtx.drawImage(enemyImage.imageRef!, 0, paintY);
-            let imageData = imageCtx.getImageData(0, paintY, enemyImage.canvas.width, enemyImage.imageRef!.height);
-            let data = imageData.data;
-            let newColorRGB = COLOR_CONVERSION[color];
-            let toChangeColor = COLOR_CONVERSION[enemyImage.baseColor];
-            for(let pixelStart = 0; pixelStart < data.length; pixelStart += 4){
-                if(data[pixelStart] === toChangeColor.r
-                    && data[pixelStart+1] === toChangeColor.g
-                    && data[pixelStart+2] === toChangeColor.b
-                ){
-                    data[pixelStart] = newColorRGB.r;
-                    data[pixelStart+1] = newColorRGB.g;
-                    data[pixelStart+2] = newColorRGB.b;
-                }else if(data[pixelStart] === newColorRGB.r
-                    && data[pixelStart+1] === newColorRGB.g
-                    && data[pixelStart+2] === newColorRGB.b
-                ){
-                    data[pixelStart] = 255;
-                    data[pixelStart+1] = 255;
-                    data[pixelStart+2] = 255;
-                }
-            }
-            imageCtx.putImageData(imageData, 0, paintY);
         }
     }
 }

@@ -1,4 +1,4 @@
-import { paintCharacters } from "../character/character.js";
+import { paintCharacters } from "../character/characterPaint.js";
 import { MapChunkPaintCache, Position } from "../gameModel.js";
 import { GameMap, MapChunk, TILE_VALUES } from "./map.js";
 

@@ -1,5 +1,5 @@
 import { handleCommand } from "./commands.js";
-import { fillRandomUpgradeOptions } from "./character/levelingCharacter.js";
+import { fillRandomUpgradeOptions, upgradeLevelingCharacter } from "./character/levelingCharacter.js";
 import { findPlayerById } from "./player.js";
 import { Character } from "./character/characterModel.js";
 import { LevelingCharacter, UpgradeOption } from "./character/levelingCharacterModel.js";
@@ -146,20 +146,8 @@ function playerAction(clientId: number, action: string, isKeydown: boolean, game
             }
         } else if (UPGRADE_ACTIONS.indexOf(action) !== -1) {
             if (isKeydown) {
-                upgradeLevelingCharacter(character as LevelingCharacter, action, game.avaialbleUpgrades, game.state.randomSeed);
+                upgradeLevelingCharacter(character as LevelingCharacter, UPGRADE_ACTIONS.indexOf(action), game.avaialbleUpgrades, game.state.randomSeed);
             }
-        }
-    }
-}
-
-function upgradeLevelingCharacter(character: LevelingCharacter, action: string, upgradeOptions: Map<string, UpgradeOption>, randomSeed: RandomSeed) {
-    if (character.availableSkillPoints > 0) {
-        let index = UPGRADE_ACTIONS.indexOf(action);
-        upgradeOptions.get(character.upgradeOptions[index].name)?.upgrade(character);
-        character.availableSkillPoints--;
-        character.upgradeOptions = [];
-        if (character.availableSkillPoints > 0) {
-            fillRandomUpgradeOptions(character, randomSeed, upgradeOptions);
         }
     }
 }

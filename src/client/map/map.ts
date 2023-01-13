@@ -1,4 +1,5 @@
 import { Character } from "../character/characterModel.js";
+import { calculateDistance } from "../game.js";
 import { IdCounter, Position } from "../gameModel.js"
 import { createNewChunk } from "./mapGeneration.js";
 
@@ -82,6 +83,74 @@ export function findNearNonBlockingPosition(pos: Position, map: GameMap, idCount
 export function positionToMapKey(pos: Position, map: GameMap): string {
     let chunkSize = map.tileSize * map.chunkLength;
     return `${Math.floor(pos.y / chunkSize)}_${Math.floor(pos.x / chunkSize)}`;
+}
+
+export function mapKeyToChunkIJ(mapKey: string){
+    let chunkI = parseInt(mapKey.split("_")[0]);
+    let chunkJ = parseInt(mapKey.split("_")[1]);
+    return {chunkI, chunkJ};
+}
+
+export function determineMapKeysInDistance(position: Position, map: GameMap, maxDistance: number, addNotCreatedChunkKeys: boolean = true): string[] {
+    let chunkSize = map.tileSize * map.chunkLength;
+    let maxChunks = Math.ceil(maxDistance / chunkSize);
+    let result: string[] = [];
+    for (let i = - maxChunks; i <= maxChunks; i++) {
+        for (let j = - maxChunks; j <= maxChunks; j++) {
+            let chunkI = Math.floor(position.y / chunkSize) + i;
+            let chunkJ = Math.floor(position.x / chunkSize) + j;
+            if (!addNotCreatedChunkKeys && map.chunks[`${chunkI}_${chunkJ}`] === undefined) continue;
+            let distance = calculateDistanceToMapChunk(chunkI, chunkJ, position, map);
+            if (distance <= maxDistance) {
+                result.push(`${chunkI}_${chunkJ}`);
+            }
+        }
+    }
+    return result;
+}
+
+export function removeAllMapCharacters(map: GameMap) {
+    let key = Object.keys(map.chunks);
+    for (let i = 0; i < key.length; i++) {
+        map.chunks[key[i]].characters = [];
+    }
+}
+
+function calculateDistanceToMapChunk(chunkI: number, chunkJ: number, position: Position, map: GameMap): number {
+    let chunkSize = map.tileSize * map.chunkLength;
+    let topChunk = chunkI * chunkSize;
+    let leftChunk = chunkJ * chunkSize;
+    if (leftChunk <= position.x && leftChunk + chunkSize > position.x) {
+        if (topChunk + chunkSize > position.y) {
+            if (topChunk <= position.y) {
+                return 0;
+            } else {
+                return topChunk - position.y;
+            }
+        } else {
+            return position.y - topChunk + chunkSize;
+        }
+    } else if (topChunk <= position.y && topChunk + chunkSize > position.y) {
+        if (leftChunk + chunkSize > position.x) {
+            if (leftChunk <= position.x) {
+                return 0;
+            } else {
+                return leftChunk - position.x;
+            }
+        } else {
+            return position.x - leftChunk + chunkSize;
+        }
+    } else {
+        if (topChunk > position.y && leftChunk > position.x) {
+            return calculateDistance(position, { x: leftChunk, y: topChunk });
+        } else if (topChunk + chunkSize <= position.y && leftChunk > position.x) {
+            return calculateDistance(position, { x: leftChunk, y: topChunk + chunkSize });
+        } else if (topChunk > position.y && leftChunk + chunkSize <= position.x) {
+            return calculateDistance(position, { x: leftChunk + chunkSize, y: topChunk });
+        } else {
+            return calculateDistance(position, { x: leftChunk + chunkSize, y: topChunk + chunkSize });
+        }
+    }
 }
 
 function getMapTile(pos: Position, map: GameMap, idCounter: IdCounter): MapTile {

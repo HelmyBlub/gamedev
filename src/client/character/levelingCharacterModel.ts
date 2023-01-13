@@ -1,6 +1,6 @@
 import { getNextId } from "../game.js";
-import { Game, IdCounter } from "../gameModel.js";
-import { Character } from "./characterModel.js";
+import { IdCounter } from "../gameModel.js";
+import { Character, createCharacter } from "./characterModel.js";
 
 export type LevelingCharacter = Character & {
     experience: number,
@@ -35,22 +35,10 @@ export function createLevelingCharacter(
     hp: number,
     damage: number,
     faction: string,
-    isMoving: boolean = false,
 ): LevelingCharacter {
+    let character = createCharacter(getNextId(idCounter), x, y, size, color, moveSpeed, hp, damage, faction, "levelingCharacter", 1);
     return {
-        id: getNextId(idCounter),
-        x: x,
-        y: y,
-        size: size,
-        color: color,
-        moveSpeed: moveSpeed,
-        moveDirection: 0,
-        isMoving: isMoving,
-        hp: hp,
-        maxHp: hp,
-        damage: damage,
-        faction: faction,
-        experienceWorth: 1,
+        ...character,
         experience: 0,
         experienceForLevelUp: 10,
         level: 0,
@@ -64,7 +52,5 @@ export function createLevelingCharacter(
             multiShot: 0,
             timeToLive: 1000,
         },
-        type: "levelingCharacter",
-        isDead: false,
     };
 }

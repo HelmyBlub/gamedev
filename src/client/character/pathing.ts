@@ -24,7 +24,7 @@ export function getNextWaypoint(
     idCounter: IdCounter
 ): Position | null {
     if(isPositionBlocking(sourcePos, map, idCounter)){
-        throw new Error("idiot, can't find way to a blocking position");
+        throw new Error("can't find way to a blocking position");
     }
     let targetIJ: Position = calculatePosToTileIJ(sourcePos, map);
     let startIJ: Position = calculatePosToTileIJ(targetPos, map);
@@ -104,7 +104,6 @@ export function getNextWaypoint(
 function getPathNeighborsIJ(posIJ: Position, map: GameMap, idCounter: IdCounter): Position[] {
     let result: Position[] = [];
     let top, bottom, left, right: boolean = false;
-
 
     let tempIJ = { x: posIJ.x, y: posIJ.y - 1 };
     if (!isPositionBlocking({ x: tempIJ.x * map.tileSize, y: tempIJ.y * map.tileSize }, map, idCounter)) {

@@ -1,5 +1,6 @@
-import { createFixPositionRespawnEnemies } from "../character/enemy/fixPositionRespawnEnemy.js";
+import { createFixPositionRespawnEnemies } from "../character/enemy/fixPositionRespawnEnemyModel.js";
 import { IdCounter } from "../gameModel.js";
+import { fixedRandom } from "../randomNumberGenerator.js";
 import { GameMap, MapChunk } from "./map.js";
 
 export function createNewChunk(map: GameMap, chunkI: number, chunkJ: number, idCounter: IdCounter): MapChunk{
@@ -32,10 +33,6 @@ export function createNewChunkTiles(chunkLength: number, chunkI: number, chunkJ:
     }
 
     return chunk;
-}
-
-export function fixedRandom(x: number, y: number, seed: number) {
-    return (Math.sin((x * 112.01716 + y * 718.233 + seed * 1234.1234) * 437057.545323) * 1000000) & 255;
 }
 
 function perlin_get(x: number, y: number, seed: number) {

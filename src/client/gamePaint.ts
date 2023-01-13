@@ -1,4 +1,5 @@
-import { getPlayerCharacters, paintCharacters } from "./character/character.js";
+import { getPlayerCharacters } from "./character/character.js";
+import { paintCharacters } from "./character/characterPaint.js";
 import { LevelingCharacter } from "./character/levelingCharacterModel.js";
 import { calculateDistance, getCameraPosition } from "./game.js";
 import { Game, Position, Highscores, TestingStuff } from "./gameModel.js";
