@@ -78,22 +78,18 @@ async function runGameWithPlayerInputsMultiplayer(game: Game, playerInputs: Play
 }
 
 // time: 14790.5, chrome&firefox, 60frameskip, kills:93, score: 1301
+// time: 1049,  chrome, 60frameskip, kills:93, score: 1301 => frameskip no also skips setTimeout
+// time: 1562, firefox, 60frameskip, kills:93, score: 1301 => frameskip no also skips setTimeout
+// new inputs: time: 4531.200000000186
 function runGameWithPlayerInputsSinglePlayer(game: Game, playerInputs: PlayerInput[]){
     game.testing = {
         startTime: performance.now(),
         frameSkipAmount: 60,
         zeroTimeout: true,
+        replayPlayerInputs: playerInputs,
     };
     game.state.ended = true;
     handleCommand(game, { command: "restart", clientId: game.multiplayer.myClientId, testing: true });
-
-    const myPromise = getUntilPromise(() => !game.state.ended, 50);
-    myPromise.then(() => {
-        for (const input of playerInputs) {
-            input.clientId = game.multiplayer.myClientId;
-            handleCommand(game, input);
-        }        
-    });
 }
 
 function getClientIds( playerInputs: PlayerInput[]): number[]{

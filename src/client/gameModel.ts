@@ -20,9 +20,10 @@ export type TestingStuff = {
     zeroTimeout?: boolean,
     doNotPaint?: boolean,
     frameSkipAmount?: number,
-    frameSkipCounter?: number,
     startTime: number,
     collectedTestInputs?: PlayerInput[],
+    replayPlayerInputs?: PlayerInput[],
+    replayInputCounter?: number,
 }
 
 export type MapChunkPaintCache = {

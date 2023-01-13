@@ -8,6 +8,7 @@ import { createMap, determineMapKeysInDistance, GameMap, removeAllMapCharacters 
 import { Character } from "./character/characterModel.js";
 import { createNewChunk } from "./map/mapGeneration.js";
 import { createFixPositionRespawnEnemiesOnInit } from "./character/enemy/fixPositionRespawnEnemyModel.js";
+import { handleCommand } from "./commands.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -85,11 +86,16 @@ export function calculateDistance(objectA: { x: number, y: number }, objectB: { 
 }
 
 export function runner(game: Game) {
-    const timeNow = performance.now();
-
     if (game.multiplayer.websocket === null) {
-        tick(game.tickInterval, game);
+        if (game.testing && game.testing.frameSkipAmount && game.testing.frameSkipAmount > 0) {
+            for (let i = 0; i < game.testing.frameSkipAmount; i++) {
+                tick(game.tickInterval, game);
+            }
+        } else {
+            tick(game.tickInterval, game);
+        }
     } else {
+        const timeNow = performance.now();
         let counter = 0;
         while (!game.state.ended && (game.multiplayer.maxServerGameTime >= game.state.time + game.tickInterval || game.state.triggerRestart) && counter < 50) {
             counter++;
@@ -193,6 +199,14 @@ function endGame(state: GameState, testing: TestingStuff | undefined) {
 
 function tick(gameTimePassed: number, game: Game) {
     if (!game.state.ended) {
+        if (game.testing && game.testing.replayPlayerInputs) {
+            if (game.testing.replayInputCounter === undefined) game.testing.replayInputCounter = 0;
+            while (game.testing.replayPlayerInputs[game.testing.replayInputCounter]
+                && game.testing.replayPlayerInputs[game.testing.replayInputCounter].executeTime < game.state.time + 1000) {
+                handleCommand(game, game.testing.replayPlayerInputs[game.testing.replayInputCounter]);
+                game.testing.replayInputCounter++;
+            }
+        }
         game.state.time += gameTimePassed;
         generateMissingChunks(game.state.map, getPlayerCharacters(game.state.players), game.state.idCounter);
         tickPlayerInputs(game.state.playerInputs, game.state.time, game);
