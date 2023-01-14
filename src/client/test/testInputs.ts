@@ -1,4 +1,4 @@
-//399 kills, 4791 distance
+//398 kills, 4791 distance
 export const testInputs = [
     {
         "command": "playerInput",

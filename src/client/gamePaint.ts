@@ -11,7 +11,7 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
     if (!ctx) return;
     if (game.performance.mapChunkPaintCache === undefined) game.performance.mapChunkPaintCache = {};
     let cameraPosition: Position = getCameraPosition(game);
-    paintMap(ctx, cameraPosition, game.state.map, game.performance.mapChunkPaintCache);
+    paintMap(ctx, cameraPosition, game.state.map, game.performance.mapChunkPaintCache, game.debug);
     paintCharacters(ctx, getPlayerCharacters(game.state.players), cameraPosition);
     paintProjectiles(ctx, game.state.projectiles, cameraPosition);
     paintKillCounter(ctx, game.state.killCounter);

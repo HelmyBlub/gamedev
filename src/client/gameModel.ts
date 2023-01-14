@@ -26,6 +26,11 @@ export type TestingStuff = {
     replayInputCounter?: number,
 }
 
+export type Debugging = {
+    paintMarkActiveChunks?: boolean,
+    paintTileIJNumbers?: boolean,
+}
+
 export type MapChunkPaintCache = {
     [key: string]: CanvasRenderingContext2D
 }
@@ -84,6 +89,7 @@ export type Game = {
         mapChunkPaintCache?: MapChunkPaintCache,
     }
     testing?: TestingStuff,
+    debug?: Debugging,
     closeGame?: boolean,
 }
 
@@ -130,6 +136,10 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             type: "follow character"
         },
         performance:{},
+        debug:{ 
+            //paintTileIJNumbers: true,
+            paintMarkActiveChunks: true,
+        },
     }
 
     game.state.map.seed = nextRandom(game.state.randomSeed);

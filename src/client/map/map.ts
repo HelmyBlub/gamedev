@@ -31,6 +31,7 @@ export type GameMap = {
     tileSize: number,
     chunkLength: number,
     activeChunkKeys: string[],
+    activeChunkRange: number,
     chunks: { [key: string]: MapChunk },
 }
 
@@ -39,6 +40,7 @@ export function createMap(): GameMap {
         tileSize: 40,
         chunkLength: 8,
         activeChunkKeys: [],
+        activeChunkRange: 1000,
         chunks: {},
     }
 }
@@ -128,7 +130,7 @@ function calculateDistanceToMapChunk(chunkI: number, chunkJ: number, position: P
                 return topChunk - position.y;
             }
         } else {
-            return position.y - topChunk + chunkSize;
+            return position.y - (topChunk + chunkSize);
         }
     } else if (topChunk <= position.y && topChunk + chunkSize > position.y) {
         if (leftChunk + chunkSize > position.x) {
@@ -138,7 +140,7 @@ function calculateDistanceToMapChunk(chunkI: number, chunkJ: number, position: P
                 return leftChunk - position.x;
             }
         } else {
-            return position.x - leftChunk + chunkSize;
+            return position.x - (leftChunk + chunkSize);
         }
     } else {
         if (topChunk > position.y && leftChunk > position.x) {

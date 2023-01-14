@@ -1,8 +1,8 @@
 import { paintCharacters } from "../character/characterPaint.js";
-import { MapChunkPaintCache, Position } from "../gameModel.js";
+import { Debugging, MapChunkPaintCache, Position, TestingStuff } from "../gameModel.js";
 import { GameMap, MapChunk, TILE_VALUES } from "./map.js";
 
-export function paintMap(ctx: CanvasRenderingContext2D, cameraPosition: Position, map: GameMap, mapChunkPaintCache: MapChunkPaintCache) {
+export function paintMap(ctx: CanvasRenderingContext2D, cameraPosition: Position, map: GameMap, mapChunkPaintCache: MapChunkPaintCache, debug: Debugging | undefined) {
     let chunkSize = map.tileSize * map.chunkLength;
     let width = ctx.canvas.width;
     let height = ctx.canvas.height;
@@ -15,14 +15,24 @@ export function paintMap(ctx: CanvasRenderingContext2D, cameraPosition: Position
         let chunkI = startChunkI + i;
         for (let j = 0; j < Math.ceil(width / chunkSize) + 1; j++) {
             let chunkJ = startChunkJ + j;
-            let chunk = map.chunks[`${chunkI}_${chunkJ}`];
+            let chunkKey = `${chunkI}_${chunkJ}`;
+            let chunk = map.chunks[chunkKey];
             if (chunk === undefined) {
-                console.log("missing chunk creation", `${chunkI}_${chunkJ}`);
+                console.log("missing chunk creation", chunkKey);
                 continue;
             }
             let x = chunkJ * chunkSize - startX;
             let y = chunkI * chunkSize - startY;
-            paintChunk(ctx, { x, y }, chunk, map.tileSize, { x: chunkJ, y: chunkI }, mapChunkPaintCache);
+            paintChunk(ctx, { x, y }, chunk, map.tileSize, { x: chunkJ, y: chunkI }, mapChunkPaintCache, debug);
+            if(debug?.paintMarkActiveChunks){
+                if(map.activeChunkKeys.indexOf(chunkKey) > -1){
+                    ctx.beginPath()
+                    ctx.strokeStyle = 'red';
+                    ctx.rect(x+1,y+1, chunkSize-2,chunkSize-2);
+                    ctx.stroke();
+                    ctx.closePath();
+                }
+            }
         }
     }
 
@@ -37,7 +47,7 @@ export function paintMap(ctx: CanvasRenderingContext2D, cameraPosition: Position
     }
 }
 
-function paintChunk(ctx: CanvasRenderingContext2D, paintTopLeftPosition: Position, chunk: MapChunk, tileSize: number, chunkIJ: Position, mapChunkPaintCache: MapChunkPaintCache) {
+function paintChunk(ctx: CanvasRenderingContext2D, paintTopLeftPosition: Position, chunk: MapChunk, tileSize: number, chunkIJ: Position, mapChunkPaintCache: MapChunkPaintCache, debug: Debugging | undefined) {
     if (chunk) {
         let chunkSize = tileSize * chunk.tiles.length;
         let chunkKey = `${chunkIJ.y}_${chunkIJ.x}`;
@@ -51,7 +61,12 @@ function paintChunk(ctx: CanvasRenderingContext2D, paintTopLeftPosition: Positio
                 for (let j = 0; j < chunk.tiles[i].length; j++) {
                     let x = j * tileSize;
                     let y = i * tileSize;
-                    let tileReady = paintTile(cacheCtx, { x, y }, tileSize, chunk.tiles[i][j], { x: chunkIJ.x * chunk.tiles.length + j, y: chunkIJ.y * chunk.tiles.length + i });
+                    let tileReady = paintTile(cacheCtx, { x, y }, tileSize, chunk.tiles[i][j]);
+                    if(debug?.paintTileIJNumbers){
+                        cacheCtx.fillStyle = "black";
+                        cacheCtx.font = "8px Arial";
+                        cacheCtx.fillText((chunkIJ.x * chunk.tiles.length + j) + "_" + (chunkIJ.y * chunk.tiles.length + i) , x, y + 10);
+                    }
                     readyForCache = readyForCache && tileReady;
                 }
             }
@@ -64,7 +79,7 @@ function paintChunk(ctx: CanvasRenderingContext2D, paintTopLeftPosition: Positio
 }
 
 
-function paintTile(ctx: CanvasRenderingContext2D, paintPosition: Position, tileSize: number, tileId: number, posIJ: Position): boolean {
+function paintTile(ctx: CanvasRenderingContext2D, paintPosition: Position, tileSize: number, tileId: number): boolean {
     let imageReady = true;
     if (TILE_VALUES[tileId]) {
         if (TILE_VALUES[tileId].imagePath !== undefined) {

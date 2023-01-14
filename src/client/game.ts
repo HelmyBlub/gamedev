@@ -225,7 +225,7 @@ function determineActiveChunks(characters: Character[], map: GameMap) {
     let keySet: Set<string> = new Set();
     for (let i = 0; i < characters.length; i++) {
         if (characters[i].isDead) continue;
-        let nearMapKeys = determineMapKeysInDistance(characters[i], map, 1000, false);
+        let nearMapKeys = determineMapKeysInDistance(characters[i], map, map.activeChunkRange, false);
         for (const mapKey of nearMapKeys) {
             keySet.add(mapKey);
         }

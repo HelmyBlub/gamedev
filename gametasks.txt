@@ -1,5 +1,6 @@
 next tasks:
-    - Refactoring
+    - active chunks distance affects replay test, although it does not seems like it should
+        - debug
     - player Character
         - images for player
             - randomized character image, random head/body/legs/eyes/hair
