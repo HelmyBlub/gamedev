@@ -244,7 +244,7 @@ export function detectProjectileToCharacterHit(map: GameMap, projectiles: Projec
             let c = characters[charIt];
             if (c.isDead || c.faction === projectile.faction) continue;
             let distance = calculateDistance(c, projectile);
-            if (distance < projectile.size / 2 + c.size / 2) {
+            if (distance < projectile.size / 2 + c.width / 2) {
                 c.hp -= projectile.damage;
                 c.wasHitRecently = true;
                 projectile.pierceCount--;

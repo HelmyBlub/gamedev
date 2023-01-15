@@ -1,5 +1,7 @@
 import { getNextId } from "../game.js";
 import { IdCounter } from "../gameModel.js";
+import { createRandomizedCharacterPaintKey, GAME_IMAGES } from "../imageLoad.js";
+import { RandomSeed } from "../randomNumberGenerator.js";
 import { Character, createCharacter } from "./characterModel.js";
 
 export type LevelingCharacter = Character & {
@@ -29,16 +31,19 @@ export function createLevelingCharacter(
     idCounter: IdCounter,
     x: number,
     y: number,
-    size: number,
+    width: number,
+    height: number,
     color: string,
     moveSpeed: number,
     hp: number,
     damage: number,
     faction: string,
+    seed: RandomSeed,
 ): LevelingCharacter {
-    let character = createCharacter(getNextId(idCounter), x, y, size, color, moveSpeed, hp, damage, faction, "levelingCharacter", 1);
+    let character = createCharacter(getNextId(idCounter), x, y, width, height, color, moveSpeed, hp, damage, faction, "levelingCharacter", 1);
     return {
         ...character,
+        randomizedPaintKey: createRandomizedCharacterPaintKey(GAME_IMAGES["player"], seed),
         experience: 0,
         experienceForLevelUp: 10,
         level: 0,

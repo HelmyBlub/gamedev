@@ -138,7 +138,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
         performance:{},
         debug:{ 
             //paintTileIJNumbers: true,
-            paintMarkActiveChunks: true,
+            //paintMarkActiveChunks: true,
         },
     }
 

@@ -124,7 +124,7 @@ function createEnemy(
     respawnTime: number,
     experienceWorth: number,
 ): FixPositionRespawnEnemyCharacter {
-    let enemy = createCharacter(getNextId(idCounter), x, y, size, color, moveSpeed, hp, damage, "enemy", "fixPositionRespawnEnemy", experienceWorth);
+    let enemy = createCharacter(getNextId(idCounter), x, y, size, size, color, moveSpeed, hp, damage, "enemy", "fixPositionRespawnEnemy", experienceWorth);
     return {
         ...enemy,
         autoAggroRange: autoAggroRange,

@@ -39,6 +39,7 @@ export function keyDown(event: KeyboardEvent, game: Game) {
 
     switch (event.code) {
         case "KeyR":
+            delete game.testing;
             handleCommand(game, { command: "restart", clientId: game.multiplayer.myClientId });
             break;
         case "KeyZ":

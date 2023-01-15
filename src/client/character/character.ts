@@ -134,7 +134,7 @@ export function determineEnemyHitsPlayer(enemy: Character, closestPlayer: Charac
     if (closestPlayer === null) return;
 
     let distance = calculateDistance(enemy, closestPlayer);
-    if (distance <= enemy.size / 2 + closestPlayer.size / 2) {
+    if (distance <= enemy.width / 2 + closestPlayer.width / 2) {
         closestPlayer.hp -= enemy.damage;
     }
 }
