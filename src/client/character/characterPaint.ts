@@ -43,14 +43,17 @@ function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cam
             } else if (characterImage.properties?.canvases && character.randomizedPaintKey && characterImage.properties?.canvases[character.randomizedPaintKey]) {
                 let spriteWidth = characterImage.spriteRowWidths[0];
                 let spriteHeight = 40;
+                let widthIndex = moveDirectionToSpriteIndex(character);
                 ctx.drawImage(
                     characterImage.properties.canvases[character.randomizedPaintKey],
+                    widthIndex * spriteWidth,
                     0,
-                    0,
-                    spriteWidth, spriteHeight,
+                    spriteWidth,
+                    spriteHeight,
                     paintX - character.width / 2,
                     paintY - character.height / 2,
-                    character.width, character.height
+                    character.width,
+                    character.height
                 );
             }
         } else {
@@ -65,4 +68,9 @@ function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cam
             character.width, 0, 2 * Math.PI);
         ctx.fill();
     }       
+}
+
+function moveDirectionToSpriteIndex( character: Character): number{
+    return (Math.floor(character.moveDirection / Math.PI / 2 * 4) + 3) % 4; 
+
 }

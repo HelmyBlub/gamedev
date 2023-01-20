@@ -29,6 +29,7 @@ GAME_IMAGES["player"] = {
     spriteRowWidths: [20,20,20],
     properties: {
         spriteCounter: [3,3,3],
+        spriteCharacterDirection: ["down", "left", "up"],
         skinColor: "white",
         clothColor: "blue",
     },

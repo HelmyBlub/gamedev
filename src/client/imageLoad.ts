@@ -57,25 +57,42 @@ export function createRandomizedCharacterPaintKey(gameImage: GameImage, seed: Ra
 
 function createRandomizedCharacter(gameImage: GameImage, randomizedPaintKey: string): CanvasImageSource {
     let canvas = document.createElement('canvas');
-    canvas.width = gameImage.imageRef!.width;
+    let numberCharacterDirections = gameImage.properties.spriteCharacterDirection.length;
+    canvas.width = gameImage.spriteRowWidths[0] * (numberCharacterDirections + 1);
     canvas.height = gameImage.imageRef!.height;
     let imageCtx: CanvasRenderingContext2D = canvas.getContext("2d")!;
     let paintKeyParts = randomizedPaintKey.split("|");
     let spriteIndexes = paintKeyParts[0].split("_");
     let sy = 0;
+    let borderWidth = 1;
+    let totalCharacterSpritesWidth = numberCharacterDirections * (gameImage.spriteRowWidths[0] + borderWidth);
     for (let i = 0; i < spriteIndexes.length; i++) {
-        let offsetX = parseInt(spriteIndexes[i]) * (gameImage.spriteRowWidths[i] + 1) + 1;
-        imageCtx.drawImage(
-            gameImage.imageRef!,
-            offsetX,
-            sy + 1 + i * 1,
-            gameImage.spriteRowWidths[i],
-            gameImage.spriteRowHeights[i],
-            0,
-            sy,
-            gameImage.spriteRowWidths[i],
-            gameImage.spriteRowHeights[i],
-        );
+        let spriteIndex = parseInt(spriteIndexes[i]);
+        for (let directionIndex = 0; directionIndex < numberCharacterDirections + 1; directionIndex++) {
+            let offsetSX = borderWidth + spriteIndex * totalCharacterSpritesWidth + (gameImage.spriteRowWidths[0] + borderWidth) * directionIndex;
+            let offsetDX = gameImage.spriteRowWidths[0] * directionIndex;
+            if(directionIndex === numberCharacterDirections){
+                imageCtx.save();
+                imageCtx.translate(canvas.width, 0);
+                imageCtx.scale(-1,1);
+                offsetSX = borderWidth + spriteIndex * totalCharacterSpritesWidth + (gameImage.spriteRowWidths[0] + borderWidth) * 1;
+                offsetDX = 0;
+            }
+            imageCtx.drawImage(
+                gameImage.imageRef!,
+                offsetSX,
+                sy + 1 + i * 1,
+                gameImage.spriteRowWidths[0],
+                gameImage.spriteRowHeights[i],
+                offsetDX,
+                sy,
+                gameImage.spriteRowWidths[0],
+                gameImage.spriteRowHeights[i],
+            );
+            if(directionIndex === numberCharacterDirections){
+                imageCtx.restore();
+            }
+        }
         sy += gameImage.spriteRowHeights[i];
     }
     replaceColorInIamgeArea(imageCtx, 0, 0, canvas.width, canvas.height,
