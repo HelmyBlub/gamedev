@@ -21,6 +21,7 @@ const COLOR_CONVERSION: ColorConversions = {
     "black": { r: 0, g: 0, b: 0 },
     "red": { r: 255, g: 0, b: 0 },
     "blue": { r: 0, g: 0, b: 255 },
+    "white": { r: 255, g: 255, b: 255 },
 }
 
 export const GAME_IMAGES: GameImages = {};
@@ -48,6 +49,9 @@ export function createRandomizedCharacterPaintKey(gameImage: GameImage, seed: Ra
         if (i > 0) result += "_";
         result += Math.floor(nextRandom(seed) * gameImage.properties.spriteCounter[i]);
     }
+    result += "|" + Math.floor(nextRandom(seed) * Object.keys(COLOR_CONVERSION).length);
+    result += "|" + Math.floor(nextRandom(seed) * Object.keys(COLOR_CONVERSION).length);
+
     return result;
 }
 
@@ -56,7 +60,8 @@ function createRandomizedCharacter(gameImage: GameImage, randomizedPaintKey: str
     canvas.width = gameImage.imageRef!.width;
     canvas.height = gameImage.imageRef!.height;
     let imageCtx: CanvasRenderingContext2D = canvas.getContext("2d")!;
-    let spriteIndexes = randomizedPaintKey.split("_");
+    let paintKeyParts = randomizedPaintKey.split("|");
+    let spriteIndexes = paintKeyParts[0].split("_");
     let sy = 0;
     for (let i = 0; i < spriteIndexes.length; i++) {
         let offsetX = parseInt(spriteIndexes[i]) * (gameImage.spriteRowWidths[i] + 1) + 1;
@@ -73,6 +78,15 @@ function createRandomizedCharacter(gameImage: GameImage, randomizedPaintKey: str
         );
         sy += gameImage.spriteRowHeights[i];
     }
+    replaceColorInIamgeArea(imageCtx, 0, 0, canvas.width, canvas.height,
+        COLOR_CONVERSION[Object.keys(COLOR_CONVERSION)[parseInt(paintKeyParts[1])]],
+        COLOR_CONVERSION[gameImage.properties.skinColor]
+    );
+    replaceColorInIamgeArea(imageCtx, 0, 0, canvas.width, canvas.height,
+        COLOR_CONVERSION[Object.keys(COLOR_CONVERSION)[parseInt(paintKeyParts[2])]],
+        COLOR_CONVERSION[gameImage.properties.clothColor]
+    );
+
     return canvas;
 }
 
@@ -92,13 +106,17 @@ function createColorVariants(gameImage: GameImage, color: string) {
             gameImage.properties.colorToSprite.push(color);
             let imageCtx: CanvasRenderingContext2D = gameImage.properties.canvas.getContext("2d")!;
             imageCtx.drawImage(gameImage.imageRef!, 0, paintY);
-            let imageData = imageCtx.getImageData(0, paintY, gameImage.properties.canvas.width, gameImage.imageRef!.height);
             let newColorRGB = COLOR_CONVERSION[color];
             let toChangeColor = COLOR_CONVERSION[gameImage.properties.baseColor];
-            replaceColor(imageData, newColorRGB, toChangeColor);
-            imageCtx.putImageData(imageData, 0, paintY);
+            replaceColorInIamgeArea(imageCtx, 0, paintY, gameImage.properties.canvas.width, gameImage.imageRef!.height, newColorRGB, toChangeColor);
         }
     }
+}
+
+function replaceColorInIamgeArea(imageCtx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, newColorRGB: any, toChangeColor: any) {
+    let imageData = imageCtx.getImageData(x, y, width, height);
+    replaceColor(imageData, newColorRGB, toChangeColor);
+    imageCtx.putImageData(imageData, x, y);
 }
 
 function replaceColor(imageData: ImageData, newColorRGB: any, toChangeColor: any) {
