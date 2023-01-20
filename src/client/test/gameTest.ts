@@ -77,10 +77,7 @@ async function runGameWithPlayerInputsMultiplayer(game: Game, playerInputs: Play
     }
 }
 
-// time: 14790.5, chrome&firefox, 60frameskip, kills:93, score: 1301
-// time: 1049,  chrome, 60frameskip, kills:93, score: 1301 => frameskip no also skips setTimeout
-// time: 1562, firefox, 60frameskip, kills:93, score: 1301 => frameskip no also skips setTimeout
-// new inputs: time: 4531.200000000186
+// new inputs: time: 6412.5999999996275
 function runGameWithPlayerInputsSinglePlayer(game: Game, playerInputs: PlayerInput[]){
     game.testing = {
         startTime: performance.now(),

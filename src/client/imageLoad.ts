@@ -46,7 +46,7 @@ export function createRandomizedCharacterPaintKey(gameImage: GameImage, seed: Ra
     let result = "";
     for (let i = 0; i < gameImage.spriteRowHeights.length; i++) {
         if (i > 0) result += "_";
-        result += Math.floor(nextRandom(seed) * 2);
+        result += Math.floor(nextRandom(seed) * gameImage.properties.spriteCounter[i]);
     }
     return result;
 }
@@ -56,15 +56,14 @@ function createRandomizedCharacter(gameImage: GameImage, randomizedPaintKey: str
     canvas.width = gameImage.imageRef!.width;
     canvas.height = gameImage.imageRef!.height;
     let imageCtx: CanvasRenderingContext2D = canvas.getContext("2d")!;
-    console.log(randomizedPaintKey);
     let spriteIndexes = randomizedPaintKey.split("_");
     let sy = 0;
     for (let i = 0; i < spriteIndexes.length; i++) {
-        let offset = parseInt(spriteIndexes[i]) * gameImage.spriteRowWidths[i];
+        let offsetX = parseInt(spriteIndexes[i]) * (gameImage.spriteRowWidths[i] + 1) + 1;
         imageCtx.drawImage(
             gameImage.imageRef!,
-            offset,
-            sy,
+            offsetX,
+            sy + 1 + i * 1,
             gameImage.spriteRowWidths[i],
             gameImage.spriteRowHeights[i],
             0,

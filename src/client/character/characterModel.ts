@@ -23,7 +23,16 @@ export type CharacterImage = {
 }
 
 GAME_IMAGES["slime"] = { properties: { baseColor: "green" }, imagePath: "/images/slimeEnemy.png", spriteRowHeights: [20], spriteRowWidths: [20] };
-GAME_IMAGES["player"] = { imagePath: "/images/player.png", spriteRowHeights: [15,15,10], spriteRowWidths: [20,20,20] };
+GAME_IMAGES["player"] = { 
+    imagePath: "/images/player.png", 
+    spriteRowHeights: [13,14,13], 
+    spriteRowWidths: [20,20,20],
+    properties: {
+        spriteCounter: [3,3,3],
+        skinColor: "white",
+        clothColor: "blue",
+    },
+};
 
 export const PLAYER_FACTION = "player";
 export const ENEMY_FACTION = "enemy";
