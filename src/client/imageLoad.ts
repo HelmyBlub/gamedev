@@ -1,10 +1,10 @@
-import { nextRandom, RandomSeed } from "./randomNumberGenerator.js";
+import { createRandomizedCharacter } from "./randomizedCharacterImage.js";
 
-type GameImages = {
+export type GameImages = {
     [key: string]: GameImage,
 }
 
-type GameImage = {
+export type GameImage = {
     spriteRowHeights: number[],
     spriteRowWidths: number[],
     imagePath?: string,
@@ -12,11 +12,11 @@ type GameImage = {
     properties?: any,
 }
 
-type ColorConversions = {
+export type ColorConversions = {
     [key: string]: { r: number, g: number, b: number },
 }
 
-const COLOR_CONVERSION: ColorConversions = {
+export const COLOR_CONVERSION: ColorConversions = {
     "green": { r: 0, g: 255, b: 0 },
     "black": { r: 0, g: 0, b: 0 },
     "red": { r: 255, g: 0, b: 0 },
@@ -43,79 +43,10 @@ export function loadImage(gameImage: GameImage, color: string = "", randomizedPa
     }
 }
 
-export function createRandomizedCharacterPaintKey(gameImage: GameImage, seed: RandomSeed): string {
-    let result = "";
-    for (let i = 0; i < gameImage.spriteRowHeights.length; i++) {
-        if (i > 0) result += "_";
-        result += Math.floor(nextRandom(seed) * gameImage.properties.spriteCounter[i]);
-    }
-    result += "|" + Math.floor(nextRandom(seed) * Object.keys(COLOR_CONVERSION).length);
-    result += "|" + Math.floor(nextRandom(seed) * Object.keys(COLOR_CONVERSION).length);
-
-    return result;
-}
-
-function createRandomizedCharacter(gameImage: GameImage, randomizedPaintKey: string): CanvasImageSource {
-    let canvas = document.createElement('canvas');
-    let walkinAnimationSpriteCount = 3;
-    let numberCharacterDirections = gameImage.properties.spriteCharacterDirection.length;
-    let characterSpriteHeight = gameImage.spriteRowHeights[0]+gameImage.spriteRowHeights[1]+gameImage.spriteRowHeights[2];
-    canvas.width = gameImage.spriteRowWidths[0] * (numberCharacterDirections + 1);
-    canvas.height = characterSpriteHeight * walkinAnimationSpriteCount;
-    let imageCtx: CanvasRenderingContext2D = canvas.getContext("2d")!;
-    let paintKeyParts = randomizedPaintKey.split("|");
-    let spriteIndexes = paintKeyParts[0].split("_");
-    let sy = 0;
-    let borderWidth = 1;
-    let totalCharacterSpritesWidth = numberCharacterDirections * (gameImage.spriteRowWidths[0] + borderWidth);
-    for (let i = 0; i < spriteIndexes.length; i++) {
-        let spriteIndex = parseInt(spriteIndexes[i]);
-        for (let directionIndex = 0; directionIndex < numberCharacterDirections + 1; directionIndex++) {
-            for (let walkingIndex = 0; walkingIndex < walkinAnimationSpriteCount; walkingIndex++) {
-                let offsetSY = (characterSpriteHeight + borderWidth * 3) * walkingIndex;
-                offsetSY -= (gameImage.spriteRowHeights[0] + borderWidth) * walkingIndex;
-                if(i === 0){
-                    offsetSY = 0;
-                }
-                let offsetDY = characterSpriteHeight * walkingIndex;
-
-                let offsetSX = borderWidth + spriteIndex * totalCharacterSpritesWidth + (gameImage.spriteRowWidths[0] + borderWidth) * directionIndex;
-                let offsetDX = gameImage.spriteRowWidths[0] * directionIndex;
-                if(directionIndex === numberCharacterDirections){
-                    imageCtx.save();
-                    imageCtx.translate(canvas.width, 0);
-                    imageCtx.scale(-1,1);
-                    offsetSX = borderWidth + spriteIndex * totalCharacterSpritesWidth + (gameImage.spriteRowWidths[0] + borderWidth) * 1;
-                    offsetDX = 0;
-                }
-                imageCtx.drawImage(
-                    gameImage.imageRef!,
-                    offsetSX,
-                    sy + 1 + i * 1 + offsetSY,
-                    gameImage.spriteRowWidths[0],
-                    gameImage.spriteRowHeights[i],
-                    offsetDX,
-                    sy + offsetDY,
-                    gameImage.spriteRowWidths[0],
-                    gameImage.spriteRowHeights[i],
-                );
-                if(directionIndex === numberCharacterDirections){
-                    imageCtx.restore();
-                }
-            }
-        }
-        sy += gameImage.spriteRowHeights[i];
-    }
-    replaceColorInIamgeArea(imageCtx, 0, 0, canvas.width, canvas.height,
-        COLOR_CONVERSION[Object.keys(COLOR_CONVERSION)[parseInt(paintKeyParts[1])]],
-        COLOR_CONVERSION[gameImage.properties.skinColor]
-    );
-    replaceColorInIamgeArea(imageCtx, 0, 0, canvas.width, canvas.height,
-        COLOR_CONVERSION[Object.keys(COLOR_CONVERSION)[parseInt(paintKeyParts[2])]],
-        COLOR_CONVERSION[gameImage.properties.clothColor]
-    );
-
-    return canvas;
+export function replaceColorInIamgeArea(imageCtx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, newColorRGB: any, toChangeColor: any) {
+    let imageData = imageCtx.getImageData(x, y, width, height);
+    replaceColor(imageData, newColorRGB, toChangeColor);
+    imageCtx.putImageData(imageData, x, y);
 }
 
 function createColorVariants(gameImage: GameImage, color: string) {
@@ -139,12 +70,6 @@ function createColorVariants(gameImage: GameImage, color: string) {
             replaceColorInIamgeArea(imageCtx, 0, paintY, gameImage.properties.canvas.width, gameImage.imageRef!.height, newColorRGB, toChangeColor);
         }
     }
-}
-
-function replaceColorInIamgeArea(imageCtx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, newColorRGB: any, toChangeColor: any) {
-    let imageData = imageCtx.getImageData(x, y, width, height);
-    replaceColor(imageData, newColorRGB, toChangeColor);
-    imageCtx.putImageData(imageData, x, y);
 }
 
 function replaceColor(imageData: ImageData, newColorRGB: any, toChangeColor: any) {

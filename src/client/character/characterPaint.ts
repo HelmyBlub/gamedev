@@ -78,5 +78,4 @@ function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cam
 
 function moveDirectionToSpriteIndex( character: Character): number{
     return (Math.floor(character.moveDirection / Math.PI / 2 * 4) + 3) % 4; 
-
 }

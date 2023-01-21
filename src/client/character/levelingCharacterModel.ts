@@ -1,6 +1,7 @@
 import { getNextId } from "../game.js";
 import { IdCounter } from "../gameModel.js";
-import { createRandomizedCharacterPaintKey, GAME_IMAGES } from "../imageLoad.js";
+import { GAME_IMAGES } from "../imageLoad.js";
+import { createRandomizedCharacterPaintKey } from "../randomizedCharacterImage.js";
 import { RandomSeed } from "../randomNumberGenerator.js";
 import { Character, createCharacter } from "./characterModel.js";
 

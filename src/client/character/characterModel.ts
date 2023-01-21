@@ -30,6 +30,7 @@ GAME_IMAGES["player"] = {
     properties: {
         spriteCounter: [3,3,3],
         spriteCharacterDirection: ["down", "left", "up"],
+        animationSpriteCount: 3,
         skinColor: "white",
         clothColor: "blue",
     },

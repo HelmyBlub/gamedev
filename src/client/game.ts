@@ -202,8 +202,13 @@ function tick(gameTimePassed: number, game: Game) {
         if (game.testing && game.testing.replayPlayerInputs) {
             if (game.testing.replayInputCounter === undefined) game.testing.replayInputCounter = 0;
             while (game.testing.replayPlayerInputs[game.testing.replayInputCounter]
-                && game.testing.replayPlayerInputs[game.testing.replayInputCounter].executeTime < game.state.time + 1000) {
-                handleCommand(game, game.testing.replayPlayerInputs[game.testing.replayInputCounter]);
+                && game.testing.replayPlayerInputs[game.testing.replayInputCounter].executeTime < game.state.time + 1000
+            ) {
+                let data = game.testing.replayPlayerInputs[game.testing.replayInputCounter];
+                if(game.state.players.length === 1){
+                    data.clientId = game.multiplayer.myClientId;
+                }
+                handleCommand(game, data);
                 game.testing.replayInputCounter++;
             }
         }
