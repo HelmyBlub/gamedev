@@ -31,11 +31,11 @@ function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cam
                     let spriteHeight = characterImage.spriteRowHeights[0];
                     ctx.drawImage(
                         characterImage.properties.canvas!,
-                        0 + spriteAnimation * spriteWidth,
-                        0 + spriteColor * spriteHeight,
+                        0 + spriteAnimation * (spriteWidth + 1),
+                        0 + spriteColor * (spriteHeight + 1),
                         spriteWidth, spriteHeight,
-                        paintX - character.width / 2,
-                        paintY - character.height / 2,
+                        Math.floor(paintX - character.width / 2),
+                        Math.floor(paintY - character.height / 2),
                         character.width, character.height
                     );
 
@@ -56,8 +56,8 @@ function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cam
                     animationY * spriteHeight,
                     spriteWidth,
                     spriteHeight,
-                    paintX - character.width / 2,
-                    paintY - character.height / 2,
+                    Math.floor(paintX - character.width / 2),
+                    Math.floor(paintY - character.height / 2),
                     character.width,
                     character.height
                 );

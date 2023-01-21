@@ -1,8 +1,7 @@
 next tasks:
-    - Bug: black lines on painted character boarders
     - player Character
         - animation
-            - walking
+            - improve code
         - build one new player class: Melee
             - sword as weapon
             - upgrade option: bigger sword or more swords

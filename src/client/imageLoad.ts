@@ -122,7 +122,7 @@ function createColorVariants(gameImage: GameImage, color: string) {
     if (gameImage.properties?.canvas === undefined && gameImage.imageRef?.complete) {
         let canvas = document.createElement('canvas');
         canvas.width = gameImage.imageRef!.width;
-        canvas.height = gameImage.imageRef!.height * Object.keys(COLOR_CONVERSION).length;
+        canvas.height = (gameImage.imageRef!.height + 1) * Object.keys(COLOR_CONVERSION).length;
         let imageCtx: CanvasRenderingContext2D = canvas.getContext("2d")!;
         imageCtx.drawImage(gameImage.imageRef!, 0, 0);
         gameImage.properties.canvas = canvas;
@@ -130,7 +130,7 @@ function createColorVariants(gameImage: GameImage, color: string) {
     }
     if (gameImage.properties?.canvas && gameImage.properties.colorToSprite?.indexOf(color) === -1) {
         if (color !== gameImage.properties.baseColor) {
-            let paintY = gameImage.imageRef!.height * gameImage.properties.colorToSprite.length;
+            let paintY = (gameImage.imageRef!.height + 1) * gameImage.properties.colorToSprite.length;
             gameImage.properties.colorToSprite.push(color);
             let imageCtx: CanvasRenderingContext2D = gameImage.properties.canvas.getContext("2d")!;
             imageCtx.drawImage(gameImage.imageRef!, 0, paintY);
