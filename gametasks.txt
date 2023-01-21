@@ -1,13 +1,8 @@
 next tasks:
+    - Bug: black lines on painted character boarders
     - player Character
-        - images
-            - randomized character image, random head/body/legs/eyes
-                - character can have differently ways to be painted
-                    - one sprite for complete character
-                    - randomized character sprite
-                        - consist of multiple sprites
-                - sprite with base color
-                - animation
+        - animation
+            - walking
         - build one new player class: Melee
             - sword as weapon
             - upgrade option: bigger sword or more swords
