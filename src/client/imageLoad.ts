@@ -1,4 +1,4 @@
-import { createRandomizedCharacter } from "./randomizedCharacterImage.js";
+import { createRandomizedCharacter, RandomizedCharacterImage, randomizedCharacterImageToKey } from "./randomizedCharacterImage.js";
 
 export type GameImages = {
     [key: string]: GameImage,
@@ -26,7 +26,7 @@ export const COLOR_CONVERSION: ColorConversions = {
 
 export const GAME_IMAGES: GameImages = {};
 
-export function loadImage(gameImage: GameImage, color: string = "", randomizedPaintKey: string | undefined = undefined) {
+export function loadImage(gameImage: GameImage, color: string = "", randomizedCharacterImage: RandomizedCharacterImage | undefined = undefined) {
     if (gameImage.imageRef === undefined) {
         let image = new Image();
         image.src = gameImage.imagePath!;
@@ -34,11 +34,11 @@ export function loadImage(gameImage: GameImage, color: string = "", randomizedPa
     }
     if (color !== "" && gameImage.properties?.baseColor !== undefined) {
         createColorVariants(gameImage, color);
-    } else if (randomizedPaintKey !== undefined && gameImage.imageRef?.complete) {
+    } else if (randomizedCharacterImage !== undefined && gameImage.imageRef?.complete) {
         if (gameImage.properties === undefined) gameImage.properties = {};
         if (gameImage.properties.canvases === undefined) gameImage.properties.canvases = {};
-        if (gameImage.properties?.canvases[randomizedPaintKey] === undefined) {
-            gameImage.properties.canvases[randomizedPaintKey] = createRandomizedCharacter(gameImage, randomizedPaintKey);
+        if (gameImage.properties?.canvases[randomizedCharacterImageToKey(randomizedCharacterImage)] === undefined) {
+            gameImage.properties.canvases[randomizedCharacterImageToKey(randomizedCharacterImage)] = createRandomizedCharacter(gameImage, randomizedCharacterImage);
         }
     }
 }

@@ -1,5 +1,6 @@
 import { Position, IdCounter } from "../gameModel.js";
 import { GAME_IMAGES } from "../imageLoad.js";
+import { RandomizedCharacterImage } from "../randomizedCharacterImage.js";
 import { RandomSeed } from "../randomNumberGenerator.js";
 import { tickFixPositionRespawnEnemyCharacter } from "./enemy/fixPositionRespawnEnemy.js";
 import { tickRandomSpawnFollowingEnemyCharacter } from "./enemy/randomSpawnFollowingEnemy.js";
@@ -22,18 +23,38 @@ export type CharacterImage = {
     colorToSprite?: string[];
 }
 
+export type CharacterImageLoadProperties = {
+    headSpriteRows: number[],
+    headSpriteCounter: number;
+    chestSpriteRows: number[],
+    chestSpriteCounter: number,
+    legsSpriteRows: number[],
+    legsSpriteCounter: number,
+    directionSpriteCount: number,
+    skinColor: string,
+    clothColor: string,
+    canvases?: {[key:string]: HTMLCanvasElement},
+}
+
 GAME_IMAGES["slime"] = { properties: { baseColor: "green" }, imagePath: "/images/slimeEnemy.png", spriteRowHeights: [20], spriteRowWidths: [20] };
+
+let playerImageProperties: CharacterImageLoadProperties = {
+    headSpriteRows: [0],
+    headSpriteCounter: 3,
+    chestSpriteRows: [1,3,5],
+    chestSpriteCounter: 3,
+    legsSpriteRows: [2,4,6],
+    legsSpriteCounter: 3,
+    directionSpriteCount: 3,
+    skinColor: "white",
+    clothColor: "blue",
+}
+
 GAME_IMAGES["player"] = { 
     imagePath: "/images/player.png", 
     spriteRowHeights: [13,14,13], 
     spriteRowWidths: [20,20,20],
-    properties: {
-        spriteCounter: [3,3,3],
-        spriteCharacterDirection: ["down", "left", "up"],
-        animationSpriteCount: 3,
-        skinColor: "white",
-        clothColor: "blue",
-    },
+    properties: playerImageProperties,
 };
 
 export const PLAYER_FACTION = "player";
@@ -66,7 +87,7 @@ export type Character = Position & {
     type: string,
     isDead: boolean,
     wasHitRecently?: boolean,
-    randomizedPaintKey?: string,
+    randomizedCharacterImage?: RandomizedCharacterImage,
 }
 
 export function createCharacter(

@@ -1,7 +1,7 @@
 import { getNextId } from "../game.js";
 import { IdCounter } from "../gameModel.js";
 import { GAME_IMAGES } from "../imageLoad.js";
-import { createRandomizedCharacterPaintKey } from "../randomizedCharacterImage.js";
+import { createRandomizedCharacterImageData } from "../randomizedCharacterImage.js";
 import { RandomSeed } from "../randomNumberGenerator.js";
 import { Character, createCharacter } from "./characterModel.js";
 
@@ -44,7 +44,7 @@ export function createLevelingCharacter(
     let character = createCharacter(getNextId(idCounter), x, y, width, height, color, moveSpeed, hp, damage, faction, "levelingCharacter", 1);
     return {
         ...character,
-        randomizedPaintKey: createRandomizedCharacterPaintKey(GAME_IMAGES["player"], seed),
+        randomizedCharacterImage: createRandomizedCharacterImageData(GAME_IMAGES["player"], seed),
         experience: 0,
         experienceForLevelUp: 10,
         level: 0,

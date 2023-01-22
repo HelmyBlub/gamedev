@@ -1,7 +1,7 @@
 next tasks:
     - player Character
         - animation
-            - improve code
+            - improve code?
         - build one new player class: Melee
             - sword as weapon
             - upgrade option: bigger sword or more swords
