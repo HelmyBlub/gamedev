@@ -43,6 +43,6 @@ function levelingCharacterLevelUp(character: LevelingCharacter, randomSeed: Rand
     character.level++;
     character.availableSkillPoints += 1;
     character.experience -= character.experienceForLevelUp;
-    character.experienceForLevelUp += 1;
+    character.experienceForLevelUp += character.level;
     fillRandomUpgradeOptions(character, randomSeed, upgradeOptions);
 }
