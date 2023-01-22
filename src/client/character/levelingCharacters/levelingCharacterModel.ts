@@ -1,23 +1,17 @@
-import { getNextId } from "../game.js";
-import { IdCounter } from "../gameModel.js";
-import { GAME_IMAGES } from "../imageLoad.js";
-import { createRandomizedCharacterImageData } from "../randomizedCharacterImage.js";
-import { RandomSeed } from "../randomNumberGenerator.js";
-import { Character, createCharacter } from "./characterModel.js";
+import { getNextId } from "../../game.js";
+import { IdCounter } from "../../gameModel.js";
+import { GAME_IMAGES } from "../../imageLoad.js";
+import { createRandomizedCharacterImageData } from "../../randomizedCharacterImage.js";
+import { RandomSeed } from "../../randomNumberGenerator.js";
+import { Character, createCharacter } from "../characterModel.js";
 
 export type LevelingCharacter = Character & {
     experience: number,
     experienceForLevelUp: number,
     level: number,
     availableSkillPoints: number,
-    shooting: {
-        baseFrequency: number,
-        frequencyIncrease: number,
-        nextShotTime: number,
-        pierceCount: number,
-        multiShot: number,
-        timeToLive: number,
-    }
+    characterClass: string,
+    characterClassProperties: any,
     upgradeOptions: {
         name: string,
     }[],
@@ -40,6 +34,8 @@ export function createLevelingCharacter(
     damage: number,
     faction: string,
     seed: RandomSeed,
+    characterClass: string,
+    characterClassProperties: any,
 ): LevelingCharacter {
     let character = createCharacter(getNextId(idCounter), x, y, width, height, color, moveSpeed, hp, damage, faction, "levelingCharacter", 1);
     return {
@@ -50,13 +46,7 @@ export function createLevelingCharacter(
         level: 0,
         availableSkillPoints: 0,
         upgradeOptions: [],
-        shooting: {
-            baseFrequency: 500,
-            frequencyIncrease: 1,
-            nextShotTime: 0,
-            pierceCount: 0,
-            multiShot: 0,
-            timeToLive: 1000,
-        },
+        characterClass: characterClass,
+        characterClassProperties: characterClassProperties,
     };
 }

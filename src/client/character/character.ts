@@ -1,10 +1,10 @@
-import { levelingCharacterXpGain } from "./levelingCharacter.js";
+import { levelingCharacterXpGain } from "./levelingCharacters/levelingCharacter.js";
 import { determineMapKeysInDistance, GameMap, isPositionBlocking } from "../map/map.js";
 import { Character, CHARACTER_TYPES_STUFF, ENEMY_FACTION } from "./characterModel.js";
 import { createPathingCache, getNextWaypoint, PathingCache } from "./pathing.js";
-import { UpgradeOption } from "./levelingCharacterModel.js";
+import { UpgradeOption } from "./levelingCharacters/levelingCharacterModel.js";
 import { calculateDirection, calculateDistance } from "../game.js";
-import { Position, Game, GameState, IdCounter } from "../gameModel.js";
+import { Position, Game, GameState, IdCounter, UpgradeOptions } from "../gameModel.js";
 import { Player } from "../player.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
 
@@ -85,7 +85,7 @@ export function countCharacters(map: GameMap): number{
     return counter;
 }
 
-export function detectCharacterDeath(map: GameMap, state: GameState, upgradeOptions: Map<string, UpgradeOption>) {
+export function detectCharacterDeath(map: GameMap, state: GameState, upgradeOptions: UpgradeOptions) {
     for (let i = 0; i < map.activeChunkKeys.length; i++) {
         let chunk = map.chunks[map.activeChunkKeys[i]];
         for (let charIt = chunk.characters.length - 1; charIt >= 0; charIt--) {

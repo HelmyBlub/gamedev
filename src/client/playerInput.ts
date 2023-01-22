@@ -1,10 +1,9 @@
 import { handleCommand } from "./commands.js";
-import { fillRandomUpgradeOptions, upgradeLevelingCharacter } from "./character/levelingCharacter.js";
+import { upgradeLevelingCharacter } from "./character/levelingCharacters/levelingCharacter.js";
 import { findPlayerById } from "./player.js";
 import { Character } from "./character/characterModel.js";
-import { LevelingCharacter, UpgradeOption } from "./character/levelingCharacterModel.js";
+import { LevelingCharacter, UpgradeOption } from "./character/levelingCharacters/levelingCharacterModel.js";
 import { Game } from "./gameModel.js";
-import { RandomSeed } from "./randomNumberGenerator.js";
 import { testGame } from "./test/gameTest.js";
 import { websocketConnect } from "./multiplayerConenction.js";
 

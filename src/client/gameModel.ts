@@ -1,5 +1,5 @@
-import { createDefaultUpgradeOptions } from "./character/levelingCharacter.js";
-import { UpgradeOption } from "./character/levelingCharacterModel.js";
+import { createDefaultUpgradeOptions } from "./character/levelingCharacters/levelingCharacter.js";
+import { UpgradeOption } from "./character/levelingCharacters/levelingCharacterModel.js";
 import { generateMissingChunks } from "./game.js";
 import { createMap, GameMap } from "./map/map.js";
 import { Player } from "./player.js";
@@ -55,6 +55,7 @@ export type Highscores = {
     scores: number[],
     maxLength: 10,
 }
+export type UpgradeOptions = {[key:string]: Map<string, UpgradeOption>};
 
 export type Game = {
     canvasElement?: HTMLCanvasElement,
@@ -80,7 +81,7 @@ export type Game = {
         lastRestartReceiveTime?: number,
         cachePlayerInputs?: PlayerInput[],
     },
-    avaialbleUpgrades: Map<string, UpgradeOption>,
+    avaialbleUpgrades: UpgradeOptions,
     camera: {
         type: string,
         characterId?: number,

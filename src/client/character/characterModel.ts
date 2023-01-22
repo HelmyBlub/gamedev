@@ -4,8 +4,8 @@ import { RandomizedCharacterImage } from "../randomizedCharacterImage.js";
 import { RandomSeed } from "../randomNumberGenerator.js";
 import { tickFixPositionRespawnEnemyCharacter } from "./enemy/fixPositionRespawnEnemy.js";
 import { tickRandomSpawnFollowingEnemyCharacter } from "./enemy/randomSpawnFollowingEnemy.js";
-import { tickPlayerCharacter } from "./levelingCharacter.js";
-import { createLevelingCharacter } from "./levelingCharacterModel.js";
+import { tickPlayerCharacter } from "./levelingCharacters/levelingCharacter.js";
+import { createShooterCharacter } from "./levelingCharacters/shooterCharacterClass.js";
 
 export type CHARACTER_TYPES_STUFF = {
     [key: string]: {
@@ -125,5 +125,5 @@ export function createCharacter(
 }
 
 export function createPlayerCharacter(idCounter: IdCounter, pos: Position, seed: RandomSeed): Character {
-    return createLevelingCharacter(idCounter, pos.x, pos.y, 20, 40, "blue", 2, 200, 10, PLAYER_FACTION, seed);
+    return createShooterCharacter(idCounter, pos.x, pos.y, 20, 40, "blue", 2, 200, 10, PLAYER_FACTION, seed);
 }
