@@ -1,35 +1,25 @@
 import { getPlayerCharacters } from "../character.js";
-import { Game, GameState, UpgradeOptions } from "../../gameModel.js";
-import { nextRandom, RandomSeed } from "../../randomNumberGenerator.js";
+import { Game, GameState, LEVELING_CHARACTER_CLASSES, UpgradeOptions } from "../../gameModel.js";
+import { RandomSeed } from "../../randomNumberGenerator.js";
 import { Character } from "../characterModel.js";
-import { LevelingCharacter, UpgradeOption } from "./levelingCharacterModel.js";
-import { createShooterUpgradeOptions, tickShooterCharacter, upgradeShooterCharacter } from "./shooterCharacterClass.js";
+import { LevelingCharacter } from "./levelingCharacterModel.js";
 
 export function fillRandomUpgradeOptions(character: LevelingCharacter, randomSeed: RandomSeed, upgradeOptions: UpgradeOptions) {
-    if (character.upgradeOptions.length === 0) {
-        let setOfUsedUpgrades = new Set<number>();
-        let upgradeOptionsShooter = upgradeOptions["Shooter"];
-        for (let i = 0; i < 3; i++) {
-            let randomOption = Math.floor(nextRandom(randomSeed) * upgradeOptionsShooter.size);
-            while (setOfUsedUpgrades.has(randomOption) && upgradeOptionsShooter.size > setOfUsedUpgrades.size) {
-                randomOption = Math.floor(nextRandom(randomSeed) * upgradeOptionsShooter.size);
-            }
-            setOfUsedUpgrades.add(randomOption);
-            character.upgradeOptions.push({ name: Array.from(upgradeOptionsShooter.keys())[randomOption] });
-        }
-    }
+    LEVELING_CHARACTER_CLASSES[character.characterClass].fillRandomUpgradeOptions(character, randomSeed, upgradeOptions);
 }
 
-export function createDefaultUpgradeOptions(): UpgradeOptions{
+export function createDefaultUpgradeOptions(): UpgradeOptions {
     let allUpgradeOptions: UpgradeOptions = {};
-    allUpgradeOptions["Shooter"] = createShooterUpgradeOptions();
+    let keys = Object.keys(LEVELING_CHARACTER_CLASSES);
+
+    for(let key of keys){
+        allUpgradeOptions[key] = LEVELING_CHARACTER_CLASSES[key].createDefaultUpgradeOptions();
+    }
     return allUpgradeOptions;
 }
 
 export function upgradeLevelingCharacter(character: LevelingCharacter, upgradeOptionIndex: number, upgradeOptions: UpgradeOptions, randomSeed: RandomSeed) {
-    if(character.characterClass === "Shooter"){
-        upgradeShooterCharacter(character, upgradeOptionIndex, upgradeOptions, randomSeed);
-    }
+    LEVELING_CHARACTER_CLASSES[character.characterClass].upgradeLevelingCharacter(character, upgradeOptionIndex, upgradeOptions, randomSeed);
 }
 
 export function levelingCharacterXpGain(state: GameState, killedCharacter: Character, upgradeOptions: UpgradeOptions) {
@@ -45,10 +35,8 @@ export function levelingCharacterXpGain(state: GameState, killedCharacter: Chara
 }
 
 export function tickPlayerCharacter(character: LevelingCharacter, game: Game) {
-    if(character.isDead) return;
-    if(character.characterClass === "Shooter"){
-        tickShooterCharacter(character, game);
-    }
+    if (character.isDead) return;
+    LEVELING_CHARACTER_CLASSES[character.characterClass].tickPlayerCharacter(character, game);
 }
 
 function levelingCharacterLevelUp(character: LevelingCharacter, randomSeed: RandomSeed, upgradeOptions: UpgradeOptions) {

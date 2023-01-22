@@ -1,3 +1,4 @@
+import { addShooterClass } from "./character/levelingCharacters/shooterCharacterClass.js";
 import { runner } from "./game.js";
 import { createDefaultGameData, Game } from "./gameModel.js";
 import { keyDown, keyUp } from "./playerInput.js";
@@ -39,4 +40,7 @@ export function createGame(canvasElementId: string | undefined, forTesting: bool
     return game;
 }
 
-start();
+document.addEventListener("DOMContentLoaded", function(){
+    addShooterClass();
+    start();
+});

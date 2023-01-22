@@ -1,5 +1,5 @@
 import { getNextId } from "../../game.js";
-import { IdCounter } from "../../gameModel.js";
+import { Game, IdCounter, UpgradeOptions } from "../../gameModel.js";
 import { GAME_IMAGES } from "../../imageLoad.js";
 import { createRandomizedCharacterImageData } from "../../randomizedCharacterImage.js";
 import { RandomSeed } from "../../randomNumberGenerator.js";
@@ -15,6 +15,30 @@ export type LevelingCharacter = Character & {
     upgradeOptions: {
         name: string,
     }[],
+}
+
+export type LevelingCharacterClass = {
+    fillRandomUpgradeOptions: (character: LevelingCharacter, randomSeed: RandomSeed, upgradeOptions: UpgradeOptions) => void,
+    createDefaultUpgradeOptions: () => Map<string, UpgradeOption>;
+    upgradeLevelingCharacter: (character: LevelingCharacter, upgradeOptionIndex: number, upgradeOptions: UpgradeOptions, randomSeed: RandomSeed) => void,
+    tickPlayerCharacter: (character: LevelingCharacter, game: Game) => void,
+    createLevelingCharacter: (
+        idCounter: IdCounter,
+        x: number,
+        y: number,
+        width: number,
+        height: number,
+        color: string,
+        moveSpeed: number,
+        hp: number,
+        damage: number,
+        faction: string,
+        seed: RandomSeed,
+    ) => LevelingCharacter,
+}
+
+export type LevelingCharacterClasses = {
+    [key:string]: LevelingCharacterClass,
 }
 
 export type UpgradeOption = {

@@ -1,4 +1,4 @@
-import { Position, IdCounter } from "../gameModel.js";
+import { Position, IdCounter, LEVELING_CHARACTER_CLASSES } from "../gameModel.js";
 import { GAME_IMAGES } from "../imageLoad.js";
 import { RandomizedCharacterImage } from "../randomizedCharacterImage.js";
 import { RandomSeed } from "../randomNumberGenerator.js";
@@ -124,6 +124,6 @@ export function createCharacter(
     };
 }
 
-export function createPlayerCharacter(idCounter: IdCounter, pos: Position, seed: RandomSeed): Character {
-    return createShooterCharacter(idCounter, pos.x, pos.y, 20, 40, "blue", 2, 200, 10, PLAYER_FACTION, seed);
+export function createPlayerCharacter(idCounter: IdCounter, pos: Position, seed: RandomSeed, characterClass: string): Character {
+    return LEVELING_CHARACTER_CLASSES[characterClass].createLevelingCharacter(idCounter, pos.x, pos.y, 20, 40, "blue", 2, 200, 10, PLAYER_FACTION, seed);
 }

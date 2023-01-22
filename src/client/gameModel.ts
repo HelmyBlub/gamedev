@@ -1,5 +1,6 @@
 import { createDefaultUpgradeOptions } from "./character/levelingCharacters/levelingCharacter.js";
-import { UpgradeOption } from "./character/levelingCharacters/levelingCharacterModel.js";
+import { LevelingCharacterClasses, UpgradeOption } from "./character/levelingCharacters/levelingCharacterModel.js";
+import { addShooterClass } from "./character/levelingCharacters/shooterCharacterClass.js";
 import { generateMissingChunks } from "./game.js";
 import { createMap, GameMap } from "./map/map.js";
 import { Player } from "./player.js";
@@ -93,6 +94,8 @@ export type Game = {
     debug?: Debugging,
     closeGame?: boolean,
 }
+
+export const LEVELING_CHARACTER_CLASSES: LevelingCharacterClasses = {};
 
 export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: CanvasRenderingContext2D | undefined): Game {
     let game: Game = {
