@@ -1,5 +1,6 @@
-import { Game, IdCounter, LEVELING_CHARACTER_CLASSES, Position, UpgradeOptions } from "../../gameModel.js";
-import { GameImage, GAME_IMAGES, loadImage } from "../../imageLoad.js";
+import { calculateDirection, calculateDistance } from "../../game.js";
+import { Game, IdCounter, LEVELING_CHARACTER_CLASSES, Position } from "../../gameModel.js";
+import { GAME_IMAGES, loadImage } from "../../imageLoad.js";
 import { GameMap } from "../../map/map.js";
 import { RandomSeed, nextRandom } from "../../randomNumberGenerator.js";
 import { determineCharactersInDistance, moveCharacterTick } from "../character.js";
@@ -8,6 +9,7 @@ import { defaultFillRandomUpgradeOptions, upgradeCharacter } from "./levelingCha
 import { createLevelingCharacter, LevelingCharacter, UpgradeOption } from "./levelingCharacterModel.js";
 
 const SHOOTERCLASS = "Sword";
+const SWORDSITANCETOHODLDER = 10;
 export function addSwordClass(){
     LEVELING_CHARACTER_CLASSES[SHOOTERCLASS] = {
         fillRandomUpgradeOptions: defaultFillRandomUpgradeOptions,
@@ -22,8 +24,10 @@ export function addSwordClass(){
 type SwordCharacterClass = {
     damage: number,
     swordLength: number,
-    attackNextTick: boolean,
-    nextAttackDirection: number,
+    swordCount: number,
+    angleChangePerTick: number,
+    currentSwordAngle: number,
+    angleChangePerSword: number,
 }
 
 function createSwordCharacter(
@@ -43,8 +47,10 @@ function createSwordCharacter(
     let characterClassProperties: SwordCharacterClass = {
         damage: 10,
         swordLength: 30,
-        attackNextTick: false,
-        nextAttackDirection: 0,
+        swordCount: 1,
+        angleChangePerTick: 0.01,
+        currentSwordAngle: 0,
+        angleChangePerSword: 1,
     };
 
     let character = createLevelingCharacter(idCounter, x, y, width, height, color, moveSpeed, hp, damage, faction, seed, characterClass, characterClassProperties);
@@ -121,39 +127,38 @@ function drawSword(ctx: CanvasRenderingContext2D, character: Character, cameraPo
     ctx.fillStyle = character.color;
     let swordImage = GAME_IMAGES["sword"];
     loadImage(swordImage);
-    ctx.translate(paintX, paintY);
-    ctx.rotate(properties.nextAttackDirection);
-    ctx.translate(-paintX, -paintY);
-    if(swordImage.imageRef?.complete){
-        let swordSizeImage = swordImage.imageRef;
-        if(properties.swordLength > swordSizeImage.height + 10){
-            let imageSwordSize = Math.round(properties.swordLength/10)*10;
-            createBiggerSwordImage(imageSwordSize);
-            swordSizeImage = swordImage.properties.canvases[imageSwordSize];
+
+    for(let i = 0; i<properties.swordCount;i++){
+        ctx.translate(paintX, paintY);
+        ctx.rotate(properties.currentSwordAngle + Math.PI/2 + properties.angleChangePerSword * i);
+        ctx.translate(-paintX, -paintY);
+        if(swordImage.imageRef?.complete){
+            let swordSizeImage = swordImage.imageRef;
+            if(properties.swordLength > swordSizeImage.height + 10){
+                let imageSwordSize = Math.round(properties.swordLength/10)*10;
+                createBiggerSwordImage(imageSwordSize);
+                swordSizeImage = swordImage.properties.canvases[imageSwordSize];
+            }
+            ctx.drawImage(
+                swordSizeImage,
+                0,
+                0,
+                swordSizeImage.width,
+                swordSizeImage.height,
+                paintX - Math.floor(swordSizeImage.width/2),
+                paintY - properties.swordLength - SWORDSITANCETOHODLDER,
+                swordSizeImage.width,
+                properties.swordLength
+            );
         }
-        ctx.drawImage(
-            swordSizeImage,
-            0,
-            0,
-            swordSizeImage.width,
-            swordSizeImage.height,
-            paintX - Math.floor(swordSizeImage.width/2),
-            paintY - properties.swordLength - 10,
-            swordSizeImage.width,
-            properties.swordLength
-        );
+        ctx.resetTransform();
     }
-    ctx.resetTransform();
 }
 
 function tickSwordCharacter(character: LevelingCharacter, game: Game) {
     if(character.isDead) return;
     let properties: SwordCharacterClass = character.characterClassProperties;
-    properties.nextAttackDirection = (properties.nextAttackDirection + 0.03) % (Math.PI*2);
-    if(properties.attackNextTick){
-        properties.attackNextTick = false;
-        attack(character);
-    }
+    properties.currentSwordAngle = (properties.currentSwordAngle + properties.angleChangePerTick) % (Math.PI*2);
     detectSwordToCharactersHit(character, game.state.map, 14);
     moveCharacterTick(character, game.state.map, game.state.idCounter, true);
 }
@@ -183,6 +188,21 @@ function createSwordUpgradeOptions(): Map<string, UpgradeOption>{
         }
     });
 
+    upgradeOptions.set("SwordCount+", {
+        name: "SwordCount+", upgrade: (c: LevelingCharacter) => {
+            let properties: SwordCharacterClass =  c.characterClassProperties;
+            properties.swordCount += 1;
+            properties.angleChangePerSword = Math.PI*2 / properties.swordCount;
+        }
+    });
+
+    upgradeOptions.set("SwordSpeed+", {
+        name: "SwordSpeed+", upgrade: (c: LevelingCharacter) => {
+            let properties: SwordCharacterClass =  c.characterClassProperties;
+            properties.angleChangePerTick += 0.005;
+        }
+    });
+
     return upgradeOptions;
 }
 
@@ -194,47 +214,32 @@ function detectSwordToCharactersHit(sourceCharacter: LevelingCharacter, map: Gam
     for (let charIt = targetCharacters.length - 1; charIt >= 0; charIt--) {
         let targetCharacter = targetCharacters[charIt];
         if (targetCharacter.isDead || targetCharacter.faction === sourceCharacter.faction) continue;
-        let isHit = detectSwordToCharacterHit(sourceCharacter, targetCharacter, swordWidth);
-        if (isHit) {
-            targetCharacter.hp -= properties.damage;
-            targetCharacter.wasHitRecently = true;
+        for(let swordIndex = 0; swordIndex< properties.swordCount; swordIndex++){
+            let isHit = detectSwordToCharacterHit(sourceCharacter, targetCharacter, targetCharacter.width, swordIndex);
+            if (isHit) {
+                targetCharacter.hp -= properties.damage;
+                targetCharacter.wasHitRecently = true;
+            }
         }
     }
 }
 
-function detectSwordToCharacterHit(sourceSwordCharacter: LevelingCharacter, pos: Position, swordWidth: number): boolean{
+function detectSwordToCharacterHit(sourceSwordCharacter: LevelingCharacter, pos: Position, enemyWidth: number, swordIndex: number): boolean{
     let properties: SwordCharacterClass =  sourceSwordCharacter.characterClassProperties;
-    let x1 = sourceSwordCharacter.x;
-    let y1 = sourceSwordCharacter.y;
-    let x2 = x1 + Math.cos(properties.nextAttackDirection - Math.PI/2) * properties.swordLength;
-    let y2 = y1 + Math.sin(properties.nextAttackDirection - Math.PI/2) * properties.swordLength;
-    if(x1 < x2){
-        if(pos.x < x1 - swordWidth/2 || pos.x > x2 + swordWidth/2){
-            return false;
+    let angle = calculateDirection(sourceSwordCharacter, pos);
+    if(angle < 0) angle += Math.PI * 2;
+    let currentSwordAngle = (properties.currentSwordAngle + (properties.angleChangePerSword * swordIndex)) % (Math.PI*2);
+    let angleSizeToCheck = properties.angleChangePerTick + 0.1;
+    let startAngle = currentSwordAngle - angleSizeToCheck;
+    angle = (angle - startAngle) % (Math.PI*2);
+    if(angle < 0) angle += Math.PI * 2;
+    
+    if(angle <= angleSizeToCheck){
+        let distance = calculateDistance(sourceSwordCharacter, pos);
+        if(distance < properties.swordLength + SWORDSITANCETOHODLDER + enemyWidth){
+            return true;
         }
-    }else{
-        if(pos.x < x2 - swordWidth/2 || pos.x > x1 + swordWidth/2){
-            return false;
-        }
-    }
-    if(y1 < y2){
-        if(pos.y < y1 - swordWidth/2 || pos.y > y2 + swordWidth/2){
-            return false;
-        }
-    }else{
-        if(pos.y < y2 - swordWidth/2 || pos.y > y1 + swordWidth/2){
-            return false;
-        }
-    }
+    } 
 
-    let numerator = Math.abs(((x2 - x1)*(y1-pos.y)) - ((x1-pos.x)*(y2-y1)));
-    let denominator = Math.sqrt(Math.pow((x2-x1), 2) + Math.pow((y2-y1), 2));
-
-    let distance = numerator / denominator - swordWidth/2;
-
-    return distance <= 0;
-}
-
-function attack(character: LevelingCharacter) {
-    let properties: SwordCharacterClass = character.characterClassProperties;
+    return false;
 }
