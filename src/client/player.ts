@@ -32,7 +32,7 @@ export function createDefaultKeyBindings1() {
 }
 
 function addPlayer(idCounter: IdCounter, clientId: number, players: Player[], pos: Position, seed: RandomSeed) {
-    let character = createPlayerCharacter(idCounter, pos, seed, "Shooter");
+    let character = createPlayerCharacter(idCounter, pos, seed, "Sword");
     players.push(createPlayer(clientId, character));
 }
 

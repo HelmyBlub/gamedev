@@ -1,4 +1,5 @@
 import { addShooterClass } from "./character/levelingCharacters/shooterCharacterClass.js";
+import { addSwordClass } from "./character/levelingCharacters/swordCharacterClass.js";
 import { runner } from "./game.js";
 import { createDefaultGameData, Game } from "./gameModel.js";
 import { keyDown, keyUp } from "./playerInput.js";
@@ -42,5 +43,6 @@ export function createGame(canvasElementId: string | undefined, forTesting: bool
 
 document.addEventListener("DOMContentLoaded", function(){
     addShooterClass();
+    addSwordClass();
     start();
 });

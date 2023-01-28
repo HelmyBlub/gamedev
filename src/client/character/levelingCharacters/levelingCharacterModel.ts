@@ -1,5 +1,5 @@
 import { getNextId } from "../../game.js";
-import { Game, IdCounter, UpgradeOptions } from "../../gameModel.js";
+import { Game, IdCounter, Position, UpgradeOptions } from "../../gameModel.js";
 import { GAME_IMAGES } from "../../imageLoad.js";
 import { createRandomizedCharacterImageData } from "../../randomizedCharacterImage.js";
 import { RandomSeed } from "../../randomNumberGenerator.js";
@@ -35,6 +35,7 @@ export type LevelingCharacterClass = {
         faction: string,
         seed: RandomSeed,
     ) => LevelingCharacter,
+    paintWeapon?: (ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position) => void,
 }
 
 export type LevelingCharacterClasses = {

@@ -1,6 +1,6 @@
 import { getPlayerCharacters } from "../character.js";
 import { Game, GameState, LEVELING_CHARACTER_CLASSES, UpgradeOptions } from "../../gameModel.js";
-import { RandomSeed } from "../../randomNumberGenerator.js";
+import { nextRandom, RandomSeed } from "../../randomNumberGenerator.js";
 import { Character } from "../characterModel.js";
 import { LevelingCharacter } from "./levelingCharacterModel.js";
 
@@ -39,10 +39,36 @@ export function tickPlayerCharacter(character: LevelingCharacter, game: Game) {
     LEVELING_CHARACTER_CLASSES[character.characterClass].tickPlayerCharacter(character, game);
 }
 
+export function upgradeCharacter(character: LevelingCharacter, upgradeOptionIndex: number, upgradeOptions: UpgradeOptions, randomSeed: RandomSeed) {
+    if (character.availableSkillPoints > 0) {
+        let upgradeOptionsShooter = upgradeOptions[character.characterClass];
+        upgradeOptionsShooter.get(character.upgradeOptions[upgradeOptionIndex].name)?.upgrade(character);
+        character.availableSkillPoints--;
+        character.upgradeOptions = [];
+        if (character.availableSkillPoints > 0) {
+            fillRandomUpgradeOptions(character, randomSeed, upgradeOptions);
+        }
+    }
+}
+
+export function defaultFillRandomUpgradeOptions(character: LevelingCharacter, randomSeed: RandomSeed, upgradeOptions: UpgradeOptions) {
+    if (character.upgradeOptions.length === 0) {
+        let setOfUsedUpgrades = new Set<number>();
+        let upgradeOptionsShooter = upgradeOptions[character.characterClass];
+        for (let i = 0; i < 3; i++) {
+            let randomOption = Math.floor(nextRandom(randomSeed) * upgradeOptionsShooter.size);
+            while (setOfUsedUpgrades.has(randomOption) && upgradeOptionsShooter.size > setOfUsedUpgrades.size) {
+                randomOption = Math.floor(nextRandom(randomSeed) * upgradeOptionsShooter.size);
+            }
+            setOfUsedUpgrades.add(randomOption);
+            character.upgradeOptions.push({ name: Array.from(upgradeOptionsShooter.keys())[randomOption] });
+        }
+    }
+}
 function levelingCharacterLevelUp(character: LevelingCharacter, randomSeed: RandomSeed, upgradeOptions: UpgradeOptions) {
     character.level++;
     character.availableSkillPoints += 1;
     character.experience -= character.experienceForLevelUp;
-    character.experienceForLevelUp += character.level;
+    character.experienceForLevelUp += Math.floor(character.level/2);
     fillRandomUpgradeOptions(character, randomSeed, upgradeOptions);
 }

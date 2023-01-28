@@ -5,7 +5,6 @@ import { RandomSeed } from "../randomNumberGenerator.js";
 import { tickFixPositionRespawnEnemyCharacter } from "./enemy/fixPositionRespawnEnemy.js";
 import { tickRandomSpawnFollowingEnemyCharacter } from "./enemy/randomSpawnFollowingEnemy.js";
 import { tickPlayerCharacter } from "./levelingCharacters/levelingCharacter.js";
-import { createShooterCharacter } from "./levelingCharacters/shooterCharacterClass.js";
 
 export type CHARACTER_TYPES_STUFF = {
     [key: string]: {

@@ -2,20 +2,21 @@ import { Game, IdCounter, LEVELING_CHARACTER_CLASSES, UpgradeOptions } from "../
 import { Projectile, createProjectile } from "../../projectile.js";
 import { RandomSeed, nextRandom } from "../../randomNumberGenerator.js";
 import { moveCharacterTick } from "../character.js";
+import { defaultFillRandomUpgradeOptions, upgradeCharacter } from "./levelingCharacter.js";
 import { createLevelingCharacter, LevelingCharacter, UpgradeOption } from "./levelingCharacterModel.js";
 
 const SHOOTERCLASS = "Shooter";
 export function addShooterClass(){
     LEVELING_CHARACTER_CLASSES[SHOOTERCLASS] = {
-        fillRandomUpgradeOptions: fillRandomShooterUpgradeOptions,
+        fillRandomUpgradeOptions: defaultFillRandomUpgradeOptions,
         createDefaultUpgradeOptions: createShooterUpgradeOptions,
-        upgradeLevelingCharacter: upgradeShooterCharacter,
+        upgradeLevelingCharacter: upgradeCharacter,
         tickPlayerCharacter: tickShooterCharacter,
         createLevelingCharacter: createShooterCharacter,
     }   
 }
 
-export type ShooterCharacterClass = {
+type ShooterCharacterClass = {
     baseFrequency: number,
     frequencyIncrease: number,
     nextShotTime: number,
@@ -24,7 +25,7 @@ export type ShooterCharacterClass = {
     timeToLive: number,
 }
 
-export function createShooterCharacter(
+function createShooterCharacter(
     idCounter: IdCounter,
     x: number,
     y: number,
@@ -51,7 +52,7 @@ export function createShooterCharacter(
     return character;
 }
 
-export function tickShooterCharacter(character: LevelingCharacter, game: Game) {
+function tickShooterCharacter(character: LevelingCharacter, game: Game) {
     if(character.isDead) return;
     let properties: ShooterCharacterClass = character.characterClassProperties;
 
@@ -62,7 +63,7 @@ export function tickShooterCharacter(character: LevelingCharacter, game: Game) {
     moveCharacterTick(character, game.state.map, game.state.idCounter, true);
 }
 
-export function createShooterUpgradeOptions(): Map<string, UpgradeOption>{
+function createShooterUpgradeOptions(): Map<string, UpgradeOption>{
     let upgradeOptions = new Map<string, UpgradeOption>();
     upgradeOptions.set("Health+50", {
         name: "Health+50", upgrade: (c: LevelingCharacter) => {
@@ -99,33 +100,6 @@ export function createShooterUpgradeOptions(): Map<string, UpgradeOption>{
     });
 
     return upgradeOptions;
-}
-
-export function upgradeShooterCharacter(character: LevelingCharacter, upgradeOptionIndex: number, upgradeOptions: UpgradeOptions, randomSeed: RandomSeed) {
-    if (character.availableSkillPoints > 0) {
-        let upgradeOptionsShooter = upgradeOptions[SHOOTERCLASS];
-        upgradeOptionsShooter.get(character.upgradeOptions[upgradeOptionIndex].name)?.upgrade(character);
-        character.availableSkillPoints--;
-        character.upgradeOptions = [];
-        if (character.availableSkillPoints > 0) {
-            fillRandomShooterUpgradeOptions(character, randomSeed, upgradeOptions);
-        }
-    }
-}
-
-export function fillRandomShooterUpgradeOptions(character: LevelingCharacter, randomSeed: RandomSeed, upgradeOptions: UpgradeOptions) {
-    if (character.upgradeOptions.length === 0) {
-        let setOfUsedUpgrades = new Set<number>();
-        let upgradeOptionsShooter = upgradeOptions[SHOOTERCLASS];
-        for (let i = 0; i < 3; i++) {
-            let randomOption = Math.floor(nextRandom(randomSeed) * upgradeOptionsShooter.size);
-            while (setOfUsedUpgrades.has(randomOption) && upgradeOptionsShooter.size > setOfUsedUpgrades.size) {
-                randomOption = Math.floor(nextRandom(randomSeed) * upgradeOptionsShooter.size);
-            }
-            setOfUsedUpgrades.add(randomOption);
-            character.upgradeOptions.push({ name: Array.from(upgradeOptionsShooter.keys())[randomOption] });
-        }
-    }
 }
 
 function shoot(character: LevelingCharacter, projectiles: Projectile[], gameTime: number, randomSeed: RandomSeed) {
