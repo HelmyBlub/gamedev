@@ -54,7 +54,6 @@ export function gameInit(game: Game) {
     game.state.triggerRestart = false;
     game.state.restartAfterTick = false;
     game.state.time = 0;
-    game.realStartTime = performance.now();
     game.state.playerInputs = [];
     game.clientKeyBindings = [];
     game.performance = {};
@@ -63,8 +62,6 @@ export function gameInit(game: Game) {
     gameInitPlayers(game);
     if (game.multiplayer.websocket !== null) {
         game.multiplayer.maxServerGameTime = 0;
-        game.multiplayer.smoothedGameTime = 0;
-        game.realStartTime = game.multiplayer.lastRestartReceiveTime!;
         game.state.playerInputs = game.multiplayer.cachePlayerInputs!;
     }
 }
@@ -97,13 +94,23 @@ export function runner(game: Game) {
     } else {
         const timeNow = performance.now();
         let counter = 0;
-        while (!game.state.ended && (game.multiplayer.maxServerGameTime >= game.state.time + game.tickInterval || game.state.triggerRestart) && counter < 50) {
+        let timePassedSinceServerTimeUpdate = timeNow - game.multiplayer.maxServerGameTimeReceivedTime;
+        let timeUntilNextUpdate = game.multiplayer.updateInterval - timePassedSinceServerTimeUpdate;
+        let gameTimeBehind = game.multiplayer.maxServerGameTime - game.state.time;
+        let timeDiff = gameTimeBehind - timeUntilNextUpdate;
+        let maxCounter = Math.min(Math.max(2, (gameTimeBehind-100)/game.tickInterval), 50);
+        while (!game.state.ended
+            && (
+                (game.multiplayer.maxServerGameTime >= game.state.time + game.tickInterval 
+                    && timeDiff >= game.tickInterval )
+                || game.state.triggerRestart
+            )
+            && counter < maxCounter
+        ) {
             counter++;
-            let delayDiff = game.multiplayer.delay - game.multiplayer.minDelay;
-            if (timeNow < game.realStartTime + game.state.time + game.multiplayer.updateInterval + delayDiff) {
-                break;
-            }
             tick(game.tickInterval, game);
+            gameTimeBehind = game.multiplayer.maxServerGameTime - game.state.time;
+            timeDiff = gameTimeBehind - timeUntilNextUpdate;
         }
         if (counter >= 50) {
             console.log("game can not keep up");
@@ -219,7 +226,7 @@ function tick(gameTimePassed: number, game: Game) {
         tickCharacters(getPlayerCharacters(game.state.players), game);
         tickProjectiles(game.state.projectiles, game.state.time);
         detectProjectileToCharacterHit(game.state.map, game.state.projectiles);
-        detectCharacterDeath(game.state.map, game.state, game.avaialbleUpgrades);
+        detectCharacterDeath(game.state.map, game.state, game.avaialbleUpgrades, game.camera);
         if (gameEndedCheck(game)) endGame(game.state, game.testing);
         if (game.state.restartAfterTick) gameRestart(game);
         determineActiveChunks(getPlayerCharacters(game.state.players), game.state.map);

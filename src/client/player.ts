@@ -1,8 +1,8 @@
 import { Character, createPlayerCharacter } from "./character/characterModel.js";
-import { Game, IdCounter, Position } from "./gameModel.js";
+import { Game, IdCounter, LEVELING_CHARACTER_CLASSES, Position } from "./gameModel.js";
 import { findNearNonBlockingPosition } from "./map/map.js";
 import { ActionsPressed, createActionsPressed } from "./playerInput.js";
-import { RandomSeed } from "./randomNumberGenerator.js";
+import { nextRandom, RandomSeed } from "./randomNumberGenerator.js";
 
 export type Player = {
     character: Character,
@@ -32,7 +32,9 @@ export function createDefaultKeyBindings1() {
 }
 
 function addPlayer(idCounter: IdCounter, clientId: number, players: Player[], pos: Position, seed: RandomSeed) {
-    let character = createPlayerCharacter(idCounter, pos, seed, "Sword");
+    let keys = Object.keys(LEVELING_CHARACTER_CLASSES);
+    let randomClassIndex = Math.floor(nextRandom(seed) * keys.length);
+    let character = createPlayerCharacter(idCounter, pos, seed, keys[randomClassIndex]);
     players.push(createPlayer(clientId, character));
 }
 

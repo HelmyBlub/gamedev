@@ -42,7 +42,6 @@ export function executeCommand(game: Game, data: any) {
             break;
         case "gameState":
             game.state = data.data;
-            game.realStartTime = performance.now() - game.state.time;
             for (let i = 0; i < game.state.clientIds.length; i++) {
                 if (game.multiplayer.myClientId === game.state.clientIds[i]) {
                     game.clientKeyBindings = [{
@@ -68,6 +67,7 @@ export function executeCommand(game: Game, data: any) {
             break;
         case "timeUpdate":
             game.multiplayer.maxServerGameTime = data.time;
+            game.multiplayer.maxServerGameTimeReceivedTime = performance.now();
             break;
         default:
             console.log("unkown command: " + command, data);

@@ -2,9 +2,8 @@ import { levelingCharacterXpGain } from "./levelingCharacters/levelingCharacter.
 import { determineMapKeysInDistance, GameMap, isPositionBlocking } from "../map/map.js";
 import { Character, CHARACTER_TYPES_STUFF, ENEMY_FACTION } from "./characterModel.js";
 import { createPathingCache, getNextWaypoint, PathingCache } from "./pathing.js";
-import { UpgradeOption } from "./levelingCharacters/levelingCharacterModel.js";
 import { calculateDirection, calculateDistance } from "../game.js";
-import { Position, Game, GameState, IdCounter, UpgradeOptions } from "../gameModel.js";
+import { Position, Game, GameState, IdCounter, UpgradeOptions, Camera } from "../gameModel.js";
 import { Player } from "../player.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
 
@@ -85,7 +84,7 @@ export function countCharacters(map: GameMap): number{
     return counter;
 }
 
-export function detectCharacterDeath(map: GameMap, state: GameState, upgradeOptions: UpgradeOptions) {
+export function detectCharacterDeath(map: GameMap, state: GameState, upgradeOptions: UpgradeOptions, camera: Camera) {
     for (let i = 0; i < map.activeChunkKeys.length; i++) {
         let chunk = map.chunks[map.activeChunkKeys[i]];
         for (let charIt = chunk.characters.length - 1; charIt >= 0; charIt--) {
@@ -102,6 +101,17 @@ export function detectCharacterDeath(map: GameMap, state: GameState, upgradeOpti
         let char = state.players[i].character;
         if (char.hp <= 0 && !char.isDead) {
             char.isDead = true;
+            if(camera.characterId === char.id){
+                findAndSetNewCameraCharacterId(camera, state.players);
+            }
+        }
+    }
+}
+
+function findAndSetNewCameraCharacterId(camera: Camera, players: Player[]){
+    for (let i = 0; i < players.length; i++) {
+        if(!players[i].character.isDead){
+            camera.characterId = players[i].character.id;
         }
     }
 }

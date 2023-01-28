@@ -56,13 +56,18 @@ export type Highscores = {
     scores: number[],
     maxLength: 10,
 }
+
+export type Camera ={
+    type: string,
+    characterId?: number,
+}
+
 export type UpgradeOptions = {[key:string]: Map<string, UpgradeOption>};
 
 export type Game = {
     canvasElement?: HTMLCanvasElement,
     ctx?: CanvasRenderingContext2D,
     state: GameState,
-    realStartTime: number,
     shouldTickTime?: number,
     tickInterval: number,
     clientKeyBindings: {
@@ -73,7 +78,7 @@ export type Game = {
         myClientId: number,
         websocket: WebSocket | null,
         maxServerGameTime: number,
-        smoothedGameTime: number,
+        maxServerGameTimeReceivedTime: number,
         delay: number,
         maxDelay: number,
         minDelay: number,
@@ -83,10 +88,7 @@ export type Game = {
         cachePlayerInputs?: PlayerInput[],
     },
     avaialbleUpgrades: UpgradeOptions,
-    camera: {
-        type: string,
-        characterId?: number,
-    }
+    camera: Camera,
     performance: {
         mapChunkPaintCache?: MapChunkPaintCache,
     }
@@ -122,13 +124,12 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             map: createMap(),
         },
         clientKeyBindings: [],
-        realStartTime: 0,
         tickInterval: 16,
         multiplayer: {
             myClientId: -1,
             websocket: null,
             maxServerGameTime: 0,
-            smoothedGameTime: 0,
+            maxServerGameTimeReceivedTime: 0,
             delay: 0,
             maxDelay: 0,
             minDelay: 0,

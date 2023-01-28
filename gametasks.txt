@@ -1,6 +1,6 @@
 next tasks:
-    - player Character
-    - be able to choose player class at beginning of a round
+    - check mutliplayer still working
+        - improve multiplayer on bad connections
     - character.size changed to width and height. but hit calculation still only uses width
 
 technical tasks or bugs:
