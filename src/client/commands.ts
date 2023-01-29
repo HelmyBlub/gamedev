@@ -66,8 +66,19 @@ export function executeCommand(game: Game, data: any) {
             }
             break;
         case "timeUpdate":
+            let oldReceivedTime =  game.multiplayer.maxServerGameTimeReceivedTime;
             game.multiplayer.maxServerGameTime = data.time;
             game.multiplayer.maxServerGameTimeReceivedTime = performance.now();
+            let lag = game.multiplayer.maxServerGameTimeReceivedTime - oldReceivedTime - game.multiplayer.updateInterval;
+            if(game.multiplayer.timeReceivedLag < lag){
+                game.multiplayer.timeReceivedLag = lag;
+            }else{
+                game.multiplayer.timeReceivedLag *= 0.8;
+            }
+            if(game.multiplayer.timeReceivedLag > 10 || lag > 10){
+                console.log(lag, game.multiplayer.timeReceivedLag);
+            }
+    
             break;
         default:
             console.log("unkown command: " + command, data);

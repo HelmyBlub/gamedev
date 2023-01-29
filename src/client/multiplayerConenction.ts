@@ -56,6 +56,5 @@ function determineDelay(messageObj: any, game: Game) {
         } else {
             game.multiplayer.minDelay = (game.multiplayer.minDelay + currDelay) / 2;
         };
-        let delayDiff = game.multiplayer.delay - game.multiplayer.minDelay!;
     }
 }

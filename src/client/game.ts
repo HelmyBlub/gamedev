@@ -98,11 +98,12 @@ export function runner(game: Game) {
         let timeUntilNextUpdate = game.multiplayer.updateInterval - timePassedSinceServerTimeUpdate;
         let gameTimeBehind = game.multiplayer.maxServerGameTime - game.state.time;
         let timeDiff = gameTimeBehind - timeUntilNextUpdate;
+        let timeDiffAndLag = timeDiff - game.multiplayer.timeReceivedLag;
         let maxCounter = Math.min(Math.max(2, (gameTimeBehind-100)/game.tickInterval), 50);
         while (!game.state.ended
             && (
                 (game.multiplayer.maxServerGameTime >= game.state.time + game.tickInterval 
-                    && timeDiff >= game.tickInterval )
+                    && timeDiffAndLag >= game.tickInterval )
                 || game.state.triggerRestart
             )
             && counter < maxCounter
