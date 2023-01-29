@@ -67,14 +67,26 @@ export function executeCommand(game: Game, data: any) {
             break;
         case "timeUpdate":
             let multi = game.multiplayer;
+            let timeNow = performance.now();
             let oldReceivedTime =  multi.maxServerGameTimeReceivedTime;
             multi.maxServerGameTime = data.time;
-            multi.maxServerGameTimeReceivedTime = performance.now();
+            multi.maxServerGameTimeReceivedTime = timeNow;
             let validTimeUpdate = oldReceivedTime > 0 && oldReceivedTime < multi.maxServerGameTimeReceivedTime;
             if(validTimeUpdate){
                 let startTime = multi.maxServerGameTimeReceivedTime - multi.maxServerGameTime + multi.updateInterval;
                 if(multi.worstCaseGameStartTime < startTime){
                     multi.worstCaseGameStartTime = startTime;
+                    multi.worstCaseAge = timeNow;
+                    multi.worstRecentCaseGameStartTime = 0;
+                }else{
+                    if(multi.worstRecentCaseGameStartTime < startTime){
+                        multi.worstRecentCaseGameStartTime = startTime;
+                    }
+                    if(multi.worstCaseAge + 1000 < timeNow){
+                        multi.worstCaseGameStartTime = multi.worstRecentCaseGameStartTime;
+                        multi.worstCaseAge = timeNow;
+                        multi.worstRecentCaseGameStartTime = 0;    
+                    }
                 }
             }
     
