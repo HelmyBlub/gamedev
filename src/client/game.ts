@@ -94,24 +94,18 @@ export function runner(game: Game) {
     } else {
         const timeNow = performance.now();
         let counter = 0;
-        let timePassedSinceServerTimeUpdate = timeNow - game.multiplayer.maxServerGameTimeReceivedTime;
-        let timeUntilNextUpdate = game.multiplayer.updateInterval - timePassedSinceServerTimeUpdate;
-        let gameTimeBehind = game.multiplayer.maxServerGameTime - game.state.time;
-        let timeDiff = gameTimeBehind - timeUntilNextUpdate;
-        let timeDiffAndLag = timeDiff - game.multiplayer.timeReceivedLag;
-        let maxCounter = Math.min(Math.max(2, (gameTimeBehind-100)/game.tickInterval), 50);
+        let maxCounter = 50;
+        let realTimePassed = timeNow - game.multiplayer.worstCaseGameStartTime;
         while (!game.state.ended
             && (
                 (game.multiplayer.maxServerGameTime >= game.state.time + game.tickInterval 
-                    && timeDiffAndLag >= game.tickInterval )
+                    && realTimePassed > game.state.time + game.tickInterval )
                 || game.state.triggerRestart
             )
             && counter < maxCounter
         ) {
             counter++;
             tick(game.tickInterval, game);
-            gameTimeBehind = game.multiplayer.maxServerGameTime - game.state.time;
-            timeDiff = gameTimeBehind - timeUntilNextUpdate;
         }
         if (counter >= 50) {
             console.log("game can not keep up");

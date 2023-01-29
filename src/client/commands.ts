@@ -66,17 +66,16 @@ export function executeCommand(game: Game, data: any) {
             }
             break;
         case "timeUpdate":
-            let oldReceivedTime =  game.multiplayer.maxServerGameTimeReceivedTime;
-            game.multiplayer.maxServerGameTime = data.time;
-            game.multiplayer.maxServerGameTimeReceivedTime = performance.now();
-            let lag = game.multiplayer.maxServerGameTimeReceivedTime - oldReceivedTime - game.multiplayer.updateInterval;
-            if(game.multiplayer.timeReceivedLag < lag){
-                game.multiplayer.timeReceivedLag = lag;
-            }else{
-                game.multiplayer.timeReceivedLag *= 0.8;
-            }
-            if(game.multiplayer.timeReceivedLag > 10 || lag > 10){
-                console.log(lag, game.multiplayer.timeReceivedLag);
+            let multi = game.multiplayer;
+            let oldReceivedTime =  multi.maxServerGameTimeReceivedTime;
+            multi.maxServerGameTime = data.time;
+            multi.maxServerGameTimeReceivedTime = performance.now();
+            let validTimeUpdate = oldReceivedTime > 0 && oldReceivedTime < multi.maxServerGameTimeReceivedTime;
+            if(validTimeUpdate){
+                let startTime = multi.maxServerGameTimeReceivedTime - multi.maxServerGameTime + multi.updateInterval;
+                if(multi.worstCaseGameStartTime < startTime){
+                    multi.worstCaseGameStartTime = startTime;
+                }
             }
     
             break;
