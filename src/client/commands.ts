@@ -1,3 +1,4 @@
+import { findAndSetNewCameraCharacterId } from "./character/character.js";
 import { Game } from "./gameModel.js";
 import { sendMultiplayer } from "./multiplayerConenction.js";
 import { createDefaultKeyBindings1 } from "./player.js";
@@ -42,6 +43,7 @@ export function executeCommand(game: Game, data: any) {
             break;
         case "gameState":
             game.state = data.data;
+            game.performance = {};
             for (let i = 0; i < game.state.clientIds.length; i++) {
                 if (game.multiplayer.myClientId === game.state.clientIds[i]) {
                     game.clientKeyBindings = [{
@@ -50,6 +52,7 @@ export function executeCommand(game: Game, data: any) {
                     }];
                 }
             }
+            findAndSetNewCameraCharacterId(game.camera, game.state.players);
             break;
         case "connectInfo":
             game.multiplayer.myClientId = data.clientId;
@@ -77,7 +80,7 @@ export function executeCommand(game: Game, data: any) {
                 if(multi.worstCaseGameStartTime < startTime){
                     multi.worstCaseGameStartTime = startTime;
                     multi.worstCaseAge = timeNow;
-                    multi.worstRecentCaseGameStartTime = 0;
+                    multi.worstRecentCaseGameStartTime = Number.NEGATIVE_INFINITY;
                 }else{
                     if(multi.worstRecentCaseGameStartTime < startTime){
                         multi.worstRecentCaseGameStartTime = startTime;
@@ -85,7 +88,7 @@ export function executeCommand(game: Game, data: any) {
                     if(multi.worstCaseAge + 1000 < timeNow){
                         multi.worstCaseGameStartTime = multi.worstRecentCaseGameStartTime;
                         multi.worstCaseAge = timeNow;
-                        multi.worstRecentCaseGameStartTime = 0;    
+                        multi.worstRecentCaseGameStartTime = Number.NEGATIVE_INFINITY;    
                     }
                 }
             }

@@ -18,6 +18,9 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
 
     if (game.state.ended) {
         paintHighscoreBoard(ctx, game.state.highscores);
+        if (game.multiplayer.myClientId !== -1) {
+            ctx.fillText("Ping: " + Math.round(game.multiplayer.delay), 10, 60);
+        }
     } else {
         if (game.multiplayer.myClientId !== -1) {
             let player = findPlayerById(game.state.players, game.multiplayer.myClientId);

@@ -108,7 +108,7 @@ export function detectCharacterDeath(map: GameMap, state: GameState, upgradeOpti
     }
 }
 
-function findAndSetNewCameraCharacterId(camera: Camera, players: Player[]){
+export function findAndSetNewCameraCharacterId(camera: Camera, players: Player[]){
     for (let i = 0; i < players.length; i++) {
         if(!players[i].character.isDead){
             camera.characterId = players[i].character.id;
