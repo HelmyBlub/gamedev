@@ -1,3 +1,4 @@
+import { createAbilitySword } from "../../ability/abilitySword.js"
 import { calculateDistance, getNextId } from "../../game.js"
 import { Game, IdCounter, Position } from "../../gameModel.js"
 import { MapChunk, GameMap, isPositionBlocking, mapKeyToChunkIJ } from "../../map/map.js"

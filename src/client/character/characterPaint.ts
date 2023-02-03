@@ -1,3 +1,4 @@
+import { ABILITIES_FUNCTIONS } from "../ability/ability.js";
 import { LEVELING_CHARACTER_CLASSES, Position } from "../gameModel.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
 import { randomizedCharacterImageToKey } from "../randomizedCharacterImage.js";
@@ -66,10 +67,7 @@ function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cam
                     character.width,
                     character.height
                 );
-                let characterClass = LEVELING_CHARACTER_CLASSES[(character as LevelingCharacter).characterClass];
-                if(characterClass?.paintWeapon){
-                    characterClass.paintWeapon(ctx, character, cameraPosition);
-                }
+
             }
         } else {
             console.log("missing image path for enemy", characterImageId);
@@ -82,6 +80,12 @@ function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cam
             paintY,
             character.width, 0, 2 * Math.PI);
         ctx.fill();
+    }
+    for(let ability of character.abilities){
+        const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+        if(abilityFunctions.paintAbility !== undefined){
+            abilityFunctions.paintAbility(ctx, character, ability, cameraPosition);
+        }
     }
 }
 

@@ -221,7 +221,7 @@ function tick(gameTimePassed: number, game: Game) {
         tickCharacters(getPlayerCharacters(game.state.players), game);
         tickProjectiles(game.state.projectiles, game.state.time);
         detectProjectileToCharacterHit(game.state.map, game.state.projectiles);
-        detectCharacterDeath(game.state.map, game.state, game.avaialbleUpgrades, game.camera);
+        detectCharacterDeath(game.state.map, game.state, game.camera);
         if (gameEndedCheck(game)) endGame(game.state, game.testing);
         if (game.state.restartAfterTick) gameRestart(game);
         determineActiveChunks(getPlayerCharacters(game.state.players), game.state.map);

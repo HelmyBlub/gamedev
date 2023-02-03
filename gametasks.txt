@@ -1,4 +1,9 @@
 next tasks:
+    - code redesign:
+        - abilities instead of character classes
+            - sword and shoot are abilities, able to be given to every character
+    - display time measures on screen to be able to determine where game slow downes come from    
+        - make a simple menu to enable/disable stuff in game, not per code
     - character.size changed to width and height. but hit calculation still only uses width
 
 technical tasks or bugs:
@@ -6,14 +11,10 @@ technical tasks or bugs:
 - upgrade versions
 - use same code files for backend and frontend
     - understand require vs import in backend vs frontend
-- holding key down creates a lot of keyDown events, always sending over network although nothing changed
-- analyse and improve performance, still far to slow for so little stuff happening  
-    - unable to find an easy performance improvement
 - Perforamnce bug: pulling many enemies far away from spawn and than outranging them, they will move back to their own spawn and create a lot of lag
 
 future functional tasks:
     - if an enemy is aggroed in an inactive chunk, it should be active
-    - depending on the direction of start, enemies can be stronger in different ways
     - map tiles:
         - destroyable tiles
             - destroy trees to gather wood
@@ -30,7 +31,6 @@ future functional tasks:
         - unity example https://gamedevacademy.org/procedural-2d-maps-unity-tutorial/
     - multiplayer 
         - gamesync
-            - try with different client delays
             - need real users to compare how it behaves
     - every one controlls their own character
         - currently has to wait on gamerestart, could make it to be in on join
@@ -45,7 +45,6 @@ future technical tasks:
 - multiplayer test speedup should also work
 - Bug: infinte pathing problem if enemy surounded by blocking tiles, currently only solved thorugh a max counter
 - multiplayer connection delay with localtunnel is too bad, try other options?
-- think: is automated testing already usefull?
 - https/ssl websocket
     - https://www.nginx.com/blog/websocket-nginx/, where goes the config?
 

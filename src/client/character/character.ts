@@ -3,7 +3,7 @@ import { determineMapKeysInDistance, GameMap, isPositionBlocking } from "../map/
 import { Character, CHARACTER_TYPES_STUFF, ENEMY_FACTION } from "./characterModel.js";
 import { createPathingCache, getNextWaypoint, PathingCache } from "./pathing.js";
 import { calculateDirection, calculateDistance } from "../game.js";
-import { Position, Game, GameState, IdCounter, UpgradeOptions, Camera } from "../gameModel.js";
+import { Position, Game, GameState, IdCounter, Camera } from "../gameModel.js";
 import { Player } from "../player.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
 
@@ -84,13 +84,13 @@ export function countCharacters(map: GameMap): number{
     return counter;
 }
 
-export function detectCharacterDeath(map: GameMap, state: GameState, upgradeOptions: UpgradeOptions, camera: Camera) {
+export function detectCharacterDeath(map: GameMap, state: GameState, camera: Camera) {
     for (let i = 0; i < map.activeChunkKeys.length; i++) {
         let chunk = map.chunks[map.activeChunkKeys[i]];
         for (let charIt = chunk.characters.length - 1; charIt >= 0; charIt--) {
             if (chunk.characters[charIt].hp <= 0 && !chunk.characters[charIt].isDead) {
                 if (chunk.characters[charIt].faction === ENEMY_FACTION) {
-                    levelingCharacterXpGain(state, chunk.characters[charIt], upgradeOptions);
+                    levelingCharacterXpGain(state, chunk.characters[charIt]);
                     state.killCounter++;
                 }
                 chunk.characters[charIt].isDead = true;

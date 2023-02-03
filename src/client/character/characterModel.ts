@@ -1,10 +1,11 @@
+import { Ability } from "../ability/ability.js";
 import { Position, IdCounter, LEVELING_CHARACTER_CLASSES } from "../gameModel.js";
 import { GAME_IMAGES } from "../imageLoad.js";
 import { RandomizedCharacterImage } from "../randomizedCharacterImage.js";
 import { RandomSeed } from "../randomNumberGenerator.js";
 import { tickFixPositionRespawnEnemyCharacter } from "./enemy/fixPositionRespawnEnemy.js";
 import { tickRandomSpawnFollowingEnemyCharacter } from "./enemy/randomSpawnFollowingEnemy.js";
-import { tickPlayerCharacter } from "./levelingCharacters/levelingCharacter.js";
+import { tickLevelingCharacter } from "./levelingCharacters/levelingCharacter.js";
 
 export type CHARACTER_TYPES_STUFF = {
     [key: string]: {
@@ -66,7 +67,7 @@ export const CHARACTER_TYPES_STUFF: CHARACTER_TYPES_STUFF = {
         tickFunction: tickRandomSpawnFollowingEnemyCharacter
     },
     levelingCharacter: {
-        tickFunction: tickPlayerCharacter
+        tickFunction: tickLevelingCharacter
     }
 }
 
@@ -85,6 +86,7 @@ export type Character = Position & {
     experienceWorth: number,
     type: string,
     isDead: boolean,
+    abilities: Ability[],
     wasHitRecently?: boolean,
     randomizedCharacterImage?: RandomizedCharacterImage,
 }
@@ -120,6 +122,7 @@ export function createCharacter(
         experienceWorth: experienceWorth,
         type: type,
         isDead: false,
+        abilities: []
     };
 }
 

@@ -1,6 +1,4 @@
-import { createDefaultUpgradeOptions } from "./character/levelingCharacters/levelingCharacter.js";
-import { LevelingCharacterClasses, UpgradeOption } from "./character/levelingCharacters/levelingCharacterModel.js";
-import { addShooterClass } from "./character/levelingCharacters/shooterCharacterClass.js";
+import { LevelingCharacterClasses } from "./character/levelingCharacters/levelingCharacterModel.js";
 import { generateMissingChunks } from "./game.js";
 import { createMap, GameMap } from "./map/map.js";
 import { Player } from "./player.js";
@@ -62,8 +60,6 @@ export type Camera ={
     characterId?: number,
 }
 
-export type UpgradeOptions = {[key:string]: Map<string, UpgradeOption>};
-
 export type Game = {
     canvasElement?: HTMLCanvasElement,
     ctx?: CanvasRenderingContext2D,
@@ -90,7 +86,6 @@ export type Game = {
         lastRestartReceiveTime?: number,
         cachePlayerInputs?: PlayerInput[],
     },
-    avaialbleUpgrades: UpgradeOptions,
     camera: Camera,
     performance: {
         mapChunkPaintCache?: MapChunkPaintCache,
@@ -142,7 +137,6 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             lastSendTime: [],
             updateInterval: -1,
         },
-        avaialbleUpgrades: createDefaultUpgradeOptions(),
         camera: {
             type: "follow character"
         },

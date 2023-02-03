@@ -2,7 +2,7 @@ import { handleCommand } from "./commands.js";
 import { upgradeLevelingCharacter } from "./character/levelingCharacters/levelingCharacter.js";
 import { findPlayerById } from "./player.js";
 import { Character } from "./character/characterModel.js";
-import { LevelingCharacter, UpgradeOption } from "./character/levelingCharacters/levelingCharacterModel.js";
+import { LevelingCharacter } from "./character/levelingCharacters/levelingCharacterModel.js";
 import { Game } from "./gameModel.js";
 import { testGame } from "./test/gameTest.js";
 import { websocketConnect } from "./multiplayerConenction.js";
@@ -146,7 +146,7 @@ function playerAction(clientId: number, action: string, isKeydown: boolean, game
             }
         } else if (UPGRADE_ACTIONS.indexOf(action) !== -1) {
             if (isKeydown) {
-                upgradeLevelingCharacter(character as LevelingCharacter, UPGRADE_ACTIONS.indexOf(action), game.avaialbleUpgrades, game.state.randomSeed);
+                upgradeLevelingCharacter(character as LevelingCharacter, UPGRADE_ACTIONS.indexOf(action), game.state.randomSeed);
             }
         }
     }

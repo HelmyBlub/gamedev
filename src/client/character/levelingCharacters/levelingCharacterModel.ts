@@ -1,5 +1,6 @@
+import { Ability } from "../../ability/ability.js";
 import { getNextId } from "../../game.js";
-import { Game, IdCounter, Position, UpgradeOptions } from "../../gameModel.js";
+import { Game, IdCounter } from "../../gameModel.js";
 import { GAME_IMAGES } from "../../imageLoad.js";
 import { createRandomizedCharacterImageData } from "../../randomizedCharacterImage.js";
 import { RandomSeed } from "../../randomNumberGenerator.js";
@@ -10,18 +11,13 @@ export type LevelingCharacter = Character & {
     experienceForLevelUp: number,
     level: number,
     availableSkillPoints: number,
-    characterClass: string,
-    characterClassProperties: any,
     upgradeOptions: {
+        abilityName?: string,
         name: string,
     }[],
 }
 
 export type LevelingCharacterClass = {
-    fillRandomUpgradeOptions: (character: LevelingCharacter, randomSeed: RandomSeed, upgradeOptions: UpgradeOptions) => void,
-    createDefaultUpgradeOptions: () => Map<string, UpgradeOption>;
-    upgradeLevelingCharacter: (character: LevelingCharacter, upgradeOptionIndex: number, upgradeOptions: UpgradeOptions, randomSeed: RandomSeed) => void,
-    tickPlayerCharacter: (character: LevelingCharacter, game: Game) => void,
     createLevelingCharacter: (
         idCounter: IdCounter,
         x: number,
@@ -34,17 +30,16 @@ export type LevelingCharacterClass = {
         damage: number,
         faction: string,
         seed: RandomSeed,
-    ) => LevelingCharacter,
-    paintWeapon?: (ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position) => void,
+    ) => LevelingCharacter
 }
 
 export type LevelingCharacterClasses = {
     [key:string]: LevelingCharacterClass,
 }
 
-export type UpgradeOption = {
+export type UpgradeOptionLevelingCharacter = {
     name: string,
-    upgrade: (character: LevelingCharacter) => void,
+    upgrade: (levelingCharacter: LevelingCharacter) => void,
 }
 
 export function createLevelingCharacter(
@@ -58,9 +53,7 @@ export function createLevelingCharacter(
     hp: number,
     damage: number,
     faction: string,
-    seed: RandomSeed,
-    characterClass: string,
-    characterClassProperties: any,
+    seed: RandomSeed
 ): LevelingCharacter {
     let character = createCharacter(getNextId(idCounter), x, y, width, height, color, moveSpeed, hp, damage, faction, "levelingCharacter", 1);
     return {
@@ -70,8 +63,6 @@ export function createLevelingCharacter(
         experienceForLevelUp: 10,
         level: 0,
         availableSkillPoints: 0,
-        upgradeOptions: [],
-        characterClass: characterClass,
-        characterClassProperties: characterClassProperties,
+        upgradeOptions: []
     };
 }
