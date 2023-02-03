@@ -1,7 +1,4 @@
 next tasks:
-    - check mutliplayer still working
-        - Bug: map wrong on multiplayer connect
-        - indication UI when mulitplayer, e.g. draw ping in death screen
     - character.size changed to width and height. but hit calculation still only uses width
 
 technical tasks or bugs:

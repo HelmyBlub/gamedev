@@ -18,7 +18,7 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
 
     if (game.state.ended) {
         paintHighscoreBoard(ctx, game.state.highscores);
-        if (game.multiplayer.myClientId !== -1) {
+        if (game.multiplayer.websocket !== null) {
             ctx.fillText("Ping: " + Math.round(game.multiplayer.delay), 10, 60);
         }
     } else {
@@ -27,7 +27,9 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
             if (player === null) return;
             let character = player.character;
             if (character !== null) paintPlayerStats(ctx, character as LevelingCharacter, game.state.time);
-            ctx.fillText("Ping: " + Math.round(game.multiplayer.delay), 10, 60);
+            if (game.multiplayer.websocket !== null) {
+                ctx.fillText("Ping: " + Math.round(game.multiplayer.delay), 10, 60);
+            }
 
         } else {
             paintPlayerStats(ctx, game.state.players[0].character as LevelingCharacter, game.state.time);
