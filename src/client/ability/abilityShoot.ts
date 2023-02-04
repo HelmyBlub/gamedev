@@ -1,3 +1,4 @@
+import { Character } from "../character/characterModel.js";
 import { LevelingCharacter } from "../character/levelingCharacters/levelingCharacterModel.js";
 import { Game } from "../gameModel.js";
 import { Projectile, createProjectile } from "../projectile.js";
@@ -30,6 +31,7 @@ export function createAbilityShoot(
     multiShot: number = 0,
     timeToLive: number = 1000
 ): AbilityShoot {
+    if(ABILITIES_FUNCTIONS[ABILITY_NAME] === undefined) addShootAbility();
     return {
         name: ABILITY_NAME,
         baseFrequency: baseFrequency,
@@ -42,7 +44,7 @@ export function createAbilityShoot(
     };
 }
 
-export function tickAbilityShoot(character: LevelingCharacter, ability: Ability, game: Game) {
+export function tickAbilityShoot(character: Character, ability: Ability, game: Game) {
     let abilityShoot = ability as AbilityShoot;
     while (abilityShoot.nextShotTime <= game.state.time) {
         shoot(character, abilityShoot, game.state.projectiles, game.state.time, game.state.randomSeed);
@@ -80,14 +82,14 @@ function createAbiltiyShootUpgradeOptions(): UpgradeOptionAbility[]{
     return upgradeOptions;
 }
 
-function shoot(character: LevelingCharacter, ability: AbilityShoot, projectiles: Projectile[], gameTime: number, randomSeed: RandomSeed) {
+function shoot(character: Character, ability: AbilityShoot, projectiles: Projectile[], gameTime: number, randomSeed: RandomSeed) {
     for (let i = 0; i <= ability.multiShot; i++) {
         let shotSpread: number = (nextRandom(randomSeed) - 0.5) / 10 * ability.multiShot;
         projectiles.push(createProjectile(
             character.x,
             character.y,
             character.moveDirection + shotSpread,
-            character.damage,
+            ability.damage,
             character.faction,
             character.moveSpeed + 2,
             gameTime,

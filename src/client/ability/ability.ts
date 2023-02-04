@@ -7,7 +7,7 @@ export type Ability = {
 }
 
 export type AbilityFunctions = {
-    tickAbility: (character: LevelingCharacter, ability: Ability, game: Game) => void,
+    tickAbility: (character: Character, ability: Ability, game: Game) => void,
     createAbiltiyUpgradeOptions: () => UpgradeOptionAbility[],
     paintAbility?: (ctx: CanvasRenderingContext2D, character: Character, ability: Ability, cameraPosition: Position) => void,
 }

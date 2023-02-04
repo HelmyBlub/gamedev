@@ -1,5 +1,3 @@
-import { addShootAbility } from "./ability/abilityShoot.js";
-import { addSwordAbility } from "./ability/abilitySword.js";
 import { addShooterClass } from "./character/levelingCharacters/shooterCharacterClass.js";
 import { addSwordClass } from "./character/levelingCharacters/swordCharacterClass.js";
 import { runner } from "./game.js";
@@ -46,7 +44,5 @@ export function createGame(canvasElementId: string | undefined, forTesting: bool
 document.addEventListener("DOMContentLoaded", function(){
     addShooterClass();
     addSwordClass();
-    addShootAbility();
-    addSwordAbility();
     start();
 });

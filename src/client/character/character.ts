@@ -6,6 +6,7 @@ import { calculateDirection, calculateDistance } from "../game.js";
 import { Position, Game, GameState, IdCounter, Camera } from "../gameModel.js";
 import { Player } from "../player.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
+import { ABILITIES_FUNCTIONS } from "../ability/ability.js";
 
 export function findCharacterById(characters: Character[], id: number): Character | null {
     for (let i = 0; i < characters.length; i++) {
@@ -29,6 +30,11 @@ export function tickMapCharacters(map: GameMap, game: Game) {
 export function tickCharacters(characters: Character[], game: Game, pathingCache: PathingCache | null = null) {
     for (let j = characters.length - 1; j >= 0; j--) {
         CHARACTER_TYPES_STUFF[characters[j].type].tickFunction(characters[j], game, pathingCache);
+        if (!characters[j].isDead){
+            for(let ability of characters[j].abilities){
+                ABILITIES_FUNCTIONS[ability.name].tickAbility(characters[j], ability, game);
+            }    
+        }
     }
 }
 
@@ -55,7 +61,7 @@ export function determineClosestCharacter(character: Character, characters: Char
     return { minDistanceCharacter, minDistance };
 }
 
-export function determineCharactersInDistance(position: Position, map: GameMap, maxDistance: number): Character[] {
+export function determineCharactersInDistance(position: Position, map: GameMap, players: Player[], maxDistance: number): Character[] {
     let result: Character[] = [];
     let mapKeysInDistance = determineMapKeysInDistance(position, map, maxDistance);
 
@@ -68,6 +74,12 @@ export function determineCharactersInDistance(position: Position, map: GameMap, 
             if (maxDistance >= distance) {
                 result.push(characters[j]);
             }
+        }
+    }
+    for(let player of players){
+        let distance = calculateDistance(position, player.character);
+        if (maxDistance >= distance) {
+            result.push(player.character);
         }
     }
     return result;

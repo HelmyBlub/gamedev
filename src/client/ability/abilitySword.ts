@@ -5,6 +5,7 @@ import { calculateDirection, calculateDistance } from "../game.js";
 import { Position, Game } from "../gameModel.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
 import { GameMap } from "../map/map.js";
+import { Player } from "../player.js";
 import { ABILITIES_FUNCTIONS, Ability, UpgradeOptionAbility } from "./ability.js";
 
 type AbilitySword = Ability & {
@@ -38,6 +39,7 @@ export function createAbilitySword(
     angleChangePerTick: number = 0.01,
     angleChangePerSword: number = 1
 ): AbilitySword {
+    if(ABILITIES_FUNCTIONS[ABILITY_NAME] === undefined) addSwordAbility();
     return {
         name: ABILITY_NAME,
         damage: damage,
@@ -141,10 +143,10 @@ function paintAbilitySword(ctx: CanvasRenderingContext2D, character: Character, 
     }
 }
 
-function tickAbilitySword(character: LevelingCharacter, ability: Ability, game: Game) {
+function tickAbilitySword(character: Character, ability: Ability, game: Game) {
     let abilitySword = ability as AbilitySword;
     abilitySword.currentSwordAngle = (abilitySword.currentSwordAngle + abilitySword.angleChangePerTick) % (Math.PI * 2);
-    detectSwordToCharactersHit(character, abilitySword, game.state.map);
+    detectSwordToCharactersHit(character, abilitySword, game.state.map, game.state.players);
 }
 
 function createAbilitySwordUpgradeOptions(): UpgradeOptionAbility[] {
@@ -180,10 +182,10 @@ function createAbilitySwordUpgradeOptions(): UpgradeOptionAbility[] {
     return upgradeOptions;
 }
 
-function detectSwordToCharactersHit(sourceCharacter: Character, ability: AbilitySword, map: GameMap) {
+function detectSwordToCharactersHit(sourceCharacter: Character, ability: AbilitySword, map: GameMap, players: Player[]) {
     let maxEnemySizeEstimate = 40;
 
-    let targetCharacters = determineCharactersInDistance(sourceCharacter, map, ability.swordLength + maxEnemySizeEstimate);
+    let targetCharacters = determineCharactersInDistance(sourceCharacter, map, players, ability.swordLength + maxEnemySizeEstimate);
     for (let charIt = targetCharacters.length - 1; charIt >= 0; charIt--) {
         let targetCharacter = targetCharacters[charIt];
         if (targetCharacter.isDead || targetCharacter.faction === sourceCharacter.faction) continue;

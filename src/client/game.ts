@@ -1,6 +1,6 @@
 import { countAlivePlayerCharacters, detectCharacterDeath, determineCharactersInDistance, findCharacterById, getPlayerCharacters, tickCharacters, tickMapCharacters } from "./character/character.js";
 import { paintAll } from "./gamePaint.js";
-import { gameInitPlayers } from "./player.js";
+import { gameInitPlayers, Player } from "./player.js";
 import { tickPlayerInputs } from "./playerInput.js";
 import { Projectile, tickProjectiles } from "./projectile.js";
 import { Position, GameState, Game, IdCounter, TestingStuff } from "./gameModel.js";
@@ -220,7 +220,7 @@ function tick(gameTimePassed: number, game: Game) {
         tickMapCharacters(game.state.map, game);
         tickCharacters(getPlayerCharacters(game.state.players), game);
         tickProjectiles(game.state.projectiles, game.state.time);
-        detectProjectileToCharacterHit(game.state.map, game.state.projectiles);
+        detectProjectileToCharacterHit(game.state.map, game.state.projectiles, game.state.players);
         detectCharacterDeath(game.state.map, game.state, game.camera);
         if (gameEndedCheck(game)) endGame(game.state, game.testing);
         if (game.state.restartAfterTick) gameRestart(game);
@@ -240,13 +240,13 @@ function determineActiveChunks(characters: Character[], map: GameMap) {
     map.activeChunkKeys = [...keySet];
 }
 
-export function detectProjectileToCharacterHit(map: GameMap, projectiles: Projectile[]) {
+export function detectProjectileToCharacterHit(map: GameMap, projectiles: Projectile[], players: Player[]) {
     for (let projIt = 0; projIt < projectiles.length; projIt++) {
         let projectile = projectiles[projIt];
         let maxEnemySizeEstimate = 40;
         let maxProjectileSizeEstimate = 20;
 
-        let characters = determineCharactersInDistance(projectile, map, projectile.size + maxEnemySizeEstimate + maxProjectileSizeEstimate);
+        let characters = determineCharactersInDistance(projectile, map, players, projectile.size + maxEnemySizeEstimate + maxProjectileSizeEstimate);
         for (let charIt = characters.length - 1; charIt >= 0; charIt--) {
             let c = characters[charIt];
             if (c.isDead || c.faction === projectile.faction) continue;

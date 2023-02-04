@@ -144,7 +144,7 @@ function testDetectProjectileToCharacterHitPerformance() {
 
     let startTime = performance.now();
     for (let i = 0; i < iterations; i++) {
-        detectProjectileToCharacterHit(map, projectiles);
+        detectProjectileToCharacterHit(map, projectiles, []);
     }
     let time = performance.now() - startTime;
     console.log("time", time / iterations, time);

@@ -1,7 +1,4 @@
 next tasks:
-    - code redesign:
-        - abilities instead of character classes
-            - sword and shoot are abilities, able to be given to every character
     - display time measures on screen to be able to determine where game slow downes come from    
         - make a simple menu to enable/disable stuff in game, not per code
     - character.size changed to width and height. but hit calculation still only uses width

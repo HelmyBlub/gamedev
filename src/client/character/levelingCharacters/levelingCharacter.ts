@@ -63,10 +63,6 @@ export function levelingCharacterXpGain(state: GameState, killedCharacter: Chara
 
 export function tickLevelingCharacter(character: LevelingCharacter, game: Game) {
     if (character.isDead) return;
-    for(let ability of character.abilities){
-        ABILITIES_FUNCTIONS[ability.name].tickAbility(character, ability, game);
-    }
-
     moveCharacterTick(character, game.state.map, game.state.idCounter, true);
 }
 
