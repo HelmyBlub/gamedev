@@ -2,7 +2,7 @@ import { getPlayerCharacters } from "./character/character.js";
 import { paintCharacters } from "./character/characterPaint.js";
 import { LevelingCharacter } from "./character/levelingCharacters/levelingCharacterModel.js";
 import { calculateDistance, getCameraPosition } from "./game.js";
-import { Game, Position, Highscores, TestingStuff } from "./gameModel.js";
+import { Game, Position, Highscores, TestingStuff, Debugging } from "./gameModel.js";
 import { paintMap } from "./map/mapPaint.js";
 import { findPlayerById } from "./player.js";
 import { paintProjectiles } from "./projectile.js";
@@ -34,6 +34,25 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
         } else {
             paintPlayerStats(ctx, game.state.players[0].character as LevelingCharacter, game.state.time);
         }
+    }
+    paintTimeMeasures(ctx, game.debug);
+}
+
+function paintTimeMeasures(ctx: CanvasRenderingContext2D, debug: Debugging | undefined) {
+    if (debug === undefined || debug.takeTimeMeasures !== true) return;
+    let fontSize = 12;
+    let startX = 0;
+    let startY = 80;
+    ctx.fillStyle = "white";
+    ctx.fillRect(startX, startY - fontSize, 120, debug.timeMeasuresData!.length * fontSize + 1);
+
+    ctx.fillStyle = "black";
+    ctx.font = fontSize + "px Arial";
+    for (let i = 0; i < debug.timeMeasuresData!.length; i++) {
+        const data = debug.timeMeasuresData![i];
+        const sum = data.timeMeasures.reduce((a, b) => a + b, 0);
+        const avg = (sum / data.timeMeasures.length) || 0;
+        ctx.fillText(avg.toFixed(2) + " " + data.name, startX, startY + i * fontSize);
     }
 }
 

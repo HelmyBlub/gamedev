@@ -28,6 +28,8 @@ export type TestingStuff = {
 export type Debugging = {
     paintMarkActiveChunks?: boolean,
     paintTileIJNumbers?: boolean,
+    takeTimeMeasures?: boolean,
+    timeMeasuresData?: {name:string, timeMeasures:number[], tempTime: number}[],
 }
 
 export type MapChunkPaintCache = {
@@ -144,6 +146,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
         debug:{ 
             //paintTileIJNumbers: true,
             //paintMarkActiveChunks: true,
+            takeTimeMeasures: true,
         },
     }
 

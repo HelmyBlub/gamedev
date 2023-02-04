@@ -3,7 +3,7 @@ import { paintAll } from "./gamePaint.js";
 import { gameInitPlayers, Player } from "./player.js";
 import { tickPlayerInputs } from "./playerInput.js";
 import { Projectile, tickProjectiles } from "./projectile.js";
-import { Position, GameState, Game, IdCounter, TestingStuff } from "./gameModel.js";
+import { Position, GameState, Game, IdCounter, TestingStuff, Debugging } from "./gameModel.js";
 import { createMap, determineMapKeysInDistance, GameMap, removeAllMapCharacters } from "./map/map.js";
 import { Character } from "./character/characterModel.js";
 import { createNewChunk } from "./map/mapGeneration.js";
@@ -82,11 +82,35 @@ export function calculateDistance(objectA: { x: number, y: number }, objectB: { 
     return Math.sqrt(xDiff * xDiff + yDiff * yDiff);
 }
 
+export function takeTimeMeasure(debug: Debugging | undefined, endName: string, startName: string) {
+    if(debug === undefined || debug.takeTimeMeasures !== true) return;
+    if (debug.timeMeasuresData === undefined) debug.timeMeasuresData = [];
+    let timeNow = performance.now();
+    if(endName !== ""){
+        let data = debug.timeMeasuresData?.find((e) => e.name === endName);
+        if(data === undefined) throw Error("did not startTimeMeasure for " + endName);
+        data.timeMeasures.push(timeNow - data.tempTime);
+        if(data.timeMeasures.length > 30) data.timeMeasures.shift();
+    }
+    if(startName !== ""){
+        let data = debug.timeMeasuresData?.find((e) => e.name === startName);
+        if(data === undefined){
+            data = {name: startName, timeMeasures: [], tempTime: timeNow};
+            debug.timeMeasuresData!.push(data);
+        }else{
+            data.tempTime = timeNow;
+        }
+    }
+}
+
 export function runner(game: Game) {
+    takeTimeMeasure(game.debug, "", "runner");
+    takeTimeMeasure(game.debug, "", "tick");
     if (game.multiplayer.websocket === null) {
         if (game.testing && game.testing.frameSkipAmount && game.testing.frameSkipAmount > 0) {
             for (let i = 0; i < game.testing.frameSkipAmount; i++) {
                 tick(game.tickInterval, game);
+                if(i < game.testing.frameSkipAmount-1) takeTimeMeasure(game.debug, "tick", "tick");
             }
         } else {
             tick(game.tickInterval, game);
@@ -98,8 +122,8 @@ export function runner(game: Game) {
         let realTimePassed = timeNow - game.multiplayer.worstCaseGameStartTime;
         while (!game.state.ended
             && (
-                (game.multiplayer.maxServerGameTime >= game.state.time + game.tickInterval 
-                    && realTimePassed > game.state.time + game.tickInterval )
+                (game.multiplayer.maxServerGameTime >= game.state.time + game.tickInterval
+                    && realTimePassed > game.state.time + game.tickInterval)
                 || game.state.triggerRestart
             )
             && counter < maxCounter
@@ -111,8 +135,10 @@ export function runner(game: Game) {
             console.log("game can not keep up");
         }
     }
+    takeTimeMeasure(game.debug, "tick", "paint");
 
     paintAll(game.ctx, game);
+    takeTimeMeasure(game.debug, "paint", "");
     if (game.state.ended && game.state.triggerRestart) {
         gameRestart(game);
     }
@@ -121,6 +147,7 @@ export function runner(game: Game) {
         let timeoutSleep = determineRunnerTimeout(game);
         setTimeout(() => runner(game), timeoutSleep);
     }
+    takeTimeMeasure(game.debug, "runner", "");
 }
 
 export function generateMissingChunks(map: GameMap, positions: Position[], idCounter: IdCounter) {
@@ -201,30 +228,52 @@ function endGame(state: GameState, testing: TestingStuff | undefined) {
 
 function tick(gameTimePassed: number, game: Game) {
     if (!game.state.ended) {
-        if (game.testing && game.testing.replayPlayerInputs) {
-            if (game.testing.replayInputCounter === undefined) game.testing.replayInputCounter = 0;
-            while (game.testing.replayPlayerInputs[game.testing.replayInputCounter]
-                && game.testing.replayPlayerInputs[game.testing.replayInputCounter].executeTime < game.state.time + 1000
-            ) {
-                let data = game.testing.replayPlayerInputs[game.testing.replayInputCounter];
-                if(game.state.players.length === 1){
-                    data.clientId = game.multiplayer.myClientId;
-                }
-                handleCommand(game, data);
-                game.testing.replayInputCounter++;
-            }
-        }
+        addTestReplayInputs(game);
         game.state.time += gameTimePassed;
+        takeTimeMeasure(game.debug, "", "generateMissingChunks");
         generateMissingChunks(game.state.map, getPlayerCharacters(game.state.players), game.state.idCounter);
+
+        takeTimeMeasure(game.debug, "generateMissingChunks", "tickPlayerInputs");
         tickPlayerInputs(game.state.playerInputs, game.state.time, game);
+
+        takeTimeMeasure(game.debug, "tickPlayerInputs", "tickMapCharacters");
         tickMapCharacters(game.state.map, game);
+
+        takeTimeMeasure(game.debug, "tickMapCharacters", "tickCharacters");
         tickCharacters(getPlayerCharacters(game.state.players), game);
+
+        takeTimeMeasure(game.debug, "tickCharacters", "tickProjectiles");
         tickProjectiles(game.state.projectiles, game.state.time);
+
+        takeTimeMeasure(game.debug, "tickProjectiles", "detectProjectileToCharacterHit");
         detectProjectileToCharacterHit(game.state.map, game.state.projectiles, game.state.players);
+
+        takeTimeMeasure(game.debug, "detectProjectileToCharacterHit", "detectCharacterDeath");
         detectCharacterDeath(game.state.map, game.state, game.camera);
+        takeTimeMeasure(game.debug, "detectCharacterDeath", "");
+
         if (gameEndedCheck(game)) endGame(game.state, game.testing);
         if (game.state.restartAfterTick) gameRestart(game);
+
+        takeTimeMeasure(game.debug, "", "determineActiveChunks");
         determineActiveChunks(getPlayerCharacters(game.state.players), game.state.map);
+        takeTimeMeasure(game.debug, "determineActiveChunks", "");
+    }
+}
+
+function addTestReplayInputs(game: Game){
+    if (game.testing && game.testing.replayPlayerInputs) {
+            if (game.testing.replayInputCounter === undefined) game.testing.replayInputCounter = 0;
+        while (game.testing.replayPlayerInputs[game.testing.replayInputCounter]
+            && game.testing.replayPlayerInputs[game.testing.replayInputCounter].executeTime < game.state.time + 1000
+        ) {
+            let data = game.testing.replayPlayerInputs[game.testing.replayInputCounter];
+            if (game.state.players.length === 1) {
+                data.clientId = game.multiplayer.myClientId;
+            }
+            handleCommand(game, data);
+            game.testing.replayInputCounter++;
+        }
     }
 }
 
