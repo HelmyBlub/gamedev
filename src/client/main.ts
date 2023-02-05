@@ -1,6 +1,6 @@
 import { addShooterClass } from "./character/levelingCharacters/shooterCharacterClass.js";
 import { addSwordClass } from "./character/levelingCharacters/swordCharacterClass.js";
-import { addHTMLDebugCheckboxesToSettings, runner } from "./game.js";
+import { addHTMLDebugCheckboxesToSettings, runner, setRelativeMousePosition } from "./game.js";
 import { createDefaultGameData, Game } from "./gameModel.js";
 import { keyDown, keyUp } from "./playerInput.js";
 
@@ -28,6 +28,7 @@ export function createGame(canvasElementId: string | undefined, forTesting: bool
         game = createDefaultGameData(c, ctx);
         document.addEventListener('keydown', (e) => keyDown(e, game), false);
         document.addEventListener('keyup', (e) => keyUp(e, game), false);
+        c.addEventListener('mousemove', (e) => setRelativeMousePosition(e, game));
         addEventListener("resize", (event) => {
             c!.height = window.innerHeight - 2;
             c!.width = window.innerWidth - 2;

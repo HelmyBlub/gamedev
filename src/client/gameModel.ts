@@ -88,6 +88,7 @@ export type Game = {
         lastRestartReceiveTime?: number,
         cachePlayerInputs?: PlayerInput[],
     },
+    mouseRelativeCanvasPosition: Position,
     camera: Camera,
     performance: {
         mapChunkPaintCache?: MapChunkPaintCache,
@@ -142,6 +143,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
         camera: {
             type: "follow character"
         },
+        mouseRelativeCanvasPosition: {x:0, y:0},
         performance:{},
         debug:{ 
         },

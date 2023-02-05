@@ -28,6 +28,11 @@ export function createDefaultKeyBindings1() {
     keyBindings.set("Digit1", "upgrade1");
     keyBindings.set("Digit2", "upgrade2");
     keyBindings.set("Digit3", "upgrade3");
+
+    keyBindings.set("KeyQ", "ability1");
+    keyBindings.set("KeyE", "ability2");
+    keyBindings.set("KeyR", "ability3");
+
     return keyBindings;
 }
 

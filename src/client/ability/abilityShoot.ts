@@ -41,6 +41,7 @@ export function createAbilityShoot(
         pierceCount: pierceCount,
         multiShot: multiShot,
         timeToLive: timeToLive,
+        passive: true,
     };
 }
 

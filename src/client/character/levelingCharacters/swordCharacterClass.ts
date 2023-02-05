@@ -1,3 +1,4 @@
+import { addAbilityToCharacter } from "../../ability/ability.js";
 import { createAbilitySword } from "../../ability/abilitySword.js";
 import { IdCounter, LEVELING_CHARACTER_CLASSES } from "../../gameModel.js";
 import { RandomSeed } from "../../randomNumberGenerator.js";
@@ -23,6 +24,6 @@ function createSwordCharacter(
     seed: RandomSeed,
 ): LevelingCharacter {
     let character = createLevelingCharacter(idCounter, x, y, width, height, color, moveSpeed, hp, damage, faction, seed);
-    character.abilities.push(createAbilitySword());
+    addAbilityToCharacter(character, createAbilitySword());
     return character;
 }

@@ -47,7 +47,8 @@ export function createAbilitySword(
         swordCount: swordCount,
         angleChangePerTick: angleChangePerTick,
         currentSwordAngle: 0,
-        angleChangePerSword: angleChangePerSword
+        angleChangePerSword: angleChangePerSword,
+        passive: true,
     };
 }
 

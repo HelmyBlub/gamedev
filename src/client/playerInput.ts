@@ -3,12 +3,15 @@ import { upgradeLevelingCharacter } from "./character/levelingCharacters/levelin
 import { findPlayerById } from "./player.js";
 import { Character } from "./character/characterModel.js";
 import { LevelingCharacter } from "./character/levelingCharacters/levelingCharacterModel.js";
-import { Game } from "./gameModel.js";
+import { Game, Position } from "./gameModel.js";
 import { testGame } from "./test/gameTest.js";
 import { websocketConnect } from "./multiplayerConenction.js";
+import { ABILITIES_FUNCTIONS } from "./ability/ability.js";
+import { getCameraPosition } from "./game.js";
 
 export const MOVE_ACTIONS = ["left", "down", "right", "up"];
 export const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3"];
+export const ABILITY_ACTIONS = ["ability1", "ability2", "ability3"];
 
 export type ActionsPressed = {
     [key: string]: boolean;
@@ -30,6 +33,9 @@ export function createActionsPressed() {
         upgrade1: false,
         upgrade2: false,
         upgrade3: false,
+        ability1: false,
+        ability2: false,
+        ability3: false,
     }
 }
 
@@ -69,7 +75,7 @@ export function tickPlayerInputs(playerInputs: PlayerInput[], currentTime: numbe
             if (playerInputs[0].executeTime <= currentTime - 16) {
                 console.log("playerAction to late", currentTime - playerInputs[0].executeTime, playerInputs[0]);
             }
-            playerAction(playerInputs[0].clientId, playerInputs[0].data.action, playerInputs[0].data.isKeydown, game);
+            playerAction(playerInputs[0].clientId, playerInputs[0].data, game);
             playerInputs.shift();
         } else if (playerInputs[0].command === "restart") {
             playerInputs.shift();
@@ -124,16 +130,31 @@ function playerInputChangeEvent(event: KeyboardEvent, game: Game) {
             if(isKeydown && findPlayerById(game.state.players, clientId)!.actionsPressed[action]){
                 return;
             }
-            handleCommand(game, {
-                command: "playerInput",
-                clientId: clientId,
-                data: { action: action, isKeydown: isKeydown },
-            });
+            if(action.indexOf("ability") > -1){
+                let cameraPosition = getCameraPosition(game);
+                let castPosition: Position = {
+                    x: game.mouseRelativeCanvasPosition.x - game.canvasElement!.width/2 + cameraPosition.x,
+                    y: game.mouseRelativeCanvasPosition.y - game.canvasElement!.height/2 + cameraPosition.y
+                }
+                handleCommand(game, {
+                    command: "playerInput",
+                    clientId: clientId,
+                    data: { action: action, isKeydown: isKeydown, castPosition: castPosition },
+                });
+            }else{
+                handleCommand(game, {
+                    command: "playerInput",
+                    clientId: clientId,
+                    data: { action: action, isKeydown: isKeydown },
+                });
+            }
         }
     }
 }
 
-function playerAction(clientId: number, action: string, isKeydown: boolean, game: Game) {
+function playerAction(clientId: number, data: any, game: Game) {
+    const action: string = data.action;
+    const isKeydown: boolean = data.isKeydown;
     const player = findPlayerById(game.state.players, clientId);
     if (player === null) return;
     let character = player.character;
@@ -147,6 +168,18 @@ function playerAction(clientId: number, action: string, isKeydown: boolean, game
         } else if (UPGRADE_ACTIONS.indexOf(action) !== -1) {
             if (isKeydown) {
                 upgradeLevelingCharacter(character as LevelingCharacter, UPGRADE_ACTIONS.indexOf(action), game.state.randomSeed);
+            }
+        } else if (ABILITY_ACTIONS.indexOf(action) !== -1) {
+            if (isKeydown) {
+                let ability = character.abilities.find((a) => a.playerInputBinding && a.playerInputBinding === action);
+                if(ability){
+                    let functions = ABILITIES_FUNCTIONS[ability.name];
+                    if(functions.activeAbilityCast !== undefined){
+                        functions.activeAbilityCast(character, ability, data.castPosition, game);
+                    }else{
+                        console.log("missing activeAbilityCast function for", action, ability);
+                    }
+                }
             }
         }
     }

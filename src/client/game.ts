@@ -182,6 +182,11 @@ export function generateMissingChunks(map: GameMap, positions: Position[], idCou
     }
 }
 
+export function setRelativeMousePosition(event: MouseEvent, game: Game){
+    let target = event.currentTarget as HTMLElement;
+    game.mouseRelativeCanvasPosition = {x: event.x - target.offsetLeft, y: event.y - target.offsetTop};
+}
+
 function addSettingCheckbox(checkboxName: string, game: Game) {
     let settingsElement = document.getElementById('settings');
     if (!settingsElement) return;

@@ -1,12 +1,10 @@
 next tasks:
-    - display time measures on screen to be able to determine where game slow downes come from    
-        - make a simple menu to enable/disable stuff in game, not per code
-
+    - add an active ability, differ between passive and active abilities
+        - redesign projectiles to also include "fireCircle" abiltiy (size & color missing)
     - mutlipalyer:
         - some strange button no registering behavior on higher pings
         - some connecting to running game problems
         - some synchronization problems on connection of running games
-    - add an active ability, differ between passive and active abilities
     - character.size changed to width and height. but hit calculation still only uses width
 
 technical tasks or bugs:
