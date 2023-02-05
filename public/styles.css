@@ -1,0 +1,20 @@
+.mainCanvas{
+    border:1px solid #000000;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.settingButton{
+    position:absolute;
+    right:10px;
+}
+
+.settingAreaDiv{
+    position:absolute;
+    background-color: white;
+}
+
+.hide{
+    display:none;
+}

@@ -46,6 +46,14 @@ export function closeGame(game: Game) {
     console.log("closing game");
 }
 
+export function addHTMLDebugCheckboxesToSettings(game: Game) {
+    let settingsElement = document.getElementById('settings');
+    if (!settingsElement) return;
+    addSettingCheckbox("takeTimeMeasures", game);
+    addSettingCheckbox("paintTileIJNumbers", game);
+    addSettingCheckbox("paintMarkActiveChunks", game);
+}
+
 export function gameInit(game: Game) {
     game.state.projectiles = [];
     game.state.players = [];
@@ -83,21 +91,21 @@ export function calculateDistance(objectA: { x: number, y: number }, objectB: { 
 }
 
 export function takeTimeMeasure(debug: Debugging | undefined, endName: string, startName: string) {
-    if(debug === undefined || debug.takeTimeMeasures !== true) return;
+    if (debug === undefined || debug.takeTimeMeasures !== true) return;
     if (debug.timeMeasuresData === undefined) debug.timeMeasuresData = [];
     let timeNow = performance.now();
-    if(endName !== ""){
+    if (endName !== "") {
         let data = debug.timeMeasuresData?.find((e) => e.name === endName);
-        if(data === undefined) throw Error("did not startTimeMeasure for " + endName);
+        if (data === undefined) throw Error("did not startTimeMeasure for " + endName);
         data.timeMeasures.push(timeNow - data.tempTime);
-        if(data.timeMeasures.length > 30) data.timeMeasures.shift();
+        if (data.timeMeasures.length > 30) data.timeMeasures.shift();
     }
-    if(startName !== ""){
+    if (startName !== "") {
         let data = debug.timeMeasuresData?.find((e) => e.name === startName);
-        if(data === undefined){
-            data = {name: startName, timeMeasures: [], tempTime: timeNow};
+        if (data === undefined) {
+            data = { name: startName, timeMeasures: [], tempTime: timeNow };
             debug.timeMeasuresData!.push(data);
-        }else{
+        } else {
             data.tempTime = timeNow;
         }
     }
@@ -110,7 +118,7 @@ export function runner(game: Game) {
         if (game.testing && game.testing.frameSkipAmount && game.testing.frameSkipAmount > 0) {
             for (let i = 0; i < game.testing.frameSkipAmount; i++) {
                 tick(game.tickInterval, game);
-                if(i < game.testing.frameSkipAmount-1) takeTimeMeasure(game.debug, "tick", "tick");
+                if (i < game.testing.frameSkipAmount - 1) takeTimeMeasure(game.debug, "tick", "tick");
             }
         } else {
             tick(game.tickInterval, game);
@@ -171,6 +179,32 @@ export function generateMissingChunks(map: GameMap, positions: Position[], idCou
                 }
             }
         }
+    }
+}
+
+function addSettingCheckbox(checkboxName: string, game: Game) {
+    let settingsElement = document.getElementById('settings');
+    if (!settingsElement) return;
+    let debug: any = game.debug;
+    let checkbox: HTMLInputElement = document.getElementById(checkboxName) as HTMLInputElement;
+    if (!checkbox) {
+        let canvasHTML = `
+            <input type="checkbox" id="${checkboxName}" name="${checkboxName}">
+            <label for="debug">${checkboxName}</label><br>
+        `;
+        settingsElement.insertAdjacentHTML("beforeend", canvasHTML);
+        checkbox = document.getElementById(checkboxName) as HTMLInputElement;
+    }
+    if (checkbox) {
+        checkbox.addEventListener('change', () => {
+            if (checkbox.checked) {
+                debug[checkboxName] = true;
+                game.performance = {};
+            } else {
+                debug[checkboxName] = false;                
+                game.performance = {};
+            }
+        });
     }
 }
 
@@ -261,9 +295,9 @@ function tick(gameTimePassed: number, game: Game) {
     }
 }
 
-function addTestReplayInputs(game: Game){
+function addTestReplayInputs(game: Game) {
     if (game.testing && game.testing.replayPlayerInputs) {
-            if (game.testing.replayInputCounter === undefined) game.testing.replayInputCounter = 0;
+        if (game.testing.replayInputCounter === undefined) game.testing.replayInputCounter = 0;
         while (game.testing.replayPlayerInputs[game.testing.replayInputCounter]
             && game.testing.replayPlayerInputs[game.testing.replayInputCounter].executeTime < game.state.time + 1000
         ) {

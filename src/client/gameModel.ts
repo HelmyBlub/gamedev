@@ -93,7 +93,7 @@ export type Game = {
         mapChunkPaintCache?: MapChunkPaintCache,
     }
     testing?: TestingStuff,
-    debug?: Debugging,
+    debug: Debugging,
     closeGame?: boolean,
 }
 
@@ -144,9 +144,6 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
         },
         performance:{},
         debug:{ 
-            //paintTileIJNumbers: true,
-            //paintMarkActiveChunks: true,
-            takeTimeMeasures: true,
         },
     }
 
