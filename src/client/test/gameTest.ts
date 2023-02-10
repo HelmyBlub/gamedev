@@ -1,16 +1,17 @@
 import { createCharacter, ENEMY_FACTION, PLAYER_FACTION } from "../character/characterModel.js";
 import { handleCommand } from "../commands.js";
-import { closeGame, detectProjectileToCharacterHit, gameRestart } from "../game.js";
+import { closeGame } from "../game.js";
 import { Game } from "../gameModel.js";
 import { createGame } from "../main.js";
 import { addEnemyToMap, createMap, GameMap } from "../map/map.js";
 import { createNewChunkTiles } from "../map/mapGeneration.js";
 import { websocketConnect } from "../multiplayerConenction.js";
 import { PlayerInput } from "../playerInput.js";
-import { createProjectile, Projectile } from "../projectile.js";
+import { createProjectile, Projectile } from "../ability/projectile.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
 import { testInputs } from "./testInputs.js";
 import { testMultiplayerInputs } from "./testMultiplayerInputs.js";
+import { detectAbilityObjectToCharacterHit } from "../ability/ability.js";
 
 export function testGame(game: Game) {
     runGameWithPlayerInputs(game, testInputs);
@@ -119,7 +120,7 @@ function createTestCharacter(id: number, x: number, y: number) {
 }
 
 function createTestProjectiles(x: number, y: number, pierceCount: number = 10, timeToLive: number = 1000) {
-    return createProjectile(x, y, 0, 2, PLAYER_FACTION, 2, 0, pierceCount, timeToLive);
+    return createProjectile(x, y, 0, 2, PLAYER_FACTION, 2, 0, pierceCount, timeToLive, "Projectile");
 }
 
 
@@ -144,7 +145,9 @@ function testDetectProjectileToCharacterHitPerformance() {
 
     let startTime = performance.now();
     for (let i = 0; i < iterations; i++) {
-        detectProjectileToCharacterHit(map, projectiles, []);
+        for (let j = 0; j < projectiles.length; j++) {
+            detectAbilityObjectToCharacterHit(map, projectiles[j], []);
+        }
     }
     let time = performance.now() - startTime;
     console.log("time", time / iterations, time);

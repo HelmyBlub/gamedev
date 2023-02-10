@@ -1,9 +1,10 @@
+import { AbilityObject } from "./ability/ability.js";
 import { LevelingCharacterClasses } from "./character/levelingCharacters/levelingCharacterModel.js";
 import { generateMissingChunks } from "./game.js";
 import { createMap, GameMap } from "./map/map.js";
 import { Player } from "./player.js";
 import { PlayerInput } from "./playerInput.js";
-import { Projectile } from "./projectile.js";
+import { Projectile } from "./ability/projectile.js";
 import { nextRandom, RandomSeed } from "./randomNumberGenerator.js";
 
 export type Position = {
@@ -38,7 +39,7 @@ export type MapChunkPaintCache = {
 
 export type GameState = {
     idCounter: IdCounter,
-    projectiles: Projectile[],
+    abilityObjects: AbilityObject[],
     players: Player[],
     killCounter: number,
     time: number;
@@ -106,7 +107,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
         ctx: ctx,
         state: {
             idCounter: {nextId: 0},
-            projectiles: [],
+            abilityObjects: [],
             killCounter: 0,
             ended: true,
             triggerRestart: false,

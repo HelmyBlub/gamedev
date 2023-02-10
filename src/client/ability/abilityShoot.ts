@@ -1,9 +1,9 @@
 import { Character } from "../character/characterModel.js";
 import { LevelingCharacter } from "../character/levelingCharacters/levelingCharacterModel.js";
 import { Game } from "../gameModel.js";
-import { Projectile, createProjectile } from "../projectile.js";
+import { Projectile, createProjectile, tickProjectile, deleteProjectile } from "./projectile.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, Ability, UpgradeOptionAbility } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, UpgradeOptionAbility } from "./ability.js";
 
 const ABILITY_NAME = "Shoot";
 export type AbilityShoot = Ability & {
@@ -20,6 +20,8 @@ export function addShootAbility(){
     ABILITIES_FUNCTIONS[ABILITY_NAME] = {
         tickAbility: tickAbilityShoot,
         createAbiltiyUpgradeOptions: createAbiltiyShootUpgradeOptions,
+        tickAbilityObject: tickProjectile,
+        deleteAbilityObject: deleteProjectile,
     };
 }
 
@@ -48,7 +50,7 @@ export function createAbilityShoot(
 export function tickAbilityShoot(character: Character, ability: Ability, game: Game) {
     let abilityShoot = ability as AbilityShoot;
     while (abilityShoot.nextShotTime <= game.state.time) {
-        shoot(character, abilityShoot, game.state.projectiles, game.state.time, game.state.randomSeed);
+        shoot(character, abilityShoot, game.state.abilityObjects, game.state.time, game.state.randomSeed);
         abilityShoot.nextShotTime += abilityShoot.baseFrequency / abilityShoot.frequencyIncrease;
     }
 }
@@ -83,10 +85,10 @@ function createAbiltiyShootUpgradeOptions(): UpgradeOptionAbility[]{
     return upgradeOptions;
 }
 
-function shoot(character: Character, ability: AbilityShoot, projectiles: Projectile[], gameTime: number, randomSeed: RandomSeed) {
+function shoot(character: Character, ability: AbilityShoot, abilityObjects: AbilityObject[], gameTime: number, randomSeed: RandomSeed) {
     for (let i = 0; i <= ability.multiShot; i++) {
         let shotSpread: number = (nextRandom(randomSeed) - 0.5) / 10 * ability.multiShot;
-        projectiles.push(createProjectile(
+        abilityObjects.push(createProjectile(
             character.x,
             character.y,
             character.moveDirection + shotSpread,
@@ -95,7 +97,8 @@ function shoot(character: Character, ability: AbilityShoot, projectiles: Project
             character.moveSpeed + 2,
             gameTime,
             ability.pierceCount,
-            ability.timeToLive
+            ability.timeToLive,
+            ABILITY_NAME,
         ));
     }
 }

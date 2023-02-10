@@ -36,6 +36,18 @@ export function paintMap(ctx: CanvasRenderingContext2D, cameraPosition: Position
         }
     }
 
+
+}
+
+export function paintMapCharacters(ctx: CanvasRenderingContext2D, cameraPosition: Position, map: GameMap){
+    let chunkSize = map.tileSize * map.chunkLength;
+    let width = ctx.canvas.width;
+    let height = ctx.canvas.height;
+    let startX = (cameraPosition.x - width / 2);
+    let startY = (cameraPosition.y - height / 2);
+    let startChunkI = Math.floor(startY / chunkSize);
+    let startChunkJ = Math.floor(startX / chunkSize);
+
     for (let i = 0; i < Math.ceil(height / chunkSize) + 1; i++) {
         let chunkI = startChunkI + i;
         for (let j = 0; j < Math.ceil(width / chunkSize) + 1; j++) {

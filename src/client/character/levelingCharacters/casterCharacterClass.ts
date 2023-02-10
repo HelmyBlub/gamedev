@@ -1,17 +1,16 @@
 import { addAbilityToCharacter } from "../../ability/ability.js";
 import { createAbilityFireCircle } from "../../ability/abilityFireCircle.js";
-import { createAbilityShoot } from "../../ability/abilityShoot.js";
 import { IdCounter, LEVELING_CHARACTER_CLASSES } from "../../gameModel.js";
 import { RandomSeed } from "../../randomNumberGenerator.js";
 import { createLevelingCharacter, LevelingCharacter } from "./levelingCharacterModel.js";
 
-export function addShooterClass(){
-    LEVELING_CHARACTER_CLASSES["Shooter"] = {
-        createLevelingCharacter: createShooterCharacter,
+export function addCasterClass(){
+    LEVELING_CHARACTER_CLASSES["Caster"] = {
+        createLevelingCharacter: createCasterCharacter
     }   
 }
 
-function createShooterCharacter(
+function createCasterCharacter(
     idCounter: IdCounter,
     x: number,
     y: number,
@@ -25,6 +24,6 @@ function createShooterCharacter(
     seed: RandomSeed,
 ): LevelingCharacter {
     let character = createLevelingCharacter(idCounter, x, y, width, height, color, moveSpeed, hp, damage, faction, seed);
-    addAbilityToCharacter(character, createAbilityShoot());
+    addAbilityToCharacter(character, createAbilityFireCircle());
     return character;
 }

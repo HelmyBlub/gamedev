@@ -1,3 +1,4 @@
+import { addCasterClass } from "./character/levelingCharacters/casterCharacterClass.js";
 import { addShooterClass } from "./character/levelingCharacters/shooterCharacterClass.js";
 import { addSwordClass } from "./character/levelingCharacters/swordCharacterClass.js";
 import { addHTMLDebugCheckboxesToSettings, runner, setRelativeMousePosition } from "./game.js";
@@ -46,5 +47,6 @@ export function createGame(canvasElementId: string | undefined, forTesting: bool
 document.addEventListener("DOMContentLoaded", function(){
     addShooterClass();
     addSwordClass();
+    addCasterClass();
     start();
 });

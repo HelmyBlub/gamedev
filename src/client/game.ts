@@ -2,13 +2,13 @@ import { countAlivePlayerCharacters, detectCharacterDeath, determineCharactersIn
 import { paintAll } from "./gamePaint.js";
 import { gameInitPlayers, Player } from "./player.js";
 import { tickPlayerInputs } from "./playerInput.js";
-import { Projectile, tickProjectiles } from "./projectile.js";
 import { Position, GameState, Game, IdCounter, TestingStuff, Debugging } from "./gameModel.js";
 import { createMap, determineMapKeysInDistance, GameMap, removeAllMapCharacters } from "./map/map.js";
 import { Character } from "./character/characterModel.js";
 import { createNewChunk } from "./map/mapGeneration.js";
 import { createFixPositionRespawnEnemiesOnInit } from "./character/enemy/fixPositionRespawnEnemyModel.js";
 import { handleCommand } from "./commands.js";
+import { tickAbilityObjects } from "./ability/ability.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -55,7 +55,7 @@ export function addHTMLDebugCheckboxesToSettings(game: Game) {
 }
 
 export function gameInit(game: Game) {
-    game.state.projectiles = [];
+    game.state.abilityObjects = [];
     game.state.players = [];
     game.state.killCounter = 0;
     game.state.ended = false;
@@ -281,13 +281,10 @@ function tick(gameTimePassed: number, game: Game) {
         takeTimeMeasure(game.debug, "tickMapCharacters", "tickCharacters");
         tickCharacters(getPlayerCharacters(game.state.players), game);
 
-        takeTimeMeasure(game.debug, "tickCharacters", "tickProjectiles");
-        tickProjectiles(game.state.projectiles, game.state.time);
+        takeTimeMeasure(game.debug, "tickCharacters", "tickAbilityObjects");
+        tickAbilityObjects(game.state.abilityObjects, game);
 
-        takeTimeMeasure(game.debug, "tickProjectiles", "detectProjectileToCharacterHit");
-        detectProjectileToCharacterHit(game.state.map, game.state.projectiles, game.state.players);
-
-        takeTimeMeasure(game.debug, "detectProjectileToCharacterHit", "detectCharacterDeath");
+        takeTimeMeasure(game.debug, "tickAbilityObjects", "detectCharacterDeath");
         detectCharacterDeath(game.state.map, game.state, game.camera);
         takeTimeMeasure(game.debug, "detectCharacterDeath", "");
 
@@ -326,27 +323,6 @@ function determineActiveChunks(characters: Character[], map: GameMap) {
         }
     }
     map.activeChunkKeys = [...keySet];
-}
-
-export function detectProjectileToCharacterHit(map: GameMap, projectiles: Projectile[], players: Player[]) {
-    for (let projIt = 0; projIt < projectiles.length; projIt++) {
-        let projectile = projectiles[projIt];
-        let maxEnemySizeEstimate = 40;
-        let maxProjectileSizeEstimate = 20;
-
-        let characters = determineCharactersInDistance(projectile, map, players, projectile.size + maxEnemySizeEstimate + maxProjectileSizeEstimate);
-        for (let charIt = characters.length - 1; charIt >= 0; charIt--) {
-            let c = characters[charIt];
-            if (c.isDead || c.faction === projectile.faction) continue;
-            let distance = calculateDistance(c, projectile);
-            if (distance < projectile.size / 2 + c.width / 2) {
-                c.hp -= projectile.damage;
-                c.wasHitRecently = true;
-                projectile.pierceCount--;
-                if (projectile.pierceCount < 0) break;
-            }
-        }
-    }
 }
 
 function setTestSeeds(game: Game) {
