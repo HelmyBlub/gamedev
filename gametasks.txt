@@ -1,6 +1,6 @@
 next tasks:
     - add an active ability, differ between passive and active abilities
-        - redesign projectiles to also include "fireCircle" abiltiy (size & color missing)
+        - bind ability to mouse button
     - mutlipalyer:
         - some strange button no registering behavior on higher pings
         - some connecting to running game problems

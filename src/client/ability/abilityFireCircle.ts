@@ -32,7 +32,7 @@ export function createAbilityFireCircle(
     objectDuration: number = 2000,
     damage: number = 10,
     size: number = 30,
-    rechargeTime: number = 1000,
+    rechargeTime: number = 2000,
     maxCharges: number = 3
 ): AbilityFireCircle {
     if (ABILITIES_FUNCTIONS[ABILITY_NAME] === undefined) addFireCircleAbility();
@@ -80,19 +80,20 @@ function createAbiltiyFireCircleUpgradeOptions(): UpgradeOptionAbility[] {
     upgradeOptions.push({
         name: "Size+", upgrade: (a: Ability) => {
             let as = a as AbilityFireCircle;
-            as.size += 10;
+            let addSize = Math.max(1, 10 - (as.size - 30)/40);
+            as.size += addSize;
         },
     });
     upgradeOptions.push({
         name: "Duration+", upgrade: (a: Ability) => {
             let as = a as AbilityFireCircle;
-            as.objectDuration += 1000;
+            as.objectDuration += 250;
         },
     });
     upgradeOptions.push({
         name: "RechargeTime-", upgrade: (a: Ability) => {
             let as = a as AbilityFireCircle;
-            as.rechargeTimeDecreaseFaktor += 0.25;
+            as.rechargeTimeDecreaseFaktor += 0.15;
         },
     });
 
