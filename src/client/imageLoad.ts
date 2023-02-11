@@ -63,7 +63,7 @@ function createColorVariants(gameImage: GameImage, color: string) {
         if (color !== gameImage.properties.baseColor) {
             let paintY = (gameImage.imageRef!.height + 1) * gameImage.properties.colorToSprite.length;
             gameImage.properties.colorToSprite.push(color);
-            let imageCtx: CanvasRenderingContext2D = gameImage.properties.canvas.getContext("2d")!;
+            let imageCtx: CanvasRenderingContext2D = gameImage.properties.canvas.getContext("2d", { willReadFrequently: true })!;
             imageCtx.drawImage(gameImage.imageRef!, 0, paintY);
             let newColorRGB = COLOR_CONVERSION[color];
             let toChangeColor = COLOR_CONVERSION[gameImage.properties.baseColor];

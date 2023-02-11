@@ -229,7 +229,9 @@ function determineRunnerTimeout(game: Game): number {
                 if (timeoutSleep < 0) {
                     game.shouldTickTime = timeEnd;
                     timeoutSleep = 0;
-                    console.log("game slow down, can not keep up");
+                    if(game.state.time > 1000){
+                        console.log("game slow down, can not keep up");
+                    }
                 }
                 return timeoutSleep;
             }

@@ -42,7 +42,7 @@ export function createRandomizedCharacter(gameImage: GameImage, randomizedCharac
     let characterSpriteHeight = gameImage.spriteRowHeights[0] + gameImage.spriteRowHeights[1] + gameImage.spriteRowHeights[2];
     canvas.width = gameImage.spriteRowWidths[0] * (numberCharacterDirections + 1);
     canvas.height = characterSpriteHeight * walkinAnimationSpriteCount;
-    let imageCtx: CanvasRenderingContext2D = canvas.getContext("2d")!;
+    let imageCtx: CanvasRenderingContext2D = canvas.getContext("2d", { willReadFrequently: true })!;
     let spriteBodyPartIndexes = [randomizedCharacterImage.headIndex, randomizedCharacterImage.chestIndex, randomizedCharacterImage.legsIndex];
     let sy = 0;
     let borderWidth = 1;
