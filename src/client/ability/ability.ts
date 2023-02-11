@@ -100,7 +100,7 @@ export function detectAbilityObjectToCharacterHit(map: GameMap, abilityObject: A
         if (distance < abilityObject.size / 2 + c.width / 2) {
             c.hp -= abilityObject.damage;
             c.wasHitRecently = true;
-            if(abilityObject.type === "Projectile"){
+            if(abilityObject.type === "Shoot"){
                 let projectile = abilityObject as Projectile;
                 projectile.pierceCount--;
                 if (projectile.pierceCount < 0) break;

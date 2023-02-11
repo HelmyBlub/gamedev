@@ -39,7 +39,6 @@ export function createAbilitySword(
     angleChangePerTick: number = 0.01,
     angleChangePerSword: number = 1
 ): AbilitySword {
-    if(ABILITIES_FUNCTIONS[ABILITY_NAME] === undefined) addSwordAbility();
     return {
         name: ABILITY_NAME,
         damage: damage,

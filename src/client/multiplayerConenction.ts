@@ -4,7 +4,13 @@ import { Game } from "./gameModel.js";
 export function websocketConnect(game: Game) {
     const protocol = window.location.protocol === "http:" ? "ws" : "wss";
 
-    const url = `${protocol}://${window.location.host}/ws`;
+    let url = `${protocol}://${window.location.host}/ws`;
+
+    let lastIdentifier = localStorage.getItem('multiplayerIdentifier');
+    if(lastIdentifier){
+        console.log("multiplayer Last Identifier", lastIdentifier);
+        url += "?myId="+lastIdentifier;
+    }
     const socket = new WebSocket(url, 'gamedev');
 
     socket.onopen = function (e) {

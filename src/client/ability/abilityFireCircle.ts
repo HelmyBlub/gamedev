@@ -35,7 +35,6 @@ export function createAbilityFireCircle(
     rechargeTime: number = 2000,
     maxCharges: number = 3
 ): AbilityFireCircle {
-    if (ABILITIES_FUNCTIONS[ABILITY_NAME] === undefined) addFireCircleAbility();
     return {
         name: ABILITY_NAME,
         objectDuration: objectDuration,

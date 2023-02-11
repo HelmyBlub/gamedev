@@ -33,7 +33,6 @@ export function createAbilityShoot(
     multiShot: number = 0,
     timeToLive: number = 1000
 ): AbilityShoot {
-    if(ABILITIES_FUNCTIONS[ABILITY_NAME] === undefined) addShootAbility();
     return {
         name: ABILITY_NAME,
         baseFrequency: baseFrequency,

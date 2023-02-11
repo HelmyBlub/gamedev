@@ -120,12 +120,18 @@ export function detectCharacterDeath(map: GameMap, state: GameState, camera: Cam
     }
 }
 
-export function findAndSetNewCameraCharacterId(camera: Camera, players: Player[]){
+export function findAndSetNewCameraCharacterId(camera: Camera, players: Player[], myClientId?: number){
+    let newCameraCharacterId = undefined;
     for (let i = 0; i < players.length; i++) {
         if(!players[i].character.isDead){
-            camera.characterId = players[i].character.id;
+            if(players[i].character.id === camera.characterId
+                 || newCameraCharacterId === undefined
+                 || myClientId === players[i].clientId){
+                newCameraCharacterId = players[i].character.id;
+            }
         }
     }
+    camera.characterId = newCameraCharacterId;
 }
 
 export function getSpawnPositionAroundPlayer(playerCharacter: Character, randomSeed: RandomSeed, map: GameMap, idCounter: IdCounter): Position | null {

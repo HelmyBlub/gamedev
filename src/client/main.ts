@@ -1,3 +1,6 @@
+import { addFireCircleAbility } from "./ability/abilityFireCircle.js";
+import { addShootAbility } from "./ability/abilityShoot.js";
+import { addSwordAbility } from "./ability/abilitySword.js";
 import { addCasterClass } from "./character/levelingCharacters/casterCharacterClass.js";
 import { addShooterClass } from "./character/levelingCharacters/shooterCharacterClass.js";
 import { addSwordClass } from "./character/levelingCharacters/swordCharacterClass.js";
@@ -49,5 +52,9 @@ document.addEventListener("DOMContentLoaded", function(){
     addShooterClass();
     addSwordClass();
     addCasterClass();
+    addShootAbility();
+    addFireCircleAbility();
+    addSwordAbility();
+
     start();
 });

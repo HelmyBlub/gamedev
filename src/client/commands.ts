@@ -52,12 +52,16 @@ export function executeCommand(game: Game, data: any) {
                     }];
                 }
             }
-            findAndSetNewCameraCharacterId(game.camera, game.state.players);
+            findAndSetNewCameraCharacterId(game.camera, game.state.players, game.multiplayer.myClientId);
             break;
         case "connectInfo":
             game.multiplayer.myClientId = data.clientId;
             game.state.clientIds = [data.clientId];
             game.multiplayer.updateInterval = data.updateInterval;
+            if(data.randomIdentifier){
+                console.log("myIdentifier", data.randomIdentifier);
+                localStorage.setItem('multiplayerIdentifier', data.randomIdentifier);
+            }
             break;
         case "playerLeft":
             for (let i = 0; i < game.state.clientIds.length; i++) {

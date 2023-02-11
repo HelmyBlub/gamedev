@@ -128,7 +128,8 @@ function playerInputChangeEvent(game: Game, inputCode: string, isInputDown: bool
         let action = game.clientKeyBindings[i].keyCodeToActionPressed.get(inputCode);
         if (action !== undefined) {
             const clientId = game.clientKeyBindings[i].clientIdRef;
-            if(isInputDown && findPlayerById(game.state.players, clientId)!.actionsPressed[action.action]){
+            let player = findPlayerById(game.state.players, clientId);
+            if(isInputDown && (!player || player.actionsPressed[action.action])){
                 return;
             }
             if(action.action.indexOf("ability") > -1){

@@ -1,9 +1,11 @@
 next tasks:
-    - clean up unecessary console messages
     - mutlipalyer:
         - some strange button no registering behavior on higher pings
         - some connecting to running game problems
+            - be able to reconnect with character in game
+                - same browser, same data. Mutltiple tabs/windwos will use same data and can not determine their old connection
         - some synchronization problems on connection of running games
+    - refactoring
     - character.size changed to width and height. but hit calculation still only uses width
 
 technical tasks or bugs:
