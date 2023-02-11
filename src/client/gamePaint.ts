@@ -75,13 +75,13 @@ function paintUiForActiveAbilities(ctx: CanvasRenderingContext2D, game: Game){
             if(fireCircle.playerInputBinding){
                 let keyBind = "";
                 game.clientKeyBindings[0].keyCodeToActionPressed.forEach((value, key) => {
-                    if(value === fireCircle.playerInputBinding){
-                        keyBind = key.slice(-1);
+                    if(value.action === fireCircle.playerInputBinding){
+                        keyBind = value.uiDisplayInputValue;
                     }
                 });
                 ctx.fillStyle = "black";
-                ctx.font = "12px Arial";
-                ctx.fillText(keyBind, startX + rectSize - 10, startY + 12);
+                ctx.font = "10px Arial";
+                ctx.fillText(keyBind, startX + 1, startY + 8);
             }
             startX += rectSize;
         }

@@ -63,6 +63,9 @@ export type Camera ={
     characterId?: number,
 }
 
+export type KeyCodeToAction = Map<string, {action: string, uiDisplayInputValue: string}>;
+
+
 export type Game = {
     canvasElement?: HTMLCanvasElement,
     ctx?: CanvasRenderingContext2D,
@@ -71,7 +74,7 @@ export type Game = {
     tickInterval: number,
     clientKeyBindings: {
         clientIdRef: number,
-        keyCodeToActionPressed: Map<string, string>,
+        keyCodeToActionPressed: KeyCodeToAction,
     }[],
     multiplayer: {
         myClientId: number,

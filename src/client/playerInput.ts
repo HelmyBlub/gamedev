@@ -39,8 +39,12 @@ export function createActionsPressed() {
     }
 }
 
+export function mouseDown(event: MouseEvent, game: Game){
+    playerInputChangeEvent(game, "Mouse"+event.button, true);
+}
+
 export function keyDown(event: KeyboardEvent, game: Game) {
-    playerInputChangeEvent(event, game);
+    playerInputChangeEvent(game, event.code, true);
 
     switch (event.code) {
         case "KeyR":
@@ -66,7 +70,7 @@ export function keyDown(event: KeyboardEvent, game: Game) {
 }
 
 export function keyUp(event: KeyboardEvent, game: Game) {
-    playerInputChangeEvent(event, game);
+    playerInputChangeEvent(game, event.code, false);
 }
 
 export function tickPlayerInputs(playerInputs: PlayerInput[], currentTime: number, game: Game) {
@@ -119,18 +123,15 @@ function determinePlayerMoveDirection(player: Character, actionsPressed: Actions
     }
 }
 
-function playerInputChangeEvent(event: KeyboardEvent, game: Game) {
-    const keycode = event.code;
-    const isKeydown = event.type === "keydown" ? true : false;
-
+function playerInputChangeEvent(game: Game, inputCode: string, isInputDown: boolean) {
     for (let i = 0; i < game.clientKeyBindings.length; i++) {
-        let action = game.clientKeyBindings[i].keyCodeToActionPressed.get(keycode);
+        let action = game.clientKeyBindings[i].keyCodeToActionPressed.get(inputCode);
         if (action !== undefined) {
             const clientId = game.clientKeyBindings[i].clientIdRef;
-            if(isKeydown && findPlayerById(game.state.players, clientId)!.actionsPressed[action]){
+            if(isInputDown && findPlayerById(game.state.players, clientId)!.actionsPressed[action.action]){
                 return;
             }
-            if(action.indexOf("ability") > -1){
+            if(action.action.indexOf("ability") > -1){
                 let cameraPosition = getCameraPosition(game);
                 let castPosition: Position = {
                     x: game.mouseRelativeCanvasPosition.x - game.canvasElement!.width/2 + cameraPosition.x,
@@ -139,13 +140,13 @@ function playerInputChangeEvent(event: KeyboardEvent, game: Game) {
                 handleCommand(game, {
                     command: "playerInput",
                     clientId: clientId,
-                    data: { action: action, isKeydown: isKeydown, castPosition: castPosition },
+                    data: { action: action.action, isKeydown: isInputDown, castPosition: castPosition },
                 });
             }else{
                 handleCommand(game, {
                     command: "playerInput",
                     clientId: clientId,
-                    data: { action: action, isKeydown: isKeydown },
+                    data: { action: action.action, isKeydown: isInputDown },
                 });
             }
         }

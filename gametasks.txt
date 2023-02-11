@@ -1,6 +1,5 @@
 next tasks:
-    - add an active ability, differ between passive and active abilities
-        - bind ability to mouse button
+    - clean up unecessary console messages
     - mutlipalyer:
         - some strange button no registering behavior on higher pings
         - some connecting to running game problems

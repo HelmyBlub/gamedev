@@ -1,5 +1,5 @@
 import { Character, createPlayerCharacter } from "./character/characterModel.js";
-import { Game, IdCounter, LEVELING_CHARACTER_CLASSES, Position } from "./gameModel.js";
+import { Game, IdCounter, KeyCodeToAction, LEVELING_CHARACTER_CLASSES, Position } from "./gameModel.js";
 import { findNearNonBlockingPosition } from "./map/map.js";
 import { ActionsPressed, createActionsPressed } from "./playerInput.js";
 import { nextRandom, RandomSeed } from "./randomNumberGenerator.js";
@@ -19,19 +19,19 @@ export function createPlayer(clientId: number, character: Character): Player {
 }
 
 export function createDefaultKeyBindings1() {
-    let keyBindings = new Map<string, string>();
-    keyBindings.set("KeyA", "left");
-    keyBindings.set("KeyS", "down");
-    keyBindings.set("KeyD", "right");
-    keyBindings.set("KeyW", "up");
+    let keyBindings: KeyCodeToAction = new Map();
+    keyBindings.set("KeyA", {action: "left", uiDisplayInputValue: "A"});
+    keyBindings.set("KeyS", {action: "down", uiDisplayInputValue: "S"});
+    keyBindings.set("KeyD", {action: "right", uiDisplayInputValue: "D"});
+    keyBindings.set("KeyW", {action: "up", uiDisplayInputValue: "W"});
 
-    keyBindings.set("Digit1", "upgrade1");
-    keyBindings.set("Digit2", "upgrade2");
-    keyBindings.set("Digit3", "upgrade3");
+    keyBindings.set("Digit1", {action: "upgrade1", uiDisplayInputValue: "1"});
+    keyBindings.set("Digit2", {action: "upgrade2", uiDisplayInputValue: "2"});
+    keyBindings.set("Digit3", {action: "upgrade3", uiDisplayInputValue: "3"});
 
-    keyBindings.set("KeyQ", "ability1");
-    keyBindings.set("KeyE", "ability2");
-    keyBindings.set("KeyR", "ability3");
+    keyBindings.set("Mouse0", {action: "ability1", uiDisplayInputValue: "Mouse0"});
+    keyBindings.set("KeyE", {action: "ability2", uiDisplayInputValue: "E"});
+    keyBindings.set("KeyR", {action: "ability3", uiDisplayInputValue: "R"});
 
     return keyBindings;
 }
