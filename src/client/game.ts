@@ -23,7 +23,7 @@ export function calculateDirection(startPos: Position, targetPos: Position): num
     } else {
         direction = - Math.atan(xDiff / yDiff) - Math.PI / 2;
     }
-
+    if(isNaN(direction)) return 0;
     return direction;
 }
 
@@ -306,7 +306,8 @@ function addTestReplayInputs(game: Game) {
             && game.testing.replayPlayerInputs[game.testing.replayInputCounter].executeTime < game.state.time + 1000
         ) {
             let data = game.testing.replayPlayerInputs[game.testing.replayInputCounter];
-            if (game.state.players.length === 1) {
+            if (game.state.players.length === 1
+                || (data.clientId === -1 && game.state.players[0].clientId === game.multiplayer.myClientId)) {
                 data.clientId = game.multiplayer.myClientId;
             }
             handleCommand(game, data);

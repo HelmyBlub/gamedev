@@ -7,7 +7,7 @@ import { Game, Position } from "./gameModel.js";
 import { testGame } from "./test/gameTest.js";
 import { websocketConnect } from "./multiplayerConenction.js";
 import { ABILITIES_FUNCTIONS } from "./ability/ability.js";
-import { getCameraPosition } from "./game.js";
+import { calculateDirection, getCameraPosition } from "./game.js";
 
 export const MOVE_ACTIONS = ["left", "down", "right", "up"];
 export const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3"];
@@ -41,6 +41,10 @@ export function createActionsPressed() {
 
 export function mouseDown(event: MouseEvent, game: Game){
     playerInputChangeEvent(game, "Mouse"+event.button, true);
+}
+
+export function mouseUp(event: MouseEvent, game: Game){
+    playerInputChangeEvent(game, "Mouse"+event.button, false);
 }
 
 export function keyDown(event: KeyboardEvent, game: Game) {
@@ -93,33 +97,19 @@ export function tickPlayerInputs(playerInputs: PlayerInput[], currentTime: numbe
 }
 
 function determinePlayerMoveDirection(player: Character, actionsPressed: ActionsPressed) {
-    player.isMoving = true;
-    if (actionsPressed.left && !actionsPressed.up) {
-        if (!actionsPressed.down) {
-            player.moveDirection = Math.PI;
-        } else {
-            player.moveDirection = Math.PI * 0.75;
-        }
-    } else if (actionsPressed.down) {
-        if (!actionsPressed.right) {
-            player.moveDirection = Math.PI * 0.5;
-        } else {
-            player.moveDirection = Math.PI * 0.25;
-        }
-    } else if (actionsPressed.right) {
-        if (!actionsPressed.up) {
-            player.moveDirection = 0;
-        } else {
-            player.moveDirection = Math.PI * 1.75;
-        }
-    } else if (actionsPressed.up) {
-        if (!actionsPressed.left) {
-            player.moveDirection = Math.PI * 1.5;
-        } else {
-            player.moveDirection = Math.PI * 1.25;
-        }
-    } else {
+    let newDirection = 0;
+    let left = 0;
+    if(actionsPressed.right) left++;
+    if(actionsPressed.left) left--;
+    let down = 0;
+    if(actionsPressed.down) down++;
+    if(actionsPressed.up) down--;
+    newDirection = calculateDirection({x:0,y:0}, {x:left, y:down});
+    if(left === 0 && down === 0){        
         player.isMoving = false;
+    }else{
+        player.moveDirection = newDirection;
+        player.isMoving = true;
     }
 }
 
@@ -128,10 +118,10 @@ function playerInputChangeEvent(game: Game, inputCode: string, isInputDown: bool
         let action = game.clientKeyBindings[i].keyCodeToActionPressed.get(inputCode);
         if (action !== undefined) {
             const clientId = game.clientKeyBindings[i].clientIdRef;
-            let player = findPlayerById(game.state.players, clientId);
-            if(isInputDown && (!player || player.actionsPressed[action.action])){
+            if(isInputDown && action.isInputAlreadyDown){
                 return;
             }
+            action.isInputAlreadyDown = isInputDown;
             if(action.action.indexOf("ability") > -1){
                 let cameraPosition = getCameraPosition(game);
                 let castPosition: Position = {

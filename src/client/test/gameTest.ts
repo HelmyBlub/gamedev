@@ -82,10 +82,12 @@ async function runGameWithPlayerInputsMultiplayer(game: Game, playerInputs: Play
 function runGameWithPlayerInputsSinglePlayer(game: Game, playerInputs: PlayerInput[]){
     game.testing = {
         startTime: performance.now(),
-        frameSkipAmount: 60,
-        zeroTimeout: true,
         replayPlayerInputs: playerInputs,
     };
+    if(!game.multiplayer.websocket){
+        game.testing.frameSkipAmount = 60;
+        game.testing.zeroTimeout = true;
+    }
     game.state.ended = true;
     handleCommand(game, { command: "restart", clientId: game.multiplayer.myClientId, testing: true });
 }

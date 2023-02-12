@@ -63,7 +63,7 @@ export type Camera ={
     characterId?: number,
 }
 
-export type KeyCodeToAction = Map<string, {action: string, uiDisplayInputValue: string}>;
+export type KeyCodeToAction = Map<string, {action: string, uiDisplayInputValue: string, isInputAlreadyDown: boolean}>;
 
 
 export type Game = {

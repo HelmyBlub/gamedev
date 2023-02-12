@@ -20,18 +20,18 @@ export function createPlayer(clientId: number, character: Character): Player {
 
 export function createDefaultKeyBindings1() {
     let keyBindings: KeyCodeToAction = new Map();
-    keyBindings.set("KeyA", {action: "left", uiDisplayInputValue: "A"});
-    keyBindings.set("KeyS", {action: "down", uiDisplayInputValue: "S"});
-    keyBindings.set("KeyD", {action: "right", uiDisplayInputValue: "D"});
-    keyBindings.set("KeyW", {action: "up", uiDisplayInputValue: "W"});
+    keyBindings.set("KeyA", {action: "left", uiDisplayInputValue: "A", isInputAlreadyDown: false});
+    keyBindings.set("KeyS", {action: "down", uiDisplayInputValue: "S", isInputAlreadyDown: false});
+    keyBindings.set("KeyD", {action: "right", uiDisplayInputValue: "D", isInputAlreadyDown: false});
+    keyBindings.set("KeyW", {action: "up", uiDisplayInputValue: "W", isInputAlreadyDown: false});
 
-    keyBindings.set("Digit1", {action: "upgrade1", uiDisplayInputValue: "1"});
-    keyBindings.set("Digit2", {action: "upgrade2", uiDisplayInputValue: "2"});
-    keyBindings.set("Digit3", {action: "upgrade3", uiDisplayInputValue: "3"});
+    keyBindings.set("Digit1", {action: "upgrade1", uiDisplayInputValue: "1", isInputAlreadyDown: false});
+    keyBindings.set("Digit2", {action: "upgrade2", uiDisplayInputValue: "2", isInputAlreadyDown: false});
+    keyBindings.set("Digit3", {action: "upgrade3", uiDisplayInputValue: "3", isInputAlreadyDown: false});
 
-    keyBindings.set("Mouse0", {action: "ability1", uiDisplayInputValue: "Mouse0"});
-    keyBindings.set("KeyE", {action: "ability2", uiDisplayInputValue: "E"});
-    keyBindings.set("KeyR", {action: "ability3", uiDisplayInputValue: "R"});
+    keyBindings.set("Mouse0", {action: "ability1", uiDisplayInputValue: "Mouse0", isInputAlreadyDown: false});
+    keyBindings.set("KeyE", {action: "ability2", uiDisplayInputValue: "E", isInputAlreadyDown: false});
+    keyBindings.set("KeyR", {action: "ability3", uiDisplayInputValue: "R", isInputAlreadyDown: false});
 
     return keyBindings;
 }

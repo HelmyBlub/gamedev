@@ -34,7 +34,22 @@ export function executeCommand(game: Game, data: any) {
             if (game.state.triggerRestart) {
                 game.multiplayer.cachePlayerInputs!.push(data);
             } else {
-                game.state.playerInputs.push(data);
+                //
+                if(game.state.playerInputs.length === 0 || data.executeTime >= game.state.playerInputs[game.state.playerInputs.length -1].executeTime){
+                    game.state.playerInputs.push(data);
+                }else{
+                    let inserted = false;
+                    for(let i = 0; i < game.state.playerInputs.length; i++){
+                        if(data.executeTime < game.state.playerInputs[i].executeTime){
+                            game.state.playerInputs.splice(i, 0, data);
+                            inserted = true;
+                            break;
+                        }
+                    }
+                    if(!inserted){
+                        console.log("should not be possible. Input not inserted", data);
+                    }
+                }
             }
             break;
         case "sendGameState":
