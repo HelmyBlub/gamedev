@@ -305,7 +305,8 @@ function addTestReplayInputs(game: Game) {
         while (game.testing.replayPlayerInputs[game.testing.replayInputCounter]
             && game.testing.replayPlayerInputs[game.testing.replayInputCounter].executeTime < game.state.time + 1000
         ) {
-            let data = game.testing.replayPlayerInputs[game.testing.replayInputCounter];
+            let original = game.testing.replayPlayerInputs[game.testing.replayInputCounter]
+            let data = {...original};
             if (game.state.players.length === 1
                 || (data.clientId === -1 && game.state.players[0].clientId === game.multiplayer.myClientId)) {
                 data.clientId = game.multiplayer.myClientId;

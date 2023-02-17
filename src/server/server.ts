@@ -21,7 +21,7 @@ app.ws('/ws', function (ws: any, req: any) {
         if(lostConIndex !== -1){
             let lostCon = lostConnections[lostConIndex];
             connection = { clientId: lostCon.clientId, con: ws, randomIdentifier: lostCon.randomIdentifier };
-            lostConnections.splice(lostCon, 1);
+            lostConnections.splice(lostConIndex, 1);
             console.log("client reconnected " + lostCon.clientId);
         }else{
             console.log("unknown lastIdentifier " + myIdentifier);

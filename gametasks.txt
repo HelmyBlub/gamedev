@@ -1,16 +1,18 @@
 next tasks:
-    - mutlipalyer:
-        - some synchronization problems on connection of running games
-    - always record game inputs
     - refactoring
-    - character.size changed to width and height. but hit calculation still only uses width
+        - refacgtor "any" for network types
+    - always record game inputs + game seeds
+        - put seeds into test object of restart command
+    - mutlipalyer:
+        - automated inputs for multiple clients
 
 technical tasks or bugs:
-- find uses of "any" type and try to remove
-- upgrade versions
-- use same code files for backend and frontend
-    - understand require vs import in backend vs frontend
-- Perforamnce bug: pulling many enemies far away from spawn and than outranging them, they will move back to their own spawn and create a lot of lag
+    - character.size changed to width and height. but hit calculation still only uses width
+    - find uses of "any" type and try to remove
+    - upgrade versions
+    - use same code files for backend and frontend
+        - understand require vs import in backend vs frontend
+    - Perforamnce bug: pulling many enemies far away from spawn and than outranging them, they will move back to their own spawn and create a lot of lag
 
 future functional tasks:
     - if an enemy is aggroed in an inactive chunk, it should be active

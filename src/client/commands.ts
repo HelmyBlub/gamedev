@@ -27,7 +27,9 @@ export function executeCommand(game: Game, data: any) {
                 }else{
                     game.testing = {startTime: performance.now()};
                 }
-            } 
+            }else if(game.testing){
+                delete game.testing;
+            }
             break;
         case "playerInput":
             if (game.testing?.collectedTestInputs !== undefined) game.testing.collectedTestInputs.push(data);
