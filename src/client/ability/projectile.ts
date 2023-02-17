@@ -1,5 +1,5 @@
 import { AbilityObject, detectAbilityObjectToCharacterHit } from "./ability.js";
-import { Game, Position } from "../gameModel.js";
+import { Game } from "../gameModel.js";
 
 export type Projectile = AbilityObject & {
     moveSpeed: number,

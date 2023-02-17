@@ -1,10 +1,9 @@
 import { AbilityObject } from "./ability/ability.js";
 import { LevelingCharacterClasses } from "./character/levelingCharacters/levelingCharacterModel.js";
-import { generateMissingChunks } from "./game.js";
 import { createMap, GameMap } from "./map/map.js";
+import { generateMissingChunks } from "./map/mapGeneration.js";
 import { Player } from "./player.js";
 import { PlayerInput } from "./playerInput.js";
-import { Projectile } from "./ability/projectile.js";
 import { nextRandom, RandomSeed } from "./randomNumberGenerator.js";
 
 export type Position = {
@@ -30,7 +29,7 @@ export type Debugging = {
     paintMarkActiveChunks?: boolean,
     paintTileIJNumbers?: boolean,
     takeTimeMeasures?: boolean,
-    timeMeasuresData?: {name:string, timeMeasures:number[], tempTime: number}[],
+    timeMeasuresData?: { name: string, timeMeasures: number[], tempTime: number }[],
 }
 
 export type MapChunkPaintCache = {
@@ -58,12 +57,12 @@ export type Highscores = {
     maxLength: 10,
 }
 
-export type Camera ={
+export type Camera = {
     type: string,
     characterId?: number,
 }
 
-export type KeyCodeToAction = Map<string, {action: string, uiDisplayInputValue: string, isInputAlreadyDown: boolean}>;
+export type KeyCodeToAction = Map<string, { action: string, uiDisplayInputValue: string, isInputAlreadyDown: boolean }>;
 
 
 export type Game = {
@@ -109,7 +108,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
         canvasElement: c,
         ctx: ctx,
         state: {
-            idCounter: {nextId: 0},
+            idCounter: { nextId: 0 },
             abilityObjects: [],
             killCounter: 0,
             ended: true,
@@ -147,14 +146,14 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
         camera: {
             type: "follow character"
         },
-        mouseRelativeCanvasPosition: {x:0, y:0},
-        performance:{},
-        debug:{ 
+        mouseRelativeCanvasPosition: { x: 0, y: 0 },
+        performance: {},
+        debug: {
         },
     }
 
     game.state.map.seed = nextRandom(game.state.randomSeed);
-    generateMissingChunks(game.state.map, [{x:0, y:0}], game.state.idCounter);
+    generateMissingChunks(game.state.map, [{ x: 0, y: 0 }], game.state.idCounter);
 
     return game;
 }

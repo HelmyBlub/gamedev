@@ -1,5 +1,4 @@
 import { Character } from "../character/characterModel.js";
-import { LevelingCharacter } from "../character/levelingCharacters/levelingCharacterModel.js";
 import { Game } from "../gameModel.js";
 import { Projectile, createProjectile, tickProjectile, deleteProjectile } from "./projectile.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
@@ -22,6 +21,7 @@ export function addShootAbility(){
         createAbiltiyUpgradeOptions: createAbiltiyShootUpgradeOptions,
         tickAbilityObject: tickProjectile,
         deleteAbilityObject: deleteProjectile,
+        onHitAndReturnIfContinue: onShootHitAndReturnIfContinue,
     };
 }
 
@@ -46,12 +46,18 @@ export function createAbilityShoot(
     };
 }
 
-export function tickAbilityShoot(character: Character, ability: Ability, game: Game) {
+function tickAbilityShoot(character: Character, ability: Ability, game: Game) {
     let abilityShoot = ability as AbilityShoot;
     while (abilityShoot.nextShotTime <= game.state.time) {
         shoot(character, abilityShoot, game.state.abilityObjects, game.state.time, game.state.randomSeed);
         abilityShoot.nextShotTime += abilityShoot.baseFrequency / abilityShoot.frequencyIncrease;
     }
+}
+
+function onShootHitAndReturnIfContinue(abilityObject: AbilityObject){
+    let projectile = abilityObject as Projectile;
+    projectile.pierceCount--;
+    return projectile.pierceCount >= 0;
 }
 
 function createAbiltiyShootUpgradeOptions(): UpgradeOptionAbility[]{

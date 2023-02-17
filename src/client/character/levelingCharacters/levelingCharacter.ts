@@ -8,22 +8,22 @@ import { ABILITIES_FUNCTIONS, UpgradeOptionAbility } from "../../ability/ability
 export function fillRandomUpgradeOptions(character: LevelingCharacter, randomSeed: RandomSeed) {
     if (character.upgradeOptions.length === 0) {
         let characterOptions = createLevelingCharacterUpgradeOptions();
-        let abilitiesOptions: {[key:string]: UpgradeOptionAbility[]} = {};
-        for(let ability of character.abilities){
+        let abilitiesOptions: { [key: string]: UpgradeOptionAbility[] } = {};
+        for (let ability of character.abilities) {
             abilitiesOptions[ability.name] = ABILITIES_FUNCTIONS[ability.name].createAbiltiyUpgradeOptions();
         }
         for (let i = 0; i < 3; i++) {
             let randomIndex = Math.floor(nextRandom(randomSeed) * (1 + character.abilities.length));
-            if(randomIndex === 0 && characterOptions.length === 0) randomIndex++;
-            if(randomIndex === 0){
+            if (randomIndex === 0 && characterOptions.length === 0) randomIndex++;
+            if (randomIndex === 0) {
                 randomIndex = Math.floor(nextRandom(randomSeed) * characterOptions.length);
-                character.upgradeOptions.push({name: characterOptions[randomIndex].name});            
+                character.upgradeOptions.push({ name: characterOptions[randomIndex].name });
                 characterOptions.splice(randomIndex, 1);
-            }else{
-                let abilityName = character.abilities[randomIndex-1].name;
+            } else {
+                let abilityName = character.abilities[randomIndex - 1].name;
                 let abilityOptions = abilitiesOptions[abilityName];
                 randomIndex = Math.floor(nextRandom(randomSeed) * abilityOptions.length);
-                character.upgradeOptions.push({name: abilityOptions[randomIndex].name, abilityName: abilityName});            
+                character.upgradeOptions.push({ name: abilityOptions[randomIndex].name, abilityName: abilityName });
                 abilityOptions.splice(randomIndex, 1);
             }
         }
@@ -33,11 +33,11 @@ export function fillRandomUpgradeOptions(character: LevelingCharacter, randomSee
 export function upgradeLevelingCharacter(character: LevelingCharacter, upgradeOptionIndex: number, randomSeed: RandomSeed) {
     if (character.availableSkillPoints > 0) {
         let upgradeOption = character.upgradeOptions[upgradeOptionIndex];
-        if(upgradeOption.abilityName !== undefined){
+        if (upgradeOption.abilityName !== undefined) {
             let upgrades = ABILITIES_FUNCTIONS[upgradeOption.abilityName].createAbiltiyUpgradeOptions();
             let ability = character.abilities.find(a => a.name === upgradeOption.abilityName);
-            if(ability !== undefined) upgrades.find((e) => e.name === upgradeOption.name)?.upgrade(ability);
-        }else{
+            if (ability !== undefined) upgrades.find((e) => e.name === upgradeOption.name)?.upgrade(ability);
+        } else {
             let upgrades = createLevelingCharacterUpgradeOptions();
             upgrades.find((e) => e.name === character.upgradeOptions[upgradeOptionIndex].name)?.upgrade(character);
         }
@@ -66,7 +66,7 @@ export function tickLevelingCharacter(character: LevelingCharacter, game: Game) 
     moveCharacterTick(character, game.state.map, game.state.idCounter, true);
 }
 
-function createLevelingCharacterUpgradeOptions(): UpgradeOptionLevelingCharacter[]{
+function createLevelingCharacterUpgradeOptions(): UpgradeOptionLevelingCharacter[] {
     let upgradeOptions: UpgradeOptionLevelingCharacter[] = [];
     upgradeOptions.push({
         name: "Health+50", upgrade: (c: LevelingCharacter) => {
@@ -86,6 +86,6 @@ function levelingCharacterLevelUp(character: LevelingCharacter, randomSeed: Rand
     character.level++;
     character.availableSkillPoints += 1;
     character.experience -= character.experienceForLevelUp;
-    character.experienceForLevelUp += Math.floor(character.level/2);
+    character.experienceForLevelUp += Math.floor(character.level / 2);
     fillRandomUpgradeOptions(character, randomSeed);
 }

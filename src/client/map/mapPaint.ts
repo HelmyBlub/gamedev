@@ -24,22 +24,20 @@ export function paintMap(ctx: CanvasRenderingContext2D, cameraPosition: Position
             let x = chunkJ * chunkSize - startX;
             let y = chunkI * chunkSize - startY;
             paintChunk(ctx, { x, y }, chunk, map.tileSize, { x: chunkJ, y: chunkI }, mapChunkPaintCache, debug);
-            if(debug?.paintMarkActiveChunks){
-                if(map.activeChunkKeys.indexOf(chunkKey) > -1){
+            if (debug?.paintMarkActiveChunks) {
+                if (map.activeChunkKeys.indexOf(chunkKey) > -1) {
                     ctx.beginPath()
                     ctx.strokeStyle = 'red';
-                    ctx.rect(x+1,y+1, chunkSize-2,chunkSize-2);
+                    ctx.rect(x + 1, y + 1, chunkSize - 2, chunkSize - 2);
                     ctx.stroke();
                     ctx.closePath();
                 }
             }
         }
     }
-
-
 }
 
-export function paintMapCharacters(ctx: CanvasRenderingContext2D, cameraPosition: Position, map: GameMap){
+export function paintMapCharacters(ctx: CanvasRenderingContext2D, cameraPosition: Position, map: GameMap) {
     let chunkSize = map.tileSize * map.chunkLength;
     let width = ctx.canvas.width;
     let height = ctx.canvas.height;
@@ -74,10 +72,10 @@ function paintChunk(ctx: CanvasRenderingContext2D, paintTopLeftPosition: Positio
                     let x = j * tileSize;
                     let y = i * tileSize;
                     let tileReady = paintTile(cacheCtx, { x, y }, tileSize, chunk.tiles[i][j]);
-                    if(debug?.paintTileIJNumbers){
+                    if (debug?.paintTileIJNumbers) {
                         cacheCtx.fillStyle = "black";
                         cacheCtx.font = "8px Arial";
-                        cacheCtx.fillText((chunkIJ.x * chunk.tiles.length + j) + "_" + (chunkIJ.y * chunk.tiles.length + i) , x, y + 10);
+                        cacheCtx.fillText((chunkIJ.x * chunk.tiles.length + j) + "_" + (chunkIJ.y * chunk.tiles.length + i), x, y + 10);
                     }
                     readyForCache = readyForCache && tileReady;
                 }
@@ -90,7 +88,6 @@ function paintChunk(ctx: CanvasRenderingContext2D, paintTopLeftPosition: Positio
     }
 }
 
-
 function paintTile(ctx: CanvasRenderingContext2D, paintPosition: Position, tileSize: number, tileId: number): boolean {
     let imageReady = true;
     if (TILE_VALUES[tileId]) {
@@ -100,14 +97,14 @@ function paintTile(ctx: CanvasRenderingContext2D, paintPosition: Position, tileS
                 image.src = TILE_VALUES[tileId].imagePath!;
                 if (!image.complete) {
                     imageReady = false;
-                }else{
+                } else {
                     ctx.drawImage(image, paintPosition.x, paintPosition.y);
                 }
                 TILE_VALUES[tileId].imageRef = image;
             } else {
                 if (!TILE_VALUES[tileId].imageRef!.complete) {
                     imageReady = false;
-                }else{
+                } else {
                     ctx.drawImage(TILE_VALUES[tileId].imageRef!, paintPosition.x, paintPosition.y);
                 }
             }

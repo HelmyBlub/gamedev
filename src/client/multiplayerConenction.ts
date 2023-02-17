@@ -1,5 +1,6 @@
 import { executeCommand } from "./commands.js";
 import { Game } from "./gameModel.js";
+import { PlayerInput } from "./playerInput.js";
 
 export function websocketConnect(game: Game) {
     const protocol = window.location.protocol === "http:" ? "ws" : "wss";
@@ -7,9 +8,9 @@ export function websocketConnect(game: Game) {
     let url = `${protocol}://${window.location.host}/ws`;
 
     let lastIdentifier = localStorage.getItem('multiplayerIdentifier');
-    if(lastIdentifier){
+    if (lastIdentifier) {
         console.log("multiplayer Last Identifier", lastIdentifier);
-        url += "?myId="+lastIdentifier;
+        url += "?myId=" + lastIdentifier;
     }
     const socket = new WebSocket(url, 'gamedev');
 
@@ -41,7 +42,7 @@ export function sendMultiplayer(data: any, game: Game) {
     game.multiplayer.websocket!.send(JSON.stringify(data));
 }
 
-function determineDelay(messageObj: any, game: Game) {
+function determineDelay(messageObj: PlayerInput, game: Game) {
     if (game.multiplayer.myClientId === -1) return;
     const clientId = game.multiplayer.myClientId;
     if (messageObj.command === "playerInput" && messageObj.clientId === clientId) {

@@ -18,12 +18,12 @@ app.ws('/ws', function (ws: any, req: any) {
 
     if (myIdentifier) {
         let lostConIndex = lostConnections.findIndex((con) => con.randomIdentifier === myIdentifier);
-        if(lostConIndex !== -1){
+        if (lostConIndex !== -1) {
             let lostCon = lostConnections[lostConIndex];
             connection = { clientId: lostCon.clientId, con: ws, randomIdentifier: lostCon.randomIdentifier };
             lostConnections.splice(lostConIndex, 1);
             console.log("client reconnected " + lostCon.clientId);
-        }else{
+        } else {
             console.log("unknown lastIdentifier " + myIdentifier);
         }
     }
@@ -45,9 +45,9 @@ app.listen(port, () => {
     console.log(`GameDev started ${port}`);
 });
 
-function onConnectionClose(connection:{ clientId: number, con: any, randomIdentifier: string }) {
+function onConnectionClose(connection: { clientId: number, con: any, randomIdentifier: string }) {
     console.log(connection.clientId + " disconnected", connection.randomIdentifier);
-    lostConnections.push({clientId: connection.clientId, randomIdentifier: connection.randomIdentifier});
+    lostConnections.push({ clientId: connection.clientId, randomIdentifier: connection.randomIdentifier });
     let clientId = -1;
 
     for (let i = 0; i < connections.length; i++) {

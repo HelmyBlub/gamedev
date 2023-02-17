@@ -1,9 +1,8 @@
 import { ABILITIES_FUNCTIONS } from "../ability/ability.js";
-import { LEVELING_CHARACTER_CLASSES, Position } from "../gameModel.js";
+import { Position } from "../gameModel.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
 import { randomizedCharacterImageToKey } from "../randomizedCharacterImage.js";
 import { Character } from "./characterModel.js";
-import { LevelingCharacter } from "./levelingCharacters/levelingCharacterModel.js";
 
 export function paintCharacters(ctx: CanvasRenderingContext2D, characters: Character[], cameraPosition: Position) {
     for (let i = 0; i < characters.length; i++) {
@@ -81,9 +80,9 @@ function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cam
             character.width, 0, 2 * Math.PI);
         ctx.fill();
     }
-    for(let ability of character.abilities){
+    for (let ability of character.abilities) {
         const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-        if(abilityFunctions.paintAbility !== undefined){
+        if (abilityFunctions.paintAbility !== undefined) {
             abilityFunctions.paintAbility(ctx, character, ability, cameraPosition);
         }
     }

@@ -1,14 +1,13 @@
 import { addAbilityToCharacter } from "../../ability/ability.js";
-import { createAbilityFireCircle } from "../../ability/abilityFireCircle.js";
 import { createAbilityShoot } from "../../ability/abilityShoot.js";
 import { IdCounter, LEVELING_CHARACTER_CLASSES } from "../../gameModel.js";
 import { RandomSeed } from "../../randomNumberGenerator.js";
 import { createLevelingCharacter, LevelingCharacter } from "./levelingCharacterModel.js";
 
-export function addShooterClass(){
+export function addShooterClass() {
     LEVELING_CHARACTER_CLASSES["Shooter"] = {
         createLevelingCharacter: createShooterCharacter,
-    }   
+    }
 }
 
 function createShooterCharacter(

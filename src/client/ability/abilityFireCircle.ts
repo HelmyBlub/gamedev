@@ -3,7 +3,7 @@ import { Game, Position } from "../gameModel.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, detectAbilityObjectToCharacterHit, UpgradeOptionAbility } from "./ability.js";
 
 const ABILITY_NAME = "FireCircle";
-export type AbilityFireCircle = Ability & {    
+export type AbilityFireCircle = Ability & {
     objectDuration: number,
     damage: number,
     size: number,
@@ -25,10 +25,12 @@ export function addFireCircleAbility() {
         activeAbilityCast: castFireCircle,
         tickAbilityObject: tickAbilityObject,
         deleteAbilityObject: deleteObjectFireCircle,
+        paintAbilityUI: paintAbilityFireCircleUI,
     };
 }
 
 export function createAbilityFireCircle(
+    playerInputBinding: string,
     objectDuration: number = 2000,
     damage: number = 10,
     size: number = 30,
@@ -46,16 +48,64 @@ export function createAbilityFireCircle(
         currentCharges: maxCharges,
         nextRechargeTime: 0,
         passive: false,
+        playerInputBinding: playerInputBinding,
     };
 }
 
-export function tickAbilityFireCircle(character: Character, ability: Ability, game: Game) {
+function createObjectFireCircle(x: number, y: number, damage: number, faction: string, gameTime: number, duration: number, size: number): AbilityObjectFireCircle {
+    return {
+        type: ABILITY_NAME,
+        x: x,
+        y: y,
+        size: size,
+        color: "red",
+        damage: damage,
+        faction: faction,
+        deleteTime: gameTime + duration,
+        paintOrder: "beforeCharacterPaint",
+    }
+}
+
+function tickAbilityFireCircle(character: Character, ability: Ability, game: Game) {
     let abilityFireCircle = ability as AbilityFireCircle;
-    if(abilityFireCircle.currentCharges < abilityFireCircle.maxCharges){
-        if(game.state.time >= abilityFireCircle.nextRechargeTime){
+    if (abilityFireCircle.currentCharges < abilityFireCircle.maxCharges) {
+        if (game.state.time >= abilityFireCircle.nextRechargeTime) {
             abilityFireCircle.currentCharges++;
             abilityFireCircle.nextRechargeTime += abilityFireCircle.baseRechargeTime / abilityFireCircle.rechargeTimeDecreaseFaktor;
         }
+    }
+}
+
+function paintAbilityFireCircleUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
+    let fireCircle = ability as AbilityFireCircle;
+    let fontSize = size;
+    let rectSize = size;
+    ctx.strokeStyle = "black";
+    ctx.fillStyle = "white";
+    ctx.fillRect(drawStartX, drawStartY, rectSize, rectSize);
+    ctx.beginPath();
+    ctx.rect(drawStartX, drawStartY, rectSize, rectSize);
+    ctx.stroke();
+    if (fireCircle.currentCharges < fireCircle.maxCharges) {
+        ctx.fillStyle = "gray";
+        let heightFactor = (fireCircle.nextRechargeTime - game.state.time) / (fireCircle.baseRechargeTime / fireCircle.rechargeTimeDecreaseFaktor);
+        ctx.fillRect(drawStartX, drawStartY, rectSize, rectSize * heightFactor);
+    }
+
+    ctx.fillStyle = "black";
+    ctx.font = fontSize + "px Arial";
+    ctx.fillText("" + fireCircle.currentCharges, drawStartX, drawStartY + rectSize - (rectSize - fontSize * 0.9));
+
+    if (fireCircle.playerInputBinding) {
+        let keyBind = "";
+        game.clientKeyBindings[0].keyCodeToActionPressed.forEach((value, key) => {
+            if (value.action === fireCircle.playerInputBinding) {
+                keyBind = value.uiDisplayInputValue;
+            }
+        });
+        ctx.fillStyle = "black";
+        ctx.font = "10px Arial";
+        ctx.fillText(keyBind, drawStartX + 1, drawStartY + 8);
     }
 }
 
@@ -79,7 +129,7 @@ function createAbiltiyFireCircleUpgradeOptions(): UpgradeOptionAbility[] {
     upgradeOptions.push({
         name: "Size+", upgrade: (a: Ability) => {
             let as = a as AbilityFireCircle;
-            let addSize = Math.max(1, 10 - (as.size - 30)/40);
+            let addSize = Math.max(1, 10 - (as.size - 30) / 40);
             as.size += addSize;
         },
     });
@@ -101,7 +151,7 @@ function createAbiltiyFireCircleUpgradeOptions(): UpgradeOptionAbility[] {
 
 function castFireCircle(character: Character, ability: Ability, castPosition: Position, game: Game) {
     let abilityFireCircle = ability as AbilityFireCircle;
-    if(abilityFireCircle.currentCharges > 0){
+    if (abilityFireCircle.currentCharges > 0) {
         game.state.abilityObjects.push(createObjectFireCircle(
             castPosition.x,
             castPosition.y,
@@ -111,23 +161,9 @@ function castFireCircle(character: Character, ability: Ability, castPosition: Po
             abilityFireCircle.objectDuration,
             abilityFireCircle.size
         ));
-        if(abilityFireCircle.currentCharges === abilityFireCircle.maxCharges){
+        if (abilityFireCircle.currentCharges === abilityFireCircle.maxCharges) {
             abilityFireCircle.nextRechargeTime = game.state.time + abilityFireCircle.baseRechargeTime / abilityFireCircle.rechargeTimeDecreaseFaktor;
         }
         abilityFireCircle.currentCharges--;
-    }
-}
-
-export function createObjectFireCircle(x: number, y: number, damage: number, faction: string, gameTime: number, duration: number, size: number): AbilityObjectFireCircle {
-    return {
-        type: 'FireCircle',
-        x: x,
-        y: y,
-        size: size,
-        color: "red",
-        damage: damage,
-        faction: faction,
-        deleteTime: gameTime + duration,
-        paintOrder: "beforeCharacterPaint",
     }
 }

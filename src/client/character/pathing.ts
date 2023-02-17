@@ -8,7 +8,7 @@ export type PathingCache = {
     alreadyTraveledDistanceCache: Map<string, Map<string, number>>,
 }
 
-export function createPathingCache(): PathingCache{
+export function createPathingCache(): PathingCache {
     return {
         cameFromCache: new Map<string, Map<string, Position>>(),
         openNodesCache: new Map<string, Position[]>(),
@@ -23,7 +23,7 @@ export function getNextWaypoint(
     pathingCache: PathingCache | null = null,
     idCounter: IdCounter
 ): Position | null {
-    if(isPositionBlocking(sourcePos, map, idCounter)){
+    if (isPositionBlocking(sourcePos, map, idCounter)) {
         throw new Error("can't find way to a blocking position");
     }
     let targetIJ: Position = calculatePosToTileIJ(sourcePos, map);
@@ -39,7 +39,7 @@ export function getNextWaypoint(
 
     let startKey = `${startIJ.x}_${startIJ.y}`;
     let targetKey = `${targetIJ.x}_${targetIJ.y}`;
-    if (pathingCache !== null){
+    if (pathingCache !== null) {
         if (pathingCache.openNodesCache.has(startKey)) {
             openNodes = pathingCache.openNodesCache.get(startKey)!;
             cameFrom = pathingCache.cameFromCache.get(startKey)!;
@@ -54,7 +54,7 @@ export function getNextWaypoint(
             pathingCache.alreadyTraveledDistanceCache.set(startKey, alreadyTraveledDistance);
             openNodes.push(startIJ);
         }
-    }else{
+    } else {
         openNodes.push(startIJ);
     }
 
@@ -62,7 +62,7 @@ export function getNextWaypoint(
     let maxCounter = calculateDistance(startIJ, targetIJ) * 10;
     while (openNodes.length > 0) {
         counter++;
-        if(counter > maxCounter) return null;
+        if (counter > maxCounter) return null;
 
         let currentLowestValue = -1;
         let currentIndex = -1;
@@ -78,7 +78,7 @@ export function getNextWaypoint(
 
         if (currentNode.x === targetIJ.x && currentNode.y === targetIJ.y) {
             let lastPosition = cameFrom.get(`${targetIJ.x}_${targetIJ.y}`)!;
-            if(pathingCache !== null) openNodes.push(currentNode);
+            if (pathingCache !== null) openNodes.push(currentNode);
             return { x: lastPosition.x * map.tileSize + map.tileSize / 2, y: lastPosition.y * map.tileSize + map.tileSize / 2 };
         }
 

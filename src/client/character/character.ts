@@ -30,10 +30,10 @@ export function tickMapCharacters(map: GameMap, game: Game) {
 export function tickCharacters(characters: Character[], game: Game, pathingCache: PathingCache | null = null) {
     for (let j = characters.length - 1; j >= 0; j--) {
         CHARACTER_TYPES_STUFF[characters[j].type].tickFunction(characters[j], game, pathingCache);
-        if (!characters[j].isDead){
-            for(let ability of characters[j].abilities){
+        if (!characters[j].isDead) {
+            for (let ability of characters[j].abilities) {
                 ABILITIES_FUNCTIONS[ability.name].tickAbility(characters[j], ability, game);
-            }    
+            }
         }
     }
 }
@@ -76,7 +76,7 @@ export function determineCharactersInDistance(position: Position, map: GameMap, 
             }
         }
     }
-    for(let player of players){
+    for (let player of players) {
         let distance = calculateDistance(position, player.character);
         if (maxDistance >= distance) {
             result.push(player.character);
@@ -85,14 +85,14 @@ export function determineCharactersInDistance(position: Position, map: GameMap, 
     return result;
 }
 
-export function countCharacters(map: GameMap): number{
+export function countCharacters(map: GameMap): number {
     let counter = 0;
     let chunkKeys = Object.keys(map.chunks);
 
-    for(const key of chunkKeys){
+    for (const key of chunkKeys) {
         counter += map.chunks[key].characters.length;
     }
-    
+
     return counter;
 }
 
@@ -113,20 +113,20 @@ export function detectCharacterDeath(map: GameMap, state: GameState, camera: Cam
         let char = state.players[i].character;
         if (char.hp <= 0 && !char.isDead) {
             char.isDead = true;
-            if(camera.characterId === char.id){
+            if (camera.characterId === char.id) {
                 findAndSetNewCameraCharacterId(camera, state.players);
             }
         }
     }
 }
 
-export function findAndSetNewCameraCharacterId(camera: Camera, players: Player[], myClientId?: number){
-    let newCameraCharacterId = undefined;
+export function findAndSetNewCameraCharacterId(camera: Camera, players: Player[], myClientId?: number) {
+    let newCameraCharacterId = camera.characterId;
     for (let i = 0; i < players.length; i++) {
-        if(!players[i].character.isDead){
-            if(players[i].character.id === camera.characterId
-                 || newCameraCharacterId === undefined
-                 || myClientId === players[i].clientId){
+        if (!players[i].character.isDead) {
+            if (players[i].character.id === camera.characterId
+                || newCameraCharacterId === undefined
+                || myClientId === players[i].clientId) {
                 newCameraCharacterId = players[i].character.id;
             }
         }
@@ -187,21 +187,24 @@ export function moveCharacterTick(character: Character, map: GameMap, idCounter:
         let y = character.y + Math.sin(character.moveDirection) * character.moveSpeed;
         let blocking = isPositionBlocking({ x, y }, map, idCounter);
         if (!blocking) {
-            if (!isPlayer) {
-                let currentChunkI = Math.floor(character.y / (map.tileSize * map.chunkLength));
-                let newChunkI = Math.floor(y / (map.tileSize * map.chunkLength));
-                let currentChunkJ = Math.floor(character.x / (map.tileSize * map.chunkLength));
-                let newChunkJ = Math.floor(x / (map.tileSize * map.chunkLength));
-                if (currentChunkI !== newChunkI || currentChunkJ !== newChunkJ) {
-                    let currentChunkKey = `${currentChunkI}_${currentChunkJ}`;
-                    let newChunkKey = `${newChunkI}_${newChunkJ}`;
-                    map.chunks[currentChunkKey].characters = map.chunks[currentChunkKey].characters.filter(el => el !== character);
-                    map.chunks[newChunkKey].characters.push(character);
-                }
-            }
-
+            mapCharacterCheckForChunkChange(character, map, x, y, isPlayer);
             character.x = x;
             character.y = y;
+        }
+    }
+}
+
+function mapCharacterCheckForChunkChange(character: Character, map: GameMap, newX: number, newY: number, isPlayer: boolean) {
+    if (!isPlayer) {
+        let currentChunkI = Math.floor(character.y / (map.tileSize * map.chunkLength));
+        let newChunkI = Math.floor(newY / (map.tileSize * map.chunkLength));
+        let currentChunkJ = Math.floor(character.x / (map.tileSize * map.chunkLength));
+        let newChunkJ = Math.floor(newX / (map.tileSize * map.chunkLength));
+        if (currentChunkI !== newChunkI || currentChunkJ !== newChunkJ) {
+            let currentChunkKey = `${currentChunkI}_${currentChunkJ}`;
+            let newChunkKey = `${newChunkI}_${newChunkJ}`;
+            map.chunks[currentChunkKey].characters = map.chunks[currentChunkKey].characters.filter(el => el !== character);
+            map.chunks[newChunkKey].characters.push(character);
         }
     }
 }

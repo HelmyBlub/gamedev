@@ -1,6 +1,5 @@
-import { Ability } from "../../ability/ability.js";
 import { getNextId } from "../../game.js";
-import { Game, IdCounter } from "../../gameModel.js";
+import { IdCounter } from "../../gameModel.js";
 import { GAME_IMAGES } from "../../imageLoad.js";
 import { createRandomizedCharacterImageData } from "../../randomizedCharacterImage.js";
 import { RandomSeed } from "../../randomNumberGenerator.js";
@@ -34,7 +33,7 @@ export type LevelingCharacterClass = {
 }
 
 export type LevelingCharacterClasses = {
-    [key:string]: LevelingCharacterClass,
+    [key: string]: LevelingCharacterClass,
 }
 
 export type UpgradeOptionLevelingCharacter = {

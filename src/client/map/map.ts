@@ -87,10 +87,10 @@ export function positionToMapKey(pos: Position, map: GameMap): string {
     return `${Math.floor(pos.y / chunkSize)}_${Math.floor(pos.x / chunkSize)}`;
 }
 
-export function mapKeyToChunkIJ(mapKey: string){
+export function mapKeyToChunkIJ(mapKey: string) {
     let chunkI = parseInt(mapKey.split("_")[0]);
     let chunkJ = parseInt(mapKey.split("_")[1]);
-    return {chunkI, chunkJ};
+    return { chunkI, chunkJ };
 }
 
 export function determineMapKeysInDistance(position: Position, map: GameMap, maxDistance: number, addNotCreatedChunkKeys: boolean = true): string[] {

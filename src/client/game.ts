@@ -1,11 +1,11 @@
-import { countAlivePlayerCharacters, detectCharacterDeath, determineCharactersInDistance, findCharacterById, getPlayerCharacters, tickCharacters, tickMapCharacters } from "./character/character.js";
+import { countAlivePlayerCharacters, detectCharacterDeath, findCharacterById, getPlayerCharacters, tickCharacters, tickMapCharacters } from "./character/character.js";
 import { paintAll } from "./gamePaint.js";
 import { gameInitPlayers, Player } from "./player.js";
 import { tickPlayerInputs } from "./playerInput.js";
 import { Position, GameState, Game, IdCounter, TestingStuff, Debugging } from "./gameModel.js";
 import { createMap, determineMapKeysInDistance, GameMap, removeAllMapCharacters } from "./map/map.js";
 import { Character } from "./character/characterModel.js";
-import { createNewChunk } from "./map/mapGeneration.js";
+import { generateMissingChunks } from "./map/mapGeneration.js";
 import { createFixPositionRespawnEnemiesOnInit } from "./character/enemy/fixPositionRespawnEnemyModel.js";
 import { handleCommand } from "./commands.js";
 import { tickAbilityObjects } from "./ability/ability.js";
@@ -23,7 +23,7 @@ export function calculateDirection(startPos: Position, targetPos: Position): num
     } else {
         direction = - Math.atan(xDiff / yDiff) - Math.PI / 2;
     }
-    if(isNaN(direction)) return 0;
+    if (isNaN(direction)) return 0;
     return direction;
 }
 
@@ -44,14 +44,6 @@ export function closeGame(game: Game) {
     }
     game.closeGame = true;
     console.log("closing game");
-}
-
-export function addHTMLDebugCheckboxesToSettings(game: Game) {
-    let settingsElement = document.getElementById('settings');
-    if (!settingsElement) return;
-    addSettingCheckbox("takeTimeMeasures", game);
-    addSettingCheckbox("paintTileIJNumbers", game);
-    addSettingCheckbox("paintMarkActiveChunks", game);
 }
 
 export function gameInit(game: Game) {
@@ -158,59 +150,9 @@ export function runner(game: Game) {
     takeTimeMeasure(game.debug, "runner", "");
 }
 
-export function generateMissingChunks(map: GameMap, positions: Position[], idCounter: IdCounter) {
-    let chunkSize = map.tileSize * map.chunkLength;
-    let generationRadius = 1500;
-
-    for (const position of positions) {
-        let startX = (position.x - generationRadius);
-        let startY = (position.y - generationRadius);
-        let startChunkI = Math.floor(startY / chunkSize);
-        let startChunkJ = Math.floor(startX / chunkSize);
-
-        for (let i = 0; i < Math.ceil(generationRadius / chunkSize * 2); i++) {
-            let chunkI = startChunkI + i;
-            for (let j = 0; j < Math.ceil(generationRadius / chunkSize * 2); j++) {
-                let chunkJ = startChunkJ + j;
-                let chunk = map.chunks[`${chunkI}_${chunkJ}`];
-                if (chunk === undefined) {
-                    chunk = createNewChunk(map, chunkI, chunkJ, idCounter);
-                    map.chunks[`${chunkI}_${chunkJ}`] = chunk;
-                }
-            }
-        }
-    }
-}
-
-export function setRelativeMousePosition(event: MouseEvent, game: Game){
+export function setRelativeMousePosition(event: MouseEvent, game: Game) {
     let target = event.currentTarget as HTMLElement;
-    game.mouseRelativeCanvasPosition = {x: event.x - target.offsetLeft, y: event.y - target.offsetTop};
-}
-
-function addSettingCheckbox(checkboxName: string, game: Game) {
-    let settingsElement = document.getElementById('settings');
-    if (!settingsElement) return;
-    let debug: any = game.debug;
-    let checkbox: HTMLInputElement = document.getElementById(checkboxName) as HTMLInputElement;
-    if (!checkbox) {
-        let canvasHTML = `
-            <input type="checkbox" id="${checkboxName}" name="${checkboxName}">
-            <label for="debug">${checkboxName}</label><br>
-        `;
-        settingsElement.insertAdjacentHTML("beforeend", canvasHTML);
-        checkbox = document.getElementById(checkboxName) as HTMLInputElement;
-    }
-    if (checkbox) {
-        checkbox.addEventListener('change', () => {
-            if (checkbox.checked) {
-                debug[checkboxName] = true;
-                game.performance = {};
-            } else {
-                debug[checkboxName] = false;                
-                game.performance = {};
-            }
-        });
-    }
+    game.mouseRelativeCanvasPosition = { x: event.x - target.offsetLeft, y: event.y - target.offsetTop };
 }
 
 function determineRunnerTimeout(game: Game): number {
@@ -229,7 +171,7 @@ function determineRunnerTimeout(game: Game): number {
                 if (timeoutSleep < 0) {
                     game.shouldTickTime = timeEnd;
                     timeoutSleep = 0;
-                    if(game.state.time > 1000){
+                    if (game.state.time > 1000) {
                         console.log("game slow down, can not keep up");
                     }
                 }
@@ -306,7 +248,7 @@ function addTestReplayInputs(game: Game) {
             && game.testing.replayPlayerInputs[game.testing.replayInputCounter].executeTime < game.state.time + 1000
         ) {
             let original = game.testing.replayPlayerInputs[game.testing.replayInputCounter]
-            let data = {...original};
+            let data = { ...original };
             if (game.state.players.length === 1
                 || (data.clientId === -1 && game.state.players[0].clientId === game.multiplayer.myClientId)) {
                 data.clientId = game.multiplayer.myClientId;

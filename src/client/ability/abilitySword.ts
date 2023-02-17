@@ -1,6 +1,5 @@
 import { determineCharactersInDistance } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
-import { LevelingCharacter } from "../character/levelingCharacters/levelingCharacterModel.js";
 import { calculateDirection, calculateDistance } from "../game.js";
 import { Position, Game } from "../gameModel.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
@@ -24,7 +23,7 @@ GAME_IMAGES[ABILITY_NAME] = {
     spriteRowWidths: [11],
 };
 
-export function addSwordAbility(){
+export function addSwordAbility() {
     ABILITIES_FUNCTIONS[ABILITY_NAME] = {
         tickAbility: tickAbilitySword,
         createAbiltiyUpgradeOptions: createAbilitySwordUpgradeOptions,

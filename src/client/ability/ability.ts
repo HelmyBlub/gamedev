@@ -3,7 +3,10 @@ import { Character } from "../character/characterModel.js"
 import { calculateDistance } from "../game.js"
 import { Game, Position } from "../gameModel.js"
 import { GameMap } from "../map/map.js"
-import { Player } from "../player.js"
+import { findPlayerByCharacterId, findPlayerById, Player } from "../player.js"
+import { addFireCircleAbility } from "./abilityFireCircle.js"
+import { addShootAbility } from "./abilityShoot.js"
+import { addSwordAbility } from "./abilitySword.js"
 import { Projectile } from "./projectile.js"
 
 export type Ability = {
@@ -25,13 +28,16 @@ export type AbilityFunctions = {
     tickAbility: (character: Character, ability: Ability, game: Game) => void,
     createAbiltiyUpgradeOptions: () => UpgradeOptionAbility[],
     paintAbility?: (ctx: CanvasRenderingContext2D, character: Character, ability: Ability, cameraPosition: Position) => void,
-    activeAbilityCast?: (character: Character,  ability: Ability, castPosition: Position, game: Game) => void,
+    activeAbilityCast?: (character: Character, ability: Ability, castPosition: Position, game: Game) => void,
     tickAbilityObject?: (abilityObject: AbilityObject, game: Game) => void,
     deleteAbilityObject?: (abilityObject: AbilityObject, game: Game) => boolean,
+    paintAbilityObject?: (ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, cameraPosition: Position) => void,
+    paintAbilityUI?: (ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) => void,
+    onHitAndReturnIfContinue?: (abilityObject: AbilityObject) => boolean,
 }
 
 export type AbilitiesFunctions = {
-    [key:string]: AbilityFunctions,
+    [key: string]: AbilityFunctions,
 }
 
 export type UpgradeOptionAbility = {
@@ -41,52 +47,45 @@ export type UpgradeOptionAbility = {
 
 export const ABILITIES_FUNCTIONS: AbilitiesFunctions = {};
 
-export function addAbilityToCharacter(character: Character, ability: Ability){
-    character.abilities.push(ability);
-    if(!ability.passive){
-        ability.playerInputBinding = "ability1";
-    }
+export function onDomLoadSetAbilitiesFunctions() {
+    addShootAbility();
+    addFireCircleAbility();
+    addSwordAbility();
 }
 
-export function paintAbilityObjects(ctx:CanvasRenderingContext2D, abilityObjects: AbilityObject[], cameraPosition: Position, paintOrder: PaintOrder){
-    for(let abilityObject of abilityObjects){
-        if(abilityObject.paintOrder === paintOrder){
-            paintDefault(ctx, abilityObject, cameraPosition);
+export function addAbilityToCharacter(character: Character, ability: Ability) {
+    character.abilities.push(ability);
+}
+
+export function paintAbilityObjects(ctx: CanvasRenderingContext2D, abilityObjects: AbilityObject[], cameraPosition: Position, paintOrder: PaintOrder) {
+    for (let abilityObject of abilityObjects) {
+        if (abilityObject.paintOrder === paintOrder) {
+            let abilityFunctions = ABILITIES_FUNCTIONS[abilityObject.type];
+            if (abilityFunctions?.paintAbilityObject !== undefined) {
+                abilityFunctions.paintAbilityObject(ctx, abilityObject, cameraPosition);
+            } else {
+                paintDefault(ctx, abilityObject, cameraPosition);
+            }
         }
     }
 }
 
-export function tickAbilityObjects(abilityObjects: AbilityObject[], game: Game){
-    for(let i = abilityObjects.length - 1; i >= 0; i--){
+export function tickAbilityObjects(abilityObjects: AbilityObject[], game: Game) {
+    for (let i = abilityObjects.length - 1; i >= 0; i--) {
         let abilityFunctions = ABILITIES_FUNCTIONS[abilityObjects[i].type];
-        if(abilityFunctions.tickAbilityObject !== undefined){
+        if (abilityFunctions.tickAbilityObject !== undefined) {
             abilityFunctions.tickAbilityObject(abilityObjects[i], game);
-        }else{
+        } else {
             throw new Error("tickAbilityObject not defined for " + abilityObjects[i].type);
         }
-        if(abilityFunctions.deleteAbilityObject !== undefined){
-            if(abilityFunctions.deleteAbilityObject(abilityObjects[i], game)){
-                abilityObjects.splice(i,1);
+        if (abilityFunctions.deleteAbilityObject !== undefined) {
+            if (abilityFunctions.deleteAbilityObject(abilityObjects[i], game)) {
+                abilityObjects.splice(i, 1);
             }
-        }else{
+        } else {
             throw new Error("deleteAbilityObject not defined for " + abilityObjects[i].type);
         }
     }
-}
-
-function paintDefault(ctx:CanvasRenderingContext2D, abilityObject: AbilityObject, cameraPosition: Position){
-    let centerX = ctx.canvas.width / 2;
-    let centerY = ctx.canvas.height / 2;
-
-    ctx.fillStyle = abilityObject.color;
-    ctx.beginPath();
-    ctx.arc(
-        abilityObject.x - cameraPosition.x + centerX,
-        abilityObject.y - cameraPosition.y + centerY,
-        abilityObject.size / 2, 0, 2 * Math.PI
-    );
-    ctx.fill();
-
 }
 
 export function detectAbilityObjectToCharacterHit(map: GameMap, abilityObject: AbilityObject, players: Player[]) {
@@ -100,11 +99,42 @@ export function detectAbilityObjectToCharacterHit(map: GameMap, abilityObject: A
         if (distance < abilityObject.size / 2 + c.width / 2) {
             c.hp -= abilityObject.damage;
             c.wasHitRecently = true;
-            if(abilityObject.type === "Shoot"){
-                let projectile = abilityObject as Projectile;
-                projectile.pierceCount--;
-                if (projectile.pierceCount < 0) break;
+            let abilityFunction = ABILITIES_FUNCTIONS[abilityObject.type];
+            if (abilityFunction.onHitAndReturnIfContinue) {
+                let continueHitDetection = abilityFunction.onHitAndReturnIfContinue(abilityObject);
+                if (!continueHitDetection) break;
             }
         }
     }
+}
+
+export function paintUiForAbilities(ctx: CanvasRenderingContext2D, game: Game) {
+    if (game.camera.characterId === undefined) return;
+    let player = findPlayerByCharacterId(game.state.players, game.camera.characterId);
+    if (!player) return;
+
+    let size = 40;
+    let startX = ctx.canvas.width / 2 - 20;
+    let startY = ctx.canvas.height - size - 2;
+    for (let ability of player.character.abilities) {
+        let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+        if (abilityFunctions?.paintAbilityUI !== undefined) {
+            abilityFunctions.paintAbilityUI(ctx, ability, startX, startY, size, game);
+            startX += size;
+        }
+    }
+}
+
+function paintDefault(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, cameraPosition: Position) {
+    let centerX = ctx.canvas.width / 2;
+    let centerY = ctx.canvas.height / 2;
+
+    ctx.fillStyle = abilityObject.color;
+    ctx.beginPath();
+    ctx.arc(
+        abilityObject.x - cameraPosition.x + centerX,
+        abilityObject.y - cameraPosition.y + centerY,
+        abilityObject.size / 2, 0, 2 * Math.PI
+    );
+    ctx.fill();
 }

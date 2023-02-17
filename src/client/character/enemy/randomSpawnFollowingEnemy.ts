@@ -28,8 +28,8 @@ export function createRandomSpawnFollowingEnemy(game: Game) {
     }
 }
 
-export function tickRandomSpawnFollowingEnemyCharacter(enemy: RandomSpawnFollowingEnemyCharacter, game: Game, pathingCache:PathingCache) {
-    if(enemy.isDead){
+export function tickRandomSpawnFollowingEnemyCharacter(enemy: RandomSpawnFollowingEnemyCharacter, game: Game, pathingCache: PathingCache) {
+    if (enemy.isDead) {
         removeEnemy(enemy, game.state.map);
     } else {
         let playerCharacters = getPlayerCharacters(game.state.players);
@@ -42,12 +42,12 @@ export function tickRandomSpawnFollowingEnemyCharacter(enemy: RandomSpawnFollowi
     }
 }
 
-function removeEnemy(enemy: RandomSpawnFollowingEnemyCharacter, map: GameMap){
+function removeEnemy(enemy: RandomSpawnFollowingEnemyCharacter, map: GameMap) {
     const chunkKey = positionToMapKey(enemy, map);
     let characters = map.chunks[chunkKey].characters;
-    for(let i = 0; i<characters.length;i++){
-        if(characters[i] === enemy){
-            characters.splice(i,1);
+    for (let i = 0; i < characters.length; i++) {
+        if (characters[i] === enemy) {
+            characters.splice(i, 1);
             return;
         }
     }
@@ -64,15 +64,15 @@ function teleportFarEnemy(enemy: RandomSpawnFollowingEnemyCharacter, playerChara
     }
 }
 
-function increaseEnemyMovementSpeedAfterTime(enemy: RandomSpawnFollowingEnemyCharacter, gameTime: number){
-    if(enemy.spawnTime + 15000 < gameTime){
+function increaseEnemyMovementSpeedAfterTime(enemy: RandomSpawnFollowingEnemyCharacter, gameTime: number) {
+    if (enemy.spawnTime + 15000 < gameTime) {
         enemy.moveSpeed = (gameTime - enemy.spawnTime) / 15000;
     }
 }
 
 function createEnemy(game: Game, x: number, y: number, hp: number): RandomSpawnFollowingEnemyCharacter {
     let enemy: Character = createCharacter(getNextId(game.state.idCounter), x, y, 5, 5, "black", 0.5, hp, 1, ENEMY_FACTION, "randomSpawnFollowingEnemy", 1);
-    let randomEnemy = {...enemy, spawnTime: game.state.time};
-    
+    let randomEnemy = { ...enemy, spawnTime: game.state.time };
+
     return randomEnemy;
 }

@@ -1,12 +1,11 @@
-import { addFireCircleAbility } from "./ability/abilityFireCircle.js";
-import { addShootAbility } from "./ability/abilityShoot.js";
-import { addSwordAbility } from "./ability/abilitySword.js";
+import { onDomLoadSetAbilitiesFunctions } from "./ability/ability.js";
 import { addCasterClass } from "./character/levelingCharacters/casterCharacterClass.js";
 import { addShooterClass } from "./character/levelingCharacters/shooterCharacterClass.js";
 import { addSwordClass } from "./character/levelingCharacters/swordCharacterClass.js";
-import { addHTMLDebugCheckboxesToSettings, runner, setRelativeMousePosition } from "./game.js";
+import { runner, setRelativeMousePosition } from "./game.js";
 import { createDefaultGameData, Game } from "./gameModel.js";
 import { keyDown, keyUp, mouseDown, mouseUp } from "./playerInput.js";
+import { addHTMLDebugCheckboxesToSettings } from "./settingsHtmlMenu.js";
 
 var gameCount: number = 0;
 
@@ -24,7 +23,7 @@ export function startMore() {
 
 export function createGame(canvasElementId: string | undefined, forTesting: boolean = false): Game {
     let game: Game;
-    if(!forTesting && canvasElementId){
+    if (!forTesting && canvasElementId) {
         let c: HTMLCanvasElement | null = document.getElementById(canvasElementId) as HTMLCanvasElement;
         if (c == null) throw new DOMException("canvas element not found");
         let ctx: CanvasRenderingContext2D | null = c.getContext("2d");
@@ -42,20 +41,18 @@ export function createGame(canvasElementId: string | undefined, forTesting: bool
         c.height = window.innerHeight - 2;
         c.width = window.innerWidth - 2;
         addHTMLDebugCheckboxesToSettings(game);
-    }else{
+    } else {
         game = createDefaultGameData(undefined, undefined);
     }
     runner(game);
     return game;
 }
 
-document.addEventListener("DOMContentLoaded", function(){
+document.addEventListener("DOMContentLoaded", function () {
     addShooterClass();
     addSwordClass();
     addCasterClass();
-    addShootAbility();
-    addFireCircleAbility();
-    addSwordAbility();
+    onDomLoadSetAbilitiesFunctions();
 
     start();
 });

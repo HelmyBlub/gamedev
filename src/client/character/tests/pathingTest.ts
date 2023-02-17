@@ -1,4 +1,4 @@
-import { Game, IdCounter, Position } from "../../gameModel.js";
+import { IdCounter, Position } from "../../gameModel.js";
 import { createMap, findNearNonBlockingPosition, GameMap } from "../../map/map.js";
 import { nextRandom, RandomSeed } from "../../randomNumberGenerator.js";
 import { createPathingCache, getNextWaypoint } from "../pathing.js";

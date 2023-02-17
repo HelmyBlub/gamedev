@@ -1,7 +1,7 @@
 import { calculateDistance } from "../../game.js";
 import { Game } from "../../gameModel.js";
 import { GameMap, positionToMapKey } from "../../map/map.js";
-import { determineCharactersInDistance, determineClosestCharacter, determineEnemyHitsPlayer, determineEnemyMoveDirection, findCharacterById, getPlayerCharacters, moveCharacterTick } from "../character.js";
+import { determineCharactersInDistance, determineClosestCharacter, determineEnemyHitsPlayer, determineEnemyMoveDirection, getPlayerCharacters, moveCharacterTick } from "../character.js";
 import { Character } from "../characterModel.js";
 import { PathingCache } from "../pathing.js";
 import { FixPositionRespawnEnemyCharacter } from "./fixPositionRespawnEnemyModel.js";

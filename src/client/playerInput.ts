@@ -1,4 +1,4 @@
-import { handleCommand } from "./commands.js";
+import { CommandRestart, handleCommand } from "./commands.js";
 import { upgradeLevelingCharacter } from "./character/levelingCharacters/levelingCharacter.js";
 import { findPlayerById } from "./player.js";
 import { Character } from "./character/characterModel.js";
@@ -24,7 +24,7 @@ export type PlayerInput = {
     data?: any
 }
 
-export function createActionsPressed() {
+export function createActionsPressed(): ActionsPressed {
     return {
         left: false,
         down: false,
@@ -49,13 +49,16 @@ export function mouseUp(event: MouseEvent, game: Game){
 
 export function keyDown(event: KeyboardEvent, game: Game) {
     playerInputChangeEvent(game, event.code, true);
+    let commandRestart: Omit<CommandRestart, "executeTime">;
 
     switch (event.code) {
         case "KeyR":
-            handleCommand(game, { command: "restart", clientId: game.multiplayer.myClientId });
+            commandRestart = { command: "restart", clientId: game.multiplayer.myClientId };
+            handleCommand(game, commandRestart);
             break;
         case "KeyZ":
-            handleCommand(game, { command: "restart", clientId: game.multiplayer.myClientId, testing: true });
+            commandRestart = { command: "restart", clientId: game.multiplayer.myClientId, testing: true };
+            handleCommand(game, commandRestart);
             break;
         case "KeyT":
             testGame(game);

@@ -1,5 +1,4 @@
-import { paintAbilityObjects } from "./ability/ability.js";
-import { AbilityFireCircle } from "./ability/abilityFireCircle.js";
+import { paintAbilityObjects, paintUiForAbilities } from "./ability/ability.js";
 import { getPlayerCharacters } from "./character/character.js";
 import { paintCharacters } from "./character/characterPaint.js";
 import { LevelingCharacter } from "./character/levelingCharacters/levelingCharacterModel.js";
@@ -39,53 +38,7 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
         }
     }
     paintTimeMeasures(ctx, game.debug);
-    paintUiForActiveAbilities(ctx, game);
-}
-
-function paintUiForActiveAbilities(ctx: CanvasRenderingContext2D, game: Game){
-    let player = game.state.players[0];
-    if(!player) return;
-    if (game.multiplayer.myClientId !== -1) {
-        let tempPlayer = findPlayerById(game.state.players, game.multiplayer.myClientId);
-        if(tempPlayer) player = tempPlayer;
-    }
-    let fontSize = 40;
-    let rectSize = 40;
-    let startX = ctx.canvas.width / 2 - 20;
-    let startY = ctx.canvas.height - rectSize - 2;
-    for(let ability of player.character.abilities){
-        if(!ability.passive){
-            let fireCircle = ability as AbilityFireCircle;
-            ctx.strokeStyle = "black";
-            ctx.fillStyle = "white";
-            ctx.fillRect(startX,startY,rectSize,rectSize);
-            ctx.beginPath();
-            ctx.rect(startX,startY,rectSize,rectSize);
-            ctx.stroke();
-            if(fireCircle.currentCharges < fireCircle.maxCharges){
-                ctx.fillStyle = "gray";
-                let heightFactor = (fireCircle.nextRechargeTime - game.state.time) / (fireCircle.baseRechargeTime / fireCircle.rechargeTimeDecreaseFaktor);
-                ctx.fillRect(startX,startY,rectSize,rectSize * heightFactor);                
-            }
-
-            ctx.fillStyle = "black";
-            ctx.font = fontSize + "px Arial";
-            ctx.fillText("" + fireCircle.currentCharges, startX, startY + rectSize - (rectSize - fontSize * 0.9));
-
-            if(fireCircle.playerInputBinding){
-                let keyBind = "";
-                game.clientKeyBindings[0].keyCodeToActionPressed.forEach((value, key) => {
-                    if(value.action === fireCircle.playerInputBinding){
-                        keyBind = value.uiDisplayInputValue;
-                    }
-                });
-                ctx.fillStyle = "black";
-                ctx.font = "10px Arial";
-                ctx.fillText(keyBind, startX + 1, startY + 8);
-            }
-            startX += rectSize;
-        }
-    }
+    paintUiForAbilities(ctx, game);
 }
 
 function paintTimeMeasures(ctx: CanvasRenderingContext2D, debug: Debugging | undefined) {

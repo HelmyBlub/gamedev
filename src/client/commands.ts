@@ -2,6 +2,13 @@ import { findAndSetNewCameraCharacterId } from "./character/character.js";
 import { Game } from "./gameModel.js";
 import { sendMultiplayer } from "./multiplayerConenction.js";
 import { createDefaultKeyBindings1 } from "./player.js";
+import { PlayerInput } from "./playerInput.js";
+
+type Command = { command: string };
+type CommandTimeUpdate = Command & { time: number };
+export type CommandRestart = PlayerInput & {
+    testing?: boolean,
+}
 
 export function handleCommand(game: Game, data: any) {
     if (game.multiplayer.websocket === null) {
@@ -16,43 +23,10 @@ export function executeCommand(game: Game, data: any) {
     const command = data.command;
     switch (command) {
         case "restart":
-            if (game.testing?.collectedTestInputs !== undefined) game.testing.collectedTestInputs.push(data);
-            game.state.playerInputs.push(data);
-            game.state.triggerRestart = true;
-            game.multiplayer.lastRestartReceiveTime = performance.now();
-            game.multiplayer.cachePlayerInputs = [];
-            if (data.testing){
-                if(game.testing){
-                    game.testing.startTime = performance.now();
-                }else{
-                    game.testing = {startTime: performance.now()};
-                }
-            }else if(game.testing){
-                delete game.testing;
-            }
+            restart(game, data);
             break;
         case "playerInput":
-            if (game.testing?.collectedTestInputs !== undefined) game.testing.collectedTestInputs.push(data);
-            if (game.state.triggerRestart) {
-                game.multiplayer.cachePlayerInputs!.push(data);
-            } else {
-                //
-                if(game.state.playerInputs.length === 0 || data.executeTime >= game.state.playerInputs[game.state.playerInputs.length -1].executeTime){
-                    game.state.playerInputs.push(data);
-                }else{
-                    let inserted = false;
-                    for(let i = 0; i < game.state.playerInputs.length; i++){
-                        if(data.executeTime < game.state.playerInputs[i].executeTime){
-                            game.state.playerInputs.splice(i, 0, data);
-                            inserted = true;
-                            break;
-                        }
-                    }
-                    if(!inserted){
-                        console.log("should not be possible. Input not inserted", data);
-                    }
-                }
-            }
+            playerInput(game, data);
             break;
         case "sendGameState":
             game.state.clientIds.push(data.clientId);
@@ -75,7 +49,7 @@ export function executeCommand(game: Game, data: any) {
             game.multiplayer.myClientId = data.clientId;
             game.state.clientIds = [data.clientId];
             game.multiplayer.updateInterval = data.updateInterval;
-            if(data.randomIdentifier){
+            if (data.randomIdentifier) {
                 console.log("myIdentifier", data.randomIdentifier);
                 localStorage.setItem('multiplayerIdentifier', data.randomIdentifier);
             }
@@ -90,32 +64,75 @@ export function executeCommand(game: Game, data: any) {
             }
             break;
         case "timeUpdate":
-            let multi = game.multiplayer;
-            let timeNow = performance.now();
-            let oldReceivedTime =  multi.maxServerGameTimeReceivedTime;
-            multi.maxServerGameTime = data.time;
-            multi.maxServerGameTimeReceivedTime = timeNow;
-            let validTimeUpdate = oldReceivedTime > 0 && oldReceivedTime < multi.maxServerGameTimeReceivedTime;
-            if(validTimeUpdate){
-                let startTime = multi.maxServerGameTimeReceivedTime - multi.maxServerGameTime + multi.updateInterval;
-                if(multi.worstCaseGameStartTime < startTime){
-                    multi.worstCaseGameStartTime = startTime;
-                    multi.worstCaseAge = timeNow;
-                    multi.worstRecentCaseGameStartTime = Number.NEGATIVE_INFINITY;
-                }else{
-                    if(multi.worstRecentCaseGameStartTime < startTime){
-                        multi.worstRecentCaseGameStartTime = startTime;
-                    }
-                    if(multi.worstCaseAge + 1000 < timeNow){
-                        multi.worstCaseGameStartTime = multi.worstRecentCaseGameStartTime;
-                        multi.worstCaseAge = timeNow;
-                        multi.worstRecentCaseGameStartTime = Number.NEGATIVE_INFINITY;    
-                    }
-                }
-            }
-    
+            timeUpdate(game, data);
             break;
         default:
             console.log("unkown command: " + command, data);
+    }
+}
+
+function restart(game: Game, data: CommandRestart) {
+    if (game.testing?.collectedTestInputs !== undefined) game.testing.collectedTestInputs.push(data);
+    game.state.playerInputs.push(data);
+    game.state.triggerRestart = true;
+    game.multiplayer.lastRestartReceiveTime = performance.now();
+    game.multiplayer.cachePlayerInputs = [];
+    if (data.testing) {
+        if (game.testing) {
+            game.testing.startTime = performance.now();
+        } else {
+            game.testing = { startTime: performance.now() };
+        }
+    } else if (game.testing) {
+        delete game.testing;
+    }
+}
+
+function playerInput(game: Game, data: PlayerInput) {
+    if (game.testing?.collectedTestInputs !== undefined) game.testing.collectedTestInputs.push(data);
+    if (game.state.triggerRestart) {
+        game.multiplayer.cachePlayerInputs!.push(data);
+    } else {
+        if (game.state.playerInputs.length === 0 || data.executeTime >= game.state.playerInputs[game.state.playerInputs.length - 1].executeTime) {
+            game.state.playerInputs.push(data);
+        } else {
+            let inserted = false;
+            for (let i = 0; i < game.state.playerInputs.length; i++) {
+                if (data.executeTime < game.state.playerInputs[i].executeTime) {
+                    game.state.playerInputs.splice(i, 0, data);
+                    inserted = true;
+                    break;
+                }
+            }
+            if (!inserted) {
+                console.log("should not be possible. Input not inserted", data);
+            }
+        }
+    }
+}
+
+function timeUpdate(game: Game, data: CommandTimeUpdate) {
+    let multi = game.multiplayer;
+    let timeNow = performance.now();
+    let oldReceivedTime = multi.maxServerGameTimeReceivedTime;
+    multi.maxServerGameTime = data.time;
+    multi.maxServerGameTimeReceivedTime = timeNow;
+    let validTimeUpdate = oldReceivedTime > 0 && oldReceivedTime < multi.maxServerGameTimeReceivedTime;
+    if (validTimeUpdate) {
+        let startTime = multi.maxServerGameTimeReceivedTime - multi.maxServerGameTime + multi.updateInterval;
+        if (multi.worstCaseGameStartTime < startTime) {
+            multi.worstCaseGameStartTime = startTime;
+            multi.worstCaseAge = timeNow;
+            multi.worstRecentCaseGameStartTime = Number.NEGATIVE_INFINITY;
+        } else {
+            if (multi.worstRecentCaseGameStartTime < startTime) {
+                multi.worstRecentCaseGameStartTime = startTime;
+            }
+            if (multi.worstCaseAge + 1000 < timeNow) {
+                multi.worstCaseGameStartTime = multi.worstRecentCaseGameStartTime;
+                multi.worstCaseAge = timeNow;
+                multi.worstRecentCaseGameStartTime = Number.NEGATIVE_INFINITY;
+            }
+        }
     }
 }

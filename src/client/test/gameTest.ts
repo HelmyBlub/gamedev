@@ -21,23 +21,23 @@ export function testGame(game: Game) {
 //---------------------//
 function runGameWithPlayerInputs(game: Game, playerInputs: PlayerInput[]) {
     const playerIds = getClientIds(playerInputs);
-    if(playerIds.length > 1){
+    if (playerIds.length > 1) {
         runGameWithPlayerInputsMultiplayer(game, playerInputs, playerIds);
-    }else{
+    } else {
         runGameWithPlayerInputsSinglePlayer(game, playerInputs);
     }
 }
 
-async function runGameWithPlayerInputsMultiplayer(game: Game, playerInputs: PlayerInput[], playerIds: number[]){
+async function runGameWithPlayerInputsMultiplayer(game: Game, playerInputs: PlayerInput[], playerIds: number[]) {
     const playerCount = playerIds.length;
     const games: Game[] = [game];
-    if(!game.multiplayer.websocket){
+    if (!game.multiplayer.websocket) {
         websocketConnect(game);
         game.testing = {
             startTime: performance.now(),
         };
     }
-    for(let i = 1; i< playerCount; i++){
+    for (let i = 1; i < playerCount; i++) {
         games.push(createGame(undefined, true));
         websocketConnect(games[i]);
         games[i].testing = {
@@ -47,8 +47,8 @@ async function runGameWithPlayerInputsMultiplayer(game: Game, playerInputs: Play
     }
 
     const waitForMultiplayerConnections = getUntilPromise(() => {
-        for(const tGame of games){
-            if(!tGame.multiplayer.websocket) return false;
+        for (const tGame of games) {
+            if (!tGame.multiplayer.websocket) return false;
         }
         return true;
     }, 50);
@@ -57,8 +57,8 @@ async function runGameWithPlayerInputsMultiplayer(game: Game, playerInputs: Play
     game.state.ended = true;
     handleCommand(game, { command: "restart", clientId: game.multiplayer.myClientId, testing: true });
     const waitForRestart = getUntilPromise(() => {
-        for(const tGame of games){
-            if(tGame.state.ended) return false;
+        for (const tGame of games) {
+            if (tGame.state.ended) return false;
         }
         return true;
     }, 50);
@@ -67,24 +67,24 @@ async function runGameWithPlayerInputsMultiplayer(game: Game, playerInputs: Play
     for (const input of playerInputs) {
         let playerIndex = playerIds.findIndex((value) => input.clientId === value);
         input.clientId = games[playerIndex].multiplayer.myClientId;
-        if(input.executeTime > games[playerIndex].state.time + 2000){
+        if (input.executeTime > games[playerIndex].state.time + 2000) {
             await getUntilPromise(() => input.executeTime < games[playerIndex].state.time + 2000, 50);
         }
         handleCommand(games[playerIndex], input);
-    }        
+    }
 
-    for(let i = 1; i< playerCount; i++){
+    for (let i = 1; i < playerCount; i++) {
         closeGame(games[i]);
     }
 }
 
 // new inputs: time: 6412.5999999996275
-function runGameWithPlayerInputsSinglePlayer(game: Game, playerInputs: PlayerInput[]){
+function runGameWithPlayerInputsSinglePlayer(game: Game, playerInputs: PlayerInput[]) {
     game.testing = {
         startTime: performance.now(),
         replayPlayerInputs: playerInputs,
     };
-    if(!game.multiplayer.websocket){
+    if (!game.multiplayer.websocket) {
         game.testing.frameSkipAmount = 60;
         game.testing.zeroTimeout = true;
     }
@@ -92,9 +92,9 @@ function runGameWithPlayerInputsSinglePlayer(game: Game, playerInputs: PlayerInp
     handleCommand(game, { command: "restart", clientId: game.multiplayer.myClientId, testing: true });
 }
 
-function getClientIds( playerInputs: PlayerInput[]): number[]{
+function getClientIds(playerInputs: PlayerInput[]): number[] {
     let clients: Set<number> = new Set<number>();
-    for(const playerInput of playerInputs){
+    for (const playerInput of playerInputs) {
         clients.add(playerInput.clientId);
     }
     return [...clients];

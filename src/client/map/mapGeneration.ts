@@ -1,10 +1,34 @@
 import { createFixPositionRespawnEnemies } from "../character/enemy/fixPositionRespawnEnemyModel.js";
-import { IdCounter } from "../gameModel.js";
+import { IdCounter, Position } from "../gameModel.js";
 import { fixedRandom } from "../randomNumberGenerator.js";
 import { GameMap, MapChunk } from "./map.js";
 
-export function createNewChunk(map: GameMap, chunkI: number, chunkJ: number, idCounter: IdCounter): MapChunk{
-    let newChunk = { tiles:createNewChunkTiles(map.chunkLength, chunkI, chunkJ, map.seed!), characters: []};
+export function generateMissingChunks(map: GameMap, positions: Position[], idCounter: IdCounter) {
+    let chunkSize = map.tileSize * map.chunkLength;
+    let generationRadius = 1500;
+
+    for (const position of positions) {
+        let startX = (position.x - generationRadius);
+        let startY = (position.y - generationRadius);
+        let startChunkI = Math.floor(startY / chunkSize);
+        let startChunkJ = Math.floor(startX / chunkSize);
+
+        for (let i = 0; i < Math.ceil(generationRadius / chunkSize * 2); i++) {
+            let chunkI = startChunkI + i;
+            for (let j = 0; j < Math.ceil(generationRadius / chunkSize * 2); j++) {
+                let chunkJ = startChunkJ + j;
+                let chunk = map.chunks[`${chunkI}_${chunkJ}`];
+                if (chunk === undefined) {
+                    chunk = createNewChunk(map, chunkI, chunkJ, idCounter);
+                    map.chunks[`${chunkI}_${chunkJ}`] = chunk;
+                }
+            }
+        }
+    }
+}
+
+export function createNewChunk(map: GameMap, chunkI: number, chunkJ: number, idCounter: IdCounter): MapChunk {
+    let newChunk = { tiles: createNewChunkTiles(map.chunkLength, chunkI, chunkJ, map.seed!), characters: [] };
     map.chunks[`${chunkI}_${chunkJ}`] = newChunk;
     createFixPositionRespawnEnemies(newChunk, chunkI, chunkJ, map, idCounter);
     return newChunk;
