@@ -1,6 +1,6 @@
 next tasks:
     - refactoring
-        - refacgtor "any" for network types
+        - refactor "any" for network types
     - always record game inputs + game seeds
         - put seeds into test object of restart command
     - mutlipalyer:

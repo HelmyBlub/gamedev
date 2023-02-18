@@ -120,11 +120,11 @@ function paintAbilitySword(ctx: CanvasRenderingContext2D, character: Character, 
         ctx.rotate(abilitySword.currentSwordAngle + Math.PI / 2 + abilitySword.angleChangePerSword * i);
         ctx.translate(-paintX, -paintY);
         if (swordImage.imageRef?.complete) {
-            let swordSizeImage = swordImage.imageRef;
+            let swordSizeImage: HTMLImageElement = swordImage.imageRef;
             if (abilitySword.swordLength > swordSizeImage.height + 10) {
                 let imageSwordSize = Math.round(abilitySword.swordLength / 10) * 10;
                 createBiggerSwordImage(imageSwordSize);
-                swordSizeImage = swordImage.properties.canvases[imageSwordSize];
+                swordSizeImage = swordImage.properties!.canvases![imageSwordSize];
             }
             ctx.drawImage(
                 swordSizeImage,

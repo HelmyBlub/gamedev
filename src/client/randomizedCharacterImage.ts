@@ -34,7 +34,7 @@ export function randomizedCharacterImageToKey(randomizedCharacterImage: Randomiz
     return result;
 }
 
-export function createRandomizedCharacter(gameImage: GameImage, randomizedCharacterImage: RandomizedCharacterImage): CanvasImageSource {
+export function createRandomizedCharacter(gameImage: GameImage, randomizedCharacterImage: RandomizedCharacterImage): HTMLCanvasElement {
     let canvas = document.createElement('canvas');
     let properties: CharacterImageLoadProperties = gameImage.properties;
     let walkinAnimationSpriteCount = properties.legsSpriteRows.length;

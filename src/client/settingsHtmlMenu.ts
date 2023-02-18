@@ -1,4 +1,4 @@
-import { Game } from "./gameModel.js";
+import { Debugging, Game } from "./gameModel.js";
 
 export function addHTMLDebugCheckboxesToSettings(game: Game) {
     let settingsElement = document.getElementById('settings');
@@ -8,7 +8,7 @@ export function addHTMLDebugCheckboxesToSettings(game: Game) {
     addSettingCheckbox("paintMarkActiveChunks", game);
 }
 
-function addSettingCheckbox(checkboxName: string, game: Game) {
+function addSettingCheckbox(checkboxName: keyof Debugging, game: Game) {
     let settingsElement = document.getElementById('settings');
     if (!settingsElement) return;
     let debug: any = game.debug;
