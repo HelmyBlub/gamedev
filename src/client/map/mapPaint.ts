@@ -2,7 +2,7 @@ import { paintCharacters } from "../character/characterPaint.js";
 import { Debugging, MapChunkPaintCache, Position, TestingStuff } from "../gameModel.js";
 import { GameMap, MapChunk, TILE_VALUES } from "./map.js";
 
-export function paintMap(ctx: CanvasRenderingContext2D, cameraPosition: Position, map: GameMap, mapChunkPaintCache: MapChunkPaintCache, debug: Debugging | undefined) {
+export function paintMap(ctx: CanvasRenderingContext2D, cameraPosition: Position, map: GameMap, mapChunkPaintCache: MapChunkPaintCache, debug: Debugging | undefined, time: number) {
     let chunkSize = map.tileSize * map.chunkLength;
     let width = ctx.canvas.width;
     let height = ctx.canvas.height;
@@ -17,7 +17,7 @@ export function paintMap(ctx: CanvasRenderingContext2D, cameraPosition: Position
             let chunkJ = startChunkJ + j;
             let chunkKey = `${chunkI}_${chunkJ}`;
             let chunk = map.chunks[chunkKey];
-            if (chunk === undefined) {
+            if (chunk === undefined && time > 1000) {
                 console.log("missing chunk creation", chunkKey);
                 continue;
             }

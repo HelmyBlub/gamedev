@@ -1,5 +1,6 @@
 import { AbilityObject } from "./ability/ability.js";
 import { LevelingCharacterClasses } from "./character/levelingCharacters/levelingCharacterModel.js";
+import { CommandRestart } from "./commands.js";
 import { createMap, GameMap } from "./map/map.js";
 import { generateMissingChunks } from "./map/mapGeneration.js";
 import { Player } from "./player.js";
@@ -20,9 +21,12 @@ export type TestingStuff = {
     doNotPaint?: boolean,
     frameSkipAmount?: number,
     startTime: number,
-    collectedTestInputs?: PlayerInput[],
+    collectedTestInputs?: Omit<PlayerInput, "executeTime">[],
     replayPlayerInputs?: PlayerInput[],
     replayInputCounter?: number,
+    mapSeed?: number,
+    randomStartSeed?: number,
+    restartPlayerInput?: Omit<CommandRestart, "executeTime">,
 }
 
 export type Debugging = {

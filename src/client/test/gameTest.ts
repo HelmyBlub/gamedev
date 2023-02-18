@@ -1,5 +1,5 @@
 import { createCharacter, ENEMY_FACTION, PLAYER_FACTION } from "../character/characterModel.js";
-import { handleCommand } from "../commands.js";
+import { CommandRestart, handleCommand } from "../commands.js";
 import { closeGame } from "../game.js";
 import { Game } from "../gameModel.js";
 import { createGame } from "../main.js";
@@ -19,10 +19,10 @@ export function testGame(game: Game) {
 }
 
 //---------------------//
-function runGameWithPlayerInputs(game: Game, playerInputs: PlayerInput[]) {
+function runGameWithPlayerInputs(game: Game, playerInputs: (PlayerInput | Omit<CommandRestart, "executeTime">)[]) {
     const playerIds = getClientIds(playerInputs);
     if (playerIds.length > 1) {
-        runGameWithPlayerInputsMultiplayer(game, playerInputs, playerIds);
+        //runGameWithPlayerInputsMultiplayer(game, playerInputs, playerIds);
     } else {
         runGameWithPlayerInputsSinglePlayer(game, playerInputs);
     }
@@ -79,20 +79,25 @@ async function runGameWithPlayerInputsMultiplayer(game: Game, playerInputs: Play
 }
 
 // new inputs: time: 6412.5999999996275
-function runGameWithPlayerInputsSinglePlayer(game: Game, playerInputs: PlayerInput[]) {
+function runGameWithPlayerInputsSinglePlayer(game: Game, playerInputs: (PlayerInput | Omit<CommandRestart, "executeTime">)[]) {
     game.testing = {
         startTime: performance.now(),
-        replayPlayerInputs: playerInputs,
+        replayPlayerInputs: [...playerInputs as any],
     };
     if (!game.multiplayer.websocket) {
         game.testing.frameSkipAmount = 60;
         game.testing.zeroTimeout = true;
     }
     game.state.ended = true;
-    handleCommand(game, { command: "restart", clientId: game.multiplayer.myClientId, testing: true });
+    if(playerInputs[0].command === "restart"){
+        let startCommand = game.testing.replayPlayerInputs!.shift();
+        handleCommand(game, startCommand);
+    }else{
+        handleCommand(game, { command: "restart", clientId: game.multiplayer.myClientId, testing: true });
+    }
 }
 
-function getClientIds(playerInputs: PlayerInput[]): number[] {
+function getClientIds(playerInputs: (PlayerInput | Omit<CommandRestart, "executeTime">)[]): number[] {
     let clients: Set<number> = new Set<number>();
     for (const playerInput of playerInputs) {
         clients.add(playerInput.clientId);

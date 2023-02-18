@@ -8,6 +8,8 @@ type Command = { command: string };
 type CommandTimeUpdate = Command & { time: number };
 export type CommandRestart = PlayerInput & {
     testing?: boolean,
+    testMapSeed?: number,
+    testRandomStartSeed?: number,
 }
 
 export function handleCommand(game: Game, data: any) {
@@ -83,6 +85,8 @@ function restart(game: Game, data: CommandRestart) {
         } else {
             game.testing = { startTime: performance.now() };
         }
+        if(data.testMapSeed !== undefined) game.testing.mapSeed = data.testMapSeed;
+        if(data.testRandomStartSeed !== undefined) game.testing.randomStartSeed = data.testRandomStartSeed;
     } else if (game.testing) {
         delete game.testing;
     }

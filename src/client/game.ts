@@ -275,5 +275,10 @@ function setTestSeeds(game: Game) {
     game.state.randomSeed.seed = 0;
     game.state.map = createMap();
     game.state.map.seed = 0;
-    if (game.testing) game.testing.collectedTestInputs = [];
+    if (game.testing){
+        game.testing.collectedTestInputs = []
+        if(game.testing.restartPlayerInput) game.testing.collectedTestInputs.push(game.testing.restartPlayerInput);
+        if(game.testing.mapSeed !== undefined) game.state.map.seed = game.testing.mapSeed;
+        if(game.testing.randomStartSeed !== undefined) game.state.randomSeed.seed = game.testing.randomStartSeed;
+    };
 }

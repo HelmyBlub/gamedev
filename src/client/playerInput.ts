@@ -39,12 +39,12 @@ export function createActionsPressed(): ActionsPressed {
     }
 }
 
-export function mouseDown(event: MouseEvent, game: Game){
-    playerInputChangeEvent(game, "Mouse"+event.button, true);
+export function mouseDown(event: MouseEvent, game: Game) {
+    playerInputChangeEvent(game, "Mouse" + event.button, true);
 }
 
-export function mouseUp(event: MouseEvent, game: Game){
-    playerInputChangeEvent(game, "Mouse"+event.button, false);
+export function mouseUp(event: MouseEvent, game: Game) {
+    playerInputChangeEvent(game, "Mouse" + event.button, false);
 }
 
 export function keyDown(event: KeyboardEvent, game: Game) {
@@ -53,11 +53,19 @@ export function keyDown(event: KeyboardEvent, game: Game) {
 
     switch (event.code) {
         case "KeyR":
-            commandRestart = { command: "restart", clientId: game.multiplayer.myClientId };
-            handleCommand(game, commandRestart);
-            break;
+//            commandRestart = { command: "restart", clientId: game.multiplayer.myClientId };
+//            handleCommand(game, commandRestart);
+//            break;
         case "KeyZ":
-            commandRestart = { command: "restart", clientId: game.multiplayer.myClientId, testing: true };
+            commandRestart = {
+                command: "restart",
+                clientId: game.multiplayer.myClientId,
+                testing: true,
+                testMapSeed: game.state.map.seed,
+                testRandomStartSeed: game.state.randomSeed.seed
+            };
+            if (game.testing === undefined) game.testing = {startTime: 0};
+            game.testing.restartPlayerInput = {...commandRestart};
             handleCommand(game, commandRestart);
             break;
         case "KeyT":
@@ -101,15 +109,15 @@ export function tickPlayerInputs(playerInputs: PlayerInput[], currentTime: numbe
 function determinePlayerMoveDirection(player: Character, actionsPressed: ActionsPressed) {
     let newDirection = 0;
     let left = 0;
-    if(actionsPressed.right) left++;
-    if(actionsPressed.left) left--;
+    if (actionsPressed.right) left++;
+    if (actionsPressed.left) left--;
     let down = 0;
-    if(actionsPressed.down) down++;
-    if(actionsPressed.up) down--;
-    newDirection = calculateDirection({x:0,y:0}, {x:left, y:down});
-    if(left === 0 && down === 0){        
+    if (actionsPressed.down) down++;
+    if (actionsPressed.up) down--;
+    newDirection = calculateDirection({ x: 0, y: 0 }, { x: left, y: down });
+    if (left === 0 && down === 0) {
         player.isMoving = false;
-    }else{
+    } else {
         player.moveDirection = newDirection;
         player.isMoving = true;
     }
@@ -120,22 +128,22 @@ function playerInputChangeEvent(game: Game, inputCode: string, isInputDown: bool
         let action = game.clientKeyBindings[i].keyCodeToActionPressed.get(inputCode);
         if (action !== undefined) {
             const clientId = game.clientKeyBindings[i].clientIdRef;
-            if(isInputDown && action.isInputAlreadyDown){
+            if (isInputDown && action.isInputAlreadyDown) {
                 return;
             }
             action.isInputAlreadyDown = isInputDown;
-            if(action.action.indexOf("ability") > -1){
+            if (action.action.indexOf("ability") > -1) {
                 let cameraPosition = getCameraPosition(game);
                 let castPosition: Position = {
-                    x: game.mouseRelativeCanvasPosition.x - game.canvasElement!.width/2 + cameraPosition.x,
-                    y: game.mouseRelativeCanvasPosition.y - game.canvasElement!.height/2 + cameraPosition.y
+                    x: game.mouseRelativeCanvasPosition.x - game.canvasElement!.width / 2 + cameraPosition.x,
+                    y: game.mouseRelativeCanvasPosition.y - game.canvasElement!.height / 2 + cameraPosition.y
                 }
                 handleCommand(game, {
                     command: "playerInput",
                     clientId: clientId,
                     data: { action: action.action, isKeydown: isInputDown, castPosition: castPosition },
                 });
-            }else{
+            } else {
                 handleCommand(game, {
                     command: "playerInput",
                     clientId: clientId,
@@ -166,11 +174,11 @@ function playerAction(clientId: number, data: any, game: Game) {
         } else if (ABILITY_ACTIONS.indexOf(action) !== -1) {
             if (isKeydown) {
                 let ability = character.abilities.find((a) => a.playerInputBinding && a.playerInputBinding === action);
-                if(ability){
+                if (ability) {
                     let functions = ABILITIES_FUNCTIONS[ability.name];
-                    if(functions.activeAbilityCast !== undefined){
+                    if (functions.activeAbilityCast !== undefined) {
                         functions.activeAbilityCast(character, ability, data.castPosition, game);
-                    }else{
+                    } else {
                         console.log("missing activeAbilityCast function for", action, ability);
                     }
                 }

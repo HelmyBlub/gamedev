@@ -11,7 +11,7 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
     if (!ctx) return;
     if (game.performance.mapChunkPaintCache === undefined) game.performance.mapChunkPaintCache = {};
     let cameraPosition: Position = getCameraPosition(game);
-    paintMap(ctx, cameraPosition, game.state.map, game.performance.mapChunkPaintCache, game.debug);
+    paintMap(ctx, cameraPosition, game.state.map, game.performance.mapChunkPaintCache, game.debug, game.state.time);
     paintAbilityObjects(ctx, game.state.abilityObjects, cameraPosition, "beforeCharacterPaint");
     paintMapCharacters(ctx, cameraPosition, game.state.map);
     paintCharacters(ctx, getPlayerCharacters(game.state.players), cameraPosition);
