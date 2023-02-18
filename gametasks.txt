@@ -1,6 +1,7 @@
 next tasks:
     - mutlipalyer:
         - automated inputs for multiple clients
+    - performance of "getNextWaypoint" takes 75% (for firefox, 40% for chrome) of time
 
 technical tasks or bugs:
     - character.size changed to width and height. but hit calculation still only uses width
