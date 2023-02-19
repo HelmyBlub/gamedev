@@ -1,5 +1,6 @@
 import { AbilityObject } from "./ability/ability.js";
 import { LevelingCharacterClasses } from "./character/levelingCharacters/levelingCharacterModel.js";
+import { PathingCache } from "./character/pathing.js";
 import { CommandRestart } from "./commands.js";
 import { createMap, GameMap } from "./map/map.js";
 import { generateMissingChunks } from "./map/mapGeneration.js";
@@ -99,6 +100,7 @@ export type Game = {
     camera: Camera,
     performance: {
         mapChunkPaintCache?: MapChunkPaintCache,
+        pathingCache?: PathingCache,
     }
     testing?: TestingStuff,
     debug: Debugging,

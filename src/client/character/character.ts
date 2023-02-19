@@ -1,7 +1,7 @@
 import { levelingCharacterXpGain } from "./levelingCharacters/levelingCharacter.js";
 import { determineMapKeysInDistance, GameMap, isPositionBlocking } from "../map/map.js";
 import { Character, CHARACTER_TYPES_STUFF, ENEMY_FACTION } from "./characterModel.js";
-import { createPathingCache, getNextWaypoint, PathingCache } from "./pathing.js";
+import { getNextWaypoint, PathingCache } from "./pathing.js";
 import { calculateDirection, calculateDistance } from "../game.js";
 import { Position, Game, GameState, IdCounter, Camera } from "../gameModel.js";
 import { Player } from "../player.js";
@@ -18,7 +18,12 @@ export function findCharacterById(characters: Character[], id: number): Characte
 }
 
 export function tickMapCharacters(map: GameMap, game: Game) {
-    let pathingCache = createPathingCache();
+    let pathingCache = {};
+    if(game.performance.pathingCache !== undefined){
+        pathingCache = game.performance.pathingCache;
+    }else{
+        game.performance.pathingCache = pathingCache;
+    }
     let allCharacters: Character[] = [];
     for (let i = 0; i < map.activeChunkKeys.length; i++) {
         let chunk = map.chunks[map.activeChunkKeys[i]];

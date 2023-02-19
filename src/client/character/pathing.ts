@@ -2,18 +2,26 @@ import { calculateDistance } from "../game.js";
 import { IdCounter, Position } from "../gameModel.js";
 import { GameMap, isPositionBlocking } from "../map/map.js";
 
-export type PathingCache = {
+export type PathingCacheIJ = {
     cameFromCache: Map<string, Map<string, Position>>,
     openNodesCache: Map<string, Position[]>,
     alreadyTraveledDistanceCache: Map<string, Map<string, number>>,
 }
 
-export function createPathingCache(): PathingCache {
+export type PathingCache = {
+    [tileIjKey: string]: PathingCacheIJ,
+}
+
+export function createPathingCacheIJ(): PathingCacheIJ {
     return {
         cameFromCache: new Map<string, Map<string, Position>>(),
         openNodesCache: new Map<string, Position[]>(),
         alreadyTraveledDistanceCache: new Map<string, Map<string, number>>()
     }
+}
+
+export function tileIjToPathingCacheKey(tileIJ: Position) {
+    return tileIJ.x + "_" + tileIJ.y;
 }
 
 export function getNextWaypoint(
@@ -39,19 +47,26 @@ export function getNextWaypoint(
 
     let startKey = `${startIJ.x}_${startIJ.y}`;
     let targetKey = `${targetIJ.x}_${targetIJ.y}`;
+    let pathingCacheIJ: PathingCacheIJ | undefined;
     if (pathingCache !== null) {
-        if (pathingCache.openNodesCache.has(startKey)) {
-            openNodes = pathingCache.openNodesCache.get(startKey)!;
-            cameFrom = pathingCache.cameFromCache.get(startKey)!;
-            alreadyTraveledDistance = pathingCache.alreadyTraveledDistanceCache.get(startKey)!;
+        let pathingKey = tileIjToPathingCacheKey(startIJ);
+        pathingCacheIJ = pathingCache[pathingKey];
+        if(pathingCacheIJ === undefined){
+            pathingCacheIJ = createPathingCacheIJ();
+            pathingCache[pathingKey] = pathingCacheIJ;
+        }
+        if (pathingCacheIJ.openNodesCache.has(startKey)) {
+            openNodes = pathingCacheIJ.openNodesCache.get(startKey)!;
+            cameFrom = pathingCacheIJ.cameFromCache.get(startKey)!;
+            alreadyTraveledDistance = pathingCacheIJ.alreadyTraveledDistanceCache.get(startKey)!;
             if (cameFrom.has(targetKey)) {
                 let lastPosition = cameFrom.get(targetKey)!;
                 return { x: lastPosition.x * map.tileSize + map.tileSize / 2, y: lastPosition.y * map.tileSize + map.tileSize / 2 };
             }
         } else {
-            pathingCache.openNodesCache.set(startKey, openNodes);
-            pathingCache.cameFromCache.set(startKey, cameFrom);
-            pathingCache.alreadyTraveledDistanceCache.set(startKey, alreadyTraveledDistance);
+            pathingCacheIJ.openNodesCache.set(startKey, openNodes);
+            pathingCacheIJ.cameFromCache.set(startKey, cameFrom);
+            pathingCacheIJ.alreadyTraveledDistanceCache.set(startKey, alreadyTraveledDistance);
             openNodes.push(startIJ);
         }
     } else {
@@ -59,13 +74,17 @@ export function getNextWaypoint(
     }
 
     let counter = 0;
-    let maxCounter = calculateDistance(startIJ, targetIJ) * 10;
+    let maxCounter = calculateDistance(startIJ, targetIJ) * 300;
     while (openNodes.length > 0) {
         counter++;
-        if (counter > maxCounter) return null;
+        if (counter > maxCounter) {
+            console.log("stoped pathfinding, can cause multiplayer sync loss");
+            return null
+        };
 
         let currentLowestValue = -1;
-        let currentIndex = -1;
+        let currentIndex = 0;
+        /*let currentIndex = -1;
         for (let i = 0; i < openNodes.length; i++) {
             let currKey = `${openNodes[i].x}_${openNodes[i].y}`;
             let bestEstimatedTotalDistance = alreadyTraveledDistance.get(currKey)! + calculateDistance(openNodes[i], targetIJ);
@@ -73,12 +92,12 @@ export function getNextWaypoint(
                 currentLowestValue = bestEstimatedTotalDistance;
                 currentIndex = i;
             }
-        }
+        }*/
         let currentNode = openNodes.splice(currentIndex, 1)[0]!;
 
         if (currentNode.x === targetIJ.x && currentNode.y === targetIJ.y) {
             let lastPosition = cameFrom.get(`${targetIJ.x}_${targetIJ.y}`)!;
-            if (pathingCache !== null) openNodes.push(currentNode);
+            if (pathingCacheIJ) openNodes.push(currentNode);
             return { x: lastPosition.x * map.tileSize + map.tileSize / 2, y: lastPosition.y * map.tileSize + map.tileSize / 2 };
         }
 

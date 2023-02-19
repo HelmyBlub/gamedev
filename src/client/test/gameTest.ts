@@ -10,11 +10,14 @@ import { PlayerInput } from "../playerInput.js";
 import { createProjectile, Projectile } from "../ability/projectile.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
 import { testInputs } from "./testInputs.js";
+import { testInputs2 } from "./testInputs2.js";
 import { testMultiplayerInputs } from "./testMultiplayerInputs.js";
 import { detectAbilityObjectToCharacterHit } from "../ability/ability.js";
+import { testPathing } from "../character/tests/pathingTest.js";
 
 export function testGame(game: Game) {
-    runGameWithPlayerInputs(game, testInputs);
+    //testPathing();
+    runGameWithPlayerInputs(game, testInputs2);
     //runGameWithPlayerInputs(game, testMultiplayerInputs);
 }
 
@@ -78,7 +81,7 @@ async function runGameWithPlayerInputsMultiplayer(game: Game, playerInputs: Play
     }
 }
 
-// new inputs: time: 6412.5999999996275
+//time: 16427.699999999255, kills: 2874, score: 16635
 function runGameWithPlayerInputsSinglePlayer(game: Game, playerInputs: (PlayerInput | Omit<CommandRestart, "executeTime">)[]) {
     game.testing = {
         startTime: performance.now(),
