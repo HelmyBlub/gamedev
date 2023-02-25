@@ -121,7 +121,7 @@ export function paintPathingArrows(ctx: CanvasRenderingContext2D, map: GameMap, 
         );
         if (pathingCache2) {
             let targetTileIJ2 = pathingCache2.cameFromCache.get(key);
-            if (targetTileIJ2 !== undefined && (targetTileIJ1!.x !== targetTileIJ2.x || targetTileIJ1!.y !== targetTileIJ2.y)) {
+            if (targetTileIJ2 !== undefined && (targetTileIJ1!.x !== targetTileIJ2!.x || targetTileIJ1!.y !== targetTileIJ2!.y)) {
                 canvas_arrow(
                     ctx,
                     sourceTileIJ.x * arrowSize + arrowOffsetX,

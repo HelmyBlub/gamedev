@@ -3,7 +3,7 @@ import { Game, IdCounter, Position } from "../gameModel.js";
 import { GameMap, isPositionBlocking } from "../map/map.js";
 
 export type PathingCacheIJ = {
-    cameFromCache: Map<string, Position>,
+    cameFromCache: Map<string, Position | null>,
     openNodesCache: Position[],
     alreadyTraveledDistanceCache: Map<string, number>,
     timeLastUsed: number,
@@ -15,7 +15,7 @@ export type PathingCache = {
 
 export function createPathingCacheIJ(timeLastUsed: number): PathingCacheIJ {
     return {
-        cameFromCache: new Map<string, Position>(),
+        cameFromCache: new Map<string, Position | null>(),
         openNodesCache: [],
         alreadyTraveledDistanceCache: new Map<string, number>(),
         timeLastUsed: timeLastUsed
@@ -44,7 +44,7 @@ export function getNextWaypoint(
     }
 
     let openNodes: Position[] = [];
-    let cameFrom: Map<string, Position> = new Map<string, Position>();
+    let cameFrom: Map<string, Position | null> = new Map<string, Position | null>();
 
     let targetKey = `${targetIJ.x}_${targetIJ.y}`;
     let pathingCacheIJ: PathingCacheIJ | undefined;
@@ -61,8 +61,12 @@ export function getNextWaypoint(
             openNodes = pathingCacheIJ.openNodesCache;
             cameFrom = pathingCacheIJ.cameFromCache;
             if (cameFrom.has(targetKey)) {
-                let lastPosition = cameFrom.get(targetKey)!;
-                return { x: lastPosition.x * map.tileSize + map.tileSize / 2, y: lastPosition.y * map.tileSize + map.tileSize / 2 };
+                let nextWaypoint = cameFrom.get(targetKey)!;
+                if(nextWaypoint !== null){
+                    return { x: nextWaypoint.x * map.tileSize + map.tileSize / 2, y: nextWaypoint.y * map.tileSize + map.tileSize / 2 };
+                }else{
+                    return null;
+                }
             }
         } else {
             pathingCacheIJ.openNodesCache = openNodes;
@@ -79,6 +83,7 @@ export function getNextWaypoint(
         counter++;
         if (counter > maxCounter) {
             console.log("stoped pathfinding, can cause multiplayer sync loss");
+            cameFrom.set(targetKey, null);
             return null
         };
 

@@ -1,6 +1,9 @@
 next tasks:
-    - mutlipalyer:
-        - automated inputs for multiple clients
+    - play a round to see if it sill lags lategame, analyse performance again
+    - create a complex/fun/chaotic class?
+        - different upgrade paths, have to choose one?
+        - 
+    - create boss enemies?
 
 technical tasks or bugs:
     - character.size changed to width and height. but hit calculation still only uses width
@@ -9,6 +12,8 @@ technical tasks or bugs:
     - use same code files for backend and frontend
         - understand require vs import in backend vs frontend
     - Perforamnce bug: pulling many enemies far away from spawn and than outranging them, they will move back to their own spawn and create a lot of lag
+    - mutlipalyer:
+        - automated inputs for multiple clients
 
 future functional tasks:
     - if an enemy is aggroed in an inactive chunk, it should be active

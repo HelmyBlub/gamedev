@@ -17,7 +17,7 @@ import { testPathing } from "../character/tests/pathingTest.js";
 
 export function testGame(game: Game) {
     //testPathing(game.ctx);
-    runGameWithPlayerInputs(game, testInputs2);
+    runGameWithPlayerInputs(game, testInputs);
     //runGameWithPlayerInputs(game, testMultiplayerInputs);
 }
 
@@ -81,9 +81,10 @@ async function runGameWithPlayerInputsMultiplayer(game: Game, playerInputs: Play
     }
 }
 
-//time: 16427.699999999255, kills: 2874, score: 16635
 
-//time: 15670.300000000047, kills: 2873, score: 16629
+//input2 time: 15670.300000000047, kills: 2873, score: 16629
+//input1 time: 131692, kills: 19450, score: 20234
+//input1 time: 89343.89999999944, kills: 19450, score: 20234
 function runGameWithPlayerInputsSinglePlayer(game: Game, playerInputs: (PlayerInput | Omit<CommandRestart, "executeTime">)[]) {
     game.testing = {
         startTime: performance.now(),
