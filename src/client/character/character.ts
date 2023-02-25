@@ -130,7 +130,7 @@ export function detectCharacterDeath(map: GameMap, state: GameState, camera: Cam
 }
 
 export function findAndSetNewCameraCharacterId(camera: Camera, players: Player[], myClientId?: number) {
-    let newCameraCharacterId = camera.characterId;
+    let newCameraCharacterId = undefined;
     for (let i = 0; i < players.length; i++) {
         if (!players[i].character.isDead) {
             if (players[i].character.id === camera.characterId
@@ -140,7 +140,9 @@ export function findAndSetNewCameraCharacterId(camera: Camera, players: Player[]
             }
         }
     }
-    camera.characterId = newCameraCharacterId;
+    if(newCameraCharacterId){
+        camera.characterId = newCameraCharacterId;
+    }
 }
 
 export function getSpawnPositionAroundPlayer(playerCharacter: Character, randomSeed: RandomSeed, map: GameMap, idCounter: IdCounter): Position | null {
