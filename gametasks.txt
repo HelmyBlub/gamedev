@@ -1,9 +1,32 @@
 next tasks:
-    - play a round to see if it sill lags lategame, analyse performance again
-    - create a complex/fun/chaotic class?
-        - different upgrade paths, have to choose one?
-        - 
+    - create a complex/fun/chaotic class or improve on one?
+        - add more abilities to fire caster? be able to have 4 buttons for abilities?
+            - be able to get abilities as upgrade options?
+        - placing things down class:
+            - ability idea:
+                - placing ability. can have placed maximum of x things at any time
+                - placed things do interact with the other
+                    - damaging line between them?
+                    - empowered if grouped up?
+                    - stronger the longer not replaced?
+                    - explode after time?
+                    - randomly doe damage to near enemies?
+                    - rotating sword around them
+                    - stick/jump to nearby enemies
+        - passive class:
+            - choose starting ability out of 3 options instead of a random one
+            - one upgrade can affect multiple abilities
+            - simple abilities:
+                - random firecircle
+                - random shots in a straigt line towards an enemy
+                - random projectile orbiting around player
+                - etc.
+
     - create boss enemies?
+        - just some big health pool?
+        - display boss health?
+        - auto spawn one boss every 5000 distance?
+
 
 technical tasks or bugs:
     - character.size changed to width and height. but hit calculation still only uses width

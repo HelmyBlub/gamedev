@@ -17,7 +17,7 @@ import { testPathing } from "../character/tests/pathingTest.js";
 
 export function testGame(game: Game) {
     //testPathing(game.ctx);
-    runGameWithPlayerInputs(game, testInputs);
+    runGameWithPlayerInputs(game, testInputs2);
     //runGameWithPlayerInputs(game, testMultiplayerInputs);
 }
 
