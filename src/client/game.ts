@@ -9,6 +9,7 @@ import { generateMissingChunks } from "./map/mapGeneration.js";
 import { createFixPositionRespawnEnemiesOnInit } from "./character/enemy/fixPositionRespawnEnemyModel.js";
 import { handleCommand } from "./commands.js";
 import { tickAbilityObjects } from "./ability/ability.js";
+import { garbageCollectPathingCache } from "./character/pathing.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -213,31 +214,18 @@ function tick(gameTimePassed: number, game: Game) {
     if (!game.state.ended) {
         addTestReplayInputs(game);
         game.state.time += gameTimePassed;
-        takeTimeMeasure(game.debug, "", "generateMissingChunks");
-        generateMissingChunks(game.state.map, getPlayerCharacters(game.state.players), game.state.idCounter);
-
-        takeTimeMeasure(game.debug, "generateMissingChunks", "tickPlayerInputs");
+        generateMissingChunks(game.state.map, getPlayerCharacters(game.state.players), game.state.idCounter, game);
         tickPlayerInputs(game.state.playerInputs, game.state.time, game);
-
-        takeTimeMeasure(game.debug, "tickPlayerInputs", "tickMapCharacters");
         tickMapCharacters(game.state.map, game);
-
-        takeTimeMeasure(game.debug, "tickMapCharacters", "tickCharacters");
         tickCharacters(getPlayerCharacters(game.state.players), game);
-
-        takeTimeMeasure(game.debug, "tickCharacters", "tickAbilityObjects");
         tickAbilityObjects(game.state.abilityObjects, game);
-
-        takeTimeMeasure(game.debug, "tickAbilityObjects", "detectCharacterDeath");
-        detectCharacterDeath(game.state.map, game.state, game.camera);
-        takeTimeMeasure(game.debug, "detectCharacterDeath", "");
+        detectCharacterDeath(game.state.map, game.state, game.camera, game);
 
         if (gameEndedCheck(game)) endGame(game.state, game.testing);
         if (game.state.restartAfterTick) gameRestart(game);
 
-        takeTimeMeasure(game.debug, "", "determineActiveChunks");
-        determineActiveChunks(getPlayerCharacters(game.state.players), game.state.map);
-        takeTimeMeasure(game.debug, "determineActiveChunks", "");
+        garbageCollectPathingCache(game.performance.pathingCache, game.state.time, game);
+        determineActiveChunks(getPlayerCharacters(game.state.players), game.state.map, game);
     }
 }
 
@@ -259,7 +247,8 @@ function addTestReplayInputs(game: Game) {
     }
 }
 
-function determineActiveChunks(characters: Character[], map: GameMap) {
+function determineActiveChunks(characters: Character[], map: GameMap, game: Game) {
+    takeTimeMeasure(game.debug, "", "determineActiveChunks");
     let keySet: Set<string> = new Set();
     for (let i = 0; i < characters.length; i++) {
         if (characters[i].isDead) continue;
@@ -269,6 +258,7 @@ function determineActiveChunks(characters: Character[], map: GameMap) {
         }
     }
     map.activeChunkKeys = [...keySet];
+    takeTimeMeasure(game.debug, "determineActiveChunks", "");
 }
 
 function setTestSeeds(game: Game) {

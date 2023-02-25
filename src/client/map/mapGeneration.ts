@@ -1,9 +1,12 @@
 import { createFixPositionRespawnEnemies } from "../character/enemy/fixPositionRespawnEnemyModel.js";
-import { IdCounter, Position } from "../gameModel.js";
+import { takeTimeMeasure } from "../game.js";
+import { Game, IdCounter, Position } from "../gameModel.js";
 import { fixedRandom } from "../randomNumberGenerator.js";
 import { GameMap, MapChunk } from "./map.js";
 
-export function generateMissingChunks(map: GameMap, positions: Position[], idCounter: IdCounter) {
+export function generateMissingChunks(map: GameMap, positions: Position[], idCounter: IdCounter, game: Game) {
+    takeTimeMeasure(game.debug, "", "generateMissingChunks");
+
     let chunkSize = map.tileSize * map.chunkLength;
     let generationRadius = 1500;
 
@@ -25,6 +28,7 @@ export function generateMissingChunks(map: GameMap, positions: Position[], idCou
             }
         }
     }
+    takeTimeMeasure(game.debug, "generateMissingChunks", "");
 }
 
 export function createNewChunk(map: GameMap, chunkI: number, chunkJ: number, idCounter: IdCounter): MapChunk {

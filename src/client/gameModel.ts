@@ -159,7 +159,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
     }
 
     game.state.map.seed = nextRandom(game.state.randomSeed);
-    generateMissingChunks(game.state.map, [{ x: 0, y: 0 }], game.state.idCounter);
+    generateMissingChunks(game.state.map, [{ x: 0, y: 0 }], game.state.idCounter, game);
 
     return game;
 }

@@ -34,7 +34,7 @@ export function tickRandomSpawnFollowingEnemyCharacter(enemy: RandomSpawnFollowi
     } else {
         let playerCharacters = getPlayerCharacters(game.state.players);
         let closestPlayer = determineClosestCharacter(enemy, playerCharacters).minDistanceCharacter;
-        determineEnemyMoveDirection(enemy, closestPlayer, game.state.map, pathingCache, game.state.idCounter);
+        determineEnemyMoveDirection(enemy, closestPlayer, game.state.map, pathingCache, game.state.idCounter, game.state.time);
         determineEnemyHitsPlayer(enemy, closestPlayer);
         increaseEnemyMovementSpeedAfterTime(enemy, game.state.time);
         teleportFarEnemy(enemy, playerCharacters, game.state.randomSeed, game.state.map, game.state.idCounter);

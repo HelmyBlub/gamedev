@@ -1,8 +1,4 @@
 next tasks:
-    - performance of "getNextWaypoint" takes 75% (for firefox, 40% for chrome) of time
-        - caching of wayPoints results in mutliplayer desync
-            - there are multiple ways from one point to another all with the same length
-                - depending on cache state it can have differen resutlts
     - mutlipalyer:
         - automated inputs for multiple clients
 

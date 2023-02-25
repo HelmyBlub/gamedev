@@ -7,7 +7,7 @@ import { Game, Position } from "./gameModel.js";
 import { testGame } from "./test/gameTest.js";
 import { websocketConnect } from "./multiplayerConenction.js";
 import { ABILITIES_FUNCTIONS } from "./ability/ability.js";
-import { calculateDirection, getCameraPosition } from "./game.js";
+import { calculateDirection, getCameraPosition, takeTimeMeasure } from "./game.js";
 
 export const MOVE_ACTIONS = ["left", "down", "right", "up"];
 export const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3"];
@@ -88,6 +88,7 @@ export function keyUp(event: KeyboardEvent, game: Game) {
 }
 
 export function tickPlayerInputs(playerInputs: PlayerInput[], currentTime: number, game: Game) {
+    takeTimeMeasure(game.debug, "", "tickPlayerInputs");
     while (playerInputs.length > 0 && playerInputs[0].executeTime <= currentTime) {
         if (playerInputs[0].command === "playerInput") {
             if (playerInputs[0].executeTime <= currentTime - 16) {
@@ -104,6 +105,7 @@ export function tickPlayerInputs(playerInputs: PlayerInput[], currentTime: numbe
             throw new Error("invalid command in inputs");
         }
     }
+    takeTimeMeasure(game.debug, "tickPlayerInputs", "");
 }
 
 function determinePlayerMoveDirection(player: Character, actionsPressed: ActionsPressed) {

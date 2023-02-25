@@ -2,7 +2,7 @@ import { levelingCharacterXpGain } from "./levelingCharacters/levelingCharacter.
 import { determineMapKeysInDistance, GameMap, isPositionBlocking } from "../map/map.js";
 import { Character, CHARACTER_TYPES_STUFF, ENEMY_FACTION } from "./characterModel.js";
 import { getNextWaypoint, PathingCache } from "./pathing.js";
-import { calculateDirection, calculateDistance } from "../game.js";
+import { calculateDirection, calculateDistance, takeTimeMeasure } from "../game.js";
 import { Position, Game, GameState, IdCounter, Camera } from "../gameModel.js";
 import { Player } from "../player.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
@@ -18,6 +18,7 @@ export function findCharacterById(characters: Character[], id: number): Characte
 }
 
 export function tickMapCharacters(map: GameMap, game: Game) {
+    takeTimeMeasure(game.debug, "", "tickMapCharacters");
     let pathingCache = {};
     if(game.performance.pathingCache !== undefined){
         pathingCache = game.performance.pathingCache;
@@ -30,6 +31,7 @@ export function tickMapCharacters(map: GameMap, game: Game) {
         allCharacters.push(...chunk.characters);
     }
     tickCharacters(allCharacters, game, pathingCache);
+    takeTimeMeasure(game.debug, "tickMapCharacters", "");
 }
 
 export function tickCharacters(characters: Character[], game: Game, pathingCache: PathingCache | null = null) {
@@ -101,7 +103,8 @@ export function countCharacters(map: GameMap): number {
     return counter;
 }
 
-export function detectCharacterDeath(map: GameMap, state: GameState, camera: Camera) {
+export function detectCharacterDeath(map: GameMap, state: GameState, camera: Camera, game: Game) {
+    takeTimeMeasure(game.debug, "", "detectCharacterDeath");
     for (let i = 0; i < map.activeChunkKeys.length; i++) {
         let chunk = map.chunks[map.activeChunkKeys[i]];
         for (let charIt = chunk.characters.length - 1; charIt >= 0; charIt--) {
@@ -123,6 +126,7 @@ export function detectCharacterDeath(map: GameMap, state: GameState, camera: Cam
             }
         }
     }
+    takeTimeMeasure(game.debug, "detectCharacterDeath", "");
 }
 
 export function findAndSetNewCameraCharacterId(camera: Camera, players: Player[], myClientId?: number) {
@@ -172,13 +176,13 @@ export function determineEnemyHitsPlayer(enemy: Character, closestPlayer: Charac
     }
 }
 
-export function determineEnemyMoveDirection(enemy: Character, closestPlayerPosition: Position | null, map: GameMap, pathingCache: PathingCache, idCounter: IdCounter) {
+export function determineEnemyMoveDirection(enemy: Character, closestPlayerPosition: Position | null, map: GameMap, pathingCache: PathingCache, idCounter: IdCounter, time: number) {
     if (closestPlayerPosition === null) {
         enemy.isMoving = false;
         return;
     }
     enemy.isMoving = true;
-    let nextWayPoint: Position | null = getNextWaypoint(enemy, closestPlayerPosition, map, pathingCache, idCounter);
+    let nextWayPoint: Position | null = getNextWaypoint(enemy, closestPlayerPosition, map, pathingCache, idCounter, time);
     if (nextWayPoint === null) {
         enemy.isMoving = false;
         return;

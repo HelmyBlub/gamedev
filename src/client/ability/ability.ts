@@ -1,6 +1,6 @@
 import { determineCharactersInDistance } from "../character/character.js"
 import { Character } from "../character/characterModel.js"
-import { calculateDistance } from "../game.js"
+import { calculateDistance, takeTimeMeasure } from "../game.js"
 import { Game, Position } from "../gameModel.js"
 import { GameMap } from "../map/map.js"
 import { findPlayerByCharacterId, findPlayerById, Player } from "../player.js"
@@ -71,6 +71,7 @@ export function paintAbilityObjects(ctx: CanvasRenderingContext2D, abilityObject
 }
 
 export function tickAbilityObjects(abilityObjects: AbilityObject[], game: Game) {
+    takeTimeMeasure(game.debug, "", "tickAbilityObjects");
     for (let i = abilityObjects.length - 1; i >= 0; i--) {
         let abilityFunctions = ABILITIES_FUNCTIONS[abilityObjects[i].type];
         if (abilityFunctions.tickAbilityObject !== undefined) {
@@ -86,6 +87,7 @@ export function tickAbilityObjects(abilityObjects: AbilityObject[], game: Game) 
             throw new Error("deleteAbilityObject not defined for " + abilityObjects[i].type);
         }
     }
+    takeTimeMeasure(game.debug, "tickAbilityObjects", "");
 }
 
 export function detectAbilityObjectToCharacterHit(map: GameMap, abilityObject: AbilityObject, players: Player[]) {

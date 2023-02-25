@@ -1,22 +1,24 @@
-import { calculateDistance } from "../game.js";
-import { IdCounter, Position } from "../gameModel.js";
+import { calculateDistance, takeTimeMeasure } from "../game.js";
+import { Game, IdCounter, Position } from "../gameModel.js";
 import { GameMap, isPositionBlocking } from "../map/map.js";
 
 export type PathingCacheIJ = {
-    cameFromCache: Map<string, Map<string, Position>>,
-    openNodesCache: Map<string, Position[]>,
-    alreadyTraveledDistanceCache: Map<string, Map<string, number>>,
+    cameFromCache: Map<string, Position>,
+    openNodesCache: Position[],
+    alreadyTraveledDistanceCache: Map<string, number>,
+    timeLastUsed: number,
 }
 
 export type PathingCache = {
     [tileIjKey: string]: PathingCacheIJ,
 }
 
-export function createPathingCacheIJ(): PathingCacheIJ {
+export function createPathingCacheIJ(timeLastUsed: number): PathingCacheIJ {
     return {
-        cameFromCache: new Map<string, Map<string, Position>>(),
-        openNodesCache: new Map<string, Position[]>(),
-        alreadyTraveledDistanceCache: new Map<string, Map<string, number>>()
+        cameFromCache: new Map<string, Position>(),
+        openNodesCache: [],
+        alreadyTraveledDistanceCache: new Map<string, number>(),
+        timeLastUsed: timeLastUsed
     }
 }
 
@@ -29,7 +31,8 @@ export function getNextWaypoint(
     targetPos: Position,
     map: GameMap,
     pathingCache: PathingCache | null = null,
-    idCounter: IdCounter
+    idCounter: IdCounter,
+    time: number,
 ): Position | null {
     if (isPositionBlocking(sourcePos, map, idCounter)) {
         throw new Error("can't find way to a blocking position");
@@ -42,31 +45,28 @@ export function getNextWaypoint(
 
     let openNodes: Position[] = [];
     let cameFrom: Map<string, Position> = new Map<string, Position>();
-    let alreadyTraveledDistance: Map<string, number> = new Map<string, number>();
-    alreadyTraveledDistance.set(`${startIJ.x}_${startIJ.y}`, 0);
 
-    let startKey = `${startIJ.x}_${startIJ.y}`;
     let targetKey = `${targetIJ.x}_${targetIJ.y}`;
     let pathingCacheIJ: PathingCacheIJ | undefined;
     if (pathingCache !== null) {
         let pathingKey = tileIjToPathingCacheKey(startIJ);
         pathingCacheIJ = pathingCache[pathingKey];
-        if(pathingCacheIJ === undefined){
-            pathingCacheIJ = createPathingCacheIJ();
+        if (pathingCacheIJ === undefined) {
+            pathingCacheIJ = createPathingCacheIJ(time);
             pathingCache[pathingKey] = pathingCacheIJ;
+        } else {
+            pathingCacheIJ.timeLastUsed = time;
         }
-        if (pathingCacheIJ.openNodesCache.has(startKey)) {
-            openNodes = pathingCacheIJ.openNodesCache.get(startKey)!;
-            cameFrom = pathingCacheIJ.cameFromCache.get(startKey)!;
-            alreadyTraveledDistance = pathingCacheIJ.alreadyTraveledDistanceCache.get(startKey)!;
+        if (pathingCacheIJ.openNodesCache.length > 0) {
+            openNodes = pathingCacheIJ.openNodesCache;
+            cameFrom = pathingCacheIJ.cameFromCache;
             if (cameFrom.has(targetKey)) {
                 let lastPosition = cameFrom.get(targetKey)!;
                 return { x: lastPosition.x * map.tileSize + map.tileSize / 2, y: lastPosition.y * map.tileSize + map.tileSize / 2 };
             }
         } else {
-            pathingCacheIJ.openNodesCache.set(startKey, openNodes);
-            pathingCacheIJ.cameFromCache.set(startKey, cameFrom);
-            pathingCacheIJ.alreadyTraveledDistanceCache.set(startKey, alreadyTraveledDistance);
+            pathingCacheIJ.openNodesCache = openNodes;
+            pathingCacheIJ.cameFromCache = cameFrom;
             openNodes.push(startIJ);
         }
     } else {
@@ -82,34 +82,20 @@ export function getNextWaypoint(
             return null
         };
 
-        let currentLowestValue = -1;
         let currentIndex = 0;
-        /*let currentIndex = -1;
-        for (let i = 0; i < openNodes.length; i++) {
-            let currKey = `${openNodes[i].x}_${openNodes[i].y}`;
-            let bestEstimatedTotalDistance = alreadyTraveledDistance.get(currKey)! + calculateDistance(openNodes[i], targetIJ);
-            if (currentIndex === -1 || bestEstimatedTotalDistance < currentLowestValue) {
-                currentLowestValue = bestEstimatedTotalDistance;
-                currentIndex = i;
-            }
-        }*/
         let currentNode = openNodes.splice(currentIndex, 1)[0]!;
 
         if (currentNode.x === targetIJ.x && currentNode.y === targetIJ.y) {
             let lastPosition = cameFrom.get(`${targetIJ.x}_${targetIJ.y}`)!;
-            if (pathingCacheIJ) openNodes.push(currentNode);
+            if (pathingCacheIJ) openNodes.unshift(currentNode);
             return { x: lastPosition.x * map.tileSize + map.tileSize / 2, y: lastPosition.y * map.tileSize + map.tileSize / 2 };
         }
 
         let neighborsIJ = getPathNeighborsIJ(currentNode, map, idCounter);
         for (let i = 0; i < neighborsIJ.length; i++) {
-            let currentNodKey: string = `${currentNode.x}_${currentNode.y}`;
             let neighborKey = `${neighborsIJ[i].x}_${neighborsIJ[i].y}`;
-            let tentativeScore = alreadyTraveledDistance.get(currentNodKey)! + calculateDistance(neighborsIJ[i], currentNode);
-
-            if (!alreadyTraveledDistance.has(neighborKey) || tentativeScore < alreadyTraveledDistance.get(neighborKey)!) {
+            if (!cameFrom.has(neighborKey)) {
                 cameFrom.set(neighborKey, currentNode);
-                alreadyTraveledDistance.set(neighborKey, tentativeScore);
                 if (!openNodes.find((curr: Position) => curr.x === neighborsIJ[i].x && curr.y === neighborsIJ[i].y)) {
                     openNodes.push(neighborsIJ[i]);
                 }
@@ -118,6 +104,18 @@ export function getNextWaypoint(
     }
 
     return null;
+}
+
+export function garbageCollectPathingCache(pathingCache: PathingCache | undefined, currentTime: number, game: Game) {
+    takeTimeMeasure(game.debug, "", "garbageCollectPathingCache");
+    if(pathingCache === undefined) return;
+    let keys = Object.keys(pathingCache);
+    for (let i = keys.length - 1; i >= 0; i--) {
+        if(pathingCache[keys[i]].timeLastUsed < currentTime - 5000){
+            delete pathingCache[keys[i]];
+        }
+    }
+    takeTimeMeasure(game.debug, "garbageCollectPathingCache", "");
 }
 
 function getPathNeighborsIJ(posIJ: Position, map: GameMap, idCounter: IdCounter): Position[] {
@@ -172,7 +170,7 @@ function getPathNeighborsIJ(posIJ: Position, map: GameMap, idCounter: IdCounter)
     return result;
 }
 
-function calculatePosToTileIJ(pos: Position, map: GameMap): Position {
+export function calculatePosToTileIJ(pos: Position, map: GameMap): Position {
     let chunkSize = map.tileSize * map.chunkLength;
     let startChunkI = Math.floor(pos.y / chunkSize);
     let startChunkJ = Math.floor(pos.x / chunkSize);

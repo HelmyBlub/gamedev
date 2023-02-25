@@ -25,13 +25,13 @@ export function tickFixPositionRespawnEnemyCharacter(enemy: FixPositionRespawnEn
                 if (enemy.wasHitRecently) {
                     alertCloseEnemies(enemy, game);
                 }
-                determineEnemyMoveDirection(enemy, closest.minDistanceCharacter, game.state.map, pathingCache, game.state.idCounter);
+                determineEnemyMoveDirection(enemy, closest.minDistanceCharacter, game.state.map, pathingCache, game.state.idCounter, game.state.time);
                 determineEnemyHitsPlayer(enemy, closest.minDistanceCharacter);
             } else {
                 let spawnDistance = calculateDistance(enemy, enemy.spawnPosition);
                 enemy.isAggroed = false;
                 if (spawnDistance > game.state.map.tileSize / 2) {
-                    determineEnemyMoveDirection(enemy, enemy.spawnPosition, game.state.map, pathingCache, game.state.idCounter);
+                    determineEnemyMoveDirection(enemy, enemy.spawnPosition, game.state.map, pathingCache, game.state.idCounter, game.state.time);
                 } else {
                     enemy.nextTickTime = game.state.time + closest.minDistance;
                     enemy.isMoving = false;
