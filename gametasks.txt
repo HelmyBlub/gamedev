@@ -1,8 +1,7 @@
 next tasks:
     - create a complex/fun/chaotic class or improve on one?
-        - add more abilities to fire caster? be able to have 4 buttons for abilities?
-            - be able to get abilities as upgrade options?
-        - placing things down class:
+        - Rod class:
+            - infinite loop happens? need to check
             - ability idea:
                 - placing ability. can have placed maximum of x things at any time
                 - placed things do interact with the other

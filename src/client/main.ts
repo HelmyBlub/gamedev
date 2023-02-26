@@ -1,5 +1,6 @@
 import { onDomLoadSetAbilitiesFunctions } from "./ability/ability.js";
 import { addCasterClass } from "./character/levelingCharacters/casterCharacterClass.js";
+import { addRodClass } from "./character/levelingCharacters/rodCharacterClass.js";
 import { addShooterClass } from "./character/levelingCharacters/shooterCharacterClass.js";
 import { addSwordClass } from "./character/levelingCharacters/swordCharacterClass.js";
 import { runner, setRelativeMousePosition } from "./game.js";
@@ -49,9 +50,10 @@ export function createGame(canvasElementId: string | undefined, forTesting: bool
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-    addShooterClass();
-    addSwordClass();
-    addCasterClass();
+    //addShooterClass();
+    //addSwordClass();
+    //addCasterClass();
+    addRodClass();
     onDomLoadSetAbilitiesFunctions();
 
     start();

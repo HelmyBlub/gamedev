@@ -5,6 +5,7 @@ import { Game, Position } from "../gameModel.js"
 import { GameMap } from "../map/map.js"
 import { findPlayerByCharacterId, findPlayerById, Player } from "../player.js"
 import { addFireCircleAbility } from "./abilityFireCircle.js"
+import { addRodAbility } from "./abilityRod.js"
 import { addShootAbility } from "./abilityShoot.js"
 import { addSwordAbility } from "./abilitySword.js"
 import { Projectile } from "./projectile.js"
@@ -51,6 +52,7 @@ export function onDomLoadSetAbilitiesFunctions() {
     addShootAbility();
     addFireCircleAbility();
     addSwordAbility();
+    addRodAbility();
 }
 
 export function addAbilityToCharacter(character: Character, ability: Ability) {
