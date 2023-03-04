@@ -2,13 +2,16 @@ import { getCharactersTouchingLine } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
 import { calculateDistance } from "../game.js";
 import { Position, Game } from "../gameModel.js";
-import { GameMap, MapChunk, positionToMapKey } from "../map/map.js";
-import { ABILITIES_FUNCTIONS, Ability, UpgradeOptionAbility } from "./ability.js";
+import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityFunctions, AbilityOwner, UpgradeOptionAbility } from "./ability.js";
+import { createAbilityShoot } from "./abilityShoot.js";
+import { createAbilitySword } from "./abilitySword.js";
 
 type RodObject = {
     pos: Position,
     id: number,
     conntetedToId?: number,
+    ability?: Ability,
 }
 
 type AbilityRod = Ability & {
@@ -19,8 +22,6 @@ type AbilityRod = Ability & {
     effects: string[],
 }
 
-type RodConnection = { rod: RodObject, connectedTo: RodObject };
-
 const ABILITY_NAME = "Rod";
 
 export function addRodAbility() {
@@ -30,11 +31,13 @@ export function addRodAbility() {
         paintAbility: paintAbilityRod,
         paintAbilityUI: paintAbilityRodUI,
         activeAbilityCast: castRod,
+        createAbility: createAbilityRod,
+        isPassive: false,
     };
 }
 
 export function createAbilityRod(
-    playerInputBinding: string,
+    playerInputBinding?: string,
     damage: number = 10,
 ): AbilityRod {
     return {
@@ -49,7 +52,7 @@ export function createAbilityRod(
     };
 }
 
-function castRod(character: Character, ability: Ability, castPosition: Position, game: Game) {
+function castRod(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, game: Game) {
     let abilityRod = ability as AbilityRod;
 
     if (abilityRod.rodObjects.length >= abilityRod.maxNumberRods) {
@@ -61,7 +64,8 @@ function castRod(character: Character, ability: Ability, castPosition: Position,
         }
     }
 
-    let newRod: RodObject = { pos: castPosition, id: abilityRod.idCounter++};
+    let rodAbility: Ability | undefined = getRandomPassiveAbility(game.state.randomSeed);
+    let newRod: RodObject = { pos: castPosition, id: abilityRod.idCounter++, ability: rodAbility};
     if(abilityRod.rodObjects.length > 0){
         let nearest = getNearestRod(abilityRod, newRod);
         if(nearest){
@@ -69,9 +73,40 @@ function castRod(character: Character, ability: Ability, castPosition: Position,
         }
     }
     abilityRod.rodObjects.push(newRod);
+    updateRodObjectAbilityLevels(abilityRod);
 }
 
-function paintAbilityRod(ctx: CanvasRenderingContext2D, character: Character, ability: Ability, cameraPosition: Position) {
+function getRandomPassiveAbility(randomSeed: RandomSeed): Ability | undefined{
+    let abilityFunctionKeys = Object.keys(ABILITIES_FUNCTIONS);
+    let passiveAbilitiesFunctionKeys: string[] = [];
+    for(let abilityFunctionKey of abilityFunctionKeys){
+        let afk = ABILITIES_FUNCTIONS[abilityFunctionKey];
+        if(afk.isPassive){
+            passiveAbilitiesFunctionKeys.push(abilityFunctionKey);
+        }
+    }
+    if(passiveAbilitiesFunctionKeys.length > 0){
+        let random = Math.floor(nextRandom(randomSeed) * passiveAbilitiesFunctionKeys.length);
+        let abilityFunctions = ABILITIES_FUNCTIONS[passiveAbilitiesFunctionKeys[random]];
+        return abilityFunctions.createAbility();
+    }
+
+    return undefined;
+}
+
+function updateRodObjectAbilityLevels(abilityRod: AbilityRod){
+    for(let rod of abilityRod.rodObjects){
+        let level = getRodConnectionCount(abilityRod, rod);
+        if(rod.ability){
+            let abilityFunctions = ABILITIES_FUNCTIONS[rod.ability.name];
+            if(abilityFunctions.setAbilityToLevel){
+                abilityFunctions.setAbilityToLevel(rod.ability, level);
+            }
+        }
+    }
+}
+
+function paintAbilityRod(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position) {
     let abilityRod = ability as AbilityRod;
     let centerX = ctx.canvas.width / 2;
     let centerY = ctx.canvas.height / 2;
@@ -98,6 +133,17 @@ function paintAbilityRod(ctx: CanvasRenderingContext2D, character: Character, ab
                 break;
             default:
                 throw new Error("missing effect case");
+        }
+    }
+
+    for (let i = 0; i < abilityRod.rodObjects.length; i++) {
+        let rod = abilityRod.rodObjects[i];
+        if(rod.ability){
+            let abilityFunction = ABILITIES_FUNCTIONS[rod.ability.name];
+            if(abilityFunction.paintAbility){
+                let rodOwner = {x: rod.pos.x, y: rod.pos.y, faction: abilityOwner.faction};
+                abilityFunction.paintAbility(ctx, rodOwner, rod.ability, cameraPosition);
+            }
         }
     }
 }
@@ -169,7 +215,7 @@ function getNearestRod(abilityRod: AbilityRod, rod: RodObject): RodObject | unde
     return nearest;
 }
 
-function tickEffectConnected(character: Character, abilityRod: AbilityRod, game: Game) {
+function tickEffectConnected(abilityOwner: AbilityOwner, abilityRod: AbilityRod, game: Game) {
     if (abilityRod.rodObjects.length > 1) {
         let rods = abilityRod.rodObjects;
         for (let i = 0; i < rods.length; i++) {
@@ -181,7 +227,7 @@ function tickEffectConnected(character: Character, abilityRod: AbilityRod, game:
                 continue;
             }
             let rodConnectionCounter = getRodConnectionCount(abilityRod, rod) + getRodConnectionCount(abilityRod, connectedRod);
-            let damageFactor = 0.8 + (rodConnectionCounter * 0.15);
+            let damageFactor = 0.7 + (rodConnectionCounter * 0.15);
 
             let characters: Character[] = getCharactersTouchingLine(game, rod.pos, connectedRod.pos);
             for (let char of characters) {
@@ -219,15 +265,26 @@ function paintAbilityRodUI(ctx: CanvasRenderingContext2D, ability: Ability, draw
     }
 }
 
-function tickAbilityRod(character: Character, ability: Ability, game: Game) {
+function tickAbilityRod(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     let abilityRod = ability as AbilityRod;
+
+
     for (let effect of abilityRod.effects) {
         switch (effect) {
             case "connected":
-                tickEffectConnected(character, abilityRod, game);
+                tickEffectConnected(abilityOwner, abilityRod, game);
                 break;
             default:
                 throw new Error("missing effect case");
+        }
+    }
+
+    for (let i = 0; i < abilityRod.rodObjects.length; i++) {
+        let rod = abilityRod.rodObjects[i];
+        if(rod.ability){
+            let abilityFunction = ABILITIES_FUNCTIONS[rod.ability.name];
+            let rodOwner = {x: rod.pos.x, y: rod.pos.y, faction: abilityOwner.faction};
+            abilityFunction.tickAbility(rodOwner, rod.ability, game);
         }
     }
 }

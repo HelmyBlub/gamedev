@@ -8,7 +8,6 @@ import { addFireCircleAbility } from "./abilityFireCircle.js"
 import { addRodAbility } from "./abilityRod.js"
 import { addShootAbility } from "./abilityShoot.js"
 import { addSwordAbility } from "./abilitySword.js"
-import { Projectile } from "./projectile.js"
 
 export type Ability = {
     name: string,
@@ -25,16 +24,23 @@ export type AbilityObject = Position & {
     paintOrder: PaintOrder,
 }
 
+export type AbilityOwner = Position & {
+    faction: string
+}
+
 export type AbilityFunctions = {
-    tickAbility: (character: Character, ability: Ability, game: Game) => void,
+    tickAbility: (abilityOwner: AbilityOwner, ability: Ability, game: Game) => void,
     createAbiltiyUpgradeOptions: () => UpgradeOptionAbility[],
-    paintAbility?: (ctx: CanvasRenderingContext2D, character: Character, ability: Ability, cameraPosition: Position) => void,
-    activeAbilityCast?: (character: Character, ability: Ability, castPosition: Position, game: Game) => void,
+    paintAbility?: (ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position) => void,
+    activeAbilityCast?: (abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, game: Game) => void,
     tickAbilityObject?: (abilityObject: AbilityObject, game: Game) => void,
     deleteAbilityObject?: (abilityObject: AbilityObject, game: Game) => boolean,
     paintAbilityObject?: (ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, cameraPosition: Position) => void,
     paintAbilityUI?: (ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) => void,
     onHitAndReturnIfContinue?: (abilityObject: AbilityObject) => boolean,
+    setAbilityToLevel?: (ability: Ability, level: number) => void,
+    createAbility: () => Ability,
+    isPassive: boolean,
 }
 
 export type AbilitiesFunctions = {

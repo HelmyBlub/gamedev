@@ -1,6 +1,6 @@
 import { Character } from "../character/characterModel.js";
 import { Game, Position } from "../gameModel.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, detectAbilityObjectToCharacterHit, UpgradeOptionAbility } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectAbilityObjectToCharacterHit, UpgradeOptionAbility } from "./ability.js";
 
 const ABILITY_NAME = "FireCircle";
 export type AbilityFireCircle = Ability & {
@@ -26,11 +26,13 @@ export function addFireCircleAbility() {
         tickAbilityObject: tickAbilityObject,
         deleteAbilityObject: deleteObjectFireCircle,
         paintAbilityUI: paintAbilityFireCircleUI,
+        createAbility: createAbilityFireCircle,
+        isPassive: false,
     };
 }
 
 export function createAbilityFireCircle(
-    playerInputBinding: string,
+    playerInputBinding?: string,
     objectDuration: number = 2000,
     damage: number = 10,
     size: number = 30,
@@ -66,7 +68,7 @@ function createObjectFireCircle(x: number, y: number, damage: number, faction: s
     }
 }
 
-function tickAbilityFireCircle(character: Character, ability: Ability, game: Game) {
+function tickAbilityFireCircle(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     let abilityFireCircle = ability as AbilityFireCircle;
     if (abilityFireCircle.currentCharges < abilityFireCircle.maxCharges) {
         if (game.state.time >= abilityFireCircle.nextRechargeTime) {
@@ -149,14 +151,14 @@ function createAbiltiyFireCircleUpgradeOptions(): UpgradeOptionAbility[] {
     return upgradeOptions;
 }
 
-function castFireCircle(character: Character, ability: Ability, castPosition: Position, game: Game) {
+function castFireCircle(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, game: Game) {
     let abilityFireCircle = ability as AbilityFireCircle;
     if (abilityFireCircle.currentCharges > 0) {
         game.state.abilityObjects.push(createObjectFireCircle(
             castPosition.x,
             castPosition.y,
             abilityFireCircle.damage,
-            character.faction,
+            abilityOwner.faction,
             game.state.time,
             abilityFireCircle.objectDuration,
             abilityFireCircle.size

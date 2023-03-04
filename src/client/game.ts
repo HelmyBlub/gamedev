@@ -249,7 +249,11 @@ function tick(gameTimePassed: number, game: Game) {
         generateMissingChunks(game.state.map, getPlayerCharacters(game.state.players), game.state.idCounter, game);
         tickPlayerInputs(game.state.playerInputs, game.state.time, game);
         tickMapCharacters(game.state.map, game);
+
+        takeTimeMeasure(game.debug, "", "playerTick");
         tickCharacters(getPlayerCharacters(game.state.players), game);
+        takeTimeMeasure(game.debug, "playerTick", "");
+
         tickAbilityObjects(game.state.abilityObjects, game);
         detectCharacterDeath(game.state.map, game.state, game.camera, game);
 

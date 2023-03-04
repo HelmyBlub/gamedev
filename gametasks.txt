@@ -2,13 +2,14 @@ next tasks:
     - create a complex/fun/chaotic class or improve on one?
         - Rod class:
             - ability idea:
-                - only connect to nearest rod
-                - rod damage increased based on how many connected
+                - make rod be able to have character abilities
+                - every rod has one random ability
+
                 - placed things do interact with the other
                     - empowered if grouped up?
                     - stronger the longer not replaced?
                     - explode after time?
-                    - randomly doe damage to near enemies?
+                    - randomly do damage to near enemies?
                     - rotating sword around them
                     - stick/jump to nearby enemies
         - passive class:
