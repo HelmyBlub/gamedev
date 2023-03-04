@@ -1,18 +1,26 @@
+import { getCharactersTouchingLine } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
+import { calculateDistance } from "../game.js";
 import { Position, Game } from "../gameModel.js";
 import { GameMap, MapChunk, positionToMapKey } from "../map/map.js";
 import { ABILITIES_FUNCTIONS, Ability, UpgradeOptionAbility } from "./ability.js";
 
 type RodObject = {
     pos: Position,
+    id: number,
+    conntetedToId?: number,
 }
 
 type AbilityRod = Ability & {
+    idCounter: number,
     damage: number,
     maxNumberRods: number,
     rodObjects: RodObject[],
     effects: string[],
 }
+
+type RodConnection = { rod: RodObject, connectedTo: RodObject };
+
 const ABILITY_NAME = "Rod";
 
 export function addRodAbility() {
@@ -37,6 +45,7 @@ export function createAbilityRod(
         passive: false,
         playerInputBinding: playerInputBinding,
         effects: ["connected"],
+        idCounter: 0,
     };
 }
 
@@ -44,10 +53,21 @@ function castRod(character: Character, ability: Ability, castPosition: Position,
     let abilityRod = ability as AbilityRod;
 
     if (abilityRod.rodObjects.length >= abilityRod.maxNumberRods) {
-        abilityRod.rodObjects.splice(0, 1);
+        let deletedId = abilityRod.rodObjects.splice(0, 1)[0].id;
+        for(let rod of abilityRod.rodObjects){
+            if(rod.conntetedToId !== undefined && rod.conntetedToId === deletedId){
+                delete rod.conntetedToId;
+            }
+        }
     }
 
-    let newRod: RodObject = { pos: castPosition };
+    let newRod: RodObject = { pos: castPosition, id: abilityRod.idCounter++};
+    if(abilityRod.rodObjects.length > 0){
+        let nearest = getNearestRod(abilityRod, newRod);
+        if(nearest){
+            newRod.conntetedToId = nearest.id;
+        }
+    }
     abilityRod.rodObjects.push(newRod);
 }
 
@@ -55,19 +75,26 @@ function paintAbilityRod(ctx: CanvasRenderingContext2D, character: Character, ab
     let abilityRod = ability as AbilityRod;
     let centerX = ctx.canvas.width / 2;
     let centerY = ctx.canvas.height / 2;
-    let rodSize = 10;
+    let rodBaseSize = 8;
 
-    for (let rod of abilityRod.rodObjects) {
-        let paintX = Math.floor(rod.pos.x - cameraPosition.x + centerX - rodSize / 2);
-        let paintY = Math.floor(rod.pos.y - cameraPosition.y + centerY - rodSize / 2);
-        ctx.fillStyle = "white";
-        ctx.fillRect(paintX, paintY, rodSize, rodSize);
+    for (let i = 0; i < abilityRod.rodObjects.length; i++) {
+        let rod = abilityRod.rodObjects[i];
+        let rodConnectionCounter = getRodConnectionCount(abilityRod, rod);
+        let rodHeight = rodBaseSize + rodConnectionCounter * 5;
+        let paintX = Math.floor(rod.pos.x - cameraPosition.x + centerX - rodBaseSize / 2);
+        let paintY = Math.floor(rod.pos.y - cameraPosition.y + centerY - rodBaseSize / 2);
+        if (i === 0 && abilityRod.maxNumberRods === abilityRod.rodObjects.length) {
+            ctx.fillStyle = "gray";
+        } else {
+            ctx.fillStyle = "white";
+        }
+        ctx.fillRect(paintX, paintY, rodBaseSize, rodHeight);
     }
 
     for (let effect of abilityRod.effects) {
         switch (effect) {
             case "connected":
-                drawEffectConnected(ctx, abilityRod, cameraPosition);
+                paintEffectConnected(ctx, abilityRod, cameraPosition);
                 break;
             default:
                 throw new Error("missing effect case");
@@ -75,166 +102,94 @@ function paintAbilityRod(ctx: CanvasRenderingContext2D, character: Character, ab
     }
 }
 
-function drawEffectConnected(ctx: CanvasRenderingContext2D, abilityRod: AbilityRod, cameraPosition: Position) {
+function getRodConnectionCount(abilityRod: AbilityRod, rod: RodObject): number{
+    let counter = 0;
+    if(rod.conntetedToId !== undefined ) counter++;
+    for(let rodIter of abilityRod.rodObjects){
+        if(rodIter.conntetedToId !== undefined && rodIter.conntetedToId === rod.id){
+            counter++;
+        }
+    }
+
+    return counter;
+}
+
+function paintEffectConnected(ctx: CanvasRenderingContext2D, abilityRod: AbilityRod, cameraPosition: Position) {
     if (abilityRod.rodObjects.length > 1) {
         let centerX = ctx.canvas.width / 2;
         let centerY = ctx.canvas.height / 2;
         ctx.strokeStyle = "red";
-        ctx.lineWidth = 3;
         let rods = abilityRod.rodObjects;
         let paintX: number;
         let paintY: number;
 
-        for (let i = 0; i < rods.length - 1; i++) {
-            for (let j = i + 1; j < rods.length; j++) {
-                ctx.beginPath();
-                paintX = Math.floor(abilityRod.rodObjects[i].pos.x - cameraPosition.x + centerX);
-                paintY = Math.floor(abilityRod.rodObjects[i].pos.y - cameraPosition.y + centerY);
-                ctx.moveTo(paintX, paintY);
-                paintX = Math.floor(abilityRod.rodObjects[j].pos.x - cameraPosition.x + centerX);
-                paintY = Math.floor(abilityRod.rodObjects[j].pos.y - cameraPosition.y + centerY);
-                ctx.lineTo(paintX, paintY);
-                ctx.stroke();
+        for (let i = 0; i < rods.length; i++) {
+            let rod = rods[i];
+            if(rod.conntetedToId === undefined) continue;
+            let connectedRod = getRodById(abilityRod, rod.conntetedToId);
+            if(connectedRod === undefined){
+                console.log("rod connection not cleaned up");
+                continue;
             }
+            let totalConnection =  getRodConnectionCount(abilityRod, rod) + getRodConnectionCount(abilityRod, connectedRod);
+            ctx.lineWidth = totalConnection;
+
+            ctx.beginPath();
+            paintX = Math.floor(rod.pos.x - cameraPosition.x + centerX);
+            paintY = Math.floor(rod.pos.y - cameraPosition.y + centerY);
+            ctx.moveTo(paintX, paintY);
+            paintX = Math.floor(connectedRod.pos.x - cameraPosition.x + centerX);
+            paintY = Math.floor(connectedRod.pos.y - cameraPosition.y + centerY);
+            ctx.lineTo(paintX, paintY);
+            ctx.stroke();
         }
     }
+}
+
+function getRodById(abilityRod: AbilityRod, id: number): RodObject | undefined{
+    for(let rod of abilityRod.rodObjects){
+        if(rod.id === id) return rod;
+    }
+    return undefined;
+}
+
+function getNearestRod(abilityRod: AbilityRod, rod: RodObject): RodObject | undefined{
+    let rods = abilityRod.rodObjects;
+    let currentDistance: number;
+    let lowestDistance: number = 0;
+    let nearest = undefined;
+    for (let i = 0; i < rods.length; i++) {
+        if (rods[i] === rod) continue;
+        currentDistance = calculateDistance(rods[i].pos, rod.pos);
+        if (nearest === undefined || currentDistance < lowestDistance) {
+            nearest = rods[i];
+            lowestDistance = currentDistance;
+        }
+    }
+    return nearest;
 }
 
 function tickEffectConnected(character: Character, abilityRod: AbilityRod, game: Game) {
     if (abilityRod.rodObjects.length > 1) {
         let rods = abilityRod.rodObjects;
-        for (let i = 0; i < rods.length - 1; i++) {
-            for (let j = i + 1; j < rods.length; j++) {
-                let characters: Character[] = getCharactersTouchingLine(game, rods[i].pos, rods[j].pos);
-                for (let char of characters) {
-                    char.hp -= abilityRod.damage;
-                    char.wasHitRecently = true;
-                }
+        for (let i = 0; i < rods.length; i++) {
+            let rod = rods[i];
+            if(rod.conntetedToId === undefined) continue;
+            let connectedRod = getRodById(abilityRod, rod.conntetedToId);
+            if(connectedRod === undefined){
+                console.log("rod connection not cleaned up");
+                continue;
+            }
+            let rodConnectionCounter = getRodConnectionCount(abilityRod, rod) + getRodConnectionCount(abilityRod, connectedRod);
+            let damageFactor = 0.8 + (rodConnectionCounter * 0.15);
+
+            let characters: Character[] = getCharactersTouchingLine(game, rod.pos, connectedRod.pos);
+            for (let char of characters) {
+                char.hp -= abilityRod.damage * damageFactor;
+                char.wasHitRecently = true;
             }
         }
     }
-}
-
-function getCharactersTouchingLine(game: Game, lineStart: Position, lineEnd: Position): Character[] {
-    let chunks: MapChunk[] = getChunksTouchingLine(game.state.map, lineStart, lineEnd);
-    let lineWidth = 3;
-    let charactersTouchingLine: Character[] = [];
-    for (let chunk of chunks) {
-        for (let char of chunk.characters) {
-            let distance = calculateDistancePointToLine(char, lineStart, lineEnd);
-            if (distance < char.width / 2 + lineWidth / 2) {
-                charactersTouchingLine.push(char);
-            }
-        }
-    }
-
-    return charactersTouchingLine;
-}
-
-function calculateDistancePointToLine(point: Position, linestart: Position, lineEnd: Position) {
-    var A = point.x - linestart.x;
-    var B = point.y - linestart.y;
-    var C = lineEnd.x - linestart.x;
-    var D = lineEnd.y - linestart.y;
-
-    var dot = A * C + B * D;
-    var len_sq = C * C + D * D;
-    var param = -1;
-    if (len_sq != 0) //in case of 0 length line
-        param = dot / len_sq;
-
-    var xx, yy;
-
-    if (param < 0) {
-        xx = linestart.x;
-        yy = linestart.y;
-    }
-    else if (param > 1) {
-        xx = lineEnd.x;
-        yy = lineEnd.y;
-    }
-    else {
-        xx = linestart.x + param * C;
-        yy = linestart.y + param * D;
-    }
-
-    var dx = point.x - xx;
-    var dy = point.y - yy;
-    return Math.sqrt(dx * dx + dy * dy);
-}
-
-export function getChunksTouchingLine(map: GameMap, lineStart: Position, lineEnd: Position): MapChunk[] {
-    let chunkSize = map.chunkLength * map.tileSize;
-    let chunkKeys: string[] = [];
-    chunkKeys.push(positionToMapKey(lineStart, map));
-    let endKey = positionToMapKey(lineEnd, map);
-    if (chunkKeys[0] !== endKey) {
-        let xDiff = lineEnd.x - lineStart.x;
-        let yDiff = lineEnd.y - lineStart.y;
-        let currentPos = { ...lineStart };
-        let currentKey: string;
-        do {
-            let nextYBorder: number | undefined;
-            let nextXBorder: number | undefined;
-            let nextYBorderX: number | undefined;
-            let nextXBorderY: number | undefined;
-            if(yDiff !== 0){
-                if(yDiff > 0){
-                    nextYBorder = Math.ceil(currentPos.y / chunkSize) * chunkSize + 1;
-                }else{
-                    nextYBorder = Math.floor(currentPos.y / chunkSize) * chunkSize - 1;
-                }
-            }
-            if(xDiff !== 0){
-                if(xDiff > 0){
-                    nextXBorder = Math.ceil(currentPos.x / chunkSize) * chunkSize + 1;
-                }else{
-                    nextXBorder = Math.floor(currentPos.x / chunkSize) * chunkSize - 1;
-                }
-            }
-            if(nextYBorder !== undefined){
-                nextYBorderX = (nextYBorder - currentPos.y) * (xDiff/yDiff) + currentPos.x;
-            }
-            if(nextXBorder !== undefined){
-                nextXBorderY = (nextXBorder - currentPos.x) * (yDiff/xDiff) + currentPos.y;
-            }
-            if(nextYBorderX !== undefined && nextXBorderY !== undefined){
-                if(nextXBorder! > nextYBorderX){
-                    if(xDiff > 0){
-                        currentPos.x = nextYBorderX;
-                        currentPos.y = nextYBorder!;
-                    }else{
-                        currentPos.x = nextXBorder!;
-                        currentPos.y = nextXBorderY;
-                    }
-                }else{
-                    if(xDiff > 0){
-                        currentPos.x = nextXBorder!;
-                        currentPos.y = nextXBorderY;
-                    }else{
-                        currentPos.x = nextYBorderX;
-                        currentPos.y = nextYBorder!;
-                    }
-                }
-            }else if(nextYBorderX !== undefined){
-
-            }else if(nextXBorderY !== undefined){
-
-            }else{
-                console.log("should not happen?");
-            }
-            currentKey = positionToMapKey(currentPos, map);
-            chunkKeys.push(currentKey);
-        } while (currentKey !== endKey);
-    }
-
-    let chunks: MapChunk[] = [];
-    for (let chunkKey of chunkKeys) {
-        if (map.chunks[chunkKey] !== undefined) {
-            chunks.push(map.chunks[chunkKey]);
-        }
-    }
-    return chunks;
 }
 
 function paintAbilityRodUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {

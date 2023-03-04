@@ -1,11 +1,10 @@
 next tasks:
     - create a complex/fun/chaotic class or improve on one?
         - Rod class:
-            - infinite loop happens? need to check
             - ability idea:
-                - placing ability. can have placed maximum of x things at any time
+                - only connect to nearest rod
+                - rod damage increased based on how many connected
                 - placed things do interact with the other
-                    - damaging line between them?
                     - empowered if grouped up?
                     - stronger the longer not replaced?
                     - explode after time?

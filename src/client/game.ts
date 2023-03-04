@@ -156,6 +156,38 @@ export function setRelativeMousePosition(event: MouseEvent, game: Game) {
     game.mouseRelativeCanvasPosition = { x: event.x - target.offsetLeft, y: event.y - target.offsetTop };
 }
 
+export function calculateDistancePointToLine(point: Position, linestart: Position, lineEnd: Position) {
+    var A = point.x - linestart.x;
+    var B = point.y - linestart.y;
+    var C = lineEnd.x - linestart.x;
+    var D = lineEnd.y - linestart.y;
+
+    var dot = A * C + B * D;
+    var len_sq = C * C + D * D;
+    var param = -1;
+    if (len_sq != 0) //in case of 0 length line
+        param = dot / len_sq;
+
+    var xx, yy;
+
+    if (param < 0) {
+        xx = linestart.x;
+        yy = linestart.y;
+    }
+    else if (param > 1) {
+        xx = lineEnd.x;
+        yy = lineEnd.y;
+    }
+    else {
+        xx = linestart.x + param * C;
+        yy = linestart.y + param * D;
+    }
+
+    var dx = point.x - xx;
+    var dy = point.y - yy;
+    return Math.sqrt(dx * dx + dy * dy);
+}
+
 function determineRunnerTimeout(game: Game): number {
     if (game.testing?.zeroTimeout) {
         return 0;

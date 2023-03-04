@@ -118,6 +118,80 @@ export function removeAllMapCharacters(map: GameMap) {
     }
 }
 
+export function getChunksTouchingLine(map: GameMap, lineStart: Position, lineEnd: Position): MapChunk[] {
+    let chunkSize = map.chunkLength * map.tileSize;
+    let chunkKeys: string[] = [];
+    chunkKeys.push(positionToMapKey(lineStart, map));
+    let endKey = positionToMapKey(lineEnd, map);
+    if (chunkKeys[0] !== endKey) {
+        let xDiff = lineEnd.x - lineStart.x;
+        let yDiff = lineEnd.y - lineStart.y;
+        let currentPos = { ...lineStart };
+        let currentKey: string;
+        do {
+            let nextYBorder: number | undefined;
+            let nextXBorder: number | undefined;
+            let nextYBorderX: number | undefined;
+            let nextXBorderY: number | undefined;
+            if(yDiff !== 0){
+                if(yDiff > 0){
+                    nextYBorder = Math.ceil(currentPos.y / chunkSize) * chunkSize + 0.01;
+                }else{
+                    nextYBorder = Math.floor(currentPos.y / chunkSize) * chunkSize - 0.01;
+                }
+            }
+            if(xDiff !== 0){
+                if(xDiff > 0){
+                    nextXBorder = Math.ceil(currentPos.x / chunkSize) * chunkSize + 0.01;
+                }else{
+                    nextXBorder = Math.floor(currentPos.x / chunkSize) * chunkSize - 0.01;
+                }
+            }
+            if(nextYBorder !== undefined){
+                nextYBorderX = (nextYBorder - currentPos.y) * (xDiff/yDiff) + currentPos.x;
+            }
+            if(nextXBorder !== undefined){
+                nextXBorderY = (nextXBorder - currentPos.x) * (yDiff/xDiff) + currentPos.y;
+            }
+            if(nextYBorderX !== undefined && nextXBorderY !== undefined){
+                if(nextXBorder! > nextYBorderX){
+                    if(xDiff > 0){
+                        currentPos.x = nextYBorderX;
+                        currentPos.y = nextYBorder!;
+                    }else{
+                        currentPos.x = nextXBorder!;
+                        currentPos.y = nextXBorderY;
+                    }
+                }else{
+                    if(xDiff > 0){
+                        currentPos.x = nextXBorder!;
+                        currentPos.y = nextXBorderY;
+                    }else{
+                        currentPos.x = nextYBorderX;
+                        currentPos.y = nextYBorder!;
+                    }
+                }
+            }else if(nextYBorderX !== undefined){
+                currentPos.y = nextYBorder!;
+            }else if(nextXBorderY !== undefined){
+                currentPos.x = nextXBorder!;
+            }else{
+                console.log("should not happen?");
+            }
+            currentKey = positionToMapKey(currentPos, map);
+            chunkKeys.push(currentKey);
+        } while (currentKey !== endKey);
+    }
+
+    let chunks: MapChunk[] = [];
+    for (let chunkKey of chunkKeys) {
+        if (map.chunks[chunkKey] !== undefined) {
+            chunks.push(map.chunks[chunkKey]);
+        }
+    }
+    return chunks;
+}
+
 function calculateDistanceToMapChunk(chunkI: number, chunkJ: number, position: Position, map: GameMap): number {
     let chunkSize = map.tileSize * map.chunkLength;
     let topChunk = chunkI * chunkSize;

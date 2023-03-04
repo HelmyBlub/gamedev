@@ -14,11 +14,15 @@ import { testInputs2 } from "./testInputs2.js";
 import { testMultiplayerInputs } from "./testMultiplayerInputs.js";
 import { detectAbilityObjectToCharacterHit } from "../ability/ability.js";
 import { testPathing } from "../character/tests/pathingTest.js";
+import { testTemp } from "../ability/temptest.js";
 
 export function testGame(game: Game) {
+    console.log("start test");
     //testPathing(game.ctx);
-    runGameWithPlayerInputs(game, testInputs2);
+    //runGameWithPlayerInputs(game, testInputs2);
     //runGameWithPlayerInputs(game, testMultiplayerInputs);
+    testTemp();
+    console.log("end test");
 }
 
 //---------------------//

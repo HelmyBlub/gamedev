@@ -1,8 +1,8 @@
 import { levelingCharacterXpGain } from "./levelingCharacters/levelingCharacter.js";
-import { determineMapKeysInDistance, GameMap, isPositionBlocking } from "../map/map.js";
+import { determineMapKeysInDistance, GameMap, getChunksTouchingLine, isPositionBlocking, MapChunk } from "../map/map.js";
 import { Character, CHARACTER_TYPES_STUFF, ENEMY_FACTION } from "./characterModel.js";
 import { getNextWaypoint, PathingCache } from "./pathing.js";
-import { calculateDirection, calculateDistance, takeTimeMeasure } from "../game.js";
+import { calculateDirection, calculateDistance, calculateDistancePointToLine, takeTimeMeasure } from "../game.js";
 import { Position, Game, GameState, IdCounter, Camera } from "../gameModel.js";
 import { Player } from "../player.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
@@ -90,6 +90,22 @@ export function determineCharactersInDistance(position: Position, map: GameMap, 
         }
     }
     return result;
+}
+
+export function getCharactersTouchingLine(game: Game, lineStart: Position, lineEnd: Position): Character[] {
+    let chunks: MapChunk[] = getChunksTouchingLine(game.state.map, lineStart, lineEnd);
+    let lineWidth = 3;
+    let charactersTouchingLine: Character[] = [];
+    for (let chunk of chunks) {
+        for (let char of chunk.characters) {
+            let distance = calculateDistancePointToLine(char, lineStart, lineEnd);
+            if (distance < char.width / 2 + lineWidth / 2) {
+                charactersTouchingLine.push(char);
+            }
+        }
+    }
+
+    return charactersTouchingLine;
 }
 
 export function countCharacters(map: GameMap): number {
