@@ -105,15 +105,14 @@ function createAbiltiyShootUpgradeOptions(): UpgradeOptionAbility[]{
 function shoot(abilityOwner: AbilityOwner, ability: AbilityShoot, abilityObjects: AbilityObject[], gameTime: number, randomSeed: RandomSeed) {
     for (let i = 0; i <= ability.multiShot; i++) {
         let shotSpread: number = (nextRandom(randomSeed) - 0.5) / 10 * ability.multiShot;
-        let anyOwner: any = abilityOwner;
 
         let moveSpeed = 2;
-        if(anyOwner.moveSpeed !== undefined){
-            moveSpeed = anyOwner.moveSpeed + 2;
+        if(abilityOwner.moveSpeed !== undefined){
+            moveSpeed = abilityOwner.moveSpeed + 2;
         }
         let direction = 0;
-        if(anyOwner.moveDirection !== undefined){
-            direction = anyOwner.moveDirection;
+        if(abilityOwner.moveDirection !== undefined){
+            direction = abilityOwner.moveDirection;
         }else{
             direction = nextRandom(randomSeed) * Math.PI * 2;
         }

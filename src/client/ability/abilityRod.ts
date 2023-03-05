@@ -1,14 +1,12 @@
 import { getCharactersTouchingLine } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
-import { calculateDistance } from "../game.js";
-import { Position, Game } from "../gameModel.js";
+import { calculateDistance, getNextId } from "../game.js";
+import { Position, Game, IdCounter } from "../gameModel.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityFunctions, AbilityOwner, UpgradeOptionAbility } from "./ability.js";
-import { createAbilityShoot } from "./abilityShoot.js";
-import { createAbilitySword } from "./abilitySword.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityFunctions, AbilityObject, AbilityOwner, UpgradeOptionAbility } from "./ability.js";
 
-type RodObject = {
-    pos: Position,
+type AbilityObjectRod = AbilityObject & {
+    ownerId: number,
     id: number,
     conntetedToId?: number,
     ability?: Ability,
@@ -18,8 +16,6 @@ type AbilityRod = Ability & {
     idCounter: number,
     damage: number,
     maxNumberRods: number,
-    rodObjects: RodObject[],
-    effects: string[],
 }
 
 const ABILITY_NAME = "Rod";
@@ -27,11 +23,13 @@ const ABILITY_NAME = "Rod";
 export function addRodAbility() {
     ABILITIES_FUNCTIONS[ABILITY_NAME] = {
         tickAbility: tickAbilityRod,
+        tickAbilityObject: tickAbilityObjectRod,
         createAbiltiyUpgradeOptions: createAbilityRodUpgradeOptions,
-        paintAbility: paintAbilityRod,
+        paintAbilityObject: paintAbilityObjectRod,
         paintAbilityUI: paintAbilityRodUI,
         activeAbilityCast: castRod,
         createAbility: createAbilityRod,
+        deleteAbilityObject: deleteAbilityObjectRod,
         isPassive: false,
     };
 }
@@ -44,36 +42,87 @@ export function createAbilityRod(
         name: ABILITY_NAME,
         damage: damage,
         maxNumberRods: 3,
-        rodObjects: [],
         passive: false,
         playerInputBinding: playerInputBinding,
-        effects: ["connected"],
         idCounter: 0,
     };
 }
 
+function createAbilityObjectRod(idCounter: IdCounter, ownerId: number, position: Position, ability: Ability | undefined, damage: number, size: number = 8): AbilityObjectRod{
+    return {
+        type: ABILITY_NAME,
+        ownerId: ownerId,
+        size: size,
+        color: "",
+        x: position.x,
+        y: position.y,
+        id: getNextId(idCounter),
+        ability: ability,
+        damage: damage,
+        paintOrder: "afterCharacterPaint",
+        faction: "",
+    }
+}
+
+function deleteAbilityObjectRod(abilityObject: AbilityObject, game: Game){
+    //nothing to do here, delete happens on cast
+    return false;
+}
+
 function castRod(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, game: Game) {
     let abilityRod = ability as AbilityRod;
+    let abilityObjects = game.state.abilityObjects;
 
-    if (abilityRod.rodObjects.length >= abilityRod.maxNumberRods) {
-        let deletedId = abilityRod.rodObjects.splice(0, 1)[0].id;
-        for(let rod of abilityRod.rodObjects){
-            if(rod.conntetedToId !== undefined && rod.conntetedToId === deletedId){
-                delete rod.conntetedToId;
-            }
-        }
+    if (getRodCountOfOwner(abilityObjects, abilityOwner.id) >= abilityRod.maxNumberRods) {
+        let deletedId = deleteOldesRodOfOwnerAndReturnDeletedId(abilityObjects, abilityOwner.id);        
+        updateRodsWhichHadDeletedId(abilityObjects, deletedId);
     }
 
     let rodAbility: Ability | undefined = getRandomPassiveAbility(game.state.randomSeed);
-    let newRod: RodObject = { pos: castPosition, id: abilityRod.idCounter++, ability: rodAbility};
-    if(abilityRod.rodObjects.length > 0){
-        let nearest = getNearestRod(abilityRod, newRod);
-        if(nearest){
-            newRod.conntetedToId = nearest.id;
+    let newRod: AbilityObjectRod = createAbilityObjectRod(game.state.idCounter, abilityOwner.id, castPosition, rodAbility, abilityRod.damage);
+    let nearest = getNearestRod(abilityObjects, newRod);
+    if(nearest){
+        newRod.conntetedToId = nearest.id;
+    }
+    abilityObjects.push(newRod);
+    updateRodObjectAbilityLevels(abilityObjects);
+}
+
+function updateRodsWhichHadDeletedId(abilityObjects: AbilityObject[], deletedId: number){
+    for(let abilityObject of abilityObjects){
+        if(abilityObject.type === ABILITY_NAME){
+            let abilityRod = abilityObject as AbilityObjectRod;
+            if(abilityRod.conntetedToId !== undefined && abilityRod.conntetedToId === deletedId){
+                delete abilityRod.conntetedToId;
+            }
         }
     }
-    abilityRod.rodObjects.push(newRod);
-    updateRodObjectAbilityLevels(abilityRod);
+}
+
+function deleteOldesRodOfOwnerAndReturnDeletedId(abilityObjects: AbilityObject[], ownerId: number): number{
+    for(let i = 0; i < abilityObjects.length; i++){
+        if(abilityObjects[i].type === ABILITY_NAME){
+            let abilityRod = abilityObjects[i] as AbilityObjectRod;
+            if(abilityRod.ownerId === ownerId){
+                return (abilityObjects.splice(i,1)[0] as AbilityObjectRod).id;
+            }
+        }
+    }
+    debugger;
+    throw new Error("id does not exist " + ownerId);
+}
+
+function getRodCountOfOwner(abilityObjects: AbilityObject[], ownerId: number): number{
+    let counter = 0;
+    for(let abilityObject of abilityObjects){
+        if(abilityObject.type === ABILITY_NAME){
+            let abilityRod = abilityObject as AbilityObjectRod;
+            if(abilityRod.ownerId === ownerId){
+                counter++;
+            }
+        }
+    }
+    return counter;
 }
 
 function getRandomPassiveAbility(randomSeed: RandomSeed): Ability | undefined{
@@ -94,9 +143,11 @@ function getRandomPassiveAbility(randomSeed: RandomSeed): Ability | undefined{
     return undefined;
 }
 
-function updateRodObjectAbilityLevels(abilityRod: AbilityRod){
-    for(let rod of abilityRod.rodObjects){
-        let level = getRodConnectionCount(abilityRod, rod);
+function updateRodObjectAbilityLevels(abilityObjects: AbilityObject[]){
+    for(let abilityObject of abilityObjects){
+        if(abilityObject.type !== ABILITY_NAME) continue;
+        let rod: AbilityObjectRod = abilityObject as AbilityObjectRod;
+        let level = getRodConnectionCount(abilityObjects, rod);
         if(rod.ability){
             let abilityFunctions = ABILITIES_FUNCTIONS[rod.ability.name];
             if(abilityFunctions.setAbilityToLevel){
@@ -106,135 +157,112 @@ function updateRodObjectAbilityLevels(abilityRod: AbilityRod){
     }
 }
 
-function paintAbilityRod(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position) {
-    let abilityRod = ability as AbilityRod;
+function paintAbilityObjectRod(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, cameraPosition: Position, abilityObjects: AbilityObject[]) {
+    let rod = abilityObject as AbilityObjectRod;
     let centerX = ctx.canvas.width / 2;
     let centerY = ctx.canvas.height / 2;
-    let rodBaseSize = 8;
+    let rodBaseSize = rod.size;
 
-    for (let i = 0; i < abilityRod.rodObjects.length; i++) {
-        let rod = abilityRod.rodObjects[i];
-        let rodConnectionCounter = getRodConnectionCount(abilityRod, rod);
-        let rodHeight = rodBaseSize + rodConnectionCounter * 5;
-        let paintX = Math.floor(rod.pos.x - cameraPosition.x + centerX - rodBaseSize / 2);
-        let paintY = Math.floor(rod.pos.y - cameraPosition.y + centerY - rodBaseSize / 2);
-        if (i === 0 && abilityRod.maxNumberRods === abilityRod.rodObjects.length) {
-            ctx.fillStyle = "gray";
-        } else {
-            ctx.fillStyle = "white";
-        }
-        ctx.fillRect(paintX, paintY, rodBaseSize, rodHeight);
-    }
+    let rodConnectionCounter = 1; //TODO
+    let rodHeight = rodBaseSize + rodConnectionCounter * 5;
+    let paintX = Math.floor(rod.x - cameraPosition.x + centerX - rodBaseSize / 2);
+    let paintY = Math.floor(rod.y - cameraPosition.y + centerY - rodBaseSize / 2);
+    ctx.fillStyle = "white"; //TODO different color for next to be replaced
+    ctx.fillRect(paintX, paintY, rodBaseSize, rodHeight);
 
-    for (let effect of abilityRod.effects) {
-        switch (effect) {
-            case "connected":
-                paintEffectConnected(ctx, abilityRod, cameraPosition);
-                break;
-            default:
-                throw new Error("missing effect case");
-        }
-    }
+    paintEffectConnected(ctx, rod, cameraPosition, abilityObjects);
 
-    for (let i = 0; i < abilityRod.rodObjects.length; i++) {
-        let rod = abilityRod.rodObjects[i];
-        if(rod.ability){
-            let abilityFunction = ABILITIES_FUNCTIONS[rod.ability.name];
-            if(abilityFunction.paintAbility){
-                let rodOwner = {x: rod.pos.x, y: rod.pos.y, faction: abilityOwner.faction};
-                abilityFunction.paintAbility(ctx, rodOwner, rod.ability, cameraPosition);
-            }
+    if(rod.ability){
+        let abilityFunction = ABILITIES_FUNCTIONS[rod.ability.name];
+        if(abilityFunction.paintAbility){
+            abilityFunction.paintAbility(ctx, rod, rod.ability, cameraPosition);
         }
     }
 }
 
-function getRodConnectionCount(abilityRod: AbilityRod, rod: RodObject): number{
+function getRodConnectionCount(abilityObjects: AbilityObject[], rod: AbilityObjectRod): number{
     let counter = 0;
     if(rod.conntetedToId !== undefined ) counter++;
-    for(let rodIter of abilityRod.rodObjects){
-        if(rodIter.conntetedToId !== undefined && rodIter.conntetedToId === rod.id){
-            counter++;
+    for(let abilityObject of abilityObjects){
+        if(abilityObject.type === ABILITY_NAME){
+            let abilityRod = abilityObject as AbilityObjectRod;
+            if(abilityRod.conntetedToId !== undefined && abilityRod.conntetedToId === rod.id){
+                counter++;
+            }
         }
     }
 
     return counter;
 }
 
-function paintEffectConnected(ctx: CanvasRenderingContext2D, abilityRod: AbilityRod, cameraPosition: Position) {
-    if (abilityRod.rodObjects.length > 1) {
+function paintEffectConnected(ctx: CanvasRenderingContext2D, abilityObjectRod: AbilityObjectRod, cameraPosition: Position, abilityObjects: AbilityObject[]) {
+    if (abilityObjectRod.conntetedToId !== undefined) {
         let centerX = ctx.canvas.width / 2;
         let centerY = ctx.canvas.height / 2;
         ctx.strokeStyle = "red";
-        let rods = abilityRod.rodObjects;
         let paintX: number;
         let paintY: number;
 
-        for (let i = 0; i < rods.length; i++) {
-            let rod = rods[i];
-            if(rod.conntetedToId === undefined) continue;
-            let connectedRod = getRodById(abilityRod, rod.conntetedToId);
-            if(connectedRod === undefined){
-                console.log("rod connection not cleaned up");
-                continue;
-            }
-            let totalConnection =  getRodConnectionCount(abilityRod, rod) + getRodConnectionCount(abilityRod, connectedRod);
-            ctx.lineWidth = totalConnection;
-
-            ctx.beginPath();
-            paintX = Math.floor(rod.pos.x - cameraPosition.x + centerX);
-            paintY = Math.floor(rod.pos.y - cameraPosition.y + centerY);
-            ctx.moveTo(paintX, paintY);
-            paintX = Math.floor(connectedRod.pos.x - cameraPosition.x + centerX);
-            paintY = Math.floor(connectedRod.pos.y - cameraPosition.y + centerY);
-            ctx.lineTo(paintX, paintY);
-            ctx.stroke();
+        let connectedRod = getRodById(abilityObjects, abilityObjectRod.conntetedToId);
+        if(connectedRod === undefined){
+            console.log("rod connection not cleaned up");
+            return;
         }
+        let totalConnection =  getRodConnectionCount(abilityObjects, abilityObjectRod) + getRodConnectionCount(abilityObjects, connectedRod);
+        ctx.lineWidth = totalConnection;
+
+        ctx.beginPath();
+        paintX = Math.floor(abilityObjectRod.x - cameraPosition.x + centerX);
+        paintY = Math.floor(abilityObjectRod.y - cameraPosition.y + centerY);
+        ctx.moveTo(paintX, paintY);
+        paintX = Math.floor(connectedRod.x - cameraPosition.x + centerX);
+        paintY = Math.floor(connectedRod.y - cameraPosition.y + centerY);
+        ctx.lineTo(paintX, paintY);
+        ctx.stroke();
     }
 }
 
-function getRodById(abilityRod: AbilityRod, id: number): RodObject | undefined{
-    for(let rod of abilityRod.rodObjects){
-        if(rod.id === id) return rod;
+function getRodById(abilityObjects: AbilityObject[], id: number): AbilityObjectRod | undefined{
+    for (let i = 0; i < abilityObjects.length; i++) {
+        if (abilityObjects[i].type === ABILITY_NAME){
+            let rod: AbilityObjectRod = abilityObjects[i] as AbilityObjectRod;
+            if(rod.id === id) return rod;
+        }
     }
     return undefined;
 }
 
-function getNearestRod(abilityRod: AbilityRod, rod: RodObject): RodObject | undefined{
-    let rods = abilityRod.rodObjects;
+function getNearestRod(abilityObjects: AbilityObject[], rod: AbilityObjectRod): AbilityObjectRod | undefined{
     let currentDistance: number;
     let lowestDistance: number = 0;
-    let nearest = undefined;
-    for (let i = 0; i < rods.length; i++) {
-        if (rods[i] === rod) continue;
-        currentDistance = calculateDistance(rods[i].pos, rod.pos);
+    let nearest: AbilityObjectRod | undefined = undefined;
+    for (let i = 0; i < abilityObjects.length; i++) {
+        if (abilityObjects[i] === rod) continue;
+        if (abilityObjects[i].type !== ABILITY_NAME) continue;
+        currentDistance = calculateDistance(abilityObjects[i], rod);
         if (nearest === undefined || currentDistance < lowestDistance) {
-            nearest = rods[i];
+            nearest = abilityObjects[i] as AbilityObjectRod;
             lowestDistance = currentDistance;
         }
     }
     return nearest;
 }
 
-function tickEffectConnected(abilityOwner: AbilityOwner, abilityRod: AbilityRod, game: Game) {
-    if (abilityRod.rodObjects.length > 1) {
-        let rods = abilityRod.rodObjects;
-        for (let i = 0; i < rods.length; i++) {
-            let rod = rods[i];
-            if(rod.conntetedToId === undefined) continue;
-            let connectedRod = getRodById(abilityRod, rod.conntetedToId);
-            if(connectedRod === undefined){
-                console.log("rod connection not cleaned up");
-                continue;
-            }
-            let rodConnectionCounter = getRodConnectionCount(abilityRod, rod) + getRodConnectionCount(abilityRod, connectedRod);
-            let damageFactor = 0.7 + (rodConnectionCounter * 0.15);
+function tickEffectConnected(abilityObjectRod: AbilityObjectRod, game: Game) {
+    if(abilityObjectRod.conntetedToId === undefined) return;
+    let abilityObjects = game.state.abilityObjects;
+    let connectedRod = getRodById(abilityObjects, abilityObjectRod.conntetedToId);
+    if(connectedRod === undefined){
+        console.log("rod connection not cleaned up");
+        return;
+    }
+    let rodConnectionCounter = getRodConnectionCount(abilityObjects, abilityObjectRod) + getRodConnectionCount(abilityObjects, connectedRod);
+    let damageFactor = 0.7 + (rodConnectionCounter * 0.15);
 
-            let characters: Character[] = getCharactersTouchingLine(game, rod.pos, connectedRod.pos);
-            for (let char of characters) {
-                char.hp -= abilityRod.damage * damageFactor;
-                char.wasHitRecently = true;
-            }
-        }
+    let characters: Character[] = getCharactersTouchingLine(game, abilityObjectRod, connectedRod);
+    for (let char of characters) {
+        char.hp -= abilityObjectRod.damage * damageFactor;
+        char.wasHitRecently = true;
     }
 }
 
@@ -267,25 +295,15 @@ function paintAbilityRodUI(ctx: CanvasRenderingContext2D, ability: Ability, draw
 
 function tickAbilityRod(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     let abilityRod = ability as AbilityRod;
+}
 
+function tickAbilityObjectRod(abilityObject: AbilityObject, game: Game){
+    let abilityRod = abilityObject as AbilityObjectRod;
+    tickEffectConnected(abilityRod, game);
 
-    for (let effect of abilityRod.effects) {
-        switch (effect) {
-            case "connected":
-                tickEffectConnected(abilityOwner, abilityRod, game);
-                break;
-            default:
-                throw new Error("missing effect case");
-        }
-    }
-
-    for (let i = 0; i < abilityRod.rodObjects.length; i++) {
-        let rod = abilityRod.rodObjects[i];
-        if(rod.ability){
-            let abilityFunction = ABILITIES_FUNCTIONS[rod.ability.name];
-            let rodOwner = {x: rod.pos.x, y: rod.pos.y, faction: abilityOwner.faction};
-            abilityFunction.tickAbility(rodOwner, rod.ability, game);
-        }
+    if(abilityRod.ability){
+        let abilityFunction = ABILITIES_FUNCTIONS[abilityRod.ability.name];
+        abilityFunction.tickAbility(abilityRod, abilityRod.ability, game);
     }
 }
 

@@ -1,10 +1,11 @@
 next tasks:
     - create a complex/fun/chaotic class or improve on one?
         - Rod class:
-            - ability idea:
-                - make rod be able to have character abilities
-                - every rod has one random ability
-
+            - in mutliplayer, all player rod can connect to different player rods
+                - create rodObjects in game.state.abilityObjects, same for line-effect
+            - rods can use active abilities like fire circle
+                - ABILITIES_FUNCTIONS new function for randomAutoCast
+            - ability ideas:
                 - placed things do interact with the other
                     - empowered if grouped up?
                     - stronger the longer not replaced?

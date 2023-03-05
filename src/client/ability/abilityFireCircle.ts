@@ -1,4 +1,3 @@
-import { Character } from "../character/characterModel.js";
 import { Game, Position } from "../gameModel.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectAbilityObjectToCharacterHit, UpgradeOptionAbility } from "./ability.js";
 

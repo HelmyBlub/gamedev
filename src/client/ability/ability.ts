@@ -25,7 +25,10 @@ export type AbilityObject = Position & {
 }
 
 export type AbilityOwner = Position & {
-    faction: string
+    faction: string,
+    id: number,
+    moveSpeed?: number,
+    moveDirection?: number,
 }
 
 export type AbilityFunctions = {
@@ -35,7 +38,7 @@ export type AbilityFunctions = {
     activeAbilityCast?: (abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, game: Game) => void,
     tickAbilityObject?: (abilityObject: AbilityObject, game: Game) => void,
     deleteAbilityObject?: (abilityObject: AbilityObject, game: Game) => boolean,
-    paintAbilityObject?: (ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, cameraPosition: Position) => void,
+    paintAbilityObject?: (ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, cameraPosition: Position, abilityObjects: AbilityObject[]) => void,
     paintAbilityUI?: (ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) => void,
     onHitAndReturnIfContinue?: (abilityObject: AbilityObject) => boolean,
     setAbilityToLevel?: (ability: Ability, level: number) => void,
@@ -70,7 +73,7 @@ export function paintAbilityObjects(ctx: CanvasRenderingContext2D, abilityObject
         if (abilityObject.paintOrder === paintOrder) {
             let abilityFunctions = ABILITIES_FUNCTIONS[abilityObject.type];
             if (abilityFunctions?.paintAbilityObject !== undefined) {
-                abilityFunctions.paintAbilityObject(ctx, abilityObject, cameraPosition);
+                abilityFunctions.paintAbilityObject(ctx, abilityObject, cameraPosition, abilityObjects);
             } else {
                 paintDefault(ctx, abilityObject, cameraPosition);
             }
