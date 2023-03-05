@@ -108,10 +108,12 @@ function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Levelin
     let currentX = Math.max(5, ctx.canvas.width / 2 - 200);
     if (character.availableSkillPoints > 0) {
         for(let i = 0; i<3; i++){
+            ctx.globalAlpha = 0.4;
             ctx.fillStyle = "white";
             let text = `${i+1}=${character.upgradeOptions[i].name}`;
             let textWidthEstimate = text.length * fontSize * 0.63;
             ctx.fillRect(currentX, startY - fontSize - 2, textWidthEstimate, fontSize + 4);
+            ctx.globalAlpha = 1;
         
             ctx.fillStyle = "black";
             ctx.fillText(text, currentX, startY);
