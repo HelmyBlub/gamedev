@@ -237,6 +237,7 @@ function endGame(state: GameState, testing: TestingStuff | undefined) {
     }
     state.highscores.scores.push(newScore);
     state.highscores.scores.sort((a, b) => b - a);
+    state.highscores.lastHighscorePosition = state.highscores.scores.findIndex((e) => e === newScore);
     if (state.highscores.scores.length > state.highscores.maxLength) {
         state.highscores.scores.pop();
     }

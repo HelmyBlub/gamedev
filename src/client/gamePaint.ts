@@ -60,12 +60,21 @@ function paintTimeMeasures(ctx: CanvasRenderingContext2D, debug: Debugging | und
 }
 
 function paintHighscoreBoard(ctx: CanvasRenderingContext2D, highscores: Highscores) {
+    ctx.fillStyle = "white";
+    ctx.fillRect(150, 60 - 20, 100, (highscores.scores.length + 1) * 20 + 4);
+
     ctx.fillStyle = "black";
     ctx.font = "18px Arial";
 
     ctx.fillText("Restart with Key \"R\" ", 150, 20);
+
     ctx.fillText("Scores: ", 150, 60);
     for (let i = 0; i < highscores.scores.length; i++) {
+        if(i === highscores.lastHighscorePosition){
+            ctx.fillStyle = "lightblue";
+            ctx.fillRect(150, 80 + 20 * i - 20, 100, 22);
+            ctx.fillStyle = "black";        
+        } 
         ctx.fillText((i + 1) + ": " + highscores.scores[i], 150, 80 + 20 * i);
     }
 }
@@ -88,7 +97,25 @@ function paintPlayerStats(ctx: CanvasRenderingContext2D, character: LevelingChar
     ctx.fillText("Time: " + Math.round(gameTime / 1000), 400, 20);
     ctx.fillText("Distance: " + distance, 10, 40);
 
+    paintUpgradeOptionsUI(ctx, character);
+}
+
+function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: LevelingCharacter){
+    let fontSize = 20;
+    ctx.font = fontSize + "px Arial";
+    let startY = (ctx.canvas.height * 0.75);
+    let optionSpacer = 50;
+    let currentX = Math.max(5, ctx.canvas.width / 2 - 200);
     if (character.availableSkillPoints > 0) {
-        ctx.fillText(`1=${character.upgradeOptions[0].name} Up, 2=${character.upgradeOptions[1].name}, 3=${character.upgradeOptions[2].name}`, 10, 300);
+        for(let i = 0; i<3; i++){
+            ctx.fillStyle = "white";
+            let text = `${i+1}=${character.upgradeOptions[i].name}`;
+            let textWidthEstimate = text.length * fontSize * 0.63;
+            ctx.fillRect(currentX, startY - fontSize - 2, textWidthEstimate, fontSize + 4);
+        
+            ctx.fillStyle = "black";
+            ctx.fillText(text, currentX, startY);
+            currentX += textWidthEstimate + optionSpacer;
+        }
     }
 }

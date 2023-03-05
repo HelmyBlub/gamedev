@@ -1,4 +1,7 @@
 next tasks:
+    - small UI improvement:
+        - upgrade options text more to the middle with background to read easier
+        - highscore: with backgorund, score to the middle, last one highlited
     - create a complex/fun/chaotic class or improve on one?
         - Rod class:
             - ability ideas:

@@ -60,6 +60,7 @@ export type GameState = {
 export type Highscores = {
     scores: number[],
     maxLength: 10,
+    lastHighscorePosition: number,
 }
 
 export type Camera = {
@@ -124,6 +125,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             playerInputs: [],
             highscores: {
                 scores: [],
+                lastHighscorePosition: 0,
                 maxLength: 10,
             },
             randomSeed: {
