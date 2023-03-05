@@ -33,6 +33,7 @@ export type AbilityOwner = Position & {
 
 export type AbilityFunctions = {
     tickAbility: (abilityOwner: AbilityOwner, ability: Ability, game: Game) => void,
+    createAbility: () => Ability,
     createAbiltiyUpgradeOptions: () => UpgradeOptionAbility[],
     paintAbility?: (ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position) => void,
     activeAbilityCast?: (abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, game: Game) => void,
@@ -42,8 +43,8 @@ export type AbilityFunctions = {
     paintAbilityUI?: (ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) => void,
     onHitAndReturnIfContinue?: (abilityObject: AbilityObject) => boolean,
     setAbilityToLevel?: (ability: Ability, level: number) => void,
-    createAbility: () => Ability,
     isPassive: boolean,
+    hasAutoCast?: boolean,
 }
 
 export type AbilitiesFunctions = {

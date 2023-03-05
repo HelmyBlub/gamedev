@@ -1,4 +1,5 @@
 import { Game, Position } from "../gameModel.js";
+import { nextRandom } from "../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectAbilityObjectToCharacterHit, UpgradeOptionAbility } from "./ability.js";
 
 const ABILITY_NAME = "FireCircle";
@@ -22,11 +23,13 @@ export function addFireCircleAbility() {
         tickAbility: tickAbilityFireCircle,
         createAbiltiyUpgradeOptions: createAbiltiyFireCircleUpgradeOptions,
         activeAbilityCast: castFireCircle,
-        tickAbilityObject: tickAbilityObject,
+        tickAbilityObject: tickAbilityObjectFireCircle,
         deleteAbilityObject: deleteObjectFireCircle,
         paintAbilityUI: paintAbilityFireCircleUI,
         createAbility: createAbilityFireCircle,
+        setAbilityToLevel: setAbilityFireCircleToLevel,
         isPassive: false,
+        hasAutoCast: true,
     };
 }
 
@@ -46,8 +49,8 @@ export function createAbilityFireCircle(
         baseRechargeTime: rechargeTime,
         rechargeTimeDecreaseFaktor: 1,
         maxCharges: maxCharges,
-        currentCharges: maxCharges,
-        nextRechargeTime: 0,
+        currentCharges: 0,
+        nextRechargeTime: -1,
         passive: false,
         playerInputBinding: playerInputBinding,
     };
@@ -67,14 +70,40 @@ function createObjectFireCircle(x: number, y: number, damage: number, faction: s
     }
 }
 
+function setAbilityFireCircleToLevel(ability: Ability, level: number){
+    let abilityFireCircle = ability as AbilityFireCircle;
+    abilityFireCircle.damage = 10 + level * 10;
+    abilityFireCircle.size = 30 + level * 10;
+    abilityFireCircle.objectDuration = 2000 + level * 500;
+    abilityFireCircle.rechargeTimeDecreaseFaktor = 1 + 0.30 * level;
+}
+
 function tickAbilityFireCircle(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     let abilityFireCircle = ability as AbilityFireCircle;
+    if (abilityFireCircle.nextRechargeTime === -1){
+        abilityFireCircle.nextRechargeTime = game.state.time + abilityFireCircle.baseRechargeTime / abilityFireCircle.rechargeTimeDecreaseFaktor;
+    } 
     if (abilityFireCircle.currentCharges < abilityFireCircle.maxCharges) {
         if (game.state.time >= abilityFireCircle.nextRechargeTime) {
             abilityFireCircle.currentCharges++;
             abilityFireCircle.nextRechargeTime += abilityFireCircle.baseRechargeTime / abilityFireCircle.rechargeTimeDecreaseFaktor;
         }
     }
+
+    if (ability.passive) {
+        if (abilityFireCircle.currentCharges > 0) {
+            autoCastAbility(abilityOwner, ability, game);
+        }
+    }
+}
+
+function autoCastAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
+    let castRandomPosition = {
+        x: abilityOwner.x + nextRandom(game.state.randomSeed) * 100,
+        y: abilityOwner.y + nextRandom(game.state.randomSeed) * 100
+    };
+
+    castFireCircle(abilityOwner, ability, castRandomPosition, game);
 }
 
 function paintAbilityFireCircleUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
@@ -110,7 +139,7 @@ function paintAbilityFireCircleUI(ctx: CanvasRenderingContext2D, ability: Abilit
     }
 }
 
-function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
+function tickAbilityObjectFireCircle(abilityObject: AbilityObject, game: Game) {
     detectAbilityObjectToCharacterHit(game.state.map, abilityObject, game.state.players);
 }
 

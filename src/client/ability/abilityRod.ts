@@ -48,7 +48,7 @@ export function createAbilityRod(
     };
 }
 
-function createAbilityObjectRod(idCounter: IdCounter, ownerId: number, position: Position, ability: Ability | undefined, damage: number, size: number = 8): AbilityObjectRod{
+function createAbilityObjectRod(idCounter: IdCounter, ownerId: number, faction: string, position: Position, ability: Ability | undefined, damage: number, size: number = 8): AbilityObjectRod{
     return {
         type: ABILITY_NAME,
         ownerId: ownerId,
@@ -60,7 +60,7 @@ function createAbilityObjectRod(idCounter: IdCounter, ownerId: number, position:
         ability: ability,
         damage: damage,
         paintOrder: "afterCharacterPaint",
-        faction: "",
+        faction: faction,
     }
 }
 
@@ -79,7 +79,7 @@ function castRod(abilityOwner: AbilityOwner, ability: Ability, castPosition: Pos
     }
 
     let rodAbility: Ability | undefined = getRandomPassiveAbility(game.state.randomSeed);
-    let newRod: AbilityObjectRod = createAbilityObjectRod(game.state.idCounter, abilityOwner.id, castPosition, rodAbility, abilityRod.damage);
+    let newRod: AbilityObjectRod = createAbilityObjectRod(game.state.idCounter, abilityOwner.id, abilityOwner.faction, castPosition, rodAbility, abilityRod.damage);
     let nearest = getNearestRod(abilityObjects, newRod);
     if(nearest){
         newRod.conntetedToId = nearest.id;
@@ -129,15 +129,17 @@ function getRandomPassiveAbility(randomSeed: RandomSeed): Ability | undefined{
     let abilityFunctionKeys = Object.keys(ABILITIES_FUNCTIONS);
     let passiveAbilitiesFunctionKeys: string[] = [];
     for(let abilityFunctionKey of abilityFunctionKeys){
-        let afk = ABILITIES_FUNCTIONS[abilityFunctionKey];
-        if(afk.isPassive){
+        let abilityFunctions = ABILITIES_FUNCTIONS[abilityFunctionKey];
+        if(abilityFunctions.isPassive || abilityFunctions.hasAutoCast){
             passiveAbilitiesFunctionKeys.push(abilityFunctionKey);
         }
     }
     if(passiveAbilitiesFunctionKeys.length > 0){
         let random = Math.floor(nextRandom(randomSeed) * passiveAbilitiesFunctionKeys.length);
         let abilityFunctions = ABILITIES_FUNCTIONS[passiveAbilitiesFunctionKeys[random]];
-        return abilityFunctions.createAbility();
+        let ability = abilityFunctions.createAbility();
+        if(!abilityFunctions.isPassive) ability.passive = true;
+        return ability;
     }
 
     return undefined;
