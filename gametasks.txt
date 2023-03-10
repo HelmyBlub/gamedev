@@ -1,6 +1,10 @@
 next tasks:
+    - dead player following alive player  
+        - hard to click correct position if other player moves
+    - expanding circle from middle to force player to move out, some time pressure
     - create a complex/fun/chaotic class or improve on one?
         - Rod class:
+            - instead of +RodCount, change +RodCound for specific rod Ability
             - ability ideas:
                 - placed things do interact with the other
                     - empowered if grouped up?
