@@ -42,7 +42,7 @@ export function createAbilityRod(
     return {
         name: ABILITY_NAME,
         damage: damage,
-        maxNumberRods: 3,
+        maxNumberRods: 30,
         passive: false,
         playerInputBinding: playerInputBinding,
         idCounter: 0,
@@ -81,7 +81,7 @@ function castRod(abilityOwner: AbilityOwner, ability: Ability, castPosition: Pos
 
     let rodAbility: Ability | undefined = getRandomPassiveAbility(game.state.randomSeed);
     let newRod: AbilityObjectRod = createAbilityObjectRod(game.state.idCounter, abilityOwner.id, abilityOwner.faction, castPosition, rodAbility, abilityRod.damage);
-    let nearest = getNearestRod(abilityObjects, newRod);
+    let nearest = getNearestRod(abilityObjects, newRod, game.state.randomSeed);
     if(nearest){
         newRod.conntetedToId = nearest.id;
     }
@@ -258,20 +258,27 @@ function getRodById(abilityObjects: AbilityObject[], id: number): AbilityObjectR
     return undefined;
 }
 
-function getNearestRod(abilityObjects: AbilityObject[], rod: AbilityObjectRod): AbilityObjectRod | undefined{
+function getNearestRod(abilityObjects: AbilityObject[], rod: AbilityObjectRod, randomSeed: RandomSeed): AbilityObjectRod | undefined{
     let currentDistance: number;
     let lowestDistance: number = 0;
-    let nearest: AbilityObjectRod | undefined = undefined;
+    let nearest: AbilityObjectRod[] | undefined = undefined;
     for (let i = 0; i < abilityObjects.length; i++) {
         if (abilityObjects[i] === rod) continue;
         if (abilityObjects[i].type !== ABILITY_NAME) continue;
         currentDistance = calculateDistance(abilityObjects[i], rod);
         if (nearest === undefined || currentDistance < lowestDistance) {
-            nearest = abilityObjects[i] as AbilityObjectRod;
+            nearest = [abilityObjects[i] as AbilityObjectRod];
             lowestDistance = currentDistance;
+        }else if(currentDistance === lowestDistance){
+            nearest.push(abilityObjects[i] as AbilityObjectRod);
         }
     }
-    return nearest;
+    if(nearest){
+        let randomIndex = nearest.length > 1 ? Math.floor(nextRandom(randomSeed)*nearest.length) : 0;
+        return nearest[randomIndex];
+    }else{
+        return undefined;
+    }
 }
 
 function tickEffectConnected(abilityObjectRod: AbilityObjectRod, game: Game) {

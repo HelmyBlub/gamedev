@@ -1,6 +1,4 @@
 next tasks:
-    - player no longer leveling if dead
-
     - create a complex/fun/chaotic class or improve on one?
         - Rod class:
             - ability ideas:

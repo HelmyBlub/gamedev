@@ -1,3 +1,4 @@
+import { getCameraPosition } from "../game.js";
 import { Game, Position } from "../gameModel.js";
 import { nextRandom } from "../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectAbilityObjectToCharacterHit, UpgradeOptionAbility } from "./ability.js";
@@ -28,6 +29,7 @@ export function addFireCircleAbility() {
         paintAbilityUI: paintAbilityFireCircleUI,
         createAbility: createAbilityFireCircle,
         setAbilityToLevel: setAbilityFireCircleToLevel,
+        paintAbilityObject: paintAbilityObjectFireCircle,
         isPassive: false,
         hasAutoCast: true,
     };
@@ -68,6 +70,23 @@ function createObjectFireCircle(x: number, y: number, damage: number, faction: s
         deleteTime: gameTime + duration,
         paintOrder: "beforeCharacterPaint",
     }
+}
+
+function paintAbilityObjectFireCircle(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, game: Game) {
+    let cameraPosition = getCameraPosition(game);
+    let centerX = ctx.canvas.width / 2;
+    let centerY = ctx.canvas.height / 2;
+
+    ctx.fillStyle = abilityObject.color;
+    ctx.globalAlpha = 0.65;
+    ctx.beginPath();
+    ctx.arc(
+        abilityObject.x - cameraPosition.x + centerX,
+        abilityObject.y - cameraPosition.y + centerY,
+        abilityObject.size / 2, 0, 2 * Math.PI
+    );
+    ctx.fill();
+    ctx.globalAlpha = 1;
 }
 
 function setAbilityFireCircleToLevel(ability: Ability, level: number){
