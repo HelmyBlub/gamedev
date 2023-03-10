@@ -1,7 +1,8 @@
-import { getCharactersTouchingLine } from "../character/character.js";
+import { findCharacterById, getCharactersTouchingLine, getPlayerCharacters } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
-import { calculateDistance, getNextId } from "../game.js";
+import { calculateDistance, getCameraPosition, getNextId } from "../game.js";
 import { Position, Game, IdCounter } from "../gameModel.js";
+import { findPlayerByCharacterId } from "../player.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityFunctions, AbilityObject, AbilityOwner, UpgradeOptionAbility } from "./ability.js";
 
@@ -99,14 +100,22 @@ function updateRodsWhichHadDeletedId(abilityObjects: AbilityObject[], deletedId:
     }
 }
 
-function deleteOldesRodOfOwnerAndReturnDeletedId(abilityObjects: AbilityObject[], ownerId: number): number{
+function findOldesRodOfOwner(abilityObjects: AbilityObject[], ownerId: number): {rod: AbilityObjectRod, index: number} | undefined{
     for(let i = 0; i < abilityObjects.length; i++){
         if(abilityObjects[i].type === ABILITY_NAME){
             let abilityRod = abilityObjects[i] as AbilityObjectRod;
             if(abilityRod.ownerId === ownerId){
-                return (abilityObjects.splice(i,1)[0] as AbilityObjectRod).id;
+                return {rod: abilityRod, index: i};
             }
         }
+    }
+    return undefined;
+}
+
+function deleteOldesRodOfOwnerAndReturnDeletedId(abilityObjects: AbilityObject[], ownerId: number): number{
+    let oldestRodIndex = findOldesRodOfOwner(abilityObjects, ownerId)?.index;
+    if(oldestRodIndex !== undefined){
+        return (abilityObjects.splice(oldestRodIndex,1)[0] as AbilityObjectRod).id;
     }
     debugger;
     throw new Error("id does not exist " + ownerId);
@@ -159,20 +168,35 @@ function updateRodObjectAbilityLevels(abilityObjects: AbilityObject[]){
     }
 }
 
-function paintAbilityObjectRod(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, cameraPosition: Position, abilityObjects: AbilityObject[]) {
+function paintAbilityObjectRod(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, game: Game) {
+    let cameraPosition = getCameraPosition(game);
     let rod = abilityObject as AbilityObjectRod;
+    let owner = findPlayerByCharacterId(game.state.players, rod.ownerId);
     let centerX = ctx.canvas.width / 2;
     let centerY = ctx.canvas.height / 2;
     let rodBaseSize = rod.size;
 
-    let rodConnectionCounter = 1; //TODO
-    let rodHeight = rodBaseSize + rodConnectionCounter * 5;
+    let rodHeight = rodBaseSize + 5;
     let paintX = Math.floor(rod.x - cameraPosition.x + centerX - rodBaseSize / 2);
     let paintY = Math.floor(rod.y - cameraPosition.y + centerY - rodBaseSize / 2);
-    ctx.fillStyle = "white"; //TODO different color for next to be replaced
+    if(owner?.clientId === game.multiplayer.myClientId){
+        let ability = owner.character.abilities.find((e)=> e.name === ABILITY_NAME) as AbilityRod;
+        if (getRodCountOfOwner(game.state.abilityObjects, rod.ownerId) >= ability.maxNumberRods) {
+            let oldestRod = findOldesRodOfOwner(game.state.abilityObjects, rod.ownerId)?.rod;
+            if(oldestRod && oldestRod === rod){
+                ctx.fillStyle = "black"; 
+            }else{
+                ctx.fillStyle = "blue"; 
+            }
+        }else{
+            ctx.fillStyle = "blue"; 
+        }
+    }else{
+        ctx.fillStyle = "white"; 
+    }
     ctx.fillRect(paintX, paintY, rodBaseSize, rodHeight);
 
-    paintEffectConnected(ctx, rod, cameraPosition, abilityObjects);
+    paintEffectConnected(ctx, rod, cameraPosition, game.state.abilityObjects);
 
     if(rod.ability){
         let abilityFunction = ABILITIES_FUNCTIONS[rod.ability.name];

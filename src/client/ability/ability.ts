@@ -1,6 +1,6 @@
 import { determineCharactersInDistance } from "../character/character.js"
 import { Character } from "../character/characterModel.js"
-import { calculateDistance, takeTimeMeasure } from "../game.js"
+import { calculateDistance, getCameraPosition, takeTimeMeasure } from "../game.js"
 import { Game, Position } from "../gameModel.js"
 import { GameMap } from "../map/map.js"
 import { findPlayerByCharacterId, findPlayerById, Player } from "../player.js"
@@ -39,7 +39,7 @@ export type AbilityFunctions = {
     activeAbilityCast?: (abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, game: Game) => void,
     tickAbilityObject?: (abilityObject: AbilityObject, game: Game) => void,
     deleteAbilityObject?: (abilityObject: AbilityObject, game: Game) => boolean,
-    paintAbilityObject?: (ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, cameraPosition: Position, abilityObjects: AbilityObject[]) => void,
+    paintAbilityObject?: (ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, game: Game) => void,
     paintAbilityUI?: (ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) => void,
     onHitAndReturnIfContinue?: (abilityObject: AbilityObject) => boolean,
     setAbilityToLevel?: (ability: Ability, level: number) => void,
@@ -69,14 +69,14 @@ export function addAbilityToCharacter(character: Character, ability: Ability) {
     character.abilities.push(ability);
 }
 
-export function paintAbilityObjects(ctx: CanvasRenderingContext2D, abilityObjects: AbilityObject[], cameraPosition: Position, paintOrder: PaintOrder) {
+export function paintAbilityObjects(ctx: CanvasRenderingContext2D, abilityObjects: AbilityObject[], game: Game, paintOrder: PaintOrder) {
     for (let abilityObject of abilityObjects) {
         if (abilityObject.paintOrder === paintOrder) {
             let abilityFunctions = ABILITIES_FUNCTIONS[abilityObject.type];
             if (abilityFunctions?.paintAbilityObject !== undefined) {
-                abilityFunctions.paintAbilityObject(ctx, abilityObject, cameraPosition, abilityObjects);
+                abilityFunctions.paintAbilityObject(ctx, abilityObject, game);
             } else {
-                paintDefault(ctx, abilityObject, cameraPosition);
+                paintDefault(ctx, abilityObject, getCameraPosition(game));
             }
         }
     }
