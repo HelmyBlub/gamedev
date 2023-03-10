@@ -1,7 +1,10 @@
 next tasks:
+    - expanding circle from middle to force player to move out, some time pressure
     - dead player following alive player  
         - hard to click correct position if other player moves
-    - expanding circle from middle to force player to move out, some time pressure
+            - dead player becomes new "pet" character, which is on a leash to a living player
+                - give some camera control to dead player
+    - death animation
     - create a complex/fun/chaotic class or improve on one?
         - Rod class:
             - instead of +RodCount, change +RodCound for specific rod Ability

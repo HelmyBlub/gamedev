@@ -10,6 +10,8 @@ import { createFixPositionRespawnEnemiesOnInit } from "./character/enemy/fixPosi
 import { handleCommand } from "./commands.js";
 import { tickAbilityObjects } from "./ability/ability.js";
 import { garbageCollectPathingCache } from "./character/pathing.js";
+import { createObjectDeathCircle } from "./ability/abilityDeathCircle.js";
+import { LevelingCharacter } from "./character/levelingCharacters/levelingCharacterModel.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -188,6 +190,19 @@ export function calculateDistancePointToLine(point: Position, linestart: Positio
     return Math.sqrt(dx * dx + dy * dy);
 }
 
+export function getHighestLevelOfPlayers(players: Player[]){
+    let highestLevel = 0;
+    for(let player of players){
+        if (player.character.type === "levelingCharacter"){
+            let levelingCharater = player.character as LevelingCharacter;
+            if(levelingCharater.level > highestLevel){
+                highestLevel = levelingCharater.level;
+            }
+        }
+    }
+    return highestLevel;
+}
+
 function determineRunnerTimeout(game: Game): number {
     if (game.testing?.zeroTimeout) {
         return 0;
@@ -245,6 +260,7 @@ function endGame(state: GameState, testing: TestingStuff | undefined) {
 
 function tick(gameTimePassed: number, game: Game) {
     if (!game.state.ended) {
+        checkDeathCircleSpawn(game);
         addTestReplayInputs(game);
         game.state.time += gameTimePassed;
         generateMissingChunks(game.state.map, getPlayerCharacters(game.state.players), game.state.idCounter, game);
@@ -263,6 +279,16 @@ function tick(gameTimePassed: number, game: Game) {
 
         garbageCollectPathingCache(game.performance.pathingCache, game.state.time, game);
         determineActiveChunks(getPlayerCharacters(game.state.players), game.state.map, game);
+    }
+}
+
+function checkDeathCircleSpawn(game: Game){
+    if(!game.state.deathCircleCreated){
+        let highestLevet = getHighestLevelOfPlayers(game.state.players);
+        if(highestLevet >= 10){
+            game.state.abilityObjects.push(createObjectDeathCircle(game.state.map));
+            game.state.deathCircleCreated = true;
+        }
     }
 }
 

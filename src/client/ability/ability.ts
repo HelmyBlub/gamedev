@@ -4,6 +4,7 @@ import { calculateDistance, getCameraPosition, takeTimeMeasure } from "../game.j
 import { Game, Position } from "../gameModel.js"
 import { GameMap } from "../map/map.js"
 import { findPlayerByCharacterId, findPlayerById, Player } from "../player.js"
+import { addDeathCircleAbility } from "./abilityDeathCircle.js"
 import { addFireCircleAbility } from "./abilityFireCircle.js"
 import { addRodAbility } from "./abilityRod.js"
 import { addShootAbility } from "./abilityShoot.js"
@@ -43,6 +44,7 @@ export type AbilityFunctions = {
     paintAbilityUI?: (ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) => void,
     onHitAndReturnIfContinue?: (abilityObject: AbilityObject) => boolean,
     setAbilityToLevel?: (ability: Ability, level: number) => void,
+    notInheritable?: boolean,
     isPassive: boolean,
     hasAutoCast?: boolean,
 }
@@ -63,6 +65,7 @@ export function onDomLoadSetAbilitiesFunctions() {
     addFireCircleAbility();
     addSwordAbility();
     addRodAbility();
+    addDeathCircleAbility();
 }
 
 export function addAbilityToCharacter(character: Character, ability: Ability) {

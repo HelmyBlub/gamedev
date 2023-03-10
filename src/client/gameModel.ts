@@ -55,6 +55,7 @@ export type GameState = {
     highscores: Highscores,
     clientIds: number[],
     map: GameMap,
+    deathCircleCreated: boolean,
 }
 
 export type Highscores = {
@@ -134,6 +135,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             players: [],
             clientIds: [-1],
             map: createMap(),
+            deathCircleCreated: false,
         },
         clientKeyBindings: [],
         tickInterval: 16,

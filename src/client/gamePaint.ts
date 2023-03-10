@@ -93,7 +93,7 @@ function paintPlayerStats(ctx: CanvasRenderingContext2D, character: LevelingChar
     ctx.fillText("Level: " + character.level
         + "  SkillPoints:" + character.availableSkillPoints,
         200, 20);
-    ctx.fillText("HP: " + character.hp, 100, 20);
+    ctx.fillText("HP: " + Math.ceil(character.hp), 100, 20);
     ctx.fillText("Time: " + Math.round(gameTime / 1000), 400, 20);
     ctx.fillText("Distance: " + distance, 10, 40);
 

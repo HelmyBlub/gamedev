@@ -42,7 +42,7 @@ export function createAbilityRod(
     return {
         name: ABILITY_NAME,
         damage: damage,
-        maxNumberRods: 30,
+        maxNumberRods: 3,
         passive: false,
         playerInputBinding: playerInputBinding,
         idCounter: 0,
@@ -139,7 +139,7 @@ function getRandomPassiveAbility(randomSeed: RandomSeed): Ability | undefined{
     let passiveAbilitiesFunctionKeys: string[] = [];
     for(let abilityFunctionKey of abilityFunctionKeys){
         let abilityFunctions = ABILITIES_FUNCTIONS[abilityFunctionKey];
-        if(abilityFunctions.isPassive || abilityFunctions.hasAutoCast){
+        if(!abilityFunctions.notInheritable && (abilityFunctions.isPassive || abilityFunctions.hasAutoCast)){
             passiveAbilitiesFunctionKeys.push(abilityFunctionKey);
         }
     }
