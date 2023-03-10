@@ -158,7 +158,7 @@ function updateRodObjectAbilityLevels(abilityObjects: AbilityObject[]){
     for(let abilityObject of abilityObjects){
         if(abilityObject.type !== ABILITY_NAME) continue;
         let rod: AbilityObjectRod = abilityObject as AbilityObjectRod;
-        let level = getRodConnectionCount(abilityObjects, rod);
+        let level = getRodConnectionCount(abilityObjects, rod) + 1;
         if(rod.ability){
             let abilityFunctions = ABILITIES_FUNCTIONS[rod.ability.name];
             if(abilityFunctions.setAbilityToLevel){

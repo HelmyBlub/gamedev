@@ -9,12 +9,12 @@ export type Projectile = AbilityObject & {
     pierceCount: number,
 }
 
-export function createProjectile(x: number, y: number, moveDirection: number, damage: number, faction: string, moveSpeed: number, gameTime: number, pierceCount: number, timeToLive: number, type: string): Projectile {
+export function createProjectile(x: number, y: number, moveDirection: number, damage: number, faction: string, moveSpeed: number, gameTime: number, pierceCount: number, timeToLive: number, type: string, size: number = 4): Projectile {
     return {
         type: type,
         x: x,
         y: y,
-        size: 4,
+        size: size,
         color: "white",
         moveSpeed: moveSpeed,
         moveDirection: moveDirection,

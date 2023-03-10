@@ -13,6 +13,8 @@ export type AbilityShoot = Ability & {
     pierceCount: number,
     multiShot: number,
     timeToLive: number,
+    moveSpeed: number,
+    bulletSize: number,
 }
 
 export function addShootAbility(){
@@ -34,7 +36,9 @@ export function createAbilityShoot(
     damage: number = 10,
     pierceCount: number = 0,
     multiShot: number = 0,
-    timeToLive: number = 1000
+    timeToLive: number = 1000,
+    moveSpeed: number = 2,
+    bulletSize: number = 5,
 ): AbilityShoot {
     return {
         name: ABILITY_NAME,
@@ -46,15 +50,19 @@ export function createAbilityShoot(
         multiShot: multiShot,
         timeToLive: timeToLive,
         passive: true,
+        moveSpeed: moveSpeed,
+        bulletSize: bulletSize,
     };
 }
 
 function setAbilityShootToLevel(ability: Ability, level: number){
     let abilityShoot = ability as AbilityShoot;
     abilityShoot.damage = level * 10;
-    abilityShoot.frequencyIncrease = 0.2 * level;
-    abilityShoot.multiShot = level;
-    abilityShoot.pierceCount = level;
+    abilityShoot.frequencyIncrease = 1 + 0.2 * level;
+    abilityShoot.multiShot = level - 1;
+    abilityShoot.pierceCount = level - 1;
+    abilityShoot.moveSpeed = 2 + level * 0.2;
+    abilityShoot.bulletSize = 5 + level;
 }
 
 function tickAbilityShoot(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
@@ -106,7 +114,7 @@ function shoot(abilityOwner: AbilityOwner, ability: AbilityShoot, abilityObjects
     for (let i = 0; i <= ability.multiShot; i++) {
         let shotSpread: number = (nextRandom(randomSeed) - 0.5) / 10 * ability.multiShot;
 
-        let moveSpeed = 2;
+        let moveSpeed = ability.moveSpeed;
         if(abilityOwner.moveSpeed !== undefined){
             moveSpeed = abilityOwner.moveSpeed + 2;
         }
@@ -127,6 +135,7 @@ function shoot(abilityOwner: AbilityOwner, ability: AbilityShoot, abilityObjects
             ability.pierceCount,
             ability.timeToLive,
             ABILITY_NAME,
+            ability.bulletSize
         ));
     }
 }

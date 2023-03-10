@@ -72,8 +72,8 @@ function createObjectFireCircle(x: number, y: number, damage: number, faction: s
 
 function setAbilityFireCircleToLevel(ability: Ability, level: number){
     let abilityFireCircle = ability as AbilityFireCircle;
-    abilityFireCircle.damage = 10 + level * 10;
-    abilityFireCircle.size = 30 + level * 10;
+    abilityFireCircle.damage = level * 10;
+    abilityFireCircle.size = 20 + level * 10;
     abilityFireCircle.objectDuration = 2000 + level * 500;
     abilityFireCircle.rechargeTimeDecreaseFaktor = 1 + 0.30 * level;
 }
@@ -92,18 +92,19 @@ function tickAbilityFireCircle(abilityOwner: AbilityOwner, ability: Ability, gam
 
     if (ability.passive) {
         if (abilityFireCircle.currentCharges > 0) {
-            autoCastAbility(abilityOwner, ability, game);
+            autoCastAbility(abilityOwner, abilityFireCircle, game);
         }
     }
 }
 
-function autoCastAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
+function autoCastAbility(abilityOwner: AbilityOwner, abilityFireCircle: AbilityFireCircle, game: Game) {
+    let areaSize = 20 + abilityFireCircle.size;
     let castRandomPosition = {
-        x: abilityOwner.x + nextRandom(game.state.randomSeed) * 100,
-        y: abilityOwner.y + nextRandom(game.state.randomSeed) * 100
+        x: abilityOwner.x + nextRandom(game.state.randomSeed) * areaSize * 2 - areaSize,
+        y: abilityOwner.y + nextRandom(game.state.randomSeed) * areaSize * 2 - areaSize
     };
 
-    castFireCircle(abilityOwner, ability, castRandomPosition, game);
+    castFireCircle(abilityOwner, abilityFireCircle, castRandomPosition, game);
 }
 
 function paintAbilityFireCircleUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
