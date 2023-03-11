@@ -1,16 +1,17 @@
 import { ABILITIES_FUNCTIONS } from "../ability/ability.js";
-import { Position } from "../gameModel.js";
+import { Game, Position } from "../gameModel.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
 import { randomizedCharacterImageToKey } from "../randomizedCharacterImage.js";
 import { Character } from "./characterModel.js";
+import { LevelingCharacter } from "./levelingCharacters/levelingCharacterModel.js";
 
-export function paintCharacters(ctx: CanvasRenderingContext2D, characters: Character[], cameraPosition: Position) {
+export function paintCharacters(ctx: CanvasRenderingContext2D, characters: Character[], cameraPosition: Position, game: Game) {
     for (let i = 0; i < characters.length; i++) {
-        paintCharacter(ctx, characters[i], cameraPosition);
+        paintCharacter(ctx, characters[i], cameraPosition, game);
     }
 }
 
-function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position) {
+function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
     if (character.isDead) return;
     let centerX = ctx.canvas.width / 2;
     let centerY = ctx.canvas.height / 2;
@@ -55,6 +56,8 @@ function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cam
                     if (animationY === 2) animationY = 0;
                     if (animationY === 3) animationY = 2;
                 }
+                let heightFactor = 1;
+                if ((character as LevelingCharacter).isPet) heightFactor = 0.5;
                 ctx.drawImage(
                     characterImage.properties.canvases[randomizedCharacterImageToKey(character.randomizedCharacterImage)],
                     widthIndex * spriteWidth,
@@ -62,9 +65,9 @@ function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cam
                     spriteWidth,
                     spriteHeight,
                     Math.floor(paintX - character.width / 2),
-                    Math.floor(paintY - character.height / 2),
+                    Math.floor(paintY - character.height / 2 * heightFactor),
                     character.width,
-                    character.height
+                    character.height * heightFactor
                 );
 
             }
@@ -83,7 +86,7 @@ function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cam
     for (let ability of character.abilities) {
         const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
         if (abilityFunctions.paintAbility !== undefined) {
-            abilityFunctions.paintAbility(ctx, character, ability, cameraPosition);
+            abilityFunctions.paintAbility(ctx, character, ability, cameraPosition, game);
         }
     }
 }

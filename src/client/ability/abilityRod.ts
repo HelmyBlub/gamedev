@@ -201,7 +201,7 @@ function paintAbilityObjectRod(ctx: CanvasRenderingContext2D, abilityObject: Abi
     if(rod.ability){
         let abilityFunction = ABILITIES_FUNCTIONS[rod.ability.name];
         if(abilityFunction.paintAbility){
-            abilityFunction.paintAbility(ctx, rod, rod.ability, cameraPosition);
+            abilityFunction.paintAbility(ctx, rod, rod.ability, cameraPosition, game);
         }
     }
 }

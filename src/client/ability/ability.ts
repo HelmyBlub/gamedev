@@ -6,6 +6,7 @@ import { GameMap } from "../map/map.js"
 import { findPlayerByCharacterId, findPlayerById, Player } from "../player.js"
 import { addDeathCircleAbility } from "./abilityDeathCircle.js"
 import { addFireCircleAbility } from "./abilityFireCircle.js"
+import { addLeshAbility } from "./abilityLeash.js"
 import { addRodAbility } from "./abilityRod.js"
 import { addShootAbility } from "./abilityShoot.js"
 import { addSwordAbility } from "./abilitySword.js"
@@ -36,7 +37,7 @@ export type AbilityFunctions = {
     tickAbility: (abilityOwner: AbilityOwner, ability: Ability, game: Game) => void,
     createAbility: () => Ability,
     createAbiltiyUpgradeOptions: () => UpgradeOptionAbility[],
-    paintAbility?: (ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position) => void,
+    paintAbility?: (ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) => void,
     activeAbilityCast?: (abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, game: Game) => void,
     tickAbilityObject?: (abilityObject: AbilityObject, game: Game) => void,
     deleteAbilityObject?: (abilityObject: AbilityObject, game: Game) => boolean,
@@ -66,6 +67,7 @@ export function onDomLoadSetAbilitiesFunctions() {
     addSwordAbility();
     addRodAbility();
     addDeathCircleAbility();
+    addLeshAbility();
 }
 
 export function addAbilityToCharacter(character: Character, ability: Ability) {

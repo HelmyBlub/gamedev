@@ -1,5 +1,5 @@
 import { paintCharacters } from "../character/characterPaint.js";
-import { Debugging, MapChunkPaintCache, Position, TestingStuff } from "../gameModel.js";
+import { Debugging, Game, MapChunkPaintCache, Position, TestingStuff } from "../gameModel.js";
 import { GameMap, MapChunk, TILE_VALUES } from "./map.js";
 
 export function paintMap(ctx: CanvasRenderingContext2D, cameraPosition: Position, map: GameMap, mapChunkPaintCache: MapChunkPaintCache, debug: Debugging | undefined, time: number) {
@@ -37,7 +37,7 @@ export function paintMap(ctx: CanvasRenderingContext2D, cameraPosition: Position
     }
 }
 
-export function paintMapCharacters(ctx: CanvasRenderingContext2D, cameraPosition: Position, map: GameMap) {
+export function paintMapCharacters(ctx: CanvasRenderingContext2D, cameraPosition: Position, map: GameMap, game: Game) {
     let chunkSize = map.tileSize * map.chunkLength;
     let width = ctx.canvas.width;
     let height = ctx.canvas.height;
@@ -52,7 +52,7 @@ export function paintMapCharacters(ctx: CanvasRenderingContext2D, cameraPosition
             let chunkJ = startChunkJ + j;
             let chunk = map.chunks[`${chunkI}_${chunkJ}`];
             if (chunk === undefined) continue;
-            paintCharacters(ctx, chunk.characters, cameraPosition);
+            paintCharacters(ctx, chunk.characters, cameraPosition, game);
         }
     }
 }

@@ -7,6 +7,7 @@ import { Position, Game, GameState, IdCounter, Camera } from "../gameModel.js";
 import { Player } from "../player.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS } from "../ability/ability.js";
+import { LevelingCharacter } from "./levelingCharacters/levelingCharacterModel.js";
 
 export function findCharacterById(characters: Character[], id: number): Character | null {
     for (let i = 0; i < characters.length; i++) {
@@ -59,6 +60,7 @@ export function determineClosestCharacter(character: Character, characters: Char
 
     for (let i = 0; i < characters.length; i++) {
         if (characters[i].isDead) continue;
+        if (characters[i].type === "levelingCharacter" && (characters[i] as LevelingCharacter).isPet) continue;
         let distance = calculateDistance(character, characters[i]);
         if (minDistanceCharacter === null || minDistance > distance) {
             minDistance = distance;
@@ -137,9 +139,6 @@ export function detectCharacterDeath(map: GameMap, state: GameState, camera: Cam
         let char = state.players[i].character;
         if (char.hp <= 0 && !char.isDead) {
             char.isDead = true;
-            if (camera.characterId === char.id) {
-                findAndSetNewCameraCharacterId(camera, state.players);
-            }
         }
     }
     takeTimeMeasure(game.debug, "detectCharacterDeath", "");

@@ -116,7 +116,7 @@ function createBiggerSwordImage(newSwordSize: number) {
     }
 }
 
-function paintAbilitySword(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position) {
+function paintAbilitySword(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
     let abilitySword = ability as AbilitySword;
     let centerX = ctx.canvas.width / 2;
     let centerY = ctx.canvas.height / 2;

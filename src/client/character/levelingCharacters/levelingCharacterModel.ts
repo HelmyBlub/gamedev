@@ -10,6 +10,7 @@ export type LevelingCharacter = Character & {
     experienceForLevelUp: number,
     level: number,
     availableSkillPoints: number,
+    isPet: boolean,
     upgradeOptions: {
         abilityName?: string,
         name: string,
@@ -62,6 +63,7 @@ export function createLevelingCharacter(
         experienceForLevelUp: 10,
         level: 0,
         availableSkillPoints: 0,
-        upgradeOptions: []
+        upgradeOptions: [],
+        isPet: false,
     };
 }

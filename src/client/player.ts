@@ -1,3 +1,4 @@
+import { createAbilityLeash } from "./ability/abilityLeash.js";
 import { Character, createPlayerCharacter } from "./character/characterModel.js";
 import { Game, IdCounter, KeyCodeToAction, LEVELING_CHARACTER_CLASSES, Position } from "./gameModel.js";
 import { findNearNonBlockingPosition } from "./map/map.js";

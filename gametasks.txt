@@ -1,5 +1,4 @@
 next tasks:
-    - expanding circle from middle to force player to move out, some time pressure
     - dead player following alive player  
         - hard to click correct position if other player moves
             - dead player becomes new "pet" character, which is on a leash to a living player
