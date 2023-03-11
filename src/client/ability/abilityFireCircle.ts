@@ -1,7 +1,7 @@
 import { calculateDirection, calculateDistance, getCameraPosition } from "../game.js";
 import { Game, Position } from "../gameModel.js";
 import { nextRandom } from "../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectAbilityObjectToCharacterHit, UpgradeOptionAbility } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectAbilityObjectToCharacterHit, PaintOrder, UpgradeOptionAbility } from "./ability.js";
 
 const ABILITY_NAME = "FireCircle";
 export type AbilityFireCircle = Ability & {
@@ -77,7 +77,6 @@ function createObjectFireCircleTraveling(x: number, y: number, damage: number, f
         damage: damage,
         faction: faction,
         duration: duration,
-        paintOrder: "afterCharacterPaint",
         subType: "FireCircelTraveling",
         moveSpeed: 4,
         targetPosition: { x, y },
@@ -95,12 +94,11 @@ function createObjectFireCircle(abilityObject: AbilityObjectFireCircleTraveling,
         damage: abilityObject.damage,
         faction: abilityObject.faction,
         deleteTime: gameTime + abilityObject.duration,
-        paintOrder: "beforeCharacterPaint",
         subType: "FireCircel",
     }
 }
 
-function paintAbilityObjectFireCircle(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, game: Game) {
+function paintAbilityObjectFireCircle(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrder, game: Game) {
     let abilityObjectFireCircle = abilityObject as AbilityObjectFireCircle;
     let cameraPosition = getCameraPosition(game);
     let centerX = ctx.canvas.width / 2;
@@ -108,23 +106,27 @@ function paintAbilityObjectFireCircle(ctx: CanvasRenderingContext2D, abilityObje
 
     ctx.fillStyle = abilityObject.color;
     if(abilityObjectFireCircle.subType === "FireCircel"){
-        ctx.globalAlpha = 0.65;
-        ctx.beginPath();
-        ctx.arc(
-            abilityObject.x - cameraPosition.x + centerX,
-            abilityObject.y - cameraPosition.y + centerY,
-            abilityObject.size / 2, 0, 2 * Math.PI
-        );
-        ctx.fill();
-        ctx.globalAlpha = 1;
+        if(paintOrder === "beforeCharacterPaint"){
+            ctx.globalAlpha = 0.65;
+            ctx.beginPath();
+            ctx.arc(
+                abilityObject.x - cameraPosition.x + centerX,
+                abilityObject.y - cameraPosition.y + centerY,
+                abilityObject.size / 2, 0, 2 * Math.PI
+            );
+            ctx.fill();
+            ctx.globalAlpha = 1;
+        }
     }else if(abilityObjectFireCircle.subType === "FireCircelTraveling"){
-        ctx.beginPath();
-        ctx.arc(
-            abilityObject.x - cameraPosition.x + centerX,
-            abilityObject.y - cameraPosition.y + centerY,
-            5, 0, 2 * Math.PI
-        );
-        ctx.fill();
+        if(paintOrder === "afterCharacterPaint"){
+            ctx.beginPath();
+            ctx.arc(
+                abilityObject.x - cameraPosition.x + centerX,
+                abilityObject.y - cameraPosition.y + centerY,
+                5, 0, 2 * Math.PI
+            );
+            ctx.fill();
+        }
     }
 
 }

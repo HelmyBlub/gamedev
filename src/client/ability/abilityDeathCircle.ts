@@ -2,7 +2,7 @@ import { getPlayerCharacters } from "../character/character.js";
 import { calculateDistance, getCameraPosition } from "../game.js";
 import { Game } from "../gameModel.js";
 import { GameMap } from "../map/map.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, UpgradeOptionAbility } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrder, UpgradeOptionAbility } from "./ability.js";
 
 export type AbilityDeathCircle = Ability & {
     damage: number,
@@ -48,7 +48,6 @@ export function createObjectDeathCircle(map: GameMap): AbilityObjectDeathCircle 
         growSpeed: 0.5,
         x: mapCenter,
         y: mapCenter,
-        paintOrder: "beforeCharacterPaint",
     }
 }
 
@@ -78,19 +77,21 @@ function tickAbilityObjectDeathCircle(abilityObject: AbilityObject, game: Game) 
     }
 }
 
-function paintAbilityObjectDeathCircle(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, game: Game) {
-    let cameraPosition = getCameraPosition(game);
-    let centerX = ctx.canvas.width / 2;
-    let centerY = ctx.canvas.height / 2;
-
-    ctx.fillStyle = abilityObject.color;
-    ctx.globalAlpha = 0.65;
-    ctx.beginPath();
-    ctx.arc(
-        abilityObject.x - cameraPosition.x + centerX,
-        abilityObject.y - cameraPosition.y + centerY,
-        abilityObject.size / 2, 0, 2 * Math.PI
-    );
-    ctx.fill();
-    ctx.globalAlpha = 1;
+function paintAbilityObjectDeathCircle(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrder, game: Game) {
+    if(paintOrder === "beforeCharacterPaint"){
+        let cameraPosition = getCameraPosition(game);
+        let centerX = ctx.canvas.width / 2;
+        let centerY = ctx.canvas.height / 2;
+    
+        ctx.fillStyle = abilityObject.color;
+        ctx.globalAlpha = 0.65;
+        ctx.beginPath();
+        ctx.arc(
+            abilityObject.x - cameraPosition.x + centerX,
+            abilityObject.y - cameraPosition.y + centerY,
+            abilityObject.size / 2, 0, 2 * Math.PI
+        );
+        ctx.fill();
+        ctx.globalAlpha = 1;
+    }
 }

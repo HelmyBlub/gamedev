@@ -23,7 +23,6 @@ export function createProjectile(x: number, y: number, moveDirection: number, da
         faction: faction,
         deleteTime: gameTime + timeToLive,
         pierceCount: pierceCount,
-        paintOrder: "afterCharacterPaint",
     }
 }
 

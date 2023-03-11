@@ -1,10 +1,10 @@
-import { findCharacterById, getCharactersTouchingLine, getPlayerCharacters } from "../character/character.js";
+import { getCharactersTouchingLine } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
 import { calculateDistance, getCameraPosition, getNextId } from "../game.js";
 import { Position, Game, IdCounter } from "../gameModel.js";
 import { findPlayerByCharacterId } from "../player.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityFunctions, AbilityObject, AbilityOwner, UpgradeOptionAbility } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityFunctions, AbilityObject, AbilityOwner, PaintOrder, UpgradeOptionAbility } from "./ability.js";
 
 type AbilityObjectRod = AbilityObject & {
     ownerId: number,
@@ -42,7 +42,7 @@ export function createAbilityRod(
     return {
         name: ABILITY_NAME,
         damage: damage,
-        maxNumberRods: 3,
+        maxNumberRods: 30,
         passive: false,
         playerInputBinding: playerInputBinding,
         idCounter: 0,
@@ -60,7 +60,6 @@ function createAbilityObjectRod(idCounter: IdCounter, ownerId: number, faction: 
         id: getNextId(idCounter),
         ability: ability,
         damage: damage,
-        paintOrder: "afterCharacterPaint",
         faction: faction,
     }
 }
@@ -168,40 +167,43 @@ function updateRodObjectAbilityLevels(abilityObjects: AbilityObject[]){
     }
 }
 
-function paintAbilityObjectRod(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, game: Game) {
+function paintAbilityObjectRod(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrder, game: Game) {
     let cameraPosition = getCameraPosition(game);
     let rod = abilityObject as AbilityObjectRod;
-    let owner = findPlayerByCharacterId(game.state.players, rod.ownerId);
-    let centerX = ctx.canvas.width / 2;
-    let centerY = ctx.canvas.height / 2;
-    let rodBaseSize = rod.size;
 
-    let rodHeight = rodBaseSize + 5;
-    let paintX = Math.floor(rod.x - cameraPosition.x + centerX - rodBaseSize / 2);
-    let paintY = Math.floor(rod.y - cameraPosition.y + centerY - rodBaseSize / 2);
-    if(owner?.clientId === game.multiplayer.myClientId){
-        let ability = owner.character.abilities.find((e)=> e.name === ABILITY_NAME) as AbilityRod;
-        if (getRodCountOfOwner(game.state.abilityObjects, rod.ownerId) >= ability.maxNumberRods) {
-            let oldestRod = findOldesRodOfOwner(game.state.abilityObjects, rod.ownerId)?.rod;
-            if(oldestRod && oldestRod === rod){
-                ctx.fillStyle = "black"; 
+    if(paintOrder === "beforeCharacterPaint"){
+        paintEffectConnected(ctx, rod, cameraPosition, game.state.abilityObjects);
+    }else if(paintOrder === "afterCharacterPaint"){
+        let owner = findPlayerByCharacterId(game.state.players, rod.ownerId);
+        let centerX = ctx.canvas.width / 2;
+        let centerY = ctx.canvas.height / 2;
+        let rodBaseSize = rod.size;
+    
+        let rodHeight = rodBaseSize + 5;
+        let paintX = Math.floor(rod.x - cameraPosition.x + centerX - rodBaseSize / 2);
+        let paintY = Math.floor(rod.y - cameraPosition.y + centerY - rodBaseSize / 2);
+        if(owner?.clientId === game.multiplayer.myClientId){
+            let ability = owner.character.abilities.find((e)=> e.name === ABILITY_NAME) as AbilityRod;
+            if (getRodCountOfOwner(game.state.abilityObjects, rod.ownerId) >= ability.maxNumberRods) {
+                let oldestRod = findOldesRodOfOwner(game.state.abilityObjects, rod.ownerId)?.rod;
+                if(oldestRod && oldestRod === rod){
+                    ctx.fillStyle = "black"; 
+                }else{
+                    ctx.fillStyle = "blue"; 
+                }
             }else{
                 ctx.fillStyle = "blue"; 
             }
         }else{
-            ctx.fillStyle = "blue"; 
+            ctx.fillStyle = "white"; 
         }
-    }else{
-        ctx.fillStyle = "white"; 
-    }
-    ctx.fillRect(paintX, paintY, rodBaseSize, rodHeight);
-
-    paintEffectConnected(ctx, rod, cameraPosition, game.state.abilityObjects);
-
-    if(rod.ability){
-        let abilityFunction = ABILITIES_FUNCTIONS[rod.ability.name];
-        if(abilityFunction.paintAbility){
-            abilityFunction.paintAbility(ctx, rod, rod.ability, cameraPosition, game);
+        ctx.fillRect(paintX, paintY, rodBaseSize, rodHeight);
+    
+        if(rod.ability){
+            let abilityFunction = ABILITIES_FUNCTIONS[rod.ability.name];
+            if(abilityFunction.paintAbility){
+                abilityFunction.paintAbility(ctx, rod, rod.ability, cameraPosition, game);
+            }
         }
     }
 }
@@ -303,6 +305,8 @@ function paintAbilityRodUI(ctx: CanvasRenderingContext2D, ability: Ability, draw
     let rod = ability as AbilityRod;
     let fontSize = size;
     let rectSize = size;
+
+    ctx.lineWidth = 1;
     ctx.strokeStyle = "black";
     ctx.fillStyle = "white";
     ctx.fillRect(drawStartX, drawStartY, rectSize, rectSize);

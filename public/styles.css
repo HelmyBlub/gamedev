@@ -12,6 +12,8 @@
 
 .settingAreaDiv{
     position:absolute;
+    right:10px;
+    top: 40px;
     background-color: white;
 }
 

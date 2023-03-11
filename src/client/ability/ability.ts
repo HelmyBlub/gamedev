@@ -23,7 +23,6 @@ export type AbilityObject = Position & {
     color: string,
     damage: number,
     faction: string,
-    paintOrder: PaintOrder,
 }
 
 export type AbilityOwner = Position & {
@@ -41,7 +40,7 @@ export type AbilityFunctions = {
     activeAbilityCast?: (abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, game: Game) => void,
     tickAbilityObject?: (abilityObject: AbilityObject, game: Game) => void,
     deleteAbilityObject?: (abilityObject: AbilityObject, game: Game) => boolean,
-    paintAbilityObject?: (ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, game: Game) => void,
+    paintAbilityObject?: (ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrder, game: Game) => void,
     paintAbilityUI?: (ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) => void,
     onHitAndReturnIfContinue?: (abilityObject: AbilityObject) => boolean,
     setAbilityToLevel?: (ability: Ability, level: number) => void,
@@ -76,13 +75,11 @@ export function addAbilityToCharacter(character: Character, ability: Ability) {
 
 export function paintAbilityObjects(ctx: CanvasRenderingContext2D, abilityObjects: AbilityObject[], game: Game, paintOrder: PaintOrder) {
     for (let abilityObject of abilityObjects) {
-        if (abilityObject.paintOrder === paintOrder) {
-            let abilityFunctions = ABILITIES_FUNCTIONS[abilityObject.type];
-            if (abilityFunctions?.paintAbilityObject !== undefined) {
-                abilityFunctions.paintAbilityObject(ctx, abilityObject, game);
-            } else {
-                paintDefault(ctx, abilityObject, getCameraPosition(game));
-            }
+        let abilityFunctions = ABILITIES_FUNCTIONS[abilityObject.type];
+        if (abilityFunctions?.paintAbilityObject !== undefined) {
+            abilityFunctions.paintAbilityObject(ctx, abilityObject, paintOrder, game);
+        } else {
+            paintDefault(ctx, abilityObject, getCameraPosition(game), paintOrder);
         }
     }
 }
@@ -144,16 +141,18 @@ export function paintUiForAbilities(ctx: CanvasRenderingContext2D, game: Game) {
     }
 }
 
-function paintDefault(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, cameraPosition: Position) {
-    let centerX = ctx.canvas.width / 2;
-    let centerY = ctx.canvas.height / 2;
-
-    ctx.fillStyle = abilityObject.color;
-    ctx.beginPath();
-    ctx.arc(
-        abilityObject.x - cameraPosition.x + centerX,
-        abilityObject.y - cameraPosition.y + centerY,
-        abilityObject.size / 2, 0, 2 * Math.PI
-    );
-    ctx.fill();
+function paintDefault(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, cameraPosition: Position, paintOrder: PaintOrder) {
+    if(paintOrder === "afterCharacterPaint"){
+        let centerX = ctx.canvas.width / 2;
+        let centerY = ctx.canvas.height / 2;
+    
+        ctx.fillStyle = abilityObject.color;
+        ctx.beginPath();
+        ctx.arc(
+            abilityObject.x - cameraPosition.x + centerX,
+            abilityObject.y - cameraPosition.y + centerY,
+            abilityObject.size / 2, 0, 2 * Math.PI
+        );
+        ctx.fill();
+    }
 }
