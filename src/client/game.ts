@@ -12,6 +12,7 @@ import { tickAbilityObjects } from "./ability/ability.js";
 import { garbageCollectPathingCache } from "./character/pathing.js";
 import { createObjectDeathCircle } from "./ability/abilityDeathCircle.js";
 import { LevelingCharacter } from "./character/levelingCharacters/levelingCharacterModel.js";
+import { createBossWithLevel, tickBossCharacters } from "./character/enemy/bossEnemy.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -58,6 +59,7 @@ export function gameInit(game: Game) {
     game.state.restartAfterTick = false;
     game.state.time = 0;
     game.state.playerInputs = [];
+    game.state.bosses = [];
     game.clientKeyBindings = [];
     game.performance = {};
     removeAllMapCharacters(game.state.map);
@@ -266,6 +268,7 @@ function tick(gameTimePassed: number, game: Game) {
         generateMissingChunks(game.state.map, getPlayerCharacters(game.state.players), game.state.idCounter, game);
         tickPlayerInputs(game.state.playerInputs, game.state.time, game);
         tickMapCharacters(game.state.map, game);
+        tickBossCharacters(game.state.bosses, game);
 
         takeTimeMeasure(game.debug, "", "playerTick");
         tickCharacters(getPlayerCharacters(game.state.players), game);

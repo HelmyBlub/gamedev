@@ -1,13 +1,14 @@
 import { levelingCharacterXpGain } from "./levelingCharacters/levelingCharacter.js";
 import { determineMapKeysInDistance, GameMap, getChunksTouchingLine, isPositionBlocking, MapChunk } from "../map/map.js";
 import { Character, CHARACTER_TYPES_STUFF, ENEMY_FACTION } from "./characterModel.js";
-import { getNextWaypoint, PathingCache } from "./pathing.js";
+import { getNextWaypoint, getPathingCache, PathingCache } from "./pathing.js";
 import { calculateDirection, calculateDistance, calculateDistancePointToLine, takeTimeMeasure } from "../game.js";
 import { Position, Game, GameState, IdCounter, Camera } from "../gameModel.js";
 import { Player } from "../player.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS } from "../ability/ability.js";
 import { LevelingCharacter } from "./levelingCharacters/levelingCharacterModel.js";
+import { BossEnemyCharacter, CHARACTER_TYPE_BOSS_ENEMY } from "./enemy/bossEnemy.js";
 
 export function findCharacterById(characters: Character[], id: number): Character | null {
     for (let i = 0; i < characters.length; i++) {
@@ -20,12 +21,7 @@ export function findCharacterById(characters: Character[], id: number): Characte
 
 export function tickMapCharacters(map: GameMap, game: Game) {
     takeTimeMeasure(game.debug, "", "tickMapCharacters");
-    let pathingCache = {};
-    if(game.performance.pathingCache !== undefined){
-        pathingCache = game.performance.pathingCache;
-    }else{
-        game.performance.pathingCache = pathingCache;
-    }
+    let pathingCache = getPathingCache(game);
     let allCharacters: Character[] = [];
     for (let i = 0; i < map.activeChunkKeys.length; i++) {
         let chunk = map.chunks[map.activeChunkKeys[i]];
@@ -70,7 +66,7 @@ export function determineClosestCharacter(character: Character, characters: Char
     return { minDistanceCharacter, minDistance };
 }
 
-export function determineCharactersInDistance(position: Position, map: GameMap, players: Player[], maxDistance: number): Character[] {
+export function determineCharactersInDistance(position: Position, map: GameMap, players: Player[], bosses: BossEnemyCharacter[] , maxDistance: number): Character[] {
     let result: Character[] = [];
     let mapKeysInDistance = determineMapKeysInDistance(position, map, maxDistance);
 
@@ -85,6 +81,14 @@ export function determineCharactersInDistance(position: Position, map: GameMap, 
             }
         }
     }
+
+    for (let boss of bosses) {
+        let distance = calculateDistance(position, boss);
+        if (maxDistance >= distance) {
+            result.push(boss);
+        }
+    }
+
     for (let player of players) {
         let distance = calculateDistance(position, player.character);
         if (maxDistance >= distance) {
@@ -104,6 +108,12 @@ export function getCharactersTouchingLine(game: Game, lineStart: Position, lineE
             if (distance < char.width / 2 + lineWidth / 2) {
                 charactersTouchingLine.push(char);
             }
+        }
+    }
+    for(let boss of game.state.bosses){
+        let distance = calculateDistancePointToLine(boss, lineStart, lineEnd);
+        if (distance < boss.width / 2 + lineWidth / 2) {
+            charactersTouchingLine.push(boss);
         }
     }
 
@@ -135,6 +145,14 @@ export function detectCharacterDeath(map: GameMap, state: GameState, camera: Cam
             }
         }
     }
+    for (let i = state.bosses.length - 1; i >= 0; i--) {
+        let char = state.bosses[i];
+        if (char.hp <= 0 && !char.isDead) {
+            char.isDead = true;
+            state.bosses.splice(i,1);
+        }
+    }
+
     for (let i = 0; i < state.players.length; i++) {
         let char = state.players[i].character;
         if (char.hp <= 0 && !char.isDead) {
@@ -221,7 +239,7 @@ export function moveCharacterTick(character: Character, map: GameMap, idCounter:
 }
 
 function mapCharacterCheckForChunkChange(character: Character, map: GameMap, newX: number, newY: number, isPlayer: boolean) {
-    if (!isPlayer) {
+    if (!isPlayer && character.type !== CHARACTER_TYPE_BOSS_ENEMY) {
         let currentChunkI = Math.floor(character.y / (map.tileSize * map.chunkLength));
         let newChunkI = Math.floor(newY / (map.tileSize * map.chunkLength));
         let currentChunkJ = Math.floor(character.x / (map.tileSize * map.chunkLength));

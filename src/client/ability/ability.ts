@@ -1,5 +1,6 @@
 import { determineCharactersInDistance } from "../character/character.js"
 import { Character } from "../character/characterModel.js"
+import { BossEnemyCharacter } from "../character/enemy/bossEnemy.js"
 import { calculateDistance, getCameraPosition, takeTimeMeasure } from "../game.js"
 import { Game, Position } from "../gameModel.js"
 import { GameMap } from "../map/map.js"
@@ -104,10 +105,10 @@ export function tickAbilityObjects(abilityObjects: AbilityObject[], game: Game) 
     takeTimeMeasure(game.debug, "tickAbilityObjects", "");
 }
 
-export function detectAbilityObjectToCharacterHit(map: GameMap, abilityObject: AbilityObject, players: Player[]) {
+export function detectAbilityObjectToCharacterHit(map: GameMap, abilityObject: AbilityObject, players: Player[], bosses: BossEnemyCharacter[]) {
     let maxEnemySizeEstimate = 40;
 
-    let characters = determineCharactersInDistance(abilityObject, map, players, abilityObject.size + maxEnemySizeEstimate);
+    let characters = determineCharactersInDistance(abilityObject, map, players, bosses, abilityObject.size + maxEnemySizeEstimate);
     for (let charIt = characters.length - 1; charIt >= 0; charIt--) {
         let c = characters[charIt];
         if (c.isDead || c.faction === abilityObject.faction) continue;

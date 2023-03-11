@@ -204,7 +204,7 @@ function paintAbilityFireCircleUI(ctx: CanvasRenderingContext2D, ability: Abilit
 function tickAbilityObjectFireCircle(abilityObject: AbilityObject, game: Game) {
     let abilityObjectFireCircle = abilityObject as AbilityObjectFireCircle;
     if (abilityObjectFireCircle.subType === "FireCircel") {
-        detectAbilityObjectToCharacterHit(game.state.map, abilityObject, game.state.players);
+        detectAbilityObjectToCharacterHit(game.state.map, abilityObject, game.state.players, game.state.bosses);
     } else if (abilityObjectFireCircle.subType === "FireCircelTraveling") {
         let ability = abilityObject as AbilityObjectFireCircleTraveling;
         if (ability.toDelete) return;

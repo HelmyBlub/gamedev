@@ -1,4 +1,5 @@
 import { AbilityObject } from "./ability/ability.js";
+import { Character } from "./character/characterModel.js";
 import { LevelingCharacterClasses } from "./character/levelingCharacters/levelingCharacterModel.js";
 import { PathingCache } from "./character/pathing.js";
 import { CommandRestart } from "./commands.js";
@@ -45,6 +46,7 @@ export type GameState = {
     idCounter: IdCounter,
     abilityObjects: AbilityObject[],
     players: Player[],
+    bosses: Character[],
     killCounter: number,
     time: number;
     ended: boolean,
@@ -136,6 +138,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             clientIds: [-1],
             map: createMap(),
             deathCircleCreated: false,
+            bosses: [],
         },
         clientKeyBindings: [],
         tickInterval: 16,

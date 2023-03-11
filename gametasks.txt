@@ -1,4 +1,13 @@
 next tasks:
+    - create boss enemies?
+        - big health pool
+        - display boss health
+        - later bosses get random abilities
+        - auto spawn one boss every ?25? player levels?
+        - problems?:
+            - mulitplayer: player running in different directions, if player dies boss might
+              have very long distane to other player. Very bad for pathfinding performance.
+
     - create a complex/fun/chaotic class or improve on one?
         - Rod class:
             - instead of +RodCount, change +RodCound for specific rod Ability
@@ -18,12 +27,6 @@ next tasks:
                 - random shots in a straigt line towards an enemy
                 - random projectile orbiting around player
                 - etc.
-
-    - create boss enemies?
-        - just some big health pool?
-        - display boss health?
-        - auto spawn one boss every 5000 distance?
-
 
 technical tasks or bugs:
     - character.size changed to width and height. but hit calculation still only uses width

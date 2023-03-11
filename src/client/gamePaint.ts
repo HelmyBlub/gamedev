@@ -1,6 +1,7 @@
 import { paintAbilityObjects, paintUiForAbilities } from "./ability/ability.js";
 import { getPlayerCharacters } from "./character/character.js";
 import { paintCharacters } from "./character/characterPaint.js";
+import { paintBossCharacters } from "./character/enemy/bossEnemy.js";
 import { LevelingCharacter } from "./character/levelingCharacters/levelingCharacterModel.js";
 import { calculateDistance, getCameraPosition } from "./game.js";
 import { Game, Position, Highscores, TestingStuff, Debugging } from "./gameModel.js";
@@ -14,6 +15,7 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
     paintMap(ctx, cameraPosition, game.state.map, game.performance.mapChunkPaintCache, game.debug, game.state.time);
     paintAbilityObjects(ctx, game.state.abilityObjects, game, "beforeCharacterPaint");
     paintMapCharacters(ctx, cameraPosition, game.state.map, game);
+    paintBossCharacters(ctx, cameraPosition, game);
     paintCharacters(ctx, getPlayerCharacters(game.state.players), cameraPosition, game);
     paintAbilityObjects(ctx, game.state.abilityObjects, game, "afterCharacterPaint");
     paintKillCounter(ctx, game.state.killCounter);

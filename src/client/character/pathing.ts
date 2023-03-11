@@ -26,6 +26,16 @@ export function tileIjToPathingCacheKey(tileIJ: Position) {
     return tileIJ.x + "_" + tileIJ.y;
 }
 
+export function getPathingCache(game: Game){
+    let pathingCache = {};
+    if(game.performance.pathingCache !== undefined){
+        pathingCache = game.performance.pathingCache;
+    }else{
+        game.performance.pathingCache = pathingCache;
+    }
+    return pathingCache;
+}
+
 export function getNextWaypoint(
     sourcePos: Position,
     targetPos: Position,

@@ -1,5 +1,6 @@
 import { determineCharactersInDistance } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
+import { BossEnemyCharacter } from "../character/enemy/bossEnemy.js";
 import { calculateDirection, calculateDistance } from "../game.js";
 import { Position, Game } from "../gameModel.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
@@ -157,7 +158,7 @@ function paintAbilitySword(ctx: CanvasRenderingContext2D, abilityOwner: AbilityO
 function tickAbilitySword(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     let abilitySword = ability as AbilitySword;
     abilitySword.currentSwordAngle = (abilitySword.currentSwordAngle + abilitySword.angleChangePerTick) % (Math.PI * 2);
-    detectSwordToCharactersHit(abilityOwner, abilitySword, game.state.map, game.state.players);
+    detectSwordToCharactersHit(abilityOwner, abilitySword, game.state.map, game.state.players, game.state.bosses);
 }
 
 function createAbilitySwordUpgradeOptions(): UpgradeOptionAbility[] {
@@ -193,10 +194,10 @@ function createAbilitySwordUpgradeOptions(): UpgradeOptionAbility[] {
     return upgradeOptions;
 }
 
-function detectSwordToCharactersHit(abilityOwner: AbilityOwner, ability: AbilitySword, map: GameMap, players: Player[]) {
+function detectSwordToCharactersHit(abilityOwner: AbilityOwner, ability: AbilitySword, map: GameMap, players: Player[], bosses: BossEnemyCharacter[]) {
     let maxEnemySizeEstimate = 40;
 
-    let targetCharacters = determineCharactersInDistance(abilityOwner, map, players, ability.swordLength + maxEnemySizeEstimate);
+    let targetCharacters = determineCharactersInDistance(abilityOwner, map, players, bosses ,ability.swordLength + maxEnemySizeEstimate);
     for (let charIt = targetCharacters.length - 1; charIt >= 0; charIt--) {
         let targetCharacter = targetCharacters[charIt];
         if (targetCharacter.isDead || targetCharacter.faction === abilityOwner.faction) continue;
