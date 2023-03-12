@@ -55,7 +55,7 @@ export function levelingCharacterXpGain(state: GameState, killedCharacter: Chara
     for (let i = 0; i < playerCharacters.length; i++) {
         if (playerCharacters[i].experience !== undefined && !playerCharacters[i].isDead && !playerCharacters[i].isPet) {
             playerCharacters[i].experience += killedCharacter.experienceWorth;
-            if (playerCharacters[i].experience >= playerCharacters[i].experienceForLevelUp) {
+            while(playerCharacters[i].experience >= playerCharacters[i].experienceForLevelUp){
                 levelingCharacterLevelUp(playerCharacters[i], state.randomSeed);
             }
         }

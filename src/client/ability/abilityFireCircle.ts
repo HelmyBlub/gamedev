@@ -6,6 +6,7 @@ import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectAbilit
 const ABILITY_NAME = "FireCircle";
 export type AbilityFireCircle = Ability & {
     objectDuration: number,
+    moveSpeed: number,
     damage: number,
     size: number,
     baseRechargeTime: number,
@@ -39,6 +40,8 @@ export function addFireCircleAbility() {
         createAbility: createAbilityFireCircle,
         setAbilityToLevel: setAbilityFireCircleToLevel,
         paintAbilityObject: paintAbilityObjectFireCircle,
+        setAbilityToBossLevel: setAbilityFireCircleToBossLevel,
+        canBeUsedByBosses: true,
         isPassive: false,
         hasAutoCast: true,
     };
@@ -64,10 +67,11 @@ export function createAbilityFireCircle(
         nextRechargeTime: -1,
         passive: false,
         playerInputBinding: playerInputBinding,
+        moveSpeed: 4,
     };
 }
 
-function createObjectFireCircleTraveling(x: number, y: number, damage: number, faction: string, duration: number, size: number, owner: AbilityOwner): AbilityObjectFireCircleTraveling {
+function createObjectFireCircleTraveling(x: number, y: number, damage: number, faction: string, duration: number, size: number, moveSpeed: number, owner: AbilityOwner): AbilityObjectFireCircleTraveling {
     return {
         type: ABILITY_NAME,
         x: owner.x,
@@ -78,7 +82,7 @@ function createObjectFireCircleTraveling(x: number, y: number, damage: number, f
         faction: faction,
         duration: duration,
         subType: "FireCircelTraveling",
-        moveSpeed: 4,
+        moveSpeed: moveSpeed,
         targetPosition: { x, y },
         toDelete: false,
     }
@@ -105,6 +109,7 @@ function paintAbilityObjectFireCircle(ctx: CanvasRenderingContext2D, abilityObje
     let centerY = ctx.canvas.height / 2;
 
     ctx.fillStyle = abilityObject.color;
+    if(abilityObject.faction === "enemy") ctx.fillStyle = "black";
     if(abilityObjectFireCircle.subType === "FireCircel"){
         if(paintOrder === "beforeCharacterPaint"){
             ctx.globalAlpha = 0.65;
@@ -139,6 +144,16 @@ function setAbilityFireCircleToLevel(ability: Ability, level: number) {
     abilityFireCircle.rechargeTimeDecreaseFaktor = 1 + 0.30 * level;
 }
 
+function setAbilityFireCircleToBossLevel(ability: Ability, level: number) {
+    let abilityFireCircle = ability as AbilityFireCircle;
+    abilityFireCircle.damage = level * 1;
+    abilityFireCircle.size = 30 + level * 10;
+    abilityFireCircle.objectDuration = 5000;
+    abilityFireCircle.baseRechargeTime = 5000;
+    abilityFireCircle.rechargeTimeDecreaseFaktor = 1;
+    abilityFireCircle.moveSpeed = 1;
+}
+
 function tickAbilityFireCircle(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     let abilityFireCircle = ability as AbilityFireCircle;
     if (abilityFireCircle.nextRechargeTime === -1) {
@@ -160,6 +175,7 @@ function tickAbilityFireCircle(abilityOwner: AbilityOwner, ability: Ability, gam
 
 function autoCastAbility(abilityOwner: AbilityOwner, abilityFireCircle: AbilityFireCircle, game: Game) {
     let areaSize = 20 + abilityFireCircle.size;
+    if(abilityOwner.faction === "enemy") areaSize += 50;
     let castRandomPosition = {
         x: abilityOwner.x + nextRandom(game.state.randomSeed) * areaSize * 2 - areaSize,
         y: abilityOwner.y + nextRandom(game.state.randomSeed) * areaSize * 2 - areaSize
@@ -204,7 +220,7 @@ function paintAbilityFireCircleUI(ctx: CanvasRenderingContext2D, ability: Abilit
 function tickAbilityObjectFireCircle(abilityObject: AbilityObject, game: Game) {
     let abilityObjectFireCircle = abilityObject as AbilityObjectFireCircle;
     if (abilityObjectFireCircle.subType === "FireCircel") {
-        detectAbilityObjectToCharacterHit(game.state.map, abilityObject, game.state.players, game.state.bosses);
+        detectAbilityObjectToCharacterHit(game.state.map, abilityObject, game.state.players, game.state.bossStuff.bosses);
     } else if (abilityObjectFireCircle.subType === "FireCircelTraveling") {
         let ability = abilityObject as AbilityObjectFireCircleTraveling;
         if (ability.toDelete) return;
@@ -272,6 +288,7 @@ function castFireCircle(abilityOwner: AbilityOwner, ability: Ability, castPositi
             abilityOwner.faction,
             abilityFireCircle.objectDuration,
             abilityFireCircle.size,
+            abilityFireCircle.moveSpeed,
             abilityOwner
         ));
         if (abilityFireCircle.currentCharges === abilityFireCircle.maxCharges) {

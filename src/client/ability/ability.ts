@@ -31,6 +31,7 @@ export type AbilityOwner = Position & {
     id: number,
     moveSpeed?: number,
     moveDirection?: number,
+    width?: number,
 }
 
 export type AbilityFunctions = {
@@ -45,7 +46,9 @@ export type AbilityFunctions = {
     paintAbilityUI?: (ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) => void,
     onHitAndReturnIfContinue?: (abilityObject: AbilityObject) => boolean,
     setAbilityToLevel?: (ability: Ability, level: number) => void,
+    setAbilityToBossLevel?: (ability: Ability, level: number) => void,
     notInheritable?: boolean,
+    canBeUsedByBosses?: boolean,
     isPassive: boolean,
     hasAutoCast?: boolean,
 }

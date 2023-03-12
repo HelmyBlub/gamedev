@@ -1,5 +1,6 @@
-import { createAbilityLeash } from "./ability/abilityLeash.js";
 import { Character, createPlayerCharacter } from "./character/characterModel.js";
+import { LevelingCharacter } from "./character/levelingCharacters/levelingCharacterModel.js";
+import { calculateDistance } from "./game.js";
 import { Game, IdCounter, KeyCodeToAction, LEVELING_CHARACTER_CLASSES, Position } from "./gameModel.js";
 import { findNearNonBlockingPosition } from "./map/map.js";
 import { ActionsPressed, createActionsPressed } from "./playerInput.js";
@@ -77,4 +78,31 @@ export function findPlayerByCharacterId(players: Player[], id: number): Player |
         }
     }
     return null;
+}
+
+export function getHighestLevelOfPlayers(players: Player[]){
+    let highestLevel = 0;
+    for(let player of players){
+        if (player.character.type === "levelingCharacter"){
+            let levelingCharater = player.character as LevelingCharacter;
+            if(levelingCharater.level > highestLevel){
+                highestLevel = levelingCharater.level;
+            }
+        }
+    }
+    return highestLevel;
+}
+
+export function getPlayerFurthestAwayFromSpawn(players: Player[]): Player | undefined{
+    let highestDistance = 0;
+    let furthestPlayer: Player | undefined;
+    let distance = 0;
+    for(let player of players){
+        distance = calculateDistance(player.character, {x:0, y:0});
+        if(distance > highestDistance){
+            highestDistance = distance;
+            furthestPlayer = player;
+        }
+    }
+    return furthestPlayer;
 }

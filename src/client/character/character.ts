@@ -110,7 +110,7 @@ export function getCharactersTouchingLine(game: Game, lineStart: Position, lineE
             }
         }
     }
-    for(let boss of game.state.bosses){
+    for(let boss of game.state.bossStuff.bosses){
         let distance = calculateDistancePointToLine(boss, lineStart, lineEnd);
         if (distance < boss.width / 2 + lineWidth / 2) {
             charactersTouchingLine.push(boss);
@@ -145,11 +145,16 @@ export function detectCharacterDeath(map: GameMap, state: GameState, camera: Cam
             }
         }
     }
-    for (let i = state.bosses.length - 1; i >= 0; i--) {
-        let char = state.bosses[i];
+    let bosses = state.bossStuff.bosses;
+    for (let i = bosses.length - 1; i >= 0; i--) {
+        let char = bosses[i];
         if (char.hp <= 0 && !char.isDead) {
             char.isDead = true;
-            state.bosses.splice(i,1);
+            if (char.faction === ENEMY_FACTION) {
+                levelingCharacterXpGain(state, char);
+                state.killCounter++;
+            }
+            bosses.splice(i,1);
         }
     }
 

@@ -15,6 +15,7 @@ export type AbilityShoot = Ability & {
     timeToLive: number,
     moveSpeed: number,
     bulletSize: number,
+    shootRandom?: boolean,
 }
 
 export function addShootAbility(){
@@ -26,7 +27,9 @@ export function addShootAbility(){
         onHitAndReturnIfContinue: onShootHitAndReturnIfContinue,
         setAbilityToLevel: setAbilityShootToLevel,
         createAbility: createAbilityShoot,
+        setAbilityToBossLevel: setAbilityShootToBossLevel,
         isPassive: true,
+        canBeUsedByBosses: true,
     };
 }
 
@@ -64,6 +67,20 @@ function setAbilityShootToLevel(ability: Ability, level: number){
     abilityShoot.moveSpeed = 2 + level * 0.2;
     abilityShoot.bulletSize = 5 + level;
 }
+
+function setAbilityShootToBossLevel(ability: Ability, level: number){
+    let abilityShoot = ability as AbilityShoot;
+    abilityShoot.damage = level * 5;
+    abilityShoot.frequencyIncrease = 1 + 0.2 * level;
+    abilityShoot.multiShot = level - 1;
+    abilityShoot.pierceCount = 0;
+    abilityShoot.moveSpeed = 1;
+    abilityShoot.timeToLive = 3000;
+    abilityShoot.baseFrequency = 1000;
+    abilityShoot.bulletSize = 5 + 5 * level;
+    abilityShoot.shootRandom = true;
+}
+
 
 function tickAbilityShoot(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     let abilityShoot = ability as AbilityShoot;
@@ -119,7 +136,7 @@ function shoot(abilityOwner: AbilityOwner, ability: AbilityShoot, abilityObjects
             moveSpeed = abilityOwner.moveSpeed + 2;
         }
         let direction = 0;
-        if(abilityOwner.moveDirection !== undefined){
+        if(!ability.shootRandom && abilityOwner.moveDirection !== undefined){
             direction = abilityOwner.moveDirection;
         }else{
             direction = nextRandom(randomSeed) * Math.PI * 2;

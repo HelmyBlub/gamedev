@@ -118,6 +118,21 @@ export function removeAllMapCharacters(map: GameMap) {
     }
 }
 
+export function moveByDirectionAndDistance(position: Position, moveDirection: number, distance: number, checkColision: boolean, map: GameMap | undefined = undefined, idCounter: IdCounter | undefined = undefined) {
+    let x = position.x + Math.cos(moveDirection) * distance;
+    let y = position.y + Math.sin(moveDirection) * distance;
+    let blocking = checkColision;
+    if(checkColision){
+        if(!map || !idCounter) throw new Error("collision check requires map and idCounter");
+        blocking = isPositionBlocking({ x, y }, map, idCounter);
+    } 
+    if (!blocking) {
+        position.x = x;
+        position.y = y;
+    }
+}
+
+
 export function getChunksTouchingLine(map: GameMap, lineStart: Position, lineEnd: Position): MapChunk[] {
     let chunkSize = map.chunkLength * map.tileSize;
     let chunkKeys: string[] = [];
@@ -190,6 +205,11 @@ export function getChunksTouchingLine(map: GameMap, lineStart: Position, lineEnd
         }
     }
     return chunks;
+}
+
+export function getMapMidlePosition(map: GameMap){
+    let offset = map.tileSize * map.chunkLength / 2;
+    return {x: offset, y: offset};
 }
 
 function calculateDistanceToMapChunk(chunkI: number, chunkJ: number, position: Position, map: GameMap): number {

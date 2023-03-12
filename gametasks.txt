@@ -1,10 +1,7 @@
 next tasks:
     - create boss enemies?
-        - big health pool
-        - display boss health
-        - later bosses get random abilities
-        - auto spawn one boss every ?25? player levels?
         - problems?:
+            - boss abilities also check for enmey hit, uneccessary calculations
             - mulitplayer: player running in different directions, if player dies boss might
               have very long distane to other player. Very bad for pathfinding performance.
 

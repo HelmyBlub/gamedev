@@ -1,9 +1,9 @@
 import { countAlivePlayerCharacters, detectCharacterDeath, findCharacterById, getPlayerCharacters, tickCharacters, tickMapCharacters } from "./character/character.js";
 import { paintAll } from "./gamePaint.js";
-import { gameInitPlayers, Player } from "./player.js";
+import { gameInitPlayers, getHighestLevelOfPlayers, Player } from "./player.js";
 import { tickPlayerInputs } from "./playerInput.js";
 import { Position, GameState, Game, IdCounter, TestingStuff, Debugging } from "./gameModel.js";
-import { createMap, determineMapKeysInDistance, GameMap, removeAllMapCharacters } from "./map/map.js";
+import { createMap, determineMapKeysInDistance, GameMap, getMapMidlePosition, removeAllMapCharacters } from "./map/map.js";
 import { Character } from "./character/characterModel.js";
 import { generateMissingChunks } from "./map/mapGeneration.js";
 import { createFixPositionRespawnEnemiesOnInit } from "./character/enemy/fixPositionRespawnEnemyModel.js";
@@ -11,8 +11,7 @@ import { handleCommand } from "./commands.js";
 import { tickAbilityObjects } from "./ability/ability.js";
 import { garbageCollectPathingCache } from "./character/pathing.js";
 import { createObjectDeathCircle } from "./ability/abilityDeathCircle.js";
-import { LevelingCharacter } from "./character/levelingCharacters/levelingCharacterModel.js";
-import { createBossWithLevel, tickBossCharacters } from "./character/enemy/bossEnemy.js";
+import { checkForBossSpawn, createBossWithLevel, tickBossCharacters } from "./character/enemy/bossEnemy.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -59,7 +58,8 @@ export function gameInit(game: Game) {
     game.state.restartAfterTick = false;
     game.state.time = 0;
     game.state.playerInputs = [];
-    game.state.bosses = [];
+    game.state.bossStuff.bosses = [];
+    game.state.bossStuff.bossLevelCounter = 1;
     game.clientKeyBindings = [];
     game.performance = {};
     removeAllMapCharacters(game.state.map);
@@ -192,19 +192,6 @@ export function calculateDistancePointToLine(point: Position, linestart: Positio
     return Math.sqrt(dx * dx + dy * dy);
 }
 
-export function getHighestLevelOfPlayers(players: Player[]){
-    let highestLevel = 0;
-    for(let player of players){
-        if (player.character.type === "levelingCharacter"){
-            let levelingCharater = player.character as LevelingCharacter;
-            if(levelingCharater.level > highestLevel){
-                highestLevel = levelingCharater.level;
-            }
-        }
-    }
-    return highestLevel;
-}
-
 function determineRunnerTimeout(game: Game): number {
     if (game.testing?.zeroTimeout) {
         return 0;
@@ -249,7 +236,7 @@ function endGame(state: GameState, testing: TestingStuff | undefined) {
     state.ended = true;
     let newScore: number = 0;
     for (const player of state.players) {
-        let distance = Math.round(calculateDistance(player.character, { x: 0, y: 0 }));
+        let distance = Math.round(calculateDistance(player.character, getMapMidlePosition(state.map)));
         if (distance > newScore) newScore = distance;
     }
     state.highscores.scores.push(newScore);
@@ -262,13 +249,13 @@ function endGame(state: GameState, testing: TestingStuff | undefined) {
 
 function tick(gameTimePassed: number, game: Game) {
     if (!game.state.ended) {
-        checkDeathCircleSpawn(game);
+        checkForEventStarting(game);
         addTestReplayInputs(game);
         game.state.time += gameTimePassed;
         generateMissingChunks(game.state.map, getPlayerCharacters(game.state.players), game.state.idCounter, game);
         tickPlayerInputs(game.state.playerInputs, game.state.time, game);
         tickMapCharacters(game.state.map, game);
-        tickBossCharacters(game.state.bosses, game);
+        tickBossCharacters(game.state.bossStuff, game);
 
         takeTimeMeasure(game.debug, "", "playerTick");
         tickCharacters(getPlayerCharacters(game.state.players), game);
@@ -285,10 +272,15 @@ function tick(gameTimePassed: number, game: Game) {
     }
 }
 
+function checkForEventStarting(game: Game){
+    checkDeathCircleSpawn(game);
+    checkForBossSpawn(game);
+}
+
 function checkDeathCircleSpawn(game: Game){
     if(!game.state.deathCircleCreated){
-        let highestLevet = getHighestLevelOfPlayers(game.state.players);
-        if(highestLevet >= 10){
+        let highestLevel = getHighestLevelOfPlayers(game.state.players);
+        if(highestLevel >= 10){
             game.state.abilityObjects.push(createObjectDeathCircle(game.state.map));
             game.state.deathCircleCreated = true;
         }

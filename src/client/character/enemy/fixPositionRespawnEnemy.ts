@@ -45,7 +45,7 @@ export function tickFixPositionRespawnEnemyCharacter(enemy: FixPositionRespawnEn
 
 function alertCloseEnemies(enemy: FixPositionRespawnEnemyCharacter, game: Game) {
     if (enemy.alertEnemyRange === undefined) return;
-    let charactersInDistance = determineCharactersInDistance(enemy, game.state.map, game.state.players, game.state.bosses, enemy.alertEnemyRange);
+    let charactersInDistance = determineCharactersInDistance(enemy, game.state.map, game.state.players, game.state.bossStuff.bosses, enemy.alertEnemyRange);
 
     for (let i = 0; i < charactersInDistance.length; i++) {
         if (charactersInDistance[i].type === enemy.type) {

@@ -42,11 +42,17 @@ export type MapChunkPaintCache = {
     [key: string]: CanvasRenderingContext2D
 }
 
+export type BossStuff = {
+    bossLevelCounter: number,
+    bossEachXLevels: number,
+    bosses: Character[],
+}
+
 export type GameState = {
     idCounter: IdCounter,
     abilityObjects: AbilityObject[],
     players: Player[],
-    bosses: Character[],
+    bossStuff: BossStuff,
     killCounter: number,
     time: number;
     ended: boolean,
@@ -138,7 +144,11 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             clientIds: [-1],
             map: createMap(),
             deathCircleCreated: false,
-            bosses: [],
+            bossStuff: {
+                bossEachXLevels: 25,
+                bossLevelCounter: 1, 
+                bosses: [],
+            },
         },
         clientKeyBindings: [],
         tickInterval: 16,

@@ -1,5 +1,4 @@
 import { determineCharactersInDistance } from "../character/character.js";
-import { Character } from "../character/characterModel.js";
 import { BossEnemyCharacter } from "../character/enemy/bossEnemy.js";
 import { calculateDirection, calculateDistance } from "../game.js";
 import { Position, Game } from "../gameModel.js";
@@ -17,7 +16,7 @@ type AbilitySword = Ability & {
     angleChangePerSword: number,
 }
 const ABILITY_NAME = "Sword";
-const SWORD_DISTANCE_TO_HODLDER = 10;
+
 GAME_IMAGES[ABILITY_NAME] = {
     imagePath: "/images/sword.png",
     spriteRowHeights: [38],
@@ -31,7 +30,9 @@ export function addSwordAbility() {
         paintAbility: paintAbilitySword,
         setAbilityToLevel: setAbilitySwordToLevel,
         createAbility: createAbilitySword,
+        setAbilityToBossLevel: setAbilitySwordToBossLevel,
         isPassive: true,
+        canBeUsedByBosses: true,
     };
 }
 
@@ -59,6 +60,15 @@ function setAbilitySwordToLevel(ability: Ability, level: number){
     abilitySword.damage = level * 10;
     abilitySword.swordCount = level;
     abilitySword.swordLength = 30 + level * 10;
+    abilitySword.angleChangePerTick = 0.01 * level;
+    abilitySword.angleChangePerSword = Math.PI * 2 / abilitySword.swordCount;
+}
+
+function setAbilitySwordToBossLevel(ability: Ability, level: number){
+    let abilitySword = ability as AbilitySword;
+    abilitySword.damage = level * 1;
+    abilitySword.swordCount = 1;
+    abilitySword.swordLength = 30 + level * 20;
     abilitySword.angleChangePerTick = 0.01 * level;
     abilitySword.angleChangePerSword = Math.PI * 2 / abilitySword.swordCount;
 }
@@ -146,7 +156,7 @@ function paintAbilitySword(ctx: CanvasRenderingContext2D, abilityOwner: AbilityO
                 swordSizeImage.width,
                 swordSizeImage.height,
                 paintX - Math.floor(swordSizeImage.width / 2),
-                paintY - abilitySword.swordLength - SWORD_DISTANCE_TO_HODLDER,
+                paintY - abilitySword.swordLength - swordDistanceToHolder(abilityOwner),
                 swordSizeImage.width,
                 abilitySword.swordLength
             );
@@ -155,10 +165,20 @@ function paintAbilitySword(ctx: CanvasRenderingContext2D, abilityOwner: AbilityO
     }
 }
 
+function swordDistanceToHolder(abilityOwner: AbilityOwner): number{
+    const baseDistance = 10;
+    let result = baseDistance;
+    if(abilityOwner.width){
+        result += abilityOwner.width / 2;
+    }
+
+    return result;
+}
+
 function tickAbilitySword(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     let abilitySword = ability as AbilitySword;
     abilitySword.currentSwordAngle = (abilitySword.currentSwordAngle + abilitySword.angleChangePerTick) % (Math.PI * 2);
-    detectSwordToCharactersHit(abilityOwner, abilitySword, game.state.map, game.state.players, game.state.bosses);
+    detectSwordToCharactersHit(abilityOwner, abilitySword, game.state.map, game.state.players, game.state.bossStuff.bosses);
 }
 
 function createAbilitySwordUpgradeOptions(): UpgradeOptionAbility[] {
@@ -222,7 +242,7 @@ function detectSwordToCharacterHit(abilityOwner: AbilityOwner, ability: AbilityS
 
     if (angle <= angleSizeToCheck) {
         let distance = calculateDistance(abilityOwner, pos);
-        if (distance < ability.swordLength + SWORD_DISTANCE_TO_HODLDER + enemyWidth) {
+        if (distance < ability.swordLength + swordDistanceToHolder(abilityOwner) + enemyWidth) {
             return true;
         }
     }

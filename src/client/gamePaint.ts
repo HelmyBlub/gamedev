@@ -5,6 +5,7 @@ import { paintBossCharacters } from "./character/enemy/bossEnemy.js";
 import { LevelingCharacter } from "./character/levelingCharacters/levelingCharacterModel.js";
 import { calculateDistance, getCameraPosition } from "./game.js";
 import { Game, Position, Highscores, TestingStuff, Debugging } from "./gameModel.js";
+import { getMapMidlePosition } from "./map/map.js";
 import { paintMap, paintMapCharacters } from "./map/mapPaint.js";
 import { findPlayerById } from "./player.js";
 
@@ -30,13 +31,13 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
             let player = findPlayerById(game.state.players, game.multiplayer.myClientId);
             if (player === null) return;
             let character = player.character;
-            if (character !== null) paintPlayerStats(ctx, character as LevelingCharacter, game.state.time);
+            if (character !== null) paintPlayerStats(ctx, character as LevelingCharacter, game.state.time, game);
             if (game.multiplayer.websocket !== null) {
                 ctx.fillText("Ping: " + Math.round(game.multiplayer.delay), 10, 60);
             }
 
         } else {
-            paintPlayerStats(ctx, game.state.players[0].character as LevelingCharacter, game.state.time);
+            paintPlayerStats(ctx, game.state.players[0].character as LevelingCharacter, game.state.time, game);
         }
     }
     paintTimeMeasures(ctx, game.debug);
@@ -87,8 +88,8 @@ function paintKillCounter(ctx: CanvasRenderingContext2D, killCounter: number) {
     ctx.fillText("Kills: " + killCounter, 10, 20);
 }
 
-function paintPlayerStats(ctx: CanvasRenderingContext2D, character: LevelingCharacter, gameTime: number) {
-    let distance = Math.round(calculateDistance(character, { x: 0, y: 0 }));
+function paintPlayerStats(ctx: CanvasRenderingContext2D, character: LevelingCharacter, gameTime: number, game: Game) {
+    let distance = Math.round(calculateDistance(character, getMapMidlePosition(game.state.map)));
     ctx.fillStyle = "black";
     ctx.font = "18px Arial";
 
