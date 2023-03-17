@@ -48,6 +48,10 @@ export function mouseUp(event: MouseEvent, game: Game) {
 }
 
 export function keyDown(event: KeyboardEvent, game: Game) {
+    if(event.code !== "F12"){
+        event.preventDefault();
+        event.stopPropagation();
+    }
     playerInputChangeEvent(game, event.code, true);
     let commandRestart: Omit<CommandRestart, "executeTime">;
 

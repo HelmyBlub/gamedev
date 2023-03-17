@@ -145,7 +145,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             map: createMap(),
             deathCircleCreated: false,
             bossStuff: {
-                bossEachXLevels: 1,
+                bossEachXLevels: 25,
                 bossLevelCounter: 1, 
                 bosses: [],
             },

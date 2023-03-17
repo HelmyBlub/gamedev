@@ -17,6 +17,7 @@ type AbilityRod = Ability & {
     idCounter: number,
     damage: number,
     maxNumberRods: number,
+    maxClickRange: number,
 }
 
 const ABILITY_NAME = "Rod";
@@ -46,10 +47,11 @@ export function createAbilityRod(
         passive: false,
         playerInputBinding: playerInputBinding,
         idCounter: 0,
+        maxClickRange: 1500,
     };
 }
 
-function createAbilityObjectRod(idCounter: IdCounter, ownerId: number, faction: string, position: Position, ability: Ability | undefined, damage: number, size: number = 8): AbilityObjectRod{
+function createAbilityObjectRod(idCounter: IdCounter, ownerId: number, faction: string, position: Position, ability: Ability | undefined, damage: number, size: number = 8): AbilityObjectRod {
     return {
         type: ABILITY_NAME,
         ownerId: ownerId,
@@ -64,68 +66,70 @@ function createAbilityObjectRod(idCounter: IdCounter, ownerId: number, faction: 
     }
 }
 
-function deleteAbilityObjectRod(abilityObject: AbilityObject, game: Game){
+function deleteAbilityObjectRod(abilityObject: AbilityObject, game: Game) {
     //nothing to do here, delete happens on cast
     return false;
 }
 
 function castRod(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, game: Game) {
     let abilityRod = ability as AbilityRod;
+    let distance = calculateDistance(abilityOwner, castPosition);
+    if (distance > abilityRod.maxClickRange) return;
     let abilityObjects = game.state.abilityObjects;
 
     if (getRodCountOfOwner(abilityObjects, abilityOwner.id) >= abilityRod.maxNumberRods) {
-        let deletedId = deleteOldesRodOfOwnerAndReturnDeletedId(abilityObjects, abilityOwner.id);        
+        let deletedId = deleteOldesRodOfOwnerAndReturnDeletedId(abilityObjects, abilityOwner.id);
         updateRodsWhichHadDeletedId(abilityObjects, deletedId);
     }
 
     let rodAbility: Ability | undefined = getRandomPassiveAbility(game.state.randomSeed);
     let newRod: AbilityObjectRod = createAbilityObjectRod(game.state.idCounter, abilityOwner.id, abilityOwner.faction, castPosition, rodAbility, abilityRod.damage);
     let nearest = getNearestRod(abilityObjects, newRod, game.state.randomSeed);
-    if(nearest){
+    if (nearest) {
         newRod.conntetedToId = nearest.id;
     }
     abilityObjects.push(newRod);
     updateRodObjectAbilityLevels(abilityObjects);
 }
 
-function updateRodsWhichHadDeletedId(abilityObjects: AbilityObject[], deletedId: number){
-    for(let abilityObject of abilityObjects){
-        if(abilityObject.type === ABILITY_NAME){
+function updateRodsWhichHadDeletedId(abilityObjects: AbilityObject[], deletedId: number) {
+    for (let abilityObject of abilityObjects) {
+        if (abilityObject.type === ABILITY_NAME) {
             let abilityRod = abilityObject as AbilityObjectRod;
-            if(abilityRod.conntetedToId !== undefined && abilityRod.conntetedToId === deletedId){
+            if (abilityRod.conntetedToId !== undefined && abilityRod.conntetedToId === deletedId) {
                 delete abilityRod.conntetedToId;
             }
         }
     }
 }
 
-function findOldesRodOfOwner(abilityObjects: AbilityObject[], ownerId: number): {rod: AbilityObjectRod, index: number} | undefined{
-    for(let i = 0; i < abilityObjects.length; i++){
-        if(abilityObjects[i].type === ABILITY_NAME){
+function findOldesRodOfOwner(abilityObjects: AbilityObject[], ownerId: number): { rod: AbilityObjectRod, index: number } | undefined {
+    for (let i = 0; i < abilityObjects.length; i++) {
+        if (abilityObjects[i].type === ABILITY_NAME) {
             let abilityRod = abilityObjects[i] as AbilityObjectRod;
-            if(abilityRod.ownerId === ownerId){
-                return {rod: abilityRod, index: i};
+            if (abilityRod.ownerId === ownerId) {
+                return { rod: abilityRod, index: i };
             }
         }
     }
     return undefined;
 }
 
-function deleteOldesRodOfOwnerAndReturnDeletedId(abilityObjects: AbilityObject[], ownerId: number): number{
+function deleteOldesRodOfOwnerAndReturnDeletedId(abilityObjects: AbilityObject[], ownerId: number): number {
     let oldestRodIndex = findOldesRodOfOwner(abilityObjects, ownerId)?.index;
-    if(oldestRodIndex !== undefined){
-        return (abilityObjects.splice(oldestRodIndex,1)[0] as AbilityObjectRod).id;
+    if (oldestRodIndex !== undefined) {
+        return (abilityObjects.splice(oldestRodIndex, 1)[0] as AbilityObjectRod).id;
     }
     debugger;
     throw new Error("id does not exist " + ownerId);
 }
 
-function getRodCountOfOwner(abilityObjects: AbilityObject[], ownerId: number): number{
+function getRodCountOfOwner(abilityObjects: AbilityObject[], ownerId: number): number {
     let counter = 0;
-    for(let abilityObject of abilityObjects){
-        if(abilityObject.type === ABILITY_NAME){
+    for (let abilityObject of abilityObjects) {
+        if (abilityObject.type === ABILITY_NAME) {
             let abilityRod = abilityObject as AbilityObjectRod;
-            if(abilityRod.ownerId === ownerId){
+            if (abilityRod.ownerId === ownerId) {
                 counter++;
             }
         }
@@ -133,34 +137,34 @@ function getRodCountOfOwner(abilityObjects: AbilityObject[], ownerId: number): n
     return counter;
 }
 
-function getRandomPassiveAbility(randomSeed: RandomSeed): Ability | undefined{
+function getRandomPassiveAbility(randomSeed: RandomSeed): Ability | undefined {
     let abilityFunctionKeys = Object.keys(ABILITIES_FUNCTIONS);
     let passiveAbilitiesFunctionKeys: string[] = [];
-    for(let abilityFunctionKey of abilityFunctionKeys){
+    for (let abilityFunctionKey of abilityFunctionKeys) {
         let abilityFunctions = ABILITIES_FUNCTIONS[abilityFunctionKey];
-        if(!abilityFunctions.notInheritable && (abilityFunctions.isPassive || abilityFunctions.hasAutoCast)){
+        if (!abilityFunctions.notInheritable && (abilityFunctions.isPassive || abilityFunctions.hasAutoCast)) {
             passiveAbilitiesFunctionKeys.push(abilityFunctionKey);
         }
     }
-    if(passiveAbilitiesFunctionKeys.length > 0){
+    if (passiveAbilitiesFunctionKeys.length > 0) {
         let random = Math.floor(nextRandom(randomSeed) * passiveAbilitiesFunctionKeys.length);
         let abilityFunctions = ABILITIES_FUNCTIONS[passiveAbilitiesFunctionKeys[random]];
         let ability = abilityFunctions.createAbility();
-        if(!abilityFunctions.isPassive) ability.passive = true;
+        if (!abilityFunctions.isPassive) ability.passive = true;
         return ability;
     }
 
     return undefined;
 }
 
-function updateRodObjectAbilityLevels(abilityObjects: AbilityObject[]){
-    for(let abilityObject of abilityObjects){
-        if(abilityObject.type !== ABILITY_NAME) continue;
+function updateRodObjectAbilityLevels(abilityObjects: AbilityObject[]) {
+    for (let abilityObject of abilityObjects) {
+        if (abilityObject.type !== ABILITY_NAME) continue;
         let rod: AbilityObjectRod = abilityObject as AbilityObjectRod;
         let level = getRodConnectionCount(abilityObjects, rod) + 1;
-        if(rod.ability){
+        if (rod.ability) {
             let abilityFunctions = ABILITIES_FUNCTIONS[rod.ability.name];
-            if(abilityFunctions.setAbilityToLevel){
+            if (abilityFunctions.setAbilityToLevel) {
                 abilityFunctions.setAbilityToLevel(rod.ability, level);
             }
         }
@@ -171,50 +175,50 @@ function paintAbilityObjectRod(ctx: CanvasRenderingContext2D, abilityObject: Abi
     let cameraPosition = getCameraPosition(game);
     let rod = abilityObject as AbilityObjectRod;
 
-    if(paintOrder === "beforeCharacterPaint"){
+    if (paintOrder === "beforeCharacterPaint") {
         paintEffectConnected(ctx, rod, cameraPosition, game.state.abilityObjects);
-    }else if(paintOrder === "afterCharacterPaint"){
+    } else if (paintOrder === "afterCharacterPaint") {
         let owner = findPlayerByCharacterId(game.state.players, rod.ownerId);
         let centerX = ctx.canvas.width / 2;
         let centerY = ctx.canvas.height / 2;
         let rodBaseSize = rod.size;
-    
+
         let rodHeight = rodBaseSize + 5;
         let paintX = Math.floor(rod.x - cameraPosition.x + centerX - rodBaseSize / 2);
         let paintY = Math.floor(rod.y - cameraPosition.y + centerY - rodBaseSize / 2);
-        if(owner?.clientId === game.multiplayer.myClientId){
-            let ability = owner.character.abilities.find((e)=> e.name === ABILITY_NAME) as AbilityRod;
+        if (owner?.clientId === game.multiplayer.myClientId) {
+            let ability = owner.character.abilities.find((e) => e.name === ABILITY_NAME) as AbilityRod;
             if (getRodCountOfOwner(game.state.abilityObjects, rod.ownerId) >= ability.maxNumberRods) {
                 let oldestRod = findOldesRodOfOwner(game.state.abilityObjects, rod.ownerId)?.rod;
-                if(oldestRod && oldestRod === rod){
-                    ctx.fillStyle = "black"; 
-                }else{
-                    ctx.fillStyle = "blue"; 
+                if (oldestRod && oldestRod === rod) {
+                    ctx.fillStyle = "black";
+                } else {
+                    ctx.fillStyle = "blue";
                 }
-            }else{
-                ctx.fillStyle = "blue"; 
+            } else {
+                ctx.fillStyle = "blue";
             }
-        }else{
-            ctx.fillStyle = "white"; 
+        } else {
+            ctx.fillStyle = "white";
         }
         ctx.fillRect(paintX, paintY, rodBaseSize, rodHeight);
-    
-        if(rod.ability){
+
+        if (rod.ability) {
             let abilityFunction = ABILITIES_FUNCTIONS[rod.ability.name];
-            if(abilityFunction.paintAbility){
+            if (abilityFunction.paintAbility) {
                 abilityFunction.paintAbility(ctx, rod, rod.ability, cameraPosition, game);
             }
         }
     }
 }
 
-function getRodConnectionCount(abilityObjects: AbilityObject[], rod: AbilityObjectRod): number{
+function getRodConnectionCount(abilityObjects: AbilityObject[], rod: AbilityObjectRod): number {
     let counter = 0;
-    if(rod.conntetedToId !== undefined ) counter++;
-    for(let abilityObject of abilityObjects){
-        if(abilityObject.type === ABILITY_NAME){
+    if (rod.conntetedToId !== undefined) counter++;
+    for (let abilityObject of abilityObjects) {
+        if (abilityObject.type === ABILITY_NAME) {
             let abilityRod = abilityObject as AbilityObjectRod;
-            if(abilityRod.conntetedToId !== undefined && abilityRod.conntetedToId === rod.id){
+            if (abilityRod.conntetedToId !== undefined && abilityRod.conntetedToId === rod.id) {
                 counter++;
             }
         }
@@ -232,11 +236,11 @@ function paintEffectConnected(ctx: CanvasRenderingContext2D, abilityObjectRod: A
         let paintY: number;
 
         let connectedRod = getRodById(abilityObjects, abilityObjectRod.conntetedToId);
-        if(connectedRod === undefined){
+        if (connectedRod === undefined) {
             console.log("rod connection not cleaned up");
             return;
         }
-        let totalConnection =  getRodConnectionCount(abilityObjects, abilityObjectRod) + getRodConnectionCount(abilityObjects, connectedRod);
+        let totalConnection = getRodConnectionCount(abilityObjects, abilityObjectRod) + getRodConnectionCount(abilityObjects, connectedRod);
         ctx.lineWidth = totalConnection;
 
         ctx.beginPath();
@@ -250,17 +254,17 @@ function paintEffectConnected(ctx: CanvasRenderingContext2D, abilityObjectRod: A
     }
 }
 
-function getRodById(abilityObjects: AbilityObject[], id: number): AbilityObjectRod | undefined{
+function getRodById(abilityObjects: AbilityObject[], id: number): AbilityObjectRod | undefined {
     for (let i = 0; i < abilityObjects.length; i++) {
-        if (abilityObjects[i].type === ABILITY_NAME){
+        if (abilityObjects[i].type === ABILITY_NAME) {
             let rod: AbilityObjectRod = abilityObjects[i] as AbilityObjectRod;
-            if(rod.id === id) return rod;
+            if (rod.id === id) return rod;
         }
     }
     return undefined;
 }
 
-function getNearestRod(abilityObjects: AbilityObject[], rod: AbilityObjectRod, randomSeed: RandomSeed): AbilityObjectRod | undefined{
+function getNearestRod(abilityObjects: AbilityObject[], rod: AbilityObjectRod, randomSeed: RandomSeed): AbilityObjectRod | undefined {
     let currentDistance: number;
     let lowestDistance: number = 0;
     let nearest: AbilityObjectRod[] | undefined = undefined;
@@ -271,23 +275,23 @@ function getNearestRod(abilityObjects: AbilityObject[], rod: AbilityObjectRod, r
         if (nearest === undefined || currentDistance < lowestDistance) {
             nearest = [abilityObjects[i] as AbilityObjectRod];
             lowestDistance = currentDistance;
-        }else if(currentDistance === lowestDistance){
+        } else if (currentDistance === lowestDistance) {
             nearest.push(abilityObjects[i] as AbilityObjectRod);
         }
     }
-    if(nearest){
-        let randomIndex = nearest.length > 1 ? Math.floor(nextRandom(randomSeed)*nearest.length) : 0;
+    if (nearest) {
+        let randomIndex = nearest.length > 1 ? Math.floor(nextRandom(randomSeed) * nearest.length) : 0;
         return nearest[randomIndex];
-    }else{
+    } else {
         return undefined;
     }
 }
 
 function tickEffectConnected(abilityObjectRod: AbilityObjectRod, game: Game) {
-    if(abilityObjectRod.conntetedToId === undefined) return;
+    if (abilityObjectRod.conntetedToId === undefined) return;
     let abilityObjects = game.state.abilityObjects;
     let connectedRod = getRodById(abilityObjects, abilityObjectRod.conntetedToId);
-    if(connectedRod === undefined){
+    if (connectedRod === undefined) {
         console.log("rod connection not cleaned up");
         return;
     }
@@ -333,11 +337,11 @@ function tickAbilityRod(abilityOwner: AbilityOwner, ability: Ability, game: Game
     let abilityRod = ability as AbilityRod;
 }
 
-function tickAbilityObjectRod(abilityObject: AbilityObject, game: Game){
+function tickAbilityObjectRod(abilityObject: AbilityObject, game: Game) {
     let abilityRod = abilityObject as AbilityObjectRod;
     tickEffectConnected(abilityRod, game);
 
-    if(abilityRod.ability){
+    if (abilityRod.ability) {
         let abilityFunction = ABILITIES_FUNCTIONS[abilityRod.ability.name];
         abilityFunction.tickAbility(abilityRod, abilityRod.ability, game);
     }
