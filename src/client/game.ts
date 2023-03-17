@@ -60,6 +60,7 @@ export function gameInit(game: Game) {
     game.state.playerInputs = [];
     game.state.bossStuff.bosses = [];
     game.state.bossStuff.bossLevelCounter = 1;
+    game.state.deathCircleCreated = false;
     game.clientKeyBindings = [];
     game.performance = {};
     removeAllMapCharacters(game.state.map);

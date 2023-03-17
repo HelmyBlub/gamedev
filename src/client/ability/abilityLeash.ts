@@ -22,7 +22,7 @@ export function addLeshAbility() {
 }
 
 export function createAbilityLeash(
-    leashMaxLength: number = 100,
+    leashMaxLength: number = 150,
     leashedToOwnerId: number | undefined = undefined,
 ): AbilityLeash {
     return {
@@ -73,7 +73,7 @@ function tickAbilityLeash(abilityOwner: AbilityOwner, ability: Ability, game: Ga
         } 
         let distance = calculateDistance(abilityOwner, connectedOwner);
         if(distance > abilityLeash.leashMaxLength){
-            if(distance <= abilityLeash.leashMaxLength * 1.5){
+            if(distance <= abilityLeash.leashMaxLength * 2){
                 let pullSpeed = (distance - abilityLeash.leashMaxLength) / 10;
                 let direction = calculateDirection(abilityOwner, connectedOwner);
                 abilityOwner.x = abilityOwner.x + Math.cos(direction) * pullSpeed;

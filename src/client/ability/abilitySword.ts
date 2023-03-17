@@ -1,4 +1,4 @@
-import { determineCharactersInDistance } from "../character/character.js";
+import { determineCharactersInDistance, characterTakeDamage } from "../character/character.js";
 import { BossEnemyCharacter } from "../character/enemy/bossEnemy.js";
 import { calculateDirection, calculateDistance } from "../game.js";
 import { Position, Game } from "../gameModel.js";
@@ -224,8 +224,7 @@ function detectSwordToCharactersHit(abilityOwner: AbilityOwner, ability: Ability
         for (let swordIndex = 0; swordIndex < ability.swordCount; swordIndex++) {
             let isHit = detectSwordToCharacterHit(abilityOwner, ability, targetCharacter, targetCharacter.width, swordIndex);
             if (isHit) {
-                targetCharacter.hp -= ability.damage;
-                targetCharacter.wasHitRecently = true;
+                characterTakeDamage(targetCharacter, ability.damage);
             }
         }
     }

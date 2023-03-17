@@ -1,4 +1,4 @@
-import { determineCharactersInDistance } from "../character/character.js"
+import { determineCharactersInDistance, characterTakeDamage } from "../character/character.js"
 import { Character } from "../character/characterModel.js"
 import { BossEnemyCharacter } from "../character/enemy/bossEnemy.js"
 import { calculateDistance, getCameraPosition, takeTimeMeasure } from "../game.js"
@@ -78,14 +78,8 @@ export function addAbilityToCharacter(character: Character, ability: Ability) {
 }
 
 export function paintAbilityObjects(ctx: CanvasRenderingContext2D, abilityObjects: AbilityObject[], game: Game, paintOrder: PaintOrder) {
-    for (let abilityObject of abilityObjects) {
-        let abilityFunctions = ABILITIES_FUNCTIONS[abilityObject.type];
-        if (abilityFunctions?.paintAbilityObject !== undefined) {
-            abilityFunctions.paintAbilityObject(ctx, abilityObject, paintOrder, game);
-        } else {
-            paintDefault(ctx, abilityObject, getCameraPosition(game), paintOrder);
-        }
-    }
+    paintAbilityObjectsForFaction(ctx, abilityObjects, game, paintOrder, "player");
+    paintAbilityObjectsForFaction(ctx, abilityObjects, game, paintOrder, "enemy");
 }
 
 export function tickAbilityObjects(abilityObjects: AbilityObject[], game: Game) {
@@ -117,8 +111,7 @@ export function detectAbilityObjectToCharacterHit(map: GameMap, abilityObject: A
         if (c.isDead || c.faction === abilityObject.faction) continue;
         let distance = calculateDistance(c, abilityObject);
         if (distance < abilityObject.size / 2 + c.width / 2) {
-            c.hp -= abilityObject.damage;
-            c.wasHitRecently = true;
+            characterTakeDamage(c, abilityObject.damage);
             let abilityFunction = ABILITIES_FUNCTIONS[abilityObject.type];
             if (abilityFunction.onHitAndReturnIfContinue) {
                 let continueHitDetection = abilityFunction.onHitAndReturnIfContinue(abilityObject);
@@ -145,12 +138,25 @@ export function paintUiForAbilities(ctx: CanvasRenderingContext2D, game: Game) {
     }
 }
 
+function paintAbilityObjectsForFaction(ctx: CanvasRenderingContext2D, abilityObjects: AbilityObject[], game: Game, paintOrder: PaintOrder, faction: string) {
+    for (let abilityObject of abilityObjects) {
+        if(abilityObject.faction === faction){
+            let abilityFunctions = ABILITIES_FUNCTIONS[abilityObject.type];
+            if (abilityFunctions?.paintAbilityObject !== undefined) {
+                abilityFunctions.paintAbilityObject(ctx, abilityObject, paintOrder, game);
+            } else {
+                paintDefault(ctx, abilityObject, getCameraPosition(game), paintOrder);
+            }
+        }
+    }
+}
+
 function paintDefault(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, cameraPosition: Position, paintOrder: PaintOrder) {
     if(paintOrder === "afterCharacterPaint"){
         let centerX = ctx.canvas.width / 2;
         let centerY = ctx.canvas.height / 2;
     
-        ctx.fillStyle = abilityObject.color;
+        ctx.fillStyle = abilityObject.faction === "enemy" ? "black" : abilityObject.color;
         ctx.beginPath();
         ctx.arc(
             abilityObject.x - cameraPosition.x + centerX,

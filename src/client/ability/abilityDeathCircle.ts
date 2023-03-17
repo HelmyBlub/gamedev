@@ -1,4 +1,4 @@
-import { getPlayerCharacters } from "../character/character.js";
+import { getPlayerCharacters, characterTakeDamage } from "../character/character.js";
 import { calculateDistance, getCameraPosition } from "../game.js";
 import { Game } from "../gameModel.js";
 import { GameMap } from "../map/map.js";
@@ -72,7 +72,7 @@ function tickAbilityObjectDeathCircle(abilityObject: AbilityObject, game: Game) 
     for(let playerCharacter of playerCharacters){
         let distance = calculateDistance(playerCharacter, abilityObject);
         if(distance < abilityObjectDeathCircle.size / 2){
-            playerCharacter.hp -= abilityObject.damage;
+            characterTakeDamage(playerCharacter, abilityObject.damage)
         }
     }
 }

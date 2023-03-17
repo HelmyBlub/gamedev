@@ -69,24 +69,29 @@ export function levelingCharacterXpGain(state: GameState, killedCharacter: Chara
 export function tickLevelingCharacter(character: LevelingCharacter, game: Game) {
     if (character.isDead){ 
         character.isDead = false;
-        character.isPet = true;
         character.hp = 100;
-        let newPlayerOwnerId: number | undefined = undefined;
-        let possibleOwnerCharacters: LevelingCharacter[] = [];
-        for(let player of game.state.players){
-            let characterIter: LevelingCharacter = player.character as LevelingCharacter;
-            if(!characterIter.isPet && !characterIter.isDead){
-                possibleOwnerCharacters.push(characterIter);
+        if(character.isPet){
+            console.log("character already a pet, should not happen");
+            debugger;
+        }else{
+            character.isPet = true;
+            let newPlayerOwnerId: number | undefined = undefined;
+            let possibleOwnerCharacters: LevelingCharacter[] = [];
+            for(let player of game.state.players){
+                let characterIter: LevelingCharacter = player.character as LevelingCharacter;
+                if(!characterIter.isPet && !characterIter.isDead){
+                    possibleOwnerCharacters.push(characterIter);
+                }
             }
+            if(possibleOwnerCharacters.length > 0){
+                let randomOwnerIndex = Math.floor(nextRandom(game.state.randomSeed) * possibleOwnerCharacters.length);
+                newPlayerOwnerId = possibleOwnerCharacters[randomOwnerIndex].id;
+                character.x = possibleOwnerCharacters[randomOwnerIndex].x;
+                character.y = possibleOwnerCharacters[randomOwnerIndex].y;
+            }
+    
+            character.abilities.push(createAbilityLeash(100, newPlayerOwnerId));
         }
-        if(possibleOwnerCharacters.length > 0){
-            let randomOwnerIndex = Math.floor(nextRandom(game.state.randomSeed) * possibleOwnerCharacters.length);
-            newPlayerOwnerId = possibleOwnerCharacters[randomOwnerIndex].id;
-            character.x = possibleOwnerCharacters[randomOwnerIndex].x;
-            character.y = possibleOwnerCharacters[randomOwnerIndex].y;
-        }
-
-        character.abilities.push(createAbilityLeash(100, newPlayerOwnerId));
     }
     moveCharacterTick(character, game.state.map, game.state.idCounter, true);
 }

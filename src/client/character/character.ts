@@ -19,6 +19,16 @@ export function findCharacterById(characters: Character[], id: number): Characte
     return null;
 }
 
+export function characterTakeDamage(character: Character, damage: number) {
+    if (character.isDead) return;
+    if (character.type === "levelingCharacter") {
+        let levelingCharacter = character as LevelingCharacter;
+        if (levelingCharacter.isPet) return;
+    }
+    character.hp -= damage;
+    if (character.faction === "enemy") character.wasHitRecently = true;
+}
+
 export function tickMapCharacters(map: GameMap, game: Game) {
     takeTimeMeasure(game.debug, "", "tickMapCharacters");
     let pathingCache = getPathingCache(game);
@@ -218,7 +228,7 @@ export function determineEnemyHitsPlayer(enemy: Character, closestPlayer: Charac
 
     let distance = calculateDistance(enemy, closestPlayer);
     if (distance <= enemy.width / 2 + closestPlayer.width / 2) {
-        closestPlayer.hp -= enemy.damage;
+        characterTakeDamage(closestPlayer, enemy.damage);
     }
 }
 

@@ -1,4 +1,4 @@
-import { getCharactersTouchingLine } from "../character/character.js";
+import { getCharactersTouchingLine, characterTakeDamage } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
 import { calculateDistance, getCameraPosition, getNextId } from "../game.js";
 import { Position, Game, IdCounter } from "../gameModel.js";
@@ -296,8 +296,7 @@ function tickEffectConnected(abilityObjectRod: AbilityObjectRod, game: Game) {
 
     let characters: Character[] = getCharactersTouchingLine(game, abilityObjectRod, connectedRod);
     for (let char of characters) {
-        char.hp -= abilityObjectRod.damage * damageFactor;
-        char.wasHitRecently = true;
+        characterTakeDamage(char, abilityObjectRod.damage * damageFactor);
     }
 }
 
