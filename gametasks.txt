@@ -1,4 +1,8 @@
 next tasks:
+    - check code "case "sendGameState":" why is it always pushing clientid?
+    - check: mutliple multiplayer connects don't clear eventlisteners?
+    - player names, more than two players confusing
+    - trees/stones get hidden by to much fireCircle
     - create boss enemies?
         - problems?:
             - boss abilities also check for enmey hit, uneccessary calculations

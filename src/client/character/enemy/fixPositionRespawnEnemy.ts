@@ -92,6 +92,7 @@ function resetEnemy(enemy: FixPositionRespawnEnemyCharacter, map: GameMap) {
         map.chunks[deathMapChunkKey].characters = map.chunks[deathMapChunkKey].characters.filter(char => char !== enemy);
         map.chunks[spawnMapChunkKey].characters.push(enemy);
     }
+    if(enemy.wasHitRecently) delete enemy.wasHitRecently;
     enemy.x = enemy.spawnPosition.x;
     enemy.y = enemy.spawnPosition.y;
     delete enemy.respawnOnTime;

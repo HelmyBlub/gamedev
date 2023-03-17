@@ -13,6 +13,7 @@ app.use(express.static('public'));
 
 app.ws('/ws', function (ws: any, req: any) {
     let myIdentifier = req.query.myId;
+    let clientName = req.query.clientName;
     let randomIdentifier = clientIdCounter + "_" + Math.random().toString();
     let connection = { clientId: clientIdCounter, con: ws, randomIdentifier: randomIdentifier };
 
@@ -27,11 +28,11 @@ app.ws('/ws', function (ws: any, req: any) {
             console.log("unknown lastIdentifier " + myIdentifier);
         }
     }
-    console.log(clientIdCounter + "#Con" + connections.length);
+    console.log(clientIdCounter + "#Con" + connections.length + " ClientName:" + clientName);
 
-    ws.send(JSON.stringify({ command: "connectInfo", clientId: connection.clientId, updateInterval: updateInterval, randomIdentifier: connection.randomIdentifier }));
+    ws.send(JSON.stringify({ command: "connectInfo", clientId: connection.clientId, clientName: clientName, updateInterval: updateInterval, randomIdentifier: connection.randomIdentifier }));
     if (connections.length > 0) {
-        connections[0].con.send(JSON.stringify({ command: "sendGameState", clientId: connection.clientId }));
+        connections[0].con.send(JSON.stringify({ command: "sendGameState", clientId: connection.clientId, clientName: clientName }));
     }
 
     connections.push(connection);

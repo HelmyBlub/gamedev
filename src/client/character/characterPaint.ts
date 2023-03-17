@@ -89,6 +89,30 @@ function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cam
             abilityFunctions.paintAbility(ctx, character, ability, cameraPosition, game);
         }
     }
+    paintPlayerNameOverCharacter(ctx, character, cameraPosition, game);
+}
+
+function paintPlayerNameOverCharacter(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
+    if (character.faction !== "player") return;
+    const centerX = ctx.canvas.width / 2;
+    const centerY = ctx.canvas.height / 2;
+    const paintX = character.x - cameraPosition.x + centerX;
+    const paintY = character.y - cameraPosition.y + centerY;
+    const fontSize = 12;
+    const playerOfCharacter = game.state.players.find((e) => e.character === character);
+    if (!playerOfCharacter) return;
+    const clientInfo = game.state.cliendInfos.find((e) => e.id === playerOfCharacter.clientId);
+    if (!clientInfo || !clientInfo.name) return;
+    if (clientInfo.id === game.multiplayer.myClientId) return;
+
+    ctx.fillStyle = "black";
+    ctx.font = fontSize + "px Arial";
+
+    ctx.fillText(
+        clientInfo.name,
+        paintX - clientInfo.name.length * fontSize / 4,
+        paintY - character.height / 2 - 2
+    );
 }
 
 function moveDirectionToSpriteIndex(character: Character): number {

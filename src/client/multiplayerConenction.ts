@@ -2,15 +2,15 @@ import { executeCommand } from "./commands.js";
 import { Game } from "./gameModel.js";
 import { PlayerInput } from "./playerInput.js";
 
-export function websocketConnect(game: Game) {
+export function websocketConnect(game: Game, clientName: string = "Unknown") {
     const protocol = window.location.protocol === "http:" ? "ws" : "wss";
 
     let url = `${protocol}://${window.location.host}/ws`;
-
+    url += "?clientName=" + clientName;
     let lastIdentifier = localStorage.getItem('multiplayerIdentifier');
     if (lastIdentifier) {
         console.log("multiplayer Last Identifier", lastIdentifier);
-        url += "?myId=" + lastIdentifier;
+        url += "&myId=" + lastIdentifier;
     }
     const socket = new WebSocket(url, 'gamedev');
 

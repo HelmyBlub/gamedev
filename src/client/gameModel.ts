@@ -48,6 +48,11 @@ export type BossStuff = {
     bosses: Character[],
 }
 
+export type CliendInfo = {
+    id: number,
+    name: string,
+}
+
 export type GameState = {
     idCounter: IdCounter,
     abilityObjects: AbilityObject[],
@@ -61,7 +66,7 @@ export type GameState = {
     randomSeed: RandomSeed,
     playerInputs: PlayerInput[],
     highscores: Highscores,
-    clientIds: number[],
+    cliendInfos: CliendInfo[],
     map: GameMap,
     deathCircleCreated: boolean,
 }
@@ -141,7 +146,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
                 seed: Math.random(),
             },
             players: [],
-            clientIds: [-1],
+            cliendInfos: [{id: -1, name: "Unknown"}],
             map: createMap(),
             deathCircleCreated: false,
             bossStuff: {

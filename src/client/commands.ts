@@ -31,14 +31,14 @@ export function executeCommand(game: Game, data: any) {
             playerInput(game, data);
             break;
         case "sendGameState":
-            game.state.clientIds.push(data.clientId);
+            game.state.cliendInfos.push({id: data.clientId, name:data.clientName});
             game.multiplayer.websocket!.send(JSON.stringify({ command: "gameState", data: game.state }));
             break;
         case "gameState":
             game.state = data.data;
             game.performance = {};
-            for (let i = 0; i < game.state.clientIds.length; i++) {
-                if (game.multiplayer.myClientId === game.state.clientIds[i]) {
+            for (let i = 0; i < game.state.cliendInfos.length; i++) {
+                if (game.multiplayer.myClientId === game.state.cliendInfos[i].id) {
                     game.clientKeyBindings = [{
                         clientIdRef: game.multiplayer.myClientId,
                         keyCodeToActionPressed: createDefaultKeyBindings1()
@@ -49,7 +49,7 @@ export function executeCommand(game: Game, data: any) {
             break;
         case "connectInfo":
             game.multiplayer.myClientId = data.clientId;
-            game.state.clientIds = [data.clientId];
+            game.state.cliendInfos = [{id: data.clientId, name: data.clientName}];
             game.multiplayer.updateInterval = data.updateInterval;
             if (data.randomIdentifier) {
                 console.log("myIdentifier", data.randomIdentifier);
@@ -57,10 +57,10 @@ export function executeCommand(game: Game, data: any) {
             }
             break;
         case "playerLeft":
-            for (let i = 0; i < game.state.clientIds.length; i++) {
-                if (game.state.clientIds[i] === data.clientId) {
-                    console.log("client removed", game.state.clientIds[i]);
-                    game.state.clientIds.splice(i, 1);
+            for (let i = 0; i < game.state.cliendInfos.length; i++) {
+                if (game.state.cliendInfos[i].id === data.clientId) {
+                    console.log("client removed", game.state.cliendInfos[i]);
+                    game.state.cliendInfos.splice(i, 1);
                     break;
                 }
             }

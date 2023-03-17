@@ -49,8 +49,8 @@ export function mouseUp(event: MouseEvent, game: Game) {
 
 export function keyDown(event: KeyboardEvent, game: Game) {
     if(event.code !== "F12"){
-        event.preventDefault();
-        event.stopPropagation();
+        //event.preventDefault();
+        //event.stopPropagation();
     }
     playerInputChangeEvent(game, event.code, true);
     let commandRestart: Omit<CommandRestart, "executeTime">;
@@ -77,7 +77,13 @@ export function keyDown(event: KeyboardEvent, game: Game) {
             break;
         case "KeyP":
             if (game.multiplayer.websocket === null) {
-                if (game.state.ended) websocketConnect(game);
+                document.getElementById('stringInput')?.classList.toggle('hide');
+                const connectButton = document.getElementById('multiplayerConnect');
+                connectButton?.addEventListener("click", (e) => {
+                    const textInput = document.getElementById('textInput') as HTMLInputElement;
+                    const clientName = textInput.value;
+                    if (game.state.ended) websocketConnect(game, clientName);
+                });                
             } else {
                 game.multiplayer.websocket?.close();
             }
