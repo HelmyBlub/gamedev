@@ -66,7 +66,7 @@ export function determineClosestCharacter(character: Character, characters: Char
     return { minDistanceCharacter, minDistance };
 }
 
-export function determineCharactersInDistance(position: Position, map: GameMap, players: Player[], bosses: BossEnemyCharacter[] , maxDistance: number): Character[] {
+export function determineCharactersInDistance(position: Position, map: GameMap, players: Player[], bosses: BossEnemyCharacter[], maxDistance: number): Character[] {
     let result: Character[] = [];
     let mapKeysInDistance = determineMapKeysInDistance(position, map, maxDistance);
 
@@ -110,7 +110,7 @@ export function getCharactersTouchingLine(game: Game, lineStart: Position, lineE
             }
         }
     }
-    for(let boss of game.state.bossStuff.bosses){
+    for (let boss of game.state.bossStuff.bosses) {
         let distance = calculateDistancePointToLine(boss, lineStart, lineEnd);
         if (distance < boss.width / 2 + lineWidth / 2) {
             charactersTouchingLine.push(boss);
@@ -154,7 +154,7 @@ export function detectCharacterDeath(map: GameMap, state: GameState, camera: Cam
                 levelingCharacterXpGain(state, char);
                 state.killCounter++;
             }
-            bosses.splice(i,1);
+            bosses.splice(i, 1);
         }
     }
 
@@ -178,7 +178,7 @@ export function findAndSetNewCameraCharacterId(camera: Camera, players: Player[]
             }
         }
     }
-    if(newCameraCharacterId){
+    if (newCameraCharacterId) {
         camera.characterId = newCameraCharacterId;
     }
 }
@@ -202,7 +202,13 @@ export function getSpawnPositionAroundPlayer(playerCharacter: Character, randomS
 export function countAlivePlayerCharacters(players: Player[]) {
     let counter = 0;
     for (let i = players.length - 1; i >= 0; i--) {
-        if (!players[i].character.isDead) counter++;
+        if (!players[i].character.isDead) {
+            if (players[i].character.type === "levelingCharacter") {
+                let levelingCharacter = players[i].character as LevelingCharacter;
+                if (levelingCharacter.isPet) continue;
+            }
+            counter++;
+        }
     }
     return counter;
 }

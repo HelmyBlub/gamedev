@@ -14,7 +14,8 @@ export function fillRandomUpgradeOptions(character: LevelingCharacter, randomSee
             abilitiesOptions[ability.name] = ABILITIES_FUNCTIONS[ability.name].createAbiltiyUpgradeOptions();
         }
         for (let i = 0; i < 3; i++) {
-            let randomIndex = Math.floor(nextRandom(randomSeed) * (1 + character.abilities.length));
+            const abilitiesOptionsCount = Object.keys(abilitiesOptions).length;
+            let randomIndex = Math.floor(nextRandom(randomSeed) * (1 + abilitiesOptionsCount));
             if (randomIndex === 0 && characterOptions.length === 0) randomIndex++;
             if (randomIndex === 0) {
                 randomIndex = Math.floor(nextRandom(randomSeed) * characterOptions.length);
@@ -26,6 +27,9 @@ export function fillRandomUpgradeOptions(character: LevelingCharacter, randomSee
                 randomIndex = Math.floor(nextRandom(randomSeed) * abilityOptions.length);
                 character.upgradeOptions.push({ name: abilityOptions[randomIndex].name, abilityName: abilityName });
                 abilityOptions.splice(randomIndex, 1);
+                if(abilityOptions.length === 0){
+                    delete abilitiesOptions[abilityName];
+                }
             }
         }
     }
