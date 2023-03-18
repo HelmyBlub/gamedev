@@ -84,6 +84,24 @@ export type Camera = {
 
 export type KeyCodeToAction = Map<string, { action: string, uiDisplayInputValue: string, isInputAlreadyDown: boolean }>;
 
+export type Multiplayer = {
+    myClientId: number,
+    websocket: WebSocket | null,
+    maxServerGameTime: number,
+    maxServerGameTimeReceivedTime: number,
+    worstCaseGameStartTime: number,
+    worstCaseAge: number,
+    worstRecentCaseGameStartTime: number,
+    delay: number,
+    maxDelay: number,
+    minDelay: number,
+    lastSendTime: number[],
+    updateInterval: number,
+    lastRestartReceiveTime?: number,
+    cachePlayerInputs?: PlayerInput[],
+    connectMenuOpen: boolean,
+    connectMenuListenerSet: boolean,
+}
 
 export type Game = {
     canvasElement?: HTMLCanvasElement,
@@ -95,22 +113,7 @@ export type Game = {
         clientIdRef: number,
         keyCodeToActionPressed: KeyCodeToAction,
     }[],
-    multiplayer: {
-        myClientId: number,
-        websocket: WebSocket | null,
-        maxServerGameTime: number,
-        maxServerGameTimeReceivedTime: number,
-        worstCaseGameStartTime: number,
-        worstCaseAge: number,
-        worstRecentCaseGameStartTime: number,
-        delay: number,
-        maxDelay: number,
-        minDelay: number,
-        lastSendTime: number[],
-        updateInterval: number,
-        lastRestartReceiveTime?: number,
-        cachePlayerInputs?: PlayerInput[],
-    },
+    multiplayer: Multiplayer,
     mouseRelativeCanvasPosition: Position,
     camera: Camera,
     performance: {
@@ -170,6 +173,8 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             minDelay: 0,
             lastSendTime: [],
             updateInterval: -1,
+            connectMenuOpen: false,
+            connectMenuListenerSet: false,
         },
         camera: {
             type: "follow character"

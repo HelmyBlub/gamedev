@@ -48,10 +48,12 @@ export function mouseUp(event: MouseEvent, game: Game) {
 }
 
 export function keyDown(event: KeyboardEvent, game: Game) {
-    if(event.code !== "F12"){
-        //event.preventDefault();
-        //event.stopPropagation();
+    if(event.code !== "F12" && !game.multiplayer.connectMenuOpen){
+        event.preventDefault();
+        event.stopPropagation();
     }
+    if(game.multiplayer.connectMenuOpen) return;
+
     playerInputChangeEvent(game, event.code, true);
     let commandRestart: Omit<CommandRestart, "executeTime">;
 
@@ -76,20 +78,35 @@ export function keyDown(event: KeyboardEvent, game: Game) {
             testGame(game);
             break;
         case "KeyP":
-            if (game.multiplayer.websocket === null) {
-                document.getElementById('stringInput')?.classList.toggle('hide');
-                const connectButton = document.getElementById('multiplayerConnect');
-                connectButton?.addEventListener("click", (e) => {
-                    const textInput = document.getElementById('textInput') as HTMLInputElement;
-                    const clientName = textInput.value;
-                    if (game.state.ended) websocketConnect(game, clientName);
-                });                
-            } else {
-                game.multiplayer.websocket?.close();
-            }
+            multiplayerConnectMenu(game);
             break;
         default:
             break;
+    }
+}
+
+function multiplayerConnectMenu(game:Game){
+    let multiplayer = game.multiplayer;
+    if (multiplayer.websocket === null) {
+        if(!game.state.ended) return;
+        document.getElementById('stringInput')?.classList.toggle('hide');
+        multiplayer.connectMenuOpen = true;
+        if(!multiplayer.connectMenuListenerSet){
+            multiplayer.connectMenuListenerSet = true;
+            const connectButton = document.getElementById('multiplayerConnect');
+            connectButton?.addEventListener("click", (e) => {
+                const textInput = document.getElementById('textInput') as HTMLInputElement;
+                const clientName = textInput.value;
+                multiplayer.connectMenuOpen = false;
+                websocketConnect(game, clientName);
+            });       
+            const cancelButton = document.getElementById('multiplayerCancel');         
+            cancelButton?.addEventListener("click", (e) => {
+                multiplayer.connectMenuOpen = false;
+            });       
+        }
+    } else {
+        multiplayer.websocket?.close();
     }
 }
 
