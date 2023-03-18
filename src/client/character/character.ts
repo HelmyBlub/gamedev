@@ -252,9 +252,30 @@ export function moveCharacterTick(character: Character, map: GameMap, idCounter:
         let y = character.y + Math.sin(character.moveDirection) * character.moveSpeed;
         let blocking = isPositionBlocking({ x, y }, map, idCounter);
         if (!blocking) {
-            mapCharacterCheckForChunkChange(character, map, x, y, isPlayer);
-            character.x = x;
-            character.y = y;
+            let blockingBothSides = isPositionBlocking({ x:character.x, y }, map, idCounter) && isPositionBlocking({ x, y:character.y }, map, idCounter);
+            if(!blockingBothSides){
+                mapCharacterCheckForChunkChange(character, map, x, y, isPlayer);
+                character.x = x;
+                character.y = y;
+            }
+        } else {
+            let xTile = Math.floor(character.x / map.tileSize);
+            let newXTile = Math.floor(x / map.tileSize);
+            if(xTile !== newXTile){
+                if(!isPositionBlocking({ x: character.x, y }, map, idCounter)){
+                    mapCharacterCheckForChunkChange(character, map, character.x, y, isPlayer);
+                    character.y = y;
+                    return;
+                }
+            }
+            let yTile = Math.floor(character.y / map.tileSize);
+            let newYTile = Math.floor(y / map.tileSize);
+            if(yTile !== newYTile){
+                if(!isPositionBlocking({ x, y: character.y }, map, idCounter)){
+                    mapCharacterCheckForChunkChange(character, map, x, character.y, isPlayer);
+                    character.x = x;
+                }
+            }
         }
     }
 }
