@@ -2,6 +2,7 @@ import { Character } from "../character/characterModel.js";
 import { calculateDistance } from "../game.js";
 import { IdCounter, Position } from "../gameModel.js"
 import { createNewChunk } from "./mapGeneration.js";
+import { MapPaintLayer } from "./mapPaint.js";
 
 type MapTiles = {
     [key: number]: MapTile,
@@ -13,6 +14,7 @@ type MapTile = {
     imagePath?: string,
     imageRef?: HTMLImageElement,
     blocking: boolean,
+    layer: MapPaintLayer,
 }
 
 export type MapChunk = {
@@ -21,9 +23,9 @@ export type MapChunk = {
 }
 
 export let TILE_VALUES: MapTiles = {
-    0: { name: "grass", imagePath: "/images/grass.png", blocking: false },
-    1: { name: "tree", imagePath: "/images/tree.png", blocking: true },
-    2: { name: "rock", imagePath: "/images/rock.png", blocking: true },
+    0: { name: "grass", imagePath: "/images/grass.png", blocking: false, layer:"Layer1" },
+    1: { name: "tree", imagePath: "/images/tree.png", blocking: true, layer:"Layer2" },
+    2: { name: "rock", imagePath: "/images/rock.png", blocking: true, layer:"Layer2" },
 }
 
 export type GameMap = {
@@ -210,6 +212,16 @@ export function getChunksTouchingLine(map: GameMap, lineStart: Position, lineEnd
 export function getMapMidlePosition(map: GameMap){
     let offset = map.tileSize * map.chunkLength / 2;
     return {x: offset, y: offset};
+}
+
+export function getTileIdForTileName(tileName: string): number{
+    let keys: any = Object.keys(TILE_VALUES);
+    for(let key of keys){
+        if(TILE_VALUES[key].name === tileName){
+            return key;
+        }
+    }
+    throw new Error("TileName not found");
 }
 
 function calculateDistanceToMapChunk(chunkI: number, chunkJ: number, position: Position, map: GameMap): number {

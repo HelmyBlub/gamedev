@@ -43,7 +43,7 @@ export function createAbilityRod(
     return {
         name: ABILITY_NAME,
         damage: damage,
-        maxNumberRods: 3,
+        maxNumberRods: 30,
         passive: false,
         playerInputBinding: playerInputBinding,
         idCounter: 0,

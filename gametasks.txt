@@ -1,5 +1,4 @@
 next tasks:
-    - trees/stones get hidden by to much fireCircle
     - create boss enemies?
         - problems?:
             - boss abilities also check for enmey hit, uneccessary calculations
