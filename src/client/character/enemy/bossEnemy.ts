@@ -1,5 +1,5 @@
 import { ABILITIES_FUNCTIONS, Ability } from "../../ability/ability.js";
-import { calculateDirection, getNextId } from "../../game.js";
+import { calculateDirection, calculateDistance, getNextId } from "../../game.js";
 import { IdCounter, Game, Position, GameState, BossStuff } from "../../gameModel.js";
 import { GAME_IMAGES, loadImage } from "../../imageLoad.js";
 import { findNearNonBlockingPosition, getMapMidlePosition, moveByDirectionAndDistance } from "../../map/map.js";
@@ -44,6 +44,10 @@ export function tickBossEnemyCharacter(enemy: BossEnemyCharacter, game: Game, pa
     if (enemy.isDead) return;
     let playerCharacters = getPlayerCharacters(game.state.players);
     let closest = determineClosestCharacter(enemy, playerCharacters);
+    if(closest.minDistance > 1200){
+        teleportBossToNearestPlayer(enemy, game);
+        closest = determineClosestCharacter(enemy, playerCharacters);
+    }
     determineEnemyMoveDirection(enemy, closest.minDistanceCharacter, game.state.map, pathingCache, game.state.idCounter, game.state.time);
     determineEnemyHitsPlayer(enemy, closest.minDistanceCharacter);
     moveCharacterTick(enemy, game.state.map, game.state.idCounter, false);
@@ -51,6 +55,12 @@ export function tickBossEnemyCharacter(enemy: BossEnemyCharacter, game: Game, pa
     for (let ability of enemy.abilities) {
         ABILITIES_FUNCTIONS[ability.name].tickAbility(enemy, ability, game);
     }
+}
+
+function teleportBossToNearestPlayer(enemy: BossEnemyCharacter, game: Game){
+    let newPosition = getBossSpawnPosition(game);
+    enemy.x = newPosition.x;
+    enemy.y = newPosition.y;
 }
 
 export function paintBossCharacters(ctx: CanvasRenderingContext2D, cameraPosition: Position, game: Game) {

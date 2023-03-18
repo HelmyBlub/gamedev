@@ -19,8 +19,8 @@ export function paintMap(layer: MapPaintLayer, ctx: CanvasRenderingContext2D, ca
             let chunkJ = startChunkJ + j;
             let chunkKey = `${chunkI}_${chunkJ}`;
             let chunk = map.chunks[chunkKey];
-            if (chunk === undefined && time > 1000) {
-                console.log("missing chunk creation", chunkKey);
+            if (chunk === undefined) {
+                if(time > 1000) console.log("missing chunk creation", chunkKey);
                 continue;
             }
             let x = chunkJ * chunkSize - startX;

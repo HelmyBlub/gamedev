@@ -274,7 +274,7 @@ function tick(gameTimePassed: number, game: Game) {
 }
 
 function checkForEventStarting(game: Game){
-    checkDeathCircleSpawn(game);
+    //checkDeathCircleSpawn(game);
     checkForBossSpawn(game);
 }
 

@@ -1,4 +1,5 @@
 next tasks:
+    - rename "Rod" to "Tower"?
     - create boss enemies?
         - problems?:
             - boss abilities also check for enmey hit, uneccessary calculations
@@ -14,16 +15,7 @@ next tasks:
                     - stronger the longer not replaced?
                     - explode after time?
                     - randomly do damage to near enemies?
-                    - rotating sword around them
                     - stick/jump to nearby enemies
-        - passive class:
-            - choose starting ability out of 3 options instead of a random one
-            - one upgrade can affect multiple abilities
-            - simple abilities:
-                - random firecircle
-                - random shots in a straigt line towards an enemy
-                - random projectile orbiting around player
-                - etc.
 
 technical tasks or bugs:
     - character.size changed to width and height. but hit calculation still only uses width
