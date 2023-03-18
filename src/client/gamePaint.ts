@@ -1,7 +1,8 @@
-import { paintAbilityObjects, paintUiForAbilities } from "./ability/ability.js";
+import { ABILITIES_FUNCTIONS, paintAbilityObjects, paintUiForAbilities } from "./ability/ability.js";
 import { getPlayerCharacters } from "./character/character.js";
 import { paintCharacters } from "./character/characterPaint.js";
 import { paintBossCharacters } from "./character/enemy/bossEnemy.js";
+import { paintLevelingCharacterStatsUI } from "./character/levelingCharacters/levelingCharacter.js";
 import { LevelingCharacter } from "./character/levelingCharacters/levelingCharacterModel.js";
 import { calculateDistance, getCameraPosition } from "./game.js";
 import { Game, Position, Highscores, TestingStuff, Debugging } from "./gameModel.js";
@@ -102,6 +103,25 @@ function paintPlayerStats(ctx: CanvasRenderingContext2D, character: LevelingChar
     ctx.fillText("Distance: " + distance, 10, 40);
 
     paintUpgradeOptionsUI(ctx, character);
+    paintPlayerStatsUI(ctx, character, game);
+}
+
+function paintPlayerStatsUI(ctx: CanvasRenderingContext2D, character: LevelingCharacter, game: Game){
+    if(!game.UI.displayStats) return;
+    const spacing = 5;
+    let paintX = 20;
+    let paintY = 60;
+    
+    let area = paintLevelingCharacterStatsUI(ctx, character, paintX, paintY, game);
+    paintX += area.width + spacing;
+
+    for(let ability of character.abilities){
+        let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+        if(abilityFunctions.paintAbilityStatsUI){
+            area = abilityFunctions.paintAbilityStatsUI(ctx, ability, paintX, paintY, game);
+            paintX += area.width + spacing;
+        }
+    }
 }
 
 function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: LevelingCharacter){

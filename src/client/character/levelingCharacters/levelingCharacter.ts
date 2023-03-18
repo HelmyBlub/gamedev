@@ -27,7 +27,7 @@ export function fillRandomUpgradeOptions(character: LevelingCharacter, randomSee
                 randomIndex = Math.floor(nextRandom(randomSeed) * abilityOptions.length);
                 character.upgradeOptions.push({ name: abilityOptions[randomIndex].name, abilityName: abilityName });
                 abilityOptions.splice(randomIndex, 1);
-                if(abilityOptions.length === 0){
+                if (abilityOptions.length === 0) {
                     delete abilitiesOptions[abilityName];
                 }
             }
@@ -59,37 +59,55 @@ export function levelingCharacterXpGain(state: GameState, killedCharacter: Chara
     for (let i = 0; i < playerCharacters.length; i++) {
         if (playerCharacters[i].experience !== undefined && !playerCharacters[i].isDead && !playerCharacters[i].isPet) {
             playerCharacters[i].experience += killedCharacter.experienceWorth;
-            while(playerCharacters[i].experience >= playerCharacters[i].experienceForLevelUp){
+            while (playerCharacters[i].experience >= playerCharacters[i].experienceForLevelUp) {
                 levelingCharacterLevelUp(playerCharacters[i], state.randomSeed);
             }
         }
     }
 }
 
+export function paintLevelingCharacterStatsUI(ctx: CanvasRenderingContext2D, character: LevelingCharacter, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
+    const width = 200;
+    const height = 200;
+    const fontSize = 14;
+
+    ctx.fillStyle = "white";
+    ctx.fillRect(drawStartX, drawStartY, width, height);
+    ctx.font = fontSize + "px Arial";
+    ctx.fillStyle = "black";
+    let textLineCounter = 1;
+    ctx.fillText("Character Stats:", drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
+    ctx.fillText("HP:" + character.hp, drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
+    ctx.fillText("Movement Speed:" + character.moveSpeed.toFixed(2), drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
+
+    return { width, height };
+}
+
+
 export function tickLevelingCharacter(character: LevelingCharacter, game: Game) {
-    if (character.isDead){ 
+    if (character.isDead) {
         character.isDead = false;
         character.hp = 100;
-        if(character.isPet){
+        if (character.isPet) {
             console.log("character already a pet, should not happen");
             debugger;
-        }else{
+        } else {
             character.isPet = true;
             let newPlayerOwnerId: number | undefined = undefined;
             let possibleOwnerCharacters: LevelingCharacter[] = [];
-            for(let player of game.state.players){
+            for (let player of game.state.players) {
                 let characterIter: LevelingCharacter = player.character as LevelingCharacter;
-                if(!characterIter.isPet && !characterIter.isDead){
+                if (!characterIter.isPet && !characterIter.isDead) {
                     possibleOwnerCharacters.push(characterIter);
                 }
             }
-            if(possibleOwnerCharacters.length > 0){
+            if (possibleOwnerCharacters.length > 0) {
                 let randomOwnerIndex = Math.floor(nextRandom(game.state.randomSeed) * possibleOwnerCharacters.length);
                 newPlayerOwnerId = possibleOwnerCharacters[randomOwnerIndex].id;
                 character.x = possibleOwnerCharacters[randomOwnerIndex].x;
                 character.y = possibleOwnerCharacters[randomOwnerIndex].y;
             }
-    
+
             character.abilities.push(createAbilityLeash(100, newPlayerOwnerId));
         }
     }

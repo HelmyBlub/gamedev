@@ -32,6 +32,7 @@ export function addRodAbility() {
         activeAbilityCast: castRod,
         createAbility: createAbilityRod,
         deleteAbilityObject: deleteAbilityObjectRod,
+        paintAbilityStatsUI: paintAbilityRodStatsUI,
         isPassive: false,
     };
 }
@@ -43,7 +44,7 @@ export function createAbilityRod(
     return {
         name: ABILITY_NAME,
         damage: damage,
-        maxNumberRods: 30,
+        maxNumberRods: 3,
         passive: false,
         playerInputBinding: playerInputBinding,
         idCounter: 0,
@@ -333,6 +334,35 @@ function paintAbilityRodUI(ctx: CanvasRenderingContext2D, ability: Ability, draw
     }
 }
 
+function paintAbilityRodStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, game: Game): {width: number, height: number}{
+    let abilityRod = ability as AbilityRod;
+    const abilityRodDescription = ["Click to place Rod. Rod always connects to closest other Rod."];
+    abilityRodDescription.push("More connections equals more damage. Rods have random");
+    abilityRodDescription.push("Abilities. Abilities are Sword, Bullet or FireCircle.");
+    abilityRodDescription.push("Abilities get more powerfull per connection");
+    const fontSize = 14;
+    const width = 400;
+    const height = 200;
+    ctx.fillStyle = "white";
+    ctx.fillRect(drawStartX, drawStartY, width, height);
+    ctx.font = fontSize + "px Arial";
+    ctx.fillStyle = "black";
+    let textLineCounter = 1;
+    ctx.fillText("Ability:" + abilityRod.name, drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
+    for(let desc of abilityRodDescription){
+        ctx.fillText(desc, drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
+
+    }
+    textLineCounter++;
+    ctx.fillText("Ability stats: ", drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
+    ctx.fillText("Max Rods: " + abilityRod.maxNumberRods, drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
+    ctx.fillText("Max Click Range: " + abilityRod.maxClickRange, drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
+    ctx.fillText("Line Damage: " + abilityRod.damage, drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
+    ctx.fillText("Line Damage Increase per Connection: 15%", drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
+
+    return {width, height};
+}
+
 function tickAbilityRod(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     let abilityRod = ability as AbilityRod;
 }
@@ -349,12 +379,6 @@ function tickAbilityObjectRod(abilityObject: AbilityObject, game: Game) {
 
 function createAbilityRodUpgradeOptions(): UpgradeOptionAbility[] {
     let upgradeOptions: UpgradeOptionAbility[] = [];
-    upgradeOptions.push({
-        name: "Damage+10", upgrade: (a: Ability) => {
-            let as = a as AbilityRod;
-            as.damage += 10;
-        }
-    });
     upgradeOptions.push({
         name: "Damage+10", upgrade: (a: Ability) => {
             let as = a as AbilityRod;

@@ -123,6 +123,9 @@ export type Game = {
     testing?: TestingStuff,
     debug: Debugging,
     closeGame?: boolean,
+    UI:{
+        displayStats: boolean,
+    }
 }
 
 export const LEVELING_CHARACTER_CLASSES: LevelingCharacterClasses = {};
@@ -183,6 +186,9 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
         performance: {},
         debug: {
         },
+        UI: {
+            displayStats: false,
+        }
     }
 
     game.state.map.seed = nextRandom(game.state.randomSeed);
