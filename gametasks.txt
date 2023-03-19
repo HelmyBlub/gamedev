@@ -1,7 +1,9 @@
 next tasks:
+    - ability upgrade option: influence probability of options
     - create a complex/fun/chaotic class or improve on one?
-        - Rod class:
-            - instead of +RodCount, change +RodCound for specific rod Ability
+        - tower class:
+            - add more tower abilities
+            - randomize tower starting abilities, if more than 3 exist
             - ability ideas:
                 - placed things do interact with the other
                     - empowered if grouped up?

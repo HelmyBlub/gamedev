@@ -11,7 +11,7 @@ export function fillRandomUpgradeOptions(character: LevelingCharacter, randomSee
         let characterOptions = createLevelingCharacterUpgradeOptions();
         let abilitiesOptions: { [key: string]: UpgradeOptionAbility[] } = {};
         for (let ability of character.abilities) {
-            abilitiesOptions[ability.name] = ABILITIES_FUNCTIONS[ability.name].createAbiltiyUpgradeOptions();
+            abilitiesOptions[ability.name] = ABILITIES_FUNCTIONS[ability.name].createAbiltiyUpgradeOptions(ability);
         }
         for (let i = 0; i < 3; i++) {
             const abilitiesOptionsCount = Object.keys(abilitiesOptions).length;
@@ -39,9 +39,11 @@ export function upgradeLevelingCharacter(character: LevelingCharacter, upgradeOp
     if (character.availableSkillPoints > 0) {
         let upgradeOption = character.upgradeOptions[upgradeOptionIndex];
         if (upgradeOption.abilityName !== undefined) {
-            let upgrades = ABILITIES_FUNCTIONS[upgradeOption.abilityName].createAbiltiyUpgradeOptions();
             let ability = character.abilities.find(a => a.name === upgradeOption.abilityName);
-            if (ability !== undefined) upgrades.find((e) => e.name === upgradeOption.name)?.upgrade(ability);
+            if (ability !== undefined){
+                let upgrades = ABILITIES_FUNCTIONS[upgradeOption.abilityName].createAbiltiyUpgradeOptions(ability);
+                upgrades.find((e) => e.name === upgradeOption.name)?.upgrade(ability);
+            }
         } else {
             let upgrades = createLevelingCharacterUpgradeOptions();
             upgrades.find((e) => e.name === character.upgradeOptions[upgradeOptionIndex].name)?.upgrade(character);
@@ -77,7 +79,7 @@ export function paintLevelingCharacterStatsUI(ctx: CanvasRenderingContext2D, cha
     ctx.fillStyle = "black";
     let textLineCounter = 1;
     ctx.fillText("Character Stats:", drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
-    ctx.fillText("HP:" + character.hp, drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
+    ctx.fillText(`HP: ${character.hp.toFixed(0)}/${character.maxHp.toFixed(0)}`, drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
     ctx.fillText("Movement Speed:" + character.moveSpeed.toFixed(2), drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
 
     return { width, height };
@@ -87,7 +89,7 @@ export function paintLevelingCharacterStatsUI(ctx: CanvasRenderingContext2D, cha
 export function tickLevelingCharacter(character: LevelingCharacter, game: Game) {
     if (character.isDead) {
         character.isDead = false;
-        character.hp = 100;
+        character.hp = character.maxHp;
         if (character.isPet) {
             console.log("character already a pet, should not happen");
             debugger;
@@ -117,8 +119,9 @@ export function tickLevelingCharacter(character: LevelingCharacter, game: Game) 
 function createLevelingCharacterUpgradeOptions(): UpgradeOptionLevelingCharacter[] {
     let upgradeOptions: UpgradeOptionLevelingCharacter[] = [];
     upgradeOptions.push({
-        name: "Health+50", upgrade: (c: LevelingCharacter) => {
+        name: "Max Health+50", upgrade: (c: LevelingCharacter) => {
             c.hp += 50;
+            c.maxHp += 50;
         }
     });
     upgradeOptions.push({

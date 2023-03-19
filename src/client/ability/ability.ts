@@ -11,6 +11,7 @@ import { addLeshAbility } from "./abilityLeash.js"
 import { addTowerAbility } from "./abilityTower.js"
 import { addShootAbility } from "./abilityShoot.js"
 import { addSwordAbility } from "./abilitySword.js"
+import { addHpRegenAbility } from "./abilityHpRegen.js"
 
 export type Ability = {
     name: string,
@@ -32,12 +33,14 @@ export type AbilityOwner = Position & {
     moveSpeed?: number,
     moveDirection?: number,
     width?: number,
+    hp?: number,
+    maxHp?: number,
 }
 
 export type AbilityFunctions = {
     tickAbility: (abilityOwner: AbilityOwner, ability: Ability, game: Game) => void,
     createAbility: () => Ability,
-    createAbiltiyUpgradeOptions: () => UpgradeOptionAbility[],
+    createAbiltiyUpgradeOptions: (ability: Ability) => UpgradeOptionAbility[],
     activeAbilityCast?: (abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, game: Game) => void,
     tickAbilityObject?: (abilityObject: AbilityObject, game: Game) => void,
     deleteAbilityObject?: (abilityObject: AbilityObject, game: Game) => boolean,
@@ -72,6 +75,7 @@ export function onDomLoadSetAbilitiesFunctions() {
     addTowerAbility();
     addDeathCircleAbility();
     addLeshAbility();
+    addHpRegenAbility();
 }
 
 export function addAbilityToCharacter(character: Character, ability: Ability) {

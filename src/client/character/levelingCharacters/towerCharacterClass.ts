@@ -1,4 +1,5 @@
 import { addAbilityToCharacter } from "../../ability/ability.js";
+import { createAbilityHpRegen } from "../../ability/abilityHpRegen.js";
 import { createAbilityTower } from "../../ability/abilityTower.js";
 import { IdCounter, LEVELING_CHARACTER_CLASSES } from "../../gameModel.js";
 import { RandomSeed } from "../../randomNumberGenerator.js";
@@ -25,5 +26,6 @@ function createTowerCharacter(
 ): LevelingCharacter {
     let character = createLevelingCharacter(idCounter, x, y, width, height, color, moveSpeed, hp, damage, faction, seed);
     addAbilityToCharacter(character, createAbilityTower("ability1"));
+    addAbilityToCharacter(character, createAbilityHpRegen());
     return character;
 }
