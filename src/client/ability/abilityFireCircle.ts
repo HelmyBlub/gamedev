@@ -250,26 +250,26 @@ function deleteObjectFireCircle(abilityObject: AbilityObject, game: Game): boole
 function createAbiltiyFireCircleUpgradeOptions(): UpgradeOptionAbility[] {
     let upgradeOptions: UpgradeOptionAbility[] = [];
     upgradeOptions.push({
-        name: "Damage+10", upgrade: (a: Ability) => {
+        name: "Damage+10", probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilityFireCircle;
             as.damage += 10;
         },
     });
     upgradeOptions.push({
-        name: "Size+", upgrade: (a: Ability) => {
+        name: "Size+", probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilityFireCircle;
             let addSize = Math.max(1, 10 - (as.size - 30) / 40);
             as.size += addSize;
         },
     });
     upgradeOptions.push({
-        name: "Duration+", upgrade: (a: Ability) => {
+        name: "Duration+", probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilityFireCircle;
             as.objectDuration += 250;
         },
     });
     upgradeOptions.push({
-        name: "RechargeTime-", upgrade: (a: Ability) => {
+        name: "RechargeTime-", probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilityFireCircle;
             as.rechargeTimeDecreaseFaktor += 0.15;
         },

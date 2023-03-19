@@ -413,14 +413,14 @@ function createAbilityTowerUpgradeOptions(ability: Ability): UpgradeOptionAbilit
     let abilityTower = ability as AbilityTower;
     let upgradeOptions: UpgradeOptionAbility[] = [];
     upgradeOptions.push({
-        name: "Damage+10", upgrade: (a: Ability) => {
+        name: "Damage+10", probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilityTower;
             as.damage += 10;
         }
     });
     for(let i = 0; i < abilityTower.availableAbilityKeys.length; i++){
         upgradeOptions.push({
-            name: `Tower ${abilityTower.availableAbilityKeys[i]}+`, upgrade: (a: Ability) => {
+            name: `Tower ${abilityTower.availableAbilityKeys[i]}+`, probabilityFactor: 1, upgrade: (a: Ability) => {
                 let as = a as AbilityTower;                
                 as.orderOfAbilities.splice(as.currentAbilityIndex,0,i);
             }

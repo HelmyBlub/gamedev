@@ -184,20 +184,20 @@ function tickAbilitySword(abilityOwner: AbilityOwner, ability: Ability, game: Ga
 function createAbilitySwordUpgradeOptions(): UpgradeOptionAbility[] {
     let upgradeOptions: UpgradeOptionAbility[] = [];
     upgradeOptions.push({
-        name: "Damage+10", upgrade: (a: Ability) => {
+        name: "Damage+10", probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilitySword;
             as.damage += 10;
         }
     });
     upgradeOptions.push({
-        name: "SwordSize+", upgrade: (a: Ability) => {
+        name: "SwordSize+", probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilitySword;
             as.swordLength += 10;
         }
     });
 
     upgradeOptions.push({
-        name: "SwordCount+", upgrade: (a: Ability) => {
+        name: "SwordCount+", probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilitySword;
             as.swordCount += 1;
             as.angleChangePerSword = Math.PI * 2 / as.swordCount;
@@ -205,7 +205,7 @@ function createAbilitySwordUpgradeOptions(): UpgradeOptionAbility[] {
     });
 
     upgradeOptions.push({
-        name: "SwordSpeed+", upgrade: (a: Ability) => {
+        name: "SwordSpeed+", probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilitySword;
             as.angleChangePerTick += 0.005;
         }

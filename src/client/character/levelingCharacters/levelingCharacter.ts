@@ -9,28 +9,65 @@ import { createAbilityLeash } from "../../ability/abilityLeash.js";
 export function fillRandomUpgradeOptions(character: LevelingCharacter, randomSeed: RandomSeed) {
     if (character.upgradeOptions.length === 0) {
         let characterOptions = createLevelingCharacterUpgradeOptions();
-        let abilitiesOptions: { [key: string]: UpgradeOptionAbility[] } = {};
+        let characterOptionProbability = 0;
+        for(let characterOption of characterOptions){
+            characterOptionProbability += characterOption.probabilityFactor;
+        }
+        let abilitiesOptions: { [key: string]: {options: UpgradeOptionAbility[], probability:number }} = {};
         for (let ability of character.abilities) {
-            abilitiesOptions[ability.name] = ABILITIES_FUNCTIONS[ability.name].createAbiltiyUpgradeOptions(ability);
+            let options = ABILITIES_FUNCTIONS[ability.name].createAbiltiyUpgradeOptions(ability);
+            let abilityOptionProbability = 0;
+            for(let abilityOption of options){
+                abilityOptionProbability += abilityOption.probabilityFactor;
+            }
+            abilitiesOptions[ability.name] = {options, probability:abilityOptionProbability};
         }
         for (let i = 0; i < 3; i++) {
-            const abilitiesOptionsCount = Object.keys(abilitiesOptions).length;
-            let randomIndex = Math.floor(nextRandom(randomSeed) * (1 + abilitiesOptionsCount));
-            if (randomIndex === 0 && characterOptions.length === 0) randomIndex++;
-            if (randomIndex === 0) {
-                randomIndex = Math.floor(nextRandom(randomSeed) * characterOptions.length);
-                character.upgradeOptions.push({ name: characterOptions[randomIndex].name });
-                characterOptions.splice(randomIndex, 1);
+            const abilitiesOptionsKeys = Object.keys(abilitiesOptions);
+            let totablPropability = characterOptionProbability;
+            for(let key of abilitiesOptionsKeys){
+                totablPropability += abilitiesOptions[key].probability;
+            }
+            let randomProbability = nextRandom(randomSeed) * (totablPropability);
+            if (randomProbability < characterOptionProbability) {
+                let characterOptionIndex = 0;
+                for(let characterOptionIndex = 0; characterOptionIndex < characterOptions.length; characterOptionIndex++){
+                    randomProbability -= characterOptions[characterOptionIndex].probabilityFactor;
+                    if(randomProbability < 0) {
+                        characterOptionIndex = characterOptionIndex;
+                        break;
+                    };
+                }
+                if(randomProbability >= 0) throw new Error("getting random upgrade option with probabilities failed. Probability not fitting to character options");
+                character.upgradeOptions.push({ name: characterOptions[characterOptionIndex].name });
+                characterOptionProbability -= characterOptions[characterOptionIndex].probabilityFactor;
+                characterOptions.splice(characterOptionIndex, 1);
             } else {
-                let abilityName = character.abilities[randomIndex - 1].name;
+                randomProbability -= characterOptionProbability;
+                let abilityName = "";
+                for(let abilityKeyIndex = 0; abilityKeyIndex < abilitiesOptionsKeys.length; abilityKeyIndex++){
+                    if(randomProbability < abilitiesOptions[abilitiesOptionsKeys[abilityKeyIndex]].probability) {
+                        abilityName = abilitiesOptionsKeys[abilityKeyIndex];
+                        break;
+                    };
+                    randomProbability -= abilitiesOptions[abilitiesOptionsKeys[abilityKeyIndex]].probability;                    
+                }
                 let abilityOptions = abilitiesOptions[abilityName];
-                randomIndex = Math.floor(nextRandom(randomSeed) * abilityOptions.length);
-                character.upgradeOptions.push({ name: abilityOptions[randomIndex].name, abilityName: abilityName });
-                abilityOptions.splice(randomIndex, 1);
-                if (abilityOptions.length === 0) {
-                    delete abilitiesOptions[abilityName];
+
+                for(let abilityOptionIndex = 0; abilityOptionIndex < abilityOptions.options.length; abilityOptionIndex++){
+                    randomProbability -= abilityOptions.options[abilityOptionIndex].probabilityFactor;
+                    if(randomProbability < 0){
+                        character.upgradeOptions.push({ name: abilityOptions.options[abilityOptionIndex].name, abilityName: abilityName });
+                        abilityOptions.probability -= abilityOptions.options[abilityOptionIndex].probabilityFactor;
+                        abilityOptions.options.splice(abilityOptionIndex, 1);
+                        if (abilityOptions.options.length === 0) {
+                            delete abilitiesOptions[abilityName];
+                        }
+                        break;
+                    }
                 }
             }
+            if(randomProbability >= 0) throw new Error("getting random upgrade option with probabilities failed. Random value to high?");
         }
     }
 }
@@ -119,13 +156,13 @@ export function tickLevelingCharacter(character: LevelingCharacter, game: Game) 
 function createLevelingCharacterUpgradeOptions(): UpgradeOptionLevelingCharacter[] {
     let upgradeOptions: UpgradeOptionLevelingCharacter[] = [];
     upgradeOptions.push({
-        name: "Max Health+50", upgrade: (c: LevelingCharacter) => {
+        name: "Max Health+50", probabilityFactor: 1, upgrade: (c: LevelingCharacter) => {
             c.hp += 50;
             c.maxHp += 50;
         }
     });
     upgradeOptions.push({
-        name: "Speed+0.2", upgrade: (c: LevelingCharacter) => {
+        name: "Speed+0.2", probabilityFactor: 1, upgrade: (c: LevelingCharacter) => {
             c.moveSpeed += 0.2;
         }
     });

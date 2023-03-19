@@ -39,6 +39,7 @@ export type LevelingCharacterClasses = {
 
 export type UpgradeOptionLevelingCharacter = {
     name: string,
+    probabilityFactor: number,
     upgrade: (levelingCharacter: LevelingCharacter) => void,
 }
 

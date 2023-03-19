@@ -89,7 +89,7 @@ function tickAbilityLeash(abilityOwner: AbilityOwner, ability: Ability, game: Ga
 function createAbilityLeashUpgradeOptions(): UpgradeOptionAbility[] {
     let upgradeOptions: UpgradeOptionAbility[] = [];
     upgradeOptions.push({
-        name: "LeashLength+10", upgrade: (a: Ability) => {
+        name: "LeashLength+10", probabilityFactor: 1, upgrade: (a: Ability) => {
             let al = a as AbilityLeash;
             al.leashMaxLength += 10;
         }

@@ -100,25 +100,25 @@ function onShootHitAndReturnIfContinue(abilityObject: AbilityObject){
 function createAbiltiyShootUpgradeOptions(): UpgradeOptionAbility[]{
     let upgradeOptions: UpgradeOptionAbility[] = [];
     upgradeOptions.push({
-        name: "Damage+10", upgrade: (a: Ability) => {
+        name: "Damage+10", probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilityShoot;
             as.damage += 10;
         },
     });
     upgradeOptions.push({
-        name: "shootSpeed Up", upgrade: (a: Ability) => {
+        name: "shootSpeed Up", probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilityShoot;
             as.frequencyIncrease += 0.2;
         }
     });
     upgradeOptions.push({
-        name: "Piercing+1", upgrade: (a: Ability) => {
+        name: "Piercing+1", probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilityShoot;
             as.pierceCount += 1;
         }
     });
     upgradeOptions.push({
-        name: "MultiShot+1", upgrade: (a: Ability) => {
+        name: "MultiShot+1", probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilityShoot;
             as.multiShot += 1;
         }

@@ -51,7 +51,7 @@ function tickAbilityHpRegen(abilityOwner: AbilityOwner, ability: Ability, game: 
 function createAbilityHpRegenUpgradeOptions(): UpgradeOptionAbility[] {
     let upgradeOptions: UpgradeOptionAbility[] = [];
     upgradeOptions.push({
-        name: "Hp Regen+", upgrade: (a: Ability) => {
+        name: "Hp Regen+", probabilityFactor: 1, upgrade: (a: Ability) => {
             let abilityHpRegen = a as AbilityHpRegen;
             abilityHpRegen.amount += 1;
         }
