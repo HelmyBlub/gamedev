@@ -8,7 +8,7 @@ import { findPlayerByCharacterId, findPlayerById, Player } from "../player.js"
 import { addDeathCircleAbility } from "./abilityDeathCircle.js"
 import { addFireCircleAbility } from "./abilityFireCircle.js"
 import { addLeshAbility } from "./abilityLeash.js"
-import { addRodAbility } from "./abilityRod.js"
+import { addTowerAbility } from "./abilityTower.js"
 import { addShootAbility } from "./abilityShoot.js"
 import { addSwordAbility } from "./abilitySword.js"
 
@@ -69,7 +69,7 @@ export function onDomLoadSetAbilitiesFunctions() {
     addShootAbility();
     addFireCircleAbility();
     addSwordAbility();
-    addRodAbility();
+    addTowerAbility();
     addDeathCircleAbility();
     addLeshAbility();
 }

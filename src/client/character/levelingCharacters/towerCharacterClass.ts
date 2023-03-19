@@ -1,16 +1,16 @@
 import { addAbilityToCharacter } from "../../ability/ability.js";
-import { createAbilityRod } from "../../ability/abilityRod.js";
+import { createAbilityTower } from "../../ability/abilityTower.js";
 import { IdCounter, LEVELING_CHARACTER_CLASSES } from "../../gameModel.js";
 import { RandomSeed } from "../../randomNumberGenerator.js";
 import { createLevelingCharacter, LevelingCharacter } from "./levelingCharacterModel.js";
 
-export function addRodClass() {
-    LEVELING_CHARACTER_CLASSES["Rod"] = {
-        createLevelingCharacter: createRodCharacter
+export function addTowerClass() {
+    LEVELING_CHARACTER_CLASSES["Tower"] = {
+        createLevelingCharacter: createTowerCharacter
     }
 }
 
-function createRodCharacter(
+function createTowerCharacter(
     idCounter: IdCounter,
     x: number,
     y: number,
@@ -24,6 +24,6 @@ function createRodCharacter(
     seed: RandomSeed,
 ): LevelingCharacter {
     let character = createLevelingCharacter(idCounter, x, y, width, height, color, moveSpeed, hp, damage, faction, seed);
-    addAbilityToCharacter(character, createAbilityRod("ability1"));
+    addAbilityToCharacter(character, createAbilityTower("ability1"));
     return character;
 }

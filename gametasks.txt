@@ -1,11 +1,4 @@
 next tasks:
-    - rename "Rod" to "Tower"?
-    - create boss enemies?
-        - problems?:
-            - boss abilities also check for enmey hit, uneccessary calculations
-            - mulitplayer: player running in different directions, if player dies boss might
-              have very long distane to other player. Very bad for pathfinding performance.
-
     - create a complex/fun/chaotic class or improve on one?
         - Rod class:
             - instead of +RodCount, change +RodCound for specific rod Ability
