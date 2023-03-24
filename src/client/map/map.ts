@@ -23,9 +23,9 @@ export type MapChunk = {
 }
 
 export let TILE_VALUES: MapTiles = {
-    0: { name: "grass", imagePath: "/images/grass.png", blocking: false, layer:"Layer1" },
-    1: { name: "tree", imagePath: "/images/tree.png", blocking: true, layer:"Layer2" },
-    2: { name: "rock", imagePath: "/images/rock.png", blocking: true, layer:"Layer2" },
+    0: { name: "grass", imagePath: "/images/grass.png", blocking: false, layer: "Layer1" },
+    1: { name: "tree", imagePath: "/images/tree.png", blocking: true, layer: "Layer2" },
+    2: { name: "rock", imagePath: "/images/rock.png", blocking: true, layer: "Layer2" },
 }
 
 export type GameMap = {
@@ -95,7 +95,7 @@ export function mapKeyToChunkIJ(mapKey: string) {
     return { chunkI, chunkJ };
 }
 
-export function determineMapKeysInDistance(position: Position, map: GameMap, maxDistance: number, addNotCreatedChunkKeys: boolean = true): string[] {
+export function determineMapKeysInDistance(position: Position, map: GameMap, maxDistance: number, addNotCreatedChunkKeys: boolean = true, addNonActiveChunkKeys: boolean = true): string[] {
     let chunkSize = map.tileSize * map.chunkLength;
     let maxChunks = Math.ceil(maxDistance / chunkSize);
     let result: string[] = [];
@@ -104,6 +104,7 @@ export function determineMapKeysInDistance(position: Position, map: GameMap, max
             let chunkI = Math.floor(position.y / chunkSize) + i;
             let chunkJ = Math.floor(position.x / chunkSize) + j;
             if (!addNotCreatedChunkKeys && map.chunks[`${chunkI}_${chunkJ}`] === undefined) continue;
+            if (!addNonActiveChunkKeys && !map.activeChunkKeys.includes(`${chunkI}_${chunkJ}`)) continue;
             let distance = calculateDistanceToMapChunk(chunkI, chunkJ, position, map);
             if (distance <= maxDistance) {
                 result.push(`${chunkI}_${chunkJ}`);
@@ -124,10 +125,10 @@ export function moveByDirectionAndDistance(position: Position, moveDirection: nu
     let x = position.x + Math.cos(moveDirection) * distance;
     let y = position.y + Math.sin(moveDirection) * distance;
     let blocking = checkColision;
-    if(checkColision){
-        if(!map || !idCounter) throw new Error("collision check requires map and idCounter");
+    if (checkColision) {
+        if (!map || !idCounter) throw new Error("collision check requires map and idCounter");
         blocking = isPositionBlocking({ x, y }, map, idCounter);
-    } 
+    }
     if (!blocking) {
         position.x = x;
         position.y = y;
@@ -150,49 +151,49 @@ export function getChunksTouchingLine(map: GameMap, lineStart: Position, lineEnd
             let nextXBorder: number | undefined;
             let nextYBorderX: number | undefined;
             let nextXBorderY: number | undefined;
-            if(yDiff !== 0){
-                if(yDiff > 0){
+            if (yDiff !== 0) {
+                if (yDiff > 0) {
                     nextYBorder = Math.ceil(currentPos.y / chunkSize) * chunkSize + 0.01;
-                }else{
+                } else {
                     nextYBorder = Math.floor(currentPos.y / chunkSize) * chunkSize - 0.01;
                 }
             }
-            if(xDiff !== 0){
-                if(xDiff > 0){
+            if (xDiff !== 0) {
+                if (xDiff > 0) {
                     nextXBorder = Math.ceil(currentPos.x / chunkSize) * chunkSize + 0.01;
-                }else{
+                } else {
                     nextXBorder = Math.floor(currentPos.x / chunkSize) * chunkSize - 0.01;
                 }
             }
-            if(nextYBorder !== undefined){
-                nextYBorderX = (nextYBorder - currentPos.y) * (xDiff/yDiff) + currentPos.x;
+            if (nextYBorder !== undefined) {
+                nextYBorderX = (nextYBorder - currentPos.y) * (xDiff / yDiff) + currentPos.x;
             }
-            if(nextXBorder !== undefined){
-                nextXBorderY = (nextXBorder - currentPos.x) * (yDiff/xDiff) + currentPos.y;
+            if (nextXBorder !== undefined) {
+                nextXBorderY = (nextXBorder - currentPos.x) * (yDiff / xDiff) + currentPos.y;
             }
-            if(nextYBorderX !== undefined && nextXBorderY !== undefined){
-                if(nextXBorder! > nextYBorderX){
-                    if(xDiff > 0){
+            if (nextYBorderX !== undefined && nextXBorderY !== undefined) {
+                if (nextXBorder! > nextYBorderX) {
+                    if (xDiff > 0) {
                         currentPos.x = nextYBorderX;
                         currentPos.y = nextYBorder!;
-                    }else{
+                    } else {
                         currentPos.x = nextXBorder!;
                         currentPos.y = nextXBorderY;
                     }
-                }else{
-                    if(xDiff > 0){
+                } else {
+                    if (xDiff > 0) {
                         currentPos.x = nextXBorder!;
                         currentPos.y = nextXBorderY;
-                    }else{
+                    } else {
                         currentPos.x = nextYBorderX;
                         currentPos.y = nextYBorder!;
                     }
                 }
-            }else if(nextYBorderX !== undefined){
+            } else if (nextYBorderX !== undefined) {
                 currentPos.y = nextYBorder!;
-            }else if(nextXBorderY !== undefined){
+            } else if (nextXBorderY !== undefined) {
                 currentPos.x = nextXBorder!;
-            }else{
+            } else {
                 console.log("should not happen?");
             }
             currentKey = positionToMapKey(currentPos, map);
@@ -202,22 +203,22 @@ export function getChunksTouchingLine(map: GameMap, lineStart: Position, lineEnd
 
     let chunks: MapChunk[] = [];
     for (let chunkKey of chunkKeys) {
-        if (map.chunks[chunkKey] !== undefined) {
+        if (map.chunks[chunkKey] !== undefined && map.activeChunkKeys.includes(chunkKey)) {
             chunks.push(map.chunks[chunkKey]);
         }
     }
     return chunks;
 }
 
-export function getMapMidlePosition(map: GameMap){
+export function getMapMidlePosition(map: GameMap) {
     let offset = map.tileSize * map.chunkLength / 2;
-    return {x: offset, y: offset};
+    return { x: offset, y: offset };
 }
 
-export function getTileIdForTileName(tileName: string): number{
+export function getTileIdForTileName(tileName: string): number {
     let keys: any = Object.keys(TILE_VALUES);
-    for(let key of keys){
-        if(TILE_VALUES[key].name === tileName){
+    for (let key of keys) {
+        if (TILE_VALUES[key].name === tileName) {
             return key;
         }
     }

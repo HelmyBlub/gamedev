@@ -28,6 +28,7 @@ export function paintMap(layer: MapPaintLayer, ctx: CanvasRenderingContext2D, ca
             paintChunk(layer, ctx, { x, y }, chunk, map.tileSize, { x: chunkJ, y: chunkI }, mapChunkPaintCache, debug);
             if (debug?.paintMarkActiveChunks && layer === "Layer2") {
                 if (map.activeChunkKeys.indexOf(chunkKey) > -1) {
+                    ctx.lineWidth = 1;
                     ctx.beginPath()
                     ctx.strokeStyle = 'red';
                     ctx.rect(x + 1, y + 1, chunkSize - 2, chunkSize - 2);

@@ -2,6 +2,7 @@ import { getCharactersTouchingLine, characterTakeDamage } from "../character/cha
 import { Character } from "../character/characterModel.js";
 import { calculateDistance, getCameraPosition, getNextId } from "../game.js";
 import { Position, Game, IdCounter } from "../gameModel.js";
+import { positionToMapKey } from "../map/map.js";
 import { findPlayerByCharacterId } from "../player.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityFunctions, AbilityObject, AbilityOwner, PaintOrder, UpgradeOptionAbility } from "./ability.js";
@@ -401,6 +402,8 @@ function tickAbilityTower(abilityOwner: AbilityOwner, ability: Ability, game: Ga
 
 function tickAbilityObjectTower(abilityObject: AbilityObject, game: Game) {
     let abilityTower = abilityObject as AbilityObjectTower;
+    let mapKeyOfCharacterPosistion = positionToMapKey(abilityObject, game.state.map);
+    if(!game.state.map.activeChunkKeys.includes(mapKeyOfCharacterPosistion)) return;
     tickEffectConnected(abilityTower, game);
 
     if (abilityTower.ability) {

@@ -78,7 +78,7 @@ export function determineClosestCharacter(character: Character, characters: Char
 
 export function determineCharactersInDistance(position: Position, map: GameMap, players: Player[], bosses: BossEnemyCharacter[], maxDistance: number): Character[] {
     let result: Character[] = [];
-    let mapKeysInDistance = determineMapKeysInDistance(position, map, maxDistance);
+    let mapKeysInDistance = determineMapKeysInDistance(position, map, maxDistance, true, false);
 
     for (let i = 0; i < mapKeysInDistance.length; i++) {
         let chunk = map.chunks[mapKeysInDistance[i]];

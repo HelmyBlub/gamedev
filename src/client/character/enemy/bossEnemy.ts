@@ -7,6 +7,7 @@ import { getHighestLevelOfPlayers, getPlayerFurthestAwayFromSpawn } from "../../
 import { nextRandom } from "../../randomNumberGenerator.js";
 import { determineClosestCharacter, determineEnemyHitsPlayer, determineEnemyMoveDirection, getPlayerCharacters, getSpawnPositionAroundPlayer, moveCharacterTick } from "../character.js";
 import { Character, createCharacter } from "../characterModel.js";
+import { paintCharacterHpBar } from "../characterPaint.js";
 import { getPathingCache, PathingCache } from "../pathing.js";
 
 export type BossEnemyCharacter = Character & {
@@ -152,7 +153,7 @@ function paintBossEnemyCharacter(ctx: CanvasRenderingContext2D, character: BossE
                     characterY,
                     character.width, character.height
                 );
-                paintBossHpBar(ctx, character, { x: characterX, y: characterY });
+                paintCharacterHpBar(ctx, character, { x: characterX, y: characterY });
             }
         }
     }
@@ -162,17 +163,4 @@ function paintBossEnemyCharacter(ctx: CanvasRenderingContext2D, character: BossE
             abilityFunctions.paintAbility(ctx, character, ability, cameraPosition, game);
         }
     }
-}
-
-function paintBossHpBar(ctx: CanvasRenderingContext2D, character: BossEnemyCharacter, topLeftPaint: Position) {
-    const fillAmount = Math.max(0, character.hp / character.maxHp);
-    const bossWidth = character.width;
-    const hpBarHeight = 6;
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = "black";
-    ctx.fillStyle = "black";
-    ctx.fillRect(topLeftPaint.x, topLeftPaint.y - hpBarHeight, Math.ceil(bossWidth * fillAmount), hpBarHeight);
-    ctx.beginPath();
-    ctx.rect(topLeftPaint.x, topLeftPaint.y - hpBarHeight, bossWidth, hpBarHeight);
-    ctx.stroke();
 }

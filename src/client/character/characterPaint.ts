@@ -11,6 +11,20 @@ export function paintCharacters(ctx: CanvasRenderingContext2D, characters: Chara
     }
 }
 
+export function paintCharacterHpBar(ctx: CanvasRenderingContext2D, character: Character, topLeftPaint: Position) {
+    const fillAmount = Math.max(0, character.hp / character.maxHp);
+    const bossWidth = character.width;
+    const hpBarHeight = 6;
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = "black";
+    ctx.fillStyle = "black";
+    ctx.fillRect(topLeftPaint.x, topLeftPaint.y - hpBarHeight, Math.ceil(bossWidth * fillAmount), hpBarHeight);
+    ctx.beginPath();
+    ctx.rect(topLeftPaint.x, topLeftPaint.y - hpBarHeight, bossWidth, hpBarHeight);
+    ctx.stroke();
+}
+
+
 function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
     if (character.isDead) return;
     let centerX = ctx.canvas.width / 2;
@@ -58,18 +72,21 @@ function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cam
                 }
                 let heightFactor = 1;
                 if ((character as LevelingCharacter).isPet) heightFactor = 0.5;
+                let characterPaintX = Math.floor(paintX - character.width / 2);
+                let characterPaintY = Math.floor(paintY - character.height / 2 * heightFactor); 
                 ctx.drawImage(
                     characterImage.properties.canvases[randomizedCharacterImageToKey(character.randomizedCharacterImage)],
                     widthIndex * spriteWidth,
                     animationY * spriteHeight,
                     spriteWidth,
                     spriteHeight,
-                    Math.floor(paintX - character.width / 2),
-                    Math.floor(paintY - character.height / 2 * heightFactor),
+                    characterPaintX,
+                    characterPaintY,
                     character.width,
                     character.height * heightFactor
                 );
-
+                paintCharacterHpBar(ctx, character, { x: characterPaintX, y: characterPaintY });
+                paintPlayerNameOverCharacter(ctx, character, { x: characterPaintX, y: characterPaintY - 6}, game);
             }
         } else {
             console.log("missing image path for enemy", characterImageId);
@@ -89,15 +106,10 @@ function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cam
             abilityFunctions.paintAbility(ctx, character, ability, cameraPosition, game);
         }
     }
-    paintPlayerNameOverCharacter(ctx, character, cameraPosition, game);
 }
 
-function paintPlayerNameOverCharacter(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
+function paintPlayerNameOverCharacter(ctx: CanvasRenderingContext2D, character: Character, paintTopLeft: Position, game: Game) {
     if (character.faction !== "player") return;
-    const centerX = ctx.canvas.width / 2;
-    const centerY = ctx.canvas.height / 2;
-    const paintX = character.x - cameraPosition.x + centerX;
-    const paintY = character.y - cameraPosition.y + centerY;
     const fontSize = 12;
     const playerOfCharacter = game.state.players.find((e) => e.character === character);
     if (!playerOfCharacter) return;
@@ -110,8 +122,8 @@ function paintPlayerNameOverCharacter(ctx: CanvasRenderingContext2D, character: 
 
     ctx.fillText(
         clientInfo.name,
-        paintX - clientInfo.name.length * fontSize / 4,
-        paintY - character.height / 2 - 2
+        paintTopLeft.x - clientInfo.name.length * fontSize / 4 + character.width/2,
+        paintTopLeft.y - 2
     );
 }
 

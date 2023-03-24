@@ -19,9 +19,9 @@ import { testTemp } from "../ability/temptest.js";
 export function testGame(game: Game) {
     console.log("start test");
     //testPathing(game.ctx);
-    //runGameWithPlayerInputs(game, testInputs2);
+    runGameWithPlayerInputs(game, testInputs);
     //runGameWithPlayerInputs(game, testMultiplayerInputs);
-    testTemp();
+    //testTemp();
     console.log("end test");
 }
 
