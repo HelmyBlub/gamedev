@@ -108,7 +108,7 @@ export function tickAbilityObjects(abilityObjects: AbilityObject[], game: Game) 
     takeTimeMeasure(game.debug, "tickAbilityObjects", "");
 }
 
-export function detectAbilityObjectToCharacterHit(map: GameMap, abilityObject: AbilityObject, players: Player[], bosses: BossEnemyCharacter[]) {
+export function detectAbilityObjectToCharacterHit(map: GameMap, abilityObject: AbilityObject, players: Player[], bosses: BossEnemyCharacter[], game: Game | undefined) {
     let maxEnemySizeEstimate = 40;
 
     let characters = determineCharactersInDistance(abilityObject, map, players, bosses, abilityObject.size + maxEnemySizeEstimate);
@@ -117,7 +117,7 @@ export function detectAbilityObjectToCharacterHit(map: GameMap, abilityObject: A
         if (c.isDead || c.faction === abilityObject.faction) continue;
         let distance = calculateDistance(c, abilityObject);
         if (distance < abilityObject.size / 2 + c.width / 2) {
-            characterTakeDamage(c, abilityObject.damage);
+            characterTakeDamage(c, abilityObject.damage, game);
             let abilityFunction = ABILITIES_FUNCTIONS[abilityObject.type];
             if (abilityFunction.onHitAndReturnIfContinue) {
                 let continueHitDetection = abilityFunction.onHitAndReturnIfContinue(abilityObject);

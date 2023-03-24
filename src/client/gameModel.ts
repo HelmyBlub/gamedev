@@ -82,6 +82,14 @@ export type Camera = {
     characterId?: number,
 }
 
+export type PaintDamageNumberData = {
+    damage: number,
+    paintPosition: Position,
+    color: string,
+    fontSize: string,
+    removeTime: number,
+}
+
 export type KeyCodeToAction = Map<string, { action: string, uiDisplayInputValue: string, isInputAlreadyDown: boolean }>;
 
 export type Multiplayer = {
@@ -124,6 +132,8 @@ export type Game = {
     debug: Debugging,
     closeGame?: boolean,
     UI:{
+        displayDamageNumbers: boolean,
+        displayDamageNumbersData?: PaintDamageNumberData[],
         displayStats: boolean,
     }
 }
@@ -187,6 +197,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
         debug: {
         },
         UI: {
+            displayDamageNumbers: true,
             displayStats: false,
         }
     }

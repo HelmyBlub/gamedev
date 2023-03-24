@@ -5,7 +5,7 @@ import { paintBossCharacters } from "./character/enemy/bossEnemy.js";
 import { paintLevelingCharacterStatsUI } from "./character/levelingCharacters/levelingCharacter.js";
 import { LevelingCharacter } from "./character/levelingCharacters/levelingCharacterModel.js";
 import { calculateDistance, getCameraPosition } from "./game.js";
-import { Game, Position, Highscores, TestingStuff, Debugging } from "./gameModel.js";
+import { Game, Position, Highscores, TestingStuff, Debugging, PaintDamageNumberData } from "./gameModel.js";
 import { getMapMidlePosition } from "./map/map.js";
 import { paintMap, paintMapCharacters } from "./map/mapPaint.js";
 import { findPlayerById } from "./player.js";
@@ -21,6 +21,7 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
     paintBossCharacters(ctx, cameraPosition, game);
     paintCharacters(ctx, getPlayerCharacters(game.state.players), cameraPosition, game);
     paintAbilityObjects(ctx, game.state.abilityObjects, game, "afterCharacterPaint");
+    paintDamageNumbers(ctx, game.UI.displayDamageNumbersData, cameraPosition, game.state.time);
     paintKillCounter(ctx, game.state.killCounter);
 
     if (game.state.ended) {
@@ -37,13 +38,32 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
             if (game.multiplayer.websocket !== null) {
                 ctx.fillText("Ping: " + Math.round(game.multiplayer.delay), 10, 60);
             }
-
         } else {
             paintPlayerStats(ctx, game.state.players[0].character as LevelingCharacter, game.state.time, game);
         }
     }
     paintTimeMeasures(ctx, game.debug);
     paintUiForAbilities(ctx, game);
+}
+
+function paintDamageNumbers(ctx: CanvasRenderingContext2D, damageNumbersData: PaintDamageNumberData[] | undefined, cameraPosition: Position, time: number){
+    if(damageNumbersData === undefined) return;
+    let centerX = ctx.canvas.width / 2;
+    let centerY = ctx.canvas.height / 2;
+    for(let i = damageNumbersData.length - 1; i >= 0; i--){
+        let data = damageNumbersData[i];
+        if(data.removeTime <= time) {
+            damageNumbersData.splice(i,1)
+        }else{
+            let paintX = data.paintPosition.x - cameraPosition.x + centerX;
+            let paintY = data.paintPosition.y - cameraPosition.y + centerY;
+            let timeLeft = Math.floor((data.removeTime - time) / 100);
+
+            ctx.fillStyle = data.color;
+            ctx.font = data.fontSize + "px Arial";
+            ctx.fillText(data.damage.toFixed(0), paintX, paintY + timeLeft);
+        }
+    }
 }
 
 function paintTimeMeasures(ctx: CanvasRenderingContext2D, debug: Debugging | undefined) {

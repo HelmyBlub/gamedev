@@ -14,6 +14,8 @@ type AbilitySword = Ability & {
     angleChangePerTick: number,
     currentSwordAngle: number,
     angleChangePerSword: number,
+    tickInterval: number,
+    nextTickTime?: number,
 }
 const ABILITY_NAME = "Sword";
 
@@ -37,7 +39,7 @@ export function addSwordAbility() {
 }
 
 export function createAbilitySword(
-    damage: number = 10,
+    damage: number = 100,
     swordLength: number = 30,
     swordCount: number = 1,
     angleChangePerTick: number = 0.01,
@@ -52,12 +54,13 @@ export function createAbilitySword(
         currentSwordAngle: 0,
         angleChangePerSword: angleChangePerSword,
         passive: true,
+        tickInterval: 250,
     };
 }
 
 function setAbilitySwordToLevel(ability: Ability, level: number){
     let abilitySword = ability as AbilitySword;
-    abilitySword.damage = level * 10;
+    abilitySword.damage = level * 100;
     abilitySword.swordCount = level;
     abilitySword.swordLength = 30 + level * 10;
     abilitySword.angleChangePerTick = 0.01 * level;
@@ -66,7 +69,7 @@ function setAbilitySwordToLevel(ability: Ability, level: number){
 
 function setAbilitySwordToBossLevel(ability: Ability, level: number){
     let abilitySword = ability as AbilitySword;
-    abilitySword.damage = level * 1;
+    abilitySword.damage = level * 20;
     abilitySword.swordCount = 1;
     abilitySword.swordLength = 30 + level * 20;
     abilitySword.angleChangePerTick = 0.01 * level;
@@ -177,16 +180,21 @@ function swordDistanceToHolder(abilityOwner: AbilityOwner): number{
 
 function tickAbilitySword(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     let abilitySword = ability as AbilitySword;
-    abilitySword.currentSwordAngle = (abilitySword.currentSwordAngle + abilitySword.angleChangePerTick) % (Math.PI * 2);
-    detectSwordToCharactersHit(abilityOwner, abilitySword, game.state.map, game.state.players, game.state.bossStuff.bosses);
+    abilitySword.currentSwordAngle = (abilitySword.currentSwordAngle + abilitySword.angleChangePerTick) % (Math.PI * 2);    
+
+    if(abilitySword.nextTickTime === undefined) abilitySword.nextTickTime = game.state.time + abilitySword.tickInterval;
+    if(abilitySword.nextTickTime <= game.state.time){
+        detectSwordToCharactersHit(abilityOwner, abilitySword, game.state.map, game.state.players, game.state.bossStuff.bosses, game);
+        abilitySword.nextTickTime += abilitySword.tickInterval;
+    }
 }
 
 function createAbilitySwordUpgradeOptions(): UpgradeOptionAbility[] {
     let upgradeOptions: UpgradeOptionAbility[] = [];
     upgradeOptions.push({
-        name: "Damage+10", probabilityFactor: 1, upgrade: (a: Ability) => {
+        name: "Damage+100", probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilitySword;
-            as.damage += 10;
+            as.damage += 100;
         }
     });
     upgradeOptions.push({
@@ -214,7 +222,7 @@ function createAbilitySwordUpgradeOptions(): UpgradeOptionAbility[] {
     return upgradeOptions;
 }
 
-function detectSwordToCharactersHit(abilityOwner: AbilityOwner, ability: AbilitySword, map: GameMap, players: Player[], bosses: BossEnemyCharacter[]) {
+function detectSwordToCharactersHit(abilityOwner: AbilityOwner, ability: AbilitySword, map: GameMap, players: Player[], bosses: BossEnemyCharacter[], game: Game) {
     let maxEnemySizeEstimate = 40;
 
     let targetCharacters = determineCharactersInDistance(abilityOwner, map, players, bosses ,ability.swordLength + maxEnemySizeEstimate);
@@ -224,7 +232,7 @@ function detectSwordToCharactersHit(abilityOwner: AbilityOwner, ability: Ability
         for (let swordIndex = 0; swordIndex < ability.swordCount; swordIndex++) {
             let isHit = detectSwordToCharacterHit(abilityOwner, ability, targetCharacter, targetCharacter.width, swordIndex);
             if (isHit) {
-                characterTakeDamage(targetCharacter, ability.damage);
+                characterTakeDamage(targetCharacter, ability.damage, game);
             }
         }
     }
@@ -234,7 +242,7 @@ function detectSwordToCharacterHit(abilityOwner: AbilityOwner, ability: AbilityS
     let angle = calculateDirection(abilityOwner, pos);
     if (angle < 0) angle += Math.PI * 2;
     let currentSwordAngle = (ability.currentSwordAngle + (ability.angleChangePerSword * swordIndex)) % (Math.PI * 2);
-    let angleSizeToCheck = ability.angleChangePerTick + 0.1;
+    let angleSizeToCheck = (ability.angleChangePerTick * (ability.tickInterval / 16)) + 0.1;
     let startAngle = currentSwordAngle - angleSizeToCheck;
     angle = (angle - startAngle) % (Math.PI * 2);
     if (angle < 0) angle += Math.PI * 2;

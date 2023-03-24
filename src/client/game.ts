@@ -2,7 +2,7 @@ import { countAlivePlayerCharacters, detectCharacterDeath, findCharacterById, ge
 import { paintAll } from "./gamePaint.js";
 import { gameInitPlayers, getHighestLevelOfPlayers, Player } from "./player.js";
 import { tickPlayerInputs } from "./playerInput.js";
-import { Position, GameState, Game, IdCounter, TestingStuff, Debugging } from "./gameModel.js";
+import { Position, GameState, Game, IdCounter, TestingStuff, Debugging, PaintDamageNumberData } from "./gameModel.js";
 import { createMap, determineMapKeysInDistance, GameMap, getMapMidlePosition, removeAllMapCharacters } from "./map/map.js";
 import { Character } from "./character/characterModel.js";
 import { generateMissingChunks } from "./map/mapGeneration.js";
@@ -63,6 +63,7 @@ export function gameInit(game: Game) {
     game.state.deathCircleCreated = false;
     game.clientKeyBindings = [];
     game.performance = {};
+    game.UI.displayDamageNumbersData = [];
     removeAllMapCharacters(game.state.map);
     createFixPositionRespawnEnemiesOnInit(game);
     gameInitPlayers(game);
@@ -159,6 +160,16 @@ export function runner(game: Game) {
 export function setRelativeMousePosition(event: MouseEvent, game: Game) {
     let target = event.currentTarget as HTMLElement;
     game.mouseRelativeCanvasPosition = { x: event.x - target.offsetLeft, y: event.y - target.offsetTop };
+}
+
+export function createPaintDamageNumberData(character: Character, damage: number, currentTime: number): PaintDamageNumberData{
+    return {
+        damage: damage,
+        paintPosition: {x:character.x, y:character.y - character.height / 2},
+        color: character.faction === "player" ? "blue" : "black",
+        fontSize: character.faction === "player" ? "20" : "12",
+        removeTime: currentTime + 1000,
+    }
 }
 
 export function calculateDistancePointToLine(point: Position, linestart: Position, lineEnd: Position) {

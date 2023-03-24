@@ -12,6 +12,8 @@ export type AbilityDeathCircle = Ability & {
 
 export type AbilityObjectDeathCircle = AbilityObject & {
     growSpeed: number,
+    tickInterval: number,
+    nextTickTime?: number,
 }
 
 const ABILITY_NAME_DEATH_CIRCLE = "DeathCircle";
@@ -48,6 +50,7 @@ export function createObjectDeathCircle(map: GameMap): AbilityObjectDeathCircle 
         growSpeed: 0.5,
         x: mapCenter,
         y: mapCenter,
+        tickInterval: 250,
     }
 }
 
@@ -66,13 +69,17 @@ function tickAbilityDeathCircle(abilityOwner: AbilityOwner, ability: Ability, ga
 function tickAbilityObjectDeathCircle(abilityObject: AbilityObject, game: Game) {
     let abilityObjectDeathCircle = abilityObject as AbilityObjectDeathCircle;
     abilityObjectDeathCircle.size += abilityObjectDeathCircle.growSpeed;
-    abilityObjectDeathCircle.damage = Math.max(0.1, abilityObjectDeathCircle.size / 4000);
+    if(abilityObjectDeathCircle.nextTickTime === undefined) abilityObjectDeathCircle.nextTickTime = game.state.time + abilityObjectDeathCircle.tickInterval;
+    if(abilityObjectDeathCircle.nextTickTime > game.state.time) return;
+
+    abilityObjectDeathCircle.nextTickTime += abilityObjectDeathCircle.tickInterval;
+    abilityObjectDeathCircle.damage = Math.max(1, abilityObjectDeathCircle.size / 400);
 
     let playerCharacters = getPlayerCharacters(game.state.players);
     for(let playerCharacter of playerCharacters){
         let distance = calculateDistance(playerCharacter, abilityObject);
         if(distance < abilityObjectDeathCircle.size / 2){
-            characterTakeDamage(playerCharacter, abilityObject.damage)
+            characterTakeDamage(playerCharacter, abilityObject.damage, game);
         }
     }
 }

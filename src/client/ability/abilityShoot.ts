@@ -60,7 +60,7 @@ export function createAbilityShoot(
 
 function setAbilityShootToLevel(ability: Ability, level: number){
     let abilityShoot = ability as AbilityShoot;
-    abilityShoot.damage = level * 10;
+    abilityShoot.damage = level * 20;
     abilityShoot.frequencyIncrease = 1 + 0.2 * level;
     abilityShoot.multiShot = level - 1;
     abilityShoot.pierceCount = level - 1;
@@ -70,7 +70,7 @@ function setAbilityShootToLevel(ability: Ability, level: number){
 
 function setAbilityShootToBossLevel(ability: Ability, level: number){
     let abilityShoot = ability as AbilityShoot;
-    abilityShoot.damage = level * 5;
+    abilityShoot.damage = level * 10;
     abilityShoot.frequencyIncrease = 1 + 0.2 * level;
     abilityShoot.multiShot = level - 1;
     abilityShoot.pierceCount = 0;

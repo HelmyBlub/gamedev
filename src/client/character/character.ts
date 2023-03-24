@@ -2,8 +2,8 @@ import { levelingCharacterXpGain } from "./levelingCharacters/levelingCharacter.
 import { determineMapKeysInDistance, GameMap, getChunksTouchingLine, isPositionBlocking, MapChunk } from "../map/map.js";
 import { Character, CHARACTER_TYPES_STUFF, ENEMY_FACTION } from "./characterModel.js";
 import { getNextWaypoint, getPathingCache, PathingCache } from "./pathing.js";
-import { calculateDirection, calculateDistance, calculateDistancePointToLine, takeTimeMeasure } from "../game.js";
-import { Position, Game, GameState, IdCounter, Camera } from "../gameModel.js";
+import { calculateDirection, calculateDistance, calculateDistancePointToLine, createPaintDamageNumberData, takeTimeMeasure } from "../game.js";
+import { Position, Game, GameState, IdCounter, Camera, PaintDamageNumberData } from "../gameModel.js";
 import { Player } from "../player.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS } from "../ability/ability.js";
@@ -19,13 +19,17 @@ export function findCharacterById(characters: Character[], id: number): Characte
     return null;
 }
 
-export function characterTakeDamage(character: Character, damage: number) {
+export function characterTakeDamage(character: Character, damage: number, game: Game | undefined) {
     if (character.isDead) return;
     if (character.type === "levelingCharacter") {
         let levelingCharacter = character as LevelingCharacter;
         if (levelingCharacter.isPet) return;
     }
     character.hp -= damage;
+    if(game && game.UI.displayDamageNumbers){
+        if(!game.UI.displayDamageNumbersData) game.UI.displayDamageNumbersData = [];
+        game.UI.displayDamageNumbersData.push(createPaintDamageNumberData(character, damage, game.state.time));
+    }
     if (character.faction === "enemy") character.wasHitRecently = true;
 }
 
@@ -223,12 +227,12 @@ export function countAlivePlayerCharacters(players: Player[]) {
     return counter;
 }
 
-export function determineEnemyHitsPlayer(enemy: Character, closestPlayer: Character | null) {
+export function determineEnemyHitsPlayer(enemy: Character, closestPlayer: Character | null, game: Game) {
     if (closestPlayer === null) return;
 
     let distance = calculateDistance(enemy, closestPlayer);
     if (distance <= enemy.width / 2 + closestPlayer.width / 2) {
-        characterTakeDamage(closestPlayer, enemy.damage);
+        characterTakeDamage(closestPlayer, enemy.damage, game);
     }
 }
 

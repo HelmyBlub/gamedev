@@ -50,7 +50,7 @@ export function tickBossEnemyCharacter(enemy: BossEnemyCharacter, game: Game, pa
         closest = determineClosestCharacter(enemy, playerCharacters);
     }
     determineEnemyMoveDirection(enemy, closest.minDistanceCharacter, game.state.map, pathingCache, game.state.idCounter, game.state.time);
-    determineEnemyHitsPlayer(enemy, closest.minDistanceCharacter);
+    determineEnemyHitsPlayer(enemy, closest.minDistanceCharacter, game);
     moveCharacterTick(enemy, game.state.map, game.state.idCounter, false);
 
     for (let ability of enemy.abilities) {

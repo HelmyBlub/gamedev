@@ -19,6 +19,8 @@ export type AbilityFireCircle = Ability & {
 export type AbilityObjectFireCircle = AbilityObject & {
     subType: "FireCircel",
     deleteTime: number,
+    tickInterval: number,
+    nextTickTime?: number,
 }
 
 export type AbilityObjectFireCircleTraveling = AbilityObject & {
@@ -99,6 +101,7 @@ function createObjectFireCircle(abilityObject: AbilityObjectFireCircleTraveling,
         faction: abilityObject.faction,
         deleteTime: gameTime + abilityObject.duration,
         subType: "FireCircel",
+        tickInterval: 250,
     }
 }
 
@@ -138,7 +141,7 @@ function paintAbilityObjectFireCircle(ctx: CanvasRenderingContext2D, abilityObje
 
 function setAbilityFireCircleToLevel(ability: Ability, level: number) {
     let abilityFireCircle = ability as AbilityFireCircle;
-    abilityFireCircle.damage = level * 10;
+    abilityFireCircle.damage = level * 100;
     abilityFireCircle.size = 20 + level * 10;
     abilityFireCircle.objectDuration = 2000 + level * 500;
     abilityFireCircle.rechargeTimeDecreaseFaktor = 1 + 0.30 * level;
@@ -146,11 +149,11 @@ function setAbilityFireCircleToLevel(ability: Ability, level: number) {
 
 function setAbilityFireCircleToBossLevel(ability: Ability, level: number) {
     let abilityFireCircle = ability as AbilityFireCircle;
-    abilityFireCircle.damage = level * 1;
+    abilityFireCircle.damage = level * 10;
     abilityFireCircle.size = 30 + level * 10;
-    abilityFireCircle.objectDuration = 5000;
-    abilityFireCircle.baseRechargeTime = 5000;
-    abilityFireCircle.rechargeTimeDecreaseFaktor = 1;
+    abilityFireCircle.objectDuration = 4000;
+    abilityFireCircle.baseRechargeTime = 4000;
+    abilityFireCircle.rechargeTimeDecreaseFaktor = 1 + level * 0.2;
     abilityFireCircle.moveSpeed = 1;
 }
 
@@ -220,7 +223,11 @@ function paintAbilityFireCircleUI(ctx: CanvasRenderingContext2D, ability: Abilit
 function tickAbilityObjectFireCircle(abilityObject: AbilityObject, game: Game) {
     let abilityObjectFireCircle = abilityObject as AbilityObjectFireCircle;
     if (abilityObjectFireCircle.subType === "FireCircel") {
-        detectAbilityObjectToCharacterHit(game.state.map, abilityObject, game.state.players, game.state.bossStuff.bosses);
+        if(abilityObjectFireCircle.nextTickTime === undefined) abilityObjectFireCircle.nextTickTime = game.state.time + abilityObjectFireCircle.tickInterval;
+        if(abilityObjectFireCircle.nextTickTime <= game.state.time){
+            detectAbilityObjectToCharacterHit(game.state.map, abilityObject, game.state.players, game.state.bossStuff.bosses, game);
+            abilityObjectFireCircle.nextTickTime += abilityObjectFireCircle.tickInterval;
+        }
     } else if (abilityObjectFireCircle.subType === "FireCircelTraveling") {
         let ability = abilityObject as AbilityObjectFireCircleTraveling;
         if (ability.toDelete) return;

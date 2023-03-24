@@ -1,7 +1,7 @@
 next tasks:
     - damage numbers visualize
         - make abilities no longer do damage each tick
-        - display numbers => player can better understand damage
+        - create ability Meele for slimes, and remove frequency
     - shoot tower auto aim?
     - create a complex/fun/chaotic class or improve on one?
         - tower class:

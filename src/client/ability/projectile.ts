@@ -29,7 +29,7 @@ export function createProjectile(x: number, y: number, moveDirection: number, da
 export function tickProjectile(abilityObject: AbilityObject, game: Game) {
     let projectile = abilityObject as Projectile;
     moveProjectileTick(projectile);
-    detectAbilityObjectToCharacterHit(game.state.map, abilityObject, game.state.players, game.state.bossStuff.bosses);
+    detectAbilityObjectToCharacterHit(game.state.map, abilityObject, game.state.players, game.state.bossStuff.bosses, game);
 }
 
 function moveProjectileTick(projectile: Projectile) {

@@ -26,7 +26,7 @@ export function tickFixPositionRespawnEnemyCharacter(enemy: FixPositionRespawnEn
                     alertCloseEnemies(enemy, game);
                 }
                 determineEnemyMoveDirection(enemy, closest.minDistanceCharacter, game.state.map, pathingCache, game.state.idCounter, game.state.time);
-                determineEnemyHitsPlayer(enemy, closest.minDistanceCharacter);
+                determineEnemyHitsPlayer(enemy, closest.minDistanceCharacter, game);
             } else {
                 let spawnDistance = calculateDistance(enemy, enemy.spawnPosition);
                 enemy.isAggroed = false;

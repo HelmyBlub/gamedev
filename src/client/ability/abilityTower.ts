@@ -12,6 +12,8 @@ type AbilityObjectTower = AbilityObject & {
     id: number,
     conntetedToId?: number,
     ability?: Ability,
+    lineDamageTickFrequency: number,
+    lineDamageNextDamageTick?: number,
 }
 
 type AbilityTower = Ability & {
@@ -78,6 +80,7 @@ function createAbilityObjectTower(idCounter: IdCounter, ownerId: number, faction
         ability: ability,
         damage: damage,
         faction: faction,
+        lineDamageTickFrequency: 250,
     }
 }
 
@@ -323,7 +326,7 @@ function tickEffectConnected(abilityObjectTower: AbilityObjectTower, game: Game)
 
     let characters: Character[] = getCharactersTouchingLine(game, abilityObjectTower, connectedTower);
     for (let char of characters) {
-        characterTakeDamage(char, abilityObjectTower.damage * damageFactor);
+        characterTakeDamage(char, abilityObjectTower.damage * damageFactor, game);
     }
 }
 
@@ -404,7 +407,12 @@ function tickAbilityObjectTower(abilityObject: AbilityObject, game: Game) {
     let abilityTower = abilityObject as AbilityObjectTower;
     let mapKeyOfCharacterPosistion = positionToMapKey(abilityObject, game.state.map);
     if(!game.state.map.activeChunkKeys.includes(mapKeyOfCharacterPosistion)) return;
-    tickEffectConnected(abilityTower, game);
+
+    if(abilityTower.lineDamageNextDamageTick === undefined) abilityTower.lineDamageNextDamageTick = game.state.time + abilityTower.lineDamageTickFrequency;
+    if(abilityTower.lineDamageNextDamageTick <= game.state.time){
+        tickEffectConnected(abilityTower, game);
+        abilityTower.lineDamageNextDamageTick += abilityTower.lineDamageTickFrequency;
+    }
 
     if (abilityTower.ability) {
         let abilityFunction = ABILITIES_FUNCTIONS[abilityTower.ability.name];
