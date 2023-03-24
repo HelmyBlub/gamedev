@@ -1,5 +1,4 @@
 next tasks:
-    - ability upgrade option: influence probability of options
     - create a complex/fun/chaotic class or improve on one?
         - tower class:
             - add more tower abilities

@@ -31,10 +31,9 @@ export function fillRandomUpgradeOptions(character: LevelingCharacter, randomSee
             let randomProbability = nextRandom(randomSeed) * (totablPropability);
             if (randomProbability < characterOptionProbability) {
                 let characterOptionIndex = 0;
-                for(let characterOptionIndex = 0; characterOptionIndex < characterOptions.length; characterOptionIndex++){
+                for(characterOptionIndex = 0; characterOptionIndex < characterOptions.length; characterOptionIndex++){
                     randomProbability -= characterOptions[characterOptionIndex].probabilityFactor;
                     if(randomProbability < 0) {
-                        characterOptionIndex = characterOptionIndex;
                         break;
                     };
                 }

@@ -361,7 +361,7 @@ function paintAbilityTowerStatsUI(ctx: CanvasRenderingContext2D, ability: Abilit
     let abilityTower = ability as AbilityTower;
     const abilityTowerDescription = ["Click to place Tower. Tower always connects to closest other Tower."];
     abilityTowerDescription.push("More connections equals more damage. Towers have random");
-    abilityTowerDescription.push("Abilities. Abilities are Sword, Bullet or FireCircle.");
+    abilityTowerDescription.push("Abilities. Abilities are Sword, Shoot or FireCircle.");
     abilityTowerDescription.push("Abilities get more powerfull per connection");
     const fontSize = 14;
     const width = 425;
