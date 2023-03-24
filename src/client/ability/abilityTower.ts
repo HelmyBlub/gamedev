@@ -44,7 +44,7 @@ export function addTowerAbility() {
 
 export function createAbilityTower(
     playerInputBinding?: string,
-    damage: number = 10,
+    damage: number = 100,
 ): AbilityTower {
     let maxNumberTowers = 3;
     let keys = getRandomPassiveAbilitiyKeys();
@@ -424,9 +424,9 @@ function createAbilityTowerUpgradeOptions(ability: Ability): UpgradeOptionAbilit
     let abilityTower = ability as AbilityTower;
     let upgradeOptions: UpgradeOptionAbility[] = [];
     upgradeOptions.push({
-        name: "Damage+10", probabilityFactor: 1, upgrade: (a: Ability) => {
+        name: "Line Damage+100", probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilityTower;
-            as.damage += 10;
+            as.damage += 100;
         }
     });
     for(let i = 0; i < abilityTower.availableAbilityKeys.length; i++){
