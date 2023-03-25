@@ -1,3 +1,4 @@
+import { createAbilityMelee } from "../../ability/abilityMelee.js"
 import { calculateDistance, getNextId } from "../../game.js"
 import { Game, IdCounter, Position } from "../../gameModel.js"
 import { MapChunk, GameMap, isPositionBlocking, mapKeyToChunkIJ } from "../../map/map.js"
@@ -47,7 +48,10 @@ export function createEnemyWithLevel(idCounter: IdCounter, enemyPos: Position, l
     let respawnTime = Math.max(1000, 30000 - level * 1000);
     let experienceWorth = 1 * enemyType.xpFactor * Math.pow(level, 2);
 
-    return createEnemy(idCounter, enemyPos.x, enemyPos.y, size, moveSpeed, hp, damage, color, autoAggroRange, alertEnemyRange, respawnTime, experienceWorth);
+
+    let enemy = createEnemy(idCounter, enemyPos.x, enemyPos.y, size, moveSpeed, hp, damage, color, autoAggroRange, alertEnemyRange, respawnTime, experienceWorth);
+    enemy.abilities.push(createAbilityMelee(2 + level * 2));
+    return enemy;
 }
 
 export function createFixPositionRespawnEnemiesOnInit(game: Game) {

@@ -1,4 +1,5 @@
 import { ABILITIES_FUNCTIONS, Ability } from "../../ability/ability.js";
+import { createAbilityMelee } from "../../ability/abilityMelee.js";
 import { calculateDirection, calculateDistance, getNextId } from "../../game.js";
 import { IdCounter, Game, Position, GameState, BossStuff } from "../../gameModel.js";
 import { GAME_IMAGES, loadImage } from "../../imageLoad.js";
@@ -24,10 +25,8 @@ export function createBossWithLevel(idCounter: IdCounter, level: number, game: G
     let spawn: Position = getBossSpawnPosition(game);
 
     let bossCharacter = createCharacter(getNextId(idCounter), spawn.x, spawn.y, bossSize, bossSize, color, moveSpeed, hp, damage, "enemy", CHARACTER_TYPE_BOSS_ENEMY, experienceWorth);
-    let ability: Ability | undefined = createBossAbility(level, game);
-    if (ability) {
-        bossCharacter.abilities.push(ability);
-    }
+    let abilities: Ability[] = createBossAbilities(level, game);
+    bossCharacter.abilities = abilities;
     return bossCharacter;
 }
 
@@ -50,7 +49,6 @@ export function tickBossEnemyCharacter(enemy: BossEnemyCharacter, game: Game, pa
         closest = determineClosestCharacter(enemy, playerCharacters);
     }
     determineEnemyMoveDirection(enemy, closest.minDistanceCharacter, game.state.map, pathingCache, game.state.idCounter, game.state.time);
-    determineEnemyHitsPlayer(enemy, closest.minDistanceCharacter, game);
     moveCharacterTick(enemy, game.state.map, game.state.idCounter, false);
 
     for (let ability of enemy.abilities) {
@@ -80,7 +78,8 @@ export function checkForBossSpawn(game: Game) {
     }
 }
 
-function createBossAbility(level: number, game: Game): Ability | undefined {
+function createBossAbilities(level: number, game: Game): Ability[]{
+    let abilities: Ability[] = [];
     const abilityKeys = Object.keys(ABILITIES_FUNCTIONS);
     let possibleAbilityKeys: String[] = [];
     for (let key of abilityKeys) {
@@ -97,16 +96,25 @@ function createBossAbility(level: number, game: Game): Ability | undefined {
         let key: any = possibleAbilityKeys[randomAbilityChoice];
         let abilityFunctions = ABILITIES_FUNCTIONS[key];
         let ability = abilityFunctions.createAbility();
-        if(abilityFunctions.setAbilityToBossLevel){
-            abilityFunctions.setAbilityToBossLevel(ability, level);
-        }else{
-            throw new Error("function setAbilityToBossLevel missing for" + key);
-        }
+        setAbilityToBossLevel(ability, level);
         if(!abilityFunctions.isPassive) ability.passive = true;
-        return ability;
+        abilities.push(ability);
     }
 
-    return undefined;
+    let abilityMelee = createAbilityMelee();
+    setAbilityToBossLevel(abilityMelee, level);
+    abilities.push(abilityMelee);
+
+    return abilities;
+}
+
+function setAbilityToBossLevel(ability: Ability, level: number){
+    let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+    if(abilityFunctions.setAbilityToBossLevel){
+        abilityFunctions.setAbilityToBossLevel(ability, level);
+    }else{
+        throw new Error("function setAbilityToBossLevel missing for" + ability.name);
+    }
 }
 
 function getBossSpawnPosition(game: Game): Position {

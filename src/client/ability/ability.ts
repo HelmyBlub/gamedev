@@ -12,6 +12,7 @@ import { addTowerAbility } from "./abilityTower.js"
 import { addShootAbility } from "./abilityShoot.js"
 import { addSwordAbility } from "./abilitySword.js"
 import { addHpRegenAbility } from "./abilityHpRegen.js"
+import { addMeleeAbility } from "./abilityMelee.js"
 
 export type Ability = {
     name: string,
@@ -77,6 +78,7 @@ export function onDomLoadSetAbilitiesFunctions() {
     addDeathCircleAbility();
     addLeshAbility();
     addHpRegenAbility();
+    addMeleeAbility();
 }
 
 export function addAbilityToCharacter(character: Character, ability: Ability) {

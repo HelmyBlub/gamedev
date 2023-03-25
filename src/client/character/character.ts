@@ -64,14 +64,14 @@ export function getPlayerCharacters(players: Player[]) {
     return playerCharacters;
 }
 
-export function determineClosestCharacter(character: Character, characters: Character[]) {
+export function determineClosestCharacter(position: Position, characters: Character[]) {
     let minDistance: number = 0;
     let minDistanceCharacter: Character | null = null;
 
     for (let i = 0; i < characters.length; i++) {
         if (characters[i].isDead) continue;
         if (characters[i].type === "levelingCharacter" && (characters[i] as LevelingCharacter).isPet) continue;
-        let distance = calculateDistance(character, characters[i]);
+        let distance = calculateDistance(position, characters[i]);
         if (minDistanceCharacter === null || minDistance > distance) {
             minDistance = distance;
             minDistanceCharacter = characters[i];

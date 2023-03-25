@@ -11,7 +11,7 @@ import { handleCommand } from "./commands.js";
 import { tickAbilityObjects } from "./ability/ability.js";
 import { garbageCollectPathingCache } from "./character/pathing.js";
 import { createObjectDeathCircle } from "./ability/abilityDeathCircle.js";
-import { checkForBossSpawn, createBossWithLevel, tickBossCharacters } from "./character/enemy/bossEnemy.js";
+import { checkForBossSpawn, tickBossCharacters } from "./character/enemy/bossEnemy.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;

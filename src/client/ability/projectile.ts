@@ -7,6 +7,8 @@ export type Projectile = AbilityObject & {
     isMoving: boolean,
     deleteTime: number,
     pierceCount: number,
+    damageTickInterval: number,
+    nextDamageTickTime?: number,
 }
 
 export function createProjectile(x: number, y: number, moveDirection: number, damage: number, faction: string, moveSpeed: number, gameTime: number, pierceCount: number, timeToLive: number, type: string, size: number = 4): Projectile {
@@ -23,13 +25,18 @@ export function createProjectile(x: number, y: number, moveDirection: number, da
         faction: faction,
         deleteTime: gameTime + timeToLive,
         pierceCount: pierceCount,
+        damageTickInterval: 100,
     }
 }
 
 export function tickProjectile(abilityObject: AbilityObject, game: Game) {
     let projectile = abilityObject as Projectile;
     moveProjectileTick(projectile);
-    detectAbilityObjectToCharacterHit(game.state.map, abilityObject, game.state.players, game.state.bossStuff.bosses, game);
+    if(projectile.nextDamageTickTime === undefined) projectile.nextDamageTickTime = game.state.time + projectile.damageTickInterval;
+    if(projectile.nextDamageTickTime <= game.state.time){
+        detectAbilityObjectToCharacterHit(game.state.map, abilityObject, game.state.players, game.state.bossStuff.bosses, game);
+        projectile.nextDamageTickTime += projectile.damageTickInterval;
+    }
 }
 
 function moveProjectileTick(projectile: Projectile) {

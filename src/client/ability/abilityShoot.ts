@@ -36,7 +36,7 @@ export function addShootAbility(){
 export function createAbilityShoot(
     baseFrequency: number = 500,
     frequencyIncrease: number = 1,
-    damage: number = 10,
+    damage: number = 50,
     pierceCount: number = 0,
     multiShot: number = 0,
     timeToLive: number = 1000,
@@ -60,7 +60,7 @@ export function createAbilityShoot(
 
 function setAbilityShootToLevel(ability: Ability, level: number){
     let abilityShoot = ability as AbilityShoot;
-    abilityShoot.damage = level * 20;
+    abilityShoot.damage = level * 100;
     abilityShoot.frequencyIncrease = 1 + 0.2 * level;
     abilityShoot.multiShot = level - 1;
     abilityShoot.pierceCount = level - 1;
@@ -70,7 +70,7 @@ function setAbilityShootToLevel(ability: Ability, level: number){
 
 function setAbilityShootToBossLevel(ability: Ability, level: number){
     let abilityShoot = ability as AbilityShoot;
-    abilityShoot.damage = level * 10;
+    abilityShoot.damage = level * 50;
     abilityShoot.frequencyIncrease = 1 + 0.2 * level;
     abilityShoot.multiShot = level - 1;
     abilityShoot.pierceCount = 0;
@@ -100,9 +100,9 @@ function onShootHitAndReturnIfContinue(abilityObject: AbilityObject){
 function createAbiltiyShootUpgradeOptions(): UpgradeOptionAbility[]{
     let upgradeOptions: UpgradeOptionAbility[] = [];
     upgradeOptions.push({
-        name: "Damage+10", probabilityFactor: 1, upgrade: (a: Ability) => {
+        name: "Damage+50", probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilityShoot;
-            as.damage += 10;
+            as.damage += 50;
         },
     });
     upgradeOptions.push({
