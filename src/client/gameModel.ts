@@ -109,6 +109,7 @@ export type Multiplayer = {
     cachePlayerInputs?: PlayerInput[],
     connectMenuOpen: boolean,
     connectMenuListenerSet: boolean,
+    awaitingGameState: boolean,
 }
 
 export type Game = {
@@ -188,6 +189,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             updateInterval: -1,
             connectMenuOpen: false,
             connectMenuListenerSet: false,
+            awaitingGameState: false,
         },
         camera: {
             type: "follow character"

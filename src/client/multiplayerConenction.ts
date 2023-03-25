@@ -17,6 +17,7 @@ export function websocketConnect(game: Game, clientName: string = "Unknown") {
     socket.onopen = function (e) {
         console.log("websocket open");
         game.multiplayer.websocket = socket;
+        game.multiplayer.awaitingGameState = true;
     };
 
     socket.onmessage = function (message: any) {
@@ -27,10 +28,12 @@ export function websocketConnect(game: Game, clientName: string = "Unknown") {
 
     socket.onclose = function () {
         console.log("onclose");
+        game.multiplayer.awaitingGameState = false;
         game.multiplayer.websocket = null;
     };
 
     socket.onerror = function (error) {
+        game.multiplayer.awaitingGameState = false;
         console.log("weboscket error", error);
     };
 }

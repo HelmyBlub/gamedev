@@ -30,9 +30,13 @@ app.ws('/ws', function (ws: any, req: any) {
     }
     console.log(clientIdCounter + "#Con" + connections.length + " ClientName:" + clientName);
 
-    ws.send(JSON.stringify({ command: "connectInfo", clientId: connection.clientId, clientName: clientName, updateInterval: updateInterval, randomIdentifier: connection.randomIdentifier }));
-    if (connections.length > 0) {
-        connections[0].con.send(JSON.stringify({ command: "sendGameState", clientId: connection.clientId, clientName: clientName }));
+    ws.send(JSON.stringify({ command: "connectInfo", clientId: connection.clientId, clientName: clientName, updateInterval: updateInterval, randomIdentifier: connection.randomIdentifier, numberConnections: connections.length }));
+    for(let i = 0; i < connections.length; i++){
+        if(i === 0){
+            connections[i].con.send(JSON.stringify({ command: "sendGameState", clientId: connection.clientId, clientName: clientName }));
+        }else{
+            connections[i].con.send(JSON.stringify({ command: "playerJoined", clientId: connection.clientId, clientName: clientName }));
+        }
     }
 
     connections.push(connection);
@@ -73,9 +77,13 @@ function onMessage(message: any) {
             }
             message = JSON.stringify(data);
         }
-        connections.forEach(function (destination: any) {
-            destination.con.send(message);
-        });
+        if(data.command === "gameState" && data.toId !== undefined){
+            connections.find((e) => e.clientId === data.toId)?.con.send(message);
+        }else{
+            connections.forEach(function (destination: any) {
+                destination.con.send(message);
+            });            
+        }
         if (data.command === "restart") {
             startTime = process.hrtime.bigint();
         }

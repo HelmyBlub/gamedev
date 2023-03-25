@@ -1,9 +1,6 @@
 import { onDomLoadSetAbilitiesFunctions } from "./ability/ability.js";
-import { addCasterClass } from "./character/levelingCharacters/casterCharacterClass.js";
 import { addTowerClass } from "./character/levelingCharacters/towerCharacterClass.js";
-import { addShooterClass } from "./character/levelingCharacters/shooterCharacterClass.js";
-import { addSwordClass } from "./character/levelingCharacters/swordCharacterClass.js";
-import { runner, setRelativeMousePosition } from "./game.js";
+import { gameRestart, runner, setRelativeMousePosition } from "./game.js";
 import { createDefaultGameData, Game } from "./gameModel.js";
 import { keyDown, keyUp, mouseDown, mouseUp } from "./playerInput.js";
 import { addHTMLDebugCheckboxesToSettings } from "./settingsHtmlMenu.js";
@@ -42,6 +39,7 @@ export function createGame(canvasElementId: string | undefined, forTesting: bool
         c.height = window.innerHeight - 2;
         c.width = window.innerWidth - 2;
         addHTMLDebugCheckboxesToSettings(game);
+        gameRestart(game);
     } else {
         game = createDefaultGameData(undefined, undefined);
     }

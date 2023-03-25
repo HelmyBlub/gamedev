@@ -90,7 +90,7 @@ export function keyDown(event: KeyboardEvent, game: Game) {
 function multiplayerConnectMenu(game: Game) {
     let multiplayer = game.multiplayer;
     if (multiplayer.websocket === null) {
-        if (!game.state.ended) return;
+        //if (!game.state.ended) return;
         document.getElementById('stringInput')?.classList.toggle('hide');
         multiplayer.connectMenuOpen = true;
         if (!multiplayer.connectMenuListenerSet) {

@@ -14,15 +14,31 @@ import { testInputs2 } from "./testInputs2.js";
 import { testMultiplayerInputs } from "./testMultiplayerInputs.js";
 import { detectAbilityObjectToCharacterHit } from "../ability/ability.js";
 import { testPathing } from "../character/tests/pathingTest.js";
-import { testTemp } from "../ability/temptest.js";
+import { json } from "stream/consumers";
 
 export function testGame(game: Game) {
     console.log("start test");
     //testPathing(game.ctx);
-    runGameWithPlayerInputs(game, testInputs);
+    //runGameWithPlayerInputs(game, testInputs);
     //runGameWithPlayerInputs(game, testMultiplayerInputs);
-    //testTemp();
+    testTemp();
     console.log("end test");
+}
+
+function testTemp(){
+    let map = new Map();
+    map.set("1", "");
+    let startObject = {
+        undef: undefined,
+        null: null,
+        map: map,
+        function: () => {return 5},
+    };
+    let testJSONstring = JSON.stringify(startObject);
+    let testObject = JSON.parse(testJSONstring);
+    console.log(startObject);
+    console.log(testObject);
+    console.log(testJSONstring);
 }
 
 //---------------------//

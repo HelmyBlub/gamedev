@@ -32,9 +32,11 @@ export function executeCommand(game: Game, data: any) {
             break;
         case "sendGameState":
             game.state.cliendInfos.push({id: data.clientId, name:data.clientName});
-            game.multiplayer.websocket!.send(JSON.stringify({ command: "gameState", data: game.state }));
+            game.multiplayer.websocket!.send(JSON.stringify({ command: "gameState", data: game.state, toId: data.clientId }));
             break;
         case "gameState":
+            if(!game.multiplayer.awaitingGameState) return;
+            game.multiplayer.awaitingGameState = false;
             game.state = data.data;
             game.performance = {};
             for (let i = 0; i < game.state.cliendInfos.length; i++) {
@@ -51,10 +53,18 @@ export function executeCommand(game: Game, data: any) {
             game.multiplayer.myClientId = data.clientId;
             game.state.cliendInfos = [{id: data.clientId, name: data.clientName}];
             game.multiplayer.updateInterval = data.updateInterval;
+            if(data.numberConnections === 0){
+                game.multiplayer.awaitingGameState = false;
+                game.state.players[0].clientId = data.clientId;
+                game.clientKeyBindings[0].clientIdRef = data.clientId;
+            }
             if (data.randomIdentifier) {
                 console.log("myIdentifier", data.randomIdentifier);
                 localStorage.setItem('multiplayerIdentifier', data.randomIdentifier);
             }
+            break;
+        case "playerJoined":
+            game.state.cliendInfos.push({id: data.clientId, name:data.clientName});
             break;
         case "playerLeft":
             for (let i = 0; i < game.state.cliendInfos.length; i++) {

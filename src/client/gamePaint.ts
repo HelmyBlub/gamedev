@@ -22,9 +22,14 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
     paintCharacters(ctx, getPlayerCharacters(game.state.players), cameraPosition, game);
     paintAbilityObjects(ctx, game.state.abilityObjects, game, "afterCharacterPaint");
     paintDamageNumbers(ctx, game.UI.displayDamageNumbersData, cameraPosition, game.state.time);
-    paintKillCounter(ctx, game.state.killCounter);
+    paintKillCounter(ctx, game.state.killCounter, game);
+    paintKeyInfo(ctx, game);
 
     if (game.state.ended) {
+        let player = findPlayerById(game.state.players, game.multiplayer.myClientId);
+        if (player === null) return;
+        let character = player.character;
+        if (character !== null) paintPlayerStats(ctx, character as LevelingCharacter, game.state.time, game);
         paintHighscoreBoard(ctx, game.state.highscores);
         if (game.multiplayer.websocket !== null) {
             ctx.fillText("Ping: " + Math.round(game.multiplayer.delay), 10, 60);
@@ -44,6 +49,24 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
     }
     paintTimeMeasures(ctx, game.debug);
     paintUiForAbilities(ctx, game);
+}
+
+function paintKeyInfo(ctx: CanvasRenderingContext2D, game: Game){
+    let fontSize = 16;
+    let paintX = ctx.canvas.width - 20;
+    let paintY = ctx.canvas.height - 5;
+    let infoCounter = 0;
+    let texts = [
+        "WASD = Move",
+        "R = Restart",
+        "TAB = Character Info",
+    ]
+
+    ctx.fillStyle = "black";
+    ctx.font = fontSize + "px Arial";
+    for(let i = 0; i< texts.length;i++){
+        ctx.fillText(texts[i], paintX - texts[i].length * fontSize / 2, paintY + infoCounter-- * (fontSize + 2));
+    }
 }
 
 function paintDamageNumbers(ctx: CanvasRenderingContext2D, damageNumbersData: PaintDamageNumberData[] | undefined, cameraPosition: Position, time: number){
@@ -85,26 +108,41 @@ function paintTimeMeasures(ctx: CanvasRenderingContext2D, debug: Debugging | und
 }
 
 function paintHighscoreBoard(ctx: CanvasRenderingContext2D, highscores: Highscores) {
-    ctx.fillStyle = "white";
-    ctx.fillRect(150, 60 - 20, 100, (highscores.scores.length + 1) * 20 + 4);
+    if(highscores.scores.length === 0) return;
+    let paintX = ctx.canvas.width / 2 - 50;
+    let paintY = ctx.canvas.height / 2 - 20 - highscores.scores.length * 10;
 
-    ctx.fillStyle = "black";
+
     ctx.font = "18px Arial";
 
-    ctx.fillText("Restart with Key \"R\" ", 150, 20);
+    ctx.fillStyle = "white";
+    ctx.fillRect(paintX - 30, paintY - 60, 170, 20 + 4);
+    ctx.fillStyle = "black";
+    ctx.fillText("Restart with Key \"R\" ", paintX - 30, paintY - 40);
 
-    ctx.fillText("Scores: ", 150, 60);
+    ctx.fillStyle = "white";
+    ctx.fillRect(paintX - 100, paintY - 140, 340, 40 + 4);
+    ctx.fillStyle = "black";
+    ctx.fillText("Highscore number based on how far away", paintX - 100, paintY - 120);
+    ctx.fillText("from starting point the player died", paintX - 100, paintY - 100);
+
+
+    ctx.fillStyle = "white";
+    ctx.fillRect(paintX, paintY - 20, 100, (highscores.scores.length + 1) * 20 + 4);
+    ctx.fillStyle = "black";
+    ctx.fillText("Highscores: ", paintX, paintY - 5);
     for (let i = 0; i < highscores.scores.length; i++) {
         if(i === highscores.lastHighscorePosition){
             ctx.fillStyle = "lightblue";
-            ctx.fillRect(150, 80 + 20 * i - 20, 100, 22);
+            ctx.fillRect(paintX, paintY + 20 + 20 * i - 20, 100, 22);
             ctx.fillStyle = "black";        
         } 
-        ctx.fillText((i + 1) + ": " + highscores.scores[i], 150, 80 + 20 * i);
+        ctx.fillText((i + 1) + ": " + highscores.scores[i], paintX, paintY + 20 + 20 * i);
     }
 }
 
-function paintKillCounter(ctx: CanvasRenderingContext2D, killCounter: number) {
+function paintKillCounter(ctx: CanvasRenderingContext2D, killCounter: number, game: Game) {
+    if(game.state.ended && killCounter === 0) return;
     ctx.fillStyle = "black";
     ctx.font = "18px Arial";
     ctx.fillText("Kills: " + killCounter, 10, 20);
@@ -122,7 +160,7 @@ function paintPlayerStats(ctx: CanvasRenderingContext2D, character: LevelingChar
     ctx.fillText("Time: " + Math.round(gameTime / 1000), 400, 20);
     ctx.fillText("Distance: " + distance, 10, 40);
 
-    paintUpgradeOptionsUI(ctx, character);
+    if(!game.state.ended) paintUpgradeOptionsUI(ctx, character);
     paintPlayerStatsUI(ctx, character, game);
 }
 
@@ -149,18 +187,24 @@ function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Levelin
     ctx.font = fontSize + "px Arial";
     let startY = (ctx.canvas.height * 0.75);
     let optionSpacer = 50;
-    let currentX = Math.max(5, ctx.canvas.width / 2 - 200);
     if (character.availableSkillPoints > 0) {
+        let totalWidthEsitmate = 0;
+        let texts = [];
+        for(let i = 0; i<3; i++){
+            texts.push(`Key ${i+1}=${character.upgradeOptions[i].name}`);
+            totalWidthEsitmate += texts[i].length * fontSize * 0.63;
+        }
+
+        let currentX = Math.max(5, ctx.canvas.width / 2 - totalWidthEsitmate/2);
         for(let i = 0; i<3; i++){
             ctx.globalAlpha = 0.4;
             ctx.fillStyle = "white";
-            let text = `${i+1}=${character.upgradeOptions[i].name}`;
-            let textWidthEstimate = text.length * fontSize * 0.63;
+            let textWidthEstimate = texts[i].length * fontSize * 0.63;
             ctx.fillRect(currentX, startY - fontSize - 2, textWidthEstimate, fontSize + 4);
             ctx.globalAlpha = 1;
         
             ctx.fillStyle = "black";
-            ctx.fillText(text, currentX, startY);
+            ctx.fillText(texts[i], currentX, startY);
             currentX += textWidthEstimate + optionSpacer;
         }
     }
