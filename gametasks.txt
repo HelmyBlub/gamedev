@@ -1,8 +1,5 @@
 next tasks:
     - plan for deploy
-        - increase WASD key hint if player does not click after certain time
-            - hide info if player clicks it 
-            - make image for keys
         - early access info
             - link to my channel, github?
         - find some free site to deploy

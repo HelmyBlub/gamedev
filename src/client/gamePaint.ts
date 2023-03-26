@@ -188,9 +188,18 @@ function paintHighscoreBoard(ctx: CanvasRenderingContext2D, highscores: Highscor
 
 function paintGameTitle(ctx: CanvasRenderingContext2D){
     let middleX = ctx.canvas.width / 2;
+
+    ctx.fillStyle = "white";
+    ctx.globalAlpha = 0.3;
+    ctx.fillRect(middleX - 200, 10, 400, 95);
+    ctx.globalAlpha = 1;
+
     ctx.fillStyle = "black";
     ctx.font = "bold 60px Arial";
-    ctx.fillText("Helmys Game", middleX - 190, 70);
+    ctx.fillText("Helmys Game", middleX - 198, 70);
+
+    ctx.font = "bold 24px Arial";
+    ctx.fillText("(Earliest Early Access)", middleX - 120, 95);
 }
 
 function paintKillCounter(ctx: CanvasRenderingContext2D, killCounter: number, game: Game) {
