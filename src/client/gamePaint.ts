@@ -59,23 +59,23 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
 }
 
 function paintKeyInfo(ctx: CanvasRenderingContext2D, game: Game) {
+    if (game.UI.displayMovementKeyHint) paintMoveKeysHint(ctx);
+
     let fontSize = 16;
     let paintX = ctx.canvas.width - 20;
     let paintY = ctx.canvas.height - 5;
-    let infoCounter = 0;
-    let texts = [
-        "R = Restart",
-        "TAB = Character Info",
-    ]
-    if(game.UI.displayMovementKeyHint) paintMoveKeysHint(ctx);
+
     ctx.fillStyle = "black";
+    paintKey(ctx, "R", { x: paintX - 100, y: paintY - 30 });
     ctx.font = fontSize + "px Arial";
-    for (let i = 0; i < texts.length; i++) {
-        ctx.fillText(texts[i], paintX - texts[i].length * fontSize / 2, paintY + infoCounter-- * (fontSize + 2));
-    }
+    ctx.fillText("Restart", paintX - 60, paintY - 10);
+
+    paintKey(ctx, "TAB", { x: paintX - 100, y: paintY - 60 }, -9, 14);
+    ctx.font = fontSize + "px Arial";
+    ctx.fillText("Info", paintX - 60, paintY - 40);
 }
 
-function paintMoveKeysHint(ctx: CanvasRenderingContext2D){
+function paintMoveKeysHint(ctx: CanvasRenderingContext2D) {
     let middleX = ctx.canvas.width / 2;
     let middleY = ctx.canvas.height / 2;
     let paintX = middleX - 60;
@@ -89,7 +89,7 @@ function paintMoveKeysHint(ctx: CanvasRenderingContext2D){
     ctx.font = "16px Arial";
     ctx.fillText("Movement Keys", paintX, paintY + 18);
 
-    paintWasdKeys(ctx,paintX,paintY+20);
+    paintWasdKeys(ctx, paintX, paintY + 20);
 }
 
 function paintWasdKeys(ctx: CanvasRenderingContext2D, paintX: number, paintY: number) {
@@ -99,13 +99,13 @@ function paintWasdKeys(ctx: CanvasRenderingContext2D, paintX: number, paintY: nu
     paintKey(ctx, "D", { x: paintX + 80, y: paintY + 30 });
 }
 
-function paintKey(ctx: CanvasRenderingContext2D, key: string, paintPosition: Position, offsetX: number = 0) {
+function paintKey(ctx: CanvasRenderingContext2D, key: string, paintPosition: Position, offsetX: number = 0, fontSize: number = 16) {
     let wasdKeyImageString = "blankKey";
     let wasdKeyImage = GAME_IMAGES[wasdKeyImageString];
     loadImage(wasdKeyImage);
     if (wasdKeyImage.imageRef?.complete) {
         ctx.fillStyle = "black";
-        ctx.font = "16px Arial";
+        ctx.font = fontSize + "px Arial";
         ctx.drawImage(wasdKeyImage.imageRef, paintPosition.x, paintPosition.y);
         ctx.fillText(key, paintPosition.x + 15 + offsetX, paintPosition.y + 20);
     }
@@ -151,20 +151,23 @@ function paintTimeMeasures(ctx: CanvasRenderingContext2D, debug: Debugging | und
 
 function paintHighscoreBoard(ctx: CanvasRenderingContext2D, highscores: Highscores) {
     if (highscores.scores.length === 0) return;
+    paintGameTitle(ctx);
     let paintX = ctx.canvas.width / 2 - 50;
-    let paintY = ctx.canvas.height / 2 - 20 - highscores.scores.length * 10;
+    let paintY = ctx.canvas.height / 2 - highscores.scores.length * 10;
 
 
     ctx.font = "18px Arial";
 
     ctx.fillStyle = "white";
-    ctx.fillRect(paintX - 30, paintY - 60, 170, 20 + 4);
+    ctx.fillRect(paintX - 20, paintY - 60, 150, 20 + 4);
     ctx.fillStyle = "black";
-    ctx.fillText("Restart with Key \"R\" ", paintX - 30, paintY - 40);
+    ctx.fillText("Restart with", paintX - 20, paintY - 40);
+    paintKey(ctx, "R", { x: paintX + 82, y: paintY - 63 });
 
     ctx.fillStyle = "white";
     ctx.fillRect(paintX - 100, paintY - 140, 340, 40 + 4);
     ctx.fillStyle = "black";
+    ctx.font = "18px Arial";
     ctx.fillText("Highscore number based on how far away", paintX - 100, paintY - 120);
     ctx.fillText("from starting point the player died", paintX - 100, paintY - 100);
 
@@ -181,6 +184,13 @@ function paintHighscoreBoard(ctx: CanvasRenderingContext2D, highscores: Highscor
         }
         ctx.fillText((i + 1) + ": " + highscores.scores[i], paintX, paintY + 20 + 20 * i);
     }
+}
+
+function paintGameTitle(ctx: CanvasRenderingContext2D){
+    let middleX = ctx.canvas.width / 2;
+    ctx.fillStyle = "black";
+    ctx.font = "bold 60px Arial";
+    ctx.fillText("Helmys Game", middleX - 190, 70);
 }
 
 function paintKillCounter(ctx: CanvasRenderingContext2D, killCounter: number, game: Game) {
@@ -233,7 +243,7 @@ function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Levelin
         let totalWidthEsitmate = 0;
         let texts = [];
         for (let i = 0; i < 3; i++) {
-            texts.push(`Key ${i + 1}=${character.upgradeOptions[i].name}`);
+            texts.push(`${character.upgradeOptions[i].name}`);
             totalWidthEsitmate += texts[i].length * fontSize * 0.63;
         }
 
@@ -245,8 +255,9 @@ function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Levelin
             ctx.fillRect(currentX, startY - fontSize - 2, textWidthEstimate, fontSize + 4);
             ctx.globalAlpha = 1;
 
+            paintKey(ctx, (i + 1).toString(), { x: currentX, y: startY - 26 });
             ctx.fillStyle = "black";
-            ctx.fillText(texts[i], currentX, startY);
+            ctx.fillText(texts[i], currentX + 40, startY - 3);
             currentX += textWidthEstimate + optionSpacer;
         }
     }

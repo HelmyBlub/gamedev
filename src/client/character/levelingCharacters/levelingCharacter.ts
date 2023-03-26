@@ -161,7 +161,7 @@ function createLevelingCharacterUpgradeOptions(): UpgradeOptionLevelingCharacter
         }
     });
     upgradeOptions.push({
-        name: "Speed+0.2", probabilityFactor: 1, upgrade: (c: LevelingCharacter) => {
+        name: "Move Speed+0.2", probabilityFactor: 1, upgrade: (c: LevelingCharacter) => {
             c.moveSpeed += 0.2;
         }
     });
