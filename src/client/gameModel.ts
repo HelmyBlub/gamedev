@@ -133,6 +133,8 @@ export type Game = {
     debug: Debugging,
     closeGame?: boolean,
     UI:{
+        displayMovementKeyHint: boolean,
+        movementKeyPressed: boolean,
         displayDamageNumbers: boolean,
         displayDamageNumbersData?: PaintDamageNumberData[],
         displayStats: boolean,
@@ -199,6 +201,8 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
         debug: {
         },
         UI: {
+            displayMovementKeyHint: false,
+            movementKeyPressed: false,
             displayDamageNumbers: true,
             displayStats: false,
         }

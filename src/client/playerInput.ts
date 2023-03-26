@@ -202,6 +202,8 @@ function playerAction(clientId: number, data: any, game: Game) {
         if (MOVE_ACTIONS.indexOf(action) !== -1) {
             player.actionsPressed[action] = isKeydown;
             if (character !== null) {
+                game.UI.movementKeyPressed = true;
+                game.UI.displayMovementKeyHint = false;
                 determinePlayerMoveDirection(character, player.actionsPressed);
             }
         } else if (UPGRADE_ACTIONS.indexOf(action) !== -1) {

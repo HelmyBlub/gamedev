@@ -14,6 +14,7 @@ app.use(express.static('public'));
 app.ws('/ws', function (ws: any, req: any) {
     let myIdentifier = req.query.myId;
     let clientName = req.query.clientName;
+    let clientGameTime = req.query.myGameTime;
     let randomIdentifier = clientIdCounter + "_" + Math.random().toString();
     let connection = { clientId: clientIdCounter, con: ws, randomIdentifier: randomIdentifier };
 
@@ -31,12 +32,16 @@ app.ws('/ws', function (ws: any, req: any) {
     console.log(clientIdCounter + "#Con" + connections.length + " ClientName:" + clientName);
 
     ws.send(JSON.stringify({ command: "connectInfo", clientId: connection.clientId, clientName: clientName, updateInterval: updateInterval, randomIdentifier: connection.randomIdentifier, numberConnections: connections.length }));
-    for(let i = 0; i < connections.length; i++){
-        if(i === 0){
-            connections[i].con.send(JSON.stringify({ command: "sendGameState", clientId: connection.clientId, clientName: clientName }));
-        }else{
-            connections[i].con.send(JSON.stringify({ command: "playerJoined", clientId: connection.clientId, clientName: clientName }));
+    if(connections.length > 0){
+        for(let i = 0; i < connections.length; i++){
+            if(i === 0){
+                connections[i].con.send(JSON.stringify({ command: "sendGameState", clientId: connection.clientId, clientName: clientName }));
+            }else{
+                connections[i].con.send(JSON.stringify({ command: "playerJoined", clientId: connection.clientId, clientName: clientName }));
+            }
         }
+    }else{
+        setCurrentMsBasedOnClientGameTime(clientGameTime);
     }
 
     connections.push(connection);
@@ -95,6 +100,10 @@ function onMessage(message: any) {
 
 function getCurrentMS() {
     return Number(process.hrtime.bigint() - startTime) / 1000000;
+}
+
+function setCurrentMsBasedOnClientGameTime(clientGameTime: number){
+    startTime = process.hrtime.bigint() - BigInt(clientGameTime) * BigInt(1000000);
 }
 
 function gameTimeTicker() {

@@ -7,6 +7,7 @@ export function websocketConnect(game: Game, clientName: string = "Unknown") {
 
     let url = `${protocol}://${window.location.host}/ws`;
     url += "?clientName=" + clientName;
+    url += "&myGameTime=" + game.state.time;
     let lastIdentifier = localStorage.getItem('multiplayerIdentifier');
     if (lastIdentifier) {
         console.log("multiplayer Last Identifier", lastIdentifier);

@@ -287,6 +287,13 @@ function tick(gameTimePassed: number, game: Game) {
 function checkForEventStarting(game: Game){
     checkDeathCircleSpawn(game);
     checkForBossSpawn(game);
+    checkMovementKeyPressedHint(game);
+}
+
+function checkMovementKeyPressedHint(game: Game){
+    if(game.state.time > 10000 && !game.UI.movementKeyPressed && !game.multiplayer.websocket){
+        game.UI.displayMovementKeyHint = true;
+    }
 }
 
 function checkDeathCircleSpawn(game: Game){

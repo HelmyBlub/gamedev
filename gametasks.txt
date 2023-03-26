@@ -1,15 +1,10 @@
 next tasks:
     - plan for deploy
-        - imporve UI for other to undersand game goal
-            - game always directly started
-                - make multiplayer connect work in game
-            - highscore display improve
-            - display how to move-> wasd
-            - display game goal -> highscore game, get as far away from the middle as possible
-            - display tab key -> character overview
-            - R key -> can always restart
-        - don care for multiplayer at the start?
-            - don't need to visualize it
+        - increase WASD key hint if player does not click after certain time
+            - hide info if player clicks it 
+            - make image for keys
+        - early access info
+            - link to my channel, github?
         - find some free site to deploy
     - create a complex/fun/chaotic class or improve on one?
         - tower class:
