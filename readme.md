@@ -27,6 +27,9 @@ in Browser call (replace with your path):
  - http://localhost:8080/
 
 
+# public hosted url (WIP)
+helmysgame.infinityfreeapp.com/index2.html
+
 # SSL Setup (WIP)
 - `openssl genrsa -out key.pem`
 - `openssl req -new -key key.pem -out csr.pem`

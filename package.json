@@ -1,5 +1,7 @@
 {
   "scripts": {
+    "build": "npx tsc",
+    "start": "node public/js/server/server.js",
     "online": "npx lt --port 8080",
     "tsc": "npx tsc --watch",
     "server": "node public/js/server/server.js",

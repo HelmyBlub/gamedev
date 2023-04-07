@@ -1,8 +1,13 @@
 next tasks:
+    - setup chatgpt
     - plan for deploy
-        - early access info
-            - link to my channel, github?
         - find some free site to deploy
+            - infinityfree
+                - backend? no
+            - back4app
+                - https://containers.back4app.com/new-container
+                - dockerfile
+        - link to my channel, github?
     - create a complex/fun/chaotic class or improve on one?
         - tower class:
             - add more tower abilities
