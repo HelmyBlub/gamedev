@@ -2,7 +2,7 @@
 const express = require('express');
 const app = express();
 const expressWs = require('express-ws')(app);
-const port = 8080;
+const port = 3000;
 const connections: { clientId: number, con: any, randomIdentifier: string }[] = [];
 const lostConnections: { clientId: number, randomIdentifier: string }[] = [];
 const updateInterval: number = 100;
