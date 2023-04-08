@@ -1,5 +1,4 @@
 next tasks:
-    - bug: tower not ticking resulting in a lot of simultaneous ticks when again in raneg, game lag
     - mutliplayer connection timeout UX.
 
     - plan for deploy

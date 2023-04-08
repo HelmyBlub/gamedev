@@ -90,7 +90,7 @@ export function keyDown(event: KeyboardEvent, game: Game) {
 function multiplayerConnectMenu(game: Game) {
     let multiplayer = game.multiplayer;
     if (multiplayer.websocket === null) {
-        //if (!game.state.ended) return;
+        (document.getElementById('multiplayerConnect') as HTMLButtonElement).disabled = false;        
         document.getElementById('stringInput')?.classList.toggle('hide');
         multiplayer.connectMenuOpen = true;
         if (!multiplayer.connectMenuListenerSet) {
@@ -99,8 +99,11 @@ function multiplayerConnectMenu(game: Game) {
             connectButton?.addEventListener("click", (e) => {
                 const textInput = document.getElementById('textInput') as HTMLInputElement;
                 const clientName = textInput.value;
-                multiplayer.connectMenuOpen = false;
-                websocketConnect(game, clientName);
+                try{
+                    websocketConnect(game, clientName);
+                }catch(e){
+                    document.getElementById('stringInput')?.classList.toggle('hide');
+                }
             });
             const cancelButton = document.getElementById('multiplayerCancel');
             cancelButton?.addEventListener("click", (e) => {
