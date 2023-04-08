@@ -1,12 +1,14 @@
 next tasks:
-    - setup chatgpt
+    - bug: tower not ticking resulting in a lot of simultaneous ticks when again in raneg, game lag
+    - mutliplayer connection timeout UX.
+
     - plan for deploy
         - find some free site to deploy
-            - infinityfree
-                - backend? no
-            - back4app
+            - back4app (com)
                 - https://containers.back4app.com/new-container
                 - dockerfile
+                    - waiting for feedback if websocket can work
+            - search for europe hoster
         - link to my channel, github?
     - create a complex/fun/chaotic class or improve on one?
         - tower class:

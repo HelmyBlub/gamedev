@@ -186,6 +186,9 @@ function tickAbilitySword(abilityOwner: AbilityOwner, ability: Ability, game: Ga
     if(abilitySword.nextTickTime <= game.state.time){
         detectSwordToCharactersHit(abilityOwner, abilitySword, game.state.map, game.state.players, game.state.bossStuff.bosses, game);
         abilitySword.nextTickTime += abilitySword.tickInterval;
+        if(abilitySword.nextTickTime <= game.state.time){
+            abilitySword.nextTickTime = game.state.time + abilitySword.tickInterval;
+        }
     }
 }
 

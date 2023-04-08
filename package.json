@@ -2,7 +2,7 @@
   "scripts": {
     "build": "npx tsc",
     "start": "node public/js/server/server.js",
-    "online": "npx lt --port 8080",
+    "online": "npx lt --port 3000",
     "tsc": "npx tsc --watch",
     "server": "node public/js/server/server.js",
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q public/js/server/server.js\""

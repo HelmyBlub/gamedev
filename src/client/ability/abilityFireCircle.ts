@@ -166,6 +166,9 @@ function tickAbilityFireCircle(abilityOwner: AbilityOwner, ability: Ability, gam
         if (game.state.time >= abilityFireCircle.nextRechargeTime) {
             abilityFireCircle.currentCharges++;
             abilityFireCircle.nextRechargeTime += abilityFireCircle.baseRechargeTime / abilityFireCircle.rechargeTimeDecreaseFaktor;
+            if(abilityFireCircle.nextRechargeTime <= game.state.time){
+                abilityFireCircle.nextRechargeTime = game.state.time + abilityFireCircle.baseRechargeTime / abilityFireCircle.rechargeTimeDecreaseFaktor;
+            }    
         }
     }
 

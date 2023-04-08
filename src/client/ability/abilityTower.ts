@@ -412,6 +412,9 @@ function tickAbilityObjectTower(abilityObject: AbilityObject, game: Game) {
     if(abilityTower.lineDamageNextDamageTick <= game.state.time){
         tickEffectConnected(abilityTower, game);
         abilityTower.lineDamageNextDamageTick += abilityTower.lineDamageTickFrequency;
+        if(abilityTower.lineDamageNextDamageTick <= game.state.time){
+            abilityTower.lineDamageNextDamageTick = game.state.time + abilityTower.lineDamageTickFrequency;
+        }
     }
 
     if (abilityTower.ability) {

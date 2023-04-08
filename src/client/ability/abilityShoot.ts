@@ -88,6 +88,9 @@ function tickAbilityShoot(abilityOwner: AbilityOwner, ability: Ability, game: Ga
     while (abilityShoot.nextShotTime <= game.state.time) {
         shoot(abilityOwner, abilityShoot, game.state.abilityObjects, game.state.time, game.state.randomSeed);
         abilityShoot.nextShotTime += abilityShoot.baseFrequency / abilityShoot.frequencyIncrease;
+        if(abilityShoot.nextShotTime <= game.state.time){
+            abilityShoot.nextShotTime = game.state.time + abilityShoot.baseFrequency / abilityShoot.frequencyIncrease;
+        }
     }
 }
 
