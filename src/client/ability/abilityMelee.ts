@@ -17,7 +17,7 @@ export function addMeleeAbility() {
         createAbility: createAbilityMelee,
         setAbilityToBossLevel: setAbilityMeleeToBossLevel,
         isPassive: true,
-        canBeUsedByBosses: true,
+        notInheritable: true,
     };
 }
 

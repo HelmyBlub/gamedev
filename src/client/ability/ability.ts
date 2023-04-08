@@ -13,6 +13,7 @@ import { addShootAbility } from "./abilityShoot.js"
 import { addSwordAbility } from "./abilitySword.js"
 import { addHpRegenAbility } from "./abilityHpRegen.js"
 import { addMeleeAbility } from "./abilityMelee.js"
+import { addIceAbility } from "./abilityIceAura.js"
 
 export type Ability = {
     name: string,
@@ -79,6 +80,7 @@ export function onDomLoadSetAbilitiesFunctions() {
     addLeshAbility();
     addHpRegenAbility();
     addMeleeAbility();
+    addIceAbility();
 }
 
 export function addAbilityToCharacter(character: Character, ability: Ability) {
@@ -128,6 +130,25 @@ export function detectAbilityObjectToCharacterHit(map: GameMap, abilityObject: A
         }
     }
 }
+
+export function detectSomethingToCharacterHit(map: GameMap, position: Position, size: number, faction: string, damage: number, players: Player[], bosses: BossEnemyCharacter[], onHitAndReturnIfContinue: ((target: Character) => boolean) | undefined, game: Game | undefined) {
+    let maxEnemySizeEstimate = 40;
+
+    let characters = determineCharactersInDistance(position, map, players, bosses, size + maxEnemySizeEstimate);
+    for (let charIt = characters.length - 1; charIt >= 0; charIt--) {
+        let c = characters[charIt];
+        if (c.isDead || c.faction === faction) continue;
+        let distance = calculateDistance(c, position);
+        if (distance < size / 2 + c.width / 2) {
+            characterTakeDamage(c, damage, game);
+            if (onHitAndReturnIfContinue) {
+                let continueHitDetection = onHitAndReturnIfContinue(c);
+                if (!continueHitDetection) break;
+            }
+        }
+    }
+}
+
 
 export function paintUiForAbilities(ctx: CanvasRenderingContext2D, game: Game) {
     if (game.camera.characterId === undefined) return;

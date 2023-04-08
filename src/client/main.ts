@@ -1,5 +1,6 @@
 import { onDomLoadSetAbilitiesFunctions } from "./ability/ability.js";
 import { addTowerClass } from "./character/levelingCharacters/towerCharacterClass.js";
+import { onDomLoadSetDebuffsFunctions } from "./debuff/debuff.js";
 import { gameRestart, runner, setRelativeMousePosition } from "./game.js";
 import { createDefaultGameData, Game } from "./gameModel.js";
 import { keyDown, keyUp, mouseDown, mouseUp } from "./playerInput.js";
@@ -53,6 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
     //addCasterClass();
     addTowerClass();
     onDomLoadSetAbilitiesFunctions();
+    onDomLoadSetDebuffsFunctions();
 
     start();
 });

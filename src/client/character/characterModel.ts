@@ -1,4 +1,5 @@
 import { Ability } from "../ability/ability.js";
+import { Debuff } from "../debuff/debuff";
 import { Position, IdCounter, LEVELING_CHARACTER_CLASSES } from "../gameModel.js";
 import { GAME_IMAGES } from "../imageLoad.js";
 import { RandomizedCharacterImage } from "../randomizedCharacterImage.js";
@@ -87,9 +88,11 @@ export type Character = Position & {
     type: string,
     isDead: boolean,
     abilities: Ability[],
+    debuffs: Debuff[],
     wasHitRecently?: boolean,
     randomizedCharacterImage?: RandomizedCharacterImage,
 }
+
 
 export function createCharacter(
     id: number,
@@ -122,7 +125,8 @@ export function createCharacter(
         experienceWorth: experienceWorth,
         type: type,
         isDead: false,
-        abilities: []
+        abilities: [],
+        debuffs: [],
     };
 }
 

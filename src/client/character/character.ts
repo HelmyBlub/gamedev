@@ -9,6 +9,7 @@ import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS } from "../ability/ability.js";
 import { LevelingCharacter } from "./levelingCharacters/levelingCharacterModel.js";
 import { BossEnemyCharacter, CHARACTER_TYPE_BOSS_ENEMY } from "./enemy/bossEnemy.js";
+import { tickCharacterDebuffs } from "../debuff/debuff.js";
 
 export function findCharacterById(characters: Character[], id: number): Character | null {
     for (let i = 0; i < characters.length; i++) {
@@ -52,6 +53,7 @@ export function tickCharacters(characters: Character[], game: Game, pathingCache
             for (let ability of characters[j].abilities) {
                 ABILITIES_FUNCTIONS[ability.name].tickAbility(characters[j], ability, game);
             }
+            tickCharacterDebuffs(characters[j], game);
         }
     }
 }

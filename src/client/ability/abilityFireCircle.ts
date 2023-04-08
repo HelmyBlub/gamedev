@@ -151,10 +151,10 @@ function setAbilityFireCircleToBossLevel(ability: Ability, level: number) {
     let abilityFireCircle = ability as AbilityFireCircle;
     abilityFireCircle.damage = level * 10;
     abilityFireCircle.size = 30 + level * 10;
-    abilityFireCircle.objectDuration = 4000;
-    abilityFireCircle.baseRechargeTime = 4000;
-    abilityFireCircle.rechargeTimeDecreaseFaktor = 1 + level * 0.2;
-    abilityFireCircle.moveSpeed = 1;
+    abilityFireCircle.objectDuration = 3000;
+    abilityFireCircle.baseRechargeTime = 2000;
+    abilityFireCircle.rechargeTimeDecreaseFaktor = 1 + level * 0.50;
+    abilityFireCircle.moveSpeed = 2;
 }
 
 function tickAbilityFireCircle(abilityOwner: AbilityOwner, ability: Ability, game: Game) {

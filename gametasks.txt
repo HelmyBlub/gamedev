@@ -1,5 +1,13 @@
 next tasks:
-    - mutliplayer connection timeout UX.
+    - add more tower abilities
+        - slow aura/damage
+        - damageIncrease aura
+            - debuff damage taken increase
+        - single target tower
+        - blocking tower
+        - moving tower
+            - stick/jump to nearby enemies
+        - stronger the longer not replaced
 
     - plan for deploy
         - find some free site to deploy
@@ -9,22 +17,25 @@ next tasks:
                     - waiting for feedback if websocket can work
             - search for europe hoster
         - link to my channel, github?
+
+ideas for next tasks:
+    - too much skillpoints
+        - either autoskill option?
+        - less skillpoints but stronger choices?
+    - see other player stats
     - create a complex/fun/chaotic class or improve on one?
         - tower class:
             - add more tower abilities
             - more upgrade variations
             - randomize tower starting abilities, if more than 3 exist
-            - ability ideas:
-                - placed things do interact with the other
-                    - empowered if grouped up?
-                    - stronger the longer not replaced?
-                    - explode after time?
-                    - randomly do damage to near enemies?
-                    - stick/jump to nearby enemies
-    - too much skillpoints
-        - either autoskill option?
-        - less skillpoints but stronger choices?
-    - see other player stats
+    - gameplay changing upgrades
+        - special upgrade option after boss kill
+        - only first upgrade options are special
+            - choose tower abilities? only 3 different by default
+        - 
+        - build your character at the start?
+            - random at the start?
+
 
 technical tasks or bugs:
     - character.size changed to width and height. but hit calculation still only uses width
