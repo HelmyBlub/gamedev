@@ -1,5 +1,6 @@
 import { ABILITIES_FUNCTIONS, Ability } from "../../ability/ability.js";
 import { createAbilityMelee } from "../../ability/abilityMelee.js";
+import { tickCharacterDebuffs } from "../../debuff/debuff.js";
 import { calculateDirection, calculateDistance, getNextId } from "../../game.js";
 import { IdCounter, Game, Position, GameState, BossStuff } from "../../gameModel.js";
 import { GAME_IMAGES, loadImage } from "../../imageLoad.js";
@@ -54,6 +55,7 @@ export function tickBossEnemyCharacter(enemy: BossEnemyCharacter, game: Game, pa
     for (let ability of enemy.abilities) {
         ABILITIES_FUNCTIONS[ability.name].tickAbility(enemy, ability, game);
     }
+    tickCharacterDebuffs(enemy, game);
 }
 
 function teleportBossToNearestPlayer(enemy: BossEnemyCharacter, game: Game){

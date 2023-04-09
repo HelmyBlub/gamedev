@@ -27,8 +27,8 @@ in Browser call (replace with your path):
  - http://localhost:8080/
 
 
-# public hosted url (WIP)
-helmysgame.infinityfreeapp.com/index2.html
+# public hosted url
+https://helmysgame-helmyblub.b4a.run/
 
 # SSL Setup (WIP)
 - `openssl genrsa -out key.pem`

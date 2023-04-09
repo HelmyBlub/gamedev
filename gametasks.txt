@@ -1,9 +1,8 @@
 next tasks:
     - add more tower abilities
-        - slow aura/damage
+        - single target tower
         - damageIncrease aura
             - debuff damage taken increase
-        - single target tower
         - blocking tower
         - moving tower
             - stick/jump to nearby enemies
@@ -12,7 +11,7 @@ next tasks:
     - plan for deploy
         - find some free site to deploy
             - back4app (com)
-                - https://containers.back4app.com/new-container
+                - https://containers.back4app.com/apps
                 - dockerfile
                     - waiting for feedback if websocket can work
             - search for europe hoster

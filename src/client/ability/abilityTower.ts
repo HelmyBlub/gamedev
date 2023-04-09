@@ -46,7 +46,7 @@ export function createAbilityTower(
     playerInputBinding?: string,
     damage: number = 50,
 ): AbilityTower {
-    let maxNumberTowers = 4;
+    let maxNumberTowers = 5;
     let keys = getRandomPassiveAbilitiyKeys();
     let availableAbilities = [];
     let orderOfAbilities = [];

@@ -10,6 +10,7 @@ export type Debuff = {
 export type DebuffFunctions = {
     applyDebuffEffect: (debuff: Debuff, targetCharacter: Character, game: Game) => void,
     removeDebuffEffect: (debuff: Debuff, targetCharacter: Character, game: Game) => void,
+    refreshDebuffEffect: (newDebuff: Debuff, currentDebuff: Debuff, targetCharacter: Character, game: Game) => void,
 }
 
 export type DebuffsFunctions = {
@@ -23,9 +24,13 @@ export function onDomLoadSetDebuffsFunctions() {
 }
 
 export function applyDebuff(debuff: Debuff, character: Character, game: Game) {
-    if (character.debuffs.find((d) => d.name === debuff.name)) return;
-    character.debuffs.push(debuff);
-    DEBUFFS_FUNCTIONS[debuff.name].applyDebuffEffect(debuff, character, game);
+    let currentDebuff = character.debuffs.find((d) => d.name === debuff.name);
+    if (currentDebuff){
+        DEBUFFS_FUNCTIONS[debuff.name].refreshDebuffEffect(debuff, currentDebuff, character, game);
+    } else{
+        character.debuffs.push(debuff);
+        DEBUFFS_FUNCTIONS[debuff.name].applyDebuffEffect(debuff, character, game);
+    }
 }
 
 export function tickCharacterDebuffs(character: Character, game: Game) {

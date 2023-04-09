@@ -11,6 +11,7 @@ export function addSlowDebuff(){
     DEBUFFS_FUNCTIONS[DEBUFF_NAME_SLOW] = {
         applyDebuffEffect: applyDebuffEffectSlow,
         removeDebuffEffect: removeDebuffEffectSlow,
+        refreshDebuffEffect: refreshDebuffEffectSlow,
     };
 }
 
@@ -35,3 +36,16 @@ function removeDebuffEffectSlow(debuff: Debuff, targetCharacter: Character, game
     let debuffSlow = debuff as DebuffSlow;
     targetCharacter.moveSpeed *= debuffSlow.slowFactor;
 }
+
+function refreshDebuffEffectSlow(newDebuff: Debuff, currentDebuff: Debuff,targetCharacter: Character, game: Game){
+    let newdebuffSlow = newDebuff as DebuffSlow;
+    let currentDebuffSlow = currentDebuff as DebuffSlow;
+    if(newdebuffSlow.slowFactor > currentDebuffSlow.slowFactor){
+        removeDebuffEffectSlow(currentDebuffSlow, targetCharacter, game);
+        applyDebuffEffectSlow(newdebuffSlow, targetCharacter, game);
+        currentDebuffSlow.slowFactor = newdebuffSlow.slowFactor;
+    }else{
+        currentDebuff.removeTime = newdebuffSlow.removeTime;
+    }
+}
+

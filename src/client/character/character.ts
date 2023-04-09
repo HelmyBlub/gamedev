@@ -20,6 +20,16 @@ export function findCharacterById(characters: Character[], id: number): Characte
     return null;
 }
 
+export function findCharacterByIdAroundPosition(position: Position, range: number, game: Game, id: number): Character | null {
+    let characters = determineCharactersInDistance(position, game.state.map, game.state.players, game.state.bossStuff.bosses, range);
+    for (let i = 0; i < characters.length; i++) {
+        if (characters[i].id === id) {
+            return characters[i];
+        }
+    }
+    return null;
+}
+
 export function characterTakeDamage(character: Character, damage: number, game: Game | undefined) {
     if (character.isDead) return;
     if (character.type === "levelingCharacter") {
@@ -82,7 +92,7 @@ export function determineClosestCharacter(position: Position, characters: Charac
     return { minDistanceCharacter, minDistance };
 }
 
-export function determineCharactersInDistance(position: Position, map: GameMap, players: Player[], bosses: BossEnemyCharacter[], maxDistance: number): Character[] {
+export function determineCharactersInDistance(position: Position, map: GameMap, players: Player[], bosses: BossEnemyCharacter[], maxDistance: number, notFaction: string | undefined = undefined): Character[] {
     let result: Character[] = [];
     let mapKeysInDistance = determineMapKeysInDistance(position, map, maxDistance, true, false);
 
@@ -91,6 +101,7 @@ export function determineCharactersInDistance(position: Position, map: GameMap, 
         if (chunk === undefined) continue;
         let characters: Character[] = chunk.characters;
         for (let j = 0; j < characters.length; j++) {
+            if(characters[j].faction === notFaction) continue;
             let distance = calculateDistance(position, characters[j]);
             if (maxDistance >= distance) {
                 result.push(characters[j]);
@@ -99,6 +110,7 @@ export function determineCharactersInDistance(position: Position, map: GameMap, 
     }
 
     for (let boss of bosses) {
+        if(boss.faction === notFaction) continue;
         let distance = calculateDistance(position, boss);
         if (maxDistance >= distance) {
             result.push(boss);
@@ -106,6 +118,7 @@ export function determineCharactersInDistance(position: Position, map: GameMap, 
     }
 
     for (let player of players) {
+        if(player.character.faction === notFaction) continue;
         let distance = calculateDistance(position, player.character);
         if (maxDistance >= distance) {
             result.push(player.character);

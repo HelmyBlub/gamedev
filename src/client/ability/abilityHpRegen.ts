@@ -1,6 +1,4 @@
-import { findCharacterById, getPlayerCharacters } from "../character/character.js";
-import { calculateDirection, calculateDistance } from "../game.js";
-import { Position, Game } from "../gameModel.js";
+import { Game } from "../gameModel.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, UpgradeOptionAbility } from "./ability.js";
 
 type AbilityHpRegen = Ability & {
