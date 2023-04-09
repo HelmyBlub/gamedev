@@ -1,6 +1,5 @@
 next tasks:
     - add more tower abilities
-        - single target tower
         - damageIncrease aura
             - debuff damage taken increase
         - blocking tower
@@ -10,7 +9,16 @@ next tasks:
 
     - plan for deploy
         - find some free site to deploy
+            - https://gist.github.com/bmaupin/d2d243218863320b01b0c1e1ca0cf5f3
+                - https://render.com/docs/free#free-web-services
+                    - https://dashboard.render.com/
+                    - already working
+                - https://cloud.ibm.com/registration
+                - https://railway.app/pricing
+
             - back4app (com)
+                - still looks to have bugs
+                    - currenlty deploy does not work
                 - https://containers.back4app.com/apps
                 - dockerfile
                     - waiting for feedback if websocket can work

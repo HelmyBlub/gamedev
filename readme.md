@@ -28,7 +28,7 @@ in Browser call (replace with your path):
 
 
 # public hosted url
-https://helmysgame-helmyblub.b4a.run/
+https://helmys-game.onrender.com/
 
 # SSL Setup (WIP)
 - `openssl genrsa -out key.pem`
