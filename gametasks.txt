@@ -1,7 +1,4 @@
 next tasks:
-    - make multiplayer "lobbies"
-        - instead of "join multiplayer", create lobby or join lobby by code, or public
-
     - add more tower abilities
         - damageIncrease aura
             - debuff damage taken increase

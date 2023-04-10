@@ -3,12 +3,13 @@ import { createPaintTextData, getCameraPosition } from "./game.js";
 import { Game } from "./gameModel.js";
 import { PlayerInput } from "./playerInput.js";
 
-export function websocketConnect(game: Game, clientName: string = "Unknown") {
+export function websocketConnect(game: Game, clientName: string = "Unknown", lobbyCode: string = "") {
     const protocol = window.location.protocol === "http:" ? "ws" : "wss";
 
     let url = `${protocol}://${window.location.host}/ws`;
     url += "?clientName=" + clientName;
     url += "&myGameTime=" + game.state.time;
+    if(lobbyCode.length > 0) url += "&lobbyCode=" + lobbyCode;
     let lastIdentifier = localStorage.getItem('multiplayerIdentifier');
     if (lastIdentifier) {
         console.log("multiplayer Last Identifier", lastIdentifier);
@@ -38,6 +39,13 @@ export function websocketConnect(game: Game, clientName: string = "Unknown") {
 
         game.multiplayer.awaitingGameState = false;
         game.multiplayer.websocket = null;
+
+        let myClientId = game.multiplayer.myClientId;
+        for (let i = game.state.cliendInfos.length - 1; i >= 0; i--) {
+            if (game.state.cliendInfos[i].id !== myClientId) {
+                game.state.cliendInfos.splice(i,1);
+            }
+        }
     };
 
     socket.onerror = function (error) {

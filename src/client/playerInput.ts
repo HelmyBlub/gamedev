@@ -97,10 +97,12 @@ function multiplayerConnectMenu(game: Game) {
             multiplayer.connectMenuListenerSet = true;
             const connectButton = document.getElementById('multiplayerConnect');
             connectButton?.addEventListener("click", (e) => {
-                const textInput = document.getElementById('textInput') as HTMLInputElement;
-                const clientName = textInput.value;
+                const nameInput = document.getElementById('nameInput') as HTMLInputElement;
+                const clientName = nameInput.value;
+                const lobbyCodeElement = document.getElementById('lobbyCode') as HTMLInputElement;
+                const lobbyCode = lobbyCodeElement.value;
                 try{
-                    websocketConnect(game, clientName);
+                    websocketConnect(game, clientName, lobbyCode);
                 }catch(e){
                     document.getElementById('stringInput')?.classList.toggle('hide');
                 }
