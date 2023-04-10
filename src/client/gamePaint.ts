@@ -5,7 +5,7 @@ import { paintBossCharacters } from "./character/enemy/bossEnemy.js";
 import { paintLevelingCharacterStatsUI } from "./character/levelingCharacters/levelingCharacter.js";
 import { LevelingCharacter } from "./character/levelingCharacters/levelingCharacterModel.js";
 import { calculateDistance, getCameraPosition } from "./game.js";
-import { Game, Position, Highscores, TestingStuff, Debugging, PaintDamageNumberData } from "./gameModel.js";
+import { Game, Position, Highscores, TestingStuff, Debugging, PaintTextData } from "./gameModel.js";
 import { GAME_IMAGES, loadImage } from "./imageLoad.js";
 import { getMapMidlePosition } from "./map/map.js";
 import { paintMap, paintMapCharacters } from "./map/mapPaint.js";
@@ -28,7 +28,7 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
     paintBossCharacters(ctx, cameraPosition, game);
     paintCharacters(ctx, getPlayerCharacters(game.state.players), cameraPosition, game);
     paintAbilityObjects(ctx, game.state.abilityObjects, game, "afterCharacterPaint");
-    paintDamageNumbers(ctx, game.UI.displayDamageNumbersData, cameraPosition, game.state.time);
+    paintDamageNumbers(ctx, game.UI.displayTextData, cameraPosition, game.state.time);
     paintKillCounter(ctx, game.state.killCounter, game);
     paintKeyInfo(ctx, game);
 
@@ -111,7 +111,7 @@ function paintKey(ctx: CanvasRenderingContext2D, key: string, paintPosition: Pos
     }
 }
 
-function paintDamageNumbers(ctx: CanvasRenderingContext2D, damageNumbersData: PaintDamageNumberData[] | undefined, cameraPosition: Position, time: number) {
+function paintDamageNumbers(ctx: CanvasRenderingContext2D, damageNumbersData: PaintTextData[] | undefined, cameraPosition: Position, time: number) {
     if (damageNumbersData === undefined) return;
     let centerX = ctx.canvas.width / 2;
     let centerY = ctx.canvas.height / 2;
@@ -126,7 +126,7 @@ function paintDamageNumbers(ctx: CanvasRenderingContext2D, damageNumbersData: Pa
 
             ctx.fillStyle = data.color;
             ctx.font = data.fontSize + "px Arial";
-            ctx.fillText(data.damage.toFixed(0), paintX, paintY + timeLeft);
+            ctx.fillText(data.text, paintX, paintY + timeLeft);
         }
     }
 }

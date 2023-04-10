@@ -2,7 +2,7 @@ import { countAlivePlayerCharacters, detectCharacterDeath, findCharacterById, ge
 import { paintAll } from "./gamePaint.js";
 import { gameInitPlayers, getHighestLevelOfPlayers, Player } from "./player.js";
 import { tickPlayerInputs } from "./playerInput.js";
-import { Position, GameState, Game, IdCounter, TestingStuff, Debugging, PaintDamageNumberData } from "./gameModel.js";
+import { Position, GameState, Game, IdCounter, TestingStuff, Debugging, PaintTextData } from "./gameModel.js";
 import { createMap, determineMapKeysInDistance, GameMap, getMapMidlePosition, removeAllMapCharacters } from "./map/map.js";
 import { Character } from "./character/characterModel.js";
 import { generateMissingChunks } from "./map/mapGeneration.js";
@@ -63,7 +63,7 @@ export function gameInit(game: Game) {
     game.state.deathCircleCreated = false;
     game.clientKeyBindings = [];
     game.performance = {};
-    game.UI.displayDamageNumbersData = [];
+    game.UI.displayTextData = [];
     removeAllMapCharacters(game.state.map);
     createFixPositionRespawnEnemiesOnInit(game);
     gameInitPlayers(game);
@@ -162,13 +162,13 @@ export function setRelativeMousePosition(event: MouseEvent, game: Game) {
     game.mouseRelativeCanvasPosition = { x: event.x - target.offsetLeft, y: event.y - target.offsetTop };
 }
 
-export function createPaintDamageNumberData(character: Character, damage: number, currentTime: number): PaintDamageNumberData{
+export function createPaintTextData(position: Position, text: string, color: string, fontSize: string, currentTime: number, duration: number = 1000): PaintTextData{
     return {
-        damage: damage,
-        paintPosition: {x:character.x, y:character.y - character.height / 2},
-        color: character.faction === "player" ? "blue" : "black",
-        fontSize: character.faction === "player" ? "20" : "12",
-        removeTime: currentTime + 1000,
+        text: text,
+        paintPosition: {x: position.x, y: position.y},
+        color: color,
+        fontSize: fontSize,
+        removeTime: currentTime + duration,
     }
 }
 

@@ -82,8 +82,8 @@ export type Camera = {
     characterId?: number,
 }
 
-export type PaintDamageNumberData = {
-    damage: number,
+export type PaintTextData = {
+    text: string,
     paintPosition: Position,
     color: string,
     fontSize: string,
@@ -136,7 +136,7 @@ export type Game = {
         displayMovementKeyHint: boolean,
         movementKeyPressed: boolean,
         displayDamageNumbers: boolean,
-        displayDamageNumbersData?: PaintDamageNumberData[],
+        displayTextData: PaintTextData[],
         displayStats: boolean,
     }
 }
@@ -204,6 +204,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             displayMovementKeyHint: false,
             movementKeyPressed: false,
             displayDamageNumbers: true,
+            displayTextData: [],
             displayStats: false,
         }
     }

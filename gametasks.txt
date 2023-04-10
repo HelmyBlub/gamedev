@@ -1,4 +1,7 @@
 next tasks:
+    - make multiplayer "lobbies"
+        - instead of "join multiplayer", create lobby or join lobby by code, or public
+
     - add more tower abilities
         - damageIncrease aura
             - debuff damage taken increase
@@ -12,7 +15,7 @@ next tasks:
             - https://gist.github.com/bmaupin/d2d243218863320b01b0c1e1ca0cf5f3
                 - https://render.com/docs/free#free-web-services
                     - https://dashboard.render.com/
-                    - already working
+                    - random disconnect problems, bad for multiplayer
                 - https://cloud.ibm.com/registration
                 - https://railway.app/pricing
 

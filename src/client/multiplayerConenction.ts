@@ -1,4 +1,5 @@
 import { executeCommand } from "./commands.js";
+import { createPaintTextData, getCameraPosition } from "./game.js";
 import { Game } from "./gameModel.js";
 import { PlayerInput } from "./playerInput.js";
 
@@ -32,6 +33,9 @@ export function websocketConnect(game: Game, clientName: string = "Unknown") {
 
     socket.onclose = function () {
         console.log("onclose");
+        let textPosition1 = getCameraPosition(game);
+        game.UI.displayTextData.push(createPaintTextData(textPosition1, `Multiplayer Disconnected`, "black", "24", game.state.time, 5000));
+
         game.multiplayer.awaitingGameState = false;
         game.multiplayer.websocket = null;
     };

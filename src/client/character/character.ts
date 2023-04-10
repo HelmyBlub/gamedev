@@ -2,9 +2,9 @@ import { levelingCharacterXpGain } from "./levelingCharacters/levelingCharacter.
 import { determineMapKeysInDistance, GameMap, getChunksTouchingLine, isPositionBlocking, MapChunk } from "../map/map.js";
 import { Character, CHARACTER_TYPES_STUFF, ENEMY_FACTION } from "./characterModel.js";
 import { getNextWaypoint, getPathingCache, PathingCache } from "./pathing.js";
-import { calculateDirection, calculateDistance, calculateDistancePointToLine, createPaintDamageNumberData, takeTimeMeasure } from "../game.js";
-import { Position, Game, GameState, IdCounter, Camera, PaintDamageNumberData } from "../gameModel.js";
-import { Player } from "../player.js";
+import { calculateDirection, calculateDistance, calculateDistancePointToLine, createPaintTextData, takeTimeMeasure } from "../game.js";
+import { Position, Game, GameState, IdCounter, Camera, PaintTextData } from "../gameModel.js";
+import { findPlayerById, Player } from "../player.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS } from "../ability/ability.js";
 import { LevelingCharacter } from "./levelingCharacters/levelingCharacterModel.js";
@@ -37,9 +37,11 @@ export function characterTakeDamage(character: Character, damage: number, game: 
         if (levelingCharacter.isPet) return;
     }
     character.hp -= damage;
-    if(game && game.UI.displayDamageNumbers){
-        if(!game.UI.displayDamageNumbersData) game.UI.displayDamageNumbersData = [];
-        game.UI.displayDamageNumbersData.push(createPaintDamageNumberData(character, damage, game.state.time));
+    if (game && game.UI.displayDamageNumbers) {
+        let textPos = { x: character.x, y: character.y - character.height / 2 };
+        let fontSize = character.faction === "player" ? "20" : "12";
+        let textColor = character.faction === "player" ? "blue" : "black";
+        game.UI.displayTextData.push(createPaintTextData(textPos, damage.toFixed(0), textColor, fontSize, game.state.time));
     }
     if (character.faction === "enemy") character.wasHitRecently = true;
 }
@@ -76,6 +78,12 @@ export function getPlayerCharacters(players: Player[]) {
     return playerCharacters;
 }
 
+export function findMyCharacter(game: Game): Character | undefined{
+    let myClientId = game.multiplayer.myClientId;
+    let myPlayer = findPlayerById(game.state.players, myClientId);
+    return myPlayer?.character;
+}
+
 export function determineClosestCharacter(position: Position, characters: Character[]) {
     let minDistance: number = 0;
     let minDistanceCharacter: Character | null = null;
@@ -101,7 +109,7 @@ export function determineCharactersInDistance(position: Position, map: GameMap, 
         if (chunk === undefined) continue;
         let characters: Character[] = chunk.characters;
         for (let j = 0; j < characters.length; j++) {
-            if(characters[j].faction === notFaction) continue;
+            if (characters[j].faction === notFaction) continue;
             let distance = calculateDistance(position, characters[j]);
             if (maxDistance >= distance) {
                 result.push(characters[j]);
@@ -110,7 +118,7 @@ export function determineCharactersInDistance(position: Position, map: GameMap, 
     }
 
     for (let boss of bosses) {
-        if(boss.faction === notFaction) continue;
+        if (boss.faction === notFaction) continue;
         let distance = calculateDistance(position, boss);
         if (maxDistance >= distance) {
             result.push(boss);
@@ -118,7 +126,7 @@ export function determineCharactersInDistance(position: Position, map: GameMap, 
     }
 
     for (let player of players) {
-        if(player.character.faction === notFaction) continue;
+        if (player.character.faction === notFaction) continue;
         let distance = calculateDistance(position, player.character);
         if (maxDistance >= distance) {
             result.push(player.character);
@@ -271,8 +279,8 @@ export function moveCharacterTick(character: Character, map: GameMap, idCounter:
         let y = character.y + Math.sin(character.moveDirection) * character.moveSpeed;
         let blocking = isPositionBlocking({ x, y }, map, idCounter);
         if (!blocking) {
-            let blockingBothSides = isPositionBlocking({ x:character.x, y }, map, idCounter) && isPositionBlocking({ x, y:character.y }, map, idCounter);
-            if(!blockingBothSides){
+            let blockingBothSides = isPositionBlocking({ x: character.x, y }, map, idCounter) && isPositionBlocking({ x, y: character.y }, map, idCounter);
+            if (!blockingBothSides) {
                 mapCharacterCheckForChunkChange(character, map, x, y, isPlayer);
                 character.x = x;
                 character.y = y;
@@ -280,8 +288,8 @@ export function moveCharacterTick(character: Character, map: GameMap, idCounter:
         } else {
             let xTile = Math.floor(character.x / map.tileSize);
             let newXTile = Math.floor(x / map.tileSize);
-            if(xTile !== newXTile){
-                if(!isPositionBlocking({ x: character.x, y }, map, idCounter)){
+            if (xTile !== newXTile) {
+                if (!isPositionBlocking({ x: character.x, y }, map, idCounter)) {
                     mapCharacterCheckForChunkChange(character, map, character.x, y, isPlayer);
                     character.y = y;
                     return;
@@ -289,8 +297,8 @@ export function moveCharacterTick(character: Character, map: GameMap, idCounter:
             }
             let yTile = Math.floor(character.y / map.tileSize);
             let newYTile = Math.floor(y / map.tileSize);
-            if(yTile !== newYTile){
-                if(!isPositionBlocking({ x, y: character.y }, map, idCounter)){
+            if (yTile !== newYTile) {
+                if (!isPositionBlocking({ x, y: character.y }, map, idCounter)) {
                     mapCharacterCheckForChunkChange(character, map, x, character.y, isPlayer);
                     character.x = x;
                 }

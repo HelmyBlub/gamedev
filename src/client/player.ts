@@ -62,9 +62,9 @@ export function gameInitPlayers(game: Game) {
     }
 }
 
-export function findPlayerById(players: Player[], id: number): Player | null {
+export function findPlayerById(players: Player[], clientId: number): Player | null {
     for (let i = 0; i < players.length; i++) {
-        if (players[i].clientId === id) {
+        if (players[i].clientId === clientId) {
             return players[i];
         }
     }

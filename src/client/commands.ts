@@ -1,4 +1,5 @@
-import { findAndSetNewCameraCharacterId } from "./character/character.js";
+import { findAndSetNewCameraCharacterId, findMyCharacter } from "./character/character.js";
+import { createPaintTextData, getCameraPosition } from "./game.js";
 import { Game } from "./gameModel.js";
 import { sendMultiplayer } from "./multiplayerConenction.js";
 import { createDefaultKeyBindings1 } from "./player.js";
@@ -32,6 +33,8 @@ export function executeCommand(game: Game, data: any) {
             break;
         case "sendGameState":
             game.state.cliendInfos.push({id: data.clientId, name:data.clientName});
+            let textPosition1 = getCameraPosition(game);
+            game.UI.displayTextData.push(createPaintTextData(textPosition1, `${data.clientName} joined`, "black", "24", game.state.time, 5000));
             game.multiplayer.websocket!.send(JSON.stringify({ command: "gameState", data: game.state, toId: data.clientId }));
             break;
         case "gameState":
@@ -65,10 +68,14 @@ export function executeCommand(game: Game, data: any) {
             break;
         case "playerJoined":
             game.state.cliendInfos.push({id: data.clientId, name:data.clientName});
+            let textPosition = getCameraPosition(game);
+            game.UI.displayTextData.push(createPaintTextData(textPosition, `${data.clientName} joined`, "black", "24", game.state.time, 5000));
             break;
         case "playerLeft":
             for (let i = 0; i < game.state.cliendInfos.length; i++) {
                 if (game.state.cliendInfos[i].id === data.clientId) {
+                    let textPosition = getCameraPosition(game);
+                    game.UI.displayTextData.push(createPaintTextData(textPosition, `${game.state.cliendInfos[i].name} diconnected`, "black", "24", game.state.time, 5000));
                     console.log("client removed", game.state.cliendInfos[i]);
                     game.state.cliendInfos.splice(i, 1);
                     break;
