@@ -1,7 +1,7 @@
-import { countAlivePlayerCharacters, detectCharacterDeath, findCharacterById, getPlayerCharacters, tickCharacters, tickMapCharacters } from "./character/character.js";
+import { countAlivePlayerCharacters, detectCharacterDeath, findCharacterById, findMyCharacter, getPlayerCharacters, tickCharacters, tickMapCharacters } from "./character/character.js";
 import { paintAll } from "./gamePaint.js";
 import { gameInitPlayers, getHighestLevelOfPlayers, Player } from "./player.js";
-import { tickPlayerInputs } from "./playerInput.js";
+import { UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.js";
 import { Position, GameState, Game, IdCounter, TestingStuff, Debugging, PaintTextData } from "./gameModel.js";
 import { createMap, determineMapKeysInDistance, GameMap, getMapMidlePosition, removeAllMapCharacters } from "./map/map.js";
 import { Character } from "./character/characterModel.js";
@@ -12,6 +12,7 @@ import { tickAbilityObjects } from "./ability/ability.js";
 import { garbageCollectPathingCache } from "./character/pathing.js";
 import { createObjectDeathCircle } from "./ability/abilityDeathCircle.js";
 import { checkForBossSpawn, tickBossCharacters } from "./character/enemy/bossEnemy.js";
+import { LevelingCharacter } from "./character/levelingCharacters/levelingCharacterModel.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -261,7 +262,7 @@ function endGame(state: GameState, testing: TestingStuff | undefined) {
 
 function tick(gameTimePassed: number, game: Game) {
     if (!game.state.ended) {
-        checkForEventStarting(game);
+        checkForStuff(game);
         addTestReplayInputs(game);
         game.state.time += gameTimePassed;
         generateMissingChunks(game.state.map, getPlayerCharacters(game.state.players), game.state.idCounter, game);
@@ -284,10 +285,28 @@ function tick(gameTimePassed: number, game: Game) {
     }
 }
 
-function checkForEventStarting(game: Game){
+function checkForStuff(game: Game){
     checkDeathCircleSpawn(game);
     checkForBossSpawn(game);
     checkMovementKeyPressedHint(game);
+    checkForAutoSkill(game);
+}
+
+export function checkForAutoSkill(game: Game){
+    if(!game.settings.autoSkillEnabled) return;
+
+    let character: Character | undefined = findMyCharacter(game);
+    if(character && character.type === "levelingCharacter"){
+        let levelingCharacter = character as LevelingCharacter;
+        let hasAvailableSkillPoint = levelingCharacter.availableSkillPoints > 0;
+        if(hasAvailableSkillPoint){
+            handleCommand(game, {
+                command: "playerInput",
+                clientId: game.multiplayer.myClientId,
+                data: { action: UPGRADE_ACTIONS[0], isKeydown: true },
+            });            
+        }
+    }
 }
 
 function checkMovementKeyPressedHint(game: Game){

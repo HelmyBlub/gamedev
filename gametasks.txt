@@ -1,11 +1,5 @@
 next tasks:
-    - add more tower abilities
-        - damageIncrease aura
-            - debuff damage taken increase
-        - blocking tower
-        - moving tower
-            - stick/jump to nearby enemies
-        - stronger the longer not replaced
+    - button to enalbe/disable auto skill
 
     - plan for deploy
         - find some free site to deploy

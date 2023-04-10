@@ -5,6 +5,7 @@ import { Character } from "../characterModel.js";
 import { LevelingCharacter, UpgradeOptionLevelingCharacter } from "./levelingCharacterModel.js";
 import { ABILITIES_FUNCTIONS, UpgradeOptionAbility } from "../../ability/ability.js";
 import { createAbilityLeash } from "../../ability/abilityLeash.js";
+import { checkForAutoSkill } from "../../game.js";
 
 export function fillRandomUpgradeOptions(character: LevelingCharacter, randomSeed: RandomSeed) {
     if (character.upgradeOptions.length === 0) {

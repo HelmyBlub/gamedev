@@ -82,6 +82,8 @@ export function keyDown(event: KeyboardEvent, game: Game) {
             break;
         case "Tab":
             game.UI.displayStats = true;
+        case "KeyG":
+            game.settings.autoSkillEnabled = !game.settings.autoSkillEnabled;
         default:
             break;
     }

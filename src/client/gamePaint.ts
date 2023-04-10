@@ -62,7 +62,7 @@ function paintKeyInfo(ctx: CanvasRenderingContext2D, game: Game) {
     if (game.UI.displayMovementKeyHint) paintMoveKeysHint(ctx);
 
     let fontSize = 16;
-    let paintX = ctx.canvas.width - 20;
+    let paintX = ctx.canvas.width - 40;
     let paintY = ctx.canvas.height - 5;
 
     ctx.fillStyle = "black";
@@ -73,6 +73,11 @@ function paintKeyInfo(ctx: CanvasRenderingContext2D, game: Game) {
     paintKey(ctx, "TAB", { x: paintX - 100, y: paintY - 60 }, -9, 14);
     ctx.font = fontSize + "px Arial";
     ctx.fillText("Info", paintX - 60, paintY - 40);
+
+    paintKey(ctx, "G", { x: paintX - 100, y: paintY - 90 });
+    ctx.font = fontSize + "px Arial";
+    let onOff = game.settings.autoSkillEnabled ? "On" : "Off";
+    ctx.fillText(`AutoSkill (${onOff})`, paintX - 60, paintY - 70);
 }
 
 function paintMoveKeysHint(ctx: CanvasRenderingContext2D) {
@@ -221,7 +226,7 @@ function paintPlayerStats(ctx: CanvasRenderingContext2D, character: LevelingChar
     ctx.fillText("Time: " + Math.round(gameTime / 1000), 400, 20);
     ctx.fillText("Distance: " + distance, 10, 40);
 
-    if (!game.state.ended) paintUpgradeOptionsUI(ctx, character);
+    if (!game.state.ended && !game.settings.autoSkillEnabled) paintUpgradeOptionsUI(ctx, character);
     paintPlayerStatsUI(ctx, character, game);
 }
 

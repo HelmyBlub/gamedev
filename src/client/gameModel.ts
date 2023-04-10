@@ -132,6 +132,9 @@ export type Game = {
     testing?: TestingStuff,
     debug: Debugging,
     closeGame?: boolean,
+    settings: {
+        autoSkillEnabled: boolean,
+    }
     UI:{
         displayMovementKeyHint: boolean,
         movementKeyPressed: boolean,
@@ -206,6 +209,9 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             displayDamageNumbers: true,
             displayTextData: [],
             displayStats: false,
+        },
+        settings: {
+            autoSkillEnabled: false,
         }
     }
 
