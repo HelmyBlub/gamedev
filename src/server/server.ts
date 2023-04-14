@@ -137,7 +137,10 @@ function onMessage(message: any, lobbyCode: string) {
         }
     }
     catch (e) {
-        console.log("message send error: " + e);
+        console.log("assume compressed ");
+        currentLobby.connections.forEach(function (destination: any) {
+            destination.con.send(message);
+        });      
     }
 }
 

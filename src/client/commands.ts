@@ -4,6 +4,7 @@ import { Game } from "./gameModel.js";
 import { sendMultiplayer } from "./multiplayerConenction.js";
 import { createDefaultKeyBindings1 } from "./player.js";
 import { PlayerInput } from "./playerInput.js";
+import { compressString, decompressString } from "./stringCompress.js";
 
 type Command = { command: string };
 type CommandTimeUpdate = Command & { time: number };
@@ -35,7 +36,8 @@ export function executeCommand(game: Game, data: any) {
             game.state.cliendInfos.push({id: data.clientId, name:data.clientName});
             let textPosition1 = getCameraPosition(game);
             game.UI.displayTextData.push(createPaintTextData(textPosition1, `${data.clientName} joined`, "black", "24", game.state.time, 5000));
-            game.multiplayer.websocket!.send(JSON.stringify({ command: "gameState", data: game.state, toId: data.clientId }));
+            let compressedState = compressString(JSON.stringify({ command: "gameState", data: game.state, toId: data.clientId }));
+            game.multiplayer.websocket!.send(compressedState);
             break;
         case "gameState":
             if(!game.multiplayer.awaitingGameState) return;

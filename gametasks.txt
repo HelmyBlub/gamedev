@@ -1,5 +1,10 @@
 next tasks:
-    - button to enalbe/disable auto skill
+    - auto reconnect on connection loss
+        - game state to transfer grows big on longer games, make it smaller, compress
+            - compression takes to long in time on bigger state, find a good compression config
+                - somehow big state file does not want to work, why?
+    - info if bad server connection, instead of game nothing happening
+
 
     - plan for deploy
         - find some free site to deploy

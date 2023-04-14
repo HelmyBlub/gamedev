@@ -2,6 +2,7 @@ import { executeCommand } from "./commands.js";
 import { createPaintTextData, getCameraPosition } from "./game.js";
 import { Game } from "./gameModel.js";
 import { PlayerInput } from "./playerInput.js";
+import { decompressString } from "./stringCompress.js";
 
 export function websocketConnect(game: Game, clientName: string = "Unknown", lobbyCode: string = "") {
     const protocol = window.location.protocol === "http:" ? "ws" : "wss";
@@ -26,8 +27,14 @@ export function websocketConnect(game: Game, clientName: string = "Unknown", lob
         game.multiplayer.awaitingGameState = true;
     };
 
-    socket.onmessage = function (message: any) {
-        const messageObj = JSON.parse(message.data);
+    socket.onmessage = async function (message: any) {
+        let messageObj: any;
+        try{ 
+            messageObj = JSON.parse(message.data);
+        }catch(e){
+            const jsonString = await decompressString(message.data);
+            messageObj = JSON.parse(jsonString);
+        }
         determineDelay(messageObj, game);
         executeCommand(game, messageObj);
     };
