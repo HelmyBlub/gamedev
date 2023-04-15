@@ -78,6 +78,10 @@ function paintKeyInfo(ctx: CanvasRenderingContext2D, game: Game) {
     ctx.font = fontSize + "px Arial";
     let onOff = game.settings.autoSkillEnabled ? "On" : "Off";
     ctx.fillText(`AutoSkill (${onOff})`, paintX - 60, paintY - 70);
+
+    paintKey(ctx, "P", { x: paintX - 100, y: paintY - 120 });
+    ctx.font = fontSize + "px Arial";
+    ctx.fillText("Multiplayer", paintX - 60, paintY - 100);
 }
 
 function paintMoveKeysHint(ctx: CanvasRenderingContext2D) {

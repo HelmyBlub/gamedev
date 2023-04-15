@@ -1,11 +1,10 @@
 next tasks:
-    - auto reconnect on connection loss
-        - game state to transfer grows big on longer games, make it smaller, compress
-            - try auto reconnect if disconnect not by player
-            - server game state change again to send only to new client
-            - compression creates lag -> visualize to player lag because of player connecting
-    - info if bad server connection, instead of game nothing happening
-
+    - code clean up
+        - refactor
+            - instead of try JSON.parse other way to see if bytecode?
+        - tsignore fix with fflate
+        - upgrade versions?
+    - server game state change again to send only to new client
 
     - plan for deploy
         - find some free site to deploy
