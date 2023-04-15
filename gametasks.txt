@@ -1,5 +1,4 @@
 next tasks:
-    - visualize not receiving server updates
     - auto reconnect on connection loss
         - game state to transfer grows big on longer games, make it smaller, compress
             - try auto reconnect if disconnect not by player

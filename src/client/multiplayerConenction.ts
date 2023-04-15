@@ -26,6 +26,7 @@ export function websocketConnect(game: Game, clientName: string = "Unknown", lob
         game.UI.displayTextData.push(createPaintTextData(textPosition1, `Multiplayer Connected`, "black", "24", game.state.time, 5000));
 
         game.multiplayer.connectMenuOpen = false;
+        game.multiplayer.lastSendTime = [];
 
         game.multiplayer.websocket = socket;
         game.multiplayer.awaitingGameState = true;
