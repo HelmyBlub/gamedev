@@ -115,7 +115,7 @@ function paintAbilityObjectFireCircle(ctx: CanvasRenderingContext2D, abilityObje
     if(abilityObject.faction === "enemy") ctx.fillStyle = "black";
     if(abilityObjectFireCircle.subType === "FireCircel"){
         if(paintOrder === "beforeCharacterPaint"){
-            ctx.globalAlpha = 0.65;
+            ctx.globalAlpha = abilityObject.faction === "enemy"? 0.9 : 0.65;
             ctx.beginPath();
             ctx.arc(
                 abilityObject.x - cameraPosition.x + centerX,
@@ -151,7 +151,7 @@ function setAbilityFireCircleToBossLevel(ability: Ability, level: number) {
     let abilityFireCircle = ability as AbilityFireCircle;
     abilityFireCircle.damage = level * 10;
     abilityFireCircle.size = 30 + level * 10;
-    abilityFireCircle.objectDuration = 3000;
+    abilityFireCircle.objectDuration = 5000;
     abilityFireCircle.baseRechargeTime = 2000;
     abilityFireCircle.rechargeTimeDecreaseFaktor = 1 + level * 0.50;
     abilityFireCircle.moveSpeed = 2;

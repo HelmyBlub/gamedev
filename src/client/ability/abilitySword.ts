@@ -69,9 +69,9 @@ function setAbilitySwordToLevel(ability: Ability, level: number){
 
 function setAbilitySwordToBossLevel(ability: Ability, level: number){
     let abilitySword = ability as AbilitySword;
-    abilitySword.damage = level * 20;
-    abilitySword.swordCount = 1;
-    abilitySword.swordLength = 30 + level * 20;
+    abilitySword.damage = level * 50;
+    abilitySword.swordCount = level > 5 ? 2 : 1;
+    abilitySword.swordLength = 30 + level * 25;
     abilitySword.angleChangePerTick = 0.01 * level;
     abilitySword.angleChangePerSword = Math.PI * 2 / abilitySword.swordCount;
 }

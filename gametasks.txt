@@ -4,7 +4,6 @@ next tasks:
             - instead of try JSON.parse other way to see if bytecode?
         - tsignore fix with fflate
         - upgrade versions?
-    - server game state change again to send only to new client
 
     - plan for deploy
         - find some free site to deploy

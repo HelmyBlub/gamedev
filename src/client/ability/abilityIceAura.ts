@@ -51,7 +51,7 @@ function setAbilityIceToLevel(ability: Ability, level: number){
 function setAbilityIceToBossLevel(ability: Ability, level: number){
     let abilityIce = ability as AbilityIce;
     abilityIce.damage = level * 10;
-    abilityIce.radius = 60 + level * 10;
+    abilityIce.radius = 60 + level * 12;
     abilityIce.slowFactor = 2;
 }
 

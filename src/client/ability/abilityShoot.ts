@@ -72,12 +72,12 @@ function setAbilityShootToBossLevel(ability: Ability, level: number){
     let abilityShoot = ability as AbilityShoot;
     abilityShoot.damage = level * 50;
     abilityShoot.frequencyIncrease = 1 + 0.2 * level;
-    abilityShoot.multiShot = level - 1;
+    abilityShoot.multiShot = Math.min(level - 1, 7);
     abilityShoot.pierceCount = 0;
     abilityShoot.moveSpeed = 1;
     abilityShoot.timeToLive = 3000;
     abilityShoot.baseFrequency = 1000;
-    abilityShoot.bulletSize = 5 + 5 * level;
+    abilityShoot.bulletSize = Math.min(5 + 5 * level, 25);
     abilityShoot.shootRandom = true;
 }
 
