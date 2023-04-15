@@ -14,6 +14,7 @@ type Lobby = {
     connections: Connection[],
     lostConnections: LostConnection[],
     startTime: bigint,
+    nextGameStateTo: Connection[], 
 }
 
 const express = require('express');
@@ -37,6 +38,7 @@ app.ws('/ws', function (ws: any, req: any) {
             connections: [],
             lostConnections: [],
             startTime: process.hrtime.bigint(),
+            nextGameStateTo: [],
         }
         lobbys.set(lobbyCode, currentLobby);
         console.log("new lobby created, lobbyCounter:" + lobbys.size);
@@ -73,6 +75,7 @@ app.ws('/ws', function (ws: any, req: any) {
         for(let i = 0; i < currentLobby.connections.length; i++){
             if(i === 0){
                 currentLobby.connections[i].con.send(JSON.stringify({ command: "sendGameState", clientId: connection.clientId, clientName: clientName }));
+                currentLobby.nextGameStateTo.push(connection);
             }else{
                 currentLobby.connections[i].con.send(JSON.stringify({ command: "playerJoined", clientId: connection.clientId, clientName: clientName }));
             }
@@ -137,10 +140,11 @@ function onMessage(message: any, lobbyCode: string) {
         }
     }
     catch (e) {
-        console.log("assume compressed ");
-        currentLobby.connections.forEach(function (destination: any) {
-            destination.con.send(message);
-        });      
+        //assume compressed
+        let stateForCon = currentLobby.nextGameStateTo.shift();
+        if(stateForCon){
+            stateForCon.con.send(message);
+        }
     }
 }
 

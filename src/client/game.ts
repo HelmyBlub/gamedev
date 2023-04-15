@@ -78,7 +78,7 @@ export function getCameraPosition(game: Game): Position {
     let cameraPosition: Position = { x: 0, y: 0 };
     if (game.camera.characterId !== undefined) {
         let character = findCharacterById(getPlayerCharacters(game.state.players), game.camera.characterId);
-        if (character !== null) cameraPosition = character;
+        if (character !== null) cameraPosition = {x: character.x, y: character.y};
     }
 
     return cameraPosition;
