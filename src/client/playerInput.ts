@@ -115,6 +115,7 @@ function multiplayerConnectMenu(game: Game) {
             });
         }
     } else {
+        game.multiplayer.intentionalDisconnect = true;
         multiplayer.websocket?.close();
     }
 }

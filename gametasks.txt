@@ -1,8 +1,10 @@
 next tasks:
+    - visualize not receiving server updates
     - auto reconnect on connection loss
         - game state to transfer grows big on longer games, make it smaller, compress
-            - compression takes to long in time on bigger state, find a good compression config
-                - somehow big state file does not want to work, why?
+            - try auto reconnect if disconnect not by player
+            - server game state change again to send only to new client
+            - compression creates lag -> visualize to player lag because of player connecting
     - info if bad server connection, instead of game nothing happening
 
 

@@ -1,4 +1,4 @@
-export function compressString(text: string, level: number = 6, mem: number = 4): any {
+export function compressString(text: string, level: number = 5, mem: number = 4): any {
     // The default compression method is gzip
     // Increasing mem may increase performance at the cost of memory
     // The mem ranges from 0 to 12, where 4 is the default

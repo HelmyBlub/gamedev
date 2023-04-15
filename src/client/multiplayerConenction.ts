@@ -20,7 +20,11 @@ export function websocketConnect(game: Game, clientName: string = "Unknown", lob
 
     socket.onopen = function (e) {
         console.log("websocket open");
-        document.getElementById('stringInput')?.classList.toggle('hide');
+        document.getElementById('stringInput')?.classList.add('hide');
+        let textPosition1 = getCameraPosition(game);
+        textPosition1.y += 24;
+        game.UI.displayTextData.push(createPaintTextData(textPosition1, `Multiplayer Connected`, "black", "24", game.state.time, 5000));
+
         game.multiplayer.connectMenuOpen = false;
 
         game.multiplayer.websocket = socket;
@@ -42,16 +46,25 @@ export function websocketConnect(game: Game, clientName: string = "Unknown", lob
     socket.onclose = function () {
         console.log("onclose");
         let textPosition1 = getCameraPosition(game);
-        game.UI.displayTextData.push(createPaintTextData(textPosition1, `Multiplayer Disconnected`, "black", "24", game.state.time, 5000));
-
-        game.multiplayer.awaitingGameState = false;
-        game.multiplayer.websocket = null;
-
-        let myClientId = game.multiplayer.myClientId;
-        for (let i = game.state.cliendInfos.length - 1; i >= 0; i--) {
-            if (game.state.cliendInfos[i].id !== myClientId) {
-                game.state.cliendInfos.splice(i,1);
+        if(game.multiplayer.intentionalDisconnect){
+            game.UI.displayTextData.push(createPaintTextData(textPosition1, `Multiplayer Disconnected`, "black", "24", game.state.time, 5000));
+    
+            game.multiplayer.awaitingGameState = false;
+            game.multiplayer.websocket = null;
+    
+            let myClientId = game.multiplayer.myClientId;
+            for (let i = game.state.cliendInfos.length - 1; i >= 0; i--) {
+                if (game.state.cliendInfos[i].id !== myClientId) {
+                    game.state.cliendInfos.splice(i,1);
+                }
             }
+            game.multiplayer.intentionalDisconnect = false;
+        }else{
+            //reconenct
+            setTimeout(() => {
+                game.UI.displayTextData.push(createPaintTextData(textPosition1, `Disconnected, reconnecting...`, "black", "24", game.state.time, 5000));
+                websocketConnect(game, clientName, lobbyCode);    
+            }, 500);
         }
     };
 

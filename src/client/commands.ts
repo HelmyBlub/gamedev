@@ -138,6 +138,7 @@ function timeUpdate(game: Game, data: CommandTimeUpdate) {
     let multi = game.multiplayer;
     let timeNow = performance.now();
     let oldReceivedTime = multi.maxServerGameTimeReceivedTime;
+    multi.timePassedWithoutSeverUpdate = timeNow;
     multi.maxServerGameTime = data.time;
     multi.maxServerGameTimeReceivedTime = timeNow;
     let validTimeUpdate = oldReceivedTime > 0 && oldReceivedTime < multi.maxServerGameTimeReceivedTime;

@@ -11,7 +11,6 @@ import { createProjectile, Projectile } from "../ability/projectile.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
 import { testInputs } from "./testInputs.js";
 import { testInputs2 } from "./testInputs2.js";
-import { testState } from "./testObject.js";
 import { testMultiplayerInputs } from "./testMultiplayerInputs.js";
 import { detectAbilityObjectToCharacterHit } from "../ability/ability.js";
 import { testPathing } from "../character/tests/pathingTest.js";
@@ -27,17 +26,6 @@ export function testGame(game: Game) {
 }
 
 function testTemp(){
-    let testData = testState;
-    let compressed: any;
-    console.log("orig length", testData.length);
-    for(let level = 1; level < 10; level++){
-        for(let mem = 0; mem < 13; mem++){
-            let compStartTime = performance.now();
-            let compFinishedTime = performance.now();
-            compressed = compressString(testData, level, mem);
-            console.log(compStartTime - compFinishedTime, level, mem, compressed.length);
-        }
-    }
 }
 
 //---------------------//

@@ -110,6 +110,8 @@ export type Multiplayer = {
     connectMenuOpen: boolean,
     connectMenuListenerSet: boolean,
     awaitingGameState: boolean,
+    intentionalDisconnect: boolean,
+    timePassedWithoutSeverUpdate: number,
 }
 
 export type Game = {
@@ -195,6 +197,8 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             connectMenuOpen: false,
             connectMenuListenerSet: false,
             awaitingGameState: false,
+            intentionalDisconnect: false,
+            timePassedWithoutSeverUpdate: 0,
         },
         camera: {
             type: "follow character"

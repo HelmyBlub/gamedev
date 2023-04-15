@@ -226,6 +226,15 @@ function paintPlayerStats(ctx: CanvasRenderingContext2D, character: LevelingChar
     ctx.fillText("Time: " + Math.round(gameTime / 1000), 400, 20);
     ctx.fillText("Distance: " + distance, 10, 40);
 
+    if(!game.state.ended && game.multiplayer.websocket && game.multiplayer.timePassedWithoutSeverUpdate + 2000 < performance.now()){
+        let text = "Bad Connection...";
+        ctx.font = "bold 34px Arial";
+        ctx.fillText(text, ctx.canvas.width / 2 - 100, ctx.canvas.height / 2 - 100);
+        ctx.strokeStyle = "white";
+        ctx.lineWidth = 1;
+        ctx.strokeText(text, ctx.canvas.width / 2 - 100, ctx.canvas.height / 2 - 100);
+    }
+
     if (!game.state.ended && !game.settings.autoSkillEnabled) paintUpgradeOptionsUI(ctx, character);
     paintPlayerStatsUI(ctx, character, game);
 }
