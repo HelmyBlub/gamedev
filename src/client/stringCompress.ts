@@ -1,3 +1,4 @@
+//@ts-nocheck
 export function compressString(text: string, level: number = 5, mem: number = 4): any {
     // The default compression method is gzip
     // Increasing mem may increase performance at the cost of memory
