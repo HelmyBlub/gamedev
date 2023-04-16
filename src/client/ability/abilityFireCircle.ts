@@ -1,9 +1,9 @@
 import { calculateDirection, calculateDistance, getCameraPosition } from "../game.js";
 import { Game, Position } from "../gameModel.js";
 import { nextRandom } from "../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectAbilityObjectToCharacterHit, PaintOrder, UpgradeOptionAbility } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectAbilityObjectToCharacterHit, PaintOrderAbility, UpgradeOptionAbility } from "./ability.js";
 
-const ABILITY_NAME = "FireCircle";
+const ABILITY_NAME_FIRE_CIRCLE = "FireCircle";
 export type AbilityFireCircle = Ability & {
     objectDuration: number,
     moveSpeed: number,
@@ -32,7 +32,7 @@ export type AbilityObjectFireCircleTraveling = AbilityObject & {
 }
 
 export function addFireCircleAbility() {
-    ABILITIES_FUNCTIONS[ABILITY_NAME] = {
+    ABILITIES_FUNCTIONS[ABILITY_NAME_FIRE_CIRCLE] = {
         tickAbility: tickAbilityFireCircle,
         createAbiltiyUpgradeOptions: createAbiltiyFireCircleUpgradeOptions,
         activeAbilityCast: castFireCircle,
@@ -58,7 +58,7 @@ export function createAbilityFireCircle(
     maxCharges: number = 3
 ): AbilityFireCircle {
     return {
-        name: ABILITY_NAME,
+        name: ABILITY_NAME_FIRE_CIRCLE,
         objectDuration: objectDuration,
         damage: damage,
         size: size,
@@ -75,7 +75,7 @@ export function createAbilityFireCircle(
 
 function createObjectFireCircleTraveling(x: number, y: number, damage: number, faction: string, duration: number, size: number, moveSpeed: number, owner: AbilityOwner): AbilityObjectFireCircleTraveling {
     return {
-        type: ABILITY_NAME,
+        type: ABILITY_NAME_FIRE_CIRCLE,
         x: owner.x,
         y: owner.y,
         size: size,
@@ -92,7 +92,7 @@ function createObjectFireCircleTraveling(x: number, y: number, damage: number, f
 
 function createObjectFireCircle(abilityObject: AbilityObjectFireCircleTraveling, gameTime: number): AbilityObjectFireCircle {
     return {
-        type: ABILITY_NAME,
+        type: ABILITY_NAME_FIRE_CIRCLE,
         x: abilityObject.targetPosition.x,
         y: abilityObject.targetPosition.y,
         size: abilityObject.size,
@@ -105,7 +105,7 @@ function createObjectFireCircle(abilityObject: AbilityObjectFireCircleTraveling,
     }
 }
 
-function paintAbilityObjectFireCircle(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrder, game: Game) {
+function paintAbilityObjectFireCircle(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
     let abilityObjectFireCircle = abilityObject as AbilityObjectFireCircle;
     let cameraPosition = getCameraPosition(game);
     let centerX = ctx.canvas.width / 2;
@@ -136,7 +136,6 @@ function paintAbilityObjectFireCircle(ctx: CanvasRenderingContext2D, abilityObje
             ctx.fill();
         }
     }
-
 }
 
 function setAbilityFireCircleToLevel(ability: Ability, level: number) {

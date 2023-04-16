@@ -1,10 +1,9 @@
-import { Character } from "../character/characterModel.js";
 import { Game } from "../gameModel.js";
 import { Projectile, createProjectile, tickProjectile, deleteProjectile } from "./projectile.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, UpgradeOptionAbility } from "./ability.js";
 
-const ABILITY_NAME = "Shoot";
+const ABILITY_NAME_SHOOT = "Shoot";
 export type AbilityShoot = Ability & {
     baseFrequency: number,
     frequencyIncrease: number,
@@ -19,12 +18,13 @@ export type AbilityShoot = Ability & {
 }
 
 export function addShootAbility(){
-    ABILITIES_FUNCTIONS[ABILITY_NAME] = {
+    ABILITIES_FUNCTIONS[ABILITY_NAME_SHOOT] = {
         tickAbility: tickAbilityShoot,
         createAbiltiyUpgradeOptions: createAbiltiyShootUpgradeOptions,
         tickAbilityObject: tickProjectile,
         deleteAbilityObject: deleteProjectile,
-        onHitAndReturnIfContinue: onShootHitAndReturnIfContinue,
+        onHit: onShootHit,
+        canHitMore: canShootHitMore,
         setAbilityToLevel: setAbilityShootToLevel,
         createAbility: createAbilityShoot,
         setAbilityToBossLevel: setAbilityShootToBossLevel,
@@ -44,7 +44,7 @@ export function createAbilityShoot(
     bulletSize: number = 5,
 ): AbilityShoot {
     return {
-        name: ABILITY_NAME,
+        name: ABILITY_NAME_SHOOT,
         baseFrequency: baseFrequency,
         frequencyIncrease: frequencyIncrease,
         damage: damage,
@@ -94,9 +94,13 @@ function tickAbilityShoot(abilityOwner: AbilityOwner, ability: Ability, game: Ga
     }
 }
 
-function onShootHitAndReturnIfContinue(abilityObject: AbilityObject){
+function onShootHit(abilityObject: AbilityObject){
     let projectile = abilityObject as Projectile;
     projectile.pierceCount--;
+}
+
+function canShootHitMore(abilityObject: AbilityObject){
+    let projectile = abilityObject as Projectile;
     return projectile.pierceCount >= 0;
 }
 
@@ -154,7 +158,7 @@ function shoot(abilityOwner: AbilityOwner, ability: AbilityShoot, abilityObjects
             gameTime,
             ability.pierceCount,
             ability.timeToLive,
-            ABILITY_NAME,
+            ABILITY_NAME_SHOOT,
             ability.bulletSize
         ));
     }

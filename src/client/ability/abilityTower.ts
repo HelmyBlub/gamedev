@@ -5,7 +5,7 @@ import { Position, Game, IdCounter } from "../gameModel.js";
 import { positionToMapKey } from "../map/map.js";
 import { findPlayerByCharacterId } from "../player.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityFunctions, AbilityObject, AbilityOwner, PaintOrder, UpgradeOptionAbility } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, UpgradeOptionAbility } from "./ability.js";
 
 type AbilityObjectTower = AbilityObject & {
     ownerId: number,
@@ -158,19 +158,6 @@ function getTowerCountOfOwner(abilityObjects: AbilityObject[], ownerId: number):
     return counter;
 }
 
-function getRandomPassiveAbility(randomSeed: RandomSeed): Ability | undefined {
-    let passiveAbilitiesFunctionKeys: string[] = getRandomPassiveAbilitiyKeys();
-    if (passiveAbilitiesFunctionKeys.length > 0) {
-        let random = Math.floor(nextRandom(randomSeed) * passiveAbilitiesFunctionKeys.length);
-        let abilityFunctions = ABILITIES_FUNCTIONS[passiveAbilitiesFunctionKeys[random]];
-        let ability = abilityFunctions.createAbility();
-        if (!abilityFunctions.isPassive) ability.passive = true;
-        return ability;
-    }
-
-    return undefined;
-}
-
 function getRandomPassiveAbilitiyKeys(): string[] {
     let abilityFunctionKeys = Object.keys(ABILITIES_FUNCTIONS);
     let passiveAbilitiesFunctionKeys: string[] = [];
@@ -197,7 +184,7 @@ function updateTowerObjectAbilityLevels(abilityObjects: AbilityObject[]) {
     }
 }
 
-function paintAbilityObjectTower(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrder, game: Game) {
+function paintAbilityObjectTower(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
     let cameraPosition = getCameraPosition(game);
     let tower = abilityObject as AbilityObjectTower;
 

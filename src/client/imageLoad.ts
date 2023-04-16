@@ -1,4 +1,3 @@
-import { CharacterImageLoadProperties } from "./character/characterModel.js";
 import { createRandomizedCharacter, RandomizedCharacterImage, randomizedCharacterImageToKey } from "./randomizedCharacterImage.js";
 
 export type GameImages = {

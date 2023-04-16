@@ -1,6 +1,6 @@
 import { countAlivePlayerCharacters, detectCharacterDeath, findCharacterById, findMyCharacter, getPlayerCharacters, tickCharacters, tickMapCharacters } from "./character/character.js";
 import { paintAll } from "./gamePaint.js";
-import { gameInitPlayers, getHighestLevelOfPlayers, Player } from "./player.js";
+import { gameInitPlayers, getHighestLevelOfPlayers } from "./player.js";
 import { UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.js";
 import { Position, GameState, Game, IdCounter, TestingStuff, Debugging, PaintTextData } from "./gameModel.js";
 import { createMap, determineMapKeysInDistance, GameMap, getMapMidlePosition, removeAllMapCharacters } from "./map/map.js";
@@ -292,7 +292,7 @@ function checkForStuff(game: Game){
     checkForAutoSkill(game);
 }
 
-export function checkForAutoSkill(game: Game){
+function checkForAutoSkill(game: Game){
     if(!game.settings.autoSkillEnabled) return;
 
     let character: Character | undefined = findMyCharacter(game);

@@ -1,5 +1,4 @@
 import { Character } from "../character/characterModel.js";
-import { calculateDistance } from "../game.js";
 import { IdCounter, Position } from "../gameModel.js"
 import { createNewChunk } from "./mapGeneration.js";
 import { MapPaintLayer } from "./mapPaint.js";
@@ -135,70 +134,40 @@ export function moveByDirectionAndDistance(position: Position, moveDirection: nu
     }
 }
 
-
 export function getChunksTouchingLine(map: GameMap, lineStart: Position, lineEnd: Position): MapChunk[] {
-    let chunkSize = map.chunkLength * map.tileSize;
-    let chunkKeys: string[] = [];
-    chunkKeys.push(positionToMapKey(lineStart, map));
-    let endKey = positionToMapKey(lineEnd, map);
-    if (chunkKeys[0] !== endKey) {
-        let xDiff = lineEnd.x - lineStart.x;
-        let yDiff = lineEnd.y - lineStart.y;
-        let currentPos = { ...lineStart };
-        let currentKey: string;
-        do {
-            let nextYBorder: number | undefined;
-            let nextXBorder: number | undefined;
-            let nextYBorderX: number | undefined;
-            let nextXBorderY: number | undefined;
-            if (yDiff !== 0) {
-                if (yDiff > 0) {
-                    nextYBorder = Math.ceil(currentPos.y / chunkSize) * chunkSize + 0.01;
-                } else {
-                    nextYBorder = Math.floor(currentPos.y / chunkSize) * chunkSize - 0.01;
-                }
-            }
-            if (xDiff !== 0) {
-                if (xDiff > 0) {
-                    nextXBorder = Math.ceil(currentPos.x / chunkSize) * chunkSize + 0.01;
-                } else {
-                    nextXBorder = Math.floor(currentPos.x / chunkSize) * chunkSize - 0.01;
-                }
-            }
-            if (nextYBorder !== undefined) {
-                nextYBorderX = (nextYBorder - currentPos.y) * (xDiff / yDiff) + currentPos.x;
-            }
-            if (nextXBorder !== undefined) {
-                nextXBorderY = (nextXBorder - currentPos.x) * (yDiff / xDiff) + currentPos.y;
-            }
-            if (nextYBorderX !== undefined && nextXBorderY !== undefined) {
-                if (nextXBorder! > nextYBorderX) {
-                    if (xDiff > 0) {
-                        currentPos.x = nextYBorderX;
-                        currentPos.y = nextYBorder!;
-                    } else {
-                        currentPos.x = nextXBorder!;
-                        currentPos.y = nextXBorderY;
-                    }
-                } else {
-                    if (xDiff > 0) {
-                        currentPos.x = nextXBorder!;
-                        currentPos.y = nextXBorderY;
-                    } else {
-                        currentPos.x = nextYBorderX;
-                        currentPos.y = nextYBorder!;
-                    }
-                }
-            } else if (nextYBorderX !== undefined) {
-                currentPos.y = nextYBorder!;
-            } else if (nextXBorderY !== undefined) {
-                currentPos.x = nextXBorder!;
-            } else {
-                console.log("should not happen?");
-            }
-            currentKey = positionToMapKey(currentPos, map);
-            chunkKeys.push(currentKey);
-        } while (currentKey !== endKey);
+    //TODO does not consider line width. 
+    const chunkKeys: string[] = [];
+    let chuckSize = map.tileSize * map.chunkLength;
+    let x0 = Math.floor(lineStart.x / chuckSize);
+    let y0 = Math.floor(lineStart.y / chuckSize);
+    let x1 = Math.floor(lineEnd.x / chuckSize);
+    let y1 = Math.floor(lineEnd.y / chuckSize);
+
+    const dx = Math.abs(x1 - x0);
+    const dy = Math.abs(y1 - y0);
+    const sx = x0 < x1 ? 1 : -1;
+    const sy = y0 < y1 ? 1 : -1;
+    let err = dx - dy;
+    let x = x0;
+    let y = y0;
+
+    while (true) {
+        const key = `${y}_${x}`;
+        chunkKeys.push(key);
+
+        if (x === x1 && y === y1) {
+            break;
+        }
+
+        const e2 = 2 * err;
+        if (e2 > -dy) {
+            err -= dy;
+            x += sx;
+        }
+        if (e2 < dx) {
+            err += dx;
+            y += sy;
+        }
     }
 
     let chunks: MapChunk[] = [];
@@ -225,41 +194,13 @@ export function getTileIdForTileName(tileName: string): number {
     throw new Error("TileName not found");
 }
 
-function calculateDistanceToMapChunk(chunkI: number, chunkJ: number, position: Position, map: GameMap): number {
+export function calculateDistanceToMapChunk(chunkI: number, chunkJ: number, position: Position, map: GameMap): number {
     let chunkSize = map.tileSize * map.chunkLength;
-    let topChunk = chunkI * chunkSize;
-    let leftChunk = chunkJ * chunkSize;
-    if (leftChunk <= position.x && leftChunk + chunkSize > position.x) {
-        if (topChunk + chunkSize > position.y) {
-            if (topChunk <= position.y) {
-                return 0;
-            } else {
-                return topChunk - position.y;
-            }
-        } else {
-            return position.y - (topChunk + chunkSize);
-        }
-    } else if (topChunk <= position.y && topChunk + chunkSize > position.y) {
-        if (leftChunk + chunkSize > position.x) {
-            if (leftChunk <= position.x) {
-                return 0;
-            } else {
-                return leftChunk - position.x;
-            }
-        } else {
-            return position.x - (leftChunk + chunkSize);
-        }
-    } else {
-        if (topChunk > position.y && leftChunk > position.x) {
-            return calculateDistance(position, { x: leftChunk, y: topChunk });
-        } else if (topChunk + chunkSize <= position.y && leftChunk > position.x) {
-            return calculateDistance(position, { x: leftChunk, y: topChunk + chunkSize });
-        } else if (topChunk > position.y && leftChunk + chunkSize <= position.x) {
-            return calculateDistance(position, { x: leftChunk + chunkSize, y: topChunk });
-        } else {
-            return calculateDistance(position, { x: leftChunk + chunkSize, y: topChunk + chunkSize });
-        }
-    }
+    const cellCenterX = chunkJ * chunkSize + chunkSize / 2;
+    const cellCenterY = chunkI * chunkSize + chunkSize / 2;
+    const dx = Math.max(Math.abs(position.x - cellCenterX) - chunkSize / 2, 0);
+    const dy = Math.max(Math.abs(position.y - cellCenterY) - chunkSize / 2, 0);
+    return Math.sqrt(dx * dx + dy * dy);
 }
 
 function getMapTile(pos: Position, map: GameMap, idCounter: IdCounter): MapTile {

@@ -1,19 +1,18 @@
 import { ABILITIES_FUNCTIONS, Ability } from "../../ability/ability.js";
 import { createAbilityMelee } from "../../ability/abilityMelee.js";
 import { tickCharacterDebuffs } from "../../debuff/debuff.js";
-import { calculateDirection, calculateDistance, getNextId } from "../../game.js";
-import { IdCounter, Game, Position, GameState, BossStuff } from "../../gameModel.js";
+import { calculateDirection, getNextId } from "../../game.js";
+import { IdCounter, Game, Position, BossStuff } from "../../gameModel.js";
 import { GAME_IMAGES, loadImage } from "../../imageLoad.js";
 import { findNearNonBlockingPosition, getMapMidlePosition, moveByDirectionAndDistance } from "../../map/map.js";
 import { getHighestLevelOfPlayers, getPlayerFurthestAwayFromSpawn } from "../../player.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
-import { determineClosestCharacter, determineEnemyHitsPlayer, determineEnemyMoveDirection, getPlayerCharacters, getSpawnPositionAroundPlayer, moveCharacterTick } from "../character.js";
+import { determineClosestCharacter, determineEnemyHitsPlayer, determineEnemyMoveDirection, getPlayerCharacters, moveCharacterTick } from "../character.js";
 import { Character, createCharacter } from "../characterModel.js";
 import { paintCharacterHpBar } from "../characterPaint.js";
 import { getPathingCache, PathingCache } from "../pathing.js";
 
-export type BossEnemyCharacter = Character & {
-}
+export type BossEnemyCharacter = Character;
 export const CHARACTER_TYPE_BOSS_ENEMY = "BossEnemyCharacter";
 
 export function createBossWithLevel(idCounter: IdCounter, level: number, game: Game): BossEnemyCharacter {
@@ -58,12 +57,6 @@ export function tickBossEnemyCharacter(enemy: BossEnemyCharacter, game: Game, pa
     tickCharacterDebuffs(enemy, game);
 }
 
-function teleportBossToNearestPlayer(enemy: BossEnemyCharacter, game: Game){
-    let newPosition = getBossSpawnPosition(game);
-    enemy.x = newPosition.x;
-    enemy.y = newPosition.y;
-}
-
 export function paintBossCharacters(ctx: CanvasRenderingContext2D, cameraPosition: Position, game: Game) {
     for (let character of game.state.bossStuff.bosses) {
         paintBossEnemyCharacter(ctx, character, cameraPosition, game);
@@ -78,6 +71,12 @@ export function checkForBossSpawn(game: Game) {
         bossStuff.bosses.push(createBossWithLevel(game.state.idCounter, bossStuff.bossLevelCounter, game));
         bossStuff.bossLevelCounter++;
     }
+}
+
+function teleportBossToNearestPlayer(enemy: BossEnemyCharacter, game: Game){
+    let newPosition = getBossSpawnPosition(game);
+    enemy.x = newPosition.x;
+    enemy.y = newPosition.y;
 }
 
 function createBossAbilities(level: number, game: Game): Ability[]{

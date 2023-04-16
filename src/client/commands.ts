@@ -1,10 +1,10 @@
-import { findAndSetNewCameraCharacterId, findMyCharacter } from "./character/character.js";
+import { findAndSetNewCameraCharacterId } from "./character/character.js";
 import { createPaintTextData, getCameraPosition } from "./game.js";
-import { Game } from "./gameModel.js";
+import { Game, GameState } from "./gameModel.js";
 import { sendMultiplayer } from "./multiplayerConenction.js";
 import { createDefaultKeyBindings1 } from "./player.js";
 import { PlayerInput } from "./playerInput.js";
-import { compressString, decompressString } from "./stringCompress.js";
+import { compressString } from "./stringCompress.js";
 
 type Command = { command: string };
 type CommandTimeUpdate = Command & { time: number };
@@ -12,6 +12,19 @@ export type CommandRestart = PlayerInput & {
     testing?: boolean,
     testMapSeed?: number,
     testRandomStartSeed?: number,
+}
+
+type ConnectInfo = {
+    clientName: string,
+    clientId: number,
+    updateInterval: number,
+    randomIdentifier: string,
+    numberConnections: number,
+}
+
+type PlayerJoined = {
+    clientName: string,
+    clientId: number,
 }
 
 export function handleCommand(game: Game, data: any) {
@@ -33,45 +46,18 @@ export function executeCommand(game: Game, data: any) {
             playerInput(game, data);
             break;
         case "sendGameState":
-            game.state.cliendInfos.push({id: data.clientId, name:data.clientName});
-            let textPosition1 = getCameraPosition(game);
-            game.UI.displayTextData.push(createPaintTextData(textPosition1, `${data.clientName} joined`, "black", "24", game.state.time, 5000));
+            playerJoined(game, data);
             let compressedState = compressString(JSON.stringify({ command: "gameState", data: game.state, toId: data.clientId }));
             game.multiplayer.websocket!.send(compressedState);
             break;
         case "gameState":
-            if(!game.multiplayer.awaitingGameState) return;
-            game.multiplayer.awaitingGameState = false;
-            game.state = data.data;
-            game.performance = {};
-            for (let i = 0; i < game.state.cliendInfos.length; i++) {
-                if (game.multiplayer.myClientId === game.state.cliendInfos[i].id) {
-                    game.clientKeyBindings = [{
-                        clientIdRef: game.multiplayer.myClientId,
-                        keyCodeToActionPressed: createDefaultKeyBindings1()
-                    }];
-                }
-            }
-            findAndSetNewCameraCharacterId(game.camera, game.state.players, game.multiplayer.myClientId);
+            gameState(game, data.data);
             break;
         case "connectInfo":
-            game.multiplayer.myClientId = data.clientId;
-            game.state.cliendInfos = [{id: data.clientId, name: data.clientName}];
-            game.multiplayer.updateInterval = data.updateInterval;
-            if(data.numberConnections === 0){
-                game.multiplayer.awaitingGameState = false;
-                game.state.players[0].clientId = data.clientId;
-                game.clientKeyBindings[0].clientIdRef = data.clientId;
-            }
-            if (data.randomIdentifier) {
-                console.log("myIdentifier", data.randomIdentifier);
-                localStorage.setItem('multiplayerIdentifier', data.randomIdentifier);
-            }
+            connectInfo(game, data);
             break;
         case "playerJoined":
-            game.state.cliendInfos.push({id: data.clientId, name:data.clientName});
-            let textPosition = getCameraPosition(game);
-            game.UI.displayTextData.push(createPaintTextData(textPosition, `${data.clientName} joined`, "black", "24", game.state.time, 5000));
+            playerJoined(game, data);
             break;
         case "playerLeft":
             for (let i = 0; i < game.state.cliendInfos.length; i++) {
@@ -90,6 +76,45 @@ export function executeCommand(game: Game, data: any) {
         default:
             console.log("unkown command: " + command, data);
     }
+}
+
+function playerJoined(game: Game, data: PlayerJoined){
+    game.state.cliendInfos.push({id: data.clientId, name:data.clientName});
+    let textPosition = getCameraPosition(game);
+    game.UI.displayTextData.push(createPaintTextData(textPosition, `${data.clientName} joined`, "black", "24", game.state.time, 5000));
+
+}
+
+function connectInfo(game: Game, data: ConnectInfo){
+    game.multiplayer.myClientId = data.clientId;
+    game.state.cliendInfos = [{id: data.clientId, name: data.clientName}];
+    game.multiplayer.updateInterval = data.updateInterval;
+    if(data.numberConnections === 0){
+        game.multiplayer.awaitingGameState = false;
+        game.state.players[0].clientId = data.clientId;
+        game.clientKeyBindings[0].clientIdRef = data.clientId;
+    }
+    if (data.randomIdentifier) {
+        console.log("myIdentifier", data.randomIdentifier);
+        localStorage.setItem('multiplayerIdentifier', data.randomIdentifier);
+    }
+}
+
+function gameState(game: Game, data: GameState){
+    if(!game.multiplayer.awaitingGameState) return;
+    game.multiplayer.awaitingGameState = false;
+    game.state = data;
+    game.performance = {};
+    for (let i = 0; i < game.state.cliendInfos.length; i++) {
+        if (game.multiplayer.myClientId === game.state.cliendInfos[i].id) {
+            game.clientKeyBindings = [{
+                clientIdRef: game.multiplayer.myClientId,
+                keyCodeToActionPressed: createDefaultKeyBindings1()
+            }];
+        }
+    }
+    findAndSetNewCameraCharacterId(game.camera, game.state.players, game.multiplayer.myClientId);
+
 }
 
 function restart(game: Game, data: CommandRestart) {

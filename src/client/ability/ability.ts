@@ -21,7 +21,7 @@ export type Ability = {
     passive: boolean,
     playerInputBinding?: string,
 }
-export type PaintOrder = "beforeCharacterPaint" | "afterCharacterPaint";
+export type PaintOrderAbility = "beforeCharacterPaint" | "afterCharacterPaint";
 export type AbilityObject = Position & {
     type: string,
     size: number,
@@ -48,10 +48,11 @@ export type AbilityFunctions = {
     tickAbilityObject?: (abilityObject: AbilityObject, game: Game) => void,
     deleteAbilityObject?: (abilityObject: AbilityObject, game: Game) => boolean,
     paintAbility?: (ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) => void,
-    paintAbilityObject?: (ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrder, game: Game) => void,
+    paintAbilityObject?: (ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) => void,
     paintAbilityUI?: (ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) => void,
     paintAbilityStatsUI?: (ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, game: Game) => {width: number, height: number},
-    onHitAndReturnIfContinue?: (abilityObject: AbilityObject) => boolean,
+    onHit?: (abilityObject: AbilityObject) => void,
+    canHitMore?: (abilityObject: AbilityObject) => boolean,
     setAbilityToLevel?: (ability: Ability, level: number) => void,
     setAbilityToBossLevel?: (ability: Ability, level: number) => void,
     notInheritable?: boolean,
@@ -89,7 +90,7 @@ export function addAbilityToCharacter(character: Character, ability: Ability) {
     character.abilities.push(ability);
 }
 
-export function paintAbilityObjects(ctx: CanvasRenderingContext2D, abilityObjects: AbilityObject[], game: Game, paintOrder: PaintOrder) {
+export function paintAbilityObjects(ctx: CanvasRenderingContext2D, abilityObjects: AbilityObject[], game: Game, paintOrder: PaintOrderAbility) {
     paintAbilityObjectsForFaction(ctx, abilityObjects, game, paintOrder, "player");
     paintAbilityObjectsForFaction(ctx, abilityObjects, game, paintOrder, "enemy");
 }
@@ -125,15 +126,27 @@ export function detectAbilityObjectToCharacterHit(map: GameMap, abilityObject: A
         if (distance < abilityObject.size / 2 + c.width / 2) {
             characterTakeDamage(c, abilityObject.damage, game);
             let abilityFunction = ABILITIES_FUNCTIONS[abilityObject.type];
-            if (abilityFunction.onHitAndReturnIfContinue) {
-                let continueHitDetection = abilityFunction.onHitAndReturnIfContinue(abilityObject);
-                if (!continueHitDetection) break;
+            if (abilityFunction.onHit) {
+                abilityFunction.onHit(abilityObject);
+                if (abilityFunction.canHitMore && !abilityFunction.canHitMore(abilityObject)) {
+                    break;
+                }
             }
         }
     }
 }
 
-export function detectSomethingToCharacterHit(map: GameMap, position: Position, size: number, faction: string, damage: number, players: Player[], bosses: BossEnemyCharacter[], onHitAndReturnIfContinue: ((target: Character) => boolean) | undefined, game: Game | undefined) {
+export function detectSomethingToCharacterHit(
+    map: GameMap,
+    position: Position, 
+    size: number, 
+    faction: string,
+    damage: number, 
+    players: Player[], 
+    bosses: BossEnemyCharacter[], 
+    onHitAndReturnIfContinue: ((target: Character) => boolean) | undefined,
+    game: Game | undefined
+) {
     let maxEnemySizeEstimate = 40;
 
     let characters = determineCharactersInDistance(position, map, players, bosses, size + maxEnemySizeEstimate);
@@ -169,7 +182,7 @@ export function paintUiForAbilities(ctx: CanvasRenderingContext2D, game: Game) {
     }
 }
 
-function paintAbilityObjectsForFaction(ctx: CanvasRenderingContext2D, abilityObjects: AbilityObject[], game: Game, paintOrder: PaintOrder, faction: string) {
+function paintAbilityObjectsForFaction(ctx: CanvasRenderingContext2D, abilityObjects: AbilityObject[], game: Game, paintOrder: PaintOrderAbility, faction: string) {
     for (let abilityObject of abilityObjects) {
         if(abilityObject.faction === faction){
             let abilityFunctions = ABILITIES_FUNCTIONS[abilityObject.type];
@@ -182,7 +195,7 @@ function paintAbilityObjectsForFaction(ctx: CanvasRenderingContext2D, abilityObj
     }
 }
 
-function paintDefault(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, cameraPosition: Position, paintOrder: PaintOrder) {
+function paintDefault(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, cameraPosition: Position, paintOrder: PaintOrderAbility) {
     if(paintOrder === "afterCharacterPaint"){
         let centerX = ctx.canvas.width / 2;
         let centerY = ctx.canvas.height / 2;

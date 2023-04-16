@@ -1,7 +1,7 @@
 import { createCharacter, ENEMY_FACTION, PLAYER_FACTION } from "../character/characterModel.js";
 import { CommandRestart, handleCommand } from "../commands.js";
 import { closeGame } from "../game.js";
-import { Game } from "../gameModel.js";
+import { Game, Position } from "../gameModel.js";
 import { createGame } from "../main.js";
 import { addEnemyToMap, createMap, GameMap } from "../map/map.js";
 import { createNewChunkTiles } from "../map/mapGeneration.js";
@@ -13,8 +13,6 @@ import { testInputs } from "./testInputs.js";
 import { testInputs2 } from "./testInputs2.js";
 import { testMultiplayerInputs } from "./testMultiplayerInputs.js";
 import { detectAbilityObjectToCharacterHit } from "../ability/ability.js";
-import { testPathing } from "../character/tests/pathingTest.js";
-import { compressString } from "../stringCompress.js"
 
 export function testGame(game: Game) {
     console.log("start test");
@@ -25,7 +23,8 @@ export function testGame(game: Game) {
     console.log("end test");
 }
 
-function testTemp(){
+function testTemp() {
+
 }
 
 //---------------------//
@@ -102,10 +101,10 @@ function runGameWithPlayerInputsSinglePlayer(game: Game, playerInputs: (PlayerIn
         game.testing.zeroTimeout = true;
     }
     game.state.ended = true;
-    if(playerInputs[0].command === "restart"){
+    if (playerInputs[0].command === "restart") {
         let startCommand = game.testing.replayPlayerInputs!.shift();
         handleCommand(game, startCommand);
-    }else{
+    } else {
         handleCommand(game, { command: "restart", clientId: game.multiplayer.myClientId, testing: true });
     }
 }

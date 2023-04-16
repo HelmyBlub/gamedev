@@ -7,10 +7,10 @@ type AbilityHpRegen = Ability & {
     nextIntervalTick?: number,
 }
 
-const ABILITY_NAME_LEASH = "HP Regen";
+const ABILITY_NAME_HP_REGEN = "HP Regen";
 
 export function addHpRegenAbility() {
-    ABILITIES_FUNCTIONS[ABILITY_NAME_LEASH] = {
+    ABILITIES_FUNCTIONS[ABILITY_NAME_HP_REGEN] = {
         tickAbility: tickAbilityHpRegen,
         createAbiltiyUpgradeOptions: createAbilityHpRegenUpgradeOptions,
         createAbility: createAbilityHpRegen,
@@ -22,7 +22,7 @@ export function addHpRegenAbility() {
 
 export function createAbilityHpRegen(): AbilityHpRegen {
     return {
-        name: ABILITY_NAME_LEASH,
+        name: ABILITY_NAME_HP_REGEN,
         amount: 1,
         tickInterval: 500,
         passive: true,

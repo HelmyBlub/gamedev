@@ -30,37 +30,12 @@ app.use(express.static('public'));
 
 app.ws('/ws', function (ws: any, req: any) {
     let lobbyCode: string = req.query.lobbyCode;
-    let currentLobby: Lobby;
-    if(lobbys.has(lobbyCode)){
-        currentLobby = lobbys.get(lobbyCode)!;
-    }else{
-        currentLobby = {
-            connections: [],
-            lostConnections: [],
-            startTime: process.hrtime.bigint(),
-            nextGameStateTo: [],
-        }
-        lobbys.set(lobbyCode, currentLobby);
-        console.log("new lobby created, lobbyCounter:" + lobbys.size);
-    }
+    let currentLobby: Lobby = getLobby(lobbyCode);
 
-    let myIdentifier = req.query.myId;
     let clientName = req.query.clientName;
-
     if (clientName.length > 20) clientName = clientName.substring(0, 20);
-    let clientGameTime = req.query.myGameTime;
-    let randomIdentifier = clientIdCounter + "_" + Math.random().toString();
-    let connection = { clientId: clientIdCounter, con: ws, randomIdentifier: randomIdentifier };
 
-    if (myIdentifier) {
-        let lostConIndex = currentLobby.lostConnections.findIndex((con) => con.randomIdentifier === myIdentifier);
-        if (lostConIndex !== -1) {
-            let lostCon = currentLobby.lostConnections[lostConIndex];
-            connection = { clientId: lostCon.clientId, con: ws, randomIdentifier: lostCon.randomIdentifier };
-            currentLobby.lostConnections.splice(lostConIndex, 1);
-            console.log("client reconnected " + lostCon.clientId);
-        }
-    }
+    let connection: Connection = createConnectionObject(req.query.myId, currentLobby, ws);
     console.log(clientIdCounter + "#Con" + currentLobby.connections.length + " ClientName:" + clientName);
 
     ws.send(JSON.stringify({ 
@@ -81,6 +56,7 @@ app.ws('/ws', function (ws: any, req: any) {
             }
         }
     }else{
+        let clientGameTime = req.query.myGameTime;
         setCurrentMsBasedOnClientGameTime(clientGameTime, currentLobby);
     }
 
@@ -94,6 +70,48 @@ app.ws('/ws', function (ws: any, req: any) {
 app.listen(port, () => {
     console.log(`GameDev started ${port}`);
 });
+
+function createConnectionObject(myIdentifier: string, lobby: Lobby, ws: any): Connection{
+    let connection: Connection;
+    let lostCon = findLostConnection(myIdentifier, lobby);    
+    if (lostCon) {
+        connection = { clientId: lostCon.clientId, con: ws, randomIdentifier: lostCon.randomIdentifier };
+        console.log("client reconnected " + lostCon.clientId);
+    }else{
+        let randomIdentifier = clientIdCounter + "_" + Math.random().toString();
+        connection = { clientId: clientIdCounter, con: ws, randomIdentifier: randomIdentifier };
+    }
+    return connection;
+}
+
+function findLostConnection(myIdentifier: string, currentLobby: Lobby): LostConnection | null{
+    if (myIdentifier) {
+        let lostConIndex = currentLobby.lostConnections.findIndex((con) => con.randomIdentifier === myIdentifier);
+        if (lostConIndex !== -1) {
+            let lostCon = currentLobby.lostConnections[lostConIndex];
+            currentLobby.lostConnections.splice(lostConIndex, 1);
+            return lostCon;
+        }
+    }
+    return null;
+}
+
+function getLobby(lobbyCode: string): Lobby{
+    let currentLobby;
+    if(lobbys.has(lobbyCode)){
+        currentLobby = lobbys.get(lobbyCode)!;
+    }else{
+        currentLobby = {
+            connections: [],
+            lostConnections: [],
+            startTime: process.hrtime.bigint(),
+            nextGameStateTo: [],
+        }
+        lobbys.set(lobbyCode, currentLobby);
+        console.log("new lobby created, lobbyCounter:" + lobbys.size);
+    }
+    return currentLobby;
+}
 
 function onConnectionClose(connection: { clientId: number, con: any, randomIdentifier: string }, lobbyCode: string) {
     console.log(connection.clientId + " disconnected");

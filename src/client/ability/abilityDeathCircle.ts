@@ -2,7 +2,7 @@ import { getPlayerCharacters, characterTakeDamage } from "../character/character
 import { calculateDistance, getCameraPosition } from "../game.js";
 import { Game } from "../gameModel.js";
 import { GameMap } from "../map/map.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrder, UpgradeOptionAbility } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, UpgradeOptionAbility } from "./ability.js";
 
 export type AbilityDeathCircle = Ability & {
     damage: number,
@@ -84,7 +84,7 @@ function tickAbilityObjectDeathCircle(abilityObject: AbilityObject, game: Game) 
     }
 }
 
-function paintAbilityObjectDeathCircle(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrder, game: Game) {
+function paintAbilityObjectDeathCircle(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
     if(paintOrder === "beforeCharacterPaint"){
         let cameraPosition = getCameraPosition(game);
         let centerX = ctx.canvas.width / 2;

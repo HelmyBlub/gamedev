@@ -42,14 +42,14 @@ export function tickProjectile(abilityObject: AbilityObject, game: Game) {
     }
 }
 
+export function deleteProjectile(abilityObject: AbilityObject, game: Game): boolean {
+    let projectile = abilityObject as Projectile;
+    return projectile.deleteTime <= game.state.time || projectile.pierceCount < 0;
+}
+
 function moveProjectileTick(projectile: Projectile) {
     if (projectile.isMoving) {
         projectile.x += Math.cos(projectile.moveDirection) * projectile.moveSpeed;
         projectile.y += Math.sin(projectile.moveDirection) * projectile.moveSpeed;
     }
-}
-
-export function deleteProjectile(abilityObject: AbilityObject, game: Game): boolean {
-    let projectile = abilityObject as Projectile;
-    return projectile.deleteTime <= game.state.time || projectile.pierceCount < 0;
 }
