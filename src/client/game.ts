@@ -1,7 +1,7 @@
 import { countAlivePlayerCharacters, detectCharacterDeath, findCharacterById, findMyCharacter, getPlayerCharacters, tickCharacters, tickMapCharacters } from "./character/character.js";
 import { paintAll } from "./gamePaint.js";
 import { gameInitPlayers, getHighestLevelOfPlayers } from "./player.js";
-import { UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.js";
+import { ABILITY_ACTIONS, MOVE_ACTIONS, UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.js";
 import { Position, GameState, Game, IdCounter, TestingStuff, Debugging, PaintTextData } from "./gameModel.js";
 import { createMap, determineMapKeysInDistance, GameMap, getMapMidlePosition, removeAllMapCharacters } from "./map/map.js";
 import { Character } from "./character/characterModel.js";
@@ -36,7 +36,7 @@ export function getNextId(idCounter: IdCounter) {
 }
 
 export function gameRestart(game: Game) {
-    if (game.testing) {
+    if (game.testing.recordAndReplay) {
         setTestSeeds(game);
     }
     gameInit(game);
@@ -115,10 +115,10 @@ export function runner(game: Game) {
     takeTimeMeasure(game.debug, "", "runner");
     takeTimeMeasure(game.debug, "", "tick");
     if (game.multiplayer.websocket === null) {
-        if (game.testing && game.testing.frameSkipAmount && game.testing.frameSkipAmount > 0) {
-            for (let i = 0; i < game.testing.frameSkipAmount; i++) {
+        if (game.testing.recordAndReplay && game.testing.recordAndReplay.frameSkipAmount && game.testing.recordAndReplay.frameSkipAmount > 0) {
+            for (let i = 0; i < game.testing.recordAndReplay.frameSkipAmount; i++) {
                 tick(game.tickInterval, game);
-                if (i < game.testing.frameSkipAmount - 1) takeTimeMeasure(game.debug, "tick", "tick");
+                if (i < game.testing.recordAndReplay.frameSkipAmount - 1) takeTimeMeasure(game.debug, "tick", "tick");
             }
         } else {
             tick(game.tickInterval, game);
@@ -206,7 +206,7 @@ export function calculateDistancePointToLine(point: Position, linestart: Positio
 }
 
 function determineRunnerTimeout(game: Game): number {
-    if (game.testing?.zeroTimeout) {
+    if (game.testing.recordAndReplay?.zeroTimeout) {
         return 0;
     } else {
         if (game.multiplayer.websocket === null) {
@@ -241,10 +241,10 @@ function gameEndedCheck(game: Game) {
     return false;
 }
 
-function endGame(state: GameState, testing: TestingStuff | undefined) {
-    if (testing) {
-        if (testing.collectedTestInputs) console.log("testInputs", testing.collectedTestInputs);
-        console.log("time:", performance.now() - testing.startTime);
+function endGame(state: GameState, testing: TestingStuff) {
+    if (testing.recordAndReplay) {
+        if (testing.recordAndReplay.collectedTestInputs) console.log("testInputs", testing.recordAndReplay.collectedTestInputs);
+        console.log("time:", performance.now() - testing.recordAndReplay.startTime);
     }
     state.ended = true;
     let newScore: number = 0;
@@ -262,7 +262,7 @@ function endGame(state: GameState, testing: TestingStuff | undefined) {
 
 function tick(gameTimePassed: number, game: Game) {
     if (!game.state.ended) {
-        checkForStuff(game);
+        doStuff(game);
         addTestReplayInputs(game);
         game.state.time += gameTimePassed;
         generateMissingChunks(game.state.map, getPlayerCharacters(game.state.players), game.state.idCounter, game);
@@ -285,11 +285,40 @@ function tick(gameTimePassed: number, game: Game) {
     }
 }
 
-function checkForStuff(game: Game){
+function doStuff(game: Game){
     checkDeathCircleSpawn(game);
     checkForBossSpawn(game);
     checkMovementKeyPressedHint(game);
     checkForAutoSkill(game);
+    autoPlay(game);
+}
+
+function autoPlay(game: Game){
+    if(!game.testing || !game.testing.autoPlay  || !game.testing.autoPlay.activated) return;
+    if(game.testing.autoPlay.nextAutoButtonPressTime <= performance.now()){
+        game.testing.autoPlay.nextAutoButtonPressTime = performance.now() + 100;
+
+        if(Math.random() > 0.75){
+            let cameraPosition = getCameraPosition(game);
+            let castPosition: Position = {
+                x: Math.random() * 200 - 100 + cameraPosition.x,
+                y: Math.random() * 200 - 100 + cameraPosition.y
+            }
+            handleCommand(game, {
+                command: "playerInput",
+                clientId: game.multiplayer.myClientId,
+                data: { action: ABILITY_ACTIONS[0], isKeydown: true, castPosition: castPosition },
+            });
+
+        }else{
+            handleCommand(game, {
+                command: "playerInput",
+                clientId: game.multiplayer.myClientId,
+                data: { action: MOVE_ACTIONS[Math.floor(Math.random()*4)], isKeydown: Math.random() > 0.5 },
+            });        
+        }
+        
+    }
 }
 
 function checkForAutoSkill(game: Game){
@@ -326,19 +355,20 @@ function checkDeathCircleSpawn(game: Game){
 }
 
 function addTestReplayInputs(game: Game) {
-    if (game.testing && game.testing.replayPlayerInputs) {
-        if (game.testing.replayInputCounter === undefined) game.testing.replayInputCounter = 0;
-        while (game.testing.replayPlayerInputs[game.testing.replayInputCounter]
-            && game.testing.replayPlayerInputs[game.testing.replayInputCounter].executeTime < game.state.time + 1000
+    if (game.testing.recordAndReplay && game.testing.recordAndReplay.replayPlayerInputs) {
+        let recordAndReplay = game.testing.recordAndReplay;
+        if (recordAndReplay.replayInputCounter === undefined) recordAndReplay.replayInputCounter = 0;
+        while (recordAndReplay.replayPlayerInputs![recordAndReplay.replayInputCounter]
+            && recordAndReplay.replayPlayerInputs![recordAndReplay.replayInputCounter].executeTime < game.state.time + 1000
         ) {
-            let original = game.testing.replayPlayerInputs[game.testing.replayInputCounter]
+            let original = recordAndReplay.replayPlayerInputs![recordAndReplay.replayInputCounter]
             let data = { ...original };
             if (game.state.players.length === 1
                 || (data.clientId === -1 && game.state.players[0].clientId === game.multiplayer.myClientId)) {
                 data.clientId = game.multiplayer.myClientId;
             }
             handleCommand(game, data);
-            game.testing.replayInputCounter++;
+            recordAndReplay.replayInputCounter++;
         }
     }
 }
@@ -361,10 +391,10 @@ function setTestSeeds(game: Game) {
     game.state.randomSeed.seed = 0;
     game.state.map = createMap();
     game.state.map.seed = 0;
-    if (game.testing){
-        game.testing.collectedTestInputs = []
-        if(game.testing.restartPlayerInput) game.testing.collectedTestInputs.push(game.testing.restartPlayerInput);
-        if(game.testing.mapSeed !== undefined) game.state.map.seed = game.testing.mapSeed;
-        if(game.testing.randomStartSeed !== undefined) game.state.randomSeed.seed = game.testing.randomStartSeed;
+    if (game.testing.recordAndReplay){
+        game.testing.recordAndReplay.collectedTestInputs = []
+        if(game.testing.recordAndReplay.restartPlayerInput) game.testing.recordAndReplay.collectedTestInputs.push(game.testing.recordAndReplay.restartPlayerInput);
+        if(game.testing.recordAndReplay.mapSeed !== undefined) game.state.map.seed = game.testing.recordAndReplay.mapSeed;
+        if(game.testing.recordAndReplay.randomStartSeed !== undefined) game.state.randomSeed.seed = game.testing.recordAndReplay.randomStartSeed;
     };
 }

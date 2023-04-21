@@ -70,8 +70,8 @@ export function keyDown(event: KeyboardEvent, game: Game) {
                 testMapSeed: game.state.map.seed,
                 testRandomStartSeed: game.state.randomSeed.seed
             };
-            if (game.testing === undefined) game.testing = { startTime: 0 };
-            game.testing.restartPlayerInput = { ...commandRestart };
+            if (game.testing.recordAndReplay === undefined) game.testing.recordAndReplay = { startTime: 0 };
+            game.testing.recordAndReplay.restartPlayerInput = { ...commandRestart };
             handleCommand(game, commandRestart);
             break;
         case "KeyT":
@@ -82,8 +82,17 @@ export function keyDown(event: KeyboardEvent, game: Game) {
             break;
         case "Tab":
             game.UI.displayStats = true;
+            break;
         case "KeyG":
             game.settings.autoSkillEnabled = !game.settings.autoSkillEnabled;
+            break;
+        case "KeyH":
+            if(game.testing.autoPlay?.activated){
+                game.testing.autoPlay.activated = false;
+            }else{
+                game.testing.autoPlay = {activated:true, nextAutoButtonPressTime: 0};
+            }
+            break;
         default:
             break;
     }

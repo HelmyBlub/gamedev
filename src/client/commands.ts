@@ -38,6 +38,11 @@ export function handleCommand(game: Game, data: any) {
 
 export function executeCommand(game: Game, data: any) {
     const command = data.command;
+    if(game.multiplayer.awaitingGameState.waiting &&
+        (command !== "gameState" && command !== "sendGameState" && command !== "connectInfo")){
+        game.multiplayer.awaitingGameState.receivedCommands.push(data);
+    }
+
     switch (command) {
         case "restart":
             restart(game, data);
@@ -90,7 +95,7 @@ function connectInfo(game: Game, data: ConnectInfo){
     game.state.cliendInfos = [{id: data.clientId, name: data.clientName}];
     game.multiplayer.updateInterval = data.updateInterval;
     if(data.numberConnections === 0){
-        game.multiplayer.awaitingGameState = false;
+        game.multiplayer.awaitingGameState.waiting = false;
         game.state.players[0].clientId = data.clientId;
         game.clientKeyBindings[0].clientIdRef = data.clientId;
     }
@@ -102,7 +107,7 @@ function connectInfo(game: Game, data: ConnectInfo){
 
 function gameState(game: Game, data: GameState){
     if(!game.multiplayer.awaitingGameState) return;
-    game.multiplayer.awaitingGameState = false;
+    game.multiplayer.awaitingGameState.waiting = false;
     game.state = data;
     game.performance = {};
     for (let i = 0; i < game.state.cliendInfos.length; i++) {
@@ -114,30 +119,40 @@ function gameState(game: Game, data: GameState){
         }
     }
     findAndSetNewCameraCharacterId(game.camera, game.state.players, game.multiplayer.myClientId);
+    handleReceivedInputsWhichCameBeforeGameState(game);
+}
 
+function handleReceivedInputsWhichCameBeforeGameState(game: Game){
+    for(let i = 0; i< game.multiplayer.awaitingGameState.receivedCommands.length; i++){
+        let input = game.multiplayer.awaitingGameState.receivedCommands[i];
+        if(input.executeTime === undefined || input.executeTime > game.state.time){
+            executeCommand(game, input);
+        }
+    }
+    game.multiplayer.awaitingGameState.receivedCommands = [];
 }
 
 function restart(game: Game, data: CommandRestart) {
-    if (game.testing?.collectedTestInputs !== undefined) game.testing.collectedTestInputs.push(data);
+    if (game.testing.recordAndReplay?.collectedTestInputs !== undefined) game.testing.recordAndReplay.collectedTestInputs.push(data);
     game.state.playerInputs.push(data);
     game.state.triggerRestart = true;
     game.multiplayer.lastRestartReceiveTime = performance.now();
     game.multiplayer.cachePlayerInputs = [];
     if (data.testing) {
-        if (game.testing) {
-            game.testing.startTime = performance.now();
+        if (game.testing.recordAndReplay) {
+            game.testing.recordAndReplay.startTime = performance.now();
         } else {
-            game.testing = { startTime: performance.now() };
+            game.testing.recordAndReplay = { startTime: performance.now() };
         }
-        if(data.testMapSeed !== undefined) game.testing.mapSeed = data.testMapSeed;
-        if(data.testRandomStartSeed !== undefined) game.testing.randomStartSeed = data.testRandomStartSeed;
-    } else if (game.testing) {
-        delete game.testing;
+        if(data.testMapSeed !== undefined) game.testing.recordAndReplay.mapSeed = data.testMapSeed;
+        if(data.testRandomStartSeed !== undefined) game.testing.recordAndReplay.randomStartSeed = data.testRandomStartSeed;
+    } else if (game.testing.recordAndReplay) {
+        delete game.testing.recordAndReplay;
     }
 }
 
 function playerInput(game: Game, data: PlayerInput) {
-    if (game.testing?.collectedTestInputs !== undefined) game.testing.collectedTestInputs.push(data);
+    if (game.testing.recordAndReplay?.collectedTestInputs !== undefined) game.testing.recordAndReplay.collectedTestInputs.push(data);
     if (game.state.triggerRestart) {
         game.multiplayer.cachePlayerInputs!.push(data);
     } else {

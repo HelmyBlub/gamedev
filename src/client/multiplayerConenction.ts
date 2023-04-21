@@ -29,7 +29,7 @@ export function websocketConnect(game: Game, clientName: string = "Unknown", lob
         game.multiplayer.lastSendTime = [];
 
         game.multiplayer.websocket = socket;
-        game.multiplayer.awaitingGameState = true;
+        game.multiplayer.awaitingGameState.waiting = true;
     };
 
     socket.onmessage = async function (message: any) {
@@ -50,7 +50,7 @@ export function websocketConnect(game: Game, clientName: string = "Unknown", lob
         if(game.multiplayer.intentionalDisconnect){
             game.UI.displayTextData.push(createPaintTextData(textPosition1, `Multiplayer Disconnected`, "black", "24", game.state.time, 5000));
     
-            game.multiplayer.awaitingGameState = false;
+            game.multiplayer.awaitingGameState.waiting = false;
             game.multiplayer.websocket = null;
     
             let myClientId = game.multiplayer.myClientId;
@@ -70,7 +70,7 @@ export function websocketConnect(game: Game, clientName: string = "Unknown", lob
     };
 
     socket.onerror = function (error) {
-        game.multiplayer.awaitingGameState = false;
+        game.multiplayer.awaitingGameState.waiting = false;
         (document.getElementById('multiplayerConnect') as HTMLButtonElement).disabled = false;  
         console.log("weboscket error", error);
     };

@@ -19,16 +19,22 @@ export type IdCounter = {
 }
 
 export type TestingStuff = {
-    zeroTimeout?: boolean,
-    doNotPaint?: boolean,
-    frameSkipAmount?: number,
-    startTime: number,
-    collectedTestInputs?: Omit<PlayerInput, "executeTime">[],
-    replayPlayerInputs?: PlayerInput[],
-    replayInputCounter?: number,
-    mapSeed?: number,
-    randomStartSeed?: number,
-    restartPlayerInput?: Omit<CommandRestart, "executeTime">,
+    recordAndReplay?:{
+        zeroTimeout?: boolean,
+        doNotPaint?: boolean,
+        frameSkipAmount?: number,
+        startTime: number,
+        collectedTestInputs?: Omit<PlayerInput, "executeTime">[],
+        replayPlayerInputs?: PlayerInput[],
+        replayInputCounter?: number,
+        mapSeed?: number,
+        randomStartSeed?: number,
+        restartPlayerInput?: Omit<CommandRestart, "executeTime">,
+    }
+    autoPlay?: {
+        activated: boolean,
+        nextAutoButtonPressTime: number
+    },
 }
 
 export type Debugging = {
@@ -109,7 +115,10 @@ export type Multiplayer = {
     cachePlayerInputs?: PlayerInput[],
     connectMenuOpen: boolean,
     connectMenuListenerSet: boolean,
-    awaitingGameState: boolean,
+    awaitingGameState: {
+        waiting: boolean,
+        receivedCommands: any[],
+    },
     intentionalDisconnect: boolean,
     timePassedWithoutSeverUpdate: number,
 }
@@ -131,7 +140,7 @@ export type Game = {
         mapChunkPaintCache?: MapChunkPaintCache,
         pathingCache?: PathingCache,
     }
-    testing?: TestingStuff,
+    testing: TestingStuff,
     debug: Debugging,
     closeGame?: boolean,
     settings: {
@@ -196,7 +205,10 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             updateInterval: -1,
             connectMenuOpen: false,
             connectMenuListenerSet: false,
-            awaitingGameState: false,
+            awaitingGameState: {
+                waiting: false,
+                receivedCommands: [],
+            },
             intentionalDisconnect: false,
             timePassedWithoutSeverUpdate: 0,
         },
@@ -205,6 +217,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
         },
         mouseRelativeCanvasPosition: { x: 0, y: 0 },
         performance: {},
+        testing: {},
         debug: {
         },
         UI: {

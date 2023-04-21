@@ -5,7 +5,7 @@ import { paintBossCharacters } from "./character/enemy/bossEnemy.js";
 import { paintLevelingCharacterStatsUI } from "./character/levelingCharacters/levelingCharacter.js";
 import { LevelingCharacter } from "./character/levelingCharacters/levelingCharacterModel.js";
 import { calculateDistance, getCameraPosition } from "./game.js";
-import { Game, Position, Highscores, TestingStuff, Debugging, PaintTextData } from "./gameModel.js";
+import { Game, Position, Highscores, Debugging, PaintTextData } from "./gameModel.js";
 import { GAME_IMAGES, loadImage } from "./imageLoad.js";
 import { getMapMidlePosition } from "./map/map.js";
 import { paintMap, paintMapCharacters } from "./map/mapPaint.js";

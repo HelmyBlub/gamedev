@@ -1,10 +1,13 @@
 next tasks:
+    - bug: multiplayer not keeping sync on disconnect/reconnect
+        - reproduce bug
+            - auto player, randomly press buttons
+        - on multiplayer connect wait for gamestate before executing player inputs
+    - bug: improve "getChunksTouchingLine" to use width to acuratly determine hits on chunk borders
     - code clean up/ refactor
         - instead of try JSON.parse other way to see if bytecode?
         - tsignore fix with fflate
         - upgrade versions?
-    - bug: multiplayer not keeping sync on disconnect/reconnect
-    - bug: improve "getChunksTouchingLine" to use width to acuratly determine hits on chunk borders
 
     - plan for deploy
         - find some free site to deploy

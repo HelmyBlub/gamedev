@@ -1,5 +1,5 @@
 import { paintCharacters } from "../character/characterPaint.js";
-import { Debugging, Game, MapChunkPaintCache, Position, TestingStuff } from "../gameModel.js";
+import { Debugging, Game, MapChunkPaintCache, Position } from "../gameModel.js";
 import { GameMap, getTileIdForTileName, MapChunk, TILE_VALUES } from "./map.js";
 
 export type MapPaintLayer = "Layer1" | "Layer2";
