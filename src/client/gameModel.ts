@@ -31,8 +31,9 @@ export type TestingStuff = {
         randomStartSeed?: number,
         restartPlayerInput?: Omit<CommandRestart, "executeTime">,
     }
-    autoPlay?: {
-        activated: boolean,
+    autoPlay: {
+        hotkeyEnabled: boolean,
+        autoPlaying: boolean,
         nextAutoButtonPressTime: number
     },
 }
@@ -217,7 +218,13 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
         },
         mouseRelativeCanvasPosition: { x: 0, y: 0 },
         performance: {},
-        testing: {},
+        testing: {
+            autoPlay: {
+                autoPlaying: false,
+                hotkeyEnabled: false,
+                nextAutoButtonPressTime: 0,
+            }
+        },
         debug: {
         },
         UI: {

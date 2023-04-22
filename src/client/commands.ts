@@ -3,7 +3,7 @@ import { createPaintTextData, getCameraPosition } from "./game.js";
 import { Game, GameState } from "./gameModel.js";
 import { sendMultiplayer } from "./multiplayerConenction.js";
 import { createDefaultKeyBindings1 } from "./player.js";
-import { PlayerInput } from "./playerInput.js";
+import { PlayerInput, keyDown } from "./playerInput.js";
 import { compressString } from "./stringCompress.js";
 
 type Command = { command: string };
@@ -38,9 +38,10 @@ export function handleCommand(game: Game, data: any) {
 
 export function executeCommand(game: Game, data: any) {
     const command = data.command;
-    if(game.multiplayer.awaitingGameState.waiting &&
-        (command !== "gameState" && command !== "sendGameState" && command !== "connectInfo")){
+    if (game.multiplayer.awaitingGameState.waiting &&
+        (command !== "gameState" && command !== "sendGameState" && command !== "connectInfo")) {
         game.multiplayer.awaitingGameState.receivedCommands.push(data);
+        return;
     }
 
     switch (command) {
@@ -83,18 +84,18 @@ export function executeCommand(game: Game, data: any) {
     }
 }
 
-function playerJoined(game: Game, data: PlayerJoined){
-    game.state.cliendInfos.push({id: data.clientId, name:data.clientName});
+function playerJoined(game: Game, data: PlayerJoined) {
+    game.state.cliendInfos.push({ id: data.clientId, name: data.clientName });
     let textPosition = getCameraPosition(game);
     game.UI.displayTextData.push(createPaintTextData(textPosition, `${data.clientName} joined`, "black", "24", game.state.time, 5000));
 
 }
 
-function connectInfo(game: Game, data: ConnectInfo){
+function connectInfo(game: Game, data: ConnectInfo) {
     game.multiplayer.myClientId = data.clientId;
-    game.state.cliendInfos = [{id: data.clientId, name: data.clientName}];
+    game.state.cliendInfos = [{ id: data.clientId, name: data.clientName }];
     game.multiplayer.updateInterval = data.updateInterval;
-    if(data.numberConnections === 0){
+    if (data.numberConnections === 0) {
         game.multiplayer.awaitingGameState.waiting = false;
         game.state.players[0].clientId = data.clientId;
         game.clientKeyBindings[0].clientIdRef = data.clientId;
@@ -105,8 +106,8 @@ function connectInfo(game: Game, data: ConnectInfo){
     }
 }
 
-function gameState(game: Game, data: GameState){
-    if(!game.multiplayer.awaitingGameState) return;
+function gameState(game: Game, data: GameState) {
+    if (!game.multiplayer.awaitingGameState) return;
     game.multiplayer.awaitingGameState.waiting = false;
     game.state = data;
     game.performance = {};
@@ -122,12 +123,10 @@ function gameState(game: Game, data: GameState){
     handleReceivedInputsWhichCameBeforeGameState(game);
 }
 
-function handleReceivedInputsWhichCameBeforeGameState(game: Game){
-    for(let i = 0; i< game.multiplayer.awaitingGameState.receivedCommands.length; i++){
+function handleReceivedInputsWhichCameBeforeGameState(game: Game) {
+    for (let i = 0; i < game.multiplayer.awaitingGameState.receivedCommands.length; i++) {
         let input = game.multiplayer.awaitingGameState.receivedCommands[i];
-        if(input.executeTime === undefined || input.executeTime > game.state.time){
-            executeCommand(game, input);
-        }
+        executeCommand(game, input);
     }
     game.multiplayer.awaitingGameState.receivedCommands = [];
 }
@@ -144,8 +143,8 @@ function restart(game: Game, data: CommandRestart) {
         } else {
             game.testing.recordAndReplay = { startTime: performance.now() };
         }
-        if(data.testMapSeed !== undefined) game.testing.recordAndReplay.mapSeed = data.testMapSeed;
-        if(data.testRandomStartSeed !== undefined) game.testing.recordAndReplay.randomStartSeed = data.testRandomStartSeed;
+        if (data.testMapSeed !== undefined) game.testing.recordAndReplay.mapSeed = data.testMapSeed;
+        if (data.testRandomStartSeed !== undefined) game.testing.recordAndReplay.randomStartSeed = data.testRandomStartSeed;
     } else if (game.testing.recordAndReplay) {
         delete game.testing.recordAndReplay;
     }

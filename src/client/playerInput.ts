@@ -47,10 +47,10 @@ export function mouseUp(event: MouseEvent, game: Game) {
     playerInputChangeEvent(game, "Mouse" + event.button, false);
 }
 
-export function keyDown(event: KeyboardEvent, game: Game) {
+export function keyDown(event: { code: string, preventDefault?: Function, stopPropagation?: Function }, game: Game) {
     if (event.code !== "F12" && !game.multiplayer.connectMenuOpen) {
-        event.preventDefault();
-        event.stopPropagation();
+        if (event.preventDefault) event.preventDefault();
+        if (event.stopPropagation) event.stopPropagation();
     }
     if (game.multiplayer.connectMenuOpen) return;
 
@@ -87,10 +87,13 @@ export function keyDown(event: KeyboardEvent, game: Game) {
             game.settings.autoSkillEnabled = !game.settings.autoSkillEnabled;
             break;
         case "KeyH":
-            if(game.testing.autoPlay?.activated){
-                game.testing.autoPlay.activated = false;
-            }else{
-                game.testing.autoPlay = {activated:true, nextAutoButtonPressTime: 0};
+            if (game.testing.autoPlay.hotkeyEnabled) {
+                if (game.testing.autoPlay?.autoPlaying) {
+                    game.testing.autoPlay.autoPlaying = false;
+                } else {
+                    game.testing.autoPlay.autoPlaying = true;
+                    game.testing.autoPlay.nextAutoButtonPressTime = 0;
+                }
             }
             break;
         default:
@@ -101,7 +104,7 @@ export function keyDown(event: KeyboardEvent, game: Game) {
 function multiplayerConnectMenu(game: Game) {
     let multiplayer = game.multiplayer;
     if (multiplayer.websocket === null) {
-        (document.getElementById('multiplayerConnect') as HTMLButtonElement).disabled = false;        
+        (document.getElementById('multiplayerConnect') as HTMLButtonElement).disabled = false;
         document.getElementById('stringInput')?.classList.toggle('hide');
         multiplayer.connectMenuOpen = true;
         if (!multiplayer.connectMenuListenerSet) {
@@ -112,9 +115,9 @@ function multiplayerConnectMenu(game: Game) {
                 const clientName = nameInput.value;
                 const lobbyCodeElement = document.getElementById('lobbyCode') as HTMLInputElement;
                 const lobbyCode = lobbyCodeElement.value;
-                try{
+                try {
                     websocketConnect(game, clientName, lobbyCode);
-                }catch(e){
+                } catch (e) {
                     document.getElementById('stringInput')?.classList.toggle('hide');
                 }
             });
