@@ -1,10 +1,10 @@
 next tasks:
-    - bug: improve "getChunksTouchingLine" to use width to acuratly determine hits on chunk borders
     - code clean up/ refactor
         - instead of try JSON.parse other way to see if bytecode?
         - tsignore fix with fflate
         - upgrade versions?
 
+    - bug: improve "getChunksTouchingLine" to use width to acuratly determine hits on chunk borders
     - plan for deploy
         - find some free site to deploy
             - https://gist.github.com/bmaupin/d2d243218863320b01b0c1e1ca0cf5f3

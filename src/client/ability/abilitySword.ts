@@ -39,7 +39,7 @@ export function addSwordAbility() {
 }
 
 export function createAbilitySword(
-    damage: number = 100,
+    damage: number = 50,
     swordLength: number = 30,
     swordCount: number = 1,
     angleChangePerTick: number = 0.01,
@@ -54,13 +54,13 @@ export function createAbilitySword(
         currentSwordAngle: 0,
         angleChangePerSword: angleChangePerSword,
         passive: true,
-        tickInterval: 250,
+        tickInterval: 100,
     };
 }
 
 function setAbilitySwordToLevel(ability: Ability, level: number){
     let abilitySword = ability as AbilitySword;
-    abilitySword.damage = level * 100;
+    abilitySword.damage = level * 50;
     abilitySword.swordCount = level;
     abilitySword.swordLength = 30 + level * 10;
     abilitySword.angleChangePerTick = 0.01 * level;
@@ -69,10 +69,10 @@ function setAbilitySwordToLevel(ability: Ability, level: number){
 
 function setAbilitySwordToBossLevel(ability: Ability, level: number){
     let abilitySword = ability as AbilitySword;
-    abilitySword.damage = level * 50;
+    abilitySword.damage = level * 25;
     abilitySword.swordCount = level > 5 ? 2 : 1;
     abilitySword.swordLength = 30 + level * 25;
-    abilitySword.angleChangePerTick = 0.01 * level;
+    abilitySword.angleChangePerTick = 0.01 + 0.005 * level;
     abilitySword.angleChangePerSword = Math.PI * 2 / abilitySword.swordCount;
 }
 
@@ -195,9 +195,9 @@ function tickAbilitySword(abilityOwner: AbilityOwner, ability: Ability, game: Ga
 function createAbilitySwordUpgradeOptions(): UpgradeOptionAbility[] {
     let upgradeOptions: UpgradeOptionAbility[] = [];
     upgradeOptions.push({
-        name: "Damage+100", probabilityFactor: 1, upgrade: (a: Ability) => {
+        name: "Damage+50", probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilitySword;
-            as.damage += 100;
+            as.damage += 50;
         }
     });
     upgradeOptions.push({
