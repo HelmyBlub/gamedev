@@ -10,12 +10,16 @@ https://helmys-game.onrender.com/
 3. install browser. I use google chrome
 4. install node.js and npm:
     - linux:
-        1. `sudo apt update`
-        2. `sudo apt install nodejs npm`
+        - easy but old versions?
+            1. `sudo apt update`
+            2. `sudo apt install nodejs npm`
+        - other
+            1. download lts: https://nodejs.org/en
+            2. install steps: https://github.com/nodejs/help/wiki/Installation
     
 5. clone repo
     - `git clone https://github.com/HelmyBlub/gamedev.git`
-6. npm install
+6. install code dependencies
     - in command line, be in the path where you check out the git repo
     - `npm install`
 
@@ -26,3 +30,9 @@ https://helmys-game.onrender.com/
 add outside access:
 - `npm run online`
 - creates an url which other can use to connect to your local environment
+- it is free but has bad performance
+
+# Docker
+- build and run in docker container
+    1. `docker build -t helmys-game .`
+    2. `docker run -p 3000:3000 helmys-game`

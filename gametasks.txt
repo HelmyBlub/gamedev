@@ -1,8 +1,9 @@
 next tasks:
+    - upgrade versions?
+
     - code clean up/ refactor
         - instead of try JSON.parse other way to see if bytecode?
         - tsignore fix with fflate
-        - upgrade versions?
 
     - bug: improve "getChunksTouchingLine" to use width to acuratly determine hits on chunk borders
     - plan for deploy
