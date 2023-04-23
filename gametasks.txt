@@ -1,4 +1,5 @@
 next tasks:
+- bug: line hit detection does not hit all enemies?
 - new LevelingAbilityCharacter, alternative to LevelingCharacter
     - abilities get XP, e.g. when ability kills?
     - utility skill get XP by beeing used?

@@ -1,16 +1,17 @@
 import { addAbilityToCharacter } from "../../ability/ability.js";
-import { createAbilityFireCircle } from "../../ability/abilityFireCircle.js";
-import { IdCounter, LEVELING_CHARACTER_CLASSES } from "../../gameModel.js";
+import { createAbilityHpRegen } from "../../ability/abilityHpRegen.js";
+import { createAbilityTower } from "../../ability/abilityTower.js";
+import { IdCounter, PLAYER_CHARACTER_CLASSES } from "../../gameModel.js";
 import { RandomSeed } from "../../randomNumberGenerator.js";
 import { createLevelingCharacter, LevelingCharacter } from "./levelingCharacterModel.js";
 
-export function addCasterClass() {
-    LEVELING_CHARACTER_CLASSES["Caster"] = {
-        createLevelingCharacter: createCasterCharacter
+export function addTowerClass() {
+    PLAYER_CHARACTER_CLASSES["Tower"] = {
+        createPlayerCharacter: createTowerCharacter
     }
 }
 
-function createCasterCharacter(
+function createTowerCharacter(
     idCounter: IdCounter,
     x: number,
     y: number,
@@ -24,6 +25,7 @@ function createCasterCharacter(
     seed: RandomSeed,
 ): LevelingCharacter {
     let character = createLevelingCharacter(idCounter, x, y, width, height, color, moveSpeed, hp, damage, faction, seed);
-    addAbilityToCharacter(character, createAbilityFireCircle("ability1"));
+    addAbilityToCharacter(character, createAbilityTower("ability1"));
+    addAbilityToCharacter(character, createAbilityHpRegen());
     return character;
 }

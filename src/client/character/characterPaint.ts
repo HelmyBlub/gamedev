@@ -3,7 +3,7 @@ import { Game, Position } from "../gameModel.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
 import { randomizedCharacterImageToKey } from "../randomizedCharacterImage.js";
 import { Character } from "./characterModel.js";
-import { LevelingCharacter } from "./levelingCharacters/levelingCharacterModel.js";
+import { LevelingCharacter } from "./playerCharacters/levelingCharacterModel.js";
 
 export function paintCharacters(ctx: CanvasRenderingContext2D, characters: Character[], cameraPosition: Position, game: Game) {
     for (let i = 0; i < characters.length; i++) {

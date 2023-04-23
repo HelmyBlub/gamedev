@@ -3,7 +3,8 @@ import { IdCounter } from "../../gameModel.js";
 import { GAME_IMAGES } from "../../imageLoad.js";
 import { createRandomizedCharacterImageData } from "../../randomizedCharacterImage.js";
 import { RandomSeed } from "../../randomNumberGenerator.js";
-import { Character, createCharacter } from "../characterModel.js";
+import { Character, CHARACTER_TYPE_FUNCTIONS, createCharacter } from "../characterModel.js";
+import { tickLevelingCharacter } from "./levelingCharacter.js";
 
 export type LevelingCharacter = Character & {
     experience: number,
@@ -16,31 +17,13 @@ export type LevelingCharacter = Character & {
     }[],
 }
 
-export type LevelingCharacterClass = {
-    createLevelingCharacter: (
-        idCounter: IdCounter,
-        x: number,
-        y: number,
-        width: number,
-        height: number,
-        color: string,
-        moveSpeed: number,
-        hp: number,
-        damage: number,
-        faction: string,
-        seed: RandomSeed,
-    ) => LevelingCharacter
-}
-
-export type LevelingCharacterClasses = {
-    [key: string]: LevelingCharacterClass,
-}
-
 export type UpgradeOptionLevelingCharacter = {
     name: string,
     probabilityFactor: number,
     upgrade: (levelingCharacter: LevelingCharacter) => void,
 }
+
+const LEVELING_CHARACTER = "levelingCharacter";
 
 export function createLevelingCharacter(
     idCounter: IdCounter,
@@ -55,7 +38,7 @@ export function createLevelingCharacter(
     faction: string,
     seed: RandomSeed
 ): LevelingCharacter {
-    let character = createCharacter(getNextId(idCounter), x, y, width, height, color, moveSpeed, hp, damage, faction, "levelingCharacter", 1);
+    let character = createCharacter(getNextId(idCounter), x, y, width, height, color, moveSpeed, hp, damage, faction, LEVELING_CHARACTER, 1);
     return {
         ...character,
         randomizedCharacterImage: createRandomizedCharacterImageData(GAME_IMAGES["player"], seed),
@@ -66,4 +49,10 @@ export function createLevelingCharacter(
         upgradeOptions: [],
         isPet: false,
     };
+}
+
+export function addLevelingCharacter(){
+    CHARACTER_TYPE_FUNCTIONS[LEVELING_CHARACTER] = {
+        tickFunction: tickLevelingCharacter
+    }
 }

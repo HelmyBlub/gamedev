@@ -15,6 +15,7 @@ import { addHpRegenAbility } from "./abilityHpRegen.js"
 import { addMeleeAbility } from "./abilityMelee.js"
 import { addIceAbility } from "./abilityIceAura.js"
 import { addSingleTargetAbility } from "./abilitySingleTarget.js"
+import { addSnipeAbility } from "./abilitySnipe.js"
 
 export type Ability = {
     name: string,
@@ -84,6 +85,7 @@ export function onDomLoadSetAbilitiesFunctions() {
     addMeleeAbility();
     addIceAbility();
     addSingleTargetAbility();
+    addSnipeAbility();
 }
 
 export function addAbilityToCharacter(character: Character, ability: Ability) {

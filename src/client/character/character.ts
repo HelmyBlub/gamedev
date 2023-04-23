@@ -1,13 +1,13 @@
-import { levelingCharacterXpGain } from "./levelingCharacters/levelingCharacter.js";
+import { levelingCharacterXpGain } from "./playerCharacters/levelingCharacter.js";
 import { determineMapKeysInDistance, GameMap, getChunksTouchingLine, isPositionBlocking, MapChunk } from "../map/map.js";
-import { Character, CHARACTER_TYPES_STUFF, ENEMY_FACTION } from "./characterModel.js";
+import { Character, CHARACTER_TYPE_FUNCTIONS, ENEMY_FACTION } from "./characterModel.js";
 import { getNextWaypoint, getPathingCache, PathingCache } from "./pathing.js";
 import { calculateDirection, calculateDistance, calculateDistancePointToLine, createPaintTextData, takeTimeMeasure } from "../game.js";
 import { Position, Game, GameState, IdCounter, Camera, PaintTextData } from "../gameModel.js";
 import { findPlayerById, Player } from "../player.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS } from "../ability/ability.js";
-import { LevelingCharacter } from "./levelingCharacters/levelingCharacterModel.js";
+import { LevelingCharacter } from "./playerCharacters/levelingCharacterModel.js";
 import { BossEnemyCharacter, CHARACTER_TYPE_BOSS_ENEMY } from "./enemy/bossEnemy.js";
 import { tickCharacterDebuffs } from "../debuff/debuff.js";
 import { createAbilityLeash } from "../ability/abilityLeash.js";
@@ -59,7 +59,7 @@ export function tickMapCharacters(map: GameMap, game: Game) {
 
 export function tickCharacters(characters: Character[], game: Game, pathingCache: PathingCache | null = null) {
     for (let j = characters.length - 1; j >= 0; j--) {
-        CHARACTER_TYPES_STUFF[characters[j].type].tickFunction(characters[j], game, pathingCache);
+        CHARACTER_TYPE_FUNCTIONS[characters[j].type].tickFunction(characters[j], game, pathingCache);
         if (!characters[j].isDead) {
             for (let ability of characters[j].abilities) {
                 ABILITIES_FUNCTIONS[ability.name].tickAbility(characters[j], ability, game);
@@ -134,9 +134,8 @@ export function determineCharactersInDistance(position: Position, map: GameMap, 
     return result;
 }
 
-export function getCharactersTouchingLine(game: Game, lineStart: Position, lineEnd: Position): Character[] {
+export function getCharactersTouchingLine(game: Game, lineStart: Position, lineEnd: Position, lineWidth: number = 3): Character[] {
     let chunks: MapChunk[] = getChunksTouchingLine(game.state.map, lineStart, lineEnd);
-    let lineWidth = 3;
     let charactersTouchingLine: Character[] = [];
     for (let chunk of chunks) {
         for (let char of chunk.characters) {

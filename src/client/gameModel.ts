@@ -1,7 +1,7 @@
 import { AbilityObject } from "./ability/ability.js";
 import { Character } from "./character/characterModel.js";
-import { LevelingCharacterClasses } from "./character/levelingCharacters/levelingCharacterModel.js";
 import { PathingCache } from "./character/pathing.js";
+import { PlayerCharacterClasses } from "./character/playerCharacters/playerCharacters.js";
 import { CommandRestart } from "./commands.js";
 import { createMap, GameMap } from "./map/map.js";
 import { generateMissingChunks } from "./map/mapGeneration.js";
@@ -157,7 +157,7 @@ export type Game = {
     }
 }
 
-export const LEVELING_CHARACTER_CLASSES: LevelingCharacterClasses = {};
+export const PLAYER_CHARACTER_CLASSES: PlayerCharacterClasses = {};
 
 export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: CanvasRenderingContext2D | undefined): Game {
     let game: Game = {

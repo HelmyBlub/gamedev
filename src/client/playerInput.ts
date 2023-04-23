@@ -1,8 +1,8 @@
 import { CommandRestart, handleCommand } from "./commands.js";
-import { upgradeLevelingCharacter } from "./character/levelingCharacters/levelingCharacter.js";
+import { upgradeLevelingCharacter } from "./character/playerCharacters/levelingCharacter.js";
 import { findPlayerById } from "./player.js";
 import { Character } from "./character/characterModel.js";
-import { LevelingCharacter } from "./character/levelingCharacters/levelingCharacterModel.js";
+import { LevelingCharacter } from "./character/playerCharacters/levelingCharacterModel.js";
 import { Game, Position } from "./gameModel.js";
 import { testGame } from "./test/gameTest.js";
 import { websocketConnect } from "./multiplayerConenction.js";

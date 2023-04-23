@@ -2,8 +2,8 @@ import { ABILITIES_FUNCTIONS, paintAbilityObjects, paintUiForAbilities } from ".
 import { getPlayerCharacters } from "./character/character.js";
 import { paintCharacters } from "./character/characterPaint.js";
 import { paintBossCharacters } from "./character/enemy/bossEnemy.js";
-import { paintLevelingCharacterStatsUI } from "./character/levelingCharacters/levelingCharacter.js";
-import { LevelingCharacter } from "./character/levelingCharacters/levelingCharacterModel.js";
+import { paintLevelingCharacterStatsUI } from "./character/playerCharacters/levelingCharacter.js";
+import { LevelingCharacter } from "./character/playerCharacters/levelingCharacterModel.js";
 import { calculateDistance, getCameraPosition } from "./game.js";
 import { Game, Position, Highscores, Debugging, PaintTextData } from "./gameModel.js";
 import { GAME_IMAGES, loadImage } from "./imageLoad.js";

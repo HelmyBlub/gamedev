@@ -12,7 +12,7 @@ import { tickAbilityObjects } from "./ability/ability.js";
 import { garbageCollectPathingCache } from "./character/pathing.js";
 import { createObjectDeathCircle } from "./ability/abilityDeathCircle.js";
 import { checkForBossSpawn, tickBossCharacters } from "./character/enemy/bossEnemy.js";
-import { LevelingCharacter } from "./character/levelingCharacters/levelingCharacterModel.js";
+import { LevelingCharacter } from "./character/playerCharacters/levelingCharacterModel.js";
 import { autoPlay } from "./test/autoPlay.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {

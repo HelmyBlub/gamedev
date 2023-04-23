@@ -1,6 +1,8 @@
 import { onDomLoadSetAbilitiesFunctions } from "./ability/ability.js";
-import { addSwordClass } from "./character/levelingCharacters/swordCharacterClass.js";
-import { addTowerClass } from "./character/levelingCharacters/towerCharacterClass.js";
+import { onDomLoadSetCharacterClasses } from "./character/playerCharacters/playerCharacters.js";
+import { addSniperClass } from "./character/playerCharacters/sniperCharacter.js";
+import { addSwordClass } from "./character/playerCharacters/swordCharacterClass.js";
+import { addTowerClass } from "./character/playerCharacters/towerCharacterClass.js";
 import { onDomLoadSetDebuffsFunctions } from "./debuff/debuff.js";
 import { gameRestart, runner, setRelativeMousePosition } from "./game.js";
 import { createDefaultGameData, Game } from "./gameModel.js";
@@ -50,10 +52,7 @@ export function createGame(canvasElementId: string | undefined, forTesting: bool
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-    //addShooterClass();
-    //addSwordClass();
-    //addCasterClass();
-    addTowerClass();
+    onDomLoadSetCharacterClasses();
     onDomLoadSetAbilitiesFunctions();
     onDomLoadSetDebuffsFunctions();
 

@@ -1,14 +1,14 @@
 import { Ability } from "../ability/ability.js";
-import { Debuff } from "../debuff/debuff";
-import { Position, IdCounter, LEVELING_CHARACTER_CLASSES } from "../gameModel.js";
+import { Debuff } from "../debuff/debuff.js";
+import { Position, IdCounter, PLAYER_CHARACTER_CLASSES } from "../gameModel.js";
 import { GAME_IMAGES } from "../imageLoad.js";
 import { RandomizedCharacterImage } from "../randomizedCharacterImage.js";
 import { RandomSeed } from "../randomNumberGenerator.js";
 import { tickFixPositionRespawnEnemyCharacter } from "./enemy/fixPositionRespawnEnemy.js";
 import { tickRandomSpawnFollowingEnemyCharacter } from "./enemy/randomSpawnFollowingEnemy.js";
-import { tickLevelingCharacter } from "./levelingCharacters/levelingCharacter.js";
+import { tickLevelingCharacter } from "./playerCharacters/levelingCharacter.js";
 
-export type CHARACTER_TYPES_STUFF = {
+export type CHARACTER_TYPE_FUNCTIONS = {
     [key: string]: {
         tickFunction: Function,
     }
@@ -60,16 +60,13 @@ GAME_IMAGES["player"] = {
 
 export const PLAYER_FACTION = "player";
 export const ENEMY_FACTION = "enemy";
-export const CHARACTER_TYPES_STUFF: CHARACTER_TYPES_STUFF = {
+export const CHARACTER_TYPE_FUNCTIONS: CHARACTER_TYPE_FUNCTIONS = {
     fixPositionRespawnEnemy: {
         tickFunction: tickFixPositionRespawnEnemyCharacter
     },
     randomSpawnFollowingEnemy: {
         tickFunction: tickRandomSpawnFollowingEnemyCharacter
     },
-    levelingCharacter: {
-        tickFunction: tickLevelingCharacter
-    }
 }
 
 export type Character = Position & {
@@ -133,7 +130,7 @@ export function createCharacter(
 }
 
 export function createPlayerCharacter(idCounter: IdCounter, pos: Position, seed: RandomSeed, characterClass: string): Character {
-    let playerCharacter = LEVELING_CHARACTER_CLASSES[characterClass].createLevelingCharacter(idCounter, pos.x, pos.y, 20, 40, "blue", 2, 200, 10, PLAYER_FACTION, seed);
+    let playerCharacter = PLAYER_CHARACTER_CLASSES[characterClass].createPlayerCharacter(idCounter, pos.x, pos.y, 20, 40, "blue", 2, 200, 10, PLAYER_FACTION, seed);
     playerCharacter.willTurnToPetOnDeath = true;
     playerCharacter.isPet = false;
     return playerCharacter;
