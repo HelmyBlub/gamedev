@@ -1,4 +1,4 @@
-import { getPlayerCharacters, moveCharacterTick } from "../character.js";
+import { getPlayerCharacters, moveCharacterTick, turnCharacterToPet } from "../character.js";
 import { Game, GameState } from "../../gameModel.js";
 import { nextRandom, RandomSeed } from "../../randomNumberGenerator.js";
 import { Character } from "../characterModel.js";
@@ -124,30 +124,8 @@ export function paintLevelingCharacterStatsUI(ctx: CanvasRenderingContext2D, cha
 
 export function tickLevelingCharacter(character: LevelingCharacter, game: Game) {
     if (character.isDead) {
-        character.isDead = false;
-        character.hp = character.maxHp;
-        if (character.isPet) {
-            console.log("character already a pet, should not happen");
-            debugger;
-        } else {
-            character.isPet = true;
-            let newPlayerOwnerId: number | undefined = undefined;
-            let possibleOwnerCharacters: LevelingCharacter[] = [];
-            for (let player of game.state.players) {
-                let characterIter: LevelingCharacter = player.character as LevelingCharacter;
-                if (!characterIter.isPet && !characterIter.isDead) {
-                    possibleOwnerCharacters.push(characterIter);
-                }
-            }
-            if (possibleOwnerCharacters.length > 0) {
-                let randomOwnerIndex = Math.floor(nextRandom(game.state.randomSeed) * possibleOwnerCharacters.length);
-                newPlayerOwnerId = possibleOwnerCharacters[randomOwnerIndex].id;
-                character.x = possibleOwnerCharacters[randomOwnerIndex].x;
-                character.y = possibleOwnerCharacters[randomOwnerIndex].y;
-            }
-
-            character.abilities.push(createAbilityLeash(100, newPlayerOwnerId));
-        }
+        if(!character.willTurnToPetOnDeath) return;
+        turnCharacterToPet(character, game);
     }
     moveCharacterTick(character, game.state.map, game.state.idCounter, true);
 }

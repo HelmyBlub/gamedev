@@ -91,6 +91,8 @@ export type Character = Position & {
     debuffs: Debuff[],
     wasHitRecently?: boolean,
     randomizedCharacterImage?: RandomizedCharacterImage,
+    isPet?: boolean,
+    willTurnToPetOnDeath?: boolean,
 }
 
 
@@ -131,5 +133,8 @@ export function createCharacter(
 }
 
 export function createPlayerCharacter(idCounter: IdCounter, pos: Position, seed: RandomSeed, characterClass: string): Character {
-    return LEVELING_CHARACTER_CLASSES[characterClass].createLevelingCharacter(idCounter, pos.x, pos.y, 20, 40, "blue", 2, 200, 10, PLAYER_FACTION, seed);
+    let playerCharacter = LEVELING_CHARACTER_CLASSES[characterClass].createLevelingCharacter(idCounter, pos.x, pos.y, 20, 40, "blue", 2, 200, 10, PLAYER_FACTION, seed);
+    playerCharacter.willTurnToPetOnDeath = true;
+    playerCharacter.isPet = false;
+    return playerCharacter;
 }

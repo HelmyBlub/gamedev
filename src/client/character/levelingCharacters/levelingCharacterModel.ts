@@ -10,7 +10,6 @@ export type LevelingCharacter = Character & {
     experienceForLevelUp: number,
     level: number,
     availableSkillPoints: number,
-    isPet: boolean,
     upgradeOptions: {
         abilityName?: string,
         name: string,

@@ -1,4 +1,5 @@
 import { onDomLoadSetAbilitiesFunctions } from "./ability/ability.js";
+import { addSwordClass } from "./character/levelingCharacters/swordCharacterClass.js";
 import { addTowerClass } from "./character/levelingCharacters/towerCharacterClass.js";
 import { onDomLoadSetDebuffsFunctions } from "./debuff/debuff.js";
 import { gameRestart, runner, setRelativeMousePosition } from "./game.js";

@@ -10,6 +10,7 @@ import { ABILITIES_FUNCTIONS } from "../ability/ability.js";
 import { LevelingCharacter } from "./levelingCharacters/levelingCharacterModel.js";
 import { BossEnemyCharacter, CHARACTER_TYPE_BOSS_ENEMY } from "./enemy/bossEnemy.js";
 import { tickCharacterDebuffs } from "../debuff/debuff.js";
+import { createAbilityLeash } from "../ability/abilityLeash.js";
 
 export function findCharacterById(characters: Character[], id: number): Character | null {
     for (let i = 0; i < characters.length; i++) {
@@ -32,10 +33,8 @@ export function findCharacterByIdAroundPosition(position: Position, range: numbe
 
 export function characterTakeDamage(character: Character, damage: number, game: Game | undefined) {
     if (character.isDead) return;
-    if (character.type === "levelingCharacter") {
-        let levelingCharacter = character as LevelingCharacter;
-        if (levelingCharacter.isPet) return;
-    }
+    if (character.isPet) return;
+
     character.hp -= damage;
     if (game && game.UI.displayDamageNumbers) {
         let textPos = { x: character.x, y: character.y - character.height / 2 };
@@ -240,10 +239,7 @@ export function countAlivePlayerCharacters(players: Player[]) {
     let counter = 0;
     for (let i = players.length - 1; i >= 0; i--) {
         if (!players[i].character.isDead) {
-            if (players[i].character.type === "levelingCharacter") {
-                let levelingCharacter = players[i].character as LevelingCharacter;
-                if (levelingCharacter.isPet) continue;
-            }
+            if (players[i].character.isPet) continue;
             counter++;
         }
     }
@@ -271,6 +267,33 @@ export function determineEnemyMoveDirection(enemy: Character, closestPlayerPosit
         return;
     }
     enemy.moveDirection = calculateDirection(enemy, nextWayPoint);
+}
+
+export function turnCharacterToPet(character: Character, game: Game){
+    character.isDead = false;
+    character.hp = character.maxHp;
+    if (character.isPet) {
+        console.log("character already a pet, should not happen");
+        debugger;
+    } else {
+        character.isPet = true;
+        let newPlayerOwnerId: number | undefined = undefined;
+        let possibleOwnerCharacters: LevelingCharacter[] = [];
+        for (let player of game.state.players) {
+            let characterIter: LevelingCharacter = player.character as LevelingCharacter;
+            if (!characterIter.isPet && !characterIter.isDead) {
+                possibleOwnerCharacters.push(characterIter);
+            }
+        }
+        if (possibleOwnerCharacters.length > 0) {
+            let randomOwnerIndex = Math.floor(nextRandom(game.state.randomSeed) * possibleOwnerCharacters.length);
+            newPlayerOwnerId = possibleOwnerCharacters[randomOwnerIndex].id;
+            character.x = possibleOwnerCharacters[randomOwnerIndex].x;
+            character.y = possibleOwnerCharacters[randomOwnerIndex].y;
+        }
+
+        character.abilities.push(createAbilityLeash(100, newPlayerOwnerId));
+    }    
 }
 
 export function moveCharacterTick(character: Character, map: GameMap, idCounter: IdCounter, isPlayer: boolean) {

@@ -12,6 +12,7 @@ export function paintCharacters(ctx: CanvasRenderingContext2D, characters: Chara
 }
 
 export function paintCharacterHpBar(ctx: CanvasRenderingContext2D, character: Character, topLeftPaint: Position) {
+    if(character.isPet) return;
     const fillAmount = Math.max(0, character.hp / character.maxHp);
     const bossWidth = character.width;
     const hpBarHeight = 6;
@@ -71,7 +72,7 @@ function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cam
                     if (animationY === 3) animationY = 2;
                 }
                 let heightFactor = 1;
-                if ((character as LevelingCharacter).isPet) heightFactor = 0.5;
+                if (character.isPet) heightFactor = 0.5;
                 let characterPaintX = Math.floor(paintX - character.width / 2);
                 let characterPaintY = Math.floor(paintY - character.height / 2 * heightFactor); 
                 ctx.drawImage(
