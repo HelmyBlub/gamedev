@@ -11,7 +11,7 @@ export function websocketConnect(game: Game, clientName: string = "Unknown", lob
     url += "?clientName=" + clientName;
     url += "&myGameTime=" + game.state.time;
     if(lobbyCode.length > 0) url += "&lobbyCode=" + lobbyCode;
-    let lastIdentifier = localStorage.getItem('multiplayerIdentifier');
+    let lastIdentifier = getMyClientIdentifier(game);
     if (lastIdentifier) {
         console.log("multiplayer Last Identifier", lastIdentifier);
         url += "&myId=" + lastIdentifier;
@@ -81,6 +81,14 @@ export function sendMultiplayer(data: any, game: Game) {
         game.multiplayer.lastSendTime.push(performance.now());
     }
     game.multiplayer.websocket!.send(JSON.stringify(data));
+}
+
+function getMyClientIdentifier(game: Game): string | null{
+    if(game.multiplayer.multiplayerIdentifier !== undefined){
+        return game.multiplayer.multiplayerIdentifier;
+    }else{
+        return localStorage.getItem('multiplayerIdentifier')
+    }
 }
 
 function determineDelay(messageObj: PlayerInput, game: Game) {

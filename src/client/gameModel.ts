@@ -120,6 +120,7 @@ export type Multiplayer = {
         waiting: boolean,
         receivedCommands: any[],
     },
+    multiplayerIdentifier?: string,
     intentionalDisconnect: boolean,
     timePassedWithoutSeverUpdate: number,
 }

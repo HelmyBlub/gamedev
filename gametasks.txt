@@ -1,9 +1,5 @@
 next tasks:
-    - upgrade versions?
-
-    - code clean up/ refactor
-        - instead of try JSON.parse other way to see if bytecode?
-        - tsignore fix with fflate
+    - game client identifier first from game state than from localStorage?
 
     - bug: improve "getChunksTouchingLine" to use width to acuratly determine hits on chunk borders
     - plan for deploy
@@ -44,6 +40,10 @@ ideas for next tasks:
 
 
 technical tasks or bugs:
+    - code clean up/ refactor
+        - instead of try JSON.parse other way to see if bytecode?
+        - tsignore fix with fflate
+            - bundler like webpack?
     - character.size changed to width and height. but hit calculation still only uses width
     - find uses of "any" type and try to remove
     - upgrade versions

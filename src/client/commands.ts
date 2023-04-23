@@ -102,6 +102,7 @@ function connectInfo(game: Game, data: ConnectInfo) {
     }
     if (data.randomIdentifier) {
         console.log("myIdentifier", data.randomIdentifier);
+        game.multiplayer.multiplayerIdentifier = data.randomIdentifier;
         localStorage.setItem('multiplayerIdentifier', data.randomIdentifier);
     }
 }
