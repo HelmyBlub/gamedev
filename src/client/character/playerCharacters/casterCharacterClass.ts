@@ -24,6 +24,6 @@ function createCasterCharacter(
     seed: RandomSeed,
 ): LevelingCharacter {
     let character = createLevelingCharacter(idCounter, x, y, width, height, color, moveSpeed, hp, damage, faction, seed);
-    addAbilityToCharacter(character, createAbilityFireCircle("ability1"));
+    addAbilityToCharacter(character, createAbilityFireCircle(idCounter, "ability1"));
     return character;
 }

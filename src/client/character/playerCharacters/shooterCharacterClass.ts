@@ -24,6 +24,6 @@ function createShooterCharacter(
     seed: RandomSeed,
 ): LevelingCharacter {
     let character = createLevelingCharacter(idCounter, x, y, width, height, color, moveSpeed, hp, damage, faction, seed);
-    addAbilityToCharacter(character, createAbilityShoot());
+    addAbilityToCharacter(character, createAbilityShoot(idCounter));
     return character;
 }

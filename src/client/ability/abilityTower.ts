@@ -43,6 +43,7 @@ export function addTowerAbility() {
 }
 
 export function createAbilityTower(
+    idCounter: IdCounter,
     playerInputBinding?: string,
     damage: number = 50,
 ): AbilityTower {
@@ -56,6 +57,7 @@ export function createAbilityTower(
     }
 
     return {
+        id: getNextId(idCounter),
         name: ABILITY_NAME_TOWER,
         damage: damage,
         passive: false,
@@ -101,7 +103,7 @@ function castTower(abilityOwner: AbilityOwner, ability: Ability, castPosition: P
     }
 
     let nextAbilityKey = abilityTower.availableAbilityKeys[abilityTower.orderOfAbilities[abilityTower.currentAbilityIndex]];
-    let nextAbility: Ability = ABILITIES_FUNCTIONS[nextAbilityKey].createAbility();
+    let nextAbility: Ability = ABILITIES_FUNCTIONS[nextAbilityKey].createAbility(game.state.idCounter);
     if (!nextAbility.passive) nextAbility.passive = true;
     abilityTower.currentAbilityIndex = (abilityTower.currentAbilityIndex + 1) % abilityTower.orderOfAbilities.length;
     let newTower: AbilityObjectTower = createAbilityObjectTower(game.state.idCounter, abilityOwner.id, abilityOwner.faction, castPosition, nextAbility, abilityTower.damage);

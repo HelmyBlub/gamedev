@@ -1,6 +1,6 @@
 import { findCharacterById, getPlayerCharacters } from "../character/character.js";
-import { calculateDirection, calculateDistance } from "../game.js";
-import { Position, Game } from "../gameModel.js";
+import { calculateDirection, calculateDistance, getNextId } from "../game.js";
+import { Position, Game, IdCounter } from "../gameModel.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, UpgradeOptionAbility } from "./ability.js";
 
 type AbilityLeash = Ability & {
@@ -22,10 +22,12 @@ export function addLeshAbility() {
 }
 
 export function createAbilityLeash(
+    idCounter: IdCounter,
     leashMaxLength: number = 150,
     leashedToOwnerId: number | undefined = undefined,
 ): AbilityLeash {
     return {
+        id: getNextId(idCounter),
         name: ABILITY_NAME_LEASH,
         leashMaxLength: leashMaxLength,
         leashedToOwnerId: leashedToOwnerId,

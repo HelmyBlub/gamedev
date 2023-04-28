@@ -1,4 +1,5 @@
-import { Game } from "../gameModel.js";
+import { getNextId } from "../game.js";
+import { Game, IdCounter } from "../gameModel.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, UpgradeOptionAbility } from "./ability.js";
 
 type AbilityHpRegen = Ability & {
@@ -20,8 +21,9 @@ export function addHpRegenAbility() {
     };
 }
 
-export function createAbilityHpRegen(): AbilityHpRegen {
+export function createAbilityHpRegen(idCounter: IdCounter): AbilityHpRegen {
     return {
+        id: getNextId(idCounter),
         name: ABILITY_NAME_HP_REGEN,
         amount: 1,
         tickInterval: 500,

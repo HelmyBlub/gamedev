@@ -3,6 +3,7 @@ import { Game, Position } from "../gameModel.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
 import { randomizedCharacterImageToKey } from "../randomizedCharacterImage.js";
 import { Character } from "./characterModel.js";
+import { ABILITY_LEVELING_CHARACTER } from "./playerCharacters/abilityLevelingCharacter.js";
 import { LevelingCharacter } from "./playerCharacters/levelingCharacterModel.js";
 
 export function paintCharacters(ctx: CanvasRenderingContext2D, characters: Character[], cameraPosition: Position, game: Game) {
@@ -36,7 +37,7 @@ function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cam
         || paintY < -character.height || paintY > ctx.canvas.height) return;
 
     let characterImageId = "slime";
-    if (character.type === "levelingCharacter") characterImageId = "player";
+    if (character.type === "levelingCharacter" || character.type === ABILITY_LEVELING_CHARACTER) characterImageId = "player";
     let characterImage = GAME_IMAGES[characterImageId];
     if (characterImage) {
         if (characterImage.imagePath !== undefined) {

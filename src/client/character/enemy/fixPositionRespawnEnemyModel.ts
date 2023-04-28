@@ -50,7 +50,7 @@ export function createEnemyWithLevel(idCounter: IdCounter, enemyPos: Position, l
 
 
     let enemy = createEnemy(idCounter, enemyPos.x, enemyPos.y, size, moveSpeed, hp, damage, color, autoAggroRange, alertEnemyRange, respawnTime, experienceWorth);
-    enemy.abilities.push(createAbilityMelee(2 + level * 2));
+    enemy.abilities.push(createAbilityMelee(idCounter, 2 + level * 2));
     return enemy;
 }
 

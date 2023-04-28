@@ -1,5 +1,5 @@
-import { calculateDirection, calculateDistance, getCameraPosition } from "../game.js";
-import { Game, Position } from "../gameModel.js";
+import { calculateDirection, calculateDistance, getCameraPosition, getNextId } from "../game.js";
+import { Game, IdCounter, Position } from "../gameModel.js";
 import { nextRandom } from "../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectAbilityObjectToCharacterHit, PaintOrderAbility, UpgradeOptionAbility } from "./ability.js";
 
@@ -50,6 +50,7 @@ export function addFireCircleAbility() {
 }
 
 export function createAbilityFireCircle(
+    idCounter: IdCounter,
     playerInputBinding?: string,
     objectDuration: number = 2000,
     damage: number = 10,
@@ -58,6 +59,7 @@ export function createAbilityFireCircle(
     maxCharges: number = 3
 ): AbilityFireCircle {
     return {
+        id: getNextId(idCounter),
         name: ABILITY_NAME_FIRE_CIRCLE,
         objectDuration: objectDuration,
         damage: damage,

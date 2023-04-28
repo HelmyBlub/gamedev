@@ -25,7 +25,9 @@ function createSniperCharacter(
     seed: RandomSeed,
 ): AbilityLevelingCharacter {
     let character = createAbilityLevelingCharacter(idCounter, x, y, width, height, color, moveSpeed, hp, damage, faction, seed);
-    addAbilityToCharacter(character, createAbilitySnipe("ability1"));
-    addAbilityToCharacter(character, createAbilityHpRegen());
+    let snipe = createAbilitySnipe(idCounter, "ability1");
+    snipe.leveling = {experience: 0, experienceForLevelUp: 10, level: 1};
+    addAbilityToCharacter(character, snipe);
+    addAbilityToCharacter(character, createAbilityHpRegen(idCounter));
     return character;
 }

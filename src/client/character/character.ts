@@ -166,7 +166,7 @@ export function countCharacters(map: GameMap): number {
     return counter;
 }
 
-export function detectCharacterDeath(map: GameMap, state: GameState, camera: Camera, game: Game) {
+export function detectCharacterDeath(map: GameMap, state: GameState, game: Game) {
     takeTimeMeasure(game.debug, "", "detectCharacterDeath");
     for (let i = 0; i < map.activeChunkKeys.length; i++) {
         let chunk = map.chunks[map.activeChunkKeys[i]];
@@ -291,7 +291,7 @@ export function turnCharacterToPet(character: Character, game: Game){
             character.y = possibleOwnerCharacters[randomOwnerIndex].y;
         }
 
-        character.abilities.push(createAbilityLeash(100, newPlayerOwnerId));
+        character.abilities.push(createAbilityLeash(game.state.idCounter, 100, newPlayerOwnerId));
     }    
 }
 

@@ -276,7 +276,7 @@ function tick(gameTimePassed: number, game: Game) {
         takeTimeMeasure(game.debug, "playerTick", "");
 
         tickAbilityObjects(game.state.abilityObjects, game);
-        detectCharacterDeath(game.state.map, game.state, game.camera, game);
+        detectCharacterDeath(game.state.map, game.state, game);
 
         if (gameEndedCheck(game)) endGame(game.state, game.testing);
         if (game.state.restartAfterTick) gameRestart(game);

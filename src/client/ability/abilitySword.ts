@@ -1,7 +1,7 @@
 import { determineCharactersInDistance, characterTakeDamage } from "../character/character.js";
 import { BossEnemyCharacter } from "../character/enemy/bossEnemy.js";
-import { calculateDirection, calculateDistance } from "../game.js";
-import { Position, Game } from "../gameModel.js";
+import { calculateDirection, calculateDistance, getNextId } from "../game.js";
+import { Position, Game, IdCounter } from "../gameModel.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
 import { GameMap } from "../map/map.js";
 import { Player } from "../player.js";
@@ -39,6 +39,7 @@ export function addSwordAbility() {
 }
 
 export function createAbilitySword(
+    idCounter: IdCounter,
     damage: number = 50,
     swordLength: number = 30,
     swordCount: number = 1,
@@ -46,6 +47,7 @@ export function createAbilitySword(
     angleChangePerSword: number = 1
 ): AbilitySword {
     return {
+        id: getNextId(idCounter),
         name: ABILITY_NAME,
         damage: damage,
         swordLength: swordLength,

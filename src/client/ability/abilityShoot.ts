@@ -1,7 +1,8 @@
-import { Game } from "../gameModel.js";
+import { Game, IdCounter } from "../gameModel.js";
 import { Projectile, createProjectile, tickProjectile, deleteProjectile } from "./projectile.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, UpgradeOptionAbility } from "./ability.js";
+import { getNextId } from "../game.js";
 
 const ABILITY_NAME_SHOOT = "Shoot";
 export type AbilityShoot = Ability & {
@@ -34,6 +35,7 @@ export function addShootAbility(){
 }
 
 export function createAbilityShoot(
+    idCounter: IdCounter,
     baseFrequency: number = 500,
     frequencyIncrease: number = 1,
     damage: number = 50,
@@ -44,6 +46,7 @@ export function createAbilityShoot(
     bulletSize: number = 5,
 ): AbilityShoot {
     return {
+        id: getNextId(idCounter),
         name: ABILITY_NAME_SHOOT,
         baseFrequency: baseFrequency,
         frequencyIncrease: frequencyIncrease,

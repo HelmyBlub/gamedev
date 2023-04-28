@@ -1,6 +1,7 @@
 import { characterTakeDamage, determineCharactersInDistance, determineClosestCharacter, findCharacterByIdAroundPosition } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
-import { Position, Game } from "../gameModel.js";
+import { getNextId } from "../game.js";
+import { Position, Game, IdCounter } from "../gameModel.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, UpgradeOptionAbility } from "./ability.js";
 
 type AbilitySingleTarget = Ability & {
@@ -28,10 +29,12 @@ export function addSingleTargetAbility() {
 }
 
 export function createAbilitySingleTarget(
+    idCounter: IdCounter,
     damage: number = 50,
     maxRange: number = 100
 ): AbilitySingleTarget {
     return {
+        id: getNextId(idCounter),
         name: ABILITY_NAME_SINGLETARGET,
         damage: damage,
         maxRange: maxRange,

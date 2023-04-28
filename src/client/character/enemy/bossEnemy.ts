@@ -96,13 +96,13 @@ function createBossAbilities(level: number, game: Game): Ability[]{
         }
         let key: any = possibleAbilityKeys[randomAbilityChoice];
         let abilityFunctions = ABILITIES_FUNCTIONS[key];
-        let ability = abilityFunctions.createAbility();
+        let ability = abilityFunctions.createAbility(game.state.idCounter);
         setAbilityToBossLevel(ability, level);
         if(!abilityFunctions.isPassive) ability.passive = true;
         abilities.push(ability);
     }
 
-    let abilityMelee = createAbilityMelee();
+    let abilityMelee = createAbilityMelee(game.state.idCounter);
     setAbilityToBossLevel(abilityMelee, level);
     abilities.push(abilityMelee);
 

@@ -1,7 +1,8 @@
 import { Character } from "../character/characterModel.js";
 import { applyDebuff } from "../debuff/debuff.js";
 import { createDebuffSlow } from "../debuff/debuffSlow.js";
-import { Position, Game } from "../gameModel.js";
+import { getNextId } from "../game.js";
+import { Position, Game, IdCounter } from "../gameModel.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, UpgradeOptionAbility, detectSomethingToCharacterHit } from "./ability.js";
 
 type AbilityIce = Ability & {
@@ -27,11 +28,13 @@ export function addIceAbility() {
 }
 
 export function createAbilityIce(
+    idCounter: IdCounter,
     damage: number = 50,
     radius: number = 30,
     slowFactor: number = 1.5
 ): AbilityIce {
     return {
+        id: getNextId(idCounter),
         name: ABILITY_NAME_ICE,
         damage: damage,
         radius: radius,

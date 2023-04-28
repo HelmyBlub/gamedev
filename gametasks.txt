@@ -1,5 +1,4 @@
-next tasks:
-- bug: line hit detection does not hit all enemies?
+current tasks:
 - new LevelingAbilityCharacter, alternative to LevelingCharacter
     - abilities get XP, e.g. when ability kills?
     - utility skill get XP by beeing used?
@@ -7,6 +6,9 @@ next tasks:
 
     - snipe ability
         - straight line damage on click?
+
+    - boss and deathCircle depnent on player level, change to something different? time?
+    - getChunksTouchingLine2 does not work, still needs to improve
 
 
 

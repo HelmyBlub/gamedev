@@ -2,8 +2,7 @@ import { characterTakeDamage, getCharactersTouchingLine } from "../character/cha
 import { Character } from "../character/characterModel.js";
 import { calculateDirection, getCameraPosition, getNextId } from "../game.js";
 import { Position, Game, IdCounter } from "../gameModel.js";
-import { moveByDirectionAndDistance } from "../map/map.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, UpgradeOptionAbility } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, UpgradeOptionAbility, findAbilityById, levelingAbilityXpGain } from "./ability.js";
 
 type AbilityObjectSnipe = AbilityObject & {
     damage: number,
@@ -38,20 +37,23 @@ export function addSnipeAbility() {
         createAbility: createAbilitySnipe,
         deleteAbilityObject: deleteAbilityObjectSnipe,
         paintAbilityStatsUI: paintAbilitySnipeStatsUI,
+        setAbilityToLevel: setAbilitySnipeToLevel,
         isPassive: false,
         notInheritable: true,
     };
 }
 
 export function createAbilitySnipe(
+    idCounter: IdCounter,
     playerInputBinding?: string,
     damage: number = 50,
-    range: number = 1000,
+    range: number = 800,
     size: number = 5,
-    rechargeTime: number = 1000,
-    maxCharges: number = 3    
+    rechargeTime: number = 500,
+    maxCharges: number = 3
 ): AbilitySnipe {
     return {
+        id: getNextId(idCounter),
         name: ABILITY_NAME_SNIPE,
         damage: damage,
         passive: false,
@@ -67,7 +69,7 @@ export function createAbilitySnipe(
     };
 }
 
-function createAbilityObjectSnipe(abilityOwner: AbilityOwner, abilitySnipe: AbilitySnipe, direction: number, gameTime: number ): AbilityObjectSnipe {
+function createAbilityObjectSnipe(abilityOwner: AbilityOwner, abilitySnipe: AbilitySnipe, direction: number, gameTime: number): AbilityObjectSnipe {
     return {
         type: ABILITY_NAME_SNIPE,
         size: abilitySnipe.size,
@@ -79,8 +81,18 @@ function createAbilityObjectSnipe(abilityOwner: AbilityOwner, abilitySnipe: Abil
         direction: direction,
         range: abilitySnipe.range,
         damageDone: false,
-        deleteTime:  gameTime + abilitySnipe.paintFadeDuration,     
+        deleteTime: gameTime + abilitySnipe.paintFadeDuration,
+        leveling: abilitySnipe.leveling ? true : undefined,
+        abilityRefId: abilitySnipe.id,
     }
+}
+
+function setAbilitySnipeToLevel(ability: Ability, level: number) {
+    let abilitySnipe = ability as AbilitySnipe;
+    abilitySnipe.damage = level * 100;
+    abilitySnipe.maxCharges = 2 + level;
+    abilitySnipe.range = 800 + level * 50;
+    abilitySnipe.rechargeTimeDecreaseFaktor = 1 + level * 0.15;
 }
 
 function deleteAbilityObjectSnipe(abilityObject: AbilityObject, game: Game) {
@@ -98,7 +110,7 @@ function castSnipe(abilityOwner: AbilityOwner, ability: Ability, castPosition: P
         if (abilitySnipe.currentCharges === abilitySnipe.maxCharges) {
             abilitySnipe.nextRechargeTime = game.state.time + abilitySnipe.baseRechargeTime / abilitySnipe.rechargeTimeDecreaseFaktor;
         }
-        abilitySnipe.currentCharges--;    
+        abilitySnipe.currentCharges--;
     }
 }
 
@@ -122,11 +134,11 @@ function paintAbilityObjectSnipe(ctx: CanvasRenderingContext2D, abilityObject: A
     paintX = Math.floor(endPos.x - cameraPosition.x + centerX);
     paintY = Math.floor(endPos.y - cameraPosition.y + centerY);
     ctx.lineTo(paintX, paintY);
-    ctx.stroke();    
+    ctx.stroke();
     ctx.globalAlpha = 1;
 }
 
-function calcAbilityObjectSnipeEndPosition(snipe: AbilityObjectSnipe): Position{
+function calcAbilityObjectSnipeEndPosition(snipe: AbilityObjectSnipe): Position {
     return {
         x: snipe.x + Math.cos(snipe.direction) * snipe.range,
         y: snipe.y + Math.sin(snipe.direction) * snipe.range,
@@ -136,6 +148,35 @@ function calcAbilityObjectSnipeEndPosition(snipe: AbilityObjectSnipe): Position{
 
 function paintAbilitySnipeUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
     let snipe = ability as AbilitySnipe;
+    let fontSize = size;
+    let rectSize = size;
+    ctx.strokeStyle = "black";
+    ctx.fillStyle = "white";
+    ctx.fillRect(drawStartX, drawStartY, rectSize, rectSize);
+    ctx.beginPath();
+    ctx.rect(drawStartX, drawStartY, rectSize, rectSize);
+    ctx.stroke();
+    if (snipe.currentCharges < snipe.maxCharges) {
+        ctx.fillStyle = "gray";
+        let heightFactor = (snipe.nextRechargeTime - game.state.time) / (snipe.baseRechargeTime / snipe.rechargeTimeDecreaseFaktor);
+        ctx.fillRect(drawStartX, drawStartY, rectSize, rectSize * heightFactor);
+    }
+
+    ctx.fillStyle = "black";
+    ctx.font = fontSize + "px Arial";
+    ctx.fillText("" + snipe.currentCharges, drawStartX, drawStartY + rectSize - (rectSize - fontSize * 0.9));
+
+    if (snipe.playerInputBinding) {
+        let keyBind = "";
+        game.clientKeyBindings[0].keyCodeToActionPressed.forEach((value, key) => {
+            if (value.action === snipe.playerInputBinding) {
+                keyBind = value.uiDisplayInputValue;
+            }
+        });
+        ctx.fillStyle = "black";
+        ctx.font = "10px Arial";
+        ctx.fillText(keyBind, drawStartX + 1, drawStartY + 8);
+    }
 }
 
 function paintAbilitySnipeStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
@@ -172,23 +213,31 @@ function tickAbilitySnipe(abilityOwner: AbilityOwner, ability: Ability, game: Ga
         if (game.state.time >= abilitySnipe.nextRechargeTime) {
             abilitySnipe.currentCharges++;
             abilitySnipe.nextRechargeTime += abilitySnipe.baseRechargeTime / abilitySnipe.rechargeTimeDecreaseFaktor;
-            if(abilitySnipe.nextRechargeTime <= game.state.time){
+            if (abilitySnipe.nextRechargeTime <= game.state.time) {
                 abilitySnipe.nextRechargeTime = game.state.time + abilitySnipe.baseRechargeTime / abilitySnipe.rechargeTimeDecreaseFaktor;
-            }    
+            }
         }
     }
-
 }
 
 function tickAbilityObjectSnipe(abilityObject: AbilityObject, game: Game) {
     let abilitySnipe = abilityObject as AbilityObjectSnipe;
-    if(!abilitySnipe.damageDone){
+    if (!abilitySnipe.damageDone) {
         const endPos = calcAbilityObjectSnipeEndPosition(abilitySnipe);
         let characters: Character[] = getCharactersTouchingLine(game, abilitySnipe, endPos, abilitySnipe.size);
         for (let char of characters) {
             characterTakeDamage(char, abilitySnipe.damage, game);
+            if (char.hp <= 0) {
+                //TODO should be dead, not hp < 0
+                if (abilityObject.leveling && abilityObject.abilityRefId !== undefined) {
+                    let ability = findAbilityById(abilityObject.abilityRefId, game);
+                    if (ability) {
+                        levelingAbilityXpGain(ability, char.experienceWorth);
+                    }
+                }
+            }
         }
-    
+
         abilitySnipe.damageDone = true;
     }
 }

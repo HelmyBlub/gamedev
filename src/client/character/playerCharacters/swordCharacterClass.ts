@@ -24,6 +24,6 @@ function createSwordCharacter(
     seed: RandomSeed,
 ): LevelingCharacter {
     let character = createLevelingCharacter(idCounter, x, y, width, height, color, moveSpeed, hp, damage, faction, seed);
-    addAbilityToCharacter(character, createAbilitySword());
+    addAbilityToCharacter(character, createAbilitySword(idCounter));
     return character;
 }

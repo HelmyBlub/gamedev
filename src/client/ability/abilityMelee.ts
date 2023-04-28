@@ -1,5 +1,6 @@
 import { characterTakeDamage, determineClosestCharacter, getPlayerCharacters } from "../character/character.js";
-import { Game } from "../gameModel.js";
+import { getNextId } from "../game.js";
+import { Game, IdCounter } from "../gameModel.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, UpgradeOptionAbility } from "./ability.js";
 
 type AbilityMelee = Ability & {
@@ -22,9 +23,11 @@ export function addMeleeAbility() {
 }
 
 export function createAbilityMelee(
+    idCounter: IdCounter,
     damage: number = 100,
 ): AbilityMelee {
     return {
+        id: getNextId(idCounter),
         name: ABILITY_NAME_MELEE,
         damage: damage,
         passive: true,
