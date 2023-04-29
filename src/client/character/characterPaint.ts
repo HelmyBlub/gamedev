@@ -26,6 +26,22 @@ export function paintCharacterHpBar(ctx: CanvasRenderingContext2D, character: Ch
     ctx.stroke();
 }
 
+export function paintCharacterStatsUI(ctx: CanvasRenderingContext2D, character: Character, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
+    const width = 200;
+    const height = 200;
+    const fontSize = 14;
+
+    ctx.fillStyle = "white";
+    ctx.fillRect(drawStartX, drawStartY, width, height);
+    ctx.font = fontSize + "px Arial";
+    ctx.fillStyle = "black";
+    let textLineCounter = 1;
+    ctx.fillText("Character Stats:", drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
+    ctx.fillText(`HP: ${character.hp.toFixed(0)}/${character.maxHp.toFixed(0)}`, drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
+    ctx.fillText("Movement Speed:" + character.moveSpeed.toFixed(2), drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
+
+    return { width, height };
+}
 
 function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
     if (character.isDead) return;

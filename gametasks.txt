@@ -1,84 +1,11 @@
 current tasks:
-- new LevelingAbilityCharacter, alternative to LevelingCharacter
-    - abilities get XP, e.g. when ability kills?
-    - utility skill get XP by beeing used?
+- LevelingAbilityCharacter
     - boss kills give special upgrade choices
 
-    - snipe ability
-        - straight line damage on click?
-
-    - boss and deathCircle depnent on player level, change to something different? time?
-    - getChunksTouchingLine2 does not work, still needs to improve
+    - utility skill get XP by beeing used?
+- enemy death does happen not on damage taken, why?
 
 
 
-
-ideas for next tasks:
-    - too much skillpoints
-        - either autoskill option?
-        - less skillpoints but stronger choices?
-    - see other player stats
-    - create a complex/fun/chaotic class or improve on one?
-        - tower class:
-            - add more tower abilities
-            - more upgrade variations
-            - randomize tower starting abilities, if more than 3 exist
-    - gameplay changing upgrades
-        - special upgrade option after boss kill
-        - only first upgrade options are special
-            - choose tower abilities? only 3 different by default
-        - 
-        - build your character at the start?
-            - random at the start?
-
-
-technical tasks or bugs:
-    - code clean up/ refactor
-        - instead of try JSON.parse other way to see if bytecode?
-        - tsignore fix with fflate
-            - bundler like webpack?
-    - character.size changed to width and height. but hit calculation still only uses width
-    - find uses of "any" type and try to remove
-    - upgrade versions
-    - use same code files for backend and frontend
-        - understand require vs import in backend vs frontend
-    - Perforamnce bug: pulling many enemies far away from spawn and than outranging them, they will move back to their own spawn and create a lot of lag
-    - mutlipalyer:
-        - automated inputs for multiple clients
-
-future functional tasks:
-    - if an enemy is aggroed in an inactive chunk, it should be active
-    - map tiles:
-        - destroyable tiles
-            - destroy trees to gather wood
-    - improve enemies?
-        - sprites/ images
-        - less enemies but some behaviour patterns?
-        - can use abilities?
-    - playerCharacters
-        - different playstyles
-        - more different upgradeOptions
-        - sprites/images for player
-    - procedural map generation
-        - add more map features for orientation like a path
-        - unity example https://gamedevacademy.org/procedural-2d-maps-unity-tutorial/
-    - multiplayer 
-        - gamesync
-            - need real users to compare how it behaves
-    - every one controlls their own character
-        - currently has to wait on gamerestart, could make it to be in on join
-
-    - make the game look descent as soon as it fun
-    - deployment pipeline to a real server
-    - projectiles hitting same enemy every tick
-    - enemy animation, currenlty all move in sync
-    - if enemy hp low than color changes or fill amount changes?
-
-future technical tasks:
-- multiplayer test speedup should also work
-- Bug: infinte pathing problem if enemy surounded by blocking tiles, currently only solved thorugh a max counter
-- multiplayer connection delay with localtunnel is too bad, try other options?
-- https/ssl websocket
-    - https://www.nginx.com/blog/websocket-nginx/, where goes the config?
-
-
+possible future tasks: (only keep 5)
+1. improvement: getChunksTouchingLine2 does not work, still needs to improve

@@ -65,9 +65,8 @@ export function paintBossCharacters(ctx: CanvasRenderingContext2D, cameraPositio
 
 export function checkForBossSpawn(game: Game) {
     let bossStuff = game.state.bossStuff;
-    let highestLevel = getHighestLevelOfPlayers(game.state.players);
-    let nextBossSpawnOnLevel = bossStuff.bossEachXLevels * bossStuff.bossLevelCounter;
-    if (highestLevel >= nextBossSpawnOnLevel) {
+    let nextBossSpawnTime = bossStuff.bossSpawnEachXMilliSecond * bossStuff.bossLevelCounter;
+    if (game.state.time >= nextBossSpawnTime) {
         bossStuff.bosses.push(createBossWithLevel(game.state.idCounter, bossStuff.bossLevelCounter, game));
         bossStuff.bossLevelCounter++;
     }

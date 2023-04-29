@@ -32,6 +32,6 @@ export function onDomLoadSetCharacterClasses() {
     //addShooterClass();
     //addSwordClass();
     //addCasterClass();
-    //addSniperClass();
+    addSniperClass();
     addTowerClass();
 }

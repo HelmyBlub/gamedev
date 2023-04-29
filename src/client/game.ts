@@ -319,8 +319,8 @@ function checkMovementKeyPressedHint(game: Game) {
 
 function checkDeathCircleSpawn(game: Game) {
     if (!game.state.deathCircleCreated) {
-        let highestLevel = getHighestLevelOfPlayers(game.state.players);
-        if (highestLevel >= 10) {
+        let spawnAfterTime = game.state.time > 30000;
+        if (spawnAfterTime) {
             game.state.abilityObjects.push(createObjectDeathCircle(game.state.map));
             game.state.deathCircleCreated = true;
         }

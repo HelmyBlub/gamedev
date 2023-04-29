@@ -6,7 +6,6 @@ import { RandomizedCharacterImage } from "../randomizedCharacterImage.js";
 import { RandomSeed } from "../randomNumberGenerator.js";
 import { tickFixPositionRespawnEnemyCharacter } from "./enemy/fixPositionRespawnEnemy.js";
 import { tickRandomSpawnFollowingEnemyCharacter } from "./enemy/randomSpawnFollowingEnemy.js";
-import { tickLevelingCharacter } from "./playerCharacters/levelingCharacter.js";
 
 export type CHARACTER_TYPE_FUNCTIONS = {
     [key: string]: {
@@ -22,6 +21,12 @@ export type CharacterImage = {
     imageRef?: HTMLImageElement,
     canvas?: HTMLCanvasElement,
     colorToSprite?: string[];
+}
+
+export type UpgradeOptionCharacter = {
+    name: string,
+    probabilityFactor: number,
+    upgrade: (levelingCharacter: Character) => void,
 }
 
 export type CharacterImageLoadProperties = {
@@ -90,8 +95,12 @@ export type Character = Position & {
     randomizedCharacterImage?: RandomizedCharacterImage,
     isPet?: boolean,
     willTurnToPetOnDeath?: boolean,
+    upgradeOptions: {
+        abilityName?: string,
+        name: string,
+        boss?: boolean,
+    }[],
 }
-
 
 export function createCharacter(
     id: number,
@@ -126,6 +135,7 @@ export function createCharacter(
         isDead: false,
         abilities: [],
         debuffs: [],
+        upgradeOptions: [],
     };
 }
 

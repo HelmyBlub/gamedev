@@ -1,5 +1,6 @@
-import { characterTakeDamage, getCharactersTouchingLine } from "../character/character.js";
+import { characterTakeDamage, fillRandomUpgradeOptions, getCharactersTouchingLine } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
+import { CHARACTER_TYPE_BOSS_ENEMY } from "../character/enemy/bossEnemy.js";
 import { calculateDirection, getCameraPosition, getNextId } from "../game.js";
 import { Position, Game, IdCounter } from "../gameModel.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, UpgradeOptionAbility, findAbilityById, levelingAbilityXpGain } from "./ability.js";
@@ -181,9 +182,7 @@ function paintAbilitySnipeUI(ctx: CanvasRenderingContext2D, ability: Ability, dr
 
 function paintAbilitySnipeStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
     let abilitySnipe = ability as AbilitySnipe;
-    const abilitySnipeDescription = ["Click to place Snipe. Snipe always connects to closest other Snipe."];
-    abilitySnipeDescription.push("More connections equals more damage. Snipes have random");
-    abilitySnipeDescription.push("Abilities. Abilities get more powerfull per connection");
+    const abilitySnipeDescription = ["Snipe in direction of click. Enemies hit by line take damage"];
     const fontSize = 14;
     const width = 425;
     const height = 200;
@@ -200,6 +199,12 @@ function paintAbilitySnipeStatsUI(ctx: CanvasRenderingContext2D, ability: Abilit
     textLineCounter++;
     ctx.fillText("Ability stats: ", drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
     ctx.fillText("Damage: " + abilitySnipe.damage, drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
+    ctx.fillText("Range: " + abilitySnipe.range, drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
+    if(abilitySnipe.leveling){
+        ctx.fillText("Level: " + abilitySnipe.leveling.level, drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
+        ctx.fillText("Current XP: " + abilitySnipe.leveling.experience.toFixed(0), drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
+        ctx.fillText("XP required for Level Up: " + abilitySnipe.leveling.experienceForLevelUp, drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
+    }
 
     return { width, height };
 }
@@ -233,6 +238,9 @@ function tickAbilityObjectSnipe(abilityObject: AbilityObject, game: Game) {
                     let ability = findAbilityById(abilityObject.abilityRefId, game);
                     if (ability) {
                         levelingAbilityXpGain(ability, char.experienceWorth);
+                    }
+                    if(char.type === CHARACTER_TYPE_BOSS_ENEMY){
+//                        fillRandomUpgradeOptions();
                     }
                 }
             }

@@ -26,6 +26,7 @@ export type Ability = {
         level: number,
         experience: number,
         experienceForLevelUp: number,
+        boosSkillPoints: number,
     }
 }
 export type PaintOrderAbility = "beforeCharacterPaint" | "afterCharacterPaint";

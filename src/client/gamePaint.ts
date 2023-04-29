@@ -1,9 +1,9 @@
 import { ABILITIES_FUNCTIONS, paintAbilityObjects, paintUiForAbilities } from "./ability/ability.js";
 import { getPlayerCharacters } from "./character/character.js";
-import { paintCharacters } from "./character/characterPaint.js";
+import { Character } from "./character/characterModel.js";
+import { paintCharacterStatsUI, paintCharacters } from "./character/characterPaint.js";
 import { paintBossCharacters } from "./character/enemy/bossEnemy.js";
-import { paintLevelingCharacterStatsUI } from "./character/playerCharacters/levelingCharacter.js";
-import { LevelingCharacter } from "./character/playerCharacters/levelingCharacterModel.js";
+import { LEVELING_CHARACTER, LevelingCharacter } from "./character/playerCharacters/levelingCharacterModel.js";
 import { calculateDistance, getCameraPosition } from "./game.js";
 import { Game, Position, Highscores, Debugging, PaintTextData } from "./gameModel.js";
 import { GAME_IMAGES, loadImage } from "./imageLoad.js";
@@ -218,14 +218,17 @@ function paintKillCounter(ctx: CanvasRenderingContext2D, killCounter: number, ga
     ctx.fillText("Kills: " + killCounter, 10, 20);
 }
 
-function paintPlayerStats(ctx: CanvasRenderingContext2D, character: LevelingCharacter, gameTime: number, game: Game) {
+function paintPlayerStats(ctx: CanvasRenderingContext2D, character: Character, gameTime: number, game: Game) {
     let distance = Math.round(calculateDistance(character, getMapMidlePosition(game.state.map)));
     ctx.fillStyle = "black";
     ctx.font = "18px Arial";
 
-    ctx.fillText("Level: " + character.level
-        + "  SkillPoints:" + character.availableSkillPoints,
-        200, 20);
+    if(character.type === LEVELING_CHARACTER){
+        const levelingCharacter = character as LevelingCharacter;
+        ctx.fillText("Level: " + levelingCharacter.level
+            + "  SkillPoints:" + levelingCharacter.availableSkillPoints,
+            200, 20);
+    }
     ctx.fillText("HP: " + Math.ceil(character.hp), 100, 20);
     ctx.fillText("Time: " + Math.round(gameTime / 1000), 400, 20);
     ctx.fillText("Distance: " + distance, 10, 40);
@@ -243,13 +246,13 @@ function paintPlayerStats(ctx: CanvasRenderingContext2D, character: LevelingChar
     paintPlayerStatsUI(ctx, character, game);
 }
 
-function paintPlayerStatsUI(ctx: CanvasRenderingContext2D, character: LevelingCharacter, game: Game) {
+function paintPlayerStatsUI(ctx: CanvasRenderingContext2D, character: Character, game: Game) {
     if (!game.UI.displayStats) return;
     const spacing = 5;
     let paintX = 20;
     let paintY = 60;
 
-    let area = paintLevelingCharacterStatsUI(ctx, character, paintX, paintY, game);
+    let area = paintCharacterStatsUI(ctx, character, paintX, paintY, game);
     paintX += area.width + spacing;
 
     for (let ability of character.abilities) {
@@ -261,12 +264,12 @@ function paintPlayerStatsUI(ctx: CanvasRenderingContext2D, character: LevelingCh
     }
 }
 
-function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: LevelingCharacter) {
+function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Character) {
     let fontSize = 20;
     ctx.font = fontSize + "px Arial";
     let startY = (ctx.canvas.height * 0.75);
     let optionSpacer = 50;
-    if (character.availableSkillPoints > 0) {
+    if (character.upgradeOptions.length > 0) {
         let totalWidthEsitmate = 0;
         let texts = [];
         for (let i = 0; i < 3; i++) {

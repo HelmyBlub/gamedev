@@ -51,7 +51,7 @@ export type MapChunkPaintCache = {
 
 export type BossStuff = {
     bossLevelCounter: number,
-    bossEachXLevels: number,
+    bossSpawnEachXMilliSecond: number,
     bosses: Character[],
 }
 
@@ -185,7 +185,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             map: createMap(),
             deathCircleCreated: false,
             bossStuff: {
-                bossEachXLevels: 25,
+                bossSpawnEachXMilliSecond: 60000,
                 bossLevelCounter: 1, 
                 bosses: [],
             },

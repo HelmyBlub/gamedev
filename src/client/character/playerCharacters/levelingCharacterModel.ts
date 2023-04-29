@@ -11,19 +11,9 @@ export type LevelingCharacter = Character & {
     experienceForLevelUp: number,
     level: number,
     availableSkillPoints: number,
-    upgradeOptions: {
-        abilityName?: string,
-        name: string,
-    }[],
 }
 
-export type UpgradeOptionLevelingCharacter = {
-    name: string,
-    probabilityFactor: number,
-    upgrade: (levelingCharacter: LevelingCharacter) => void,
-}
-
-const LEVELING_CHARACTER = "levelingCharacter";
+export const LEVELING_CHARACTER = "levelingCharacter";
 
 export function createLevelingCharacter(
     idCounter: IdCounter,
