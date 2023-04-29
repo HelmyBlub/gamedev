@@ -1,9 +1,10 @@
 import { getNextId } from "../../game.js";
-import { Game, IdCounter } from "../../gameModel.js";
+import { Game, GameState, IdCounter } from "../../gameModel.js";
 import { GAME_IMAGES } from "../../imageLoad.js";
+import { Player } from "../../player.js";
 import { createRandomizedCharacterImageData } from "../../randomizedCharacterImage.js";
 import { RandomSeed } from "../../randomNumberGenerator.js";
-import { moveCharacterTick, turnCharacterToPet } from "../character.js";
+import { fillRandomUpgradeOptions, getPlayerCharacters, moveCharacterTick, turnCharacterToPet } from "../character.js";
 import { Character, CHARACTER_TYPE_FUNCTIONS, createCharacter } from "../characterModel.js";
 
 export type AbilityLevelingCharacter = Character & {
@@ -34,6 +35,23 @@ export function createAbilityLevelingCharacter(
 export function addAbilityLevelingCharacter(){
     CHARACTER_TYPE_FUNCTIONS[ABILITY_LEVELING_CHARACTER] = {
         tickFunction: tickAbilityLevelingCharacter,
+    }
+}
+
+export function abilityLevelingCharacterAddBossSkillPoint(state: GameState) {
+    let playerCharacters: Character[] = getPlayerCharacters(state.players);
+    for (let character of playerCharacters) {
+        if (character.type === ABILITY_LEVELING_CHARACTER && !character.isDead && !character.isPet) {
+            const abilityLevelingCharacter = character as AbilityLevelingCharacter;
+            for(let ability of abilityLevelingCharacter.abilities){
+                if(ability.leveling) {
+                    ability.leveling.bossSkillPoints++;
+                    if(character.upgradeOptions.length === 0){
+                        fillRandomUpgradeOptions(character, state.randomSeed, true);
+                    }
+                }
+            }
+        }
     }
 }
 

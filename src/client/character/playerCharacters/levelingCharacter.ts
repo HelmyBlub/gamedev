@@ -3,7 +3,7 @@ import { Game, GameState } from "../../gameModel.js";
 import { RandomSeed } from "../../randomNumberGenerator.js";
 import { Character } from "../characterModel.js";
 import { LEVELING_CHARACTER, LevelingCharacter } from "./levelingCharacterModel.js";
-import { ABILITIES_FUNCTIONS } from "../../ability/ability.js";
+import { ABILITIES_FUNCTIONS, UpgradeOptionAbility } from "../../ability/ability.js";
 
 export function upgradeLevelingCharacter(character: Character, upgradeOptionIndex: number, randomSeed: RandomSeed) {
     if (character.upgradeOptions.length > 0) {
@@ -11,17 +11,27 @@ export function upgradeLevelingCharacter(character: Character, upgradeOptionInde
         if (upgradeOption.abilityName !== undefined) {
             let ability = character.abilities.find(a => a.name === upgradeOption.abilityName);
             if (ability !== undefined) {
-                let upgrades = ABILITIES_FUNCTIONS[upgradeOption.abilityName].createAbiltiyUpgradeOptions(ability);
-                upgrades.find((e) => e.name === upgradeOption.name)?.upgrade(ability);
+                let upgrades: UpgradeOptionAbility[];
+                if(upgradeOption.boss){
+                    const abilityFunctions = ABILITIES_FUNCTIONS[upgradeOption.abilityName];
+                    if(abilityFunctions.createAbiltiyBossUpgradeOptions){
+                        upgrades = abilityFunctions.createAbiltiyBossUpgradeOptions(ability);
+                        upgrades.find((e) => e.name === upgradeOption.name)?.upgrade(ability);
+                    }
+                }else{
+                    upgrades = ABILITIES_FUNCTIONS[upgradeOption.abilityName].createAbiltiyUpgradeOptions(ability);
+                    upgrades.find((e) => e.name === upgradeOption.name)?.upgrade(ability);
+                }
+                character.upgradeOptions = [];
             }
         } else {
             let upgrades = createCharacterUpgradeOptions();
             upgrades.find((e) => e.name === character.upgradeOptions[upgradeOptionIndex].name)?.upgrade(character);
+            character.upgradeOptions = [];
         }
         if (character.type === LEVELING_CHARACTER) {
             const levelingCharacter = character as LevelingCharacter;
             levelingCharacter.availableSkillPoints--;
-            levelingCharacter.upgradeOptions = [];
             if (levelingCharacter.availableSkillPoints > 0) {
                 fillRandomUpgradeOptions(levelingCharacter, randomSeed);
             }

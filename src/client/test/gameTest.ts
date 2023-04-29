@@ -151,6 +151,7 @@ function testDetectProjectileToCharacterHitPerformance() {
     let numberProjectiles = 100;
     let projectiles: Projectile[] = [];
     let map: GameMap = createMap();
+    let game: Game = createGame(undefined);
     let randomSeed: RandomSeed = { seed: 0 };
     for (let i = 0; i < numberEnemies; i++) {
         let posX = nextRandom(randomSeed) * 10000;
@@ -165,7 +166,7 @@ function testDetectProjectileToCharacterHitPerformance() {
     let startTime = performance.now();
     for (let i = 0; i < iterations; i++) {
         for (let j = 0; j < projectiles.length; j++) {
-            detectAbilityObjectToCharacterHit(map, projectiles[j], [], [], undefined);
+            detectAbilityObjectToCharacterHit(map, projectiles[j], [], [], game);
         }
     }
     let time = performance.now() - startTime;

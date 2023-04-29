@@ -1,7 +1,7 @@
-import { countAlivePlayerCharacters, detectCharacterDeath, findCharacterById, findMyCharacter, getPlayerCharacters, tickCharacters, tickMapCharacters } from "./character/character.js";
+import { countAlivePlayerCharacters, findCharacterById, findMyCharacter, getPlayerCharacters, tickCharacters, tickMapCharacters } from "./character/character.js";
 import { paintAll } from "./gamePaint.js";
-import { gameInitPlayers, getHighestLevelOfPlayers } from "./player.js";
-import { ABILITY_ACTIONS, MOVE_ACTIONS, UPGRADE_ACTIONS, keyDown, tickPlayerInputs } from "./playerInput.js";
+import { gameInitPlayers } from "./player.js";
+import { UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.js";
 import { Position, GameState, Game, IdCounter, TestingStuff, Debugging, PaintTextData } from "./gameModel.js";
 import { createMap, determineMapKeysInDistance, GameMap, getMapMidlePosition, removeAllMapCharacters } from "./map/map.js";
 import { Character } from "./character/characterModel.js";
@@ -276,7 +276,6 @@ function tick(gameTimePassed: number, game: Game) {
         takeTimeMeasure(game.debug, "playerTick", "");
 
         tickAbilityObjects(game.state.abilityObjects, game);
-        detectCharacterDeath(game.state.map, game.state, game);
 
         if (gameEndedCheck(game)) endGame(game.state, game.testing);
         if (game.state.restartAfterTick) gameRestart(game);

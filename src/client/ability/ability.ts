@@ -26,7 +26,7 @@ export type Ability = {
         level: number,
         experience: number,
         experienceForLevelUp: number,
-        boosSkillPoints: number,
+        bossSkillPoints: number,
     }
 }
 export type PaintOrderAbility = "beforeCharacterPaint" | "afterCharacterPaint";
@@ -54,6 +54,7 @@ export type AbilityFunctions = {
     tickAbility: (abilityOwner: AbilityOwner, ability: Ability, game: Game) => void,
     createAbility: (idCounter: IdCounter) => Ability,
     createAbiltiyUpgradeOptions: (ability: Ability) => UpgradeOptionAbility[],
+    createAbiltiyBossUpgradeOptions?: (ability: Ability) => UpgradeOptionAbility[],
     activeAbilityCast?: (abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, game: Game) => void,
     tickAbilityObject?: (abilityObject: AbilityObject, game: Game) => void,
     deleteAbilityObject?: (abilityObject: AbilityObject, game: Game) => boolean,
@@ -148,7 +149,7 @@ export function findAbilityById(abilityId: number, game: Game): Ability | undefi
     return ability;
 }
 
-export function detectAbilityObjectToCharacterHit(map: GameMap, abilityObject: AbilityObject, players: Player[], bosses: BossEnemyCharacter[], game: Game | undefined) {
+export function detectAbilityObjectToCharacterHit(map: GameMap, abilityObject: AbilityObject, players: Player[], bosses: BossEnemyCharacter[], game: Game) {
     let maxEnemySizeEstimate = 40;
 
     let characters = determineCharactersInDistance(abilityObject, map, players, bosses, abilityObject.size + maxEnemySizeEstimate);
@@ -178,7 +179,7 @@ export function detectSomethingToCharacterHit(
     players: Player[],
     bosses: BossEnemyCharacter[],
     onHitAndReturnIfContinue: ((target: Character) => boolean) | undefined,
-    game: Game | undefined
+    game: Game,
 ) {
     let maxEnemySizeEstimate = 40;
 

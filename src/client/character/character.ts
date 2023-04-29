@@ -31,12 +31,17 @@ export function findCharacterByIdAroundPosition(position: Position, range: numbe
     return null;
 }
 
-export function characterTakeDamage(character: Character, damage: number, game: Game | undefined) {
+export function characterTakeDamage(character: Character, damage: number, game: Game) {
     if (character.isDead) return;
     if (character.isPet) return;
 
     character.hp -= damage;
-    if (game && game.UI.displayDamageNumbers) {
+    if(character.hp <= 0) {
+        character.isDead = true;
+        levelingCharacterXpGain(game.state, character);
+        game.state.killCounter++;
+    }
+    if (game.UI.displayDamageNumbers) {
         let textPos = { x: character.x, y: character.y - character.height / 2 };
         let fontSize = character.faction === "player" ? "20" : "12";
         let textColor = character.faction === "player" ? "blue" : "black";
@@ -47,19 +52,32 @@ export function characterTakeDamage(character: Character, damage: number, game: 
 
 export function fillRandomUpgradeOptions(character: Character, randomSeed: RandomSeed, boss: boolean = false) {
     if (character.upgradeOptions.length === 0) {
-        let characterOptions = createCharacterUpgradeOptions();
+        let characterOptions: UpgradeOptionCharacter[] = [];
         let characterOptionProbability = 0;
-        for (let characterOption of characterOptions) {
-            characterOptionProbability += characterOption.probabilityFactor;
+        if(!boss){
+            characterOptions = createCharacterUpgradeOptions();
+            for (let characterOption of characterOptions) {
+                characterOptionProbability += characterOption.probabilityFactor;
+            }
         }
         let abilitiesOptions: { [key: string]: { options: UpgradeOptionAbility[], probability: number } } = {};
         for (let ability of character.abilities) {
-            let options = ABILITIES_FUNCTIONS[ability.name].createAbiltiyUpgradeOptions(ability);
-            let abilityOptionProbability = 0;
-            for (let abilityOption of options) {
-                abilityOptionProbability += abilityOption.probabilityFactor;
+            let options: UpgradeOptionAbility[] = [];
+            if(boss){
+                const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+                if(abilityFunctions.createAbiltiyBossUpgradeOptions){
+                    options = abilityFunctions.createAbiltiyBossUpgradeOptions(ability);
+                }
+            }else{
+                options = ABILITIES_FUNCTIONS[ability.name].createAbiltiyUpgradeOptions(ability);
             }
-            abilitiesOptions[ability.name] = { options, probability: abilityOptionProbability };
+            if(options.length > 0){
+                let abilityOptionProbability = 0;
+                for (let abilityOption of options) {
+                    abilityOptionProbability += abilityOption.probabilityFactor;
+                }
+                abilitiesOptions[ability.name] = { options, probability: abilityOptionProbability };
+            }
         }
         for (let i = 0; i < 3; i++) {
             const abilitiesOptionsKeys = Object.keys(abilitiesOptions);
@@ -67,6 +85,7 @@ export function fillRandomUpgradeOptions(character: Character, randomSeed: Rando
             for (let key of abilitiesOptionsKeys) {
                 totablPropability += abilitiesOptions[key].probability;
             }
+            if(totablPropability === 0) return;
             let randomProbability = nextRandom(randomSeed) * (totablPropability);
             if (randomProbability < characterOptionProbability) {
                 let characterOptionIndex = 0;
@@ -77,7 +96,7 @@ export function fillRandomUpgradeOptions(character: Character, randomSeed: Rando
                     };
                 }
                 if (randomProbability >= 0) throw new Error("getting random upgrade option with probabilities failed. Probability not fitting to character options");
-                character.upgradeOptions.push({ name: characterOptions[characterOptionIndex].name });
+                character.upgradeOptions.push({ name: characterOptions[characterOptionIndex].name, boss: boss });
                 characterOptionProbability -= characterOptions[characterOptionIndex].probabilityFactor;
                 characterOptions.splice(characterOptionIndex, 1);
             } else {
@@ -95,7 +114,7 @@ export function fillRandomUpgradeOptions(character: Character, randomSeed: Rando
                 for (let abilityOptionIndex = 0; abilityOptionIndex < abilityOptions.options.length; abilityOptionIndex++) {
                     randomProbability -= abilityOptions.options[abilityOptionIndex].probabilityFactor;
                     if (randomProbability < 0) {
-                        character.upgradeOptions.push({ name: abilityOptions.options[abilityOptionIndex].name, abilityName: abilityName });
+                        character.upgradeOptions.push({ name: abilityOptions.options[abilityOptionIndex].name, abilityName: abilityName, boss: boss });
                         abilityOptions.probability -= abilityOptions.options[abilityOptionIndex].probabilityFactor;
                         abilityOptions.options.splice(abilityOptionIndex, 1);
                         if (abilityOptions.options.length === 0) {
@@ -246,42 +265,6 @@ export function countCharacters(map: GameMap): number {
     }
 
     return counter;
-}
-
-export function detectCharacterDeath(map: GameMap, state: GameState, game: Game) {
-    takeTimeMeasure(game.debug, "", "detectCharacterDeath");
-    for (let i = 0; i < map.activeChunkKeys.length; i++) {
-        let chunk = map.chunks[map.activeChunkKeys[i]];
-        for (let charIt = chunk.characters.length - 1; charIt >= 0; charIt--) {
-            if (chunk.characters[charIt].hp <= 0 && !chunk.characters[charIt].isDead) {
-                if (chunk.characters[charIt].faction === ENEMY_FACTION) {
-                    levelingCharacterXpGain(state, chunk.characters[charIt]);
-                    state.killCounter++;
-                }
-                chunk.characters[charIt].isDead = true;
-            }
-        }
-    }
-    let bosses = state.bossStuff.bosses;
-    for (let i = bosses.length - 1; i >= 0; i--) {
-        let char = bosses[i];
-        if (char.hp <= 0 && !char.isDead) {
-            char.isDead = true;
-            if (char.faction === ENEMY_FACTION) {
-                levelingCharacterXpGain(state, char);
-                state.killCounter++;
-            }
-            bosses.splice(i, 1);
-        }
-    }
-
-    for (let i = 0; i < state.players.length; i++) {
-        let char = state.players[i].character;
-        if (char.hp <= 0 && !char.isDead) {
-            char.isDead = true;
-        }
-    }
-    takeTimeMeasure(game.debug, "detectCharacterDeath", "");
 }
 
 export function findAndSetNewCameraCharacterId(camera: Camera, players: Player[], myClientId?: number) {

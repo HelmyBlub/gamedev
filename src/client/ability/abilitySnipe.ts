@@ -1,6 +1,7 @@
 import { characterTakeDamage, fillRandomUpgradeOptions, getCharactersTouchingLine } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
 import { CHARACTER_TYPE_BOSS_ENEMY } from "../character/enemy/bossEnemy.js";
+import { abilityLevelingCharacterAddBossSkillPoint } from "../character/playerCharacters/abilityLevelingCharacter.js";
 import { calculateDirection, getCameraPosition, getNextId } from "../game.js";
 import { Position, Game, IdCounter } from "../gameModel.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, UpgradeOptionAbility, findAbilityById, levelingAbilityXpGain } from "./ability.js";
@@ -32,6 +33,7 @@ export function addSnipeAbility() {
         tickAbility: tickAbilitySnipe,
         tickAbilityObject: tickAbilityObjectSnipe,
         createAbiltiyUpgradeOptions: createAbilitySnipeUpgradeOptions,
+        createAbiltiyBossUpgradeOptions: createAbilityBossSnipeUpgradeOptions,
         paintAbilityObject: paintAbilityObjectSnipe,
         paintAbilityUI: paintAbilitySnipeUI,
         activeAbilityCast: castSnipe,
@@ -232,15 +234,14 @@ function tickAbilityObjectSnipe(abilityObject: AbilityObject, game: Game) {
         let characters: Character[] = getCharactersTouchingLine(game, abilitySnipe, endPos, abilitySnipe.size);
         for (let char of characters) {
             characterTakeDamage(char, abilitySnipe.damage, game);
-            if (char.hp <= 0) {
-                //TODO should be dead, not hp < 0
+            if (char.isDead) {
                 if (abilityObject.leveling && abilityObject.abilityRefId !== undefined) {
                     let ability = findAbilityById(abilityObject.abilityRefId, game);
                     if (ability) {
                         levelingAbilityXpGain(ability, char.experienceWorth);
                     }
                     if(char.type === CHARACTER_TYPE_BOSS_ENEMY){
-//                        fillRandomUpgradeOptions();
+                        abilityLevelingCharacterAddBossSkillPoint(game.state);
                     }
                 }
             }
@@ -254,7 +255,7 @@ function createAbilitySnipeUpgradeOptions(ability: Ability): UpgradeOptionAbilit
     let abilitySnipe = ability as AbilitySnipe;
     let upgradeOptions: UpgradeOptionAbility[] = [];
     upgradeOptions.push({
-        name: "Line Damage+50", probabilityFactor: 1, upgrade: (a: Ability) => {
+        name: "Snipe Damage+50", probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilitySnipe;
             as.damage += 50;
         }
@@ -262,3 +263,17 @@ function createAbilitySnipeUpgradeOptions(ability: Ability): UpgradeOptionAbilit
 
     return upgradeOptions;
 }
+
+function createAbilityBossSnipeUpgradeOptions(ability: Ability): UpgradeOptionAbility[] {
+    let abilitySnipe = ability as AbilitySnipe;
+    let upgradeOptions: UpgradeOptionAbility[] = [];
+    upgradeOptions.push({
+        name: "Boss Snipe Damage+500", probabilityFactor: 1, upgrade: (a: Ability) => {
+            let as = a as AbilitySnipe;
+            as.damage += 500;
+        }
+    });
+
+    return upgradeOptions;
+}
+

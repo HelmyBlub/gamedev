@@ -272,13 +272,13 @@ function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Charact
     if (character.upgradeOptions.length > 0) {
         let totalWidthEsitmate = 0;
         let texts = [];
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < character.upgradeOptions.length; i++) {
             texts.push(`${character.upgradeOptions[i].name}`);
             totalWidthEsitmate += texts[i].length * fontSize * 0.63;
         }
 
         let currentX = Math.max(5, ctx.canvas.width / 2 - totalWidthEsitmate / 2);
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < character.upgradeOptions.length; i++) {
             ctx.globalAlpha = 0.4;
             ctx.fillStyle = "white";
             let textWidthEstimate = texts[i].length * fontSize * 0.63;
