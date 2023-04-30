@@ -1,10 +1,12 @@
 current tasks:
 - LevelingAbilityCharacter
-    - boss kills give special upgrade choices
+    - redesign upgrades?
 
     - utility skill get XP by beeing used?
-- enemy death does happen not on damage taken, why?
+    - how to gain more maxHP?
 
+- redesign levelingCharacter/abilityLevelingCharacter to be more independant in code
+- redesign upgrades to fit better with boss upgrades
 
 
 possible future tasks: (only keep 5)

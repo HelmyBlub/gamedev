@@ -1,9 +1,10 @@
-import { characterTakeDamage, fillRandomUpgradeOptions, getCharactersTouchingLine } from "../character/character.js";
+import { characterTakeDamage, getCharactersTouchingLine } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
 import { CHARACTER_TYPE_BOSS_ENEMY } from "../character/enemy/bossEnemy.js";
 import { abilityLevelingCharacterAddBossSkillPoint } from "../character/playerCharacters/abilityLevelingCharacter.js";
 import { calculateDirection, getCameraPosition, getNextId } from "../game.js";
 import { Position, Game, IdCounter } from "../gameModel.js";
+import { nextRandom } from "../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, UpgradeOptionAbility, findAbilityById, levelingAbilityXpGain } from "./ability.js";
 
 type AbilityObjectSnipe = AbilityObject & {
@@ -12,11 +13,12 @@ type AbilityObjectSnipe = AbilityObject & {
     direction: number,
     damageDone: boolean,
     deleteTime: number,
+    splitOnHit?: boolean,
 }
 
 type AbilitySnipe = Ability & {
-    damage: number,
-    range: number,
+    baseDamage: number,
+    baseRange: number,
     size: number,
     baseRechargeTime: number,
     rechargeTimeDecreaseFaktor: number,
@@ -24,6 +26,15 @@ type AbilitySnipe = Ability & {
     currentCharges: number,
     nextRechargeTime: number,
     paintFadeDuration: number,
+    upgrades: {
+        damageMultiplier: number,
+        rangeMultiplier: number,
+        noMissChainCounter?: number,
+        noMissCounterCap?: number,
+        noMissBonusDamageFactorAdd?: number,
+        shotSplitOnHit?: boolean,
+        shotSplitsPerHit?: number,
+    }
 }
 
 const ABILITY_NAME_SNIPE = "Snipe";
@@ -58,44 +69,61 @@ export function createAbilitySnipe(
     return {
         id: getNextId(idCounter),
         name: ABILITY_NAME_SNIPE,
-        damage: damage,
+        baseDamage: damage,
         passive: false,
         playerInputBinding: playerInputBinding,
         baseRechargeTime: rechargeTime,
         currentCharges: maxCharges,
         maxCharges: maxCharges,
         nextRechargeTime: -1,
-        range: range,
+        baseRange: range,
         rechargeTimeDecreaseFaktor: 1,
         size: size,
         paintFadeDuration: 1000,
+        upgrades: {
+            damageMultiplier: 1,
+            rangeMultiplier: 1,
+        }
     };
 }
 
-function createAbilityObjectSnipe(abilityOwner: AbilityOwner, abilitySnipe: AbilitySnipe, direction: number, gameTime: number): AbilityObjectSnipe {
+function createAbilityObjectSnipe(startPos: Position, abilitySnipe: AbilitySnipe, faction: string, direction: number, splitOnHit: boolean | undefined, gameTime: number): AbilityObjectSnipe {
     return {
         type: ABILITY_NAME_SNIPE,
         size: abilitySnipe.size,
         color: "",
-        x: abilityOwner.x,
-        y: abilityOwner.y,
-        damage: abilitySnipe.damage,
-        faction: abilityOwner.faction,
+        x: startPos.x,
+        y: startPos.y,
+        damage: getDamage(abilitySnipe),
+        faction: faction,
         direction: direction,
-        range: abilitySnipe.range,
+        range: getRange(abilitySnipe),
         damageDone: false,
         deleteTime: gameTime + abilitySnipe.paintFadeDuration,
         leveling: abilitySnipe.leveling ? true : undefined,
         abilityRefId: abilitySnipe.id,
+        splitOnHit: splitOnHit,
     }
 }
 
 function setAbilitySnipeToLevel(ability: Ability, level: number) {
     let abilitySnipe = ability as AbilitySnipe;
-    abilitySnipe.damage = level * 100;
+    abilitySnipe.baseDamage = level * 100;
     abilitySnipe.maxCharges = 2 + level;
-    abilitySnipe.range = 800 + level * 50;
+    abilitySnipe.baseRange = 800 + level * 50;
     abilitySnipe.rechargeTimeDecreaseFaktor = 1 + level * 0.15;
+}
+
+function getDamage(abilitySnipe: AbilitySnipe) {
+    let damage = abilitySnipe.baseDamage * abilitySnipe.upgrades.damageMultiplier;
+    if(abilitySnipe.upgrades.noMissChainCounter){
+       damage *= 1 + (abilitySnipe.upgrades.noMissChainCounter * abilitySnipe.upgrades.noMissBonusDamageFactorAdd!);
+    }
+    return damage;
+}
+
+function getRange(abilitySnipe: AbilitySnipe) {
+    return abilitySnipe.baseRange * abilitySnipe.upgrades.rangeMultiplier;
 }
 
 function deleteAbilityObjectSnipe(abilityObject: AbilityObject, game: Game) {
@@ -108,7 +136,7 @@ function castSnipe(abilityOwner: AbilityOwner, ability: Ability, castPosition: P
 
     if (abilitySnipe.currentCharges > 0) {
         let direction = calculateDirection(abilityOwner, castPosition);
-        let abilityObjectSnipt = createAbilityObjectSnipe(abilityOwner, abilitySnipe, direction, game.state.time);
+        let abilityObjectSnipt = createAbilityObjectSnipe(abilityOwner, abilitySnipe, abilityOwner.faction, direction, abilitySnipe.upgrades.shotSplitOnHit, game.state.time);
         game.state.abilityObjects.push(abilityObjectSnipt);
         if (abilitySnipe.currentCharges === abilitySnipe.maxCharges) {
             abilitySnipe.nextRechargeTime = game.state.time + abilitySnipe.baseRechargeTime / abilitySnipe.rechargeTimeDecreaseFaktor;
@@ -200,12 +228,15 @@ function paintAbilitySnipeStatsUI(ctx: CanvasRenderingContext2D, ability: Abilit
 
     textLineCounter++;
     ctx.fillText("Ability stats: ", drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
-    ctx.fillText("Damage: " + abilitySnipe.damage, drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
-    ctx.fillText("Range: " + abilitySnipe.range, drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
-    if(abilitySnipe.leveling){
+    ctx.fillText("Damage: " + getDamage(abilitySnipe), drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
+    ctx.fillText("Range: " + getRange(abilitySnipe), drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
+    if (abilitySnipe.leveling) {
         ctx.fillText("Level: " + abilitySnipe.leveling.level, drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
         ctx.fillText("Current XP: " + abilitySnipe.leveling.experience.toFixed(0), drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
         ctx.fillText("XP required for Level Up: " + abilitySnipe.leveling.experienceForLevelUp, drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
+        if(abilitySnipe.upgrades.noMissChainCounter !== undefined){
+            ctx.fillText("Chain Bonus: " + (abilitySnipe.upgrades.noMissChainCounter * abilitySnipe.upgrades.noMissBonusDamageFactorAdd! * 100).toFixed() + "%", drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
+        }
     }
 
     return { width, height };
@@ -228,26 +259,45 @@ function tickAbilitySnipe(abilityOwner: AbilityOwner, ability: Ability, game: Ga
 }
 
 function tickAbilityObjectSnipe(abilityObject: AbilityObject, game: Game) {
-    let abilitySnipe = abilityObject as AbilityObjectSnipe;
-    if (!abilitySnipe.damageDone) {
-        const endPos = calcAbilityObjectSnipeEndPosition(abilitySnipe);
-        let characters: Character[] = getCharactersTouchingLine(game, abilitySnipe, endPos, abilitySnipe.size);
+    let abilityObjectSnipe = abilityObject as AbilityObjectSnipe;
+    if (!abilityObjectSnipe.damageDone) {
+        const endPos = calcAbilityObjectSnipeEndPosition(abilityObjectSnipe);
+        let characters: Character[] = getCharactersTouchingLine(game, abilityObjectSnipe, endPos, abilityObjectSnipe.size);
+        let abilitySnipe = abilityObject.abilityRefId !== undefined ? findAbilityById(abilityObject.abilityRefId, game) as AbilitySnipe : undefined;
+        let hitSomething: boolean = false;
         for (let char of characters) {
-            characterTakeDamage(char, abilitySnipe.damage, game);
+            if (char.isDead) continue;
+            hitSomething = true;
+            characterTakeDamage(char, abilityObjectSnipe.damage, game);
+            if(abilityObjectSnipe.splitOnHit){
+                for(let i = 0; i < abilitySnipe!.upgrades.shotSplitsPerHit!; i++){
+                    const randomDirectionChange = nextRandom(game.state.randomSeed) / 2;
+                    let abilityObjectSnipt = createAbilityObjectSnipe(char, abilitySnipe!, abilityObjectSnipe.faction, abilityObjectSnipe.direction + randomDirectionChange, false, game.state.time);
+                    game.state.abilityObjects.push(abilityObjectSnipt);
+                }
+            }
+
             if (char.isDead) {
                 if (abilityObject.leveling && abilityObject.abilityRefId !== undefined) {
-                    let ability = findAbilityById(abilityObject.abilityRefId, game);
-                    if (ability) {
-                        levelingAbilityXpGain(ability, char.experienceWorth);
+                    if (abilitySnipe) {
+                        levelingAbilityXpGain(abilitySnipe, char.experienceWorth);
                     }
-                    if(char.type === CHARACTER_TYPE_BOSS_ENEMY){
+                    if (char.type === CHARACTER_TYPE_BOSS_ENEMY) {
                         abilityLevelingCharacterAddBossSkillPoint(game.state);
                     }
                 }
             }
         }
-
-        abilitySnipe.damageDone = true;
+        if (abilitySnipe && abilitySnipe.upgrades.noMissChainCounter !== undefined){
+            if(hitSomething){
+                if(abilitySnipe.upgrades.noMissChainCounter < abilitySnipe.upgrades.noMissCounterCap!){
+                    abilitySnipe.upgrades.noMissChainCounter++;
+                } 
+            }else{
+                abilitySnipe.upgrades.noMissChainCounter = 0;
+            }
+        }
+        abilityObjectSnipe.damageDone = true;
     }
 }
 
@@ -257,7 +307,7 @@ function createAbilitySnipeUpgradeOptions(ability: Ability): UpgradeOptionAbilit
     upgradeOptions.push({
         name: "Snipe Damage+50", probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilitySnipe;
-            as.damage += 50;
+            as.baseDamage += 50;
         }
     });
 
@@ -268,9 +318,35 @@ function createAbilityBossSnipeUpgradeOptions(ability: Ability): UpgradeOptionAb
     let abilitySnipe = ability as AbilitySnipe;
     let upgradeOptions: UpgradeOptionAbility[] = [];
     upgradeOptions.push({
-        name: "Boss Snipe Damage+500", probabilityFactor: 1, upgrade: (a: Ability) => {
+        name: "+200% Damage, Range halved", probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilitySnipe;
-            as.damage += 500;
+            as.upgrades.damageMultiplier += 2;
+            as.upgrades.rangeMultiplier /= 2;
+        }
+    });
+
+    upgradeOptions.push({
+        name: "No Miss Chain-> damage 1%-50% bonus damage", probabilityFactor: 1, upgrade: (a: Ability) => {
+            let as = a as AbilitySnipe;
+            if (as.upgrades.noMissChainCounter === undefined) {
+                as.upgrades.noMissChainCounter = 0;
+                as.upgrades.noMissBonusDamageFactorAdd = 0;
+                as.upgrades.noMissCounterCap = 50;
+            }
+            if (as.upgrades.noMissBonusDamageFactorAdd !== undefined) {
+                as.upgrades.noMissBonusDamageFactorAdd += 0.01;
+            }
+        }
+    });
+
+    upgradeOptions.push({
+        name: "Shot Split on Hit", probabilityFactor: 1, upgrade: (a: Ability) => {
+            let as = a as AbilitySnipe;
+            if(!as.upgrades.shotSplitOnHit){
+                as.upgrades.shotSplitOnHit = true;
+                as.upgrades.shotSplitsPerHit = 0;
+            }
+            as.upgrades.shotSplitsPerHit!++;
         }
     });
 

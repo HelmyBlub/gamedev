@@ -4,6 +4,7 @@ import { RandomSeed } from "../../randomNumberGenerator.js";
 import { Character } from "../characterModel.js";
 import { LEVELING_CHARACTER, LevelingCharacter } from "./levelingCharacterModel.js";
 import { ABILITIES_FUNCTIONS, UpgradeOptionAbility } from "../../ability/ability.js";
+import { ABILITY_LEVELING_CHARACTER, AbilityLevelingCharacter } from "./abilityLevelingCharacter.js";
 
 export function upgradeLevelingCharacter(character: Character, upgradeOptionIndex: number, randomSeed: RandomSeed) {
     if (character.upgradeOptions.length > 0) {
@@ -12,13 +13,14 @@ export function upgradeLevelingCharacter(character: Character, upgradeOptionInde
             let ability = character.abilities.find(a => a.name === upgradeOption.abilityName);
             if (ability !== undefined) {
                 let upgrades: UpgradeOptionAbility[];
-                if(upgradeOption.boss){
+                if (upgradeOption.boss) {
                     const abilityFunctions = ABILITIES_FUNCTIONS[upgradeOption.abilityName];
-                    if(abilityFunctions.createAbiltiyBossUpgradeOptions){
+                    if (abilityFunctions.createAbiltiyBossUpgradeOptions) {
                         upgrades = abilityFunctions.createAbiltiyBossUpgradeOptions(ability);
                         upgrades.find((e) => e.name === upgradeOption.name)?.upgrade(ability);
+                        if (ability.leveling) ability.leveling.bossSkillPoints--;
                     }
-                }else{
+                } else {
                     upgrades = ABILITIES_FUNCTIONS[upgradeOption.abilityName].createAbiltiyUpgradeOptions(ability);
                     upgrades.find((e) => e.name === upgradeOption.name)?.upgrade(ability);
                 }
@@ -33,7 +35,15 @@ export function upgradeLevelingCharacter(character: Character, upgradeOptionInde
             const levelingCharacter = character as LevelingCharacter;
             levelingCharacter.availableSkillPoints--;
             if (levelingCharacter.availableSkillPoints > 0) {
-                fillRandomUpgradeOptions(levelingCharacter, randomSeed);
+                fillRandomUpgradeOptions(character, randomSeed);
+            }
+        } else if (character.type === ABILITY_LEVELING_CHARACTER) {
+            const abilityLevelingCharacter = character as AbilityLevelingCharacter;
+            for (let ability of abilityLevelingCharacter.abilities) {
+                if (ability.leveling && ability.leveling.bossSkillPoints > 0) {
+                    fillRandomUpgradeOptions(character, randomSeed, true);
+                    break;
+                }
             }
         }
     }
