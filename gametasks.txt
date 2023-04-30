@@ -1,9 +1,17 @@
 current tasks:
 - LevelingAbilityCharacter
-    - redesign upgrades?
+    - secondary abilities?
+        - temporary movement speed boost?
+        - teleport?
+        - utility skill get XP by beeing used?
+    - sniper thoguhts:
+        - to much damage?
+        - to much clicking?
+            - magazine size? 
+        - needs more upgrade choice?
+        - how to gain more maxHP?
+    - redesign code: upgrades?
 
-    - utility skill get XP by beeing used?
-    - how to gain more maxHP?
 
 - redesign levelingCharacter/abilityLevelingCharacter to be more independant in code
 - redesign upgrades to fit better with boss upgrades

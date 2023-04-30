@@ -282,9 +282,6 @@ function tickAbilityObjectSnipe(abilityObject: AbilityObject, game: Game) {
                     if (abilitySnipe) {
                         levelingAbilityXpGain(abilitySnipe, char.experienceWorth);
                     }
-                    if (char.type === CHARACTER_TYPE_BOSS_ENEMY) {
-                        abilityLevelingCharacterAddBossSkillPoint(game.state);
-                    }
                 }
             }
         }

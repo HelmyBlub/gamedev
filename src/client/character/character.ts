@@ -11,6 +11,7 @@ import { LevelingCharacter } from "./playerCharacters/levelingCharacterModel.js"
 import { BossEnemyCharacter, CHARACTER_TYPE_BOSS_ENEMY } from "./enemy/bossEnemy.js";
 import { tickCharacterDebuffs } from "../debuff/debuff.js";
 import { createAbilityLeash } from "../ability/abilityLeash.js";
+import { abilityLevelingCharacterAddBossSkillPoint } from "./playerCharacters/abilityLevelingCharacter.js";
 
 export function findCharacterById(characters: Character[], id: number): Character | null {
     for (let i = 0; i < characters.length; i++) {
@@ -39,6 +40,9 @@ export function characterTakeDamage(character: Character, damage: number, game: 
     if(character.hp <= 0) {
         character.isDead = true;
         levelingCharacterXpGain(game.state, character);
+        if (character.type === CHARACTER_TYPE_BOSS_ENEMY) {
+            abilityLevelingCharacterAddBossSkillPoint(game.state);
+        }
         game.state.killCounter++;
     }
     if (game.UI.displayDamageNumbers) {
