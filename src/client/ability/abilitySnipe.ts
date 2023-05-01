@@ -1,7 +1,5 @@
 import { characterTakeDamage, getCharactersTouchingLine } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
-import { CHARACTER_TYPE_BOSS_ENEMY } from "../character/enemy/bossEnemy.js";
-import { abilityLevelingCharacterAddBossSkillPoint } from "../character/playerCharacters/abilityLevelingCharacter.js";
 import { calculateDirection, getCameraPosition, getNextId } from "../game.js";
 import { Position, Game, IdCounter } from "../gameModel.js";
 import { nextRandom } from "../randomNumberGenerator.js";
@@ -87,7 +85,7 @@ export function createAbilitySnipe(
     };
 }
 
-function createAbilityObjectSnipe(startPos: Position, abilitySnipe: AbilitySnipe, faction: string, direction: number, splitOnHit: boolean | undefined, gameTime: number): AbilityObjectSnipe {
+function createAbilityObjectSnipe(startPos: Position, abilityRefId: number | undefined, abilitySnipe: AbilitySnipe, faction: string, direction: number, splitOnHit: boolean | undefined, gameTime: number): AbilityObjectSnipe {
     return {
         type: ABILITY_NAME_SNIPE,
         size: abilitySnipe.size,
@@ -101,7 +99,7 @@ function createAbilityObjectSnipe(startPos: Position, abilitySnipe: AbilitySnipe
         damageDone: false,
         deleteTime: gameTime + abilitySnipe.paintFadeDuration,
         leveling: abilitySnipe.leveling ? true : undefined,
-        abilityRefId: abilitySnipe.id,
+        abilityRefId: abilityRefId,
         splitOnHit: splitOnHit,
     }
 }
@@ -136,7 +134,7 @@ function castSnipe(abilityOwner: AbilityOwner, ability: Ability, castPosition: P
 
     if (abilitySnipe.currentCharges > 0) {
         let direction = calculateDirection(abilityOwner, castPosition);
-        let abilityObjectSnipt = createAbilityObjectSnipe(abilityOwner, abilitySnipe, abilityOwner.faction, direction, abilitySnipe.upgrades.shotSplitOnHit, game.state.time);
+        let abilityObjectSnipt = createAbilityObjectSnipe(abilityOwner, abilitySnipe.id, abilitySnipe, abilityOwner.faction, direction, abilitySnipe.upgrades.shotSplitOnHit, game.state.time);
         game.state.abilityObjects.push(abilityObjectSnipt);
         if (abilitySnipe.currentCharges === abilitySnipe.maxCharges) {
             abilitySnipe.nextRechargeTime = game.state.time + abilitySnipe.baseRechargeTime / abilitySnipe.rechargeTimeDecreaseFaktor;
@@ -272,7 +270,7 @@ function tickAbilityObjectSnipe(abilityObject: AbilityObject, game: Game) {
             if(abilityObjectSnipe.splitOnHit){
                 for(let i = 0; i < abilitySnipe!.upgrades.shotSplitsPerHit!; i++){
                     const randomDirectionChange = nextRandom(game.state.randomSeed) / 2;
-                    let abilityObjectSnipt = createAbilityObjectSnipe(char, abilitySnipe!, abilityObjectSnipe.faction, abilityObjectSnipe.direction + randomDirectionChange, false, game.state.time);
+                    let abilityObjectSnipt = createAbilityObjectSnipe(char, undefined, abilitySnipe!, abilityObjectSnipe.faction, abilityObjectSnipe.direction + randomDirectionChange, false, game.state.time);
                     game.state.abilityObjects.push(abilityObjectSnipt);
                 }
             }
