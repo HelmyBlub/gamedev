@@ -1,6 +1,6 @@
 import { addAbilityToCharacter } from "../../ability/ability.js";
 import { createAbilityHpRegen } from "../../ability/abilityHpRegen.js";
-import { createAbilitySnipe } from "../../ability/abilitySnipe.js";
+import { createAbilitySnipe } from "../../ability/snipe/abilitySnipe.js";
 import { IdCounter, PLAYER_CHARACTER_CLASSES } from "../../gameModel.js";
 import { RandomSeed } from "../../randomNumberGenerator.js";
 import { AbilityLevelingCharacter, createAbilityLevelingCharacter } from "./abilityLevelingCharacter.js";

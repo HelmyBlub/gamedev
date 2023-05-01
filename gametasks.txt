@@ -1,5 +1,8 @@
 current tasks:
-- LevelingAbilityCharacter
+- Sniper: LevelingAbilityCharacter
+    - limit maximum snipe speed
+    - toogle auto snipe button
+
     - secondary abilities?
         - temporary movement speed boost?
         - teleport?
@@ -10,6 +13,7 @@ current tasks:
             - magazine size? 
         - needs more upgrade choice?
         - how to gain more maxHP?
+        - upgrade consist of two random parts e.g. current choices + maxHP/movementSpeed/more HPregen
     - redesign code: upgrades?
 
 

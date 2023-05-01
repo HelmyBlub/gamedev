@@ -15,7 +15,7 @@ import { addHpRegenAbility } from "./abilityHpRegen.js"
 import { addMeleeAbility } from "./abilityMelee.js"
 import { addIceAbility } from "./abilityIceAura.js"
 import { addSingleTargetAbility } from "./abilitySingleTarget.js"
-import { addSnipeAbility } from "./abilitySnipe.js"
+import { addSnipeAbility } from "./snipe/abilitySnipe.js"
 
 export type Ability = {
     id: number,
