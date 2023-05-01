@@ -1,7 +1,9 @@
-import { characterTakeDamage, getCharactersTouchingLine } from "../../character/character.js";
+import { characterTakeDamage, findMyCharacter, getCharactersTouchingLine } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
-import { calculateDirection, getNextId } from "../../game.js";
+import { handleCommand } from "../../commands.js";
+import { calculateDirection, getCameraPosition, getNextId } from "../../game.js";
 import { Position, Game, IdCounter } from "../../gameModel.js";
+import { ABILITY_ACTIONS } from "../../playerInput.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, UpgradeOptionAbility, findAbilityById, levelingAbilityXpGain } from "../ability.js";
 import { paintAbilityObjectSnipe, paintAbilitySnipeStatsUI, paintAbilitySnipeUI } from "./abilitySnipePaint.js";
 import { abilityUpgradeNoMissChainDamageFactor, abilityUpgradeNoMissChainOnObjectSnipeDamageDone, getAbilityUpgradeNoMissChain } from "./abilitySnipeUpgradeChainHit.js";
@@ -22,11 +24,15 @@ export type AbilitySnipe = Ability & {
     baseRange: number,
     size: number,
     baseRechargeTime: number,
-    rechargeTimeDecreaseFaktor: number,
+    shotFrequencyTimeDecreaseFaktor: number,
     maxCharges: number,
     currentCharges: number,
-    nextRechargeTime: number,
+    reloadTime: number,
     paintFadeDuration: number,
+    shotNextAllowedTime: boolean,
+    maxShootFrequency: number,
+    nextAllowedShotTime: number,
+    lastMousePosition?: Position,
     upgrades: {
         [key: string]: any,
     }
@@ -58,7 +64,7 @@ export function createAbilitySnipe(
     damage: number = 50,
     range: number = 800,
     size: number = 5,
-    rechargeTime: number = 500,
+    rechargeTime: number = 1000,
     maxCharges: number = 3
 ): AbilitySnipe {
     return {
@@ -70,12 +76,15 @@ export function createAbilitySnipe(
         baseRechargeTime: rechargeTime,
         currentCharges: maxCharges,
         maxCharges: maxCharges,
-        nextRechargeTime: -1,
+        reloadTime: -1,
         baseRange: range,
-        rechargeTimeDecreaseFaktor: 1,
+        shotFrequencyTimeDecreaseFaktor: 1,
         size: size,
         paintFadeDuration: 1000,
         upgrades: {},
+        maxShootFrequency: 1000,
+        shotNextAllowedTime: false,
+        nextAllowedShotTime: 0,
     };
 }
 
@@ -102,7 +111,7 @@ function setAbilitySnipeToLevel(ability: Ability, level: number) {
     abilitySnipe.baseDamage = level * 100;
     abilitySnipe.maxCharges = 2 + level;
     abilitySnipe.baseRange = 800 + level * 50;
-    abilitySnipe.rechargeTimeDecreaseFaktor = 1 + level * 0.15;
+    abilitySnipe.shotFrequencyTimeDecreaseFaktor = 1 + level * 0.15;
 }
 
 export function getAbilitySnipeDamage(abilitySnipe: AbilitySnipe) {
@@ -123,17 +132,24 @@ function deleteAbilityObjectSnipe(abilityObject: AbilityObject, game: Game) {
     return abilityObjectSnipe.deleteTime <= game.state.time;
 }
 
-function castSnipe(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, game: Game) {
+function castSnipe(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isKeydown: boolean, game: Game) {
     let abilitySnipe = ability as AbilitySnipe;
 
-    if (abilitySnipe.currentCharges > 0) {
-        let direction = calculateDirection(abilityOwner, castPosition);
-        let abilityObjectSnipt = createAbilityObjectSnipe(abilityOwner, abilitySnipe.id, abilitySnipe, abilityOwner.faction, direction, game.state.time);
-        game.state.abilityObjects.push(abilityObjectSnipt);
-        if (abilitySnipe.currentCharges === abilitySnipe.maxCharges) {
-            abilitySnipe.nextRechargeTime = game.state.time + abilitySnipe.baseRechargeTime / abilitySnipe.rechargeTimeDecreaseFaktor;
-        }
-        abilitySnipe.currentCharges--;
+    abilitySnipe.shotNextAllowedTime = isKeydown;
+    abilitySnipe.lastMousePosition = castPosition;
+    if(abilitySnipe.currentCharges > 0 && abilitySnipe.shotNextAllowedTime && game.state.time >= abilitySnipe.nextAllowedShotTime){
+        createAndPushAbilityObjectSnipe(abilityOwner, abilitySnipe, game);
+        abilitySnipe.nextAllowedShotTime = game.state.time + getShotFrequency(abilitySnipe);
+    }    
+}
+
+function createAndPushAbilityObjectSnipe(abilityOwner: AbilityOwner, abilitySnipe: AbilitySnipe, game: Game){
+    let direction = calculateDirection(abilityOwner, abilitySnipe.lastMousePosition!);
+    let abilityObjectSnipt = createAbilityObjectSnipe(abilityOwner, abilitySnipe.id, abilitySnipe, abilityOwner.faction, direction, game.state.time);
+    game.state.abilityObjects.push(abilityObjectSnipt);
+    abilitySnipe.currentCharges--;
+    if (abilitySnipe.currentCharges === 0) {
+        abilitySnipe.reloadTime = game.state.time + abilitySnipe.baseRechargeTime;
     }
 }
 
@@ -146,18 +162,36 @@ export function calcAbilityObjectSnipeEndPosition(snipe: AbilityObjectSnipe): Po
 
 function tickAbilitySnipe(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     let abilitySnipe = ability as AbilitySnipe;
-    if (abilitySnipe.nextRechargeTime === -1) {
-        abilitySnipe.nextRechargeTime = game.state.time + abilitySnipe.baseRechargeTime / abilitySnipe.rechargeTimeDecreaseFaktor;
-    }
-    if (abilitySnipe.currentCharges < abilitySnipe.maxCharges) {
-        if (game.state.time >= abilitySnipe.nextRechargeTime) {
-            abilitySnipe.currentCharges++;
-            abilitySnipe.nextRechargeTime += abilitySnipe.baseRechargeTime / abilitySnipe.rechargeTimeDecreaseFaktor;
-            if (abilitySnipe.nextRechargeTime <= game.state.time) {
-                abilitySnipe.nextRechargeTime = game.state.time + abilitySnipe.baseRechargeTime / abilitySnipe.rechargeTimeDecreaseFaktor;
-            }
+    if (abilitySnipe.currentCharges === 0) {
+        if (game.state.time >= abilitySnipe.reloadTime) {
+            abilitySnipe.currentCharges = abilitySnipe.maxCharges;
+            abilitySnipe.reloadTime = -1;
         }
     }
+    if(abilitySnipe.currentCharges > 0 && abilitySnipe.shotNextAllowedTime && game.state.time >= abilitySnipe.nextAllowedShotTime){
+        sendToUpdateCastPosition(abilityOwner, game);
+    }
+}
+
+function sendToUpdateCastPosition(abilityOwner: AbilityOwner, game: Game){
+    let myCharacter = findMyCharacter(game);
+    if(!myCharacter || abilityOwner.id !== myCharacter.id) return;
+    let cameraPosition = getCameraPosition(game);
+    let castPosition = {
+        x: game.mouseRelativeCanvasPosition.x - game.canvasElement!.width / 2 + cameraPosition.x,
+        y: game.mouseRelativeCanvasPosition.y - game.canvasElement!.height / 2 + cameraPosition.y
+    }            
+
+    //TODO tage correct ability action not just 0
+    handleCommand(game, {
+        command: "playerInput",
+        clientId: game.multiplayer.myClientId,
+        data: { action: ABILITY_ACTIONS[0], isKeydown: true, castPosition: castPosition },
+    });
+}
+
+export function getShotFrequency(abilitySnipe: AbilitySnipe){
+    return Math.max(abilitySnipe.maxShootFrequency / abilitySnipe.shotFrequencyTimeDecreaseFaktor, 100);
 }
 
 function tickAbilityObjectSnipe(abilityObject: AbilityObject, game: Game) {

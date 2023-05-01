@@ -91,7 +91,8 @@ function deleteAbilityObjectTower(abilityObject: AbilityObject, game: Game) {
     return false;
 }
 
-function castTower(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, game: Game) {
+function castTower(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isKeydown: boolean, game: Game) {
+    if(!isKeydown) return;
     let abilityTower = ability as AbilityTower;
     let distance = calculateDistance(abilityOwner, castPosition);
     if (distance > abilityTower.maxClickRange) return;

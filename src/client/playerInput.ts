@@ -231,15 +231,13 @@ function playerAction(clientId: number, data: any, game: Game) {
                 upgradeLevelingCharacter(character as LevelingCharacter, UPGRADE_ACTIONS.indexOf(action), game.state.randomSeed);
             }
         } else if (ABILITY_ACTIONS.indexOf(action) !== -1) {
-            if (isKeydown) {
-                let ability = character.abilities.find((a) => a.playerInputBinding && a.playerInputBinding === action);
-                if (ability) {
-                    let functions = ABILITIES_FUNCTIONS[ability.name];
-                    if (functions.activeAbilityCast !== undefined) {
-                        functions.activeAbilityCast(character, ability, data.castPosition, game);
-                    } else {
-                        console.log("missing activeAbilityCast function for", action, ability);
-                    }
+            let ability = character.abilities.find((a) => a.playerInputBinding && a.playerInputBinding === action);
+            if (ability) {
+                let functions = ABILITIES_FUNCTIONS[ability.name];
+                if (functions.activeAbilityCast !== undefined) {
+                    functions.activeAbilityCast(character, ability, data.castPosition, isKeydown, game);
+                } else {
+                    console.log("missing activeAbilityCast function for", action, ability);
                 }
             }
         }

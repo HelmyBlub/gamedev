@@ -1,7 +1,7 @@
 import { getCameraPosition } from "../../game.js";
 import { Game } from "../../gameModel.js";
 import { Ability, AbilityObject, PaintOrderAbility } from "../ability.js";
-import { AbilityObjectSnipe, AbilitySnipe, calcAbilityObjectSnipeEndPosition, getAbilitySnipeDamage, getAbilitySnipeRange } from "./abilitySnipe.js";
+import { AbilityObjectSnipe, AbilitySnipe, calcAbilityObjectSnipeEndPosition, getAbilitySnipeDamage, getAbilitySnipeRange, getShotFrequency } from "./abilitySnipe.js";
 import { UPGRADE_SNIPE_ABILITY_NO_MISS_CHAIN, abilityUpgradeNoMissChainUiText } from "./abilitySnipeUpgradeChainHit.js";
 import { UPGRADE_SNIPE_ABILITY_SPLIT_SHOT, abilityUpgradeSplitOnHitUiText } from "./abilitySnipeUpgradeSplitShot.js";
 
@@ -41,7 +41,7 @@ export function paintAbilitySnipeUI(ctx: CanvasRenderingContext2D, ability: Abil
     ctx.stroke();
     if (snipe.currentCharges < snipe.maxCharges) {
         ctx.fillStyle = "gray";
-        let heightFactor = (snipe.nextRechargeTime - game.state.time) / (snipe.baseRechargeTime / snipe.rechargeTimeDecreaseFaktor);
+        let heightFactor = Math.max((snipe.reloadTime - game.state.time) / (snipe.baseRechargeTime / snipe.shotFrequencyTimeDecreaseFaktor), 0);
         ctx.fillRect(drawStartX, drawStartY, rectSize, rectSize * heightFactor);
     }
 
@@ -64,7 +64,10 @@ export function paintAbilitySnipeUI(ctx: CanvasRenderingContext2D, ability: Abil
 
 export function paintAbilitySnipeStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
     let abilitySnipe = ability as AbilitySnipe;
-    const abilitySnipeDescription = ["Snipe in direction of click. Enemies hit by line take damage"];
+    const abilitySnipeDescription = [
+        "Snipe in direction of click. Enemies hit by line take damage",
+        "Gets XP for killing enemies. More XP more Damage"
+    ];
     const fontSize = 14;
     const width = 425;
     const height = 200;
@@ -84,6 +87,10 @@ export function paintAbilitySnipeStatsUI(ctx: CanvasRenderingContext2D, ability:
     ctx.fillText("Range: " + getAbilitySnipeRange(abilitySnipe), drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
     if (abilitySnipe.leveling) {
         ctx.fillText("Level: " + abilitySnipe.leveling.level, drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
+        ctx.fillText("Clip Size: " + abilitySnipe.maxCharges, drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
+        ctx.fillText("Shoot Cooldown: " + (getShotFrequency(abilitySnipe)/1000).toFixed(2) + "s", drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
+        ctx.fillText("Reload Time: " + (abilitySnipe.baseRechargeTime/1000).toFixed(2) + "s", drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
+        
         ctx.fillText("Current XP: " + abilitySnipe.leveling.experience.toFixed(0), drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
         ctx.fillText("XP required for Level Up: " + abilitySnipe.leveling.experienceForLevelUp, drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
         if (abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_NO_MISS_CHAIN]) {

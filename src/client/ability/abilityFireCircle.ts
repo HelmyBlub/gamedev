@@ -188,7 +188,7 @@ function autoCastAbility(abilityOwner: AbilityOwner, abilityFireCircle: AbilityF
         y: abilityOwner.y + nextRandom(game.state.randomSeed) * areaSize * 2 - areaSize
     };
 
-    castFireCircle(abilityOwner, abilityFireCircle, castRandomPosition, game);
+    castFireCircle(abilityOwner, abilityFireCircle, castRandomPosition, true, game);
 }
 
 function paintAbilityFireCircleUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
@@ -289,7 +289,8 @@ function createAbiltiyFireCircleUpgradeOptions(): UpgradeOptionAbility[] {
     return upgradeOptions;
 }
 
-function castFireCircle(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, game: Game) {
+function castFireCircle(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isKeydown: boolean, game: Game) {
+    if(!isKeydown) return;
     let abilityFireCircle = ability as AbilityFireCircle;
     if (abilityFireCircle.currentCharges > 0) {
         game.state.abilityObjects.push(createObjectFireCircleTraveling(

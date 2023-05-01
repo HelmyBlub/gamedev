@@ -1,7 +1,14 @@
 current tasks:
 - Sniper: LevelingAbilityCharacter
+    - magazine size
     - limit maximum snipe speed
     - toogle auto snipe button
+    - update mouse position for auto cast, currenlty bad for bad connection
+    - snipe todo comment
+
+    - redesign code: upgrades?
+        - make upgradeOptions file for some generall functions
+
 
     - secondary abilities?
         - temporary movement speed boost?
@@ -9,12 +16,9 @@ current tasks:
         - utility skill get XP by beeing used?
     - sniper thoguhts:
         - to much damage?
-        - to much clicking?
-            - magazine size? 
         - needs more upgrade choice?
         - how to gain more maxHP?
         - upgrade consist of two random parts e.g. current choices + maxHP/movementSpeed/more HPregen
-    - redesign code: upgrades?
 
 
 - redesign levelingCharacter/abilityLevelingCharacter to be more independant in code
