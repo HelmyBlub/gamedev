@@ -1,8 +1,8 @@
 import { countAlivePlayerCharacters, findCharacterById, findMyCharacter, getPlayerCharacters, tickCharacters, tickMapCharacters } from "./character/character.js";
 import { paintAll } from "./gamePaint.js";
-import { gameInitPlayers } from "./player.js";
-import { UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.js";
-import { Position, GameState, Game, IdCounter, TestingStuff, Debugging, PaintTextData } from "./gameModel.js";
+import { findPlayerByCharacterId, gameInitPlayers } from "./player.js";
+import { MOUSE_ACTION, UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.js";
+import { Position, GameState, Game, IdCounter, TestingStuff, Debugging, PaintTextData, ClientInfo } from "./gameModel.js";
 import { createMap, determineMapKeysInDistance, GameMap, getMapMidlePosition, removeAllMapCharacters } from "./map/map.js";
 import { Character } from "./character/characterModel.js";
 import { generateMissingChunks } from "./map/mapGeneration.js";
@@ -71,6 +71,7 @@ export function gameInit(game: Game) {
     gameInitPlayers(game);
     if (game.multiplayer.websocket !== null) {
         game.multiplayer.maxServerGameTime = 0;
+        game.multiplayer.autosendMousePosition.nextTime = 0,
         game.state.playerInputs = game.multiplayer.cachePlayerInputs!;
     }
 }
@@ -172,6 +173,19 @@ export function createPaintTextData(position: Position, text: string, color: str
         fontSize: fontSize,
         removeTime: currentTime + duration,
     }
+}
+
+export function getClientInfo(clientId: number, game: Game): ClientInfo | undefined{
+    for(let clientInfo of game.state.clientInfos){
+        if(clientInfo.id === clientId){
+            return clientInfo;
+        }
+    }
+    return undefined;
+}
+
+export function getClientInfoByCharacterId(characterId: number, game: Game): ClientInfo | undefined{
+    return getClientInfo(findPlayerByCharacterId(game.state.players, characterId)!.clientId, game);
 }
 
 export function calculateDistancePointToLine(point: Position, linestart: Position, lineEnd: Position) {
@@ -291,6 +305,25 @@ function doStuff(game: Game) {
     checkMovementKeyPressedHint(game);
     checkForAutoSkill(game);
     autoPlay(game);
+    autoSendMyMousePosition(game);
+}
+
+function autoSendMyMousePosition(game: Game){
+    if(!game.multiplayer.autosendMousePosition.active) return;
+    if(game.multiplayer.autosendMousePosition.nextTime <= game.state.time){
+        let cameraPosition = getCameraPosition(game);
+        let castPosition = {
+            x: game.mouseRelativeCanvasPosition.x - game.canvasElement!.width / 2 + cameraPosition.x,
+            y: game.mouseRelativeCanvasPosition.y - game.canvasElement!.height / 2 + cameraPosition.y
+        }            
+    
+        handleCommand(game, {
+            command: "playerInput",
+            clientId: game.multiplayer.myClientId,
+            data: { action: MOUSE_ACTION, mousePosition: castPosition },
+        });
+        game.multiplayer.autosendMousePosition.nextTime = game.state.time + game.multiplayer.autosendMousePosition.interval;
+    }
 }
 
 function checkForAutoSkill(game: Game) {

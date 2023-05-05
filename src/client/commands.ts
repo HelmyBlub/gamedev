@@ -66,12 +66,12 @@ export function executeCommand(game: Game, data: any) {
             playerJoined(game, data);
             break;
         case "playerLeft":
-            for (let i = 0; i < game.state.cliendInfos.length; i++) {
-                if (game.state.cliendInfos[i].id === data.clientId) {
+            for (let i = 0; i < game.state.clientInfos.length; i++) {
+                if (game.state.clientInfos[i].id === data.clientId) {
                     let textPosition = getCameraPosition(game);
-                    game.UI.displayTextData.push(createPaintTextData(textPosition, `${game.state.cliendInfos[i].name} diconnected`, "black", "24", game.state.time, 5000));
-                    console.log("client removed", game.state.cliendInfos[i]);
-                    game.state.cliendInfos.splice(i, 1);
+                    game.UI.displayTextData.push(createPaintTextData(textPosition, `${game.state.clientInfos[i].name} diconnected`, "black", "24", game.state.time, 5000));
+                    console.log("client removed", game.state.clientInfos[i]);
+                    game.state.clientInfos.splice(i, 1);
                     break;
                 }
             }
@@ -85,15 +85,14 @@ export function executeCommand(game: Game, data: any) {
 }
 
 function playerJoined(game: Game, data: PlayerJoined) {
-    game.state.cliendInfos.push({ id: data.clientId, name: data.clientName });
+    game.state.clientInfos.push({ id: data.clientId, name: data.clientName, lastMousePosition: {x: 0, y:0} });
     let textPosition = getCameraPosition(game);
     game.UI.displayTextData.push(createPaintTextData(textPosition, `${data.clientName} joined`, "black", "24", game.state.time, 5000));
-
 }
 
 function connectInfo(game: Game, data: ConnectInfo) {
     game.multiplayer.myClientId = data.clientId;
-    game.state.cliendInfos = [{ id: data.clientId, name: data.clientName }];
+    game.state.clientInfos = [{ id: data.clientId, name: data.clientName, lastMousePosition: {x: 0, y:0} }];
     game.multiplayer.updateInterval = data.updateInterval;
     if (data.numberConnections === 0) {
         game.multiplayer.awaitingGameState.waiting = false;
@@ -112,8 +111,8 @@ function gameState(game: Game, data: GameState) {
     game.multiplayer.awaitingGameState.waiting = false;
     game.state = data;
     game.performance = {};
-    for (let i = 0; i < game.state.cliendInfos.length; i++) {
-        if (game.multiplayer.myClientId === game.state.cliendInfos[i].id) {
+    for (let i = 0; i < game.state.clientInfos.length; i++) {
+        if (game.multiplayer.myClientId === game.state.clientInfos[i].id) {
             game.clientKeyBindings = [{
                 clientIdRef: game.multiplayer.myClientId,
                 keyCodeToActionPressed: createDefaultKeyBindings1()

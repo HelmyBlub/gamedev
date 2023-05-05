@@ -131,7 +131,7 @@ function paintPlayerNameOverCharacter(ctx: CanvasRenderingContext2D, character: 
     const fontSize = 12;
     const playerOfCharacter = game.state.players.find((e) => e.character === character);
     if (!playerOfCharacter) return;
-    const clientInfo = game.state.cliendInfos.find((e) => e.id === playerOfCharacter.clientId);
+    const clientInfo = game.state.clientInfos.find((e) => e.id === playerOfCharacter.clientId);
     if (!clientInfo || !clientInfo.name) return;
     if (clientInfo.id === game.multiplayer.myClientId) return;
 

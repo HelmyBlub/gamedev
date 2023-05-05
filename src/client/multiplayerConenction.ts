@@ -54,9 +54,9 @@ export function websocketConnect(game: Game, clientName: string = "Unknown", lob
             game.multiplayer.websocket = null;
     
             let myClientId = game.multiplayer.myClientId;
-            for (let i = game.state.cliendInfos.length - 1; i >= 0; i--) {
-                if (game.state.cliendInfos[i].id !== myClientId) {
-                    game.state.cliendInfos.splice(i,1);
+            for (let i = game.state.clientInfos.length - 1; i >= 0; i--) {
+                if (game.state.clientInfos[i].id !== myClientId) {
+                    game.state.clientInfos.splice(i,1);
                 }
             }
             game.multiplayer.intentionalDisconnect = false;

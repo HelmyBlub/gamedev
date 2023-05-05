@@ -55,9 +55,10 @@ export type BossStuff = {
     bosses: Character[],
 }
 
-export type CliendInfo = {
+export type ClientInfo = {
     id: number,
     name: string,
+    lastMousePosition: Position,
 }
 
 export type GameState = {
@@ -73,7 +74,7 @@ export type GameState = {
     randomSeed: RandomSeed,
     playerInputs: PlayerInput[],
     highscores: Highscores,
-    cliendInfos: CliendInfo[],
+    clientInfos: ClientInfo[],
     map: GameMap,
     deathCircleCreated: boolean,
 }
@@ -123,6 +124,11 @@ export type Multiplayer = {
     multiplayerIdentifier?: string,
     intentionalDisconnect: boolean,
     timePassedWithoutSeverUpdate: number,
+    autosendMousePosition: {
+        active: boolean,
+        interval: number,
+        nextTime: number,
+    }
 }
 
 export type Game = {
@@ -181,7 +187,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
                 seed: Math.random(),
             },
             players: [],
-            cliendInfos: [{id: -1, name: "Unknown"}],
+            clientInfos: [{id: -1, name: "Unknown", lastMousePosition: {x: 0, y:0}}],
             map: createMap(),
             deathCircleCreated: false,
             bossStuff: {
@@ -213,6 +219,11 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             },
             intentionalDisconnect: false,
             timePassedWithoutSeverUpdate: 0,
+            autosendMousePosition: {
+                active: false,
+                interval: 100,
+                nextTime: 0,
+            }
         },
         camera: {
             type: "follow character"

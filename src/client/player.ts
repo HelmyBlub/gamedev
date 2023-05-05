@@ -46,13 +46,13 @@ function addPlayer(idCounter: IdCounter, clientId: number, players: Player[], po
 }
 
 export function gameInitPlayers(game: Game) {
-    let numberPlayers = Math.max(game.state.cliendInfos.length, 1);
+    let numberPlayers = Math.max(game.state.clientInfos.length, 1);
     for (let i = 0; i < numberPlayers; i++) {
         let playerSpawn: Position = { x: 100, y: 100 + i * 50 };
         playerSpawn = findNearNonBlockingPosition(playerSpawn, game.state.map, game.state.idCounter);
 
-        addPlayer(game.state.idCounter, game.state.cliendInfos[i].id, game.state.players, playerSpawn, game.state.randomSeed);
-        if (game.multiplayer.myClientId === -1 || game.multiplayer.myClientId === game.state.cliendInfos[i].id) {
+        addPlayer(game.state.idCounter, game.state.clientInfos[i].id, game.state.players, playerSpawn, game.state.randomSeed);
+        if (game.multiplayer.myClientId === -1 || game.multiplayer.myClientId === game.state.clientInfos[i].id) {
             game.clientKeyBindings.push({
                 clientIdRef: game.multiplayer.myClientId,
                 keyCodeToActionPressed: createDefaultKeyBindings1()

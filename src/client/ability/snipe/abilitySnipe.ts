@@ -1,8 +1,9 @@
 import { characterTakeDamage, findMyCharacter, getCharactersTouchingLine } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
 import { handleCommand } from "../../commands.js";
-import { calculateDirection, getCameraPosition, getNextId } from "../../game.js";
-import { Position, Game, IdCounter } from "../../gameModel.js";
+import { calculateDirection, getCameraPosition, getClientInfo, getClientInfoByCharacterId, getNextId } from "../../game.js";
+import { Position, Game, IdCounter, ClientInfo } from "../../gameModel.js";
+import { findPlayerByCharacterId } from "../../player.js";
 import { ABILITY_ACTIONS } from "../../playerInput.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, UpgradeOptionAbility, findAbilityById, levelingAbilityXpGain } from "../ability.js";
 import { paintAbilityObjectSnipe, paintAbilitySnipeStatsUI, paintAbilitySnipeUI } from "./abilitySnipePaint.js";
@@ -32,7 +33,6 @@ export type AbilitySnipe = Ability & {
     shotNextAllowedTime: boolean,
     maxShootFrequency: number,
     nextAllowedShotTime: number,
-    lastMousePosition?: Position,
     upgrades: {
         [key: string]: any,
     }
@@ -132,25 +132,27 @@ function deleteAbilityObjectSnipe(abilityObject: AbilityObject, game: Game) {
     return abilityObjectSnipe.deleteTime <= game.state.time;
 }
 
-function castSnipe(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isKeydown: boolean, game: Game) {
-    let abilitySnipe = ability as AbilitySnipe;
-
-    abilitySnipe.shotNextAllowedTime = isKeydown;
-    abilitySnipe.lastMousePosition = castPosition;
+function castSnipe(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isInputdown: boolean, game: Game) {
+    const abilitySnipe = ability as AbilitySnipe;
+    const clientInfo: ClientInfo = getClientInfoByCharacterId(abilityOwner.id, game)!;
+    abilitySnipe.shotNextAllowedTime = isInputdown;
+    
+    if(clientInfo.id === game.multiplayer.myClientId) game.multiplayer.autosendMousePosition.active = isInputdown;
+    clientInfo.lastMousePosition =  castPosition;
     if(abilitySnipe.currentCharges > 0 && abilitySnipe.shotNextAllowedTime && game.state.time >= abilitySnipe.nextAllowedShotTime){
-        createAndPushAbilityObjectSnipe(abilityOwner, abilitySnipe, game);
-        abilitySnipe.nextAllowedShotTime = game.state.time + getShotFrequency(abilitySnipe);
+        createAndPushAbilityObjectSnipe(abilityOwner, abilitySnipe, castPosition, game);   
     }    
 }
 
-function createAndPushAbilityObjectSnipe(abilityOwner: AbilityOwner, abilitySnipe: AbilitySnipe, game: Game){
-    let direction = calculateDirection(abilityOwner, abilitySnipe.lastMousePosition!);
+function createAndPushAbilityObjectSnipe(abilityOwner: AbilityOwner, abilitySnipe: AbilitySnipe, castPosition: Position , game: Game){
+    let direction = calculateDirection(abilityOwner, castPosition);
     let abilityObjectSnipt = createAbilityObjectSnipe(abilityOwner, abilitySnipe.id, abilitySnipe, abilityOwner.faction, direction, game.state.time);
     game.state.abilityObjects.push(abilityObjectSnipt);
     abilitySnipe.currentCharges--;
     if (abilitySnipe.currentCharges === 0) {
         abilitySnipe.reloadTime = game.state.time + abilitySnipe.baseRechargeTime;
     }
+    abilitySnipe.nextAllowedShotTime = game.state.time + getShotFrequency(abilitySnipe);
 }
 
 export function calcAbilityObjectSnipeEndPosition(snipe: AbilityObjectSnipe): Position {
@@ -169,25 +171,9 @@ function tickAbilitySnipe(abilityOwner: AbilityOwner, ability: Ability, game: Ga
         }
     }
     if(abilitySnipe.currentCharges > 0 && abilitySnipe.shotNextAllowedTime && game.state.time >= abilitySnipe.nextAllowedShotTime){
-        sendToUpdateCastPosition(abilityOwner, game);
+        let castPosition = getClientInfoByCharacterId(abilityOwner.id, game)!.lastMousePosition;
+        createAndPushAbilityObjectSnipe(abilityOwner, abilitySnipe, castPosition, game);   
     }
-}
-
-function sendToUpdateCastPosition(abilityOwner: AbilityOwner, game: Game){
-    let myCharacter = findMyCharacter(game);
-    if(!myCharacter || abilityOwner.id !== myCharacter.id) return;
-    let cameraPosition = getCameraPosition(game);
-    let castPosition = {
-        x: game.mouseRelativeCanvasPosition.x - game.canvasElement!.width / 2 + cameraPosition.x,
-        y: game.mouseRelativeCanvasPosition.y - game.canvasElement!.height / 2 + cameraPosition.y
-    }            
-
-    //TODO tage correct ability action not just 0
-    handleCommand(game, {
-        command: "playerInput",
-        clientId: game.multiplayer.myClientId,
-        data: { action: ABILITY_ACTIONS[0], isKeydown: true, castPosition: castPosition },
-    });
 }
 
 export function getShotFrequency(abilitySnipe: AbilitySnipe){

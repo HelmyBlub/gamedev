@@ -1,11 +1,5 @@
 current tasks:
 - Sniper: LevelingAbilityCharacter
-    - magazine size
-    - limit maximum snipe speed
-    - toogle auto snipe button
-    - update mouse position for auto cast, currenlty bad for bad connection
-    - snipe todo comment
-
     - redesign code: upgrades?
         - make upgradeOptions file for some generall functions
 

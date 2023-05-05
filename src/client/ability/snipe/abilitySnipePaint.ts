@@ -35,13 +35,19 @@ export function paintAbilitySnipeUI(ctx: CanvasRenderingContext2D, ability: Abil
     let rectSize = size;
     ctx.strokeStyle = "black";
     ctx.fillStyle = "white";
+    ctx.lineWidth = 1;
     ctx.fillRect(drawStartX, drawStartY, rectSize, rectSize);
     ctx.beginPath();
     ctx.rect(drawStartX, drawStartY, rectSize, rectSize);
     ctx.stroke();
     if (snipe.currentCharges < snipe.maxCharges) {
         ctx.fillStyle = "gray";
-        let heightFactor = Math.max((snipe.reloadTime - game.state.time) / (snipe.baseRechargeTime / snipe.shotFrequencyTimeDecreaseFaktor), 0);
+        let heightFactor: number;
+        if(snipe.currentCharges === 0){
+            heightFactor = Math.max((snipe.reloadTime - game.state.time) / snipe.baseRechargeTime, 0);
+        }else{
+            heightFactor = Math.max((snipe.nextAllowedShotTime - game.state.time) / (snipe.maxShootFrequency / snipe.shotFrequencyTimeDecreaseFaktor), 0);
+        }
         ctx.fillRect(drawStartX, drawStartY, rectSize, rectSize * heightFactor);
     }
 

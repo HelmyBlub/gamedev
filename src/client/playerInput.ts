@@ -7,11 +7,12 @@ import { Game, Position } from "./gameModel.js";
 import { testGame } from "./test/gameTest.js";
 import { websocketConnect } from "./multiplayerConenction.js";
 import { ABILITIES_FUNCTIONS } from "./ability/ability.js";
-import { calculateDirection, getCameraPosition, takeTimeMeasure } from "./game.js";
+import { calculateDirection, getCameraPosition, getClientInfo, takeTimeMeasure } from "./game.js";
 
 export const MOVE_ACTIONS = ["left", "down", "right", "up"];
 export const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3"];
 export const ABILITY_ACTIONS = ["ability1", "ability2", "ability3"];
+export const MOUSE_ACTION = "mousePositionUpdate";
 
 export type ActionsPressed = {
     [key: string]: boolean;
@@ -240,6 +241,8 @@ function playerAction(clientId: number, data: any, game: Game) {
                     console.log("missing activeAbilityCast function for", action, ability);
                 }
             }
+        } else if (MOUSE_ACTION === action) {
+            getClientInfo(clientId, game)!.lastMousePosition = data.mousePosition;
         }
     }
 }
