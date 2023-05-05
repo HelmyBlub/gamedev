@@ -7,7 +7,7 @@ export type DebuffSlow = Debuff & {
     slowFactor: number,
 }
 
-export function addSlowDebuff(){
+export function addDebuffSlow(){
     DEBUFFS_FUNCTIONS[DEBUFF_NAME_SLOW] = {
         applyDebuffEffect: applyDebuffEffectSlow,
         removeDebuffEffect: removeDebuffEffectSlow,

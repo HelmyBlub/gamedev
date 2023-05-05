@@ -1,5 +1,6 @@
 import { addAbilityToCharacter } from "../../ability/ability.js";
 import { createAbilityHpRegen } from "../../ability/abilityHpRegen.js";
+import { createAbilityMovementSpeed } from "../../ability/abilityMovementSpeed.js";
 import { createAbilitySnipe } from "../../ability/snipe/abilitySnipe.js";
 import { IdCounter, PLAYER_CHARACTER_CLASSES } from "../../gameModel.js";
 import { RandomSeed } from "../../randomNumberGenerator.js";
@@ -29,5 +30,6 @@ function createSniperCharacter(
     snipe.leveling = {experience: 0, experienceForLevelUp: 10, level: 1, bossSkillPoints: 0};
     addAbilityToCharacter(character, snipe);
     addAbilityToCharacter(character, createAbilityHpRegen(idCounter));
+    addAbilityToCharacter(character, createAbilityMovementSpeed(idCounter, "ability2"));
     return character;
 }

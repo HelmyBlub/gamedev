@@ -52,7 +52,8 @@ export function tickBossEnemyCharacter(enemy: BossEnemyCharacter, game: Game, pa
     moveCharacterTick(enemy, game.state.map, game.state.idCounter, false);
 
     for (let ability of enemy.abilities) {
-        ABILITIES_FUNCTIONS[ability.name].tickAbility(enemy, ability, game);
+        let tickAbility = ABILITIES_FUNCTIONS[ability.name].tickAbility;
+        if(tickAbility) tickAbility(enemy, ability, game);
     }
     tickCharacterDebuffs(enemy, game);
 }

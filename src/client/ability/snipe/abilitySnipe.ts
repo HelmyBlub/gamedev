@@ -1,10 +1,7 @@
 import { characterTakeDamage, findMyCharacter, getCharactersTouchingLine } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
-import { handleCommand } from "../../commands.js";
-import { calculateDirection, getCameraPosition, getClientInfo, getClientInfoByCharacterId, getNextId } from "../../game.js";
+import { calculateDirection, getClientInfoByCharacterId, getNextId } from "../../game.js";
 import { Position, Game, IdCounter, ClientInfo } from "../../gameModel.js";
-import { findPlayerByCharacterId } from "../../player.js";
-import { ABILITY_ACTIONS } from "../../playerInput.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, UpgradeOptionAbility, findAbilityById, levelingAbilityXpGain } from "../ability.js";
 import { paintAbilityObjectSnipe, paintAbilitySnipeStatsUI, paintAbilitySnipeUI } from "./abilitySnipePaint.js";
 import { abilityUpgradeNoMissChainDamageFactor, abilityUpgradeNoMissChainOnObjectSnipeDamageDone, getAbilityUpgradeNoMissChain } from "./abilitySnipeUpgradeChainHit.js";

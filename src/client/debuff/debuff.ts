@@ -1,6 +1,7 @@
 import { Character } from "../character/characterModel.js";
 import { Game } from "../gameModel.js"
-import { addSlowDebuff } from "./debuffSlow.js";
+import { addBuffSpeed } from "./buffSpeed.js";
+import { addDebuffSlow } from "./debuffSlow.js";
 
 export type Debuff = {
     name: string,
@@ -20,7 +21,8 @@ export type DebuffsFunctions = {
 export const DEBUFFS_FUNCTIONS: DebuffsFunctions = {};
 
 export function onDomLoadSetDebuffsFunctions() {
-    addSlowDebuff();
+    addDebuffSlow();
+    addBuffSpeed();
 }
 
 export function applyDebuff(debuff: Debuff, character: Character, game: Game) {

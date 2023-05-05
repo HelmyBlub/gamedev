@@ -167,7 +167,8 @@ export function tickCharacters(characters: Character[], game: Game, pathingCache
         CHARACTER_TYPE_FUNCTIONS[characters[j].type].tickFunction(characters[j], game, pathingCache);
         if (!characters[j].isDead) {
             for (let ability of characters[j].abilities) {
-                ABILITIES_FUNCTIONS[ability.name].tickAbility(characters[j], ability, game);
+                let tickAbility = ABILITIES_FUNCTIONS[ability.name].tickAbility;
+                if(tickAbility) tickAbility(characters[j], ability, game);
             }
             tickCharacterDebuffs(characters[j], game);
         }

@@ -16,6 +16,7 @@ import { addMeleeAbility } from "./abilityMelee.js"
 import { addIceAbility } from "./abilityIceAura.js"
 import { addSingleTargetAbility } from "./abilitySingleTarget.js"
 import { addSnipeAbility } from "./snipe/abilitySnipe.js"
+import { addMovementSpeedAbility } from "./abilityMovementSpeed.js"
 
 export type Ability = {
     id: number,
@@ -51,7 +52,7 @@ export type AbilityOwner = Position & {
 }
 
 export type AbilityFunctions = {
-    tickAbility: (abilityOwner: AbilityOwner, ability: Ability, game: Game) => void,
+    tickAbility?: (abilityOwner: AbilityOwner, ability: Ability, game: Game) => void,
     createAbility: (idCounter: IdCounter) => Ability,
     createAbiltiyUpgradeOptions: (ability: Ability) => UpgradeOptionAbility[],
     createAbiltiyBossUpgradeOptions?: (ability: Ability) => UpgradeOptionAbility[],
@@ -96,6 +97,7 @@ export function onDomLoadSetAbilitiesFunctions() {
     addIceAbility();
     addSingleTargetAbility();
     addSnipeAbility();
+    addMovementSpeedAbility();
 }
 
 export function addAbilityToCharacter(character: Character, ability: Ability) {

@@ -408,7 +408,7 @@ function tickAbilityObjectTower(abilityObject: AbilityObject, game: Game) {
 
     if (abilityTower.ability) {
         let abilityFunction = ABILITIES_FUNCTIONS[abilityTower.ability.name];
-        abilityFunction.tickAbility(abilityTower, abilityTower.ability, game);
+        if(abilityFunction.tickAbility) abilityFunction.tickAbility(abilityTower, abilityTower.ability, game);
     }
 }
 
