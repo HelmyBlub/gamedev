@@ -315,15 +315,6 @@ export function countAlivePlayerCharacters(players: Player[]) {
     return counter;
 }
 
-export function determineEnemyHitsPlayer(enemy: Character, closestPlayer: Character | null, game: Game) {
-    if (closestPlayer === null) return;
-
-    let distance = calculateDistance(enemy, closestPlayer);
-    if (distance <= enemy.width / 2 + closestPlayer.width / 2) {
-        characterTakeDamage(closestPlayer, enemy.damage, game);
-    }
-}
-
 export function determineEnemyMoveDirection(enemy: Character, closestPlayerPosition: Position | null, map: GameMap, pathingCache: PathingCache, idCounter: IdCounter, time: number) {
     if (closestPlayerPosition === null) {
         enemy.isMoving = false;

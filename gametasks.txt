@@ -1,4 +1,6 @@
 current tasks:
+- choose character type on start
+- visualize type?
 - Sniper: LevelingAbilityCharacter
     - needs more upgrade choice?
 

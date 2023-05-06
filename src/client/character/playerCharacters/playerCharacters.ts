@@ -16,7 +16,6 @@ export type PlayerCharacterClass = {
         color: string,
         moveSpeed: number,
         hp: number,
-        damage: number,
         faction: string,
         seed: RandomSeed,
     ) => Character

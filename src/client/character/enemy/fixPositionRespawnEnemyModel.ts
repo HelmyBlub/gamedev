@@ -41,7 +41,6 @@ export function createEnemyWithLevel(idCounter: IdCounter, enemyPos: Position, l
     let hp = 5 * Math.pow(level, 3) * enemyType.hpFactor;
     let moveSpeed = Math.min(20, 1 + level / 5);
     let size = Math.min(40, (10 + 5 * Math.floor(level / colors.length + 1)) * enemyType.sizeFactor);
-    let damage = level;
     let color = colors[level % colors.length];
     let autoAggroRange = Math.min(750, 50 + level * 50);
     let alertEnemyRange = Math.min(500, 50 + level * 25);
@@ -49,7 +48,7 @@ export function createEnemyWithLevel(idCounter: IdCounter, enemyPos: Position, l
     let experienceWorth = 1 * enemyType.xpFactor * Math.pow(level, 2);
 
 
-    let enemy = createEnemy(idCounter, enemyPos.x, enemyPos.y, size, moveSpeed, hp, damage, color, autoAggroRange, alertEnemyRange, respawnTime, experienceWorth);
+    let enemy = createEnemy(idCounter, enemyPos.x, enemyPos.y, size, moveSpeed, hp, color, autoAggroRange, alertEnemyRange, respawnTime, experienceWorth);
     enemy.abilities.push(createAbilityMelee(idCounter, undefined, 2 + level * 2));
     return enemy;
 }
@@ -121,14 +120,13 @@ function createEnemy(
     size: number,
     moveSpeed: number,
     hp: number,
-    damage: number,
     color: string,
     autoAggroRange: number,
     alertEnemyRange: number,
     respawnTime: number,
     experienceWorth: number,
 ): FixPositionRespawnEnemyCharacter {
-    let enemy = createCharacter(getNextId(idCounter), x, y, size, size, color, moveSpeed, hp, damage, "enemy", "fixPositionRespawnEnemy", experienceWorth);
+    let enemy = createCharacter(getNextId(idCounter), x, y, size, size, color, moveSpeed, hp, "enemy", "fixPositionRespawnEnemy", experienceWorth);
     return {
         ...enemy,
         autoAggroRange: autoAggroRange,

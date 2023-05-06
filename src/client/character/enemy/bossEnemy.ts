@@ -5,9 +5,9 @@ import { calculateDirection, getNextId } from "../../game.js";
 import { IdCounter, Game, Position, BossStuff } from "../../gameModel.js";
 import { GAME_IMAGES, loadImage } from "../../imageLoad.js";
 import { findNearNonBlockingPosition, getMapMidlePosition, moveByDirectionAndDistance } from "../../map/map.js";
-import { getHighestLevelOfPlayers, getPlayerFurthestAwayFromSpawn } from "../../player.js";
+import { getPlayerFurthestAwayFromSpawn } from "../../player.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
-import { determineClosestCharacter, determineEnemyHitsPlayer, determineEnemyMoveDirection, getPlayerCharacters, moveCharacterTick } from "../character.js";
+import { determineClosestCharacter, determineEnemyMoveDirection, getPlayerCharacters, moveCharacterTick } from "../character.js";
 import { Character, createCharacter } from "../characterModel.js";
 import { paintCharacterHpBar } from "../characterPaint.js";
 import { getPathingCache, PathingCache } from "../pathing.js";
@@ -20,11 +20,10 @@ export function createBossWithLevel(idCounter: IdCounter, level: number, game: G
     let color = "black";
     let moveSpeed = Math.min(6, 1.5 + level * 0.5);
     let hp = 1000 * Math.pow(level, 4);
-    let damage = 1 + level;
     let experienceWorth = Math.pow(level, 2) * 100;
     let spawn: Position = getBossSpawnPosition(game);
 
-    let bossCharacter = createCharacter(getNextId(idCounter), spawn.x, spawn.y, bossSize, bossSize, color, moveSpeed, hp, damage, "enemy", CHARACTER_TYPE_BOSS_ENEMY, experienceWorth);
+    let bossCharacter = createCharacter(getNextId(idCounter), spawn.x, spawn.y, bossSize, bossSize, color, moveSpeed, hp, "enemy", CHARACTER_TYPE_BOSS_ENEMY, experienceWorth);
     let abilities: Ability[] = createBossAbilities(level, game);
     bossCharacter.abilities = abilities;
     return bossCharacter;

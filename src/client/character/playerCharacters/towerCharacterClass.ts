@@ -20,11 +20,10 @@ function createTowerCharacter(
     color: string,
     moveSpeed: number,
     hp: number,
-    damage: number,
     faction: string,
     seed: RandomSeed,
 ): LevelingCharacter {
-    let character = createLevelingCharacter(idCounter, x, y, width, height, color, moveSpeed, hp, damage, faction, seed);
+    let character = createLevelingCharacter(idCounter, x, y, width, height, color, moveSpeed, hp, faction, seed);
     addAbilityToCharacter(character, createAbilityTower(idCounter, "ability1"));
     addAbilityToCharacter(character, createAbilityHpRegen(idCounter));
     return character;

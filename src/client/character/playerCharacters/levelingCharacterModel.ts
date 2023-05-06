@@ -24,11 +24,10 @@ export function createLevelingCharacter(
     color: string,
     moveSpeed: number,
     hp: number,
-    damage: number,
     faction: string,
     seed: RandomSeed
 ): LevelingCharacter {
-    let character = createCharacter(getNextId(idCounter), x, y, width, height, color, moveSpeed, hp, damage, faction, LEVELING_CHARACTER, 1);
+    let character = createCharacter(getNextId(idCounter), x, y, width, height, color, moveSpeed, hp, faction, LEVELING_CHARACTER, 1);
     return {
         ...character,
         randomizedCharacterImage: createRandomizedCharacterImageData(GAME_IMAGES["player"], seed),

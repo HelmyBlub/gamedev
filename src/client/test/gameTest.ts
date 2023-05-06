@@ -135,7 +135,7 @@ function getUntilPromise(fn: Function, time = 1000) {
 //---------------------//
 
 function createTestCharacter(id: number, x: number, y: number) {
-    return createCharacter(id, x, y, 5, 5, "black", 0.5, 1000, 1, ENEMY_FACTION, "randomSpawnFollowingEnemy", 1);
+    return createCharacter(id, x, y, 5, 5, "black", 0.5, 1000, ENEMY_FACTION, "randomSpawnFollowingEnemy", 1);
 }
 
 function createTestProjectiles(x: number, y: number, pierceCount: number = 10, timeToLive: number = 1000) {

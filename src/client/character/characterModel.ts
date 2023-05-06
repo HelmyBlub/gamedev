@@ -5,7 +5,6 @@ import { GAME_IMAGES } from "../imageLoad.js";
 import { RandomizedCharacterImage } from "../randomizedCharacterImage.js";
 import { RandomSeed } from "../randomNumberGenerator.js";
 import { tickFixPositionRespawnEnemyCharacter } from "./enemy/fixPositionRespawnEnemy.js";
-import { tickRandomSpawnFollowingEnemyCharacter } from "./enemy/randomSpawnFollowingEnemy.js";
 
 export type CHARACTER_TYPE_FUNCTIONS = {
     [key: string]: {
@@ -69,9 +68,6 @@ export const CHARACTER_TYPE_FUNCTIONS: CHARACTER_TYPE_FUNCTIONS = {
     fixPositionRespawnEnemy: {
         tickFunction: tickFixPositionRespawnEnemyCharacter
     },
-    randomSpawnFollowingEnemy: {
-        tickFunction: tickRandomSpawnFollowingEnemyCharacter
-    },
 }
 
 export type Character = Position & {
@@ -84,7 +80,6 @@ export type Character = Position & {
     isMoving: boolean,
     hp: number,
     maxHp: number,
-    damage: number,
     faction: string,
     experienceWorth: number,
     type: string,
@@ -111,7 +106,6 @@ export function createCharacter(
     color: string,
     moveSpeed: number,
     hp: number,
-    damage: number,
     faction: string,
     type: string,
     experienceWorth: number,
@@ -128,7 +122,6 @@ export function createCharacter(
         isMoving: false,
         hp: hp,
         maxHp: hp,
-        damage: damage,
         faction: faction,
         experienceWorth: experienceWorth,
         type: type,
@@ -140,7 +133,8 @@ export function createCharacter(
 }
 
 export function createPlayerCharacter(idCounter: IdCounter, pos: Position, seed: RandomSeed, characterClass: string): Character {
-    let playerCharacter = PLAYER_CHARACTER_CLASSES[characterClass].createPlayerCharacter(idCounter, pos.x, pos.y, 20, 40, "blue", 2, 200, 10, PLAYER_FACTION, seed);
+    let playerCharacter = PLAYER_CHARACTER_CLASSES[characterClass].createPlayerCharacter(idCounter, pos.x, pos.y, 20, 40, "blue", 2, 200, PLAYER_FACTION, seed);
+    
     playerCharacter.willTurnToPetOnDeath = true;
     playerCharacter.isPet = false;
     return playerCharacter;

@@ -1,10 +1,9 @@
 import { getNextId } from "../../game.js";
 import { Game, GameState, IdCounter } from "../../gameModel.js";
 import { GAME_IMAGES } from "../../imageLoad.js";
-import { Player } from "../../player.js";
 import { createRandomizedCharacterImageData } from "../../randomizedCharacterImage.js";
 import { RandomSeed } from "../../randomNumberGenerator.js";
-import { fillRandomUpgradeOptions, getPlayerCharacters, moveCharacterTick, turnCharacterToPet } from "../character.js";
+import { moveCharacterTick, turnCharacterToPet } from "../character.js";
 import { Character, CHARACTER_TYPE_FUNCTIONS, createCharacter } from "../characterModel.js";
 
 export type AbilityLevelingCharacter = Character & {
@@ -21,11 +20,10 @@ export function createAbilityLevelingCharacter(
     color: string,
     moveSpeed: number,
     hp: number,
-    damage: number,
     faction: string,
     seed: RandomSeed
 ): AbilityLevelingCharacter {
-    let character = createCharacter(getNextId(idCounter), x, y, width, height, color, moveSpeed, hp, damage, faction, ABILITY_LEVELING_CHARACTER, 1);
+    let character = createCharacter(getNextId(idCounter), x, y, width, height, color, moveSpeed, hp, faction, ABILITY_LEVELING_CHARACTER, 1);
     return {
         ...character,
         randomizedCharacterImage: createRandomizedCharacterImageData(GAME_IMAGES["player"], seed),
