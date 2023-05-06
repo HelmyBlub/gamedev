@@ -1,5 +1,5 @@
 import { getNextId } from "../../game.js";
-import { IdCounter } from "../../gameModel.js";
+import { Game, IdCounter } from "../../gameModel.js";
 import { GAME_IMAGES } from "../../imageLoad.js";
 import { createRandomizedCharacterImageData } from "../../randomizedCharacterImage.js";
 import { RandomSeed } from "../../randomNumberGenerator.js";
@@ -15,29 +15,25 @@ export type LevelingCharacter = Character & {
 
 export const LEVELING_CHARACTER = "levelingCharacter";
 
-export function createLevelingCharacter(
-    idCounter: IdCounter,
-    x: number,
-    y: number,
-    width: number,
-    height: number,
-    color: string,
-    moveSpeed: number,
-    hp: number,
-    faction: string,
-    seed: RandomSeed
-): LevelingCharacter {
-    let character = createCharacter(getNextId(idCounter), x, y, width, height, color, moveSpeed, hp, faction, LEVELING_CHARACTER, 1);
-    return {
+export function changeToLevelingCharacter(character: Character, game: Game): LevelingCharacter {
+    const levelingCharacter = {
         ...character,
-        randomizedCharacterImage: createRandomizedCharacterImageData(GAME_IMAGES["player"], seed),
+        type: LEVELING_CHARACTER,
         experience: 0,
         experienceForLevelUp: 10,
         level: 0,
         availableSkillPoints: 0,
-        upgradeOptions: [],
-        isPet: false,
     };
+    
+    let players = game.state.players;
+    for(let player of players){
+        if(player.character === character){
+            player.character = levelingCharacter;
+            levelingCharacter.upgradeOptions = [];
+            break;
+        } 
+    }
+    return levelingCharacter;
 }
 
 export function addLevelingCharacter(){

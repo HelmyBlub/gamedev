@@ -1,13 +1,12 @@
 current tasks:
-- choose character type on start
 - visualize type?
 - Sniper: LevelingAbilityCharacter
     - needs more upgrade choice?
 
     - secondary abilities?
         - teleport?
-        - utility skill get XP by beeing used?
     - sniper thoguhts:
+        - some way to get more maxHp
         - to much damage?
         - needs more upgrade choice?
         - upgrade consist of two random parts e.g. current choices + maxHP/movementSpeed/more HPregen

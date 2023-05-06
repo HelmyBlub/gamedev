@@ -1,30 +1,23 @@
 import { addAbilityToCharacter } from "../../ability/ability.js";
 import { createAbilityHpRegen } from "../../ability/abilityHpRegen.js";
 import { createAbilityTower } from "../../ability/abilityTower.js";
-import { IdCounter, PLAYER_CHARACTER_CLASSES } from "../../gameModel.js";
-import { RandomSeed } from "../../randomNumberGenerator.js";
-import { createLevelingCharacter, LevelingCharacter } from "./levelingCharacterModel.js";
+import { Game, IdCounter } from "../../gameModel.js";
+import { Character } from "../characterModel.js";
+import { LevelingCharacter, changeToLevelingCharacter } from "./levelingCharacterModel.js";
+import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters.js";
 
 export function addTowerClass() {
-    PLAYER_CHARACTER_CLASSES["Tower"] = {
-        createPlayerCharacter: createTowerCharacter
+    PLAYER_CHARACTER_CLASSES_FUNCTIONS["Tower Builder"] = {
+           changeCharacterToThisClass: changeCharacterToTowerBuilderClass
     }
 }
 
-function createTowerCharacter(
+function changeCharacterToTowerBuilderClass(
+    character: Character,
     idCounter: IdCounter,
-    x: number,
-    y: number,
-    width: number,
-    height: number,
-    color: string,
-    moveSpeed: number,
-    hp: number,
-    faction: string,
-    seed: RandomSeed,
-): LevelingCharacter {
-    let character = createLevelingCharacter(idCounter, x, y, width, height, color, moveSpeed, hp, faction, seed);
-    addAbilityToCharacter(character, createAbilityTower(idCounter, "ability1"));
-    addAbilityToCharacter(character, createAbilityHpRegen(idCounter));
-    return character;
+    game: Game, 
+) {
+    const levelingCharacter = changeToLevelingCharacter(character, game);
+    addAbilityToCharacter(levelingCharacter, createAbilityTower(idCounter, "ability1"));
+    addAbilityToCharacter(levelingCharacter, createAbilityHpRegen(idCounter));
 }

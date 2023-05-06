@@ -1,7 +1,7 @@
 import { Character, createPlayerCharacter } from "./character/characterModel.js";
 import { LevelingCharacter } from "./character/playerCharacters/levelingCharacterModel.js";
 import { calculateDistance } from "./game.js";
-import { Game, IdCounter, KeyCodeToAction, PLAYER_CHARACTER_CLASSES, Position } from "./gameModel.js";
+import { Game, IdCounter, KeyCodeToAction, Position } from "./gameModel.js";
 import { findNearNonBlockingPosition } from "./map/map.js";
 import { ActionsPressed, createActionsPressed } from "./playerInput.js";
 import { nextRandom, RandomSeed } from "./randomNumberGenerator.js";
@@ -38,10 +38,8 @@ export function createDefaultKeyBindings1() {
     return keyBindings;
 }
 
-function addPlayer(idCounter: IdCounter, clientId: number, players: Player[], pos: Position, seed: RandomSeed) {
-    let keys = Object.keys(PLAYER_CHARACTER_CLASSES);
-    let randomClassIndex = Math.floor(nextRandom(seed) * keys.length);
-    let character = createPlayerCharacter(idCounter, pos, seed, keys[randomClassIndex]);
+function addPlayer(idCounter: IdCounter, clientId: number, players: Player[], pos: Position, seed: RandomSeed, game: Game) {
+    let character = createPlayerCharacter(idCounter, pos, seed, game);
     players.push(createPlayer(clientId, character));
 }
 
@@ -51,7 +49,7 @@ export function gameInitPlayers(game: Game) {
         let playerSpawn: Position = { x: 100, y: 100 + i * 50 };
         playerSpawn = findNearNonBlockingPosition(playerSpawn, game.state.map, game.state.idCounter);
 
-        addPlayer(game.state.idCounter, game.state.clientInfos[i].id, game.state.players, playerSpawn, game.state.randomSeed);
+        addPlayer(game.state.idCounter, game.state.clientInfos[i].id, game.state.players, playerSpawn, game.state.randomSeed, game);
         if (game.multiplayer.myClientId === -1 || game.multiplayer.myClientId === game.state.clientInfos[i].id) {
             game.clientKeyBindings.push({
                 clientIdRef: game.multiplayer.myClientId,

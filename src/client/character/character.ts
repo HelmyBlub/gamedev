@@ -1,6 +1,6 @@
 import { levelingCharacterXpGain } from "./playerCharacters/levelingCharacter.js";
 import { determineMapKeysInDistance, GameMap, getChunksTouchingLine, isPositionBlocking, MapChunk } from "../map/map.js";
-import { Character, CHARACTER_TYPE_FUNCTIONS, ENEMY_FACTION, UpgradeOptionCharacter } from "./characterModel.js";
+import { Character, CHARACTER_TYPE_FUNCTIONS, DEFAULT_CHARACTER, ENEMY_FACTION, UpgradeOptionCharacter } from "./characterModel.js";
 import { getNextWaypoint, getPathingCache, PathingCache } from "./pathing.js";
 import { calculateDirection, calculateDistance, calculateDistancePointToLine, createPaintTextData, takeTimeMeasure } from "../game.js";
 import { Position, Game, GameState, IdCounter, Camera, PaintTextData } from "../gameModel.js";
@@ -11,6 +11,7 @@ import { LevelingCharacter } from "./playerCharacters/levelingCharacterModel.js"
 import { BossEnemyCharacter, CHARACTER_TYPE_BOSS_ENEMY } from "./enemy/bossEnemy.js";
 import { tickCharacterDebuffs } from "../debuff/debuff.js";
 import { createAbilityLeash } from "../ability/abilityLeash.js";
+import { createCharacterChooseUpgradeOptions } from "./playerCharacters/playerCharacters.js";
 
 export function findCharacterById(characters: Character[], id: number): Character | null {
     for (let i = 0; i < characters.length; i++) {
@@ -58,7 +59,7 @@ export function fillRandomUpgradeOptions(character: Character, randomSeed: Rando
         let characterOptions: UpgradeOptionCharacter[] = [];
         let characterOptionProbability = 0;
         if(!boss){
-            characterOptions = createCharacterUpgradeOptions();
+            characterOptions = createCharacterUpgradeOptions(character);
             for (let characterOption of characterOptions) {
                 characterOptionProbability += characterOption.probabilityFactor;
             }
@@ -133,19 +134,23 @@ export function fillRandomUpgradeOptions(character: Character, randomSeed: Rando
     }
 }
 
-export function createCharacterUpgradeOptions(): UpgradeOptionCharacter[] {
+export function createCharacterUpgradeOptions(character: Character, game: Game | undefined = undefined): UpgradeOptionCharacter[] {
     let upgradeOptions: UpgradeOptionCharacter[] = [];
-    upgradeOptions.push({
-        name: "Max Health+50", probabilityFactor: 1, upgrade: (c: Character) => {
-            c.hp += 50;
-            c.maxHp += 50;
-        }
-    });
-    upgradeOptions.push({
-        name: "Move Speed+0.2", probabilityFactor: 1, upgrade: (c: Character) => {
-            c.moveSpeed += 0.2;
-        }
-    });
+    if(character.type === DEFAULT_CHARACTER && game){
+        upgradeOptions = createCharacterChooseUpgradeOptions(game);
+    }else{
+        upgradeOptions.push({
+            name: "Max Health+50", probabilityFactor: 1, upgrade: (c: Character) => {
+                c.hp += 50;
+                c.maxHp += 50;
+            }
+        });
+        upgradeOptions.push({
+            name: "Move Speed+0.2", probabilityFactor: 1, upgrade: (c: Character) => {
+                c.moveSpeed += 0.2;
+            }
+        });
+    }
 
     return upgradeOptions;
 }
@@ -164,7 +169,7 @@ export function tickMapCharacters(map: GameMap, game: Game) {
 
 export function tickCharacters(characters: Character[], game: Game, pathingCache: PathingCache | null = null) {
     for (let j = characters.length - 1; j >= 0; j--) {
-        CHARACTER_TYPE_FUNCTIONS[characters[j].type].tickFunction(characters[j], game, pathingCache);
+        CHARACTER_TYPE_FUNCTIONS[characters[j].type]?.tickFunction(characters[j], game, pathingCache);
         if (!characters[j].isDead) {
             for (let ability of characters[j].abilities) {
                 let tickAbility = ABILITIES_FUNCTIONS[ability.name].tickAbility;

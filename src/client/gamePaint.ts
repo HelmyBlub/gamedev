@@ -1,6 +1,6 @@
 import { ABILITIES_FUNCTIONS, paintAbilityObjects, paintUiForAbilities } from "./ability/ability.js";
 import { getPlayerCharacters } from "./character/character.js";
-import { Character } from "./character/characterModel.js";
+import { Character, DEFAULT_CHARACTER } from "./character/characterModel.js";
 import { paintCharacterStatsUI, paintCharacters } from "./character/characterPaint.js";
 import { paintBossCharacters } from "./character/enemy/bossEnemy.js";
 import { LEVELING_CHARACTER, LevelingCharacter } from "./character/playerCharacters/levelingCharacterModel.js";
@@ -242,7 +242,7 @@ function paintPlayerStats(ctx: CanvasRenderingContext2D, character: Character, g
         ctx.strokeText(text, ctx.canvas.width / 2 - 100, ctx.canvas.height / 2 - 100);
     }
 
-    if (!game.state.ended && !game.settings.autoSkillEnabled) paintUpgradeOptionsUI(ctx, character);
+    paintUpgradeOptionsUI(ctx, character, game);
     paintPlayerStatsUI(ctx, character, game);
 }
 
@@ -264,7 +264,9 @@ function paintPlayerStatsUI(ctx: CanvasRenderingContext2D, character: Character,
     }
 }
 
-function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Character) {
+function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Character, game: Game) {
+    if (game.state.ended)  return;
+    if (game.settings.autoSkillEnabled && character.type !== DEFAULT_CHARACTER) return;
     let fontSize = 20;
     ctx.font = fontSize + "px Arial";
     let startY = (ctx.canvas.height * 0.75);

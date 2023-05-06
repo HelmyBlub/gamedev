@@ -1,28 +1,21 @@
 import { addAbilityToCharacter } from "../../ability/ability.js";
 import { createAbilityShoot } from "../../ability/abilityShoot.js";
-import { IdCounter, PLAYER_CHARACTER_CLASSES } from "../../gameModel.js";
-import { RandomSeed } from "../../randomNumberGenerator.js";
-import { createLevelingCharacter, LevelingCharacter } from "./levelingCharacterModel.js";
+import { Game, IdCounter } from "../../gameModel.js";
+import { Character } from "../characterModel.js";
+import { changeToLevelingCharacter } from "./levelingCharacterModel.js";
+import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters.js";
 
 export function addShooterClass() {
-    PLAYER_CHARACTER_CLASSES["Shooter"] = {
-        createPlayerCharacter: createShooterCharacter,
+    PLAYER_CHARACTER_CLASSES_FUNCTIONS["Shooter"] = {
+        changeCharacterToThisClass: changeCharacterToShooterClass,
     }
 }
 
-function createShooterCharacter(
+function changeCharacterToShooterClass(
+    character: Character,
     idCounter: IdCounter,
-    x: number,
-    y: number,
-    width: number,
-    height: number,
-    color: string,
-    moveSpeed: number,
-    hp: number,
-    faction: string,
-    seed: RandomSeed,
-): LevelingCharacter {
-    let character = createLevelingCharacter(idCounter, x, y, width, height, color, moveSpeed, hp, faction, seed);
-    addAbilityToCharacter(character, createAbilityShoot(idCounter));
-    return character;
+    game: Game, 
+) {
+    const levelingCharacter = changeToLevelingCharacter(character, game);
+    addAbilityToCharacter(levelingCharacter, createAbilityShoot(idCounter));
 }

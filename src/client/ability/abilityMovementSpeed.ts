@@ -109,9 +109,9 @@ function createAbilityMovementSpeedUpgradeOptions(): UpgradeOptionAbility[] {
 function createAbilityBossMovementSpeedUpgradeOptions(ability: Ability): UpgradeOptionAbility[] {
     let upgradeOptions: UpgradeOptionAbility[] = [];
     upgradeOptions.push({
-        name: "Ability MovementSpeed+", probabilityFactor: 1, upgrade: (a: Ability) => {
+        name: "Ability MovementSpeed speed increase +10%", probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilityMovementSpeed;
-            as.speedFactor += 0.05;
+            as.speedFactor += 0.10;
         }
     });
 

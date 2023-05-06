@@ -11,25 +11,6 @@ export type AbilityLevelingCharacter = Character & {
 
 export const ABILITY_LEVELING_CHARACTER = "abilityLevelingCharacter";
 
-export function createAbilityLevelingCharacter(
-    idCounter: IdCounter,
-    x: number,
-    y: number,
-    width: number,
-    height: number,
-    color: string,
-    moveSpeed: number,
-    hp: number,
-    faction: string,
-    seed: RandomSeed
-): AbilityLevelingCharacter {
-    let character = createCharacter(getNextId(idCounter), x, y, width, height, color, moveSpeed, hp, faction, ABILITY_LEVELING_CHARACTER, 1);
-    return {
-        ...character,
-        randomizedCharacterImage: createRandomizedCharacterImageData(GAME_IMAGES["player"], seed),
-    };
-}
-
 export function addAbilityLevelingCharacter(){
     CHARACTER_TYPE_FUNCTIONS[ABILITY_LEVELING_CHARACTER] = {
         tickFunction: tickAbilityLevelingCharacter,

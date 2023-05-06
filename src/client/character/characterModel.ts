@@ -1,10 +1,13 @@
 import { Ability } from "../ability/ability.js";
 import { Debuff } from "../debuff/debuff.js";
-import { Position, IdCounter, PLAYER_CHARACTER_CLASSES } from "../gameModel.js";
+import { getNextId } from "../game.js";
+import { Position, IdCounter, Game } from "../gameModel.js";
 import { GAME_IMAGES } from "../imageLoad.js";
-import { RandomizedCharacterImage } from "../randomizedCharacterImage.js";
+import { createRandomizedCharacterImageData, RandomizedCharacterImage } from "../randomizedCharacterImage.js";
 import { RandomSeed } from "../randomNumberGenerator.js";
 import { tickFixPositionRespawnEnemyCharacter } from "./enemy/fixPositionRespawnEnemy.js";
+import { ABILITY_LEVELING_CHARACTER } from "./playerCharacters/abilityLevelingCharacter.js";
+import { initCharacterChoiceOptons } from "./playerCharacters/playerCharacters.js";
 
 export type CHARACTER_TYPE_FUNCTIONS = {
     [key: string]: {
@@ -40,6 +43,8 @@ export type CharacterImageLoadProperties = {
     clothColor: string,
     canvases?: { [key: string]: HTMLCanvasElement },
 }
+
+export const DEFAULT_CHARACTER = "Character";
 
 GAME_IMAGES["slime"] = { properties: { baseColor: "green" }, imagePath: "/images/slimeEnemy.png", spriteRowHeights: [20], spriteRowWidths: [20] };
 
@@ -132,10 +137,11 @@ export function createCharacter(
     };
 }
 
-export function createPlayerCharacter(idCounter: IdCounter, pos: Position, seed: RandomSeed, characterClass: string): Character {
-    let playerCharacter = PLAYER_CHARACTER_CLASSES[characterClass].createPlayerCharacter(idCounter, pos.x, pos.y, 20, 40, "blue", 2, 200, PLAYER_FACTION, seed);
-    
+export function createPlayerCharacter(idCounter: IdCounter, pos: Position, seed: RandomSeed, game: Game): Character {
+    let playerCharacter = createCharacter(getNextId(idCounter), pos.x, pos.y, 20, 40, "blue", 2, 200, PLAYER_FACTION, DEFAULT_CHARACTER, 1);
+    playerCharacter.randomizedCharacterImage = createRandomizedCharacterImageData(GAME_IMAGES["player"], seed);
     playerCharacter.willTurnToPetOnDeath = true;
     playerCharacter.isPet = false;
+    initCharacterChoiceOptons(playerCharacter, game);
     return playerCharacter;
 }

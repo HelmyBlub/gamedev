@@ -53,7 +53,7 @@ function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cam
         || paintY < -character.height || paintY > ctx.canvas.height) return;
 
     let characterImageId = "slime";
-    if (character.type === "levelingCharacter" || character.type === ABILITY_LEVELING_CHARACTER) characterImageId = "player";
+    if (character.faction === "player") characterImageId = "player";
     let characterImage = GAME_IMAGES[characterImageId];
     if (characterImage) {
         if (characterImage.imagePath !== undefined) {

@@ -1,7 +1,7 @@
 import { AbilityObject } from "./ability/ability.js";
 import { Character } from "./character/characterModel.js";
 import { PathingCache } from "./character/pathing.js";
-import { PlayerCharacterClasses } from "./character/playerCharacters/playerCharacters.js";
+import { PlayerCharacterClassesFunctions } from "./character/playerCharacters/playerCharacters.js";
 import { CommandRestart } from "./commands.js";
 import { createMap, GameMap } from "./map/map.js";
 import { generateMissingChunks } from "./map/mapGeneration.js";
@@ -163,8 +163,6 @@ export type Game = {
     }
 }
 
-export const PLAYER_CHARACTER_CLASSES: PlayerCharacterClasses = {};
-
 export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: CanvasRenderingContext2D | undefined): Game {
     let game: Game = {
         canvasElement: c,
@@ -191,7 +189,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             map: createMap(),
             deathCircleCreated: false,
             bossStuff: {
-                bossSpawnEachXMilliSecond: 15000,
+                bossSpawnEachXMilliSecond: 60000,
                 bossLevelCounter: 1, 
                 bosses: [],
             },

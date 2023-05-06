@@ -4,7 +4,7 @@ import { findPlayerByCharacterId, gameInitPlayers } from "./player.js";
 import { MOUSE_ACTION, UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.js";
 import { Position, GameState, Game, IdCounter, TestingStuff, Debugging, PaintTextData, ClientInfo } from "./gameModel.js";
 import { createMap, determineMapKeysInDistance, GameMap, getMapMidlePosition, removeAllMapCharacters } from "./map/map.js";
-import { Character } from "./character/characterModel.js";
+import { Character, DEFAULT_CHARACTER } from "./character/characterModel.js";
 import { generateMissingChunks } from "./map/mapGeneration.js";
 import { createFixPositionRespawnEnemiesOnInit } from "./character/enemy/fixPositionRespawnEnemyModel.js";
 import { handleCommand } from "./commands.js";
@@ -330,10 +330,8 @@ function checkForAutoSkill(game: Game) {
     if (!game.settings.autoSkillEnabled) return;
 
     let character: Character | undefined = findMyCharacter(game);
-    if (character && character.type === "levelingCharacter") {
-        let levelingCharacter = character as LevelingCharacter;
-        let hasAvailableSkillPoint = levelingCharacter.availableSkillPoints > 0;
-        if (hasAvailableSkillPoint) {
+    if (character && character.type !== DEFAULT_CHARACTER) {
+        if (character.upgradeOptions.length > 0) {
             handleCommand(game, {
                 command: "playerInput",
                 clientId: game.multiplayer.myClientId,
