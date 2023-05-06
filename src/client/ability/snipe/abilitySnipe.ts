@@ -35,7 +35,7 @@ export type AbilitySnipe = Ability & {
     }
 }
 
-const ABILITY_NAME_SNIPE = "Snipe";
+export const ABILITY_NAME_SNIPE = "Snipe";
 
 export function addSnipeAbility() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_SNIPE] = {

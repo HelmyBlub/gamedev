@@ -40,6 +40,7 @@ export function addSwordAbility() {
 
 export function createAbilitySword(
     idCounter: IdCounter,
+    playerInputBinding?: string,
     damage: number = 50,
     swordLength: number = 30,
     swordCount: number = 1,

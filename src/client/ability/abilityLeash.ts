@@ -23,6 +23,7 @@ export function addLeshAbility() {
 
 export function createAbilityLeash(
     idCounter: IdCounter,
+    playerInputBinding?: string,
     leashMaxLength: number = 150,
     leashedToOwnerId: number | undefined = undefined,
 ): AbilityLeash {

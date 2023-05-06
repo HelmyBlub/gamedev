@@ -191,7 +191,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             map: createMap(),
             deathCircleCreated: false,
             bossStuff: {
-                bossSpawnEachXMilliSecond: 60000,
+                bossSpawnEachXMilliSecond: 15000,
                 bossLevelCounter: 1, 
                 bosses: [],
             },

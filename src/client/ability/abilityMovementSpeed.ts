@@ -11,7 +11,7 @@ type AbilityMovementSpeed = Ability & {
     cooldown: number,
     cooldownFinishTime: number,
 }
-const ABILITY_NAME_MOVEMENTSPEED = "MovementSpeed";
+export const ABILITY_NAME_MOVEMENTSPEED = "MovementSpeed";
 
 export function addMovementSpeedAbility() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_MOVEMENTSPEED] = {
@@ -20,6 +20,7 @@ export function addMovementSpeedAbility() {
         createAbility: createAbilityMovementSpeed,
         activeAbilityCast: castMovementSpeed,
         paintAbilityUI: paintAbilityMovementSpeedUI,
+        createAbiltiyBossUpgradeOptions: createAbilityBossMovementSpeedUpgradeOptions,
         isPassive: false,
         notInheritable: true,
     };
@@ -104,3 +105,30 @@ function createAbilityMovementSpeedUpgradeOptions(): UpgradeOptionAbility[] {
 
     return upgradeOptions;
 }
+
+function createAbilityBossMovementSpeedUpgradeOptions(ability: Ability): UpgradeOptionAbility[] {
+    let upgradeOptions: UpgradeOptionAbility[] = [];
+    upgradeOptions.push({
+        name: "Ability MovementSpeed+", probabilityFactor: 1, upgrade: (a: Ability) => {
+            let as = a as AbilityMovementSpeed;
+            as.speedFactor += 0.05;
+        }
+    });
+
+    upgradeOptions.push({
+        name: "Ability MovementSpeed Reduce Cooldown 10%", probabilityFactor: 1, upgrade: (a: Ability) => {
+            let as = a as AbilityMovementSpeed;
+            as.cooldown *= 0.90;
+        }
+    });
+
+    upgradeOptions.push({
+        name: "Ability MovementSpeed Duration +0.5s", probabilityFactor: 1, upgrade: (a: Ability) => {
+            let as = a as AbilityMovementSpeed;
+            as.duration += 500;
+        }
+    });
+
+    return upgradeOptions;
+}
+

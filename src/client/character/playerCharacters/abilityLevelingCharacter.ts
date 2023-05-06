@@ -38,25 +38,6 @@ export function addAbilityLevelingCharacter(){
     }
 }
 
-export function abilityLevelingCharacterAddBossSkillPoint(state: GameState) {
-    let playerCharacters: Character[] = getPlayerCharacters(state.players);
-    for (let character of playerCharacters) {
-        if (character.type === ABILITY_LEVELING_CHARACTER && !character.isDead && !character.isPet) {
-            character.maxHp += 100;
-            character.hp += 100;
-            const abilityLevelingCharacter = character as AbilityLevelingCharacter;
-            for(let ability of abilityLevelingCharacter.abilities){
-                if(ability.leveling) {
-                    ability.leveling.bossSkillPoints++;
-                    if(character.upgradeOptions.length === 0){
-                        fillRandomUpgradeOptions(character, state.randomSeed, true);
-                    }
-                }
-            }
-        }
-    }
-}
-
 function tickAbilityLevelingCharacter(character: AbilityLevelingCharacter, game: Game) {
     if (character.isDead) {
         if(!character.willTurnToPetOnDeath) return;

@@ -36,6 +36,7 @@ export function addShootAbility(){
 
 export function createAbilityShoot(
     idCounter: IdCounter,
+    playerInputBinding?: string,
     baseFrequency: number = 500,
     frequencyIncrease: number = 1,
     damage: number = 50,

@@ -24,6 +24,7 @@ export function addMeleeAbility() {
 
 export function createAbilityMelee(
     idCounter: IdCounter,
+    playerInputBinding?: string,
     damage: number = 100,
 ): AbilityMelee {
     return {

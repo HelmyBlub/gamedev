@@ -30,6 +30,7 @@ export function addSingleTargetAbility() {
 
 export function createAbilitySingleTarget(
     idCounter: IdCounter,
+    playerInputBinding?: string,
     damage: number = 50,
     maxRange: number = 100
 ): AbilitySingleTarget {

@@ -29,6 +29,7 @@ export function addIceAbility() {
 
 export function createAbilityIce(
     idCounter: IdCounter,
+    playerInputBinding?: string,
     damage: number = 50,
     radius: number = 30,
     slowFactor: number = 1.5

@@ -69,9 +69,9 @@ export function gameInit(game: Game) {
     removeAllMapCharacters(game.state.map);
     createFixPositionRespawnEnemiesOnInit(game);
     gameInitPlayers(game);
+    game.multiplayer.autosendMousePosition.nextTime = 0;
     if (game.multiplayer.websocket !== null) {
         game.multiplayer.maxServerGameTime = 0;
-        game.multiplayer.autosendMousePosition.nextTime = 0,
         game.state.playerInputs = game.multiplayer.cachePlayerInputs!;
     }
 }

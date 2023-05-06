@@ -6,12 +6,11 @@ import { calculateDirection, calculateDistance, calculateDistancePointToLine, cr
 import { Position, Game, GameState, IdCounter, Camera, PaintTextData } from "../gameModel.js";
 import { findPlayerById, Player } from "../player.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, UpgradeOptionAbility } from "../ability/ability.js";
+import { ABILITIES_FUNCTIONS, abilityCharacterAddBossSkillPoint, UpgradeOptionAbility } from "../ability/ability.js";
 import { LevelingCharacter } from "./playerCharacters/levelingCharacterModel.js";
 import { BossEnemyCharacter, CHARACTER_TYPE_BOSS_ENEMY } from "./enemy/bossEnemy.js";
 import { tickCharacterDebuffs } from "../debuff/debuff.js";
 import { createAbilityLeash } from "../ability/abilityLeash.js";
-import { abilityLevelingCharacterAddBossSkillPoint } from "./playerCharacters/abilityLevelingCharacter.js";
 
 export function findCharacterById(characters: Character[], id: number): Character | null {
     for (let i = 0; i < characters.length; i++) {
@@ -41,7 +40,7 @@ export function characterTakeDamage(character: Character, damage: number, game: 
         character.isDead = true;
         levelingCharacterXpGain(game.state, character);
         if (character.type === CHARACTER_TYPE_BOSS_ENEMY) {
-            abilityLevelingCharacterAddBossSkillPoint(game.state);
+            abilityCharacterAddBossSkillPoint(game.state);
         }
         game.state.killCounter++;
     }
@@ -69,7 +68,7 @@ export function fillRandomUpgradeOptions(character: Character, randomSeed: Rando
             let options: UpgradeOptionAbility[] = [];
             if(boss){
                 const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-                if(abilityFunctions.createAbiltiyBossUpgradeOptions){
+                if(abilityFunctions.createAbiltiyBossUpgradeOptions && ability.bossSkillPoints !== undefined && ability.bossSkillPoints > 0){
                     options = abilityFunctions.createAbiltiyBossUpgradeOptions(ability);
                 }
             }else{
@@ -81,6 +80,7 @@ export function fillRandomUpgradeOptions(character: Character, randomSeed: Rando
                     abilityOptionProbability += abilityOption.probabilityFactor;
                 }
                 abilitiesOptions[ability.name] = { options, probability: abilityOptionProbability };
+                if(boss) break;
             }
         }
         for (let i = 0; i < 3; i++) {
@@ -361,7 +361,7 @@ export function turnCharacterToPet(character: Character, game: Game){
             character.y = possibleOwnerCharacters[randomOwnerIndex].y;
         }
 
-        character.abilities.push(createAbilityLeash(game.state.idCounter, 100, newPlayerOwnerId));
+        character.abilities.push(createAbilityLeash(game.state.idCounter, undefined ,100, newPlayerOwnerId));
     }    
 }
 

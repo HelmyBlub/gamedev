@@ -1,8 +1,8 @@
-import { determineCharactersInDistance, characterTakeDamage } from "../character/character.js"
+import { determineCharactersInDistance, characterTakeDamage, getPlayerCharacters, fillRandomUpgradeOptions } from "../character/character.js"
 import { Character } from "../character/characterModel.js"
 import { BossEnemyCharacter } from "../character/enemy/bossEnemy.js"
 import { calculateDistance, getCameraPosition, takeTimeMeasure } from "../game.js"
-import { Game, IdCounter, Position } from "../gameModel.js"
+import { Game, GameState, IdCounter, Position } from "../gameModel.js"
 import { GameMap } from "../map/map.js"
 import { findPlayerByCharacterId, findPlayerById, Player } from "../player.js"
 import { addDeathCircleAbility } from "./abilityDeathCircle.js"
@@ -27,8 +27,8 @@ export type Ability = {
         level: number,
         experience: number,
         experienceForLevelUp: number,
-        bossSkillPoints: number,
     }
+    bossSkillPoints?: number,
 }
 export type PaintOrderAbility = "beforeCharacterPaint" | "afterCharacterPaint";
 export type AbilityObject = Position & {
@@ -53,7 +53,7 @@ export type AbilityOwner = Position & {
 
 export type AbilityFunctions = {
     tickAbility?: (abilityOwner: AbilityOwner, ability: Ability, game: Game) => void,
-    createAbility: (idCounter: IdCounter) => Ability,
+    createAbility: (idCounter: IdCounter, playerInputBinding?: string) => Ability,
     createAbiltiyUpgradeOptions: (ability: Ability) => UpgradeOptionAbility[],
     createAbiltiyBossUpgradeOptions?: (ability: Ability) => UpgradeOptionAbility[],
     activeAbilityCast?: (abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isKeydown: boolean, game: Game) => void,
@@ -107,6 +107,39 @@ export function addAbilityToCharacter(character: Character, ability: Ability) {
 export function paintAbilityObjects(ctx: CanvasRenderingContext2D, abilityObjects: AbilityObject[], game: Game, paintOrder: PaintOrderAbility) {
     paintAbilityObjectsForFaction(ctx, abilityObjects, game, paintOrder, "player");
     paintAbilityObjectsForFaction(ctx, abilityObjects, game, paintOrder, "enemy");
+}
+
+export function abilityCharacterAddBossSkillPoint(state: GameState) {
+    let playerCharacters: Character[] = getPlayerCharacters(state.players);
+    for (let character of playerCharacters) {
+        if (!character.isDead && !character.isPet) {
+            for(let ability of character.abilities){
+                if(ability.bossSkillPoints !== undefined) {
+                    ability.bossSkillPoints++;
+                    if(character.upgradeOptions.length === 0){
+                        fillRandomUpgradeOptions(character, state.randomSeed, true);
+                    }
+                }
+            }
+        }
+    }
+}
+
+export function createAbility(abilityName: string, idCounter: IdCounter, isLeveling: boolean = false, getsBossSkillPoints: boolean = false, playerInputBinding: string | undefined = undefined): Ability{
+    const abilityFunctions = ABILITIES_FUNCTIONS[abilityName];
+    const ability = abilityFunctions.createAbility(idCounter, playerInputBinding);
+
+    if(isLeveling){
+        ability.leveling = {experience: 0, experienceForLevelUp: 10, level: 1};
+    }
+    if(getsBossSkillPoints){
+        if(abilityFunctions.createAbiltiyBossUpgradeOptions){
+            ability.bossSkillPoints = 0;
+        }else{
+            console.log(`${abilityName} is missing bossUpgradeOptions`);
+        }
+    }
+    return ability;
 }
 
 export function tickAbilityObjects(abilityObjects: AbilityObject[], game: Game) {

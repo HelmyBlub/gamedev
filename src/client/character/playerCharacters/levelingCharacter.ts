@@ -18,7 +18,7 @@ export function upgradeLevelingCharacter(character: Character, upgradeOptionInde
                     if (abilityFunctions.createAbiltiyBossUpgradeOptions) {
                         upgrades = abilityFunctions.createAbiltiyBossUpgradeOptions(ability);
                         upgrades.find((e) => e.name === upgradeOption.name)?.upgrade(ability);
-                        if (ability.leveling) ability.leveling.bossSkillPoints--;
+                        if (ability.bossSkillPoints !== undefined) ability.bossSkillPoints--;
                     }
                 } else {
                     upgrades = ABILITIES_FUNCTIONS[upgradeOption.abilityName].createAbiltiyUpgradeOptions(ability);
@@ -40,7 +40,7 @@ export function upgradeLevelingCharacter(character: Character, upgradeOptionInde
         } else if (character.type === ABILITY_LEVELING_CHARACTER) {
             const abilityLevelingCharacter = character as AbilityLevelingCharacter;
             for (let ability of abilityLevelingCharacter.abilities) {
-                if (ability.leveling && ability.leveling.bossSkillPoints > 0) {
+                if (ability.bossSkillPoints !== undefined && ability.bossSkillPoints > 0) {
                     fillRandomUpgradeOptions(character, randomSeed, true);
                     break;
                 }

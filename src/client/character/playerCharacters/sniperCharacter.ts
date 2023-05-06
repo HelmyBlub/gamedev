@@ -1,7 +1,7 @@
-import { addAbilityToCharacter } from "../../ability/ability.js";
+import { ABILITIES_FUNCTIONS, addAbilityToCharacter, createAbility } from "../../ability/ability.js";
 import { createAbilityHpRegen } from "../../ability/abilityHpRegen.js";
-import { createAbilityMovementSpeed } from "../../ability/abilityMovementSpeed.js";
-import { createAbilitySnipe } from "../../ability/snipe/abilitySnipe.js";
+import { ABILITY_NAME_MOVEMENTSPEED, createAbilityMovementSpeed } from "../../ability/abilityMovementSpeed.js";
+import { ABILITY_NAME_SNIPE, createAbilitySnipe } from "../../ability/snipe/abilitySnipe.js";
 import { IdCounter, PLAYER_CHARACTER_CLASSES } from "../../gameModel.js";
 import { RandomSeed } from "../../randomNumberGenerator.js";
 import { AbilityLevelingCharacter, createAbilityLevelingCharacter } from "./abilityLevelingCharacter.js";
@@ -25,11 +25,9 @@ function createSniperCharacter(
     faction: string,
     seed: RandomSeed,
 ): AbilityLevelingCharacter {
-    let character = createAbilityLevelingCharacter(idCounter, x, y, width, height, color, moveSpeed, hp, damage, faction, seed);
-    let snipe = createAbilitySnipe(idCounter, "ability1");
-    snipe.leveling = {experience: 0, experienceForLevelUp: 10, level: 1, bossSkillPoints: 0};
-    addAbilityToCharacter(character, snipe);
+    const character = createAbilityLevelingCharacter(idCounter, x, y, width, height, color, moveSpeed, hp, damage, faction, seed);
+    addAbilityToCharacter(character, createAbility(ABILITY_NAME_SNIPE, idCounter, true, true, "ability1"));
     addAbilityToCharacter(character, createAbilityHpRegen(idCounter));
-    addAbilityToCharacter(character, createAbilityMovementSpeed(idCounter, "ability2"));
+    addAbilityToCharacter(character, createAbility(ABILITY_NAME_MOVEMENTSPEED, idCounter, true, true, "ability2"));
     return character;
 }
