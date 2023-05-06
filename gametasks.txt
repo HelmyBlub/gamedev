@@ -1,18 +1,17 @@
 current tasks:
 - Sniper: LevelingAbilityCharacter
-    - redesign code: upgrades?
-        - make upgradeOptions file for some generall functions
-
+    - needs more upgrade choice?
 
     - secondary abilities?
-        - temporary movement speed boost?
         - teleport?
         - utility skill get XP by beeing used?
     - sniper thoguhts:
         - to much damage?
         - needs more upgrade choice?
-        - how to gain more maxHP?
         - upgrade consist of two random parts e.g. current choices + maxHP/movementSpeed/more HPregen
+
+- redesign code: upgrades?
+    - make upgradeOptions file for some generall functions
 
 
 - redesign levelingCharacter/abilityLevelingCharacter to be more independant in code
