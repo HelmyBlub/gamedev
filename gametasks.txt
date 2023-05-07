@@ -1,6 +1,7 @@
 current tasks:
 - Sniper: LevelingAbilityCharacter
     - needs more upgrade choice?
+    - change: snipe split shot should not use max length. Use instead remaining
 
     - secondary abilities?
         - choose secondary ability?

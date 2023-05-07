@@ -10,7 +10,7 @@ export function paintAbilityObjectSnipe(ctx: CanvasRenderingContext2D, abilityOb
     if (paintOrder !== "afterCharacterPaint") return;
     const cameraPosition = getCameraPosition(game);
     const snipe = abilityObject as AbilityObjectSnipe;
-    const endPos = calcAbilityObjectSnipeEndPosition(snipe);
+    const endPos = calcAbilityObjectSnipeEndPosition(snipe, snipe.direction, snipe.range);
     const centerX = ctx.canvas.width / 2;
     const centerY = ctx.canvas.height / 2;
     ctx.strokeStyle = "red";

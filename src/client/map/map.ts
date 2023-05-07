@@ -3,11 +3,11 @@ import { IdCounter, Position } from "../gameModel.js"
 import { createNewChunk } from "./mapGeneration.js";
 import { MapPaintLayer } from "./mapPaint.js";
 
-type MapTiles = {
+export type MapTiles = {
     [key: number]: MapTile,
 }
 
-type MapTile = {
+export type MapTile = {
     name: string,
     color?: string,
     imagePath?: string,
@@ -279,7 +279,7 @@ export function calculateDistanceToMapChunk(chunkI: number, chunkJ: number, posi
     return Math.sqrt(dx * dx + dy * dy);
 }
 
-function getMapTile(pos: Position, map: GameMap, idCounter: IdCounter): MapTile {
+export function getMapTile(pos: Position, map: GameMap, idCounter: IdCounter): MapTile {
     let chunkSize = map.tileSize * map.chunkLength;
     let chunkI = Math.floor(pos.y / chunkSize);
     let chunkJ = Math.floor(pos.x / chunkSize);

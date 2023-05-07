@@ -1,7 +1,7 @@
 import { Game, Position } from "../../gameModel.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
 import { Ability, UpgradeOptionAbility } from "../ability.js";
-import { AbilityObjectSnipe, AbilitySnipe, createAbilityObjectSnipe } from "./abilitySnipe.js";
+import { AbilityObjectSnipe, AbilitySnipe, createAbilityObjectSnipe, getAbilitySnipeRange } from "./abilitySnipe.js";
 
 export const UPGRADE_SNIPE_ABILITY_SPLIT_SHOT = "Snipe Split Shot";
 
@@ -43,7 +43,15 @@ export function abilityUpgradeOnSnipeHit(position: Position, abilitySnipe: Abili
     if (upgrades && abilitySnipe) {
         for (let i = 0; i < upgrades.shotSplitsPerHit!; i++) {
             const randomDirectionChange = nextRandom(game.state.randomSeed) / 2;
-            let abilityObjectSnipt = createAbilityObjectSnipe(position, undefined, abilitySnipe!, abilityObjectSnipe.faction, abilityObjectSnipe.direction + randomDirectionChange, game.state.time);
+            let abilityObjectSnipt = createAbilityObjectSnipe(
+                position,
+                undefined, 
+                abilitySnipe!, 
+                abilityObjectSnipe.faction, 
+                abilityObjectSnipe.direction + randomDirectionChange, 
+                getAbilitySnipeRange(abilitySnipe),
+                game.state.time
+            );
             game.state.abilityObjects.push(abilityObjectSnipt);
         }
     }
