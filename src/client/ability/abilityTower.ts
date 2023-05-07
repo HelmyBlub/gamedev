@@ -4,8 +4,9 @@ import { calculateDistance, getCameraPosition, getNextId } from "../game.js";
 import { Position, Game, IdCounter } from "../gameModel.js";
 import { positionToMapKey } from "../map/map.js";
 import { findPlayerByCharacterId } from "../player.js";
+import { playerInputBindingToDisplayValue } from "../playerInput.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, UpgradeOptionAbility } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, UpgradeOptionAbility, paintDefaultAbilityStatsUI } from "./ability.js";
 
 type AbilityObjectTower = AbilityObject & {
     ownerId: number,
@@ -339,12 +340,7 @@ function paintAbilityTowerUI(ctx: CanvasRenderingContext2D, ability: Ability, dr
     ctx.fillText(nextTower, drawStartX + 1, drawStartY + rectSize - (rectSize - fontSize)/2);
 
     if (tower.playerInputBinding) {
-        let keyBind = "";
-        game.clientKeyBindings[0].keyCodeToActionPressed.forEach((value, key) => {
-            if (value.action === tower.playerInputBinding) {
-                keyBind = value.uiDisplayInputValue;
-            }
-        });
+        let keyBind = playerInputBindingToDisplayValue(tower.playerInputBinding, game);
         ctx.fillStyle = "black";
         ctx.font = "10px Arial";
         ctx.fillText(keyBind, drawStartX + 1, drawStartY + 8);
@@ -352,29 +348,19 @@ function paintAbilityTowerUI(ctx: CanvasRenderingContext2D, ability: Ability, dr
 }
 
 function paintAbilityTowerStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
-    let abilityTower = ability as AbilityTower;
-    const abilityTowerDescription = ["Click to place Tower. Tower always connects to closest other Tower."];
-    abilityTowerDescription.push("More connections equals more damage. Towers have random");
-    abilityTowerDescription.push("Abilities. Abilities get more powerfull per connection");
-    const fontSize = 14;
-    const width = 425;
-    const height = 200;
-    ctx.fillStyle = "white";
-    ctx.fillRect(drawStartX, drawStartY, width, height);
-    ctx.font = fontSize + "px Arial";
-    ctx.fillStyle = "black";
-    let textLineCounter = 1;
-    ctx.fillText("Ability:" + abilityTower.name, drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
-    for (let desc of abilityTowerDescription) {
-        ctx.fillText(desc, drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
-    }
-
-    textLineCounter++;
-    ctx.fillText("Ability stats: ", drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
-    ctx.fillText("Max Towers: " + abilityTower.orderOfAbilities.length, drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
-    ctx.fillText("Max Click Range: " + abilityTower.maxClickRange, drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
-    ctx.fillText("Line Damage: " + abilityTower.damage, drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
-    ctx.fillText("Line Damage Increase per Connection: 15%", drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
+    const abilityTower = ability as AbilityTower;
+    const textLines: string[] = [
+        `Ability: ${abilityTower.name}`,
+        `Key: ${playerInputBindingToDisplayValue(abilityTower.playerInputBinding!, game)}`,
+        "Click to place Tower. Tower always connects to closest other Tower.",
+        "More connections equals more damage. Towers have random",
+        "Abilities. Abilities get more powerfull per connection",
+        "Ability stats:",
+        `Max Towers: ${abilityTower.orderOfAbilities.length}`,
+        `Max Click Range: ${abilityTower.maxClickRange}`,
+        `Line Damage: ${abilityTower.damage}`,
+        `Line Damage Increase per Connection: 15%`,
+    ];
 
     for(let i = 0; i< abilityTower.availableAbilityKeys.length;i++){
         let key = abilityTower.availableAbilityKeys[i];
@@ -382,10 +368,10 @@ function paintAbilityTowerStatsUI(ctx: CanvasRenderingContext2D, ability: Abilit
         for(let j = 0; j< abilityTower.orderOfAbilities.length;j++){
             if(abilityTower.orderOfAbilities[j] === i) counter++;
         }
-        ctx.fillText(`Max ${key} Tower: ${counter}`, drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
+        textLines.push(`Max ${key} Tower: ${counter}`);
     }
 
-    return { width, height };
+    return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
 }
 
 function tickAbilityTower(abilityOwner: AbilityOwner, ability: Ability, game: Game) {

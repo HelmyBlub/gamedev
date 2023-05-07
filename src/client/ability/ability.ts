@@ -113,10 +113,10 @@ export function abilityCharacterAddBossSkillPoint(state: GameState) {
     let playerCharacters: Character[] = getPlayerCharacters(state.players);
     for (let character of playerCharacters) {
         if (!character.isDead && !character.isPet) {
-            for(let ability of character.abilities){
-                if(ability.bossSkillPoints !== undefined) {
+            for (let ability of character.abilities) {
+                if (ability.bossSkillPoints !== undefined) {
                     ability.bossSkillPoints++;
-                    if(character.upgradeOptions.length === 0){
+                    if (character.upgradeOptions.length === 0) {
                         fillRandomUpgradeOptions(character, state.randomSeed, true);
                     }
                 }
@@ -125,17 +125,17 @@ export function abilityCharacterAddBossSkillPoint(state: GameState) {
     }
 }
 
-export function createAbility(abilityName: string, idCounter: IdCounter, isLeveling: boolean = false, getsBossSkillPoints: boolean = false, playerInputBinding: string | undefined = undefined): Ability{
+export function createAbility(abilityName: string, idCounter: IdCounter, isLeveling: boolean = false, getsBossSkillPoints: boolean = false, playerInputBinding: string | undefined = undefined): Ability {
     const abilityFunctions = ABILITIES_FUNCTIONS[abilityName];
     const ability = abilityFunctions.createAbility(idCounter, playerInputBinding);
 
-    if(isLeveling){
-        ability.leveling = {experience: 0, experienceForLevelUp: 10, level: 1};
+    if (isLeveling) {
+        ability.leveling = { experience: 0, experienceForLevelUp: 10, level: 1 };
     }
-    if(getsBossSkillPoints){
-        if(abilityFunctions.createAbiltiyBossUpgradeOptions){
+    if (getsBossSkillPoints) {
+        if (abilityFunctions.createAbiltiyBossUpgradeOptions) {
             ability.bossSkillPoints = 0;
-        }else{
+        } else {
             console.log(`${abilityName} is missing bossUpgradeOptions`);
         }
     }
@@ -175,13 +175,31 @@ export function findAbilityById(abilityId: number, game: Game): Ability | undefi
     let ability: Ability | undefined = undefined;
     for (let i = 0; i < game.state.players.length; i++) {
         let playerCharacter = game.state.players[i].character;
-        for(let ability of playerCharacter.abilities){
-            if(ability.id === abilityId) return ability;
+        for (let ability of playerCharacter.abilities) {
+            if (ability.id === abilityId) return ability;
         }
     }
 
     console.log("TODO?, not searching for abilityId in monsters and bosses yet");
     return ability;
+}
+
+export function paintDefaultAbilityStatsUI(ctx: CanvasRenderingContext2D, textLines: string[], drawStartX: number, drawStartY: number): { width: number, height: number } {
+    const fontSize = 14;
+    let width = 0;
+    for (let text of textLines) {
+        let currentWidth = ctx.measureText(text).width + 4;
+        if (currentWidth > width) width = currentWidth;
+    }
+    let height = textLines.length * fontSize + 6;
+    ctx.fillStyle = "white";
+    ctx.fillRect(drawStartX, drawStartY, width, height);
+    ctx.font = fontSize + "px Arial";
+    ctx.fillStyle = "black";
+    for (let i = 0; i < textLines.length; i++) {
+        ctx.fillText(textLines[i], drawStartX + 2, drawStartY + fontSize * (i + 1) + 2);
+    }
+    return { width, height };
 }
 
 export function detectAbilityObjectToCharacterHit(map: GameMap, abilityObject: AbilityObject, players: Player[], bosses: BossEnemyCharacter[], game: Game) {

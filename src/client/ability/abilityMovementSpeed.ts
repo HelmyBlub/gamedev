@@ -3,7 +3,8 @@ import { createBuffSpeed } from "../debuff/buffSpeed.js";
 import { applyDebuff } from "../debuff/debuff.js";
 import { getNextId } from "../game.js";
 import { Game, IdCounter, Position } from "../gameModel.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, UpgradeOptionAbility } from "./ability.js";
+import { playerInputBindingToDisplayValue } from "../playerInput.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, UpgradeOptionAbility, paintDefaultAbilityStatsUI } from "./ability.js";
 
 type AbilityMovementSpeed = Ability & {
     speedFactor: number,
@@ -21,6 +22,7 @@ export function addMovementSpeedAbility() {
         activeAbilityCast: castMovementSpeed,
         paintAbilityUI: paintAbilityMovementSpeedUI,
         createAbiltiyBossUpgradeOptions: createAbilityBossMovementSpeedUpgradeOptions,
+        paintAbilityStatsUI: paintAbilityMovementSpeedStatsUI,
         isPassive: false,
         notInheritable: true,
     };
@@ -52,7 +54,7 @@ function castMovementSpeed(abilityOwner: AbilityOwner, ability: Ability, castPos
     }
 }
 
-export function paintAbilityMovementSpeedUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
+function paintAbilityMovementSpeedUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
     let abilityMovementSpeed = ability as AbilityMovementSpeed;
     let fontSize = size;
     let rectSize = size;
@@ -87,6 +89,20 @@ export function paintAbilityMovementSpeedUI(ctx: CanvasRenderingContext2D, abili
         ctx.font = "10px Arial";
         ctx.fillText(keyBind, drawStartX + 1, drawStartY + 8);
     }
+}
+
+function paintAbilityMovementSpeedStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
+    const abilityMovementSpeed = ability as AbilityMovementSpeed;
+    const textLines: string[] = [
+        `Ability: ${abilityMovementSpeed.name}`,
+        `Key: ${playerInputBindingToDisplayValue(abilityMovementSpeed.playerInputBinding!, game)}`,
+        `Ability stats: `,
+        `Speed Increase: ${((abilityMovementSpeed.speedFactor-1)*100).toFixed()}%`,    
+        `Speed Duration: ${(abilityMovementSpeed.duration/1000).toFixed(2)}s`,
+        `Speed Cooldown: ${(abilityMovementSpeed.cooldown/1000).toFixed(2)}s`,    
+    ];
+
+    return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
 }
 
 function setAbilityMovementSpeedToLevel(ability: Ability, level: number){

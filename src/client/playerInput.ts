@@ -1,13 +1,11 @@
 import { CommandRestart, handleCommand } from "./commands.js";
 import { findPlayerById } from "./player.js";
 import { Character } from "./character/characterModel.js";
-import { LevelingCharacter } from "./character/playerCharacters/levelingCharacterModel.js";
 import { Game, Position } from "./gameModel.js";
 import { testGame } from "./test/gameTest.js";
 import { websocketConnect } from "./multiplayerConenction.js";
 import { ABILITIES_FUNCTIONS } from "./ability/ability.js";
 import { calculateDirection, getCameraPosition, getClientInfo, takeTimeMeasure } from "./game.js";
-import { RandomSeed } from "./randomNumberGenerator.js";
 import { upgradePlayerCharacter } from "./character/playerCharacters/playerCharacters.js";
 
 export const MOVE_ACTIONS = ["left", "down", "right", "up"];
@@ -101,6 +99,17 @@ export function keyDown(event: { code: string, preventDefault?: Function, stopPr
         default:
             break;
     }
+}
+
+export function playerInputBindingToDisplayValue(playerInputBinding: string, game: Game): string {
+    let displayValue = "";
+    game.clientKeyBindings[0].keyCodeToActionPressed.forEach((value, key) => {
+        if (value.action === playerInputBinding) {
+            displayValue = value.uiDisplayInputValue;
+        }
+    });
+
+    return displayValue;
 }
 
 function multiplayerConnectMenu(game: Game) {

@@ -1,6 +1,6 @@
 import { getNextId } from "../game.js";
 import { Game, IdCounter } from "../gameModel.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, UpgradeOptionAbility } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, UpgradeOptionAbility, paintDefaultAbilityStatsUI } from "./ability.js";
 
 type AbilityHpRegen = Ability & {
     amount: number,
@@ -61,20 +61,12 @@ function createAbilityHpRegenUpgradeOptions(): UpgradeOptionAbility[] {
 }
 
 function paintAbilityHpRegenStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
-    let abilityHpRegen = ability as AbilityHpRegen;
-    const fontSize = 14;
-    const width = 425;
-    const height = 200;
-    ctx.fillStyle = "white";
-    ctx.fillRect(drawStartX, drawStartY, width, height);
-    ctx.font = fontSize + "px Arial";
-    ctx.fillStyle = "black";
-    let textLineCounter = 1;
-    ctx.fillText("Ability:" + abilityHpRegen.name, drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
-    textLineCounter++;
-    ctx.fillText("Ability stats: ", drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
-    ctx.fillText(`Hp Tick Interval: ${(abilityHpRegen.tickInterval/1000).toFixed(2)}s`, drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
-    ctx.fillText("Hp Tick Amount: " + abilityHpRegen.amount, drawStartX + 2, drawStartY + fontSize * textLineCounter++ + 2);
-
-    return { width, height };
+    const abilityHpRegen = ability as AbilityHpRegen;
+    const textLines: string[] = [
+        `Ability: ${abilityHpRegen.name}`,
+        `Ability stats:`,
+        `Hp Tick Interval: ${(abilityHpRegen.tickInterval/1000).toFixed(2)}s`,
+        `Hp Tick Amount: ${abilityHpRegen.amount}`,    
+    ];
+    return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
 }

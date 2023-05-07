@@ -1,15 +1,15 @@
 current tasks:
-- visualize type?
 - Sniper: LevelingAbilityCharacter
     - needs more upgrade choice?
 
     - secondary abilities?
-        - teleport?
+        - choose secondary ability?
+            - teleport?
     - sniper thoguhts:
         - some way to get more maxHp
-        - to much damage?
+            - hp regen ability get boss skill points
+            - upgrade consist of two random parts e.g. current choices + maxHP/movementSpeed/more HPregen
         - needs more upgrade choice?
-        - upgrade consist of two random parts e.g. current choices + maxHP/movementSpeed/more HPregen
 
 - redesign code: upgrades?
     - make upgradeOptions file for some generall functions
