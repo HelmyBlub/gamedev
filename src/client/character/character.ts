@@ -7,7 +7,7 @@ import { Position, Game, GameState, IdCounter, Camera, PaintTextData } from "../
 import { findPlayerById, Player } from "../player.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS, abilityCharacterAddBossSkillPoint, UpgradeOptionAbility } from "../ability/ability.js";
-import { LevelingCharacter } from "./playerCharacters/levelingCharacterModel.js";
+import { LEVELING_CHARACTER, LevelingCharacter } from "./playerCharacters/levelingCharacterModel.js";
 import { BossEnemyCharacter, CHARACTER_TYPE_BOSS_ENEMY } from "./enemy/bossEnemy.js";
 import { tickCharacterDebuffs } from "../debuff/debuff.js";
 import { createAbilityLeash } from "../ability/abilityLeash.js";
@@ -167,7 +167,7 @@ export function tickMapCharacters(map: GameMap, game: Game) {
     takeTimeMeasure(game.debug, "tickMapCharacters", "");
 }
 
-export function tickCharacters(characters: Character[], game: Game, pathingCache: PathingCache | null = null) {
+export function tickCharacters(characters: Character[], game: Game, pathingCache: PathingCache | null) {
     for (let j = characters.length - 1; j >= 0; j--) {
         CHARACTER_TYPE_FUNCTIONS[characters[j].type]?.tickFunction(characters[j], game, pathingCache);
         if (!characters[j].isDead) {
@@ -192,6 +192,12 @@ export function findMyCharacter(game: Game): Character | undefined{
     let myClientId = game.multiplayer.myClientId;
     let myPlayer = findPlayerById(game.state.players, myClientId);
     return myPlayer?.character;
+}
+
+
+export function tickDefaultCharacter(character: Character, game:Game, pathingCache: PathingCache | null){
+    const isPlayer = character.faction === "player";
+    moveCharacterTick(character, game.state.map, game.state.idCounter, isPlayer);
 }
 
 export function determineClosestCharacter(position: Position, characters: Character[]) {

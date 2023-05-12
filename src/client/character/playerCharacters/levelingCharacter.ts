@@ -3,6 +3,7 @@ import { Game, GameState } from "../../gameModel.js";
 import { RandomSeed } from "../../randomNumberGenerator.js";
 import { Character } from "../characterModel.js";
 import { LEVELING_CHARACTER, LevelingCharacter } from "./levelingCharacterModel.js";
+import { PathingCache } from "../pathing.js";
 
 export function levelingCharacterXpGain(state: GameState, killedCharacter: Character) {
     let playerCharacters: LevelingCharacter[] = getPlayerCharacters(state.players) as LevelingCharacter[];
@@ -16,7 +17,8 @@ export function levelingCharacterXpGain(state: GameState, killedCharacter: Chara
     }
 }
 
-export function tickLevelingCharacter(character: LevelingCharacter, game: Game) {
+export function tickLevelingCharacter(character: Character, game: Game) {
+    const levelingCharacter = character as LevelingCharacter;
     if (character.isDead) {
         if (!character.willTurnToPetOnDeath) return;
         turnCharacterToPet(character, game);

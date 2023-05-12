@@ -6,7 +6,12 @@ import { Character } from "../characterModel.js";
 import { PathingCache } from "../pathing.js";
 import { FixPositionRespawnEnemyCharacter } from "./fixPositionRespawnEnemyModel.js";
 
-export function tickFixPositionRespawnEnemyCharacter(enemy: FixPositionRespawnEnemyCharacter, game: Game, pathingCache: PathingCache) {
+export function tickFixPositionRespawnEnemyCharacter(character: Character, game: Game, pathingCache: PathingCache | null) {
+    if(pathingCache === null) {
+        console.log("enemy needs pathing cache");
+        return;
+    }
+    const enemy = character as FixPositionRespawnEnemyCharacter;
     if (enemy.isDead) {
         if (enemy.wasHitRecently && !enemy.isAggroed) {
             alertCloseEnemies(enemy, game);

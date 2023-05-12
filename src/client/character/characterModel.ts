@@ -5,13 +5,15 @@ import { Position, IdCounter, Game } from "../gameModel.js";
 import { GAME_IMAGES } from "../imageLoad.js";
 import { createRandomizedCharacterImageData, RandomizedCharacterImage } from "../randomizedCharacterImage.js";
 import { RandomSeed } from "../randomNumberGenerator.js";
+import { tickDefaultCharacter } from "./character.js";
 import { tickFixPositionRespawnEnemyCharacter } from "./enemy/fixPositionRespawnEnemy.js";
+import { PathingCache } from "./pathing.js";
 import { ABILITY_LEVELING_CHARACTER } from "./playerCharacters/abilityLevelingCharacter.js";
 import { initCharacterChoiceOptons } from "./playerCharacters/playerCharacters.js";
 
 export type CHARACTER_TYPE_FUNCTIONS = {
     [key: string]: {
-        tickFunction: Function,
+        tickFunction: (character: Character, game: Game, pathingCache: PathingCache | null) => void,
     }
 }
 
@@ -72,6 +74,9 @@ export const ENEMY_FACTION = "enemy";
 export const CHARACTER_TYPE_FUNCTIONS: CHARACTER_TYPE_FUNCTIONS = {
     fixPositionRespawnEnemy: {
         tickFunction: tickFixPositionRespawnEnemyCharacter
+    },
+    Character: {
+        tickFunction: tickDefaultCharacter
     },
 }
 

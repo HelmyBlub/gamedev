@@ -286,7 +286,7 @@ function tick(gameTimePassed: number, game: Game) {
         tickBossCharacters(game.state.bossStuff, game);
 
         takeTimeMeasure(game.debug, "", "playerTick");
-        tickCharacters(getPlayerCharacters(game.state.players), game);
+        tickCharacters(getPlayerCharacters(game.state.players), game, null);
         takeTimeMeasure(game.debug, "playerTick", "");
 
         tickAbilityObjects(game.state.abilityObjects, game);

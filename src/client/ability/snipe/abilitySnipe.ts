@@ -1,4 +1,4 @@
-import { characterTakeDamage, findMyCharacter, getCharactersTouchingLine } from "../../character/character.js";
+import { characterTakeDamage, getCharactersTouchingLine } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
 import { calculateDirection, getClientInfoByCharacterId, getNextId } from "../../game.js";
 import { Position, Game, IdCounter, ClientInfo } from "../../gameModel.js";
@@ -15,7 +15,9 @@ export type AbilityObjectSnipe = AbilityObject & {
     direction: number,
     damageDone: boolean,
     deleteTime: number,
-    splitOnHit?: boolean,
+    remainingRange?: number,
+    preventSplitOnHit?: boolean,
+    bounceCounter?: number,
 }
 
 export type AbilitySnipe = Ability & {
@@ -108,7 +110,7 @@ function setAbilitySnipeToLevel(ability: Ability, level: number) {
     let abilitySnipe = ability as AbilitySnipe;
     abilitySnipe.baseDamage = level * 100;
     abilitySnipe.maxCharges = 2 + level;
-    abilitySnipe.baseRange = 800 + level * 50;
+    abilitySnipe.baseRange = 800 + level * 10;
     abilitySnipe.shotFrequencyTimeDecreaseFaktor = 1 + level * 0.15;
 }
 
@@ -144,15 +146,16 @@ function castSnipe(abilityOwner: AbilityOwner, ability: Ability, castPosition: P
 
 function createAndPushAbilityObjectSnipe(abilityOwner: AbilityOwner, abilitySnipe: AbilitySnipe, castPosition: Position, game: Game) {
     if (abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE]) {
-        createAndPushAbilityObjectSnipeTerrainBounce(abilityOwner, abilitySnipe, castPosition, game);
+        let direction = calculateDirection(abilityOwner, castPosition);
+        createAndPushAbilityObjectSnipeTerrainBounce(abilityOwner, abilityOwner.faction, abilitySnipe, direction, getAbilitySnipeRange(abilitySnipe), 0, false, game);
     } else {
         let direction = calculateDirection(abilityOwner, castPosition);
         let abilityObjectSnipt = createAbilityObjectSnipe(
-            abilityOwner, 
-            abilitySnipe.id, 
-            abilitySnipe, 
-            abilityOwner.faction, 
-            direction, 
+            abilityOwner,
+            abilitySnipe.id,
+            abilitySnipe,
+            abilityOwner.faction,
+            direction,
             getAbilitySnipeRange(abilitySnipe),
             game.state.time
         );
@@ -234,9 +237,9 @@ function createAbilityBossSnipeUpgradeOptions(ability: Ability): UpgradeOptionAb
     upgradeOptions.push(getAbilityUpgradeDamageAndRange());
     upgradeOptions.push(getAbilityUpgradeNoMissChain());
     upgradeOptions.push(getAbilityUpgradeSplitShot());
-//    if (!abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE]) {
-//        upgradeOptions.push(getAbilityUpgradeTerrainBounce());
-//    }
+    if (!abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE]) {
+        upgradeOptions.push(getAbilityUpgradeTerrainBounce());
+    }
     return upgradeOptions;
 }
 

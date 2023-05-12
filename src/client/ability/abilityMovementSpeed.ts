@@ -34,10 +34,10 @@ export function createAbilityMovementSpeed(
 ): AbilityMovementSpeed {
     return {
         name: ABILITY_NAME_MOVEMENTSPEED,
-        speedFactor: 2.5,
-        cooldown: 20000,
+        speedFactor: 1.5,
+        cooldown: 18000,
         cooldownFinishTime: 0,
-        duration: 5000,
+        duration: 3000,
         playerInputBinding: playerInputBinding,
         id: getNextId(idCounter),
         passive: false,
@@ -125,23 +125,23 @@ function createAbilityMovementSpeedUpgradeOptions(): UpgradeOptionAbility[] {
 function createAbilityBossMovementSpeedUpgradeOptions(ability: Ability): UpgradeOptionAbility[] {
     let upgradeOptions: UpgradeOptionAbility[] = [];
     upgradeOptions.push({
-        name: "Ability MovementSpeed speed increase +10%", probabilityFactor: 1, upgrade: (a: Ability) => {
+        name: "Ability MovementSpeed speed increase +50%", probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilityMovementSpeed;
-            as.speedFactor += 0.10;
+            as.speedFactor += 0.50;
         }
     });
 
     upgradeOptions.push({
-        name: "Ability MovementSpeed Reduce Cooldown 10%", probabilityFactor: 1, upgrade: (a: Ability) => {
+        name: "Ability MovementSpeed Reduce Cooldown 15%", probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilityMovementSpeed;
-            as.cooldown *= 0.90;
+            as.cooldown *= 0.85;
         }
     });
 
     upgradeOptions.push({
-        name: "Ability MovementSpeed Duration +0.5s", probabilityFactor: 1, upgrade: (a: Ability) => {
+        name: "Ability MovementSpeed Duration +1.0s", probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilityMovementSpeed;
-            as.duration += 500;
+            as.duration += 1000;
         }
     });
 
