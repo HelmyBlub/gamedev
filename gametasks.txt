@@ -1,5 +1,4 @@
 current tasks:
-- upgrade text width dont guess use function
 - Sniper: LevelingAbilityCharacter
     - try to improve code for terrain bounce and spit
 

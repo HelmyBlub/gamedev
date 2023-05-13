@@ -195,27 +195,19 @@ function paintHighscoreBoard(ctx: CanvasRenderingContext2D, highscores: Highscor
     }
 }
 
-function paintGameTitle(ctx: CanvasRenderingContext2D){
+function paintGameTitle(ctx: CanvasRenderingContext2D) {
     let middleX = ctx.canvas.width / 2;
 
-    ctx.fillStyle = "white";
-    ctx.globalAlpha = 0.3;
-    ctx.fillRect(middleX - 200, 10, 400, 95);
-    ctx.globalAlpha = 1;
-
-    ctx.fillStyle = "black";
     ctx.font = "bold 60px Arial";
-    ctx.fillText("Helmys Game", middleX - 198, 70);
-
+    paintTextWithOutline(ctx, "white", "black", "Helmys Game", middleX, 70, true, 3);
     ctx.font = "bold 24px Arial";
-    ctx.fillText("(Earliest Early Access)", middleX - 120, 95);
+    paintTextWithOutline(ctx, "white", "black", "(Earliest Early Access)", middleX, 95, true, 2);
 }
 
 function paintKillCounter(ctx: CanvasRenderingContext2D, killCounter: number, game: Game) {
     if (game.state.ended && killCounter === 0) return;
-    ctx.fillStyle = "black";
     ctx.font = "18px Arial";
-    ctx.fillText("Kills: " + killCounter, 10, 20);
+    paintTextWithOutline(ctx, "white", "black", "Kills: " + killCounter, 10, 20);
 }
 
 function paintPlayerStats(ctx: CanvasRenderingContext2D, character: Character, gameTime: number, game: Game) {
@@ -223,17 +215,17 @@ function paintPlayerStats(ctx: CanvasRenderingContext2D, character: Character, g
     ctx.fillStyle = "black";
     ctx.font = "18px Arial";
 
-    if(character.type === LEVELING_CHARACTER){
+    if (character.type === LEVELING_CHARACTER) {
         const levelingCharacter = character as LevelingCharacter;
         ctx.fillText("Level: " + levelingCharacter.level
             + "  SkillPoints:" + levelingCharacter.availableSkillPoints,
             200, 20);
     }
-    ctx.fillText("HP: " + Math.ceil(character.hp), 100, 20);
-    ctx.fillText("Time: " + Math.round(gameTime / 1000), 400, 20);
-    ctx.fillText("Distance: " + distance, 10, 40);
+    paintTextWithOutline(ctx, "white", "black", "HP: " + Math.ceil(character.hp), 100, 20);
+    paintTextWithOutline(ctx, "white", "black", "Time: " + Math.round(gameTime / 1000), 400, 20);
+    paintTextWithOutline(ctx, "white", "black", "Distance: " + distance, 10, 40);
 
-    if(!game.state.ended && game.multiplayer.websocket && game.multiplayer.timePassedWithoutSeverUpdate + 2000 < performance.now()){
+    if (!game.state.ended && game.multiplayer.websocket && game.multiplayer.timePassedWithoutSeverUpdate + 2000 < performance.now()) {
         let text = "Bad Connection...";
         ctx.font = "bold 34px Arial";
         ctx.fillText(text, ctx.canvas.width / 2 - 100, ctx.canvas.height / 2 - 100);
@@ -265,7 +257,7 @@ function paintPlayerStatsUI(ctx: CanvasRenderingContext2D, character: Character,
 }
 
 function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Character, game: Game) {
-    if (game.state.ended)  return;
+    if (game.state.ended) return;
     if (game.settings.autoSkillEnabled && character.type !== DEFAULT_CHARACTER) return;
     let fontSize = 20;
     ctx.font = fontSize + "px Arial";
@@ -275,22 +267,36 @@ function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Charact
         let totalWidthEsitmate = 0;
         let texts = [];
         for (let i = 0; i < character.upgradeOptions.length; i++) {
-            texts.push(`${character.upgradeOptions[i].name}`);
-            totalWidthEsitmate += texts[i].length * fontSize * 0.63;
+            let tempText = `${character.upgradeOptions[i].name}`;
+            let width = ctx.measureText(tempText).width;
+            texts.push({ text: tempText, width: width });
+            totalWidthEsitmate += width;
         }
 
         let currentX = Math.max(5, ctx.canvas.width / 2 - totalWidthEsitmate / 2);
         for (let i = 0; i < character.upgradeOptions.length; i++) {
             ctx.globalAlpha = 0.4;
             ctx.fillStyle = "white";
-            let textWidthEstimate = texts[i].length * fontSize * 0.63;
-            ctx.fillRect(currentX, startY - fontSize - 2, textWidthEstimate, fontSize + 4);
+            let textWidthEstimate = texts[i].width;
+            ctx.fillRect(currentX, startY - fontSize - 2, textWidthEstimate + 40, fontSize + 4);
             ctx.globalAlpha = 1;
 
             paintKey(ctx, (i + 1).toString(), { x: currentX, y: startY - 26 });
             ctx.fillStyle = "black";
-            ctx.fillText(texts[i], currentX + 40, startY - 3);
+            ctx.fillText(texts[i].text, currentX + 40, startY - 3);
             currentX += textWidthEstimate + optionSpacer;
         }
     }
+}
+
+function paintTextWithOutline(ctx: CanvasRenderingContext2D, outlineColor: string, textColor: string, text: string, x: number, y: number, centered: boolean = false, lineWidth: number = 1) {
+    ctx.strokeStyle = outlineColor;
+    ctx.fillStyle = textColor;
+    ctx.lineWidth = lineWidth;
+    if (centered) {
+        let width = ctx.measureText(text).width;
+        x -= width / 2;
+    }
+    ctx.strokeText(text, x, y);
+    ctx.fillText(text, x, y);
 }
