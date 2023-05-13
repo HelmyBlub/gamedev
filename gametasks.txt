@@ -1,7 +1,7 @@
 current tasks:
+- upgrade text width dont guess use function
 - Sniper: LevelingAbilityCharacter
     - try to improve code for terrain bounce and spit
-    - Terrain bounce tooltips update: does dmg increase on bounce
 
     - needs more upgrade choice?
         -

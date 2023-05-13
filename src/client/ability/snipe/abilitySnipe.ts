@@ -7,17 +7,18 @@ import { paintAbilityObjectSnipe, paintAbilitySnipeStatsUI, paintAbilitySnipeUI 
 import { abilityUpgradeNoMissChainDamageFactor, abilityUpgradeNoMissChainOnObjectSnipeDamageDone, getAbilityUpgradeNoMissChain } from "./abilitySnipeUpgradeChainHit.js";
 import { abilityUpgradeDamageAndRangeDamageFactor, abilityUpgradeDamageAndRangeRangeFactor, getAbilityUpgradeDamageAndRange } from "./abilitySnipeUpgradeDamageAndRange.js";
 import { abilityUpgradeOnSnipeHit, getAbilityUpgradeSplitShot } from "./abilitySnipeUpgradeSplitShot.js";
-import { UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE, createAndPushAbilityObjectSnipeTerrainBounce, getAbilityUpgradeTerrainBounce } from "./abilitySnipeUpgradeTerrainBounce.js";
+import { UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE, abilityUpgradeTerrainBounceDamageFactor, createAndPushAbilityObjectSnipeTerrainBounceBounce, createAndPushAbilityObjectSnipeTerrainBounceInit, getAbilityUpgradeTerrainBounce } from "./abilitySnipeUpgradeTerrainBounce.js";
 
 export type AbilityObjectSnipe = AbilityObject & {
     damage: number,
     range: number,
     direction: number,
-    damageDone: boolean,
+    damageCalcDone: boolean,
     deleteTime: number,
     remainingRange?: number,
     preventSplitOnHit?: boolean,
     bounceCounter?: number,
+    hitSomething?: boolean,
 }
 
 export type AbilitySnipe = Ability & {
@@ -88,22 +89,44 @@ export function createAbilitySnipe(
     };
 }
 
-export function createAbilityObjectSnipe(startPos: Position, abilityRefId: number | undefined, abilitySnipe: AbilitySnipe, faction: string, direction: number, range: number, gameTime: number): AbilityObjectSnipe {
-    return {
+export function createAbilityObjectSnipeByAbility(abilitySnipe: AbilitySnipe, abilityOwner: AbilityOwner,startPos: Position, direction: number, game: Game): AbilityObjectSnipe{
+    let abilityObjectSnipe: AbilityObjectSnipe = {
         type: ABILITY_NAME_SNIPE,
         size: abilitySnipe.size,
         color: "",
         x: startPos.x,
         y: startPos.y,
         damage: getAbilitySnipeDamage(abilitySnipe),
+        faction: abilityOwner.faction,
+        direction: direction,
+        range: getAbilitySnipeRange(abilitySnipe),
+        damageCalcDone: false,
+        deleteTime: game.state.time + abilitySnipe.paintFadeDuration,
+        leveling: abilitySnipe.leveling ? true : undefined,
+        abilityRefId: abilitySnipe.id,
+    }
+    return abilityObjectSnipe;
+}
+
+export function createAbilityObjectSnipe(startPos: Position, abilityRefId: number | undefined, abilitySnipe: AbilitySnipe, faction: string, direction: number, range: number, preventSplitOnHit: boolean | undefined, damage: number, gameTime: number): AbilityObjectSnipe {
+    let abilityObjectSnipe: AbilityObjectSnipe = {
+        type: ABILITY_NAME_SNIPE,
+        size: abilitySnipe.size,
+        color: "",
+        x: startPos.x,
+        y: startPos.y,
+        damage: damage,
         faction: faction,
         direction: direction,
         range: range,
-        damageDone: false,
+        damageCalcDone: false,
         deleteTime: gameTime + abilitySnipe.paintFadeDuration,
         leveling: abilitySnipe.leveling ? true : undefined,
         abilityRefId: abilityRefId,
+        preventSplitOnHit: preventSplitOnHit,        
     }
+
+    return abilityObjectSnipe;
 }
 
 function setAbilitySnipeToLevel(ability: Ability, level: number) {
@@ -114,10 +137,11 @@ function setAbilitySnipeToLevel(ability: Ability, level: number) {
     abilitySnipe.shotFrequencyTimeDecreaseFaktor = 1 + level * 0.15;
 }
 
-export function getAbilitySnipeDamage(abilitySnipe: AbilitySnipe) {
+export function getAbilitySnipeDamage(abilitySnipe: AbilitySnipe, bounceCounter: number = 0) {
     let damage = abilitySnipe.baseDamage;
     damage *= abilityUpgradeNoMissChainDamageFactor(abilitySnipe);
     damage *= abilityUpgradeDamageAndRangeDamageFactor(abilitySnipe);
+    damage *= abilityUpgradeTerrainBounceDamageFactor(abilitySnipe, bounceCounter);
     return damage;
 }
 
@@ -145,11 +169,11 @@ function castSnipe(abilityOwner: AbilityOwner, ability: Ability, castPosition: P
 }
 
 function createAndPushAbilityObjectSnipe(abilityOwner: AbilityOwner, abilitySnipe: AbilitySnipe, castPosition: Position, game: Game) {
-    if (abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE]) {
-        let direction = calculateDirection(abilityOwner, castPosition);
-        createAndPushAbilityObjectSnipeTerrainBounce(abilityOwner, abilityOwner.faction, abilitySnipe, direction, getAbilitySnipeRange(abilitySnipe), 0, false, game);
-    } else {
-        let direction = calculateDirection(abilityOwner, castPosition);
+    let direction = calculateDirection(abilityOwner, castPosition);
+    if(abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE]){
+        const range = getAbilitySnipeRange(abilitySnipe);
+        createAndPushAbilityObjectSnipeTerrainBounceInit(abilityOwner, direction, abilitySnipe, abilityOwner.faction, undefined, range, 0, game); 
+    }else{
         let abilityObjectSnipt = createAbilityObjectSnipe(
             abilityOwner,
             abilitySnipe.id,
@@ -157,10 +181,13 @@ function createAndPushAbilityObjectSnipe(abilityOwner: AbilityOwner, abilitySnip
             abilityOwner.faction,
             direction,
             getAbilitySnipeRange(abilitySnipe),
+            undefined,
+            getAbilitySnipeDamage(abilitySnipe),
             game.state.time
         );
         game.state.abilityObjects.push(abilityObjectSnipt);
     }
+
     abilitySnipe.currentCharges--;
     if (abilitySnipe.currentCharges === 0) {
         abilitySnipe.reloadTime = game.state.time + abilitySnipe.baseRechargeTime;
@@ -195,16 +222,15 @@ export function getShotFrequency(abilitySnipe: AbilitySnipe) {
 
 function tickAbilityObjectSnipe(abilityObject: AbilityObject, game: Game) {
     let abilityObjectSnipe = abilityObject as AbilityObjectSnipe;
-    if (!abilityObjectSnipe.damageDone) {
+    if (!abilityObjectSnipe.damageCalcDone) {
         const endPos = calcAbilityObjectSnipeEndPosition(abilityObjectSnipe, abilityObjectSnipe.direction, abilityObjectSnipe.range);
         let characters: Character[] = getCharactersTouchingLine(game, abilityObjectSnipe, endPos, abilityObjectSnipe.size);
         let abilitySnipe = abilityObject.abilityRefId !== undefined ? findAbilityById(abilityObject.abilityRefId, game) as AbilitySnipe : undefined;
-        let hitSomething: boolean = false;
         for (let char of characters) {
             if (char.isDead) continue;
-            hitSomething = true;
+            abilityObjectSnipe.hitSomething = true;
             characterTakeDamage(char, abilityObjectSnipe.damage, game);
-            abilityUpgradeOnSnipeHit(char, abilitySnipe, abilityObjectSnipe, game);
+            if(!abilityObjectSnipe.preventSplitOnHit) abilityUpgradeOnSnipeHit(char, abilitySnipe, abilityObjectSnipe, game);
 
             if (char.isDead) {
                 if (abilityObject.leveling && abilityObject.abilityRefId !== undefined) {
@@ -214,8 +240,12 @@ function tickAbilityObjectSnipe(abilityObject: AbilityObject, game: Game) {
                 }
             }
         }
-        if (abilitySnipe) abilityUpgradeNoMissChainOnObjectSnipeDamageDone(abilitySnipe, hitSomething);
-        abilityObjectSnipe.damageDone = true;
+        if (abilitySnipe) abilityUpgradeNoMissChainOnObjectSnipeDamageDone(abilitySnipe, abilityObjectSnipe);
+        abilityObjectSnipe.damageCalcDone = true;
+
+        if(abilitySnipe?.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE]){
+            createAndPushAbilityObjectSnipeTerrainBounceBounce(abilityObjectSnipe, abilitySnipe, game);
+        }
     }
 }
 

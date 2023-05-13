@@ -1,5 +1,5 @@
 import { Ability, UpgradeOptionAbility } from "../ability.js";
-import { AbilitySnipe } from "./abilitySnipe.js";
+import { AbilityObjectSnipe, AbilitySnipe } from "./abilitySnipe.js";
 
 export const UPGRADE_SNIPE_ABILITY_NO_MISS_CHAIN = "Snipe No Miss Chain";
 
@@ -50,10 +50,10 @@ export function abilityUpgradeNoMissChainDamageFactor(abilitySnipe: AbilitySnipe
 
 }
 
-export function abilityUpgradeNoMissChainOnObjectSnipeDamageDone(abilitySnipe: AbilitySnipe, hitSomething: boolean) {
+export function abilityUpgradeNoMissChainOnObjectSnipeDamageDone(abilitySnipe: AbilitySnipe, abilityObjectSnipe: AbilityObjectSnipe) {
     let upgrades: AbilityUpgradeChainHit | undefined = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_NO_MISS_CHAIN];
-    if (upgrades && upgrades.noMissChainCounter !== undefined) {
-        if (hitSomething) {
+    if (upgrades && upgrades.noMissChainCounter !== undefined && abilityObjectSnipe.remainingRange === undefined && !abilityObjectSnipe.preventSplitOnHit) {
+        if (abilityObjectSnipe.hitSomething) {
             if (upgrades.noMissChainCounter < upgrades.noMissCounterCap!) {
                 upgrades.noMissChainCounter++;
             }

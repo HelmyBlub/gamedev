@@ -5,6 +5,7 @@ import { Ability, AbilityObject, PaintOrderAbility, paintDefaultAbilityStatsUI }
 import { AbilityObjectSnipe, AbilitySnipe, calcAbilityObjectSnipeEndPosition, getAbilitySnipeDamage, getAbilitySnipeRange, getShotFrequency } from "./abilitySnipe.js";
 import { UPGRADE_SNIPE_ABILITY_NO_MISS_CHAIN, abilityUpgradeNoMissChainUiText } from "./abilitySnipeUpgradeChainHit.js";
 import { UPGRADE_SNIPE_ABILITY_SPLIT_SHOT, abilityUpgradeSplitOnHitUiText } from "./abilitySnipeUpgradeSplitShot.js";
+import { UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE, abilityUpgradeTerrainBounceUiText } from "./abilitySnipeUpgradeTerrainBounce.js";
 
 export function paintAbilityObjectSnipe(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
     if (paintOrder !== "afterCharacterPaint") return;
@@ -97,6 +98,9 @@ export function paintAbilitySnipeStatsUI(ctx: CanvasRenderingContext2D, ability:
         if (abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_SPLIT_SHOT]) {
             textLines.push(abilityUpgradeSplitOnHitUiText(abilitySnipe));
         }
+        if (abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE]) {
+            textLines.push(abilityUpgradeTerrainBounceUiText(abilitySnipe));
+        }        
     }
 
     return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
