@@ -68,6 +68,7 @@ export type GameState = {
     bossStuff: BossStuff,
     killCounter: number,
     time: number;
+    timeFirstKill?: number;
     ended: boolean,
     triggerRestart: boolean,
     restartAfterTick: boolean,

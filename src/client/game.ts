@@ -59,6 +59,7 @@ export function gameInit(game: Game) {
     game.state.triggerRestart = false;
     game.state.restartAfterTick = false;
     game.state.time = 0;
+    game.state.timeFirstKill = undefined;
     game.state.playerInputs = [];
     game.state.bossStuff.bosses = [];
     game.state.bossStuff.bossLevelCounter = 1;
@@ -186,6 +187,11 @@ export function getClientInfo(clientId: number, game: Game): ClientInfo | undefi
 
 export function getClientInfoByCharacterId(characterId: number, game: Game): ClientInfo | undefined{
     return getClientInfo(findPlayerByCharacterId(game.state.players, characterId)!.clientId, game);
+}
+
+export function getTimeSinceFirstKill(gameState: GameState): number{
+    if(gameState.timeFirstKill === undefined) return 0;
+    return gameState.time - gameState.timeFirstKill;
 }
 
 export function calculateDistancePointToLine(point: Position, linestart: Position, lineEnd: Position) {
@@ -342,14 +348,14 @@ function checkForAutoSkill(game: Game) {
 }
 
 function checkMovementKeyPressedHint(game: Game) {
-    if (game.state.time > 10000 && !game.UI.movementKeyPressed && !game.multiplayer.websocket) {
+    if (getTimeSinceFirstKill(game.state) > 10000 && !game.UI.movementKeyPressed && !game.multiplayer.websocket) {
         game.UI.displayMovementKeyHint = true;
     }
 }
 
 function checkDeathCircleSpawn(game: Game) {
     if (!game.state.deathCircleCreated) {
-        let spawnAfterTime = game.state.time > 30000;
+        let spawnAfterTime = getTimeSinceFirstKill(game.state) > 30000;
         if (spawnAfterTime) {
             game.state.abilityObjects.push(createObjectDeathCircle(game.state.map));
             game.state.deathCircleCreated = true;

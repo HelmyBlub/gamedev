@@ -1,7 +1,7 @@
 import { ABILITIES_FUNCTIONS, Ability } from "../../ability/ability.js";
 import { createAbilityMelee } from "../../ability/abilityMelee.js";
 import { tickCharacterDebuffs } from "../../debuff/debuff.js";
-import { calculateDirection, getNextId } from "../../game.js";
+import { calculateDirection, getNextId, getTimeSinceFirstKill } from "../../game.js";
 import { IdCounter, Game, Position, BossStuff } from "../../gameModel.js";
 import { GAME_IMAGES, loadImage } from "../../imageLoad.js";
 import { findNearNonBlockingPosition, getMapMidlePosition, moveByDirectionAndDistance } from "../../map/map.js";
@@ -66,7 +66,7 @@ export function paintBossCharacters(ctx: CanvasRenderingContext2D, cameraPositio
 export function checkForBossSpawn(game: Game) {
     let bossStuff = game.state.bossStuff;
     let nextBossSpawnTime = bossStuff.bossSpawnEachXMilliSecond * bossStuff.bossLevelCounter;
-    if (game.state.time >= nextBossSpawnTime) {
+    if (getTimeSinceFirstKill(game.state) >= nextBossSpawnTime) {
         bossStuff.bosses.push(createBossWithLevel(game.state.idCounter, bossStuff.bossLevelCounter, game));
         bossStuff.bossLevelCounter++;
     }

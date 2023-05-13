@@ -39,6 +39,7 @@ export function characterTakeDamage(character: Character, damage: number, game: 
     character.hp -= damage;
     if(character.hp <= 0) {
         character.isDead = true;
+        if(game.state.timeFirstKill === undefined) game.state.timeFirstKill = game.state.time;
         levelingCharacterXpGain(game.state, character);
         if (character.type === CHARACTER_TYPE_BOSS_ENEMY) {
             abilityCharacterAddBossSkillPoint(game.state);

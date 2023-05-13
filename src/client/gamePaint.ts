@@ -4,7 +4,7 @@ import { Character, DEFAULT_CHARACTER } from "./character/characterModel.js";
 import { paintCharacterStatsUI, paintCharacters } from "./character/characterPaint.js";
 import { paintBossCharacters } from "./character/enemy/bossEnemy.js";
 import { LEVELING_CHARACTER, LevelingCharacter } from "./character/playerCharacters/levelingCharacterModel.js";
-import { calculateDistance, getCameraPosition } from "./game.js";
+import { calculateDistance, getCameraPosition, getTimeSinceFirstKill } from "./game.js";
 import { Game, Position, Highscores, Debugging, PaintTextData } from "./gameModel.js";
 import { GAME_IMAGES, loadImage } from "./imageLoad.js";
 import { getMapMidlePosition } from "./map/map.js";
@@ -36,7 +36,7 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
         let player = findPlayerById(game.state.players, game.multiplayer.myClientId);
         if (player === null) return;
         let character = player.character;
-        if (character !== null) paintPlayerStats(ctx, character as LevelingCharacter, game.state.time, game);
+        if (character !== null) paintPlayerStats(ctx, character as LevelingCharacter, getTimeSinceFirstKill(game.state), game);
         paintHighscoreBoard(ctx, game.state.highscores);
         if (game.multiplayer.websocket !== null) {
             ctx.fillText("Ping: " + Math.round(game.multiplayer.delay), 10, 60);
@@ -46,12 +46,12 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
             let player = findPlayerById(game.state.players, game.multiplayer.myClientId);
             if (player === null) return;
             let character = player.character;
-            if (character !== null) paintPlayerStats(ctx, character as LevelingCharacter, game.state.time, game);
+            if (character !== null) paintPlayerStats(ctx, character as LevelingCharacter, getTimeSinceFirstKill(game.state), game);
             if (game.multiplayer.websocket !== null) {
                 ctx.fillText("Ping: " + Math.round(game.multiplayer.delay), 10, 60);
             }
         } else {
-            paintPlayerStats(ctx, game.state.players[0].character as LevelingCharacter, game.state.time, game);
+            paintPlayerStats(ctx, game.state.players[0].character as LevelingCharacter, getTimeSinceFirstKill(game.state), game);
         }
     }
     paintTimeMeasures(ctx, game.debug);

@@ -1,13 +1,10 @@
 current tasks:
-- change: game timer start on first kill?
-
 - Sniper: LevelingAbilityCharacter
     - try to improve code for terrain bounce and spit
     - Terrain bounce tooltips update: does dmg increase on bounce
 
     - needs more upgrade choice?
-        - wip: snipe bounce
-            - some performance spikes? something of about tile calc?
+        -
 
     - secondary abilities?
         - choose secondary ability?
