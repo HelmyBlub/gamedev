@@ -30,7 +30,6 @@ export function createBuffSpeed(
 function applyBuffEffectSpeed(debuff: Debuff, targetCharacter: Character, game: Game){
     let buffSpeed = debuff as BuffSpeed;
     targetCharacter.moveSpeed *= buffSpeed.speedFactor;
-    console.log("apply speed");
 }
 
 function removeBuffEffectSpeed(debuff: Debuff, targetCharacter: Character, game: Game){

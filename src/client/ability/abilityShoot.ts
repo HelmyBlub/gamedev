@@ -59,6 +59,7 @@ export function createAbilityShoot(
         passive: true,
         moveSpeed: moveSpeed,
         bulletSize: bulletSize,
+        upgrades: {},
     };
 }
 

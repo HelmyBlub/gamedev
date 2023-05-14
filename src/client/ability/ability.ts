@@ -17,6 +17,7 @@ import { addIceAbility } from "./abilityIceAura.js"
 import { addSingleTargetAbility } from "./abilitySingleTarget.js"
 import { addSnipeAbility } from "./snipe/abilitySnipe.js"
 import { addMovementSpeedAbility } from "./abilityMovementSpeed.js"
+import { addAbilitySlowTrail } from "./abilitySlowTrail.js"
 
 export type Ability = {
     id: number,
@@ -29,6 +30,9 @@ export type Ability = {
         experienceForLevelUp: number,
     }
     bossSkillPoints?: number,
+    upgrades: {
+        [key: string]: any,
+    }
 }
 export type PaintOrderAbility = "beforeCharacterPaint" | "afterCharacterPaint";
 export type AbilityObject = Position & {
@@ -48,11 +52,11 @@ export type AbilityOwner = Position & Partial<Character> & {
 
 export type AbilityFunctions = {
     tickAbility?: (abilityOwner: AbilityOwner, ability: Ability, game: Game) => void,
+    tickAbilityObject?: (abilityObject: AbilityObject, game: Game) => void,
     createAbility: (idCounter: IdCounter, playerInputBinding?: string) => Ability,
     createAbiltiyUpgradeOptions: (ability: Ability) => UpgradeOptionAbility[],
     createAbiltiyBossUpgradeOptions?: (ability: Ability) => UpgradeOptionAbility[],
     activeAbilityCast?: (abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isKeydown: boolean, game: Game) => void,
-    tickAbilityObject?: (abilityObject: AbilityObject, game: Game) => void,
     deleteAbilityObject?: (abilityObject: AbilityObject, game: Game) => boolean,
     paintAbility?: (ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) => void,
     paintAbilityObject?: (ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) => void,
@@ -93,6 +97,7 @@ export function onDomLoadSetAbilitiesFunctions() {
     addSingleTargetAbility();
     addSnipeAbility();
     addMovementSpeedAbility();
+    addAbilitySlowTrail();
 }
 
 export function addAbilityToCharacter(character: Character, ability: Ability) {

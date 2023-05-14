@@ -33,6 +33,7 @@ export function createAbilityLeash(
         leashMaxLength: leashMaxLength,
         leashedToOwnerId: leashedToOwnerId,
         passive: true,
+        upgrades: {},
     };
 }
 

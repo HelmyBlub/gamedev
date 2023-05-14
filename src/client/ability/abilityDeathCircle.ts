@@ -37,6 +37,7 @@ export function createAbilityDeathCircle(idCounter: IdCounter): AbilityDeathCirc
         passive: true,
         growSpeed: 2,
         size: 0,
+        upgrades: {},
     }
 }
 

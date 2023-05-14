@@ -68,6 +68,7 @@ export function createAbilityTower(
         currentAbilityIndex: 0,
         availableAbilityKeys: availableAbilities,
         orderOfAbilities: orderOfAbilities,
+        upgrades: {},
     };
 }
 

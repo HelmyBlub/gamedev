@@ -1,4 +1,5 @@
 import { findCharacterById, getPlayerCharacters } from "../character/character.js";
+import { createBuffSlowTrail } from "../debuff/buffSlowTrail.js";
 import { createBuffSpeed } from "../debuff/buffSpeed.js";
 import { applyDebuff } from "../debuff/debuff.js";
 import { getNextId } from "../game.js";
@@ -12,7 +13,13 @@ type AbilityMovementSpeed = Ability & {
     cooldown: number,
     cooldownFinishTime: number,
 }
+
+type AbilityUpgradeSlowTrail = {
+    active: boolean,
+}
+
 export const ABILITY_NAME_MOVEMENTSPEED = "MovementSpeed";
+export const ABILITY_MOVEMENT_SPEED_UPGARDE_SLOW_TRAIL = "Slow Trail";
 
 export function addMovementSpeedAbility() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_MOVEMENTSPEED] = {
@@ -41,16 +48,22 @@ export function createAbilityMovementSpeed(
         playerInputBinding: playerInputBinding,
         id: getNextId(idCounter),
         passive: false,
+        upgrades: {},
     };
 }
 
 function castMovementSpeed(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isInputdown: boolean, game: Game) {
     const abilityMovementSpeed = ability as AbilityMovementSpeed;
-    if(abilityMovementSpeed.cooldownFinishTime <= game.state.time){
+    if (abilityMovementSpeed.cooldownFinishTime <= game.state.time) {
         const speedBuff = createBuffSpeed(abilityMovementSpeed.speedFactor, abilityMovementSpeed.duration, game.state.time);
         const character = findCharacterById(getPlayerCharacters(game.state.players), abilityOwner.id)!;
         applyDebuff(speedBuff, character, game);
         abilityMovementSpeed.cooldownFinishTime = game.state.time + abilityMovementSpeed.cooldown;
+
+        if(ability.upgrades[ABILITY_MOVEMENT_SPEED_UPGARDE_SLOW_TRAIL]){
+            const slowTrail = createBuffSlowTrail(abilityMovementSpeed.duration, game.state.time);
+            applyDebuff(slowTrail, character, game);
+        }
     }
 }
 
@@ -73,7 +86,7 @@ function paintAbilityMovementSpeedUI(ctx: CanvasRenderingContext2D, ability: Abi
         ctx.fillStyle = "black";
         const fontSize2 = Math.floor(size * 0.8);
         ctx.font = fontSize2 + "px Arial";
-        const cooldownSeconds = Math.ceil((abilityMovementSpeed.cooldownFinishTime - game.state.time)/1000);
+        const cooldownSeconds = Math.ceil((abilityMovementSpeed.cooldownFinishTime - game.state.time) / 1000);
         ctx.fillText("" + cooldownSeconds, drawStartX, drawStartY + rectSize - (rectSize - fontSize2 * 0.9));
     }
 
@@ -97,15 +110,15 @@ function paintAbilityMovementSpeedStatsUI(ctx: CanvasRenderingContext2D, ability
         `Ability: ${abilityMovementSpeed.name}`,
         `Key: ${playerInputBindingToDisplayValue(abilityMovementSpeed.playerInputBinding!, game)}`,
         `Ability stats: `,
-        `Speed Increase: ${((abilityMovementSpeed.speedFactor-1)*100).toFixed()}%`,    
-        `Speed Duration: ${(abilityMovementSpeed.duration/1000).toFixed(2)}s`,
-        `Speed Cooldown: ${(abilityMovementSpeed.cooldown/1000).toFixed(2)}s`,    
+        `Speed Increase: ${((abilityMovementSpeed.speedFactor - 1) * 100).toFixed()}%`,
+        `Speed Duration: ${(abilityMovementSpeed.duration / 1000).toFixed(2)}s`,
+        `Speed Cooldown: ${(abilityMovementSpeed.cooldown / 1000).toFixed(2)}s`,
     ];
 
     return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
 }
 
-function setAbilityMovementSpeedToLevel(ability: Ability, level: number){
+function setAbilityMovementSpeedToLevel(ability: Ability, level: number) {
     let abilityMovementSpeed = ability as AbilityMovementSpeed;
     abilityMovementSpeed.speedFactor = 1.20 + 0.05 * level;
 }
@@ -144,6 +157,21 @@ function createAbilityBossMovementSpeedUpgradeOptions(ability: Ability): Upgrade
             as.duration += 1000;
         }
     });
+
+    if(!ability.upgrades[ABILITY_MOVEMENT_SPEED_UPGARDE_SLOW_TRAIL]){
+        upgradeOptions.push({
+            name: "Slow Trail", probabilityFactor: 1, upgrade: (a: Ability) => {
+                let as = a as AbilityMovementSpeed;
+                let up: AbilityUpgradeSlowTrail;
+                if (as.upgrades[ABILITY_MOVEMENT_SPEED_UPGARDE_SLOW_TRAIL] === undefined) {
+                    up = {
+                        active: true,
+                    }
+                    as.upgrades[ABILITY_MOVEMENT_SPEED_UPGARDE_SLOW_TRAIL] = up;
+                }
+            }
+        });
+    }
 
     return upgradeOptions;
 }

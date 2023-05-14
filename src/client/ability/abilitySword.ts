@@ -58,6 +58,7 @@ export function createAbilitySword(
         angleChangePerSword: angleChangePerSword,
         passive: true,
         tickInterval: 100,
+        upgrades: {},
     };
 }
 

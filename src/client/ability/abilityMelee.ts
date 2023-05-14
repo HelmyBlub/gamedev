@@ -33,6 +33,7 @@ export function createAbilityMelee(
         damage: damage,
         passive: true,
         tickInterval: 250,
+        upgrades: {},
     };
 }
 

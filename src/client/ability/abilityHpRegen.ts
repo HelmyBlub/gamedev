@@ -28,6 +28,7 @@ export function createAbilityHpRegen(idCounter: IdCounter): AbilityHpRegen {
         amount: 1,
         tickInterval: 500,
         passive: true,
+        upgrades: {},
     };
 }
 

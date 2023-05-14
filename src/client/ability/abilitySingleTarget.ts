@@ -44,6 +44,7 @@ export function createAbilitySingleTarget(
         attackInterval: 250,
         sameTargetAttackCounter: 0,
         damageIncreaseFactorPerAttack: 0,
+        upgrades: {},
     };
 }
 

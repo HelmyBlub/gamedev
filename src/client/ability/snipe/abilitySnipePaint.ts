@@ -105,7 +105,6 @@ export function paintAbilitySnipeStatsUI(ctx: CanvasRenderingContext2D, ability:
         if (abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_STAY_STILL]) {
             textLines.push(abilityUpgradeStayStillUiText(abilitySnipe));
         }        
-        
     }
 
     return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);

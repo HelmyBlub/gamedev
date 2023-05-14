@@ -42,6 +42,7 @@ export function createAbilityIce(
         slowFactor: slowFactor,
         passive: true,
         tickInterval: 250,
+        upgrades: {},
     };
 }
 

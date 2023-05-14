@@ -72,6 +72,7 @@ export function createAbilityFireCircle(
         passive: false,
         playerInputBinding: playerInputBinding,
         moveSpeed: 4,
+        upgrades: {},
     };
 }
 

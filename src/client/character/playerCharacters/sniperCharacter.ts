@@ -1,6 +1,7 @@
 import { addAbilityToCharacter, createAbility } from "../../ability/ability.js";
 import { createAbilityHpRegen } from "../../ability/abilityHpRegen.js";
 import { ABILITY_NAME_MOVEMENTSPEED } from "../../ability/abilityMovementSpeed.js";
+import { createAbilitySlowTrail } from "../../ability/abilitySlowTrail.js";
 import { ABILITY_NAME_SNIPE } from "../../ability/snipe/abilitySnipe.js";
 import { Game, IdCounter } from "../../gameModel.js";
 import { Character } from "../characterModel.js";

@@ -35,9 +35,6 @@ export type AbilitySnipe = Ability & {
     shotNextAllowedTime: boolean,
     maxShootFrequency: number,
     nextAllowedShotTime: number,
-    upgrades: {
-        [key: string]: any,
-    }
 }
 
 export const ABILITY_NAME_SNIPE = "Snipe";
