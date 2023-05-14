@@ -41,14 +41,9 @@ export type AbilityObject = Position & {
     leveling?: boolean,
 }
 
-export type AbilityOwner = Position & {
+export type AbilityOwner = Position & Partial<Character> & {
     faction: string,
     id: number,
-    moveSpeed?: number,
-    moveDirection?: number,
-    width?: number,
-    hp?: number,
-    maxHp?: number,
 }
 
 export type AbilityFunctions = {
@@ -134,7 +129,7 @@ export function createAbility(abilityName: string, idCounter: IdCounter, isLevel
     }
     if (getsBossSkillPoints) {
         if (abilityFunctions.createAbiltiyBossUpgradeOptions) {
-            ability.bossSkillPoints = 0;
+            ability.bossSkillPoints = 4;
         } else {
             console.log(`${abilityName} is missing bossUpgradeOptions`);
         }

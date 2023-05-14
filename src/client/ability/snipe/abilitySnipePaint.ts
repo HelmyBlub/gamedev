@@ -5,6 +5,7 @@ import { Ability, AbilityObject, PaintOrderAbility, paintDefaultAbilityStatsUI }
 import { AbilityObjectSnipe, AbilitySnipe, calcAbilityObjectSnipeEndPosition, getAbilitySnipeDamage, getAbilitySnipeRange, getShotFrequency } from "./abilitySnipe.js";
 import { UPGRADE_SNIPE_ABILITY_NO_MISS_CHAIN, abilityUpgradeNoMissChainUiText } from "./abilitySnipeUpgradeChainHit.js";
 import { UPGRADE_SNIPE_ABILITY_SPLIT_SHOT, abilityUpgradeSplitOnHitUiText } from "./abilitySnipeUpgradeSplitShot.js";
+import { UPGRADE_SNIPE_ABILITY_STAY_STILL, abilityUpgradeStayStillUiText } from "./abilitySnipeUpgradeStayStill.js";
 import { UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE, abilityUpgradeTerrainBounceUiText } from "./abilitySnipeUpgradeTerrainBounce.js";
 
 export function paintAbilityObjectSnipe(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
@@ -85,7 +86,7 @@ export function paintAbilitySnipeStatsUI(ctx: CanvasRenderingContext2D, ability:
     if (abilitySnipe.leveling) {
         textLines.push(
             `Level: ${abilitySnipe.leveling.level}`,
-            `Clip Size: ${abilitySnipe.maxCharges}`,
+            `Magazine Size: ${abilitySnipe.maxCharges}`,
             `Shoot Cooldown: ${(getShotFrequency(abilitySnipe) / 1000).toFixed(2)}s`,
             `Reload Time: ${(abilitySnipe.baseRechargeTime / 1000).toFixed(2)}s`,
             `Current XP: ${abilitySnipe.leveling.experience.toFixed(0)}`,
@@ -101,6 +102,10 @@ export function paintAbilitySnipeStatsUI(ctx: CanvasRenderingContext2D, ability:
         if (abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE]) {
             textLines.push(abilityUpgradeTerrainBounceUiText(abilitySnipe));
         }        
+        if (abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_STAY_STILL]) {
+            textLines.push(abilityUpgradeStayStillUiText(abilitySnipe));
+        }        
+        
     }
 
     return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);

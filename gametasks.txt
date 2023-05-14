@@ -6,7 +6,10 @@ current tasks:
         - movementspeed upgrade choices:
             - leaving slow trail when speed buff active
         - snipe upgrade
-            - dont move for 2sec -> get 50% damage for current magazine
+            - dont move for 3sec -> get 50% damage for current magazine
+    
+    - UI improve:
+        - detailed explanations for upgrade choices
 
 
     - secondary abilities?

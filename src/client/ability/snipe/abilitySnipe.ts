@@ -7,6 +7,7 @@ import { paintAbilityObjectSnipe, paintAbilitySnipeStatsUI, paintAbilitySnipeUI 
 import { abilityUpgradeNoMissChainDamageFactor, abilityUpgradeNoMissChainOnObjectSnipeDamageDone, getAbilityUpgradeNoMissChain } from "./abilitySnipeUpgradeChainHit.js";
 import { abilityUpgradeDamageAndRangeDamageFactor, abilityUpgradeDamageAndRangeRangeFactor, getAbilityUpgradeDamageAndRange } from "./abilitySnipeUpgradeDamageAndRange.js";
 import { abilityUpgradeOnSnipeHit, getAbilityUpgradeSplitShot } from "./abilitySnipeUpgradeSplitShot.js";
+import { UPGRADE_SNIPE_ABILITY_STAY_STILL, abilityUpgradeStayStillDamageFactor, getAbilityUpgradeStayStill, tickAbilityUpgradeStayStill } from "./abilitySnipeUpgradeStayStill.js";
 import { UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE, abilityUpgradeTerrainBounceDamageFactor, createAndPushAbilityObjectSnipeTerrainBounceBounce, createAndPushAbilityObjectSnipeTerrainBounceInit, getAbilityUpgradeTerrainBounce } from "./abilitySnipeUpgradeTerrainBounce.js";
 
 export type AbilityObjectSnipe = AbilityObject & {
@@ -154,6 +155,7 @@ export function getAbilitySnipeDamage(abilitySnipe: AbilitySnipe, bounceCounter:
     damage *= abilityUpgradeNoMissChainDamageFactor(abilitySnipe);
     damage *= abilityUpgradeDamageAndRangeDamageFactor(abilitySnipe);
     damage *= abilityUpgradeTerrainBounceDamageFactor(abilitySnipe, bounceCounter);
+    damage *= abilityUpgradeStayStillDamageFactor(abilitySnipe);
     return damage;
 }
 
@@ -256,6 +258,9 @@ function tickAbilitySnipe(abilityOwner: AbilityOwner, ability: Ability, game: Ga
         let castPosition = getClientInfoByCharacterId(abilityOwner.id, game)!.lastMousePosition;
         createAbilityObjectSnipeInitial(abilityOwner, abilitySnipe, castPosition, game);
     }
+    if (abilitySnipe?.upgrades[UPGRADE_SNIPE_ABILITY_STAY_STILL]) {
+        tickAbilityUpgradeStayStill(abilitySnipe, abilityOwner, game);
+    }
 }
 
 export function getShotFrequency(abilitySnipe: AbilitySnipe) {
@@ -309,6 +314,7 @@ function createAbilityBossSnipeUpgradeOptions(ability: Ability): UpgradeOptionAb
     upgradeOptions.push(getAbilityUpgradeDamageAndRange());
     upgradeOptions.push(getAbilityUpgradeNoMissChain());
     upgradeOptions.push(getAbilityUpgradeSplitShot());
+    upgradeOptions.push(getAbilityUpgradeStayStill());
     if (!abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE]) {
         upgradeOptions.push(getAbilityUpgradeTerrainBounce());
     }
