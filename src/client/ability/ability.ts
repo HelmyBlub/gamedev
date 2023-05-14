@@ -134,7 +134,7 @@ export function createAbility(abilityName: string, idCounter: IdCounter, isLevel
     }
     if (getsBossSkillPoints) {
         if (abilityFunctions.createAbiltiyBossUpgradeOptions) {
-            ability.bossSkillPoints = 4;
+            ability.bossSkillPoints = 0;
         } else {
             console.log(`${abilityName} is missing bossUpgradeOptions`);
         }
