@@ -1,9 +1,13 @@
 current tasks:
 - Sniper: LevelingAbilityCharacter
-    - try to improve code for terrain bounce and spit
+    - try to improve code for terrain bounce and split
 
     - needs more upgrade choice?
-        -
+        - movementspeed upgrade choices:
+            - leaving slow trail when speed buff active
+        - snipe upgrade
+            - dont move for 2sec -> get 50% damage for current magazine
+
 
     - secondary abilities?
         - choose secondary ability?

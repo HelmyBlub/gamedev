@@ -2,8 +2,7 @@ import { calculateDistance } from "../../game.js";
 import { Game, Position } from "../../gameModel.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
 import { Ability, UpgradeOptionAbility } from "../ability.js";
-import { AbilityObjectSnipe, AbilitySnipe, createAbilityObjectSnipe, getAbilitySnipeDamage, getAbilitySnipeRange } from "./abilitySnipe.js";
-import { UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE, createAndPushAbilityObjectSnipeTerrainBounceInit } from "./abilitySnipeUpgradeTerrainBounce.js";
+import { AbilityObjectSnipe, AbilitySnipe, createAbilityObjectSnipeBranch } from "./abilitySnipe.js";
 
 export const UPGRADE_SNIPE_ABILITY_SPLIT_SHOT = "Snipe Split Shot";
 
@@ -47,32 +46,7 @@ export function abilityUpgradeOnSnipeHit(position: Position, abilitySnipe: Abili
             const range = abilityObjectSnipe.range + remainingRange - calculateDistance(position, abilityObjectSnipe);
             const randomDirectionChange = nextRandom(game.state.randomSeed) / 2;
             const newDirection = abilityObjectSnipe.direction + randomDirectionChange;
-
-            if (abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE]) {
-                createAndPushAbilityObjectSnipeTerrainBounceInit(
-                    position, 
-                    newDirection, 
-                    abilitySnipe, 
-                    abilityObjectSnipe.faction, 
-                    true, 
-                    range, 
-                    abilityObjectSnipe.bounceCounter!,
-                    game
-                );
-            } else {
-                let splitAbilityObjectSnipe = createAbilityObjectSnipe(
-                    position,
-                    abilitySnipe.id,
-                    abilitySnipe!,
-                    abilityObjectSnipe.faction,
-                    newDirection,
-                    range,
-                    true,
-                    getAbilitySnipeDamage(abilitySnipe),
-                    game.state.time
-                );
-                game.state.abilityObjects.push(splitAbilityObjectSnipe);
-            }
+            createAbilityObjectSnipeBranch(abilitySnipe, abilityObjectSnipe, position, newDirection, range, game);
         }
     }
 }

@@ -41,7 +41,7 @@ export function abilityUpgradeTerrainBounceUiText(abilitySnipe: AbilitySnipe): s
 export function createAndPushAbilityObjectSnipeTerrainBounceInit(startPosition: Position, direction: number, abilitySnipe: AbilitySnipe, faction: string, preventSplitOnHit: boolean | undefined, range: number, bounceCounter: number, game: Game) {
     const endPosistion = calcAbilityObjectSnipeEndPosition(startPosition, direction, range);
     const blockingPosistion = getFirstBlockingTilePositionTouchingLine(game.state.map, startPosition, endPosistion, game);
-    bounceEndPart(
+    createAndPush(
         startPosition,
         blockingPosistion,
         range,
@@ -64,7 +64,7 @@ export function createAndPushAbilityObjectSnipeTerrainBounceBounce(abilityObject
     const newBounceDirection = calculateBounceAngle(newStartPosition, abilityObjectSnipe.direction, game);
     const newEndPosistion = calcAbilityObjectSnipeEndPosition(newStartPosition, newBounceDirection, abilityObjectSnipe.remainingRange);
     const nextBlockingPosistion = getFirstBlockingTilePositionTouchingLine(game.state.map, newStartPosition, newEndPosistion, game);
-    bounceEndPart(
+    createAndPush(
         newStartPosition,
         nextBlockingPosistion,
         abilityObjectSnipe.remainingRange,
@@ -79,7 +79,19 @@ export function createAndPushAbilityObjectSnipeTerrainBounceBounce(abilityObject
     );
 }
 
-function bounceEndPart(startPosition: Position, nextBlockingPosistion: Position | undefined, availableRange: number, refId: number | undefined, abilitySnipe: AbilitySnipe, faction: string, direction: number, preventSplitOnHit: boolean | undefined, bounceCounter: number, hitSomething: boolean | undefined, game: Game) {
+function createAndPush(
+    startPosition: Position,
+    nextBlockingPosistion: Position | undefined,
+    availableRange: number,
+    refId: number | undefined,
+    abilitySnipe: AbilitySnipe,
+    faction: string,
+    direction: number,
+    preventSplitOnHit: boolean | undefined,
+    bounceCounter: number,
+    hitSomething: boolean | undefined,
+    game: Game
+) {
     let remainingRange: undefined | number = undefined;
     let range = availableRange;
     if (nextBlockingPosistion) {
@@ -95,15 +107,15 @@ function bounceEndPart(startPosition: Position, nextBlockingPosistion: Position 
         range,
         preventSplitOnHit,
         getAbilitySnipeDamage(abilitySnipe, bounceCounter),
+        hitSomething,
         game.state.time
     );
-    abilityObjectSnipe.hitSomething = hitSomething;
     abilityObjectSnipe.remainingRange = remainingRange;
     abilityObjectSnipe.bounceCounter = bounceCounter;
     game.state.abilityObjects.push(abilityObjectSnipe);
 }
 
-export function abilityUpgradeTerrainBounceDamageFactor(abilitySnipe: AbilitySnipe, bounceCounter: number): number{
+export function abilityUpgradeTerrainBounceDamageFactor(abilitySnipe: AbilitySnipe, bounceCounter: number): number {
     let terrainBounce: AbilityUpgradeTerrainBounce | undefined = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE];
     if (!terrainBounce) return 1;
     return 1 + bounceCounter * terrainBounce.damageUpPerBounceFactor;
