@@ -2,8 +2,9 @@ import { characterTakeDamage, getCharactersTouchingLine } from "../../character/
 import { Character } from "../../character/characterModel.js";
 import { calculateDirection, getClientInfoByCharacterId, getNextId } from "../../game.js";
 import { Position, Game, IdCounter, ClientInfo } from "../../gameModel.js";
+import { GAME_IMAGES, loadImage } from "../../imageLoad.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, UpgradeOptionAbility, findAbilityById, levelingAbilityXpGain } from "../ability.js";
-import { paintAbilityObjectSnipe, paintAbilitySnipeStatsUI, paintAbilitySnipeUI } from "./abilitySnipePaint.js";
+import { paintAbilityObjectSnipe, paintAbilitySnipe, paintAbilitySnipeStatsUI, paintAbilitySnipeUI } from "./abilitySnipePaint.js";
 import { abilityUpgradeNoMissChainDamageFactor, abilityUpgradeNoMissChainOnObjectSnipeDamageDone, getAbilityUpgradeNoMissChain } from "./abilitySnipeUpgradeChainHit.js";
 import { abilityUpgradeDamageAndRangeDamageFactor, abilityUpgradeDamageAndRangeRangeFactor, getAbilityUpgradeDamageAndRange } from "./abilitySnipeUpgradeDamageAndRange.js";
 import { abilityUpgradeOnSnipeHit, getAbilityUpgradeSplitShot } from "./abilitySnipeUpgradeSplitShot.js";
@@ -35,9 +36,15 @@ export type AbilitySnipe = Ability & {
     shotNextAllowedTime: boolean,
     maxShootFrequency: number,
     nextAllowedShotTime: number,
+    lastSniperRiflePaintDirection: number,
 }
 
 export const ABILITY_NAME_SNIPE = "Snipe";
+GAME_IMAGES[ABILITY_NAME_SNIPE] = {
+    imagePath: "/images/sniperRifle.png",
+    spriteRowHeights: [40],
+    spriteRowWidths: [40],
+};
 
 export function addSnipeAbility() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_SNIPE] = {
@@ -47,6 +54,7 @@ export function addSnipeAbility() {
         createAbiltiyBossUpgradeOptions: createAbilityBossSnipeUpgradeOptions,
         paintAbilityObject: paintAbilityObjectSnipe,
         paintAbilityUI: paintAbilitySnipeUI,
+        paintAbility: paintAbilitySnipe,
         activeAbilityCast: castSnipe,
         createAbility: createAbilitySnipe,
         deleteAbilityObject: deleteAbilityObjectSnipe,
@@ -84,6 +92,7 @@ export function createAbilitySnipe(
         maxShootFrequency: 1000,
         shotNextAllowedTime: false,
         nextAllowedShotTime: 0,
+        lastSniperRiflePaintDirection: 0,
     };
 }
 
@@ -257,6 +266,10 @@ function tickAbilitySnipe(abilityOwner: AbilityOwner, ability: Ability, game: Ga
     }
     if (abilitySnipe?.upgrades[UPGRADE_SNIPE_ABILITY_STAY_STILL]) {
         tickAbilityUpgradeStayStill(abilitySnipe, abilityOwner, game);
+    }
+    if (abilitySnipe.shotNextAllowedTime) {
+        const clientInfo: ClientInfo = getClientInfoByCharacterId(abilityOwner.id, game)!;
+        abilitySnipe.lastSniperRiflePaintDirection = calculateDirection(abilityOwner, clientInfo.lastMousePosition);
     }
 }
 

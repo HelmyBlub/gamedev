@@ -1,12 +1,11 @@
 current tasks:
 - Sniper: LevelingAbilityCharacter
-    - try to improve code for terrain bounce and split
-
     - needs more upgrade choice?
-        - movementspeed upgrade choices:
-            - leaving slow trail when speed buff active
-        - snipe upgrade
-            - dont move for 3sec -> get 50% damage for current magazine
+        - second sniper rifle
+        - fire trail after shoot
+        - movementSpeed: +one charge
+    - balancing ideas:
+        - slow trail should last longer
     
     - UI improve:
         - detailed explanations for upgrade choices
@@ -18,8 +17,6 @@ current tasks:
     - sniper thoguhts:
         - some way to get more maxHp
             - hp regen ability get boss skill points
-            - upgrade consist of two random parts e.g. current choices + maxHP/movementSpeed/more HPregen
-        - needs more upgrade choice?
 
 - redesign code: upgrades?
     - make upgradeOptions file for some generall functions

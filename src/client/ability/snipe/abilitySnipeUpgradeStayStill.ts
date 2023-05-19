@@ -1,4 +1,4 @@
-import { Game } from "../../gameModel.js";
+import { Game, Position } from "../../gameModel.js";
 import { Ability, AbilityOwner, UpgradeOptionAbility } from "../ability.js";
 import { AbilitySnipe } from "./abilitySnipe.js";
 
@@ -41,24 +41,37 @@ export function abilityUpgradeStayStillDamageFactor(abilitySnipe: AbilitySnipe) 
     return factor;
 }
 
+export function paintVisualizationStayStill(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, abilitySnipe: AbilitySnipe, paintX: number, paintY: number, game: Game) {
+    const upgradeStayStill: AbilityUpgradeStayStill = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_STAY_STILL];
+    if (!upgradeStayStill) return;
+    if (upgradeStayStill.damageMultiplierActive) {
+        ctx.fillStyle = "blue";
+        ctx.fillRect(paintX, paintY + 14, 40, 12);
+    }else if(upgradeStayStill.stayStillStartTime > 0){
+        const filltPerCent = (game.state.time - upgradeStayStill.stayStillStartTime) / upgradeStayStill.stayStillTime;
+        ctx.fillStyle = "black";
+        ctx.fillRect(paintX, paintY + 5, Math.round(40 * filltPerCent), 4);
+    }
+}
+
 export function tickAbilityUpgradeStayStill(abilitySnipe: AbilitySnipe, abilityOwner: AbilityOwner, game: Game) {
     let upgrade: AbilityUpgradeStayStill | undefined = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_STAY_STILL];
     if (!upgrade) return;
     if (abilitySnipe.shotNextAllowedTime || abilityOwner.isMoving || upgrade.stayStillStartTime < 0) {
         upgrade.stayStillStartTime = game.state.time;
-    } else if(upgrade.stayStillStartTime + upgrade.stayStillTime <= game.state.time){
+    } else if (upgrade.stayStillStartTime + upgrade.stayStillTime <= game.state.time) {
         upgrade.damageMultiplierActive = true;
     }
-    if(abilitySnipe.currentCharges === 0){
+    if (abilitySnipe.currentCharges === 0) {
         upgrade.damageMultiplierActive = false;
         upgrade.stayStillStartTime = game.state.time;
-    } 
+    }
 }
 
 export function abilityUpgradeStayStillUiText(abilitySnipe: AbilitySnipe): string {
     let upgrades: AbilityUpgradeStayStill | undefined = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_STAY_STILL];
     if (upgrades) {
-        return `Stay Still for ${(upgrades.stayStillTime/1000).toFixed(2)}s to get ${upgrades.damageMultiplier*100}% Bonus Damge for current Magazine`;
+        return `Stay Still for ${(upgrades.stayStillTime / 1000).toFixed(2)}s to get ${upgrades.damageMultiplier * 100}% Bonus Damge for current Magazine`;
     }
 
     return "";
