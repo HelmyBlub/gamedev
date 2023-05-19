@@ -1,10 +1,11 @@
-import { calculateDirection, getCameraPosition, getClientInfoByCharacterId } from "../../game.js";
-import { ClientInfo, Game, Position } from "../../gameModel.js";
+import { calcNewPositionMovedInDirection, getCameraPosition } from "../../game.js";
+import { Game, Position } from "../../gameModel.js";
 import { GAME_IMAGES, loadImage } from "../../imageLoad.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { Ability, AbilityObject, AbilityOwner, PaintOrderAbility, paintDefaultAbilityStatsUI } from "../ability.js";
-import { ABILITY_NAME_SNIPE, AbilityObjectSnipe, AbilitySnipe, calcAbilityObjectSnipeEndPosition, getAbilitySnipeDamage, getAbilitySnipeRange, getShotFrequency } from "./abilitySnipe.js";
+import { ABILITY_NAME_SNIPE, AbilityObjectSnipe, AbilitySnipe, getAbilitySnipeDamage, getAbilitySnipeRange, getShotFrequency } from "./abilitySnipe.js";
 import { UPGRADE_SNIPE_ABILITY_NO_MISS_CHAIN, abilityUpgradeNoMissChainUiText } from "./abilitySnipeUpgradeChainHit.js";
+import { UPGRADE_SNIPE_ABILITY_MORE_RIFLES, abilityUpgradeMoreRiflesUiText, paintVisualizationMoreRifles } from "./abilitySnipeUpgradeMoreRifle.js";
 import { UPGRADE_SNIPE_ABILITY_SPLIT_SHOT, abilityUpgradeSplitOnHitUiText } from "./abilitySnipeUpgradeSplitShot.js";
 import { UPGRADE_SNIPE_ABILITY_STAY_STILL, abilityUpgradeStayStillUiText, paintVisualizationStayStill } from "./abilitySnipeUpgradeStayStill.js";
 import { UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE, abilityUpgradeTerrainBounceUiText } from "./abilitySnipeUpgradeTerrainBounce.js";
@@ -13,7 +14,7 @@ export function paintAbilityObjectSnipe(ctx: CanvasRenderingContext2D, abilityOb
     if (paintOrder !== "afterCharacterPaint") return;
     const cameraPosition = getCameraPosition(game);
     const snipe = abilityObject as AbilityObjectSnipe;
-    const endPos = calcAbilityObjectSnipeEndPosition(snipe, snipe.direction, snipe.range);
+    const endPos = calcNewPositionMovedInDirection(snipe, snipe.direction, snipe.range);
     const centerX = ctx.canvas.width / 2;
     const centerY = ctx.canvas.height / 2;
     ctx.strokeStyle = "red";
@@ -33,7 +34,6 @@ export function paintAbilityObjectSnipe(ctx: CanvasRenderingContext2D, abilityOb
     ctx.globalAlpha = 1;
 }
 
-
 export function paintAbilitySnipe(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
     const abilitySnipe = ability as AbilitySnipe;
     const centerX = ctx.canvas.width / 2;
@@ -41,17 +41,23 @@ export function paintAbilitySnipe(ctx: CanvasRenderingContext2D, abilityOwner: A
     let paintX = Math.floor(abilityOwner.x - cameraPosition.x + centerX);
     let paintY = Math.floor(abilityOwner.y - cameraPosition.y + centerY);
 
+    const direction = abilitySnipe.lastSniperRiflePaintDirection + Math.PI;
+    const distance = 20;
+    paintSniperRifle(ctx, abilitySnipe, paintX, paintY, direction, distance, game);
+    paintVisualizationMoreRifles(ctx, abilityOwner, abilitySnipe, paintX, paintY, game);
+}
+
+export function paintSniperRifle(ctx: CanvasRenderingContext2D, abilitySnipe: AbilitySnipe, paintX: number, paintY: number, pointDirection: number, distance: number, game: Game){
     let sniperRifleImageRef = GAME_IMAGES[ABILITY_NAME_SNIPE];
     loadImage(sniperRifleImageRef);
     if (sniperRifleImageRef.imageRef?.complete) {
         let sniperRifleImage: HTMLImageElement = sniperRifleImageRef.imageRef;
         ctx.translate(paintX, paintY);
-        const direction = abilitySnipe.lastSniperRiflePaintDirection + Math.PI;
-        ctx.rotate(direction);
+        ctx.rotate(pointDirection);
         ctx.translate(-paintX, -paintY);
-        paintX -= Math.floor(sniperRifleImage.width / 2) + 20;
+        paintX -= Math.floor(sniperRifleImage.width / 2) + distance;
         paintY -= Math.floor(sniperRifleImage.height / 2)
-        paintVisualizationStayStill(ctx, abilityOwner, abilitySnipe, paintX, paintY, game);
+        paintVisualizationStayStill(ctx, abilitySnipe, paintX, paintY, game);
         ctx.drawImage(
             sniperRifleImage,
             0,
@@ -139,6 +145,9 @@ export function paintAbilitySnipeStatsUI(ctx: CanvasRenderingContext2D, ability:
         }
         if (abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_STAY_STILL]) {
             textLines.push(abilityUpgradeStayStillUiText(abilitySnipe));
+        }
+        if (abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_MORE_RIFLES]) {
+            textLines.push(abilityUpgradeMoreRiflesUiText(abilitySnipe));
         }
     }
 

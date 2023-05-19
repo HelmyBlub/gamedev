@@ -1,12 +1,13 @@
 import { characterTakeDamage, getCharactersTouchingLine } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
-import { calculateDirection, getClientInfoByCharacterId, getNextId } from "../../game.js";
+import { calcNewPositionMovedInDirection, calculateDirection, getClientInfoByCharacterId, getNextId } from "../../game.js";
 import { Position, Game, IdCounter, ClientInfo } from "../../gameModel.js";
 import { GAME_IMAGES, loadImage } from "../../imageLoad.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, UpgradeOptionAbility, findAbilityById, levelingAbilityXpGain } from "../ability.js";
 import { paintAbilityObjectSnipe, paintAbilitySnipe, paintAbilitySnipeStatsUI, paintAbilitySnipeUI } from "./abilitySnipePaint.js";
 import { abilityUpgradeNoMissChainDamageFactor, abilityUpgradeNoMissChainOnObjectSnipeDamageDone, getAbilityUpgradeNoMissChain } from "./abilitySnipeUpgradeChainHit.js";
 import { abilityUpgradeDamageAndRangeDamageFactor, abilityUpgradeDamageAndRangeRangeFactor, getAbilityUpgradeDamageAndRange } from "./abilitySnipeUpgradeDamageAndRange.js";
+import { castSnipeMoreRifles, getAbilityUpgradeMoreRifles, tickAbilityUpgradeMoreRifles } from "./abilitySnipeUpgradeMoreRifle.js";
 import { abilityUpgradeOnSnipeHit, getAbilityUpgradeSplitShot } from "./abilitySnipeUpgradeSplitShot.js";
 import { UPGRADE_SNIPE_ABILITY_STAY_STILL, abilityUpgradeStayStillDamageFactor, getAbilityUpgradeStayStill, tickAbilityUpgradeStayStill } from "./abilitySnipeUpgradeStayStill.js";
 import { UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE, abilityUpgradeTerrainBounceDamageFactor, createAndPushAbilityObjectSnipeTerrainBounceBounce, createAndPushAbilityObjectSnipeTerrainBounceInit, getAbilityUpgradeTerrainBounce } from "./abilitySnipeUpgradeTerrainBounce.js";
@@ -184,21 +185,21 @@ function castSnipe(abilityOwner: AbilityOwner, ability: Ability, castPosition: P
     if (clientInfo.id === game.multiplayer.myClientId) game.multiplayer.autosendMousePosition.active = isInputdown;
     clientInfo.lastMousePosition = castPosition;
     if (abilitySnipe.currentCharges > 0 && abilitySnipe.shotNextAllowedTime && game.state.time >= abilitySnipe.nextAllowedShotTime) {
-        createAbilityObjectSnipeInitial(abilityOwner, abilitySnipe, castPosition, game);
+        createAbilityObjectSnipeInitialPlayerTriggered(abilityOwner, abilitySnipe, castPosition, game);
     }
 }
 
-function createAbilityObjectSnipeInitial(abilityOwner: AbilityOwner, abilitySnipe: AbilitySnipe, castPosition: Position, game: Game) {
-    let direction = calculateDirection(abilityOwner, castPosition);
+export function createAbilityObjectSnipeInitial(startPosition: Position, faction: string, abilitySnipe: AbilitySnipe, castPosition: Position, game: Game) {
+    let direction = calculateDirection(startPosition, castPosition);
     if (abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE]) {
         const range = getAbilitySnipeRange(abilitySnipe);
-        createAndPushAbilityObjectSnipeTerrainBounceInit(abilityOwner, direction, abilitySnipe, abilityOwner.faction, undefined, range, 0, game);
+        createAndPushAbilityObjectSnipeTerrainBounceInit(startPosition, direction, abilitySnipe, faction, undefined, range, 0, game);
     } else {
         let abilityObjectSnipt = createAbilityObjectSnipe(
-            abilityOwner,
+            startPosition,
             abilitySnipe.id,
             abilitySnipe,
-            abilityOwner.faction,
+            faction,
             direction,
             getAbilitySnipeRange(abilitySnipe),
             undefined,
@@ -208,12 +209,17 @@ function createAbilityObjectSnipeInitial(abilityOwner: AbilityOwner, abilitySnip
         );
         game.state.abilityObjects.push(abilityObjectSnipt);
     }
+}
 
+function createAbilityObjectSnipeInitialPlayerTriggered(abilityOwner: AbilityOwner, abilitySnipe: AbilitySnipe, castPosition: Position, game: Game){
+    createAbilityObjectSnipeInitial(abilityOwner, abilityOwner.faction, abilitySnipe, castPosition, game);
+    castSnipeMoreRifles(abilityOwner, abilitySnipe, castPosition, game);
     abilitySnipe.currentCharges--;
     if (abilitySnipe.currentCharges === 0) {
         abilitySnipe.reloadTime = game.state.time + abilitySnipe.baseRechargeTime;
     }
     abilitySnipe.nextAllowedShotTime = game.state.time + getShotFrequency(abilitySnipe);
+
 }
 
 export function createAbilityObjectSnipeBranch(abilitySnipe: AbilitySnipe, abilityObjectSnipe: AbilityObjectSnipe, startPosition: Position, direction: number, range: number, game: Game) {
@@ -245,13 +251,6 @@ export function createAbilityObjectSnipeBranch(abilitySnipe: AbilitySnipe, abili
     }
 }
 
-export function calcAbilityObjectSnipeEndPosition(position: Position, direction: number, range: number): Position {
-    return {
-        x: position.x + Math.cos(direction) * range,
-        y: position.y + Math.sin(direction) * range,
-    }
-}
-
 function tickAbilitySnipe(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     let abilitySnipe = ability as AbilitySnipe;
     if (abilitySnipe.currentCharges === 0) {
@@ -262,7 +261,7 @@ function tickAbilitySnipe(abilityOwner: AbilityOwner, ability: Ability, game: Ga
     }
     if (abilitySnipe.currentCharges > 0 && abilitySnipe.shotNextAllowedTime && game.state.time >= abilitySnipe.nextAllowedShotTime) {
         let castPosition = getClientInfoByCharacterId(abilityOwner.id, game)!.lastMousePosition;
-        createAbilityObjectSnipeInitial(abilityOwner, abilitySnipe, castPosition, game);
+        createAbilityObjectSnipeInitialPlayerTriggered(abilityOwner, abilitySnipe, castPosition, game);
     }
     if (abilitySnipe?.upgrades[UPGRADE_SNIPE_ABILITY_STAY_STILL]) {
         tickAbilityUpgradeStayStill(abilitySnipe, abilityOwner, game);
@@ -271,6 +270,7 @@ function tickAbilitySnipe(abilityOwner: AbilityOwner, ability: Ability, game: Ga
         const clientInfo: ClientInfo = getClientInfoByCharacterId(abilityOwner.id, game)!;
         abilitySnipe.lastSniperRiflePaintDirection = calculateDirection(abilityOwner, clientInfo.lastMousePosition);
     }
+    tickAbilityUpgradeMoreRifles(abilitySnipe, abilityOwner,game);
 }
 
 export function getShotFrequency(abilitySnipe: AbilitySnipe) {
@@ -280,7 +280,7 @@ export function getShotFrequency(abilitySnipe: AbilitySnipe) {
 function tickAbilityObjectSnipe(abilityObject: AbilityObject, game: Game) {
     let abilityObjectSnipe = abilityObject as AbilityObjectSnipe;
     if (!abilityObjectSnipe.damageCalcDone) {
-        const endPos = calcAbilityObjectSnipeEndPosition(abilityObjectSnipe, abilityObjectSnipe.direction, abilityObjectSnipe.range);
+        const endPos = calcNewPositionMovedInDirection(abilityObjectSnipe, abilityObjectSnipe.direction, abilityObjectSnipe.range);
         let characters: Character[] = getCharactersTouchingLine(game, abilityObjectSnipe, endPos, abilityObjectSnipe.size);
         let abilitySnipe = abilityObject.abilityRefId !== undefined ? findAbilityById(abilityObject.abilityRefId, game) as AbilitySnipe : undefined;
         for (let char of characters) {
@@ -328,6 +328,7 @@ function createAbilityBossSnipeUpgradeOptions(ability: Ability): UpgradeOptionAb
     if (!abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE]) {
         upgradeOptions.push(getAbilityUpgradeTerrainBounce());
     }
+    upgradeOptions.push(getAbilityUpgradeMoreRifles());
     return upgradeOptions;
 }
 

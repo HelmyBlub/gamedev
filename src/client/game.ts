@@ -93,6 +93,13 @@ export function calculateDistance(objectA: { x: number, y: number }, objectB: { 
     return Math.sqrt(xDiff * xDiff + yDiff * yDiff);
 }
 
+export function calcNewPositionMovedInDirection(position: Position, direction: number, range: number): Position {
+    return {
+        x: position.x + Math.cos(direction) * range,
+        y: position.y + Math.sin(direction) * range,
+    }
+}
+
 export function takeTimeMeasure(debug: Debugging | undefined, endName: string, startName: string) {
     if (debug === undefined || debug.takeTimeMeasures !== true) return;
     if (debug.timeMeasuresData === undefined) debug.timeMeasuresData = [];

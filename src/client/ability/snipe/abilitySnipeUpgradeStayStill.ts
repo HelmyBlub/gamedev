@@ -41,7 +41,7 @@ export function abilityUpgradeStayStillDamageFactor(abilitySnipe: AbilitySnipe) 
     return factor;
 }
 
-export function paintVisualizationStayStill(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, abilitySnipe: AbilitySnipe, paintX: number, paintY: number, game: Game) {
+export function paintVisualizationStayStill(ctx: CanvasRenderingContext2D, abilitySnipe: AbilitySnipe, paintX: number, paintY: number, game: Game) {
     const upgradeStayStill: AbilityUpgradeStayStill = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_STAY_STILL];
     if (!upgradeStayStill) return;
     if (upgradeStayStill.damageMultiplierActive) {

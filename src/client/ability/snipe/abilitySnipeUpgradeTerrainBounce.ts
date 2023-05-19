@@ -1,8 +1,8 @@
-import { calculateDistance } from "../../game.js";
+import { calcNewPositionMovedInDirection, calculateDistance } from "../../game.js";
 import { Position, Game } from "../../gameModel.js";
 import { GameMap, getMapTile } from "../../map/map.js";
 import { Ability, UpgradeOptionAbility } from "../ability.js";
-import { AbilityObjectSnipe, AbilitySnipe, calcAbilityObjectSnipeEndPosition, createAbilityObjectSnipe, getAbilitySnipeDamage, getAbilitySnipeRange } from "./abilitySnipe.js";
+import { AbilityObjectSnipe, AbilitySnipe, createAbilityObjectSnipe, getAbilitySnipeDamage, getAbilitySnipeRange } from "./abilitySnipe.js";
 
 export const UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE = "Terrain Bounce";
 
@@ -39,7 +39,7 @@ export function abilityUpgradeTerrainBounceUiText(abilitySnipe: AbilitySnipe): s
 }
 
 export function createAndPushAbilityObjectSnipeTerrainBounceInit(startPosition: Position, direction: number, abilitySnipe: AbilitySnipe, faction: string, preventSplitOnHit: boolean | undefined, range: number, bounceCounter: number, game: Game) {
-    const endPosistion = calcAbilityObjectSnipeEndPosition(startPosition, direction, range);
+    const endPosistion = calcNewPositionMovedInDirection(startPosition, direction, range);
     const blockingPosistion = getFirstBlockingTilePositionTouchingLine(game.state.map, startPosition, endPosistion, game);
     createAndPush(
         startPosition,
@@ -60,9 +60,9 @@ export function createAndPushAbilityObjectSnipeTerrainBounceBounce(abilityObject
     if (abilityObjectSnipe.remainingRange === undefined) return;
     if (abilityObjectSnipe.bounceCounter && abilityObjectSnipe.bounceCounter > 100) return;
 
-    const newStartPosition = calcAbilityObjectSnipeEndPosition(abilityObjectSnipe, abilityObjectSnipe.direction, abilityObjectSnipe.range);
+    const newStartPosition = calcNewPositionMovedInDirection(abilityObjectSnipe, abilityObjectSnipe.direction, abilityObjectSnipe.range);
     const newBounceDirection = calculateBounceAngle(newStartPosition, abilityObjectSnipe.direction, game);
-    const newEndPosistion = calcAbilityObjectSnipeEndPosition(newStartPosition, newBounceDirection, abilityObjectSnipe.remainingRange);
+    const newEndPosistion = calcNewPositionMovedInDirection(newStartPosition, newBounceDirection, abilityObjectSnipe.remainingRange);
     const nextBlockingPosistion = getFirstBlockingTilePositionTouchingLine(game.state.map, newStartPosition, newEndPosistion, game);
     createAndPush(
         newStartPosition,
