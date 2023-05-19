@@ -1,11 +1,9 @@
 current tasks:
 - Sniper: LevelingAbilityCharacter
     - needs more upgrade choice?
-        - second sniper rifle
         - fire trail after shoot
         - movementSpeed: +one charge
     - balancing ideas:
-        - slow trail should last longer
     
     - UI improve:
         - detailed explanations for upgrade choices

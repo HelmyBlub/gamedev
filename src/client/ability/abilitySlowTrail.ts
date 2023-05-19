@@ -52,7 +52,7 @@ export function createAbilitySlowTrail(
         slowFactor: slowFactor,
         passive: true,
         tickInterval: 500,
-        duration: 10000,
+        duration: 30000,
         upgrades: {},
     };
 }
