@@ -1,9 +1,5 @@
 current tasks:
 - Sniper: LevelingAbilityCharacter
-    - redesign code: upgrades?
-        - make upgradeOptions file for some generall functions
-
-    - bug: more rifles + chain hit: only main rifle should count
     - needs more upgrade choice?
         - movementSpeed: +one charge
         - fire trail after shoot

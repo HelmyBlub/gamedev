@@ -23,6 +23,7 @@ export type AbilityObjectSnipe = AbilityObject & {
     preventSplitOnHit?: boolean,
     bounceCounter?: number,
     hitSomething?: boolean,
+    triggeredByPlayer: boolean,
 }
 
 export type AbilitySnipe = Ability & {
@@ -107,7 +108,7 @@ export function createAbilitySnipe(
     };
 }
 
-export function createAbilityObjectSnipeByAbility(abilitySnipe: AbilitySnipe, abilityOwner: AbilityOwner, startPos: Position, direction: number, game: Game): AbilityObjectSnipe {
+export function createAbilityObjectSnipeByAbility(abilitySnipe: AbilitySnipe, abilityOwner: AbilityOwner, startPos: Position, direction: number, triggeredByPlayer: boolean, game: Game): AbilityObjectSnipe {
     let abilityObjectSnipe: AbilityObjectSnipe = {
         type: ABILITY_NAME_SNIPE,
         size: abilitySnipe.size,
@@ -122,6 +123,7 @@ export function createAbilityObjectSnipeByAbility(abilitySnipe: AbilitySnipe, ab
         deleteTime: game.state.time + abilitySnipe.paintFadeDuration,
         leveling: abilitySnipe.leveling ? true : undefined,
         abilityRefId: abilitySnipe.id,
+        triggeredByPlayer: triggeredByPlayer,
     }
     return abilityObjectSnipe;
 }
@@ -136,6 +138,7 @@ export function createAbilityObjectSnipe(
     preventSplitOnHit: boolean | undefined,
     damage: number,
     hitSomething: boolean | undefined,
+    triggeredByPlayer: boolean, 
     gameTime: number
 ): AbilityObjectSnipe {
     let abilityObjectSnipe: AbilityObjectSnipe = {
@@ -154,6 +157,7 @@ export function createAbilityObjectSnipe(
         abilityRefId: abilityRefId,
         preventSplitOnHit: preventSplitOnHit,
         hitSomething: hitSomething,
+        triggeredByPlayer: triggeredByPlayer,
     }
 
     return abilityObjectSnipe;
@@ -197,11 +201,11 @@ function castSnipe(abilityOwner: AbilityOwner, ability: Ability, castPosition: P
     }
 }
 
-export function createAbilityObjectSnipeInitial(startPosition: Position, faction: string, abilitySnipe: AbilitySnipe, castPosition: Position, game: Game) {
+export function createAbilityObjectSnipeInitial(startPosition: Position, faction: string, abilitySnipe: AbilitySnipe, castPosition: Position, triggeredByPlayer: boolean, game: Game) {
     let direction = calculateDirection(startPosition, castPosition);
     if (abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE]) {
         const range = getAbilitySnipeRange(abilitySnipe);
-        createAndPushAbilityObjectSnipeTerrainBounceInit(startPosition, direction, abilitySnipe, faction, undefined, range, 0, game);
+        createAndPushAbilityObjectSnipeTerrainBounceInit(startPosition, direction, abilitySnipe, faction, undefined, range, 0, triggeredByPlayer, game);
     } else {
         let abilityObjectSnipt = createAbilityObjectSnipe(
             startPosition,
@@ -213,6 +217,7 @@ export function createAbilityObjectSnipeInitial(startPosition: Position, faction
             undefined,
             getAbilitySnipeDamage(abilitySnipe),
             undefined,
+            triggeredByPlayer,
             game.state.time
         );
         game.state.abilityObjects.push(abilityObjectSnipt);
@@ -220,8 +225,8 @@ export function createAbilityObjectSnipeInitial(startPosition: Position, faction
 }
 
 function createAbilityObjectSnipeInitialPlayerTriggered(abilityOwner: AbilityOwner, abilitySnipe: AbilitySnipe, castPosition: Position, game: Game) {
-    createAbilityObjectSnipeInitial(abilityOwner, abilityOwner.faction, abilitySnipe, castPosition, game);
     castSnipeMoreRifles(abilityOwner, abilitySnipe, castPosition, game);
+    createAbilityObjectSnipeInitial(abilityOwner, abilityOwner.faction, abilitySnipe, castPosition, true, game);
     abilitySnipe.currentCharges--;
     if (abilitySnipe.currentCharges === 0) {
         abilitySnipe.reloadTime = game.state.time + abilitySnipe.baseRechargeTime;
@@ -240,6 +245,7 @@ export function createAbilityObjectSnipeBranch(abilitySnipe: AbilitySnipe, abili
             true,
             range,
             abilityObjectSnipe.bounceCounter!,
+            abilityObjectSnipe.triggeredByPlayer,
             game
         );
     } else {
@@ -253,6 +259,7 @@ export function createAbilityObjectSnipeBranch(abilitySnipe: AbilitySnipe, abili
             true,
             getAbilitySnipeDamage(abilitySnipe),
             true,
+            abilityObjectSnipe.triggeredByPlayer,
             game.state.time
         );
         game.state.abilityObjects.push(splitAbilityObjectSnipe);
