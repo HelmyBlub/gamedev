@@ -132,8 +132,8 @@ export function paintAbilitySnipeStatsUI(ctx: CanvasRenderingContext2D, ability:
             `Current XP: ${abilitySnipe.leveling.experience.toFixed(0)}`,
             `XP required for Level Up: ${abilitySnipe.leveling.experienceForLevelUp}`,
         );
-        pushAbilityUpgradesUiTexts(ABILITY_SNIPE_UPGRADE_FUNCTIONS, textLines, ability);
     }
+    pushAbilityUpgradesUiTexts(ABILITY_SNIPE_UPGRADE_FUNCTIONS, textLines, ability);
 
     return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
 }

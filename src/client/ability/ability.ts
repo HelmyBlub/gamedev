@@ -16,7 +16,7 @@ import { addMeleeAbility } from "./abilityMelee.js"
 import { addIceAbility } from "./abilityIceAura.js"
 import { addSingleTargetAbility } from "./abilitySingleTarget.js"
 import { addSnipeAbility } from "./snipe/abilitySnipe.js"
-import { addMovementSpeedAbility } from "./abilityMovementSpeed.js"
+import { addMovementSpeedAbility } from "./movementSpeed/abilityMovementSpeed.js"
 import { addAbilitySlowTrail } from "./abilitySlowTrail.js"
 
 export type Ability = {
@@ -134,7 +134,7 @@ export function createAbility(abilityName: string, idCounter: IdCounter, isLevel
     }
     if (getsBossSkillPoints) {
         if (abilityFunctions.createAbiltiyBossUpgradeOptions) {
-            ability.bossSkillPoints = 5;
+            ability.bossSkillPoints = 0;
         } else {
             console.log(`${abilityName} is missing bossUpgradeOptions`);
         }

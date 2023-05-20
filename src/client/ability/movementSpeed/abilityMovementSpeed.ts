@@ -1,28 +1,28 @@
-import { findCharacterById, getPlayerCharacters } from "../character/character.js";
-import { createBuffSlowTrail } from "../debuff/buffSlowTrail.js";
-import { createBuffSpeed } from "../debuff/buffSpeed.js";
-import { applyDebuff } from "../debuff/debuff.js";
-import { getNextId } from "../game.js";
-import { Game, IdCounter, Position } from "../gameModel.js";
-import { playerInputBindingToDisplayValue } from "../playerInput.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, AbilityUpgradeOption, paintDefaultAbilityStatsUI } from "./ability.js";
+import { findCharacterById, getPlayerCharacters } from "../../character/character.js";
+import { createBuffSlowTrail } from "../../debuff/buffSlowTrail.js";
+import { createBuffSpeed } from "../../debuff/buffSpeed.js";
+import { applyDebuff } from "../../debuff/debuff.js";
+import { getNextId } from "../../game.js";
+import { Game, IdCounter, Position } from "../../gameModel.js";
+import { playerInputBindingToDisplayValue } from "../../playerInput.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, AbilityUpgradeOption, paintDefaultAbilityStatsUI } from "../ability.js";
+import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts } from "../abilityUpgrade.js";
+import { ABILITY_MOVEMENT_SPEED_UPGARDE_ADD_CHARGE, AbilityMovementSpeedUpgradeAddCharge, addAbilitySnipeUpgradeAddCharge, tickAbilitySnipeUpgradeAddCharge } from "./abilityMovementSpeedUpgradeAddCharge.js";
+import { ABILITY_MOVEMENT_SPEED_UPGARDE_SLOW_TRAIL, addAbilitySnipeUpgradeSlowTrail } from "./abilityMovementSpeedUpgradeSlowTrail.js";
 
-type AbilityMovementSpeed = Ability & {
+export type AbilityMovementSpeed = Ability & {
     speedFactor: number,
     duration: number,
     cooldown: number,
     cooldownFinishTime: number,
 }
 
-type AbilityUpgradeSlowTrail = {
-    active: boolean,
-}
-
 export const ABILITY_NAME_MOVEMENTSPEED = "MovementSpeed";
-export const ABILITY_MOVEMENT_SPEED_UPGARDE_SLOW_TRAIL = "Slow Trail";
+export const ABILITY_MOVEMENTSPEED_UPGRADE_FUNCTIONS: AbilityUpgradesFunctions = {};
 
 export function addMovementSpeedAbility() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_MOVEMENTSPEED] = {
+        tickAbility: tickAbilityMovementSpeed,
         createAbiltiyUpgradeOptions: createAbilityMovementSpeedUpgradeOptions,
         setAbilityToLevel: setAbilityMovementSpeedToLevel,
         createAbility: createAbilityMovementSpeed,
@@ -33,6 +33,9 @@ export function addMovementSpeedAbility() {
         isPassive: false,
         notInheritable: true,
     };
+
+    addAbilitySnipeUpgradeAddCharge();
+    addAbilitySnipeUpgradeSlowTrail();
 }
 
 export function createAbilityMovementSpeed(
@@ -52,13 +55,28 @@ export function createAbilityMovementSpeed(
     };
 }
 
-function castMovementSpeed(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isInputdown: boolean, game: Game) {
+function tickAbilityMovementSpeed(abilityOwner: AbilityOwner, ability: Ability, game: Game){
     const abilityMovementSpeed = ability as AbilityMovementSpeed;
-    if (abilityMovementSpeed.cooldownFinishTime <= game.state.time) {
+    tickAbilitySnipeUpgradeAddCharge(abilityMovementSpeed, game);
+}
+
+function castMovementSpeed(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isInputdown: boolean, game: Game) {
+    if(!isInputdown) return;
+    const abilityMovementSpeed = ability as AbilityMovementSpeed;
+    const chargeUpgrade: AbilityMovementSpeedUpgradeAddCharge | undefined = ability.upgrades[ABILITY_MOVEMENT_SPEED_UPGARDE_ADD_CHARGE];
+    const readyToCast = (chargeUpgrade && chargeUpgrade.currentCharges > 0) || (!chargeUpgrade && abilityMovementSpeed.cooldownFinishTime <= game.state.time);
+    if (readyToCast) {
         const speedBuff = createBuffSpeed(abilityMovementSpeed.speedFactor, abilityMovementSpeed.duration, game.state.time);
         const character = findCharacterById(getPlayerCharacters(game.state.players), abilityOwner.id)!;
         applyDebuff(speedBuff, character, game);
-        abilityMovementSpeed.cooldownFinishTime = game.state.time + abilityMovementSpeed.cooldown;
+        if(!chargeUpgrade){
+            abilityMovementSpeed.cooldownFinishTime = game.state.time + abilityMovementSpeed.cooldown;
+        }else{
+            if(chargeUpgrade.currentCharges === chargeUpgrade.maxCharges){
+                abilityMovementSpeed.cooldownFinishTime = game.state.time + abilityMovementSpeed.cooldown;
+            }
+            chargeUpgrade.currentCharges--;
+        }
 
         if(ability.upgrades[ABILITY_MOVEMENT_SPEED_UPGARDE_SLOW_TRAIL]){
             const slowTrail = createBuffSlowTrail(abilityMovementSpeed.duration, game.state.time);
@@ -78,7 +96,8 @@ function paintAbilityMovementSpeedUI(ctx: CanvasRenderingContext2D, ability: Abi
     ctx.beginPath();
     ctx.rect(drawStartX, drawStartY, rectSize, rectSize);
     ctx.stroke();
-    if (game.state.time < abilityMovementSpeed.cooldownFinishTime) {
+    const upgrade: AbilityMovementSpeedUpgradeAddCharge = ability.upgrades[ABILITY_MOVEMENT_SPEED_UPGARDE_ADD_CHARGE];
+    if (upgrade || game.state.time < abilityMovementSpeed.cooldownFinishTime) {
         ctx.fillStyle = "gray";
         const heightFactor = Math.max((abilityMovementSpeed.cooldownFinishTime - game.state.time) / abilityMovementSpeed.cooldown, 0);
         ctx.fillRect(drawStartX, drawStartY, rectSize, rectSize * heightFactor);
@@ -87,7 +106,11 @@ function paintAbilityMovementSpeedUI(ctx: CanvasRenderingContext2D, ability: Abi
         const fontSize2 = Math.floor(size * 0.8);
         ctx.font = fontSize2 + "px Arial";
         const cooldownSeconds = Math.ceil((abilityMovementSpeed.cooldownFinishTime - game.state.time) / 1000);
-        ctx.fillText("" + cooldownSeconds, drawStartX, drawStartY + rectSize - (rectSize - fontSize2 * 0.9));
+        let displayNumber = cooldownSeconds;
+        if(upgrade){
+            displayNumber = upgrade.currentCharges;
+        }
+        ctx.fillText("" + displayNumber, drawStartX, drawStartY + rectSize - (rectSize - fontSize2 * 0.9));
     }
 
 
@@ -114,6 +137,7 @@ function paintAbilityMovementSpeedStatsUI(ctx: CanvasRenderingContext2D, ability
         `Speed Duration: ${(abilityMovementSpeed.duration / 1000).toFixed(2)}s`,
         `Speed Cooldown: ${(abilityMovementSpeed.cooldown / 1000).toFixed(2)}s`,
     ];
+    pushAbilityUpgradesUiTexts(ABILITY_MOVEMENTSPEED_UPGRADE_FUNCTIONS, textLines, ability);
 
     return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
 }
@@ -158,21 +182,7 @@ function createAbilityBossMovementSpeedUpgradeOptions(ability: Ability): Ability
         }
     });
 
-    if(!ability.upgrades[ABILITY_MOVEMENT_SPEED_UPGARDE_SLOW_TRAIL]){
-        upgradeOptions.push({
-            name: "Slow Trail", probabilityFactor: 1, upgrade: (a: Ability) => {
-                let as = a as AbilityMovementSpeed;
-                let up: AbilityUpgradeSlowTrail;
-                if (as.upgrades[ABILITY_MOVEMENT_SPEED_UPGARDE_SLOW_TRAIL] === undefined) {
-                    up = {
-                        active: true,
-                    }
-                    as.upgrades[ABILITY_MOVEMENT_SPEED_UPGARDE_SLOW_TRAIL] = up;
-                }
-            }
-        });
-    }
-
+    pushAbilityUpgradesOptions(ABILITY_MOVEMENTSPEED_UPGRADE_FUNCTIONS, upgradeOptions, ability);
     return upgradeOptions;
 }
 
