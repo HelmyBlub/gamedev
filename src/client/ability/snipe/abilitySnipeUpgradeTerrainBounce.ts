@@ -1,8 +1,8 @@
 import { calcNewPositionMovedInDirection, calculateDistance } from "../../game.js";
 import { Position, Game } from "../../gameModel.js";
 import { GameMap, getMapTile } from "../../map/map.js";
-import { Ability, UpgradeOptionAbility } from "../ability.js";
-import { AbilityObjectSnipe, AbilitySnipe, createAbilityObjectSnipe, getAbilitySnipeDamage, getAbilitySnipeRange } from "./abilitySnipe.js";
+import { Ability, AbilityUpgradeOption } from "../ability.js";
+import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe, createAbilityObjectSnipe, getAbilitySnipeDamage, getAbilitySnipeRange } from "./abilitySnipe.js";
 
 export const UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE = "Terrain Bounce";
 
@@ -11,31 +11,11 @@ export type AbilityUpgradeTerrainBounce = {
     active: boolean
 }
 
-export function getAbilityUpgradeTerrainBounce(): UpgradeOptionAbility {
-    return {
-        name: "Terrain Bounce", probabilityFactor: 1, upgrade: (a: Ability) => {
-            const as = a as AbilitySnipe;
-            let up: AbilityUpgradeTerrainBounce;
-            if (as.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE] === undefined) {
-                up = {
-                    active: true,
-                    damageUpPerBounceFactor: 0.5,
-                }
-                as.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE] = up;
-            } else {
-                throw new Error("should only be possible to skill once");
-            }
-        }
+export function addAbilitySnipeUpgradeTerrainBounce() {
+    ABILITY_SNIPE_UPGRADE_FUNCTIONS[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE] = {
+        getAbilityUpgradeUiText: getAbilityUpgradeTerrainBounceUiText,
+        pushAbilityUpgradeOption: pushAbilityUpgradeTerrainBounce,
     }
-}
-
-export function abilityUpgradeTerrainBounceUiText(abilitySnipe: AbilitySnipe): string {
-    let upgrades: AbilityUpgradeTerrainBounce | undefined = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE];
-    if (upgrades) {
-        return "Terrain Bounce and +50% damage for each bounce";
-    }
-
-    return "";
 }
 
 export function createAndPushAbilityObjectSnipeTerrainBounceInit(startPosition: Position, direction: number, abilitySnipe: AbilitySnipe, faction: string, preventSplitOnHit: boolean | undefined, range: number, bounceCounter: number, game: Game) {
@@ -79,6 +59,35 @@ export function createAndPushAbilityObjectSnipeTerrainBounceBounce(abilityObject
     );
 }
 
+export function getAbilityUpgradeTerrainBounceDamageFactor(abilitySnipe: AbilitySnipe, bounceCounter: number): number {
+    let terrainBounce: AbilityUpgradeTerrainBounce | undefined = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE];
+    if (!terrainBounce) return 1;
+    return 1 + bounceCounter * terrainBounce.damageUpPerBounceFactor;
+}
+
+function pushAbilityUpgradeTerrainBounce(ability: Ability, upgradeOptions: AbilityUpgradeOption[]) {
+    if (ability.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE]) return;
+    upgradeOptions.push({
+        name: "Terrain Bounce", probabilityFactor: 1, upgrade: (a: Ability) => {
+            const as = a as AbilitySnipe;
+            let up: AbilityUpgradeTerrainBounce;
+            if (as.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE] === undefined) {
+                up = {
+                    active: true,
+                    damageUpPerBounceFactor: 0.5,
+                }
+                as.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE] = up;
+            } else {
+                throw new Error("should only be possible to skill once");
+            }
+        }
+    });
+}
+
+function getAbilityUpgradeTerrainBounceUiText(ability: Ability): string {
+    return "Terrain Bounce and +50% damage for each bounce";
+}
+
 function createAndPush(
     startPosition: Position,
     nextBlockingPosistion: Position | undefined,
@@ -115,12 +124,6 @@ function createAndPush(
     game.state.abilityObjects.push(abilityObjectSnipe);
 }
 
-export function abilityUpgradeTerrainBounceDamageFactor(abilitySnipe: AbilitySnipe, bounceCounter: number): number {
-    let terrainBounce: AbilityUpgradeTerrainBounce | undefined = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE];
-    if (!terrainBounce) return 1;
-    return 1 + bounceCounter * terrainBounce.damageUpPerBounceFactor;
-}
-
 function calculateBounceAngle(bouncePosition: Position, startingAngle: number, game: Game): number {
     let tileSize = game.state.map.tileSize;
     let wallX = Math.abs(bouncePosition.x % tileSize);
@@ -135,7 +138,7 @@ function calculateBounceAngle(bouncePosition: Position, startingAngle: number, g
 
 
 //TODO copied from somewhere, redundant code or fine?
-export function getFirstBlockingTilePositionTouchingLine(map: GameMap, lineStart: Position, lineEnd: Position, game: Game): Position | undefined {
+function getFirstBlockingTilePositionTouchingLine(map: GameMap, lineStart: Position, lineEnd: Position, game: Game): Position | undefined {
     let tileSize = map.tileSize;
     let currentTileIJ = positionToTileIJ(map, lineStart);
     let endTileIJ = positionToTileIJ(map, lineEnd);

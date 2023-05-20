@@ -1,6 +1,6 @@
 import { getNextId } from "../game.js";
 import { Game, IdCounter } from "../gameModel.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, UpgradeOptionAbility, paintDefaultAbilityStatsUI } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, AbilityUpgradeOption, paintDefaultAbilityStatsUI } from "./ability.js";
 
 type AbilityHpRegen = Ability & {
     amount: number,
@@ -49,8 +49,8 @@ function tickAbilityHpRegen(abilityOwner: AbilityOwner, ability: Ability, game: 
     }
 }
 
-function createAbilityHpRegenUpgradeOptions(): UpgradeOptionAbility[] {
-    let upgradeOptions: UpgradeOptionAbility[] = [];
+function createAbilityHpRegenUpgradeOptions(): AbilityUpgradeOption[] {
+    let upgradeOptions: AbilityUpgradeOption[] = [];
     upgradeOptions.push({
         name: "Hp Regen+", probabilityFactor: 1, upgrade: (a: Ability) => {
             let abilityHpRegen = a as AbilityHpRegen;

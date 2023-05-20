@@ -1,8 +1,12 @@
 current tasks:
 - Sniper: LevelingAbilityCharacter
+    - redesign code: upgrades?
+        - make upgradeOptions file for some generall functions
+
+    - bug: more rifles + chain hit: only main rifle should count
     - needs more upgrade choice?
-        - fire trail after shoot
         - movementSpeed: +one charge
+        - fire trail after shoot
     - balancing ideas:
     
     - UI improve:
@@ -16,8 +20,6 @@ current tasks:
         - some way to get more maxHp
             - hp regen ability get boss skill points
 
-    - redesign code: upgrades?
-        - make upgradeOptions file for some generall functions
     - bug: second rilfe with bounce upgarde in blocking tile: probably create a bouncing projectile -> should not create any
 
 

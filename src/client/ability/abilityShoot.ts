@@ -1,7 +1,7 @@
 import { Game, IdCounter } from "../gameModel.js";
 import { Projectile, createProjectile, tickProjectile, deleteProjectile } from "./projectile.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, UpgradeOptionAbility } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, AbilityUpgradeOption } from "./ability.js";
 import { getNextId } from "../game.js";
 
 const ABILITY_NAME_SHOOT = "Shoot";
@@ -109,8 +109,8 @@ function canShootHitMore(abilityObject: AbilityObject){
     return projectile.pierceCount >= 0;
 }
 
-function createAbiltiyShootUpgradeOptions(): UpgradeOptionAbility[]{
-    let upgradeOptions: UpgradeOptionAbility[] = [];
+function createAbiltiyShootUpgradeOptions(): AbilityUpgradeOption[]{
+    let upgradeOptions: AbilityUpgradeOption[] = [];
     upgradeOptions.push({
         name: "Damage+50", probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilityShoot;

@@ -1,4 +1,4 @@
-import { UpgradeOptionAbility, ABILITIES_FUNCTIONS } from "../../ability/ability.js"
+import { AbilityUpgradeOption, ABILITIES_FUNCTIONS } from "../../ability/ability.js"
 import { Game, IdCounter } from "../../gameModel.js"
 import { RandomSeed } from "../../randomNumberGenerator.js"
 import { createCharacterUpgradeOptions, fillRandomUpgradeOptions } from "../character.js"
@@ -42,7 +42,7 @@ export function upgradePlayerCharacter(character: Character, upgradeOptionIndex:
         if (upgradeOption.abilityName !== undefined) {
             let ability = character.abilities.find(a => a.name === upgradeOption.abilityName);
             if (ability !== undefined) {
-                let upgrades: UpgradeOptionAbility[];
+                let upgrades: AbilityUpgradeOption[];
                 if (upgradeOption.boss) {
                     const abilityFunctions = ABILITIES_FUNCTIONS[upgradeOption.abilityName];
                     if (abilityFunctions.createAbiltiyBossUpgradeOptions) {

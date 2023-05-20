@@ -2,7 +2,7 @@ import { characterTakeDamage, determineCharactersInDistance, determineClosestCha
 import { Character } from "../character/characterModel.js";
 import { getNextId } from "../game.js";
 import { Position, Game, IdCounter } from "../gameModel.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, UpgradeOptionAbility } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, AbilityUpgradeOption } from "./ability.js";
 
 type AbilitySingleTarget = Ability & {
     damage: number,
@@ -111,8 +111,8 @@ function tickAbilitySingleTarget(abilityOwner: AbilityOwner, ability: Ability, g
     }
 }
 
-function createAbilitySingleTargetUpgradeOptions(): UpgradeOptionAbility[] {
-    let upgradeOptions: UpgradeOptionAbility[] = [];
+function createAbilitySingleTargetUpgradeOptions(): AbilityUpgradeOption[] {
+    let upgradeOptions: AbilityUpgradeOption[] = [];
     upgradeOptions.push({
         name: "SingleTargetDamage+100", probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilitySingleTarget;

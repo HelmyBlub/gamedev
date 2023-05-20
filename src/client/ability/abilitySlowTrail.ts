@@ -4,7 +4,7 @@ import { applyDebuff } from "../debuff/debuff.js";
 import { createDebuffSlow } from "../debuff/debuffSlow.js";
 import { getCameraPosition, getNextId } from "../game.js";
 import { Position, Game, IdCounter } from "../gameModel.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, UpgradeOptionAbility, detectSomethingToCharacterHit } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, AbilityUpgradeOption, detectSomethingToCharacterHit } from "./ability.js";
 
 export type AbilitySlowTrail = Ability & {
     slowFactor: number,
@@ -144,8 +144,8 @@ function tickAbilityObjectSlowTrail(abilityObject: AbilityObject, game: Game){
     }
 }
 
-function createAbilitySlowTrailUpgradeOptions(): UpgradeOptionAbility[] {
-    let upgradeOptions: UpgradeOptionAbility[] = [];
+function createAbilitySlowTrailUpgradeOptions(): AbilityUpgradeOption[] {
+    let upgradeOptions: AbilityUpgradeOption[] = [];
     return upgradeOptions;
 }
 

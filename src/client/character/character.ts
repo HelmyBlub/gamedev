@@ -6,7 +6,7 @@ import { calculateDirection, calculateDistance, calculateDistancePointToLine, cr
 import { Position, Game, GameState, IdCounter, Camera, PaintTextData } from "../gameModel.js";
 import { findPlayerById, Player } from "../player.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, abilityCharacterAddBossSkillPoint, UpgradeOptionAbility } from "../ability/ability.js";
+import { ABILITIES_FUNCTIONS, abilityCharacterAddBossSkillPoint, AbilityUpgradeOption } from "../ability/ability.js";
 import { LEVELING_CHARACTER, LevelingCharacter } from "./playerCharacters/levelingCharacterModel.js";
 import { BossEnemyCharacter, CHARACTER_TYPE_BOSS_ENEMY } from "./enemy/bossEnemy.js";
 import { tickCharacterDebuffs } from "../debuff/debuff.js";
@@ -65,9 +65,9 @@ export function fillRandomUpgradeOptions(character: Character, randomSeed: Rando
                 characterOptionProbability += characterOption.probabilityFactor;
             }
         }
-        let abilitiesOptions: { [key: string]: { options: UpgradeOptionAbility[], probability: number } } = {};
+        let abilitiesOptions: { [key: string]: { options: AbilityUpgradeOption[], probability: number } } = {};
         for (let ability of character.abilities) {
-            let options: UpgradeOptionAbility[] = [];
+            let options: AbilityUpgradeOption[] = [];
             if(boss){
                 const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
                 if(abilityFunctions.createAbiltiyBossUpgradeOptions && ability.bossSkillPoints !== undefined && ability.bossSkillPoints > 0){

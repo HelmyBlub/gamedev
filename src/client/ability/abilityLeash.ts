@@ -1,7 +1,7 @@
 import { findCharacterById, getPlayerCharacters } from "../character/character.js";
 import { calculateDirection, calculateDistance, getNextId } from "../game.js";
 import { Position, Game, IdCounter } from "../gameModel.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, UpgradeOptionAbility } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, AbilityUpgradeOption } from "./ability.js";
 
 type AbilityLeash = Ability & {
     leashMaxLength: number,
@@ -90,8 +90,8 @@ function tickAbilityLeash(abilityOwner: AbilityOwner, ability: Ability, game: Ga
     }
 }
 
-function createAbilityLeashUpgradeOptions(): UpgradeOptionAbility[] {
-    let upgradeOptions: UpgradeOptionAbility[] = [];
+function createAbilityLeashUpgradeOptions(): AbilityUpgradeOption[] {
+    let upgradeOptions: AbilityUpgradeOption[] = [];
     upgradeOptions.push({
         name: "LeashLength+10", probabilityFactor: 1, upgrade: (a: Ability) => {
             let al = a as AbilityLeash;

@@ -1,7 +1,7 @@
-import { Ability, UpgradeOptionAbility } from "../ability.js";
-import { AbilityObjectSnipe, AbilitySnipe } from "./abilitySnipe.js";
+import { Ability, AbilityUpgradeOption } from "../ability.js";
+import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe } from "./abilitySnipe.js";
 
-export const UPGRADE_SNIPE_ABILITY_NO_MISS_CHAIN = "Snipe No Miss Chain";
+export const UPGRADE_SNIPE_ABILITY_NO_MISS_CHAIN = "No Miss Chain";
 
 export type AbilityUpgradeChainHit = {
     noMissChainCounter: number,
@@ -9,9 +9,30 @@ export type AbilityUpgradeChainHit = {
     noMissBonusDamageFactorAdd: number,
 }
 
-export function getAbilityUpgradeNoMissChain(): UpgradeOptionAbility {
-    return {
-        name: "No Miss Chain-> damage 0%-50% bonus damage", probabilityFactor: 1, upgrade: (a: Ability) => {
+export function addAbilitySnipeUpgradeNoMissChain() {
+    ABILITY_SNIPE_UPGRADE_FUNCTIONS[UPGRADE_SNIPE_ABILITY_NO_MISS_CHAIN] = {
+        getAbilityUpgradeUiText: abilityUpgradeNoMissChainUiText,
+        pushAbilityUpgradeOption: pushAbilityUpgradeNoMissChain,
+        getAbilityUpgradeDamageFactor: abilityUpgradeNoMissChainDamageFactor,
+    }
+}
+
+export function abilityUpgradeNoMissChainOnObjectSnipeDamageDone(abilitySnipe: AbilitySnipe, abilityObjectSnipe: AbilityObjectSnipe) {
+    let upgrades: AbilityUpgradeChainHit | undefined = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_NO_MISS_CHAIN];
+    if (upgrades && upgrades.noMissChainCounter !== undefined && abilityObjectSnipe.remainingRange === undefined && !abilityObjectSnipe.preventSplitOnHit) {
+        if (abilityObjectSnipe.hitSomething) {
+            if (upgrades.noMissChainCounter < upgrades.noMissCounterCap!) {
+                upgrades.noMissChainCounter++;
+            }
+        } else {
+            upgrades.noMissChainCounter = 0;
+        }
+    }
+}
+
+function pushAbilityUpgradeNoMissChain(ability: Ability, upgradeOptions: AbilityUpgradeOption[]) {
+    upgradeOptions.push({
+        name: UPGRADE_SNIPE_ABILITY_NO_MISS_CHAIN, probabilityFactor: 1, upgrade: (a: Ability) => {
             const as = a as AbilitySnipe;
             let up: AbilityUpgradeChainHit;
             if (as.upgrades[UPGRADE_SNIPE_ABILITY_NO_MISS_CHAIN] === undefined) {
@@ -28,10 +49,11 @@ export function getAbilityUpgradeNoMissChain(): UpgradeOptionAbility {
                 up.noMissBonusDamageFactorAdd += 0.01;
             }
         }
-    }
+    });
 }
 
-export function abilityUpgradeNoMissChainUiText(abilitySnipe: AbilitySnipe): string {
+function abilityUpgradeNoMissChainUiText(ability: Ability): string {
+    let abilitySnipe = ability as AbilitySnipe;
     let upgrades: AbilityUpgradeChainHit | undefined = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_NO_MISS_CHAIN];
     if (upgrades) {
         return "Chain Bonus: " + (upgrades.noMissChainCounter * upgrades.noMissBonusDamageFactorAdd * 100).toFixed() + "%";
@@ -40,7 +62,8 @@ export function abilityUpgradeNoMissChainUiText(abilitySnipe: AbilitySnipe): str
     return "";
 }
 
-export function abilityUpgradeNoMissChainDamageFactor(abilitySnipe: AbilitySnipe) {
+function abilityUpgradeNoMissChainDamageFactor(ability: Ability): number {
+    let abilitySnipe = ability as AbilitySnipe;
     let upgrades: AbilityUpgradeChainHit | undefined = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_NO_MISS_CHAIN];
     let factor = 1;
     if (upgrades?.noMissChainCounter) {
@@ -48,17 +71,4 @@ export function abilityUpgradeNoMissChainDamageFactor(abilitySnipe: AbilitySnipe
     }
     return factor;
 
-}
-
-export function abilityUpgradeNoMissChainOnObjectSnipeDamageDone(abilitySnipe: AbilitySnipe, abilityObjectSnipe: AbilityObjectSnipe) {
-    let upgrades: AbilityUpgradeChainHit | undefined = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_NO_MISS_CHAIN];
-    if (upgrades && upgrades.noMissChainCounter !== undefined && abilityObjectSnipe.remainingRange === undefined && !abilityObjectSnipe.preventSplitOnHit) {
-        if (abilityObjectSnipe.hitSomething) {
-            if (upgrades.noMissChainCounter < upgrades.noMissCounterCap!) {
-                upgrades.noMissChainCounter++;
-            }
-        } else {
-            upgrades.noMissChainCounter = 0;
-        }
-    }
 }

@@ -5,7 +5,7 @@ import { applyDebuff } from "../debuff/debuff.js";
 import { getNextId } from "../game.js";
 import { Game, IdCounter, Position } from "../gameModel.js";
 import { playerInputBindingToDisplayValue } from "../playerInput.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, UpgradeOptionAbility, paintDefaultAbilityStatsUI } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, AbilityUpgradeOption, paintDefaultAbilityStatsUI } from "./ability.js";
 
 type AbilityMovementSpeed = Ability & {
     speedFactor: number,
@@ -123,8 +123,8 @@ function setAbilityMovementSpeedToLevel(ability: Ability, level: number) {
     abilityMovementSpeed.speedFactor = 1.20 + 0.05 * level;
 }
 
-function createAbilityMovementSpeedUpgradeOptions(): UpgradeOptionAbility[] {
-    let upgradeOptions: UpgradeOptionAbility[] = [];
+function createAbilityMovementSpeedUpgradeOptions(): AbilityUpgradeOption[] {
+    let upgradeOptions: AbilityUpgradeOption[] = [];
     upgradeOptions.push({
         name: "MovementSpeed+", probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilityMovementSpeed;
@@ -135,8 +135,8 @@ function createAbilityMovementSpeedUpgradeOptions(): UpgradeOptionAbility[] {
     return upgradeOptions;
 }
 
-function createAbilityBossMovementSpeedUpgradeOptions(ability: Ability): UpgradeOptionAbility[] {
-    let upgradeOptions: UpgradeOptionAbility[] = [];
+function createAbilityBossMovementSpeedUpgradeOptions(ability: Ability): AbilityUpgradeOption[] {
+    let upgradeOptions: AbilityUpgradeOption[] = [];
     upgradeOptions.push({
         name: "Ability MovementSpeed speed increase +50%", probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilityMovementSpeed;

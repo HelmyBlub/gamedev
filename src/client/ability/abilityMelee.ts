@@ -1,7 +1,7 @@
 import { characterTakeDamage, determineClosestCharacter, getPlayerCharacters } from "../character/character.js";
 import { getNextId } from "../game.js";
 import { Game, IdCounter } from "../gameModel.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, UpgradeOptionAbility } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, AbilityUpgradeOption } from "./ability.js";
 
 type AbilityMelee = Ability & {
     damage: number,
@@ -65,8 +65,8 @@ function tickAbilityMelee(abilityOwner: AbilityOwner, ability: Ability, game: Ga
     }
 }
 
-function createAbilityMeleeUpgradeOptions(): UpgradeOptionAbility[] {
-    let upgradeOptions: UpgradeOptionAbility[] = [];
+function createAbilityMeleeUpgradeOptions(): AbilityUpgradeOption[] {
+    let upgradeOptions: AbilityUpgradeOption[] = [];
     upgradeOptions.push({
         name: "MeleeDamage+100", probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilityMelee;

@@ -1,7 +1,7 @@
 import { calculateDirection, calculateDistance, getCameraPosition, getNextId } from "../game.js";
 import { Game, IdCounter, Position } from "../gameModel.js";
 import { nextRandom } from "../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectAbilityObjectToCharacterHit, PaintOrderAbility, UpgradeOptionAbility } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectAbilityObjectToCharacterHit, PaintOrderAbility, AbilityUpgradeOption } from "./ability.js";
 
 const ABILITY_NAME_FIRE_CIRCLE = "FireCircle";
 export type AbilityFireCircle = Ability & {
@@ -259,8 +259,8 @@ function deleteObjectFireCircle(abilityObject: AbilityObject, game: Game): boole
     }
 }
 
-function createAbiltiyFireCircleUpgradeOptions(): UpgradeOptionAbility[] {
-    let upgradeOptions: UpgradeOptionAbility[] = [];
+function createAbiltiyFireCircleUpgradeOptions(): AbilityUpgradeOption[] {
+    let upgradeOptions: AbilityUpgradeOption[] = [];
     upgradeOptions.push({
         name: "Damage+10", probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilityFireCircle;

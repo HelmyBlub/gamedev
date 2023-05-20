@@ -6,7 +6,7 @@ import { positionToMapKey } from "../map/map.js";
 import { findPlayerByCharacterId } from "../player.js";
 import { playerInputBindingToDisplayValue } from "../playerInput.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, UpgradeOptionAbility, paintDefaultAbilityStatsUI } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, AbilityUpgradeOption, paintDefaultAbilityStatsUI } from "./ability.js";
 
 type AbilityObjectTower = AbilityObject & {
     ownerId: number,
@@ -399,9 +399,9 @@ function tickAbilityObjectTower(abilityObject: AbilityObject, game: Game) {
     }
 }
 
-function createAbilityTowerUpgradeOptions(ability: Ability): UpgradeOptionAbility[] {
+function createAbilityTowerUpgradeOptions(ability: Ability): AbilityUpgradeOption[] {
     let abilityTower = ability as AbilityTower;
-    let upgradeOptions: UpgradeOptionAbility[] = [];
+    let upgradeOptions: AbilityUpgradeOption[] = [];
     upgradeOptions.push({
         name: "Line Damage+50", probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilityTower;

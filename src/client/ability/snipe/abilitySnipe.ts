@@ -2,15 +2,16 @@ import { characterTakeDamage, getCharactersTouchingLine } from "../../character/
 import { Character } from "../../character/characterModel.js";
 import { calcNewPositionMovedInDirection, calculateDirection, getClientInfoByCharacterId, getNextId } from "../../game.js";
 import { Position, Game, IdCounter, ClientInfo } from "../../gameModel.js";
-import { GAME_IMAGES, loadImage } from "../../imageLoad.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, UpgradeOptionAbility, findAbilityById, levelingAbilityXpGain } from "../ability.js";
+import { GAME_IMAGES } from "../../imageLoad.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, AbilityUpgradeOption, findAbilityById, levelingAbilityXpGain } from "../ability.js";
+import { AbilityUpgradesFunctions, getAbilityUpgradesDamageFactor, pushAbilityUpgradesOptions } from "../abilityUpgrade.js";
 import { paintAbilityObjectSnipe, paintAbilitySnipe, paintAbilitySnipeStatsUI, paintAbilitySnipeUI } from "./abilitySnipePaint.js";
-import { abilityUpgradeNoMissChainDamageFactor, abilityUpgradeNoMissChainOnObjectSnipeDamageDone, getAbilityUpgradeNoMissChain } from "./abilitySnipeUpgradeChainHit.js";
-import { abilityUpgradeDamageAndRangeDamageFactor, abilityUpgradeDamageAndRangeRangeFactor, getAbilityUpgradeDamageAndRange } from "./abilitySnipeUpgradeDamageAndRange.js";
-import { castSnipeMoreRifles, getAbilityUpgradeMoreRifles, tickAbilityUpgradeMoreRifles } from "./abilitySnipeUpgradeMoreRifle.js";
-import { abilityUpgradeOnSnipeHit, getAbilityUpgradeSplitShot } from "./abilitySnipeUpgradeSplitShot.js";
-import { UPGRADE_SNIPE_ABILITY_STAY_STILL, abilityUpgradeStayStillDamageFactor, getAbilityUpgradeStayStill, tickAbilityUpgradeStayStill } from "./abilitySnipeUpgradeStayStill.js";
-import { UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE, abilityUpgradeTerrainBounceDamageFactor, createAndPushAbilityObjectSnipeTerrainBounceBounce, createAndPushAbilityObjectSnipeTerrainBounceInit, getAbilityUpgradeTerrainBounce } from "./abilitySnipeUpgradeTerrainBounce.js";
+import { abilityUpgradeNoMissChainOnObjectSnipeDamageDone, addAbilitySnipeUpgradeNoMissChain } from "./abilitySnipeUpgradeChainHit.js";
+import { abilityUpgradeDamageAndRangeRangeFactor, addAbilitySnipeUpgradeDamageAndRange } from "./abilitySnipeUpgradeDamageAndRange.js";
+import { addAbilitySnipeUpgradeMoreRifles, castSnipeMoreRifles, tickAbilityUpgradeMoreRifles } from "./abilitySnipeUpgradeMoreRifle.js";
+import { abilityUpgradeOnSnipeHit, addAbilitySnipeUpgradeSplitShot } from "./abilitySnipeUpgradeSplitShot.js";
+import { UPGRADE_SNIPE_ABILITY_STAY_STILL, addAbilitySnipeUpgradeStayStill, tickAbilityUpgradeStayStill } from "./abilitySnipeUpgradeStayStill.js";
+import { UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE, addAbilitySnipeUpgradeTerrainBounce, createAndPushAbilityObjectSnipeTerrainBounceBounce, createAndPushAbilityObjectSnipeTerrainBounceInit, getAbilityUpgradeTerrainBounceDamageFactor } from "./abilitySnipeUpgradeTerrainBounce.js";
 
 export type AbilityObjectSnipe = AbilityObject & {
     damage: number,
@@ -41,6 +42,8 @@ export type AbilitySnipe = Ability & {
 }
 
 export const ABILITY_NAME_SNIPE = "Snipe";
+export const ABILITY_SNIPE_UPGRADE_FUNCTIONS: AbilityUpgradesFunctions = {};
+
 GAME_IMAGES[ABILITY_NAME_SNIPE] = {
     imagePath: "/images/sniperRifle.png",
     spriteRowHeights: [40],
@@ -64,6 +67,13 @@ export function addSnipeAbility() {
         isPassive: false,
         notInheritable: true,
     };
+
+    addAbilitySnipeUpgradeNoMissChain();
+    addAbilitySnipeUpgradeDamageAndRange();
+    addAbilitySnipeUpgradeMoreRifles();
+    addAbilitySnipeUpgradeSplitShot();
+    addAbilitySnipeUpgradeStayStill();
+    addAbilitySnipeUpgradeTerrainBounce();
 }
 
 export function createAbilitySnipe(
@@ -159,10 +169,8 @@ function setAbilitySnipeToLevel(ability: Ability, level: number) {
 
 export function getAbilitySnipeDamage(abilitySnipe: AbilitySnipe, bounceCounter: number = 0) {
     let damage = abilitySnipe.baseDamage;
-    damage *= abilityUpgradeNoMissChainDamageFactor(abilitySnipe);
-    damage *= abilityUpgradeDamageAndRangeDamageFactor(abilitySnipe);
-    damage *= abilityUpgradeTerrainBounceDamageFactor(abilitySnipe, bounceCounter);
-    damage *= abilityUpgradeStayStillDamageFactor(abilitySnipe);
+    damage *= getAbilityUpgradesDamageFactor(ABILITY_SNIPE_UPGRADE_FUNCTIONS, abilitySnipe);
+    damage *= getAbilityUpgradeTerrainBounceDamageFactor(abilitySnipe, bounceCounter);
     return damage;
 }
 
@@ -211,7 +219,7 @@ export function createAbilityObjectSnipeInitial(startPosition: Position, faction
     }
 }
 
-function createAbilityObjectSnipeInitialPlayerTriggered(abilityOwner: AbilityOwner, abilitySnipe: AbilitySnipe, castPosition: Position, game: Game){
+function createAbilityObjectSnipeInitialPlayerTriggered(abilityOwner: AbilityOwner, abilitySnipe: AbilitySnipe, castPosition: Position, game: Game) {
     createAbilityObjectSnipeInitial(abilityOwner, abilityOwner.faction, abilitySnipe, castPosition, game);
     castSnipeMoreRifles(abilityOwner, abilitySnipe, castPosition, game);
     abilitySnipe.currentCharges--;
@@ -270,7 +278,7 @@ function tickAbilitySnipe(abilityOwner: AbilityOwner, ability: Ability, game: Ga
         const clientInfo: ClientInfo = getClientInfoByCharacterId(abilityOwner.id, game)!;
         abilitySnipe.lastSniperRiflePaintDirection = calculateDirection(abilityOwner, clientInfo.lastMousePosition);
     }
-    tickAbilityUpgradeMoreRifles(abilitySnipe, abilityOwner,game);
+    tickAbilityUpgradeMoreRifles(abilitySnipe, abilityOwner, game);
 }
 
 export function getShotFrequency(abilitySnipe: AbilitySnipe) {
@@ -306,8 +314,8 @@ function tickAbilityObjectSnipe(abilityObject: AbilityObject, game: Game) {
     }
 }
 
-function createAbilitySnipeUpgradeOptions(ability: Ability): UpgradeOptionAbility[] {
-    let upgradeOptions: UpgradeOptionAbility[] = [];
+function createAbilitySnipeUpgradeOptions(ability: Ability): AbilityUpgradeOption[] {
+    let upgradeOptions: AbilityUpgradeOption[] = [];
     upgradeOptions.push({
         name: "Snipe Damage+50", probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilitySnipe;
@@ -318,17 +326,11 @@ function createAbilitySnipeUpgradeOptions(ability: Ability): UpgradeOptionAbilit
     return upgradeOptions;
 }
 
-function createAbilityBossSnipeUpgradeOptions(ability: Ability): UpgradeOptionAbility[] {
-    let upgradeOptions: UpgradeOptionAbility[] = [];
+function createAbilityBossSnipeUpgradeOptions(ability: Ability): AbilityUpgradeOption[] {
+    let upgradeOptions: AbilityUpgradeOption[] = [];
     let abilitySnipe = ability as AbilitySnipe;
-    upgradeOptions.push(getAbilityUpgradeDamageAndRange());
-    upgradeOptions.push(getAbilityUpgradeNoMissChain());
-    upgradeOptions.push(getAbilityUpgradeSplitShot());
-    upgradeOptions.push(getAbilityUpgradeStayStill());
-    if (!abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE]) {
-        upgradeOptions.push(getAbilityUpgradeTerrainBounce());
-    }
-    upgradeOptions.push(getAbilityUpgradeMoreRifles());
+
+    pushAbilityUpgradesOptions(ABILITY_SNIPE_UPGRADE_FUNCTIONS, upgradeOptions, ability);
     return upgradeOptions;
 }
 

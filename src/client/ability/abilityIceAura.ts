@@ -3,7 +3,7 @@ import { applyDebuff } from "../debuff/debuff.js";
 import { createDebuffSlow } from "../debuff/debuffSlow.js";
 import { getNextId } from "../game.js";
 import { Position, Game, IdCounter } from "../gameModel.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, UpgradeOptionAbility, detectSomethingToCharacterHit } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, AbilityUpgradeOption, detectSomethingToCharacterHit } from "./ability.js";
 
 type AbilityIce = Ability & {
     damage: number,
@@ -109,8 +109,8 @@ function tickAbilityIce(abilityOwner: AbilityOwner, ability: Ability, game: Game
     }
 }
 
-function createAbilityIceUpgradeOptions(): UpgradeOptionAbility[] {
-    let upgradeOptions: UpgradeOptionAbility[] = [];
+function createAbilityIceUpgradeOptions(): AbilityUpgradeOption[] {
+    let upgradeOptions: AbilityUpgradeOption[] = [];
     upgradeOptions.push({
         name: "IceDamage+50", probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilityIce;

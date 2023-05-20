@@ -3,12 +3,11 @@ import { Game, Position } from "../../gameModel.js";
 import { GAME_IMAGES, loadImage } from "../../imageLoad.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { Ability, AbilityObject, AbilityOwner, PaintOrderAbility, paintDefaultAbilityStatsUI } from "../ability.js";
-import { ABILITY_NAME_SNIPE, AbilityObjectSnipe, AbilitySnipe, getAbilitySnipeDamage, getAbilitySnipeRange, getShotFrequency } from "./abilitySnipe.js";
-import { UPGRADE_SNIPE_ABILITY_NO_MISS_CHAIN, abilityUpgradeNoMissChainUiText } from "./abilitySnipeUpgradeChainHit.js";
-import { UPGRADE_SNIPE_ABILITY_MORE_RIFLES, abilityUpgradeMoreRiflesUiText, paintVisualizationMoreRifles } from "./abilitySnipeUpgradeMoreRifle.js";
-import { UPGRADE_SNIPE_ABILITY_SPLIT_SHOT, abilityUpgradeSplitOnHitUiText } from "./abilitySnipeUpgradeSplitShot.js";
-import { UPGRADE_SNIPE_ABILITY_STAY_STILL, abilityUpgradeStayStillUiText, paintVisualizationStayStill } from "./abilitySnipeUpgradeStayStill.js";
-import { UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE, abilityUpgradeTerrainBounceUiText } from "./abilitySnipeUpgradeTerrainBounce.js";
+import { pushAbilityUpgradesUiTexts } from "../abilityUpgrade.js";
+import { ABILITY_NAME_SNIPE, ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe, getAbilitySnipeDamage, getAbilitySnipeRange, getShotFrequency } from "./abilitySnipe.js";
+import { paintVisualizationMoreRifles } from "./abilitySnipeUpgradeMoreRifle.js";
+import { paintVisualizationStayStill } from "./abilitySnipeUpgradeStayStill.js";
+import { UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE } from "./abilitySnipeUpgradeTerrainBounce.js";
 
 export function paintAbilityObjectSnipe(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
     if (paintOrder !== "afterCharacterPaint") return;
@@ -47,7 +46,7 @@ export function paintAbilitySnipe(ctx: CanvasRenderingContext2D, abilityOwner: A
     paintVisualizationMoreRifles(ctx, abilityOwner, abilitySnipe, paintX, paintY, game);
 }
 
-export function paintSniperRifle(ctx: CanvasRenderingContext2D, abilitySnipe: AbilitySnipe, paintX: number, paintY: number, pointDirection: number, distance: number, game: Game){
+export function paintSniperRifle(ctx: CanvasRenderingContext2D, abilitySnipe: AbilitySnipe, paintX: number, paintY: number, pointDirection: number, distance: number, game: Game) {
     let sniperRifleImageRef = GAME_IMAGES[ABILITY_NAME_SNIPE];
     loadImage(sniperRifleImageRef);
     if (sniperRifleImageRef.imageRef?.complete) {
@@ -133,22 +132,7 @@ export function paintAbilitySnipeStatsUI(ctx: CanvasRenderingContext2D, ability:
             `Current XP: ${abilitySnipe.leveling.experience.toFixed(0)}`,
             `XP required for Level Up: ${abilitySnipe.leveling.experienceForLevelUp}`,
         );
-
-        if (abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_NO_MISS_CHAIN]) {
-            textLines.push(abilityUpgradeNoMissChainUiText(abilitySnipe));
-        }
-        if (abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_SPLIT_SHOT]) {
-            textLines.push(abilityUpgradeSplitOnHitUiText(abilitySnipe));
-        }
-        if (abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE]) {
-            textLines.push(abilityUpgradeTerrainBounceUiText(abilitySnipe));
-        }
-        if (abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_STAY_STILL]) {
-            textLines.push(abilityUpgradeStayStillUiText(abilitySnipe));
-        }
-        if (abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_MORE_RIFLES]) {
-            textLines.push(abilityUpgradeMoreRiflesUiText(abilitySnipe));
-        }
+        pushAbilityUpgradesUiTexts(ABILITY_SNIPE_UPGRADE_FUNCTIONS, textLines, ability);
     }
 
     return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
