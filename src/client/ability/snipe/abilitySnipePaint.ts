@@ -7,10 +7,14 @@ import { pushAbilityUpgradesUiTexts } from "../abilityUpgrade.js";
 import { ABILITY_NAME_SNIPE, ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe, getAbilitySnipeDamage, getAbilitySnipeRange, getShotFrequency } from "./abilitySnipe.js";
 import { paintVisualizationMoreRifles } from "./abilitySnipeUpgradeMoreRifle.js";
 import { paintVisualizationStayStill } from "./abilitySnipeUpgradeStayStill.js";
-import { UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE } from "./abilitySnipeUpgradeTerrainBounce.js";
 
 export function paintAbilityObjectSnipe(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
-    if (paintOrder !== "afterCharacterPaint") return;
+    let abilityObjectSnipe = abilityObject as AbilityObjectSnipe;
+    if(abilityObjectSnipe.bounceCounter !== undefined){
+        if (paintOrder !== "beforeCharacterPaint") return;
+    }else{
+        if (paintOrder !== "afterCharacterPaint") return;
+    }
     const cameraPosition = getCameraPosition(game);
     const snipe = abilityObject as AbilityObjectSnipe;
     const endPos = calcNewPositionMovedInDirection(snipe, snipe.direction, snipe.range);

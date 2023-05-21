@@ -78,6 +78,7 @@ export type GameState = {
     clientInfos: ClientInfo[],
     map: GameMap,
     deathCircleCreated: boolean,
+    paused: boolean,
 }
 
 export type Highscores = {
@@ -160,7 +161,7 @@ export type Game = {
         movementKeyPressed: boolean,
         displayDamageNumbers: boolean,
         displayTextData: PaintTextData[],
-        displayStats: boolean,
+        displayLongInfos: boolean,
     }
 }
 
@@ -194,6 +195,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
                 bossLevelCounter: 1, 
                 bosses: [],
             },
+            paused: false,
         },
         clientKeyBindings: [],
         tickInterval: 16,
@@ -243,7 +245,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             movementKeyPressed: false,
             displayDamageNumbers: true,
             displayTextData: [],
-            displayStats: false,
+            displayLongInfos: false,
         },
         settings: {
             autoSkillEnabled: false,

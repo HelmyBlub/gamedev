@@ -13,6 +13,7 @@ export type AbilityUpgradeSplitShot = {
 export function addAbilitySnipeUpgradeSplitShot() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[UPGRADE_SNIPE_ABILITY_SPLIT_SHOT] = {
         getAbilityUpgradeUiText: getAbilityUpgradeSplitShotUiText,
+        getAbilityUpgradeUiTextLong: getAbilityUpgradeSplitShotUiTextLong,
         pushAbilityUpgradeOption: pushAbilityUpgradeSplitShot,
     }
 }
@@ -53,4 +54,16 @@ function getAbilityUpgradeSplitShotUiText(ability: Ability): string {
     const abilitySnipe = ability as AbilitySnipe;
     let upgrades: AbilityUpgradeSplitShot = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_SPLIT_SHOT];
     return "Split On Hit +" + upgrades.shotSplitsPerHit;
+}
+
+function getAbilityUpgradeSplitShotUiTextLong(ability: Ability): string[] {
+    let abilitySnipe = ability as AbilitySnipe;
+    let upgrades: AbilityUpgradeSplitShot | undefined = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_SPLIT_SHOT];
+    const textLines: string[] = [];
+    textLines.push(UPGRADE_SNIPE_ABILITY_SPLIT_SHOT);
+    textLines.push(`For every enemy hit with the main shot,`);
+    textLines.push(`it will split in two.`);
+    textLines.push(`The split part can not split again.`);
+
+    return textLines;
 }

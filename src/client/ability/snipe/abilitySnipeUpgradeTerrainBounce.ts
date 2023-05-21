@@ -5,6 +5,7 @@ import { Ability, AbilityUpgradeOption } from "../ability.js";
 import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe, createAbilityObjectSnipe, getAbilitySnipeDamage, getAbilitySnipeRange } from "./abilitySnipe.js";
 
 export const UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE = "Terrain Bounce";
+const DAMAGE_UP_BOUNCE = 0.5;
 
 export type AbilityUpgradeTerrainBounce = {
     damageUpPerBounceFactor: number,
@@ -14,6 +15,7 @@ export type AbilityUpgradeTerrainBounce = {
 export function addAbilitySnipeUpgradeTerrainBounce() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE] = {
         getAbilityUpgradeUiText: getAbilityUpgradeTerrainBounceUiText,
+        getAbilityUpgradeUiTextLong: getAbilityUpgradeTerrainBounceUiTextLong,
         pushAbilityUpgradeOption: pushAbilityUpgradeTerrainBounce,
     }
 }
@@ -76,7 +78,7 @@ function pushAbilityUpgradeTerrainBounce(ability: Ability, upgradeOptions: Abili
             if (as.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE] === undefined) {
                 up = {
                     active: true,
-                    damageUpPerBounceFactor: 0.5,
+                    damageUpPerBounceFactor: DAMAGE_UP_BOUNCE,
                 }
                 as.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE] = up;
             } else {
@@ -88,6 +90,18 @@ function pushAbilityUpgradeTerrainBounce(ability: Ability, upgradeOptions: Abili
 
 function getAbilityUpgradeTerrainBounceUiText(ability: Ability): string {
     return "Terrain Bounce and +50% damage for each bounce";
+}
+
+function getAbilityUpgradeTerrainBounceUiTextLong(ability: Ability): string[] {
+    let abilitySnipe = ability as AbilitySnipe;
+    let upgrades: AbilityUpgradeTerrainBounce | undefined = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE];
+    const textLines: string[] = [];
+    textLines.push(UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE);
+    textLines.push(`Shots will bounce of blocking tiles.`);
+    textLines.push(`Each bounce will increase damage by ${DAMAGE_UP_BOUNCE*100}%`);
+    textLines.push(`for the following bounced shot part.`);
+
+    return textLines;
 }
 
 function createAndPush(

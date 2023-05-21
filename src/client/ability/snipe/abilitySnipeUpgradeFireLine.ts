@@ -5,6 +5,8 @@ import { createAbilityObjectFireLine } from "../abilityFireLine.js";
 import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilitySnipe, getAbilitySnipeDamage } from "./abilitySnipe.js";
 
 export const UPGRADE_SNIPE_ABILITY_FIRE_LINE= "Fire Line";
+const DURATION = 3000;
+const DAMAGEFACTOR = 2;
 
 export type AbilityUpgradeFireLine = {
     duration: number,
@@ -16,6 +18,7 @@ export type AbilityUpgradeFireLine = {
 export function addAbilitySnipeUpgradeFireLine() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[UPGRADE_SNIPE_ABILITY_FIRE_LINE] = {
         getAbilityUpgradeUiText: getAbilityUpgradeFireLineUiText,
+        getAbilityUpgradeUiTextLong: getAbilityUpgradeFireLineUiTextLong,
         pushAbilityUpgradeOption: pushAbilityUpgradeFireLine,
     }
 }
@@ -39,7 +42,7 @@ function pushAbilityUpgradeFireLine(ability: Ability, upgradeOptions: AbilityUpg
             let up: AbilityUpgradeFireLine;
             if (as.upgrades[UPGRADE_SNIPE_ABILITY_FIRE_LINE] === undefined) {
                 up = {
-                    duration: 3000,
+                    duration: DURATION,
                     damageTotalFactor: 0,
                     tickInterval: 200,
                     range: 150,
@@ -48,7 +51,7 @@ function pushAbilityUpgradeFireLine(ability: Ability, upgradeOptions: AbilityUpg
             } else {
                 up = as.upgrades[UPGRADE_SNIPE_ABILITY_FIRE_LINE];
             }
-            up.damageTotalFactor += 2;
+            up.damageTotalFactor += DAMAGEFACTOR;
         }
     });
 }
@@ -57,4 +60,16 @@ function getAbilityUpgradeFireLineUiText(ability: Ability): string {
     const abilitySnipe = ability as AbilitySnipe;
     let upgrades: AbilityUpgradeFireLine = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_FIRE_LINE];
     return `${UPGRADE_SNIPE_ABILITY_FIRE_LINE}: ${upgrades.damageTotalFactor*100}% total damage over ${(upgrades.duration/1000).toFixed()}s`;
+}
+
+function getAbilityUpgradeFireLineUiTextLong(ability: Ability): string[] {
+    let abilitySnipe = ability as AbilitySnipe;
+    let upgrades: AbilityUpgradeFireLine | undefined = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_FIRE_LINE];
+    const textLines: string[] = [];
+    textLines.push(UPGRADE_SNIPE_ABILITY_FIRE_LINE);
+    textLines.push(`Shooting create a fire line.`);
+    textLines.push(`It stays on the ground for ${DURATION/1000}s.`);
+    textLines.push(`It does a total of ${DAMAGEFACTOR*100}% damage in its duration.`);
+
+    return textLines;
 }

@@ -3,6 +3,8 @@ import { Ability, AbilityOwner, AbilityUpgradeOption } from "../ability.js";
 import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilitySnipe } from "./abilitySnipe.js";
 
 export const UPGRADE_SNIPE_ABILITY_STAY_STILL = "Stay Still";
+const STAY_STILL_TIME = 3000;
+const DAMAGE_FACTOR = 1;
 
 export type AbilityUpgradeStayStill = {
     damageMultiplier: number,
@@ -14,6 +16,7 @@ export type AbilityUpgradeStayStill = {
 export function addAbilitySnipeUpgradeStayStill() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[UPGRADE_SNIPE_ABILITY_STAY_STILL] = {
         getAbilityUpgradeUiText: getAbilityUpgradeStayStillUiText,
+        getAbilityUpgradeUiTextLong: getAbilityUpgradeStayStillUiTextLong,
         pushAbilityUpgradeOption: pushAbilityUpgradeStayStill,
         getAbilityUpgradeDamageFactor: getAbilityUpgradeStayStillDamageFactor,
     }
@@ -56,13 +59,13 @@ function pushAbilityUpgradeStayStill(ability: Ability, upgradeOptions: AbilityUp
                     damageMultiplier: 0,
                     stayStillStartTime: -1,
                     damageMultiplierActive: false,
-                    stayStillTime: 3000,
+                    stayStillTime: STAY_STILL_TIME,
                 }
                 as.upgrades[UPGRADE_SNIPE_ABILITY_STAY_STILL] = up;
             } else {
                 up = as.upgrades[UPGRADE_SNIPE_ABILITY_STAY_STILL];
             }
-            up.damageMultiplier += 1;
+            up.damageMultiplier += DAMAGE_FACTOR;
         }
     });
 }
@@ -81,4 +84,16 @@ function getAbilityUpgradeStayStillUiText(ability: Ability): string {
     const abilitySnipe = ability as AbilitySnipe;
     let upgrades: AbilityUpgradeStayStill = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_STAY_STILL];
     return `Stay Still for ${(upgrades.stayStillTime / 1000).toFixed(2)}s to get ${upgrades.damageMultiplier * 100}% Bonus Damge for current Magazine`;
+}
+
+function getAbilityUpgradeStayStillUiTextLong(ability: Ability): string[] {
+    let abilitySnipe = ability as AbilitySnipe;
+    let upgrades: AbilityUpgradeStayStill | undefined = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_STAY_STILL];
+    const textLines: string[] = [];
+    textLines.push(UPGRADE_SNIPE_ABILITY_STAY_STILL);
+    textLines.push(`Not moving or shooting for ${STAY_STILL_TIME/1000} seconds`);
+    textLines.push(`will activate ${DAMAGE_FACTOR}% damage bonus.`);
+    textLines.push(`The damage bonus will be active until`);
+    textLines.push(`rifle reloading.`);
+    return textLines;
 }

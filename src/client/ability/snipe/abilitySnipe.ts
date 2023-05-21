@@ -66,6 +66,7 @@ export function addSnipeAbility() {
         deleteAbilityObject: deleteAbilityObjectSnipe,
         paintAbilityStatsUI: paintAbilitySnipeStatsUI,
         setAbilityToLevel: setAbilitySnipeToLevel,
+        abilityUpgradeFunctions: ABILITY_SNIPE_UPGRADE_FUNCTIONS,
         isPassive: false,
         notInheritable: true,
     };

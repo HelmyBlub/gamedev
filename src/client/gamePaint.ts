@@ -55,7 +55,16 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
         }
     }
     paintTimeMeasures(ctx, game.debug);
+    paintPausedText(ctx, game);
     paintUiForAbilities(ctx, game);
+}
+
+function paintPausedText(ctx: CanvasRenderingContext2D, game: Game) {
+    if (!game.state.paused || game.state.ended) return;
+
+    let middleX = ctx.canvas.width / 2;
+    ctx.font = "bold 60px Arial";
+    paintTextWithOutline(ctx, "white", "black", "PAUSED", middleX, 60, true, 3);
 }
 
 function paintKeyInfo(ctx: CanvasRenderingContext2D, game: Game) {
@@ -79,9 +88,13 @@ function paintKeyInfo(ctx: CanvasRenderingContext2D, game: Game) {
     let onOff = game.settings.autoSkillEnabled ? "On" : "Off";
     ctx.fillText(`AutoSkill (${onOff})`, paintX - 60, paintY - 70);
 
-    paintKey(ctx, "P", { x: paintX - 100, y: paintY - 120 });
+    paintKey(ctx, "O", { x: paintX - 100, y: paintY - 120 });
     ctx.font = fontSize + "px Arial";
     ctx.fillText("Multiplayer", paintX - 60, paintY - 100);
+
+    paintKey(ctx, "P", { x: paintX - 100, y: paintY - 150 });
+    ctx.font = fontSize + "px Arial";
+    ctx.fillText("Pause", paintX - 60, paintY - 130);
 }
 
 function paintMoveKeysHint(ctx: CanvasRenderingContext2D) {
@@ -239,7 +252,7 @@ function paintPlayerStats(ctx: CanvasRenderingContext2D, character: Character, g
 }
 
 function paintPlayerStatsUI(ctx: CanvasRenderingContext2D, character: Character, game: Game) {
-    if (!game.UI.displayStats) return;
+    if (!game.UI.displayLongInfos) return;
     const spacing = 5;
     let paintX = 20;
     let paintY = 60;
@@ -265,25 +278,55 @@ function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Charact
     let optionSpacer = 50;
     if (character.upgradeOptions.length > 0) {
         let totalWidthEsitmate = 0;
-        let texts = [];
+        let upgradesTexts: { texts: string[], maxWidth: number }[] = [];
         for (let i = 0; i < character.upgradeOptions.length; i++) {
-            let tempText = `${character.upgradeOptions[i].name}`;
-            let width = ctx.measureText(tempText).width;
-            texts.push({ text: tempText, width: width });
-            totalWidthEsitmate += width;
+            const option = character.upgradeOptions[i];
+            let hasLongText = false;
+            if (game.UI.displayLongInfos) {
+                if (option.abilityName !== undefined) {
+                    let abilityFunctions = ABILITIES_FUNCTIONS[option.abilityName];
+                    if (abilityFunctions && abilityFunctions.abilityUpgradeFunctions) {
+                        const abilityUpgradeFunctions = abilityFunctions.abilityUpgradeFunctions[option.name];
+                        if (abilityUpgradeFunctions) {
+                            const ability = character.abilities.find(a => a.name === option.abilityName);
+                            if (ability) {
+                                hasLongText = true;
+                                const texts = abilityUpgradeFunctions.getAbilityUpgradeUiTextLong(ability);
+                                let maxWidth = 0;
+                                for (let text of texts) {
+                                    let width = ctx.measureText(text).width;
+                                    if (width > maxWidth) maxWidth = width;
+                                }
+                                maxWidth = maxWidth * 0.9;
+                                upgradesTexts.push({ texts, maxWidth });
+                                totalWidthEsitmate += maxWidth;
+                            }
+                        }
+                    }
+                }
+            }
+            if (!hasLongText) {
+                let tempText = `${character.upgradeOptions[i].name}`;
+                let width = ctx.measureText(tempText).width;
+                upgradesTexts.push({ texts: [tempText], maxWidth: width });
+                totalWidthEsitmate += width;
+            }
         }
 
         let currentX = Math.max(5, ctx.canvas.width / 2 - totalWidthEsitmate / 2);
         for (let i = 0; i < character.upgradeOptions.length; i++) {
             ctx.globalAlpha = 0.4;
             ctx.fillStyle = "white";
-            let textWidthEstimate = texts[i].width;
-            ctx.fillRect(currentX, startY - fontSize - 2, textWidthEstimate + 40, fontSize + 4);
+            let textWidthEstimate = upgradesTexts[i].maxWidth;
+            ctx.fillRect(currentX, startY - fontSize - 2, textWidthEstimate + 40, fontSize * upgradesTexts[i].texts.length + 4);
             ctx.globalAlpha = 1;
 
             paintKey(ctx, (i + 1).toString(), { x: currentX, y: startY - 26 });
             ctx.fillStyle = "black";
-            ctx.fillText(texts[i].text, currentX + 40, startY - 3);
+            for (let j = 0; j < upgradesTexts[i].texts.length; j++) {
+                const text = upgradesTexts[i].texts[j];
+                ctx.fillText(text, currentX + (j === 0 ? 40 : 0), startY - 3 + fontSize * j);
+            }
             currentX += textWidthEstimate + optionSpacer;
         }
     }

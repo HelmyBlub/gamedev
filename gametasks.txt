@@ -1,11 +1,15 @@
 current tasks:
 - Sniper: LevelingAbilityCharacter
-    - needs more upgrade choice?
-        - fire line after shoot
-    - balancing ideas:
-    
     - UI improve:
         - detailed explanations for upgrade choices
+            - BUG: text measure with for some reason not working properly, using to much space
+        - add ability upgade levels display
+        - upgrade while pause keeps upgarade choice displayed which is confusing
+
+    - needs more upgrade choice?
+        -
+    - balancing ideas:
+    
 
 
     - secondary abilities?
@@ -18,7 +22,6 @@ current tasks:
     - bug: second rilfe with bounce upgarde in blocking tile: probably create a bouncing projectile -> should not create any
 
 - add a hammer image for tower builder like sniper rifle for sniper
-- game pause button?
 - redesign levelingCharacter/abilityLevelingCharacter to be more independant in code
 
 

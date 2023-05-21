@@ -19,6 +19,7 @@ import { addSnipeAbility } from "./snipe/abilitySnipe.js"
 import { addMovementSpeedAbility } from "./movementSpeed/abilityMovementSpeed.js"
 import { addAbilitySlowTrail } from "./abilitySlowTrail.js"
 import { addAbilityFireLine } from "./abilityFireLine.js"
+import { AbilityUpgradesFunctions } from "./abilityUpgrade.js"
 
 export type Ability = {
     id: number,
@@ -67,6 +68,7 @@ export type AbilityFunctions = {
     canHitMore?: (abilityObject: AbilityObject) => boolean,
     setAbilityToLevel?: (ability: Ability, level: number) => void,
     setAbilityToBossLevel?: (ability: Ability, level: number) => void,
+    abilityUpgradeFunctions?: AbilityUpgradesFunctions,
     notInheritable?: boolean,
     canBeUsedByBosses?: boolean,
     isPassive: boolean,
@@ -136,7 +138,7 @@ export function createAbility(abilityName: string, idCounter: IdCounter, isLevel
     }
     if (getsBossSkillPoints) {
         if (abilityFunctions.createAbilityBossUpgradeOptions) {
-            ability.bossSkillPoints = 0;
+            ability.bossSkillPoints = 5;
         } else {
             console.log(`${abilityName} is missing bossUpgradeOptions`);
         }
@@ -188,6 +190,7 @@ export function findAbilityById(abilityId: number, game: Game): Ability | undefi
 
 export function paintDefaultAbilityStatsUI(ctx: CanvasRenderingContext2D, textLines: string[], drawStartX: number, drawStartY: number): { width: number, height: number } {
     const fontSize = 14;
+    ctx.font = fontSize + "px Arial";
     let width = 0;
     for (let text of textLines) {
         let currentWidth = ctx.measureText(text).width + 4;
@@ -196,7 +199,6 @@ export function paintDefaultAbilityStatsUI(ctx: CanvasRenderingContext2D, textLi
     let height = textLines.length * fontSize + 6;
     ctx.fillStyle = "white";
     ctx.fillRect(drawStartX, drawStartY, width, height);
-    ctx.font = fontSize + "px Arial";
     ctx.fillStyle = "black";
     for (let i = 0; i < textLines.length; i++) {
         ctx.fillText(textLines[i], drawStartX + 2, drawStartY + fontSize * (i + 1) + 2);

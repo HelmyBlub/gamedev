@@ -77,11 +77,19 @@ export function keyDown(event: { code: string, preventDefault?: Function, stopPr
         case "KeyT":
             testGame(game);
             break;
-        case "KeyP":
+        case "KeyO":
             multiplayerConnectMenu(game);
             break;
+        case "KeyP":
+            if(!game.multiplayer.websocket){
+                game.state.paused = !game.state.paused;
+            }
+            break;
         case "Tab":
-            game.UI.displayStats = true;
+            game.UI.displayLongInfos = true;
+            if(!game.multiplayer.websocket){
+                game.state.paused = true;
+            }
             break;
         case "KeyG":
             game.settings.autoSkillEnabled = !game.settings.autoSkillEnabled;
@@ -148,7 +156,11 @@ export function keyUp(event: KeyboardEvent, game: Game) {
 
     switch (event.code) {
         case "Tab":
-            game.UI.displayStats = false;
+            game.UI.displayLongInfos = false;
+            if(!game.multiplayer.websocket){
+                game.state.paused = false;
+            }
+            break;
     }
 
 }

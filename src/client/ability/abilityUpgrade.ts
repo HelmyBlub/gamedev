@@ -4,6 +4,7 @@ import { AbilitySnipe } from "./snipe/abilitySnipe.js";
 export type AbilityUpgradeFunctions = {
     pushAbilityUpgradeOption: (ability: Ability, upgradeOptions: AbilityUpgradeOption[]) => void,
     getAbilityUpgradeUiText: (ability: Ability) => string,
+    getAbilityUpgradeUiTextLong: (ability: Ability) => string[],
     getAbilityUpgradeDamageFactor?: (ability: Ability) => number,
 }
 

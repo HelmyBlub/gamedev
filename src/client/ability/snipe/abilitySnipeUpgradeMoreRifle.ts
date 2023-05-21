@@ -16,6 +16,7 @@ export type AbilityUpgradeMoreRifles = {
 export function addAbilitySnipeUpgradeMoreRifles() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[UPGRADE_SNIPE_ABILITY_MORE_RIFLES] = {
         getAbilityUpgradeUiText: getAbilityUpgradeMoreRiflesUiText,
+        getAbilityUpgradeUiTextLong: getAbilityUpgradeMoreRiflesUiTextLong,
         pushAbilityUpgradeOption: pushAbilityUpgradeMoreRifles,
     }
 }
@@ -80,6 +81,17 @@ function getAbilityUpgradeMoreRiflesUiText(ability: Ability): string {
     const abilitySnipe = ability as AbilitySnipe;
     let upgrades: AbilityUpgradeMoreRifles = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_MORE_RIFLES];
     return `${UPGRADE_SNIPE_ABILITY_MORE_RIFLES} +${upgrades.numberRifles}`;
+}
+
+function getAbilityUpgradeMoreRiflesUiTextLong(ability: Ability): string[] {
+    let abilitySnipe = ability as AbilitySnipe;
+    let upgrades: AbilityUpgradeMoreRifles | undefined = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_MORE_RIFLES];
+    const textLines: string[] = [];
+    textLines.push(UPGRADE_SNIPE_ABILITY_MORE_RIFLES);
+    textLines.push(`Add one rifle rotating around.`);
+    textLines.push(`It copies your shooting actions.`);
+
+    return textLines;
 }
 
 function getMoreRiflesPosition(mainRiflePosition: Position, upgrade: AbilityUpgradeMoreRifles, rifleNumber: number) {

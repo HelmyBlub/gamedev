@@ -11,7 +11,8 @@ export const ABILITY_MOVEMENT_SPEED_UPGARDE_ADD_CHARGE = "Additional Charge";
 
 export function addAbilitySnipeUpgradeAddCharge() {
     ABILITY_MOVEMENTSPEED_UPGRADE_FUNCTIONS[ABILITY_MOVEMENT_SPEED_UPGARDE_ADD_CHARGE] = {
-        getAbilityUpgradeUiText: abilityUpgradeAddChargeUiText,
+        getAbilityUpgradeUiText: getAbilityUpgradeAddChargeUiText,
+        getAbilityUpgradeUiTextLong: getAbilityUpgradeAddChargeUiTextLong,
         pushAbilityUpgradeOption: pushAbilityUpgradeAddCharge,
     }
 }
@@ -50,7 +51,16 @@ function pushAbilityUpgradeAddCharge(ability: Ability, upgradeOptions: AbilityUp
     });
 }
 
-function abilityUpgradeAddChargeUiText(ability: Ability): string {
+function getAbilityUpgradeAddChargeUiText(ability: Ability): string {
     const upgrade: AbilityMovementSpeedUpgradeAddCharge = ability.upgrades[ABILITY_MOVEMENT_SPEED_UPGARDE_ADD_CHARGE];
     return `${ABILITY_MOVEMENT_SPEED_UPGARDE_ADD_CHARGE}s: +${upgrade.maxCharges-1}`;
+}
+
+function getAbilityUpgradeAddChargeUiTextLong(ability: Ability): string[] {
+    let abilityMovementSpeed = ability as AbilityMovementSpeed;
+    let upgrades: AbilityMovementSpeedUpgradeAddCharge | undefined = abilityMovementSpeed.upgrades[ABILITY_MOVEMENT_SPEED_UPGARDE_ADD_CHARGE];
+    const textLines: string[] = [];
+    textLines.push(ABILITY_MOVEMENT_SPEED_UPGARDE_ADD_CHARGE);
+    textLines.push(`Add an additional charge.`);
+    return textLines;
 }

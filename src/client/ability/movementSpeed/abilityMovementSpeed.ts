@@ -30,6 +30,7 @@ export function addMovementSpeedAbility() {
         paintAbilityUI: paintAbilityMovementSpeedUI,
         createAbilityBossUpgradeOptions: createAbilityBossMovementSpeedUpgradeOptions,
         paintAbilityStatsUI: paintAbilityMovementSpeedStatsUI,
+        abilityUpgradeFunctions: ABILITY_MOVEMENTSPEED_UPGRADE_FUNCTIONS,
         isPassive: false,
         notInheritable: true,
     };
