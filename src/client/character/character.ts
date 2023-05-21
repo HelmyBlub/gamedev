@@ -70,11 +70,11 @@ export function fillRandomUpgradeOptions(character: Character, randomSeed: Rando
             let options: AbilityUpgradeOption[] = [];
             if(boss){
                 const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-                if(abilityFunctions.createAbiltiyBossUpgradeOptions && ability.bossSkillPoints !== undefined && ability.bossSkillPoints > 0){
-                    options = abilityFunctions.createAbiltiyBossUpgradeOptions(ability);
+                if(abilityFunctions.createAbilityBossUpgradeOptions && ability.bossSkillPoints !== undefined && ability.bossSkillPoints > 0){
+                    options = abilityFunctions.createAbilityBossUpgradeOptions(ability);
                 }
             }else{
-                options = ABILITIES_FUNCTIONS[ability.name].createAbiltiyUpgradeOptions(ability);
+                options = ABILITIES_FUNCTIONS[ability.name].createAbilityUpgradeOptions(ability);
             }
             if(options.length > 0){
                 let abilityOptionProbability = 0;

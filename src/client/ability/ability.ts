@@ -18,6 +18,7 @@ import { addSingleTargetAbility } from "./abilitySingleTarget.js"
 import { addSnipeAbility } from "./snipe/abilitySnipe.js"
 import { addMovementSpeedAbility } from "./movementSpeed/abilityMovementSpeed.js"
 import { addAbilitySlowTrail } from "./abilitySlowTrail.js"
+import { addAbilityFireLine } from "./abilityFireLine.js"
 
 export type Ability = {
     id: number,
@@ -54,8 +55,8 @@ export type AbilityFunctions = {
     tickAbility?: (abilityOwner: AbilityOwner, ability: Ability, game: Game) => void,
     tickAbilityObject?: (abilityObject: AbilityObject, game: Game) => void,
     createAbility: (idCounter: IdCounter, playerInputBinding?: string) => Ability,
-    createAbiltiyUpgradeOptions: (ability: Ability) => AbilityUpgradeOption[],
-    createAbiltiyBossUpgradeOptions?: (ability: Ability) => AbilityUpgradeOption[],
+    createAbilityUpgradeOptions: (ability: Ability) => AbilityUpgradeOption[],
+    createAbilityBossUpgradeOptions?: (ability: Ability) => AbilityUpgradeOption[],
     activeAbilityCast?: (abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isKeydown: boolean, game: Game) => void,
     deleteAbilityObject?: (abilityObject: AbilityObject, game: Game) => boolean,
     paintAbility?: (ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) => void,
@@ -98,6 +99,7 @@ export function onDomLoadSetAbilitiesFunctions() {
     addSnipeAbility();
     addMovementSpeedAbility();
     addAbilitySlowTrail();
+    addAbilityFireLine();
 }
 
 export function addAbilityToCharacter(character: Character, ability: Ability) {
@@ -133,7 +135,7 @@ export function createAbility(abilityName: string, idCounter: IdCounter, isLevel
         ability.leveling = { experience: 0, experienceForLevelUp: 10, level: 1 };
     }
     if (getsBossSkillPoints) {
-        if (abilityFunctions.createAbiltiyBossUpgradeOptions) {
+        if (abilityFunctions.createAbilityBossUpgradeOptions) {
             ability.bossSkillPoints = 0;
         } else {
             console.log(`${abilityName} is missing bossUpgradeOptions`);

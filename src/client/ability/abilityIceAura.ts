@@ -17,7 +17,7 @@ const ABILITY_NAME_ICE = "Ice";
 export function addIceAbility() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_ICE] = {
         tickAbility: tickAbilityIce,
-        createAbiltiyUpgradeOptions: createAbilityIceUpgradeOptions,
+        createAbilityUpgradeOptions: createAbilityIceUpgradeOptions,
         paintAbility: paintAbilityIce,
         setAbilityToLevel: setAbilityIceToLevel,
         createAbility: createAbilityIce,

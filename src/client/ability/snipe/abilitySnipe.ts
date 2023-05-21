@@ -8,7 +8,8 @@ import { AbilityUpgradesFunctions, getAbilityUpgradesDamageFactor, pushAbilityUp
 import { paintAbilityObjectSnipe, paintAbilitySnipe, paintAbilitySnipeStatsUI, paintAbilitySnipeUI } from "./abilitySnipePaint.js";
 import { abilityUpgradeNoMissChainOnObjectSnipeDamageDone, addAbilitySnipeUpgradeNoMissChain } from "./abilitySnipeUpgradeChainHit.js";
 import { abilityUpgradeDamageAndRangeRangeFactor, addAbilitySnipeUpgradeDamageAndRange } from "./abilitySnipeUpgradeDamageAndRange.js";
-import { addAbilitySnipeUpgradeMoreRifles, castSnipeMoreRifles, tickAbilityUpgradeMoreRifles } from "./abilitySnipeUpgradeMoreRifle.js";
+import { addAbilitySnipeUpgradeFireLine, castSnipeFireLine as castSnipeUpgradeFireLine } from "./abilitySnipeUpgradeFireLine.js";
+import { addAbilitySnipeUpgradeMoreRifles, castSnipeMoreRifles as castSnipeUpgradeMoreRifles, tickAbilityUpgradeMoreRifles } from "./abilitySnipeUpgradeMoreRifle.js";
 import { abilityUpgradeOnSnipeHit, addAbilitySnipeUpgradeSplitShot } from "./abilitySnipeUpgradeSplitShot.js";
 import { UPGRADE_SNIPE_ABILITY_STAY_STILL, addAbilitySnipeUpgradeStayStill, tickAbilityUpgradeStayStill } from "./abilitySnipeUpgradeStayStill.js";
 import { UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE, addAbilitySnipeUpgradeTerrainBounce, createAndPushAbilityObjectSnipeTerrainBounceBounce, createAndPushAbilityObjectSnipeTerrainBounceInit, getAbilityUpgradeTerrainBounceDamageFactor } from "./abilitySnipeUpgradeTerrainBounce.js";
@@ -55,8 +56,8 @@ export function addSnipeAbility() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_SNIPE] = {
         tickAbility: tickAbilitySnipe,
         tickAbilityObject: tickAbilityObjectSnipe,
-        createAbiltiyUpgradeOptions: createAbilitySnipeUpgradeOptions,
-        createAbiltiyBossUpgradeOptions: createAbilityBossSnipeUpgradeOptions,
+        createAbilityUpgradeOptions: createAbilitySnipeUpgradeOptions,
+        createAbilityBossUpgradeOptions: createAbilityBossSnipeUpgradeOptions,
         paintAbilityObject: paintAbilityObjectSnipe,
         paintAbilityUI: paintAbilitySnipeUI,
         paintAbility: paintAbilitySnipe,
@@ -75,6 +76,7 @@ export function addSnipeAbility() {
     addAbilitySnipeUpgradeSplitShot();
     addAbilitySnipeUpgradeStayStill();
     addAbilitySnipeUpgradeTerrainBounce();
+    addAbilitySnipeUpgradeFireLine();
 }
 
 export function createAbilitySnipe(
@@ -225,7 +227,8 @@ export function createAbilityObjectSnipeInitial(startPosition: Position, faction
 }
 
 function createAbilityObjectSnipeInitialPlayerTriggered(abilityOwner: AbilityOwner, abilitySnipe: AbilitySnipe, castPosition: Position, game: Game) {
-    castSnipeMoreRifles(abilityOwner, abilitySnipe, castPosition, game);
+    castSnipeUpgradeFireLine(abilityOwner, abilitySnipe, castPosition, game);
+    castSnipeUpgradeMoreRifles(abilityOwner, abilitySnipe, castPosition, game);
     createAbilityObjectSnipeInitial(abilityOwner, abilityOwner.faction, abilitySnipe, castPosition, true, game);
     abilitySnipe.currentCharges--;
     if (abilitySnipe.currentCharges === 0) {
@@ -304,11 +307,9 @@ function tickAbilityObjectSnipe(abilityObject: AbilityObject, game: Game) {
             characterTakeDamage(char, abilityObjectSnipe.damage, game);
             if (!abilityObjectSnipe.preventSplitOnHit) abilityUpgradeOnSnipeHit(char, abilitySnipe, abilityObjectSnipe, game);
 
-            if (char.isDead) {
-                if (abilityObject.leveling && abilityObject.abilityRefId !== undefined) {
-                    if (abilitySnipe) {
-                        levelingAbilityXpGain(abilitySnipe, char.experienceWorth);
-                    }
+            if (abilityObject.leveling && abilityObject.abilityRefId !== undefined) {
+                if (abilitySnipe) {
+                    levelingAbilityXpGain(abilitySnipe, char.experienceWorth);
                 }
             }
         }

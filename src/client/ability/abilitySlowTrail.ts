@@ -31,7 +31,7 @@ export function addAbilitySlowTrail() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_SLOW_TRAIL] = {
         tickAbility: tickAbilitySlowTrail,
         tickAbilityObject: tickAbilityObjectSlowTrail,
-        createAbiltiyUpgradeOptions: createAbilitySlowTrailUpgradeOptions,
+        createAbilityUpgradeOptions: createAbilitySlowTrailUpgradeOptions,
         createAbility: createAbilitySlowTrail,
         deleteAbilityObject: deleteAbilityObjectSlowTrail,
         paintAbilityObject: paintAbilityObjectSlowTrail,

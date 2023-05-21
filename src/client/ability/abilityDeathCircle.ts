@@ -20,7 +20,7 @@ const ABILITY_NAME_DEATH_CIRCLE = "DeathCircle";
 export function addDeathCircleAbility() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_DEATH_CIRCLE] = {
         tickAbility: tickAbilityDeathCircle,
-        createAbiltiyUpgradeOptions: createAbiltiyDeathCircleUpgradeOptions,
+        createAbilityUpgradeOptions: createAbiltiyDeathCircleUpgradeOptions,
         tickAbilityObject: tickAbilityObjectDeathCircle,
         deleteAbilityObject: deleteObjectDeathCircle,
         createAbility: createAbilityDeathCircle,

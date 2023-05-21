@@ -19,7 +19,7 @@ const ABILITY_NAME_SINGLETARGET = "SingleTarget";
 export function addSingleTargetAbility() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_SINGLETARGET] = {
         tickAbility: tickAbilitySingleTarget,
-        createAbiltiyUpgradeOptions: createAbilitySingleTargetUpgradeOptions,
+        createAbilityUpgradeOptions: createAbilitySingleTargetUpgradeOptions,
         paintAbility: paintAbilitySingleTarget,
         setAbilityToLevel: setAbilitySingleTargetToLevel,
         createAbility: createAbilitySingleTarget,

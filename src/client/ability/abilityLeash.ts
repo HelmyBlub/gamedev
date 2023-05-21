@@ -13,7 +13,7 @@ const ABILITY_NAME_LEASH = "Leash";
 export function addLeshAbility() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_LEASH] = {
         tickAbility: tickAbilityLeash,
-        createAbiltiyUpgradeOptions: createAbilityLeashUpgradeOptions,
+        createAbilityUpgradeOptions: createAbilityLeashUpgradeOptions,
         paintAbility: paintAbilityLeash,
         createAbility: createAbilityLeash,
         notInheritable: true,

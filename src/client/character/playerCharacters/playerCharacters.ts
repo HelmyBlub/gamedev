@@ -45,13 +45,13 @@ export function upgradePlayerCharacter(character: Character, upgradeOptionIndex:
                 let upgrades: AbilityUpgradeOption[];
                 if (upgradeOption.boss) {
                     const abilityFunctions = ABILITIES_FUNCTIONS[upgradeOption.abilityName];
-                    if (abilityFunctions.createAbiltiyBossUpgradeOptions) {
-                        upgrades = abilityFunctions.createAbiltiyBossUpgradeOptions(ability);
+                    if (abilityFunctions.createAbilityBossUpgradeOptions) {
+                        upgrades = abilityFunctions.createAbilityBossUpgradeOptions(ability);
                         upgrades.find((e) => e.name === upgradeOption.name)?.upgrade(ability);
                         if (ability.bossSkillPoints !== undefined) ability.bossSkillPoints--;
                     }
                 } else {
-                    upgrades = ABILITIES_FUNCTIONS[upgradeOption.abilityName].createAbiltiyUpgradeOptions(ability);
+                    upgrades = ABILITIES_FUNCTIONS[upgradeOption.abilityName].createAbilityUpgradeOptions(ability);
                     upgrades.find((e) => e.name === upgradeOption.name)?.upgrade(ability);
                 }
                 character.upgradeOptions = [];

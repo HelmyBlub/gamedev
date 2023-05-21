@@ -28,7 +28,7 @@ GAME_IMAGES[ABILITY_NAME] = {
 export function addSwordAbility() {
     ABILITIES_FUNCTIONS[ABILITY_NAME] = {
         tickAbility: tickAbilitySword,
-        createAbiltiyUpgradeOptions: createAbilitySwordUpgradeOptions,
+        createAbilityUpgradeOptions: createAbilitySwordUpgradeOptions,
         paintAbility: paintAbilitySword,
         setAbilityToLevel: setAbilitySwordToLevel,
         createAbility: createAbilitySword,

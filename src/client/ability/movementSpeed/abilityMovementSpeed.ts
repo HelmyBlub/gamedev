@@ -23,12 +23,12 @@ export const ABILITY_MOVEMENTSPEED_UPGRADE_FUNCTIONS: AbilityUpgradesFunctions =
 export function addMovementSpeedAbility() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_MOVEMENTSPEED] = {
         tickAbility: tickAbilityMovementSpeed,
-        createAbiltiyUpgradeOptions: createAbilityMovementSpeedUpgradeOptions,
+        createAbilityUpgradeOptions: createAbilityMovementSpeedUpgradeOptions,
         setAbilityToLevel: setAbilityMovementSpeedToLevel,
         createAbility: createAbilityMovementSpeed,
         activeAbilityCast: castMovementSpeed,
         paintAbilityUI: paintAbilityMovementSpeedUI,
-        createAbiltiyBossUpgradeOptions: createAbilityBossMovementSpeedUpgradeOptions,
+        createAbilityBossUpgradeOptions: createAbilityBossMovementSpeedUpgradeOptions,
         paintAbilityStatsUI: paintAbilityMovementSpeedStatsUI,
         isPassive: false,
         notInheritable: true,

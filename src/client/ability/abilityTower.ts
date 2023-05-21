@@ -32,7 +32,7 @@ export function addTowerAbility() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_TOWER] = {
         tickAbility: tickAbilityTower,
         tickAbilityObject: tickAbilityObjectTower,
-        createAbiltiyUpgradeOptions: createAbilityTowerUpgradeOptions,
+        createAbilityUpgradeOptions: createAbilityTowerUpgradeOptions,
         paintAbilityObject: paintAbilityObjectTower,
         paintAbilityUI: paintAbilityTowerUI,
         activeAbilityCast: castTower,

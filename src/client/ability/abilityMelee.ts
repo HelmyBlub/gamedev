@@ -13,7 +13,7 @@ const ABILITY_NAME_MELEE = "Melee";
 export function addMeleeAbility() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_MELEE] = {
         tickAbility: tickAbilityMelee,
-        createAbiltiyUpgradeOptions: createAbilityMeleeUpgradeOptions,
+        createAbilityUpgradeOptions: createAbilityMeleeUpgradeOptions,
         setAbilityToLevel: setAbilityMeleeToLevel,
         createAbility: createAbilityMelee,
         setAbilityToBossLevel: setAbilityMeleeToBossLevel,

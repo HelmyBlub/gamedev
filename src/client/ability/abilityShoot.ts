@@ -21,7 +21,7 @@ export type AbilityShoot = Ability & {
 export function addShootAbility(){
     ABILITIES_FUNCTIONS[ABILITY_NAME_SHOOT] = {
         tickAbility: tickAbilityShoot,
-        createAbiltiyUpgradeOptions: createAbiltiyShootUpgradeOptions,
+        createAbilityUpgradeOptions: createAbiltiyShootUpgradeOptions,
         tickAbilityObject: tickProjectile,
         deleteAbilityObject: deleteProjectile,
         onHit: onShootHit,
