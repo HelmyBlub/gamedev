@@ -100,11 +100,13 @@ export type Character = Position & {
     randomizedCharacterImage?: RandomizedCharacterImage,
     isPet?: boolean,
     willTurnToPetOnDeath?: boolean,
-    upgradeOptions: {
-        abilityName?: string,
-        name: string,
-        boss?: boolean,
-    }[],
+    upgradeChoice: CharacterUpgradeChoice[],
+}
+
+export type CharacterUpgradeChoice = {
+    abilityName?: string,
+    name: string,
+    boss?: boolean,
 }
 
 export function createCharacter(
@@ -138,7 +140,7 @@ export function createCharacter(
         isDead: false,
         abilities: [],
         debuffs: [],
-        upgradeOptions: [],
+        upgradeChoice: [],
     };
 }
 

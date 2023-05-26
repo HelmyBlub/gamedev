@@ -67,6 +67,7 @@ export function gameInit(game: Game) {
     game.clientKeyBindings = [];
     game.performance = {};
     game.UI.displayTextData = [];
+    game.state.paused = false;
     removeAllMapCharacters(game.state.map);
     createFixPositionRespawnEnemiesOnInit(game);
     gameInitPlayers(game);
@@ -344,7 +345,7 @@ function checkForAutoSkill(game: Game) {
 
     let character: Character | undefined = findMyCharacter(game);
     if (character && character.type !== DEFAULT_CHARACTER) {
-        if (character.upgradeOptions.length > 0) {
+        if (character.upgradeChoice.length > 0) {
             handleCommand(game, {
                 command: "playerInput",
                 clientId: game.multiplayer.myClientId,

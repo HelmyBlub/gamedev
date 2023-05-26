@@ -1,10 +1,9 @@
 current tasks:
 - Sniper: LevelingAbilityCharacter
     - UI improve:
-        - detailed explanations for upgrade choices
-            - BUG: text measure with for some reason not working properly, using to much space
         - add ability upgade levels display
         - upgrade while pause keeps upgarade choice displayed which is confusing
+        - detailed explanations for upgrade choices
 
     - needs more upgrade choice?
         -

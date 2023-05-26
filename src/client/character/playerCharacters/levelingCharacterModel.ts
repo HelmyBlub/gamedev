@@ -29,7 +29,7 @@ export function changeToLevelingCharacter(character: Character, game: Game): Lev
     for(let player of players){
         if(player.character === character){
             player.character = levelingCharacter;
-            levelingCharacter.upgradeOptions = [];
+            levelingCharacter.upgradeChoice = [];
             break;
         } 
     }

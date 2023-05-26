@@ -56,7 +56,7 @@ export function characterTakeDamage(character: Character, damage: number, game: 
 }
 
 export function fillRandomUpgradeOptions(character: Character, randomSeed: RandomSeed, boss: boolean = false) {
-    if (character.upgradeOptions.length === 0) {
+    if (character.upgradeChoice.length === 0) {
         let characterOptions: UpgradeOptionCharacter[] = [];
         let characterOptionProbability = 0;
         if(!boss){
@@ -102,7 +102,7 @@ export function fillRandomUpgradeOptions(character: Character, randomSeed: Rando
                     };
                 }
                 if (randomProbability >= 0) throw new Error("getting random upgrade option with probabilities failed. Probability not fitting to character options");
-                character.upgradeOptions.push({ name: characterOptions[characterOptionIndex].name, boss: boss });
+                character.upgradeChoice.push({ name: characterOptions[characterOptionIndex].name, boss: boss });
                 characterOptionProbability -= characterOptions[characterOptionIndex].probabilityFactor;
                 characterOptions.splice(characterOptionIndex, 1);
             } else {
@@ -120,7 +120,7 @@ export function fillRandomUpgradeOptions(character: Character, randomSeed: Rando
                 for (let abilityOptionIndex = 0; abilityOptionIndex < abilityOptions.options.length; abilityOptionIndex++) {
                     randomProbability -= abilityOptions.options[abilityOptionIndex].probabilityFactor;
                     if (randomProbability < 0) {
-                        character.upgradeOptions.push({ name: abilityOptions.options[abilityOptionIndex].name, abilityName: abilityName, boss: boss });
+                        character.upgradeChoice.push({ name: abilityOptions.options[abilityOptionIndex].name, abilityName: abilityName, boss: boss });
                         abilityOptions.probability -= abilityOptions.options[abilityOptionIndex].probabilityFactor;
                         abilityOptions.options.splice(abilityOptionIndex, 1);
                         if (abilityOptions.options.length === 0) {

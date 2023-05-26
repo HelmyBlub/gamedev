@@ -32,13 +32,13 @@ export function initCharacterChoiceOptons(character: Character, game: Game){
     const options: UpgradeOptionCharacter[] = createCharacterChooseUpgradeOptions(game);
     for(let i = 0; i < 3; i++){
         if(options.length > i){
-            character.upgradeOptions.push({ name: options[i].name });
+            character.upgradeChoice.push({ name: options[i].name });
         }
     }
 }
 export function upgradePlayerCharacter(character: Character, upgradeOptionIndex: number, randomSeed: RandomSeed, game: Game) {
-    if (character.upgradeOptions.length > 0) {
-        let upgradeOption = character.upgradeOptions[upgradeOptionIndex];
+    if (character.upgradeChoice.length > 0) {
+        let upgradeOption = character.upgradeChoice[upgradeOptionIndex];
         if (upgradeOption.abilityName !== undefined) {
             let ability = character.abilities.find(a => a.name === upgradeOption.abilityName);
             if (ability !== undefined) {
@@ -54,12 +54,12 @@ export function upgradePlayerCharacter(character: Character, upgradeOptionIndex:
                     upgrades = ABILITIES_FUNCTIONS[upgradeOption.abilityName].createAbilityUpgradeOptions(ability);
                     upgrades.find((e) => e.name === upgradeOption.name)?.upgrade(ability);
                 }
-                character.upgradeOptions = [];
+                character.upgradeChoice = [];
             }
         } else {
             let upgrades = createCharacterUpgradeOptions(character, game);
-            upgrades.find((e) => e.name === character.upgradeOptions[upgradeOptionIndex].name)?.upgrade(character);
-            character.upgradeOptions = [];
+            upgrades.find((e) => e.name === character.upgradeChoice[upgradeOptionIndex].name)?.upgrade(character);
+            character.upgradeChoice = [];
         }
         if (character.type === LEVELING_CHARACTER) {
             const levelingCharacter = character as LevelingCharacter;
