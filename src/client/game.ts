@@ -290,7 +290,8 @@ function endGame(state: GameState, testing: TestingStuff) {
 }
 
 function tick(gameTimePassed: number, game: Game) {
-    if (!game.state.ended && !game.state.paused) {
+    if (!game.state.ended && (!game.state.paused || game.state.tickOnceInPaused)) {
+        if(game.state.tickOnceInPaused) game.state.tickOnceInPaused = false;
         doStuff(game);
         addTestReplayInputs(game);
         game.state.time += gameTimePassed;

@@ -224,6 +224,15 @@ function playerInputChangeEvent(game: Game, inputCode: string, isInputDown: bool
                     data: { action: action.action, isKeydown: isInputDown, castPosition: castPosition },
                 });
             } else {
+                if(action.action.indexOf("upgrade") > -1){
+                    let character = findPlayerById(game.state.players, clientId)?.character;
+                    if(!character || character.upgradeChoice.length === 0){
+                        return;
+                    }
+                    if(game.state.paused){
+                        game.state.tickOnceInPaused = true;
+                    }
+                }
                 handleCommand(game, {
                     command: "playerInput",
                     clientId: clientId,

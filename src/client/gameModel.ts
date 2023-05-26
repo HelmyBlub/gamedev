@@ -79,6 +79,7 @@ export type GameState = {
     map: GameMap,
     deathCircleCreated: boolean,
     paused: boolean,
+    tickOnceInPaused?: boolean,
 }
 
 export type Highscores = {
