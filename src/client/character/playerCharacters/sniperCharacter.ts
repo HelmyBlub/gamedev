@@ -1,6 +1,6 @@
 import { addAbilityToCharacter, createAbility } from "../../ability/ability.js";
 import { createAbilityHpRegen } from "../../ability/abilityHpRegen.js";
-import { ABILITY_NAME_MOVEMENTSPEED } from "../../ability/movementSpeed/abilityMovementSpeed.js";
+import { ABILITY_NAME_SPEED_BOOST } from "../../ability/speedBoost/abilitySpeedBoost.js";
 import { createAbilitySlowTrail } from "../../ability/abilitySlowTrail.js";
 import { ABILITY_NAME_SNIPE } from "../../ability/snipe/abilitySnipe.js";
 import { Game, IdCounter } from "../../gameModel.js";
@@ -22,5 +22,5 @@ function changeCharacterToSniperClass(
     character.type = ABILITY_LEVELING_CHARACTER;
     addAbilityToCharacter(character, createAbility(ABILITY_NAME_SNIPE, idCounter, true, true, "ability1"));
     addAbilityToCharacter(character, createAbilityHpRegen(idCounter));
-    addAbilityToCharacter(character, createAbility(ABILITY_NAME_MOVEMENTSPEED, idCounter, true, true, "ability2"));
+    addAbilityToCharacter(character, createAbility(ABILITY_NAME_SPEED_BOOST, idCounter, true, true, "ability2"));
 }

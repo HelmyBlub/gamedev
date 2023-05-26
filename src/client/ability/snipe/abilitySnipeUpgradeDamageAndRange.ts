@@ -1,11 +1,12 @@
 import { Ability, AbilityUpgradeOption } from "../ability.js";
+import { AbilityUpgrade } from "../abilityUpgrade.js";
 import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilitySnipe } from "./abilitySnipe.js";
 
 export const UPGRADE_SNIPE_ABILITY_DAMAGE_AND_RANGE = "+Damage and -Range";
 const DAMAGE_UP = 2;
 const RANGE_DOWN = 2;
 
-export type AbilityUpgradeDamageAndRange = {
+export type AbilityUpgradeDamageAndRange = AbilityUpgrade & {
     damageMultiplier: number,
     rangeMultiplier: number,
 }
@@ -37,10 +38,12 @@ function getAbilityUpgradeDamageAndRangeUiText(ability: Ability): string {
 
 function getAbilityUpgradeDamageAndRangeUiTextLong(ability: Ability): string[] {
     let abilitySnipe = ability as AbilitySnipe;
-    let upgrades: AbilityUpgradeDamageAndRange | undefined = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_DAMAGE_AND_RANGE];
+    let upgrade: AbilityUpgradeDamageAndRange | undefined = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_DAMAGE_AND_RANGE];
+    const levelText = (upgrade ? `(${upgrade.level + 1})` : "");
+
     const textLines: string[] = [];
-    textLines.push(UPGRADE_SNIPE_ABILITY_DAMAGE_AND_RANGE);
-    textLines.push(`Bonus damage is ${DAMAGE_UP * 100}%.`);
+    textLines.push(UPGRADE_SNIPE_ABILITY_DAMAGE_AND_RANGE + levelText);
+    textLines.push(`Bonus damage +${DAMAGE_UP * 100}%.`);
     textLines.push(`Range is reduced by ${(1 / RANGE_DOWN * 100).toFixed(2)}%.`);
 
     return textLines;
@@ -53,6 +56,7 @@ function pushAbilityUpgradeDamageAndRange(ability: Ability, upgradeOptions: Abil
             let up: AbilityUpgradeDamageAndRange;
             if (as.upgrades[UPGRADE_SNIPE_ABILITY_DAMAGE_AND_RANGE] === undefined) {
                 up = {
+                    level: 0,
                     damageMultiplier: 1,
                     rangeMultiplier: 1,
                 }
@@ -60,6 +64,7 @@ function pushAbilityUpgradeDamageAndRange(ability: Ability, upgradeOptions: Abil
             } else {
                 up = as.upgrades[UPGRADE_SNIPE_ABILITY_DAMAGE_AND_RANGE];
             }
+            up.level++;
             up.rangeMultiplier /= RANGE_DOWN;
             up.damageMultiplier += DAMAGE_UP;
         }

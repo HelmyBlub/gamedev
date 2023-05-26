@@ -2,11 +2,12 @@ import { calculateDistance } from "../../game.js";
 import { Game, Position } from "../../gameModel.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
 import { Ability, AbilityUpgradeOption } from "../ability.js";
+import { AbilityUpgrade } from "../abilityUpgrade.js";
 import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe, createAbilityObjectSnipeBranch } from "./abilitySnipe.js";
 
 export const UPGRADE_SNIPE_ABILITY_SPLIT_SHOT = "Split Shot";
 
-export type AbilityUpgradeSplitShot = {
+export type AbilityUpgradeSplitShot = AbilityUpgrade & {
     shotSplitsPerHit: number,
 }
 
@@ -38,13 +39,14 @@ function pushAbilityUpgradeSplitShot(ability: Ability, upgradeOptions: AbilityUp
             let up: AbilityUpgradeSplitShot;
             if (as.upgrades[UPGRADE_SNIPE_ABILITY_SPLIT_SHOT] === undefined) {
                 up = {
+                    level: 0,
                     shotSplitsPerHit: 0,
                 }
                 as.upgrades[UPGRADE_SNIPE_ABILITY_SPLIT_SHOT] = up;
             } else {
                 up = as.upgrades[UPGRADE_SNIPE_ABILITY_SPLIT_SHOT];
             }
-
+            up.level++;
             up.shotSplitsPerHit++;
         }
     });
@@ -52,15 +54,17 @@ function pushAbilityUpgradeSplitShot(ability: Ability, upgradeOptions: AbilityUp
 
 function getAbilityUpgradeSplitShotUiText(ability: Ability): string {
     const abilitySnipe = ability as AbilitySnipe;
-    let upgrades: AbilityUpgradeSplitShot = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_SPLIT_SHOT];
+    const upgrades: AbilityUpgradeSplitShot = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_SPLIT_SHOT];
     return "Split On Hit +" + upgrades.shotSplitsPerHit;
 }
 
 function getAbilityUpgradeSplitShotUiTextLong(ability: Ability): string[] {
-    let abilitySnipe = ability as AbilitySnipe;
-    let upgrades: AbilityUpgradeSplitShot | undefined = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_SPLIT_SHOT];
+    const abilitySnipe = ability as AbilitySnipe;
+    const upgrade: AbilityUpgrade | undefined = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_SPLIT_SHOT];
+    const levelText = (upgrade ? `(${upgrade.level + 1})` : "");
+
     const textLines: string[] = [];
-    textLines.push(UPGRADE_SNIPE_ABILITY_SPLIT_SHOT);
+    textLines.push(UPGRADE_SNIPE_ABILITY_SPLIT_SHOT + levelText);
     textLines.push(`For every enemy hit with the main shot,`);
     textLines.push(`it will split in two.`);
     textLines.push(`The split part can not split again.`);

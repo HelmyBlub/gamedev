@@ -16,7 +16,7 @@ import { addMeleeAbility } from "./abilityMelee.js"
 import { addIceAbility } from "./abilityIceAura.js"
 import { addSingleTargetAbility } from "./abilitySingleTarget.js"
 import { addSnipeAbility } from "./snipe/abilitySnipe.js"
-import { addMovementSpeedAbility } from "./movementSpeed/abilityMovementSpeed.js"
+import { addSpeedBoostAbility } from "./speedBoost/abilitySpeedBoost.js"
 import { addAbilitySlowTrail } from "./abilitySlowTrail.js"
 import { addAbilityFireLine } from "./abilityFireLine.js"
 import { AbilityUpgradesFunctions } from "./abilityUpgrade.js"
@@ -99,7 +99,7 @@ export function onDomLoadSetAbilitiesFunctions() {
     addIceAbility();
     addSingleTargetAbility();
     addSnipeAbility();
-    addMovementSpeedAbility();
+    addSpeedBoostAbility();
     addAbilitySlowTrail();
     addAbilityFireLine();
 }

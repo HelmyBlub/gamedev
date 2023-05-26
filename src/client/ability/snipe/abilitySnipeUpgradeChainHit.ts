@@ -1,12 +1,12 @@
-import { text } from "stream/consumers";
 import { Ability, AbilityUpgradeOption } from "../ability.js";
+import { AbilityUpgrade } from "../abilityUpgrade.js";
 import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe } from "./abilitySnipe.js";
 
 export const UPGRADE_SNIPE_ABILITY_NO_MISS_CHAIN = "No Miss Chain";
-const DAMAGE_CAP = 50;
-const DAMAGE_UP_PER_HIT = 0.01;
+const DAMAGE_CAP = 100;
+const DAMAGE_UP_PER_HIT = 0.02;
 
-export type AbilityUpgradeChainHit = {
+export type AbilityUpgradeChainHit = AbilityUpgrade & {
     noMissChainCounter: number,
     noMissCounterCap: number,
     noMissBonusDamageFactorAdd: number,
@@ -42,6 +42,7 @@ function pushAbilityUpgradeNoMissChain(ability: Ability, upgradeOptions: Ability
             let up: AbilityUpgradeChainHit;
             if (as.upgrades[UPGRADE_SNIPE_ABILITY_NO_MISS_CHAIN] === undefined) {
                 up = {
+                    level: 0,
                     noMissChainCounter: 0,
                     noMissBonusDamageFactorAdd: 0,
                     noMissCounterCap: DAMAGE_CAP,
@@ -50,9 +51,8 @@ function pushAbilityUpgradeNoMissChain(ability: Ability, upgradeOptions: Ability
             } else {
                 up = as.upgrades[UPGRADE_SNIPE_ABILITY_NO_MISS_CHAIN];
             }
-            if (up.noMissBonusDamageFactorAdd !== undefined) {
-                up.noMissBonusDamageFactorAdd += DAMAGE_UP_PER_HIT;
-            }
+            up.level++;
+            up.noMissBonusDamageFactorAdd += DAMAGE_UP_PER_HIT;
         }
     });
 }
@@ -68,10 +68,12 @@ function getAbilityUpgradeNoMissChainUiText(ability: Ability): string {
 }
 
 function getAbilityUpgradeNoMissChainUiTextLong(ability: Ability): string[] {
-    let abilitySnipe = ability as AbilitySnipe;
-    let upgrades: AbilityUpgradeChainHit | undefined = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_NO_MISS_CHAIN];
+    const abilitySnipe = ability as AbilitySnipe;
+    const upgrade: AbilityUpgradeChainHit | undefined = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_NO_MISS_CHAIN];
+    const levelText = (upgrade ? `(${upgrade.level + 1})` : "");
+
     const textLines: string[] = [];
-    textLines.push(UPGRADE_SNIPE_ABILITY_NO_MISS_CHAIN);
+    textLines.push(UPGRADE_SNIPE_ABILITY_NO_MISS_CHAIN + levelText);
     textLines.push(`Hiting an Enemy increases damage by ${DAMAGE_UP_PER_HIT*100}% per shot.`);
     textLines.push(`Not hitting any enemy with a shot resets it to 0%.`);
     textLines.push(`Bonus damage is capped at ${DAMAGE_CAP}%.`);

@@ -1,12 +1,13 @@
 import { Game, Position } from "../../gameModel.js";
 import { Ability, AbilityOwner, AbilityUpgradeOption } from "../ability.js";
+import { AbilityUpgrade } from "../abilityUpgrade.js";
 import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilitySnipe } from "./abilitySnipe.js";
 
 export const UPGRADE_SNIPE_ABILITY_STAY_STILL = "Stay Still";
 const STAY_STILL_TIME = 3000;
 const DAMAGE_FACTOR = 1;
 
-export type AbilityUpgradeStayStill = {
+export type AbilityUpgradeStayStill = AbilityUpgrade & {
     damageMultiplier: number,
     stayStillStartTime: number,
     damageMultiplierActive: boolean,
@@ -56,6 +57,7 @@ function pushAbilityUpgradeStayStill(ability: Ability, upgradeOptions: AbilityUp
             let up: AbilityUpgradeStayStill;
             if (as.upgrades[UPGRADE_SNIPE_ABILITY_STAY_STILL] === undefined) {
                 up = {
+                    level: 0,
                     damageMultiplier: 0,
                     stayStillStartTime: -1,
                     damageMultiplierActive: false,
@@ -65,6 +67,7 @@ function pushAbilityUpgradeStayStill(ability: Ability, upgradeOptions: AbilityUp
             } else {
                 up = as.upgrades[UPGRADE_SNIPE_ABILITY_STAY_STILL];
             }
+            up.level++;
             up.damageMultiplier += DAMAGE_FACTOR;
         }
     });
@@ -88,9 +91,11 @@ function getAbilityUpgradeStayStillUiText(ability: Ability): string {
 
 function getAbilityUpgradeStayStillUiTextLong(ability: Ability): string[] {
     let abilitySnipe = ability as AbilitySnipe;
-    let upgrades: AbilityUpgradeStayStill | undefined = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_STAY_STILL];
+    const upgrade: AbilityUpgrade | undefined = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_STAY_STILL];
+    const levelText = (upgrade ? `(${upgrade.level + 1})` : "");
+
     const textLines: string[] = [];
-    textLines.push(UPGRADE_SNIPE_ABILITY_STAY_STILL);
+    textLines.push(UPGRADE_SNIPE_ABILITY_STAY_STILL + levelText);
     textLines.push(`Not moving or shooting for ${STAY_STILL_TIME/1000} seconds`);
     textLines.push(`will activate ${DAMAGE_FACTOR}% damage bonus.`);
     textLines.push(`The damage bonus will be active until`);

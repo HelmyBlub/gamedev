@@ -2,12 +2,13 @@ import { calcNewPositionMovedInDirection, calculateDistance } from "../../game.j
 import { Position, Game } from "../../gameModel.js";
 import { GameMap, getMapTile } from "../../map/map.js";
 import { Ability, AbilityUpgradeOption } from "../ability.js";
+import { AbilityUpgrade } from "../abilityUpgrade.js";
 import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe, createAbilityObjectSnipe, getAbilitySnipeDamage, getAbilitySnipeRange } from "./abilitySnipe.js";
 
 export const UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE = "Terrain Bounce";
 const DAMAGE_UP_BOUNCE = 0.5;
 
-export type AbilityUpgradeTerrainBounce = {
+export type AbilityUpgradeTerrainBounce = AbilityUpgrade & {
     damageUpPerBounceFactor: number,
     active: boolean
 }
@@ -77,6 +78,7 @@ function pushAbilityUpgradeTerrainBounce(ability: Ability, upgradeOptions: Abili
             let up: AbilityUpgradeTerrainBounce;
             if (as.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE] === undefined) {
                 up = {
+                    level: 1,
                     active: true,
                     damageUpPerBounceFactor: DAMAGE_UP_BOUNCE,
                 }

@@ -1,12 +1,13 @@
 import { calcNewPositionMovedInDirection, calculateDirection, getClientInfoByCharacterId } from "../../game.js";
 import { ClientInfo, Game, Position } from "../../gameModel.js";
 import { Ability, AbilityOwner, AbilityUpgradeOption } from "../ability.js";
+import { AbilityUpgrade } from "../abilityUpgrade.js";
 import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilitySnipe, createAbilityObjectSnipeInitial } from "./abilitySnipe.js";
 import { paintSniperRifle } from "./abilitySnipePaint.js";
 
 export const UPGRADE_SNIPE_ABILITY_MORE_RIFLES = "More Rifles";
 
-export type AbilityUpgradeMoreRifles = {
+export type AbilityUpgradeMoreRifles = AbilityUpgrade & {
     numberRifles: number,
     rotationDirection: number,
     rotationDistance: number,
@@ -62,6 +63,7 @@ function pushAbilityUpgradeMoreRifles(ability: Ability, upgradeOptions: AbilityU
             let up: AbilityUpgradeMoreRifles;
             if (as.upgrades[UPGRADE_SNIPE_ABILITY_MORE_RIFLES] === undefined) {
                 up = {
+                    level: 0,
                     rotationDirection: 0,
                     rotationDistance: 80,
                     lastSniperRiflePaintDirection: [0],
@@ -71,6 +73,7 @@ function pushAbilityUpgradeMoreRifles(ability: Ability, upgradeOptions: AbilityU
             } else {
                 up = as.upgrades[UPGRADE_SNIPE_ABILITY_MORE_RIFLES];
             }
+            up.level++;
             up.numberRifles += 1;
             up.lastSniperRiflePaintDirection.push(0);
         }
@@ -84,10 +87,11 @@ function getAbilityUpgradeMoreRiflesUiText(ability: Ability): string {
 }
 
 function getAbilityUpgradeMoreRiflesUiTextLong(ability: Ability): string[] {
-    let abilitySnipe = ability as AbilitySnipe;
-    let upgrades: AbilityUpgradeMoreRifles | undefined = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_MORE_RIFLES];
+    const abilitySnipe = ability as AbilitySnipe;
+    const upgrade: AbilityUpgradeMoreRifles | undefined = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_MORE_RIFLES];
+    const levelText = (upgrade ? `(${upgrade.level + 1})` : "");
     const textLines: string[] = [];
-    textLines.push(UPGRADE_SNIPE_ABILITY_MORE_RIFLES);
+    textLines.push(UPGRADE_SNIPE_ABILITY_MORE_RIFLES + levelText);
     textLines.push(`Add one rifle rotating around.`);
     textLines.push(`It copies your shooting actions.`);
 

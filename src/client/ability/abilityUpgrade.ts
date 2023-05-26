@@ -1,5 +1,9 @@
 import { Ability, AbilityUpgradeOption } from "./ability.js"
-import { AbilitySnipe } from "./snipe/abilitySnipe.js";
+
+
+export type AbilityUpgrade = {
+    level: number,
+}
 
 export type AbilityUpgradeFunctions = {
     pushAbilityUpgradeOption: (ability: Ability, upgradeOptions: AbilityUpgradeOption[]) => void,

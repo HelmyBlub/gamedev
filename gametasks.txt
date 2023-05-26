@@ -1,15 +1,8 @@
 current tasks:
-- unexpected behaviour: pause "P" + tab(info) pause remove each other
 - Sniper: LevelingAbilityCharacter
-    - UI improve:
-        - add ability upgade levels display
-        - detailed explanations for upgrade choices
-
     - needs more upgrade choice?
         -
     - balancing ideas:
-    
-
 
     - secondary abilities?
         - choose secondary ability?
