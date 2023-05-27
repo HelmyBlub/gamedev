@@ -1,7 +1,6 @@
 current tasks:
 - Sniper: LevelingAbilityCharacter
     - needs more upgrade choice?
-        - backwards shot
         - terrain bounce have levels
         - apply death explode debuff
 

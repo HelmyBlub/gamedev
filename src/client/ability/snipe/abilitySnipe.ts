@@ -6,6 +6,7 @@ import { GAME_IMAGES } from "../../imageLoad.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, AbilityUpgradeOption, findAbilityById, levelingAbilityXpGain } from "../ability.js";
 import { AbilityUpgradesFunctions, getAbilityUpgradesDamageFactor, pushAbilityUpgradesOptions } from "../abilityUpgrade.js";
 import { paintAbilityObjectSnipe, paintAbilitySnipe, paintAbilitySnipeStatsUI, paintAbilitySnipeUI } from "./abilitySnipePaint.js";
+import { addAbilitySnipeUpgradeBackwardsShot, castSnipeBackwardsShot } from "./abilitySnipeUpgradeBackwardsShot.js";
 import { abilityUpgradeNoMissChainOnObjectSnipeDamageDone, addAbilitySnipeUpgradeNoMissChain } from "./abilitySnipeUpgradeChainHit.js";
 import { abilityUpgradeDamageAndRangeRangeFactor, addAbilitySnipeUpgradeDamageAndRange } from "./abilitySnipeUpgradeDamageAndRange.js";
 import { addAbilitySnipeUpgradeFireLine, castSnipeFireLine as castSnipeUpgradeFireLine } from "./abilitySnipeUpgradeFireLine.js";
@@ -78,6 +79,7 @@ export function addSnipeAbility() {
     addAbilitySnipeUpgradeStayStill();
     addAbilitySnipeUpgradeTerrainBounce();
     addAbilitySnipeUpgradeFireLine();
+    addAbilitySnipeUpgradeBackwardsShot();
 }
 
 export function createAbilitySnipe(
@@ -229,6 +231,7 @@ export function createAbilityObjectSnipeInitial(startPosition: Position, faction
 
 function createAbilityObjectSnipeInitialPlayerTriggered(abilityOwner: AbilityOwner, abilitySnipe: AbilitySnipe, castPosition: Position, game: Game) {
     castSnipeUpgradeFireLine(abilityOwner, abilitySnipe, castPosition, game);
+    castSnipeBackwardsShot(abilityOwner, abilitySnipe, castPosition, game);
     castSnipeUpgradeMoreRifles(abilityOwner, abilitySnipe, castPosition, game);
     createAbilityObjectSnipeInitial(abilityOwner, abilityOwner.faction, abilitySnipe, castPosition, true, game);
     abilitySnipe.currentCharges--;
