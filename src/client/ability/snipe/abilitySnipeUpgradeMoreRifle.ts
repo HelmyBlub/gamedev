@@ -5,7 +5,7 @@ import { AbilityUpgrade } from "../abilityUpgrade.js";
 import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilitySnipe, createAbilityObjectSnipeInitial } from "./abilitySnipe.js";
 import { paintSniperRifle } from "./abilitySnipePaint.js";
 
-export const UPGRADE_SNIPE_ABILITY_MORE_RIFLES = "More Rifles";
+export const ABILITY_SNIPE_UPGRADE_MORE_RIFLES = "More Rifles";
 
 export type AbilityUpgradeMoreRifles = AbilityUpgrade & {
     numberRifles: number,
@@ -15,7 +15,7 @@ export type AbilityUpgradeMoreRifles = AbilityUpgrade & {
 }
 
 export function addAbilitySnipeUpgradeMoreRifles() {
-    ABILITY_SNIPE_UPGRADE_FUNCTIONS[UPGRADE_SNIPE_ABILITY_MORE_RIFLES] = {
+    ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_MORE_RIFLES] = {
         getAbilityUpgradeUiText: getAbilityUpgradeMoreRiflesUiText,
         getAbilityUpgradeUiTextLong: getAbilityUpgradeMoreRiflesUiTextLong,
         pushAbilityUpgradeOption: pushAbilityUpgradeMoreRifles,
@@ -23,7 +23,7 @@ export function addAbilitySnipeUpgradeMoreRifles() {
 }
 
 export function castSnipeMoreRifles(abilityOwner: AbilityOwner, abilitySnipe: AbilitySnipe, castPosition: Position, game: Game) {
-    const upgradeMoreRifles: AbilityUpgradeMoreRifles = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_MORE_RIFLES];
+    const upgradeMoreRifles: AbilityUpgradeMoreRifles = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES];
     if (!upgradeMoreRifles) return;
     for (let i = 0; i < upgradeMoreRifles.numberRifles; i++) {
         const newPosition = getMoreRiflesPosition(abilityOwner, upgradeMoreRifles, i);
@@ -32,7 +32,7 @@ export function castSnipeMoreRifles(abilityOwner: AbilityOwner, abilitySnipe: Ab
 }
 
 export function paintVisualizationMoreRifles(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, abilitySnipe: AbilitySnipe, paintX: number, paintY: number, game: Game) {
-    const upgradeMoreRifles: AbilityUpgradeMoreRifles = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_MORE_RIFLES];
+    const upgradeMoreRifles: AbilityUpgradeMoreRifles = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES];
     if (!upgradeMoreRifles) return;
 
     for (let i = 0; i < upgradeMoreRifles.numberRifles; i++) {
@@ -43,7 +43,7 @@ export function paintVisualizationMoreRifles(ctx: CanvasRenderingContext2D, abil
 }
 
 export function tickAbilityUpgradeMoreRifles(abilitySnipe: AbilitySnipe, abilityOwner: AbilityOwner, game: Game) {
-    let upgrade: AbilityUpgradeMoreRifles | undefined = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_MORE_RIFLES];
+    let upgrade: AbilityUpgradeMoreRifles | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES];
     if (!upgrade) return;
     upgrade.rotationDirection += 0.02;
 
@@ -58,10 +58,10 @@ export function tickAbilityUpgradeMoreRifles(abilitySnipe: AbilitySnipe, ability
 
 function pushAbilityUpgradeMoreRifles(ability: Ability, upgradeOptions: AbilityUpgradeOption[]) {
     upgradeOptions.push({
-        name: UPGRADE_SNIPE_ABILITY_MORE_RIFLES, probabilityFactor: 1, upgrade: (a: Ability) => {
+        name: ABILITY_SNIPE_UPGRADE_MORE_RIFLES, probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilitySnipe;
             let up: AbilityUpgradeMoreRifles;
-            if (as.upgrades[UPGRADE_SNIPE_ABILITY_MORE_RIFLES] === undefined) {
+            if (as.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES] === undefined) {
                 up = {
                     level: 0,
                     rotationDirection: 0,
@@ -69,9 +69,9 @@ function pushAbilityUpgradeMoreRifles(ability: Ability, upgradeOptions: AbilityU
                     lastSniperRiflePaintDirection: [0],
                     numberRifles: 0,
                 }
-                as.upgrades[UPGRADE_SNIPE_ABILITY_MORE_RIFLES] = up;
+                as.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES] = up;
             } else {
-                up = as.upgrades[UPGRADE_SNIPE_ABILITY_MORE_RIFLES];
+                up = as.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES];
             }
             up.level++;
             up.numberRifles += 1;
@@ -82,16 +82,16 @@ function pushAbilityUpgradeMoreRifles(ability: Ability, upgradeOptions: AbilityU
 
 function getAbilityUpgradeMoreRiflesUiText(ability: Ability): string {
     const abilitySnipe = ability as AbilitySnipe;
-    let upgrades: AbilityUpgradeMoreRifles = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_MORE_RIFLES];
-    return `${UPGRADE_SNIPE_ABILITY_MORE_RIFLES} +${upgrades.numberRifles}`;
+    let upgrades: AbilityUpgradeMoreRifles = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES];
+    return `${ABILITY_SNIPE_UPGRADE_MORE_RIFLES} +${upgrades.numberRifles}`;
 }
 
 function getAbilityUpgradeMoreRiflesUiTextLong(ability: Ability): string[] {
     const abilitySnipe = ability as AbilitySnipe;
-    const upgrade: AbilityUpgradeMoreRifles | undefined = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_MORE_RIFLES];
+    const upgrade: AbilityUpgradeMoreRifles | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES];
     const levelText = (upgrade ? `(${upgrade.level + 1})` : "");
     const textLines: string[] = [];
-    textLines.push(UPGRADE_SNIPE_ABILITY_MORE_RIFLES + levelText);
+    textLines.push(ABILITY_SNIPE_UPGRADE_MORE_RIFLES + levelText);
     textLines.push(`Add one rifle rotating around.`);
     textLines.push(`It copies your shooting actions.`);
 

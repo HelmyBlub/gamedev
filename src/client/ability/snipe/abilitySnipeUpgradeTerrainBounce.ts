@@ -5,7 +5,7 @@ import { Ability, AbilityUpgradeOption } from "../ability.js";
 import { AbilityUpgrade } from "../abilityUpgrade.js";
 import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe, createAbilityObjectSnipe, getAbilitySnipeDamage, getAbilitySnipeRange } from "./abilitySnipe.js";
 
-export const UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE = "Terrain Bounce";
+export const ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE = "Terrain Bounce";
 const DAMAGE_UP_BOUNCE = 0.5;
 
 export type AbilityUpgradeTerrainBounce = AbilityUpgrade & {
@@ -14,7 +14,7 @@ export type AbilityUpgradeTerrainBounce = AbilityUpgrade & {
 }
 
 export function addAbilitySnipeUpgradeTerrainBounce() {
-    ABILITY_SNIPE_UPGRADE_FUNCTIONS[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE] = {
+    ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE] = {
         getAbilityUpgradeUiText: getAbilityUpgradeTerrainBounceUiText,
         getAbilityUpgradeUiTextLong: getAbilityUpgradeTerrainBounceUiTextLong,
         pushAbilityUpgradeOption: pushAbilityUpgradeTerrainBounce,
@@ -65,7 +65,7 @@ export function createAndPushAbilityObjectSnipeTerrainBounceBounce(abilityObject
 }
 
 export function getAbilityUpgradeTerrainBounceDamageFactor(abilitySnipe: AbilitySnipe, bounceCounter: number): number {
-    let terrainBounce: AbilityUpgradeTerrainBounce | undefined = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE];
+    let terrainBounce: AbilityUpgradeTerrainBounce | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE];
     if (!terrainBounce) return 1;
     return 1 + bounceCounter * terrainBounce.damageUpPerBounceFactor;
 }
@@ -75,15 +75,15 @@ function pushAbilityUpgradeTerrainBounce(ability: Ability, upgradeOptions: Abili
         name: "Terrain Bounce", probabilityFactor: 1, upgrade: (a: Ability) => {
             const as = a as AbilitySnipe;
             let up: AbilityUpgradeTerrainBounce;
-            if (as.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE] === undefined) {
+            if (as.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE] === undefined) {
                 up = {
                     level: 1,
                     active: true,
                     damageUpPerBounceFactor: 0,
                 }
-                as.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE] = up;
+                as.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE] = up;
             } else {
-                up = as.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE];
+                up = as.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE];
             }
             up.damageUpPerBounceFactor += DAMAGE_UP_BOUNCE;
         }
@@ -92,16 +92,16 @@ function pushAbilityUpgradeTerrainBounce(ability: Ability, upgradeOptions: Abili
 
 function getAbilityUpgradeTerrainBounceUiText(ability: Ability): string {
     let abilitySnipe = ability as AbilitySnipe;
-    let upgrades: AbilityUpgradeTerrainBounce = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE];
+    let upgrades: AbilityUpgradeTerrainBounce = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE];
 
     return `Terrain Bounce and +${upgrades.damageUpPerBounceFactor*100}% damage for each bounce`;
 }
 
 function getAbilityUpgradeTerrainBounceUiTextLong(ability: Ability): string[] {
     let abilitySnipe = ability as AbilitySnipe;
-    let upgrades: AbilityUpgradeTerrainBounce | undefined = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE];
+    let upgrades: AbilityUpgradeTerrainBounce | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE];
     const textLines: string[] = [];
-    textLines.push(UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE);
+    textLines.push(ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE);
     textLines.push(`Shots will bounce of blocking tiles.`);
     textLines.push(`Each bounce will increase damage by ${DAMAGE_UP_BOUNCE*100}%`);
     textLines.push(`for the following bounced shot part.`);

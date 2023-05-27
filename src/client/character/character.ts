@@ -9,7 +9,7 @@ import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS, abilityCharacterAddBossSkillPoint, AbilityUpgradeOption } from "../ability/ability.js";
 import { LEVELING_CHARACTER, LevelingCharacter } from "./playerCharacters/levelingCharacterModel.js";
 import { BossEnemyCharacter, CHARACTER_TYPE_BOSS_ENEMY } from "./enemy/bossEnemy.js";
-import { tickCharacterDebuffs } from "../debuff/debuff.js";
+import { removeCharacterDebuffs, tickCharacterDebuffs } from "../debuff/debuff.js";
 import { createAbilityLeash } from "../ability/abilityLeash.js";
 import { createCharacterChooseUpgradeOptions } from "./playerCharacters/playerCharacters.js";
 
@@ -44,6 +44,7 @@ export function characterTakeDamage(character: Character, damage: number, game: 
         if (character.type === CHARACTER_TYPE_BOSS_ENEMY) {
             abilityCharacterAddBossSkillPoint(game.state);
         }
+        removeCharacterDebuffs(character, game);
         game.state.killCounter++;
     }
     if (game.UI.displayDamageNumbers) {

@@ -20,6 +20,7 @@ import { addSpeedBoostAbility } from "./speedBoost/abilitySpeedBoost.js"
 import { addAbilitySlowTrail } from "./abilitySlowTrail.js"
 import { addAbilityFireLine } from "./abilityFireLine.js"
 import { AbilityUpgradesFunctions } from "./abilityUpgrade.js"
+import { addAbilityExplode } from "./abilityExplode.js"
 
 export type Ability = {
     id: number,
@@ -102,6 +103,7 @@ export function onDomLoadSetAbilitiesFunctions() {
     addSpeedBoostAbility();
     addAbilitySlowTrail();
     addAbilityFireLine();
+    addAbilityExplode();
 }
 
 export function addAbilityToCharacter(character: Character, ability: Ability) {

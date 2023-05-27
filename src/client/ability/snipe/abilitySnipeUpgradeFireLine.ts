@@ -5,7 +5,7 @@ import { createAbilityObjectFireLine } from "../abilityFireLine.js";
 import { AbilityUpgrade } from "../abilityUpgrade.js";
 import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilitySnipe, getAbilitySnipeDamage } from "./abilitySnipe.js";
 
-export const UPGRADE_SNIPE_ABILITY_FIRE_LINE= "Fire Line";
+export const ABILITY_SNIPE_UPGRADE_FIRE_LINE= "Fire Line";
 const DURATION = 3000;
 const DAMAGEFACTOR = 2;
 
@@ -17,7 +17,7 @@ export type AbilityUpgradeFireLine = AbilityUpgrade & {
 }
 
 export function addAbilitySnipeUpgradeFireLine() {
-    ABILITY_SNIPE_UPGRADE_FUNCTIONS[UPGRADE_SNIPE_ABILITY_FIRE_LINE] = {
+    ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_FIRE_LINE] = {
         getAbilityUpgradeUiText: getAbilityUpgradeFireLineUiText,
         getAbilityUpgradeUiTextLong: getAbilityUpgradeFireLineUiTextLong,
         pushAbilityUpgradeOption: pushAbilityUpgradeFireLine,
@@ -25,7 +25,7 @@ export function addAbilitySnipeUpgradeFireLine() {
 }
 
 export function castSnipeFireLine(abilityOwner: AbilityOwner, abilitySnipe: AbilitySnipe, castPosition: Position, game: Game) {
-    const upgradeFireLine: AbilityUpgradeFireLine = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_FIRE_LINE];
+    const upgradeFireLine: AbilityUpgradeFireLine = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_FIRE_LINE];
     if (!upgradeFireLine) return;
     const direction = calculateDirection(abilityOwner, castPosition);
     const endPosition = calcNewPositionMovedInDirection(abilityOwner, direction, upgradeFireLine.range);
@@ -38,10 +38,10 @@ export function castSnipeFireLine(abilityOwner: AbilityOwner, abilitySnipe: Abil
 
 function pushAbilityUpgradeFireLine(ability: Ability, upgradeOptions: AbilityUpgradeOption[]) {
     upgradeOptions.push({
-        name: UPGRADE_SNIPE_ABILITY_FIRE_LINE, probabilityFactor: 1, upgrade: (a: Ability) => {
+        name: ABILITY_SNIPE_UPGRADE_FIRE_LINE, probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilitySnipe;
             let up: AbilityUpgradeFireLine;
-            if (as.upgrades[UPGRADE_SNIPE_ABILITY_FIRE_LINE] === undefined) {
+            if (as.upgrades[ABILITY_SNIPE_UPGRADE_FIRE_LINE] === undefined) {
                 up = {
                     level: 0,
                     duration: DURATION,
@@ -49,9 +49,9 @@ function pushAbilityUpgradeFireLine(ability: Ability, upgradeOptions: AbilityUpg
                     tickInterval: 200,
                     range: 150,
                 }
-                as.upgrades[UPGRADE_SNIPE_ABILITY_FIRE_LINE] = up;
+                as.upgrades[ABILITY_SNIPE_UPGRADE_FIRE_LINE] = up;
             } else {
-                up = as.upgrades[UPGRADE_SNIPE_ABILITY_FIRE_LINE];
+                up = as.upgrades[ABILITY_SNIPE_UPGRADE_FIRE_LINE];
             }
             up.level++;
             up.damageTotalFactor += DAMAGEFACTOR;
@@ -61,17 +61,17 @@ function pushAbilityUpgradeFireLine(ability: Ability, upgradeOptions: AbilityUpg
 
 function getAbilityUpgradeFireLineUiText(ability: Ability): string {
     const abilitySnipe = ability as AbilitySnipe;
-    let upgrades: AbilityUpgradeFireLine = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_FIRE_LINE];
-    return `${UPGRADE_SNIPE_ABILITY_FIRE_LINE}: ${upgrades.damageTotalFactor*100}% total damage over ${(upgrades.duration/1000).toFixed()}s`;
+    let upgrades: AbilityUpgradeFireLine = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_FIRE_LINE];
+    return `${ABILITY_SNIPE_UPGRADE_FIRE_LINE}: ${upgrades.damageTotalFactor*100}% total damage over ${(upgrades.duration/1000).toFixed()}s`;
 }
 
 function getAbilityUpgradeFireLineUiTextLong(ability: Ability): string[] {
     const abilitySnipe = ability as AbilitySnipe;
-    const upgrade: AbilityUpgradeFireLine | undefined = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_FIRE_LINE];
+    const upgrade: AbilityUpgradeFireLine | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_FIRE_LINE];
     const levelText = (upgrade ? `(${upgrade.level + 1})` : "");
 
     const textLines: string[] = [];
-    textLines.push(UPGRADE_SNIPE_ABILITY_FIRE_LINE + levelText);
+    textLines.push(ABILITY_SNIPE_UPGRADE_FIRE_LINE + levelText);
     textLines.push(`Shooting create a fire line.`);
     textLines.push(`It stays on the ground for ${DURATION/1000}s.`);
     textLines.push(`It does a total of ${DAMAGEFACTOR*100}% damage in its duration.`);

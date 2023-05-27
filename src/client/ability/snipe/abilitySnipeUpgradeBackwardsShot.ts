@@ -4,13 +4,13 @@ import { Ability, AbilityOwner, AbilityUpgradeOption } from "../ability.js";
 import { AbilityUpgrade } from "../abilityUpgrade.js";
 import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilitySnipe, createAbilityObjectSnipeInitial } from "./abilitySnipe.js";
 
-export const UPGRADE_SNIPE_ABILITY_BACKWARDWS_SHOT = "Backwards Shot";
+export const ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT = "Backwards Shot";
 
 export type AbilityUpgradeBackwardsShot = AbilityUpgrade & {
 }
 
 export function addAbilitySnipeUpgradeBackwardsShot() {
-    ABILITY_SNIPE_UPGRADE_FUNCTIONS[UPGRADE_SNIPE_ABILITY_BACKWARDWS_SHOT] = {
+    ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT] = {
         getAbilityUpgradeUiText: getAbilityUpgradeBackwardsShotUiText,
         getAbilityUpgradeUiTextLong: getAbilityUpgradeBackwardsShotUiTextLong,
         pushAbilityUpgradeOption: pushAbilityUpgradeBackwardsShot,
@@ -18,7 +18,7 @@ export function addAbilitySnipeUpgradeBackwardsShot() {
 }
 
 export function castSnipeBackwardsShot(abilityOwner: AbilityOwner, abilitySnipe: AbilitySnipe, castPosition: Position, game: Game) {
-    const upgradeBackwardsShot: AbilityUpgradeBackwardsShot = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_BACKWARDWS_SHOT];
+    const upgradeBackwardsShot: AbilityUpgradeBackwardsShot = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT];
     if (!upgradeBackwardsShot) return;
     for (let i = 0; i < upgradeBackwardsShot.level; i++) {
         const newCastPosition = getBackwardsShotPosition(abilityOwner, castPosition, upgradeBackwardsShot, i);
@@ -28,16 +28,16 @@ export function castSnipeBackwardsShot(abilityOwner: AbilityOwner, abilitySnipe:
 
 function pushAbilityUpgradeBackwardsShot(ability: Ability, upgradeOptions: AbilityUpgradeOption[]) {
     upgradeOptions.push({
-        name: UPGRADE_SNIPE_ABILITY_BACKWARDWS_SHOT, probabilityFactor: 1, upgrade: (a: Ability) => {
+        name: ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT, probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilitySnipe;
             let up: AbilityUpgradeBackwardsShot;
-            if (as.upgrades[UPGRADE_SNIPE_ABILITY_BACKWARDWS_SHOT] === undefined) {
+            if (as.upgrades[ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT] === undefined) {
                 up = {
                     level: 0,
                 }
-                as.upgrades[UPGRADE_SNIPE_ABILITY_BACKWARDWS_SHOT] = up;
+                as.upgrades[ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT] = up;
             } else {
-                up = as.upgrades[UPGRADE_SNIPE_ABILITY_BACKWARDWS_SHOT];
+                up = as.upgrades[ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT];
             }
             up.level++;
         }
@@ -46,16 +46,16 @@ function pushAbilityUpgradeBackwardsShot(ability: Ability, upgradeOptions: Abili
 
 function getAbilityUpgradeBackwardsShotUiText(ability: Ability): string {
     const abilitySnipe = ability as AbilitySnipe;
-    let upgrades: AbilityUpgradeBackwardsShot = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_BACKWARDWS_SHOT];
-    return `${UPGRADE_SNIPE_ABILITY_BACKWARDWS_SHOT} +${upgrades.level}`;
+    let upgrades: AbilityUpgradeBackwardsShot = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT];
+    return `${ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT} +${upgrades.level}`;
 }
 
 function getAbilityUpgradeBackwardsShotUiTextLong(ability: Ability): string[] {
     const abilitySnipe = ability as AbilitySnipe;
-    const upgrade: AbilityUpgradeBackwardsShot | undefined = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_BACKWARDWS_SHOT];
+    const upgrade: AbilityUpgradeBackwardsShot | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT];
     const levelText = (upgrade ? `(${upgrade.level + 1})` : "");
     const textLines: string[] = [];
-    textLines.push(UPGRADE_SNIPE_ABILITY_BACKWARDWS_SHOT + levelText);
+    textLines.push(ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT + levelText);
     textLines.push(`When shooting, you also shot an additional`);
     textLines.push(`shot backwards.`);
 

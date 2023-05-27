@@ -1,7 +1,6 @@
 current tasks:
 - Sniper: LevelingAbilityCharacter
     - needs more upgrade choice?
-        - terrain bounce have levels
         - apply death explode debuff
 
     - balancing ideas:

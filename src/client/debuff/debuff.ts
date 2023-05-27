@@ -2,17 +2,18 @@ import { Character } from "../character/characterModel.js";
 import { Game } from "../gameModel.js"
 import { addBuffSlowTrail } from "./buffSlowTrail.js";
 import { addBuffSpeed } from "./buffSpeed.js";
+import { addDebuffExplodeOnDeath } from "./debuffExplodeOnDeath.js";
 import { addDebuffSlow } from "./debuffSlow.js";
 
 export type Debuff = {
     name: string,
-    removeTime: number,
+    removeTime?: number,
 }
 
 export type DebuffFunctions = {
-    applyDebuffEffect: (debuff: Debuff, targetCharacter: Character, game: Game) => void,
+    applyDebuffEffect?: (debuff: Debuff, targetCharacter: Character, game: Game) => void,
     removeDebuffEffect: (debuff: Debuff, targetCharacter: Character, game: Game) => void,
-    refreshDebuffEffect: (newDebuff: Debuff, currentDebuff: Debuff, targetCharacter: Character, game: Game) => void,
+    refreshDebuffEffect?: (newDebuff: Debuff, currentDebuff: Debuff, targetCharacter: Character, game: Game) => void,
     tickDebuffEffect?: (debuff: Debuff, targetCharacter: Character, game: Game) => void,
 }
 
@@ -26,15 +27,26 @@ export function onDomLoadSetDebuffsFunctions() {
     addDebuffSlow();
     addBuffSpeed();
     addBuffSlowTrail();
+    addDebuffExplodeOnDeath();
 }
 
 export function applyDebuff(debuff: Debuff, character: Character, game: Game) {
-    let currentDebuff = character.debuffs.find((d) => d.name === debuff.name);
+    const currentDebuff = character.debuffs.find((d) => d.name === debuff.name);
+    const debuffFunctions = DEBUFFS_FUNCTIONS[debuff.name];
     if (currentDebuff) {
-        DEBUFFS_FUNCTIONS[debuff.name].refreshDebuffEffect(debuff, currentDebuff, character, game);
+        if (debuffFunctions.refreshDebuffEffect) debuffFunctions.refreshDebuffEffect(debuff, currentDebuff, character, game);
     } else {
         character.debuffs.push(debuff);
-        DEBUFFS_FUNCTIONS[debuff.name].applyDebuffEffect(debuff, character, game);
+        if (debuffFunctions.applyDebuffEffect) debuffFunctions.applyDebuffEffect(debuff, character, game);
+    }
+}
+
+export function removeCharacterDebuffs(character: Character, game: Game){
+    let debuffs = character.debuffs;
+    for (let i = debuffs.length - 1; i >= 0; i--) {
+        let debuff = debuffs[i];
+        DEBUFFS_FUNCTIONS[debuff.name].removeDebuffEffect(debuff, character, game);
+        debuffs.splice(i, 1);
     }
 }
 
@@ -42,7 +54,7 @@ export function tickCharacterDebuffs(character: Character, game: Game) {
     let debuffs = character.debuffs;
     for (let i = debuffs.length - 1; i >= 0; i--) {
         let debuff = debuffs[i];
-        if (debuff.removeTime <= game.state.time) {
+        if (debuff.removeTime && debuff.removeTime <= game.state.time) {
             DEBUFFS_FUNCTIONS[debuff.name].removeDebuffEffect(debuff, character, game);
             debuffs.splice(i, 1);
         } else {
