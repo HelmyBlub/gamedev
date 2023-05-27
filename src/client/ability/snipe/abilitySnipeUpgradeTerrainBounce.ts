@@ -71,7 +71,6 @@ export function getAbilityUpgradeTerrainBounceDamageFactor(abilitySnipe: Ability
 }
 
 function pushAbilityUpgradeTerrainBounce(ability: Ability, upgradeOptions: AbilityUpgradeOption[]) {
-    if (ability.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE]) return;
     upgradeOptions.push({
         name: "Terrain Bounce", probabilityFactor: 1, upgrade: (a: Ability) => {
             const as = a as AbilitySnipe;
@@ -80,18 +79,22 @@ function pushAbilityUpgradeTerrainBounce(ability: Ability, upgradeOptions: Abili
                 up = {
                     level: 1,
                     active: true,
-                    damageUpPerBounceFactor: DAMAGE_UP_BOUNCE,
+                    damageUpPerBounceFactor: 0,
                 }
                 as.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE] = up;
             } else {
-                throw new Error("should only be possible to skill once");
+                up = as.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE];
             }
+            up.damageUpPerBounceFactor += DAMAGE_UP_BOUNCE;
         }
     });
 }
 
 function getAbilityUpgradeTerrainBounceUiText(ability: Ability): string {
-    return "Terrain Bounce and +50% damage for each bounce";
+    let abilitySnipe = ability as AbilitySnipe;
+    let upgrades: AbilityUpgradeTerrainBounce = abilitySnipe.upgrades[UPGRADE_SNIPE_ABILITY_TERRAIN_BOUNCE];
+
+    return `Terrain Bounce and +${upgrades.damageUpPerBounceFactor*100}% damage for each bounce`;
 }
 
 function getAbilityUpgradeTerrainBounceUiTextLong(ability: Ability): string[] {
