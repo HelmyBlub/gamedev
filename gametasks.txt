@@ -1,7 +1,10 @@
 current tasks:
 - Sniper: LevelingAbilityCharacter
     - needs more upgrade choice?
-        - apply death explode debuff
+        - after image: after shooting places a ghost which shoots from same place to same direction for some time
+        - combined upgrades?
+            - more rifle + fireline synergy
+            - more rifle + backwards shot synergy
 
     - balancing ideas:
 
