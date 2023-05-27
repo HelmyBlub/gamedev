@@ -1,7 +1,10 @@
 current tasks:
 - Sniper: LevelingAbilityCharacter
     - needs more upgrade choice?
-        -
+        - backwards shot
+        - terrain bounce have levels
+        - apply death explode debuff
+
     - balancing ideas:
 
     - secondary abilities?
@@ -13,7 +16,6 @@ current tasks:
 
     - bug: second rilfe with bounce upgarde in blocking tile: probably create a bouncing projectile -> should not create any
 
-- add a hammer image for tower builder like sniper rifle for sniper
 - redesign levelingCharacter/abilityLevelingCharacter to be more independant in code
 
 

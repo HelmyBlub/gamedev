@@ -2,6 +2,7 @@ import { getCharactersTouchingLine, characterTakeDamage } from "../character/cha
 import { Character } from "../character/characterModel.js";
 import { calculateDistance, getCameraPosition, getNextId } from "../game.js";
 import { Position, Game, IdCounter } from "../gameModel.js";
+import { GAME_IMAGES, loadImage } from "../imageLoad.js";
 import { positionToMapKey } from "../map/map.js";
 import { findPlayerByCharacterId } from "../player.js";
 import { playerInputBindingToDisplayValue } from "../playerInput.js";
@@ -27,6 +28,11 @@ type AbilityTower = Ability & {
 }
 
 const ABILITY_NAME_TOWER = "Tower";
+GAME_IMAGES[ABILITY_NAME_TOWER] = {
+    imagePath: "/images/hammer.png",
+    spriteRowHeights: [20],
+    spriteRowWidths: [20],
+};
 
 export function addTowerAbility() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_TOWER] = {
@@ -35,6 +41,7 @@ export function addTowerAbility() {
         createAbilityUpgradeOptions: createAbilityTowerUpgradeOptions,
         paintAbilityObject: paintAbilityObjectTower,
         paintAbilityUI: paintAbilityTowerUI,
+        paintAbility: paintAbilityTower,
         activeAbilityCast: castTower,
         createAbility: createAbilityTower,
         deleteAbilityObject: deleteAbilityObjectTower,
@@ -94,7 +101,7 @@ function deleteAbilityObjectTower(abilityObject: AbilityObject, game: Game) {
 }
 
 function castTower(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isKeydown: boolean, game: Game) {
-    if(!isKeydown) return;
+    if (!isKeydown) return;
     let abilityTower = ability as AbilityTower;
     let distance = calculateDistance(abilityOwner, castPosition);
     if (distance > abilityTower.maxClickRange) return;
@@ -186,6 +193,41 @@ function updateTowerObjectAbilityLevels(abilityObjects: AbilityObject[]) {
                 abilityFunctions.setAbilityToLevel(tower.ability, level);
             }
         }
+    }
+}
+
+function paintAbilityTower(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
+    const abiltiyTower = ability as AbilityTower;
+    const centerX = ctx.canvas.width / 2;
+    const centerY = ctx.canvas.height / 2;
+    const paintX = Math.floor(abilityOwner.x - cameraPosition.x + centerX);
+    const paintY = Math.floor(abilityOwner.y - cameraPosition.y + centerY);
+    paintHammer(ctx, abiltiyTower, paintX-10, paintY, game);
+}
+
+function paintHammer(ctx: CanvasRenderingContext2D, abilityTower: AbilityTower, paintX: number, paintY: number, game: Game) {
+    let hammerImageRef = GAME_IMAGES[ABILITY_NAME_TOWER];
+    loadImage(hammerImageRef);
+    if (hammerImageRef.imageRef?.complete) {
+        let hammerImage: HTMLImageElement = hammerImageRef.imageRef;
+        ctx.translate(paintX, paintY);
+        ctx.rotate(-Math.PI/4);
+        ctx.translate(-paintX, -paintY);
+        paintX -= Math.floor(hammerImage.width/2);
+        paintY -= Math.floor(hammerImage.height/2)-2;
+
+        ctx.drawImage(
+            hammerImage,
+            0,
+            0,
+            hammerImage.width,
+            hammerImage.height,
+            paintX,
+            paintY,
+            hammerImage.width,
+            hammerImage.height
+        )
+        ctx.resetTransform();
     }
 }
 
@@ -338,7 +380,7 @@ function paintAbilityTowerUI(ctx: CanvasRenderingContext2D, ability: Ability, dr
     ctx.fillStyle = "black";
     ctx.font = fontSize + "px Arial";
     const nextTower = tower.availableAbilityKeys[tower.orderOfAbilities[tower.currentAbilityIndex]];
-    ctx.fillText(nextTower, drawStartX + 1, drawStartY + rectSize - (rectSize - fontSize)/2);
+    ctx.fillText(nextTower, drawStartX + 1, drawStartY + rectSize - (rectSize - fontSize) / 2);
 
     if (tower.playerInputBinding) {
         let keyBind = playerInputBindingToDisplayValue(tower.playerInputBinding, game);
@@ -363,11 +405,11 @@ function paintAbilityTowerStatsUI(ctx: CanvasRenderingContext2D, ability: Abilit
         `Line Damage Increase per Connection: 15%`,
     ];
 
-    for(let i = 0; i< abilityTower.availableAbilityKeys.length;i++){
+    for (let i = 0; i < abilityTower.availableAbilityKeys.length; i++) {
         let key = abilityTower.availableAbilityKeys[i];
         let counter = 0;
-        for(let j = 0; j< abilityTower.orderOfAbilities.length;j++){
-            if(abilityTower.orderOfAbilities[j] === i) counter++;
+        for (let j = 0; j < abilityTower.orderOfAbilities.length; j++) {
+            if (abilityTower.orderOfAbilities[j] === i) counter++;
         }
         textLines.push(`Max ${key} Tower: ${counter}`);
     }
@@ -382,20 +424,20 @@ function tickAbilityTower(abilityOwner: AbilityOwner, ability: Ability, game: Ga
 function tickAbilityObjectTower(abilityObject: AbilityObject, game: Game) {
     let abilityTower = abilityObject as AbilityObjectTower;
     let mapKeyOfCharacterPosistion = positionToMapKey(abilityObject, game.state.map);
-    if(!game.state.map.activeChunkKeys.includes(mapKeyOfCharacterPosistion)) return;
+    if (!game.state.map.activeChunkKeys.includes(mapKeyOfCharacterPosistion)) return;
 
-    if(abilityTower.lineDamageNextDamageTick === undefined) abilityTower.lineDamageNextDamageTick = game.state.time + abilityTower.lineDamageTickFrequency;
-    if(abilityTower.lineDamageNextDamageTick <= game.state.time){
+    if (abilityTower.lineDamageNextDamageTick === undefined) abilityTower.lineDamageNextDamageTick = game.state.time + abilityTower.lineDamageTickFrequency;
+    if (abilityTower.lineDamageNextDamageTick <= game.state.time) {
         tickEffectConnected(abilityTower, game);
         abilityTower.lineDamageNextDamageTick += abilityTower.lineDamageTickFrequency;
-        if(abilityTower.lineDamageNextDamageTick <= game.state.time){
+        if (abilityTower.lineDamageNextDamageTick <= game.state.time) {
             abilityTower.lineDamageNextDamageTick = game.state.time + abilityTower.lineDamageTickFrequency;
         }
     }
 
     if (abilityTower.ability) {
         let abilityFunction = ABILITIES_FUNCTIONS[abilityTower.ability.name];
-        if(abilityFunction.tickAbility) abilityFunction.tickAbility(abilityTower, abilityTower.ability, game);
+        if (abilityFunction.tickAbility) abilityFunction.tickAbility(abilityTower, abilityTower.ability, game);
     }
 }
 
@@ -408,11 +450,11 @@ function createAbilityTowerUpgradeOptions(ability: Ability): AbilityUpgradeOptio
             as.damage += 50;
         }
     });
-    for(let i = 0; i < abilityTower.availableAbilityKeys.length; i++){
+    for (let i = 0; i < abilityTower.availableAbilityKeys.length; i++) {
         upgradeOptions.push({
             name: `Tower ${abilityTower.availableAbilityKeys[i]}+`, probabilityFactor: 1, upgrade: (a: Ability) => {
-                let as = a as AbilityTower;                
-                as.orderOfAbilities.splice(as.currentAbilityIndex,0,i);
+                let as = a as AbilityTower;
+                as.orderOfAbilities.splice(as.currentAbilityIndex, 0, i);
             }
         });
     }
