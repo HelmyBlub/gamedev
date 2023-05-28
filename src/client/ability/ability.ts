@@ -217,7 +217,7 @@ export function detectAbilityObjectToCharacterHit(map: GameMap, abilityObject: A
         if (c.isDead || c.faction === abilityObject.faction) continue;
         let distance = calculateDistance(c, abilityObject);
         if (distance < abilityObject.size / 2 + c.width / 2) {
-            characterTakeDamage(c, abilityObject.damage, game);
+            characterTakeDamage(c, abilityObject.damage, game, abilityObject.abilityRefId);
             let abilityFunction = ABILITIES_FUNCTIONS[abilityObject.type];
             if (abilityFunction.onHit) {
                 abilityFunction.onHit(abilityObject);

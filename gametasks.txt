@@ -1,6 +1,4 @@
 current tasks:
-- bug: line hit detection off
-
 - Sniper: LevelingAbilityCharacter
     - needs more upgrade choice?
         - combined upgrades?

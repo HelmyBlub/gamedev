@@ -6,7 +6,7 @@ import { calculateDirection, calculateDistance, calculateDistancePointToLine, cr
 import { Position, Game, GameState, IdCounter, Camera, PaintTextData } from "../gameModel.js";
 import { findPlayerById, Player } from "../player.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, abilityCharacterAddBossSkillPoint, AbilityUpgradeOption } from "../ability/ability.js";
+import { ABILITIES_FUNCTIONS, abilityCharacterAddBossSkillPoint, AbilityUpgradeOption, findAbilityById, levelingAbilityXpGain } from "../ability/ability.js";
 import { LEVELING_CHARACTER, LevelingCharacter } from "./playerCharacters/levelingCharacterModel.js";
 import { BossEnemyCharacter, CHARACTER_TYPE_BOSS_ENEMY } from "./enemy/bossEnemy.js";
 import { removeCharacterDebuffs, tickCharacterDebuffs } from "../debuff/debuff.js";
@@ -32,7 +32,7 @@ export function findCharacterByIdAroundPosition(position: Position, range: numbe
     return null;
 }
 
-export function characterTakeDamage(character: Character, damage: number, game: Game) {
+export function characterTakeDamage(character: Character, damage: number, game: Game, abilityRefId: number | undefined = undefined) {
     if (character.isDead) return;
     if (character.isPet) return;
 
@@ -43,6 +43,12 @@ export function characterTakeDamage(character: Character, damage: number, game: 
         levelingCharacterXpGain(game.state, character);
         if (character.type === CHARACTER_TYPE_BOSS_ENEMY) {
             abilityCharacterAddBossSkillPoint(game.state);
+        }
+        if(abilityRefId !== undefined){
+            let ability = findAbilityById(abilityRefId, game);
+            if (ability) {
+                levelingAbilityXpGain(ability, character.experienceWorth);
+            }
         }
         removeCharacterDebuffs(character, game);
         game.state.killCounter++;

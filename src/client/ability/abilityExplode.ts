@@ -48,6 +48,7 @@ export function createAbilityObjectExplode(
     damage: number,
     size: number,
     faction: string,
+    abilityRefId: number,
     game: Game
 ): AbilityObjectExplode {
     return {
@@ -59,6 +60,7 @@ export function createAbilityObjectExplode(
         y: position.y,
         hasDamageDone: false,
         size: size,
+        abilityRefId: abilityRefId,
     };
 }
 

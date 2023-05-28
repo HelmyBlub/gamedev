@@ -26,7 +26,7 @@ export function addAbilitySnipeUpgradeExplodeOnDeath() {
 
 export function applyDebuffExplodeOnDeath(ability: AbilitySnipe, abilityUpgrade: AbilityUpgradeExplodeOnDeath, faction: string, targetCharacter: Character, game: Game){
     const damage = abilityUpgrade.damageFactor * getAbilitySnipeDamage(ability);
-    const explodeOnDeath = createDebuffExplodeOnDeath(damage, faction, abilityUpgrade.size);
+    const explodeOnDeath = createDebuffExplodeOnDeath(damage, faction, abilityUpgrade.size, ability.id);
     applyDebuff(explodeOnDeath, targetCharacter, game);
 }
 

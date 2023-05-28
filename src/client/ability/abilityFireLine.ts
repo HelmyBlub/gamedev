@@ -57,6 +57,7 @@ export function createAbilityObjectFireLine(
     duration: number,
     tickInterval: number,
     color: string,
+    abilityRefId: number | undefined,
     game: Game
 ): AbilityObjectFireLine {
     return {
@@ -70,7 +71,8 @@ export function createAbilityObjectFireLine(
         x: startPosition.x,
         y: startPosition.y,
         endPosition: endPosition,
-        endTime: game.state.time + duration
+        endTime: game.state.time + duration,
+        abilityRefId: abilityRefId,
     };
 }
 
@@ -109,7 +111,7 @@ function tickAbilityObjectFireLine(abilityObject: AbilityObject, game: Game) {
     if (abilityObjectFireLine.nextTickTime <= game.state.time) {
         let characters: Character[] = getCharactersTouchingLine(game, abilityObjectFireLine, abilityObjectFireLine.endPosition);
         for (let char of characters) {
-            characterTakeDamage(char, abilityObjectFireLine.damage, game);
+            characterTakeDamage(char, abilityObjectFireLine.damage, game, abilityObjectFireLine.abilityRefId);
         }
     }
 }

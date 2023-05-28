@@ -318,14 +318,8 @@ function tickAbilityObjectSnipe(abilityObject: AbilityObject, game: Game) {
                 const upgardeExplodeOnDeath: AbilityUpgradeExplodeOnDeath = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH];
                 applyDebuffExplodeOnDeath(abilitySnipe, upgardeExplodeOnDeath, abilityObject.faction, char, game);
             }
-            characterTakeDamage(char, abilityObjectSnipe.damage, game);
+            characterTakeDamage(char, abilityObjectSnipe.damage, game, abilityObject.abilityRefId);
             if (!abilityObjectSnipe.preventSplitOnHit) abilityUpgradeOnSnipeHit(char, abilitySnipe, abilityObjectSnipe, game);
-
-            if (abilityObject.leveling && abilityObject.abilityRefId !== undefined) {
-                if (abilitySnipe) {
-                    levelingAbilityXpGain(abilitySnipe, char.experienceWorth);
-                }
-            }
         }
         if (abilitySnipe) abilityUpgradeNoMissChainOnObjectSnipeDamageDone(abilitySnipe, abilityObjectSnipe);
         abilityObjectSnipe.damageCalcDone = true;
