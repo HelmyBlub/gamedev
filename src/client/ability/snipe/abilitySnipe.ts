@@ -44,6 +44,8 @@ export type AbilitySnipe = Ability & {
     maxShootFrequency: number,
     nextAllowedShotTime: number,
     lastSniperRiflePaintDirection: number,
+    maxMagazineSize: number,
+    minimumShotFrequency: number,
 }
 
 export const ABILITY_NAME_SNIPE = "Snipe";
@@ -114,6 +116,8 @@ export function createAbilitySnipe(
         shotNextAllowedTime: false,
         nextAllowedShotTime: 0,
         lastSniperRiflePaintDirection: 0,
+        maxMagazineSize: 99,
+        minimumShotFrequency: 100,
     };
 }
 
@@ -175,7 +179,7 @@ export function createAbilityObjectSnipe(
 function setAbilitySnipeToLevel(ability: Ability, level: number) {
     let abilitySnipe = ability as AbilitySnipe;
     abilitySnipe.baseDamage = level * 100;
-    abilitySnipe.maxCharges = 2 + level;
+    abilitySnipe.maxCharges = Math.min(2 + level, abilitySnipe.maxMagazineSize);
     abilitySnipe.baseRange = 800 + level * 10;
     abilitySnipe.shotFrequencyTimeDecreaseFaktor = 1 + level * 0.15;
 }
@@ -302,7 +306,7 @@ function tickAbilitySnipe(abilityOwner: AbilityOwner, ability: Ability, game: Ga
 }
 
 export function getAbilitySnipeShotFrequency(abilitySnipe: AbilitySnipe) {
-    return Math.max(abilitySnipe.maxShootFrequency / abilitySnipe.shotFrequencyTimeDecreaseFaktor, 100);
+    return Math.max(abilitySnipe.maxShootFrequency / abilitySnipe.shotFrequencyTimeDecreaseFaktor, abilitySnipe.minimumShotFrequency);
 }
 
 function tickAbilityObjectSnipe(abilityObject: AbilityObject, game: Game) {
