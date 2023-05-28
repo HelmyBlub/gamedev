@@ -1,4 +1,5 @@
 current tasks:
+- bug: replay not working because of mouse updates
 - Sniper: LevelingAbilityCharacter
     - needs more upgrade choice?
         - combined upgrades?

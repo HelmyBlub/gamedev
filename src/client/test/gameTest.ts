@@ -19,7 +19,7 @@ export function testGame(game: Game) {
     //testPathing(game.ctx);
     //runGameWithPlayerInputs(game, testInputs);
     //runGameWithPlayerInputs(game, testMultiplayerInputs);
-    testTemp();
+    //testTemp();
     console.log("end test");
 }
 

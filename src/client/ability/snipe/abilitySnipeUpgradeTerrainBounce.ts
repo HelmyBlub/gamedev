@@ -99,9 +99,10 @@ function getAbilityUpgradeTerrainBounceUiText(ability: Ability): string {
 
 function getAbilityUpgradeTerrainBounceUiTextLong(ability: Ability): string[] {
     let abilitySnipe = ability as AbilitySnipe;
-    let upgrades: AbilityUpgradeTerrainBounce | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE];
+    let upgrade: AbilityUpgradeTerrainBounce | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE];
+    const levelText = (upgrade ? `(${upgrade.level + 1})` : "");
     const textLines: string[] = [];
-    textLines.push(ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE);
+    textLines.push(ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE + levelText);
     textLines.push(`Shots will bounce of blocking tiles.`);
     textLines.push(`Each bounce will increase damage by ${DAMAGE_UP_BOUNCE*100}%`);
     textLines.push(`for the following bounced shot part.`);

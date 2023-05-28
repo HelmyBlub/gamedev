@@ -1,4 +1,4 @@
-import { Game, Position } from "../../gameModel.js";
+import { Game } from "../../gameModel.js";
 import { Ability, AbilityOwner, AbilityUpgradeOption } from "../ability.js";
 import { AbilityUpgrade } from "../abilityUpgrade.js";
 import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilitySnipe } from "./abilitySnipe.js";
