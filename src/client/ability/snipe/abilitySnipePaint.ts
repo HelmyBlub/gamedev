@@ -4,7 +4,8 @@ import { GAME_IMAGES, loadImage } from "../../imageLoad.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { Ability, AbilityObject, AbilityOwner, PaintOrderAbility, paintDefaultAbilityStatsUI } from "../ability.js";
 import { pushAbilityUpgradesUiTexts } from "../abilityUpgrade.js";
-import { ABILITY_NAME_SNIPE, ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe, getAbilitySnipeDamage, getAbilitySnipeRange, getShotFrequency } from "./abilitySnipe.js";
+import { ABILITY_NAME_SNIPE, ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe, getAbilitySnipeDamage, getAbilitySnipeRange, getAbilitySnipeShotFrequency } from "./abilitySnipe.js";
+import { paintVisualizationAfterImage } from "./abilitySnipeUpgradeAfterImage.js";
 import { paintVisualizationMoreRifles } from "./abilitySnipeUpgradeMoreRifle.js";
 import { paintVisualizationStayStill } from "./abilitySnipeUpgradeStayStill.js";
 
@@ -44,10 +45,11 @@ export function paintAbilitySnipe(ctx: CanvasRenderingContext2D, abilityOwner: A
     let paintX = Math.floor(abilityOwner.x - cameraPosition.x + centerX);
     let paintY = Math.floor(abilityOwner.y - cameraPosition.y + centerY);
 
-    const direction = abilitySnipe.lastSniperRiflePaintDirection + Math.PI;
+    const direction = abilitySnipe.lastSniperRiflePaintDirection;
     const distance = 20;
     paintSniperRifle(ctx, abilitySnipe, paintX, paintY, direction, distance, game);
     paintVisualizationMoreRifles(ctx, abilityOwner, abilitySnipe, paintX, paintY, game);
+    paintVisualizationAfterImage(ctx, abilityOwner, abilitySnipe, cameraPosition, game);
 }
 
 export function paintSniperRifle(ctx: CanvasRenderingContext2D, abilitySnipe: AbilitySnipe, paintX: number, paintY: number, pointDirection: number, distance: number, game: Game) {
@@ -56,7 +58,7 @@ export function paintSniperRifle(ctx: CanvasRenderingContext2D, abilitySnipe: Ab
     if (sniperRifleImageRef.imageRef?.complete) {
         let sniperRifleImage: HTMLImageElement = sniperRifleImageRef.imageRef;
         ctx.translate(paintX, paintY);
-        ctx.rotate(pointDirection);
+        ctx.rotate(pointDirection + Math.PI);
         ctx.translate(-paintX, -paintY);
         paintX -= Math.floor(sniperRifleImage.width / 2) + distance;
         paintY -= Math.floor(sniperRifleImage.height / 2)
@@ -131,7 +133,7 @@ export function paintAbilitySnipeStatsUI(ctx: CanvasRenderingContext2D, ability:
         textLines.push(
             `Level: ${abilitySnipe.leveling.level}`,
             `Magazine Size: ${abilitySnipe.maxCharges}`,
-            `Shoot Cooldown: ${(getShotFrequency(abilitySnipe) / 1000).toFixed(2)}s`,
+            `Shoot Cooldown: ${(getAbilitySnipeShotFrequency(abilitySnipe) / 1000).toFixed(2)}s`,
             `Reload Time: ${(abilitySnipe.baseRechargeTime / 1000).toFixed(2)}s`,
             `Current XP: ${abilitySnipe.leveling.experience.toFixed(0)}`,
             `XP required for Level Up: ${abilitySnipe.leveling.experienceForLevelUp}`,

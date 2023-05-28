@@ -107,7 +107,7 @@ export function takeTimeMeasure(debug: Debugging | undefined, endName: string, s
     let timeNow = performance.now();
     if (endName !== "") {
         let data = debug.timeMeasuresData?.find((e) => e.name === endName);
-        if (data === undefined) throw Error("did not startTimeMeasure for " + endName);
+        if (data === undefined) return;
         data.timeMeasures.push(timeNow - data.tempTime);
         if (data.timeMeasures.length > 30) data.timeMeasures.shift();
     }
@@ -123,6 +123,9 @@ export function takeTimeMeasure(debug: Debugging | undefined, endName: string, s
 }
 
 export function runner(game: Game) {
+    takeTimeMeasure(game.debug, "total", "");
+    takeTimeMeasure(game.debug, "", "total");
+    takeTimeMeasure(game.debug, "timeout", "");
     takeTimeMeasure(game.debug, "", "runner");
     takeTimeMeasure(game.debug, "", "tick");
     if (game.multiplayer.websocket === null) {
@@ -164,9 +167,14 @@ export function runner(game: Game) {
 
     if (!game.closeGame) {
         let timeoutSleep = determineRunnerTimeout(game);
+        if(timeoutSleep > 17){
+            console.log("timeoutSleep to big?");
+            debugger;
+        } 
         setTimeout(() => runner(game), timeoutSleep);
     }
     takeTimeMeasure(game.debug, "runner", "");
+    takeTimeMeasure(game.debug, "", "timeout");
 }
 
 export function setRelativeMousePosition(event: MouseEvent, game: Game) {

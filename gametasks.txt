@@ -16,7 +16,8 @@ current tasks:
             - hp regen ability get boss skill points
 
     - bug: second rilfe with bounce upgarde in blocking tile: probably create a bouncing projectile -> should not create any
-
+- bug: line hit detection off
+- find out: slow down not visible thorugh stats? why? lag caused by game?
 - redesign levelingCharacter/abilityLevelingCharacter to be more independant in code
 
 

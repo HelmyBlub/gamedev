@@ -36,7 +36,7 @@ export function paintVisualizationMoreRifles(ctx: CanvasRenderingContext2D, abil
     if (!upgradeMoreRifles) return;
 
     for (let i = 0; i < upgradeMoreRifles.numberRifles; i++) {
-        const pointDirection = upgradeMoreRifles.lastSniperRiflePaintDirection[i] + Math.PI;
+        const pointDirection = upgradeMoreRifles.lastSniperRiflePaintDirection[i];
         const newPosition = getMoreRiflesPosition({ x: paintX, y: paintY }, upgradeMoreRifles, i);
         paintSniperRifle(ctx, abilitySnipe, newPosition.x, newPosition.y, pointDirection, 0, game);
     }
