@@ -1,12 +1,14 @@
 import { calculateDirection } from "../../game.js";
 import { Game, Position } from "../../gameModel.js";
+import { nextRandom } from "../../randomNumberGenerator.js";
 import { Ability, AbilityOwner, AbilityUpgradeOption } from "../ability.js";
 import { AbilityUpgrade } from "../abilityUpgrade.js";
 import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilitySnipe, createAbilityObjectSnipeInitial, getAbilitySnipeShotFrequency } from "./abilitySnipe.js";
 import { paintSniperRifle } from "./abilitySnipePaint.js";
 
 export const ABILITY_SNIPE_UPGRADE_AFTER_IMAGE = "After Image";
-const AFTER_IAMGE_DURATION = 3000;
+const AFTER_IMAGE_DURATION = 3000;
+const AFTER_IMAGE_COUNTER_PER_LEVEL = 2;
 
 type AfterImage = {
     castPosition: Position,
@@ -17,6 +19,8 @@ type AfterImage = {
 }
 
 export type AbilityUpgradeAfterImage = AbilityUpgrade & {
+    cooldown: number,
+    nextValidSpawnTime?: number,
     afterImages: AfterImage[],
 }
 
@@ -32,11 +36,12 @@ export function castSnipeAfterImage(abilityOwner: AbilityOwner, abilitySnipe: Ab
     const upgradeAfterImage: AbilityUpgradeAfterImage = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE];
     if (!upgradeAfterImage) return;
 
-    if (upgradeAfterImage.afterImages.length < upgradeAfterImage.level) {
+    if (upgradeAfterImage.nextValidSpawnTime === undefined || upgradeAfterImage.nextValidSpawnTime <= game.state.time) {
+        upgradeAfterImage.nextValidSpawnTime = game.state.time + upgradeAfterImage.cooldown;
         upgradeAfterImage.afterImages.push({
             position: { x: abilityOwner.x, y: abilityOwner.y },
             castPosition: { x: castPosition.x, y: castPosition.y },
-            removeTime: game.state.time + AFTER_IAMGE_DURATION,
+            removeTime: game.state.time + AFTER_IMAGE_DURATION,
             nextAllowedShotTime: game.state.time + getAbilitySnipeShotFrequency(abilitySnipe),
             direction: calculateDirection(abilityOwner, castPosition),
         });
@@ -65,7 +70,11 @@ export function tickAbilityUpgradeAfterImage(abilitySnipe: AbilitySnipe, ability
         const afterImage = upgrade.afterImages[i];
         if (afterImage.nextAllowedShotTime <= game.state.time) {
             afterImage.nextAllowedShotTime += getAbilitySnipeShotFrequency(abilitySnipe);
-            createAbilityObjectSnipeInitial(afterImage.position, abilityOwner.faction, abilitySnipe, afterImage.castPosition, false, game);
+            const randomizedCastPosition = {
+                x: afterImage.castPosition.x + nextRandom(game.state.randomSeed) * 10 - 5,
+                y: afterImage.castPosition.y + nextRandom(game.state.randomSeed) * 10 - 5,
+            }    
+            createAbilityObjectSnipeInitial(afterImage.position, abilityOwner.faction, abilitySnipe, randomizedCastPosition, false, game);
         }
         if (afterImage.removeTime <= game.state.time) {
             upgrade.afterImages.splice(i, 1);
@@ -82,12 +91,14 @@ function pushAbilityUpgradeAfterImage(ability: Ability, upgradeOptions: AbilityU
                 up = {
                     level: 0,
                     afterImages: [],
+                    cooldown: AFTER_IMAGE_DURATION,
                 }
                 as.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE] = up;
             } else {
                 up = as.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE];
             }
             up.level++;
+            up.cooldown = AFTER_IMAGE_DURATION / (AFTER_IMAGE_COUNTER_PER_LEVEL * up.level);
         }
     });
 }
@@ -95,7 +106,7 @@ function pushAbilityUpgradeAfterImage(ability: Ability, upgradeOptions: AbilityU
 function getAbilityUpgradeAfterImageUiText(ability: Ability): string {
     const abilitySnipe = ability as AbilitySnipe;
     let upgrades: AbilityUpgradeAfterImage = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE];
-    return `${ABILITY_SNIPE_UPGRADE_AFTER_IMAGE}: ${upgrades.level}`;
+    return `${ABILITY_SNIPE_UPGRADE_AFTER_IMAGE}s: ${upgrades.level * AFTER_IMAGE_COUNTER_PER_LEVEL}`;
 }
 
 function getAbilityUpgradeAfterImageUiTextLong(ability: Ability): string[] {
@@ -105,7 +116,8 @@ function getAbilityUpgradeAfterImageUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
     textLines.push(ABILITY_SNIPE_UPGRADE_AFTER_IMAGE + levelText);
     textLines.push(`After shooting an after image is created.`);
-    textLines.push(`It stays and repeats the same shot for ${AFTER_IAMGE_DURATION/1000}s.`);
+    textLines.push(`It stays and repeats the same shot for ${AFTER_IMAGE_DURATION/1000}s.`);
+    textLines.push(`Number After Images: +${AFTER_IMAGE_COUNTER_PER_LEVEL}.`);
 
     return textLines;
 }
