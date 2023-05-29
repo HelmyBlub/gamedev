@@ -168,13 +168,23 @@ export function tickAbilityObjects(abilityObjects: AbilityObject[], game: Game) 
     takeTimeMeasure(game.debug, "tickAbilityObjects", "");
 }
 
-export function levelingAbilityXpGain(ability: Ability, experience: number) {
+export function levelingAbilityXpGain(ability: Ability, experience: number, game: Game) {
     if (ability.leveling) {
+        let owner = findAbilityOwnerByAbilityId(ability.id, game);
+        if(!owner || owner.isDead || owner.isPet) return;
         ability.leveling.experience += experience;
         while (ability.leveling.experience >= ability.leveling.experienceForLevelUp) {
             levelUp(ability);
         }
     }
+}
+
+export function findAbilityOwnerByAbilityId(abilityId: number, game: Game): Character | undefined{
+    for(let player of game.state.players){
+        const ability = player.character.abilities.find(a => a.id === abilityId);
+        if(ability) return player.character;
+    }
+    return undefined;
 }
 
 export function findAbilityById(abilityId: number, game: Game): Ability | undefined {

@@ -8,7 +8,6 @@ import { RandomSeed } from "../randomNumberGenerator.js";
 import { tickDefaultCharacter } from "./character.js";
 import { tickFixPositionRespawnEnemyCharacter } from "./enemy/fixPositionRespawnEnemy.js";
 import { PathingCache } from "./pathing.js";
-import { ABILITY_LEVELING_CHARACTER } from "./playerCharacters/abilityLevelingCharacter.js";
 import { initCharacterChoiceOptons } from "./playerCharacters/playerCharacters.js";
 
 export type CHARACTER_TYPE_FUNCTIONS = {

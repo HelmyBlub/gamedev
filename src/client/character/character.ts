@@ -47,7 +47,7 @@ export function characterTakeDamage(character: Character, damage: number, game: 
         if(abilityRefId !== undefined){
             let ability = findAbilityById(abilityRefId, game);
             if (ability) {
-                levelingAbilityXpGain(ability, character.experienceWorth);
+                levelingAbilityXpGain(ability, character.experienceWorth, game);
             }
         }
         removeCharacterDebuffs(character, game);
@@ -205,6 +205,7 @@ export function findMyCharacter(game: Game): Character | undefined{
 
 export function tickDefaultCharacter(character: Character, game:Game, pathingCache: PathingCache | null){
     const isPlayer = character.faction === "player";
+    if(character.isDead) return;
     moveCharacterTick(character, game.state.map, game.state.idCounter, isPlayer);
 }
 
@@ -214,7 +215,7 @@ export function determineClosestCharacter(position: Position, characters: Charac
 
     for (let i = 0; i < characters.length; i++) {
         if (characters[i].isDead) continue;
-        if (characters[i].type === "levelingCharacter" && (characters[i] as LevelingCharacter).isPet) continue;
+        if (characters[i].isPet) continue;
         let distance = calculateDistance(position, characters[i]);
         if (minDistanceCharacter === null || minDistance > distance) {
             minDistance = distance;
