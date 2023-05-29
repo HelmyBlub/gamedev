@@ -37,8 +37,11 @@ export function getNextId(idCounter: IdCounter) {
 }
 
 export function gameRestart(game: Game) {
-    if (game.testing.recordAndReplay) {
-        setTestSeeds(game);
+    if (game.testing.replay) {
+        setReplaySeeds(game);
+    }
+    if (game.testing.record) {
+        if (game.testing.record.restartPlayerInput) game.testing.record.collectedTestInputs.push(game.testing.record.restartPlayerInput);
     }
     gameInit(game);
 }
@@ -129,10 +132,10 @@ export function runner(game: Game) {
     takeTimeMeasure(game.debug, "", "runner");
     takeTimeMeasure(game.debug, "", "tick");
     if (game.multiplayer.websocket === null) {
-        if (game.testing.recordAndReplay && game.testing.recordAndReplay.frameSkipAmount && game.testing.recordAndReplay.frameSkipAmount > 0) {
-            for (let i = 0; i < game.testing.recordAndReplay.frameSkipAmount; i++) {
+        if (game.testing.replay && game.testing.replay.frameSkipAmount && game.testing.replay.frameSkipAmount > 0) {
+            for (let i = 0; i < game.testing.replay.frameSkipAmount; i++) {
                 tick(game.tickInterval, game);
-                if (i < game.testing.recordAndReplay.frameSkipAmount - 1) takeTimeMeasure(game.debug, "tick", "tick");
+                if (i < game.testing.replay.frameSkipAmount - 1) takeTimeMeasure(game.debug, "tick", "tick");
             }
         } else {
             tick(game.tickInterval, game);
@@ -167,10 +170,10 @@ export function runner(game: Game) {
 
     if (!game.closeGame) {
         let timeoutSleep = determineRunnerTimeout(game);
-        if(timeoutSleep > 17){
+        if (timeoutSleep > 17) {
             console.log("timeoutSleep to big?");
             debugger;
-        } 
+        }
         setTimeout(() => runner(game), timeoutSleep);
     }
     takeTimeMeasure(game.debug, "runner", "");
@@ -192,21 +195,21 @@ export function createPaintTextData(position: Position, text: string, color: str
     }
 }
 
-export function getClientInfo(clientId: number, game: Game): ClientInfo | undefined{
-    for(let clientInfo of game.state.clientInfos){
-        if(clientInfo.id === clientId){
+export function getClientInfo(clientId: number, game: Game): ClientInfo | undefined {
+    for (let clientInfo of game.state.clientInfos) {
+        if (clientInfo.id === clientId) {
             return clientInfo;
         }
     }
     return undefined;
 }
 
-export function getClientInfoByCharacterId(characterId: number, game: Game): ClientInfo | undefined{
+export function getClientInfoByCharacterId(characterId: number, game: Game): ClientInfo | undefined {
     return getClientInfo(findPlayerByCharacterId(game.state.players, characterId)!.clientId, game);
 }
 
-export function getTimeSinceFirstKill(gameState: GameState): number{
-    if(gameState.timeFirstKill === undefined) return 0;
+export function getTimeSinceFirstKill(gameState: GameState): number {
+    if (gameState.timeFirstKill === undefined) return 0;
     return gameState.time - gameState.timeFirstKill;
 }
 
@@ -243,7 +246,7 @@ export function calculateDistancePointToLine(point: Position, linestart: Positio
 }
 
 function determineRunnerTimeout(game: Game): number {
-    if (game.testing.recordAndReplay?.zeroTimeout) {
+    if (game.testing.replay?.zeroTimeout) {
         return 0;
     } else {
         if (game.multiplayer.websocket === null) {
@@ -279,9 +282,11 @@ function gameEndedCheck(game: Game) {
 }
 
 function endGame(state: GameState, testing: TestingStuff) {
-    if (testing.recordAndReplay) {
-        if (testing.recordAndReplay.collectedTestInputs) console.log("testInputs", testing.recordAndReplay.collectedTestInputs);
-        console.log("time:", performance.now() - testing.recordAndReplay.startTime);
+    if (testing.replay) {
+        console.log("time:", performance.now() - testing.replay.startTime);
+    }
+    if (testing.record) {
+        if (testing.record.collectedTestInputs) console.log("testInputs", testing.record.collectedTestInputs);
     }
     state.ended = true;
     let newScore: number = 0;
@@ -299,7 +304,7 @@ function endGame(state: GameState, testing: TestingStuff) {
 
 function tick(gameTimePassed: number, game: Game) {
     if (!game.state.ended && (!game.state.paused || game.state.tickOnceInPaused)) {
-        if(game.state.tickOnceInPaused) game.state.tickOnceInPaused = false;
+        if (game.state.tickOnceInPaused) game.state.tickOnceInPaused = false;
         doStuff(game);
         addTestReplayInputs(game);
         game.state.time += gameTimePassed;
@@ -331,15 +336,16 @@ function doStuff(game: Game) {
     autoSendMyMousePosition(game);
 }
 
-function autoSendMyMousePosition(game: Game){
-    if(!game.multiplayer.autosendMousePosition.active) return;
-    if(game.multiplayer.autosendMousePosition.nextTime <= game.state.time){
+function autoSendMyMousePosition(game: Game) {
+    if (game.testing.replay) return;
+    if (!game.multiplayer.autosendMousePosition.active) return;
+    if (game.multiplayer.autosendMousePosition.nextTime <= game.state.time) {
         let cameraPosition = getCameraPosition(game);
         let castPosition = {
             x: game.mouseRelativeCanvasPosition.x - game.canvasElement!.width / 2 + cameraPosition.x,
             y: game.mouseRelativeCanvasPosition.y - game.canvasElement!.height / 2 + cameraPosition.y
-        }            
-    
+        }
+
         handleCommand(game, {
             command: "playerInput",
             clientId: game.multiplayer.myClientId,
@@ -381,20 +387,20 @@ function checkDeathCircleSpawn(game: Game) {
 }
 
 function addTestReplayInputs(game: Game) {
-    if (game.testing.recordAndReplay && game.testing.recordAndReplay.replayPlayerInputs) {
-        let recordAndReplay = game.testing.recordAndReplay;
-        if (recordAndReplay.replayInputCounter === undefined) recordAndReplay.replayInputCounter = 0;
-        while (recordAndReplay.replayPlayerInputs![recordAndReplay.replayInputCounter]
-            && recordAndReplay.replayPlayerInputs![recordAndReplay.replayInputCounter].executeTime < game.state.time + 1000
+    if (game.testing.replay) {
+        let replay = game.testing.replay;
+        if (replay.replayInputCounter === undefined) replay.replayInputCounter = 0;
+        while (replay.replayPlayerInputs![replay.replayInputCounter]
+            && replay.replayPlayerInputs![replay.replayInputCounter].executeTime < game.state.time + 1000
         ) {
-            let original = recordAndReplay.replayPlayerInputs![recordAndReplay.replayInputCounter]
+            let original = replay.replayPlayerInputs![replay.replayInputCounter]
             let data = { ...original };
             if (game.state.players.length === 1
                 || (data.clientId === -1 && game.state.players[0].clientId === game.multiplayer.myClientId)) {
                 data.clientId = game.multiplayer.myClientId;
             }
             handleCommand(game, data);
-            recordAndReplay.replayInputCounter++;
+            replay.replayInputCounter++;
         }
     }
 }
@@ -413,14 +419,12 @@ function determineActiveChunks(characters: Character[], map: GameMap, game: Game
     takeTimeMeasure(game.debug, "determineActiveChunks", "");
 }
 
-function setTestSeeds(game: Game) {
+function setReplaySeeds(game: Game) {
     game.state.randomSeed.seed = 0;
     game.state.map = createMap();
     game.state.map.seed = 0;
-    if (game.testing.recordAndReplay) {
-        game.testing.recordAndReplay.collectedTestInputs = []
-        if (game.testing.recordAndReplay.restartPlayerInput) game.testing.recordAndReplay.collectedTestInputs.push(game.testing.recordAndReplay.restartPlayerInput);
-        if (game.testing.recordAndReplay.mapSeed !== undefined) game.state.map.seed = game.testing.recordAndReplay.mapSeed;
-        if (game.testing.recordAndReplay.randomStartSeed !== undefined) game.state.randomSeed.seed = game.testing.recordAndReplay.randomStartSeed;
+    if (game.testing.replay) {
+        if (game.testing.replay.mapSeed !== undefined) game.state.map.seed = game.testing.replay.mapSeed;
+        if (game.testing.replay.randomStartSeed !== undefined) game.state.randomSeed.seed = game.testing.replay.randomStartSeed;
     };
 }

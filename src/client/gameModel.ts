@@ -19,17 +19,21 @@ export type IdCounter = {
 }
 
 export type TestingStuff = {
-    recordAndReplay?:{
+    record?:{
+        collectedTestInputs: Omit<PlayerInput, "executeTime">[],
+        mapSeed?: number,
+        randomStartSeed?: number,
+        restartPlayerInput?: Omit<CommandRestart, "executeTime">,
+    }
+    replay?:{
         zeroTimeout?: boolean,
         doNotPaint?: boolean,
         frameSkipAmount?: number,
         startTime: number,
-        collectedTestInputs?: Omit<PlayerInput, "executeTime">[],
-        replayPlayerInputs?: PlayerInput[],
-        replayInputCounter?: number,
         mapSeed?: number,
         randomStartSeed?: number,
-        restartPlayerInput?: Omit<CommandRestart, "executeTime">,
+        replayPlayerInputs?: PlayerInput[],
+        replayInputCounter?: number,
     }
     autoPlay: {
         hotkeyEnabled: boolean,

@@ -9,7 +9,8 @@ import { compressString } from "./stringCompress.js";
 type Command = { command: string };
 type CommandTimeUpdate = Command & { time: number };
 export type CommandRestart = PlayerInput & {
-    testing?: boolean,
+    recordInputs?: boolean,
+    replay?: boolean,
     testMapSeed?: number,
     testRandomStartSeed?: number,
 }
@@ -132,26 +133,30 @@ function handleReceivedInputsWhichCameBeforeGameState(game: Game) {
 }
 
 function restart(game: Game, data: CommandRestart) {
-    if (game.testing.recordAndReplay?.collectedTestInputs !== undefined) game.testing.recordAndReplay.collectedTestInputs.push(data);
+    if (game.testing.record?.collectedTestInputs !== undefined) game.testing.record.collectedTestInputs.push(data);
     game.state.playerInputs.push(data);
     game.state.triggerRestart = true;
     game.multiplayer.lastRestartReceiveTime = performance.now();
     game.multiplayer.cachePlayerInputs = [];
-    if (data.testing) {
-        if (game.testing.recordAndReplay) {
-            game.testing.recordAndReplay.startTime = performance.now();
-        } else {
-            game.testing.recordAndReplay = { startTime: performance.now() };
-        }
-        if (data.testMapSeed !== undefined) game.testing.recordAndReplay.mapSeed = data.testMapSeed;
-        if (data.testRandomStartSeed !== undefined) game.testing.recordAndReplay.randomStartSeed = data.testRandomStartSeed;
-    } else if (game.testing.recordAndReplay) {
-        delete game.testing.recordAndReplay;
+    if (data.recordInputs) {
+        game.testing.record = {collectedTestInputs: []};
+        game.testing.record.restartPlayerInput = { ...data };
+        if (data.testMapSeed !== undefined) game.testing.record.mapSeed = data.testMapSeed;
+        if (data.testRandomStartSeed !== undefined) game.testing.record.randomStartSeed = data.testRandomStartSeed;
+    } else if (game.testing.record) {
+        delete game.testing.record;
+    }
+    if(data.replay){
+        if(!game.testing.replay) game.testing.replay = {startTime: performance.now()};
+        game.testing.replay.mapSeed = data.testMapSeed;
+        game.testing.replay.randomStartSeed = data.testRandomStartSeed;
+    }else{
+        delete game.testing.replay;
     }
 }
 
 function playerInput(game: Game, data: PlayerInput) {
-    if (game.testing.recordAndReplay?.collectedTestInputs !== undefined) game.testing.recordAndReplay.collectedTestInputs.push(data);
+    if (game.testing.record !== undefined) game.testing.record.collectedTestInputs.push(data);
     if (game.state.triggerRestart) {
         game.multiplayer.cachePlayerInputs!.push(data);
     } else {

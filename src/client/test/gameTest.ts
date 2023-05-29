@@ -17,7 +17,7 @@ import { detectAbilityObjectToCharacterHit } from "../ability/ability.js";
 export function testGame(game: Game) {
     console.log("start test");
     //testPathing(game.ctx);
-    //runGameWithPlayerInputs(game, testInputs);
+    runGameWithPlayerInputs(game, testInputs);
     //runGameWithPlayerInputs(game, testMultiplayerInputs);
     //testTemp();
     console.log("end test");
@@ -42,14 +42,14 @@ async function runGameWithPlayerInputsMultiplayer(game: Game, playerInputs: Play
     const games: Game[] = [game];
     if (!game.multiplayer.websocket) {
         websocketConnect(game);
-        game.testing.recordAndReplay = {
+        game.testing.replay = {
             startTime: performance.now(),
         };
     }
     for (let i = 1; i < playerCount; i++) {
         games.push(createGame(undefined, true));
         websocketConnect(games[i]);
-        games[i].testing.recordAndReplay = {
+        games[i].testing.replay = {
             startTime: performance.now(),
             doNotPaint: true,
         };
@@ -92,17 +92,18 @@ async function runGameWithPlayerInputsMultiplayer(game: Game, playerInputs: Play
 //input1 time: 131692, kills: 19450, score: 20234
 //input1 time: 89343.89999999944, kills: 19450, score: 20234
 function runGameWithPlayerInputsSinglePlayer(game: Game, playerInputs: (PlayerInput | Omit<CommandRestart, "executeTime">)[]) {
-    game.testing.recordAndReplay = {
+    game.testing.replay = {
         startTime: performance.now(),
         replayPlayerInputs: [...playerInputs as any],
     };
     if (!game.multiplayer.websocket) {
-        game.testing.recordAndReplay.frameSkipAmount = 60;
-        game.testing.recordAndReplay.zeroTimeout = true;
+        game.testing.replay.frameSkipAmount = 60;
+        game.testing.replay.zeroTimeout = true;
     }
     game.state.ended = true;
     if (playerInputs[0].command === "restart") {
-        let startCommand = game.testing.recordAndReplay.replayPlayerInputs!.shift();
+        let startCommand: CommandRestart = game.testing.replay.replayPlayerInputs!.shift() as any;
+        startCommand.replay = true;
         handleCommand(game, startCommand);
     } else {
         handleCommand(game, { command: "restart", clientId: game.multiplayer.myClientId, testing: true });

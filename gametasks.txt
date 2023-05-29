@@ -1,5 +1,4 @@
 current tasks:
-- bug: replay not working because of mouse updates
 - wrong tooltip: stand still shows 1% instead of 100%
 - Sniper: LevelingAbilityCharacter
     - needs more upgrade choice?

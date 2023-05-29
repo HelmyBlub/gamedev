@@ -6,7 +6,7 @@ export const testInputs: (PlayerInput | Omit<CommandRestart, "executeTime">)[] =
     {
         "command": "restart",
         "clientId": -1,
-        "testing": true,
+        "recordInputs": true,
         "testMapSeed": 0.6466901037495464,
         "testRandomStartSeed": 1963.4507981697889
     },

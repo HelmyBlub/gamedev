@@ -66,12 +66,11 @@ export function keyDown(event: { code: string, preventDefault?: Function, stopPr
             commandRestart = {
                 command: "restart",
                 clientId: game.multiplayer.myClientId,
-                testing: true,
+                recordInputs: true,
+                replay: false,
                 testMapSeed: game.state.map.seed,
                 testRandomStartSeed: game.state.randomSeed.seed
             };
-            if (game.testing.recordAndReplay === undefined) game.testing.recordAndReplay = { startTime: 0 };
-            game.testing.recordAndReplay.restartPlayerInput = { ...commandRestart };
             handleCommand(game, commandRestart);
             break;
         case "KeyT":
