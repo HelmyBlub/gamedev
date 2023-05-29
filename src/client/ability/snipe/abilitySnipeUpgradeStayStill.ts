@@ -96,8 +96,8 @@ function getAbilityUpgradeStayStillUiTextLong(ability: Ability): string[] {
 
     const textLines: string[] = [];
     textLines.push(ABILITY_SNIPE_UPGRADE_STAY_STILL + levelText);
-    textLines.push(`Not moving or shooting for ${STAY_STILL_TIME/1000} seconds`);
-    textLines.push(`will activate ${DAMAGE_FACTOR}% damage bonus.`);
+    textLines.push(`Not moving or shooting for ${STAY_STILL_TIME / 1000} seconds`);
+    textLines.push(`will activate ${DAMAGE_FACTOR * 100}% damage bonus.`);
     textLines.push(`The damage bonus will be active until`);
     textLines.push(`rifle reloading.`);
     return textLines;

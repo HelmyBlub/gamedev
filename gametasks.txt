@@ -1,12 +1,15 @@
 current tasks:
-- wrong tooltip: stand still shows 1% instead of 100%
 - Sniper: LevelingAbilityCharacter
+    - balancing ideas:
+        - after image: 
+            - change can have more than one up per level
+            - slightly change shoot direction?
+
     - needs more upgrade choice?
         - combined upgrades?
             - more rifle + fireline synergy
             - more rifle + backwards shot synergy
 
-    - balancing ideas:
 
     - secondary abilities?
         - choose secondary ability?

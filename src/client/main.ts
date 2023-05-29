@@ -3,6 +3,7 @@ import { onDomLoadSetCharacterClasses } from "./character/playerCharacters/playe
 import { addSniperClass } from "./character/playerCharacters/sniperCharacter.js";
 import { addSwordClass } from "./character/playerCharacters/swordCharacterClass.js";
 import { addTowerClass } from "./character/playerCharacters/towerCharacterClass.js";
+import { handleCommand } from "./commands.js";
 import { onDomLoadSetDebuffsFunctions } from "./debuff/debuff.js";
 import { gameRestart, runner, setRelativeMousePosition } from "./game.js";
 import { createDefaultGameData, Game } from "./gameModel.js";
@@ -43,7 +44,15 @@ export function createGame(canvasElementId: string | undefined, forTesting: bool
         c.height = window.innerHeight - 2;
         c.width = window.innerWidth - 2;
         addHTMLDebugCheckboxesToSettings(game);
-        gameRestart(game);
+        const commandRestart = {
+            command: "restart",
+            clientId: game.multiplayer.myClientId,
+            recordInputs: true,
+            replay: false,
+            testMapSeed: game.state.map.seed,
+            testRandomStartSeed: game.state.randomSeed.seed
+        };
+        handleCommand(game, commandRestart);
     } else {
         game = createDefaultGameData(undefined, undefined);
     }
