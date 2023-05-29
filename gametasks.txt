@@ -7,7 +7,6 @@ current tasks:
 
     - balancing ideas:
 
-
     - secondary abilities?
         - choose secondary ability?
             - teleport?

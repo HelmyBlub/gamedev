@@ -17,7 +17,7 @@ import { detectAbilityObjectToCharacterHit } from "../ability/ability.js";
 export function testGame(game: Game) {
     console.log("start test");
     //testPathing(game.ctx);
-    runGameWithPlayerInputs(game, testInputs);
+    //runGameWithPlayerInputs(game, testInputs2);
     //runGameWithPlayerInputs(game, testMultiplayerInputs);
     //testTemp();
     console.log("end test");
