@@ -1,4 +1,4 @@
-import { ABILITIES_FUNCTIONS, AbilityUpgradeOption, paintAbilityObjects, paintUiForAbilities } from "./ability/ability.js";
+import { ABILITIES_FUNCTIONS, AbilityUpgradeOption, paintAbilityObjects, paintDefaultAbilityStatsUI, paintUiForAbilities } from "./ability/ability.js";
 import { getPlayerCharacters } from "./character/character.js";
 import { Character, CharacterUpgradeChoice, DEFAULT_CHARACTER } from "./character/characterModel.js";
 import { paintCharacterStatsUI, paintCharacters } from "./character/characterPaint.js";
@@ -257,7 +257,10 @@ function paintPlayerStatsUI(ctx: CanvasRenderingContext2D, character: Character,
     let paintX = 20;
     let paintY = 60;
 
-    let area = paintCharacterStatsUI(ctx, character, paintX, paintY, game);
+
+    let area = paintGameRulesUI(ctx, character, paintX, paintY, game);
+    paintX += area.width + spacing;
+    area = paintCharacterStatsUI(ctx, character, paintX, paintY, game);
     paintX += area.width + spacing;
 
     for (let ability of character.abilities) {
@@ -267,6 +270,17 @@ function paintPlayerStatsUI(ctx: CanvasRenderingContext2D, character: Character,
             paintX += area.width + spacing;
         }
     }
+}
+
+function paintGameRulesUI(ctx: CanvasRenderingContext2D, character: Character, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
+    const textLines: string[] = [
+        `Game Rules:`,
+        `Game timer starts when enemy is killed.`,
+        `On 30seconds a expanding death zone`,
+        `beginns to grow.`,
+        `Every minute one boss enemy spawns.`,
+    ];
+    return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
 }
 
 function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Character, game: Game) {

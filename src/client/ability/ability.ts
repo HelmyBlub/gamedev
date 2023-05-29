@@ -320,7 +320,7 @@ function levelUp(ability: Ability) {
         ability.leveling.experience -= ability.leveling.experienceForLevelUp;
         ability.leveling.experienceForLevelUp += ability.leveling.level * 5;
         if(ability.leveling.level > 100){
-            ability.leveling.experienceForLevelUp *= 1.01;
+            ability.leveling.experienceForLevelUp = Math.floor(ability.leveling.experienceForLevelUp * 1.01);
         }
         const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
         if (abilityFunctions.setAbilityToLevel) {

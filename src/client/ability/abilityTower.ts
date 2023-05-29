@@ -392,12 +392,13 @@ function paintAbilityTowerUI(ctx: CanvasRenderingContext2D, ability: Ability, dr
 
 function paintAbilityTowerStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
     const abilityTower = ability as AbilityTower;
+    const nextTower = abilityTower.availableAbilityKeys[abilityTower.orderOfAbilities[abilityTower.currentAbilityIndex]];
     const textLines: string[] = [
         `Ability: ${abilityTower.name}`,
         `Key: ${playerInputBindingToDisplayValue(abilityTower.playerInputBinding!, game)}`,
-        "Click to place Tower. Tower always connects to closest other Tower.",
-        "More connections equals more damage. Towers have random",
-        "Abilities. Abilities get more powerfull per connection",
+        "Click to place Tower. Tower connects to closest other Tower when placed.",
+        "More connections equals stronger Tower. Connection Lines do damage.",
+        `Ability of next placed Tower: ${nextTower}.`,
         "Ability stats:",
         `Max Towers: ${abilityTower.orderOfAbilities.length}`,
         `Max Click Range: ${abilityTower.maxClickRange}`,
