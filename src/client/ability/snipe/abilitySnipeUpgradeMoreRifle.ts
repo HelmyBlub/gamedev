@@ -27,7 +27,7 @@ export function castSnipeMoreRifles(abilityOwner: AbilityOwner, abilitySnipe: Ab
     if (!upgradeMoreRifles) return;
     for (let i = 0; i < upgradeMoreRifles.numberRifles; i++) {
         const newPosition = getMoreRiflesPosition(abilityOwner, upgradeMoreRifles, i);
-        createAbilityObjectSnipeInitial(newPosition, abilityOwner.faction, abilitySnipe, castPosition, false, game);
+        createAbilityObjectSnipeInitial(newPosition, abilityOwner.faction, abilitySnipe, castPosition, false, false, game);
     }
 }
 

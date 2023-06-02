@@ -7,6 +7,7 @@ import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilitySnipe, createAbilityObjectSnipe
 export const ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT = "Backwards Shot";
 
 export type AbilityUpgradeBackwardsShot = AbilityUpgrade & {
+    upgradeSynergry: boolean,
 }
 
 export function addAbilitySnipeUpgradeBackwardsShot() {
@@ -17,16 +18,19 @@ export function addAbilitySnipeUpgradeBackwardsShot() {
     }
 }
 
-export function castSnipeBackwardsShot(abilityOwner: AbilityOwner, abilitySnipe: AbilitySnipe, castPosition: Position, game: Game) {
+export function castSnipeBackwardsShot(startPosition: Position, faction: string, abilitySnipe: AbilitySnipe, castPosition: Position, playerTriggered: boolean, game: Game) {
     const upgradeBackwardsShot: AbilityUpgradeBackwardsShot = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT];
     if (!upgradeBackwardsShot) return;
+    if (!playerTriggered && !upgradeBackwardsShot.upgradeSynergry) return;
+
     for (let i = 0; i < upgradeBackwardsShot.level; i++) {
-        const newCastPosition = getBackwardsShotPosition(abilityOwner, castPosition, upgradeBackwardsShot, i);
-        createAbilityObjectSnipeInitial(abilityOwner, abilityOwner.faction, abilitySnipe, newCastPosition, false, game);
+        const newCastPosition = getBackwardsShotPosition(startPosition, castPosition, upgradeBackwardsShot, i);
+        createAbilityObjectSnipeInitial(startPosition, faction, abilitySnipe, newCastPosition, false, true, game);
     }
 }
 
 function pushAbilityUpgradeBackwardsShot(ability: Ability, upgradeOptions: AbilityUpgradeOption[]) {
+    const upgradeBackwardsShot: AbilityUpgradeBackwardsShot| undefined = ability.upgrades[ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT];   
     upgradeOptions.push({
         name: ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT, probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilitySnipe;
@@ -34,6 +38,7 @@ function pushAbilityUpgradeBackwardsShot(ability: Ability, upgradeOptions: Abili
             if (as.upgrades[ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT] === undefined) {
                 up = {
                     level: 0,
+                    upgradeSynergry: false,
                 }
                 as.upgrades[ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT] = up;
             } else {
@@ -42,31 +47,48 @@ function pushAbilityUpgradeBackwardsShot(ability: Ability, upgradeOptions: Abili
             up.level++;
         }
     });
+    if (upgradeBackwardsShot && !upgradeBackwardsShot.upgradeSynergry) {
+        const probability = 0.3 * upgradeBackwardsShot.level;
+        upgradeOptions.push({
+            name: `Synergry ${ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT}`,
+            upgradeName: ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT,
+            probabilityFactor: probability,
+            upgrade: (a: Ability) => {
+                let up: AbilityUpgradeBackwardsShot = a.upgrades[ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT];
+                up.upgradeSynergry = true;
+            }
+        });
+    }    
 }
 
 function getAbilityUpgradeBackwardsShotUiText(ability: Ability): string {
     const abilitySnipe = ability as AbilitySnipe;
-    let upgrades: AbilityUpgradeBackwardsShot = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT];
-    return `${ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT} +${upgrades.level}`;
+    let upgrade: AbilityUpgradeBackwardsShot = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT];
+    return `${ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT} +${upgrade.level}` + (upgrade.upgradeSynergry ? " (synergry)" : "");
 }
 
-function getAbilityUpgradeBackwardsShotUiTextLong(ability: Ability): string[] {
+function getAbilityUpgradeBackwardsShotUiTextLong(ability: Ability, name: string | undefined): string[] {
     const abilitySnipe = ability as AbilitySnipe;
     const upgrade: AbilityUpgradeBackwardsShot | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT];
     const levelText = (upgrade ? `(${upgrade.level + 1})` : "");
     const textLines: string[] = [];
-    textLines.push(ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT + levelText);
-    textLines.push(`When shooting, you also shot an additional`);
-    textLines.push(`shot backwards.`);
+    if (name && name.startsWith("Synergry")) {
+        textLines.push(`Synergry ${ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT}`);
+        textLines.push(`Most other upgrades will benefit from backwards shot`);
+    } else {
+        textLines.push(ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT + levelText);
+        textLines.push(`When shooting, you also shot an additional`);
+        textLines.push(`shot backwards.`);
+    }
 
     return textLines;
 }
 
-function getBackwardsShotPosition(ownerPosition: Position, castPosition: Position, upgrade: AbilityUpgradeBackwardsShot, backwardsShotNumber: number) {
-    const originalDirection = calculateDirection(ownerPosition, castPosition);
+function getBackwardsShotPosition(startPosition: Position, castPosition: Position, upgrade: AbilityUpgradeBackwardsShot, backwardsShotNumber: number) {
+    const originalDirection = calculateDirection(startPosition, castPosition);
     const shotAngleChange = 0.1;
     const shotsSpreadAngle = shotAngleChange * (upgrade.level - 1);
     const shotBackwardsAngleStart = originalDirection + Math.PI - shotsSpreadAngle / 2;
     const newDirection = shotBackwardsAngleStart + backwardsShotNumber * shotAngleChange;
-    return calcNewPositionMovedInDirection(ownerPosition, newDirection, 40);
+    return calcNewPositionMovedInDirection(startPosition, newDirection, 40);
 }

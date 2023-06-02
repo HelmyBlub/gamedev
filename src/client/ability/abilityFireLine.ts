@@ -49,7 +49,7 @@ export function createAbilityFireLine(
 }
 
 export function createAbilityObjectFireLine(
-    abilityOwner: AbilityOwner,
+    faction: string,
     startPosition: Position,
     endPosition: Position,
     damage: number,
@@ -66,7 +66,7 @@ export function createAbilityObjectFireLine(
         tickInterval: tickInterval,
         color: color,
         damage: damage,
-        faction: abilityOwner.faction,
+        faction: faction,
         size: 0,
         x: startPosition.x,
         y: startPosition.y,

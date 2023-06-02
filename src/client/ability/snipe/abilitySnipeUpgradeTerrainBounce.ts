@@ -10,6 +10,7 @@ const DAMAGE_UP_BOUNCE = 0.5;
 
 export type AbilityUpgradeTerrainBounce = AbilityUpgrade & {
     damageUpPerBounceFactor: number,
+    upgradeSynergry: boolean,
     active: boolean
 }
 
@@ -21,7 +22,7 @@ export function addAbilitySnipeUpgradeTerrainBounce() {
     }
 }
 
-export function createAndPushAbilityObjectSnipeTerrainBounceInit(startPosition: Position, direction: number, abilitySnipe: AbilitySnipe, faction: string, preventSplitOnHit: boolean | undefined, range: number, bounceCounter: number, triggeredByPlayer: boolean, game: Game) {
+export function createAndPushAbilityObjectSnipeTerrainBounceInit(startPosition: Position, direction: number, abilitySnipe: AbilitySnipe, faction: string, canSplitOnHit: boolean | undefined, range: number, bounceCounter: number, triggeredByPlayer: boolean, game: Game) {
     const endPosistion = calcNewPositionMovedInDirection(startPosition, direction, range);
     const blockingPosistion = getFirstBlockingTilePositionTouchingLine(game.state.map, startPosition, endPosistion, game);
     createAndPush(
@@ -32,7 +33,7 @@ export function createAndPushAbilityObjectSnipeTerrainBounceInit(startPosition: 
         abilitySnipe,
         faction,
         direction,
-        preventSplitOnHit,
+        canSplitOnHit,
         bounceCounter,
         undefined,
         triggeredByPlayer,
@@ -56,7 +57,7 @@ export function createAndPushAbilityObjectSnipeTerrainBounceBounce(abilityObject
         abilitySnipe,
         abilityObjectSnipe.faction,
         newBounceDirection,
-        abilityObjectSnipe.preventSplitOnHit,
+        abilityObjectSnipe.canSplitOnHit,
         abilityObjectSnipe.bounceCounter ? abilityObjectSnipe.bounceCounter + 1 : 1,
         abilityObjectSnipe.hitSomething,
         abilityObjectSnipe.triggeredByPlayer,
@@ -71,6 +72,7 @@ export function getAbilityUpgradeTerrainBounceDamageFactor(abilitySnipe: Ability
 }
 
 function pushAbilityUpgradeTerrainBounce(ability: Ability, upgradeOptions: AbilityUpgradeOption[]) {
+    const upgradeTerrainBounce: AbilityUpgradeTerrainBounce | undefined = ability.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE];
     upgradeOptions.push({
         name: "Terrain Bounce", probabilityFactor: 1, upgrade: (a: Ability) => {
             const as = a as AbilitySnipe;
@@ -80,6 +82,8 @@ function pushAbilityUpgradeTerrainBounce(ability: Ability, upgradeOptions: Abili
                     level: 1,
                     active: true,
                     damageUpPerBounceFactor: 0,
+                    upgradeSynergry: false,
+
                 }
                 as.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE] = up;
             } else {
@@ -88,24 +92,42 @@ function pushAbilityUpgradeTerrainBounce(ability: Ability, upgradeOptions: Abili
             up.damageUpPerBounceFactor += DAMAGE_UP_BOUNCE;
         }
     });
+
+    if (upgradeTerrainBounce && !upgradeTerrainBounce.upgradeSynergry) {
+        const probability = 0.3 * upgradeTerrainBounce.level;
+        upgradeOptions.push({
+            name: `Synergry ${ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE}`,
+            upgradeName: ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE,
+            probabilityFactor: probability,
+            upgrade: (a: Ability) => {
+                let up: AbilityUpgradeTerrainBounce = a.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE];
+                up.upgradeSynergry = true;
+            }
+        });
+    }
 }
 
 function getAbilityUpgradeTerrainBounceUiText(ability: Ability): string {
     let abilitySnipe = ability as AbilitySnipe;
-    let upgrades: AbilityUpgradeTerrainBounce = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE];
+    let upgrade: AbilityUpgradeTerrainBounce = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE];
 
-    return `Terrain Bounce and +${upgrades.damageUpPerBounceFactor*100}% damage for each bounce`;
+    return `Terrain Bounce and +${upgrade.damageUpPerBounceFactor * 100}% damage for each bounce` + (upgrade.upgradeSynergry ? " (synergry)" : "");
 }
 
-function getAbilityUpgradeTerrainBounceUiTextLong(ability: Ability): string[] {
+function getAbilityUpgradeTerrainBounceUiTextLong(ability: Ability, name: string | undefined): string[] {
     let abilitySnipe = ability as AbilitySnipe;
     let upgrade: AbilityUpgradeTerrainBounce | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE];
     const levelText = (upgrade ? `(${upgrade.level + 1})` : "");
     const textLines: string[] = [];
-    textLines.push(ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE + levelText);
-    textLines.push(`Shots will bounce of blocking tiles.`);
-    textLines.push(`Each bounce will increase damage by ${DAMAGE_UP_BOUNCE*100}%`);
-    textLines.push(`for the following bounced shot part.`);
+    if (name && name.startsWith("Synergry")) {
+        textLines.push(`Synergry ${ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE}`);
+        textLines.push(`Most other upgrades will benefit from terrain bounce`);
+    } else {
+        textLines.push(ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE + levelText);
+        textLines.push(`Main shots will bounce of blocking tiles.`);
+        textLines.push(`Each bounce will increase damage by ${DAMAGE_UP_BOUNCE * 100}%`);
+        textLines.push(`for the following bounced shot part.`);
+    }
 
     return textLines;
 }
@@ -118,7 +140,7 @@ function createAndPush(
     abilitySnipe: AbilitySnipe,
     faction: string,
     direction: number,
-    preventSplitOnHit: boolean | undefined,
+    canSplitOnHit: boolean | undefined,
     bounceCounter: number,
     hitSomething: boolean | undefined,
     triggeredByPlayer: boolean,
@@ -137,7 +159,7 @@ function createAndPush(
         faction,
         direction,
         range,
-        preventSplitOnHit,
+        canSplitOnHit,
         getAbilitySnipeDamage(abilitySnipe, bounceCounter),
         hitSomething,
         triggeredByPlayer,
@@ -160,8 +182,6 @@ function calculateBounceAngle(bouncePosition: Position, startingAngle: number, g
     return wallAngle - angleDiff;
 }
 
-
-//TODO copied from somewhere, redundant code or fine?
 function getFirstBlockingTilePositionTouchingLine(map: GameMap, lineStart: Position, lineEnd: Position, game: Game): Position | undefined {
     let tileSize = map.tileSize;
     let currentTileIJ = positionToTileIJ(map, lineStart);

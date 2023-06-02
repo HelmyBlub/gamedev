@@ -127,7 +127,12 @@ export function fillRandomUpgradeOptions(character: Character, randomSeed: Rando
                 for (let abilityOptionIndex = 0; abilityOptionIndex < abilityOptions.options.length; abilityOptionIndex++) {
                     randomProbability -= abilityOptions.options[abilityOptionIndex].probabilityFactor;
                     if (randomProbability < 0) {
-                        character.upgradeChoice.push({ name: abilityOptions.options[abilityOptionIndex].name, abilityName: abilityName, boss: boss });
+                        character.upgradeChoice.push({
+                            name: abilityOptions.options[abilityOptionIndex].name,
+                            abilityName: abilityName,
+                            abilityUpgradeName: abilityOptions.options[abilityOptionIndex].upgradeName,
+                            boss: boss
+                        });
                         abilityOptions.probability -= abilityOptions.options[abilityOptionIndex].probabilityFactor;
                         abilityOptions.options.splice(abilityOptionIndex, 1);
                         if (abilityOptions.options.length === 0) {

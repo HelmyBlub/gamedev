@@ -358,11 +358,12 @@ function getLongUpgradeChoiceTexts(option: CharacterUpgradeChoice, character: Ch
     if (option.abilityName !== undefined) {
         let abilityFunctions = ABILITIES_FUNCTIONS[option.abilityName];
         if (abilityFunctions && abilityFunctions.abilityUpgradeFunctions) {
-            const abilityUpgradeFunctions = abilityFunctions.abilityUpgradeFunctions[option.name];
+            const upgradeName = option.abilityUpgradeName ? option.abilityUpgradeName : option.name;
+            const abilityUpgradeFunctions = abilityFunctions.abilityUpgradeFunctions[upgradeName];
             if (abilityUpgradeFunctions) {
                 const ability = character.abilities.find(a => a.name === option.abilityName);
                 if (ability) {
-                    return abilityUpgradeFunctions.getAbilityUpgradeUiTextLong(ability);
+                    return abilityUpgradeFunctions.getAbilityUpgradeUiTextLong(ability, option.name);
                 }
             }
         }

@@ -1,3 +1,4 @@
+import { CharacterUpgradeChoice } from "../character/characterModel.js";
 import { Ability, AbilityUpgradeOption } from "./ability.js"
 
 
@@ -8,7 +9,7 @@ export type AbilityUpgrade = {
 export type AbilityUpgradeFunctions = {
     pushAbilityUpgradeOption: (ability: Ability, upgradeOptions: AbilityUpgradeOption[]) => void,
     getAbilityUpgradeUiText: (ability: Ability) => string,
-    getAbilityUpgradeUiTextLong: (ability: Ability) => string[],
+    getAbilityUpgradeUiTextLong: (ability: Ability, name: string | undefined) => string[],
     getAbilityUpgradeDamageFactor?: (ability: Ability) => number,
 }
 

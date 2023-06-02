@@ -104,6 +104,7 @@ export type Character = Position & {
 
 export type CharacterUpgradeChoice = {
     abilityName?: string,
+    abilityUpgradeName?: string,
     name: string,
     boss?: boolean,
 }

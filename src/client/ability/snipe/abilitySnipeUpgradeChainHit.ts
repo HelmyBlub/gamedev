@@ -23,7 +23,7 @@ export function addAbilitySnipeUpgradeNoMissChain() {
 
 export function abilityUpgradeNoMissChainOnObjectSnipeDamageDone(abilitySnipe: AbilitySnipe, abilityObjectSnipe: AbilityObjectSnipe) {
     let upgrades: AbilityUpgradeChainHit | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN];
-    let isPlayerTriggeredMainShot = !abilityObjectSnipe.preventSplitOnHit && abilityObjectSnipe.triggeredByPlayer;
+    let isPlayerTriggeredMainShot = !abilityObjectSnipe.canSplitOnHit && abilityObjectSnipe.triggeredByPlayer;
     if (upgrades && upgrades.noMissChainCounter !== undefined && abilityObjectSnipe.remainingRange === undefined && isPlayerTriggeredMainShot) {
         if (abilityObjectSnipe.hitSomething) {
             if (upgrades.noMissChainCounter < upgrades.noMissCounterCap!) {

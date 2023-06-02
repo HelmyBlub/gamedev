@@ -82,6 +82,7 @@ export type AbilitiesFunctions = {
 
 export type AbilityUpgradeOption = {
     name: string,
+    upgradeName?: string,
     probabilityFactor: number,
     upgrade: (ability: Ability) => void,
 }

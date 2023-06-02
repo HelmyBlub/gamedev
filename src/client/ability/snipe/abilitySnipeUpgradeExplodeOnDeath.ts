@@ -14,6 +14,7 @@ const EXPLODE_SIZE = 100;
 export type AbilityUpgradeExplodeOnDeath = AbilityUpgrade & {
     size: number,
     damageFactor: number,
+    upgradeSynergry: boolean,
 }
 
 export function addAbilitySnipeUpgradeExplodeOnDeath() {
@@ -24,32 +25,43 @@ export function addAbilitySnipeUpgradeExplodeOnDeath() {
     }
 }
 
-export function applyDebuffExplodeOnDeath(ability: AbilitySnipe, abilityUpgrade: AbilityUpgradeExplodeOnDeath, faction: string, targetCharacter: Character, game: Game){
-    const damage = abilityUpgrade.damageFactor * getAbilitySnipeDamage(ability);
-    const explodeOnDeath = createDebuffExplodeOnDeath(damage, faction, abilityUpgrade.size, ability.id);
+export function executeUpgradeExplodeOnDeath(ability: AbilitySnipe, faction: string, targetCharacter: Character, playerTriggered: boolean, game: Game){
+    const upgrade: AbilityUpgradeExplodeOnDeath = ability.upgrades[ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH];
+    if(!upgrade) return;
+    if(!playerTriggered && !upgrade.upgradeSynergry) return;
+
+    const damage = upgrade.damageFactor * getAbilitySnipeDamage(ability);
+    const explodeOnDeath = createDebuffExplodeOnDeath(damage, faction, upgrade.size, ability.id);
     applyDebuff(explodeOnDeath, targetCharacter, game);
 }
 
 function getAbilityUpgradeExplodeOnDeathUiText(ability: Ability): string {
     let abilitySnipe = ability as AbilitySnipe;
     let upgrade: AbilityUpgradeExplodeOnDeath = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH];
-    return `${ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH}: Damage ${(upgrade.damageFactor) * 100}%`;
+    return `${ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH}: Damage ${(upgrade.damageFactor) * 100}%` + (upgrade.upgradeSynergry ? " (synergry)" : "");
 }
 
-function getAbilityUpgradeExplodeOnDeathUiTextLong(ability: Ability): string[] {
+function getAbilityUpgradeExplodeOnDeathUiTextLong(ability: Ability, name: string | undefined): string[] {
     let abilitySnipe = ability as AbilitySnipe;
     let upgrade: AbilityUpgradeExplodeOnDeath | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH];
     const levelText = (upgrade ? `(${upgrade.level + 1})` : "");
 
     const textLines: string[] = [];
-    textLines.push(ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH + levelText);
-    textLines.push(`When Enemies die after they are hit they explode.`);
-    textLines.push(`They explode for ${(DAMAGE_FACTOR * 100).toFixed(2)}% damage.`);
+    if (name && name.startsWith("Synergry")) {
+        textLines.push(`Synergry ${ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH}`);
+        textLines.push(`Most other upgrades will benefit from explode on death`);
+    } else {
+        textLines.push(ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH + levelText);
+        textLines.push(`When Enemies die after they are hit they explode.`);
+        textLines.push(`They explode for ${(DAMAGE_FACTOR * 100).toFixed(2)}% damage.`);
+    }    
 
     return textLines;
 }
 
 function pushAbilityUpgradeExplodeOnDeath(ability: Ability, upgradeOptions: AbilityUpgradeOption[]) {
+    const upgradeExplodeOnDeath: AbilityUpgradeExplodeOnDeath | undefined = ability.upgrades[ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH];   
+
     upgradeOptions.push({
         name: ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH, probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilitySnipe;
@@ -59,6 +71,7 @@ function pushAbilityUpgradeExplodeOnDeath(ability: Ability, upgradeOptions: Abil
                     level: 0,
                     damageFactor: 0,
                     size: EXPLODE_SIZE,
+                    upgradeSynergry: false,
                 }
                 as.upgrades[ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH] = up;
             } else {
@@ -68,4 +81,16 @@ function pushAbilityUpgradeExplodeOnDeath(ability: Ability, upgradeOptions: Abil
             up.damageFactor += DAMAGE_FACTOR;
         }
     });
+    if (upgradeExplodeOnDeath && !upgradeExplodeOnDeath.upgradeSynergry) {
+        const probability = 0.3 * upgradeExplodeOnDeath.level;
+        upgradeOptions.push({
+            name: `Synergry ${ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH}`,
+            upgradeName: ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH,
+            probabilityFactor: probability,
+            upgrade: (a: Ability) => {
+                let up: AbilityUpgradeExplodeOnDeath = a.upgrades[ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH];
+                up.upgradeSynergry = true;
+            }
+        });
+    }    
 }

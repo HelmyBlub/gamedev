@@ -74,7 +74,7 @@ export function tickAbilityUpgradeAfterImage(abilitySnipe: AbilitySnipe, ability
                 x: afterImage.castPosition.x + nextRandom(game.state.randomSeed) * 10 - 5,
                 y: afterImage.castPosition.y + nextRandom(game.state.randomSeed) * 10 - 5,
             }    
-            createAbilityObjectSnipeInitial(afterImage.position, abilityOwner.faction, abilitySnipe, randomizedCastPosition, false, game);
+            createAbilityObjectSnipeInitial(afterImage.position, abilityOwner.faction, abilitySnipe, randomizedCastPosition, false, false, game);
         }
         if (afterImage.removeTime <= game.state.time) {
             upgrade.afterImages.splice(i, 1);
