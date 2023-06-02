@@ -77,7 +77,7 @@ function getAbilityUpgradeBackwardsShotUiTextLong(ability: Ability, name: string
         textLines.push(`Most other upgrades will benefit from backwards shot`);
     } else {
         textLines.push(ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT + levelText);
-        textLines.push(`When shooting, you also shot an additional`);
+        textLines.push(`Your main shot also shoots an additional`);
         textLines.push(`shot backwards.`);
     }
 

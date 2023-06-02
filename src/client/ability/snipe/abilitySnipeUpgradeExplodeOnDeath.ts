@@ -52,7 +52,7 @@ function getAbilityUpgradeExplodeOnDeathUiTextLong(ability: Ability, name: strin
         textLines.push(`Most other upgrades will benefit from explode on death`);
     } else {
         textLines.push(ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH + levelText);
-        textLines.push(`When Enemies die after they are hit they explode.`);
+        textLines.push(`Enemies hit by the main shot explode on death`);
         textLines.push(`They explode for ${(DAMAGE_FACTOR * 100).toFixed(2)}% damage.`);
     }    
 

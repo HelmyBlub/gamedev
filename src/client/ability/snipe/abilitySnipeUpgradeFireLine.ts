@@ -92,7 +92,7 @@ function getAbilityUpgradeFireLineUiTextLong(ability: Ability, name: string | un
         textLines.push(`Most other Upgrades will benefit from fire line`);
     } else {
         textLines.push(ABILITY_SNIPE_UPGRADE_FIRE_LINE + levelText);
-        textLines.push(`Shooting create a fire line.`);
+        textLines.push(`The main shot create a fire line.`);
         textLines.push(`It stays on the ground for ${DURATION / 1000}s.`);
         textLines.push(`It does a total of ${DAMAGEFACTOR * 100}% damage in its duration.`);
     }    
