@@ -49,6 +49,7 @@ export type AbilitySnipe = Ability & {
 }
 
 export const ABILITY_NAME_SNIPE = "Snipe";
+export const ABILITY_SNIPE_PAINT_FADE_DURATION = 500;
 export const ABILITY_SNIPE_UPGRADE_FUNCTIONS: AbilityUpgradesFunctions = {};
 
 GAME_IMAGES[ABILITY_NAME_SNIPE] = {
@@ -110,7 +111,7 @@ export function createAbilitySnipe(
         baseRange: range,
         shotFrequencyTimeDecreaseFaktor: 1,
         size: size,
-        paintFadeDuration: 1000,
+        paintFadeDuration: ABILITY_SNIPE_PAINT_FADE_DURATION,
         upgrades: {},
         maxShootFrequency: 1000,
         shotNextAllowedTime: false,

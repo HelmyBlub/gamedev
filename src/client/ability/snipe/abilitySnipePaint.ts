@@ -4,7 +4,7 @@ import { GAME_IMAGES, loadImage } from "../../imageLoad.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { Ability, AbilityObject, AbilityOwner, PaintOrderAbility, paintDefaultAbilityStatsUI } from "../ability.js";
 import { pushAbilityUpgradesUiTexts } from "../abilityUpgrade.js";
-import { ABILITY_NAME_SNIPE, ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe, getAbilitySnipeDamage, getAbilitySnipeRange, getAbilitySnipeShotFrequency } from "./abilitySnipe.js";
+import { ABILITY_NAME_SNIPE, ABILITY_SNIPE_PAINT_FADE_DURATION, ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe, getAbilitySnipeDamage, getAbilitySnipeRange, getAbilitySnipeShotFrequency } from "./abilitySnipe.js";
 import { paintVisualizationAfterImage } from "./abilitySnipeUpgradeAfterImage.js";
 import { paintVisualizationMoreRifles } from "./abilitySnipeUpgradeMoreRifle.js";
 import { paintVisualizationStayStill } from "./abilitySnipeUpgradeStayStill.js";
@@ -22,7 +22,7 @@ export function paintAbilityObjectSnipe(ctx: CanvasRenderingContext2D, abilityOb
     let paintY: number;
 
     ctx.lineWidth = abilityObject.size;
-    ctx.globalAlpha = Math.min((snipe.deleteTime - game.state.time) / 1000, 1);
+    ctx.globalAlpha = Math.min((snipe.deleteTime - game.state.time) / ABILITY_SNIPE_PAINT_FADE_DURATION, 1);
     ctx.beginPath();
     paintX = Math.floor(snipe.x - cameraPosition.x + centerX);
     paintY = Math.floor(snipe.y - cameraPosition.y + centerY);
