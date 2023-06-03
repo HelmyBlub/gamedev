@@ -43,7 +43,7 @@ function getAbilityUpgradeDamageAndRangeUiTextLong(ability: Ability): string[] {
 
     const textLines: string[] = [];
     textLines.push(ABILITY_SNIPE_UPGRADE_DAMAGE_AND_RANGE + levelText);
-    textLines.push(`Bonus damage +${DAMAGE_UP * 100}%.`);
+    textLines.push(`All Bonus damage +${DAMAGE_UP * 100}%.`);
     textLines.push(`Range is reduced by ${(1 / RANGE_DOWN * 100).toFixed(2)}%.`);
 
     return textLines;

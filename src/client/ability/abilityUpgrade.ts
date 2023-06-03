@@ -10,7 +10,7 @@ export type AbilityUpgradeFunctions = {
     pushAbilityUpgradeOption: (ability: Ability, upgradeOptions: AbilityUpgradeOption[]) => void,
     getAbilityUpgradeUiText: (ability: Ability) => string,
     getAbilityUpgradeUiTextLong: (ability: Ability, name: string | undefined) => string[],
-    getAbilityUpgradeDamageFactor?: (ability: Ability) => number,
+    getAbilityUpgradeDamageFactor?: (ability: Ability, playerTriggered: boolean) => number,
 }
 
 export type AbilityUpgradesFunctions = {
@@ -39,14 +39,14 @@ export function pushAbilityUpgradesOptions(upgradeFunctions: AbilityUpgradesFunc
     }
 }
 
-export function getAbilityUpgradesDamageFactor(upgradeFunctions: AbilityUpgradesFunctions, ability: Ability): number{
+export function getAbilityUpgradesDamageFactor(upgradeFunctions: AbilityUpgradesFunctions, ability: Ability, playerTriggered: boolean): number{
     const keys = Object.keys(upgradeFunctions);
     let damageFactor = 1;
     for(let key of keys){
         if(ability.upgrades[key]){
             let functions = upgradeFunctions[key];
             if(functions.getAbilityUpgradeDamageFactor){
-                damageFactor *= functions.getAbilityUpgradeDamageFactor(ability);
+                damageFactor *= functions.getAbilityUpgradeDamageFactor(ability, playerTriggered);
             }
         }
     }

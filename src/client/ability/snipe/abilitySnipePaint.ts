@@ -43,12 +43,12 @@ export function paintAbilitySnipe(ctx: CanvasRenderingContext2D, abilityOwner: A
 
     const direction = abilitySnipe.lastSniperRiflePaintDirection;
     const distance = 20;
-    paintSniperRifle(ctx, abilitySnipe, paintX, paintY, direction, distance, game);
-    paintVisualizationMoreRifles(ctx, abilityOwner, abilitySnipe, paintX, paintY, game);
+    paintSniperRifle(ctx, abilitySnipe, paintX, paintY, direction, distance, true, game);
+    paintVisualizationMoreRifles(ctx, abilityOwner, abilitySnipe, cameraPosition, game);
     paintVisualizationAfterImage(ctx, abilityOwner, abilitySnipe, cameraPosition, game);
 }
 
-export function paintSniperRifle(ctx: CanvasRenderingContext2D, abilitySnipe: AbilitySnipe, paintX: number, paintY: number, pointDirection: number, distance: number, game: Game) {
+export function paintSniperRifle(ctx: CanvasRenderingContext2D, abilitySnipe: AbilitySnipe, paintX: number, paintY: number, pointDirection: number, distance: number, playerMainRifle: boolean, game: Game) {
     let sniperRifleImageRef = GAME_IMAGES[ABILITY_NAME_SNIPE];
     loadImage(sniperRifleImageRef);
     if (sniperRifleImageRef.imageRef?.complete) {
@@ -57,8 +57,8 @@ export function paintSniperRifle(ctx: CanvasRenderingContext2D, abilitySnipe: Ab
         ctx.rotate(pointDirection + Math.PI);
         ctx.translate(-paintX, -paintY);
         paintX -= Math.floor(sniperRifleImage.width / 2) + distance;
-        paintY -= Math.floor(sniperRifleImage.height / 2)
-        paintVisualizationStayStill(ctx, abilitySnipe, paintX, paintY, game);
+        paintY -= Math.floor(sniperRifleImage.height / 2);
+        paintVisualizationStayStill(ctx, abilitySnipe, paintX, paintY, playerMainRifle, game);
         ctx.drawImage(
             sniperRifleImage,
             0,
@@ -121,7 +121,7 @@ export function paintAbilitySnipeStatsUI(ctx: CanvasRenderingContext2D, ability:
         "Snipe in direction of click. Enemies hit by line take damage",
         "Gets XP for killing enemies. More XP more Damage",
         `Ability stats:`,
-        `Damage: ${getAbilitySnipeDamage(abilitySnipe)}`,
+        `Base Damage: ${abilitySnipe.baseDamage}`,
         `Range: ${getAbilitySnipeRange(abilitySnipe)}`,
     ];
 
