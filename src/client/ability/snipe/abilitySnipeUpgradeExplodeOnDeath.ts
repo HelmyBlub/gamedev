@@ -49,7 +49,11 @@ function getAbilityUpgradeExplodeOnDeathUiTextLong(ability: Ability, name: strin
     const textLines: string[] = [];
     if (name && name.startsWith("Synergry")) {
         textLines.push(`Synergry ${ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH}`);
-        textLines.push(`Most other upgrades will benefit from explode on death`);
+        textLines.push(`List of synergies:`);
+        textLines.push(`- After Image`);
+        textLines.push(`- Backwards Shot`);
+        textLines.push(`- More Rifles`);
+        textLines.push(`- Split Shot`);
     } else {
         textLines.push(ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH + levelText);
         textLines.push(`Enemies hit by the main shot explode on death`);

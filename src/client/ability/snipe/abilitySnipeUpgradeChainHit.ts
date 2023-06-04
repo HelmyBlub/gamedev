@@ -86,7 +86,7 @@ function getAbilityUpgradeNoMissChainUiTextLong(ability: Ability, name: string |
     const textLines: string[] = [];
     if (name && name.startsWith("Synergry")) {
         textLines.push(`Synergry ${ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN}`);
-        textLines.push(`Most other upgrades will benefit`);
+        textLines.push(`All other upgrades will benefit`);
         textLines.push(`from no miss chain bonus damage.`);
     } else {
         textLines.push(ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN + levelText);

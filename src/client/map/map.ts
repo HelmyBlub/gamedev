@@ -218,7 +218,6 @@ export function getChunksTouchingLine(map: GameMap, lineStart: Position, lineEnd
 }
 
 export function getChunksTouchingLine2(map: GameMap, lineStart: Position, lineEnd: Position): MapChunk[] {
-    //TODO does not consider line width. 
     const chunkKeys: string[] = [];
     const chuckSize = map.tileSize * map.chunkLength;
     const startX = Math.floor(lineStart.x / chuckSize);

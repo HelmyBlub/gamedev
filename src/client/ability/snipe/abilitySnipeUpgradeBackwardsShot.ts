@@ -74,7 +74,9 @@ function getAbilityUpgradeBackwardsShotUiTextLong(ability: Ability, name: string
     const textLines: string[] = [];
     if (name && name.startsWith("Synergry")) {
         textLines.push(`Synergry ${ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT}`);
-        textLines.push(`Most other upgrades will benefit from backwards shot`);
+        textLines.push(`List of synergies:`);
+        textLines.push(`- After Image`);
+        textLines.push(`- More Rifles`);
     } else {
         textLines.push(ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT + levelText);
         textLines.push(`Your main shot also shoots an additional`);

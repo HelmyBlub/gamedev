@@ -89,7 +89,10 @@ function getAbilityUpgradeFireLineUiTextLong(ability: Ability, name: string | un
     const textLines: string[] = [];
     if (name && name.startsWith("Synergry")) {
         textLines.push(`Synergry ${ABILITY_SNIPE_UPGRADE_FIRE_LINE}`);
-        textLines.push(`Most other Upgrades will benefit from fire line`);
+        textLines.push(`List of synergies:`);
+        textLines.push(`- After Image`);
+        textLines.push(`- More Rifles`);
+        textLines.push(`- Backwards Shot`);
     } else {
         textLines.push(ABILITY_SNIPE_UPGRADE_FIRE_LINE + levelText);
         textLines.push(`The main shot create a fire line.`);

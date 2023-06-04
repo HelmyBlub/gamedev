@@ -113,7 +113,7 @@ function getAbilityUpgradeStayStillUiTextLong(ability: Ability, name: string | u
     const textLines: string[] = [];
     if (name && name.startsWith("Synergry")) {
         textLines.push(`Synergry ${ABILITY_SNIPE_UPGRADE_STAY_STILL}`);
-        textLines.push(`Most other upgrades will benefit`);
+        textLines.push(`All other upgrades will benefit`);
         textLines.push(`from Stay Still bonus damage.`);
     } else {
         textLines.push(ABILITY_SNIPE_UPGRADE_STAY_STILL + levelText);

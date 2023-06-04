@@ -9,15 +9,20 @@ import { websocketConnect } from "../multiplayerConenction.js";
 import { PlayerInput } from "../playerInput.js";
 import { createProjectile, Projectile } from "../ability/projectile.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
-import { testInputs } from "./testInputs.js";
-import { testInputs2 } from "./testInputs2.js";
-import { testMultiplayerInputs } from "./testMultiplayerInputs.js";
 import { detectAbilityObjectToCharacterHit } from "../ability/ability.js";
 
+let testInputs: (PlayerInput | Omit<CommandRestart, "executeTime">)[] = [];
+
 export function testGame(game: Game) {
+    if(testInputs.length === 0){
+        var request = new XMLHttpRequest();
+        request.open("GET", "/data/testInputs.json", false);
+        request.send(null)
+        testInputs = JSON.parse(request.responseText);
+    }
     console.log("start test");
     //testPathing(game.ctx);
-    //runGameWithPlayerInputs(game, testInputs);
+    runGameWithPlayerInputs(game, testInputs);
     //runGameWithPlayerInputs(game, testMultiplayerInputs);
     //testTemp();
     console.log("end test");
@@ -97,7 +102,7 @@ function runGameWithPlayerInputsSinglePlayer(game: Game, playerInputs: (PlayerIn
         replayPlayerInputs: [...playerInputs as any],
     };
     if (!game.multiplayer.websocket) {
-        game.testing.replay.frameSkipAmount = 60;
+        game.testing.replay.frameSkipAmount = 10;
         game.testing.replay.zeroTimeout = true;
     }
     game.state.ended = true;

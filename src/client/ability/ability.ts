@@ -196,8 +196,6 @@ export function findAbilityById(abilityId: number, game: Game): Ability | undefi
             if (ability.id === abilityId) return ability;
         }
     }
-
-    console.log("TODO?, not searching for abilityId in monsters and bosses yet");
     return ability;
 }
 

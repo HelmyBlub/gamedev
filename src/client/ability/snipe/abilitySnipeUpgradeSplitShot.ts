@@ -83,7 +83,10 @@ function getAbilityUpgradeSplitShotUiTextLong(ability: Ability, name: string | u
     const textLines: string[] = [];
     if (name && name.startsWith("Synergry")) {
         textLines.push(`Synergry ${ABILITY_SNIPE_UPGRADE_SPLIT_SHOT}`);
-        textLines.push(`Most other Upgrades will benefit from split shot`);
+        textLines.push(`List of synergies:`);
+        textLines.push(`- After Image`);
+        textLines.push(`- Backwards Shot`);
+        textLines.push(`- More Rifles`);
     } else {
         textLines.push(ABILITY_SNIPE_UPGRADE_SPLIT_SHOT + levelText);
         textLines.push(`For every enemy hit with the main shot,`);
