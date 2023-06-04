@@ -51,7 +51,7 @@ function getAbilityUpgradeDamageAndRangeUiTextLong(ability: Ability): string[] {
 
 function pushAbilityUpgradeDamageAndRange(ability: Ability, upgradeOptions: AbilityUpgradeOption[]) {
     upgradeOptions.push({
-        name: ABILITY_SNIPE_UPGRADE_DAMAGE_AND_RANGE, probabilityFactor: 1, upgrade: (a: Ability) => {
+        name: ABILITY_SNIPE_UPGRADE_DAMAGE_AND_RANGE, probabilityFactor: 0.5, upgrade: (a: Ability) => {
             let as = a as AbilitySnipe;
             let up: AbilityUpgradeDamageAndRange;
             if (as.upgrades[ABILITY_SNIPE_UPGRADE_DAMAGE_AND_RANGE] === undefined) {

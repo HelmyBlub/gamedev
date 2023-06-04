@@ -80,13 +80,13 @@ export function addSnipeAbility() {
     addAbilitySnipeUpgradeAfterImage();
     addAbilitySnipeUpgradeMoreRifles();
     addAbilitySnipeUpgradeSplitShot();
-    // addAbilitySnipeUpgradeNoMissChain();
-    // addAbilitySnipeUpgradeDamageAndRange();
-    // addAbilitySnipeUpgradeStayStill();
-    // addAbilitySnipeUpgradeTerrainBounce();
-    // addAbilitySnipeUpgradeFireLine();
-    // addAbilitySnipeUpgradeBackwardsShot();
-    // addAbilitySnipeUpgradeExplodeOnDeath();
+    addAbilitySnipeUpgradeNoMissChain();
+    addAbilitySnipeUpgradeDamageAndRange();
+    addAbilitySnipeUpgradeStayStill();
+    addAbilitySnipeUpgradeTerrainBounce();
+    addAbilitySnipeUpgradeFireLine();
+    addAbilitySnipeUpgradeBackwardsShot();
+    addAbilitySnipeUpgradeExplodeOnDeath();
 }
 
 export function createAbilitySnipe(

@@ -56,7 +56,7 @@ export function paintSniperRifle(ctx: CanvasRenderingContext2D, abilitySnipe: Ab
         ctx.translate(paintX, paintY);
         ctx.rotate(pointDirection + Math.PI);
         ctx.translate(-paintX, -paintY);
-        paintX -= Math.floor(sniperRifleImage.width / 2) + distance;
+        paintX -= Math.floor(sniperRifleImage.width / 2  + distance);
         paintY -= Math.floor(sniperRifleImage.height / 2);
         paintVisualizationStayStill(ctx, abilitySnipe, paintX, paintY, playerMainRifle, game);
         ctx.drawImage(
@@ -121,7 +121,7 @@ export function paintAbilitySnipeStatsUI(ctx: CanvasRenderingContext2D, ability:
         "Snipe in direction of click. Enemies hit by line take damage",
         "Gets XP for killing enemies. More XP more Damage",
         `Ability stats:`,
-        `Base Damage: ${abilitySnipe.baseDamage}`,
+        `Base Damage: ${Math.round(abilitySnipe.baseDamage)}`,
         `Range: ${getAbilitySnipeRange(abilitySnipe)}`,
     ];
 
