@@ -25,12 +25,13 @@ type EnemyType = {
     sizeFactor: number,
     spawnAmountFactor: number,
     xpFactor: number,
+    damageFactor: number,
 }
 
 const ENEMY_TYPES: EnemyTypes = {
-    "big": { hpFactor: 2, sizeFactor: 1.5, spawnAmountFactor: 0.25, xpFactor: 2 },
-    "default": { hpFactor: 1, sizeFactor: 1, spawnAmountFactor: 0.5, xpFactor: 1 },
-    "small": { hpFactor: 0.5, sizeFactor: 0.75, spawnAmountFactor: 1, xpFactor: 0.5 },
+    "big": { hpFactor: 2, sizeFactor: 1.5, spawnAmountFactor: 0.25, xpFactor: 2, damageFactor: 2 },
+    "default": { hpFactor: 1, sizeFactor: 1, spawnAmountFactor: 0.5, xpFactor: 1, damageFactor: 1 },
+    "small": { hpFactor: 0.5, sizeFactor: 0.75, spawnAmountFactor: 1, xpFactor: 0.5, damageFactor: 0.5 },
 }
 
 export function createEnemyWithLevel(idCounter: IdCounter, enemyPos: Position, level: number, enemyType: EnemyType) {
@@ -46,10 +47,11 @@ export function createEnemyWithLevel(idCounter: IdCounter, enemyPos: Position, l
     let alertEnemyRange = Math.min(500, 50 + level * 25);
     let respawnTime = Math.max(1000, 30000 - level * 1000);
     let experienceWorth = 1 * enemyType.xpFactor * Math.pow(level, 2);
+    let meleeDamage = (2 + level * 2) * enemyType.damageFactor;
 
 
     let enemy = createEnemy(idCounter, enemyPos.x, enemyPos.y, size, moveSpeed, hp, color, autoAggroRange, alertEnemyRange, respawnTime, experienceWorth);
-    enemy.abilities.push(createAbilityMelee(idCounter, undefined, 2 + level * 2));
+    enemy.abilities.push(createAbilityMelee(idCounter, undefined, meleeDamage));
     return enemy;
 }
 
