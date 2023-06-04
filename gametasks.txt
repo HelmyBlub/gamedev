@@ -1,7 +1,4 @@
 current tasks:
-- Bug: after image + more rifle synergy bug
-- Bug: upgrade More Rifles + after image shooting in wrong direction
-
 - Sniper: LevelingAbilityCharacter
     - balancing ideas:
         - reduce damage range upgrade probability

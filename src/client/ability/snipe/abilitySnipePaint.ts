@@ -44,7 +44,7 @@ export function paintAbilitySnipe(ctx: CanvasRenderingContext2D, abilityOwner: A
     const direction = abilitySnipe.lastSniperRiflePaintDirection;
     const distance = 20;
     paintSniperRifle(ctx, abilitySnipe, paintX, paintY, direction, distance, true, game);
-    paintVisualizationMoreRifles(ctx, abilityOwner, abilitySnipe, cameraPosition, game);
+    paintVisualizationMoreRifles(ctx, abilityOwner, abilitySnipe, cameraPosition, undefined, game);
     paintVisualizationAfterImage(ctx, abilityOwner, abilitySnipe, cameraPosition, game);
 }
 

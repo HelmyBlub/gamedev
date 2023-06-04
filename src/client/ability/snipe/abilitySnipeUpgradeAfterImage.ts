@@ -39,8 +39,8 @@ export function castSnipeAfterImage(position: Position, abilitySnipe: AbilitySni
     const upgradeAfterImage: AbilityUpgradeAfterImage = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE];
     if (!upgradeAfterImage) return;
     if (!playerTriggered && !upgradeAfterImage.upgradeSynergry) return;
-    if (!playerTriggered || upgradeAfterImage.nextValidSpawnTime === undefined || upgradeAfterImage.nextValidSpawnTime <= game.state.time) {
-        upgradeAfterImage.nextValidSpawnTime = game.state.time + upgradeAfterImage.cooldown;
+    if (upgradeAfterImage.nextValidSpawnTime === undefined || upgradeAfterImage.nextValidSpawnTime <= game.state.time) {
+        if(playerTriggered) upgradeAfterImage.nextValidSpawnTime = game.state.time + upgradeAfterImage.cooldown;
         upgradeAfterImage.afterImages.push({
             position: { x: position.x, y: position.y },
             castPosition: { x: castPosition.x, y: castPosition.y },
@@ -65,7 +65,7 @@ export function paintVisualizationAfterImage(ctx: CanvasRenderingContext2D, abil
         const paintY = Math.floor(afterImage.position.y - cameraPosition.y + centerY);
         paintSniperRifle(ctx, abilitySnipe, paintX, paintY, afterImage.direction, 0, false, game);
         if(afterImage.playerTriggered && upgradeMoreRifles && upgradeMoreRifles.upgradeSynergry){
-            paintVisualizationMoreRifles(ctx, afterImage.position, abilitySnipe, cameraPosition, game);
+            paintVisualizationMoreRifles(ctx, afterImage.position, abilitySnipe, cameraPosition, afterImage.castPosition, game);
         }
     }
 }

@@ -77,16 +77,16 @@ export function addSnipeAbility() {
         notInheritable: true,
     };
 
-    addAbilitySnipeUpgradeNoMissChain();
-    addAbilitySnipeUpgradeDamageAndRange();
+    addAbilitySnipeUpgradeAfterImage();
     addAbilitySnipeUpgradeMoreRifles();
     addAbilitySnipeUpgradeSplitShot();
-    addAbilitySnipeUpgradeStayStill();
-    addAbilitySnipeUpgradeTerrainBounce();
-    addAbilitySnipeUpgradeFireLine();
-    addAbilitySnipeUpgradeBackwardsShot();
-    addAbilitySnipeUpgradeExplodeOnDeath();
-    addAbilitySnipeUpgradeAfterImage();
+    // addAbilitySnipeUpgradeNoMissChain();
+    // addAbilitySnipeUpgradeDamageAndRange();
+    // addAbilitySnipeUpgradeStayStill();
+    // addAbilitySnipeUpgradeTerrainBounce();
+    // addAbilitySnipeUpgradeFireLine();
+    // addAbilitySnipeUpgradeBackwardsShot();
+    // addAbilitySnipeUpgradeExplodeOnDeath();
 }
 
 export function createAbilitySnipe(
@@ -247,8 +247,8 @@ export function createAbilityObjectSnipeInitial(startPosition: Position, faction
 }
 
 function createAbilityObjectSnipeInitialPlayerTriggered(abilityOwner: AbilityOwner, abilitySnipe: AbilitySnipe, castPosition: Position, game: Game) {
-    castSnipeAfterImage(abilityOwner, abilitySnipe, castPosition, true, game);
     castSnipeUpgradeMoreRifles(abilityOwner, abilityOwner.faction, abilitySnipe, castPosition, true, game);
+    castSnipeAfterImage(abilityOwner, abilitySnipe, castPosition, true, game);
     createAbilityObjectSnipeInitial(abilityOwner, abilityOwner.faction, abilitySnipe, castPosition, true, false, game);
     abilitySnipe.currentCharges--;
     if (abilitySnipe.currentCharges === 0) {

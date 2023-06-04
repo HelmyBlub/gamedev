@@ -35,7 +35,7 @@ export function castSnipeMoreRifles(position: Position, faction: string, ability
     }
 }
 
-export function paintVisualizationMoreRifles(ctx: CanvasRenderingContext2D, position: Position, abilitySnipe: AbilitySnipe, cameraPosition: Position, game: Game) {
+export function paintVisualizationMoreRifles(ctx: CanvasRenderingContext2D, position: Position, abilitySnipe: AbilitySnipe, cameraPosition: Position, castPosition: Position | undefined, game: Game) {
     const upgradeMoreRifles: AbilityUpgradeMoreRifles = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES];
     if (!upgradeMoreRifles) return;
     const centerX = ctx.canvas.width / 2;
@@ -44,9 +44,13 @@ export function paintVisualizationMoreRifles(ctx: CanvasRenderingContext2D, posi
     let paintY = Math.floor(position.y - cameraPosition.y + centerY);
 
     for (let i = 0; i < upgradeMoreRifles.numberRifles; i++) {
-        const pointDirection = upgradeMoreRifles.lastSniperRiflePaintDirection[i];
-        const newPosition = getMoreRiflesPosition({ x: paintX, y: paintY }, upgradeMoreRifles, i);
-        paintSniperRifle(ctx, abilitySnipe, newPosition.x, newPosition.y, pointDirection, 0, false, game);
+        let pointDirection = upgradeMoreRifles.lastSniperRiflePaintDirection[i];
+        if(castPosition){
+            const newPosition = getMoreRiflesPosition(position, upgradeMoreRifles, i);
+            pointDirection = calculateDirection(newPosition, castPosition);
+        }
+        const paintPosition = getMoreRiflesPosition({ x: paintX, y: paintY }, upgradeMoreRifles, i);
+        paintSniperRifle(ctx, abilitySnipe, paintPosition.x, paintPosition.y, pointDirection, 0, false, game);
     }
 }
 
