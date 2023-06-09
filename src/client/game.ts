@@ -9,7 +9,7 @@ import { generateMissingChunks } from "./map/mapGeneration.js";
 import { createFixPositionRespawnEnemiesOnInit } from "./character/enemy/fixPositionRespawnEnemyModel.js";
 import { handleCommand } from "./commands.js";
 import { tickAbilityObjects } from "./ability/ability.js";
-import { garbageCollectPathingCache } from "./character/pathing.js";
+import { garbageCollectPathingCache, getPathingCache } from "./character/pathing.js";
 import { createObjectDeathCircle } from "./ability/abilityDeathCircle.js";
 import { checkForBossSpawn, tickBossCharacters } from "./character/enemy/bossEnemy.js";
 import { LevelingCharacter } from "./character/playerCharacters/levelingCharacterModel.js";
@@ -314,7 +314,7 @@ function tick(gameTimePassed: number, game: Game) {
         tickBossCharacters(game.state.bossStuff, game);
 
         takeTimeMeasure(game.debug, "", "playerTick");
-        tickCharacters(getPlayerCharacters(game.state.players), game, null);
+        tickCharacters(getPlayerCharacters(game.state.players), game, getPathingCache(game));
         takeTimeMeasure(game.debug, "playerTick", "");
 
         tickAbilityObjects(game.state.abilityObjects, game);

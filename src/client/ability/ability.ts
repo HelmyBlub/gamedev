@@ -172,7 +172,7 @@ export function tickAbilityObjects(abilityObjects: AbilityObject[], game: Game) 
 export function levelingAbilityXpGain(ability: Ability, experience: number, game: Game) {
     if (ability.leveling) {
         let owner = findAbilityOwnerByAbilityId(ability.id, game);
-        if(!owner || owner.isDead || owner.isPet) return;
+        if (!owner || owner.isDead || owner.isPet) return;
         ability.leveling.experience += experience;
         while (ability.leveling.experience >= ability.leveling.experienceForLevelUp) {
             levelUp(ability);
@@ -180,10 +180,16 @@ export function levelingAbilityXpGain(ability: Ability, experience: number, game
     }
 }
 
-export function findAbilityOwnerByAbilityId(abilityId: number, game: Game): Character | undefined{
-    for(let player of game.state.players){
-        const ability = player.character.abilities.find(a => a.id === abilityId);
-        if(ability) return player.character;
+export function findAbilityOwnerByAbilityId(abilityId: number, game: Game): Character | undefined {
+    for (let player of game.state.players) {
+        let ability = player.character.abilities.find(a => a.id === abilityId);
+        if (ability) return player.character;
+        if (player.character.pets) {
+            for (let pet of player.character.pets) {
+                ability = pet.abilities.find(a => a.id === abilityId);
+                if (ability) return pet;
+            }
+        }
     }
     return undefined;
 }
@@ -194,6 +200,13 @@ export function findAbilityById(abilityId: number, game: Game): Ability | undefi
         let playerCharacter = game.state.players[i].character;
         for (let ability of playerCharacter.abilities) {
             if (ability.id === abilityId) return ability;
+        }
+        if (playerCharacter.pets) {
+            for (let pet of playerCharacter.pets) {
+                for (let ability of pet.abilities) {
+                    if (ability.id === abilityId) return ability;
+                }        
+            }
         }
     }
     return ability;
@@ -318,7 +331,7 @@ function levelUp(ability: Ability) {
         ability.leveling.level++;
         ability.leveling.experience -= ability.leveling.experienceForLevelUp;
         ability.leveling.experienceForLevelUp += ability.leveling.level * 5;
-        if(ability.leveling.level > 100){
+        if (ability.leveling.level > 100) {
             ability.leveling.experienceForLevelUp = Math.floor(ability.leveling.experienceForLevelUp * 1.01);
         }
         const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];

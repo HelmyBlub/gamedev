@@ -3,11 +3,11 @@ import { determineMapKeysInDistance, GameMap, getChunksTouchingLine, isPositionB
 import { Character, CHARACTER_TYPE_FUNCTIONS, DEFAULT_CHARACTER, ENEMY_FACTION, UpgradeOptionCharacter } from "./characterModel.js";
 import { getNextWaypoint, getPathingCache, PathingCache } from "./pathing.js";
 import { calculateDirection, calculateDistance, calculateDistancePointToLine, createPaintTextData, takeTimeMeasure } from "../game.js";
-import { Position, Game, GameState, IdCounter, Camera, PaintTextData } from "../gameModel.js";
+import { Position, Game, IdCounter, Camera } from "../gameModel.js";
 import { findPlayerById, Player } from "../player.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS, abilityCharacterAddBossSkillPoint, AbilityUpgradeOption, findAbilityById, levelingAbilityXpGain } from "../ability/ability.js";
-import { LEVELING_CHARACTER, LevelingCharacter } from "./playerCharacters/levelingCharacterModel.js";
+import { LevelingCharacter } from "./playerCharacters/levelingCharacterModel.js";
 import { BossEnemyCharacter, CHARACTER_TYPE_BOSS_ENEMY } from "./enemy/bossEnemy.js";
 import { removeCharacterDebuffs, tickCharacterDebuffs } from "../debuff/debuff.js";
 import { createAbilityLeash } from "../ability/abilityLeash.js";
@@ -37,14 +37,14 @@ export function characterTakeDamage(character: Character, damage: number, game: 
     if (character.isPet) return;
 
     character.hp -= damage;
-    if(character.hp <= 0) {
+    if (character.hp <= 0) {
         character.isDead = true;
-        if(game.state.timeFirstKill === undefined) game.state.timeFirstKill = game.state.time;
+        if (game.state.timeFirstKill === undefined) game.state.timeFirstKill = game.state.time;
         levelingCharacterXpGain(game.state, character);
         if (character.type === CHARACTER_TYPE_BOSS_ENEMY) {
             abilityCharacterAddBossSkillPoint(game.state);
         }
-        if(abilityRefId !== undefined){
+        if (abilityRefId !== undefined) {
             let ability = findAbilityById(abilityRefId, game);
             if (ability) {
                 levelingAbilityXpGain(ability, character.experienceWorth, game);
@@ -66,7 +66,7 @@ export function fillRandomUpgradeOptions(character: Character, randomSeed: Rando
     if (character.upgradeChoice.length === 0) {
         let characterOptions: UpgradeOptionCharacter[] = [];
         let characterOptionProbability = 0;
-        if(!boss){
+        if (!boss) {
             characterOptions = createCharacterUpgradeOptions(character);
             for (let characterOption of characterOptions) {
                 characterOptionProbability += characterOption.probabilityFactor;
@@ -75,21 +75,21 @@ export function fillRandomUpgradeOptions(character: Character, randomSeed: Rando
         let abilitiesOptions: { [key: string]: { options: AbilityUpgradeOption[], probability: number } } = {};
         for (let ability of character.abilities) {
             let options: AbilityUpgradeOption[] = [];
-            if(boss){
+            if (boss) {
                 const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-                if(abilityFunctions.createAbilityBossUpgradeOptions && ability.bossSkillPoints !== undefined && ability.bossSkillPoints > 0){
+                if (abilityFunctions.createAbilityBossUpgradeOptions && ability.bossSkillPoints !== undefined && ability.bossSkillPoints > 0) {
                     options = abilityFunctions.createAbilityBossUpgradeOptions(ability);
                 }
-            }else{
+            } else {
                 options = ABILITIES_FUNCTIONS[ability.name].createAbilityUpgradeOptions(ability);
             }
-            if(options.length > 0){
+            if (options.length > 0) {
                 let abilityOptionProbability = 0;
                 for (let abilityOption of options) {
                     abilityOptionProbability += abilityOption.probabilityFactor;
                 }
                 abilitiesOptions[ability.name] = { options, probability: abilityOptionProbability };
-                if(boss) break;
+                if (boss) break;
             }
         }
         for (let i = 0; i < 3; i++) {
@@ -98,7 +98,7 @@ export function fillRandomUpgradeOptions(character: Character, randomSeed: Rando
             for (let key of abilitiesOptionsKeys) {
                 totablPropability += abilitiesOptions[key].probability;
             }
-            if(totablPropability === 0) return;
+            if (totablPropability === 0) return;
             let randomProbability = nextRandom(randomSeed) * (totablPropability);
             if (randomProbability < characterOptionProbability) {
                 let characterOptionIndex = 0;
@@ -149,9 +149,9 @@ export function fillRandomUpgradeOptions(character: Character, randomSeed: Rando
 
 export function createCharacterUpgradeOptions(character: Character, game: Game | undefined = undefined): UpgradeOptionCharacter[] {
     let upgradeOptions: UpgradeOptionCharacter[] = [];
-    if(character.type === DEFAULT_CHARACTER && game){
+    if (character.type === DEFAULT_CHARACTER && game) {
         upgradeOptions = createCharacterChooseUpgradeOptions(game);
-    }else{
+    } else {
         upgradeOptions.push({
             name: "Max Health+50", probabilityFactor: 1, upgrade: (c: Character) => {
                 c.hp += 50;
@@ -180,15 +180,21 @@ export function tickMapCharacters(map: GameMap, game: Game) {
     takeTimeMeasure(game.debug, "tickMapCharacters", "");
 }
 
-export function tickCharacters(characters: Character[], game: Game, pathingCache: PathingCache | null) {
+export function tickCharacters(characters: Character[], game: Game, pathingCache: PathingCache | null, petOwner: Character | undefined = undefined) {
     for (let j = characters.length - 1; j >= 0; j--) {
-        CHARACTER_TYPE_FUNCTIONS[characters[j].type]?.tickFunction(characters[j], game, pathingCache);
+        const functions = CHARACTER_TYPE_FUNCTIONS[characters[j].type];
+        if (functions?.tickFunction){
+            functions.tickFunction(characters[j], game, pathingCache);
+        } else if(functions?.tickPetFunction && petOwner){
+            functions.tickPetFunction(characters[j], petOwner, game, pathingCache);
+        }
         if (!characters[j].isDead) {
             for (let ability of characters[j].abilities) {
                 let tickAbility = ABILITIES_FUNCTIONS[ability.name].tickAbility;
-                if(tickAbility) tickAbility(characters[j], ability, game);
+                if (tickAbility) tickAbility(characters[j], ability, game);
             }
             tickCharacterDebuffs(characters[j], game);
+            tickCharacterPets(characters[j], game, pathingCache);
         }
     }
 }
@@ -201,16 +207,16 @@ export function getPlayerCharacters(players: Player[]) {
     return playerCharacters;
 }
 
-export function findMyCharacter(game: Game): Character | undefined{
+export function findMyCharacter(game: Game): Character | undefined {
     let myClientId = game.multiplayer.myClientId;
     let myPlayer = findPlayerById(game.state.players, myClientId);
     return myPlayer?.character;
 }
 
 
-export function tickDefaultCharacter(character: Character, game:Game, pathingCache: PathingCache | null){
+export function tickDefaultCharacter(character: Character, game: Game, pathingCache: PathingCache | null) {
     const isPlayer = character.faction === "player";
-    if(character.isDead) return;
+    if (character.isDead) return;
     moveCharacterTick(character, game.state.map, game.state.idCounter, isPlayer);
 }
 
@@ -354,7 +360,7 @@ export function determineEnemyMoveDirection(enemy: Character, closestPlayerPosit
     enemy.moveDirection = calculateDirection(enemy, nextWayPoint);
 }
 
-export function turnCharacterToPet(character: Character, game: Game){
+export function turnCharacterToPet(character: Character, game: Game) {
     character.isDead = false;
     character.hp = character.maxHp;
     if (character.isPet) {
@@ -377,8 +383,8 @@ export function turnCharacterToPet(character: Character, game: Game){
             character.y = possibleOwnerCharacters[randomOwnerIndex].y;
         }
 
-        character.abilities.push(createAbilityLeash(game.state.idCounter, undefined ,100, newPlayerOwnerId));
-    }    
+        character.abilities.push(createAbilityLeash(game.state.idCounter, undefined, 100, newPlayerOwnerId));
+    }
 }
 
 export function moveCharacterTick(character: Character, map: GameMap, idCounter: IdCounter, isPlayer: boolean) {
@@ -412,6 +418,12 @@ export function moveCharacterTick(character: Character, map: GameMap, idCounter:
                 }
             }
         }
+    }
+}
+
+function tickCharacterPets(character: Character, game: Game, pathingCache: PathingCache | null) {
+    if (character.pets !== undefined) {
+        tickCharacters(character.pets, game, pathingCache, character);
     }
 }
 

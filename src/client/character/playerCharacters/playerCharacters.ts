@@ -6,6 +6,7 @@ import { Character, UpgradeOptionCharacter } from "../characterModel.js"
 import { ABILITY_LEVELING_CHARACTER, AbilityLevelingCharacter, addAbilityLevelingCharacter } from "./abilityLevelingCharacter.js"
 import { LEVELING_CHARACTER, LevelingCharacter, addLevelingCharacter } from "./levelingCharacterModel.js"
 import { addSniperClass } from "./sniperCharacter.js"
+import { addTamerClass } from "./tamerCharacter.js"
 import { addTowerClass } from "./towerCharacterClass.js"
 
 export type PlayerCharacterClassFunctions = {
@@ -26,6 +27,7 @@ export function onDomLoadSetCharacterClasses() {
     //addCasterClass();
     addSniperClass();
     addTowerClass();
+    addTamerClass();
 }
 
 export function initCharacterChoiceOptons(character: Character, game: Game){

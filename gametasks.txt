@@ -1,9 +1,10 @@
 current tasks:
+- tamer:
+    - leash pull over blocking tiles: change leash will not go over blocking tiles
+    - 
+
 - look over code for refactoring stuff
 
-- think about next new character
-    - tamer:
-        - you have pets which fight for you
 
 - Sniper: LevelingAbilityCharacter
     - balancing ideas:

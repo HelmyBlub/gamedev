@@ -1,7 +1,6 @@
 import { AbilityObject } from "./ability/ability.js";
 import { Character } from "./character/characterModel.js";
 import { PathingCache } from "./character/pathing.js";
-import { PlayerCharacterClassesFunctions } from "./character/playerCharacters/playerCharacters.js";
 import { CommandRestart } from "./commands.js";
 import { createMap, GameMap } from "./map/map.js";
 import { generateMissingChunks } from "./map/mapGeneration.js";

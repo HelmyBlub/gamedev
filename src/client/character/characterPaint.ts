@@ -8,12 +8,13 @@ import { LEVELING_CHARACTER, LevelingCharacter } from "./playerCharacters/leveli
 
 export function paintCharacters(ctx: CanvasRenderingContext2D, characters: Character[], cameraPosition: Position, game: Game) {
     for (let i = 0; i < characters.length; i++) {
-        paintCharacter(ctx, characters[i], cameraPosition, game);
+        const character = characters[i];
+        paintCharacter(ctx, character, cameraPosition, game);
     }
 }
 
 export function paintCharacterHpBar(ctx: CanvasRenderingContext2D, character: Character, topLeftPaint: Position) {
-    if(character.isPet) return;
+    if (character.isPet) return;
     const fillAmount = Math.max(0, character.hp / character.maxHp);
     const bossWidth = character.width;
     const hpBarHeight = 6;
@@ -33,7 +34,7 @@ export function paintCharacterStatsUI(ctx: CanvasRenderingContext2D, character: 
         `Movement Speed: ${character.moveSpeed.toFixed(2)}`,
         `Type: ${character.type}`,
     ];
-    if(character.type === LEVELING_CHARACTER){
+    if (character.type === LEVELING_CHARACTER) {
         let levelingCharacter = character as LevelingCharacter;
         textLines.push(
             `XP: ${Math.floor(levelingCharacter.experienceForLevelUp)}/${Math.floor(levelingCharacter.experience)}`,
@@ -41,8 +42,8 @@ export function paintCharacterStatsUI(ctx: CanvasRenderingContext2D, character: 
             `Gains Skill Points after enough XP`,
             `for LevelUp is reached.`
         );
-        
-    }else if(character.type === ABILITY_LEVELING_CHARACTER){
+
+    } else if (character.type === ABILITY_LEVELING_CHARACTER) {
         let levelingCharacter = character as AbilityLevelingCharacter;
         textLines.push(
             `Abilities gain XP only for its own kills.`,
@@ -53,8 +54,18 @@ export function paintCharacterStatsUI(ctx: CanvasRenderingContext2D, character: 
     return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
 }
 
+function paintCharacterPets(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game){
+    if (character.pets !== undefined) {
+        for (let petsIt = 0; petsIt < character.pets.length; petsIt++) {
+            paintCharacter(ctx, character.pets[petsIt], cameraPosition, game);
+        }
+    }
+}
+
 function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
     if (character.isDead) return;
+    paintCharacterPets(ctx, character, cameraPosition, game);
+
     let centerX = ctx.canvas.width / 2;
     let centerY = ctx.canvas.height / 2;
     let paintX = character.x - cameraPosition.x + centerX;
@@ -63,7 +74,7 @@ function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cam
         || paintY < -character.height || paintY > ctx.canvas.height) return;
 
     let characterImageId = "slime";
-    if (character.faction === "player") characterImageId = "player";
+    if (character.faction === "player" && !character.type.startsWith("Pet")) characterImageId = "player";
     let characterImage = GAME_IMAGES[characterImageId];
     if (characterImage) {
         if (characterImage.imagePath !== undefined) {
@@ -101,7 +112,7 @@ function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cam
                 let heightFactor = 1;
                 if (character.isPet) heightFactor = 0.5;
                 let characterPaintX = Math.floor(paintX - character.width / 2);
-                let characterPaintY = Math.floor(paintY - character.height / 2 * heightFactor); 
+                let characterPaintY = Math.floor(paintY - character.height / 2 * heightFactor);
                 ctx.drawImage(
                     characterImage.properties.canvases[randomizedCharacterImageToKey(character.randomizedCharacterImage)],
                     widthIndex * spriteWidth,
@@ -114,7 +125,7 @@ function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cam
                     character.height * heightFactor
                 );
                 paintCharacterHpBar(ctx, character, { x: characterPaintX, y: characterPaintY });
-                paintPlayerNameOverCharacter(ctx, character, { x: characterPaintX, y: characterPaintY - 6}, game);
+                paintPlayerNameOverCharacter(ctx, character, { x: characterPaintX, y: characterPaintY - 6 }, game);
             }
         } else {
             console.log("missing image path for enemy", characterImageId);
@@ -150,7 +161,7 @@ function paintPlayerNameOverCharacter(ctx: CanvasRenderingContext2D, character: 
 
     ctx.fillText(
         clientInfo.name,
-        paintTopLeft.x - clientInfo.name.length * fontSize / 4 + character.width/2,
+        paintTopLeft.x - clientInfo.name.length * fontSize / 4 + character.width / 2,
         paintTopLeft.y - 2
     );
 }

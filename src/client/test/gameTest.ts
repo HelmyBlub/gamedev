@@ -102,7 +102,7 @@ function runGameWithPlayerInputsSinglePlayer(game: Game, playerInputs: (PlayerIn
         replayPlayerInputs: [...playerInputs as any],
     };
     if (!game.multiplayer.websocket) {
-        game.testing.replay.frameSkipAmount = 10;
+        game.testing.replay.frameSkipAmount = 60;
         game.testing.replay.zeroTimeout = true;
     }
     game.state.ended = true;

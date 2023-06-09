@@ -1,11 +1,8 @@
 import { onDomLoadSetAbilitiesFunctions } from "./ability/ability.js";
 import { onDomLoadSetCharacterClasses } from "./character/playerCharacters/playerCharacters.js";
-import { addSniperClass } from "./character/playerCharacters/sniperCharacter.js";
-import { addSwordClass } from "./character/playerCharacters/swordCharacterClass.js";
-import { addTowerClass } from "./character/playerCharacters/towerCharacterClass.js";
 import { handleCommand } from "./commands.js";
 import { onDomLoadSetDebuffsFunctions } from "./debuff/debuff.js";
-import { gameRestart, runner, setRelativeMousePosition } from "./game.js";
+import { runner, setRelativeMousePosition } from "./game.js";
 import { createDefaultGameData, Game } from "./gameModel.js";
 import { keyDown, keyUp, mouseDown, mouseUp } from "./playerInput.js";
 import { addHTMLDebugCheckboxesToSettings } from "./settingsHtmlMenu.js";
