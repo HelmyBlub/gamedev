@@ -1,11 +1,10 @@
 current tasks:
 - tamer:
-    - leash pull over blocking tiles: change leash will not go over blocking tiles
-        - remove error throw in getNextWaypoint
-    - pets can pull player
+    - abilityLeash: pull strengh of player and pet configurable
     - bossSkillPoints?
         - pets get abilities?
     - Bug: long leash not painted if pet out of screen
+    - after some leash bending test: remove error throw in getNextWaypoint
 
 - look over code for refactoring stuff
 
