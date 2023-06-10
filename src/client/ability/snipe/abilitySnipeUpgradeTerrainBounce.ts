@@ -1,6 +1,6 @@
 import { calcNewPositionMovedInDirection, calculateDistance } from "../../game.js";
 import { Position, Game } from "../../gameModel.js";
-import { GameMap, getMapTile } from "../../map/map.js";
+import { getFirstBlockingGameMapTilePositionTouchingLine } from "../../map/map.js";
 import { Ability, AbilityUpgradeOption } from "../ability.js";
 import { AbilityUpgrade } from "../abilityUpgrade.js";
 import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe, createAbilityObjectSnipe, getAbilitySnipeDamage, getAbilitySnipeRange } from "./abilitySnipe.js";
@@ -24,7 +24,7 @@ export function addAbilitySnipeUpgradeTerrainBounce() {
 
 export function createAndPushAbilityObjectSnipeTerrainBounceInit(startPosition: Position, direction: number, abilitySnipe: AbilitySnipe, faction: string, canSplitOnHit: boolean | undefined, range: number, bounceCounter: number, triggeredByPlayer: boolean, game: Game) {
     const endPosistion = calcNewPositionMovedInDirection(startPosition, direction, range);
-    const blockingPosistion = getFirstBlockingTilePositionTouchingLine(game.state.map, startPosition, endPosistion, game);
+    const blockingPosistion = getFirstBlockingGameMapTilePositionTouchingLine(game.state.map, startPosition, endPosistion, game);
     createAndPush(
         startPosition,
         blockingPosistion,
@@ -48,7 +48,7 @@ export function createAndPushAbilityObjectSnipeTerrainBounceBounce(abilityObject
     const newStartPosition = calcNewPositionMovedInDirection(abilityObjectSnipe, abilityObjectSnipe.direction, abilityObjectSnipe.range);
     const newBounceDirection = calculateBounceAngle(newStartPosition, abilityObjectSnipe.direction, game);
     const newEndPosistion = calcNewPositionMovedInDirection(newStartPosition, newBounceDirection, abilityObjectSnipe.remainingRange);
-    const nextBlockingPosistion = getFirstBlockingTilePositionTouchingLine(game.state.map, newStartPosition, newEndPosistion, game);
+    const nextBlockingPosistion = getFirstBlockingGameMapTilePositionTouchingLine(game.state.map, newStartPosition, newEndPosistion, game);
     createAndPush(
         newStartPosition,
         nextBlockingPosistion,
@@ -182,81 +182,3 @@ function calculateBounceAngle(bouncePosition: Position, startingAngle: number, g
     const angleDiff = startingAngle - wallAngle;
     return wallAngle - angleDiff;
 }
-
-function getFirstBlockingTilePositionTouchingLine(map: GameMap, lineStart: Position, lineEnd: Position, game: Game): Position | undefined {
-    let tileSize = map.tileSize;
-    let currentTileIJ = positionToTileIJ(map, lineStart);
-    let endTileIJ = positionToTileIJ(map, lineEnd);
-    if (currentTileIJ.i !== endTileIJ.i || currentTileIJ.j !== endTileIJ.j) {
-        let xDiff = lineEnd.x - lineStart.x;
-        let yDiff = lineEnd.y - lineStart.y;
-        let currentPos = { ...lineStart };
-        do {
-            let nextYBorder: number | undefined;
-            let nextXBorder: number | undefined;
-            let nextYBorderX: number | undefined;
-            let nextXBorderY: number | undefined;
-            if (yDiff !== 0) {
-                if (yDiff > 0) {
-                    nextYBorder = Math.ceil(currentPos.y / tileSize) * tileSize + 0.01;
-                } else {
-                    nextYBorder = Math.floor(currentPos.y / tileSize) * tileSize - 0.01;
-                }
-            }
-            if (xDiff !== 0) {
-                if (xDiff > 0) {
-                    nextXBorder = Math.ceil(currentPos.x / tileSize) * tileSize + 0.01;
-                } else {
-                    nextXBorder = Math.floor(currentPos.x / tileSize) * tileSize - 0.01;
-                }
-            }
-            if (nextYBorder !== undefined) {
-                nextYBorderX = (nextYBorder - currentPos.y) * (xDiff / yDiff) + currentPos.x;
-            }
-            if (nextXBorder !== undefined) {
-                nextXBorderY = (nextXBorder - currentPos.x) * (yDiff / xDiff) + currentPos.y;
-            }
-            if (nextYBorderX !== undefined && nextXBorderY !== undefined) {
-                if (nextXBorder! > nextYBorderX) {
-                    if (xDiff > 0) {
-                        currentPos.x = nextYBorderX;
-                        currentPos.y = nextYBorder!;
-                    } else {
-                        currentPos.x = nextXBorder!;
-                        currentPos.y = nextXBorderY;
-                    }
-                } else {
-                    if (xDiff > 0) {
-                        currentPos.x = nextXBorder!;
-                        currentPos.y = nextXBorderY;
-                    } else {
-                        currentPos.x = nextYBorderX;
-                        currentPos.y = nextYBorder!;
-                    }
-                }
-            } else if (nextYBorderX !== undefined) {
-                currentPos.y = nextYBorder!;
-            } else if (nextXBorderY !== undefined) {
-                currentPos.x = nextXBorder!;
-            } else {
-                console.log("should not happen?");
-            }
-            const currentTile = getMapTile(currentPos, map, game.state.idCounter);
-            currentTileIJ = positionToTileIJ(map, currentPos);
-            if (currentTile.blocking) {
-                return currentPos;
-            }
-        } while (currentTileIJ.i !== endTileIJ.i || currentTileIJ.j !== endTileIJ.j);
-    }
-
-    return undefined;
-}
-
-function positionToTileIJ(map: GameMap, position: Position): { i: number, j: number } {
-    return {
-        i: Math.floor(position.x / map.tileSize),
-        j: Math.floor(position.y / map.tileSize),
-    }
-}
-
-

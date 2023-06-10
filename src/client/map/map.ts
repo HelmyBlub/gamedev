@@ -1,5 +1,5 @@
 import { Character } from "../character/characterModel.js";
-import { IdCounter, Position } from "../gameModel.js"
+import { Game, IdCounter, Position } from "../gameModel.js"
 import { createNewChunk } from "./mapGeneration.js";
 import { MapPaintLayer } from "./mapPaint.js";
 
@@ -197,13 +197,13 @@ export function getChunksTouchingLine(map: GameMap, lineStart: Position, lineEnd
             }
             currentKey = positionToMapKey(currentPos, map);
             chunkKeys.add(currentKey);
-            let tempKey = positionToMapKey({x: currentPos.x - width, y: currentPos.y}, map);
+            let tempKey = positionToMapKey({ x: currentPos.x - width, y: currentPos.y }, map);
             chunkKeys.add(tempKey);
-            tempKey = positionToMapKey({x: currentPos.x + width, y: currentPos.y}, map);
+            tempKey = positionToMapKey({ x: currentPos.x + width, y: currentPos.y }, map);
             chunkKeys.add(tempKey);
-            tempKey = positionToMapKey({x: currentPos.x, y: currentPos.y + width}, map);
+            tempKey = positionToMapKey({ x: currentPos.x, y: currentPos.y + width }, map);
             chunkKeys.add(tempKey);
-            tempKey = positionToMapKey({x: currentPos.x, y: currentPos.y - width}, map);
+            tempKey = positionToMapKey({ x: currentPos.x, y: currentPos.y - width }, map);
             chunkKeys.add(tempKey);
         } while (currentKey !== endKey);
     }
@@ -217,6 +217,82 @@ export function getChunksTouchingLine(map: GameMap, lineStart: Position, lineEnd
     return chunks;
 }
 
+export function positionToGameMapTileIJ(map: GameMap, position: Position): { i: number, j: number } {
+    return {
+        i: Math.floor(position.x / map.tileSize),
+        j: Math.floor(position.y / map.tileSize),
+    }
+}
+
+export function getFirstBlockingGameMapTilePositionTouchingLine(map: GameMap, lineStart: Position, lineEnd: Position, game: Game): Position | undefined {
+    let tileSize = map.tileSize;
+    let currentTileIJ = positionToGameMapTileIJ(map, lineStart);
+    let endTileIJ = positionToGameMapTileIJ(map, lineEnd);
+    if (currentTileIJ.i !== endTileIJ.i || currentTileIJ.j !== endTileIJ.j) {
+        let xDiff = lineEnd.x - lineStart.x;
+        let yDiff = lineEnd.y - lineStart.y;
+        let currentPos = { x: lineStart.x, y: lineStart.y };
+        do {
+            let nextYBorder: number | undefined;
+            let nextXBorder: number | undefined;
+            let nextYBorderX: number | undefined;
+            let nextXBorderY: number | undefined;
+            if (yDiff !== 0) {
+                if (yDiff > 0) {
+                    nextYBorder = Math.ceil(currentPos.y / tileSize) * tileSize + 0.01;
+                } else {
+                    nextYBorder = Math.floor(currentPos.y / tileSize) * tileSize - 0.01;
+                }
+            }
+            if (xDiff !== 0) {
+                if (xDiff > 0) {
+                    nextXBorder = Math.ceil(currentPos.x / tileSize) * tileSize + 0.01;
+                } else {
+                    nextXBorder = Math.floor(currentPos.x / tileSize) * tileSize - 0.01;
+                }
+            }
+            if (nextYBorder !== undefined) {
+                nextYBorderX = (nextYBorder - currentPos.y) * (xDiff / yDiff) + currentPos.x;
+            }
+            if (nextXBorder !== undefined) {
+                nextXBorderY = (nextXBorder - currentPos.x) * (yDiff / xDiff) + currentPos.y;
+            }
+            if (nextYBorderX !== undefined && nextXBorderY !== undefined) {
+                if (nextXBorder! > nextYBorderX) {
+                    if (xDiff > 0) {
+                        currentPos.x = nextYBorderX;
+                        currentPos.y = nextYBorder!;
+                    } else {
+                        currentPos.x = nextXBorder!;
+                        currentPos.y = nextXBorderY;
+                    }
+                } else {
+                    if (xDiff > 0) {
+                        currentPos.x = nextXBorder!;
+                        currentPos.y = nextXBorderY;
+                    } else {
+                        currentPos.x = nextYBorderX;
+                        currentPos.y = nextYBorder!;
+                    }
+                }
+            } else if (nextYBorderX !== undefined) {
+                currentPos.y = nextYBorder!;
+            } else if (nextXBorderY !== undefined) {
+                currentPos.x = nextXBorder!;
+            } else {
+                console.log("should not happen?");
+            }
+            const currentTile = getMapTile(currentPos, map, game.state.idCounter);
+            currentTileIJ = positionToGameMapTileIJ(map, currentPos);
+            if (currentTile.blocking) {
+                return currentPos;
+            }
+        } while (currentTileIJ.i !== endTileIJ.i || currentTileIJ.j !== endTileIJ.j);
+    }
+
+    return undefined;
+}
+
 export function getChunksTouchingLine2(map: GameMap, lineStart: Position, lineEnd: Position): MapChunk[] {
     const chunkKeys: string[] = [];
     const chuckSize = map.tileSize * map.chunkLength;
@@ -228,7 +304,7 @@ export function getChunksTouchingLine2(map: GameMap, lineStart: Position, lineEn
     const sy = startY < endY ? 1 : -1;
     const dx = Math.abs(lineEnd.x / chuckSize - startX);
     const dy = Math.abs(lineEnd.y / chuckSize - startY);
-    
+
     let err = dx - dy;
     let x = startX;
     let y = startY;
@@ -245,10 +321,10 @@ export function getChunksTouchingLine2(map: GameMap, lineStart: Position, lineEn
         if (e2 > dy) {
             err -= dy;
             x += sx;
-        }else if (e2 <= dx) {
+        } else if (e2 <= dx) {
             err += dx;
             y += sy;
-        }else{
+        } else {
             debugger;
             console.log(lineStart, lineEnd);
             throw new Error("would cause infinite loop, but should not be able to happen?");
