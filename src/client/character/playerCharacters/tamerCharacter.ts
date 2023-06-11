@@ -8,60 +8,17 @@ import { ABILITY_LEVELING_CHARACTER, AbilityLevelingCharacter } from "./abilityL
 import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters.js";
 import { getNextId } from "../../game.js";
 import { createAbilityLeash } from "../../ability/abilityLeash.js";
-import { determineCharactersInDistance, determineClosestCharacter, determineEnemyMoveDirection, moveCharacterTick } from "../character.js";
-import { PathingCache } from "../pathing.js";
+import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, moveCharacterTick } from "../character.js";
 import { ABILITY_NAME_MELEE, createAbilityMelee } from "../../ability/abilityMelee.js";
-import { nextRandom } from "../../randomNumberGenerator.js";
-import { tickLevelingCharacter } from "./levelingCharacter.js";
-import { LEVELING_CHARACTER } from "./levelingCharacterModel.js";
+import { PetNoTargetBehavior, PetTargetBehavior, TAMER_PET_CHARACTER, TamerPetCharacter, createTamerPetCharacter, tickTamerPetCharacter } from "./tamerPetCharacter.js";
 
 export function addTamerClass() {
     PLAYER_CHARACTER_CLASSES_FUNCTIONS["Tamer(Work in Progress)"] = {
         changeCharacterToThisClass: changeCharacterToTamerClass
     }
-    CHARACTER_TYPE_FUNCTIONS["PetAggressive"] = {
+    CHARACTER_TYPE_FUNCTIONS[TAMER_PET_CHARACTER] = {
         tickPetFunction: tickTamerPetCharacter
     }
-    CHARACTER_TYPE_FUNCTIONS["PetProtective"] = {
-        tickPetFunction: tickTamerPetCharacter
-    }
-    CHARACTER_TYPE_FUNCTIONS["PetPassive"] = {
-        tickPetFunction: tickTamerPetCharacter
-    }
-
-}
-
-export function tickTamerPetCharacter(character: Character, petOwner: Character, game: Game, pathingCache: PathingCache | null) {
-    if (pathingCache === null) {
-        console.log("needs pathing cache");
-        return;
-    }
-    const isPlayer = character.faction === "player";
-    if (character.isDead) return;
-
-    if (character.type === "PetAggressive") {
-        let playerCharacters = determineCharactersInDistance(character, game.state.map, [], game.state.bossStuff.bosses, 200);
-        let closest = determineClosestCharacter(character, playerCharacters);
-        if (closest.minDistanceCharacter !== null) {
-            determineEnemyMoveDirection(character, closest.minDistanceCharacter, game.state.map, pathingCache, game.state.idCounter, game.state.time);
-        } else {
-            character.isMoving = true;
-            character.moveDirection = nextRandom(game.state.randomSeed) * Math.PI * 2;
-        }
-    } else if (character.type === "PetProtective") {
-        let playerCharacters = determineCharactersInDistance(petOwner, game.state.map, [], game.state.bossStuff.bosses, 200);
-        let closest = determineClosestCharacter(petOwner, playerCharacters);
-        if (closest.minDistanceCharacter !== null) {
-            determineEnemyMoveDirection(character, closest.minDistanceCharacter, game.state.map, pathingCache, game.state.idCounter, game.state.time);
-        } else {
-            character.isMoving = true;
-            character.moveDirection = nextRandom(game.state.randomSeed) * Math.PI * 2;
-        }
-    } else if (character.type === "PetPassive") {
-        //standing around
-    }
-
-    moveCharacterTick(character, game.state.map, game.state.idCounter, isPlayer);
 }
 
 function changeCharacterToTamerClass(
@@ -70,14 +27,14 @@ function changeCharacterToTamerClass(
     game: Game,
 ) {
     addAbilityToCharacter(character, createAbilityHpRegen(idCounter));
-    addPetToTamer(character, "blue", "PetAggressive", game);
-    addPetToTamer(character, "green", "PetProtective", game);
-    addPetToTamer(character, "black", "PetPassive", game);
+    addPetToTamer(character, "blue", "aggressive", "hyperactive",game);
+    addPetToTamer(character, "green", "protective", "stay", game);
+    addPetToTamer(character, "black", "passive", "protective", game);
 }
 
-function addPetToTamer(character: Character, color: string, type: string, game: Game) {
+function addPetToTamer(character: Character, color: string, petTargetBehavior: PetTargetBehavior, petNoTargetBehavior: PetNoTargetBehavior, game: Game) {
     if (character.pets === undefined) character.pets = [];
-    const pet = createCharacter(getNextId(game.state.idCounter), character.x, character.y, 15, 15, color, 2, 20, "player", type, 10);
+    const pet: TamerPetCharacter = createTamerPetCharacter(character, color, petTargetBehavior, petNoTargetBehavior, game);
     //pet.isPet = true;
     pet.abilities.push(createAbilityLeash(game.state.idCounter, undefined, 100, character.id));
     pet.abilities.push(createAbility(ABILITY_NAME_MELEE, game.state.idCounter, true));

@@ -7,7 +7,7 @@ import { GAME_IMAGES, loadImage } from "../../imageLoad.js";
 import { findNearNonBlockingPosition, getMapMidlePosition, moveByDirectionAndDistance } from "../../map/map.js";
 import { getPlayerFurthestAwayFromSpawn } from "../../player.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
-import { determineClosestCharacter, determineEnemyMoveDirection, getPlayerCharacters, moveCharacterTick } from "../character.js";
+import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick } from "../character.js";
 import { Character, createCharacter } from "../characterModel.js";
 import { paintCharacterHpBar } from "../characterPaint.js";
 import { getPathingCache, PathingCache } from "../pathing.js";
@@ -47,7 +47,7 @@ export function tickBossEnemyCharacter(enemy: BossEnemyCharacter, game: Game, pa
         teleportBossToNearestPlayer(enemy, game);
         closest = determineClosestCharacter(enemy, playerCharacters);
     }
-    determineEnemyMoveDirection(enemy, closest.minDistanceCharacter, game.state.map, pathingCache, game.state.idCounter, game.state.time);
+    calculateAndSetMoveDirectionToPositionWithPathing(enemy, closest.minDistanceCharacter, game.state.map, pathingCache, game.state.idCounter, game.state.time);
     moveCharacterTick(enemy, game.state.map, game.state.idCounter, false);
 
     for (let ability of enemy.abilities) {

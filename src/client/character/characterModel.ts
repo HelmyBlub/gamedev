@@ -9,7 +9,6 @@ import { tickDefaultCharacter } from "./character.js";
 import { tickFixPositionRespawnEnemyCharacter } from "./enemy/fixPositionRespawnEnemy.js";
 import { PathingCache } from "./pathing.js";
 import { initCharacterChoiceOptons } from "./playerCharacters/playerCharacters.js";
-import { tickTamerPetCharacter } from "./playerCharacters/tamerCharacter.js";
 
 export type CHARACTER_TYPE_FUNCTIONS = {
     [key: string]: {

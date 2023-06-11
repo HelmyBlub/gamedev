@@ -1,8 +1,4 @@
-import { getNextId } from "../../game.js";
-import { Game, IdCounter } from "../../gameModel.js";
-import { GAME_IMAGES } from "../../imageLoad.js";
-import { createRandomizedCharacterImageData } from "../../randomizedCharacterImage.js";
-import { RandomSeed } from "../../randomNumberGenerator.js";
+import { Game } from "../../gameModel.js";
 import { Character, CHARACTER_TYPE_FUNCTIONS, createCharacter } from "../characterModel.js";
 import { tickLevelingCharacter } from "./levelingCharacter.js";
 

@@ -1,7 +1,7 @@
 import { calculateDistance } from "../../game.js";
 import { Game } from "../../gameModel.js";
 import { GameMap, positionToMapKey } from "../../map/map.js";
-import { determineCharactersInDistance, determineClosestCharacter, determineEnemyMoveDirection, getPlayerCharacters, moveCharacterTick } from "../character.js";
+import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick } from "../character.js";
 import { Character } from "../characterModel.js";
 import { PathingCache } from "../pathing.js";
 import { FixPositionRespawnEnemyCharacter } from "./fixPositionRespawnEnemyModel.js";
@@ -30,12 +30,12 @@ export function tickFixPositionRespawnEnemyCharacter(character: Character, game:
                 if (enemy.wasHitRecently) {
                     alertCloseEnemies(enemy, game);
                 }
-                determineEnemyMoveDirection(enemy, closest.minDistanceCharacter, game.state.map, pathingCache, game.state.idCounter, game.state.time);
+                calculateAndSetMoveDirectionToPositionWithPathing(enemy, closest.minDistanceCharacter, game.state.map, pathingCache, game.state.idCounter, game.state.time);
             } else {
                 let spawnDistance = calculateDistance(enemy, enemy.spawnPosition);
                 enemy.isAggroed = false;
                 if (spawnDistance > game.state.map.tileSize / 2) {
-                    determineEnemyMoveDirection(enemy, enemy.spawnPosition, game.state.map, pathingCache, game.state.idCounter, game.state.time);
+                    calculateAndSetMoveDirectionToPositionWithPathing(enemy, enemy.spawnPosition, game.state.map, pathingCache, game.state.idCounter, game.state.time);
                 } else {
                     enemy.nextTickTime = game.state.time + closest.minDistance;
                     enemy.isMoving = false;

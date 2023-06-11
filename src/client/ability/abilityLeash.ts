@@ -108,7 +108,7 @@ function tickAbilityLeash(abilityOwner: AbilityOwner, ability: Ability, game: Ga
                 }else{
                     pullPosition =  abilityOwner;
                 }
-                pullCharacterTowardsPosition(pullForce, connectedOwner, pullPosition);
+                pullCharacterTowardsPosition(pullForce / 3, connectedOwner, pullPosition);
             }
         }
     }

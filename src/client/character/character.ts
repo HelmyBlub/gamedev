@@ -346,18 +346,18 @@ export function countAlivePlayerCharacters(players: Player[]) {
     return counter;
 }
 
-export function determineEnemyMoveDirection(enemy: Character, closestPlayerPosition: Position | null, map: GameMap, pathingCache: PathingCache, idCounter: IdCounter, time: number) {
-    if (closestPlayerPosition === null) {
-        enemy.isMoving = false;
+export function calculateAndSetMoveDirectionToPositionWithPathing(character: Character, targetPosition: Position | null, map: GameMap, pathingCache: PathingCache, idCounter: IdCounter, time: number) {
+    if (targetPosition === null) {
+        character.isMoving = false;
         return;
     }
-    enemy.isMoving = true;
-    let nextWayPoint: Position | null = getNextWaypoint(enemy, closestPlayerPosition, map, pathingCache, idCounter, time);
+    character.isMoving = true;
+    let nextWayPoint: Position | null = getNextWaypoint(character, targetPosition, map, pathingCache, idCounter, time);
     if (nextWayPoint === null) {
-        enemy.isMoving = false;
+        character.isMoving = false;
         return;
     }
-    enemy.moveDirection = calculateDirection(enemy, nextWayPoint);
+    character.moveDirection = calculateDirection(character, nextWayPoint);
 }
 
 export function turnCharacterToPet(character: Character, game: Game) {

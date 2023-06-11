@@ -5,6 +5,7 @@ import { randomizedCharacterImageToKey } from "../randomizedCharacterImage.js";
 import { Character } from "./characterModel.js";
 import { ABILITY_LEVELING_CHARACTER, AbilityLevelingCharacter } from "./playerCharacters/abilityLevelingCharacter.js";
 import { LEVELING_CHARACTER, LevelingCharacter } from "./playerCharacters/levelingCharacterModel.js";
+import { TAMER_PET_CHARACTER } from "./playerCharacters/tamerPetCharacter.js";
 
 export function paintCharacters(ctx: CanvasRenderingContext2D, characters: Character[], cameraPosition: Position, game: Game) {
     for (let i = 0; i < characters.length; i++) {
@@ -74,7 +75,7 @@ function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cam
         || paintY < -character.height || paintY > ctx.canvas.height) return;
 
     let characterImageId = "slime";
-    if (character.faction === "player" && !character.type.startsWith("Pet")) characterImageId = "player";
+    if (character.faction === "player" && character.type !== TAMER_PET_CHARACTER) characterImageId = "player";
     let characterImage = GAME_IMAGES[characterImageId];
     if (characterImage) {
         if (characterImage.imagePath !== undefined) {
