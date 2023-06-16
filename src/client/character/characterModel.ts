@@ -102,6 +102,7 @@ export type Character = Position & {
     willTurnToPetOnDeath?: boolean,
     upgradeChoice: CharacterUpgradeChoice[],
     pets?: Character[],
+    weight: number,
 }
 
 export type CharacterUpgradeChoice = {
@@ -143,6 +144,7 @@ export function createCharacter(
         abilities: [],
         debuffs: [],
         upgradeChoice: [],
+        weight: width * height,
     };
 }
 

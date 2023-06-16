@@ -1,5 +1,6 @@
 import { characterTakeDamage, determineCharactersInDistance, determineClosestCharacter, getPlayerCharacters } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
+import { TAMER_PET_CHARACTER, TamerPetCharacter } from "../character/playerCharacters/tamerPetCharacter.js";
 import { getNextId } from "../game.js";
 import { Game, IdCounter } from "../gameModel.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, AbilityUpgradeOption } from "./ability.js";
@@ -63,8 +64,13 @@ function tickAbilityMelee(abilityOwner: AbilityOwner, ability: Ability, game: Ga
             let closest = determineClosestCharacter(abilityOwner, playerCharacters);
     
             if (abilityOwner.width !== undefined && closest.minDistanceCharacter
-                && closest.minDistance <= abilityOwner.width / 2 + closest.minDistanceCharacter.width / 2) {
-                characterTakeDamage(closest.minDistanceCharacter, abilityMelee.damage, game, ability.id);
+                && closest.minDistance <= abilityOwner.width / 2 + closest.minDistanceCharacter.width / 2) 
+            {
+                let damage = abilityMelee.damage;
+                if(abilityOwner.type === TAMER_PET_CHARACTER){
+                    damage *= (abilityOwner as TamerPetCharacter).sizeFactor;
+                }
+                characterTakeDamage(closest.minDistanceCharacter, damage, game, ability.id);
             }
         }
 

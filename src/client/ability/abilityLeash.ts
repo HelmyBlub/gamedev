@@ -78,7 +78,7 @@ function tickAbilityLeash(abilityOwner: AbilityOwner, ability: Ability, game: Ga
 
     if(abilityLeash.leashedToOwnerId !== undefined){
         let characters = getPlayerCharacters(game.state.players);
-        let connectedOwner: Position | null = findCharacterById(characters, abilityLeash.leashedToOwnerId);
+        let connectedOwner: Character | null = findCharacterById(characters, abilityLeash.leashedToOwnerId);
         if(!connectedOwner){
             console.log("leash owner not found", ability);
             delete abilityLeash.leashedToOwnerId;
@@ -101,14 +101,24 @@ function tickAbilityLeash(abilityOwner: AbilityOwner, ability: Ability, game: Ga
                 }else{
                     pullPosition =  connectedOwner;
                 }
-                pullCharacterTowardsPosition(pullForce, abilityOwner, pullPosition);
+                let weightFactor =  connectedOwner.weight / abilityOwner.weight!;
+                if(weightFactor > 1){
+                    weightFactor = 1;
+                }
+                pullCharacterTowardsPosition(pullForce * weightFactor, abilityOwner, pullPosition);
     
                 if(abilityLeash.leashBendPoints.length > 0){
                     pullPosition =  abilityLeash.leashBendPoints[abilityLeash.leashBendPoints.length-1];
                 }else{
                     pullPosition =  abilityOwner;
                 }
-                pullCharacterTowardsPosition(pullForce / 3, connectedOwner, pullPosition);
+
+                const connectBonus = 2;
+                weightFactor = abilityOwner.weight! / connectedOwner.weight / connectBonus;
+                if(weightFactor > 1){
+                    weightFactor = 1;
+                }
+                pullCharacterTowardsPosition(pullForce * weightFactor, connectedOwner, pullPosition);
             }
         }
     }

@@ -1,16 +1,49 @@
 current tasks:
 - tamer:
-    - abilityLeash: pull strengh of player and pet configurable
-    - bossSkillPoints?
-        - pets get abilities?
+    - ability "feed"
+        - visualize "feed" action with some graphic
+
     - Bug: long leash not painted if pet out of screen
     - after some leash bending test: remove error throw in getNextWaypoint
 
 - look over code for refactoring stuff
 
+tamer task ideas:
+    - default good Pet behavior:
+        - activates speed boost if player takes damage
+    - player abilities:
+        - command attack certain target/area
+        - "treat" -> pet thinks he done the right thing
+        - "stop" -> 
+        - "petting" ->
+    - pet AI:
+        - pet get random start behavior type
+            - movement
+                - lazy -> stays around often
+                - normal
+                - hyperactive -> always running around
+            - stamina:
+                - sleeping
+                - low
+                - normal
+                - high
+            - 
+        - pet states
+            - happines:
+                - happy pet has damage buff
+            - "fatigued" -> after attacking alot
+            - "hyperactive" -> faster
+            - ""
+        - stay close to player when no enemies in range
+        - more behavior patterns
+    - pet scalling?
+        - pets get abilities?
+            - bossSkillPoints?
+                - "iceAura"
+                - "sword"
+                - "shoot" but targeted maybe?
+        -
 
-- Sniper: LevelingAbilityCharacter
-    - balancing ideas:
 
 
 
