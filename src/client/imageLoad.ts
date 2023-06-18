@@ -39,6 +39,17 @@ export const COLOR_CONVERSION: ColorConversions = {
 
 export const GAME_IMAGES: GameImages = {};
 
+export function getImage(imageKey: string, color: string = "", randomizedCharacterImage: RandomizedCharacterImage | undefined = undefined): HTMLImageElement | undefined {
+    let imageRef = GAME_IMAGES[imageKey];
+
+    loadImage(imageRef);
+    if (imageRef.imageRef?.complete) {
+        return imageRef.imageRef;
+    }    
+    return undefined;
+}
+
+
 export function loadImage(gameImage: GameImage, color: string = "", randomizedCharacterImage: RandomizedCharacterImage | undefined = undefined) {
     if (gameImage.imageRef === undefined) {
         let image = new Image();
