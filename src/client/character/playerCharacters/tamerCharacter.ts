@@ -29,14 +29,14 @@ function changeCharacterToTamerClass(
 ) {
     addAbilityToCharacter(character, createAbilityHpRegen(idCounter));
     addAbilityToCharacter(character, createAbility(ABILITY_NAME_FEED_PET, idCounter, false, false, "ability1"));
-    addPetToTamer(character, "blue", "aggressive", "hyperactive",game);
-    addPetToTamer(character, "green", "protective", "stay", game);
-    addPetToTamer(character, "black", "passive", "protective", game);
+    addPetToTamer(character, "blue", game);
+    addPetToTamer(character, "green", game);
+    addPetToTamer(character, "black", game);
 }
 
-function addPetToTamer(character: Character, color: string, petTargetBehavior: PetTargetBehavior, petNoTargetBehavior: PetNoTargetBehavior, game: Game) {
+function addPetToTamer(character: Character, color: string, game: Game) {
     if (character.pets === undefined) character.pets = [];
-    const pet: TamerPetCharacter = createTamerPetCharacter(character, color, petTargetBehavior, petNoTargetBehavior, game);
+    const pet: TamerPetCharacter = createTamerPetCharacter(character, color, game);
     //pet.isPet = true;
     pet.abilities.push(createAbilityLeash(game.state.idCounter, undefined, 100, character.id));
     pet.abilities.push(createAbility(ABILITY_NAME_MELEE, game.state.idCounter, true));

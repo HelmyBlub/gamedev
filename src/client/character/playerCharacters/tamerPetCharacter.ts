@@ -1,3 +1,4 @@
+import { paintDefaultAbilityStatsUI } from "../../ability/ability.js";
 import { calculateDirection, calculateDistance, getNextId } from "../../game.js";
 import { Game } from "../../gameModel.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
@@ -6,16 +7,23 @@ import { Character, createCharacter } from "../characterModel.js";
 import { PathingCache } from "../pathing.js";
 
 export type PetTargetBehavior = "passive" | "aggressive" | "protective";
-export type PetNoTargetBehavior = "stay" | "hyperactive" | "protective";
+export type PetNoTargetBehavior = "stay" | "hyperactive" | "following";
 
 export type TamerPetCharacter = Character & {
     petTargetBehavior: PetTargetBehavior;
     petNoTargetBehavior: PetNoTargetBehavior;
     foodIntakeLevel: FoodIntakeLevel,
+    happines: Happiness,
     defaultSize: number,
     sizeFactor: number,
     nextMovementUpdateTime?: number;
     baseMoveSpeed: number,
+}
+
+type Happiness = {
+    current: number,
+    unhappyAt: number,
+    hyperactiveAt: number,
 }
 
 type FoodIntakeLevel = {
@@ -28,14 +36,14 @@ type FoodIntakeLevel = {
 
 export const TAMER_PET_CHARACTER = "tamerPet";
 
-export function createTamerPetCharacter(owner: Character, color: string, petTargetBehavior: PetTargetBehavior, petNoTargetBehavior: PetNoTargetBehavior, game: Game): TamerPetCharacter {
+export function createTamerPetCharacter(owner: Character, color: string, game: Game): TamerPetCharacter {
     const defaultSize = 15;
     const baseMoveSpeed = 2;
     let character = createCharacter(getNextId(game.state.idCounter), owner.x, owner.y, defaultSize, defaultSize, color, baseMoveSpeed, 20, owner.faction, TAMER_PET_CHARACTER, 10);
     const tamerPetCharacter: TamerPetCharacter = {
         ...character,
-        petTargetBehavior: petTargetBehavior,
-        petNoTargetBehavior: petNoTargetBehavior,
+        petTargetBehavior: "protective",
+        petNoTargetBehavior: "following",
         defaultSize: defaultSize,
         sizeFactor: 1,
         baseMoveSpeed: baseMoveSpeed,
@@ -44,6 +52,11 @@ export function createTamerPetCharacter(owner: Character, color: string, petTarg
             underfedAt: 40 - Math.floor(nextRandom(game.state.randomSeed) * 20),
             overfedAt: 60 + Math.floor(nextRandom(game.state.randomSeed) * 20),
             tickInterval: Math.floor(1000 * (nextRandom(game.state.randomSeed) * 0.5 + 0.75)),
+        },
+        happines: {
+            current: 50,
+            unhappyAt: 40 - Math.floor(nextRandom(game.state.randomSeed) * 20),
+            hyperactiveAt: 100 + Math.floor(nextRandom(game.state.randomSeed) * 20),
         }
     };
     return tamerPetCharacter;
@@ -60,11 +73,54 @@ export function tickTamerPetCharacter(character: Character, petOwner: Character,
     foodIntakeLevelTick(pet, game);
 }
 
+export function tamerPetFeed(pet: TamerPetCharacter, feedValue: number) {
+    const beforeFeed = pet.foodIntakeLevel.current;
+    pet.foodIntakeLevel.current += feedValue;
+    if (feedValue > 0) {
+        if (beforeFeed < pet.foodIntakeLevel.underfedAt) {
+            changeHappines(pet, 20);
+        } else if (beforeFeed > pet.foodIntakeLevel.overfedAt * 1.2) {
+            changeHappines(pet, -10);
+        } else {
+            changeHappines(pet, 5);
+        }
+    } else if (feedValue < 0) {
+        if (pet.foodIntakeLevel.current < pet.foodIntakeLevel.underfedAt) {
+            changeHappines(pet, feedValue);
+        }
+    }
+}
+
+export function paintTamerPetCharacterStatsUI(ctx: CanvasRenderingContext2D, pet: TamerPetCharacter, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
+    const textLines: string[] = [
+        `Pet Stats:`,
+        `Color: ${pet.color}`,
+        `food intake: ${pet.foodIntakeLevel.current}`,
+        `Happiness: ${pet.happines.current}`,
+        `Movement Speed: ${pet.moveSpeed.toFixed(2)}`,
+    ];
+    return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
+}
+
+function changeHappines(pet: TamerPetCharacter, value: number) {
+    pet.happines.current += value;
+    if (pet.happines.current < pet.happines.unhappyAt) {
+        pet.petTargetBehavior = "passive";
+        pet.petNoTargetBehavior = "stay";
+    } else if (pet.happines.current > pet.happines.hyperactiveAt) {
+        pet.petTargetBehavior = "aggressive";
+        pet.petNoTargetBehavior = "hyperactive";
+    } else {
+        pet.petTargetBehavior = "protective";
+        pet.petNoTargetBehavior = "following";
+    }
+}
+
 function foodIntakeLevelTick(pet: TamerPetCharacter, game: Game) {
     const intakeLevel = pet.foodIntakeLevel;
     if (intakeLevel.nextTick === undefined || intakeLevel.nextTick <= game.state.time) {
         intakeLevel.nextTick = game.state.time + intakeLevel.tickInterval;
-        if (intakeLevel.current > 0) intakeLevel.current -= 1;
+        if (intakeLevel.current > 0) tamerPetFeed(pet, -1);
     }
 
     if (intakeLevel.current < intakeLevel.underfedAt) {
@@ -106,7 +162,7 @@ function moveTick(pet: TamerPetCharacter, petOwner: Character, game: Game, pathi
             case "stay":
                 pet.isMoving = false;
                 break;
-            case "protective":
+            case "following":
                 if (pet.nextMovementUpdateTime === undefined || pet.nextMovementUpdateTime <= game.state.time) {
                     const random = nextRandom(game.state.randomSeed);
                     const distance = calculateDistance(pet, petOwner);

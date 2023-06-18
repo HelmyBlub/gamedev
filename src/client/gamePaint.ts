@@ -4,6 +4,7 @@ import { Character, CharacterUpgradeChoice, DEFAULT_CHARACTER } from "./characte
 import { paintCharacterStatsUI, paintCharacters } from "./character/characterPaint.js";
 import { paintBossCharacters } from "./character/enemy/bossEnemy.js";
 import { LEVELING_CHARACTER, LevelingCharacter } from "./character/playerCharacters/levelingCharacterModel.js";
+import { paintTamerPetCharacterStatsUI } from "./character/playerCharacters/tamerPetCharacter.js";
 import { calculateDistance, getCameraPosition, getTimeSinceFirstKill } from "./game.js";
 import { Game, Position, Highscores, Debugging, PaintTextData } from "./gameModel.js";
 import { GAME_IMAGES, loadImage } from "./imageLoad.js";
@@ -282,6 +283,12 @@ function paintPlayerStatsUI(ctx: CanvasRenderingContext2D, character: Character,
     paintX += area.width + spacing;
     area = paintCharacterStatsUI(ctx, character, paintX, paintY, game);
     paintX += area.width + spacing;
+    if(character.pets){
+        for (let pet of character.pets) {
+            area = paintTamerPetCharacterStatsUI(ctx, pet, paintX, paintY, game);   
+            paintX += area.width + spacing;
+        }
+    }
 
     for (let ability of character.abilities) {
         let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];

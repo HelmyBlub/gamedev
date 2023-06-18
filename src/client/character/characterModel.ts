@@ -9,6 +9,7 @@ import { tickDefaultCharacter } from "./character.js";
 import { tickFixPositionRespawnEnemyCharacter } from "./enemy/fixPositionRespawnEnemy.js";
 import { PathingCache } from "./pathing.js";
 import { initCharacterChoiceOptons } from "./playerCharacters/playerCharacters.js";
+import { TamerPetCharacter } from "./playerCharacters/tamerPetCharacter.js";
 
 export type CHARACTER_TYPE_FUNCTIONS = {
     [key: string]: {
@@ -101,7 +102,7 @@ export type Character = Position & {
     isPet?: boolean,
     willTurnToPetOnDeath?: boolean,
     upgradeChoice: CharacterUpgradeChoice[],
-    pets?: Character[],
+    pets?: TamerPetCharacter[],
     weight: number,
 }
 

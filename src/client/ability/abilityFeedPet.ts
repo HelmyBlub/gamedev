@@ -1,6 +1,6 @@
 import { findCharacterById } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
-import { TamerPetCharacter } from "../character/playerCharacters/tamerPetCharacter.js";
+import { TamerPetCharacter, tamerPetFeed } from "../character/playerCharacters/tamerPetCharacter.js";
 import { calculateDirection, calculateDistance, getCameraPosition, getNextId } from "../game.js";
 import { IdCounter, Position, Game } from "../gameModel.js";
 import { GAME_IMAGES, getImage, loadImage } from "../imageLoad.js";
@@ -78,11 +78,11 @@ function tickAbilityObjectFeedPet(abilityObject: AbilityObject, game: Game) {
 
     if (target) {
         const moveDirection = calculateDirection(abilityObject, target);
-        moveByDirectionAndDistance(abilityObject, moveDirection, 2, false);
+        moveByDirectionAndDistance(abilityObject, moveDirection, 3, false);
         const distance = calculateDistance(abilityObject, target);
-        if (distance < 2) {
+        if (distance < 3) {
             let pet = target as TamerPetCharacter;
-            pet.foodIntakeLevel.current += abilityObjectFeedPet.feedValue;
+            tamerPetFeed(pet, abilityObjectFeedPet.feedValue);
             abilityObjectFeedPet.reachedTarget = true;
         }
     }

@@ -1,31 +1,29 @@
 current tasks:
 - tamer:
-    - ability "feed"
-        - visualize "feed" action with some graphic
     - new pet stat happines
+        - visualize happines changes
         - unhappy pet:
-            - don't move
-            - don't search target
         - happy pet:
-            - following movement
             - more damage
-            - protective targeting
             - faster movementSpeed
         - too happy pet:
             - even faster movementSpeed
-            - hyperactive movement
-            - aggressive
         - gain happiness:
-            - getting food when hungry
             - on level up
             - on kill
         - lose happines:
-            - getting feed when to fat
             - on kill
         - new ability: petting
             - makes targetet pet happier
-            - other pet might be jealous and get unhappy if it does not receive a pet either
-
+        - pet traits:
+            - "loves food": pet always get happy if fed food
+            - "needs attention": pet need a lot of pets
+            - "antisocial": pet wants to stay away from other pets
+            - "jealous": wants pets if other gets them, unhappy if not given
+            - "fast": moves faster
+            - "strong": does more damage
+            - "heavy bones": harder to pull
+            - "light bones": easier to pull
 
     - name pets
 
