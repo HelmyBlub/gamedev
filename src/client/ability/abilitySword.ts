@@ -239,7 +239,7 @@ function detectSwordToCharactersHit(abilityOwner: AbilityOwner, ability: Ability
         for (let swordIndex = 0; swordIndex < ability.swordCount; swordIndex++) {
             let isHit = detectSwordToCharacterHit(abilityOwner, ability, targetCharacter, targetCharacter.width, swordIndex);
             if (isHit) {
-                characterTakeDamage(targetCharacter, ability.damage, game);
+                characterTakeDamage(targetCharacter, ability.damage, game, ability.id);
             }
         }
     }

@@ -46,7 +46,7 @@ export type AbilityObject = Position & {
     damage: number,
     faction: string,
     abilityRefId?: number,
-    leveling?: boolean,
+    isLeveling?: boolean,
 }
 
 export type AbilityOwner = Position & Partial<Character> & {
@@ -262,6 +262,7 @@ export function detectSomethingToCharacterHit(
     damage: number,
     players: Player[],
     bosses: BossEnemyCharacter[],
+    abilityRefId: number | undefined,
     onHitAndReturnIfContinue: ((target: Character) => boolean) | undefined,
     game: Game,
 ) {
@@ -273,7 +274,7 @@ export function detectSomethingToCharacterHit(
         if (c.isDead || c.faction === faction) continue;
         let distance = calculateDistance(c, position);
         if (distance < size / 2 + c.width / 2) {
-            characterTakeDamage(c, damage, game);
+            characterTakeDamage(c, damage, game, abilityRefId);
             if (onHitAndReturnIfContinue) {
                 let continueHitDetection = onHitAndReturnIfContinue(c);
                 if (!continueHitDetection) break;

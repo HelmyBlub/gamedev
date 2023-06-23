@@ -98,6 +98,7 @@ function tickAbilityIce(abilityOwner: AbilityOwner, ability: Ability, game: Game
             abilityIce.damage,
             game.state.players,
             game.state.bossStuff.bosses,
+            ability.id,
             (c: Character) => onHitEffect(c, abilityIce, game),
             game
         );

@@ -1,6 +1,8 @@
 current tasks:
 - tamer:
-    - pet colision
+    - give pets abilities:
+        - first version: give pet ability of killed boss
+        - on boss kill: choose randon upgrade option for each pet
     - new pet stat happines
         - visualize happines changes
         - unhappy pet:

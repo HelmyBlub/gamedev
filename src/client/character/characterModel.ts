@@ -104,6 +104,11 @@ export type Character = Position & {
     upgradeChoice: CharacterUpgradeChoice[],
     pets?: TamerPetCharacter[],
     weight: number,
+    leveling?: {
+        level: number,
+        experience: number,
+        experienceForLevelUp: number,
+    }    
 }
 
 export type CharacterUpgradeChoice = {

@@ -3,10 +3,12 @@ import { Character, CHARACTER_TYPE_FUNCTIONS, createCharacter } from "../charact
 import { tickLevelingCharacter } from "./levelingCharacter.js";
 
 export type LevelingCharacter = Character & {
-    experience: number,
-    experienceForLevelUp: number,
-    level: number,
     availableSkillPoints: number,
+    leveling: {
+        level: number,
+        experience: number,
+        experienceForLevelUp: number,        
+    }
 }
 
 export const LEVELING_CHARACTER = "levelingCharacter";
@@ -15,9 +17,11 @@ export function changeToLevelingCharacter(character: Character, game: Game): Lev
     const levelingCharacter = {
         ...character,
         type: LEVELING_CHARACTER,
-        experience: 0,
-        experienceForLevelUp: 10,
-        level: 0,
+        leveling: {
+            experience: 0,
+            experienceForLevelUp: 10,
+            level: 0,
+        },
         availableSkillPoints: 0,
     };
     

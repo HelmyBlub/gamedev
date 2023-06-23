@@ -11,7 +11,7 @@ export type Projectile = AbilityObject & {
     nextDamageTickTime?: number,
 }
 
-export function createProjectile(x: number, y: number, moveDirection: number, damage: number, faction: string, moveSpeed: number, gameTime: number, pierceCount: number, timeToLive: number, type: string, size: number = 4): Projectile {
+export function createProjectile(x: number, y: number, moveDirection: number, damage: number, faction: string, moveSpeed: number, gameTime: number, pierceCount: number, timeToLive: number, type: string, abilityRefId: number | undefined = undefined, size: number = 4): Projectile {
     return {
         type: type,
         x: x,
@@ -26,6 +26,7 @@ export function createProjectile(x: number, y: number, moveDirection: number, da
         deleteTime: gameTime + timeToLive,
         pierceCount: pierceCount,
         damageTickInterval: 100,
+        abilityRefId: abilityRefId,
     }
 }
 

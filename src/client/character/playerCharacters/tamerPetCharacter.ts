@@ -1,10 +1,11 @@
-import { paintDefaultAbilityStatsUI } from "../../ability/ability.js";
+import { ABILITIES_FUNCTIONS, createAbility, paintDefaultAbilityStatsUI } from "../../ability/ability.js";
 import { calculateDirection, calculateDistance, getNextId } from "../../game.js";
 import { Game, Position } from "../../gameModel.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
-import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, calculateCharacterMovePosition } from "../character.js";
+import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, calculateCharacterMovePosition, getPlayerCharacters } from "../character.js";
 import { Character, createCharacter } from "../characterModel.js";
 import { PathingCache } from "../pathing.js";
+import { TAMER_CHARACTER } from "./tamerCharacter.js";
 
 export type PetTargetBehavior = "passive" | "aggressive" | "protective";
 export type PetNoTargetBehavior = "stay" | "hyperactive" | "following";
@@ -18,6 +19,11 @@ export type TamerPetCharacter = Character & {
     sizeFactor: number,
     nextMovementUpdateTime?: number;
     baseMoveSpeed: number,
+    leveling: {
+        level: number,
+        experience: number,
+        experienceForLevelUp: number,
+    }
 }
 
 type Happiness = {
@@ -47,6 +53,11 @@ export function createTamerPetCharacter(owner: Character, color: string, game: G
         defaultSize: defaultSize,
         sizeFactor: 1,
         baseMoveSpeed: baseMoveSpeed,
+        leveling: {
+            experience: 0,
+            experienceForLevelUp: 10,
+            level: 0,
+        },
         foodIntakeLevel: {
             current: 50,
             underfedAt: 40 - Math.floor(nextRandom(game.state.randomSeed) * 20),
@@ -71,6 +82,26 @@ export function tickTamerPetCharacter(character: Character, petOwner: Character,
     if (character.isDead) return;
     moveTick(pet, petOwner, game, pathingCache);
     foodIntakeLevelTick(pet, game);
+}
+
+export function tamerPetOnBossKillAddAbility(boss: Character, game: Game) {
+    let playerCharacters: Character[] = getPlayerCharacters(game.state.players);
+    for (let characterIt of playerCharacters) {
+        if (!characterIt.isDead && !characterIt.isPet) {
+            if (characterIt.type === TAMER_CHARACTER) {
+                for (let pet of characterIt.pets!) {
+                    const ability = createAbility(boss.abilities[0].name, game.state.idCounter, false);
+                    ability.passive = true;
+                    const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+                    if (abilityFunctions && abilityFunctions.setAbilityToLevel) {
+                        const abilityLevel = Math.max(1, Math.ceil(pet.leveling.level / 10));
+                        abilityFunctions.setAbilityToLevel(ability, abilityLevel);
+                    }
+                    pet.abilities.push(ability);
+                }
+            }
+        }
+    }
 }
 
 export function tamerPetFeed(pet: TamerPetCharacter, feedValue: number) {
@@ -98,6 +129,7 @@ export function paintTamerPetCharacterStatsUI(ctx: CanvasRenderingContext2D, pet
         `food intake: ${pet.foodIntakeLevel.current}`,
         `Happiness: ${pet.happines.current}`,
         `Movement Speed: ${pet.moveSpeed.toFixed(2)}`,
+        `Level: ${pet.leveling.level.toFixed(0)}`,
     ];
     return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
 }
@@ -150,11 +182,11 @@ function moveTick(pet: TamerPetCharacter, petOwner: Character, game: Game, pathi
     } else if (pet.petTargetBehavior === "protective") {
         let playerCharacters = determineCharactersInDistance(petOwner, game.state.map, [], game.state.bossStuff.bosses, 200);
         let closest = determineClosestCharacter(petOwner, playerCharacters);
-        if(closest.minDistance < 60){
+        if (closest.minDistance < 60) {
             target = closest.minDistanceCharacter;
-        }else{
+        } else {
             let closest = determineClosestCharacter(pet, playerCharacters);
-            target = closest.minDistanceCharacter;    
+            target = closest.minDistanceCharacter;
         }
     } else if (pet.petTargetBehavior === "passive") {
         //not searching for target
@@ -192,18 +224,18 @@ function moveTick(pet: TamerPetCharacter, petOwner: Character, game: Game, pathi
     }
 
     let newMovePosition = calculateCharacterMovePosition(pet, game.state.map, game.state.idCounter);
-    if(newMovePosition && !collisionWithOtherPets(pet, petOwner, newMovePosition, game)){
+    if (newMovePosition && !collisionWithOtherPets(pet, petOwner, newMovePosition, game)) {
         pet.x = newMovePosition.x;
         pet.y = newMovePosition.y;
     }
 }
 
-function collisionWithOtherPets(pet: TamerPetCharacter, petOwner: Character, newMovePosition: Position, game: Game): boolean{
-    for(let petIt of petOwner.pets!){
-        if(petIt === pet) continue;
+function collisionWithOtherPets(pet: TamerPetCharacter, petOwner: Character, newMovePosition: Position, game: Game): boolean {
+    for (let petIt of petOwner.pets!) {
+        if (petIt === pet) continue;
         const distanceBefore = calculateDistance(petIt, pet);
         const distanceAfter = calculateDistance(petIt, newMovePosition);
-        if(distanceBefore > distanceAfter && distanceAfter < (pet.width + petIt.width) / 2.5){
+        if (distanceBefore > distanceAfter && distanceAfter < (pet.width + petIt.width) / 2.5) {
             return true;
         }
     }

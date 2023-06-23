@@ -251,9 +251,10 @@ function paintPlayerStats(ctx: CanvasRenderingContext2D, character: Character, g
 
     if (character.type === LEVELING_CHARACTER) {
         const levelingCharacter = character as LevelingCharacter;
-        ctx.fillText("Level: " + levelingCharacter.level
+        ctx.fillText("Level: " + levelingCharacter.leveling.level
             + "  SkillPoints:" + levelingCharacter.availableSkillPoints,
-            200, 20);
+            200, 20
+        );
     }
     paintTextWithOutline(ctx, "white", "black", "HP: " + Math.ceil(character.hp), 100, 20);
     paintTextWithOutline(ctx, "white", "black", "Time: " + Math.round(gameTime / 1000), 400, 20);

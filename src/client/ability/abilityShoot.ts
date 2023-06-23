@@ -164,6 +164,7 @@ function shoot(abilityOwner: AbilityOwner, ability: AbilityShoot, abilityObjects
             ability.pierceCount,
             ability.timeToLive,
             ABILITY_NAME_SHOOT,
+            ability.id,
             ability.bulletSize
         ));
     }

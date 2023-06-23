@@ -78,19 +78,6 @@ export function findPlayerByCharacterId(players: Player[], id: number): Player |
     return null;
 }
 
-export function getHighestLevelOfPlayers(players: Player[]){
-    let highestLevel = 0;
-    for(let player of players){
-        if (player.character.type === "levelingCharacter"){
-            let levelingCharater = player.character as LevelingCharacter;
-            if(levelingCharater.level > highestLevel){
-                highestLevel = levelingCharater.level;
-            }
-        }
-    }
-    return highestLevel;
-}
-
 export function getPlayerFurthestAwayFromSpawn(players: Player[]): Player | undefined{
     let highestDistance = 0;
     let furthestPlayer: Player | undefined;

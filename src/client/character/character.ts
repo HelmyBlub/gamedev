@@ -6,12 +6,14 @@ import { calculateDirection, calculateDistance, calculateDistancePointToLine, cr
 import { Position, Game, IdCounter, Camera } from "../gameModel.js";
 import { findPlayerById, Player } from "../player.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, abilityCharacterAddBossSkillPoint, AbilityUpgradeOption, findAbilityById, levelingAbilityXpGain } from "../ability/ability.js";
-import { LevelingCharacter } from "./playerCharacters/levelingCharacterModel.js";
+import { ABILITIES_FUNCTIONS, abilityCharacterAddBossSkillPoint, AbilityUpgradeOption, createAbility, findAbilityById, findAbilityOwnerByAbilityId, levelingAbilityXpGain } from "../ability/ability.js";
+import { LEVELING_CHARACTER, LevelingCharacter } from "./playerCharacters/levelingCharacterModel.js";
 import { BossEnemyCharacter, CHARACTER_TYPE_BOSS_ENEMY } from "./enemy/bossEnemy.js";
 import { removeCharacterDebuffs, tickCharacterDebuffs } from "../debuff/debuff.js";
 import { createAbilityLeash } from "../ability/abilityLeash.js";
 import { createCharacterChooseUpgradeOptions } from "./playerCharacters/playerCharacters.js";
+import { TAMER_CHARACTER } from "./playerCharacters/tamerCharacter.js";
+import { tamerPetOnBossKillAddAbility } from "./playerCharacters/tamerPetCharacter.js";
 
 export function findCharacterById(characters: Character[], id: number): Character | null {
     for (let i = 0; i < characters.length; i++) {
@@ -38,20 +40,7 @@ export function characterTakeDamage(character: Character, damage: number, game: 
 
     character.hp -= damage;
     if (character.hp <= 0) {
-        character.isDead = true;
-        if (game.state.timeFirstKill === undefined) game.state.timeFirstKill = game.state.time;
-        levelingCharacterXpGain(game.state, character);
-        if (character.type === CHARACTER_TYPE_BOSS_ENEMY) {
-            abilityCharacterAddBossSkillPoint(game.state);
-        }
-        if (abilityRefId !== undefined) {
-            let ability = findAbilityById(abilityRefId, game);
-            if (ability) {
-                levelingAbilityXpGain(ability, character.experienceWorth, game);
-            }
-        }
-        removeCharacterDebuffs(character, game);
-        game.state.killCounter++;
+        killCharacter(character, game, abilityRefId);
     }
     if (game.UI.displayDamageNumbers) {
         let textPos = { x: character.x, y: character.y - character.height / 2 };
@@ -60,6 +49,42 @@ export function characterTakeDamage(character: Character, damage: number, game: 
         game.UI.displayTextData.push(createPaintTextData(textPos, damage.toFixed(0), textColor, fontSize, game.state.time));
     }
     if (character.faction === "enemy") character.wasHitRecently = true;
+}
+
+function killCharacter(character: Character, game: Game, abilityRefId: number | undefined = undefined) {
+    character.isDead = true;
+    if (game.state.timeFirstKill === undefined) game.state.timeFirstKill = game.state.time;
+    levelingCharacterXpGain(game.state, character);
+    if (character.type === CHARACTER_TYPE_BOSS_ENEMY) {
+        abilityCharacterAddBossSkillPoint(game.state);
+        tamerPetOnBossKillAddAbility(character, game);
+    }
+    if (abilityRefId !== undefined) {
+        let ability = findAbilityById(abilityRefId, game);
+        if (ability) {
+            levelingAbilityXpGain(ability, character.experienceWorth, game);
+            const owner = findAbilityOwnerByAbilityId(ability.id, game);
+            if (owner && owner.leveling && owner.type !== LEVELING_CHARACTER) {
+                if (!owner.isDead && !owner.isPet) {
+                    owner.leveling.experience += character.experienceWorth;
+                    while (owner.leveling.experience >= owner.leveling.experienceForLevelUp) {
+                        owner.leveling.level++;
+                        owner.leveling.experience -= owner.leveling.experienceForLevelUp;
+                        owner.leveling.experienceForLevelUp += Math.floor(owner.leveling.level / 2);
+                        for (let abilityIt of owner.abilities) {
+                            const abilityFunctions = ABILITIES_FUNCTIONS[abilityIt.name];
+                            if (abilityFunctions && abilityFunctions.setAbilityToLevel) {
+                                const abilityLevel = Math.max(1, Math.ceil(owner.leveling.level / 10));
+                                abilityFunctions.setAbilityToLevel(abilityIt, abilityLevel);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    removeCharacterDebuffs(character, game);
+    game.state.killCounter++;
 }
 
 export function fillRandomUpgradeOptions(character: Character, randomSeed: RandomSeed, boss: boolean = false) {

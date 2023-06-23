@@ -38,7 +38,7 @@ export function paintCharacterStatsUI(ctx: CanvasRenderingContext2D, character: 
     if (character.type === LEVELING_CHARACTER) {
         let levelingCharacter = character as LevelingCharacter;
         textLines.push(
-            `XP: ${Math.floor(levelingCharacter.experienceForLevelUp)}/${Math.floor(levelingCharacter.experience)}`,
+            `XP: ${Math.floor(levelingCharacter.leveling.experienceForLevelUp)}/${Math.floor(levelingCharacter.leveling.experience)}`,
             `Gains XP for every enemy killed by anyone.`,
             `Gains Skill Points after enough XP`,
             `for LevelUp is reached.`
