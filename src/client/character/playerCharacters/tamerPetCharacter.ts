@@ -1,8 +1,8 @@
 import { paintDefaultAbilityStatsUI } from "../../ability/ability.js";
 import { calculateDirection, calculateDistance, getNextId } from "../../game.js";
-import { Game } from "../../gameModel.js";
+import { Game, Position } from "../../gameModel.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
-import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, moveCharacterTick } from "../character.js";
+import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, calculateCharacterMovePosition } from "../character.js";
 import { Character, createCharacter } from "../characterModel.js";
 import { PathingCache } from "../pathing.js";
 
@@ -150,7 +150,12 @@ function moveTick(pet: TamerPetCharacter, petOwner: Character, game: Game, pathi
     } else if (pet.petTargetBehavior === "protective") {
         let playerCharacters = determineCharactersInDistance(petOwner, game.state.map, [], game.state.bossStuff.bosses, 200);
         let closest = determineClosestCharacter(petOwner, playerCharacters);
-        target = closest.minDistanceCharacter;
+        if(closest.minDistance < 60){
+            target = closest.minDistanceCharacter;
+        }else{
+            let closest = determineClosestCharacter(pet, playerCharacters);
+            target = closest.minDistanceCharacter;    
+        }
     } else if (pet.petTargetBehavior === "passive") {
         //not searching for target
     }
@@ -186,5 +191,21 @@ function moveTick(pet: TamerPetCharacter, petOwner: Character, game: Game, pathi
         }
     }
 
-    moveCharacterTick(pet, game.state.map, game.state.idCounter, isPlayer);
+    let newMovePosition = calculateCharacterMovePosition(pet, game.state.map, game.state.idCounter);
+    if(newMovePosition && !collisionWithOtherPets(pet, petOwner, newMovePosition, game)){
+        pet.x = newMovePosition.x;
+        pet.y = newMovePosition.y;
+    }
+}
+
+function collisionWithOtherPets(pet: TamerPetCharacter, petOwner: Character, newMovePosition: Position, game: Game): boolean{
+    for(let petIt of petOwner.pets!){
+        if(petIt === pet) continue;
+        const distanceBefore = calculateDistance(petIt, pet);
+        const distanceAfter = calculateDistance(petIt, newMovePosition);
+        if(distanceBefore > distanceAfter && distanceAfter < (pet.width + petIt.width) / 2.5){
+            return true;
+        }
+    }
+    return false;
 }

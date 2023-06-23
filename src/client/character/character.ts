@@ -183,9 +183,9 @@ export function tickMapCharacters(map: GameMap, game: Game) {
 export function tickCharacters(characters: Character[], game: Game, pathingCache: PathingCache | null, petOwner: Character | undefined = undefined) {
     for (let j = characters.length - 1; j >= 0; j--) {
         const functions = CHARACTER_TYPE_FUNCTIONS[characters[j].type];
-        if (functions?.tickFunction){
+        if (functions?.tickFunction) {
             functions.tickFunction(characters[j], game, pathingCache);
-        } else if(functions?.tickPetFunction && petOwner){
+        } else if (functions?.tickPetFunction && petOwner) {
             functions.tickPetFunction(characters[j], petOwner, game, pathingCache);
         }
         if (!characters[j].isDead) {
@@ -217,7 +217,7 @@ export function findMyCharacter(game: Game): Character | undefined {
 export function tickDefaultCharacter(character: Character, game: Game, pathingCache: PathingCache | null) {
     const isPlayer = character.faction === "player";
     if (character.isDead) return;
-    moveCharacterTick(character, game.state.map, game.state.idCounter, isPlayer);
+    moveCharacterTick(character, game.state.map, game.state.idCounter);
 }
 
 export function determineClosestCharacter(position: Position, characters: Character[]) {
@@ -387,7 +387,24 @@ export function turnCharacterToPet(character: Character, game: Game) {
     }
 }
 
-export function moveCharacterTick(character: Character, map: GameMap, idCounter: IdCounter, isPlayer: boolean) {
+export function moveMapCharacterTick(character: Character, map: GameMap, idCounter: IdCounter) {
+    let newPosition = calculateCharacterMovePosition(character, map, idCounter);
+    if (newPosition) {
+        mapCharacterCheckForChunkChange(character, map, newPosition.x, newPosition.y);
+        character.x = newPosition.x;
+        character.y = newPosition.y;
+    }
+}
+
+export function moveCharacterTick(character: Character, map: GameMap, idCounter: IdCounter) {
+    let newPosition = calculateCharacterMovePosition(character, map, idCounter);
+    if (newPosition) {
+        character.x = newPosition.x;
+        character.y = newPosition.y;
+    }
+}
+
+export function calculateCharacterMovePosition(character: Character, map: GameMap, idCounter: IdCounter) {
     if (character.isMoving) {
         let x = character.x + Math.cos(character.moveDirection) * character.moveSpeed;
         let y = character.y + Math.sin(character.moveDirection) * character.moveSpeed;
@@ -395,30 +412,26 @@ export function moveCharacterTick(character: Character, map: GameMap, idCounter:
         if (!blocking) {
             let blockingBothSides = isPositionBlocking({ x: character.x, y }, map, idCounter) && isPositionBlocking({ x, y: character.y }, map, idCounter);
             if (!blockingBothSides) {
-                mapCharacterCheckForChunkChange(character, map, x, y, isPlayer);
-                character.x = x;
-                character.y = y;
+                return { x, y };
             }
         } else {
             let xTile = Math.floor(character.x / map.tileSize);
             let newXTile = Math.floor(x / map.tileSize);
             if (xTile !== newXTile) {
                 if (!isPositionBlocking({ x: character.x, y }, map, idCounter)) {
-                    mapCharacterCheckForChunkChange(character, map, character.x, y, isPlayer);
-                    character.y = y;
-                    return;
+                    return { x: character.x, y };
                 }
             }
             let yTile = Math.floor(character.y / map.tileSize);
             let newYTile = Math.floor(y / map.tileSize);
             if (yTile !== newYTile) {
                 if (!isPositionBlocking({ x, y: character.y }, map, idCounter)) {
-                    mapCharacterCheckForChunkChange(character, map, x, character.y, isPlayer);
-                    character.x = x;
+                    return { x, y: character.y };
                 }
             }
         }
     }
+    return undefined;
 }
 
 function tickCharacterPets(character: Character, game: Game, pathingCache: PathingCache | null) {
@@ -427,17 +440,15 @@ function tickCharacterPets(character: Character, game: Game, pathingCache: Pathi
     }
 }
 
-function mapCharacterCheckForChunkChange(character: Character, map: GameMap, newX: number, newY: number, isPlayer: boolean) {
-    if (!isPlayer && character.type !== CHARACTER_TYPE_BOSS_ENEMY) {
-        let currentChunkI = Math.floor(character.y / (map.tileSize * map.chunkLength));
-        let newChunkI = Math.floor(newY / (map.tileSize * map.chunkLength));
-        let currentChunkJ = Math.floor(character.x / (map.tileSize * map.chunkLength));
-        let newChunkJ = Math.floor(newX / (map.tileSize * map.chunkLength));
-        if (currentChunkI !== newChunkI || currentChunkJ !== newChunkJ) {
-            let currentChunkKey = `${currentChunkI}_${currentChunkJ}`;
-            let newChunkKey = `${newChunkI}_${newChunkJ}`;
-            map.chunks[currentChunkKey].characters = map.chunks[currentChunkKey].characters.filter(el => el !== character);
-            map.chunks[newChunkKey].characters.push(character);
-        }
+function mapCharacterCheckForChunkChange(character: Character, map: GameMap, newX: number, newY: number) {
+    let currentChunkI = Math.floor(character.y / (map.tileSize * map.chunkLength));
+    let newChunkI = Math.floor(newY / (map.tileSize * map.chunkLength));
+    let currentChunkJ = Math.floor(character.x / (map.tileSize * map.chunkLength));
+    let newChunkJ = Math.floor(newX / (map.tileSize * map.chunkLength));
+    if (currentChunkI !== newChunkI || currentChunkJ !== newChunkJ) {
+        let currentChunkKey = `${currentChunkI}_${currentChunkJ}`;
+        let newChunkKey = `${newChunkI}_${newChunkJ}`;
+        map.chunks[currentChunkKey].characters = map.chunks[currentChunkKey].characters.filter(el => el !== character);
+        map.chunks[newChunkKey].characters.push(character);
     }
 }

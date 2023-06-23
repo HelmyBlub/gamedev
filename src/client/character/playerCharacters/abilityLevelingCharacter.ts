@@ -3,7 +3,7 @@ import { Game, GameState, IdCounter } from "../../gameModel.js";
 import { GAME_IMAGES } from "../../imageLoad.js";
 import { createRandomizedCharacterImageData } from "../../randomizedCharacterImage.js";
 import { RandomSeed } from "../../randomNumberGenerator.js";
-import { moveCharacterTick, turnCharacterToPet } from "../character.js";
+import { calculateCharacterMovePosition, moveCharacterTick, turnCharacterToPet } from "../character.js";
 import { Character, CHARACTER_TYPE_FUNCTIONS, createCharacter } from "../characterModel.js";
 
 export type AbilityLevelingCharacter = Character & {
@@ -22,5 +22,5 @@ function tickAbilityLevelingCharacter(character: AbilityLevelingCharacter, game:
         if(!character.willTurnToPetOnDeath) return;
         turnCharacterToPet(character, game);
     }
-    moveCharacterTick(character, game.state.map, game.state.idCounter, true);
+    moveCharacterTick(character, game.state.map, game.state.idCounter);
 }

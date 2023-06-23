@@ -1,4 +1,4 @@
-import { createCharacterUpgradeOptions, fillRandomUpgradeOptions, getPlayerCharacters, moveCharacterTick, turnCharacterToPet } from "../character.js";
+import { createCharacterUpgradeOptions, fillRandomUpgradeOptions, getPlayerCharacters, calculateCharacterMovePosition, turnCharacterToPet, moveCharacterTick } from "../character.js";
 import { Game, GameState } from "../../gameModel.js";
 import { RandomSeed } from "../../randomNumberGenerator.js";
 import { Character } from "../characterModel.js";
@@ -23,7 +23,7 @@ export function tickLevelingCharacter(character: Character, game: Game) {
         if (!character.willTurnToPetOnDeath) return;
         turnCharacterToPet(character, game);
     }
-    moveCharacterTick(character, game.state.map, game.state.idCounter, true);
+    moveCharacterTick(character, game.state.map, game.state.idCounter);
 }
 
 function levelingCharacterLevelUp(character: LevelingCharacter, randomSeed: RandomSeed) {

@@ -1,5 +1,6 @@
 current tasks:
 - tamer:
+    - pet colision
     - new pet stat happines
         - visualize happines changes
         - unhappy pet:

@@ -1,7 +1,7 @@
 import { calculateDistance } from "../../game.js";
 import { Game } from "../../gameModel.js";
 import { GameMap, positionToMapKey } from "../../map/map.js";
-import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick } from "../character.js";
+import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, calculateCharacterMovePosition, moveMapCharacterTick } from "../character.js";
 import { Character } from "../characterModel.js";
 import { PathingCache } from "../pathing.js";
 import { FixPositionRespawnEnemyCharacter } from "./fixPositionRespawnEnemyModel.js";
@@ -41,7 +41,7 @@ export function tickFixPositionRespawnEnemyCharacter(character: Character, game:
                     enemy.isMoving = false;
                 }
             }
-            moveCharacterTick(enemy, game.state.map, game.state.idCounter, false);
+            moveMapCharacterTick(enemy, game.state.map, game.state.idCounter);
             if (enemy.wasHitRecently) delete enemy.wasHitRecently;
         }
     }

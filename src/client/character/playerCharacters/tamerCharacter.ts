@@ -1,16 +1,11 @@
 import { addAbilityToCharacter, createAbility } from "../../ability/ability.js";
 import { createAbilityHpRegen } from "../../ability/abilityHpRegen.js";
-import { ABILITY_NAME_SPEED_BOOST } from "../../ability/speedBoost/abilitySpeedBoost.js";
-import { ABILITY_NAME_SNIPE } from "../../ability/snipe/abilitySnipe.js";
 import { Game, IdCounter } from "../../gameModel.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, createCharacter } from "../characterModel.js";
-import { ABILITY_LEVELING_CHARACTER, AbilityLevelingCharacter } from "./abilityLevelingCharacter.js";
 import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters.js";
-import { getNextId } from "../../game.js";
 import { createAbilityLeash } from "../../ability/abilityLeash.js";
-import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, moveCharacterTick } from "../character.js";
-import { ABILITY_NAME_MELEE, createAbilityMelee } from "../../ability/abilityMelee.js";
-import { PetNoTargetBehavior, PetTargetBehavior, TAMER_PET_CHARACTER, TamerPetCharacter, createTamerPetCharacter, tickTamerPetCharacter } from "./tamerPetCharacter.js";
+import { ABILITY_NAME_MELEE } from "../../ability/abilityMelee.js";
+import { TAMER_PET_CHARACTER, TamerPetCharacter, createTamerPetCharacter, tickTamerPetCharacter } from "./tamerPetCharacter.js";
 import { ABILITY_NAME_FEED_PET } from "../../ability/abilityFeedPet.js";
 
 export function addTamerClass() {
