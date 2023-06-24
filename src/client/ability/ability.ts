@@ -1,4 +1,4 @@
-import { determineCharactersInDistance, characterTakeDamage, getPlayerCharacters, fillRandomUpgradeOptions } from "../character/character.js"
+import { determineCharactersInDistance, characterTakeDamage } from "../character/character.js"
 import { Character } from "../character/characterModel.js"
 import { BossEnemyCharacter } from "../character/enemy/bossEnemy.js"
 import { calculateDistance, getCameraPosition, takeTimeMeasure } from "../game.js"
@@ -117,22 +117,6 @@ export function addAbilityToCharacter(character: Character, ability: Ability) {
 export function paintAbilityObjects(ctx: CanvasRenderingContext2D, abilityObjects: AbilityObject[], game: Game, paintOrder: PaintOrderAbility) {
     paintAbilityObjectsForFaction(ctx, abilityObjects, game, paintOrder, "player");
     paintAbilityObjectsForFaction(ctx, abilityObjects, game, paintOrder, "enemy");
-}
-
-export function abilityCharacterAddBossSkillPoint(state: GameState) {
-    let playerCharacters: Character[] = getPlayerCharacters(state.players);
-    for (let character of playerCharacters) {
-        if (!character.isDead && !character.isPet) {
-            for (let ability of character.abilities) {
-                if (ability.bossSkillPoints !== undefined) {
-                    ability.bossSkillPoints++;
-                    if (character.upgradeChoice.length === 0) {
-                        fillRandomUpgradeOptions(character, state.randomSeed, true);
-                    }
-                }
-            }
-        }
-    }
 }
 
 export function createAbility(abilityName: string, idCounter: IdCounter, isLeveling: boolean = false, getsBossSkillPoints: boolean = false, playerInputBinding: string | undefined = undefined): Ability {

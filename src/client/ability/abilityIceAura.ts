@@ -12,10 +12,10 @@ type AbilityIce = Ability & {
     tickInterval: number,
     nextTickTime?: number,
 }
-const ABILITY_NAME_ICE = "Ice";
+export const ABILITY_NAME_ICE_AURA = "Ice Aura";
 
 export function addIceAbility() {
-    ABILITIES_FUNCTIONS[ABILITY_NAME_ICE] = {
+    ABILITIES_FUNCTIONS[ABILITY_NAME_ICE_AURA] = {
         tickAbility: tickAbilityIce,
         createAbilityUpgradeOptions: createAbilityIceUpgradeOptions,
         paintAbility: paintAbilityIce,
@@ -36,7 +36,7 @@ export function createAbilityIce(
 ): AbilityIce {
     return {
         id: getNextId(idCounter),
-        name: ABILITY_NAME_ICE,
+        name: ABILITY_NAME_ICE_AURA,
         damage: damage,
         radius: radius,
         slowFactor: slowFactor,

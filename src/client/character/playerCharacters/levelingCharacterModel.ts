@@ -1,5 +1,6 @@
 import { Game } from "../../gameModel.js";
 import { Character, CHARACTER_TYPE_FUNCTIONS, createCharacter } from "../characterModel.js";
+import { createCharacterUpgradeOptions } from "../characterUpgrades.js";
 import { tickLevelingCharacter } from "./levelingCharacter.js";
 
 export type LevelingCharacter = Character & {
@@ -38,6 +39,7 @@ export function changeToLevelingCharacter(character: Character, game: Game): Lev
 
 export function addLevelingCharacter(){
     CHARACTER_TYPE_FUNCTIONS[LEVELING_CHARACTER] = {
-        tickFunction: tickLevelingCharacter
+        tickFunction: tickLevelingCharacter,
+        createUpgradeOptions: createCharacterUpgradeOptions,
     }
 }

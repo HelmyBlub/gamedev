@@ -4,7 +4,7 @@ import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, AbilityUpgradeOption } from "./ability.js";
 import { getNextId } from "../game.js";
 
-const ABILITY_NAME_SHOOT = "Shoot";
+export const ABILITY_NAME_SHOOT = "Shoot";
 export type AbilityShoot = Ability & {
     baseFrequency: number,
     frequencyIncrease: number,

@@ -17,16 +17,16 @@ type AbilitySword = Ability & {
     tickInterval: number,
     nextTickTime?: number,
 }
-const ABILITY_NAME = "Sword";
+export const ABILITY_NAME_SWORD = "Sword";
 
-GAME_IMAGES[ABILITY_NAME] = {
+GAME_IMAGES[ABILITY_NAME_SWORD] = {
     imagePath: "/images/sword.png",
     spriteRowHeights: [38],
     spriteRowWidths: [11],
 };
 
 export function addSwordAbility() {
-    ABILITIES_FUNCTIONS[ABILITY_NAME] = {
+    ABILITIES_FUNCTIONS[ABILITY_NAME_SWORD] = {
         tickAbility: tickAbilitySword,
         createAbilityUpgradeOptions: createAbilitySwordUpgradeOptions,
         paintAbility: paintAbilitySword,
@@ -49,7 +49,7 @@ export function createAbilitySword(
 ): AbilitySword {
     return {
         id: getNextId(idCounter),
-        name: ABILITY_NAME,
+        name: ABILITY_NAME_SWORD,
         damage: damage,
         swordLength: swordLength,
         swordCount: swordCount,
@@ -81,7 +81,7 @@ function setAbilitySwordToBossLevel(ability: Ability, level: number){
 }
 
 function createBiggerSwordImage(newSwordSize: number) {
-    let swordImage = GAME_IMAGES[ABILITY_NAME];
+    let swordImage = GAME_IMAGES[ABILITY_NAME_SWORD];
     if (swordImage.imageRef === undefined) return;
     if (swordImage.properties === undefined) swordImage.properties = {};
     if (swordImage.properties.canvases === undefined) swordImage.properties.canvases = {};
@@ -142,7 +142,7 @@ function paintAbilitySword(ctx: CanvasRenderingContext2D, abilityOwner: AbilityO
     let paintY = Math.floor(abilityOwner.y - cameraPosition.y + centerY);
 
     //ctx.fillStyle = character.color;
-    let swordImage = GAME_IMAGES[ABILITY_NAME];
+    let swordImage = GAME_IMAGES[ABILITY_NAME_SWORD];
     loadImage(swordImage);
 
     for (let i = 0; i < abilitySword.swordCount; i++) {

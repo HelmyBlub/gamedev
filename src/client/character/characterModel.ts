@@ -5,16 +5,19 @@ import { Position, IdCounter, Game } from "../gameModel.js";
 import { GAME_IMAGES } from "../imageLoad.js";
 import { createRandomizedCharacterImageData, RandomizedCharacterImage } from "../randomizedCharacterImage.js";
 import { RandomSeed } from "../randomNumberGenerator.js";
+import { CharacterUpgradeChoice, CharacterUpgradeOption, createDefaultCharacterUpgradeOptions } from "./characterUpgrades.js";
 import { tickDefaultCharacter } from "./character.js";
 import { tickFixPositionRespawnEnemyCharacter } from "./enemy/fixPositionRespawnEnemy.js";
 import { PathingCache } from "./pathing.js";
-import { initCharacterChoiceOptons } from "./playerCharacters/playerCharacters.js";
+import { initPlayerCharacterChoiceOptions } from "./playerCharacters/playerCharacters.js";
 import { TamerPetCharacter } from "./playerCharacters/tamerPetCharacter.js";
 
 export type CHARACTER_TYPE_FUNCTIONS = {
     [key: string]: {
         tickFunction?: (character: Character, game: Game, pathingCache: PathingCache | null) => void,
         tickPetFunction?: (character: Character, petOwner: Character, game: Game, pathingCache: PathingCache | null) => void,
+        createUpgradeOptions?: (character: Character, game: Game) => CharacterUpgradeOption[],
+        createBossUpgradeOptions?: (character: Character, game: Game) => CharacterUpgradeOption[],
     }
 }
 
@@ -26,12 +29,6 @@ export type CharacterImage = {
     imageRef?: HTMLImageElement,
     canvas?: HTMLCanvasElement,
     colorToSprite?: string[];
-}
-
-export type UpgradeOptionCharacter = {
-    name: string,
-    probabilityFactor: number,
-    upgrade: (levelingCharacter: Character) => void,
 }
 
 export type CharacterImageLoadProperties = {
@@ -77,7 +74,8 @@ export const CHARACTER_TYPE_FUNCTIONS: CHARACTER_TYPE_FUNCTIONS = {
         tickFunction: tickFixPositionRespawnEnemyCharacter
     },
     Character: {
-        tickFunction: tickDefaultCharacter
+        tickFunction: tickDefaultCharacter,
+        createUpgradeOptions: createDefaultCharacterUpgradeOptions,
     },
 }
 
@@ -104,18 +102,12 @@ export type Character = Position & {
     upgradeChoice: CharacterUpgradeChoice[],
     pets?: TamerPetCharacter[],
     weight: number,
+    bossSkillPoints?: number,
     leveling?: {
         level: number,
         experience: number,
         experienceForLevelUp: number,
     }    
-}
-
-export type CharacterUpgradeChoice = {
-    abilityName?: string,
-    abilityUpgradeName?: string,
-    name: string,
-    boss?: boolean,
 }
 
 export function createCharacter(
@@ -159,6 +151,6 @@ export function createPlayerCharacter(idCounter: IdCounter, pos: Position, seed:
     playerCharacter.randomizedCharacterImage = createRandomizedCharacterImageData(GAME_IMAGES["player"], seed);
     playerCharacter.willTurnToPetOnDeath = true;
     playerCharacter.isPet = false;
-    initCharacterChoiceOptons(playerCharacter, game);
+    initPlayerCharacterChoiceOptions(playerCharacter, game);
     return playerCharacter;
 }

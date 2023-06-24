@@ -6,7 +6,7 @@ import { testGame } from "./test/gameTest.js";
 import { websocketConnect } from "./multiplayerConenction.js";
 import { ABILITIES_FUNCTIONS } from "./ability/ability.js";
 import { calculateDirection, getCameraPosition, getClientInfo, takeTimeMeasure } from "./game.js";
-import { upgradePlayerCharacter } from "./character/playerCharacters/playerCharacters.js";
+import { upgradeCharacter } from "./character/characterUpgrades.js";
 
 export const MOVE_ACTIONS = ["left", "down", "right", "up"];
 export const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3"];
@@ -259,7 +259,7 @@ function playerAction(clientId: number, data: any, game: Game) {
             }
         } else if (UPGRADE_ACTIONS.indexOf(action) !== -1) {
             if (isKeydown) {
-                upgradePlayerCharacter(character, UPGRADE_ACTIONS.indexOf(action), game.state.randomSeed, game);
+                upgradeCharacter(character, UPGRADE_ACTIONS.indexOf(action), game.state.randomSeed, game);
             }
         } else if (ABILITY_ACTIONS.indexOf(action) !== -1) {
             let ability = character.abilities.find((a) => a.playerInputBinding && a.playerInputBinding === action);

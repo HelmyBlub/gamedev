@@ -3,7 +3,7 @@ import { Game, IdCounter, Position } from "../gameModel.js";
 import { nextRandom } from "../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectAbilityObjectToCharacterHit, PaintOrderAbility, AbilityUpgradeOption } from "./ability.js";
 
-const ABILITY_NAME_FIRE_CIRCLE = "FireCircle";
+export const ABILITY_NAME_FIRE_CIRCLE = "FireCircle";
 export type AbilityFireCircle = Ability & {
     objectDuration: number,
     moveSpeed: number,

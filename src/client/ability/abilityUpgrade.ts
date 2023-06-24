@@ -1,4 +1,3 @@
-import { CharacterUpgradeChoice } from "../character/characterModel.js";
 import { Ability, AbilityUpgradeOption } from "./ability.js"
 
 

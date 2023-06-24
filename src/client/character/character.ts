@@ -1,19 +1,17 @@
 import { levelingCharacterXpGain } from "./playerCharacters/levelingCharacter.js";
 import { determineMapKeysInDistance, GameMap, getChunksTouchingLine, isPositionBlocking, MapChunk } from "../map/map.js";
-import { Character, CHARACTER_TYPE_FUNCTIONS, DEFAULT_CHARACTER, ENEMY_FACTION, UpgradeOptionCharacter } from "./characterModel.js";
+import { Character, CHARACTER_TYPE_FUNCTIONS } from "./characterModel.js";
 import { getNextWaypoint, getPathingCache, PathingCache } from "./pathing.js";
 import { calculateDirection, calculateDistance, calculateDistancePointToLine, createPaintTextData, takeTimeMeasure } from "../game.js";
 import { Position, Game, IdCounter, Camera } from "../gameModel.js";
 import { findPlayerById, Player } from "../player.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, abilityCharacterAddBossSkillPoint, AbilityUpgradeOption, createAbility, findAbilityById, findAbilityOwnerByAbilityId, levelingAbilityXpGain } from "../ability/ability.js";
+import { ABILITIES_FUNCTIONS, Ability, findAbilityById, findAbilityOwnerByAbilityId, levelingAbilityXpGain } from "../ability/ability.js";
 import { LEVELING_CHARACTER, LevelingCharacter } from "./playerCharacters/levelingCharacterModel.js";
 import { BossEnemyCharacter, CHARACTER_TYPE_BOSS_ENEMY } from "./enemy/bossEnemy.js";
 import { removeCharacterDebuffs, tickCharacterDebuffs } from "../debuff/debuff.js";
 import { createAbilityLeash } from "../ability/abilityLeash.js";
-import { createCharacterChooseUpgradeOptions } from "./playerCharacters/playerCharacters.js";
-import { TAMER_CHARACTER } from "./playerCharacters/tamerCharacter.js";
-import { tamerPetOnBossKillAddAbility } from "./playerCharacters/tamerPetCharacter.js";
+import { fillRandomUpgradeOptions } from "./characterUpgrades.js";
 
 export function findCharacterById(characters: Character[], id: number): Character | null {
     for (let i = 0; i < characters.length; i++) {
@@ -51,13 +49,48 @@ export function characterTakeDamage(character: Character, damage: number, game: 
     if (character.faction === "enemy") character.wasHitRecently = true;
 }
 
+export function playerCharactersAddBossSkillPoints(game: Game) {
+    let playerCharacters: Character[] = getPlayerCharacters(game.state.players);
+    for (let character of playerCharacters) {
+        if (!character.isDead && !character.isPet) {
+            let gotSkillPoint = false;
+            if (character.bossSkillPoints) {
+                character.bossSkillPoints++;
+                gotSkillPoint = true;
+            }
+            for (let ability of character.abilities) {
+                if (ability.bossSkillPoints !== undefined) {
+                    ability.bossSkillPoints++;
+                    gotSkillPoint = true;
+                }
+            }
+            if(character.pets){
+                for(let pet of character.pets){
+                    if (pet.bossSkillPoints !== undefined) {
+                        pet.bossSkillPoints++;
+                        gotSkillPoint = true;
+                    }
+                    for (let ability of pet.abilities) {
+                        if (ability.bossSkillPoints !== undefined) {
+                            ability.bossSkillPoints++;
+                            gotSkillPoint = true;
+                        }
+                    }                            
+                }
+            }
+            if (gotSkillPoint && character.upgradeChoice.length === 0) {
+                fillRandomUpgradeOptions(character, game.state.randomSeed, game, true);
+            }
+        }
+    }
+}
+
 function killCharacter(character: Character, game: Game, abilityRefId: number | undefined = undefined) {
     character.isDead = true;
     if (game.state.timeFirstKill === undefined) game.state.timeFirstKill = game.state.time;
-    levelingCharacterXpGain(game.state, character);
+    levelingCharacterXpGain(game.state, character, game);
     if (character.type === CHARACTER_TYPE_BOSS_ENEMY) {
-        abilityCharacterAddBossSkillPoint(game.state);
-        tamerPetOnBossKillAddAbility(character, game);
+        playerCharactersAddBossSkillPoints(game);
     }
     if (abilityRefId !== undefined) {
         let ability = findAbilityById(abilityRefId, game);
@@ -72,11 +105,7 @@ function killCharacter(character: Character, game: Game, abilityRefId: number | 
                         owner.leveling.experience -= owner.leveling.experienceForLevelUp;
                         owner.leveling.experienceForLevelUp += Math.floor(owner.leveling.level / 2);
                         for (let abilityIt of owner.abilities) {
-                            const abilityFunctions = ABILITIES_FUNCTIONS[abilityIt.name];
-                            if (abilityFunctions && abilityFunctions.setAbilityToLevel) {
-                                const abilityLevel = Math.max(1, Math.ceil(owner.leveling.level / 10));
-                                abilityFunctions.setAbilityToLevel(abilityIt, abilityLevel);
-                            }
+                            setCharacterAbilityLevel(abilityIt, owner);
                         }
                     }
                 }
@@ -87,110 +116,12 @@ function killCharacter(character: Character, game: Game, abilityRefId: number | 
     game.state.killCounter++;
 }
 
-export function fillRandomUpgradeOptions(character: Character, randomSeed: RandomSeed, boss: boolean = false) {
-    if (character.upgradeChoice.length === 0) {
-        let characterOptions: UpgradeOptionCharacter[] = [];
-        let characterOptionProbability = 0;
-        if (!boss) {
-            characterOptions = createCharacterUpgradeOptions(character);
-            for (let characterOption of characterOptions) {
-                characterOptionProbability += characterOption.probabilityFactor;
-            }
-        }
-        let abilitiesOptions: { [key: string]: { options: AbilityUpgradeOption[], probability: number } } = {};
-        for (let ability of character.abilities) {
-            let options: AbilityUpgradeOption[] = [];
-            if (boss) {
-                const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-                if (abilityFunctions.createAbilityBossUpgradeOptions && ability.bossSkillPoints !== undefined && ability.bossSkillPoints > 0) {
-                    options = abilityFunctions.createAbilityBossUpgradeOptions(ability);
-                }
-            } else {
-                options = ABILITIES_FUNCTIONS[ability.name].createAbilityUpgradeOptions(ability);
-            }
-            if (options.length > 0) {
-                let abilityOptionProbability = 0;
-                for (let abilityOption of options) {
-                    abilityOptionProbability += abilityOption.probabilityFactor;
-                }
-                abilitiesOptions[ability.name] = { options, probability: abilityOptionProbability };
-                if (boss) break;
-            }
-        }
-        for (let i = 0; i < 3; i++) {
-            const abilitiesOptionsKeys = Object.keys(abilitiesOptions);
-            let totablPropability = characterOptionProbability;
-            for (let key of abilitiesOptionsKeys) {
-                totablPropability += abilitiesOptions[key].probability;
-            }
-            if (totablPropability === 0) return;
-            let randomProbability = nextRandom(randomSeed) * (totablPropability);
-            if (randomProbability < characterOptionProbability) {
-                let characterOptionIndex = 0;
-                for (characterOptionIndex = 0; characterOptionIndex < characterOptions.length; characterOptionIndex++) {
-                    randomProbability -= characterOptions[characterOptionIndex].probabilityFactor;
-                    if (randomProbability < 0) {
-                        break;
-                    };
-                }
-                if (randomProbability >= 0) throw new Error("getting random upgrade option with probabilities failed. Probability not fitting to character options");
-                character.upgradeChoice.push({ name: characterOptions[characterOptionIndex].name, boss: boss });
-                characterOptionProbability -= characterOptions[characterOptionIndex].probabilityFactor;
-                characterOptions.splice(characterOptionIndex, 1);
-            } else {
-                randomProbability -= characterOptionProbability;
-                let abilityName = "";
-                for (let abilityKeyIndex = 0; abilityKeyIndex < abilitiesOptionsKeys.length; abilityKeyIndex++) {
-                    if (randomProbability < abilitiesOptions[abilitiesOptionsKeys[abilityKeyIndex]].probability) {
-                        abilityName = abilitiesOptionsKeys[abilityKeyIndex];
-                        break;
-                    };
-                    randomProbability -= abilitiesOptions[abilitiesOptionsKeys[abilityKeyIndex]].probability;
-                }
-                let abilityOptions = abilitiesOptions[abilityName];
-
-                for (let abilityOptionIndex = 0; abilityOptionIndex < abilityOptions.options.length; abilityOptionIndex++) {
-                    randomProbability -= abilityOptions.options[abilityOptionIndex].probabilityFactor;
-                    if (randomProbability < 0) {
-                        character.upgradeChoice.push({
-                            name: abilityOptions.options[abilityOptionIndex].name,
-                            abilityName: abilityName,
-                            abilityUpgradeName: abilityOptions.options[abilityOptionIndex].upgradeName,
-                            boss: boss
-                        });
-                        abilityOptions.probability -= abilityOptions.options[abilityOptionIndex].probabilityFactor;
-                        abilityOptions.options.splice(abilityOptionIndex, 1);
-                        if (abilityOptions.options.length === 0) {
-                            delete abilitiesOptions[abilityName];
-                        }
-                        break;
-                    }
-                }
-            }
-            if (randomProbability >= 0) throw new Error("getting random upgrade option with probabilities failed. Random value to high?");
-        }
+export function setCharacterAbilityLevel(ability: Ability, character: Character) {
+    const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+    if (character.leveling && abilityFunctions && abilityFunctions.setAbilityToLevel) {
+        const abilityLevel = Math.max(1, Math.ceil(character.leveling.level / 10));
+        abilityFunctions.setAbilityToLevel(ability, abilityLevel);
     }
-}
-
-export function createCharacterUpgradeOptions(character: Character, game: Game | undefined = undefined): UpgradeOptionCharacter[] {
-    let upgradeOptions: UpgradeOptionCharacter[] = [];
-    if (character.type === DEFAULT_CHARACTER && game) {
-        upgradeOptions = createCharacterChooseUpgradeOptions(game);
-    } else {
-        upgradeOptions.push({
-            name: "Max Health+50", probabilityFactor: 1, upgrade: (c: Character) => {
-                c.hp += 50;
-                c.maxHp += 50;
-            }
-        });
-        upgradeOptions.push({
-            name: "Move Speed+0.2", probabilityFactor: 1, upgrade: (c: Character) => {
-                c.moveSpeed += 0.2;
-            }
-        });
-    }
-
-    return upgradeOptions;
 }
 
 export function tickMapCharacters(map: GameMap, game: Game) {

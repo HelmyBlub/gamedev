@@ -1,6 +1,6 @@
 import { ABILITIES_FUNCTIONS, AbilityUpgradeOption, paintAbilityObjects, paintDefaultAbilityStatsUI, paintUiForAbilities } from "./ability/ability.js";
 import { getPlayerCharacters } from "./character/character.js";
-import { Character, CharacterUpgradeChoice, DEFAULT_CHARACTER } from "./character/characterModel.js";
+import { Character, DEFAULT_CHARACTER } from "./character/characterModel.js";
 import { paintCharacterStatsUI, paintCharacters } from "./character/characterPaint.js";
 import { paintBossCharacters } from "./character/enemy/bossEnemy.js";
 import { LEVELING_CHARACTER, LevelingCharacter } from "./character/playerCharacters/levelingCharacterModel.js";
@@ -11,6 +11,7 @@ import { GAME_IMAGES, loadImage } from "./imageLoad.js";
 import { getMapMidlePosition } from "./map/map.js";
 import { paintMap, paintMapCharacters } from "./map/mapPaint.js";
 import { findPlayerById } from "./player.js";
+import { CharacterUpgradeChoice } from "./character/characterUpgrades.js";
 
 GAME_IMAGES["blankKey"] = {
     imagePath: "/images/singleBlankKey.png",

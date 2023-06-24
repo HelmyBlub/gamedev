@@ -1,8 +1,8 @@
-import { ABILITIES_FUNCTIONS, createAbility, paintDefaultAbilityStatsUI } from "../../ability/ability.js";
+import { ABILITIES_FUNCTIONS, Ability, createAbility, paintDefaultAbilityStatsUI } from "../../ability/ability.js";
 import { calculateDirection, calculateDistance, getNextId } from "../../game.js";
 import { Game, Position } from "../../gameModel.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
-import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, calculateCharacterMovePosition, getPlayerCharacters } from "../character.js";
+import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, calculateCharacterMovePosition, getPlayerCharacters, setCharacterAbilityLevel } from "../character.js";
 import { Character, createCharacter } from "../characterModel.js";
 import { PathingCache } from "../pathing.js";
 import { TAMER_CHARACTER } from "./tamerCharacter.js";
@@ -53,6 +53,7 @@ export function createTamerPetCharacter(owner: Character, color: string, game: G
         defaultSize: defaultSize,
         sizeFactor: 1,
         baseMoveSpeed: baseMoveSpeed,
+        bossSkillPoints: 0,
         leveling: {
             experience: 0,
             experienceForLevelUp: 10,
@@ -82,26 +83,6 @@ export function tickTamerPetCharacter(character: Character, petOwner: Character,
     if (character.isDead) return;
     moveTick(pet, petOwner, game, pathingCache);
     foodIntakeLevelTick(pet, game);
-}
-
-export function tamerPetOnBossKillAddAbility(boss: Character, game: Game) {
-    let playerCharacters: Character[] = getPlayerCharacters(game.state.players);
-    for (let characterIt of playerCharacters) {
-        if (!characterIt.isDead && !characterIt.isPet) {
-            if (characterIt.type === TAMER_CHARACTER) {
-                for (let pet of characterIt.pets!) {
-                    const ability = createAbility(boss.abilities[0].name, game.state.idCounter, false);
-                    ability.passive = true;
-                    const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-                    if (abilityFunctions && abilityFunctions.setAbilityToLevel) {
-                        const abilityLevel = Math.max(1, Math.ceil(pet.leveling.level / 10));
-                        abilityFunctions.setAbilityToLevel(ability, abilityLevel);
-                    }
-                    pet.abilities.push(ability);
-                }
-            }
-        }
-    }
 }
 
 export function tamerPetFeed(pet: TamerPetCharacter, feedValue: number) {
