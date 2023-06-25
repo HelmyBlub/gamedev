@@ -1,4 +1,6 @@
-import { Ability, AbilityUpgradeOption } from "./ability.js"
+import { Character } from "../character/characterModel.js";
+import { CharacterUpgradeChoice } from "../character/characterUpgrades.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityUpgradeOption } from "./ability.js"
 
 
 export type AbilityUpgrade = {
@@ -14,6 +16,25 @@ export type AbilityUpgradeFunctions = {
 
 export type AbilityUpgradesFunctions = {
     [key: string]: AbilityUpgradeFunctions,
+}
+
+export function upgradeAbility(character: Character, upgradeOption: CharacterUpgradeChoice){
+    let ability = character.abilities.find(a => a.name === upgradeOption.abilityName);
+    if (ability !== undefined) {
+        let upgrades: AbilityUpgradeOption[];
+        if (upgradeOption.boss) {
+            const abilityFunctions = ABILITIES_FUNCTIONS[upgradeOption.abilityName!];
+            if (abilityFunctions.createAbilityBossUpgradeOptions) {
+                upgrades = abilityFunctions.createAbilityBossUpgradeOptions(ability);
+                upgrades.find((e) => e.name === upgradeOption.name)?.upgrade(ability);
+                if (ability.bossSkillPoints !== undefined) ability.bossSkillPoints--;
+            }
+        } else {
+            upgrades = ABILITIES_FUNCTIONS[upgradeOption.abilityName!].createAbilityUpgradeOptions(ability);
+            upgrades.find((e) => e.name === upgradeOption.name)?.upgrade(ability);
+        }
+        character.upgradeChoice = [];
+    }    
 }
 
 export function pushAbilityUpgradesUiTexts(upgradeFunctions: AbilityUpgradesFunctions, texts: string[], ability: Ability){

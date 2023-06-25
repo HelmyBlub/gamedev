@@ -1,9 +1,12 @@
 current tasks:
 - tamer:
-    - small code changes for ability boss gain
-    - give pets abilities:
-        - on boss kill: choose randon upgrade option for each pet
-            - upgarde options are: random ability + random trait
+    - upgarde options get additional trait: random ability + random trait
+    
+    - create abilities for pets and replace them with the existing one
+    - balacing/change ideas:
+        - happines limits 0 and 1xx.
+        - new ability "heart" increases pet happyness
+        - too happy happyness slowly decreases
     - new pet stat happines
         - visualize happines changes
         - unhappy pet:

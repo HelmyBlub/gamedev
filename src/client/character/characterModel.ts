@@ -18,6 +18,7 @@ export type CHARACTER_TYPE_FUNCTIONS = {
         tickPetFunction?: (character: Character, petOwner: Character, game: Game, pathingCache: PathingCache | null) => void,
         createUpgradeOptions?: (character: Character, game: Game) => CharacterUpgradeOption[],
         createBossUpgradeOptions?: (character: Character, game: Game) => CharacterUpgradeOption[],
+        getUpgradeOptionByUpgradeChoice?:(character: Character, characterUpgradeChoice: CharacterUpgradeChoice, game: Game) => CharacterUpgradeOption | undefined,
     }
 }
 

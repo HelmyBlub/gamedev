@@ -24,7 +24,10 @@ export type TamerPetCharacter = Character & {
         experience: number,
         experienceForLevelUp: number,
     }
+    traits: string[],
 }
+
+export const TAMER_PET_TRAITS = ["loves food", "very hungry", "never gets fat"];
 
 type Happiness = {
     current: number,
@@ -69,7 +72,8 @@ export function createTamerPetCharacter(owner: Character, color: string, game: G
             current: 50,
             unhappyAt: 40 - Math.floor(nextRandom(game.state.randomSeed) * 20),
             hyperactiveAt: 100 + Math.floor(nextRandom(game.state.randomSeed) * 20),
-        }
+        },
+        traits: [],
     };
     return tamerPetCharacter;
 }
@@ -112,6 +116,23 @@ export function paintTamerPetCharacterStatsUI(ctx: CanvasRenderingContext2D, pet
         `Movement Speed: ${pet.moveSpeed.toFixed(2)}`,
         `Level: ${pet.leveling.level.toFixed(0)}`,
     ];
+
+    if(pet.abilities.length > 0){
+        textLines.push("");
+        textLines.push("Abilities:");
+        for(let ability of pet.abilities){
+            textLines.push(ability.name);
+        }
+    }
+
+    if(pet.traits.length > 0){
+        textLines.push("");
+        textLines.push("Traits:");
+        for(let trait of pet.traits){
+            textLines.push(trait);
+        }
+    }
+
     return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
 }
 

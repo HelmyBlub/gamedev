@@ -5,14 +5,15 @@ import { CHARACTER_TYPE_FUNCTIONS, Character } from "../characterModel.js";
 import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters.js";
 import { createAbilityLeash } from "../../ability/abilityLeash.js";
 import { ABILITY_NAME_MELEE } from "../../ability/abilityMelee.js";
-import { TAMER_PET_CHARACTER, TamerPetCharacter, createTamerPetCharacter, tickTamerPetCharacter } from "./tamerPetCharacter.js";
+import { TAMER_PET_CHARACTER, TAMER_PET_TRAITS, TamerPetCharacter, createTamerPetCharacter, tickTamerPetCharacter } from "./tamerPetCharacter.js";
 import { ABILITY_NAME_FEED_PET } from "../../ability/abilityFeedPet.js";
 import { tickDefaultCharacter } from "../character.js";
-import { CharacterUpgradeOption } from "../characterUpgrades.js";
+import { CharacterUpgradeChoice, CharacterUpgradeOption } from "../characterUpgrades.js";
 import { ABILITY_NAME_FIRE_CIRCLE } from "../../ability/abilityFireCircle.js";
 import { ABILITY_NAME_SHOOT } from "../../ability/abilityShoot.js";
 import { ABILITY_NAME_ICE_AURA } from "../../ability/abilityIceAura.js";
 import { ABILITY_NAME_SWORD } from "../../ability/abilitySword.js";
+import { nextRandom } from "../../randomNumberGenerator.js";
 
 export const TAMER_CHARACTER = "Tamer(Work in Progress)";
 export function addTamerClass() {
@@ -22,6 +23,7 @@ export function addTamerClass() {
     CHARACTER_TYPE_FUNCTIONS[TAMER_CHARACTER] = {
         tickFunction: tickDefaultCharacter,
         createBossUpgradeOptions: createTamerBossUpgradeOptions,
+        getUpgradeOptionByUpgradeChoice: getCharacterUpgradeOptionByChoice,
     }
     CHARACTER_TYPE_FUNCTIONS[TAMER_PET_CHARACTER] = {
         tickPetFunction: tickTamerPetCharacter
@@ -41,33 +43,92 @@ function changeCharacterToTamerClass(
     addPetToTamer(character, "black", game);
 }
 
-function createTamerBossUpgradeOptions (character: Character, game: Game): CharacterUpgradeOption[]{
-    const options: CharacterUpgradeOption[] = [];
-    if(!character.pets) return options;
-    for(let pet of character.pets){
-        if(pet.bossSkillPoints && pet.bossSkillPoints > 0){
-            pushUpgradeOptionForAbilitName(pet, ABILITY_NAME_FIRE_CIRCLE, options, game);
-            pushUpgradeOptionForAbilitName(pet, ABILITY_NAME_SHOOT, options, game);
-            pushUpgradeOptionForAbilitName(pet, ABILITY_NAME_ICE_AURA, options, game);
-            pushUpgradeOptionForAbilitName(pet, ABILITY_NAME_SWORD, options, game);
+function getCharacterUpgradeOptionByChoice(character: Character, characterUpgradeChoice: CharacterUpgradeChoice, game: Game): CharacterUpgradeOption | undefined {
+    let values = upgradeNameToValues(characterUpgradeChoice.name);
+    let pet = character.pets!.find((p) => p.color === values.petName);
+    return getUpgradeOptionForAbilitNameAndTrait(pet!, values.abilityName, values.trait, game);
+}
 
+function createTamerBossUpgradeOptions(character: Character, game: Game): CharacterUpgradeOption[] {
+    const options: CharacterUpgradeOption[] = [];
+    if (!character.pets) return options;
+    for (let pet of character.pets) {
+        if (pet.bossSkillPoints && pet.bossSkillPoints > 0) {
+            const availableTraits = getAvailablePetTraits(pet);
+            const availableAbilties = getAvailablePetAbilities(character, pet);
+
+            for (let ability of availableAbilties) {
+                const randomTraitIndex = Math.floor(nextRandom(game.state.randomSeed) * availableTraits.length);
+                const option = getUpgradeOptionForAbilitNameAndTrait(pet, ability, availableTraits[randomTraitIndex], game);
+                options.push(option);
+            }
             return options;
         }
     }
     return options;
 }
 
-function pushUpgradeOptionForAbilitName(pet: TamerPetCharacter, abilityName:string, options: CharacterUpgradeOption[], game: Game){
-    if(pet.abilities.find((a) => a.name === abilityName) === undefined){
-        options.push({
-            name: `${abilityName} for ${pet.color}`, probabilityFactor: 1, upgrade: (c: Character) => {
-                const ability = createAbility(abilityName, game.state.idCounter, false);
-                ability.passive = true;
-                pet.abilities.push(ability);
-                pet.bossSkillPoints!--;
+function getAvailablePetAbilities(character: Character, pet: TamerPetCharacter): string[] {
+    const availableAbilityNames: string[] = [];
+    const possibleAbilityNames = [
+        ABILITY_NAME_FIRE_CIRCLE,
+        ABILITY_NAME_SHOOT,
+        ABILITY_NAME_ICE_AURA,
+        ABILITY_NAME_SWORD,
+    ]
+
+    for (let abilityName of possibleAbilityNames) {
+        let available = true;
+        for (let pet of character.pets!) {
+            if (pet.abilities.find((a) => a.name === abilityName)) {
+                available = false;
+                break;
             }
-        });                
+        }
+        if (available) availableAbilityNames.push(abilityName);
     }
+
+    return availableAbilityNames;
+}
+
+
+function getAvailablePetTraits(pet: TamerPetCharacter): string[] {
+    const availableTrais: string[] = [];
+
+    for (let trait of TAMER_PET_TRAITS) {
+        if (!pet.traits.find((a) => a === trait)) {
+            availableTrais.push(trait);
+        }
+    }
+
+    return availableTrais;
+}
+
+function upgradeNameToValues(upgradeName: string): { petName: string, abilityName: string, trait: string } {
+    const seperator1 = upgradeName.indexOf(" & ");
+    const seperator2 = upgradeName.indexOf(" for ");
+    return {
+        abilityName: upgradeName.substring(0, seperator1),
+        trait: upgradeName.substring(seperator1 + 3, seperator2),
+        petName: upgradeName.substring(seperator2 + 5),
+    }
+}
+
+function valuesToUpgradeName(petName: string, abilityName: string, trait: string) {
+    return `${abilityName} & ${trait} for ${petName}`;
+}
+
+function getUpgradeOptionForAbilitNameAndTrait(pet: TamerPetCharacter, abilityName: string, trait: string, game: Game): CharacterUpgradeOption {
+    const upgradeName = valuesToUpgradeName(pet.color, abilityName, trait);
+    return {
+        name: upgradeName, probabilityFactor: 1, upgrade: (c: Character) => {
+            const ability = createAbility(abilityName, game.state.idCounter, false);
+            ability.passive = true;
+            pet.abilities.push(ability);
+            pet.traits.push(trait);
+            pet.bossSkillPoints!--;
+        }
+    };
 }
 
 
