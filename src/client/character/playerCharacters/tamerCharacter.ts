@@ -5,7 +5,7 @@ import { CHARACTER_TYPE_FUNCTIONS, Character } from "../characterModel.js";
 import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters.js";
 import { createAbilityLeash } from "../../ability/abilityLeash.js";
 import { ABILITY_NAME_MELEE } from "../../ability/abilityMelee.js";
-import { TAMER_PET_CHARACTER, TAMER_PET_TRAITS, TamerPetCharacter, createTamerPetCharacter, tickTamerPetCharacter } from "./tamerPetCharacter.js";
+import { TAMER_PET_CHARACTER, TAMER_PET_TRAITS, TamerPetCharacter, Trait, createTamerPetCharacter, tickTamerPetCharacter } from "./tamerPetCharacter.js";
 import { ABILITY_NAME_FEED_PET } from "../../ability/abilityFeedPet.js";
 import { tickDefaultCharacter } from "../character.js";
 import { CharacterUpgradeChoice, CharacterUpgradeOption } from "../characterUpgrades.js";
@@ -59,7 +59,7 @@ function createTamerBossUpgradeOptions(character: Character, game: Game): Charac
 
             for (let ability of availableAbilties) {
                 const randomTraitIndex = Math.floor(nextRandom(game.state.randomSeed) * availableTraits.length);
-                const option = getUpgradeOptionForAbilitNameAndTrait(pet, ability, availableTraits[randomTraitIndex], game);
+                const option = getUpgradeOptionForAbilitNameAndTrait(pet, ability, availableTraits[randomTraitIndex] as Trait, game);
                 options.push(option);
             }
             return options;
@@ -104,12 +104,12 @@ function getAvailablePetTraits(pet: TamerPetCharacter): string[] {
     return availableTrais;
 }
 
-function upgradeNameToValues(upgradeName: string): { petName: string, abilityName: string, trait: string } {
+function upgradeNameToValues(upgradeName: string): { petName: string, abilityName: string, trait: Trait } {
     const seperator1 = upgradeName.indexOf(" & ");
     const seperator2 = upgradeName.indexOf(" for ");
     return {
         abilityName: upgradeName.substring(0, seperator1),
-        trait: upgradeName.substring(seperator1 + 3, seperator2),
+        trait: upgradeName.substring(seperator1 + 3, seperator2) as Trait,
         petName: upgradeName.substring(seperator2 + 5),
     }
 }
@@ -118,7 +118,7 @@ function valuesToUpgradeName(petName: string, abilityName: string, trait: string
     return `${abilityName} & ${trait} for ${petName}`;
 }
 
-function getUpgradeOptionForAbilitNameAndTrait(pet: TamerPetCharacter, abilityName: string, trait: string, game: Game): CharacterUpgradeOption {
+function getUpgradeOptionForAbilitNameAndTrait(pet: TamerPetCharacter, abilityName: string, trait: Trait, game: Game): CharacterUpgradeOption {
     const upgradeName = valuesToUpgradeName(pet.color, abilityName, trait);
     return {
         name: upgradeName, probabilityFactor: 1, upgrade: (c: Character) => {

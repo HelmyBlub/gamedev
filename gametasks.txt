@@ -1,12 +1,10 @@
 current tasks:
-- tamer:
-    - upgarde options get additional trait: random ability + random trait
-    
-    - create abilities for pets and replace them with the existing one
+- tamer:    
     - balacing/change ideas:
         - happines limits 0 and 1xx.
         - new ability "heart" increases pet happyness
         - too happy happyness slowly decreases
+    - create abilities for pets and replace them with the existing one
     - new pet stat happines
         - visualize happines changes
         - unhappy pet:
