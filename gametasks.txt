@@ -1,25 +1,19 @@
 current tasks:
 - tamer:    
-    - balacing/change ideas:
-        
     - create abilities for pets and replace them with the existing one
+        - abilitys which behaviour/damage changes with pet foodIntake and Happiness
+        - should have multiple upgrades like snipe
+        - aoe ideas:
+            - "breath" -> frontal cone aoe
+                - size dependant on pet size
+                - uses up foodIntake fast, can not use ability if not fed enough
+            - ""
+
+
+    - balacing/change ideas:
+        -
     - new pet stat happines
-        - visualize happines changes
-        - unhappy pet:
-        - happy pet:
-            - more damage
-            - faster movementSpeed
-        - too happy pet:
-            - even faster movementSpeed
-        - gain happiness:
-            - on level up
-            - on kill
-        - lose happines:
-            - on kill
-        - new ability: petting
-            - makes targetet pet happier
         - pet traits:
-            - "needs attention": pet need a lot of pets
             - "antisocial": pet wants to stay away from other pets
             - "jealous": wants pets if other gets them, unhappy if not given
             - "fast": moves faster

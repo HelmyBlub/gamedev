@@ -10,8 +10,9 @@ import { PathingCache } from "../pathing.js";
 
 export type PetTargetBehavior = "passive" | "aggressive" | "protective";
 export type PetNoTargetBehavior = "stay" | "hyperactive" | "following";
-export type Trait = "loves food" | "very hungry" | "never gets fat";
-export const TAMER_PET_TRAITS: Trait[] = ["loves food", "very hungry", "never gets fat"];
+export const TAMER_PET_TRAITS = ["loves food", "very hungry", "never gets fat", "needs more love"] as const;
+export type Trait = typeof TAMER_PET_TRAITS[number];
+
 const MAX_HAPPINES = 150;
 const MAX_FOOD_INTAKE = 500;
 const MAX_OVERFED_SIZE = 10;
@@ -113,7 +114,7 @@ export function tickTamerPetCharacter(character: Character, petOwner: Character,
     if (character.isDead) return;
     moveTick(pet, petOwner, game, pathingCache);
     foodIntakeLevelTick(pet, game);
-    if (pet.happines.current > pet.happines.hyperactiveAt) {
+    if (pet.happines.current > pet.happines.hyperactiveAt || pet.traits.includes("needs more love")) {
         if (pet.happines.nextTick === undefined || pet.happines.nextTick < game.state.time) {
             pet.happines.nextTick = game.state.time + pet.happines.tickInterval;
             changeTamerPetHappines(pet, -1, game.state.time, false);
