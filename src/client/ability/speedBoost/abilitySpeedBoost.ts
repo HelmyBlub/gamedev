@@ -23,7 +23,7 @@ export type AbilitySpeedBoost = Ability & {
 export const ABILITY_NAME_SPEED_BOOST = "SpeedBoost";
 export const ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS: AbilityUpgradesFunctions = {};
 
-export function addSpeedBoostAbility() {
+export function addAbilitySpeedBoost() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_SPEED_BOOST] = {
         tickAbility: tickAbilitySpeedBoost,
         createAbilityUpgradeOptions: createAbilitySpeedBoostUpgradeOptions,

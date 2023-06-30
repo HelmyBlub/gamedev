@@ -17,7 +17,7 @@ export type AbilityObjectDeathCircle = AbilityObject & {
 }
 
 const ABILITY_NAME_DEATH_CIRCLE = "DeathCircle";
-export function addDeathCircleAbility() {
+export function addAbilityDeathCircle() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_DEATH_CIRCLE] = {
         tickAbility: tickAbilityDeathCircle,
         createAbilityUpgradeOptions: createAbiltiyDeathCircleUpgradeOptions,

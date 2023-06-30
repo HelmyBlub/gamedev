@@ -14,7 +14,7 @@ type AbilityIce = Ability & {
 }
 export const ABILITY_NAME_ICE_AURA = "Ice Aura";
 
-export function addIceAbility() {
+export function addAbilityIceAura() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_ICE_AURA] = {
         tickAbility: tickAbilityIce,
         createAbilityUpgradeOptions: createAbilityIceUpgradeOptions,

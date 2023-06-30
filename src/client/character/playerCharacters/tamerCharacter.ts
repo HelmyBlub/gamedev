@@ -5,8 +5,8 @@ import { CHARACTER_TYPE_FUNCTIONS, Character } from "../characterModel.js";
 import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters.js";
 import { createAbilityLeash } from "../../ability/abilityLeash.js";
 import { ABILITY_NAME_MELEE } from "../../ability/abilityMelee.js";
-import { TAMER_PET_CHARACTER, TAMER_PET_TRAITS, TamerPetCharacter, Trait, createTamerPetCharacter, tickTamerPetCharacter } from "./tamerPetCharacter.js";
-import { ABILITY_NAME_FEED_PET } from "../../ability/abilityFeedPet.js";
+import { TAMER_PET_CHARACTER, TAMER_PET_TRAITS, TamerPetCharacter, Trait, createTamerPetCharacter, paintTamerPetCharacter, tickTamerPetCharacter } from "./tamerPetCharacter.js";
+import { ABILITY_NAME_FEED_PET } from "../../ability/petTamer/abilityFeedPet.js";
 import { tickDefaultCharacter } from "../character.js";
 import { CharacterUpgradeChoice, CharacterUpgradeOption } from "../characterUpgrades.js";
 import { ABILITY_NAME_FIRE_CIRCLE } from "../../ability/abilityFireCircle.js";
@@ -14,6 +14,7 @@ import { ABILITY_NAME_SHOOT } from "../../ability/abilityShoot.js";
 import { ABILITY_NAME_ICE_AURA } from "../../ability/abilityIceAura.js";
 import { ABILITY_NAME_SWORD } from "../../ability/abilitySword.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
+import { ABILITY_NAME_LOVE_PET } from "../../ability/petTamer/abilityLovePet.js";
 
 export const TAMER_CHARACTER = "Tamer(Work in Progress)";
 export function addTamerClass() {
@@ -26,7 +27,8 @@ export function addTamerClass() {
         getUpgradeOptionByUpgradeChoice: getCharacterUpgradeOptionByChoice,
     }
     CHARACTER_TYPE_FUNCTIONS[TAMER_PET_CHARACTER] = {
-        tickPetFunction: tickTamerPetCharacter
+        tickPetFunction: tickTamerPetCharacter,
+        paintCharacterType: paintTamerPetCharacter,
     }
 }
 
@@ -38,6 +40,7 @@ function changeCharacterToTamerClass(
     character.type = TAMER_CHARACTER;
     addAbilityToCharacter(character, createAbilityHpRegen(idCounter));
     addAbilityToCharacter(character, createAbility(ABILITY_NAME_FEED_PET, idCounter, false, false, "ability1"));
+    addAbilityToCharacter(character, createAbility(ABILITY_NAME_LOVE_PET, idCounter, false, false, "ability2"));
     addPetToTamer(character, "blue", game);
     addPetToTamer(character, "green", game);
     addPetToTamer(character, "black", game);

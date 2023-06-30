@@ -18,7 +18,7 @@ export type AbilityShoot = Ability & {
     shootRandom?: boolean,
 }
 
-export function addShootAbility(){
+export function addAbilityShoot(){
     ABILITIES_FUNCTIONS[ABILITY_NAME_SHOOT] = {
         tickAbility: tickAbilityShoot,
         createAbilityUpgradeOptions: createAbiltiyShootUpgradeOptions,

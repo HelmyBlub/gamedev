@@ -1,15 +1,33 @@
 import { paintDefaultAbilityStatsUI } from "../../ability/ability.js";
 import { calculateDirection, calculateDistance, getNextId } from "../../game.js";
 import { Game, Position } from "../../gameModel.js";
+import { GAME_IMAGES, getImage } from "../../imageLoad.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
 import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, calculateCharacterMovePosition, getPlayerCharacters, setCharacterAbilityLevel } from "../character.js";
 import { Character, createCharacter } from "../characterModel.js";
+import { paintCharacter } from "../characterPaint.js";
 import { PathingCache } from "../pathing.js";
 
 export type PetTargetBehavior = "passive" | "aggressive" | "protective";
 export type PetNoTargetBehavior = "stay" | "hyperactive" | "following";
 export type Trait = "loves food" | "very hungry" | "never gets fat";
 export const TAMER_PET_TRAITS: Trait[] = ["loves food", "very hungry", "never gets fat"];
+const MAX_HAPPINES = 150;
+const MAX_FOOD_INTAKE = 500;
+const MAX_OVERFED_SIZE = 10;
+const MIN_MOVEMENTSPEED_FACTOR = 0.1;
+
+GAME_IMAGES["HAPPY"] = {
+    imagePath: "/images/happy.png",
+    spriteRowHeights: [40],
+    spriteRowWidths: [40],
+};
+GAME_IMAGES["UNHAPPY"] = {
+    imagePath: "/images/unhappy.png",
+    spriteRowHeights: [40],
+    spriteRowWidths: [40],
+};
+
 
 export type TamerPetCharacter = Character & {
     petTargetBehavior: PetTargetBehavior;
@@ -33,6 +51,12 @@ type Happiness = {
     current: number,
     unhappyAt: number,
     hyperactiveAt: number,
+    tickInterval: number,
+    nextTick?: number,
+    visualizations: {
+        happy: boolean,
+        displayUntil: number,
+    }[],
 }
 
 type FoodIntakeLevel = {
@@ -72,6 +96,8 @@ export function createTamerPetCharacter(owner: Character, color: string, game: G
             current: 50,
             unhappyAt: 40 - Math.floor(nextRandom(game.state.randomSeed) * 20),
             hyperactiveAt: 100 + Math.floor(nextRandom(game.state.randomSeed) * 20),
+            tickInterval: Math.floor(1000 * (nextRandom(game.state.randomSeed) * 0.5 + 0.75)),
+            visualizations: [],
         },
         traits: [],
     };
@@ -87,28 +113,54 @@ export function tickTamerPetCharacter(character: Character, petOwner: Character,
     if (character.isDead) return;
     moveTick(pet, petOwner, game, pathingCache);
     foodIntakeLevelTick(pet, game);
+    if (pet.happines.current > pet.happines.hyperactiveAt) {
+        if (pet.happines.nextTick === undefined || pet.happines.nextTick < game.state.time) {
+            pet.happines.nextTick = game.state.time + pet.happines.tickInterval;
+            changeTamerPetHappines(pet, -1, game.state.time, false);
+        }
+    }
 }
 
-export function tamerPetFeed(pet: TamerPetCharacter, feedValue: number) {
+export function tamerPetFeed(pet: TamerPetCharacter, feedValue: number, time: number) {
     const beforeFeed = pet.foodIntakeLevel.current;
     pet.foodIntakeLevel.current += feedValue;
+    if (pet.foodIntakeLevel.current > MAX_FOOD_INTAKE) pet.foodIntakeLevel.current = MAX_FOOD_INTAKE;
     if (feedValue > 0) {
-        if(pet.traits.includes("loves food")){
-            changeHappines(pet, 20);
-        }else{
+        if (pet.traits.includes("loves food")) {
+            changeTamerPetHappines(pet, 20, time, true);
+        } else {
             if (beforeFeed < pet.foodIntakeLevel.underfedAt) {
-                changeHappines(pet, 20);
+                changeTamerPetHappines(pet, 20, time, true);
             } else if (beforeFeed > pet.foodIntakeLevel.overfedAt * 1.2) {
-                changeHappines(pet, -10);
+                changeTamerPetHappines(pet, -10, time, true);
             } else {
-                changeHappines(pet, 5);
+                changeTamerPetHappines(pet, 5, time, true);
             }
         }
 
     } else if (feedValue < 0) {
         if (pet.foodIntakeLevel.current < pet.foodIntakeLevel.underfedAt) {
-            changeHappines(pet, feedValue);
+            changeTamerPetHappines(pet, feedValue, time, true);
         }
+    }
+}
+
+function foodIntakeToDisplayText(foodIntakeLevel: FoodIntakeLevel): string{
+    if(foodIntakeLevel.current < foodIntakeLevel.underfedAt){
+        return "hungry";
+    }else if(foodIntakeLevel.current > foodIntakeLevel.overfedAt){
+        return "ate too much";
+    }else{
+        return "not hungry";
+    }
+}
+function happinessToDisplayText(happines: Happiness): string{
+    if(happines.current < happines.unhappyAt){
+        return "unhappy";
+    }else if(happines.current > happines.hyperactiveAt){
+        return "too much";
+    }else{
+        return "happy";
     }
 }
 
@@ -116,24 +168,24 @@ export function paintTamerPetCharacterStatsUI(ctx: CanvasRenderingContext2D, pet
     const textLines: string[] = [
         `Pet Stats:`,
         `Color: ${pet.color}`,
-        `food intake: ${pet.foodIntakeLevel.current}`,
-        `Happiness: ${pet.happines.current}`,
+        `food: ${foodIntakeToDisplayText(pet.foodIntakeLevel)}`,
+        `Happiness: ${happinessToDisplayText(pet.happines)}`,
         `Movement Speed: ${pet.moveSpeed.toFixed(2)}`,
         `Level: ${pet.leveling.level.toFixed(0)}`,
     ];
 
-    if(pet.abilities.length > 0){
+    if (pet.abilities.length > 0) {
         textLines.push("");
         textLines.push("Abilities:");
-        for(let ability of pet.abilities){
+        for (let ability of pet.abilities) {
             textLines.push(ability.name);
         }
     }
 
-    if(pet.traits.length > 0){
+    if (pet.traits.length > 0) {
         textLines.push("");
         textLines.push("Traits:");
-        for(let trait of pet.traits){
+        for (let trait of pet.traits) {
             textLines.push(trait);
         }
     }
@@ -141,8 +193,35 @@ export function paintTamerPetCharacterStatsUI(ctx: CanvasRenderingContext2D, pet
     return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
 }
 
-function changeHappines(pet: TamerPetCharacter, value: number) {
+export function paintTamerPetCharacter(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
+    let tamerPetCharacter = character as TamerPetCharacter;
+    paintCharacter(ctx, character, cameraPosition, game);
+    if(tamerPetCharacter.happines.visualizations.length > 0){
+        let centerX = ctx.canvas.width / 2;
+        let centerY = ctx.canvas.height / 2;
+        let paintX = character.x - cameraPosition.x + centerX;
+        let paintY = character.y - cameraPosition.y + centerY - Math.floor(character.height / 2);
+        let happyImage = getImage("HAPPY");
+        let unhappyImage = getImage("UNHAPPY");
+        for(let visu of tamerPetCharacter.happines.visualizations){
+            if(visu.displayUntil >= game.state.time){
+                if (visu.happy && happyImage) {
+                    ctx.drawImage(happyImage, paintX - Math.floor(happyImage.width/2), paintY - happyImage.height);
+                    paintY -= happyImage.height;
+                }else if(!visu.happy && unhappyImage){
+                    ctx.drawImage(unhappyImage, paintX - Math.floor(unhappyImage.width/2), paintY - unhappyImage.height);
+                    paintY -= unhappyImage.height;
+                }
+            }
+        }
+    }
+}
+
+export function changeTamerPetHappines(pet: TamerPetCharacter, value: number, time: number, visualizeChange: boolean) {
     pet.happines.current += value;
+    if (visualizeChange) pet.happines.visualizations.push({ happy: value > 0, displayUntil: time + 500 });
+    if (pet.happines.current < 0) pet.happines.current = 0;
+    if (pet.happines.current > MAX_HAPPINES) pet.happines.current = MAX_HAPPINES;
     if (pet.happines.current < pet.happines.unhappyAt) {
         pet.petTargetBehavior = "passive";
         pet.petNoTargetBehavior = "stay";
@@ -160,22 +239,22 @@ function foodIntakeLevelTick(pet: TamerPetCharacter, game: Game) {
     if (intakeLevel.nextTick === undefined || intakeLevel.nextTick <= game.state.time) {
         intakeLevel.nextTick = game.state.time + intakeLevel.tickInterval;
         let tickChange = -1;
-        if(pet.traits.includes("very hungry")) tickChange = -5;
+        if (pet.traits.includes("very hungry")) tickChange = -5;
 
-        if (intakeLevel.current > 0) tamerPetFeed(pet, tickChange);
+        if (intakeLevel.current > 0) tamerPetFeed(pet, tickChange, game.state.time);
     }
 
     if (intakeLevel.current < intakeLevel.underfedAt) {
         pet.sizeFactor = 1 - (intakeLevel.underfedAt - intakeLevel.current) / intakeLevel.underfedAt / 2;
         pet.moveSpeed = pet.baseMoveSpeed;
     } else if (intakeLevel.current > intakeLevel.overfedAt) {
-        if(pet.traits.includes("never gets fat")){
+        if (pet.traits.includes("never gets fat")) {
             pet.sizeFactor = 1;
-            pet.moveSpeed = pet.baseMoveSpeed;    
-        }else{
+            pet.moveSpeed = pet.baseMoveSpeed;
+        } else {
             pet.sizeFactor = 1 + (intakeLevel.current - intakeLevel.overfedAt) / intakeLevel.overfedAt;
-            pet.sizeFactor = Math.min(10, pet.sizeFactor);
-            pet.moveSpeed = pet.baseMoveSpeed * Math.max(0.10, 1 / pet.sizeFactor);
+            pet.sizeFactor = Math.min(MAX_OVERFED_SIZE, pet.sizeFactor);
+            pet.moveSpeed = pet.baseMoveSpeed * Math.max(MIN_MOVEMENTSPEED_FACTOR, 1 / pet.sizeFactor);
         }
     } else {
         pet.sizeFactor = 1;

@@ -19,6 +19,7 @@ export type CHARACTER_TYPE_FUNCTIONS = {
         createUpgradeOptions?: (character: Character, game: Game) => CharacterUpgradeOption[],
         createBossUpgradeOptions?: (character: Character, game: Game) => CharacterUpgradeOption[],
         getUpgradeOptionByUpgradeChoice?:(character: Character, characterUpgradeChoice: CharacterUpgradeChoice, game: Game) => CharacterUpgradeOption | undefined,
+        paintCharacterType?: (ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) => void,
     }
 }
 

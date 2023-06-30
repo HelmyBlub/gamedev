@@ -34,7 +34,7 @@ GAME_IMAGES[ABILITY_NAME_TOWER] = {
     spriteRowWidths: [20],
 };
 
-export function addTowerAbility() {
+export function addAbilityTower() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_TOWER] = {
         tickAbility: tickAbilityTower,
         tickAbilityObject: tickAbilityObjectTower,

@@ -25,7 +25,7 @@ GAME_IMAGES[ABILITY_NAME_SWORD] = {
     spriteRowWidths: [11],
 };
 
-export function addSwordAbility() {
+export function addAbilitySword() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_SWORD] = {
         tickAbility: tickAbilitySword,
         createAbilityUpgradeOptions: createAbilitySwordUpgradeOptions,

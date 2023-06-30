@@ -10,7 +10,7 @@ type AbilityHpRegen = Ability & {
 
 const ABILITY_NAME_HP_REGEN = "HP Regen";
 
-export function addHpRegenAbility() {
+export function addAbilityHpRegen() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_HP_REGEN] = {
         tickAbility: tickAbilityHpRegen,
         createAbilityUpgradeOptions: createAbilityHpRegenUpgradeOptions,

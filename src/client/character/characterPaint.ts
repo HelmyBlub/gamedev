@@ -2,7 +2,7 @@ import { ABILITIES_FUNCTIONS, paintDefaultAbilityStatsUI } from "../ability/abil
 import { Game, Position } from "../gameModel.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
 import { randomizedCharacterImageToKey } from "../randomizedCharacterImage.js";
-import { Character } from "./characterModel.js";
+import { CHARACTER_TYPE_FUNCTIONS, Character } from "./characterModel.js";
 import { ABILITY_LEVELING_CHARACTER, AbilityLevelingCharacter } from "./playerCharacters/abilityLevelingCharacter.js";
 import { LEVELING_CHARACTER, LevelingCharacter } from "./playerCharacters/levelingCharacterModel.js";
 import { TAMER_PET_CHARACTER } from "./playerCharacters/tamerPetCharacter.js";
@@ -10,7 +10,12 @@ import { TAMER_PET_CHARACTER } from "./playerCharacters/tamerPetCharacter.js";
 export function paintCharacters(ctx: CanvasRenderingContext2D, characters: Character[], cameraPosition: Position, game: Game) {
     for (let i = 0; i < characters.length; i++) {
         const character = characters[i];
-        paintCharacter(ctx, character, cameraPosition, game);
+        const characterFunctions = CHARACTER_TYPE_FUNCTIONS[character.type];
+        if(characterFunctions && characterFunctions.paintCharacterType){
+            characterFunctions.paintCharacterType(ctx, character, cameraPosition, game);
+        }else{
+            paintCharacter(ctx, character, cameraPosition, game);
+        }
     }
 }
 
@@ -55,15 +60,7 @@ export function paintCharacterStatsUI(ctx: CanvasRenderingContext2D, character: 
     return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
 }
 
-function paintCharacterPets(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game){
-    if (character.pets !== undefined) {
-        for (let petsIt = 0; petsIt < character.pets.length; petsIt++) {
-            paintCharacter(ctx, character.pets[petsIt], cameraPosition, game);
-        }
-    }
-}
-
-function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
+export function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
     if (character.isDead) return;
     paintCharacterPets(ctx, character, cameraPosition, game);
 
@@ -145,6 +142,12 @@ function paintCharacter(ctx: CanvasRenderingContext2D, character: Character, cam
         if (abilityFunctions.paintAbility !== undefined) {
             abilityFunctions.paintAbility(ctx, character, ability, cameraPosition, game);
         }
+    }
+}
+
+function paintCharacterPets(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game){
+    if (character.pets !== undefined) {
+        paintCharacters(ctx, character.pets, cameraPosition, game);
     }
 }
 

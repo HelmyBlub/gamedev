@@ -31,7 +31,7 @@ export type AbilityObjectFireCircleTraveling = AbilityObject & {
     toDelete: boolean,
 }
 
-export function addFireCircleAbility() {
+export function addAbilityFireCircle() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_FIRE_CIRCLE] = {
         tickAbility: tickAbilityFireCircle,
         createAbilityUpgradeOptions: createAbiltiyFireCircleUpgradeOptions,

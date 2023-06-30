@@ -12,7 +12,7 @@ type AbilityMelee = Ability & {
 }
 export const ABILITY_NAME_MELEE = "Melee";
 
-export function addMeleeAbility() {
+export function addAbilityMelee() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_MELEE] = {
         tickAbility: tickAbilityMelee,
         createAbilityUpgradeOptions: createAbilityMeleeUpgradeOptions,

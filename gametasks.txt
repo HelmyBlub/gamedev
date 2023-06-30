@@ -1,9 +1,7 @@
 current tasks:
 - tamer:    
     - balacing/change ideas:
-        - happines limits 0 and 1xx.
-        - new ability "heart" increases pet happyness
-        - too happy happyness slowly decreases
+        
     - create abilities for pets and replace them with the existing one
     - new pet stat happines
         - visualize happines changes
@@ -21,7 +19,6 @@ current tasks:
         - new ability: petting
             - makes targetet pet happier
         - pet traits:
-            - "loves food": pet always get happy if fed food
             - "needs attention": pet need a lot of pets
             - "antisocial": pet wants to stay away from other pets
             - "jealous": wants pets if other gets them, unhappy if not given

@@ -16,7 +16,7 @@ type AbilitySingleTarget = Ability & {
 }
 const ABILITY_NAME_SINGLETARGET = "SingleTarget";
 
-export function addSingleTargetAbility() {
+export function addAbilitySingleTarget() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_SINGLETARGET] = {
         tickAbility: tickAbilitySingleTarget,
         createAbilityUpgradeOptions: createAbilitySingleTargetUpgradeOptions,

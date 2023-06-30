@@ -1,12 +1,12 @@
-import { findCharacterById } from "../character/character.js";
-import { Character } from "../character/characterModel.js";
-import { TamerPetCharacter, tamerPetFeed } from "../character/playerCharacters/tamerPetCharacter.js";
-import { calculateDirection, calculateDistance, getCameraPosition, getNextId } from "../game.js";
-import { IdCounter, Position, Game } from "../gameModel.js";
-import { GAME_IMAGES, getImage, loadImage } from "../imageLoad.js";
-import { moveByDirectionAndDistance } from "../map/map.js";
-import { playerInputBindingToDisplayValue } from "../playerInput.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, AbilityUpgradeOption, PaintOrderAbility } from "./ability.js";
+import { findCharacterById } from "../../character/character.js";
+import { Character } from "../../character/characterModel.js";
+import { TamerPetCharacter, tamerPetFeed } from "../../character/playerCharacters/tamerPetCharacter.js";
+import { calculateDirection, calculateDistance, getCameraPosition, getNextId } from "../../game.js";
+import { IdCounter, Position, Game } from "../../gameModel.js";
+import { GAME_IMAGES, getImage, loadImage } from "../../imageLoad.js";
+import { moveByDirectionAndDistance } from "../../map/map.js";
+import { playerInputBindingToDisplayValue } from "../../playerInput.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, AbilityUpgradeOption, PaintOrderAbility } from "../ability.js";
 
 export type AbilityFeedPet = Ability & {
     feedValue: number,
@@ -28,7 +28,7 @@ GAME_IMAGES[ABILITY_NAME_FEED_PET] = {
     spriteRowWidths: [40],
 };
 
-export function addFeedPetAbility() {
+export function addAbilityFeedPet() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_FEED_PET] = {
         createAbilityUpgradeOptions: createAbilityFeedPetUpgradeOptions,
         activeAbilityCast: castFeedPet,
@@ -82,7 +82,7 @@ function tickAbilityObjectFeedPet(abilityObject: AbilityObject, game: Game) {
         const distance = calculateDistance(abilityObject, target);
         if (distance < 3) {
             let pet = target as TamerPetCharacter;
-            tamerPetFeed(pet, abilityObjectFeedPet.feedValue);
+            tamerPetFeed(pet, abilityObjectFeedPet.feedValue, game.state.time);
             abilityObjectFeedPet.reachedTarget = true;
         }
     }

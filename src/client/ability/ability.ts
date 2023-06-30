@@ -5,23 +5,24 @@ import { calculateDistance, getCameraPosition, takeTimeMeasure } from "../game.j
 import { Game, GameState, IdCounter, Position } from "../gameModel.js"
 import { GameMap } from "../map/map.js"
 import { findPlayerByCharacterId, findPlayerById, Player } from "../player.js"
-import { addDeathCircleAbility } from "./abilityDeathCircle.js"
-import { addFireCircleAbility } from "./abilityFireCircle.js"
-import { addLeshAbility } from "./abilityLeash.js"
-import { addTowerAbility } from "./abilityTower.js"
-import { addShootAbility } from "./abilityShoot.js"
-import { addSwordAbility } from "./abilitySword.js"
-import { addHpRegenAbility } from "./abilityHpRegen.js"
-import { addMeleeAbility } from "./abilityMelee.js"
-import { addIceAbility } from "./abilityIceAura.js"
-import { addSingleTargetAbility } from "./abilitySingleTarget.js"
-import { addSnipeAbility } from "./snipe/abilitySnipe.js"
-import { addSpeedBoostAbility } from "./speedBoost/abilitySpeedBoost.js"
+import { addAbilityDeathCircle } from "./abilityDeathCircle.js"
+import { addAbilityFireCircle } from "./abilityFireCircle.js"
+import { addAbilityLesh } from "./abilityLeash.js"
+import { addAbilityTower } from "./abilityTower.js"
+import { addAbilityShoot } from "./abilityShoot.js"
+import { addAbilitySword } from "./abilitySword.js"
+import { addAbilityHpRegen } from "./abilityHpRegen.js"
+import { addAbilityMelee } from "./abilityMelee.js"
+import { addAbilityIceAura } from "./abilityIceAura.js"
+import { addAbilitySingleTarget } from "./abilitySingleTarget.js"
+import { addAbilitySnipe } from "./snipe/abilitySnipe.js"
+import { addAbilitySpeedBoost } from "./speedBoost/abilitySpeedBoost.js"
 import { addAbilitySlowTrail } from "./abilitySlowTrail.js"
 import { addAbilityFireLine } from "./abilityFireLine.js"
 import { AbilityUpgradesFunctions } from "./abilityUpgrade.js"
 import { addAbilityExplode } from "./abilityExplode.js"
-import { addFeedPetAbility } from "./abilityFeedPet.js"
+import { addAbilityFeedPet } from "./petTamer/abilityFeedPet.js"
+import { addAbilityLovePet } from "./petTamer/abilityLovePet.js"
 
 export type Ability = {
     id: number,
@@ -91,23 +92,23 @@ export type AbilityUpgradeOption = {
 export const ABILITIES_FUNCTIONS: AbilitiesFunctions = {};
 
 export function onDomLoadSetAbilitiesFunctions() {
-    addShootAbility();
-    addFireCircleAbility();
-    addSwordAbility();
-    addTowerAbility();
-    addDeathCircleAbility();
-    addLeshAbility();
-    addHpRegenAbility();
-    addMeleeAbility();
-    addIceAbility();
-    addSingleTargetAbility();
-    addSnipeAbility();
-    addSpeedBoostAbility();
+    addAbilityShoot();
+    addAbilityFireCircle();
+    addAbilitySword();
+    addAbilityTower();
+    addAbilityDeathCircle();
+    addAbilityLesh();
+    addAbilityHpRegen();
+    addAbilityMelee();
+    addAbilityIceAura();
+    addAbilitySingleTarget();
+    addAbilitySnipe();
+    addAbilitySpeedBoost();
     addAbilitySlowTrail();
     addAbilityFireLine();
     addAbilityExplode();
-
-    addFeedPetAbility();
+    addAbilityFeedPet();
+    addAbilityLovePet();
 }
 
 export function addAbilityToCharacter(character: Character, ability: Ability) {

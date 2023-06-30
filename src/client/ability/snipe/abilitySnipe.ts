@@ -58,7 +58,7 @@ GAME_IMAGES[ABILITY_NAME_SNIPE] = {
     spriteRowWidths: [40],
 };
 
-export function addSnipeAbility() {
+export function addAbilitySnipe() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_SNIPE] = {
         tickAbility: tickAbilitySnipe,
         tickAbilityObject: tickAbilityObjectSnipe,

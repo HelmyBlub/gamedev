@@ -13,7 +13,7 @@ type AbilityLeash = Ability & {
 
 const ABILITY_NAME_LEASH = "Leash";
 
-export function addLeshAbility() {
+export function addAbilityLesh() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_LEASH] = {
         tickAbility: tickAbilityLeash,
         createAbilityUpgradeOptions: createAbilityLeashUpgradeOptions,
