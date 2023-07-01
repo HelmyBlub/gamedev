@@ -39,6 +39,9 @@ function changeCharacterToTamerClass(
     game: Game,
 ) {
     character.type = TAMER_CHARACTER;
+    character.moveSpeed *= 1.2;
+    character.maxHp *= 1.5;
+    character.hp *= 1.5;
     addAbilityToCharacter(character, createAbilityHpRegen(idCounter));
     addAbilityToCharacter(character, createAbility(ABILITY_NAME_FEED_PET, idCounter, false, false, "ability1"));
     addAbilityToCharacter(character, createAbility(ABILITY_NAME_LOVE_PET, idCounter, false, false, "ability2"));
@@ -77,7 +80,9 @@ function getAvailablePetAbilities(character: Character, pet: TamerPetCharacter):
     const possibleAbilityNames = [
         ABILITY_NAME_ICE_AURA,
         ABILITY_NAME_SWORD,
-        ABILITY_NAME_PET_BREATH
+        ABILITY_NAME_PET_BREATH,
+        ABILITY_NAME_SHOOT,
+        ABILITY_NAME_FIRE_CIRCLE,
     ]
 
     for (let abilityName of possibleAbilityNames) {

@@ -2,6 +2,7 @@ import { paintDefaultAbilityStatsUI } from "../../ability/ability.js";
 import { calculateDirection, calculateDistance, getNextId } from "../../game.js";
 import { Game, Position } from "../../gameModel.js";
 import { GAME_IMAGES, getImage } from "../../imageLoad.js";
+import { moveByDirectionAndDistance } from "../../map/map.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
 import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, calculateCharacterMovePosition, getPlayerCharacters, setCharacterAbilityLevel } from "../character.js";
 import { Character, createCharacter } from "../characterModel.js";
@@ -319,20 +320,32 @@ function moveTick(pet: TamerPetCharacter, petOwner: Character, game: Game, pathi
     }
 
     let newMovePosition = calculateCharacterMovePosition(pet, game.state.map, game.state.idCounter);
-    if (newMovePosition && !collisionWithOtherPets(pet, petOwner, newMovePosition, game)) {
-        pet.x = newMovePosition.x;
-        pet.y = newMovePosition.y;
+    if (newMovePosition) {
+        let collidedPet = collisionWithOtherPets(pet, petOwner, newMovePosition, game);
+        if(collidedPet === undefined){
+            pet.x = newMovePosition.x;
+            pet.y = newMovePosition.y;
+        } else {
+            const direction = calculateDirection(collidedPet, newMovePosition);
+            const distance = (pet.width + collidedPet.width) / 2.5 - calculateDistance(collidedPet, newMovePosition);
+            moveByDirectionAndDistance(newMovePosition, direction, distance, true, game.state.map, game.state.idCounter);
+            collidedPet = collisionWithOtherPets(pet, petOwner, newMovePosition, game);
+            if(collidedPet === undefined){
+                pet.x = newMovePosition.x;
+                pet.y = newMovePosition.y;    
+            }
+        }
     }
 }
 
-function collisionWithOtherPets(pet: TamerPetCharacter, petOwner: Character, newMovePosition: Position, game: Game): boolean {
+function collisionWithOtherPets(pet: TamerPetCharacter, petOwner: Character, newMovePosition: Position, game: Game): TamerPetCharacter | undefined {
     for (let petIt of petOwner.pets!) {
         if (petIt === pet) continue;
         const distanceBefore = calculateDistance(petIt, pet);
         const distanceAfter = calculateDistance(petIt, newMovePosition);
         if (distanceBefore > distanceAfter && distanceAfter < (pet.width + petIt.width) / 2.5) {
-            return true;
+            return petIt;
         }
     }
-    return false;
+    return undefined;
 }
