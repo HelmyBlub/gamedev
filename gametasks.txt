@@ -1,13 +1,25 @@
 current tasks:
 - tamer:    
     - create abilities for pets and replace them with the existing one
-        - abilitys which behaviour/damage changes with pet foodIntake and Happiness
-        - should have multiple upgrades like snipe
         - aoe ideas:
             - "breath" -> frontal cone aoe
-                - size dependant on pet size
-                - uses up foodIntake fast, can not use ability if not fed enough
-            - ""
+                - pet uses ability only when enemies around?
+                - if active can not change direction instantly?
+                - further upgrades
+                - upgrade details info text
+            - "painter"
+                - path it runs makes line -> if lines form a shape something happens
+                    - square -> horizontal&vertical -> cross explosion
+                    - circle -> beginns rolling around
+                    - triangle -> rotates in place firering in 3 directions
+                    - more speed = paints more shapes
+            - "Dash"
+                - constant direction movement. Movement Speed increased.
+                 Does damage to everything it touches while "dashing".
+                - Increases "weight" which result in player beeing more pulled
+                - can push enemies/bosses?
+                - higher speed = more damage
+                - bigger size = more area hit
 
 
     - balacing/change ideas:

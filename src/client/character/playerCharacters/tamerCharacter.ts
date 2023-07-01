@@ -15,6 +15,7 @@ import { ABILITY_NAME_ICE_AURA } from "../../ability/abilityIceAura.js";
 import { ABILITY_NAME_SWORD } from "../../ability/abilitySword.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
 import { ABILITY_NAME_LOVE_PET } from "../../ability/petTamer/abilityLovePet.js";
+import { ABILITY_NAME_PET_BREATH } from "../../ability/petTamer/abilityPetBreath.js";
 
 export const TAMER_CHARACTER = "Tamer(Work in Progress)";
 export function addTamerClass() {
@@ -74,10 +75,9 @@ function createTamerBossUpgradeOptions(character: Character, game: Game): Charac
 function getAvailablePetAbilities(character: Character, pet: TamerPetCharacter): string[] {
     const availableAbilityNames: string[] = [];
     const possibleAbilityNames = [
-        ABILITY_NAME_FIRE_CIRCLE,
-        ABILITY_NAME_SHOOT,
         ABILITY_NAME_ICE_AURA,
         ABILITY_NAME_SWORD,
+        ABILITY_NAME_PET_BREATH
     ]
 
     for (let abilityName of possibleAbilityNames) {
