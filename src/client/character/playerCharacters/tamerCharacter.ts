@@ -16,6 +16,7 @@ import { ABILITY_NAME_SWORD } from "../../ability/abilitySword.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
 import { ABILITY_NAME_LOVE_PET } from "../../ability/petTamer/abilityLovePet.js";
 import { ABILITY_NAME_PET_BREATH } from "../../ability/petTamer/abilityPetBreath.js";
+import { ABILITY_NAME_PET_PAINTER } from "../../ability/petTamer/abilityPetPainter.js";
 
 export const TAMER_CHARACTER = "Tamer(Work in Progress)";
 export function addTamerClass() {
@@ -83,6 +84,7 @@ function getAvailablePetAbilities(character: Character, pet: TamerPetCharacter):
         ABILITY_NAME_PET_BREATH,
         ABILITY_NAME_SHOOT,
         ABILITY_NAME_FIRE_CIRCLE,
+        ABILITY_NAME_PET_PAINTER
     ]
 
     for (let abilityName of possibleAbilityNames) {

@@ -46,8 +46,8 @@ export type TamerPetCharacter = Character & {
         experienceForLevelUp: number,
     }
     traits: Trait[],
+    forcedMovePosition?: Position,
 }
-
 
 type Happiness = {
     current: number,
@@ -269,56 +269,22 @@ function foodIntakeLevelTick(pet: TamerPetCharacter, game: Game) {
 }
 
 function moveTick(pet: TamerPetCharacter, petOwner: Character, game: Game, pathingCache: PathingCache) {
-    const isPlayer = pet.faction === "player";
-    let target: Character | null = null;
-    if (pet.petTargetBehavior === "aggressive") {
-        let playerCharacters = determineCharactersInDistance(pet, game.state.map, [], game.state.bossStuff.bosses, 200);
-        let closest = determineClosestCharacter(pet, playerCharacters);
-        target = closest.minDistanceCharacter;
-    } else if (pet.petTargetBehavior === "protective") {
-        let playerCharacters = determineCharactersInDistance(petOwner, game.state.map, [], game.state.bossStuff.bosses, 200);
-        let closest = determineClosestCharacter(petOwner, playerCharacters);
-        if (closest.minDistance < 60) {
-            target = closest.minDistanceCharacter;
+    if(pet.forcedMovePosition){
+        pet.isMoving = true;
+        let direction = calculateDirection(pet, pet.forcedMovePosition);
+        pet.moveDirection = direction;
+    }else{
+        let target = getTargetByBehavior(pet, petOwner, game);
+        if (target) {
+            calculateAndSetMoveDirectionToPositionWithPathing(pet, target, game.state.map, pathingCache, game.state.idCounter, game.state.time);
         } else {
-            let closest = determineClosestCharacter(pet, playerCharacters);
-            target = closest.minDistanceCharacter;
-        }
-    } else if (pet.petTargetBehavior === "passive") {
-        //not searching for target
-    }
-
-    if (target) {
-        calculateAndSetMoveDirectionToPositionWithPathing(pet, target, game.state.map, pathingCache, game.state.idCounter, game.state.time);
-    } else {
-        switch (pet.petNoTargetBehavior) {
-            case "stay":
-                pet.isMoving = false;
-                break;
-            case "following":
-                if (pet.nextMovementUpdateTime === undefined || pet.nextMovementUpdateTime <= game.state.time) {
-                    const random = nextRandom(game.state.randomSeed);
-                    const distance = calculateDistance(pet, petOwner);
-                    if (random > Math.max(distance / 100, 0.2)) {
-                        pet.isMoving = false;
-                    } else {
-                        pet.isMoving = true;
-                        let direction = calculateDirection(pet, petOwner);
-                        pet.moveDirection = direction + (nextRandom(game.state.randomSeed) * Math.PI / 2 - Math.PI / 4);
-                    }
-                    pet.nextMovementUpdateTime = game.state.time + 500;
-                }
-                break;
-            case "hyperactive":
-                if (pet.nextMovementUpdateTime === undefined || pet.nextMovementUpdateTime <= game.state.time) {
-                    pet.isMoving = true;
-                    pet.moveDirection = nextRandom(game.state.randomSeed) * Math.PI * 2;
-                    pet.nextMovementUpdateTime = game.state.time + nextRandom(game.state.randomSeed) * 100 + 50;
-                }
-                break;
+            setMoveDirectionWithNoTarget(pet, petOwner, game);
         }
     }
+    setMovePositonWithPetCollision(pet,petOwner, game);
+}
 
+function setMovePositonWithPetCollision(pet: TamerPetCharacter, petOwner: Character, game: Game){
     let newMovePosition = calculateCharacterMovePosition(pet, game.state.map, game.state.idCounter);
     if (newMovePosition) {
         let collidedPet = collisionWithOtherPets(pet, petOwner, newMovePosition, game);
@@ -336,6 +302,56 @@ function moveTick(pet: TamerPetCharacter, petOwner: Character, game: Game, pathi
             }
         }
     }
+}
+
+function setMoveDirectionWithNoTarget(pet: TamerPetCharacter, petOwner: Character, game: Game){
+    switch (pet.petNoTargetBehavior) {
+        case "stay":
+            pet.isMoving = false;
+            break;
+        case "following":
+            if (pet.nextMovementUpdateTime === undefined || pet.nextMovementUpdateTime <= game.state.time) {
+                const random = nextRandom(game.state.randomSeed);
+                const distance = calculateDistance(pet, petOwner);
+                if (random > Math.max(distance / 100, 0.2)) {
+                    pet.isMoving = false;
+                } else {
+                    pet.isMoving = true;
+                    let direction = calculateDirection(pet, petOwner);
+                    pet.moveDirection = direction + (nextRandom(game.state.randomSeed) * Math.PI / 2 - Math.PI / 4);
+                }
+                pet.nextMovementUpdateTime = game.state.time + 500;
+            }
+            break;
+        case "hyperactive":
+            if (pet.nextMovementUpdateTime === undefined || pet.nextMovementUpdateTime <= game.state.time) {
+                pet.isMoving = true;
+                pet.moveDirection = nextRandom(game.state.randomSeed) * Math.PI * 2;
+                pet.nextMovementUpdateTime = game.state.time + nextRandom(game.state.randomSeed) * 100 + 50;
+            }
+            break;
+    }
+}
+
+function getTargetByBehavior(pet: TamerPetCharacter, petOwner: Character, game: Game): Character | null{
+    let target: Character | null = null;
+    if (pet.petTargetBehavior === "aggressive") {
+        let playerCharacters = determineCharactersInDistance(pet, game.state.map, [], game.state.bossStuff.bosses, 200);
+        let closest = determineClosestCharacter(pet, playerCharacters);
+        target = closest.minDistanceCharacter;
+    } else if (pet.petTargetBehavior === "protective") {
+        let playerCharacters = determineCharactersInDistance(petOwner, game.state.map, [], game.state.bossStuff.bosses, 200);
+        let closest = determineClosestCharacter(petOwner, playerCharacters);
+        if (closest.minDistance < 60) {
+            target = closest.minDistanceCharacter;
+        } else {
+            let closest = determineClosestCharacter(pet, playerCharacters);
+            target = closest.minDistanceCharacter;
+        }
+    } else if (pet.petTargetBehavior === "passive") {
+        //not searching for target
+    }    
+    return target;
 }
 
 function collisionWithOtherPets(pet: TamerPetCharacter, petOwner: Character, newMovePosition: Position, game: Game): TamerPetCharacter | undefined {

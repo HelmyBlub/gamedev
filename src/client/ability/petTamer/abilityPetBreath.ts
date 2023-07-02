@@ -17,7 +17,7 @@ type AbilityPetBreath = Ability & {
     active: boolean,
 }
 
-export const ABILITY_NAME_PET_BREATH = "PetBreath";
+export const ABILITY_NAME_PET_BREATH = "Breath";
 
 export function addAbilityPetBreath() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_PET_BREATH] = {

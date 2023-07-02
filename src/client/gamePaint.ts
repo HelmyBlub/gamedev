@@ -61,6 +61,15 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
     paintUiForAbilities(ctx, game);
 }
 
+export function getPointPaintPosition(ctx: CanvasRenderingContext2D, point: Position, cameraPosition: Position): Position{
+    const centerX = ctx.canvas.width / 2;
+    const centerY = ctx.canvas.height / 2;
+    return { 
+        x: Math.floor(point.x - cameraPosition.x + centerX),
+        y: Math.floor(point.y - cameraPosition.y + centerY),
+    }
+}
+
 function paintPausedText(ctx: CanvasRenderingContext2D, game: Game) {
     if (!game.state.paused || game.state.ended) return;
 

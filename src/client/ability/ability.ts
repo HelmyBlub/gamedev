@@ -24,6 +24,7 @@ import { addAbilityExplode } from "./abilityExplode.js"
 import { addAbilityFeedPet } from "./petTamer/abilityFeedPet.js"
 import { addAbilityLovePet } from "./petTamer/abilityLovePet.js"
 import { addAbilityPetBreath } from "./petTamer/abilityPetBreath.js"
+import { addAbilityPetPainter } from "./petTamer/abilityPetPainter.js"
 
 export type Ability = {
     id: number,
@@ -111,6 +112,7 @@ export function onDomLoadSetAbilitiesFunctions() {
     addAbilityFeedPet();
     addAbilityLovePet();
     addAbilityPetBreath();
+    addAbilityPetPainter();
 }
 
 export function addAbilityToCharacter(character: Character, ability: Ability) {
