@@ -1,19 +1,18 @@
 current tasks:
 - tamer:    
-    - upgrade details info text for traits and ability upgrades
+
     - create abilities for pets and replace them with the existing one
         - aoe ideas:
+            - "painter"
+                - path it runs makes line -> if lines form a shape something happens
+                    - circle -> beginns rolling around
+                    - triangle -> rotates in place firering in 3 directions
+                    - more speed = paints more shapes
             - "breath" -> frontal cone aoe
                 - pet uses ability only when enemies around?
                 - if active can not change direction instantly?
                 - further upgrades
                 - upgarde -> frost(slow)|fire(dot)|??
-            - "painter"
-                - path it runs makes line -> if lines form a shape something happens
-                    - square -> horizontal&vertical -> cross explosion
-                    - circle -> beginns rolling around
-                    - triangle -> rotates in place firering in 3 directions
-                    - more speed = paints more shapes
             - "Dash"
                 - constant direction movement. Movement Speed increased.
                  Does damage to everything it touches while "dashing".
@@ -21,6 +20,7 @@ current tasks:
                 - can push enemies/bosses?
                 - higher speed = more damage
                 - bigger size = more area hit
+    - upgrade details info text for traits and ability upgrades
 
 
     - balacing/change ideas:

@@ -294,12 +294,13 @@ function setMovePositonWithPetCollision(pet: TamerPetCharacter, petOwner: Charac
         } else {
             const direction = calculateDirection(collidedPet, newMovePosition);
             const distance = (pet.width + collidedPet.width) / 2.5 - calculateDistance(collidedPet, newMovePosition);
-            moveByDirectionAndDistance(newMovePosition, direction, distance, true, game.state.map, game.state.idCounter);
-            collidedPet = collisionWithOtherPets(pet, petOwner, newMovePosition, game);
-            if(collidedPet === undefined){
-                pet.x = newMovePosition.x;
-                pet.y = newMovePosition.y;    
-            }
+            const totalWeight = pet.weight + collidedPet.weight;
+            const factorPet = 1 / totalWeight * pet.weight;
+            const factorCollidedPet = 1 / totalWeight * collidedPet.weight;
+            moveByDirectionAndDistance(newMovePosition, direction, (distance / 2) / factorCollidedPet, true, game.state.map, game.state.idCounter);
+            moveByDirectionAndDistance(collidedPet, direction + Math.PI, (distance / 2) * factorPet, true, game.state.map, game.state.idCounter);
+            pet.x = newMovePosition.x;
+            pet.y = newMovePosition.y; 
         }
     }
 }

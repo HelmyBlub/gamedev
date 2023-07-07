@@ -1,5 +1,5 @@
 import { levelingCharacterXpGain } from "./playerCharacters/levelingCharacter.js";
-import { determineMapKeysInDistance, GameMap, getChunksTouchingLine, isPositionBlocking, MapChunk } from "../map/map.js";
+import { calculateMovePosition, determineMapKeysInDistance, GameMap, getChunksTouchingLine, isPositionBlocking, MapChunk } from "../map/map.js";
 import { Character, CHARACTER_TYPE_FUNCTIONS } from "./characterModel.js";
 import { getNextWaypoint, getPathingCache, PathingCache } from "./pathing.js";
 import { calculateDirection, calculateDistance, calculateDistancePointToLine, createPaintTextData, takeTimeMeasure } from "../game.js";
@@ -362,30 +362,7 @@ export function moveCharacterTick(character: Character, map: GameMap, idCounter:
 
 export function calculateCharacterMovePosition(character: Character, map: GameMap, idCounter: IdCounter) {
     if (character.isMoving) {
-        let x = character.x + Math.cos(character.moveDirection) * character.moveSpeed;
-        let y = character.y + Math.sin(character.moveDirection) * character.moveSpeed;
-        let blocking = isPositionBlocking({ x, y }, map, idCounter);
-        if (!blocking) {
-            let blockingBothSides = isPositionBlocking({ x: character.x, y }, map, idCounter) && isPositionBlocking({ x, y: character.y }, map, idCounter);
-            if (!blockingBothSides) {
-                return { x, y };
-            }
-        } else {
-            let xTile = Math.floor(character.x / map.tileSize);
-            let newXTile = Math.floor(x / map.tileSize);
-            if (xTile !== newXTile) {
-                if (!isPositionBlocking({ x: character.x, y }, map, idCounter)) {
-                    return { x: character.x, y };
-                }
-            }
-            let yTile = Math.floor(character.y / map.tileSize);
-            let newYTile = Math.floor(y / map.tileSize);
-            if (yTile !== newYTile) {
-                if (!isPositionBlocking({ x, y: character.y }, map, idCounter)) {
-                    return { x, y: character.y };
-                }
-            }
-        }
+        return calculateMovePosition(character, character.moveDirection, character.moveSpeed, true, map, idCounter);
     }
     return undefined;
 }

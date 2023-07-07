@@ -121,16 +121,41 @@ export function removeAllMapCharacters(map: GameMap) {
 }
 
 export function moveByDirectionAndDistance(position: Position, moveDirection: number, distance: number, checkColision: boolean, map: GameMap | undefined = undefined, idCounter: IdCounter | undefined = undefined) {
+    let newPos = calculateMovePosition(position, moveDirection, distance, checkColision, map, idCounter);
+    position.x = newPos.x;
+    position.y = newPos.y;
+}
+
+export function calculateMovePosition(position: Position, moveDirection: number, distance: number, checkColision: boolean, map: GameMap | undefined = undefined, idCounter: IdCounter | undefined = undefined): Position {
     let x = position.x + Math.cos(moveDirection) * distance;
     let y = position.y + Math.sin(moveDirection) * distance;
-    let blocking = checkColision;
     if (checkColision) {
         if (!map || !idCounter) throw new Error("collision check requires map and idCounter");
-        blocking = isPositionBlocking({ x, y }, map, idCounter);
-    }
-    if (!blocking) {
-        position.x = x;
-        position.y = y;
+        let blocking = isPositionBlocking({ x, y }, map, idCounter);
+        if (!blocking) {
+            let blockingBothSides = isPositionBlocking({ x: position.x, y }, map, idCounter) && isPositionBlocking({ x, y: position.y }, map, idCounter);
+            if (!blockingBothSides) {
+                return { x, y };
+            }
+        } else {
+            let xTile = Math.floor(position.x / map.tileSize);
+            let newXTile = Math.floor(x / map.tileSize);
+            if (xTile !== newXTile) {
+                if (!isPositionBlocking({ x: position.x, y }, map, idCounter)) {
+                    return { x: position.x, y };
+                }
+            }
+            let yTile = Math.floor(position.y / map.tileSize);
+            let newYTile = Math.floor(y / map.tileSize);
+            if (yTile !== newYTile) {
+                if (!isPositionBlocking({ x, y: position.y }, map, idCounter)) {
+                    return { x, y: position.y };
+                }
+            }
+        }
+        return { x: position.x, y: position.y };
+    }else{
+        return { x, y };
     }
 }
 
