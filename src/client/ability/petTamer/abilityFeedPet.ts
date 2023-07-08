@@ -162,7 +162,6 @@ function castFeedPet(abilityOwner: AbilityOwner, ability: Ability, castPosition:
                 color: "white",
                 damage: 0,
                 faction: "player",
-                size: 40,
                 type: ABILITY_NAME_FEED_PET,
                 x: abilityOwner.x,
                 y: abilityOwner.y,

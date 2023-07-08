@@ -4,12 +4,12 @@ import { TamerPetCharacter } from "../../character/playerCharacters/tamerPetChar
 import { calculateDistance, getCameraPosition, getNextId } from "../../game.js";
 import { IdCounter, Game, Position } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
-import { isPositionBlocking } from "../../map/map.js";
+import { calculateBounceAngle, calculateMovePosition, isPositionBlocking } from "../../map/map.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, AbilityUpgradeOption, PaintOrderAbility } from "../ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityObjectCircle, AbilityOwner, AbilityUpgradeOption, PaintOrderAbility, detectAbilityObjectCircleToCharacterHit } from "../ability.js";
 
 export type AbilityPetPainter = Ability & {
-    damage: number,
+    baseDamage: number,
     currentlyPainting?: Shape,
     paintPoints?: Position[],
     paintCircle?: {
@@ -20,14 +20,29 @@ export type AbilityPetPainter = Ability & {
 
 export type AbilityObjectPetPainter = AbilityObject & {
     subType: Shape,
+    deleteTime: number,
+}
+
+export type AbilityObjectPetPainterSquare = AbilityObjectPetPainter & {
+    subType: "Square",
+    size: number,
     range: number,
     damageDone: boolean,
-    deleteTime: number,
+}
+
+export type AbilityObjectPetPainterCircle = AbilityObjectPetPainter & AbilityObjectCircle & {
+    subType: "Circle",
+    tickInterval: number,
+    nextTickTime?: number,
+    direction: number,
+    moveSpeed: number,
 }
 
 export const ABILITY_NAME_PET_PAINTER = "Painter";
 const FADETIME = 500;
 const SQUARESIZE = 30;
+const SQUARE_DAMAGE_FACTOR = 5;
+const CIRCLE_DAMAGE_FACTOR = 1;
 const CIRCLERADIUS = 15;
 const PAINTER_SHAPES = ["Circle", "Square"] as const;
 type Shape = typeof PAINTER_SHAPES[number];
@@ -50,35 +65,62 @@ export function createAbilityPetPainter(idCounter: IdCounter): AbilityPetPainter
     return {
         id: getNextId(idCounter),
         name: ABILITY_NAME_PET_PAINTER,
-        damage: 500,
+        baseDamage: 100,
         passive: true,
         upgrades: {},
     }
 }
 
-function createAbilityObjectPetPainter(
+function createAbilityObjectPetPainterSquare(
     position: Position,
     size: number,
     damage: number,
-    subType: Shape,
     abilityRefId: number,
     faction: string,
     range: number,
     gameTime: number
 ): AbilityObjectPetPainter {
-    let abilityObjectPetPainter: AbilityObjectPetPainter = {
+    let abilityObjectPetPainter: AbilityObjectPetPainterSquare = {
         type: ABILITY_NAME_PET_PAINTER,
         size: size,
         color: "",
         x: position.x,
         y: position.y,
-        damage: damage,
+        damage: damage * SQUARE_DAMAGE_FACTOR,
         faction: faction,
         range: range,
         deleteTime: gameTime + FADETIME,
         damageDone: false,
-        subType: subType,
+        subType: "Square",
         abilityRefId: abilityRefId,
+    }
+
+    return abilityObjectPetPainter;
+}
+
+function createAbilityObjectPetPainterCircle(
+    position: Position,
+    damage: number,
+    abilityRefId: number,
+    faction: string,
+    radius: number,
+    rollDirection: number,
+    gameTime: number
+): AbilityObjectPetPainter {
+    let abilityObjectPetPainter: AbilityObjectPetPainterCircle = {
+        type: ABILITY_NAME_PET_PAINTER,
+        color: "red",
+        x: position.x,
+        y: position.y,
+        damage: damage * CIRCLE_DAMAGE_FACTOR,
+        faction: faction,
+        deleteTime: gameTime + 5000,
+        subType: "Circle",
+        abilityRefId: abilityRefId,
+        radius: radius,
+        direction: rollDirection,
+        moveSpeed: 4,
+        tickInterval: 100,
     }
 
     return abilityObjectPetPainter;
@@ -86,15 +128,35 @@ function createAbilityObjectPetPainter(
 
 function setAbilityPetPainterToLevel(ability: Ability, level: number) {
     let abilityPetPainter = ability as AbilityPetPainter;
-    abilityPetPainter.damage = level * 500;
+    abilityPetPainter.baseDamage = level * 100;
 }
 
 function tickAbilityObjectPetPainter(abilityObject: AbilityObject, game: Game) {
     let petPainter = abilityObject as AbilityObjectPetPainter;
-    detectAbilityObjectToCharacterHit(petPainter, game);
+    if(petPainter.subType === "Square"){
+        detectAbilityObjectToCharacterHit(petPainter as AbilityObjectPetPainterSquare, game);
+    }else if(petPainter.subType === "Circle"){
+        const circle = petPainter as AbilityObjectPetPainterCircle;
+        let newPosition = calculateMovePosition(circle, circle.direction, circle.moveSpeed, false);
+        if(isPositionBlocking(newPosition, game.state.map, game.state.idCounter)){
+            circle.direction = calculateBounceAngle(newPosition, circle.direction, game.state.map);
+        }else{
+            circle.x = newPosition.x;
+            circle.y = newPosition.y;
+        }
+
+        if (circle.nextTickTime === undefined) circle.nextTickTime = game.state.time + circle.tickInterval;
+        if (circle.nextTickTime <= game.state.time) {
+            detectAbilityObjectCircleToCharacterHit(game.state.map, circle, [], game.state.bossStuff.bosses, game);
+            circle.nextTickTime += circle.tickInterval;
+            if (circle.nextTickTime <= game.state.time) {
+                circle.nextTickTime = game.state.time + circle.tickInterval;
+            }
+        }    
+    }
 }
 
-function detectAbilityObjectToCharacterHit(petPainter: AbilityObjectPetPainter, game: Game) {
+function detectAbilityObjectToCharacterHit(petPainter: AbilityObjectPetPainterSquare, game: Game) {
     if (petPainter.damageDone) return;
     petPainter.damageDone = true;
     let maxEnemySizeEstimate = 40;
@@ -127,11 +189,20 @@ function paintAbilityObjectPetPainter(ctx: CanvasRenderingContext2D, abilityObje
     const petPainter = abilityObject as AbilityObjectPetPainter;
     if (petPainter.subType === "Square") {
         const paintPos = getPointPaintPosition(ctx, petPainter, cameraPosition);
+        const square = abilityObject as AbilityObjectPetPainterSquare;
         ctx.fillStyle = "red";
         ctx.globalAlpha = (petPainter.deleteTime - game.state.time) / FADETIME;
-        ctx.fillRect(paintPos.x - petPainter.range, paintPos.y, petPainter.size + petPainter.range * 2, petPainter.size);
-        ctx.fillRect(paintPos.x, paintPos.y - petPainter.range, petPainter.size, petPainter.size + petPainter.range * 2);
+        ctx.fillRect(paintPos.x - square.range, paintPos.y, square.size + square.range * 2, square.size);
+        ctx.fillRect(paintPos.x, paintPos.y - square.range, square.size, square.size + square.range * 2);
         ctx.globalAlpha = 1;
+    }else if(petPainter.subType === "Circle"){
+        const paintPos = getPointPaintPosition(ctx, petPainter, cameraPosition);
+        const circle = abilityObject as AbilityObjectPetPainterCircle;
+        ctx.fillStyle = circle.color;
+        ctx.strokeStyle = circle.color;
+        ctx.beginPath();
+        ctx.arc(paintPos.x, paintPos.y, circle.radius, 0, Math.PI * 2);
+        ctx.fill();
     }
 }
 
@@ -245,7 +316,10 @@ function tickCircle(pet: TamerPetCharacter, abilityPetPainter: AbilityPetPainter
         if(angle > Math.PI * 2){
             abilityPetPainter.currentlyPainting = undefined;
             pet.forcedMovePosition = undefined;
-            //TODO create circle object
+            const randomDirection = nextRandom(game.state.randomSeed) * Math.PI * 2;
+            const obj = createAbilityObjectPetPainterCircle(abilityPetPainter.paintCircle!.middle, abilityPetPainter.baseDamage, abilityPetPainter.id, pet.faction, CIRCLERADIUS, randomDirection, game.state.time );
+            game.state.abilityObjects.push(obj);
+
         }else{
             let nextPosition: Position = {
                 x:abilityPetPainter.paintCircle!.middle.x + Math.sin(angle) * CIRCLERADIUS,
@@ -253,6 +327,8 @@ function tickCircle(pet: TamerPetCharacter, abilityPetPainter: AbilityPetPainter
             }
             pet.forcedMovePosition = nextPosition;
         }
+    } else if (distance > 150) {
+        abilityPetPainter.currentlyPainting = undefined;
     }
 }
 
@@ -281,7 +357,7 @@ function tickSquare(pet: TamerPetCharacter, abilityPetPainter: AbilityPetPainter
                 abilityPetPainter.currentlyPainting = undefined;
                 pet.forcedMovePosition = undefined;
                 const range = 200;
-                const obj = createAbilityObjectPetPainter(abilityPetPainter.paintPoints![0], SQUARESIZE, abilityPetPainter.damage, "Square", abilityPetPainter.id, pet.faction, range, game.state.time);
+                const obj = createAbilityObjectPetPainterSquare(abilityPetPainter.paintPoints![0], SQUARESIZE, abilityPetPainter.baseDamage, abilityPetPainter.id, pet.faction, range, game.state.time);
                 game.state.abilityObjects.push(obj);
                 break;
         }

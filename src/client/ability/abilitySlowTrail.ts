@@ -72,7 +72,6 @@ function createAbilityObjectSlowTrail(
         color: "white",
         damage: 0,
         faction: abilityOwner.faction,
-        size: 0,
         x: 0,
         y: 0,
         startPosition: startPosition,

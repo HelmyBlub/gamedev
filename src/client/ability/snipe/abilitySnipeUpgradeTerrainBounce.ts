@@ -1,6 +1,6 @@
 import { calcNewPositionMovedInDirection, calculateDistance } from "../../game.js";
 import { Position, Game } from "../../gameModel.js";
-import { getFirstBlockingGameMapTilePositionTouchingLine } from "../../map/map.js";
+import { calculateBounceAngle, getFirstBlockingGameMapTilePositionTouchingLine } from "../../map/map.js";
 import { Ability, AbilityUpgradeOption } from "../ability.js";
 import { AbilityUpgrade } from "../abilityUpgrade.js";
 import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe, createAbilityObjectSnipe, getAbilitySnipeDamage, getAbilitySnipeRange } from "./abilitySnipe.js";
@@ -46,7 +46,7 @@ export function createAndPushAbilityObjectSnipeTerrainBounceBounce(abilityObject
     if (abilityObjectSnipe.bounceCounter && abilityObjectSnipe.bounceCounter > 100) return;
 
     const newStartPosition = calcNewPositionMovedInDirection(abilityObjectSnipe, abilityObjectSnipe.direction, abilityObjectSnipe.range);
-    const newBounceDirection = calculateBounceAngle(newStartPosition, abilityObjectSnipe.direction, game);
+    const newBounceDirection = calculateBounceAngle(newStartPosition, abilityObjectSnipe.direction, game.state.map);
     const newEndPosistion = calcNewPositionMovedInDirection(newStartPosition, newBounceDirection, abilityObjectSnipe.remainingRange);
     const nextBlockingPosistion = getFirstBlockingGameMapTilePositionTouchingLine(game.state.map, newStartPosition, newEndPosistion, game);
     createAndPush(
@@ -169,16 +169,4 @@ function createAndPush(
     abilityObjectSnipe.remainingRange = remainingRange;
     abilityObjectSnipe.bounceCounter = bounceCounter;
     game.state.abilityObjects.push(abilityObjectSnipe);
-}
-
-function calculateBounceAngle(bouncePosition: Position, startingAngle: number, game: Game): number {
-    let tileSize = game.state.map.tileSize;
-    let wallX = Math.abs(bouncePosition.x % tileSize);
-    if (wallX > tileSize / 2) wallX = Math.abs(wallX - tileSize);
-    let wallY = Math.abs(bouncePosition.y % tileSize);
-    if (wallY > tileSize / 2) wallY = Math.abs(wallY - tileSize);
-
-    const wallAngle = wallX - wallY > 0 ? 0 : Math.PI / 2;
-    const angleDiff = startingAngle - wallAngle;
-    return wallAngle - angleDiff;
 }

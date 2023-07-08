@@ -6,6 +6,7 @@ current tasks:
             - "painter"
                 - path it runs makes line -> if lines form a shape something happens
                     - circle -> beginns rolling around
+                        - create circle object
                     - triangle -> rotates in place firering in 3 directions
                     - more speed = paints more shapes
             - "breath" -> frontal cone aoe

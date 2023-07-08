@@ -126,6 +126,18 @@ export function moveByDirectionAndDistance(position: Position, moveDirection: nu
     position.y = newPos.y;
 }
 
+export function calculateBounceAngle(bouncePosition: Position, startingAngle: number, map: GameMap): number {
+    let tileSize = map.tileSize;
+    let wallX = Math.abs(bouncePosition.x % tileSize);
+    if (wallX > tileSize / 2) wallX = Math.abs(wallX - tileSize);
+    let wallY = Math.abs(bouncePosition.y % tileSize);
+    if (wallY > tileSize / 2) wallY = Math.abs(wallY - tileSize);
+
+    const wallAngle = wallX - wallY > 0 ? 0 : Math.PI / 2;
+    const angleDiff = startingAngle - wallAngle;
+    return wallAngle - angleDiff;
+}
+
 export function calculateMovePosition(position: Position, moveDirection: number, distance: number, checkColision: boolean, map: GameMap | undefined = undefined, idCounter: IdCounter | undefined = undefined): Position {
     let x = position.x + Math.cos(moveDirection) * distance;
     let y = position.y + Math.sin(moveDirection) * distance;

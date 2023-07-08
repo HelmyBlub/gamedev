@@ -9,7 +9,7 @@ import { websocketConnect } from "../multiplayerConenction.js";
 import { PlayerInput } from "../playerInput.js";
 import { createProjectile, Projectile } from "../ability/projectile.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
-import { detectAbilityObjectToCharacterHit } from "../ability/ability.js";
+import { detectAbilityObjectCircleToCharacterHit } from "../ability/ability.js";
 
 let testInputs: (PlayerInput | Omit<CommandRestart, "executeTime">)[] = [];
 
@@ -172,7 +172,7 @@ function testDetectProjectileToCharacterHitPerformance() {
     let startTime = performance.now();
     for (let i = 0; i < iterations; i++) {
         for (let j = 0; j < projectiles.length; j++) {
-            detectAbilityObjectToCharacterHit(map, projectiles[j], [], [], game);
+            detectAbilityObjectCircleToCharacterHit(map, projectiles[j], [], [], game);
         }
     }
     let time = performance.now() - startTime;

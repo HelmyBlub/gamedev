@@ -21,7 +21,7 @@ export function paintAbilityObjectSnipe(ctx: CanvasRenderingContext2D, abilityOb
     let paintX: number;
     let paintY: number;
 
-    ctx.lineWidth = abilityObject.size;
+    ctx.lineWidth = abilityObjectSnipe.size;
     ctx.globalAlpha = Math.min((snipe.deleteTime - game.state.time) / ABILITY_SNIPE_PAINT_FADE_DURATION, 1);
     ctx.beginPath();
     paintX = Math.floor(snipe.x - cameraPosition.x + centerX);

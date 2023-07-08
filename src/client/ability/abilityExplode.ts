@@ -1,13 +1,13 @@
 import { getCameraPosition, getNextId } from "../game.js";
 import { Game, IdCounter, Position } from "../gameModel.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, AbilityUpgradeOption, detectSomethingToCharacterHit, detectAbilityObjectToCharacterHit } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, AbilityUpgradeOption, detectSomethingToCharacterHit, detectAbilityObjectCircleToCharacterHit, AbilityObjectCircle } from "./ability.js";
 
 export type AbilityExplode = Ability & {
-    size: number,
+    radius: number,
     damage: number,
 }
 
-type AbilityObjectExplode = AbilityObject & {
+type AbilityObjectExplode = AbilityObjectCircle & {
     damage: number,
     hasDamageDone: boolean,
     removeTime?: number,
@@ -36,7 +36,7 @@ export function createAbilityExplode(
     return {
         id: getNextId(idCounter),
         name: ABILITY_NAME_EXPLODE,
-        size: 40,
+        radius: 20,
         passive: true,
         damage: damage,
         upgrades: {},
@@ -46,7 +46,7 @@ export function createAbilityExplode(
 export function createAbilityObjectExplode(
     position: Position,
     damage: number,
-    size: number,
+    radius: number,
     faction: string,
     abilityRefId: number,
     game: Game
@@ -59,7 +59,7 @@ export function createAbilityObjectExplode(
         x: position.x,
         y: position.y,
         hasDamageDone: false,
-        size: size,
+        radius: radius,
         abilityRefId: abilityRefId,
     };
 }
@@ -84,7 +84,7 @@ function paintAbilityObjectExplode(ctx: CanvasRenderingContext2D, abilityObject:
     ctx.arc(
         abilityObject.x - cameraPosition.x + centerX,
         abilityObject.y - cameraPosition.y + centerY,
-        abilityObject.size / 2, 0, 2 * Math.PI
+        abilityObjectExplode.radius, 0, 2 * Math.PI
     );
     ctx.fill();
     ctx.globalAlpha = 1;
@@ -96,7 +96,7 @@ function tickAbilityObjectExplode(abilityObject: AbilityObject, game: Game) {
     if(abilityObjectExplode.hasDamageDone) return;
     abilityObjectExplode.hasDamageDone = true;
     abilityObjectExplode.removeTime = game.state.time + PAINT_FADE_TIME;
-    detectAbilityObjectToCharacterHit(game.state.map, abilityObject, game.state.players, game.state.bossStuff.bosses, game);
+    detectAbilityObjectCircleToCharacterHit(game.state.map, abilityObjectExplode, game.state.players, game.state.bossStuff.bosses, game);
 }
 
 function createAbilityExplodeUpgradeOptions(): AbilityUpgradeOption[] {

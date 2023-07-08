@@ -20,6 +20,7 @@ import { ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE, AbilityUpgradeTerrainBounce, addA
 export type AbilityObjectSnipe = AbilityObject & {
     damage: number,
     range: number,
+    size: number,
     direction: number,
     damageCalcDone: boolean,
     deleteTime: number,

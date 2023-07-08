@@ -7,7 +7,7 @@ export const DEBUFF_NAME_EXPLODE_ON_DEATH = "Explode on death";
 export type DebuffExplodeOnDeath = Debuff & {
     damage: number,
     faction: string,
-    size: number,
+    radius: number,
     abilityRefId: number,
 }
 
@@ -20,19 +20,19 @@ export function addDebuffExplodeOnDeath() {
 export function createDebuffExplodeOnDeath(
     damage: number,
     faction: string,
-    size: number,
+    radius: number,
     abilityRefId: number,
 ): DebuffExplodeOnDeath {
     return {
         name: DEBUFF_NAME_EXPLODE_ON_DEATH,
         faction: faction,
         damage: damage,
-        size: size,
+        radius: radius,
         abilityRefId: abilityRefId,
     };
 }
 
 function removeDebuffEffectExplodeOnDeath(debuff: Debuff, targetCharacter: Character, game: Game) {
     let debuffExplodeOnDeath = debuff as DebuffExplodeOnDeath;
-    game.state.abilityObjects.push(createAbilityObjectExplode(targetCharacter, debuffExplodeOnDeath.damage, debuffExplodeOnDeath.size, debuffExplodeOnDeath.faction, debuffExplodeOnDeath.abilityRefId, game));
+    game.state.abilityObjects.push(createAbilityObjectExplode(targetCharacter, debuffExplodeOnDeath.damage, debuffExplodeOnDeath.radius, debuffExplodeOnDeath.faction, debuffExplodeOnDeath.abilityRefId, game));
 }

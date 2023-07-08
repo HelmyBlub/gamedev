@@ -1,7 +1,7 @@
-import { AbilityObject, detectAbilityObjectToCharacterHit } from "./ability.js";
+import { AbilityObject, AbilityObjectCircle, detectAbilityObjectCircleToCharacterHit } from "./ability.js";
 import { Game } from "../gameModel.js";
 
-export type Projectile = AbilityObject & {
+export type Projectile = AbilityObjectCircle & {
     moveSpeed: number,
     moveDirection: number,
     isMoving: boolean,
@@ -11,12 +11,12 @@ export type Projectile = AbilityObject & {
     nextDamageTickTime?: number,
 }
 
-export function createProjectile(x: number, y: number, moveDirection: number, damage: number, faction: string, moveSpeed: number, gameTime: number, pierceCount: number, timeToLive: number, type: string, abilityRefId: number | undefined = undefined, size: number = 4): Projectile {
+export function createProjectile(x: number, y: number, moveDirection: number, damage: number, faction: string, moveSpeed: number, gameTime: number, pierceCount: number, timeToLive: number, type: string, abilityRefId: number | undefined = undefined, radius: number = 2): Projectile {
     return {
         type: type,
         x: x,
         y: y,
-        size: size,
+        radius: radius,
         color: "white",
         moveSpeed: moveSpeed,
         moveDirection: moveDirection,
@@ -35,7 +35,7 @@ export function tickProjectile(abilityObject: AbilityObject, game: Game) {
     moveProjectileTick(projectile);
     if(projectile.nextDamageTickTime === undefined) projectile.nextDamageTickTime = game.state.time + projectile.damageTickInterval;
     if(projectile.nextDamageTickTime <= game.state.time){
-        detectAbilityObjectToCharacterHit(game.state.map, abilityObject, game.state.players, game.state.bossStuff.bosses, game);
+        detectAbilityObjectCircleToCharacterHit(game.state.map, projectile, game.state.players, game.state.bossStuff.bosses, game);
         projectile.nextDamageTickTime += projectile.damageTickInterval;
         if(projectile.nextDamageTickTime <= game.state.time){
             projectile.nextDamageTickTime = game.state.time + projectile.damageTickInterval;

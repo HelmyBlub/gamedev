@@ -67,7 +67,6 @@ export function createAbilityObjectFireLine(
         color: color,
         damage: damage,
         faction: faction,
-        size: 0,
         x: startPosition.x,
         y: startPosition.y,
         endPosition: endPosition,

@@ -9,10 +9,10 @@ import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilitySnipe, getAbilitySnipeDamage } 
 export const ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH = "Explode on Death";
 
 const DAMAGE_FACTOR = 0.5;
-const EXPLODE_SIZE = 100;
+const EXPLODE_RADIUS = 50;
 
 export type AbilityUpgradeExplodeOnDeath = AbilityUpgrade & {
-    size: number,
+    radius: number,
     damageFactor: number,
     upgradeSynergry: boolean,
 }
@@ -31,7 +31,7 @@ export function executeUpgradeExplodeOnDeath(ability: AbilitySnipe, faction: str
     if(!playerTriggered && !upgrade.upgradeSynergry) return;
 
     const damage = upgrade.damageFactor * getAbilitySnipeDamage(ability, ability.baseDamage, false, 0);
-    const explodeOnDeath = createDebuffExplodeOnDeath(damage, faction, upgrade.size, ability.id);
+    const explodeOnDeath = createDebuffExplodeOnDeath(damage, faction, upgrade.radius, ability.id);
     applyDebuff(explodeOnDeath, targetCharacter, game);
 }
 
@@ -74,7 +74,7 @@ function pushAbilityUpgradeExplodeOnDeath(ability: Ability, upgradeOptions: Abil
                 up = {
                     level: 0,
                     damageFactor: 0,
-                    size: EXPLODE_SIZE,
+                    radius: EXPLODE_RADIUS,
                     upgradeSynergry: false,
                 }
                 as.upgrades[ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH] = up;

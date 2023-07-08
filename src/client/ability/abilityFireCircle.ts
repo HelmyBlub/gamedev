@@ -1,14 +1,14 @@
 import { calculateDirection, calculateDistance, getCameraPosition, getNextId } from "../game.js";
 import { Game, IdCounter, Position } from "../gameModel.js";
 import { nextRandom } from "../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectAbilityObjectToCharacterHit, PaintOrderAbility, AbilityUpgradeOption } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectAbilityObjectCircleToCharacterHit, PaintOrderAbility, AbilityUpgradeOption, AbilityObjectCircle } from "./ability.js";
 
 export const ABILITY_NAME_FIRE_CIRCLE = "FireCircle";
 export type AbilityFireCircle = Ability & {
     objectDuration: number,
     moveSpeed: number,
     damage: number,
-    size: number,
+    radius: number,
     baseRechargeTime: number,
     rechargeTimeDecreaseFaktor: number,
     maxCharges: number,
@@ -16,14 +16,14 @@ export type AbilityFireCircle = Ability & {
     nextRechargeTime: number,
 }
 
-export type AbilityObjectFireCircle = AbilityObject & {
+export type AbilityObjectFireCircle = AbilityObjectCircle & {
     subType: "FireCircel",
     deleteTime: number,
     tickInterval: number,
     nextTickTime?: number,
 }
 
-export type AbilityObjectFireCircleTraveling = AbilityObject & {
+export type AbilityObjectFireCircleTraveling = AbilityObjectCircle & {
     subType: "FireCircelTraveling",
     targetPosition: Position,
     duration: number,
@@ -54,7 +54,7 @@ export function createAbilityFireCircle(
     playerInputBinding?: string,
     objectDuration: number = 2000,
     damage: number = 10,
-    size: number = 30,
+    radius: number = 15,
     rechargeTime: number = 2000,
     maxCharges: number = 3
 ): AbilityFireCircle {
@@ -63,7 +63,7 @@ export function createAbilityFireCircle(
         name: ABILITY_NAME_FIRE_CIRCLE,
         objectDuration: objectDuration,
         damage: damage,
-        size: size,
+        radius: radius,
         baseRechargeTime: rechargeTime,
         rechargeTimeDecreaseFaktor: 1,
         maxCharges: maxCharges,
@@ -76,12 +76,12 @@ export function createAbilityFireCircle(
     };
 }
 
-function createObjectFireCircleTraveling(x: number, y: number, damage: number, faction: string, duration: number, size: number, moveSpeed: number, owner: AbilityOwner): AbilityObjectFireCircleTraveling {
+function createObjectFireCircleTraveling(x: number, y: number, damage: number, faction: string, duration: number, radius: number, moveSpeed: number, owner: AbilityOwner): AbilityObjectFireCircleTraveling {
     return {
         type: ABILITY_NAME_FIRE_CIRCLE,
         x: owner.x,
         y: owner.y,
-        size: size,
+        radius: radius,
         color: "red",
         damage: damage,
         faction: faction,
@@ -98,7 +98,7 @@ function createObjectFireCircle(abilityObject: AbilityObjectFireCircleTraveling,
         type: ABILITY_NAME_FIRE_CIRCLE,
         x: abilityObject.targetPosition.x,
         y: abilityObject.targetPosition.y,
-        size: abilityObject.size,
+        radius: abilityObject.radius,
         color: "red",
         damage: abilityObject.damage,
         faction: abilityObject.faction,
@@ -123,7 +123,7 @@ function paintAbilityObjectFireCircle(ctx: CanvasRenderingContext2D, abilityObje
             ctx.arc(
                 abilityObject.x - cameraPosition.x + centerX,
                 abilityObject.y - cameraPosition.y + centerY,
-                abilityObject.size / 2, 0, 2 * Math.PI
+                abilityObjectFireCircle.radius, 0, 2 * Math.PI
             );
             ctx.fill();
             ctx.globalAlpha = 1;
@@ -144,7 +144,7 @@ function paintAbilityObjectFireCircle(ctx: CanvasRenderingContext2D, abilityObje
 function setAbilityFireCircleToLevel(ability: Ability, level: number) {
     let abilityFireCircle = ability as AbilityFireCircle;
     abilityFireCircle.damage = level * 100;
-    abilityFireCircle.size = 20 + level * 10;
+    abilityFireCircle.radius = 10 + level * 5;
     abilityFireCircle.objectDuration = 2000 + level * 500;
     abilityFireCircle.rechargeTimeDecreaseFaktor = 1 + 0.30 * level;
 }
@@ -152,7 +152,7 @@ function setAbilityFireCircleToLevel(ability: Ability, level: number) {
 function setAbilityFireCircleToBossLevel(ability: Ability, level: number) {
     let abilityFireCircle = ability as AbilityFireCircle;
     abilityFireCircle.damage = level * 10;
-    abilityFireCircle.size = 30 + level * 10;
+    abilityFireCircle.radius = 15 + level * 5;
     abilityFireCircle.objectDuration = 5000;
     abilityFireCircle.baseRechargeTime = 2000;
     abilityFireCircle.rechargeTimeDecreaseFaktor = 1 + level * 0.50;
@@ -182,7 +182,7 @@ function tickAbilityFireCircle(abilityOwner: AbilityOwner, ability: Ability, gam
 }
 
 function autoCastAbility(abilityOwner: AbilityOwner, abilityFireCircle: AbilityFireCircle, game: Game) {
-    let areaSize = 20 + abilityFireCircle.size;
+    let areaSize = 20 + abilityFireCircle.radius * 2;
     if(abilityOwner.faction === "enemy") areaSize += 50;
     let castRandomPosition = {
         x: abilityOwner.x + nextRandom(game.state.randomSeed) * areaSize * 2 - areaSize,
@@ -230,7 +230,7 @@ function tickAbilityObjectFireCircle(abilityObject: AbilityObject, game: Game) {
     if (abilityObjectFireCircle.subType === "FireCircel") {
         if(abilityObjectFireCircle.nextTickTime === undefined) abilityObjectFireCircle.nextTickTime = game.state.time + abilityObjectFireCircle.tickInterval;
         if(abilityObjectFireCircle.nextTickTime <= game.state.time){
-            detectAbilityObjectToCharacterHit(game.state.map, abilityObject, game.state.players, game.state.bossStuff.bosses, game);
+            detectAbilityObjectCircleToCharacterHit(game.state.map, abilityObjectFireCircle, game.state.players, game.state.bossStuff.bosses, game);
             abilityObjectFireCircle.nextTickTime += abilityObjectFireCircle.tickInterval;
         }
     } else if (abilityObjectFireCircle.subType === "FireCircelTraveling") {
@@ -268,10 +268,10 @@ function createAbiltiyFireCircleUpgradeOptions(): AbilityUpgradeOption[] {
         },
     });
     upgradeOptions.push({
-        name: "Size+", probabilityFactor: 1, upgrade: (a: Ability) => {
+        name: "Radius+", probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilityFireCircle;
-            let addSize = Math.max(1, 10 - (as.size - 30) / 40);
-            as.size += addSize;
+            let addSize = Math.max(0.5, 5 - (as.radius - 15) / 20);
+            as.radius += addSize;
         },
     });
     upgradeOptions.push({
@@ -300,7 +300,7 @@ function castFireCircle(abilityOwner: AbilityOwner, ability: Ability, castPositi
             abilityFireCircle.damage,
             abilityOwner.faction,
             abilityFireCircle.objectDuration,
-            abilityFireCircle.size,
+            abilityFireCircle.radius,
             abilityFireCircle.moveSpeed,
             abilityOwner
         ));

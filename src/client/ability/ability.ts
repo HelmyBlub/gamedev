@@ -44,7 +44,6 @@ export type Ability = {
 export type PaintOrderAbility = "beforeCharacterPaint" | "afterCharacterPaint";
 export type AbilityObject = Position & {
     type: string,
-    size: number,
     color: string,
     damage: number,
     faction: string,
@@ -52,6 +51,10 @@ export type AbilityObject = Position & {
     isLeveling?: boolean,
 }
 
+export type AbilityObjectCircle = AbilityObject & {
+    radius: number,
+}
+    
 export type AbilityOwner = Position & Partial<Character> & {
     faction: string,
     id: number,
@@ -222,15 +225,15 @@ export function paintDefaultAbilityStatsUI(ctx: CanvasRenderingContext2D, textLi
     return { width, height };
 }
 
-export function detectAbilityObjectToCharacterHit(map: GameMap, abilityObject: AbilityObject, players: Player[], bosses: BossEnemyCharacter[], game: Game) {
+export function detectAbilityObjectCircleToCharacterHit(map: GameMap, abilityObject: AbilityObjectCircle, players: Player[], bosses: BossEnemyCharacter[], game: Game) {
     let maxEnemySizeEstimate = 40;
 
-    let characters = determineCharactersInDistance(abilityObject, map, players, bosses, abilityObject.size + maxEnemySizeEstimate);
+    let characters = determineCharactersInDistance(abilityObject, map, players, bosses, abilityObject.radius * 2 + maxEnemySizeEstimate);
     for (let charIt = characters.length - 1; charIt >= 0; charIt--) {
         let c = characters[charIt];
         if (c.isDead || c.faction === abilityObject.faction) continue;
         let distance = calculateDistance(c, abilityObject);
-        if (distance < abilityObject.size / 2 + c.width / 2) {
+        if (distance < abilityObject.radius + c.width / 2) {
             characterTakeDamage(c, abilityObject.damage, game, abilityObject.abilityRefId);
             let abilityFunction = ABILITIES_FUNCTIONS[abilityObject.type];
             if (abilityFunction.onHit) {
@@ -305,6 +308,8 @@ function paintAbilityObjectsForFaction(ctx: CanvasRenderingContext2D, abilityObj
 
 function paintDefault(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, cameraPosition: Position, paintOrder: PaintOrderAbility) {
     if (paintOrder === "afterCharacterPaint") {
+        let circle = abilityObject as AbilityObjectCircle;
+        if(!circle.radius) return;
         let centerX = ctx.canvas.width / 2;
         let centerY = ctx.canvas.height / 2;
 
@@ -313,7 +318,7 @@ function paintDefault(ctx: CanvasRenderingContext2D, abilityObject: AbilityObjec
         ctx.arc(
             abilityObject.x - cameraPosition.x + centerX,
             abilityObject.y - cameraPosition.y + centerY,
-            abilityObject.size / 2, 0, 2 * Math.PI
+            circle.radius, 0, 2 * Math.PI
         );
         ctx.fill();
     }

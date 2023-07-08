@@ -11,6 +11,7 @@ import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAb
 
 type AbilityObjectTower = AbilityObject & {
     ownerId: number,
+    size: number,
     id: number,
     conntetedToId?: number,
     ability?: Ability,
