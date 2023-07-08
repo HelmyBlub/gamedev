@@ -50,8 +50,8 @@ function changeCharacterToTamerClass(
     addPetToTamer(character, "green", game);
     addPetToTamer(character, "black", game);
 
-    const ability = createAbility(ABILITY_NAME_PET_PAINTER, game.state.idCounter, false);
-    character.pets![0].abilities.push(ability);
+    // const ability = createAbility(ABILITY_NAME_PET_PAINTER, game.state.idCounter, false);
+    // character.pets![0].abilities.push(ability);
 }
 
 function getCharacterUpgradeOptionByChoice(character: Character, characterUpgradeChoice: CharacterUpgradeChoice, game: Game): CharacterUpgradeOption | undefined {
