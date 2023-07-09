@@ -1,12 +1,8 @@
-import { characterTakeDamage, determineCharactersInDistance, getPlayerCharacters } from "../../character/character.js";
-import { Character } from "../../character/characterModel.js";
 import { TamerPetCharacter } from "../../character/playerCharacters/tamerPetCharacter.js";
-import { calculateDistance, getCameraPosition, getNextId } from "../../game.js";
-import { IdCounter, Game, Position } from "../../gameModel.js";
-import { getPointPaintPosition } from "../../gamePaint.js";
-import { calculateBounceAngle, calculateMovePosition, isPositionBlocking, moveByDirectionAndDistance } from "../../map/map.js";
+import { getNextId } from "../../game.js";
+import { Position, Game, IdCounter } from "../../gameModel.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityObjectCircle, AbilityOwner, AbilityUpgradeOption, PaintOrderAbility, detectAbilityObjectCircleToCharacterHit } from "../ability.js";
+import { Ability, AbilityObject, AbilityOwner, PaintOrderAbility, ABILITIES_FUNCTIONS, AbilityUpgradeOption } from "../ability.js";
 import { addAbilityPetPainterCircle } from "./abilityPetPainterCircle.js";
 import { addAbilityPetPainterSquare } from "./abilityPetPainterSquare.js";
 import { addAbilityPetPainterTriangle } from "./abilityPetPainterTriangle.js";

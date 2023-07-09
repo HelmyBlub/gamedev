@@ -5,7 +5,7 @@ import { Game, Position } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { calculateMovePosition, isPositionBlocking, calculateBounceAngle } from "../../map/map.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
-import { AbilityObject, AbilityObjectCircle, AbilityOwner, PaintOrderAbility, detectAbilityObjectCircleToCharacterHit } from "../ability.js";
+import { AbilityObjectCircle, AbilityOwner, PaintOrderAbility, detectAbilityObjectCircleToCharacterHit } from "../ability.js";
 import { ABILITY_NAME_PET_PAINTER, ABILITY_PET_PAINTER_SHAPES_FUNCTIONS, AbilityObjectPetPainter, AbilityPetPainter } from "./abilityPetPainter.js";
 
 export type AbilityObjectPetPainterCircle = AbilityObjectPetPainter & AbilityObjectCircle & {
@@ -43,7 +43,7 @@ function createAbilityObjectPetPainterCircle(
         color: "red",
         x: position.x,
         y: position.y,
-        damage: damage * CIRCLE_DAMAGE_FACTOR,
+        damage: damage,
         faction: faction,
         deleteTime: gameTime + 5000,
         subType: PET_PAINTER_CIRCLE,
@@ -141,7 +141,8 @@ function tickCircle(pet: TamerPetCharacter, abilityPetPainter: AbilityPetPainter
             abilityPetPainter.currentlyPainting = undefined;
             pet.forcedMovePosition = undefined;
             const randomDirection = nextRandom(game.state.randomSeed) * Math.PI * 2;
-            const obj = createAbilityObjectPetPainterCircle(abilityPetPainter.paintCircle!.middle, abilityPetPainter.baseDamage, abilityPetPainter.id, pet.faction, CIRCLERADIUS, randomDirection, game.state.time);
+            const damage = abilityPetPainter.baseDamage * pet.sizeFactor * CIRCLE_DAMAGE_FACTOR;
+            const obj = createAbilityObjectPetPainterCircle(abilityPetPainter.paintCircle!.middle, damage, abilityPetPainter.id, pet.faction, CIRCLERADIUS, randomDirection, game.state.time);
             game.state.abilityObjects.push(obj);
 
         } else {

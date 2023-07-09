@@ -226,14 +226,18 @@ export function paintDefaultAbilityStatsUI(ctx: CanvasRenderingContext2D, textLi
 }
 
 export function detectAbilityObjectCircleToCharacterHit(map: GameMap, abilityObject: AbilityObjectCircle, players: Player[], bosses: BossEnemyCharacter[], game: Game) {
+    detectAbilityObjectToCharacterHit(map, abilityObject, abilityObject.radius, abilityObject, players, bosses, game);
+}
+
+export function detectAbilityObjectToCharacterHit(map: GameMap, circleCenter: Position, circleRadius: number, abilityObject: AbilityObject, players: Player[], bosses: BossEnemyCharacter[], game: Game) {
     let maxEnemySizeEstimate = 40;
 
-    let characters = determineCharactersInDistance(abilityObject, map, players, bosses, abilityObject.radius * 2 + maxEnemySizeEstimate);
+    let characters = determineCharactersInDistance(circleCenter, map, players, bosses, circleRadius * 2 + maxEnemySizeEstimate);
     for (let charIt = characters.length - 1; charIt >= 0; charIt--) {
         let c = characters[charIt];
         if (c.isDead || c.faction === abilityObject.faction) continue;
-        let distance = calculateDistance(c, abilityObject);
-        if (distance < abilityObject.radius + c.width / 2) {
+        let distance = calculateDistance(c, circleCenter);
+        if (distance < circleRadius + c.width / 2) {
             characterTakeDamage(c, abilityObject.damage, game, abilityObject.abilityRefId);
             let abilityFunction = ABILITIES_FUNCTIONS[abilityObject.type];
             if (abilityFunction.onHit) {

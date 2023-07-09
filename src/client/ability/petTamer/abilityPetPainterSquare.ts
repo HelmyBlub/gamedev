@@ -6,7 +6,7 @@ import { Game, Position } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { isPositionBlocking } from "../../map/map.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
-import { Ability, AbilityObject, AbilityOwner, PaintOrderAbility } from "../ability.js";
+import { AbilityOwner, PaintOrderAbility } from "../ability.js";
 import { ABILITY_NAME_PET_PAINTER, ABILITY_PET_PAINTER_SHAPES_FUNCTIONS, AbilityObjectPetPainter, AbilityPetPainter } from "./abilityPetPainter.js";
 
 
@@ -46,7 +46,7 @@ function createAbilityObjectPetPainterSquare(
         color: "",
         x: position.x,
         y: position.y,
-        damage: damage * SQUARE_DAMAGE_FACTOR,
+        damage: damage,
         faction: faction,
         range: range,
         deleteTime: gameTime + FADETIME,
@@ -170,7 +170,8 @@ function tickSquare(pet: TamerPetCharacter, abilityPetPainter: AbilityPetPainter
                 abilityPetPainter.currentlyPainting = undefined;
                 pet.forcedMovePosition = undefined;
                 const range = 200;
-                const obj = createAbilityObjectPetPainterSquare(abilityPetPainter.paintPoints![0], SQUARESIZE, abilityPetPainter.baseDamage, abilityPetPainter.id, pet.faction, range, game.state.time);
+                const damage = abilityPetPainter.baseDamage * pet.sizeFactor * SQUARE_DAMAGE_FACTOR;
+                const obj = createAbilityObjectPetPainterSquare(abilityPetPainter.paintPoints![0], SQUARESIZE, damage, abilityPetPainter.id, pet.faction, range, game.state.time);
                 game.state.abilityObjects.push(obj);
                 break;
         }

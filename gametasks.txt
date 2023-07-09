@@ -1,11 +1,11 @@
 current tasks:
 - tamer:    
-
+    - BUG: big pet pushing small pet 
     - create abilities for pets and replace them with the existing one
         - aoe ideas:
             - "painter"
-                - triangle -> rotates in place 
-                    - rotates around initial lokation getting further away
+                - triangle
+                    - hit detection
             - "breath" -> frontal cone aoe
                 - pet uses ability only when enemies around?
                 - if active can not change direction instantly?
