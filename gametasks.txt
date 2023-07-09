@@ -4,7 +4,8 @@ current tasks:
     - create abilities for pets and replace them with the existing one
         - aoe ideas:
             - "painter"
-                - triangle -> rotates in place firering in 3 directions
+                - triangle -> rotates in place 
+                    - rotates around initial lokation getting further away
             - "breath" -> frontal cone aoe
                 - pet uses ability only when enemies around?
                 - if active can not change direction instantly?

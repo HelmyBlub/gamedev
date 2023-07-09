@@ -236,6 +236,16 @@ export function changeTamerPetHappines(pet: TamerPetCharacter, value: number, ti
     }
 }
 
+export function findPetOwnerInPlayers(pet: TamerPetCharacter, game: Game): Character | undefined {
+    let playerCharacters = getPlayerCharacters(game.state.players);
+    for (let character of playerCharacters) {
+        if (character.pets?.includes(pet)) {
+            return character;
+        }
+    }
+    return undefined;
+}
+
 function foodIntakeLevelTick(pet: TamerPetCharacter, game: Game) {
     const intakeLevel = pet.foodIntakeLevel;
     if (intakeLevel.nextTick === undefined || intakeLevel.nextTick <= game.state.time) {
