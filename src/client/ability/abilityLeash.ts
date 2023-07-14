@@ -5,13 +5,13 @@ import { Position, Game, IdCounter } from "../gameModel.js";
 import { getFirstBlockingGameMapTilePositionTouchingLine } from "../map/map.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, AbilityUpgradeOption } from "./ability.js";
 
-type AbilityLeash = Ability & {
+export type AbilityLeash = Ability & {
     leashMaxLength: number,
     leashBendPoints: Position[],
     leashedToOwnerId?: number,
 }
 
-const ABILITY_NAME_LEASH = "Leash";
+export const ABILITY_NAME_LEASH = "Leash";
 
 export function addAbilityLesh() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_LEASH] = {

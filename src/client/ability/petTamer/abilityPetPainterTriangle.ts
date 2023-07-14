@@ -5,7 +5,7 @@ import { Game, Position } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { isPositionBlocking, moveByDirectionAndDistance } from "../../map/map.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
-import { AbilityOwner, PaintOrderAbility, detectAbilityObjectToCharacterHit } from "../ability.js";
+import { AbilityOwner, PaintOrderAbility, detectCircleCharacterHit } from "../ability.js";
 import { ABILITY_NAME_PET_PAINTER, ABILITY_PET_PAINTER_SHAPES_FUNCTIONS, AbilityObjectPetPainter, AbilityPetPainter } from "./abilityPetPainter.js";
 
 export type AbilityObjectPetPainterTriangle = AbilityObjectPetPainter & {
@@ -76,7 +76,7 @@ function tickShapeObjectPetPainterTriangle(abilityObject: AbilityObjectPetPainte
     if (triangle.nextTickTime === undefined) triangle.nextTickTime = game.state.time + triangle.tickInterval;
     if (triangle.nextTickTime <= game.state.time) {
         let center: Position = triangleCenter(triangle);
-        detectAbilityObjectToCharacterHit(game.state.map, center, TRIANGLESIZE / 2, triangle, [], game.state.bossStuff.bosses, game);
+        detectCircleCharacterHit(game.state.map, center, TRIANGLESIZE / 2, triangle.faction, triangle.abilityRefId!, triangle.damage, [], game.state.bossStuff.bosses, game);
         triangle.nextTickTime += triangle.tickInterval;
         if (triangle.nextTickTime <= game.state.time) {
             triangle.nextTickTime = game.state.time + triangle.tickInterval;

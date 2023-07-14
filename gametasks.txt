@@ -1,23 +1,18 @@
 current tasks:
+- game crash because movement target was on blocking tile?
+    - make it reproduceable, before throw print game or at least recoreded inputs for replay
 - tamer:    
-    - BUG: big pet pushing small pet 
     - create abilities for pets and replace them with the existing one
         - aoe ideas:
+            - "Dash"
+                - thoughts?
             - "painter"
-                - triangle
-                    - hit detection
-            - "breath" -> frontal cone aoe
+                - upgrades?
+            - "breath"
                 - pet uses ability only when enemies around?
                 - if active can not change direction instantly?
-                - further upgrades
-                - upgarde -> frost(slow)|fire(dot)|??
-            - "Dash"
-                - constant direction movement. Movement Speed increased.
-                 Does damage to everything it touches while "dashing".
-                - Increases "weight" which result in player beeing more pulled
-                - can push enemies/bosses?
-                - higher speed = more damage
-                - bigger size = more area hit
+                - upgrades
+                    - frost(slow)|fire(dot)|??
     - upgrade details info text for traits and ability upgrades
 
 

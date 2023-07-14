@@ -3,7 +3,7 @@ import { createAbilityHpRegen } from "../../ability/abilityHpRegen.js";
 import { Game, IdCounter } from "../../gameModel.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character } from "../characterModel.js";
 import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters.js";
-import { createAbilityLeash } from "../../ability/abilityLeash.js";
+import { ABILITY_NAME_LEASH, AbilityLeash, createAbilityLeash } from "../../ability/abilityLeash.js";
 import { ABILITY_NAME_MELEE } from "../../ability/abilityMelee.js";
 import { TAMER_PET_CHARACTER, TAMER_PET_TRAITS, TamerPetCharacter, Trait, createTamerPetCharacter, paintTamerPetCharacter, tickTamerPetCharacter } from "./tamerPetCharacter.js";
 import { ABILITY_NAME_FEED_PET } from "../../ability/petTamer/abilityFeedPet.js";
@@ -17,6 +17,7 @@ import { nextRandom } from "../../randomNumberGenerator.js";
 import { ABILITY_NAME_LOVE_PET } from "../../ability/petTamer/abilityLovePet.js";
 import { ABILITY_NAME_PET_BREATH } from "../../ability/petTamer/abilityPetBreath.js";
 import { ABILITY_NAME_PET_PAINTER } from "../../ability/petTamer/abilityPetPainter.js";
+import { ABILITY_NAME_PET_DASH } from "../../ability/petTamer/abilityPetDash.js";
 
 export const TAMER_CHARACTER = "Tamer(Work in Progress)";
 export function addTamerClass() {
@@ -50,7 +51,7 @@ function changeCharacterToTamerClass(
     addPetToTamer(character, "green", game);
     addPetToTamer(character, "black", game);
 
-    // const ability = createAbility(ABILITY_NAME_PET_PAINTER, game.state.idCounter, false);
+    // const ability = createAbility(ABILITY_NAME_PET_DASH, game.state.idCounter, false);
     // character.pets![0].abilities.push(ability);
 }
 
@@ -68,11 +69,14 @@ function createTamerBossUpgradeOptions(character: Character, game: Game): Charac
             const availableTraits = getAvailablePetTraits(pet);
             const availableAbilties = getAvailablePetAbilities(character, pet);
 
-            for (let ability of availableAbilties) {
-                const randomTraitIndex = Math.floor(nextRandom(game.state.randomSeed) * availableTraits.length);
-                const option = getUpgradeOptionForAbilitNameAndTrait(pet, ability, availableTraits[randomTraitIndex] as Trait, game);
-                options.push(option);
+            while (options.length < 3 && availableAbilties.length > 0) {
+                for (let ability of availableAbilties) {
+                    const randomTraitIndex = Math.floor(nextRandom(game.state.randomSeed) * availableTraits.length);
+                    const option = getUpgradeOptionForAbilitNameAndTrait(pet, ability, availableTraits[randomTraitIndex] as Trait, game);
+                    options.push(option);
+                }
             }
+
             return options;
         }
     }
@@ -82,12 +86,13 @@ function createTamerBossUpgradeOptions(character: Character, game: Game): Charac
 function getAvailablePetAbilities(character: Character, pet: TamerPetCharacter): string[] {
     const availableAbilityNames: string[] = [];
     const possibleAbilityNames = [
-        ABILITY_NAME_ICE_AURA,
-        ABILITY_NAME_SWORD,
+        // ABILITY_NAME_ICE_AURA,
+        // ABILITY_NAME_SWORD,
+        // ABILITY_NAME_FIRE_CIRCLE,
+        // ABILITY_NAME_SHOOT,
         ABILITY_NAME_PET_BREATH,
-        ABILITY_NAME_SHOOT,
-        ABILITY_NAME_FIRE_CIRCLE,
-        ABILITY_NAME_PET_PAINTER
+        ABILITY_NAME_PET_PAINTER,
+        ABILITY_NAME_PET_DASH
     ]
 
     for (let abilityName of possibleAbilityNames) {
@@ -140,6 +145,10 @@ function getUpgradeOptionForAbilitNameAndTrait(pet: TamerPetCharacter, abilityNa
             pet.abilities.push(ability);
             pet.traits.push(trait);
             pet.bossSkillPoints!--;
+            if (abilityName === ABILITY_NAME_PET_PAINTER) {
+                let leash: AbilityLeash | undefined = pet.abilities.find(a => a.name === ABILITY_NAME_LEASH) as AbilityLeash;
+                if (leash) leash.leashMaxLength += 100;
+            }
         }
     };
 }

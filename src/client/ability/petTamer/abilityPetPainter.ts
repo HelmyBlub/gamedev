@@ -58,7 +58,7 @@ export function createAbilityPetPainter(idCounter: IdCounter): AbilityPetPainter
     return {
         id: getNextId(idCounter),
         name: ABILITY_NAME_PET_PAINTER,
-        baseDamage: 100,
+        baseDamage: 200,
         passive: true,
         upgrades: {},
     }
@@ -66,7 +66,7 @@ export function createAbilityPetPainter(idCounter: IdCounter): AbilityPetPainter
 
 function setAbilityPetPainterToLevel(ability: Ability, level: number) {
     let abilityPetPainter = ability as AbilityPetPainter;
-    abilityPetPainter.baseDamage = level * 100;
+    abilityPetPainter.baseDamage = level * 200;
 }
 
 function tickAbilityObjectPetPainter(abilityObject: AbilityObject, game: Game) {

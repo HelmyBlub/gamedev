@@ -46,7 +46,7 @@ export function createAbilityLovePet(
     idCounter: IdCounter,
     playerInputBinding?: string,
     range: number = 200,
-    rechargeTime: number = 500,
+    rechargeTime: number = 100,
 ): AbilityLovePet {
     return {
         id: getNextId(idCounter),
