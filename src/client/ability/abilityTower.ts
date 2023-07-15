@@ -7,7 +7,8 @@ import { positionToMapKey } from "../map/map.js";
 import { findPlayerByCharacterId } from "../player.js";
 import { playerInputBindingToDisplayValue } from "../playerInput.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, AbilityUpgradeOption, paintDefaultAbilityStatsUI } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, paintDefaultAbilityStatsUI } from "./ability.js";
+import { AbilityUpgradeOption } from "./abilityUpgrade.js";
 
 type AbilityObjectTower = AbilityObject & {
     ownerId: number,

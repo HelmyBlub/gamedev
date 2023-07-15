@@ -6,8 +6,8 @@ import { Game, Position } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { isPositionBlocking } from "../../map/map.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
-import { AbilityOwner, PaintOrderAbility } from "../ability.js";
-import { ABILITY_NAME_PET_PAINTER, ABILITY_PET_PAINTER_SHAPES_FUNCTIONS, AbilityObjectPetPainter, AbilityPetPainter } from "./abilityPetPainter.js";
+import { AbilityObject, AbilityOwner, PaintOrderAbility } from "../ability.js";
+import { ABILITY_NAME_PET_PAINTER, ABILITY_PET_PAINTER_SHAPES_FUNCTIONS, AbilityObjectPetPainter, AbilityPetPainter, createShapeAbilityPetPainter } from "./abilityPetPainter.js";
 
 
 export type AbilityObjectPetPainterSquare = AbilityObjectPetPainter & {
@@ -23,6 +23,7 @@ const PET_PAINTER_SQUARE = "Square";
 
 export function addAbilityPetPainterSquare() {
     ABILITY_PET_PAINTER_SHAPES_FUNCTIONS[PET_PAINTER_SQUARE] = {
+        createShape: createShapeSquare,
         paintShape: paintShapeSquare,
         paintShapeObject: paintShapeObjectPetPainterSquare,
         tickShape: tickSquare,
@@ -56,6 +57,12 @@ function createAbilityObjectPetPainterSquare(
     }
 
     return abilityObjectPetPainter;
+}
+
+function createShapeSquare(pet: TamerPetCharacter, abilityPetPainter: AbilityPetPainter, game: Game): AbilityObject{
+    const range = 200;
+    const damage = abilityPetPainter.baseDamage * pet.sizeFactor * SQUARE_DAMAGE_FACTOR;
+    return createAbilityObjectPetPainterSquare(abilityPetPainter.paintPoints![0], SQUARESIZE, damage, abilityPetPainter.id, pet.faction, range, game.state.time);
 }
 
 function initShapePaintSquare(pet: TamerPetCharacter, ability: AbilityPetPainter, game: Game){
@@ -169,10 +176,7 @@ function tickSquare(pet: TamerPetCharacter, abilityPetPainter: AbilityPetPainter
             case 4:
                 abilityPetPainter.currentlyPainting = undefined;
                 pet.forcedMovePosition = undefined;
-                const range = 200;
-                const damage = abilityPetPainter.baseDamage * pet.sizeFactor * SQUARE_DAMAGE_FACTOR;
-                const obj = createAbilityObjectPetPainterSquare(abilityPetPainter.paintPoints![0], SQUARESIZE, damage, abilityPetPainter.id, pet.faction, range, game.state.time);
-                game.state.abilityObjects.push(obj);
+                createShapeAbilityPetPainter(PET_PAINTER_SQUARE, pet, abilityPetPainter, game);
                 break;
         }
     } else if (distance > 150) {

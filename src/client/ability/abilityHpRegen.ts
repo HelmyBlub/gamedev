@@ -1,6 +1,7 @@
 import { getNextId } from "../game.js";
 import { Game, IdCounter } from "../gameModel.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, AbilityUpgradeOption, paintDefaultAbilityStatsUI } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, paintDefaultAbilityStatsUI } from "./ability.js";
+import { AbilityUpgradeOption } from "./abilityUpgrade.js";
 
 type AbilityHpRegen = Ability & {
     amount: number,

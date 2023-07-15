@@ -9,10 +9,6 @@ import { TAMER_PET_CHARACTER, TAMER_PET_TRAITS, TamerPetCharacter, Trait, create
 import { ABILITY_NAME_FEED_PET } from "../../ability/petTamer/abilityFeedPet.js";
 import { tickDefaultCharacter } from "../character.js";
 import { CharacterUpgradeChoice, CharacterUpgradeOption } from "../characterUpgrades.js";
-import { ABILITY_NAME_FIRE_CIRCLE } from "../../ability/abilityFireCircle.js";
-import { ABILITY_NAME_SHOOT } from "../../ability/abilityShoot.js";
-import { ABILITY_NAME_ICE_AURA } from "../../ability/abilityIceAura.js";
-import { ABILITY_NAME_SWORD } from "../../ability/abilitySword.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
 import { ABILITY_NAME_LOVE_PET } from "../../ability/petTamer/abilityLovePet.js";
 import { ABILITY_NAME_PET_BREATH } from "../../ability/petTamer/abilityPetBreath.js";
@@ -51,7 +47,8 @@ function changeCharacterToTamerClass(
     addPetToTamer(character, "green", game);
     addPetToTamer(character, "black", game);
 
-    // const ability = createAbility(ABILITY_NAME_PET_DASH, game.state.idCounter, false);
+    // const ability = createAbility(ABILITY_NAME_PET_PAINTER, game.state.idCounter, false);
+    // ability.upgrades[ABILITY_PET_PAINTER_UPGARDE_DUPLICATE] = {level:1};
     // character.pets![0].abilities.push(ability);
 }
 

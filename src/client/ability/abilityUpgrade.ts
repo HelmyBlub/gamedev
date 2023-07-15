@@ -1,10 +1,17 @@
 import { Character } from "../character/characterModel.js";
 import { CharacterUpgradeChoice } from "../character/characterUpgrades.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityUpgradeOption } from "./ability.js"
+import { ABILITIES_FUNCTIONS, Ability } from "./ability.js"
 
 
 export type AbilityUpgrade = {
     level: number,
+}
+
+export type AbilityUpgradeOption = {
+    name: string,
+    upgradeName?: string,
+    probabilityFactor: number,
+    upgrade: (ability: Ability) => void,
 }
 
 export type AbilityUpgradeFunctions = {

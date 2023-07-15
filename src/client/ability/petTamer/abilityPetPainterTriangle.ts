@@ -6,7 +6,7 @@ import { getPointPaintPosition } from "../../gamePaint.js";
 import { isPositionBlocking, moveByDirectionAndDistance } from "../../map/map.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
 import { AbilityOwner, PaintOrderAbility, detectCircleCharacterHit } from "../ability.js";
-import { ABILITY_NAME_PET_PAINTER, ABILITY_PET_PAINTER_SHAPES_FUNCTIONS, AbilityObjectPetPainter, AbilityPetPainter } from "./abilityPetPainter.js";
+import { ABILITY_NAME_PET_PAINTER, ABILITY_PET_PAINTER_SHAPES_FUNCTIONS, AbilityObjectPetPainter, AbilityPetPainter, createShapeAbilityPetPainter } from "./abilityPetPainter.js";
 
 export type AbilityObjectPetPainterTriangle = AbilityObjectPetPainter & {
     tickInterval: number,
@@ -23,6 +23,7 @@ const PET_PAINTER_TRIANGLE = "Triangle";
 
 export function addAbilityPetPainterTriangle() {
     ABILITY_PET_PAINTER_SHAPES_FUNCTIONS[PET_PAINTER_TRIANGLE] = {
+        createShape: createShapeTriangle,
         paintShape: paintShapeTriangle,
         paintShapeObject: paintShapeObjectPetPainterTriangle,
         tickShape: tickTriangle,
@@ -56,6 +57,11 @@ function createAbilityObjectPetPainterTriangle(
     }
 
     return abilityObjectPetPainter;
+}
+
+function createShapeTriangle(pet: TamerPetCharacter, abilityPetPainter: AbilityPetPainter, game: Game): AbilityObjectPetPainter{
+    const damage = abilityPetPainter.baseDamage * pet.sizeFactor * TRIANGLE_DAMAGE_FACTOR;
+    return createAbilityObjectPetPainterTriangle(abilityPetPainter.paintPoints![0], damage, abilityPetPainter.id, pet.faction, game.state.time);
 }
 
 function initShapePaintTriangle(pet: TamerPetCharacter, ability: AbilityPetPainter, game: Game) {
@@ -182,9 +188,7 @@ function tickTriangle(pet: TamerPetCharacter, abilityPetPainter: AbilityPetPaint
             case 3:
                 abilityPetPainter.currentlyPainting = undefined;
                 pet.forcedMovePosition = undefined;
-                const damage = abilityPetPainter.baseDamage * pet.sizeFactor * TRIANGLE_DAMAGE_FACTOR;
-                const obj = createAbilityObjectPetPainterTriangle(abilityPetPainter.paintPoints![0], damage, abilityPetPainter.id, pet.faction, game.state.time);
-                game.state.abilityObjects.push(obj);
+                createShapeAbilityPetPainter(PET_PAINTER_TRIANGLE, pet, abilityPetPainter, game);
                 break;
         }
     } else if (distance > 150) {

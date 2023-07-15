@@ -5,7 +5,8 @@ import { Position, Game, IdCounter } from "../gameModel.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
 import { GameMap } from "../map/map.js";
 import { Player } from "../player.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, AbilityUpgradeOption } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityOwner } from "./ability.js";
+import { AbilityUpgradeOption } from "./abilityUpgrade.js";
 
 type AbilitySword = Ability & {
     damage: number,

@@ -3,9 +3,11 @@ import { getNextId } from "../../game.js";
 import { Position, Game, IdCounter } from "../../gameModel.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
 import { Ability, AbilityObject, AbilityOwner, PaintOrderAbility, ABILITIES_FUNCTIONS, AbilityUpgradeOption } from "../ability.js";
+import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions } from "../abilityUpgrade.js";
 import { addAbilityPetPainterCircle } from "./abilityPetPainterCircle.js";
 import { addAbilityPetPainterSquare } from "./abilityPetPainterSquare.js";
 import { addAbilityPetPainterTriangle } from "./abilityPetPainterTriangle.js";
+import { ABILITY_PET_PAINTER_UPGARDE_DUPLICATE, AbilityPetPainterUpgradeDuplicate, addAbilityPetPainterUpgradeDuplicate } from "./abilityPetPainterUpgradeDuplicate.js";
 
 export type AbilityPetPainter = Ability & {
     baseDamage: number,
@@ -23,6 +25,7 @@ export type AbilityObjectPetPainter = AbilityObject & {
 }
 
 export type AbilityPetPainterShapeFunctions = {
+    createShape: (pet: TamerPetCharacter, abilityPetPainter: AbilityPetPainter, game: Game) => AbilityObject,
     tickShape: (pet: TamerPetCharacter, abilityPetPainter: AbilityPetPainter, game: Game) => void,
     tickShapeObject: (abilityObject: AbilityObjectPetPainter, game: Game) => void,
     paintShape: (ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: AbilityPetPainter, cameraPosition: Position, game: Game) => void,
@@ -34,6 +37,7 @@ export type AbilityPetPainterShapesFunctions = {
     [key: string]: AbilityPetPainterShapeFunctions,
 }
 
+export const ABILITY_PET_PAINTER_UPGRADE_FUNCTIONS: AbilityUpgradesFunctions = {};
 export const ABILITY_PET_PAINTER_SHAPES_FUNCTIONS: AbilityPetPainterShapesFunctions = {};
 export const ABILITY_NAME_PET_PAINTER = "Painter";
 
@@ -42,6 +46,7 @@ export function addAbilityPetPainter() {
         tickAbility: tickAbilityPetPainter,
         tickAbilityObject: tickAbilityObjectPetPainter,
         createAbilityUpgradeOptions: createAbiltiyPetPainterUpgradeOptions,
+        createAbilityBossUpgradeOptions: createAbilityPetPainterUpgradeOptions,
         createAbility: createAbilityPetPainter,
         paintAbility: paintAbilityPetPainter,
         paintAbilityObject: paintAbilityObjectPetPainter,
@@ -52,6 +57,8 @@ export function addAbilityPetPainter() {
     addAbilityPetPainterCircle();
     addAbilityPetPainterSquare();
     addAbilityPetPainterTriangle();
+
+    addAbilityPetPainterUpgradeDuplicate();
 }
 
 export function createAbilityPetPainter(idCounter: IdCounter): AbilityPetPainter {
@@ -61,6 +68,25 @@ export function createAbilityPetPainter(idCounter: IdCounter): AbilityPetPainter
         baseDamage: 200,
         passive: true,
         upgrades: {},
+    }
+}
+
+export function createShapeAbilityPetPainter(shape: string, abilityOwner: AbilityOwner, ability: Ability, game: Game) {
+    const abilityPetPainter = ability as AbilityPetPainter;
+    const pet = abilityOwner as TamerPetCharacter;
+    const shapeFunction = ABILITY_PET_PAINTER_SHAPES_FUNCTIONS[shape];
+    if (shapeFunction) {
+        let numberShapes = 1;
+        let duplicateUpgrade = abilityPetPainter.upgrades[ABILITY_PET_PAINTER_UPGARDE_DUPLICATE] as AbilityPetPainterUpgradeDuplicate;
+        if(duplicateUpgrade){
+            numberShapes += duplicateUpgrade.level;
+        }
+        for(let i = 0; i< numberShapes; i++){
+            const shape = shapeFunction.createShape(pet, abilityPetPainter, game);
+            game.state.abilityObjects.push(shape);
+        }
+    }else{
+        throw Error("missing implementation");
     }
 }
 
@@ -107,6 +133,12 @@ function paintAbilityPetPainter(ctx: CanvasRenderingContext2D, abilityOwner: Abi
 
 function createAbiltiyPetPainterUpgradeOptions(): AbilityUpgradeOption[] {
     let upgradeOptions: AbilityUpgradeOption[] = [];
+    return upgradeOptions;
+}
+
+function createAbilityPetPainterUpgradeOptions(ability: Ability): AbilityUpgradeOption[] {
+    let upgradeOptions: AbilityUpgradeOption[] = [];
+    pushAbilityUpgradesOptions(ABILITY_PET_PAINTER_UPGRADE_FUNCTIONS, upgradeOptions, ability);
     return upgradeOptions;
 }
 

@@ -19,7 +19,7 @@ import { addAbilitySnipe } from "./snipe/abilitySnipe.js"
 import { addAbilitySpeedBoost } from "./speedBoost/abilitySpeedBoost.js"
 import { addAbilitySlowTrail } from "./abilitySlowTrail.js"
 import { addAbilityFireLine } from "./abilityFireLine.js"
-import { AbilityUpgradesFunctions } from "./abilityUpgrade.js"
+import { AbilityUpgradeOption, AbilityUpgradesFunctions } from "./abilityUpgrade.js"
 import { addAbilityExplode } from "./abilityExplode.js"
 import { addAbilityFeedPet } from "./petTamer/abilityFeedPet.js"
 import { addAbilityLovePet } from "./petTamer/abilityLovePet.js"
@@ -86,13 +86,6 @@ export type AbilityFunctions = {
 
 export type AbilitiesFunctions = {
     [key: string]: AbilityFunctions,
-}
-
-export type AbilityUpgradeOption = {
-    name: string,
-    upgradeName?: string,
-    probabilityFactor: number,
-    upgrade: (ability: Ability) => void,
 }
 
 export const ABILITIES_FUNCTIONS: AbilitiesFunctions = {};
@@ -348,4 +341,6 @@ function levelUp(ability: Ability) {
         }
     }
 }
+
+export { AbilityUpgradeOption }
 
