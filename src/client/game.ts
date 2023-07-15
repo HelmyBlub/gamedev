@@ -174,7 +174,15 @@ export function runner(game: Game) {
             console.log("timeoutSleep to big?");
             debugger;
         }
-        setTimeout(() => runner(game), timeoutSleep);
+        setTimeout(() =>{
+            try{
+                runner(game);
+            }catch(e){
+                console.log(game);
+                console.log(game.testing.record?.collectedTestInputs);
+                throw e;
+            }
+        }, timeoutSleep);
     }
     takeTimeMeasure(game.debug, "runner", "");
     takeTimeMeasure(game.debug, "", "timeout");
