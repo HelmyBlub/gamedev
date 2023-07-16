@@ -26,6 +26,7 @@ import { addAbilityLovePet } from "./petTamer/abilityLovePet.js"
 import { addAbilityPetBreath } from "./petTamer/abilityPetBreath.js"
 import { addAbilityPetPainter } from "./petTamer/abilityPetPainter.js"
 import { addAbilityPetDash } from "./petTamer/abilityPetDash.js"
+import { UpgradeOption, UpgradeOptionAndProbability } from "../character/upgrade.js"
 
 export type Ability = {
     id: number,
@@ -67,6 +68,8 @@ export type AbilityFunctions = {
     createAbility: (idCounter: IdCounter, playerInputBinding?: string) => Ability,
     createAbilityUpgradeOptions: (ability: Ability) => AbilityUpgradeOption[],
     createAbilityBossUpgradeOptions?: (ability: Ability) => AbilityUpgradeOption[],
+    createAbilityUpgradeOptionsNew?: (ability: Ability) => UpgradeOptionAndProbability[],
+    executeUpgradeOption?: (ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game) => void,
     activeAbilityCast?: (abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isKeydown: boolean, game: Game) => void,
     deleteAbilityObject?: (abilityObject: AbilityObject, game: Game) => boolean,
     paintAbility?: (ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) => void,

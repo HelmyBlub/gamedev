@@ -1,6 +1,6 @@
 import { levelingCharacterXpGain } from "./playerCharacters/levelingCharacter.js";
 import { calculateMovePosition, determineMapKeysInDistance, GameMap, getChunksTouchingLine, isPositionBlocking, MapChunk } from "../map/map.js";
-import { Character, CHARACTER_TYPE_FUNCTIONS } from "./characterModel.js";
+import { Character, CHARACTER_TYPE_FUNCTIONS, DEFAULT_CHARACTER } from "./characterModel.js";
 import { getNextWaypoint, getPathingCache, PathingCache } from "./pathing.js";
 import { calculateDirection, calculateDistance, calculateDistancePointToLine, createPaintTextData, takeTimeMeasure } from "../game.js";
 import { Position, Game, IdCounter, Camera } from "../gameModel.js";
@@ -12,6 +12,8 @@ import { BossEnemyCharacter, CHARACTER_TYPE_BOSS_ENEMY } from "./enemy/bossEnemy
 import { removeCharacterDebuffs, tickCharacterDebuffs } from "../debuff/debuff.js";
 import { createAbilityLeash } from "../ability/abilityLeash.js";
 import { fillRandomUpgradeOptions } from "./characterUpgrades.js";
+import { fillRandomUpgradeOptionChoices, UpgradeOption } from "./upgrade.js";
+import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters/playerCharacters.js";
 
 export function findCharacterById(characters: Character[], id: number): Character | null {
     for (let i = 0; i < characters.length; i++) {
@@ -79,7 +81,20 @@ export function playerCharactersAddBossSkillPoints(game: Game) {
                 }
             }
             if (gotSkillPoint && character.upgradeChoice.length === 0) {
-                fillRandomUpgradeOptions(character, game.state.randomSeed, game, true);
+                fillRandomUpgradeOptionChoices(character, game);
+            }
+        }
+    }
+}
+
+export function executeDefaultCharacterUpgradeOption(character: Character, upgradeOptionChoice: UpgradeOption, game: Game) {
+    if (character.type === DEFAULT_CHARACTER) {
+        let keys = Object.keys(PLAYER_CHARACTER_CLASSES_FUNCTIONS);
+    
+        for(let key of keys){
+            if(key === upgradeOptionChoice.name){
+                PLAYER_CHARACTER_CLASSES_FUNCTIONS[key].changeCharacterToThisClass(character, game.state.idCounter, game);
+                break;
             }
         }
     }

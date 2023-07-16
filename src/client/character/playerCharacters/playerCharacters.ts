@@ -1,6 +1,7 @@
 import { Game, IdCounter } from "../../gameModel.js"
 import { Character } from "../characterModel.js"
 import { CharacterUpgradeOption } from "../characterUpgrades.js"
+import { UpgradeOption } from "../upgrade.js"
 import { addAbilityLevelingCharacter } from "./abilityLevelingCharacter.js"
 import { addLevelingCharacter } from "./levelingCharacterModel.js"
 import { addSniperClass } from "./sniperCharacter.js"
@@ -29,24 +30,23 @@ export function onDomLoadSetCharacterClasses() {
 }
 
 export function initPlayerCharacterChoiceOptions(character: Character, game: Game){
-    const options: CharacterUpgradeOption[] = createCharacterChooseUpgradeOptions(game);
+    const options: UpgradeOption[] = createCharacterChooseUpgradeOptions(game);
     for(let i = 0; i < 3; i++){
         if(options.length > i){
-            character.upgradeChoice.push({ name: options[i].name });
+            character.upgradeChoices.push(options[i]);
         }
     }
 }
 
-export function createCharacterChooseUpgradeOptions(game: Game): CharacterUpgradeOption[] {
-    const idCounter = game.state.idCounter;
-    const upgradeOptions: CharacterUpgradeOption[] = [];
+export function createCharacterChooseUpgradeOptions(game: Game): UpgradeOption[] {
+    const upgradeOptions: UpgradeOption[] = [];
     let keys = Object.keys(PLAYER_CHARACTER_CLASSES_FUNCTIONS);
 
     for(let key of keys){
         upgradeOptions.push({
-            name: key, probabilityFactor: 1, upgrade: (c: Character) => {
-                PLAYER_CHARACTER_CLASSES_FUNCTIONS[key].changeCharacterToThisClass(c, idCounter, game);
-            }
+            displayText: key,
+            type: "Character",
+            name: key
         });
     }
 

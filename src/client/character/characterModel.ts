@@ -5,19 +5,23 @@ import { Position, IdCounter, Game } from "../gameModel.js";
 import { GAME_IMAGES } from "../imageLoad.js";
 import { createRandomizedCharacterImageData, RandomizedCharacterImage } from "../randomizedCharacterImage.js";
 import { RandomSeed } from "../randomNumberGenerator.js";
-import { CharacterUpgradeChoice, CharacterUpgradeOption, createDefaultCharacterUpgradeOptions } from "./characterUpgrades.js";
-import { tickDefaultCharacter } from "./character.js";
+import { CharacterUpgradeChoice, CharacterUpgradeOption } from "./characterUpgrades.js";
+import { executeDefaultCharacterUpgradeOption, tickDefaultCharacter } from "./character.js";
 import { tickFixPositionRespawnEnemyCharacter } from "./enemy/fixPositionRespawnEnemy.js";
 import { PathingCache } from "./pathing.js";
 import { initPlayerCharacterChoiceOptions } from "./playerCharacters/playerCharacters.js";
 import { TamerPetCharacter } from "./playerCharacters/tamerPetCharacter.js";
+import { UpgradeOption, UpgradeOptionAndProbability } from "./upgrade.js";
 
 export type CHARACTER_TYPE_FUNCTIONS = {
     [key: string]: {
         tickFunction?: (character: Character, game: Game, pathingCache: PathingCache | null) => void,
         tickPetFunction?: (character: Character, petOwner: Character, game: Game, pathingCache: PathingCache | null) => void,
         createUpgradeOptions?: (character: Character, game: Game) => CharacterUpgradeOption[],
+        createUpgradeOptionsNew?: (character: Character, game: Game) => UpgradeOptionAndProbability[],
         createBossUpgradeOptions?: (character: Character, game: Game) => CharacterUpgradeOption[],
+        createBossUpgradeOptionsNew?: (character: Character, game: Game) => UpgradeOptionAndProbability[],
+        executeUpgradeOption?: (character: Character, upgradeOptionChoice: UpgradeOption, game: Game) => void,
         getUpgradeOptionByUpgradeChoice?:(character: Character, characterUpgradeChoice: CharacterUpgradeChoice, game: Game) => CharacterUpgradeOption | undefined,
         paintCharacterType?: (ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) => void,
     }
@@ -77,7 +81,7 @@ export const CHARACTER_TYPE_FUNCTIONS: CHARACTER_TYPE_FUNCTIONS = {
     },
     Character: {
         tickFunction: tickDefaultCharacter,
-        createUpgradeOptions: createDefaultCharacterUpgradeOptions,
+        executeUpgradeOption: executeDefaultCharacterUpgradeOption,
     },
 }
 
@@ -102,6 +106,7 @@ export type Character = Position & {
     isPet?: boolean,
     willTurnToPetOnDeath?: boolean,
     upgradeChoice: CharacterUpgradeChoice[],
+    upgradeChoices: UpgradeOption[],
     pets?: TamerPetCharacter[],
     weight: number,
     bossSkillPoints?: number,
@@ -144,6 +149,7 @@ export function createCharacter(
         abilities: [],
         debuffs: [],
         upgradeChoice: [],
+        upgradeChoices: [],
         weight: width * height,
     };
 }

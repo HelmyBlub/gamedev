@@ -23,15 +23,6 @@ export type CharacterUpgradeChoice = {
 type AbilitiesUpgradeAndProbability = { [key: string]: { options: AbilityUpgradeOption[], probability: number } };
 type CharacterUpgradeAndProbability = { options: CharacterUpgradeOption[], probability: number };
 
-export function createDefaultCharacterUpgradeOptions(character: Character, game: Game): CharacterUpgradeOption[] {
-    let upgradeOptions: CharacterUpgradeOption[] = [];
-    if (character.type === DEFAULT_CHARACTER) {
-        upgradeOptions = createCharacterChooseUpgradeOptions(game);
-    }
-
-    return upgradeOptions;
-}
-
 export function createCharacterUpgradeOptions(character: Character, game: Game): CharacterUpgradeOption[] {
     let upgradeOptions: CharacterUpgradeOption[] = [];
     upgradeOptions.push({

@@ -2,7 +2,6 @@ import { Character } from "../character/characterModel.js";
 import { CharacterUpgradeChoice } from "../character/characterUpgrades.js";
 import { ABILITIES_FUNCTIONS, Ability } from "./ability.js"
 
-
 export type AbilityUpgrade = {
     level: number,
 }

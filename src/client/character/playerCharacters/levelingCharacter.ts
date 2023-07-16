@@ -4,6 +4,8 @@ import { RandomSeed } from "../../randomNumberGenerator.js";
 import { Character } from "../characterModel.js";
 import { LEVELING_CHARACTER, LevelingCharacter } from "./levelingCharacterModel.js";
 import { fillRandomUpgradeOptions } from "../characterUpgrades.js";
+import { UpgradeOption, UpgradeOptionAndProbability, fillRandomUpgradeOptionChoices } from "../upgrade.js";
+import { ABILITIES_FUNCTIONS } from "../../ability/ability.js";
 
 export function levelingCharacterXpGain(state: GameState, killedCharacter: Character, game: Game) {
     let playerCharacters: LevelingCharacter[] = getPlayerCharacters(state.players) as LevelingCharacter[];
@@ -31,5 +33,58 @@ function levelingCharacterLevelUp(character: LevelingCharacter, randomSeed: Rand
     character.availableSkillPoints += 1;
     character.leveling.experience -= character.leveling.experienceForLevelUp;
     character.leveling.experienceForLevelUp += Math.floor(character.leveling.level / 2);
-    fillRandomUpgradeOptions(character, randomSeed, game);
+    fillRandomUpgradeOptionChoices(character, game);
+}
+
+export function executeLevelingCharacterUpgradeOption(character: Character, upgradeOption: UpgradeOption, game: Game){
+    const levelingCharacter = character as LevelingCharacter;
+    if(upgradeOption.type === "Character"){
+        if(upgradeOption.name === "Max Health+50"){
+            character.hp += 50;
+            character.maxHp += 50;
+        }
+        if(upgradeOption.name === "Move Speed+0.2"){
+            character.moveSpeed += 0.2;
+        }
+    }else if(upgradeOption.type === "Ability"){
+        let ability = character.abilities.find((a) => a.name === upgradeOption.name);
+        if(ability){
+            let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+            if(abilityFunctions && abilityFunctions.executeUpgradeOption){
+                abilityFunctions.executeUpgradeOption(ability, character, upgradeOption, game);
+            }
+        }
+    }
+    levelingCharacter.availableSkillPoints--;
+}
+
+export function createCharacterUpgradeOptionsNew(character: Character, game: Game): UpgradeOptionAndProbability[] {
+    let leveling = character as LevelingCharacter;
+    let upgradeOptions: UpgradeOptionAndProbability[] = [];
+    if(leveling.availableSkillPoints === 0) return upgradeOptions;
+    upgradeOptions.push({
+        option: {
+            name: "Max Health+50",
+            displayText: "Max Health+50",
+            type: "Character",
+        },
+        probability: 1,
+    });
+    upgradeOptions.push({
+        option: {
+            name: "Move Speed+0.2",
+            displayText: "Move Speed+0.2",
+            type: "Character",
+        },
+        probability: 1,
+    });
+
+    for(let ability of character.abilities){
+        let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+        if(abilityFunctions && abilityFunctions.createAbilityUpgradeOptionsNew){
+            upgradeOptions.push(...abilityFunctions.createAbilityUpgradeOptionsNew(ability));
+        }
+    }
+
+    return upgradeOptions;
 }

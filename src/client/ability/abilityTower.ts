@@ -1,5 +1,6 @@
 import { getCharactersTouchingLine, characterTakeDamage } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
+import { UpgradeOption, UpgradeOptionAndProbability } from "../character/upgrade.js";
 import { calculateDistance, getCameraPosition, getNextId } from "../game.js";
 import { Position, Game, IdCounter } from "../gameModel.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
@@ -41,6 +42,8 @@ export function addAbilityTower() {
         tickAbility: tickAbilityTower,
         tickAbilityObject: tickAbilityObjectTower,
         createAbilityUpgradeOptions: createAbilityTowerUpgradeOptions,
+        createAbilityUpgradeOptionsNew: createAbilityTowerUpgradeOptionsNew,
+        executeUpgradeOption: executeAbilityTowerUpgradeOption,
         paintAbilityObject: paintAbilityObjectTower,
         paintAbilityUI: paintAbilityTowerUI,
         paintAbility: paintAbilityTower,
@@ -441,6 +444,27 @@ function tickAbilityObjectTower(abilityObject: AbilityObject, game: Game) {
     if (abilityTower.ability) {
         let abilityFunction = ABILITIES_FUNCTIONS[abilityTower.ability.name];
         if (abilityFunction.tickAbility) abilityFunction.tickAbility(abilityTower, abilityTower.ability, game);
+    }
+}
+
+function createAbilityTowerUpgradeOptionsNew(ability: Ability): UpgradeOptionAndProbability[] {
+    let abilityTower = ability as AbilityTower;
+    let upgradeOptions: UpgradeOptionAndProbability[] = [];
+    upgradeOptions.push({
+        option:{
+            displayText: "Line Damage+50",
+            type: "Ability",
+            name: ability.name,
+        },
+        probability: 1,
+    });
+    return upgradeOptions;
+}
+
+function executeAbilityTowerUpgradeOption(ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game){
+    let abilityTower = ability as AbilityTower;
+    if(upgradeOption.displayText === "Line Damage+50"){
+        abilityTower.damage += 50;
     }
 }
 

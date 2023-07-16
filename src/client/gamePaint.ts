@@ -332,7 +332,7 @@ function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Charact
     const addFontSize = 14;
     const startY = (ctx.canvas.height * 0.75);
     const optionSpacer = 50;
-    if (character.upgradeChoice.length > 0) {
+    if (character.upgradeChoices.length > 0) {
         let upgradesTexts = getUpgradeTexts(character, game);
         let maxWidthes: number[] = [];
         let totalWidthEsitmate = 0;
@@ -351,15 +351,15 @@ function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Charact
         }
 
         let currentX = Math.max(5, ctx.canvas.width / 2 - totalWidthEsitmate / 2);
-        let displayKeyHint = !game.UI.displayLongInfos && character.upgradeChoice[0].abilityName;
-        if(displayKeyHint){
-            const hintX = ctx.canvas.width / 2;
-            const hintY = startY;
-            paintKey(ctx, "TAB", { x: hintX - 70, y: hintY - 60 }, -9, 14);
-            ctx.font = firstFontSize + "px Arial";
-            ctx.fillText("More Info", hintX - 30, hintY - 40);
-        }
-        for (let i = 0; i < character.upgradeChoice.length; i++) {
+        // let displayKeyHint = !game.UI.displayLongInfos && character.upgradeChoices[0].abilityName;
+        // if(displayKeyHint){
+        //     const hintX = ctx.canvas.width / 2;
+        //     const hintY = startY;
+        //     paintKey(ctx, "TAB", { x: hintX - 70, y: hintY - 60 }, -9, 14);
+        //     ctx.font = firstFontSize + "px Arial";
+        //     ctx.fillText("More Info", hintX - 30, hintY - 40);
+        // }
+        for (let i = 0; i < character.upgradeChoices.length; i++) {
             ctx.globalAlpha = 0.4;
             ctx.fillStyle = "white";
             let textWidthEstimate = maxWidthes[i];
@@ -386,8 +386,8 @@ function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Charact
 
 function getUpgradeTexts(character: Character, game: Game): string[][] {
     let upgradesTexts: string[][] = [];
-    for (let i = 0; i < character.upgradeChoice.length; i++) {
-        const option = character.upgradeChoice[i];
+    for (let i = 0; i < character.upgradeChoices.length; i++) {
+        const option = character.upgradeChoices[i];
         let hasLongText = false;
         if (game.UI.displayLongInfos) {
             const texts = getLongUpgradeChoiceTexts(option, character);
@@ -397,7 +397,7 @@ function getUpgradeTexts(character: Character, game: Game): string[][] {
             }
         }
         if (!hasLongText) {
-            let tempText = `${character.upgradeChoice[i].name}`;
+            let tempText = `${option.name}`;
             upgradesTexts.push([tempText]);
         }
     }
