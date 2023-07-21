@@ -3,7 +3,7 @@ import { Character } from "../character/characterModel.js";
 import { TAMER_PET_CHARACTER, TamerPetCharacter } from "../character/playerCharacters/tamerPetCharacter.js";
 import { getNextId } from "../game.js";
 import { Game, IdCounter } from "../gameModel.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, AbilityUpgradeOption } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityOwner } from "./ability.js";
 
 type AbilityMelee = Ability & {
     damage: number,
@@ -15,7 +15,6 @@ export const ABILITY_NAME_MELEE = "Melee";
 export function addAbilityMelee() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_MELEE] = {
         tickAbility: tickAbilityMelee,
-        createAbilityUpgradeOptions: createAbilityMeleeUpgradeOptions,
         createAbility: createAbilityMelee,
         setAbilityToLevel: setAbilityMeleeToLevel,
         setAbilityToBossLevel: setAbilityMeleeToBossLevel,
@@ -76,16 +75,4 @@ function tickAbilityMelee(abilityOwner: AbilityOwner, ability: Ability, game: Ga
 
         abilityMelee.nextTickTime += abilityMelee.tickInterval;
     }
-}
-
-function createAbilityMeleeUpgradeOptions(): AbilityUpgradeOption[] {
-    let upgradeOptions: AbilityUpgradeOption[] = [];
-    upgradeOptions.push({
-        name: "MeleeDamage+100", probabilityFactor: 1, upgrade: (a: Ability) => {
-            let as = a as AbilityMelee;
-            as.damage += 100;
-        }
-    });
-
-    return upgradeOptions;
 }

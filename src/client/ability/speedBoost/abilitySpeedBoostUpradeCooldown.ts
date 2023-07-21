@@ -1,4 +1,5 @@
-import { Ability, AbilityUpgradeOption } from "../ability.js";
+import { AbilityUpgradeOption } from "../../character/upgrade.js";
+import { Ability } from "../ability.js";
 import { AbilityUpgrade } from "../abilityUpgrade.js";
 import { ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS, AbilitySpeedBoost } from "./abilitySpeedBoost.js";
 
@@ -10,27 +11,23 @@ export const ABILITY_SPEED_BOOST_UPGARDE_COOLDOWN = "Speed Boost -Cooldown";
 
 export function addAbilitySpeedBoostUpgradeCooldown() {
     ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS[ABILITY_SPEED_BOOST_UPGARDE_COOLDOWN] = {
-        getAbilityUpgradeUiText: getAbilityUpgradeCooldownUiText,
-        getAbilityUpgradeUiTextLong: getAbilityUpgradeCooldownUiTextLong,
-        pushAbilityUpgradeOption: pushAbilityUpgradeCooldown,
+        getUiText: getAbilityUpgradeCooldownUiText,
+        getUiTextLong: getAbilityUpgradeCooldownUiTextLong,
+        executeOption: executeOptionCooldown,
     }
 }
 
-function pushAbilityUpgradeCooldown(ability: Ability, upgradeOptions: AbilityUpgradeOption[]) {
-    upgradeOptions.push({
-        name: ABILITY_SPEED_BOOST_UPGARDE_COOLDOWN, probabilityFactor: 1, upgrade: (a: Ability) => {
-            let as = a as AbilitySpeedBoost;
-            let up: AbilitySpeedBoostUpgradeCooldown;
-            if (as.upgrades[ABILITY_SPEED_BOOST_UPGARDE_COOLDOWN] === undefined) {
-                up = { level: 0 };
-                as.upgrades[ABILITY_SPEED_BOOST_UPGARDE_COOLDOWN] = up;
-            } else {
-                up = as.upgrades[ABILITY_SPEED_BOOST_UPGARDE_COOLDOWN];
-            }
-            up.level++;
-            as.cooldown *= (1 - REDUCED_COOLDOWN_PER_LEVEL);
-        }
-    });
+function executeOptionCooldown(ability: Ability, option: AbilityUpgradeOption){
+    let as = ability as AbilitySpeedBoost;
+    let up: AbilitySpeedBoostUpgradeCooldown;
+    if (as.upgrades[ABILITY_SPEED_BOOST_UPGARDE_COOLDOWN] === undefined) {
+        up = { level: 0 };
+        as.upgrades[ABILITY_SPEED_BOOST_UPGARDE_COOLDOWN] = up;
+    } else {
+        up = as.upgrades[ABILITY_SPEED_BOOST_UPGARDE_COOLDOWN];
+    }
+    up.level++;
+    as.cooldown *= (1 - REDUCED_COOLDOWN_PER_LEVEL);
 }
 
 function getAbilityUpgradeCooldownUiText(ability: Ability): string {

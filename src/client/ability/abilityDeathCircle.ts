@@ -2,7 +2,7 @@ import { getPlayerCharacters, characterTakeDamage } from "../character/character
 import { calculateDistance, getCameraPosition, getNextId } from "../game.js";
 import { Game, IdCounter } from "../gameModel.js";
 import { GameMap } from "../map/map.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, AbilityUpgradeOption, AbilityObjectCircle } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, AbilityObjectCircle } from "./ability.js";
 
 export type AbilityDeathCircle = Ability & {
     damage: number,
@@ -20,7 +20,6 @@ const ABILITY_NAME_DEATH_CIRCLE = "DeathCircle";
 export function addAbilityDeathCircle() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_DEATH_CIRCLE] = {
         tickAbility: tickAbilityDeathCircle,
-        createAbilityUpgradeOptions: createAbiltiyDeathCircleUpgradeOptions,
         tickAbilityObject: tickAbilityObjectDeathCircle,
         deleteAbilityObject: deleteObjectDeathCircle,
         createAbility: createAbilityDeathCircle,
@@ -54,11 +53,6 @@ export function createObjectDeathCircle(map: GameMap): AbilityObjectDeathCircle 
         y: mapCenter,
         tickInterval: 250,
     }
-}
-
-function createAbiltiyDeathCircleUpgradeOptions(): AbilityUpgradeOption[] {
-    let upgradeOptions: AbilityUpgradeOption[] = [];
-    return upgradeOptions;
 }
 
 function deleteObjectDeathCircle(abilityObject: AbilityObject, game: Game): boolean {

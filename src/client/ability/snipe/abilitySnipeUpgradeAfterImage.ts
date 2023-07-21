@@ -1,8 +1,9 @@
+import { AbilityUpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { calculateDirection } from "../../game.js";
 import { Game, Position } from "../../gameModel.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
-import { Ability, AbilityOwner, AbilityUpgradeOption } from "../ability.js";
-import { AbilityUpgrade } from "../abilityUpgrade.js";
+import { Ability, AbilityOwner } from "../ability.js";
+import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrade.js";
 import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilitySnipe, createAbilityObjectSnipeInitial, getAbilitySnipeShotFrequency } from "./abilitySnipe.js";
 import { paintSniperRifle } from "./abilitySnipePaint.js";
 import { ABILITY_SNIPE_UPGRADE_MORE_RIFLES, AbilityUpgradeMoreRifles, castSnipeMoreRifles, paintVisualizationMoreRifles } from "./abilitySnipeUpgradeMoreRifle.js";
@@ -29,9 +30,10 @@ export type AbilityUpgradeAfterImage = AbilityUpgrade & {
 
 export function addAbilitySnipeUpgradeAfterImage() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE] = {
-        getAbilityUpgradeUiText: getAbilityUpgradeAfterImageUiText,
-        getAbilityUpgradeUiTextLong: getAbilityUpgradeAfterImageUiTextLong,
-        pushAbilityUpgradeOption: pushAbilityUpgradeAfterImage,
+        getUiText: getAbilityUpgradeAfterImageUiText,
+        getUiTextLong: getAbilityUpgradeAfterImageUiTextLong,
+        getOptions: getOptionsAfterImage,
+        executeOption: executeOptionAfterImage,
     }
 }
 
@@ -91,38 +93,47 @@ export function tickAbilityUpgradeAfterImage(abilitySnipe: AbilitySnipe, ability
     }
 }
 
-function pushAbilityUpgradeAfterImage(ability: Ability, upgradeOptions: AbilityUpgradeOption[]) {
+function getOptionsAfterImage(ability: Ability): UpgradeOptionAndProbability[]{
+    let options = getAbilityUpgradeOptionDefault(ABILITY_SNIPE_UPGRADE_AFTER_IMAGE);
     const upgradeAfterImage: AbilityUpgradeAfterImage | undefined = ability.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE];   
-    upgradeOptions.push({
-        name: ABILITY_SNIPE_UPGRADE_AFTER_IMAGE, probabilityFactor: 1, upgrade: (a: Ability) => {
-            let as = a as AbilitySnipe;
-            let up: AbilityUpgradeAfterImage;
-            if (as.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE] === undefined) {
-                up = {
-                    level: 0,
-                    afterImages: [],
-                    cooldown: AFTER_IMAGE_DURATION,
-                    upgradeSynergry: false,
-                }
-                as.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE] = up;
-            } else {
-                up = as.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE];
-            }
-            up.level++;
-            up.cooldown = AFTER_IMAGE_DURATION / (AFTER_IMAGE_COUNTER_PER_LEVEL * up.level);
-        }
-    });
+
     if (upgradeAfterImage && !upgradeAfterImage.upgradeSynergry) {
         const probability = 0.3 * upgradeAfterImage.level;
-        upgradeOptions.push({
-            name: `Synergry ${ABILITY_SNIPE_UPGRADE_AFTER_IMAGE}`,
-            upgradeName: ABILITY_SNIPE_UPGRADE_AFTER_IMAGE,
-            probabilityFactor: probability,
-            upgrade: (a: Ability) => {
-                let up: AbilityUpgradeAfterImage = a.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE];
-                up.upgradeSynergry = true;
-            }
+        options.push({
+            option: {
+                displayText: `Synergry ${ABILITY_SNIPE_UPGRADE_AFTER_IMAGE}`,
+                identifier: ABILITY_SNIPE_UPGRADE_AFTER_IMAGE,
+                type: "Ability",
+                additionalInfo: "Synergy",
+                boss: true,
+            },
+            probability: probability,
         });
+    }
+
+    return options;
+}
+
+function executeOptionAfterImage(ability: Ability, option: AbilityUpgradeOption){
+    let as = ability as AbilitySnipe;
+    let up: AbilityUpgradeAfterImage;
+    if(option.additionalInfo === "Synergy"){
+        up = as.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE];
+        up.upgradeSynergry = true;
+    }else{
+        if (as.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE] === undefined) {
+            up = {
+                level: 0,
+                afterImages: [],
+                cooldown: AFTER_IMAGE_DURATION,
+                upgradeSynergry: false,
+            }
+            as.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE] = up;
+        } else {
+            up = as.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE];
+        }
+        up.level++;
+        up.cooldown = AFTER_IMAGE_DURATION / (AFTER_IMAGE_COUNTER_PER_LEVEL * up.level);
     }
 }
 

@@ -3,7 +3,7 @@ import { applyDebuff } from "../debuff/debuff.js";
 import { createDebuffSlow } from "../debuff/debuffSlow.js";
 import { getNextId } from "../game.js";
 import { Position, Game, IdCounter } from "../gameModel.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, AbilityUpgradeOption, detectSomethingToCharacterHit } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, detectSomethingToCharacterHit } from "./ability.js";
 
 type AbilityIce = Ability & {
     damage: number,
@@ -17,7 +17,6 @@ export const ABILITY_NAME_ICE_AURA = "Ice Aura";
 export function addAbilityIceAura() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_ICE_AURA] = {
         tickAbility: tickAbilityIce,
-        createAbilityUpgradeOptions: createAbilityIceUpgradeOptions,
         paintAbility: paintAbilityIce,
         setAbilityToLevel: setAbilityIceToLevel,
         createAbility: createAbilityIce,
@@ -108,22 +107,4 @@ function tickAbilityIce(abilityOwner: AbilityOwner, ability: Ability, game: Game
             abilityIce.nextTickTime = game.state.time + abilityIce.tickInterval;
         }
     }
-}
-
-function createAbilityIceUpgradeOptions(): AbilityUpgradeOption[] {
-    let upgradeOptions: AbilityUpgradeOption[] = [];
-    upgradeOptions.push({
-        name: "IceDamage+50", probabilityFactor: 1, upgrade: (a: Ability) => {
-            let as = a as AbilityIce;
-            as.damage += 50;
-        }
-    });
-    upgradeOptions.push({
-        name: "IceRadius+", probabilityFactor: 1, upgrade: (a: Ability) => {
-            let as = a as AbilityIce;
-            as.radius += 10;
-        }
-    });
-
-    return upgradeOptions;
 }

@@ -1,5 +1,6 @@
+import { AbilityUpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { Game } from "../../gameModel.js";
-import { Ability, AbilityOwner, AbilityUpgradeOption } from "../ability.js";
+import { Ability } from "../ability.js";
 import { AbilityUpgrade } from "../abilityUpgrade.js";
 import { ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS, AbilitySpeedBoost } from "./abilitySpeedBoost.js";
 
@@ -12,9 +13,9 @@ export const ABILITY_SPEED_BOOST_UPGARDE_ADD_CHARGE = "Additional Charge";
 
 export function addAbilitySpeedBoostUpgradeAddCharge() {
     ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS[ABILITY_SPEED_BOOST_UPGARDE_ADD_CHARGE] = {
-        getAbilityUpgradeUiText: getAbilityUpgradeAddChargeUiText,
-        getAbilityUpgradeUiTextLong: getAbilityUpgradeAddChargeUiTextLong,
-        pushAbilityUpgradeOption: pushAbilityUpgradeAddCharge,
+        getUiText: getAbilityUpgradeAddChargeUiText,
+        getUiTextLong: getAbilityUpgradeAddChargeUiTextLong,
+        executeOption: executeAddCharge,
     }
 }
 
@@ -32,26 +33,22 @@ export function tickAbilitySpeedBoostUpgradeAddCharge(abilitySpeedBoost: Ability
     }
 }
 
-function pushAbilityUpgradeAddCharge(ability: Ability, upgradeOptions: AbilityUpgradeOption[]) {
-    upgradeOptions.push({
-        name: ABILITY_SPEED_BOOST_UPGARDE_ADD_CHARGE, probabilityFactor: 1, upgrade: (a: Ability) => {
-            let as = a as AbilitySpeedBoost;
-            let up: AbilitySpeedBoostUpgradeAddCharge;
-            if (as.upgrades[ABILITY_SPEED_BOOST_UPGARDE_ADD_CHARGE] === undefined) {
-                up = {
-                    level: 0,
-                    maxCharges: 1,
-                    currentCharges: 1,
-                }
-                as.upgrades[ABILITY_SPEED_BOOST_UPGARDE_ADD_CHARGE] = up;
-            } else {
-                up = as.upgrades[ABILITY_SPEED_BOOST_UPGARDE_ADD_CHARGE];
-            }
-            up.level++;
-            up.maxCharges += 1;
-            up.currentCharges += 1;
+function executeAddCharge(ability: Ability, option: AbilityUpgradeOption){
+    let as = ability as AbilitySpeedBoost;
+    let up: AbilitySpeedBoostUpgradeAddCharge;
+    if (as.upgrades[ABILITY_SPEED_BOOST_UPGARDE_ADD_CHARGE] === undefined) {
+        up = {
+            level: 0,
+            maxCharges: 1,
+            currentCharges: 1,
         }
-    });
+        as.upgrades[ABILITY_SPEED_BOOST_UPGARDE_ADD_CHARGE] = up;
+    } else {
+        up = as.upgrades[ABILITY_SPEED_BOOST_UPGARDE_ADD_CHARGE];
+    }
+    up.level++;
+    up.maxCharges += 1;
+    up.currentCharges += 1;
 }
 
 function getAbilityUpgradeAddChargeUiText(ability: Ability): string {

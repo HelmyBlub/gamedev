@@ -1,6 +1,5 @@
 import { Game, IdCounter } from "../../gameModel.js"
 import { Character } from "../characterModel.js"
-import { CharacterUpgradeOption } from "../characterUpgrades.js"
 import { UpgradeOption } from "../upgrade.js"
 import { addAbilityLevelingCharacter } from "./abilityLevelingCharacter.js"
 import { addLevelingCharacter } from "./levelingCharacterModel.js"
@@ -46,7 +45,7 @@ export function createCharacterChooseUpgradeOptions(game: Game): UpgradeOption[]
         upgradeOptions.push({
             displayText: key,
             type: "Character",
-            name: key
+            identifier: key
         });
     }
 

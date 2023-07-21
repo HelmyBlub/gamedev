@@ -8,7 +8,6 @@ import { ABILITY_NAME_MELEE } from "../../ability/abilityMelee.js";
 import { TAMER_PET_CHARACTER, TAMER_PET_TRAITS, TamerPetCharacter, Trait, createTamerPetCharacter, paintTamerPetCharacter, tickTamerPetCharacter } from "./tamerPetCharacter.js";
 import { ABILITY_NAME_FEED_PET } from "../../ability/petTamer/abilityFeedPet.js";
 import { tickDefaultCharacter } from "../character.js";
-import { CharacterUpgradeChoice, CharacterUpgradeOption } from "../characterUpgrades.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
 import { ABILITY_NAME_LOVE_PET } from "../../ability/petTamer/abilityLovePet.js";
 import { ABILITY_NAME_PET_BREATH } from "../../ability/petTamer/abilityPetBreath.js";
@@ -52,14 +51,14 @@ function changeCharacterToTamerClass(
     // character.pets![0].abilities.push(ability);
 }
 
-function getCharacterUpgradeOptionByChoice(character: Character, characterUpgradeChoice: CharacterUpgradeChoice, game: Game): CharacterUpgradeOption | undefined {
+function getCharacterUpgradeOptionByChoice(character: Character, characterUpgradeChoice: CharacterUpgradeChoice, game: Game): CharacterUpgradeOptionOld | undefined {
     let values = upgradeNameToValues(characterUpgradeChoice.name);
     let pet = character.pets!.find((p) => p.color === values.petName);
     return getUpgradeOptionForAbilitNameAndTrait(pet!, values.abilityName, values.trait, game);
 }
 
-function createTamerBossUpgradeOptions(character: Character, game: Game): CharacterUpgradeOption[] {
-    const options: CharacterUpgradeOption[] = [];
+function createTamerBossUpgradeOptions(character: Character, game: Game): CharacterUpgradeOptionOld[] {
+    const options: CharacterUpgradeOptionOld[] = [];
     if (!character.pets) return options;
     for (let pet of character.pets) {
         if (pet.bossSkillPoints && pet.bossSkillPoints > 0) {
@@ -133,7 +132,7 @@ function valuesToUpgradeName(petName: string, abilityName: string, trait: string
     return `${abilityName} & ${trait} for ${petName}`;
 }
 
-function getUpgradeOptionForAbilitNameAndTrait(pet: TamerPetCharacter, abilityName: string, trait: Trait, game: Game): CharacterUpgradeOption {
+function getUpgradeOptionForAbilitNameAndTrait(pet: TamerPetCharacter, abilityName: string, trait: Trait, game: Game): CharacterUpgradeOptionOld {
     const upgradeName = valuesToUpgradeName(pet.color, abilityName, trait);
     return {
         name: upgradeName, probabilityFactor: 1, upgrade: (c: Character) => {

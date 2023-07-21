@@ -4,7 +4,7 @@ import { applyDebuff } from "../debuff/debuff.js";
 import { createDebuffSlow } from "../debuff/debuffSlow.js";
 import { getCameraPosition, getNextId } from "../game.js";
 import { Position, Game, IdCounter } from "../gameModel.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, AbilityUpgradeOption, detectSomethingToCharacterHit } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility } from "./ability.js";
 
 export type AbilitySlowTrail = Ability & {
     slowFactor: number,
@@ -31,7 +31,6 @@ export function addAbilitySlowTrail() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_SLOW_TRAIL] = {
         tickAbility: tickAbilitySlowTrail,
         tickAbilityObject: tickAbilityObjectSlowTrail,
-        createAbilityUpgradeOptions: createAbilitySlowTrailUpgradeOptions,
         createAbility: createAbilitySlowTrail,
         deleteAbilityObject: deleteAbilityObjectSlowTrail,
         paintAbilityObject: paintAbilityObjectSlowTrail,
@@ -80,13 +79,13 @@ function createAbilityObjectSlowTrail(
     };
 }
 
-function deleteAbilityObjectSlowTrail(abilityObject: AbilityObject, game: Game): boolean{
+function deleteAbilityObjectSlowTrail(abilityObject: AbilityObject, game: Game): boolean {
     let abilityObjectSlowTrail = abilityObject as AbilityObjectSlowTrail;
     return abilityObjectSlowTrail.endTime <= game.state.time;
 }
 
-function paintAbilityObjectSlowTrail(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game){
-    if(paintOrder !== "beforeCharacterPaint") return;
+function paintAbilityObjectSlowTrail(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
+    if (paintOrder !== "beforeCharacterPaint") return;
     let abilityObjectSlowTrail = abilityObject as AbilityObjectSlowTrail;
     let cameraPosition = getCameraPosition(game);
     let centerX = ctx.canvas.width / 2;
@@ -129,7 +128,7 @@ function tickAbilitySlowTrail(abilityOwner: AbilityOwner, ability: Ability, game
     }
 }
 
-function tickAbilityObjectSlowTrail(abilityObject: AbilityObject, game: Game){
+function tickAbilityObjectSlowTrail(abilityObject: AbilityObject, game: Game) {
     let abilityObjectSlowTrail = abilityObject as AbilityObjectSlowTrail;
 
     if (abilityObjectSlowTrail.nextTickTime === undefined) {
@@ -143,13 +142,8 @@ function tickAbilityObjectSlowTrail(abilityObject: AbilityObject, game: Game){
     }
 }
 
-function createAbilitySlowTrailUpgradeOptions(): AbilityUpgradeOption[] {
-    let upgradeOptions: AbilityUpgradeOption[] = [];
-    return upgradeOptions;
-}
-
 function placeNewSlowTrail(abilityOwner: AbilityOwner, abilitySlowTrail: AbilitySlowTrail, game: Game) {
-    let endPosition = {x: abilityOwner.x, y: abilityOwner.y};
+    let endPosition = { x: abilityOwner.x, y: abilityOwner.y };
     let slowTrail = createAbilityObjectSlowTrail(abilitySlowTrail, abilityOwner, abilitySlowTrail.lastPosition!, endPosition, game);
     game.state.abilityObjects.push(slowTrail);
     abilitySlowTrail.lastPosition = { x: abilityOwner.x, y: abilityOwner.y };

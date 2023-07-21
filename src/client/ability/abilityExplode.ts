@@ -1,6 +1,6 @@
 import { getCameraPosition, getNextId } from "../game.js";
 import { Game, IdCounter, Position } from "../gameModel.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, AbilityUpgradeOption, detectSomethingToCharacterHit, detectAbilityObjectCircleToCharacterHit, AbilityObjectCircle } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, PaintOrderAbility, detectAbilityObjectCircleToCharacterHit, AbilityObjectCircle } from "./ability.js";
 
 export type AbilityExplode = Ability & {
     radius: number,
@@ -19,7 +19,6 @@ const PAINT_FADE_TIME = 500;
 export function addAbilityExplode() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_EXPLODE] = {
         tickAbilityObject: tickAbilityObjectExplode,
-        createAbilityUpgradeOptions: createAbilityExplodeUpgradeOptions,
         createAbility: createAbilityExplode,
         deleteAbilityObject: deleteAbilityObjectExplode,
         paintAbilityObject: paintAbilityObjectExplode,
@@ -97,9 +96,4 @@ function tickAbilityObjectExplode(abilityObject: AbilityObject, game: Game) {
     abilityObjectExplode.hasDamageDone = true;
     abilityObjectExplode.removeTime = game.state.time + PAINT_FADE_TIME;
     detectAbilityObjectCircleToCharacterHit(game.state.map, abilityObjectExplode, game.state.players, game.state.bossStuff.bosses, game);
-}
-
-function createAbilityExplodeUpgradeOptions(): AbilityUpgradeOption[] {
-    let upgradeOptions: AbilityUpgradeOption[] = [];
-    return upgradeOptions;
 }

@@ -6,7 +6,6 @@ import { testGame } from "./test/gameTest.js";
 import { websocketConnect } from "./multiplayerConenction.js";
 import { ABILITIES_FUNCTIONS } from "./ability/ability.js";
 import { calculateDirection, getCameraPosition, getClientInfo, takeTimeMeasure } from "./game.js";
-import { upgradeCharacter } from "./character/characterUpgrades.js";
 import { executeUpgradeOptionChoice } from "./character/upgrade.js";
 
 export const MOVE_ACTIONS = ["left", "down", "right", "up"];

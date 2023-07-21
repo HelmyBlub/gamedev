@@ -6,7 +6,7 @@ import { GAME_IMAGES, loadImage } from "../imageLoad.js";
 import { GameMap } from "../map/map.js";
 import { Player } from "../player.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner } from "./ability.js";
-import { AbilityUpgradeOption } from "./abilityUpgrade.js";
+import { AbilityUpgradeOptionOld } from "./abilityUpgrade.js";
 
 type AbilitySword = Ability & {
     damage: number,
@@ -197,8 +197,8 @@ function tickAbilitySword(abilityOwner: AbilityOwner, ability: Ability, game: Ga
     }
 }
 
-function createAbilitySwordUpgradeOptions(): AbilityUpgradeOption[] {
-    let upgradeOptions: AbilityUpgradeOption[] = [];
+function createAbilitySwordUpgradeOptions(): AbilityUpgradeOptionOld[] {
+    let upgradeOptions: AbilityUpgradeOptionOld[] = [];
     upgradeOptions.push({
         name: "Damage+50", probabilityFactor: 1, upgrade: (a: Ability) => {
             let as = a as AbilitySword;

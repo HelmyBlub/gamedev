@@ -4,9 +4,15 @@ import { CHARACTER_TYPE_FUNCTIONS, Character } from "./characterModel.js";
 
 export type UpgradeOption = {
     type: "Character" | "Ability" | "Pet" | "PetAbility",
-    name: string,
-    boss?: boolean,
     displayText: string,
+    identifier: string,
+    additionalInfo?: string,
+    boss?: boolean,
+}
+
+export type AbilityUpgradeOption = UpgradeOption & {
+    type: "Ability",
+    name: string,
 }
 
 export type UpgradeOptionAndProbability = { option: UpgradeOption, probability: number };

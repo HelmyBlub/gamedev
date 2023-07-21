@@ -1,4 +1,5 @@
-import { Ability, AbilityUpgradeOption } from "../ability.js";
+import { AbilityUpgradeOption } from "../../character/upgrade.js";
+import { Ability } from "../ability.js";
 import { AbilityUpgrade } from "../abilityUpgrade.js";
 import { ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS, AbilitySpeedBoost } from "./abilitySpeedBoost.js";
 
@@ -11,27 +12,22 @@ export const ABILITY_SPEED_BOOST_UPGARDE_DURATION = "Speed Boost +Duration";
 
 export function addAbilitySpeedBoostUpgradeDuration() {
     ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS[ABILITY_SPEED_BOOST_UPGARDE_DURATION] = {
-        getAbilityUpgradeUiText: getAbilityUpgradeDurationUiText,
-        getAbilityUpgradeUiTextLong: getAbilityUpgradeDurationUiTextLong,
-        pushAbilityUpgradeOption: pushAbilityUpgradeDuration,
+        getUiText: getAbilityUpgradeDurationUiText,
+        getUiTextLong: getAbilityUpgradeDurationUiTextLong,
+        executeOption: executeOptionDuration,
     }
 }
-
-function pushAbilityUpgradeDuration(ability: Ability, upgradeOptions: AbilityUpgradeOption[]) {
-    upgradeOptions.push({
-        name: ABILITY_SPEED_BOOST_UPGARDE_DURATION, probabilityFactor: 1, upgrade: (a: Ability) => {
-            let as = a as AbilitySpeedBoost;
-            let up: AbilitySpeedBoostUpgradeDuration;
-            if (as.upgrades[ABILITY_SPEED_BOOST_UPGARDE_DURATION] === undefined) {
-                up = { level: 0 };
-                as.upgrades[ABILITY_SPEED_BOOST_UPGARDE_DURATION] = up;
-            } else {
-                up = as.upgrades[ABILITY_SPEED_BOOST_UPGARDE_DURATION];
-            }
-            up.level++;
-            as.duration += BONUS_DURATION_PER_LEVEL;
-        }
-    });
+function executeOptionDuration(ability: Ability, option: AbilityUpgradeOption){
+    let as = ability as AbilitySpeedBoost;
+    let up: AbilitySpeedBoostUpgradeDuration;
+    if (as.upgrades[ABILITY_SPEED_BOOST_UPGARDE_DURATION] === undefined) {
+        up = { level: 0 };
+        as.upgrades[ABILITY_SPEED_BOOST_UPGARDE_DURATION] = up;
+    } else {
+        up = as.upgrades[ABILITY_SPEED_BOOST_UPGARDE_DURATION];
+    }
+    up.level++;
+    as.duration += BONUS_DURATION_PER_LEVEL;
 }
 
 function getAbilityUpgradeDurationUiText(ability: Ability): string {

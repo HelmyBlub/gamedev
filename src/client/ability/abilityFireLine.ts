@@ -2,7 +2,7 @@ import { characterTakeDamage, getCharactersTouchingLine } from "../character/cha
 import { Character } from "../character/characterModel.js";
 import { getCameraPosition, getNextId } from "../game.js";
 import { Position, Game, IdCounter } from "../gameModel.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, AbilityUpgradeOption } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, PaintOrderAbility } from "./ability.js";
 
 export type AbilityFireLine = Ability & {
     tickInterval: number,
@@ -24,7 +24,6 @@ export const ABILITY_NAME_FIRE_LINE = "Fire Line";
 export function addAbilityFireLine() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_FIRE_LINE] = {
         tickAbilityObject: tickAbilityObjectFireLine,
-        createAbilityUpgradeOptions: createAbilityFireLineUpgradeOptions,
         createAbility: createAbilityFireLine,
         deleteAbilityObject: deleteAbilityObjectFireLine,
         paintAbilityObject: paintAbilityObjectFireLine,
@@ -113,9 +112,4 @@ function tickAbilityObjectFireLine(abilityObject: AbilityObject, game: Game) {
             characterTakeDamage(char, abilityObjectFireLine.damage, game, abilityObjectFireLine.abilityRefId);
         }
     }
-}
-
-function createAbilityFireLineUpgradeOptions(): AbilityUpgradeOption[] {
-    let upgradeOptions: AbilityUpgradeOption[] = [];
-    return upgradeOptions;
 }

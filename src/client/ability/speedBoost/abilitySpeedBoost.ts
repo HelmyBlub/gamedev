@@ -1,12 +1,14 @@
 import { findCharacterById, getPlayerCharacters } from "../../character/character.js";
+import { Character } from "../../character/characterModel.js";
+import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { createBuffSlowTrail } from "../../debuff/buffSlowTrail.js";
 import { createBuffSpeed } from "../../debuff/buffSpeed.js";
 import { applyDebuff } from "../../debuff/debuff.js";
 import { getNextId } from "../../game.js";
 import { Game, IdCounter, Position } from "../../gameModel.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, AbilityUpgradeOption, paintDefaultAbilityStatsUI } from "../ability.js";
-import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts } from "../abilityUpgrade.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, paintDefaultAbilityStatsUI } from "../ability.js";
+import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
 import { ABILITY_SPEED_BOOST_UPGARDE_ADD_CHARGE, AbilitySpeedBoostUpgradeAddCharge, addAbilitySpeedBoostUpgradeAddCharge, tickAbilitySpeedBoostUpgradeAddCharge } from "./abilitySpeedBoostUpgradeAddCharge.js";
 import { addAbilitySpeedBoostUpgradeDuration } from "./abilitySpeedBoostUpgradeDuration.js";
 import { ABILITY_SPEED_BOOST_UPGARDE_SLOW_TRAIL, addAbilitySpeedBoostUpgradeSlowTrail } from "./abilitySpeedBoostUpgradeSlowTrail.js";
@@ -26,12 +28,12 @@ export const ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS: AbilityUpgradesFunctions = {
 export function addAbilitySpeedBoost() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_SPEED_BOOST] = {
         tickAbility: tickAbilitySpeedBoost,
-        createAbilityUpgradeOptions: createAbilitySpeedBoostUpgradeOptions,
         setAbilityToLevel: setAbilitySpeedBoostToLevel,
         createAbility: createAbilitySpeedBoost,
         activeAbilityCast: castSpeedBoost,
         paintAbilityUI: paintAbilitySpeedBoostUI,
-        createAbilityBossUpgradeOptions: createAbilityBossSpeedBoostUpgradeOptions,
+        createAbilityBossUpgradeOptionsNew: createAbilityBossSpeedBoostUpgradeOptions,
+        executeUpgradeOption: executeAbilitySpeedBoostUpgradeOption,
         paintAbilityStatsUI: paintAbilitySpeedBoostStatsUI,
         abilityUpgradeFunctions: ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS,
         isPassive: false,
@@ -154,21 +156,15 @@ function setAbilitySpeedBoostToLevel(ability: Ability, level: number) {
     abilitySpeedBoost.speedFactor = 1.20 + 0.05 * level;
 }
 
-function createAbilitySpeedBoostUpgradeOptions(): AbilityUpgradeOption[] {
-    let upgradeOptions: AbilityUpgradeOption[] = [];
-    upgradeOptions.push({
-        name: "SpeedBoost+", probabilityFactor: 1, upgrade: (a: Ability) => {
-            let as = a as AbilitySpeedBoost;
-            as.speedFactor += 0.05;
-        }
-    });
-
-    return upgradeOptions;
-}
-
-function createAbilityBossSpeedBoostUpgradeOptions(ability: Ability): AbilityUpgradeOption[] {
-    let upgradeOptions: AbilityUpgradeOption[] = [];
+function createAbilityBossSpeedBoostUpgradeOptions(ability: Ability): UpgradeOptionAndProbability[] {
+    let upgradeOptions: UpgradeOptionAndProbability[] = [];
     pushAbilityUpgradesOptions(ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS, upgradeOptions, ability);
     return upgradeOptions;
 }
+
+function executeAbilitySpeedBoostUpgradeOption(ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game){
+    const abilityUpgradeOption: AbilityUpgradeOption = upgradeOption as AbilityUpgradeOption;
+    upgradeAbility(ability, character, abilityUpgradeOption);
+}
+
 

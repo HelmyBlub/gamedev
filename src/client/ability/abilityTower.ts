@@ -1,6 +1,6 @@
 import { getCharactersTouchingLine, characterTakeDamage } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
-import { UpgradeOption, UpgradeOptionAndProbability } from "../character/upgrade.js";
+import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../character/upgrade.js";
 import { calculateDistance, getCameraPosition, getNextId } from "../game.js";
 import { Position, Game, IdCounter } from "../gameModel.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
@@ -9,7 +9,6 @@ import { findPlayerByCharacterId } from "../player.js";
 import { playerInputBindingToDisplayValue } from "../playerInput.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, paintDefaultAbilityStatsUI } from "./ability.js";
-import { AbilityUpgradeOption } from "./abilityUpgrade.js";
 
 type AbilityObjectTower = AbilityObject & {
     ownerId: number,
@@ -41,7 +40,6 @@ export function addAbilityTower() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_TOWER] = {
         tickAbility: tickAbilityTower,
         tickAbilityObject: tickAbilityObjectTower,
-        createAbilityUpgradeOptions: createAbilityTowerUpgradeOptions,
         createAbilityUpgradeOptionsNew: createAbilityTowerUpgradeOptionsNew,
         executeUpgradeOption: executeAbilityTowerUpgradeOption,
         paintAbilityObject: paintAbilityObjectTower,
@@ -450,41 +448,44 @@ function tickAbilityObjectTower(abilityObject: AbilityObject, game: Game) {
 function createAbilityTowerUpgradeOptionsNew(ability: Ability): UpgradeOptionAndProbability[] {
     let abilityTower = ability as AbilityTower;
     let upgradeOptions: UpgradeOptionAndProbability[] = [];
+    const option: AbilityUpgradeOption = {
+        displayText: "Line Damage+50",
+        type: "Ability",
+        identifier: "Line Damage+50",
+        name: ability.name,
+    }
     upgradeOptions.push({
-        option:{
-            displayText: "Line Damage+50",
-            type: "Ability",
-            name: ability.name,
-        },
+        option: option,
         probability: 1,
     });
-    return upgradeOptions;
-}
 
-function executeAbilityTowerUpgradeOption(ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game){
-    let abilityTower = ability as AbilityTower;
-    if(upgradeOption.displayText === "Line Damage+50"){
-        abilityTower.damage += 50;
-    }
-}
-
-function createAbilityTowerUpgradeOptions(ability: Ability): AbilityUpgradeOption[] {
-    let abilityTower = ability as AbilityTower;
-    let upgradeOptions: AbilityUpgradeOption[] = [];
-    upgradeOptions.push({
-        name: "Line Damage+50", probabilityFactor: 1, upgrade: (a: Ability) => {
-            let as = a as AbilityTower;
-            as.damage += 50;
-        }
-    });
     for (let i = 0; i < abilityTower.availableAbilityKeys.length; i++) {
+        let abilityOption: AbilityUpgradeOption = {
+            displayText: `Tower ${abilityTower.availableAbilityKeys[i]}+`,
+            identifier: abilityTower.availableAbilityKeys[i],
+            type: "Ability",
+            name: ability.name,
+        }
         upgradeOptions.push({
-            name: `Tower ${abilityTower.availableAbilityKeys[i]}+`, probabilityFactor: 1, upgrade: (a: Ability) => {
-                let as = a as AbilityTower;
-                as.orderOfAbilities.splice(as.currentAbilityIndex, 0, i);
-            }
+            option: abilityOption,
+            probability: 1,
         });
     }
 
     return upgradeOptions;
+}
+
+function executeAbilityTowerUpgradeOption(ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game){
+    const abilityTower = ability as AbilityTower;
+    if(upgradeOption.identifier === "Line Damage+50"){
+        abilityTower.damage += 50;
+        return;
+    }
+    for (let i = 0; i < abilityTower.availableAbilityKeys.length; i++) {
+        const key = abilityTower.availableAbilityKeys[i];
+        if(key === upgradeOption.identifier){
+            abilityTower.orderOfAbilities.splice(abilityTower.currentAbilityIndex, 0, i);
+            return;
+        }
+    }
 }

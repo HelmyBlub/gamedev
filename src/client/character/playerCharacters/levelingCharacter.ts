@@ -3,8 +3,7 @@ import { Game, GameState } from "../../gameModel.js";
 import { RandomSeed } from "../../randomNumberGenerator.js";
 import { Character } from "../characterModel.js";
 import { LEVELING_CHARACTER, LevelingCharacter } from "./levelingCharacterModel.js";
-import { fillRandomUpgradeOptions } from "../characterUpgrades.js";
-import { UpgradeOption, UpgradeOptionAndProbability, fillRandomUpgradeOptionChoices } from "../upgrade.js";
+import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability, fillRandomUpgradeOptionChoices } from "../upgrade.js";
 import { ABILITIES_FUNCTIONS } from "../../ability/ability.js";
 
 export function levelingCharacterXpGain(state: GameState, killedCharacter: Character, game: Game) {
@@ -39,15 +38,16 @@ function levelingCharacterLevelUp(character: LevelingCharacter, randomSeed: Rand
 export function executeLevelingCharacterUpgradeOption(character: Character, upgradeOption: UpgradeOption, game: Game){
     const levelingCharacter = character as LevelingCharacter;
     if(upgradeOption.type === "Character"){
-        if(upgradeOption.name === "Max Health+50"){
+        if(upgradeOption.identifier === "Max Health+50"){
             character.hp += 50;
             character.maxHp += 50;
         }
-        if(upgradeOption.name === "Move Speed+0.2"){
+        if(upgradeOption.identifier === "Move Speed+0.2"){
             character.moveSpeed += 0.2;
         }
     }else if(upgradeOption.type === "Ability"){
-        let ability = character.abilities.find((a) => a.name === upgradeOption.name);
+        const abilityUpgradeOption = upgradeOption as AbilityUpgradeOption;
+        let ability = character.abilities.find((a) => a.name === abilityUpgradeOption.name);
         if(ability){
             let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
             if(abilityFunctions && abilityFunctions.executeUpgradeOption){
@@ -64,7 +64,7 @@ export function createCharacterUpgradeOptionsNew(character: Character, game: Gam
     if(leveling.availableSkillPoints === 0) return upgradeOptions;
     upgradeOptions.push({
         option: {
-            name: "Max Health+50",
+            identifier: "Max Health+50",
             displayText: "Max Health+50",
             type: "Character",
         },
@@ -72,7 +72,7 @@ export function createCharacterUpgradeOptionsNew(character: Character, game: Gam
     });
     upgradeOptions.push({
         option: {
-            name: "Move Speed+0.2",
+            identifier: "Move Speed+0.2",
             displayText: "Move Speed+0.2",
             type: "Character",
         },

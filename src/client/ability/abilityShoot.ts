@@ -1,7 +1,7 @@
 import { Game, IdCounter } from "../gameModel.js";
 import { Projectile, createProjectile, tickProjectile, deleteProjectile } from "./projectile.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, AbilityUpgradeOption } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner } from "./ability.js";
 import { getNextId } from "../game.js";
 
 export const ABILITY_NAME_SHOOT = "Shoot";
@@ -21,7 +21,6 @@ export type AbilityShoot = Ability & {
 export function addAbilityShoot(){
     ABILITIES_FUNCTIONS[ABILITY_NAME_SHOOT] = {
         tickAbility: tickAbilityShoot,
-        createAbilityUpgradeOptions: createAbiltiyShootUpgradeOptions,
         tickAbilityObject: tickProjectile,
         deleteAbilityObject: deleteProjectile,
         onHit: onShootHit,
@@ -107,36 +106,6 @@ function onShootHit(abilityObject: AbilityObject){
 function canShootHitMore(abilityObject: AbilityObject){
     let projectile = abilityObject as Projectile;
     return projectile.pierceCount >= 0;
-}
-
-function createAbiltiyShootUpgradeOptions(): AbilityUpgradeOption[]{
-    let upgradeOptions: AbilityUpgradeOption[] = [];
-    upgradeOptions.push({
-        name: "Damage+50", probabilityFactor: 1, upgrade: (a: Ability) => {
-            let as = a as AbilityShoot;
-            as.damage += 50;
-        },
-    });
-    upgradeOptions.push({
-        name: "shootSpeed Up", probabilityFactor: 1, upgrade: (a: Ability) => {
-            let as = a as AbilityShoot;
-            as.frequencyIncrease += 0.2;
-        }
-    });
-    upgradeOptions.push({
-        name: "Piercing+1", probabilityFactor: 1, upgrade: (a: Ability) => {
-            let as = a as AbilityShoot;
-            as.pierceCount += 1;
-        }
-    });
-    upgradeOptions.push({
-        name: "MultiShot+1", probabilityFactor: 1, upgrade: (a: Ability) => {
-            let as = a as AbilityShoot;
-            as.multiShot += 1;
-        }
-    });
-
-    return upgradeOptions;
 }
 
 function shoot(abilityOwner: AbilityOwner, ability: AbilityShoot, abilityObjects: AbilityObject[], gameTime: number, randomSeed: RandomSeed) {

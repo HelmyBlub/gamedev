@@ -1,7 +1,7 @@
 import { calculateDirection, calculateDistance, getCameraPosition, getNextId } from "../game.js";
 import { Game, IdCounter, Position } from "../gameModel.js";
 import { nextRandom } from "../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectAbilityObjectCircleToCharacterHit, PaintOrderAbility, AbilityUpgradeOption, AbilityObjectCircle } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectAbilityObjectCircleToCharacterHit, PaintOrderAbility, AbilityObjectCircle } from "./ability.js";
 
 export const ABILITY_NAME_FIRE_CIRCLE = "FireCircle";
 export type AbilityFireCircle = Ability & {
@@ -34,7 +34,6 @@ export type AbilityObjectFireCircleTraveling = AbilityObjectCircle & {
 export function addAbilityFireCircle() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_FIRE_CIRCLE] = {
         tickAbility: tickAbilityFireCircle,
-        createAbilityUpgradeOptions: createAbiltiyFireCircleUpgradeOptions,
         activeAbilityCast: castFireCircle,
         tickAbilityObject: tickAbilityObjectFireCircle,
         deleteAbilityObject: deleteObjectFireCircle,
@@ -257,37 +256,6 @@ function deleteObjectFireCircle(abilityObject: AbilityObject, game: Game): boole
         let abilityObjectFireCircleTraveling = abilityObject as AbilityObjectFireCircleTraveling;
         return abilityObjectFireCircleTraveling.toDelete;
     }
-}
-
-function createAbiltiyFireCircleUpgradeOptions(): AbilityUpgradeOption[] {
-    let upgradeOptions: AbilityUpgradeOption[] = [];
-    upgradeOptions.push({
-        name: "Damage+10", probabilityFactor: 1, upgrade: (a: Ability) => {
-            let as = a as AbilityFireCircle;
-            as.damage += 10;
-        },
-    });
-    upgradeOptions.push({
-        name: "Radius+", probabilityFactor: 1, upgrade: (a: Ability) => {
-            let as = a as AbilityFireCircle;
-            let addSize = Math.max(0.5, 5 - (as.radius - 15) / 20);
-            as.radius += addSize;
-        },
-    });
-    upgradeOptions.push({
-        name: "Duration+", probabilityFactor: 1, upgrade: (a: Ability) => {
-            let as = a as AbilityFireCircle;
-            as.objectDuration += 250;
-        },
-    });
-    upgradeOptions.push({
-        name: "RechargeTime-", probabilityFactor: 1, upgrade: (a: Ability) => {
-            let as = a as AbilityFireCircle;
-            as.rechargeTimeDecreaseFaktor += 0.15;
-        },
-    });
-
-    return upgradeOptions;
 }
 
 function castFireCircle(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isKeydown: boolean, game: Game) {

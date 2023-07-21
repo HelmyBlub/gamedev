@@ -1,17 +1,17 @@
-import { ABILITIES_FUNCTIONS, AbilityUpgradeOption, paintAbilityObjects, paintDefaultAbilityStatsUI, paintUiForAbilities } from "./ability/ability.js";
+import { ABILITIES_FUNCTIONS, paintAbilityObjects, paintDefaultAbilityStatsUI, paintUiForAbilities } from "./ability/ability.js";
 import { getPlayerCharacters } from "./character/character.js";
 import { Character, DEFAULT_CHARACTER } from "./character/characterModel.js";
 import { paintCharacterStatsUI, paintCharacters } from "./character/characterPaint.js";
 import { paintBossCharacters } from "./character/enemy/bossEnemy.js";
 import { LEVELING_CHARACTER, LevelingCharacter } from "./character/playerCharacters/levelingCharacterModel.js";
 import { paintTamerPetCharacterStatsUI } from "./character/playerCharacters/tamerPetCharacter.js";
+import { AbilityUpgradeOption, UpgradeOption } from "./character/upgrade.js";
 import { calculateDistance, getCameraPosition, getTimeSinceFirstKill } from "./game.js";
 import { Game, Position, Highscores, Debugging, PaintTextData } from "./gameModel.js";
 import { GAME_IMAGES, loadImage } from "./imageLoad.js";
 import { getMapMidlePosition } from "./map/map.js";
 import { paintMap, paintMapCharacters } from "./map/mapPaint.js";
 import { findPlayerById } from "./player.js";
-import { CharacterUpgradeChoice } from "./character/characterUpgrades.js";
 
 GAME_IMAGES["blankKey"] = {
     imagePath: "/images/singleBlankKey.png",
@@ -390,30 +390,30 @@ function getUpgradeTexts(character: Character, game: Game): string[][] {
         const option = character.upgradeChoices[i];
         let hasLongText = false;
         if (game.UI.displayLongInfos) {
-            const texts = getLongUpgradeChoiceTexts(option, character);
+            const texts = undefined; //getLongUpgradeChoiceTexts(option, character);
             if (texts) {
                 hasLongText = true;
                 upgradesTexts.push(texts);
             }
         }
         if (!hasLongText) {
-            let tempText = `${option.name}`;
+            let tempText = `${option.displayText}`;
             upgradesTexts.push([tempText]);
         }
     }
     return upgradesTexts;
 }
 
-function getLongUpgradeChoiceTexts(option: CharacterUpgradeChoice, character: Character): string[] | undefined {
-    if (option.abilityName !== undefined) {
-        let abilityFunctions = ABILITIES_FUNCTIONS[option.abilityName];
+function getLongUpgradeChoiceTexts(option: UpgradeOption, character: Character): string[] | undefined {
+    if (option.type !== "Ability") {
+        const abilityOption = option as AbilityUpgradeOption;
+        let abilityFunctions = ABILITIES_FUNCTIONS[abilityOption.name];
         if (abilityFunctions && abilityFunctions.abilityUpgradeFunctions) {
-            const upgradeName = option.abilityUpgradeName ? option.abilityUpgradeName : option.name;
-            const abilityUpgradeFunctions = abilityFunctions.abilityUpgradeFunctions[upgradeName];
+            const abilityUpgradeFunctions = abilityFunctions.abilityUpgradeFunctions[option.identifier];
             if (abilityUpgradeFunctions) {
-                const ability = character.abilities.find(a => a.name === option.abilityName);
+                const ability = character.abilities.find(a => a.name === abilityOption.name);
                 if (ability) {
-                    return abilityUpgradeFunctions.getAbilityUpgradeUiTextLong(ability, option.name);
+                    return abilityUpgradeFunctions.getUiTextLong(ability, abilityOption.name);
                 }
             }
         }

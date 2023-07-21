@@ -3,7 +3,7 @@ import { Character } from "../character/characterModel.js";
 import { calculateDirection, calculateDistance, getNextId } from "../game.js";
 import { Position, Game, IdCounter } from "../gameModel.js";
 import { getFirstBlockingGameMapTilePositionTouchingLine } from "../map/map.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, AbilityUpgradeOption } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityOwner } from "./ability.js";
 
 export type AbilityLeash = Ability & {
     leashMaxLength: number,
@@ -16,7 +16,6 @@ export const ABILITY_NAME_LEASH = "Leash";
 export function addAbilityLesh() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_LEASH] = {
         tickAbility: tickAbilityLeash,
-        createAbilityUpgradeOptions: createAbilityLeashUpgradeOptions,
         paintAbility: paintAbilityLeash,
         createAbility: createAbilityLeash,
         notInheritable: true,
@@ -216,16 +215,4 @@ function calculateLeashLength(abilityOwner: Position, connectedOwner: Position, 
         }
     }
     return distance;
-}
-
-function createAbilityLeashUpgradeOptions(): AbilityUpgradeOption[] {
-    let upgradeOptions: AbilityUpgradeOption[] = [];
-    upgradeOptions.push({
-        name: "LeashLength+10", probabilityFactor: 1, upgrade: (a: Ability) => {
-            let al = a as AbilityLeash;
-            al.leashMaxLength += 10;
-        }
-    });
-
-    return upgradeOptions;
 }

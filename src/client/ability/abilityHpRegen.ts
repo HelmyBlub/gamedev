@@ -1,7 +1,8 @@
+import { Character } from "../character/characterModel.js";
+import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../character/upgrade.js";
 import { getNextId } from "../game.js";
 import { Game, IdCounter } from "../gameModel.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, paintDefaultAbilityStatsUI } from "./ability.js";
-import { AbilityUpgradeOption } from "./abilityUpgrade.js";
 
 type AbilityHpRegen = Ability & {
     amount: number,
@@ -14,7 +15,8 @@ const ABILITY_NAME_HP_REGEN = "HP Regen";
 export function addAbilityHpRegen() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_HP_REGEN] = {
         tickAbility: tickAbilityHpRegen,
-        createAbilityUpgradeOptions: createAbilityHpRegenUpgradeOptions,
+        createAbilityUpgradeOptionsNew: createAbilityHpRegenUpgradeOptions,
+        executeUpgradeOption: executeAbilityHpRegenUpgradeOption,
         createAbility: createAbilityHpRegen,
         paintAbilityStatsUI: paintAbilityHpRegenStatsUI,
         notInheritable: true,
@@ -50,17 +52,29 @@ function tickAbilityHpRegen(abilityOwner: AbilityOwner, ability: Ability, game: 
     }
 }
 
-function createAbilityHpRegenUpgradeOptions(): AbilityUpgradeOption[] {
-    let upgradeOptions: AbilityUpgradeOption[] = [];
+function createAbilityHpRegenUpgradeOptions(ability: Ability): UpgradeOptionAndProbability[] {
+    let upgradeOptions: UpgradeOptionAndProbability[] = [];
+    const option: AbilityUpgradeOption = {
+        displayText: "Hp Regen +1",
+        type: "Ability",
+        identifier: "Hp Regen+1",
+        name: ability.name,
+    }
     upgradeOptions.push({
-        name: "Hp Regen+", probabilityFactor: 1, upgrade: (a: Ability) => {
-            let abilityHpRegen = a as AbilityHpRegen;
-            abilityHpRegen.amount += 1;
-        }
+        option: option,
+        probability: 1,
     });
-
     return upgradeOptions;
 }
+
+function executeAbilityHpRegenUpgradeOption(ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game){
+    let abilityHpRegen= ability as AbilityHpRegen;
+    if(upgradeOption.identifier === "Hp Regen+1"){
+        abilityHpRegen.amount += 1;
+        return;
+    }
+}
+
 
 function paintAbilityHpRegenStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
     const abilityHpRegen = ability as AbilityHpRegen;

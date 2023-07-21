@@ -1,10 +1,11 @@
 import { characterTakeDamage, getCharactersTouchingLine } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
+import { UpgradeOptionAndProbability, UpgradeOption, AbilityUpgradeOption } from "../../character/upgrade.js";
 import { calcNewPositionMovedInDirection, calculateDirection, getClientInfoByCharacterId, getNextId } from "../../game.js";
 import { Position, Game, IdCounter, ClientInfo } from "../../gameModel.js";
 import { GAME_IMAGES } from "../../imageLoad.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, AbilityUpgradeOption, findAbilityById } from "../ability.js";
-import { AbilityUpgradesFunctions, getAbilityUpgradesDamageFactor, pushAbilityUpgradesOptions } from "../abilityUpgrade.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, findAbilityById } from "../ability.js";
+import { AbilityUpgradesFunctions, getAbilityUpgradesDamageFactor, pushAbilityUpgradesOptions, upgradeAbility } from "../abilityUpgrade.js";
 import { paintAbilityObjectSnipe, paintAbilitySnipe, paintAbilitySnipeStatsUI, paintAbilitySnipeUI } from "./abilitySnipePaint.js";
 import { addAbilitySnipeUpgradeAfterImage, castSnipeAfterImage, tickAbilityUpgradeAfterImage } from "./abilitySnipeUpgradeAfterImage.js";
 import { addAbilitySnipeUpgradeBackwardsShot, castSnipeBackwardsShot } from "./abilitySnipeUpgradeBackwardsShot.js";
@@ -63,8 +64,8 @@ export function addAbilitySnipe() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_SNIPE] = {
         tickAbility: tickAbilitySnipe,
         tickAbilityObject: tickAbilityObjectSnipe,
-        createAbilityUpgradeOptions: createAbilitySnipeUpgradeOptions,
-        createAbilityBossUpgradeOptions: createAbilityBossSnipeUpgradeOptions,
+        createAbilityBossUpgradeOptionsNew: createAbilityBossSnipeUpgradeOptions,
+        executeUpgradeOption: executeAbilitySnipeUpgradeOption,
         paintAbilityObject: paintAbilityObjectSnipe,
         paintAbilityUI: paintAbilitySnipeUI,
         paintAbility: paintAbilitySnipe,
@@ -344,23 +345,14 @@ function tickAbilityObjectSnipe(abilityObject: AbilityObject, game: Game) {
     }
 }
 
-function createAbilitySnipeUpgradeOptions(ability: Ability): AbilityUpgradeOption[] {
-    let upgradeOptions: AbilityUpgradeOption[] = [];
-    upgradeOptions.push({
-        name: "Snipe Damage+50", probabilityFactor: 1, upgrade: (a: Ability) => {
-            let as = a as AbilitySnipe;
-            as.baseDamage += 50;
-        }
-    });
-
+function createAbilityBossSnipeUpgradeOptions(ability: Ability): UpgradeOptionAndProbability[] {
+    let upgradeOptions: UpgradeOptionAndProbability[] = [];
+    pushAbilityUpgradesOptions(ABILITY_SNIPE_UPGRADE_FUNCTIONS, upgradeOptions, ability);
     return upgradeOptions;
 }
 
-function createAbilityBossSnipeUpgradeOptions(ability: Ability): AbilityUpgradeOption[] {
-    let upgradeOptions: AbilityUpgradeOption[] = [];
-    let abilitySnipe = ability as AbilitySnipe;
-
-    pushAbilityUpgradesOptions(ABILITY_SNIPE_UPGRADE_FUNCTIONS, upgradeOptions, ability);
-    return upgradeOptions;
+function executeAbilitySnipeUpgradeOption(ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game){
+    const abilityUpgradeOption: AbilityUpgradeOption = upgradeOption as AbilityUpgradeOption;
+    upgradeAbility(ability, character, abilityUpgradeOption);
 }
 

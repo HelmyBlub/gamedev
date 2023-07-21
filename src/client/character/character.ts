@@ -11,7 +11,6 @@ import { LEVELING_CHARACTER, LevelingCharacter } from "./playerCharacters/leveli
 import { BossEnemyCharacter, CHARACTER_TYPE_BOSS_ENEMY } from "./enemy/bossEnemy.js";
 import { removeCharacterDebuffs, tickCharacterDebuffs } from "../debuff/debuff.js";
 import { createAbilityLeash } from "../ability/abilityLeash.js";
-import { fillRandomUpgradeOptions } from "./characterUpgrades.js";
 import { fillRandomUpgradeOptionChoices, UpgradeOption } from "./upgrade.js";
 import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters/playerCharacters.js";
 
@@ -80,7 +79,7 @@ export function playerCharactersAddBossSkillPoints(game: Game) {
                     }                            
                 }
             }
-            if (gotSkillPoint && character.upgradeChoice.length === 0) {
+            if (gotSkillPoint && character.upgradeChoices.length === 0) {
                 fillRandomUpgradeOptionChoices(character, game);
             }
         }
@@ -92,7 +91,7 @@ export function executeDefaultCharacterUpgradeOption(character: Character, upgra
         let keys = Object.keys(PLAYER_CHARACTER_CLASSES_FUNCTIONS);
     
         for(let key of keys){
-            if(key === upgradeOptionChoice.name){
+            if(key === upgradeOptionChoice.identifier){
                 PLAYER_CHARACTER_CLASSES_FUNCTIONS[key].changeCharacterToThisClass(character, game.state.idCounter, game);
                 break;
             }

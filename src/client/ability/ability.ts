@@ -19,7 +19,7 @@ import { addAbilitySnipe } from "./snipe/abilitySnipe.js"
 import { addAbilitySpeedBoost } from "./speedBoost/abilitySpeedBoost.js"
 import { addAbilitySlowTrail } from "./abilitySlowTrail.js"
 import { addAbilityFireLine } from "./abilityFireLine.js"
-import { AbilityUpgradeOption, AbilityUpgradesFunctions } from "./abilityUpgrade.js"
+import { AbilityUpgradesFunctions } from "./abilityUpgrade.js"
 import { addAbilityExplode } from "./abilityExplode.js"
 import { addAbilityFeedPet } from "./petTamer/abilityFeedPet.js"
 import { addAbilityLovePet } from "./petTamer/abilityLovePet.js"
@@ -66,9 +66,8 @@ export type AbilityFunctions = {
     tickAbility?: (abilityOwner: AbilityOwner, ability: Ability, game: Game) => void,
     tickAbilityObject?: (abilityObject: AbilityObject, game: Game) => void,
     createAbility: (idCounter: IdCounter, playerInputBinding?: string) => Ability,
-    createAbilityUpgradeOptions: (ability: Ability) => AbilityUpgradeOption[],
-    createAbilityBossUpgradeOptions?: (ability: Ability) => AbilityUpgradeOption[],
     createAbilityUpgradeOptionsNew?: (ability: Ability) => UpgradeOptionAndProbability[],
+    createAbilityBossUpgradeOptionsNew?: (ability: Ability) => UpgradeOptionAndProbability[],
     executeUpgradeOption?: (ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game) => void,
     activeAbilityCast?: (abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isKeydown: boolean, game: Game) => void,
     deleteAbilityObject?: (abilityObject: AbilityObject, game: Game) => boolean,
@@ -133,7 +132,7 @@ export function createAbility(abilityName: string, idCounter: IdCounter, isLevel
         ability.leveling = { experience: 0, experienceForLevelUp: 10, level: 1 };
     }
     if (getsBossSkillPoints) {
-        if (abilityFunctions.createAbilityBossUpgradeOptions) {
+        if (abilityFunctions.createAbilityBossUpgradeOptionsNew) {
             ability.bossSkillPoints = 0;
         } else {
             console.log(`${abilityName} is missing bossUpgradeOptions`);
@@ -344,6 +343,3 @@ function levelUp(ability: Ability) {
         }
     }
 }
-
-export { AbilityUpgradeOption }
-

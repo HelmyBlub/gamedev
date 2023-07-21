@@ -368,7 +368,7 @@ function checkForAutoSkill(game: Game) {
 
     let character: Character | undefined = findMyCharacter(game);
     if (character && character.type !== DEFAULT_CHARACTER) {
-        if (character.upgradeChoice.length > 0) {
+        if (character.upgradeChoices.length > 0) {
             handleCommand(game, {
                 command: "playerInput",
                 clientId: game.multiplayer.myClientId,

@@ -1,46 +1,31 @@
 import { Character } from "../character/characterModel.js";
-import { CharacterUpgradeChoice } from "../character/characterUpgrades.js";
+import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../character/upgrade.js";
 import { ABILITIES_FUNCTIONS, Ability } from "./ability.js"
 
 export type AbilityUpgrade = {
     level: number,
 }
 
-export type AbilityUpgradeOption = {
-    name: string,
-    upgradeName?: string,
-    probabilityFactor: number,
-    upgrade: (ability: Ability) => void,
-}
-
 export type AbilityUpgradeFunctions = {
-    pushAbilityUpgradeOption: (ability: Ability, upgradeOptions: AbilityUpgradeOption[]) => void,
-    getAbilityUpgradeUiText: (ability: Ability) => string,
-    getAbilityUpgradeUiTextLong: (ability: Ability, name: string | undefined) => string[],
-    getAbilityUpgradeDamageFactor?: (ability: Ability, playerTriggered: boolean) => number,
+    getOptions?: (ability: Ability) => UpgradeOptionAndProbability[],
+    executeOption: (ability: Ability, option: AbilityUpgradeOption) => void,
+    getUiText: (ability: Ability) => string,
+    getUiTextLong: (ability: Ability, name: string | undefined) => string[],
+    getDamageFactor?: (ability: Ability, playerTriggered: boolean) => number,
 }
 
 export type AbilityUpgradesFunctions = {
     [key: string]: AbilityUpgradeFunctions,
 }
 
-export function upgradeAbility(character: Character, upgradeOption: CharacterUpgradeChoice){
-    let ability = character.abilities.find(a => a.name === upgradeOption.abilityName);
-    if (ability !== undefined) {
-        let upgrades: AbilityUpgradeOption[];
-        if (upgradeOption.boss) {
-            const abilityFunctions = ABILITIES_FUNCTIONS[upgradeOption.abilityName!];
-            if (abilityFunctions.createAbilityBossUpgradeOptions) {
-                upgrades = abilityFunctions.createAbilityBossUpgradeOptions(ability);
-                upgrades.find((e) => e.name === upgradeOption.name)?.upgrade(ability);
-                if (ability.bossSkillPoints !== undefined) ability.bossSkillPoints--;
-            }
-        } else {
-            upgrades = ABILITIES_FUNCTIONS[upgradeOption.abilityName!].createAbilityUpgradeOptions(ability);
-            upgrades.find((e) => e.name === upgradeOption.name)?.upgrade(ability);
-        }
-        character.upgradeChoice = [];
-    }    
+export function upgradeAbility(ability: Ability, character: Character, upgradeOption: AbilityUpgradeOption){
+    const abilityFunctions = ABILITIES_FUNCTIONS[upgradeOption.name!];
+    const upgradeFunctions = abilityFunctions.abilityUpgradeFunctions![upgradeOption.identifier];
+    if (upgradeFunctions) {
+        upgradeFunctions.executeOption(ability, upgradeOption);
+        if (ability.bossSkillPoints !== undefined) ability.bossSkillPoints--;
+    }
+    character.upgradeChoices = [];
 }
 
 export function pushAbilityUpgradesUiTexts(upgradeFunctions: AbilityUpgradesFunctions, texts: string[], ability: Ability){
@@ -53,15 +38,20 @@ export function pushAbilityUpgradesUiTexts(upgradeFunctions: AbilityUpgradesFunc
                 texts.push("Upgrades:");
                 first = false;
             }
-            texts.push(upgradeFunctions[key].getAbilityUpgradeUiText(ability));
+            texts.push(upgradeFunctions[key].getUiText(ability));
         }
     }
 }
 
-export function pushAbilityUpgradesOptions(upgradeFunctions: AbilityUpgradesFunctions, upgradeOptions: AbilityUpgradeOption[], ability: Ability) {
+export function pushAbilityUpgradesOptions(upgradeFunctions: AbilityUpgradesFunctions, upgradeOptions: UpgradeOptionAndProbability[], ability: Ability) {
     const keys = Object.keys(upgradeFunctions);
     for(let key of keys){
-        upgradeFunctions[key].pushAbilityUpgradeOption(ability, upgradeOptions);
+        const functions = upgradeFunctions[key];
+        if(functions.getOptions){
+            upgradeOptions.push(...functions.getOptions(ability));
+        }else{
+            upgradeOptions.push(...getAbilityUpgradeOptionDefault(key));
+        }
     }
 }
 
@@ -71,10 +61,22 @@ export function getAbilityUpgradesDamageFactor(upgradeFunctions: AbilityUpgrades
     for(let key of keys){
         if(ability.upgrades[key]){
             let functions = upgradeFunctions[key];
-            if(functions.getAbilityUpgradeDamageFactor){
-                damageFactor *= functions.getAbilityUpgradeDamageFactor(ability, playerTriggered);
+            if(functions.getDamageFactor){
+                damageFactor *= functions.getDamageFactor(ability, playerTriggered);
             }
         }
     }
     return damageFactor;
+}
+
+export function getAbilityUpgradeOptionDefault(optionName: string): UpgradeOptionAndProbability[] {
+    return [{
+        option: {
+            displayText: optionName,
+            identifier: optionName,
+            type: "Ability",
+            boss: true,
+        },
+        probability: 1,
+    }];
 }
