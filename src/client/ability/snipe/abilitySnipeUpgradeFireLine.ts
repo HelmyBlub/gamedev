@@ -1,8 +1,9 @@
+import { AbilityUpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { calcNewPositionMovedInDirection, calculateDirection } from "../../game.js";
 import { Game, Position } from "../../gameModel.js";
-import { Ability, AbilityOwner, AbilityUpgradeOption } from "../ability.js";
+import { Ability } from "../ability.js";
 import { createAbilityObjectFireLine } from "../abilityFireLine.js";
-import { AbilityUpgrade } from "../abilityUpgrade.js";
+import { AbilityUpgrade, getAbilityUpgradeOptionDefault, getAbilityUpgradeOptionSynergy } from "../abilityUpgrade.js";
 import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilitySnipe, getAbilitySnipeDamage } from "./abilitySnipe.js";
 
 export const ABILITY_SNIPE_UPGRADE_FIRE_LINE = "Fire Line";
@@ -19,9 +20,10 @@ export type AbilityUpgradeFireLine = AbilityUpgrade & {
 
 export function addAbilitySnipeUpgradeFireLine() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_FIRE_LINE] = {
-        getAbilityUpgradeUiText: getAbilityUpgradeFireLineUiText,
-        getAbilityUpgradeUiTextLong: getAbilityUpgradeFireLineUiTextLong,
-        pushAbilityUpgradeOption: pushAbilityUpgradeFireLine,
+        getUiText: getAbilityUpgradeFireLineUiText,
+        getUiTextLong: getAbilityUpgradeFireLineUiTextLong,
+        getOptions: getOptionsFireLine,
+        executeOption: executeOptionFireLine,
     }
 }
 
@@ -37,41 +39,39 @@ export function castSnipeFireLine(startPosition: Position, faction: string, abil
     game.state.abilityObjects.push(createAbilityObjectFireLine(faction, startPosition, endPosition, damagePerTick, width, upgradeFireLine.duration, upgradeFireLine.tickInterval, color, abilitySnipe.id, game));
 }
 
-function pushAbilityUpgradeFireLine(ability: Ability, upgradeOptions: AbilityUpgradeOption[]) {
+function getOptionsFireLine(ability: Ability): UpgradeOptionAndProbability[] {
+    let options = getAbilityUpgradeOptionDefault(ability.name, ABILITY_SNIPE_UPGRADE_FIRE_LINE);
     const upgradeFireLine: AbilityUpgradeFireLine | undefined = ability.upgrades[ABILITY_SNIPE_UPGRADE_FIRE_LINE];
-    upgradeOptions.push({
-        name: ABILITY_SNIPE_UPGRADE_FIRE_LINE, probabilityFactor: 1, upgrade: (a: Ability) => {
-            let as = a as AbilitySnipe;
-            let up: AbilityUpgradeFireLine;
-            if (as.upgrades[ABILITY_SNIPE_UPGRADE_FIRE_LINE] === undefined) {
-                up = {
-                    level: 0,
-                    duration: DURATION,
-                    damageTotalFactor: 0,
-                    tickInterval: 200,
-                    range: 150,
-                    upgradeSynergry: false,
-                }
-                as.upgrades[ABILITY_SNIPE_UPGRADE_FIRE_LINE] = up;
-            } else {
-                up = as.upgrades[ABILITY_SNIPE_UPGRADE_FIRE_LINE];
-            }
-            up.level++;
-            up.damageTotalFactor += DAMAGEFACTOR;
-        }
-    });
 
     if (upgradeFireLine && !upgradeFireLine.upgradeSynergry) {
-        const probability = 0.3 * upgradeFireLine.level;
-        upgradeOptions.push({
-            name: `Synergry ${ABILITY_SNIPE_UPGRADE_FIRE_LINE}`,
-            upgradeName: ABILITY_SNIPE_UPGRADE_FIRE_LINE,
-            probabilityFactor: probability,
-            upgrade: (a: Ability) => {
-                let up: AbilityUpgradeFireLine = a.upgrades[ABILITY_SNIPE_UPGRADE_FIRE_LINE];
-                up.upgradeSynergry = true;
+        options.push(getAbilityUpgradeOptionSynergy(ability.name, ABILITY_SNIPE_UPGRADE_FIRE_LINE, upgradeFireLine.level));
+    }
+
+    return options;
+}
+
+function executeOptionFireLine(ability: Ability, option: AbilityUpgradeOption) {
+    let as = ability as AbilitySnipe;
+    let up: AbilityUpgradeFireLine;
+    if (option.additionalInfo === "Synergy") {
+        up = as.upgrades[ABILITY_SNIPE_UPGRADE_FIRE_LINE];
+        up.upgradeSynergry = true;
+    } else {
+        if (as.upgrades[ABILITY_SNIPE_UPGRADE_FIRE_LINE] === undefined) {
+            up = {
+                level: 0,
+                duration: DURATION,
+                damageTotalFactor: 0,
+                tickInterval: 200,
+                range: 150,
+                upgradeSynergry: false,
             }
-        });
+            as.upgrades[ABILITY_SNIPE_UPGRADE_FIRE_LINE] = up;
+        } else {
+            up = as.upgrades[ABILITY_SNIPE_UPGRADE_FIRE_LINE];
+        }
+        up.level++;
+        up.damageTotalFactor += DAMAGEFACTOR;
     }
 }
 
@@ -98,7 +98,7 @@ function getAbilityUpgradeFireLineUiTextLong(ability: Ability, name: string | un
         textLines.push(`The main shot create a fire line.`);
         textLines.push(`It stays on the ground for ${DURATION / 1000}s.`);
         textLines.push(`It does a total of ${DAMAGEFACTOR * 100}% damage in its duration.`);
-    }    
+    }
 
     return textLines;
 }

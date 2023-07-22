@@ -1,8 +1,9 @@
+import { UpgradeOptionAndProbability, AbilityUpgradeOption } from "../../character/upgrade.js";
 import { calculateDistance } from "../../game.js";
 import { Game, Position } from "../../gameModel.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
-import { Ability, AbilityUpgradeOption } from "../ability.js";
-import { AbilityUpgrade } from "../abilityUpgrade.js";
+import { Ability } from "../ability.js";
+import { AbilityUpgrade, getAbilityUpgradeOptionDefault, getAbilityUpgradeOptionSynergy } from "../abilityUpgrade.js";
 import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe, createAbilityObjectSnipeBranch } from "./abilitySnipe.js";
 
 export const ABILITY_SNIPE_UPGRADE_SPLIT_SHOT = "Split Shot";
@@ -14,9 +15,10 @@ export type AbilityUpgradeSplitShot = AbilityUpgrade & {
 
 export function addAbilitySnipeUpgradeSplitShot() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_SPLIT_SHOT] = {
-        getAbilityUpgradeUiText: getAbilityUpgradeSplitShotUiText,
-        getAbilityUpgradeUiTextLong: getAbilityUpgradeSplitShotUiTextLong,
-        pushAbilityUpgradeOption: pushAbilityUpgradeSplitShot,
+        getUiText: getAbilityUpgradeSplitShotUiText,
+        getUiTextLong: getAbilityUpgradeSplitShotUiTextLong,
+        getOptions: getOptionsSplitShot,
+        executeOption: executeOptionSplitShot,
     }
 }
 
@@ -35,37 +37,36 @@ export function abilityUpgradeSplitShotOnSnipeHit(position: Position, abilitySni
     }
 }
 
-function pushAbilityUpgradeSplitShot(ability: Ability, upgradeOptions: AbilityUpgradeOption[]) {
-    const upgradeSplitShot: AbilityUpgradeSplitShot | undefined = ability.upgrades[ABILITY_SNIPE_UPGRADE_SPLIT_SHOT]
-    upgradeOptions.push({
-        name: ABILITY_SNIPE_UPGRADE_SPLIT_SHOT, probabilityFactor: 1, upgrade: (a: Ability) => {
-            let as = a as AbilitySnipe;
-            let up: AbilityUpgradeSplitShot;
-            if (as.upgrades[ABILITY_SNIPE_UPGRADE_SPLIT_SHOT] === undefined) {
-                up = {
-                    level: 0,
-                    shotSplitsPerHit: 0,
-                    upgradeSynergry: false,
-                }
-                as.upgrades[ABILITY_SNIPE_UPGRADE_SPLIT_SHOT] = up;
-            } else {
-                up = as.upgrades[ABILITY_SNIPE_UPGRADE_SPLIT_SHOT];
-            }
-            up.level++;
-            up.shotSplitsPerHit++;
-        }
-    });
+function getOptionsSplitShot(ability: Ability): UpgradeOptionAndProbability[] {
+    let options = getAbilityUpgradeOptionDefault(ability.name, ABILITY_SNIPE_UPGRADE_SPLIT_SHOT);
+    const upgradeSplitShot: AbilityUpgradeSplitShot| undefined = ability.upgrades[ABILITY_SNIPE_UPGRADE_SPLIT_SHOT];
+
     if (upgradeSplitShot && !upgradeSplitShot.upgradeSynergry) {
-        const probability = 0.3 * upgradeSplitShot.level;
-        upgradeOptions.push({
-            name: `Synergry ${ABILITY_SNIPE_UPGRADE_SPLIT_SHOT}`,
-            upgradeName: ABILITY_SNIPE_UPGRADE_SPLIT_SHOT,
-            probabilityFactor: probability,
-            upgrade: (a: Ability) => {
-                let up: AbilityUpgradeSplitShot = a.upgrades[ABILITY_SNIPE_UPGRADE_SPLIT_SHOT];
-                up.upgradeSynergry = true;
+        options.push(getAbilityUpgradeOptionSynergy(ability.name, ABILITY_SNIPE_UPGRADE_SPLIT_SHOT, upgradeSplitShot.level));
+    }
+
+    return options;
+}
+
+function executeOptionSplitShot(ability: Ability, option: AbilityUpgradeOption) {
+    let as = ability as AbilitySnipe;
+    let up: AbilityUpgradeSplitShot;
+    if (option.additionalInfo === "Synergy") {
+        up = as.upgrades[ABILITY_SNIPE_UPGRADE_SPLIT_SHOT];
+        up.upgradeSynergry = true;
+    } else {
+        if (as.upgrades[ABILITY_SNIPE_UPGRADE_SPLIT_SHOT] === undefined) {
+            up = {
+                level: 0,
+                shotSplitsPerHit: 0,
+                upgradeSynergry: false,
             }
-        });
+            as.upgrades[ABILITY_SNIPE_UPGRADE_SPLIT_SHOT] = up;
+        } else {
+            up = as.upgrades[ABILITY_SNIPE_UPGRADE_SPLIT_SHOT];
+        }
+        up.level++;
+        up.shotSplitsPerHit++;
     }
 }
 

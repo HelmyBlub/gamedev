@@ -1,9 +1,11 @@
+import { Character } from "../../character/characterModel.js";
 import { TamerPetCharacter } from "../../character/playerCharacters/tamerPetCharacter.js";
+import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { getNextId } from "../../game.js";
 import { Position, Game, IdCounter } from "../../gameModel.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
-import { Ability, AbilityObject, AbilityOwner, PaintOrderAbility, ABILITIES_FUNCTIONS, AbilityUpgradeOption } from "../ability.js";
-import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions } from "../abilityUpgrade.js";
+import { Ability, AbilityObject, AbilityOwner, PaintOrderAbility, ABILITIES_FUNCTIONS } from "../ability.js";
+import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, upgradeAbility } from "../abilityUpgrade.js";
 import { addAbilityPetPainterCircle } from "./abilityPetPainterCircle.js";
 import { addAbilityPetPainterSquare } from "./abilityPetPainterSquare.js";
 import { addAbilityPetPainterTriangle } from "./abilityPetPainterTriangle.js";
@@ -45,13 +47,14 @@ export function addAbilityPetPainter() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_PET_PAINTER] = {
         tickAbility: tickAbilityPetPainter,
         tickAbilityObject: tickAbilityObjectPetPainter,
-        createAbilityUpgradeOptions: createAbiltiyPetPainterUpgradeOptions,
-        createAbilityBossUpgradeOptions: createAbilityPetPainterUpgradeOptions,
+        createAbilityBossUpgradeOptionsNew: createAbilityPetPainterUpgradeOptions,
+        executeUpgradeOption: executeAbilityPetPainterUpgradeOption,
         createAbility: createAbilityPetPainter,
         paintAbility: paintAbilityPetPainter,
         paintAbilityObject: paintAbilityObjectPetPainter,
         deleteAbilityObject: deleteAbilityObjectPetPainter,
         setAbilityToLevel: setAbilityPetPainterToLevel,
+        abilityUpgradeFunctions: ABILITY_PET_PAINTER_UPGRADE_FUNCTIONS,
         isPassive: true,
     };
     addAbilityPetPainterCircle();
@@ -131,15 +134,15 @@ function paintAbilityPetPainter(ctx: CanvasRenderingContext2D, abilityOwner: Abi
     }
 }
 
-function createAbiltiyPetPainterUpgradeOptions(): AbilityUpgradeOption[] {
-    let upgradeOptions: AbilityUpgradeOption[] = [];
+function createAbilityPetPainterUpgradeOptions(ability: Ability): UpgradeOptionAndProbability[] {
+    let upgradeOptions: UpgradeOptionAndProbability[] = [];
+    pushAbilityUpgradesOptions(ABILITY_PET_PAINTER_UPGRADE_FUNCTIONS, upgradeOptions, ability);
     return upgradeOptions;
 }
 
-function createAbilityPetPainterUpgradeOptions(ability: Ability): AbilityUpgradeOption[] {
-    let upgradeOptions: AbilityUpgradeOption[] = [];
-    pushAbilityUpgradesOptions(ABILITY_PET_PAINTER_UPGRADE_FUNCTIONS, upgradeOptions, ability);
-    return upgradeOptions;
+function executeAbilityPetPainterUpgradeOption(ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game){
+    const abilityUpgradeOption: AbilityUpgradeOption = upgradeOption as AbilityUpgradeOption;
+    upgradeAbility(ability, character, abilityUpgradeOption);
 }
 
 function tickAbilityPetPainter(abilityOwner: AbilityOwner, ability: Ability, game: Game) {

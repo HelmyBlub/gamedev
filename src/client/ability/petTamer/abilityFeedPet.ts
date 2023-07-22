@@ -6,7 +6,7 @@ import { IdCounter, Position, Game } from "../../gameModel.js";
 import { GAME_IMAGES, getImage, loadImage } from "../../imageLoad.js";
 import { moveByDirectionAndDistance } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, AbilityUpgradeOption, PaintOrderAbility } from "../ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility } from "../ability.js";
 
 export type AbilityFeedPet = Ability & {
     feedValue: number,
@@ -30,7 +30,6 @@ GAME_IMAGES[ABILITY_NAME_FEED_PET] = {
 
 export function addAbilityFeedPet() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_FEED_PET] = {
-        createAbilityUpgradeOptions: createAbilityFeedPetUpgradeOptions,
         activeAbilityCast: castFeedPet,
         createAbility: createAbilityFeedPet,
         paintAbilityUI: paintAbilityFeedPetUI,
@@ -175,14 +174,3 @@ function castFeedPet(abilityOwner: AbilityOwner, ability: Ability, castPosition:
 
 }
 
-function createAbilityFeedPetUpgradeOptions(ability: Ability): AbilityUpgradeOption[] {
-    let upgradeOptions: AbilityUpgradeOption[] = [];
-    upgradeOptions.push({
-        name: "Feed pet +10", probabilityFactor: 1, upgrade: (a: Ability) => {
-            let as = a as AbilityFeedPet;
-            as.feedValue += 10;
-        }
-    });
-
-    return upgradeOptions;
-}

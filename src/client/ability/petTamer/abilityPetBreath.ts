@@ -5,7 +5,7 @@ import { getNextId, calculateDirection, calculateDistance } from "../../game.js"
 import { IdCounter, Position, Game } from "../../gameModel.js";
 import { GameMap, moveByDirectionAndDistance } from "../../map/map.js";
 import { Player } from "../../player.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, AbilityUpgradeOption } from "../ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityOwner } from "../ability.js";
 
 type AbilityPetBreath = Ability & {
     damage: number,
@@ -23,7 +23,6 @@ export function addAbilityPetBreath() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_PET_BREATH] = {
         tickAbility: tickAbilityPetBreath,
         createAbility: createAbilityPetBreath,
-        createAbilityUpgradeOptions: createAbilityPetBreathUpgradeOptions,
         paintAbility: paintAbilityPetBreath,
         setAbilityToLevel: setAbilityPetBreathToLevel,
         setAbilityToBossLevel: setAbilityPetBreathToBossLevel,
@@ -114,12 +113,6 @@ function tickAbilityPetBreath(abilityOwner: AbilityOwner, ability: Ability, game
 
 function getDamage(pet: TamerPetCharacter, ability: AbilityPetBreath): number{
     return ability.damage * pet.sizeFactor;
-}
-
-function createAbilityPetBreathUpgradeOptions(): AbilityUpgradeOption[] {
-    let upgradeOptions: AbilityUpgradeOption[] = [];
-
-    return upgradeOptions;
 }
 
 function detectPetBreathToCharactersHit(abilityOwner: TamerPetCharacter, ability: AbilityPetBreath, map: GameMap, players: Player[], bosses: BossEnemyCharacter[], game: Game) {

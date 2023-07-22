@@ -30,7 +30,7 @@ export function changeToLevelingCharacter(character: Character, game: Game): Lev
 export function addLevelingCharacter(){
     CHARACTER_TYPE_FUNCTIONS[LEVELING_CHARACTER] = {
         tickFunction: tickLevelingCharacter,
-        createUpgradeOptionsNew: createCharacterUpgradeOptionsNew,
+        createUpgradeOptions: createCharacterUpgradeOptionsNew,
         executeUpgradeOption: executeLevelingCharacterUpgradeOption,
     }
 }

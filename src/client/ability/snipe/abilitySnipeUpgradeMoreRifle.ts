@@ -1,7 +1,8 @@
+import { AbilityUpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { calcNewPositionMovedInDirection, calculateDirection, getClientInfoByCharacterId } from "../../game.js";
 import { ClientInfo, Game, Position } from "../../gameModel.js";
-import { Ability, AbilityOwner, AbilityUpgradeOption } from "../ability.js";
-import { AbilityUpgrade } from "../abilityUpgrade.js";
+import { Ability, AbilityOwner } from "../ability.js";
+import { AbilityUpgrade, getAbilityUpgradeOptionDefault, getAbilityUpgradeOptionSynergy } from "../abilityUpgrade.js";
 import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilitySnipe, createAbilityObjectSnipeInitial } from "./abilitySnipe.js";
 import { paintSniperRifle } from "./abilitySnipePaint.js";
 import { ABILITY_SNIPE_UPGRADE_AFTER_IMAGE, AbilityUpgradeAfterImage, castSnipeAfterImage } from "./abilitySnipeUpgradeAfterImage.js";
@@ -18,9 +19,10 @@ export type AbilityUpgradeMoreRifles = AbilityUpgrade & {
 
 export function addAbilitySnipeUpgradeMoreRifles() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_MORE_RIFLES] = {
-        getAbilityUpgradeUiText: getAbilityUpgradeMoreRiflesUiText,
-        getAbilityUpgradeUiTextLong: getAbilityUpgradeMoreRiflesUiTextLong,
-        pushAbilityUpgradeOption: pushAbilityUpgradeMoreRifles,
+        getUiText: getAbilityUpgradeMoreRiflesUiText,
+        getUiTextLong: getAbilityUpgradeMoreRiflesUiTextLong,
+        getOptions: getOptionsMoreRifles,
+        executeOption: executeOptionMoreRifles,
     }
 }
 
@@ -68,41 +70,40 @@ export function tickAbilityUpgradeMoreRifles(abilitySnipe: AbilitySnipe, ability
     }
 }
 
-function pushAbilityUpgradeMoreRifles(ability: Ability, upgradeOptions: AbilityUpgradeOption[]) {
+function getOptionsMoreRifles(ability: Ability): UpgradeOptionAndProbability[] {
+    let options = getAbilityUpgradeOptionDefault(ability.name, ABILITY_SNIPE_UPGRADE_MORE_RIFLES);
     const upgradeMoreRifles: AbilityUpgradeMoreRifles | undefined = ability.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES];
-    upgradeOptions.push({
-        name: ABILITY_SNIPE_UPGRADE_MORE_RIFLES, probabilityFactor: 1, upgrade: (a: Ability) => {
-            let as = a as AbilitySnipe;
-            let up: AbilityUpgradeMoreRifles;
-            if (as.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES] === undefined) {
-                up = {
-                    level: 0,
-                    rotationDirection: 0,
-                    rotationDistance: 80,
-                    lastSniperRiflePaintDirection: [0],
-                    numberRifles: 0,
-                    upgradeSynergry: false,
-                }
-                as.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES] = up;
-            } else {
-                up = as.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES];
-            }
-            up.level++;
-            up.numberRifles += 1;
-            up.lastSniperRiflePaintDirection.push(0);
-        }
-    });
+
     if (upgradeMoreRifles && !upgradeMoreRifles.upgradeSynergry) {
-        const probability = 0.3 * upgradeMoreRifles.level;
-        upgradeOptions.push({
-            name: `Synergry ${ABILITY_SNIPE_UPGRADE_MORE_RIFLES}`,
-            upgradeName: ABILITY_SNIPE_UPGRADE_MORE_RIFLES,
-            probabilityFactor: probability,
-            upgrade: (a: Ability) => {
-                let up: AbilityUpgradeMoreRifles = a.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES];
-                up.upgradeSynergry = true;
+        options.push(getAbilityUpgradeOptionSynergy(ability.name, ABILITY_SNIPE_UPGRADE_MORE_RIFLES, upgradeMoreRifles.level));
+    }
+
+    return options;
+}
+
+function executeOptionMoreRifles(ability: Ability, option: AbilityUpgradeOption) {
+    let as = ability as AbilitySnipe;
+    let up: AbilityUpgradeMoreRifles;
+    if (option.additionalInfo === "Synergy") {
+        up = as.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES];
+        up.upgradeSynergry = true;
+    } else {
+        if (as.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES] === undefined) {
+            up = {
+                level: 0,
+                rotationDirection: 0,
+                rotationDistance: 80,
+                lastSniperRiflePaintDirection: [0],
+                numberRifles: 0,
+                upgradeSynergry: false,
             }
-        });
+            as.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES] = up;
+        } else {
+            up = as.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES];
+        }
+        up.level++;
+        up.numberRifles += 1;
+        up.lastSniperRiflePaintDirection.push(0);
     }
 }
 

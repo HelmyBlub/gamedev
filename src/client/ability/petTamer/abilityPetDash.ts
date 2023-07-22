@@ -1,13 +1,9 @@
-import { determineCharactersInDistance, characterTakeDamage } from "../../character/character.js";
-import { BossEnemyCharacter } from "../../character/enemy/bossEnemy.js";
-import { TamerPetCharacter, tamerPetFeed } from "../../character/playerCharacters/tamerPetCharacter.js";
-import { getNextId, calculateDirection, calculateDistance } from "../../game.js";
+import { TamerPetCharacter } from "../../character/playerCharacters/tamerPetCharacter.js";
+import { getNextId } from "../../game.js";
 import { IdCounter, Position, Game } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
-import { GameMap, moveByDirectionAndDistance } from "../../map/map.js";
-import { Player } from "../../player.js";
-import { nextRandom } from "../../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, AbilityUpgradeOption, detectCircleCharacterHit } from "../ability.js";
+import { moveByDirectionAndDistance } from "../../map/map.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, detectCircleCharacterHit } from "../ability.js";
 
 type AbilityPetDash = Ability & {
     baseDamage: number,
@@ -26,7 +22,6 @@ export function addAbilityPetDash() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_PET_DASH] = {
         tickAbility: tickAbilityPetDash,
         createAbility: createAbilityPetDash,
-        createAbilityUpgradeOptions: createAbilityPetDashUpgradeOptions,
         paintAbility: paintAbilityPetDash,
         setAbilityToLevel: setAbilityPetDashToLevel,
         setAbilityToBossLevel: setAbilityPetDashToBossLevel,
@@ -106,10 +101,4 @@ function tickAbilityPetDash(abilityOwner: AbilityOwner, ability: Ability, game: 
 
 function getDamage(pet: TamerPetCharacter, ability: AbilityPetDash): number {
     return ability.baseDamage * pet.sizeFactor * pet.moveSpeed;
-}
-
-function createAbilityPetDashUpgradeOptions(): AbilityUpgradeOption[] {
-    let upgradeOptions: AbilityUpgradeOption[] = [];
-
-    return upgradeOptions;
 }

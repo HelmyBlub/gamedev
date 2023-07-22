@@ -1,6 +1,7 @@
+import { UpgradeOptionAndProbability, AbilityUpgradeOption } from "../../character/upgrade.js";
 import { Game } from "../../gameModel.js";
-import { Ability, AbilityOwner, AbilityUpgradeOption } from "../ability.js";
-import { AbilityUpgrade } from "../abilityUpgrade.js";
+import { Ability, AbilityOwner } from "../ability.js";
+import { AbilityUpgrade, getAbilityUpgradeOptionDefault, getAbilityUpgradeOptionSynergy } from "../abilityUpgrade.js";
 import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilitySnipe } from "./abilitySnipe.js";
 
 export const ABILITY_SNIPE_UPGRADE_STAY_STILL = "Stay Still";
@@ -17,10 +18,11 @@ export type AbilityUpgradeStayStill = AbilityUpgrade & {
 
 export function addAbilitySnipeUpgradeStayStill() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_STAY_STILL] = {
-        getAbilityUpgradeUiText: getAbilityUpgradeStayStillUiText,
-        getAbilityUpgradeUiTextLong: getAbilityUpgradeStayStillUiTextLong,
-        pushAbilityUpgradeOption: pushAbilityUpgradeStayStill,
-        getAbilityUpgradeDamageFactor: getAbilityUpgradeStayStillDamageFactor,
+        getUiText: getAbilityUpgradeStayStillUiText,
+        getUiTextLong: getAbilityUpgradeStayStillUiTextLong,
+        getDamageFactor: getAbilityUpgradeStayStillDamageFactor,
+        getOptions: getOptionsStayStill,
+        executeOption: executeOptionStayStill,
     }
 }
 
@@ -52,40 +54,39 @@ export function tickAbilityUpgradeStayStill(abilitySnipe: AbilitySnipe, abilityO
     }
 }
 
-function pushAbilityUpgradeStayStill(ability: Ability, upgradeOptions: AbilityUpgradeOption[]) {
+function getOptionsStayStill(ability: Ability): UpgradeOptionAndProbability[] {
+    let options = getAbilityUpgradeOptionDefault(ability.name, ABILITY_SNIPE_UPGRADE_STAY_STILL);
     const upgradeStayStill: AbilityUpgradeStayStill | undefined = ability.upgrades[ABILITY_SNIPE_UPGRADE_STAY_STILL];
-    upgradeOptions.push({
-        name: ABILITY_SNIPE_UPGRADE_STAY_STILL, probabilityFactor: 1, upgrade: (a: Ability) => {
-            let as = a as AbilitySnipe;
-            let up: AbilityUpgradeStayStill;
-            if (as.upgrades[ABILITY_SNIPE_UPGRADE_STAY_STILL] === undefined) {
-                up = {
-                    level: 0,
-                    damageMultiplier: 0,
-                    stayStillStartTime: -1,
-                    damageMultiplierActive: false,
-                    stayStillTime: STAY_STILL_TIME,
-                    upgradeSynergry: false,
-                }
-                as.upgrades[ABILITY_SNIPE_UPGRADE_STAY_STILL] = up;
-            } else {
-                up = as.upgrades[ABILITY_SNIPE_UPGRADE_STAY_STILL];
-            }
-            up.level++;
-            up.damageMultiplier += DAMAGE_FACTOR;
-        }
-    });
+
     if (upgradeStayStill && !upgradeStayStill.upgradeSynergry) {
-        const probability = 0.3 * upgradeStayStill.level;
-        upgradeOptions.push({
-            name: `Synergry ${ABILITY_SNIPE_UPGRADE_STAY_STILL}`,
-            upgradeName: ABILITY_SNIPE_UPGRADE_STAY_STILL,
-            probabilityFactor: probability,
-            upgrade: (a: Ability) => {
-                let up: AbilityUpgradeStayStill = a.upgrades[ABILITY_SNIPE_UPGRADE_STAY_STILL];
-                up.upgradeSynergry = true;
+        options.push(getAbilityUpgradeOptionSynergy(ability.name, ABILITY_SNIPE_UPGRADE_STAY_STILL, upgradeStayStill.level));
+    }
+
+    return options;
+}
+
+function executeOptionStayStill(ability: Ability, option: AbilityUpgradeOption) {
+    let as = ability as AbilitySnipe;
+    let up: AbilityUpgradeStayStill;
+    if (option.additionalInfo === "Synergy") {
+        up = as.upgrades[ABILITY_SNIPE_UPGRADE_STAY_STILL];
+        up.upgradeSynergry = true;
+    } else {
+        if (as.upgrades[ABILITY_SNIPE_UPGRADE_STAY_STILL] === undefined) {
+            up = {
+                level: 0,
+                damageMultiplier: 0,
+                stayStillStartTime: -1,
+                damageMultiplierActive: false,
+                stayStillTime: STAY_STILL_TIME,
+                upgradeSynergry: false,
             }
-        });
+            as.upgrades[ABILITY_SNIPE_UPGRADE_STAY_STILL] = up;
+        } else {
+            up = as.upgrades[ABILITY_SNIPE_UPGRADE_STAY_STILL];
+        }
+        up.level++;
+        up.damageMultiplier += DAMAGE_FACTOR;
     }
 }
 

@@ -6,7 +6,6 @@ import { GAME_IMAGES, loadImage } from "../imageLoad.js";
 import { GameMap } from "../map/map.js";
 import { Player } from "../player.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner } from "./ability.js";
-import { AbilityUpgradeOptionOld } from "./abilityUpgrade.js";
 
 type AbilitySword = Ability & {
     damage: number,
@@ -29,7 +28,6 @@ GAME_IMAGES[ABILITY_NAME_SWORD] = {
 export function addAbilitySword() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_SWORD] = {
         tickAbility: tickAbilitySword,
-        createAbilityUpgradeOptions: createAbilitySwordUpgradeOptions,
         paintAbility: paintAbilitySword,
         setAbilityToLevel: setAbilitySwordToLevel,
         createAbility: createAbilitySword,
@@ -195,39 +193,6 @@ function tickAbilitySword(abilityOwner: AbilityOwner, ability: Ability, game: Ga
             abilitySword.nextTickTime = game.state.time + abilitySword.tickInterval;
         }
     }
-}
-
-function createAbilitySwordUpgradeOptions(): AbilityUpgradeOptionOld[] {
-    let upgradeOptions: AbilityUpgradeOptionOld[] = [];
-    upgradeOptions.push({
-        name: "Damage+50", probabilityFactor: 1, upgrade: (a: Ability) => {
-            let as = a as AbilitySword;
-            as.damage += 50;
-        }
-    });
-    upgradeOptions.push({
-        name: "SwordSize+", probabilityFactor: 1, upgrade: (a: Ability) => {
-            let as = a as AbilitySword;
-            as.swordLength += 10;
-        }
-    });
-
-    upgradeOptions.push({
-        name: "SwordCount+", probabilityFactor: 1, upgrade: (a: Ability) => {
-            let as = a as AbilitySword;
-            as.swordCount += 1;
-            as.angleChangePerSword = Math.PI * 2 / as.swordCount;
-        }
-    });
-
-    upgradeOptions.push({
-        name: "SwordSpeed+", probabilityFactor: 1, upgrade: (a: Ability) => {
-            let as = a as AbilitySword;
-            as.angleChangePerTick += 0.005;
-        }
-    });
-
-    return upgradeOptions;
 }
 
 function detectSwordToCharactersHit(abilityOwner: AbilityOwner, ability: AbilitySword, map: GameMap, players: Player[], bosses: BossEnemyCharacter[], game: Game) {

@@ -1,12 +1,6 @@
 current tasks:
 - redesign "upgrades"
-    - currently works with character & his abilities
-    - does not work with character pets abiltities
-    - what it can do:
-        - "choice"
-            - display text
-            - display long text
-        - gather all upgrade "options" (20) -> take 3 random "choices" -> 
+    - continue at "abilitySnipeUpgradeBackwardsShot"
 - tamer:    
     - create abilities for pets and replace them with the existing one
         - aoe ideas:

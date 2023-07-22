@@ -16,8 +16,8 @@ export type CHARACTER_TYPE_FUNCTIONS = {
     [key: string]: {
         tickFunction?: (character: Character, game: Game, pathingCache: PathingCache | null) => void,
         tickPetFunction?: (character: Character, petOwner: Character, game: Game, pathingCache: PathingCache | null) => void,
-        createUpgradeOptionsNew?: (character: Character, game: Game) => UpgradeOptionAndProbability[],
-        createBossUpgradeOptionsNew?: (character: Character, game: Game) => UpgradeOptionAndProbability[],
+        createUpgradeOptions?: (character: Character, game: Game) => UpgradeOptionAndProbability[],
+        createBossUpgradeOptions?: (character: Character, game: Game) => UpgradeOptionAndProbability[],
         executeUpgradeOption?: (character: Character, upgradeOptionChoice: UpgradeOption, game: Game) => void,
         paintCharacterType?: (ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) => void,
     }

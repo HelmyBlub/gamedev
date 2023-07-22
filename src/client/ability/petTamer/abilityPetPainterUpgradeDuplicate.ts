@@ -1,4 +1,5 @@
-import { Ability, AbilityUpgradeOption } from "../ability.js";
+import { AbilityUpgradeOption } from "../../character/upgrade.js";
+import { Ability } from "../ability.js";
 import { AbilityUpgrade } from "../abilityUpgrade.js";
 import { ABILITY_PET_PAINTER_UPGRADE_FUNCTIONS, AbilityPetPainter } from "./abilityPetPainter.js";
 
@@ -9,26 +10,22 @@ export const ABILITY_PET_PAINTER_UPGARDE_DUPLICATE = "Paint Duplicate";
 
 export function addAbilityPetPainterUpgradeDuplicate() {
     ABILITY_PET_PAINTER_UPGRADE_FUNCTIONS[ABILITY_PET_PAINTER_UPGARDE_DUPLICATE] = {
-        getAbilityUpgradeUiText: getAbilityUpgradeDuplicateUiText,
-        getAbilityUpgradeUiTextLong: getAbilityUpgradeDuplicateUiTextLong,
-        pushAbilityUpgradeOption: pushAbilityUpgradeDuplicate,
+        getUiText: getAbilityUpgradeDuplicateUiText,
+        getUiTextLong: getAbilityUpgradeDuplicateUiTextLong,
+        executeOption: executeOptionPaintDuplicate,
     }
 }
 
-function pushAbilityUpgradeDuplicate(ability: Ability, upgradeOptions: AbilityUpgradeOption[]) {
-    upgradeOptions.push({
-        name: ABILITY_PET_PAINTER_UPGARDE_DUPLICATE, probabilityFactor: 1, upgrade: (a: Ability) => {
-            let as = a as AbilityPetPainter;
-            let up: AbilityPetPainterUpgradeDuplicate;
-            if (as.upgrades[ABILITY_PET_PAINTER_UPGARDE_DUPLICATE] === undefined) {
-                up = { level: 0 };
-                as.upgrades[ABILITY_PET_PAINTER_UPGARDE_DUPLICATE] = up;
-            } else {
-                up = as.upgrades[ABILITY_PET_PAINTER_UPGARDE_DUPLICATE];
-            }
-            up.level++;
-        }
-    });
+function executeOptionPaintDuplicate(ability: Ability, option: AbilityUpgradeOption) {
+    let as = ability as AbilityPetPainter;
+    let up: AbilityPetPainterUpgradeDuplicate;
+    if (as.upgrades[ABILITY_PET_PAINTER_UPGARDE_DUPLICATE] === undefined) {
+        up = { level: 0 };
+        as.upgrades[ABILITY_PET_PAINTER_UPGARDE_DUPLICATE] = up;
+    } else {
+        up = as.upgrades[ABILITY_PET_PAINTER_UPGARDE_DUPLICATE];
+    }
+    up.level++;
 }
 
 function getAbilityUpgradeDuplicateUiText(ability: Ability): string {

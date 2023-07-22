@@ -15,6 +15,12 @@ export type AbilityUpgradeOption = UpgradeOption & {
     name: string,
 }
 
+export type PetAbilityUpgradeOption = UpgradeOption & {
+    type: "PetAbility",
+    abilityName: string,
+    petId: number,
+}
+
 export type UpgradeOptionAndProbability = { option: UpgradeOption, probability: number };
 
 export function fillRandomUpgradeOptionChoices(character: Character, game: Game) {
@@ -53,11 +59,11 @@ export function executeUpgradeOptionChoice(character: Character, upgradeChoice: 
 function getCharacterUpgradeOptions(character: Character, game: Game): UpgradeOptionAndProbability[] {
     let upgradeOptionAndProbability: UpgradeOptionAndProbability[] = [];
     let characterTypeFunction = CHARACTER_TYPE_FUNCTIONS[character.type];
-    if (characterTypeFunction.createBossUpgradeOptionsNew) {
-        upgradeOptionAndProbability = characterTypeFunction.createBossUpgradeOptionsNew(character, game);
+    if (characterTypeFunction.createBossUpgradeOptions) {
+        upgradeOptionAndProbability = characterTypeFunction.createBossUpgradeOptions(character, game);
     }
-    if (upgradeOptionAndProbability.length === 0 && characterTypeFunction.createUpgradeOptionsNew) {
-        upgradeOptionAndProbability = characterTypeFunction.createUpgradeOptionsNew(character, game);
+    if (upgradeOptionAndProbability.length === 0 && characterTypeFunction.createUpgradeOptions) {
+        upgradeOptionAndProbability = characterTypeFunction.createUpgradeOptions(character, game);
     }
     return upgradeOptionAndProbability;
 }

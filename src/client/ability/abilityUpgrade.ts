@@ -20,7 +20,7 @@ export type AbilityUpgradesFunctions = {
 
 export function upgradeAbility(ability: Ability, character: Character, upgradeOption: AbilityUpgradeOption){
     const abilityFunctions = ABILITIES_FUNCTIONS[upgradeOption.name!];
-    const upgradeFunctions = abilityFunctions.abilityUpgradeFunctions![upgradeOption.identifier];
+    const upgradeFunctions = abilityFunctions.abilityUpgradeFunctions![upgradeOption.identifier!];
     if (upgradeFunctions) {
         upgradeFunctions.executeOption(ability, upgradeOption);
         if (ability.bossSkillPoints !== undefined) ability.bossSkillPoints--;
@@ -50,7 +50,7 @@ export function pushAbilityUpgradesOptions(upgradeFunctions: AbilityUpgradesFunc
         if(functions.getOptions){
             upgradeOptions.push(...functions.getOptions(ability));
         }else{
-            upgradeOptions.push(...getAbilityUpgradeOptionDefault(key));
+            upgradeOptions.push(...getAbilityUpgradeOptionDefault(ability.name, key));
         }
     }
 }
@@ -69,14 +69,34 @@ export function getAbilityUpgradesDamageFactor(upgradeFunctions: AbilityUpgrades
     return damageFactor;
 }
 
-export function getAbilityUpgradeOptionDefault(optionName: string): UpgradeOptionAndProbability[] {
+export function getAbilityUpgradeOptionDefault(abilityName: string, upgradeName: string): UpgradeOptionAndProbability[] {
+    let option: AbilityUpgradeOption = {
+        displayText: upgradeName,
+        identifier: upgradeName,
+        name: abilityName,
+        type: "Ability",
+        boss: true,
+    }    
     return [{
-        option: {
-            displayText: optionName,
-            identifier: optionName,
-            type: "Ability",
-            boss: true,
-        },
+        option: option,
         probability: 1,
     }];
+}
+
+export function getAbilityUpgradeOptionSynergy(abilityName: string, upgradeName: string, probabilityFactor: number): UpgradeOptionAndProbability{
+    const probability = 0.3 * probabilityFactor;
+    let option: AbilityUpgradeOption = {
+        displayText: `Synergry ${upgradeName}`,
+        identifier: upgradeName,
+        name: abilityName,
+        type: "Ability",
+        additionalInfo: "Synergry",
+        boss: true,
+    }    
+
+    let optionAndProbability: UpgradeOptionAndProbability = {
+        option: option,
+        probability: probability,
+    };
+    return optionAndProbability;
 }

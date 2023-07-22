@@ -6,7 +6,7 @@ import { IdCounter, Position, Game } from "../../gameModel.js";
 import { GAME_IMAGES, getImage, loadImage } from "../../imageLoad.js";
 import { moveByDirectionAndDistance } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, AbilityUpgradeOption, PaintOrderAbility } from "../ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility } from "../ability.js";
 
 export type AbilityLovePet = Ability & {
     loveValue: number,
@@ -30,7 +30,6 @@ GAME_IMAGES[ABILITY_NAME_LOVE_PET] = {
 
 export function addAbilityLovePet() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_LOVE_PET] = {
-        createAbilityUpgradeOptions: createAbilityLovePetUpgradeOptions,
         activeAbilityCast: castLovePet,
         createAbility: createAbilityLovePet,
         paintAbilityUI: paintAbilityLovePetUI,
@@ -173,16 +172,4 @@ function castLovePet(abilityOwner: AbilityOwner, ability: Ability, castPosition:
     }
 
 
-}
-
-function createAbilityLovePetUpgradeOptions(ability: Ability): AbilityUpgradeOption[] {
-    let upgradeOptions: AbilityUpgradeOption[] = [];
-    upgradeOptions.push({
-        name: "Love pet +10", probabilityFactor: 1, upgrade: (a: Ability) => {
-            let as = a as AbilityLovePet;
-            as.loveValue += 10;
-        }
-    });
-
-    return upgradeOptions;
 }

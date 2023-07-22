@@ -19,7 +19,7 @@ export function addAbilitySpeedBoostUpgradeSlowTrail() {
 
 function getOptionsSlowTrail(ability: Ability): UpgradeOptionAndProbability[]{
     if (ability.upgrades[ABILITY_SPEED_BOOST_UPGARDE_SLOW_TRAIL]) return [];
-    return getAbilityUpgradeOptionDefault(ABILITY_SPEED_BOOST_UPGARDE_SLOW_TRAIL);
+    return getAbilityUpgradeOptionDefault(ability.name, ABILITY_SPEED_BOOST_UPGARDE_SLOW_TRAIL);
 }
 
 function executeOptionSlowTrail(ability: Ability, option: AbilityUpgradeOption){

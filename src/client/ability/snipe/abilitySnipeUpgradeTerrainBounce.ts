@@ -1,8 +1,9 @@
+import { UpgradeOptionAndProbability, AbilityUpgradeOption } from "../../character/upgrade.js";
 import { calcNewPositionMovedInDirection, calculateDistance } from "../../game.js";
 import { Position, Game } from "../../gameModel.js";
 import { calculateBounceAngle, getFirstBlockingGameMapTilePositionTouchingLine } from "../../map/map.js";
-import { Ability, AbilityUpgradeOption } from "../ability.js";
-import { AbilityUpgrade } from "../abilityUpgrade.js";
+import { Ability } from "../ability.js";
+import { AbilityUpgrade, getAbilityUpgradeOptionDefault, getAbilityUpgradeOptionSynergy } from "../abilityUpgrade.js";
 import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe, createAbilityObjectSnipe, getAbilitySnipeDamage, getAbilitySnipeRange } from "./abilitySnipe.js";
 
 export const ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE = "Terrain Bounce";
@@ -16,9 +17,10 @@ export type AbilityUpgradeTerrainBounce = AbilityUpgrade & {
 
 export function addAbilitySnipeUpgradeTerrainBounce() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE] = {
-        getAbilityUpgradeUiText: getAbilityUpgradeTerrainBounceUiText,
-        getAbilityUpgradeUiTextLong: getAbilityUpgradeTerrainBounceUiTextLong,
-        pushAbilityUpgradeOption: pushAbilityUpgradeTerrainBounce,
+        getUiText: getAbilityUpgradeTerrainBounceUiText,
+        getUiTextLong: getAbilityUpgradeTerrainBounceUiTextLong,
+        getOptions: getOptionsTerrainBounce,
+        executeOption: executeOptionTerrainBounce,
     }
 }
 
@@ -71,39 +73,37 @@ export function getAbilityUpgradeTerrainBounceDamageFactor(abilitySnipe: Ability
     return 1 + bounceCounter * terrainBounce.damageUpPerBounceFactor;
 }
 
-function pushAbilityUpgradeTerrainBounce(ability: Ability, upgradeOptions: AbilityUpgradeOption[]) {
+function getOptionsTerrainBounce(ability: Ability): UpgradeOptionAndProbability[] {
+    let options = getAbilityUpgradeOptionDefault(ability.name, ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE);
     const upgradeTerrainBounce: AbilityUpgradeTerrainBounce | undefined = ability.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE];
-    upgradeOptions.push({
-        name: "Terrain Bounce", probabilityFactor: 1, upgrade: (a: Ability) => {
-            const as = a as AbilitySnipe;
-            let up: AbilityUpgradeTerrainBounce;
-            if (as.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE] === undefined) {
-                up = {
-                    level: 1,
-                    active: true,
-                    damageUpPerBounceFactor: 0,
-                    upgradeSynergry: false,
-
-                }
-                as.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE] = up;
-            } else {
-                up = as.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE];
-            }
-            up.damageUpPerBounceFactor += DAMAGE_UP_BOUNCE;
-        }
-    });
 
     if (upgradeTerrainBounce && !upgradeTerrainBounce.upgradeSynergry) {
-        const probability = 0.3 * upgradeTerrainBounce.level;
-        upgradeOptions.push({
-            name: `Synergry ${ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE}`,
-            upgradeName: ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE,
-            probabilityFactor: probability,
-            upgrade: (a: Ability) => {
-                let up: AbilityUpgradeTerrainBounce = a.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE];
-                up.upgradeSynergry = true;
+        options.push(getAbilityUpgradeOptionSynergy(ability.name, ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE, upgradeTerrainBounce.level));
+    }
+
+    return options;
+}
+
+function executeOptionTerrainBounce(ability: Ability, option: AbilityUpgradeOption) {
+    let as = ability as AbilitySnipe;
+    let up: AbilityUpgradeTerrainBounce;
+    if (option.additionalInfo === "Synergy") {
+        up = as.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE];
+        up.upgradeSynergry = true;
+    } else {
+        if (as.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE] === undefined) {
+            up = {
+                level: 1,
+                active: true,
+                damageUpPerBounceFactor: 0,
+                upgradeSynergry: false,
+
             }
-        });
+            as.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE] = up;
+        } else {
+            up = as.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE];
+        }
+        up.damageUpPerBounceFactor += DAMAGE_UP_BOUNCE;
     }
 }
 
