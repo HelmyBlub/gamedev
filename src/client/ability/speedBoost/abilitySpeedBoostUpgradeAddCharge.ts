@@ -1,7 +1,7 @@
 import { AbilityUpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { Game } from "../../gameModel.js";
 import { Ability } from "../ability.js";
-import { AbilityUpgrade } from "../abilityUpgrade.js";
+import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrade.js";
 import { ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS, AbilitySpeedBoost } from "./abilitySpeedBoost.js";
 
 export type AbilitySpeedBoostUpgradeAddCharge = AbilityUpgrade & {
@@ -13,8 +13,9 @@ export const ABILITY_SPEED_BOOST_UPGARDE_ADD_CHARGE = "Additional Charge";
 
 export function addAbilitySpeedBoostUpgradeAddCharge() {
     ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS[ABILITY_SPEED_BOOST_UPGARDE_ADD_CHARGE] = {
-        getUiText: getAbilityUpgradeAddChargeUiText,
-        getUiTextLong: getAbilityUpgradeAddChargeUiTextLong,
+        getStatsDisplayText: getAbilityUpgradeAddChargeUiText,
+        getLongExplainText: getAbilityUpgradeAddChargeUiTextLong,
+        getOptions: getOptionsAddCharge,
         executeOption: executeAddCharge,
     }
 }
@@ -31,6 +32,12 @@ export function tickAbilitySpeedBoostUpgradeAddCharge(abilitySpeedBoost: Ability
             }
         }
     }
+}
+
+function getOptionsAddCharge(ability: Ability): UpgradeOptionAndProbability[] {
+    let options = getAbilityUpgradeOptionDefault(ability, ABILITY_SPEED_BOOST_UPGARDE_ADD_CHARGE);
+    options[0].option.displayLongText = getAbilityUpgradeAddChargeUiTextLong(ability);
+    return options;
 }
 
 function executeAddCharge(ability: Ability, option: AbilityUpgradeOption){

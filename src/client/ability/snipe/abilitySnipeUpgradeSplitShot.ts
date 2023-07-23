@@ -15,8 +15,8 @@ export type AbilityUpgradeSplitShot = AbilityUpgrade & {
 
 export function addAbilitySnipeUpgradeSplitShot() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_SPLIT_SHOT] = {
-        getUiText: getAbilityUpgradeSplitShotUiText,
-        getUiTextLong: getAbilityUpgradeSplitShotUiTextLong,
+        getStatsDisplayText: getAbilityUpgradeSplitShotUiText,
+        getLongExplainText: getAbilityUpgradeSplitShotUiTextLong,
         getOptions: getOptionsSplitShot,
         executeOption: executeOptionSplitShot,
     }
@@ -38,12 +38,13 @@ export function abilityUpgradeSplitShotOnSnipeHit(position: Position, abilitySni
 }
 
 function getOptionsSplitShot(ability: Ability): UpgradeOptionAndProbability[] {
-    let options = getAbilityUpgradeOptionDefault(ability.name, ABILITY_SNIPE_UPGRADE_SPLIT_SHOT);
+    let options = getAbilityUpgradeOptionDefault(ability, ABILITY_SNIPE_UPGRADE_SPLIT_SHOT);
     const upgradeSplitShot: AbilityUpgradeSplitShot| undefined = ability.upgrades[ABILITY_SNIPE_UPGRADE_SPLIT_SHOT];
 
     if (upgradeSplitShot && !upgradeSplitShot.upgradeSynergry) {
         options.push(getAbilityUpgradeOptionSynergy(ability.name, ABILITY_SNIPE_UPGRADE_SPLIT_SHOT, upgradeSplitShot.level));
     }
+    options[0].option.displayLongText = getAbilityUpgradeSplitShotUiTextLong(ability, options[0].option as AbilityUpgradeOption);
 
     return options;
 }
@@ -76,13 +77,13 @@ function getAbilityUpgradeSplitShotUiText(ability: Ability): string {
     return "Split On Hit +" + upgrade.shotSplitsPerHit + (upgrade.upgradeSynergry ? " (synergry)" : "");
 }
 
-function getAbilityUpgradeSplitShotUiTextLong(ability: Ability, name: string | undefined): string[] {
+function getAbilityUpgradeSplitShotUiTextLong(ability: Ability, option: AbilityUpgradeOption): string[] {
     const abilitySnipe = ability as AbilitySnipe;
     const upgrade: AbilityUpgrade | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_SPLIT_SHOT];
     const levelText = (upgrade ? `(${upgrade.level + 1})` : "");
 
     const textLines: string[] = [];
-    if (name && name.startsWith("Synergry")) {
+    if (option.additionalInfo && option.additionalInfo === "Synergry") {
         textLines.push(`Synergry ${ABILITY_SNIPE_UPGRADE_SPLIT_SHOT}`);
         textLines.push(`List of synergies:`);
         textLines.push(`- After Image`);

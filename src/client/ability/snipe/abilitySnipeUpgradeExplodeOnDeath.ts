@@ -20,8 +20,8 @@ export type AbilityUpgradeExplodeOnDeath = AbilityUpgrade & {
 
 export function addAbilitySnipeUpgradeExplodeOnDeath() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH] = {
-        getUiText: getAbilityUpgradeExplodeOnDeathUiText,
-        getUiTextLong: getAbilityUpgradeExplodeOnDeathUiTextLong,
+        getStatsDisplayText: getAbilityUpgradeExplodeOnDeathUiText,
+        getLongExplainText: getAbilityUpgradeExplodeOnDeathUiTextLong,
         getOptions: getOptionsExplodeOnDeath,
         executeOption: executeOptionExplodeOnDeath,
     }
@@ -38,12 +38,13 @@ export function executeUpgradeExplodeOnDeath(ability: AbilitySnipe, faction: str
 }
 
 function getOptionsExplodeOnDeath(ability: Ability): UpgradeOptionAndProbability[] {
-    let options = getAbilityUpgradeOptionDefault(ability.name, ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH);
+    let options = getAbilityUpgradeOptionDefault(ability, ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH);
     const upgradeExplodeOnDeath: AbilityUpgradeExplodeOnDeath | undefined = ability.upgrades[ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH];
 
     if (upgradeExplodeOnDeath && !upgradeExplodeOnDeath.upgradeSynergry) {
         options.push(getAbilityUpgradeOptionSynergy(ability.name, ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH, upgradeExplodeOnDeath.level));
     }
+    options[0].option.displayLongText = getAbilityUpgradeExplodeOnDeathUiTextLong(ability, options[0].option as AbilityUpgradeOption);
 
     return options;
 }
@@ -77,13 +78,13 @@ function getAbilityUpgradeExplodeOnDeathUiText(ability: Ability): string {
     return `${ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH}: Damage ${(upgrade.damageFactor) * 100}%` + (upgrade.upgradeSynergry ? " (synergry)" : "");
 }
 
-function getAbilityUpgradeExplodeOnDeathUiTextLong(ability: Ability, name: string | undefined): string[] {
+function getAbilityUpgradeExplodeOnDeathUiTextLong(ability: Ability, option: AbilityUpgradeOption): string[] {
     let abilitySnipe = ability as AbilitySnipe;
     let upgrade: AbilityUpgradeExplodeOnDeath | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH];
     const levelText = (upgrade ? `(${upgrade.level + 1})` : "");
 
     const textLines: string[] = [];
-    if (name && name.startsWith("Synergry")) {
+    if (option.additionalInfo && option.additionalInfo === "Synergry") {
         textLines.push(`Synergry ${ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH}`);
         textLines.push(`List of synergies:`);
         textLines.push(`- After Image`);

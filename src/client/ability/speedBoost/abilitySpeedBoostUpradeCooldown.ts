@@ -1,6 +1,6 @@
-import { AbilityUpgradeOption } from "../../character/upgrade.js";
+import { AbilityUpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { Ability } from "../ability.js";
-import { AbilityUpgrade } from "../abilityUpgrade.js";
+import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrade.js";
 import { ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS, AbilitySpeedBoost } from "./abilitySpeedBoost.js";
 
 type AbilitySpeedBoostUpgradeCooldown = AbilityUpgrade & {
@@ -11,10 +11,17 @@ export const ABILITY_SPEED_BOOST_UPGARDE_COOLDOWN = "Speed Boost -Cooldown";
 
 export function addAbilitySpeedBoostUpgradeCooldown() {
     ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS[ABILITY_SPEED_BOOST_UPGARDE_COOLDOWN] = {
-        getUiText: getAbilityUpgradeCooldownUiText,
-        getUiTextLong: getAbilityUpgradeCooldownUiTextLong,
+        getStatsDisplayText: getAbilityUpgradeCooldownUiText,
+        getLongExplainText: getAbilityUpgradeCooldownUiTextLong,
+        getOptions: getOptionsCooldown,
         executeOption: executeOptionCooldown,
     }
+}
+
+function getOptionsCooldown(ability: Ability): UpgradeOptionAndProbability[] {
+    let options = getAbilityUpgradeOptionDefault(ability, ABILITY_SPEED_BOOST_UPGARDE_COOLDOWN);
+    options[0].option.displayLongText = getAbilityUpgradeCooldownUiTextLong(ability);
+    return options;
 }
 
 function executeOptionCooldown(ability: Ability, option: AbilityUpgradeOption){

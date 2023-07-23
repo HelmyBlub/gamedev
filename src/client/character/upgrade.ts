@@ -5,6 +5,7 @@ import { CHARACTER_TYPE_FUNCTIONS, Character } from "./characterModel.js";
 export type UpgradeOption = {
     type: "Character" | "Ability" | "Pet" | "PetAbility",
     displayText: string,
+    displayLongText?: string[],
     identifier: string,
     additionalInfo?: string,
     boss?: boolean,

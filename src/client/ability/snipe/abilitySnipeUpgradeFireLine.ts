@@ -20,8 +20,8 @@ export type AbilityUpgradeFireLine = AbilityUpgrade & {
 
 export function addAbilitySnipeUpgradeFireLine() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_FIRE_LINE] = {
-        getUiText: getAbilityUpgradeFireLineUiText,
-        getUiTextLong: getAbilityUpgradeFireLineUiTextLong,
+        getStatsDisplayText: getAbilityUpgradeFireLineUiText,
+        getLongExplainText: getAbilityUpgradeFireLineUiTextLong,
         getOptions: getOptionsFireLine,
         executeOption: executeOptionFireLine,
     }
@@ -40,12 +40,13 @@ export function castSnipeFireLine(startPosition: Position, faction: string, abil
 }
 
 function getOptionsFireLine(ability: Ability): UpgradeOptionAndProbability[] {
-    let options = getAbilityUpgradeOptionDefault(ability.name, ABILITY_SNIPE_UPGRADE_FIRE_LINE);
+    let options = getAbilityUpgradeOptionDefault(ability, ABILITY_SNIPE_UPGRADE_FIRE_LINE);
     const upgradeFireLine: AbilityUpgradeFireLine | undefined = ability.upgrades[ABILITY_SNIPE_UPGRADE_FIRE_LINE];
 
     if (upgradeFireLine && !upgradeFireLine.upgradeSynergry) {
         options.push(getAbilityUpgradeOptionSynergy(ability.name, ABILITY_SNIPE_UPGRADE_FIRE_LINE, upgradeFireLine.level));
     }
+    options[0].option.displayLongText = getAbilityUpgradeFireLineUiTextLong(ability, options[0].option as AbilityUpgradeOption);
 
     return options;
 }
@@ -81,13 +82,13 @@ function getAbilityUpgradeFireLineUiText(ability: Ability): string {
     return `${ABILITY_SNIPE_UPGRADE_FIRE_LINE}: ${upgrade.damageTotalFactor * 100}% total damage over ${(upgrade.duration / 1000).toFixed()}s` + (upgrade.upgradeSynergry ? " (synergry)" : "");
 }
 
-function getAbilityUpgradeFireLineUiTextLong(ability: Ability, name: string | undefined): string[] {
+function getAbilityUpgradeFireLineUiTextLong(ability: Ability, option: AbilityUpgradeOption): string[] {
     const abilitySnipe = ability as AbilitySnipe;
     const upgrade: AbilityUpgradeFireLine | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_FIRE_LINE];
     const levelText = (upgrade ? `(${upgrade.level + 1})` : "");
 
     const textLines: string[] = [];
-    if (name && name.startsWith("Synergry")) {
+    if (option.additionalInfo && option.additionalInfo === "Synergry") {
         textLines.push(`Synergry ${ABILITY_SNIPE_UPGRADE_FIRE_LINE}`);
         textLines.push(`List of synergies:`);
         textLines.push(`- After Image`);

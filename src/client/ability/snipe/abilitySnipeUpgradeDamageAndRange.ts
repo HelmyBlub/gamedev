@@ -14,11 +14,11 @@ export type AbilityUpgradeDamageAndRange = AbilityUpgrade & {
 
 export function addAbilitySnipeUpgradeDamageAndRange() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_DAMAGE_AND_RANGE] = {
-        getUiText: getAbilityUpgradeDamageAndRangeUiText,
-        getUiTextLong: getAbilityUpgradeDamageAndRangeUiTextLong,
+        getStatsDisplayText: getAbilityUpgradeDamageAndRangeUiText,
+        getLongExplainText: getAbilityUpgradeDamageAndRangeUiTextLong,
         getDamageFactor: getAbilityUpgradeDamageAndRangeDamageFactor,
-        getOptions: getOptionsNoMissChain,
-        executeOption: executeOptionNoMissChain,
+        getOptions: getOptionsDamageAndRange,
+        executeOption: executeOptionDamageAndRange,
     }
 }
 
@@ -32,8 +32,9 @@ export function abilityUpgradeDamageAndRangeRangeFactor(ability: Ability) {
     return factor;
 }
 
-function getOptionsNoMissChain(ability: Ability): UpgradeOptionAndProbability[] {
-    let options = getAbilityUpgradeOptionDefault(ability.name, ABILITY_SNIPE_UPGRADE_DAMAGE_AND_RANGE);
+function getOptionsDamageAndRange(ability: Ability): UpgradeOptionAndProbability[] {
+    let options = getAbilityUpgradeOptionDefault(ability, ABILITY_SNIPE_UPGRADE_DAMAGE_AND_RANGE);
+    options[0].option.displayLongText = getAbilityUpgradeDamageAndRangeUiTextLong(ability);
     options[0].probability = 0.5;
     return options;
 }
@@ -57,7 +58,7 @@ function getAbilityUpgradeDamageAndRangeUiTextLong(ability: Ability): string[] {
     return textLines;
 }
 
-function executeOptionNoMissChain(ability: Ability, option: AbilityUpgradeOption) {
+function executeOptionDamageAndRange(ability: Ability, option: AbilityUpgradeOption) {
     let as = ability as AbilitySnipe;
     let up: AbilityUpgradeDamageAndRange;
     if (as.upgrades[ABILITY_SNIPE_UPGRADE_DAMAGE_AND_RANGE] === undefined) {

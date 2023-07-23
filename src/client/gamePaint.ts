@@ -333,17 +333,24 @@ function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Charact
     const startY = (ctx.canvas.height * 0.75);
     const optionSpacer = 50;
     if (character.upgradeChoices.length > 0) {
-        let upgradesTexts = getUpgradeTexts(character, game);
         let maxWidthes: number[] = [];
         let totalWidthEsitmate = 0;
-        for (let upgradeText of upgradesTexts) {
+        let displayKeyHint = false;
+        for (let choice of character.upgradeChoices) {
             let maxWidth = 0;
-            for (let textIt = 0; textIt < upgradeText.length; textIt++) {
-                let text = upgradeText[textIt];
-                const fontSize = textIt === 0 ? firstFontSize : addFontSize;
-                ctx.font = fontSize + "px Arial";
-
-                let width = ctx.measureText(text).width + (textIt === 0 ? 40 : 0);
+            if(!game.UI.displayLongInfos && choice.displayLongText) displayKeyHint = true;
+            if(game.UI.displayLongInfos && choice.displayLongText){
+                for (let textIt = 0; textIt < choice.displayLongText.length; textIt++) {
+                    let text = choice.displayLongText[textIt];
+                    const fontSize = textIt === 0 ? firstFontSize : addFontSize;
+                    ctx.font = fontSize + "px Arial";
+    
+                    let width = ctx.measureText(text).width + (textIt === 0 ? 40 : 0);
+                    if (width > maxWidth) maxWidth = width;
+                }
+            }else{
+                ctx.font = firstFontSize + "px Arial";
+                let width = ctx.measureText(choice.displayText).width + 40;
                 if (width > maxWidth) maxWidth = width;
             }
             maxWidthes.push(maxWidth);
@@ -351,29 +358,31 @@ function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Charact
         }
 
         let currentX = Math.max(5, ctx.canvas.width / 2 - totalWidthEsitmate / 2);
-        // let displayKeyHint = !game.UI.displayLongInfos && character.upgradeChoices[0].abilityName;
-        // if(displayKeyHint){
-        //     const hintX = ctx.canvas.width / 2;
-        //     const hintY = startY;
-        //     paintKey(ctx, "TAB", { x: hintX - 70, y: hintY - 60 }, -9, 14);
-        //     ctx.font = firstFontSize + "px Arial";
-        //     ctx.fillText("More Info", hintX - 30, hintY - 40);
-        // }
+        if(displayKeyHint){
+            const hintX = ctx.canvas.width / 2;
+            const hintY = startY;
+            paintKey(ctx, "TAB", { x: hintX - 70, y: hintY - 60 }, -9, 14);
+            ctx.font = firstFontSize + "px Arial";
+            ctx.fillText("More Info", hintX - 30, hintY - 40);
+        }
         for (let i = 0; i < character.upgradeChoices.length; i++) {
+            const choice = character.upgradeChoices[i];
+            let upgradeText: string[] = [choice.displayText];
+            if(game.UI.displayLongInfos && choice.displayLongText) upgradeText = choice.displayLongText;
             ctx.globalAlpha = 0.4;
             ctx.fillStyle = "white";
             let textWidthEstimate = maxWidthes[i];
-            const rectHeight = firstFontSize + addFontSize * (upgradesTexts[i].length - 1) + 6;
+            const rectHeight = firstFontSize + addFontSize * (upgradeText.length - 1) + 6;
             ctx.fillRect(currentX, startY - firstFontSize - 2, textWidthEstimate, rectHeight);
             ctx.globalAlpha = 1;
 
             paintKey(ctx, (i + 1).toString(), { x: currentX, y: startY - 26 });
 
             ctx.fillStyle = "black";
-            for (let j = 0; j < upgradesTexts[i].length; j++) {
+            for (let j = 0; j < upgradeText.length; j++) {
                 const fontSize = j === 0 ? firstFontSize : addFontSize;
                 ctx.font = fontSize + "px Arial";
-                const text = upgradesTexts[i][j];
+                const text = upgradeText[j];
                 let textY = startY - 3;
                 textY += j > 0 ? (firstFontSize + addFontSize * (j - 1)) : 0;
                 const textX = currentX + (j === 0 ? 40 : 0);
@@ -382,43 +391,6 @@ function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Charact
             currentX += textWidthEstimate + optionSpacer;
         }
     }
-}
-
-function getUpgradeTexts(character: Character, game: Game): string[][] {
-    let upgradesTexts: string[][] = [];
-    for (let i = 0; i < character.upgradeChoices.length; i++) {
-        const option = character.upgradeChoices[i];
-        let hasLongText = false;
-        if (game.UI.displayLongInfos) {
-            const texts = undefined; //getLongUpgradeChoiceTexts(option, character);
-            if (texts) {
-                hasLongText = true;
-                upgradesTexts.push(texts);
-            }
-        }
-        if (!hasLongText) {
-            let tempText = `${option.displayText}`;
-            upgradesTexts.push([tempText]);
-        }
-    }
-    return upgradesTexts;
-}
-
-function getLongUpgradeChoiceTexts(option: UpgradeOption, character: Character): string[] | undefined {
-    if (option.type !== "Ability") {
-        const abilityOption = option as AbilityUpgradeOption;
-        let abilityFunctions = ABILITIES_FUNCTIONS[abilityOption.name];
-        if (abilityFunctions && abilityFunctions.abilityUpgradeFunctions) {
-            const abilityUpgradeFunctions = abilityFunctions.abilityUpgradeFunctions[option.identifier];
-            if (abilityUpgradeFunctions) {
-                const ability = character.abilities.find(a => a.name === abilityOption.name);
-                if (ability) {
-                    return abilityUpgradeFunctions.getUiTextLong(ability, abilityOption.name);
-                }
-            }
-        }
-    }
-    return undefined;
 }
 
 function paintTextWithOutline(ctx: CanvasRenderingContext2D, outlineColor: string, textColor: string, text: string, x: number, y: number, centered: boolean = false, lineWidth: number = 1) {

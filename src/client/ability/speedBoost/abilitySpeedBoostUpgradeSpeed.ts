@@ -1,6 +1,6 @@
-import { AbilityUpgradeOption } from "../../character/upgrade.js";
+import { AbilityUpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { Ability } from "../ability.js";
-import { AbilityUpgrade } from "../abilityUpgrade.js";
+import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrade.js";
 import { ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS, AbilitySpeedBoost } from "./abilitySpeedBoost.js";
 
 type AbilitySpeedBoostUpgradeSpeed = AbilityUpgrade & {
@@ -11,10 +11,17 @@ export const ABILITY_SPEED_BOOST_UPGARDE_SPEED = "Speed Boost +Speed";
 
 export function addAbilitySpeedBoostUpgradeSpeed() {
     ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS[ABILITY_SPEED_BOOST_UPGARDE_SPEED] = {
-        getUiText: getAbilityUpgradeSpeedUiText,
-        getUiTextLong: getAbilityUpgradeSpeedUiTextLong,
+        getStatsDisplayText: getAbilityUpgradeSpeedUiText,
+        getLongExplainText: getAbilityUpgradeSpeedUiTextLong,
+        getOptions: getOptionsSpeed,
         executeOption: executeOptionSpeed,
     }
+}
+
+function getOptionsSpeed(ability: Ability): UpgradeOptionAndProbability[] {
+    let options = getAbilityUpgradeOptionDefault(ability, ABILITY_SPEED_BOOST_UPGARDE_SPEED);
+    options[0].option.displayLongText = getAbilityUpgradeSpeedUiTextLong(ability);
+    return options;
 }
 
 function executeOptionSpeed(ability: Ability, option: AbilityUpgradeOption){

@@ -16,8 +16,8 @@ export type AbilityUpgradeNoMissChain = AbilityUpgrade & {
 
 export function addAbilitySnipeUpgradeNoMissChain() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN] = {
-        getUiText: getAbilityUpgradeNoMissChainUiText,
-        getUiTextLong: getAbilityUpgradeNoMissChainUiTextLong,
+        getStatsDisplayText: getAbilityUpgradeNoMissChainUiText,
+        getLongExplainText: getAbilityUpgradeNoMissChainUiTextLong,
         getDamageFactor: getAbilityUpgradeNoMissChainDamageFactor,
         getOptions: getOptionsNoMissChain,
         executeOption: executeOptionNoMissChain,
@@ -39,12 +39,13 @@ export function abilityUpgradeNoMissChainOnObjectSnipeDamageDone(abilitySnipe: A
 }
 
 function getOptionsNoMissChain(ability: Ability): UpgradeOptionAndProbability[] {
-    let options = getAbilityUpgradeOptionDefault(ability.name, ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN);
+    let options = getAbilityUpgradeOptionDefault(ability, ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN);
     const upgradeNoMissChain: AbilityUpgradeNoMissChain | undefined = ability.upgrades[ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN];
 
     if (upgradeNoMissChain && !upgradeNoMissChain.upgradeSynergry) {
         options.push(getAbilityUpgradeOptionSynergy(ability.name, ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN, upgradeNoMissChain.level));
     }
+    options[0].option.displayLongText = getAbilityUpgradeNoMissChainUiTextLong(ability, options[0].option as AbilityUpgradeOption);
 
     return options;
 }
@@ -79,13 +80,13 @@ function getAbilityUpgradeNoMissChainUiText(ability: Ability): string {
     return "Chain Bonus: " + (upgrade.noMissChainCounter * upgrade.noMissBonusDamageFactorAdd * 100).toFixed() + "%" + (upgrade.upgradeSynergry ? " (synergry)" : "");
 }
 
-function getAbilityUpgradeNoMissChainUiTextLong(ability: Ability, name: string | undefined): string[] {
+function getAbilityUpgradeNoMissChainUiTextLong(ability: Ability, option: AbilityUpgradeOption): string[] {
     const abilitySnipe = ability as AbilitySnipe;
     const upgrade: AbilityUpgradeNoMissChain | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN];
     const levelText = (upgrade ? `(${upgrade.level + 1})` : "");
 
     const textLines: string[] = [];
-    if (name && name.startsWith("Synergry")) {
+    if (option.additionalInfo && option.additionalInfo === "Synergry") {
         textLines.push(`Synergry ${ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN}`);
         textLines.push(`All other upgrades will benefit`);
         textLines.push(`from no miss chain bonus damage.`);

@@ -10,8 +10,8 @@ export const ABILITY_SPEED_BOOST_UPGARDE_SLOW_TRAIL = "Slow Trail";
 
 export function addAbilitySpeedBoostUpgradeSlowTrail() {
     ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS[ABILITY_SPEED_BOOST_UPGARDE_SLOW_TRAIL] = {
-        getUiText: getAbilityUpgradeSlowTrailUiText,
-        getUiTextLong: getAbilityUpgradeSlowTrailUiTextLong,
+        getStatsDisplayText: getAbilityUpgradeSlowTrailUiText,
+        getLongExplainText: getAbilityUpgradeSlowTrailUiTextLong,
         getOptions:getOptionsSlowTrail,
         executeOption: executeOptionSlowTrail,
     }
@@ -19,7 +19,9 @@ export function addAbilitySpeedBoostUpgradeSlowTrail() {
 
 function getOptionsSlowTrail(ability: Ability): UpgradeOptionAndProbability[]{
     if (ability.upgrades[ABILITY_SPEED_BOOST_UPGARDE_SLOW_TRAIL]) return [];
-    return getAbilityUpgradeOptionDefault(ability.name, ABILITY_SPEED_BOOST_UPGARDE_SLOW_TRAIL);
+    let options =  getAbilityUpgradeOptionDefault(ability, ABILITY_SPEED_BOOST_UPGARDE_SLOW_TRAIL);
+    options[0].option.displayLongText = getAbilityUpgradeSlowTrailUiTextLong(ability);
+    return options;
 }
 
 function executeOptionSlowTrail(ability: Ability, option: AbilityUpgradeOption){

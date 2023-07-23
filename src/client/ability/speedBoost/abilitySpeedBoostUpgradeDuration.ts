@@ -1,6 +1,6 @@
-import { AbilityUpgradeOption } from "../../character/upgrade.js";
+import { AbilityUpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { Ability } from "../ability.js";
-import { AbilityUpgrade } from "../abilityUpgrade.js";
+import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrade.js";
 import { ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS, AbilitySpeedBoost } from "./abilitySpeedBoost.js";
 
 type AbilitySpeedBoostUpgradeDuration = AbilityUpgrade & {
@@ -12,11 +12,19 @@ export const ABILITY_SPEED_BOOST_UPGARDE_DURATION = "Speed Boost +Duration";
 
 export function addAbilitySpeedBoostUpgradeDuration() {
     ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS[ABILITY_SPEED_BOOST_UPGARDE_DURATION] = {
-        getUiText: getAbilityUpgradeDurationUiText,
-        getUiTextLong: getAbilityUpgradeDurationUiTextLong,
+        getStatsDisplayText: getAbilityUpgradeDurationUiText,
+        getLongExplainText: getAbilityUpgradeDurationUiTextLong,
+        getOptions: getOptionsDuration,
         executeOption: executeOptionDuration,
     }
 }
+
+function getOptionsDuration(ability: Ability): UpgradeOptionAndProbability[] {
+    let options = getAbilityUpgradeOptionDefault(ability, ABILITY_SPEED_BOOST_UPGARDE_DURATION);
+    options[0].option.displayLongText = getAbilityUpgradeDurationUiTextLong(ability);
+    return options;
+}
+
 function executeOptionDuration(ability: Ability, option: AbilityUpgradeOption){
     let as = ability as AbilitySpeedBoost;
     let up: AbilitySpeedBoostUpgradeDuration;

@@ -9,8 +9,8 @@ export type AbilityUpgrade = {
 export type AbilityUpgradeFunctions = {
     getOptions?: (ability: Ability) => UpgradeOptionAndProbability[],
     executeOption: (ability: Ability, option: AbilityUpgradeOption) => void,
-    getUiText: (ability: Ability) => string,
-    getUiTextLong: (ability: Ability, name: string | undefined) => string[],
+    getStatsDisplayText: (ability: Ability) => string,
+    getLongExplainText?: (ability: Ability, option: AbilityUpgradeOption) => string[],
     getDamageFactor?: (ability: Ability, playerTriggered: boolean) => number,
 }
 
@@ -38,7 +38,7 @@ export function pushAbilityUpgradesUiTexts(upgradeFunctions: AbilityUpgradesFunc
                 texts.push("Upgrades:");
                 first = false;
             }
-            texts.push(upgradeFunctions[key].getUiText(ability));
+            texts.push(upgradeFunctions[key].getStatsDisplayText(ability));
         }
     }
 }
@@ -50,7 +50,7 @@ export function pushAbilityUpgradesOptions(upgradeFunctions: AbilityUpgradesFunc
         if(functions.getOptions){
             upgradeOptions.push(...functions.getOptions(ability));
         }else{
-            upgradeOptions.push(...getAbilityUpgradeOptionDefault(ability.name, key));
+            upgradeOptions.push(...getAbilityUpgradeOptionDefault(ability, key));
         }
     }
 }
@@ -69,11 +69,11 @@ export function getAbilityUpgradesDamageFactor(upgradeFunctions: AbilityUpgrades
     return damageFactor;
 }
 
-export function getAbilityUpgradeOptionDefault(abilityName: string, upgradeName: string): UpgradeOptionAndProbability[] {
+export function getAbilityUpgradeOptionDefault(ability: Ability, upgradeName: string): UpgradeOptionAndProbability[] {
     let option: AbilityUpgradeOption = {
         displayText: upgradeName,
         identifier: upgradeName,
-        name: abilityName,
+        name: ability.name,
         type: "Ability",
         boss: true,
     }    

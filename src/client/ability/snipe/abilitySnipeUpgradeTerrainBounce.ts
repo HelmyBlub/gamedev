@@ -17,8 +17,8 @@ export type AbilityUpgradeTerrainBounce = AbilityUpgrade & {
 
 export function addAbilitySnipeUpgradeTerrainBounce() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE] = {
-        getUiText: getAbilityUpgradeTerrainBounceUiText,
-        getUiTextLong: getAbilityUpgradeTerrainBounceUiTextLong,
+        getStatsDisplayText: getAbilityUpgradeTerrainBounceUiText,
+        getLongExplainText: getAbilityUpgradeTerrainBounceUiTextLong,
         getOptions: getOptionsTerrainBounce,
         executeOption: executeOptionTerrainBounce,
     }
@@ -74,12 +74,13 @@ export function getAbilityUpgradeTerrainBounceDamageFactor(abilitySnipe: Ability
 }
 
 function getOptionsTerrainBounce(ability: Ability): UpgradeOptionAndProbability[] {
-    let options = getAbilityUpgradeOptionDefault(ability.name, ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE);
+    let options = getAbilityUpgradeOptionDefault(ability, ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE);
     const upgradeTerrainBounce: AbilityUpgradeTerrainBounce | undefined = ability.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE];
 
     if (upgradeTerrainBounce && !upgradeTerrainBounce.upgradeSynergry) {
         options.push(getAbilityUpgradeOptionSynergy(ability.name, ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE, upgradeTerrainBounce.level));
     }
+    options[0].option.displayLongText = getAbilityUpgradeTerrainBounceUiTextLong(ability, options[0].option as AbilityUpgradeOption);
 
     return options;
 }
@@ -114,12 +115,12 @@ function getAbilityUpgradeTerrainBounceUiText(ability: Ability): string {
     return `Terrain Bounce and +${upgrade.damageUpPerBounceFactor * 100}% damage for each bounce` + (upgrade.upgradeSynergry ? " (synergry)" : "");
 }
 
-function getAbilityUpgradeTerrainBounceUiTextLong(ability: Ability, name: string | undefined): string[] {
+function getAbilityUpgradeTerrainBounceUiTextLong(ability: Ability, option: AbilityUpgradeOption): string[] {
     let abilitySnipe = ability as AbilitySnipe;
     let upgrade: AbilityUpgradeTerrainBounce | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE];
     const levelText = (upgrade ? `(${upgrade.level + 1})` : "");
     const textLines: string[] = [];
-    if (name && name.startsWith("Synergry")) {
+    if (option.additionalInfo && option.additionalInfo === "Synergry") {
         textLines.push(`Synergry ${ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE}`);
         textLines.push(`Most other upgrades will benefit from terrain bounce`);
     } else {

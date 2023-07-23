@@ -18,8 +18,8 @@ export type AbilityUpgradeStayStill = AbilityUpgrade & {
 
 export function addAbilitySnipeUpgradeStayStill() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_STAY_STILL] = {
-        getUiText: getAbilityUpgradeStayStillUiText,
-        getUiTextLong: getAbilityUpgradeStayStillUiTextLong,
+        getStatsDisplayText: getAbilityUpgradeStayStillUiText,
+        getLongExplainText: getAbilityUpgradeStayStillUiTextLong,
         getDamageFactor: getAbilityUpgradeStayStillDamageFactor,
         getOptions: getOptionsStayStill,
         executeOption: executeOptionStayStill,
@@ -55,12 +55,13 @@ export function tickAbilityUpgradeStayStill(abilitySnipe: AbilitySnipe, abilityO
 }
 
 function getOptionsStayStill(ability: Ability): UpgradeOptionAndProbability[] {
-    let options = getAbilityUpgradeOptionDefault(ability.name, ABILITY_SNIPE_UPGRADE_STAY_STILL);
+    let options = getAbilityUpgradeOptionDefault(ability, ABILITY_SNIPE_UPGRADE_STAY_STILL);
     const upgradeStayStill: AbilityUpgradeStayStill | undefined = ability.upgrades[ABILITY_SNIPE_UPGRADE_STAY_STILL];
 
     if (upgradeStayStill && !upgradeStayStill.upgradeSynergry) {
         options.push(getAbilityUpgradeOptionSynergy(ability.name, ABILITY_SNIPE_UPGRADE_STAY_STILL, upgradeStayStill.level));
     }
+    options[0].option.displayLongText = getAbilityUpgradeStayStillUiTextLong(ability, options[0].option as AbilityUpgradeOption);
 
     return options;
 }
@@ -106,13 +107,13 @@ function getAbilityUpgradeStayStillUiText(ability: Ability): string {
     return `Stay Still for ${(upgrade.stayStillTime / 1000).toFixed(2)}s to get ${upgrade.damageMultiplier * 100}% Bonus Damge for current Magazine` + (upgrade.upgradeSynergry ? " (synergry)" : "");
 }
 
-function getAbilityUpgradeStayStillUiTextLong(ability: Ability, name: string | undefined): string[] {
+function getAbilityUpgradeStayStillUiTextLong(ability: Ability, option: AbilityUpgradeOption): string[] {
     let abilitySnipe = ability as AbilitySnipe;
     const upgrade: AbilityUpgrade | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_STAY_STILL];
     const levelText = (upgrade ? `(${upgrade.level + 1})` : "");
 
     const textLines: string[] = [];
-    if (name && name.startsWith("Synergry")) {
+    if (option.additionalInfo && option.additionalInfo === "Synergry") {
         textLines.push(`Synergry ${ABILITY_SNIPE_UPGRADE_STAY_STILL}`);
         textLines.push(`All other upgrades will benefit`);
         textLines.push(`from Stay Still bonus damage.`);

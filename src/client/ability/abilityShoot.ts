@@ -81,7 +81,7 @@ function setAbilityShootToBossLevel(ability: Ability, level: number){
     abilityShoot.moveSpeed = 1;
     abilityShoot.timeToLive = 3000;
     abilityShoot.baseFrequency = 1000;
-    abilityShoot.bulletSize = Math.min(5 + 5 * level, 25);
+    abilityShoot.bulletSize = Math.min(7 + 1 * level, 13);
     abilityShoot.shootRandom = true;
 }
 
