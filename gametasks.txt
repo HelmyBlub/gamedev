@@ -1,5 +1,4 @@
 current tasks:
-- bug: upgrade levels not displayed on choice
 - tamer:    
     - create abilities for pets and replace them with the existing one
         - aoe ideas:
