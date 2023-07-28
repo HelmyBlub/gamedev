@@ -40,7 +40,7 @@ export function addAbilityTower() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_TOWER] = {
         tickAbility: tickAbilityTower,
         tickAbilityObject: tickAbilityObjectTower,
-        createAbilityUpgradeOptionsNew: createAbilityTowerUpgradeOptionsNew,
+        createAbilityUpgradeOptions: createAbilityTowerUpgradeOptionsNew,
         executeUpgradeOption: executeAbilityTowerUpgradeOption,
         paintAbilityObject: paintAbilityObjectTower,
         paintAbilityUI: paintAbilityTowerUI,

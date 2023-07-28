@@ -1,11 +1,14 @@
 current tasks:
+- bug: upgrade levels not displayed on choice
 - tamer:    
     - create abilities for pets and replace them with the existing one
         - aoe ideas:
             - "Dash"
-                - upgrade?
+                - upgrade:
+                    - bouncy: dashing against walls will redirect dash and make it go longer distance
             - "painter"
-                - make pet ability upgrade available to choose after boss kill
+                - bug: circles getting stuck when bouncing from terrain
+                - upgrades
             - "breath"
                 - pet uses ability only when enemies around?
                 - if active can not change direction instantly?

@@ -66,8 +66,8 @@ export type AbilityFunctions = {
     tickAbility?: (abilityOwner: AbilityOwner, ability: Ability, game: Game) => void,
     tickAbilityObject?: (abilityObject: AbilityObject, game: Game) => void,
     createAbility: (idCounter: IdCounter, playerInputBinding?: string) => Ability,
-    createAbilityUpgradeOptionsNew?: (ability: Ability) => UpgradeOptionAndProbability[],
-    createAbilityBossUpgradeOptionsNew?: (ability: Ability) => UpgradeOptionAndProbability[],
+    createAbilityUpgradeOptions?: (ability: Ability) => UpgradeOptionAndProbability[],
+    createAbilityBossUpgradeOptions?: (ability: Ability) => UpgradeOptionAndProbability[],
     executeUpgradeOption?: (ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game) => void,
     activeAbilityCast?: (abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isKeydown: boolean, game: Game) => void,
     deleteAbilityObject?: (abilityObject: AbilityObject, game: Game) => boolean,
@@ -132,7 +132,7 @@ export function createAbility(abilityName: string, idCounter: IdCounter, isLevel
         ability.leveling = { experience: 0, experienceForLevelUp: 10, level: 1 };
     }
     if (getsBossSkillPoints) {
-        if (abilityFunctions.createAbilityBossUpgradeOptionsNew) {
+        if (abilityFunctions.createAbilityBossUpgradeOptions) {
             ability.bossSkillPoints = 0;
         } else {
             console.log(`${abilityName} is missing bossUpgradeOptions`);

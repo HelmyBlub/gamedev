@@ -27,8 +27,8 @@ function executeAbilityLevelingCharacterUpgradeOption(character: Character, upgr
 function createBossUpgradeOptionsAbilityLeveling(character: Character, game: Game): UpgradeOptionAndProbability[]{
     for(let ability of character.abilities){
         const functions = ABILITIES_FUNCTIONS[ability.name];
-        if(ability.bossSkillPoints && ability.bossSkillPoints > 0 && functions.createAbilityBossUpgradeOptionsNew){
-            return functions.createAbilityBossUpgradeOptionsNew(ability);
+        if(ability.bossSkillPoints && ability.bossSkillPoints > 0 && functions.createAbilityBossUpgradeOptions){
+            return functions.createAbilityBossUpgradeOptions(ability);
         }
     }
     return [];

@@ -47,7 +47,7 @@ export function addAbilityPetPainter() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_PET_PAINTER] = {
         tickAbility: tickAbilityPetPainter,
         tickAbilityObject: tickAbilityObjectPetPainter,
-        createAbilityBossUpgradeOptionsNew: createAbilityPetPainterUpgradeOptions,
+        createAbilityBossUpgradeOptions: createAbilityPetPainterUpgradeOptions,
         executeUpgradeOption: executeAbilityPetPainterUpgradeOption,
         createAbility: createAbilityPetPainter,
         paintAbility: paintAbilityPetPainter,

@@ -81,8 +81,8 @@ export function createCharacterUpgradeOptionsNew(character: Character, game: Gam
 
     for(let ability of character.abilities){
         let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-        if(abilityFunctions && abilityFunctions.createAbilityUpgradeOptionsNew){
-            upgradeOptions.push(...abilityFunctions.createAbilityUpgradeOptionsNew(ability));
+        if(abilityFunctions && abilityFunctions.createAbilityUpgradeOptions){
+            upgradeOptions.push(...abilityFunctions.createAbilityUpgradeOptions(ability));
         }
     }
 

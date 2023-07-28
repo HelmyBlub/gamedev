@@ -4,7 +4,7 @@ import { calculateDistance, getCameraPosition } from "../../game.js";
 import { Game, Position } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { isPositionBlocking, moveByDirectionAndDistance } from "../../map/map.js";
-import { nextRandom } from "../../randomNumberGenerator.js";
+import { RandomSeed, nextRandom } from "../../randomNumberGenerator.js";
 import { AbilityOwner, PaintOrderAbility, detectCircleCharacterHit } from "../ability.js";
 import { ABILITY_NAME_PET_PAINTER, ABILITY_PET_PAINTER_SHAPES_FUNCTIONS, AbilityObjectPetPainter, AbilityPetPainter, createShapeAbilityPetPainter } from "./abilityPetPainter.js";
 
@@ -15,6 +15,7 @@ export type AbilityObjectPetPainterTriangle = AbilityObjectPetPainter & {
     rotationSpeed: number,
     range: number,
     centerPos: Position,
+    rotationOffset: number,
 }
 
 const TRIANGLESIZE = 30;
@@ -37,8 +38,9 @@ function createAbilityObjectPetPainterTriangle(
     damage: number,
     abilityRefId: number,
     faction: string,
+    randomSeed: RandomSeed,
     gameTime: number
-): AbilityObjectPetPainter {
+): AbilityObjectPetPainterTriangle {
     let abilityObjectPetPainter: AbilityObjectPetPainterTriangle = {
         type: ABILITY_NAME_PET_PAINTER,
         color: "red",
@@ -52,8 +54,9 @@ function createAbilityObjectPetPainterTriangle(
         tickInterval: 100,
         range: 50,
         rotation: 0,
-        rotationSpeed: 0.1,
+        rotationSpeed: nextRandom(randomSeed) > 0.5 ? 0.1: -0.1,        
         centerPos: position,
+        rotationOffset: nextRandom(randomSeed) * Math.PI * 2,
     }
 
     return abilityObjectPetPainter;
@@ -61,7 +64,8 @@ function createAbilityObjectPetPainterTriangle(
 
 function createShapeTriangle(pet: TamerPetCharacter, abilityPetPainter: AbilityPetPainter, game: Game): AbilityObjectPetPainter{
     const damage = abilityPetPainter.baseDamage * pet.sizeFactor * TRIANGLE_DAMAGE_FACTOR;
-    return createAbilityObjectPetPainterTriangle(abilityPetPainter.paintPoints![0], damage, abilityPetPainter.id, pet.faction, game.state.time);
+    const triangle = createAbilityObjectPetPainterTriangle(abilityPetPainter.paintPoints![0], damage, abilityPetPainter.id, pet.faction, game.state.randomSeed, game.state.time);
+    return triangle;
 }
 
 function initShapePaintTriangle(pet: TamerPetCharacter, ability: AbilityPetPainter, game: Game) {
@@ -74,9 +78,10 @@ function tickShapeObjectPetPainterTriangle(abilityObject: AbilityObjectPetPainte
     const triangle = abilityObject as AbilityObjectPetPainterTriangle;
     if (abilityObject.subType === PET_PAINTER_TRIANGLE) {
         triangle.rotation = (triangle.rotation + triangle.rotationSpeed) % (Math.PI * 2);
+        const direction = triangle.rotationSpeed < 0 ? -1 : 1;
         const distance = (5000 - (triangle.deleteTime - game.state.time)) / 50;
-        triangle.x = triangle.centerPos.x + Math.sin(distance / 10) * distance;
-        triangle.y = triangle.centerPos.y + Math.cos(distance / 10) * distance;
+        triangle.x = triangle.centerPos.x + Math.sin(distance / 10 + triangle.rotationOffset) * distance * direction;
+        triangle.y = triangle.centerPos.y + Math.cos(distance / 10 + triangle.rotationOffset) * distance * direction;
     }
 
     if (triangle.nextTickTime === undefined) triangle.nextTickTime = game.state.time + triangle.tickInterval;

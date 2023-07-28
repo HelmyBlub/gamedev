@@ -64,7 +64,7 @@ export function addAbilitySnipe() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_SNIPE] = {
         tickAbility: tickAbilitySnipe,
         tickAbilityObject: tickAbilityObjectSnipe,
-        createAbilityBossUpgradeOptionsNew: createAbilityBossSnipeUpgradeOptions,
+        createAbilityBossUpgradeOptions: createAbilityBossSnipeUpgradeOptions,
         executeUpgradeOption: executeAbilitySnipeUpgradeOption,
         paintAbilityObject: paintAbilityObjectSnipe,
         paintAbilityUI: paintAbilitySnipeUI,

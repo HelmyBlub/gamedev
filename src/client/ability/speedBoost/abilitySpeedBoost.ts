@@ -32,7 +32,7 @@ export function addAbilitySpeedBoost() {
         createAbility: createAbilitySpeedBoost,
         activeAbilityCast: castSpeedBoost,
         paintAbilityUI: paintAbilitySpeedBoostUI,
-        createAbilityBossUpgradeOptionsNew: createAbilityBossSpeedBoostUpgradeOptions,
+        createAbilityBossUpgradeOptions: createAbilityBossSpeedBoostUpgradeOptions,
         executeUpgradeOption: executeAbilitySpeedBoostUpgradeOption,
         paintAbilityStatsUI: paintAbilitySpeedBoostStatsUI,
         abilityUpgradeFunctions: ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS,

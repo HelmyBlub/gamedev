@@ -71,6 +71,8 @@ function executeTamerBossUpgradeOption(character: Character, upgradeOption: Upgr
         const ability = pet.abilities.find((a) => a.name === option.abilityName)!;
         const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
         const upgradeFunctions = abilityFunctions.abilityUpgradeFunctions![upgradeOption.identifier];
+        const trait = option.additionalInfo as Trait;
+        pet.traits.push(trait);
         upgradeFunctions.executeOption(ability, upgradeOption as AbilityUpgradeOption);
         pet.bossSkillPoints!--;
     }
@@ -107,14 +109,20 @@ function createTamerBossUpgradeOptions(character: Character, game: Game): Upgrad
                 let pushedSomething = false;
                 for(let ability of pet.abilities){
                     const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-                    if(abilityFunctions && abilityFunctions.createAbilityBossUpgradeOptionsNew){
-                        let abilityOptionsAndProbability = abilityFunctions.createAbilityBossUpgradeOptionsNew(ability);
+                    if(abilityFunctions && abilityFunctions.createAbilityBossUpgradeOptions){
+                        let abilityOptionsAndProbability = abilityFunctions.createAbilityBossUpgradeOptions(ability);
                         for(let opProb of abilityOptionsAndProbability){
                             let abilityOption = opProb.option as AbilityUpgradeOption;
                             let petOption = opProb.option as PetAbilityUpgradeOption;
                             petOption.abilityName = abilityOption.name;
                             petOption.petId = pet.id;
                             petOption.type = "PetAbility";
+
+                            const randomTraitIndex = Math.floor(nextRandom(game.state.randomSeed) * availableTraits.length);
+                            const trait = availableTraits[randomTraitIndex] as Trait;    
+                            petOption.additionalInfo = trait;
+                            petOption.displayText += " & " + trait;
+                            if(petOption.displayLongText) petOption.displayLongText.push(trait)
                         }
                         options.push(...abilityOptionsAndProbability);
                         pushedSomething = true;

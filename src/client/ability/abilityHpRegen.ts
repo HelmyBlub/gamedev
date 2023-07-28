@@ -15,7 +15,7 @@ const ABILITY_NAME_HP_REGEN = "HP Regen";
 export function addAbilityHpRegen() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_HP_REGEN] = {
         tickAbility: tickAbilityHpRegen,
-        createAbilityUpgradeOptionsNew: createAbilityHpRegenUpgradeOptions,
+        createAbilityUpgradeOptions: createAbilityHpRegenUpgradeOptions,
         executeUpgradeOption: executeAbilityHpRegenUpgradeOption,
         createAbility: createAbilityHpRegen,
         paintAbilityStatsUI: paintAbilityHpRegenStatsUI,

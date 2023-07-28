@@ -1,13 +1,18 @@
 import { determineCharactersInDistance, characterTakeDamage } from "../../character/character.js";
 import { BossEnemyCharacter } from "../../character/enemy/bossEnemy.js";
 import { TamerPetCharacter, tamerPetFeed } from "../../character/playerCharacters/tamerPetCharacter.js";
+import { UpgradeOptionAndProbability } from "../../character/upgrade.js";
+import { applyDebuff } from "../../debuff/debuff.js";
+import { createDebuffSlow } from "../../debuff/debuffSlow.js";
 import { getNextId, calculateDirection, calculateDistance } from "../../game.js";
 import { IdCounter, Position, Game } from "../../gameModel.js";
 import { GameMap, moveByDirectionAndDistance } from "../../map/map.js";
 import { Player } from "../../player.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner } from "../ability.js";
+import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions } from "../abilityUpgrade.js";
+import { abilityPetBreathUpgradeSlowApplySlow, addAbilityPetBreathUpgradeSlow } from "./abilityPetBreathUpgradeSlow.js";
 
-type AbilityPetBreath = Ability & {
+export type AbilityPetBreath = Ability & {
     damage: number,
     range: number,
     directionAngle: number,
@@ -15,19 +20,24 @@ type AbilityPetBreath = Ability & {
     tickInterval: number,
     nextTickTime?: number,
     active: boolean,
+    color: string,
 }
-
 export const ABILITY_NAME_PET_BREATH = "Breath";
+export const ABILITY_PET_BREATH_UPGRADE_FUNCTIONS: AbilityUpgradesFunctions = {};
 
 export function addAbilityPetBreath() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_PET_BREATH] = {
         tickAbility: tickAbilityPetBreath,
         createAbility: createAbilityPetBreath,
+        createAbilityBossUpgradeOptions: createAbilityPetBreathUpgradeOptions,
         paintAbility: paintAbilityPetBreath,
         setAbilityToLevel: setAbilityPetBreathToLevel,
         setAbilityToBossLevel: setAbilityPetBreathToBossLevel,
+        abilityUpgradeFunctions: ABILITY_PET_BREATH_UPGRADE_FUNCTIONS,
         isPassive: true,
     };
+
+    addAbilityPetBreathUpgradeSlow();
 }
 
 export function createAbilityPetBreath(
@@ -45,7 +55,14 @@ export function createAbilityPetBreath(
         tickInterval: 100,
         upgrades: {},
         active: false,
+        color: "red",
     };
+}
+
+function createAbilityPetBreathUpgradeOptions(ability: Ability): UpgradeOptionAndProbability[] {
+    let upgradeOptions: UpgradeOptionAndProbability[] = [];
+    pushAbilityUpgradesOptions(ABILITY_PET_BREATH_UPGRADE_FUNCTIONS, upgradeOptions, ability);
+    return upgradeOptions;
 }
 
 function setAbilityPetBreathToLevel(ability: Ability, level: number) {
@@ -68,7 +85,7 @@ function paintAbilityPetBreath(ctx: CanvasRenderingContext2D, abilityOwner: Abil
 
     const startAngle = abilityPetBreath.directionAngle - abilityPetBreath.angleSize / 2;
     ctx.globalAlpha = 0.5;
-    ctx.fillStyle = "red";
+    ctx.fillStyle = abilityPetBreath.color;
     ctx.beginPath();
     let pos1 = { x: paintX, y: paintY };
     let pos2 = { x: paintX, y: paintY };
@@ -126,6 +143,7 @@ function detectPetBreathToCharactersHit(abilityOwner: TamerPetCharacter, ability
         let isHit = detectPetBreathToCharacterHit(abilityOwner, ability, targetCharacter, targetCharacter.width);
         if (isHit) {
             characterTakeDamage(targetCharacter, damage, game, ability.id);
+            abilityPetBreathUpgradeSlowApplySlow(ability, targetCharacter, game);
         }
     }
 }
