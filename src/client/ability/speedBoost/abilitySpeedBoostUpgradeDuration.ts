@@ -21,6 +21,9 @@ export function addAbilitySpeedBoostUpgradeDuration() {
 
 function getOptionsDuration(ability: Ability): UpgradeOptionAndProbability[] {
     let options = getAbilityUpgradeOptionDefault(ability, ABILITY_SPEED_BOOST_UPGARDE_DURATION);
+    const upgrade: AbilitySpeedBoostUpgradeDuration | undefined = ability.upgrades[ABILITY_SPEED_BOOST_UPGARDE_DURATION];
+    const levelText = upgrade === undefined ? "" : `(${upgrade.level})`;
+    options[0].option.displayText += levelText;
     options[0].option.displayLongText = getAbilityUpgradeDurationUiTextLong(ability);
     return options;
 }
@@ -46,8 +49,6 @@ function getAbilityUpgradeDurationUiText(ability: Ability): string {
 function getAbilityUpgradeDurationUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
     const upgrade: AbilityUpgrade | undefined = ability.upgrades[ABILITY_SPEED_BOOST_UPGARDE_DURATION];
-    const levelText = (upgrade ? `(${upgrade.level + 1})` : "");
-    textLines.push(ABILITY_SPEED_BOOST_UPGARDE_DURATION + levelText);
     textLines.push(`Speed Boost +${BONUS_DURATION_PER_LEVEL/1000}s increased duration`);
 
     return textLines;

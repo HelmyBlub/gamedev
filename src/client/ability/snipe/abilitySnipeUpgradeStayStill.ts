@@ -1,8 +1,8 @@
 import { UpgradeOptionAndProbability, AbilityUpgradeOption } from "../../character/upgrade.js";
 import { Game } from "../../gameModel.js";
 import { Ability, AbilityOwner } from "../ability.js";
-import { AbilityUpgrade, getAbilityUpgradeOptionDefault, getAbilityUpgradeOptionSynergy } from "../abilityUpgrade.js";
-import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilitySnipe } from "./abilitySnipe.js";
+import { AbilityUpgrade } from "../abilityUpgrade.js";
+import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilitySnipe, getOptionsSnipeUpgrade } from "./abilitySnipe.js";
 
 export const ABILITY_SNIPE_UPGRADE_STAY_STILL = "Stay Still";
 const STAY_STILL_TIME = 2500;
@@ -13,7 +13,7 @@ export type AbilityUpgradeStayStill = AbilityUpgrade & {
     stayStillStartTime: number,
     damageMultiplierActive: boolean,
     stayStillTime: number,
-    upgradeSynergry: boolean,
+    upgradeSynergy: boolean,
 }
 
 export function addAbilitySnipeUpgradeStayStill() {
@@ -29,7 +29,7 @@ export function addAbilitySnipeUpgradeStayStill() {
 export function paintVisualizationStayStill(ctx: CanvasRenderingContext2D, abilitySnipe: AbilitySnipe, paintX: number, paintY: number, playerMainRifle: boolean, game: Game) {
     const upgradeStayStill: AbilityUpgradeStayStill = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_STAY_STILL];
     if (!upgradeStayStill) return;
-    if (!playerMainRifle && !upgradeStayStill.upgradeSynergry) return;
+    if (!playerMainRifle && !upgradeStayStill.upgradeSynergy) return;
     if (upgradeStayStill.damageMultiplierActive) {
         ctx.fillStyle = "blue";
         ctx.fillRect(paintX, paintY + 14, 40, 12);
@@ -55,14 +55,7 @@ export function tickAbilityUpgradeStayStill(abilitySnipe: AbilitySnipe, abilityO
 }
 
 function getOptionsStayStill(ability: Ability): UpgradeOptionAndProbability[] {
-    let options = getAbilityUpgradeOptionDefault(ability, ABILITY_SNIPE_UPGRADE_STAY_STILL);
-    const upgradeStayStill: AbilityUpgradeStayStill | undefined = ability.upgrades[ABILITY_SNIPE_UPGRADE_STAY_STILL];
-
-    if (upgradeStayStill && !upgradeStayStill.upgradeSynergry) {
-        options.push(getAbilityUpgradeOptionSynergy(ability.name, ABILITY_SNIPE_UPGRADE_STAY_STILL, upgradeStayStill.level));
-    }
-    options[0].option.displayLongText = getAbilityUpgradeStayStillUiTextLong(ability, options[0].option as AbilityUpgradeOption);
-
+    let options = getOptionsSnipeUpgrade(ability, ABILITY_SNIPE_UPGRADE_STAY_STILL);
     return options;
 }
 
@@ -71,7 +64,7 @@ function executeOptionStayStill(ability: Ability, option: AbilityUpgradeOption) 
     let up: AbilityUpgradeStayStill;
     if (option.additionalInfo === "Synergy") {
         up = as.upgrades[ABILITY_SNIPE_UPGRADE_STAY_STILL];
-        up.upgradeSynergry = true;
+        up.upgradeSynergy = true;
     } else {
         if (as.upgrades[ABILITY_SNIPE_UPGRADE_STAY_STILL] === undefined) {
             up = {
@@ -80,7 +73,7 @@ function executeOptionStayStill(ability: Ability, option: AbilityUpgradeOption) 
                 stayStillStartTime: -1,
                 damageMultiplierActive: false,
                 stayStillTime: STAY_STILL_TIME,
-                upgradeSynergry: false,
+                upgradeSynergy: false,
             }
             as.upgrades[ABILITY_SNIPE_UPGRADE_STAY_STILL] = up;
         } else {
@@ -95,7 +88,7 @@ function getAbilityUpgradeStayStillDamageFactor(ability: Ability, playerTriggere
     const abilitySnipe = ability as AbilitySnipe;
     let upgrade: AbilityUpgradeStayStill | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_STAY_STILL];
     let factor = 1;
-    if (upgrade && upgrade.damageMultiplierActive && (playerTriggered || upgrade.upgradeSynergry)) {
+    if (upgrade && upgrade.damageMultiplierActive && (playerTriggered || upgrade.upgradeSynergy)) {
         factor = 1 + upgrade.damageMultiplier;
     }
     return factor;
@@ -104,21 +97,18 @@ function getAbilityUpgradeStayStillDamageFactor(ability: Ability, playerTriggere
 function getAbilityUpgradeStayStillUiText(ability: Ability): string {
     const abilitySnipe = ability as AbilitySnipe;
     let upgrade: AbilityUpgradeStayStill = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_STAY_STILL];
-    return `Stay Still for ${(upgrade.stayStillTime / 1000).toFixed(2)}s to get ${upgrade.damageMultiplier * 100}% Bonus Damge for current Magazine` + (upgrade.upgradeSynergry ? " (synergry)" : "");
+    return `Stay Still for ${(upgrade.stayStillTime / 1000).toFixed(2)}s to get ${upgrade.damageMultiplier * 100}% Bonus Damge for current Magazine` + (upgrade.upgradeSynergy ? " (Synergy)" : "");
 }
 
 function getAbilityUpgradeStayStillUiTextLong(ability: Ability, option: AbilityUpgradeOption): string[] {
     let abilitySnipe = ability as AbilitySnipe;
     const upgrade: AbilityUpgrade | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_STAY_STILL];
-    const levelText = (upgrade ? `(${upgrade.level + 1})` : "");
 
     const textLines: string[] = [];
-    if (option.additionalInfo && option.additionalInfo === "Synergry") {
-        textLines.push(`Synergry ${ABILITY_SNIPE_UPGRADE_STAY_STILL}`);
+    if (option.additionalInfo && option.additionalInfo === "Synergy") {
         textLines.push(`All other upgrades will benefit`);
         textLines.push(`from Stay Still bonus damage.`);
     } else {
-        textLines.push(ABILITY_SNIPE_UPGRADE_STAY_STILL + levelText);
         textLines.push(`Not moving or shooting for ${STAY_STILL_TIME / 1000} seconds`);
         textLines.push(`will activate ${DAMAGE_FACTOR * 100}% damage bonus.`);
         textLines.push(`The damage bonus will be active until`);

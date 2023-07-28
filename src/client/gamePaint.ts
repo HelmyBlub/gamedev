@@ -336,22 +336,20 @@ function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Charact
         let maxWidthes: number[] = [];
         let totalWidthEsitmate = 0;
         let displayKeyHint = false;
+        let keyDisplayWidth = 40;
         for (let choice of character.upgradeChoices) {
-            let maxWidth = 0;
+            ctx.font = firstFontSize + "px Arial";
+            let maxWidth = ctx.measureText(choice.displayText).width + keyDisplayWidth;;
+
             if(!game.UI.displayLongInfos && choice.displayLongText) displayKeyHint = true;
             if(game.UI.displayLongInfos && choice.displayLongText){
                 for (let textIt = 0; textIt < choice.displayLongText.length; textIt++) {
                     let text = choice.displayLongText[textIt];
-                    const fontSize = textIt === 0 ? firstFontSize : addFontSize;
-                    ctx.font = fontSize + "px Arial";
+                    ctx.font = addFontSize + "px Arial";
     
-                    let width = ctx.measureText(text).width + (textIt === 0 ? 40 : 0);
+                    let width = ctx.measureText(text).width;
                     if (width > maxWidth) maxWidth = width;
                 }
-            }else{
-                ctx.font = firstFontSize + "px Arial";
-                let width = ctx.measureText(choice.displayText).width + 40;
-                if (width > maxWidth) maxWidth = width;
             }
             maxWidthes.push(maxWidth);
             totalWidthEsitmate += maxWidth;
@@ -368,7 +366,7 @@ function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Charact
         for (let i = 0; i < character.upgradeChoices.length; i++) {
             const choice = character.upgradeChoices[i];
             let upgradeText: string[] = [choice.displayText];
-            if(game.UI.displayLongInfos && choice.displayLongText) upgradeText = choice.displayLongText;
+            if(game.UI.displayLongInfos && choice.displayLongText) upgradeText.push(...choice.displayLongText);
             ctx.globalAlpha = 0.4;
             ctx.fillStyle = "white";
             let textWidthEstimate = maxWidthes[i];

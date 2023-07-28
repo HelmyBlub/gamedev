@@ -39,7 +39,6 @@ function getAbilityUpgradeSlowTrailUiText(ability: Ability): string {
 
 function getAbilityUpgradeSlowTrailUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
-    textLines.push(ABILITY_SPEED_BOOST_UPGARDE_SLOW_TRAIL);
     textLines.push(`When activating the speed boost, you will leave`);
     textLines.push(`a trail behind which slows enemies.`);
 

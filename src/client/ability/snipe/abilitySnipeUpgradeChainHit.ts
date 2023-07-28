@@ -1,7 +1,7 @@
 import { AbilityUpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { Ability } from "../ability.js";
-import { AbilityUpgrade, getAbilityUpgradeOptionDefault, getAbilityUpgradeOptionSynergy } from "../abilityUpgrade.js";
-import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe } from "./abilitySnipe.js";
+import { AbilityUpgrade } from "../abilityUpgrade.js";
+import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe, getOptionsSnipeUpgrade } from "./abilitySnipe.js";
 
 export const ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN = "No Miss Chain";
 const DAMAGE_CAP = 200;
@@ -11,7 +11,7 @@ export type AbilityUpgradeNoMissChain = AbilityUpgrade & {
     noMissChainCounter: number,
     noMissCounterCap: number,
     noMissBonusDamageFactorAdd: number,
-    upgradeSynergry: boolean,
+    upgradeSynergy: boolean,
 }
 
 export function addAbilitySnipeUpgradeNoMissChain() {
@@ -39,14 +39,7 @@ export function abilityUpgradeNoMissChainOnObjectSnipeDamageDone(abilitySnipe: A
 }
 
 function getOptionsNoMissChain(ability: Ability): UpgradeOptionAndProbability[] {
-    let options = getAbilityUpgradeOptionDefault(ability, ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN);
-    const upgradeNoMissChain: AbilityUpgradeNoMissChain | undefined = ability.upgrades[ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN];
-
-    if (upgradeNoMissChain && !upgradeNoMissChain.upgradeSynergry) {
-        options.push(getAbilityUpgradeOptionSynergy(ability.name, ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN, upgradeNoMissChain.level));
-    }
-    options[0].option.displayLongText = getAbilityUpgradeNoMissChainUiTextLong(ability, options[0].option as AbilityUpgradeOption);
-
+    let options = getOptionsSnipeUpgrade(ability, ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN);
     return options;
 }
 
@@ -55,7 +48,7 @@ function executeOptionNoMissChain(ability: Ability, option: AbilityUpgradeOption
     let up: AbilityUpgradeNoMissChain;
     if (option.additionalInfo === "Synergy") {
         up = as.upgrades[ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN];
-        up.upgradeSynergry = true;
+        up.upgradeSynergy = true;
     } else {
         if (as.upgrades[ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN] === undefined) {
             up = {
@@ -63,7 +56,7 @@ function executeOptionNoMissChain(ability: Ability, option: AbilityUpgradeOption
                 noMissChainCounter: 0,
                 noMissBonusDamageFactorAdd: 0,
                 noMissCounterCap: DAMAGE_CAP,
-                upgradeSynergry: false,
+                upgradeSynergy: false,
             }
             as.upgrades[ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN] = up;
         } else {
@@ -77,21 +70,18 @@ function executeOptionNoMissChain(ability: Ability, option: AbilityUpgradeOption
 function getAbilityUpgradeNoMissChainUiText(ability: Ability): string {
     let abilitySnipe = ability as AbilitySnipe;
     let upgrade: AbilityUpgradeNoMissChain = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN];
-    return "Chain Bonus: " + (upgrade.noMissChainCounter * upgrade.noMissBonusDamageFactorAdd * 100).toFixed() + "%" + (upgrade.upgradeSynergry ? " (synergry)" : "");
+    return "Chain Bonus: " + (upgrade.noMissChainCounter * upgrade.noMissBonusDamageFactorAdd * 100).toFixed() + "%" + (upgrade.upgradeSynergy ? " (Synergy)" : "");
 }
 
 function getAbilityUpgradeNoMissChainUiTextLong(ability: Ability, option: AbilityUpgradeOption): string[] {
     const abilitySnipe = ability as AbilitySnipe;
     const upgrade: AbilityUpgradeNoMissChain | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN];
-    const levelText = (upgrade ? `(${upgrade.level + 1})` : "");
 
     const textLines: string[] = [];
-    if (option.additionalInfo && option.additionalInfo === "Synergry") {
-        textLines.push(`Synergry ${ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN}`);
+    if (option.additionalInfo && option.additionalInfo === "Synergy") {
         textLines.push(`All other upgrades will benefit`);
         textLines.push(`from no miss chain bonus damage.`);
     } else {
-        textLines.push(ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN + levelText);
         textLines.push(`Hiting an Enemy increases damage by ${DAMAGE_UP_PER_HIT * 100}% per shot.`);
         textLines.push(`Not hitting any enemy with a shot resets it to 0%.`);
         textLines.push(`Bonus damage is capped at ${DAMAGE_CAP}%.`);
@@ -105,7 +95,7 @@ function getAbilityUpgradeNoMissChainDamageFactor(ability: Ability, playerTrigge
     let abilitySnipe = ability as AbilitySnipe;
     let upgrade: AbilityUpgradeNoMissChain | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN];
     let factor = 1;
-    if (upgrade?.noMissChainCounter && (playerTriggered || upgrade.upgradeSynergry)) {
+    if (upgrade?.noMissChainCounter && (playerTriggered || upgrade.upgradeSynergy)) {
         factor = 1 + (upgrade.noMissChainCounter * upgrade.noMissBonusDamageFactorAdd);
     }
     return factor;

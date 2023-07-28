@@ -34,6 +34,9 @@ export function abilityUpgradeDamageAndRangeRangeFactor(ability: Ability) {
 
 function getOptionsDamageAndRange(ability: Ability): UpgradeOptionAndProbability[] {
     let options = getAbilityUpgradeOptionDefault(ability, ABILITY_SNIPE_UPGRADE_DAMAGE_AND_RANGE);
+    const upgrade: AbilityUpgradeDamageAndRange | undefined = ability.upgrades[ABILITY_SNIPE_UPGRADE_DAMAGE_AND_RANGE];
+    const levelText = upgrade === undefined ? "" : `(${upgrade.level})`;
+    options[0].option.displayText += levelText;
     options[0].option.displayLongText = getAbilityUpgradeDamageAndRangeUiTextLong(ability);
     options[0].probability = 0.5;
     return options;
@@ -48,10 +51,8 @@ function getAbilityUpgradeDamageAndRangeUiText(ability: Ability): string {
 function getAbilityUpgradeDamageAndRangeUiTextLong(ability: Ability): string[] {
     let abilitySnipe = ability as AbilitySnipe;
     let upgrade: AbilityUpgradeDamageAndRange | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_DAMAGE_AND_RANGE];
-    const levelText = (upgrade ? `(${upgrade.level + 1})` : "");
 
     const textLines: string[] = [];
-    textLines.push(ABILITY_SNIPE_UPGRADE_DAMAGE_AND_RANGE + levelText);
     textLines.push(`All Bonus damage +${DAMAGE_UP * 100}%.`);
     textLines.push(`Range is reduced by ${(1 / RANGE_DOWN * 100).toFixed(2)}%.`);
 

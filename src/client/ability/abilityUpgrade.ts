@@ -82,21 +82,3 @@ export function getAbilityUpgradeOptionDefault(ability: Ability, upgradeName: st
         probability: 1,
     }];
 }
-
-export function getAbilityUpgradeOptionSynergy(abilityName: string, upgradeName: string, probabilityFactor: number): UpgradeOptionAndProbability{
-    const probability = 0.3 * probabilityFactor;
-    let option: AbilityUpgradeOption = {
-        displayText: `Synergry ${upgradeName}`,
-        identifier: upgradeName,
-        name: abilityName,
-        type: "Ability",
-        additionalInfo: "Synergry",
-        boss: true,
-    }    
-
-    let optionAndProbability: UpgradeOptionAndProbability = {
-        option: option,
-        probability: probability,
-    };
-    return optionAndProbability;
-}

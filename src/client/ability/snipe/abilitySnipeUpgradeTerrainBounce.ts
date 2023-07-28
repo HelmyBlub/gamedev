@@ -3,15 +3,15 @@ import { calcNewPositionMovedInDirection, calculateDistance } from "../../game.j
 import { Position, Game } from "../../gameModel.js";
 import { calculateBounceAngle, getFirstBlockingGameMapTilePositionTouchingLine } from "../../map/map.js";
 import { Ability } from "../ability.js";
-import { AbilityUpgrade, getAbilityUpgradeOptionDefault, getAbilityUpgradeOptionSynergy } from "../abilityUpgrade.js";
-import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe, createAbilityObjectSnipe, getAbilitySnipeDamage, getAbilitySnipeRange } from "./abilitySnipe.js";
+import { AbilityUpgrade } from "../abilityUpgrade.js";
+import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe, createAbilityObjectSnipe, getAbilitySnipeDamage, getAbilitySnipeRange, getOptionsSnipeUpgrade } from "./abilitySnipe.js";
 
 export const ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE = "Terrain Bounce";
 const DAMAGE_UP_BOUNCE = 0.5;
 
 export type AbilityUpgradeTerrainBounce = AbilityUpgrade & {
     damageUpPerBounceFactor: number,
-    upgradeSynergry: boolean,
+    upgradeSynergy: boolean,
     active: boolean
 }
 
@@ -74,14 +74,7 @@ export function getAbilityUpgradeTerrainBounceDamageFactor(abilitySnipe: Ability
 }
 
 function getOptionsTerrainBounce(ability: Ability): UpgradeOptionAndProbability[] {
-    let options = getAbilityUpgradeOptionDefault(ability, ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE);
-    const upgradeTerrainBounce: AbilityUpgradeTerrainBounce | undefined = ability.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE];
-
-    if (upgradeTerrainBounce && !upgradeTerrainBounce.upgradeSynergry) {
-        options.push(getAbilityUpgradeOptionSynergy(ability.name, ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE, upgradeTerrainBounce.level));
-    }
-    options[0].option.displayLongText = getAbilityUpgradeTerrainBounceUiTextLong(ability, options[0].option as AbilityUpgradeOption);
-
+    let options = getOptionsSnipeUpgrade(ability, ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE);
     return options;
 }
 
@@ -90,14 +83,14 @@ function executeOptionTerrainBounce(ability: Ability, option: AbilityUpgradeOpti
     let up: AbilityUpgradeTerrainBounce;
     if (option.additionalInfo === "Synergy") {
         up = as.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE];
-        up.upgradeSynergry = true;
+        up.upgradeSynergy = true;
     } else {
         if (as.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE] === undefined) {
             up = {
                 level: 1,
                 active: true,
                 damageUpPerBounceFactor: 0,
-                upgradeSynergry: false,
+                upgradeSynergy: false,
 
             }
             as.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE] = up;
@@ -112,19 +105,16 @@ function getAbilityUpgradeTerrainBounceUiText(ability: Ability): string {
     let abilitySnipe = ability as AbilitySnipe;
     let upgrade: AbilityUpgradeTerrainBounce = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE];
 
-    return `Terrain Bounce and +${upgrade.damageUpPerBounceFactor * 100}% damage for each bounce` + (upgrade.upgradeSynergry ? " (synergry)" : "");
+    return `Terrain Bounce and +${upgrade.damageUpPerBounceFactor * 100}% damage for each bounce` + (upgrade.upgradeSynergy ? " (Synergy)" : "");
 }
 
 function getAbilityUpgradeTerrainBounceUiTextLong(ability: Ability, option: AbilityUpgradeOption): string[] {
     let abilitySnipe = ability as AbilitySnipe;
     let upgrade: AbilityUpgradeTerrainBounce | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE];
-    const levelText = (upgrade ? `(${upgrade.level + 1})` : "");
     const textLines: string[] = [];
-    if (option.additionalInfo && option.additionalInfo === "Synergry") {
-        textLines.push(`Synergry ${ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE}`);
+    if (option.additionalInfo && option.additionalInfo === "Synergy") {
         textLines.push(`Most other upgrades will benefit from terrain bounce`);
     } else {
-        textLines.push(ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE + levelText);
         textLines.push(`Main shots will bounce of blocking tiles.`);
         textLines.push(`Each bounce will increase damage by ${DAMAGE_UP_BOUNCE * 100}%`);
         textLines.push(`for the following bounced shot part.`);

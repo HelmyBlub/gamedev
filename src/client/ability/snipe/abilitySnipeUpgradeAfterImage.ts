@@ -3,8 +3,8 @@ import { calculateDirection } from "../../game.js";
 import { Game, Position } from "../../gameModel.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
 import { Ability, AbilityOwner } from "../ability.js";
-import { AbilityUpgrade, getAbilityUpgradeOptionDefault, getAbilityUpgradeOptionSynergy } from "../abilityUpgrade.js";
-import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilitySnipe, createAbilityObjectSnipeInitial, getAbilitySnipeShotFrequency } from "./abilitySnipe.js";
+import { AbilityUpgrade } from "../abilityUpgrade.js";
+import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilitySnipe, createAbilityObjectSnipeInitial, getAbilitySnipeShotFrequency, getOptionsSnipeUpgrade } from "./abilitySnipe.js";
 import { paintSniperRifle } from "./abilitySnipePaint.js";
 import { ABILITY_SNIPE_UPGRADE_MORE_RIFLES, AbilityUpgradeMoreRifles, castSnipeMoreRifles, paintVisualizationMoreRifles } from "./abilitySnipeUpgradeMoreRifle.js";
 
@@ -25,7 +25,7 @@ export type AbilityUpgradeAfterImage = AbilityUpgrade & {
     cooldown: number,
     nextValidSpawnTime?: number,
     afterImages: AfterImage[],
-    upgradeSynergry: boolean,
+    upgradeSynergy: boolean,
 }
 
 export function addAbilitySnipeUpgradeAfterImage() {
@@ -40,7 +40,7 @@ export function addAbilitySnipeUpgradeAfterImage() {
 export function castSnipeAfterImage(position: Position, abilitySnipe: AbilitySnipe, castPosition: Position, playerTriggered: boolean, game: Game) {
     const upgradeAfterImage: AbilityUpgradeAfterImage = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE];
     if (!upgradeAfterImage) return;
-    if (!playerTriggered && !upgradeAfterImage.upgradeSynergry) return;
+    if (!playerTriggered && !upgradeAfterImage.upgradeSynergy) return;
     if (upgradeAfterImage.nextValidSpawnTime === undefined || upgradeAfterImage.nextValidSpawnTime <= game.state.time) {
         if (playerTriggered) upgradeAfterImage.nextValidSpawnTime = game.state.time + upgradeAfterImage.cooldown;
         upgradeAfterImage.afterImages.push({
@@ -66,7 +66,7 @@ export function paintVisualizationAfterImage(ctx: CanvasRenderingContext2D, abil
         const paintX = Math.floor(afterImage.position.x - cameraPosition.x + centerX);
         const paintY = Math.floor(afterImage.position.y - cameraPosition.y + centerY);
         paintSniperRifle(ctx, abilitySnipe, paintX, paintY, afterImage.direction, 0, false, game);
-        if (afterImage.playerTriggered && upgradeMoreRifles && upgradeMoreRifles.upgradeSynergry) {
+        if (afterImage.playerTriggered && upgradeMoreRifles && upgradeMoreRifles.upgradeSynergy) {
             paintVisualizationMoreRifles(ctx, afterImage.position, abilitySnipe, cameraPosition, afterImage.castPosition, game);
         }
     }
@@ -94,14 +94,7 @@ export function tickAbilityUpgradeAfterImage(abilitySnipe: AbilitySnipe, ability
 }
 
 function getOptionsAfterImage(ability: Ability): UpgradeOptionAndProbability[] {
-    let options = getAbilityUpgradeOptionDefault(ability, ABILITY_SNIPE_UPGRADE_AFTER_IMAGE);
-    const upgradeAfterImage: AbilityUpgradeAfterImage | undefined = ability.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE];
-
-    if (upgradeAfterImage && !upgradeAfterImage.upgradeSynergry) {
-        options.push(getAbilityUpgradeOptionSynergy(ability.name, ABILITY_SNIPE_UPGRADE_AFTER_IMAGE, upgradeAfterImage.level));
-    }
-    options[0].option.displayLongText = getAbilityUpgradeAfterImageUiTextLong(ability, options[0].option as AbilityUpgradeOption);
-
+    let options = getOptionsSnipeUpgrade(ability, ABILITY_SNIPE_UPGRADE_AFTER_IMAGE);
     return options;
 }
 
@@ -110,14 +103,14 @@ function executeOptionAfterImage(ability: Ability, option: AbilityUpgradeOption)
     let up: AbilityUpgradeAfterImage;
     if (option.additionalInfo === "Synergy") {
         up = as.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE];
-        up.upgradeSynergry = true;
+        up.upgradeSynergy = true;
     } else {
         if (as.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE] === undefined) {
             up = {
                 level: 0,
                 afterImages: [],
                 cooldown: AFTER_IMAGE_DURATION,
-                upgradeSynergry: false,
+                upgradeSynergy: false,
             }
             as.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE] = up;
         } else {
@@ -131,20 +124,17 @@ function executeOptionAfterImage(ability: Ability, option: AbilityUpgradeOption)
 function getAbilityUpgradeAfterImageUiText(ability: Ability): string {
     const abilitySnipe = ability as AbilitySnipe;
     let upgrade: AbilityUpgradeAfterImage = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE];
-    return `${ABILITY_SNIPE_UPGRADE_AFTER_IMAGE}s: ${upgrade.level * AFTER_IMAGE_COUNTER_PER_LEVEL}` + (upgrade.upgradeSynergry ? " (synergry)" : "");
+    return `${ABILITY_SNIPE_UPGRADE_AFTER_IMAGE}s: ${upgrade.level * AFTER_IMAGE_COUNTER_PER_LEVEL}` + (upgrade.upgradeSynergy ? " (Synergy)" : "");
 }
 
 function getAbilityUpgradeAfterImageUiTextLong(ability: Ability, option: AbilityUpgradeOption): string[] {
     const abilitySnipe = ability as AbilitySnipe;
     const upgrade: AbilityUpgradeAfterImage | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE];
-    const levelText = (upgrade ? `(${upgrade.level + 1})` : "");
     const textLines: string[] = [];
-    if (option.additionalInfo && option.additionalInfo === "Synergry") {
-        textLines.push(`Synergry ${ABILITY_SNIPE_UPGRADE_AFTER_IMAGE}`);
+    if (option.additionalInfo && option.additionalInfo === "Synergy") {
         textLines.push(`List of synergies:`);
         textLines.push(`- More Rifles`);
     } else {
-        textLines.push(ABILITY_SNIPE_UPGRADE_AFTER_IMAGE + levelText);
         textLines.push(`After shooting an after image is created.`);
         textLines.push(`It stays and repeats the same shot for ${AFTER_IMAGE_DURATION / 1000}s.`);
         textLines.push(`Number After Images: +${AFTER_IMAGE_COUNTER_PER_LEVEL}.`);
