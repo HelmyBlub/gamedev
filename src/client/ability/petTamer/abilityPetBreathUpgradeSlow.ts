@@ -33,10 +33,8 @@ export function abilityPetBreathUpgradeSlowApplySlow(ability: AbilityPetBreath, 
 function getOptionsSlow(ability: Ability): UpgradeOptionAndProbability[] {
     let options = getAbilityUpgradeOptionDefault(ability, ABILITY_PET_BREATH_UPGARDE_SLOW);
     options[0].option.displayLongText = getAbilityUpgradeSlowUiTextLong(ability);
-    options[0].probability = 0.5;
     return options;
 }
-
 
 function executeOptionPaintSlow(ability: Ability, option: AbilityUpgradeOption) {
     let as = ability as AbilityPetBreath;
@@ -61,9 +59,7 @@ function getAbilityUpgradeSlowUiText(ability: Ability): string {
 function getAbilityUpgradeSlowUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
     const upgrade: AbilityUpgrade | undefined = ability.upgrades[ABILITY_PET_BREATH_UPGARDE_SLOW];
-    const levelText = (upgrade ? `(${upgrade.level + 1})` : "");
-    textLines.push(ABILITY_PET_BREATH_UPGARDE_SLOW + levelText);
-    textLines.push(`Breath slows enemies`);
+    textLines.push(`Breath slows enemies by 50% per upgrade level`);
 
     return textLines;
 }

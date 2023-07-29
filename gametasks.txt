@@ -12,13 +12,11 @@ current tasks:
                 - pet uses ability only when enemies around?
                 - if active can not change direction instantly?
                 - upgrades
-                    - frost(slow)|fire(dot)|??
+                    - fire(dot)|??
     - upgrade details info text for traits and ability upgrades
 
 
     - balacing/change ideas:
-        -
-    - new pet stat happines
         - pet traits:
             - "antisocial": pet wants to stay away from other pets
             - "jealous": wants pets if other gets them, unhappy if not given

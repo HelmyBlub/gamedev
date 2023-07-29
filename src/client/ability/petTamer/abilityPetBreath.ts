@@ -2,8 +2,6 @@ import { determineCharactersInDistance, characterTakeDamage } from "../../charac
 import { BossEnemyCharacter } from "../../character/enemy/bossEnemy.js";
 import { TamerPetCharacter, tamerPetFeed } from "../../character/playerCharacters/tamerPetCharacter.js";
 import { UpgradeOptionAndProbability } from "../../character/upgrade.js";
-import { applyDebuff } from "../../debuff/debuff.js";
-import { createDebuffSlow } from "../../debuff/debuffSlow.js";
 import { getNextId, calculateDirection, calculateDistance } from "../../game.js";
 import { IdCounter, Position, Game } from "../../gameModel.js";
 import { GameMap, moveByDirectionAndDistance } from "../../map/map.js";

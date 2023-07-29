@@ -1,6 +1,6 @@
-import { AbilityUpgradeOption } from "../../character/upgrade.js";
+import { AbilityUpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { Ability } from "../ability.js";
-import { AbilityUpgrade } from "../abilityUpgrade.js";
+import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrade.js";
 import { ABILITY_PET_PAINTER_UPGRADE_FUNCTIONS, AbilityPetPainter } from "./abilityPetPainter.js";
 
 export type AbilityPetPainterUpgradeDuplicate = AbilityUpgrade & {
@@ -12,8 +12,15 @@ export function addAbilityPetPainterUpgradeDuplicate() {
     ABILITY_PET_PAINTER_UPGRADE_FUNCTIONS[ABILITY_PET_PAINTER_UPGARDE_DUPLICATE] = {
         getStatsDisplayText: getAbilityUpgradeDuplicateUiText,
         getLongExplainText: getAbilityUpgradeDuplicateUiTextLong,
+        getOptions: getOptionsDuplicate,
         executeOption: executeOptionPaintDuplicate,
     }
+}
+
+function getOptionsDuplicate(ability: Ability): UpgradeOptionAndProbability[] {
+    let options = getAbilityUpgradeOptionDefault(ability, ABILITY_PET_PAINTER_UPGARDE_DUPLICATE);
+    options[0].option.displayLongText = getAbilityUpgradeDuplicateUiTextLong(ability);
+    return options;
 }
 
 function executeOptionPaintDuplicate(ability: Ability, option: AbilityUpgradeOption) {
@@ -36,8 +43,6 @@ function getAbilityUpgradeDuplicateUiText(ability: Ability): string {
 function getAbilityUpgradeDuplicateUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
     const upgrade: AbilityUpgrade | undefined = ability.upgrades[ABILITY_PET_PAINTER_UPGARDE_DUPLICATE];
-    const levelText = (upgrade ? `(${upgrade.level + 1})` : "");
-    textLines.push(ABILITY_PET_PAINTER_UPGARDE_DUPLICATE + levelText);
     textLines.push(`Painter creates multiple shapes with one paint`);
 
     return textLines;
