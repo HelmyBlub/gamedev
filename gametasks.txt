@@ -1,10 +1,11 @@
 current tasks:
 - tamer:    
+    - pet traits:
+        - longer/shorter leash
     - create abilities for pets and replace them with the existing one
         - aoe ideas:
             - "Dash"
                 - upgrade:
-                    - bouncy: dashing against walls will redirect dash and make it go longer distance
             - "painter"
                 - bug: circles getting stuck when bouncing from terrain
                 - upgrades
@@ -18,12 +19,13 @@ current tasks:
 
     - balacing/change ideas:
         - pet traits:
-            - "antisocial": pet wants to stay away from other pets
-            - "jealous": wants pets if other gets them, unhappy if not given
-            - "fast": moves faster
-            - "strong": does more damage
-            - "heavy bones": harder to pull
-            - "light bones": easier to pull
+            ideas:
+                - "antisocial": pet wants to stay away from other pets
+                - "jealous": wants pets if other gets them, unhappy if not given
+                - "fast": moves faster
+                - "strong": does more damage
+                - "heavy bones": harder to pull
+                - "light bones": easier to pull
 
     - name pets
 
