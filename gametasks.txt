@@ -1,7 +1,8 @@
 current tasks:
 - tamer:    
     - pet traits:
-        - longer/shorter leash
+        - most traits have an opposite trait which replaces it
+        - long descriptions for traits
     - create abilities for pets and replace them with the existing one
         - aoe ideas:
             - "Dash"
@@ -21,7 +22,7 @@ current tasks:
         - pet traits:
             ideas:
                 - "antisocial": pet wants to stay away from other pets
-                - "jealous": wants pets if other gets them, unhappy if not given
+                - "jealous": wants hearts if other gets them, unhappy if not given
                 - "fast": moves faster
                 - "strong": does more damage
                 - "heavy bones": harder to pull

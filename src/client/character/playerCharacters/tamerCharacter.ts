@@ -5,7 +5,7 @@ import { CHARACTER_TYPE_FUNCTIONS, Character } from "../characterModel.js";
 import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters.js";
 import { ABILITY_NAME_LEASH, AbilityLeash, createAbilityLeash } from "../../ability/abilityLeash.js";
 import { ABILITY_NAME_MELEE } from "../../ability/abilityMelee.js";
-import { TAMER_PET_CHARACTER, TAMER_PET_TRAITS, TamerPetCharacter, Trait, createTamerPetCharacter, paintTamerPetCharacter, tickTamerPetCharacter } from "./tamerPetCharacter.js";
+import { TAMER_PET_CHARACTER, TAMER_PET_TRAITS, TamerPetCharacter, Trait, addTraitToTamerPet, createTamerPetCharacter, paintTamerPetCharacter, tickTamerPetCharacter } from "./tamerPetCharacter.js";
 import { ABILITY_NAME_FEED_PET } from "../../ability/petTamer/abilityFeedPet.js";
 import { tickDefaultCharacter } from "../character.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
@@ -59,7 +59,7 @@ function executeTamerBossUpgradeOption(character: Character, upgradeOption: Upgr
         const pet: TamerPetCharacter = character.pets!.find((p) => p.color === upgradeValues.petName)!;
         ability.passive = true;
         pet.abilities.push(ability);
-        pet.traits.push(upgradeValues.trait);
+        addTraitToTamerPet(pet, upgradeValues.trait, game);
         pet.bossSkillPoints!--;
         if (upgradeValues.abilityName === ABILITY_NAME_PET_PAINTER) {
             let leash: AbilityLeash | undefined = pet.abilities.find(a => a.name === ABILITY_NAME_LEASH) as AbilityLeash;
@@ -73,7 +73,7 @@ function executeTamerBossUpgradeOption(character: Character, upgradeOption: Upgr
         const upgradeFunctions = abilityFunctions.abilityUpgradeFunctions![upgradeOption.identifier];
         if(option.additionalInfo){
             const trait = option.additionalInfo as Trait;
-            pet.traits.push(trait);
+            addTraitToTamerPet(pet, trait, game);
         }
         upgradeFunctions.executeOption(ability, upgradeOption as AbilityUpgradeOption);
         pet.bossSkillPoints!--;
