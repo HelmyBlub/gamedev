@@ -7,6 +7,7 @@ import { calculateBounceAngle, calculateMovePosition, isPositionBlocking, moveBy
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, detectCircleCharacterHit } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions } from "../abilityUpgrade.js";
 import { ABILITY_PET_DASH_UPGARDE_TERRAIN_BOUNCE, AbilityPetDashUpgradeTerrainBounce, addAbilityPetDashUpgradeTerrainBounce } from "./abilityPetDashUpgradeBounce.js";
+import { ABILITY_PET_DASH_UPGARDE_FIRE_LINE, AbilityPetDashUpgradeFireLine, addAbilityPetDashUpgradeFireLine, createPetDashUpgradeFireLine } from "./abilityPetDashUpgradeFireLine.js";
 
 export type AbilityPetDash = Ability & {
     baseDamage: number,
@@ -35,6 +36,7 @@ export function addAbilityPetDash() {
     };
 
     addAbilityPetDashUpgradeTerrainBounce();
+    addAbilityPetDashUpgradeFireLine();
 }
 
 export function createAbilityPetDash(
@@ -52,6 +54,13 @@ export function createAbilityPetDash(
         passive: true,
         upgrades: {},
     };
+}
+
+export function getPetAbilityDashDamage(pet: TamerPetCharacter, ability: AbilityPetDash): number {
+    let damage = ability.baseDamage * pet.sizeFactor * pet.moveSpeed;
+    const upgradeBounce: AbilityPetDashUpgradeTerrainBounce = ability.upgrades[ABILITY_PET_DASH_UPGARDE_TERRAIN_BOUNCE];
+    if (upgradeBounce !== undefined) damage * upgradeBounce.currentDamageFactor;
+    return damage;
 }
 
 function createAbilityPetDashUpgradeOptions(ability: Ability): UpgradeOptionAndProbability[] {
@@ -102,6 +111,7 @@ function tickAbilityPetDash(abilityOwner: AbilityOwner, ability: Ability, game: 
     let pet = abilityOwner as TamerPetCharacter;
     if (abilityPetDash.readyTime === undefined) abilityPetDash.readyTime = game.state.time + abilityPetDash.cooldown;
     const upgradeBounce: AbilityPetDashUpgradeTerrainBounce = abilityPetDash.upgrades[ABILITY_PET_DASH_UPGARDE_TERRAIN_BOUNCE];
+    const upgradeFireLine: AbilityPetDashUpgradeFireLine =  abilityPetDash.upgrades[ABILITY_PET_DASH_UPGARDE_FIRE_LINE];
     if (abilityPetDash.activeUntilTime && abilityPetDash.activeUntilTime > game.state.time) {
         if (upgradeBounce !== undefined) {
             let newPosition = calculateMovePosition(pet, abilityPetDash.direction!, abilityPetDash.baseSpeed, false);
@@ -117,20 +127,20 @@ function tickAbilityPetDash(abilityOwner: AbilityOwner, ability: Ability, game: 
             moveByDirectionAndDistance(pet, abilityPetDash.direction!, abilityPetDash.baseSpeed, true, game.state.map, game.state.idCounter);
         }
 
-        detectCircleCharacterHit(game.state.map, pet, pet.width / 2 + abilityPetDash.sizeExtension, pet.faction, ability.id, getDamage(pet, abilityPetDash), [], game.state.bossStuff.bosses, game);
+        detectCircleCharacterHit(game.state.map, pet, pet.width / 2 + abilityPetDash.sizeExtension, pet.faction, ability.id, getPetAbilityDashDamage(pet, abilityPetDash), [], game.state.bossStuff.bosses, game);
     } else if (abilityPetDash.readyTime <= game.state.time) {
         if (abilityOwner.isMoving) {
             if (upgradeBounce) upgradeBounce.currentDamageFactor = 1;
+            if (upgradeFireLine) upgradeFireLine.startPosition = {x: pet.x, y: pet.y};
             abilityPetDash.readyTime = game.state.time + abilityPetDash.cooldown;
             abilityPetDash.activeUntilTime = game.state.time + abilityPetDash.duration;
             abilityPetDash.direction = abilityOwner.moveDirection;
         }
     }
-}
-
-function getDamage(pet: TamerPetCharacter, ability: AbilityPetDash): number {
-    let damage = ability.baseDamage * pet.sizeFactor * pet.moveSpeed;
-    const upgradeBounce: AbilityPetDashUpgradeTerrainBounce = ability.upgrades[ABILITY_PET_DASH_UPGARDE_TERRAIN_BOUNCE];
-    if (upgradeBounce !== undefined) damage * upgradeBounce.currentDamageFactor;
-    return damage;
+    if(upgradeFireLine && upgradeFireLine.startPosition){
+        if(abilityPetDash.activeUntilTime! <= game.state.time){
+            createPetDashUpgradeFireLine(pet, abilityPetDash, game);
+            upgradeFireLine.startPosition = undefined;
+        }
+    }
 }
