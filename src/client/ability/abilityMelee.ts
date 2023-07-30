@@ -1,6 +1,6 @@
 import { characterTakeDamage, determineCharactersInDistance, determineClosestCharacter, getPlayerCharacters } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
-import { TAMER_PET_CHARACTER, TamerPetCharacter } from "../character/playerCharacters/tamerPetCharacter.js";
+import { TAMER_PET_CHARACTER, TamerPetCharacter } from "../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { getNextId } from "../game.js";
 import { Game, IdCounter } from "../gameModel.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner } from "./ability.js";

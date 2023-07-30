@@ -4,7 +4,7 @@ import { Character, DEFAULT_CHARACTER } from "./character/characterModel.js";
 import { paintCharacterStatsUI, paintCharacters } from "./character/characterPaint.js";
 import { paintBossCharacters } from "./character/enemy/bossEnemy.js";
 import { LEVELING_CHARACTER, LevelingCharacter } from "./character/playerCharacters/levelingCharacterModel.js";
-import { paintTamerPetCharacterStatsUI } from "./character/playerCharacters/tamerPetCharacter.js";
+import { paintTamerPetCharacterStatsUI } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
 import { AbilityUpgradeOption, UpgradeOption } from "./character/upgrade.js";
 import { calculateDistance, getCameraPosition, getTimeSinceFirstKill } from "./game.js";
 import { Game, Position, Highscores, Debugging, PaintTextData } from "./gameModel.js";

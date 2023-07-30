@@ -4,7 +4,7 @@ import { UpgradeOption } from "../upgrade.js"
 import { addAbilityLevelingCharacter } from "./abilityLevelingCharacter.js"
 import { addLevelingCharacter } from "./levelingCharacterModel.js"
 import { addSniperClass } from "./sniperCharacter.js"
-import { addTamerClass } from "./tamerCharacter.js"
+import { addTamerClass } from "./tamer/tamerCharacter.js"
 import { addTowerClass } from "./towerCharacterClass.js"
 
 export type PlayerCharacterClassFunctions = {

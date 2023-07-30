@@ -1,6 +1,6 @@
 import { characterTakeDamage, determineCharactersInDistance } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
-import { TamerPetCharacter, findPetOwnerInPlayers } from "../../character/playerCharacters/tamerPetCharacter.js";
+import { TamerPetCharacter, findPetOwnerInPlayers } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { calculateDistance, getCameraPosition } from "../../game.js";
 import { Game, Position } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";

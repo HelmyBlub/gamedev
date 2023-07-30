@@ -1,6 +1,6 @@
 import { findCharacterById } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
-import { TamerPetCharacter, changeTamerPetHappines } from "../../character/playerCharacters/tamerPetCharacter.js";
+import { TamerPetCharacter, changeTamerPetHappines } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { calculateDirection, calculateDistance, getCameraPosition, getNextId } from "../../game.js";
 import { IdCounter, Position, Game } from "../../gameModel.js";
 import { GAME_IMAGES, getImage, loadImage } from "../../imageLoad.js";

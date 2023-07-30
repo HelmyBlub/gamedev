@@ -1,30 +1,18 @@
-import { paintDefaultAbilityStatsUI } from "../../ability/ability.js";
-import { ABILITY_NAME_LEASH, AbilityLeash } from "../../ability/abilityLeash.js";
-import { calculateDirection, calculateDistance, getNextId } from "../../game.js";
-import { Game, Position } from "../../gameModel.js";
-import { GAME_IMAGES, getImage } from "../../imageLoad.js";
-import { moveByDirectionAndDistance } from "../../map/map.js";
-import { nextRandom } from "../../randomNumberGenerator.js";
-import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, calculateCharacterMovePosition, getPlayerCharacters, setCharacterAbilityLevel } from "../character.js";
-import { Character, createCharacter } from "../characterModel.js";
-import { paintCharacter } from "../characterPaint.js";
-import { PathingCache } from "../pathing.js";
+import { paintDefaultAbilityStatsUI } from "../../../ability/ability.js";
+import { ABILITY_NAME_LEASH, AbilityLeash } from "../../../ability/abilityLeash.js";
+import { calculateDirection, calculateDistance, getNextId } from "../../../game.js";
+import { Game, Position } from "../../../gameModel.js";
+import { GAME_IMAGES, getImage } from "../../../imageLoad.js";
+import { moveByDirectionAndDistance } from "../../../map/map.js";
+import { nextRandom } from "../../../randomNumberGenerator.js";
+import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, calculateCharacterMovePosition, getPlayerCharacters, setCharacterAbilityLevel } from "../../character.js";
+import { Character, createCharacter } from "../../characterModel.js";
+import { paintCharacter } from "../../characterPaint.js";
+import { PathingCache } from "../../pathing.js";
+import { Trait, tamerPetIncludesTrait } from "./petTrait.js";
 
 export type PetTargetBehavior = "passive" | "aggressive" | "protective";
 export type PetNoTargetBehavior = "stay" | "hyperactive" | "following";
-export const TAMER_PET_TRAITS = [
-    "loves food",
-    "wants to stay slim",
-    "very hungry",
-    "eats less",
-    "never gets fat",
-    "gets fat easily",
-    "needs more love",
-    "happy one",
-    "longer leash",
-    "shorter leash",
-] as const;
-export type Trait = typeof TAMER_PET_TRAITS[number];
 
 const MAX_HAPPINES = 150;
 const MAX_FOOD_INTAKE = 500;
@@ -118,71 +106,6 @@ export function createTamerPetCharacter(owner: Character, color: string, game: G
     return tamerPetCharacter;
 }
 
-export function addTraitToTamerPet(pet: TamerPetCharacter, trait: Trait, game: Game) {
-    if (!pet.traits.includes(trait)) {
-        pet.traits.push(trait);
-        let oppositeTraitIdex: number;
-        switch (trait) {
-            case "eats less":
-                oppositeTraitIdex = pet.traits.findIndex((t) => t === "very hungry");
-                if (oppositeTraitIdex > -1) pet.traits.splice(oppositeTraitIdex, 1);
-                break;
-            case "very hungry":
-                oppositeTraitIdex = pet.traits.findIndex((t) => t === "eats less");
-                if (oppositeTraitIdex > -1) pet.traits.splice(oppositeTraitIdex, 1);
-                break;
-            case "loves food":
-                oppositeTraitIdex = pet.traits.findIndex((t) => t === "wants to stay slim");
-                if (oppositeTraitIdex > -1) pet.traits.splice(oppositeTraitIdex, 1);
-                break;
-            case "wants to stay slim":
-                oppositeTraitIdex = pet.traits.findIndex((t) => t === "loves food");
-                if (oppositeTraitIdex > -1) pet.traits.splice(oppositeTraitIdex, 1);
-                break;
-            case "never gets fat":
-                oppositeTraitIdex = pet.traits.findIndex((t) => t === "gets fat easily");
-                if (oppositeTraitIdex > -1) pet.traits.splice(oppositeTraitIdex, 1);
-                break;
-            case "gets fat easily":
-                oppositeTraitIdex = pet.traits.findIndex((t) => t === "never gets fat");
-                if (oppositeTraitIdex > -1) pet.traits.splice(oppositeTraitIdex, 1);
-                break;
-            case "happy one":
-                oppositeTraitIdex = pet.traits.findIndex((t) => t === "needs more love");
-                if (oppositeTraitIdex > -1) pet.traits.splice(oppositeTraitIdex, 1);
-                break;
-            case "needs more love":
-                oppositeTraitIdex = pet.traits.findIndex((t) => t === "happy one");
-                if (oppositeTraitIdex > -1) pet.traits.splice(oppositeTraitIdex, 1);
-                break;
-            case "longer leash":
-                {
-                    let bonusLength = 100;
-                    let shorterLeashIndex = pet.traits.findIndex((t) => t === "shorter leash");
-                    if (shorterLeashIndex > -1) {
-                        bonusLength += 50;
-                        pet.traits.splice(shorterLeashIndex, 1);
-                    }
-                    const leash = pet.abilities.find((a) => a.name === ABILITY_NAME_LEASH) as AbilityLeash;
-                    if (leash) leash.leashMaxLength += bonusLength;
-                    break;
-                }
-            case "shorter leash":
-                {
-                    let removeLength = 50;
-                    let longerLeashIndex = pet.traits.findIndex((t) => t === "longer leash");
-                    if (longerLeashIndex > -1) {
-                        removeLength += 100;
-                        pet.traits.splice(longerLeashIndex, 1);
-                    }
-                    const leash = pet.abilities.find((a) => a.name === ABILITY_NAME_LEASH) as AbilityLeash;
-                    if (leash) leash.leashMaxLength -= removeLength;
-                    break;
-                }
-        }
-    }
-}
-
 export function tickTamerPetCharacter(character: Character, petOwner: Character, game: Game, pathingCache: PathingCache | null) {
     const pet: TamerPetCharacter = character as TamerPetCharacter;
     if (pathingCache === null) {
@@ -192,7 +115,7 @@ export function tickTamerPetCharacter(character: Character, petOwner: Character,
     if (character.isDead) return;
     moveTick(pet, petOwner, game, pathingCache);
     foodIntakeLevelTick(pet, game);
-    if (pet.happines.current > pet.happines.hyperactiveAt || pet.traits.includes("needs more love")) {
+    if (pet.happines.current > pet.happines.hyperactiveAt || tamerPetIncludesTrait("needs more love", pet)) {
         if (pet.happines.nextTick === undefined || pet.happines.nextTick < game.state.time) {
             pet.happines.nextTick = game.state.time + pet.happines.tickInterval;
             changeTamerPetHappines(pet, -1, game.state.time, false);
@@ -205,9 +128,9 @@ export function tamerPetFeed(pet: TamerPetCharacter, feedValue: number, time: nu
     pet.foodIntakeLevel.current += feedValue;
     if (pet.foodIntakeLevel.current > MAX_FOOD_INTAKE) pet.foodIntakeLevel.current = MAX_FOOD_INTAKE;
     if (feedValue > 0) {
-        if (pet.traits.includes("loves food")) {
+        if (tamerPetIncludesTrait("loves food", pet)) {
             changeTamerPetHappines(pet, 20, time, true);
-        } else if (pet.traits.includes("wants to stay slim")) {
+        } else if (tamerPetIncludesTrait("wants to stay slim", pet)) {
             changeTamerPetHappines(pet, -5, time, true);
         } else {
             if (beforeFeed < pet.foodIntakeLevel.underfedAt) {
@@ -267,7 +190,7 @@ export function paintTamerPetCharacterStatsUI(ctx: CanvasRenderingContext2D, pet
         textLines.push("");
         textLines.push("Traits:");
         for (let trait of pet.traits) {
-            textLines.push(trait);
+            textLines.push(trait.name);
         }
     }
 
@@ -300,7 +223,7 @@ export function paintTamerPetCharacter(ctx: CanvasRenderingContext2D, character:
 
 export function changeTamerPetHappines(pet: TamerPetCharacter, value: number, time: number, visualizeChange: boolean) {
     pet.happines.current += value;
-    if (pet.traits.includes("happy one")){
+    if (tamerPetIncludesTrait("happy one", pet)){
         pet.happines.current = pet.happines.hyperactiveAt - 1;
     } 
     if (visualizeChange) pet.happines.visualizations.push({ happy: value > 0, displayUntil: time + 500 });
@@ -333,8 +256,8 @@ function foodIntakeLevelTick(pet: TamerPetCharacter, game: Game) {
     if (intakeLevel.nextTick === undefined || intakeLevel.nextTick <= game.state.time) {
         intakeLevel.nextTick = game.state.time + intakeLevel.tickInterval;
         let tickChange = -1;
-        if (pet.traits.includes("very hungry")) tickChange = -5;
-        if (pet.traits.includes("eats less")) tickChange /= 2;
+        if (tamerPetIncludesTrait("very hungry", pet)) tickChange = -5;
+        if (tamerPetIncludesTrait("eats less", pet)) tickChange /= 2;
 
         if (intakeLevel.current > 0) tamerPetFeed(pet, tickChange, game.state.time);
     }
@@ -343,10 +266,10 @@ function foodIntakeLevelTick(pet: TamerPetCharacter, game: Game) {
         pet.sizeFactor = 1 - (intakeLevel.underfedAt - intakeLevel.current) / intakeLevel.underfedAt / 2;
         pet.moveSpeed = pet.baseMoveSpeed;
     } else if (intakeLevel.current > intakeLevel.overfedAt) {
-        if (pet.traits.includes("never gets fat")) {
+        if (tamerPetIncludesTrait("never gets fat", pet)) {
             pet.sizeFactor = 1;
             pet.moveSpeed = pet.baseMoveSpeed;
-        } else if (pet.traits.includes("gets fat easily")) {
+        } else if (tamerPetIncludesTrait("gets fat easily", pet)) {
             pet.sizeFactor = 1 + (intakeLevel.current - intakeLevel.overfedAt) / intakeLevel.overfedAt * 1.5;
             pet.sizeFactor = Math.min(MAX_OVERFED_SIZE, pet.sizeFactor);
             pet.moveSpeed = pet.baseMoveSpeed * Math.max(MIN_MOVEMENTSPEED_FACTOR, 1 / pet.sizeFactor);

@@ -1,5 +1,5 @@
 import { Character } from "../../character/characterModel.js";
-import { TamerPetCharacter } from "../../character/playerCharacters/tamerPetCharacter.js";
+import { TamerPetCharacter } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { getNextId } from "../../game.js";
 import { Position, Game, IdCounter } from "../../gameModel.js";

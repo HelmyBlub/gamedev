@@ -9,7 +9,7 @@ import { executeDefaultCharacterUpgradeOption, tickDefaultCharacter } from "./ch
 import { tickFixPositionRespawnEnemyCharacter } from "./enemy/fixPositionRespawnEnemy.js";
 import { PathingCache } from "./pathing.js";
 import { initPlayerCharacterChoiceOptions } from "./playerCharacters/playerCharacters.js";
-import { TamerPetCharacter } from "./playerCharacters/tamerPetCharacter.js";
+import { TamerPetCharacter } from "./playerCharacters/tamer/tamerPetCharacter.js";
 import { UpgradeOption, UpgradeOptionAndProbability } from "./upgrade.js";
 
 export type CHARACTER_TYPE_FUNCTIONS = {

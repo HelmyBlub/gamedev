@@ -1,6 +1,6 @@
 import { determineCharactersInDistance, characterTakeDamage } from "../../character/character.js";
 import { BossEnemyCharacter } from "../../character/enemy/bossEnemy.js";
-import { TamerPetCharacter, tamerPetFeed } from "../../character/playerCharacters/tamerPetCharacter.js";
+import { TamerPetCharacter, tamerPetFeed } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { getNextId, calculateDirection, calculateDistance } from "../../game.js";
 import { IdCounter, Position, Game } from "../../gameModel.js";

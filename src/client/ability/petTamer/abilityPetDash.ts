@@ -1,4 +1,4 @@
-import { TamerPetCharacter } from "../../character/playerCharacters/tamerPetCharacter.js";
+import { TamerPetCharacter } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { getNextId } from "../../game.js";
 import { IdCounter, Position, Game } from "../../gameModel.js";
