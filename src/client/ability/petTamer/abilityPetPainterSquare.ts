@@ -8,12 +8,15 @@ import { isPositionBlocking } from "../../map/map.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
 import { AbilityObject, AbilityOwner, PaintOrderAbility } from "../ability.js";
 import { ABILITY_NAME_PET_PAINTER, ABILITY_PET_PAINTER_SHAPES_FUNCTIONS, AbilityObjectPetPainter, AbilityPetPainter, createShapeAbilityPetPainter } from "./abilityPetPainter.js";
+import { ABILITY_PET_PAINTER_UPGARDE_FACTORY, AbilityPetPainterUpgradeFactory } from "./abilityPetPainterUpgradeFactory.js";
 
 
 export type AbilityObjectPetPainterSquare = AbilityObjectPetPainter & {
     size: number,
     range: number,
     damageDone: boolean,
+    tickInterval?: number,
+    nextTickTime?: number,
 }
 
 const FADETIME = 500;
@@ -59,20 +62,67 @@ function createAbilityObjectPetPainterSquare(
     return abilityObjectPetPainter;
 }
 
-function createShapeSquare(pet: TamerPetCharacter, abilityPetPainter: AbilityPetPainter, game: Game): AbilityObject{
-    const range = 200;
-    const damage = abilityPetPainter.baseDamage * pet.sizeFactor * SQUARE_DAMAGE_FACTOR;
-    return createAbilityObjectPetPainterSquare(abilityPetPainter.paintPoints![0], SQUARESIZE, damage, abilityPetPainter.id, pet.faction, range, game.state.time);
+function createAbilityObjectPetPainterSquareFactory(
+    position: Position,
+    size: number,
+    damage: number,
+    abilityRefId: number,
+    faction: string,
+    range: number,
+    duration: number,
+    spawnInterval: number,
+    gameTime: number
+): AbilityObjectPetPainter {
+    let abilityObjectPetPainter: AbilityObjectPetPainterSquare = {
+        type: ABILITY_NAME_PET_PAINTER,
+        size: size,
+        color: "",
+        x: position.x,
+        y: position.y,
+        damage: damage,
+        faction: faction,
+        range: range,
+        deleteTime: gameTime + duration,
+        damageDone: false,
+        subType: PET_PAINTER_SQUARE,
+        abilityRefId: abilityRefId,
+        tickInterval: spawnInterval,
+        isFactory: true,
+    }
+
+    return abilityObjectPetPainter;
 }
 
-function initShapePaintSquare(pet: TamerPetCharacter, ability: AbilityPetPainter, game: Game){
+function createShapeSquare(pet: TamerPetCharacter, abilityPetPainter: AbilityPetPainter, game: Game): AbilityObject {
+    const range = 200;
+    const damage = abilityPetPainter.baseDamage * pet.sizeFactor * SQUARE_DAMAGE_FACTOR;
+    const factoryUpgrade = abilityPetPainter.upgrades[ABILITY_PET_PAINTER_UPGARDE_FACTORY] as AbilityPetPainterUpgradeFactory;
+    if (factoryUpgrade) {
+        return createAbilityObjectPetPainterSquareFactory(abilityPetPainter.paintPoints![0], SQUARESIZE, damage, abilityPetPainter.id, pet.faction, range, factoryUpgrade.duration, factoryUpgrade.spawnInterval, game.state.time);
+    } else {
+        return createAbilityObjectPetPainterSquare(abilityPetPainter.paintPoints![0], SQUARESIZE, damage, abilityPetPainter.id, pet.faction, range, game.state.time);
+    }
+}
+
+function initShapePaintSquare(pet: TamerPetCharacter, ability: AbilityPetPainter, game: Game) {
     ability.currentlyPainting = PET_PAINTER_SQUARE;
     ability.paintPoints = [];
     pet.forcedMovePosition = getRandomStartPaintPositionSquare(pet, game);
 }
 
 function tickShapeObjectPetPainterSquare(abilityObject: AbilityObjectPetPainter, game: Game) {
-    if (abilityObject.subType === PET_PAINTER_SQUARE) {
+    if(abilityObject.isFactory){
+        const factory = abilityObject as AbilityObjectPetPainterSquare;
+        if (factory.nextTickTime === undefined) factory.nextTickTime = game.state.time + factory.tickInterval!;
+        if (factory.nextTickTime <= game.state.time) {
+            const shape = createAbilityObjectPetPainterSquare(factory, factory.size, factory.damage, factory.abilityRefId!, factory.faction, factory.range, game.state.time);
+            game.state.abilityObjects.push(shape);
+            factory.nextTickTime += factory.tickInterval!;
+            if (factory.nextTickTime <= game.state.time) {
+                factory.nextTickTime = game.state.time + factory.tickInterval!;
+            }
+        }
+    }else{
         detectSquareToCharacterHit(abilityObject as AbilityObjectPetPainterSquare, game);
     }
 }
@@ -102,32 +152,35 @@ function detectSquareToCharacterHit(petPainter: AbilityObjectPetPainterSquare, g
 function paintShapeObjectPetPainterSquare(ctx: CanvasRenderingContext2D, abilityObject: AbilityObjectPetPainter, paintOrder: PaintOrderAbility, game: Game) {
     if (paintOrder !== "beforeCharacterPaint") return;
     const cameraPosition = getCameraPosition(game);
-    if (abilityObject.subType === PET_PAINTER_SQUARE) {
-        const square = abilityObject as AbilityObjectPetPainterSquare;
-        const paintPos = getPointPaintPosition(ctx, square, cameraPosition);
-        ctx.fillStyle = "red";
-        ctx.globalAlpha = (square.deleteTime - game.state.time) / FADETIME;
+    const square = abilityObject as AbilityObjectPetPainterSquare;
+    const paintPos = getPointPaintPosition(ctx, square, cameraPosition);
+    ctx.fillStyle = "red";
+    ctx.lineWidth = 1;
+    ctx.globalAlpha = (square.deleteTime - game.state.time) / FADETIME;
+    if(square.isFactory){
+        ctx.rect(paintPos.x, paintPos.y, square.size, square.size);
+        ctx.stroke();
+    }else{
         ctx.fillRect(paintPos.x - square.range, paintPos.y, square.size + square.range * 2, square.size);
         ctx.fillRect(paintPos.x, paintPos.y - square.range, square.size, square.size + square.range * 2);
-        ctx.globalAlpha = 1;
     }
+    ctx.globalAlpha = 1;
 }
 
 function paintShapeSquare(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: AbilityPetPainter, cameraPosition: Position, game: Game) {
-    if (ability.currentlyPainting === PET_PAINTER_SQUARE) {
-        if (!ability.paintPoints || ability.paintPoints.length === 0) return;
-        const start = getPointPaintPosition(ctx, ability.paintPoints[0], cameraPosition);
-        ctx.fillStyle = "red";
-        ctx.beginPath();
-        ctx.moveTo(start.x, start.y);
-        for (let i = 1; i < ability.paintPoints!.length; i++) {
-            const nextPoint = getPointPaintPosition(ctx, ability.paintPoints![i], cameraPosition);
-            ctx.lineTo(nextPoint.x, nextPoint.y);
-        }
-        const petPoint = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
-        ctx.lineTo(petPoint.x, petPoint.y);
-        ctx.stroke();
+    if (!ability.paintPoints || ability.paintPoints.length === 0) return;
+    const start = getPointPaintPosition(ctx, ability.paintPoints[0], cameraPosition);
+    ctx.fillStyle = "red";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(start.x, start.y);
+    for (let i = 1; i < ability.paintPoints!.length; i++) {
+        const nextPoint = getPointPaintPosition(ctx, ability.paintPoints![i], cameraPosition);
+        ctx.lineTo(nextPoint.x, nextPoint.y);
     }
+    const petPoint = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
+    ctx.lineTo(petPoint.x, petPoint.y);
+    ctx.stroke();
 }
 
 function getRandomStartPaintPositionSquare(pet: TamerPetCharacter, game: Game): Position {

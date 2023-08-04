@@ -7,6 +7,7 @@ import { calculateMovePosition, isPositionBlocking, calculateBounceAngle } from 
 import { nextRandom } from "../../randomNumberGenerator.js";
 import { AbilityObject, AbilityObjectCircle, AbilityOwner, PaintOrderAbility, detectAbilityObjectCircleToCharacterHit } from "../ability.js";
 import { ABILITY_NAME_PET_PAINTER, ABILITY_PET_PAINTER_SHAPES_FUNCTIONS, AbilityObjectPetPainter, AbilityPetPainter, createShapeAbilityPetPainter } from "./abilityPetPainter.js";
+import { ABILITY_PET_PAINTER_UPGARDE_FACTORY, AbilityPetPainterUpgradeFactory } from "./abilityPetPainterUpgradeFactory.js";
 
 export type AbilityObjectPetPainterCircle = AbilityObjectPetPainter & AbilityObjectCircle & {
     tickInterval: number,
@@ -58,10 +59,45 @@ function createAbilityObjectPetPainterCircle(
     return abilityObjectPetPainter;
 }
 
+function createAbilityObjectPetPainterCircleFactory(
+    position: Position,
+    damage: number,
+    abilityRefId: number,
+    faction: string,
+    radius: number,
+    duration: number,
+    spawnInterval: number,
+    gameTime: number
+): AbilityObjectPetPainter {
+    let abilityObjectPetPainter: AbilityObjectPetPainterCircle = {
+        type: ABILITY_NAME_PET_PAINTER,
+        color: "red",
+        x: position.x,
+        y: position.y,
+        damage: damage,
+        faction: faction,
+        deleteTime: gameTime + duration,
+        subType: PET_PAINTER_CIRCLE,
+        abilityRefId: abilityRefId,
+        radius: radius,
+        direction: 0,
+        moveSpeed: 4,
+        tickInterval: spawnInterval,
+        isFactory: true,
+    }
+
+    return abilityObjectPetPainter;
+}
+
 function createShapeCircle(pet: TamerPetCharacter, abilityPetPainter: AbilityPetPainter, game: Game): AbilityObject{
-    const randomDirection = nextRandom(game.state.randomSeed) * Math.PI * 2;
     const damage = abilityPetPainter.baseDamage * pet.sizeFactor * CIRCLE_DAMAGE_FACTOR;
-    return createAbilityObjectPetPainterCircle(abilityPetPainter.paintCircle!.middle, damage, abilityPetPainter.id, pet.faction, CIRCLERADIUS, randomDirection, game.state.time);
+    const factoryUpgrade = abilityPetPainter.upgrades[ABILITY_PET_PAINTER_UPGARDE_FACTORY] as AbilityPetPainterUpgradeFactory;
+    if(factoryUpgrade){
+        return createAbilityObjectPetPainterCircleFactory(abilityPetPainter.paintCircle!.middle, damage, abilityPetPainter.id, pet.faction, CIRCLERADIUS, factoryUpgrade.duration, factoryUpgrade.spawnInterval, game.state.time);
+    }else{
+        const randomDirection = nextRandom(game.state.randomSeed) * Math.PI * 2;
+        return createAbilityObjectPetPainterCircle(abilityPetPainter.paintCircle!.middle, damage, abilityPetPainter.id, pet.faction, CIRCLERADIUS, randomDirection, game.state.time);
+    }
 }
 
 function initShapePaintCircle(pet: TamerPetCharacter, ability: AbilityPetPainter, game: Game){
@@ -75,7 +111,19 @@ function initShapePaintCircle(pet: TamerPetCharacter, ability: AbilityPetPainter
 }
 
 function tickShapeObjectPetPainterCircle(abilityObject: AbilityObjectPetPainter, game: Game) {
-    if (abilityObject.subType === PET_PAINTER_CIRCLE) {
+    if(abilityObject.isFactory){
+        const circleFactory = abilityObject as AbilityObjectPetPainterCircle;
+        if (circleFactory.nextTickTime === undefined) circleFactory.nextTickTime = game.state.time + circleFactory.tickInterval;
+        if (circleFactory.nextTickTime <= game.state.time) {
+            const randomDirection = nextRandom(game.state.randomSeed) * Math.PI * 2;
+            const shape = createAbilityObjectPetPainterCircle(circleFactory, circleFactory.damage, circleFactory.abilityRefId!, circleFactory.faction, circleFactory.radius, randomDirection, game.state.time);
+            game.state.abilityObjects.push(shape);
+            circleFactory.nextTickTime += circleFactory.tickInterval;
+            if (circleFactory.nextTickTime <= game.state.time) {
+                circleFactory.nextTickTime = game.state.time + circleFactory.tickInterval;
+            }
+        }
+    }else{
         const circle = abilityObject as AbilityObjectPetPainterCircle;
         let newPosition = calculateMovePosition(circle, circle.direction, circle.moveSpeed, false);
         if (isPositionBlocking(newPosition, game.state.map, game.state.idCounter)) {
@@ -99,27 +147,24 @@ function tickShapeObjectPetPainterCircle(abilityObject: AbilityObjectPetPainter,
 function paintShapeObjectPetPainterCircle(ctx: CanvasRenderingContext2D, abilityObject: AbilityObjectPetPainter, paintOrder: PaintOrderAbility, game: Game) {
     if (paintOrder !== "beforeCharacterPaint") return;
     const cameraPosition = getCameraPosition(game);
-    if (abilityObject.subType === PET_PAINTER_CIRCLE) {
-        const circle = abilityObject as AbilityObjectPetPainterCircle;
-        const paintPos = getPointPaintPosition(ctx, circle, cameraPosition);
-        ctx.fillStyle = circle.color;
-        ctx.strokeStyle = circle.color;
-        ctx.beginPath();
-        ctx.arc(paintPos.x, paintPos.y, circle.radius, 0, Math.PI * 2);
-        ctx.fill();
-    }
+    const circle = abilityObject as AbilityObjectPetPainterCircle;
+    const paintPos = getPointPaintPosition(ctx, circle, cameraPosition);
+    ctx.fillStyle = circle.color;
+    ctx.strokeStyle = circle.color;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(paintPos.x, paintPos.y, circle.radius, 0, Math.PI * 2);
+    !abilityObject.isFactory ? ctx.fill() : ctx.stroke();
 }
 
 function paintShapeCircle(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: AbilityPetPainter, cameraPosition: Position, game: Game) {
-    if (ability.currentlyPainting === PET_PAINTER_CIRCLE) {
-        if (!ability.paintCircle) return;
-        const middle = getPointPaintPosition(ctx, ability.paintCircle.middle, cameraPosition);
-        ctx.fillStyle = "red";
-        ctx.strokeStyle = "red";
-        ctx.beginPath();
-        ctx.arc(middle.x, middle.y, CIRCLERADIUS, -Math.PI / 2, ability.paintCircle.currentAngle - Math.PI / 2);
-        ctx.stroke();
-    }
+    if (!ability.paintCircle) return;
+    const middle = getPointPaintPosition(ctx, ability.paintCircle.middle, cameraPosition);
+    ctx.fillStyle = "red";
+    ctx.strokeStyle = "red";
+    ctx.beginPath();
+    ctx.arc(middle.x, middle.y, CIRCLERADIUS, -Math.PI / 2, ability.paintCircle.currentAngle - Math.PI / 2);
+    ctx.stroke();
 }
 
 function getRandomStartPaintPositionCircle(pet: TamerPetCharacter, game: Game): Position {

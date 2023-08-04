@@ -1,21 +1,22 @@
 current tasks:
+- Bug: multiple boss skill point for tamer when not picket ability yet for pet will result in no points
 - tamer:    
     - pet traits:
-    - create abilities for pets and replace them with the existing one
-        - aoe ideas:
-            - "Dash"
-                - upgrade:
-                - fire trail
-            - "painter"
-                - bug: circles getting stuck when bouncing from terrain
-                - upgrades:
-                    - creator: instead of creating the shape, it creates a shape "factory" which continues to spawn shapes in intervals
-            - "breath"
-                - upgrades
-                    - fire(dot)|??
-                    - explode on death
-                - pet uses ability only when enemies around?
-                - if active can not change direction instantly?
+    - abilities
+        - "Dash"
+            - upgrade:
+                - stun?: hit target can not move for a short time
+        - "painter"
+            - bug: circles getting stuck when bouncing from terrain
+            - upgrades:
+                - factory: instead of creating the shape, it creates a shape "factory" which continues to spawn shapes in intervals
+                - split: instead of despawn -> split into two smaller ones 
+        - "breath"
+            - upgrades
+                - fire(dot)|??
+                - explode on death
+            - pet uses ability only when enemies around?
+            - if active can not change direction instantly?
     - upgrade details info text for traits and ability upgrades
 
 

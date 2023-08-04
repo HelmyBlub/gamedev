@@ -54,8 +54,8 @@ function changeCharacterToTamerClass(
     // character.pets![0].abilities.push(ability);
 }
 
-function executeTamerBossUpgradeOption(character: Character, upgradeOption: UpgradeOption, game: Game){
-    if(upgradeOption.type === "Pet"){
+function executeTamerBossUpgradeOption(character: Character, upgradeOption: UpgradeOption, game: Game) {
+    if (upgradeOption.type === "Pet") {
         let upgradeValues = upgradeNameToValues(upgradeOption.identifier);
         const ability = createAbility(upgradeValues.abilityName, game.state.idCounter, false);
         const pet: TamerPetCharacter = character.pets!.find((p) => p.color === upgradeValues.petName)!;
@@ -67,13 +67,13 @@ function executeTamerBossUpgradeOption(character: Character, upgradeOption: Upgr
             let leash: AbilityLeash | undefined = pet.abilities.find(a => a.name === ABILITY_NAME_LEASH) as AbilityLeash;
             if (leash) leash.leashMaxLength += 100;
         }
-    }else if(upgradeOption.type === "PetAbility"){
+    } else if (upgradeOption.type === "PetAbility") {
         const option = upgradeOption as PetAbilityUpgradeOption;
         const pet: TamerPetCharacter = character.pets!.find((p) => p.id === option.petId)!;
         const ability = pet.abilities.find((a) => a.name === option.abilityName)!;
         const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
         const upgradeFunctions = abilityFunctions.abilityUpgradeFunctions![upgradeOption.identifier];
-        if(option.additionalInfo){
+        if (option.additionalInfo) {
             const trait = option.additionalInfo;
             addTraitToTamerPet(pet, trait, game);
         }
@@ -87,16 +87,16 @@ function createTamerBossUpgradeOptions(character: Character, game: Game): Upgrad
     const numberChoices = 3;
     if (!character.pets) return options;
     for (let pet of character.pets) {
-        if (pet.bossSkillPoints && pet.bossSkillPoints > 0) {
+        if (pet.bossSkillPoints !== undefined && pet.bossSkillPoints > 0) {
             const availableTraits = getAvailableTamerPetTraits(pet);
             const availableAbilties = getAvailablePetAbilities(character, pet);
 
-            if(availableAbilties.length > 0){
+            if (availableAbilties.length > 0 && pet.abilities.length < 3) {
                 while (options.length < numberChoices) {
                     for (let ability of availableAbilties) {
                         const randomTraitIndex = Math.floor(nextRandom(game.state.randomSeed) * availableTraits.length);
                         const trait = availableTraits[randomTraitIndex];
-                        availableTraits.splice(randomTraitIndex,1);
+                        availableTraits.splice(randomTraitIndex, 1);
                         const indentifier = valuesToUpgradeName(pet.color, ability, trait);
                         let option: UpgradeOptionAndProbability = {
                             option: {
@@ -112,33 +112,33 @@ function createTamerBossUpgradeOptions(character: Character, game: Game): Upgrad
                     }
                 }
                 return options;
-            }else{
-                for(let ability of pet.abilities){
+            } else {
+                for (let ability of pet.abilities) {
                     const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-                    if(abilityFunctions && abilityFunctions.createAbilityBossUpgradeOptions){
+                    if (abilityFunctions && abilityFunctions.createAbilityBossUpgradeOptions) {
                         while (options.length < numberChoices) {
                             let abilityOptionsAndProbability = abilityFunctions.createAbilityBossUpgradeOptions(ability);
-                            if(abilityOptionsAndProbability.length === 0) break;
-                            for(let opProb of abilityOptionsAndProbability){
+                            if (abilityOptionsAndProbability.length === 0) break;
+                            for (let opProb of abilityOptionsAndProbability) {
                                 let abilityOption = opProb.option as AbilityUpgradeOption;
                                 let petOption = opProb.option as PetAbilityUpgradeOption;
                                 petOption.abilityName = abilityOption.name;
                                 petOption.petId = pet.id;
                                 petOption.type = "PetAbility";
 
-                                if(availableTraits.length > 0){
+                                if (availableTraits.length > 0) {
                                     const randomTraitIndex = Math.floor(nextRandom(game.state.randomSeed) * availableTraits.length);
-                                    const trait = availableTraits[randomTraitIndex];    
-                                    availableTraits.splice(randomTraitIndex,1);
+                                    const trait = availableTraits[randomTraitIndex];
+                                    availableTraits.splice(randomTraitIndex, 1);
                                     petOption.displayText += " & " + trait;
                                     addTraitToUpgradeOption(petOption, trait);
                                 }
                                 options.push(opProb);
-                                if(options.length >= numberChoices) return options;
+                                if (options.length >= numberChoices) return options;
                             }
                         }
                     }
-                    if(options.length > 0) return options;
+                    if (options.length > 0) return options;
                 }
             }
         }
@@ -146,18 +146,18 @@ function createTamerBossUpgradeOptions(character: Character, game: Game): Upgrad
     return options;
 }
 
-function addTraitToUpgradeOption(petOption: UpgradeOption, trait: string){
+function addTraitToUpgradeOption(petOption: UpgradeOption, trait: string) {
     petOption.additionalInfo = trait;
     const longText = getLongExplainTextForTamerPetTrait(trait);
-    if(longText){
-        if(!petOption.displayLongText){
+    if (longText) {
+        if (!petOption.displayLongText) {
             petOption.displayLongText = [];
-        }else{
+        } else {
             petOption.displayLongText.push("");
         }
         petOption.displayLongText.push(`Trait: '${trait}'`);
         petOption.displayLongText.push(...longText);
-    } 
+    }
 }
 
 function getAvailablePetAbilities(character: Character, pet: TamerPetCharacter): string[] {
