@@ -8,6 +8,7 @@ import { GameMap, moveByDirectionAndDistance } from "../../map/map.js";
 import { Player } from "../../player.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions } from "../abilityUpgrade.js";
+import { abilityPetBreathUpgradeExplodeApplyExplode, addAbilityPetBreathUpgradeExplode } from "./abilityPetBreathUpgradeExplode.js";
 import { abilityPetBreathUpgradeSlowApplySlow, addAbilityPetBreathUpgradeSlow } from "./abilityPetBreathUpgradeSlow.js";
 
 export type AbilityPetBreath = Ability & {
@@ -36,6 +37,7 @@ export function addAbilityPetBreath() {
     };
 
     addAbilityPetBreathUpgradeSlow();
+    addAbilityPetBreathUpgradeExplode();
 }
 
 export function createAbilityPetBreath(
@@ -140,8 +142,9 @@ function detectPetBreathToCharactersHit(abilityOwner: TamerPetCharacter, ability
         if (targetCharacter.isDead || targetCharacter.faction === abilityOwner.faction) continue;
         let isHit = detectPetBreathToCharacterHit(abilityOwner, ability, targetCharacter, targetCharacter.width);
         if (isHit) {
-            characterTakeDamage(targetCharacter, damage, game, ability.id);
+            abilityPetBreathUpgradeExplodeApplyExplode(ability, abilityOwner, targetCharacter, game);
             abilityPetBreathUpgradeSlowApplySlow(ability, targetCharacter, game);
+            characterTakeDamage(targetCharacter, damage, game, ability.id);
         }
     }
 }
