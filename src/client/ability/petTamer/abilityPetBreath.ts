@@ -9,6 +9,7 @@ import { Player } from "../../player.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions } from "../abilityUpgrade.js";
 import { abilityPetBreathUpgradeExplodeApplyExplode, addAbilityPetBreathUpgradeExplode } from "./abilityPetBreathUpgradeExplode.js";
+import { ABILITY_PET_BREATH_UPGARDE_RANGE_UP, AbilityPetBreathUpgradeRangeUp, abilityPetBreathUpgradeRangeUpGetAdditionFoodIntake, abilityPetBreathUpgradeRangeUpGetAdditionRange, addAbilityPetBreathUpgradeRangeUp } from "./abilityPetBreathUpgradeRangeUp.js";
 import { abilityPetBreathUpgradeSlowApplySlow, addAbilityPetBreathUpgradeSlow } from "./abilityPetBreathUpgradeSlow.js";
 
 export type AbilityPetBreath = Ability & {
@@ -38,6 +39,7 @@ export function addAbilityPetBreath() {
 
     addAbilityPetBreathUpgradeSlow();
     addAbilityPetBreathUpgradeExplode();
+    addAbilityPetBreathUpgradeRangeUp();
 }
 
 export function createAbilityPetBreath(
@@ -114,13 +116,19 @@ function tickAbilityPetBreath(abilityOwner: AbilityOwner, ability: Ability, game
     abilityPetBreath.active = pet.foodIntakeLevel.current > pet.foodIntakeLevel.underfedAt;
     if (!abilityPetBreath.active) return;
 
-    if (abilityOwner.moveDirection) abilityPetBreath.directionAngle = abilityOwner.moveDirection;
-    if (abilityOwner.width) abilityPetBreath.range = Math.sqrt(abilityOwner.width / 2) * 20 + 5;
-
+    abilityPetBreath.directionAngle = pet.moveDirection;
+    const rangeUpgrade = abilityPetBreath.upgrades[ABILITY_PET_BREATH_UPGARDE_RANGE_UP] as AbilityPetBreathUpgradeRangeUp;
+    let rangeBonus = 0;
+    if(rangeUpgrade) rangeBonus = abilityPetBreathUpgradeRangeUpGetAdditionRange(pet, rangeUpgrade);
+    const feedValue = Math.max(pet.foodIntakeLevel.current - pet.foodIntakeLevel.underfedAt, 0);
+    abilityPetBreath.range = Math.sqrt(feedValue) / 3 * (25 + rangeBonus) + 5;
+    
     if (abilityPetBreath.nextTickTime === undefined) abilityPetBreath.nextTickTime = game.state.time + abilityPetBreath.tickInterval;
     if (abilityPetBreath.nextTickTime <= game.state.time) {
         detectPetBreathToCharactersHit(pet, abilityPetBreath, game.state.map, game.state.players, game.state.bossStuff.bosses, game);
-        tamerPetFeed(pet, - abilityPetBreath.tickInterval / 200, game.state.time);
+        let foodChangePerSec = 5;
+        if(rangeUpgrade) foodChangePerSec += abilityPetBreathUpgradeRangeUpGetAdditionFoodIntake(pet, rangeUpgrade);
+        tamerPetFeed(pet, - abilityPetBreath.tickInterval / 1000 * foodChangePerSec, game.state.time);
         abilityPetBreath.nextTickTime += abilityPetBreath.tickInterval;
         if (abilityPetBreath.nextTickTime <= game.state.time) {
             abilityPetBreath.nextTickTime = game.state.time + abilityPetBreath.tickInterval;

@@ -65,9 +65,8 @@ export function addTraitToTamerPet(pet: TamerPetCharacter, traitName: string, ga
         const trait = functions.createTrait();
         if(functions.addTrait){
             functions.addTrait(pet, trait, game);
-        }else{
-            pet.traits.push(trait);
         }
+        pet.traits.push(trait);
         if(trait.opposite){
             const oppositeIndex = pet.traits.findIndex((t) => t.name === trait.opposite);
             if(oppositeIndex > -1){

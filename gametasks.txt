@@ -9,7 +9,6 @@ current tasks:
         - "painter"
             - bug: circles getting stuck when bouncing from terrain
             - upgrades:
-                - split: instead of despawn -> split into two smaller ones 
         - "breath"
             - upgrades
                 - fire circle on death, instead of expode on death?
