@@ -9,6 +9,7 @@ import { nextRandom } from "../../randomNumberGenerator.js";
 import { AbilityObject, AbilityOwner, PaintOrderAbility } from "../ability.js";
 import { ABILITY_NAME_PET_PAINTER, ABILITY_PET_PAINTER_SHAPES_FUNCTIONS, AbilityObjectPetPainter, AbilityPetPainter, createShapeAbilityPetPainter } from "./abilityPetPainter.js";
 import { ABILITY_PET_PAINTER_UPGARDE_FACTORY, AbilityPetPainterUpgradeFactory } from "./abilityPetPainterUpgradeFactory.js";
+import { AbilityPetPainterUpgradeSplit } from "./abilityPetPainterUpgradeSplit.js";
 
 
 export type AbilityObjectPetPainterSquare = AbilityObjectPetPainter & {
@@ -27,6 +28,7 @@ const PET_PAINTER_SQUARE = "Square";
 export function addAbilityPetPainterSquare() {
     ABILITY_PET_PAINTER_SHAPES_FUNCTIONS[PET_PAINTER_SQUARE] = {
         createShape: createShapeSquare,
+        createSplitShape: createSplitShape,
         paintShape: paintShapeSquare,
         paintShapeObject: paintShapeObjectPetPainterSquare,
         tickShape: tickSquare,
@@ -93,6 +95,35 @@ function createAbilityObjectPetPainterSquareFactory(
     return abilityObjectPetPainter;
 }
 
+function createSplitShape(abilityObject: AbilityObjectPetPainter, upgrade: AbilityPetPainterUpgradeSplit, game: Game): AbilityObjectPetPainter {
+    const square = abilityObject as AbilityObjectPetPainterSquare;
+    const random = Math.floor(nextRandom(game.state.randomSeed) * 4);
+    let position: Position = { x: square.x + square.size / 4, y: square.y + square.size / 4 };
+    switch (random) {
+        case 0:
+            position.x += square.range;
+            break;
+        case 1:
+            position.x -= square.range;
+            break;
+        case 2:
+            position.y += square.range;
+            break;
+        case 3:
+            position.y -= square.range;
+            break;
+    }
+    return createAbilityObjectPetPainterSquare(
+        position,
+        square.size / 2,
+        square.damage * upgrade.damageFactor,
+        square.abilityRefId!,
+        square.faction,
+        square.range / 2,
+        game.state.time
+    );
+}
+
 function createShapeSquare(pet: TamerPetCharacter, abilityPetPainter: AbilityPetPainter, game: Game): AbilityObject {
     const range = 200;
     const damage = abilityPetPainter.baseDamage * pet.sizeFactor * SQUARE_DAMAGE_FACTOR;
@@ -111,7 +142,7 @@ function initShapePaintSquare(pet: TamerPetCharacter, ability: AbilityPetPainter
 }
 
 function tickShapeObjectPetPainterSquare(abilityObject: AbilityObjectPetPainter, game: Game) {
-    if(abilityObject.isFactory){
+    if (abilityObject.isFactory) {
         const factory = abilityObject as AbilityObjectPetPainterSquare;
         if (factory.nextTickTime === undefined) factory.nextTickTime = game.state.time + factory.tickInterval!;
         if (factory.nextTickTime <= game.state.time) {
@@ -122,7 +153,7 @@ function tickShapeObjectPetPainterSquare(abilityObject: AbilityObjectPetPainter,
                 factory.nextTickTime = game.state.time + factory.tickInterval!;
             }
         }
-    }else{
+    } else {
         detectSquareToCharacterHit(abilityObject as AbilityObjectPetPainterSquare, game);
     }
 }
@@ -157,10 +188,10 @@ function paintShapeObjectPetPainterSquare(ctx: CanvasRenderingContext2D, ability
     ctx.fillStyle = "red";
     ctx.lineWidth = 1;
     ctx.globalAlpha = (square.deleteTime - game.state.time) / FADETIME;
-    if(square.isFactory){
+    if (square.isFactory) {
         ctx.rect(paintPos.x, paintPos.y, square.size, square.size);
         ctx.stroke();
-    }else{
+    } else {
         ctx.fillRect(paintPos.x - square.range, paintPos.y, square.size + square.range * 2, square.size);
         ctx.fillRect(paintPos.x, paintPos.y - square.range, square.size, square.size + square.range * 2);
     }

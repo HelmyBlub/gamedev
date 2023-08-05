@@ -1,7 +1,7 @@
 import { AbilityUpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
-import { Ability, AbilityObject } from "../ability.js";
+import { Ability } from "../ability.js";
 import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrade.js";
-import { ABILITY_NAME_PET_PAINTER, ABILITY_PET_PAINTER_UPGRADE_FUNCTIONS, AbilityObjectPetPainter, AbilityPetPainter } from "./abilityPetPainter.js";
+import { ABILITY_PET_PAINTER_UPGRADE_FUNCTIONS, AbilityPetPainter } from "./abilityPetPainter.js";
 
 export type AbilityPetPainterUpgradeFactory = AbilityUpgrade & {
     spawnInterval: number,

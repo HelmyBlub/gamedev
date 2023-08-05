@@ -4,13 +4,14 @@ import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from
 import { getNextId } from "../../game.js";
 import { Position, Game, IdCounter } from "../../gameModel.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
-import { Ability, AbilityObject, AbilityOwner, PaintOrderAbility, ABILITIES_FUNCTIONS } from "../ability.js";
+import { Ability, AbilityObject, AbilityOwner, PaintOrderAbility, ABILITIES_FUNCTIONS, findAbilityById } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, upgradeAbility } from "../abilityUpgrade.js";
 import { addAbilityPetPainterCircle } from "./abilityPetPainterCircle.js";
 import { addAbilityPetPainterSquare } from "./abilityPetPainterSquare.js";
 import { addAbilityPetPainterTriangle } from "./abilityPetPainterTriangle.js";
 import { ABILITY_PET_PAINTER_UPGARDE_DUPLICATE, AbilityPetPainterUpgradeDuplicate, addAbilityPetPainterUpgradeDuplicate } from "./abilityPetPainterUpgradeDuplicate.js";
-import { addAbilityPetPainterUpgradeFactory } from "./abilityPetPainterUpgradeFactory.js";
+import { AbilityPetPainterUpgradeFactory, addAbilityPetPainterUpgradeFactory } from "./abilityPetPainterUpgradeFactory.js";
+import { ABILITY_PET_PAINTER_UPGARDE_SPLIT, AbilityPetPainterUpgradeSplit, abilityPetPainerUpgradeSplitCheckForSplit, addAbilityPetPainterUpgradeSplit } from "./abilityPetPainterUpgradeSplit.js";
 
 export type AbilityPetPainter = Ability & {
     baseDamage: number,
@@ -26,10 +27,12 @@ export type AbilityObjectPetPainter = AbilityObject & {
     subType: string,
     deleteTime: number,
     isFactory?: boolean,
+    isSplit?: boolean,
 }
 
 export type AbilityPetPainterShapeFunctions = {
     createShape: (pet: TamerPetCharacter, abilityPetPainter: AbilityPetPainter, game: Game) => AbilityObject,
+    createSplitShape: (abilityObject: AbilityObjectPetPainter, upgrade: AbilityPetPainterUpgradeSplit, game: Game) => AbilityObjectPetPainter,
     tickShape: (pet: TamerPetCharacter, abilityPetPainter: AbilityPetPainter, game: Game) => void,
     tickShapeObject: (abilityObject: AbilityObjectPetPainter, game: Game) => void,
     paintShape: (ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: AbilityPetPainter, cameraPosition: Position, game: Game) => void,
@@ -65,6 +68,7 @@ export function addAbilityPetPainter() {
 
     addAbilityPetPainterUpgradeDuplicate();
     addAbilityPetPainterUpgradeFactory();
+    addAbilityPetPainterUpgradeSplit();
 }
 
 export function createAbilityPetPainter(idCounter: IdCounter): AbilityPetPainter {
@@ -113,7 +117,12 @@ function tickAbilityObjectPetPainter(abilityObject: AbilityObject, game: Game) {
 
 function deleteAbilityObjectPetPainter(abilityObject: AbilityObject, game: Game) {
     const abilityObjectPetPainter = abilityObject as AbilityObjectPetPainter;
-    return abilityObjectPetPainter.deleteTime <= game.state.time;
+    const deleteObject = abilityObjectPetPainter.deleteTime <= game.state.time;
+    if(deleteObject && !abilityObjectPetPainter.isSplit){
+        abilityPetPainerUpgradeSplitCheckForSplit(abilityObjectPetPainter, game);
+    }
+
+    return deleteObject;
 }
 
 function paintAbilityObjectPetPainter(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
