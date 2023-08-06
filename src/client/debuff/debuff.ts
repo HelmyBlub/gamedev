@@ -3,6 +3,7 @@ import { Game } from "../gameModel.js"
 import { addBuffSlowTrail } from "./buffSlowTrail.js";
 import { addBuffSpeed } from "./buffSpeed.js";
 import { addDebuffExplodeOnDeath } from "./debuffExplodeOnDeath.js";
+import { addDebuffRoot } from "./debuffRoot.js";
 import { addDebuffSlow } from "./debuffSlow.js";
 
 export type Debuff = {
@@ -25,6 +26,7 @@ export const DEBUFFS_FUNCTIONS: DebuffsFunctions = {};
 
 export function onDomLoadSetDebuffsFunctions() {
     addDebuffSlow();
+    addDebuffRoot();
     addBuffSpeed();
     addBuffSlowTrail();
     addDebuffExplodeOnDeath();

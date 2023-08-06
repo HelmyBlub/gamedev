@@ -227,8 +227,6 @@ export function getOptionsSnipeUpgrade(ability: Ability, upgradeName:string): Up
     let options = getAbilityUpgradeOptionDefault(ability, upgradeName);
     const upgrade: AbilityUpgrade & {upgradeSynergy:boolean} | undefined = ability.upgrades[upgradeName];
     const upgradeFunctions = ABILITY_SNIPE_UPGRADE_FUNCTIONS[upgradeName];
-    const levelText = upgrade === undefined ? "" : `(${upgrade.level})`;
-    options[0].option.displayText += levelText;
     options[0].option.displayLongText = upgradeFunctions.getLongExplainText!(ability, options[0].option as AbilityUpgradeOption);
 
     if (upgrade && !upgrade.upgradeSynergy) {

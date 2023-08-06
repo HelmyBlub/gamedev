@@ -1,4 +1,4 @@
-import { paintDefaultAbilityStatsUI } from "../../../ability/ability.js";
+import { ABILITIES_FUNCTIONS, paintDefaultAbilityStatsUI } from "../../../ability/ability.js";
 import { ABILITY_NAME_LEASH, AbilityLeash } from "../../../ability/abilityLeash.js";
 import { calculateDirection, calculateDistance, getNextId } from "../../../game.js";
 import { Game, Position } from "../../../gameModel.js";
@@ -183,6 +183,15 @@ export function paintTamerPetCharacterStatsUI(ctx: CanvasRenderingContext2D, pet
         textLines.push("Abilities:");
         for (let ability of pet.abilities) {
             textLines.push(ability.name);
+            let upgradeKeys = Object.keys(ability.upgrades);
+            if (upgradeKeys.length > 0) {
+                let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+                let upgradeFunctions = abilityFunctions.abilityUpgradeFunctions;
+                if (!upgradeFunctions) continue;
+                for (let key of upgradeKeys) {
+                    textLines.push(" -" + upgradeFunctions[key].getStatsDisplayText(ability));
+                }
+            }
         }
     }
 
@@ -223,9 +232,9 @@ export function paintTamerPetCharacter(ctx: CanvasRenderingContext2D, character:
 
 export function changeTamerPetHappines(pet: TamerPetCharacter, value: number, time: number, visualizeChange: boolean) {
     pet.happines.current += value;
-    if (tamerPetIncludesTrait("happy one", pet)){
+    if (tamerPetIncludesTrait("happy one", pet)) {
         pet.happines.current = pet.happines.hyperactiveAt - 1;
-    } 
+    }
     if (visualizeChange) pet.happines.visualizations.push({ happy: value > 0, displayUntil: time + 500 });
     if (pet.happines.current < 0) pet.happines.current = 0;
     if (pet.happines.current > MAX_HAPPINES) pet.happines.current = MAX_HAPPINES;

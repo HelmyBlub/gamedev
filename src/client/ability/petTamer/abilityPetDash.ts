@@ -1,13 +1,15 @@
+import { Character } from "../../character/characterModel.js";
 import { TamerPetCharacter } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { getNextId } from "../../game.js";
 import { IdCounter, Position, Game } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { calculateBounceAngle, calculateMovePosition, isPositionBlocking, moveByDirectionAndDistance } from "../../map/map.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, detectCircleCharacterHit } from "../ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectCircleCharacterHit, findAbilityById } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions } from "../abilityUpgrade.js";
 import { ABILITY_PET_DASH_UPGARDE_TERRAIN_BOUNCE, AbilityPetDashUpgradeTerrainBounce, addAbilityPetDashUpgradeTerrainBounce } from "./abilityPetDashUpgradeBounce.js";
 import { ABILITY_PET_DASH_UPGARDE_FIRE_LINE, AbilityPetDashUpgradeFireLine, addAbilityPetDashUpgradeFireLine, createPetDashUpgradeFireLine } from "./abilityPetDashUpgradeFireLine.js";
+import { abilityPetDashUpgradeRootApplyRoot, addAbilityPetDashUpgradeTerrainRoot } from "./abilityPetDashUpgradeRoot.js";
 
 export type AbilityPetDash = Ability & {
     baseDamage: number,
@@ -31,12 +33,14 @@ export function addAbilityPetDash() {
         paintAbility: paintAbilityPetDash,
         setAbilityToLevel: setAbilityPetDashToLevel,
         setAbilityToBossLevel: setAbilityPetDashToBossLevel,
+        onHit: onHit,
         abilityUpgradeFunctions: ABILITY_PET_DASH_UPGRADE_FUNCTIONS,
         isPassive: true,
     };
 
     addAbilityPetDashUpgradeTerrainBounce();
     addAbilityPetDashUpgradeFireLine();
+    addAbilityPetDashUpgradeTerrainRoot();
 }
 
 export function createAbilityPetDash(
@@ -61,6 +65,11 @@ export function getPetAbilityDashDamage(pet: TamerPetCharacter, ability: Ability
     const upgradeBounce: AbilityPetDashUpgradeTerrainBounce = ability.upgrades[ABILITY_PET_DASH_UPGARDE_TERRAIN_BOUNCE];
     if (upgradeBounce !== undefined) damage * upgradeBounce.currentDamageFactor;
     return damage;
+}
+
+function onHit(ability: Ability, targetCharacter: Character, game: Game){
+    const dash = ability as AbilityPetDash;
+    abilityPetDashUpgradeRootApplyRoot(dash, targetCharacter, game);
 }
 
 function createAbilityPetDashUpgradeOptions(ability: Ability): UpgradeOptionAndProbability[] {
@@ -127,7 +136,7 @@ function tickAbilityPetDash(abilityOwner: AbilityOwner, ability: Ability, game: 
             moveByDirectionAndDistance(pet, abilityPetDash.direction!, abilityPetDash.baseSpeed, true, game.state.map, game.state.idCounter);
         }
 
-        detectCircleCharacterHit(game.state.map, pet, pet.width / 2 + abilityPetDash.sizeExtension, pet.faction, ability.id, getPetAbilityDashDamage(pet, abilityPetDash), [], game.state.bossStuff.bosses, game);
+        detectCircleCharacterHit(game.state.map, pet, pet.width / 2 + abilityPetDash.sizeExtension, pet.faction, ability.id, getPetAbilityDashDamage(pet, abilityPetDash), [], game.state.bossStuff.bosses, game, undefined, ability);
     } else if (abilityPetDash.readyTime <= game.state.time) {
         if (abilityOwner.isMoving) {
             if (upgradeBounce) upgradeBounce.currentDamageFactor = 1;

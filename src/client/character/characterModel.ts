@@ -89,6 +89,7 @@ export type Character = Position & {
     moveSpeed: number,
     moveDirection: number,
     isMoving: boolean,
+    isRooted: boolean,
     hp: number,
     maxHp: number,
     faction: string,
@@ -145,6 +146,7 @@ export function createCharacter(
         debuffs: [],
         upgradeChoices: [],
         weight: width * height,
+        isRooted: false,
     };
 }
 

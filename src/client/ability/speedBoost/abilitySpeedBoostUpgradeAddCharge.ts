@@ -37,8 +37,6 @@ export function tickAbilitySpeedBoostUpgradeAddCharge(abilitySpeedBoost: Ability
 function getOptionsAddCharge(ability: Ability): UpgradeOptionAndProbability[] {
     let options = getAbilityUpgradeOptionDefault(ability, ABILITY_SPEED_BOOST_UPGARDE_ADD_CHARGE);
     const upgrade: AbilitySpeedBoostUpgradeAddCharge | undefined = ability.upgrades[ABILITY_SPEED_BOOST_UPGARDE_ADD_CHARGE];
-    const levelText = upgrade === undefined ? "" : `(${upgrade.level})`;
-    options[0].option.displayText += levelText;
     options[0].option.displayLongText = getAbilityUpgradeAddChargeUiTextLong(ability);
     return options;
 }

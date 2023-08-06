@@ -21,8 +21,6 @@ export function addAbilitySpeedBoostUpgradeCooldown() {
 function getOptionsCooldown(ability: Ability): UpgradeOptionAndProbability[] {
     let options = getAbilityUpgradeOptionDefault(ability, ABILITY_SPEED_BOOST_UPGARDE_COOLDOWN);
     const upgrade: AbilitySpeedBoostUpgradeCooldown | undefined = ability.upgrades[ABILITY_SPEED_BOOST_UPGARDE_COOLDOWN];
-    const levelText = upgrade === undefined ? "" : `(${upgrade.level})`;
-    options[0].option.displayText += levelText;
     options[0].option.displayLongText = getAbilityUpgradeCooldownUiTextLong(ability);
     return options;
 }

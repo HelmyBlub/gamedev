@@ -75,8 +75,9 @@ export type AbilityFunctions = {
     paintAbilityObject?: (ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) => void,
     paintAbilityUI?: (ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) => void,
     paintAbilityStatsUI?: (ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, game: Game) => { width: number, height: number },
-    onHit?: (abilityObject: AbilityObject) => void,
-    canHitMore?: (abilityObject: AbilityObject) => boolean,
+    onHit?:(ability: Ability, targetCharacter: Character, game: Game) => void,
+    onObjectHit?: (abilityObject: AbilityObject, targetCharacter: Character, game: Game) => void,
+    canObjectHitMore?: (abilityObject: AbilityObject) => boolean,
     setAbilityToLevel?: (ability: Ability, level: number) => void,
     setAbilityToBossLevel?: (ability: Ability, level: number) => void,
     abilityUpgradeFunctions?: AbilityUpgradesFunctions,
@@ -226,7 +227,7 @@ export function detectAbilityObjectCircleToCharacterHit(map: GameMap, abilityObj
     detectCircleCharacterHit(map, abilityObject, abilityObject.radius, abilityObject.faction, abilityObject.abilityRefId!, abilityObject.damage, players, bosses, game, abilityObject);
 }
 
-export function detectCircleCharacterHit(map: GameMap, circleCenter: Position, circleRadius: number, faction: string, abilityId: number, damage: number, players: Player[], bosses: BossEnemyCharacter[], game: Game, abilityObject: AbilityObject | undefined = undefined) {
+export function detectCircleCharacterHit(map: GameMap, circleCenter: Position, circleRadius: number, faction: string, abilityId: number, damage: number, players: Player[], bosses: BossEnemyCharacter[], game: Game, abilityObject: AbilityObject | undefined = undefined, ability: Ability | undefined = undefined) {
     let maxEnemySizeEstimate = 40;
 
     let characters = determineCharactersInDistance(circleCenter, map, players, bosses, circleRadius * 2 + maxEnemySizeEstimate);
@@ -238,11 +239,16 @@ export function detectCircleCharacterHit(map: GameMap, circleCenter: Position, c
             characterTakeDamage(c, damage, game, abilityId);
             if(abilityObject){
                 let abilityFunction = ABILITIES_FUNCTIONS[abilityObject.type];
-                if (abilityFunction.onHit) {
-                    abilityFunction.onHit(abilityObject);
-                    if (abilityFunction.canHitMore && !abilityFunction.canHitMore(abilityObject)) {
+                if (abilityFunction.onObjectHit) {
+                    abilityFunction.onObjectHit(abilityObject, c, game);
+                    if (abilityFunction.canObjectHitMore && !abilityFunction.canObjectHitMore(abilityObject)) {
                         break;
                     }
+                }
+            }else if(ability){
+                let abilityFunction = ABILITIES_FUNCTIONS[ability.name];
+                if (abilityFunction.onHit) {
+                    abilityFunction.onHit(ability, c, game);
                 }
             }
         }

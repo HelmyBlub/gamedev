@@ -367,6 +367,7 @@ export function moveMapCharacterTick(character: Character, map: GameMap, idCount
 }
 
 export function moveCharacterTick(character: Character, map: GameMap, idCounter: IdCounter) {
+    if(character.isRooted) return;
     let newPosition = calculateCharacterMovePosition(character, map, idCounter);
     if (newPosition) {
         character.x = newPosition.x;

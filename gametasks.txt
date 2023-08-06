@@ -4,15 +4,17 @@ current tasks:
     - abilities
         - "Dash"
             - upgrade:
-                - stun&push?: hit target can not move for a short time
+                - root: hit target can not move for a short time
+            - upgrade change ideas:
+                - terrainBounce too weak? add additional range or push?
                 - fire line: should exist longer?
         - "painter"
             - bug: circles getting stuck when bouncing from terrain
             - upgrades:
         - "breath"
             - upgrades
+            - upgrade change ideas:
                 - fire circle on death, instead of expode on death?
-                - range+: bigger range but needs more food
             - pet uses ability only when enemies around?
             - if active can not change direction instantly?
     - upgrade details info text for traits and ability upgrades
