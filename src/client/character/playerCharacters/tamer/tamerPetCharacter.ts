@@ -10,13 +10,18 @@ import { Character, createCharacter } from "../../characterModel.js";
 import { paintCharacter } from "../../characterPaint.js";
 import { PathingCache } from "../../pathing.js";
 import { Trait, tamerPetIncludesTrait } from "./petTrait.js";
+import { TAMER_PET_TRAIT_EATS_LESS } from "./petTraitEatsLess.js";
+import { TAMER_PET_TRAIT_GETS_FAT_EASILY } from "./petTraitGetFatEasily.js";
+import { TAMER_PET_TRAIT_HAPPY_ONE } from "./petTraitHappyOne.js";
+import { TAMER_PET_TRAIT_NEVER_GETS_FAT } from "./petTraitNeverGetsFat.js";
+import { TAMER_PET_TRAIT_VERY_HUNGRY } from "./petTraitVeryHungry.js";
 
 export type PetTargetBehavior = "passive" | "aggressive" | "protective";
 export type PetNoTargetBehavior = "stay" | "hyperactive" | "following";
 
 const MAX_HAPPINES = 150;
 const MAX_FOOD_INTAKE = 500;
-const MAX_OVERFED_SIZE = 10;
+const MAX_OVERFED_SIZE = 5;
 const MIN_MOVEMENTSPEED_FACTOR = 0.1;
 
 GAME_IMAGES["HAPPY"] = {
@@ -72,7 +77,7 @@ type FoodIntakeLevel = {
 export const TAMER_PET_CHARACTER = "tamerPet";
 
 export function createTamerPetCharacter(owner: Character, color: string, game: Game): TamerPetCharacter {
-    const defaultSize = 15;
+    const defaultSize = 30;
     const baseMoveSpeed = 2;
     let character = createCharacter(getNextId(game.state.idCounter), owner.x, owner.y, defaultSize, defaultSize, color, baseMoveSpeed, 20, owner.faction, TAMER_PET_CHARACTER, 10);
     const tamerPetCharacter: TamerPetCharacter = {
@@ -124,6 +129,9 @@ export function tickTamerPetCharacter(character: Character, petOwner: Character,
 }
 
 export function tamerPetFeed(pet: TamerPetCharacter, feedValue: number, time: number) {
+    if(tamerPetIncludesTrait(TAMER_PET_TRAIT_GETS_FAT_EASILY, pet) && feedValue > 0){
+        feedValue *= 2;
+    }
     const beforeFeed = pet.foodIntakeLevel.current;
     pet.foodIntakeLevel.current += feedValue;
     if (pet.foodIntakeLevel.current > MAX_FOOD_INTAKE) pet.foodIntakeLevel.current = MAX_FOOD_INTAKE;
@@ -232,7 +240,7 @@ export function paintTamerPetCharacter(ctx: CanvasRenderingContext2D, character:
 
 export function changeTamerPetHappines(pet: TamerPetCharacter, value: number, time: number, visualizeChange: boolean) {
     pet.happines.current += value;
-    if (tamerPetIncludesTrait("happy one", pet)) {
+    if (tamerPetIncludesTrait(TAMER_PET_TRAIT_HAPPY_ONE, pet)) {
         pet.happines.current = pet.happines.hyperactiveAt - 1;
     }
     if (visualizeChange) pet.happines.visualizations.push({ happy: value > 0, displayUntil: time + 500 });
@@ -265,8 +273,8 @@ function foodIntakeLevelTick(pet: TamerPetCharacter, game: Game) {
     if (intakeLevel.nextTick === undefined || intakeLevel.nextTick <= game.state.time) {
         intakeLevel.nextTick = game.state.time + intakeLevel.tickInterval;
         let tickChange = -1;
-        if (tamerPetIncludesTrait("very hungry", pet)) tickChange = -5;
-        if (tamerPetIncludesTrait("eats less", pet)) tickChange /= 2;
+        if (tamerPetIncludesTrait(TAMER_PET_TRAIT_VERY_HUNGRY, pet)) tickChange = -5;
+        if (tamerPetIncludesTrait(TAMER_PET_TRAIT_EATS_LESS, pet)) tickChange /= 2;
 
         if (intakeLevel.current > 0) tamerPetFeed(pet, tickChange, game.state.time);
     }
@@ -275,13 +283,9 @@ function foodIntakeLevelTick(pet: TamerPetCharacter, game: Game) {
         pet.sizeFactor = 1 - (intakeLevel.underfedAt - intakeLevel.current) / intakeLevel.underfedAt / 2;
         pet.moveSpeed = pet.baseMoveSpeed;
     } else if (intakeLevel.current > intakeLevel.overfedAt) {
-        if (tamerPetIncludesTrait("never gets fat", pet)) {
+        if (tamerPetIncludesTrait(TAMER_PET_TRAIT_NEVER_GETS_FAT, pet)) {
             pet.sizeFactor = 1;
             pet.moveSpeed = pet.baseMoveSpeed;
-        } else if (tamerPetIncludesTrait("gets fat easily", pet)) {
-            pet.sizeFactor = 1 + (intakeLevel.current - intakeLevel.overfedAt) / intakeLevel.overfedAt * 1.5;
-            pet.sizeFactor = Math.min(MAX_OVERFED_SIZE, pet.sizeFactor);
-            pet.moveSpeed = pet.baseMoveSpeed * Math.max(MIN_MOVEMENTSPEED_FACTOR, 1 / pet.sizeFactor);
         } else {
             pet.sizeFactor = 1 + (intakeLevel.current - intakeLevel.overfedAt) / intakeLevel.overfedAt;
             pet.sizeFactor = Math.min(MAX_OVERFED_SIZE, pet.sizeFactor);
@@ -294,7 +298,7 @@ function foodIntakeLevelTick(pet: TamerPetCharacter, game: Game) {
 
     pet.width = pet.defaultSize * pet.sizeFactor;
     pet.height = pet.width;
-    pet.weight = pet.width * pet.height;
+    pet.weight = (pet.width * pet.height) / 3;
 }
 
 function moveTick(pet: TamerPetCharacter, petOwner: Character, game: Game, pathingCache: PathingCache) {

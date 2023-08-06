@@ -16,7 +16,7 @@ import { ABILITY_NAME_PET_DASH } from "../../../ability/petTamer/abilityPetDash.
 import { AbilityUpgradeOption, PetAbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../upgrade.js";
 import { Trait, addTamerPetTraits, addTraitToTamerPet, getAvailableTamerPetTraits, getLongExplainTextForTamerPetTrait } from "./petTrait.js";
 
-export const TAMER_CHARACTER = "Tamer(Work in Progress)";
+export const TAMER_CHARACTER = "Tamer";
 export function addTamerClass() {
     PLAYER_CHARACTER_CLASSES_FUNCTIONS[TAMER_CHARACTER] = {
         changeCharacterToThisClass: changeCharacterToTamerClass
@@ -203,7 +203,7 @@ function valuesToUpgradeName(petName: string, abilityName: string, traitName: st
 function addPetToTamer(character: Character, color: string, game: Game) {
     if (character.pets === undefined) character.pets = [];
     const pet: TamerPetCharacter = createTamerPetCharacter(character, color, game);
-    pet.abilities.push(createAbilityLeash(game.state.idCounter, undefined, 100, character.id));
+    pet.abilities.push(createAbilityLeash(game.state.idCounter, undefined, 175, character.id));
     pet.abilities.push(createAbility(ABILITY_NAME_MELEE, game.state.idCounter, false));
 
     character.pets.push(pet);

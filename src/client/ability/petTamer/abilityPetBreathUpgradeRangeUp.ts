@@ -56,7 +56,7 @@ function getAbilityUpgradeRangeUpUiText(ability: Ability): string {
 function getAbilityUpgradeRangeUpUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
     const upgrade: AbilityUpgrade | undefined = ability.upgrades[ABILITY_PET_BREATH_UPGARDE_RANGE_UP];
-    textLines.push(`Increased Range for a higher food requirement`);
+    textLines.push(`Increased Range but requires more food`);
 
     return textLines;
 }

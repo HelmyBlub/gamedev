@@ -113,15 +113,20 @@ function paintAbilityPetBreath(ctx: CanvasRenderingContext2D, abilityOwner: Abil
 function tickAbilityPetBreath(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     let abilityPetBreath = ability as AbilityPetBreath;
     let pet = abilityOwner as TamerPetCharacter;
-    abilityPetBreath.active = pet.foodIntakeLevel.current > pet.foodIntakeLevel.underfedAt;
+    const activeUntil = pet.foodIntakeLevel.underfedAt / 2;
+    abilityPetBreath.active = pet.foodIntakeLevel.current > activeUntil;
+    const underfed = pet.foodIntakeLevel.current < pet.foodIntakeLevel.underfedAt;
     if (!abilityPetBreath.active) return;
 
     abilityPetBreath.directionAngle = pet.moveDirection;
     const rangeUpgrade = abilityPetBreath.upgrades[ABILITY_PET_BREATH_UPGARDE_RANGE_UP] as AbilityPetBreathUpgradeRangeUp;
     let rangeBonus = 0;
     if(rangeUpgrade) rangeBonus = abilityPetBreathUpgradeRangeUpGetAdditionRange(pet, rangeUpgrade);
-    const feedValue = Math.max(pet.foodIntakeLevel.current - pet.foodIntakeLevel.underfedAt, 0);
-    abilityPetBreath.range = Math.sqrt(feedValue) / 3 * (25 + rangeBonus) + 5;
+    abilityPetBreath.range = Math.sqrt(pet.width * 3) / 3 * (25 + rangeBonus) + 5;
+    if(underfed){
+        const underfedFactor = (pet.foodIntakeLevel.current - activeUntil) / activeUntil;
+        abilityPetBreath.range *= underfedFactor;
+    } 
     
     if (abilityPetBreath.nextTickTime === undefined) abilityPetBreath.nextTickTime = game.state.time + abilityPetBreath.tickInterval;
     if (abilityPetBreath.nextTickTime <= game.state.time) {

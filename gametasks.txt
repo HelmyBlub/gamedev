@@ -1,82 +1,23 @@
 current tasks:
+- visualize pet happyness
+- increase pet default size. keep max size
+- ability level faster early, slower late
 - tamer:    
     - pet traits:
     - abilities
         - "Dash"
-            - upgrade:
-                - root: hit target can not move for a short time
             - upgrade change ideas:
                 - terrainBounce too weak? add additional range or push?
                 - fire line: should exist longer?
         - "painter"
             - bug: circles getting stuck when bouncing from terrain
-            - upgrades:
         - "breath"
             - upgrades
-            - upgrade change ideas:
-                - fire circle on death, instead of expode on death?
-            - pet uses ability only when enemies around?
-            - if active can not change direction instantly?
-    - upgrade details info text for traits and ability upgrades
-
-
-    - balacing/change ideas:
-        - pet traits:
-            ideas:
-                - "antisocial": pet wants to stay away from other pets
-                - "jealous": wants hearts if other gets them, unhappy if not given
-                - "fast": moves faster
-                - "strong": does more damage
-                - "heavy bones": harder to pull
-                - "light bones": easier to pull
 
     - name pets
-
     - Bug: long leash not painted if pet out of screen
 
-
     - after some leash bending test: remove error throw in getNextWaypoint
-
-- look over code for refactoring stuff
-
-tamer task ideas:
-    - default good Pet behavior:
-        - activates speed boost if player takes damage
-    - player abilities:
-        - command attack certain target/area
-        - "treat" -> pet thinks he done the right thing
-        - "stop" -> 
-        - "petting" ->
-    - pet AI:
-        - pet get random start behavior type
-            - movement
-                - lazy -> stays around often
-                - normal
-                - hyperactive -> always running around
-            - stamina:
-                - sleeping
-                - low
-                - normal
-                - high
-            - 
-        - pet states
-            - happines:
-                - happy pet has damage buff
-            - "fatigued" -> after attacking alot
-            - "hyperactive" -> faster
-            - ""
-        - stay close to player when no enemies in range
-        - more behavior patterns
-    - pet scalling?
-        - pets get abilities?
-            - bossSkillPoints?
-                - "iceAura"
-                - "sword"
-                - "shoot" but targeted maybe?
-        -
-
-
-
 
 possible future tasks: (only keep 5)
 1. improvement: getChunksTouchingLine2 does not work, still needs to improve
