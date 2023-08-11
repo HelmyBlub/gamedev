@@ -42,9 +42,13 @@ export const GAME_IMAGES: GameImages = {};
 export function getImage(imageKey: string, color: string = "", randomizedCharacterImage: RandomizedCharacterImage | undefined = undefined): HTMLImageElement | undefined {
     let imageRef = GAME_IMAGES[imageKey];
 
-    loadImage(imageRef);
+    loadImage(imageRef, color, randomizedCharacterImage);
     if (imageRef.imageRef?.complete) {
-        return imageRef.imageRef;
+        if(color === ""){
+            return imageRef.imageRef;
+        }else if(imageRef.properties && imageRef.properties.canvas){
+            return imageRef.properties.canvas;
+        }
     }    
     return undefined;
 }
@@ -67,7 +71,7 @@ export function loadImage(gameImage: GameImage, color: string = "", randomizedCh
     }
 }
 
-export function replaceColorInIamgeArea(imageCtx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, newColorRGB: RgbColor, toChangeColor: RgbColor) {
+export function replaceColorInImageArea(imageCtx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, newColorRGB: RgbColor, toChangeColor: RgbColor) {
     let imageData = imageCtx.getImageData(x, y, width, height);
     replaceColor(imageData, newColorRGB, toChangeColor);
     imageCtx.putImageData(imageData, x, y);
@@ -91,7 +95,7 @@ function createColorVariants(gameImage: GameImage, color: string) {
             imageCtx.drawImage(gameImage.imageRef!, 0, paintY);
             let newColorRGB = COLOR_CONVERSION[color];
             let toChangeColor = COLOR_CONVERSION[gameImage.properties.baseColor!];
-            replaceColorInIamgeArea(imageCtx, 0, paintY, gameImage.properties.canvas.width, gameImage.imageRef!.height, newColorRGB, toChangeColor);
+            replaceColorInImageArea(imageCtx, 0, paintY, gameImage.properties.canvas.width, gameImage.imageRef!.height, newColorRGB, toChangeColor);
         }
     }
 }

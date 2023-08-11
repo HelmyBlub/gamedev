@@ -1,7 +1,8 @@
 current tasks:
 - visualize pet happyness
-- increase pet default size. keep max size
-- ability level faster early, slower late
+- bigest problem: boss fights: hard to pull pets, hard to keep distance to boss
+    - trait: "heavy/light bones" might help
+        - faster+++
 - tamer:    
     - pet traits:
     - abilities

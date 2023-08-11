@@ -2,6 +2,7 @@ import { ABILITIES_FUNCTIONS, paintDefaultAbilityStatsUI } from "../../../abilit
 import { ABILITY_NAME_LEASH, AbilityLeash } from "../../../ability/abilityLeash.js";
 import { calculateDirection, calculateDistance, getNextId } from "../../../game.js";
 import { Game, Position } from "../../../gameModel.js";
+import { getPointPaintPosition } from "../../../gamePaint.js";
 import { GAME_IMAGES, getImage } from "../../../imageLoad.js";
 import { moveByDirectionAndDistance } from "../../../map/map.js";
 import { nextRandom } from "../../../randomNumberGenerator.js";
@@ -23,18 +24,6 @@ const MAX_HAPPINES = 150;
 const MAX_FOOD_INTAKE = 500;
 const MAX_OVERFED_SIZE = 5;
 const MIN_MOVEMENTSPEED_FACTOR = 0.1;
-
-GAME_IMAGES["HAPPY"] = {
-    imagePath: "/images/happy.png",
-    spriteRowHeights: [40],
-    spriteRowWidths: [40],
-};
-GAME_IMAGES["UNHAPPY"] = {
-    imagePath: "/images/unhappy.png",
-    spriteRowHeights: [40],
-    spriteRowWidths: [40],
-};
-
 
 export type TamerPetCharacter = Character & {
     petTargetBehavior: PetTargetBehavior;
@@ -75,6 +64,22 @@ type FoodIntakeLevel = {
 }
 
 export const TAMER_PET_CHARACTER = "tamerPet";
+GAME_IMAGES[TAMER_PET_CHARACTER] = {
+    properties: { baseColor: "green" },
+    imagePath: "/images/slime.png",
+    spriteRowHeights: [20],
+    spriteRowWidths: [20],
+};
+GAME_IMAGES["HAPPY"] = {
+    imagePath: "/images/happy.png",
+    spriteRowHeights: [40],
+    spriteRowWidths: [40],
+};
+GAME_IMAGES["UNHAPPY"] = {
+    imagePath: "/images/unhappy.png",
+    spriteRowHeights: [40],
+    spriteRowWidths: [40],
+};
 
 export function createTamerPetCharacter(owner: Character, color: string, game: Game): TamerPetCharacter {
     const defaultSize = 30;
@@ -129,7 +134,7 @@ export function tickTamerPetCharacter(character: Character, petOwner: Character,
 }
 
 export function tamerPetFeed(pet: TamerPetCharacter, feedValue: number, time: number) {
-    if(tamerPetIncludesTrait(TAMER_PET_TRAIT_GETS_FAT_EASILY, pet) && feedValue > 0){
+    if (tamerPetIncludesTrait(TAMER_PET_TRAIT_GETS_FAT_EASILY, pet) && feedValue > 0) {
         feedValue *= 2;
     }
     const beforeFeed = pet.foodIntakeLevel.current;
@@ -216,7 +221,33 @@ export function paintTamerPetCharacterStatsUI(ctx: CanvasRenderingContext2D, pet
 
 export function paintTamerPetCharacter(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
     let tamerPetCharacter = character as TamerPetCharacter;
-    paintCharacter(ctx, character, cameraPosition, game);
+    //paintCharacter(ctx, character, cameraPosition, game);
+    let petImage = getImage(TAMER_PET_CHARACTER, character.color);
+    if (petImage) {
+        const characterImage = GAME_IMAGES[TAMER_PET_CHARACTER];
+        const spriteAnimation = Math.floor(game.state.time / 250) % 2;
+        const happinesToInt = tamerPetCharacter.happines.current < tamerPetCharacter.happines.unhappyAt ? 0 : (tamerPetCharacter.happines.current > tamerPetCharacter.happines.hyperactiveAt) ? 2 : 1;
+        const spriteWidth = characterImage.spriteRowWidths[0];
+        const spriteHappinesOffset = happinesToInt * 2 * (spriteWidth + 1);
+        const spriteHeight = characterImage.spriteRowHeights[0];
+        const spriteColor = characterImage.properties.colorToSprite!.indexOf(character.color);
+        const paintPos = getPointPaintPosition(ctx, character, cameraPosition);
+        ctx.drawImage(
+            petImage,
+            0 + spriteAnimation * (spriteWidth + 1) + spriteHappinesOffset,
+            0 + spriteColor * (spriteHeight + 1),
+            spriteWidth, spriteHeight,
+            Math.floor(paintPos.x - character.width / 2),
+            Math.floor(paintPos.y - character.height / 2),
+            character.width, character.height
+        );
+    }
+    for (let ability of character.abilities) {
+        const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+        if (abilityFunctions.paintAbility !== undefined) {
+            abilityFunctions.paintAbility(ctx, character, ability, cameraPosition, game);
+        }
+    }
     if (tamerPetCharacter.happines.visualizations.length > 0) {
         let centerX = ctx.canvas.width / 2;
         let centerY = ctx.canvas.height / 2;

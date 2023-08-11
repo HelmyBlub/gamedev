@@ -79,7 +79,7 @@ export function paintCharacter(ctx: CanvasRenderingContext2D, character: Charact
             loadImage(characterImage, character.color, character.randomizedCharacterImage);
             if (characterImage.properties?.canvas) {
                 if (characterImageId === "slime") {
-                    let spriteAnimation = Math.floor(performance.now() / 250) % 2;
+                    let spriteAnimation = Math.floor(game.state.time / 250) % 2;
                     let spriteColor = characterImage.properties.colorToSprite!.indexOf(character.color);
                     let spriteWidth = characterImage.spriteRowWidths[0];
                     let spriteHeight = characterImage.spriteRowHeights[0];

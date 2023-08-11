@@ -48,7 +48,12 @@ export type CharacterImageLoadProperties = {
 
 export const DEFAULT_CHARACTER = "Character";
 
-GAME_IMAGES["slime"] = { properties: { baseColor: "green" }, imagePath: "/images/slimeEnemy.png", spriteRowHeights: [20], spriteRowWidths: [20] };
+GAME_IMAGES["slime"] = { 
+    properties: { baseColor: "green" },
+    imagePath: "/images/slimeEnemy.png",
+    spriteRowHeights: [20],
+    spriteRowWidths: [20]
+};
 
 let playerImageProperties: CharacterImageLoadProperties = {
     headSpriteRows: [0],

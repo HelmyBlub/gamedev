@@ -1,5 +1,5 @@
 import { CharacterImageLoadProperties } from "./character/characterModel.js";
-import { COLOR_CONVERSION, GameImage, replaceColorInIamgeArea } from "./imageLoad.js";
+import { COLOR_CONVERSION, GameImage, replaceColorInImageArea } from "./imageLoad.js";
 import { RandomSeed, nextRandom } from "./randomNumberGenerator.js";
 
 export type RandomizedCharacterImage = {
@@ -85,11 +85,11 @@ export function createRandomizedCharacter(gameImage: GameImage, randomizedCharac
         }
         sy += gameImage.spriteRowHeights[bodyPartIndex];
     }
-    replaceColorInIamgeArea(imageCtx, 0, 0, canvas.width, canvas.height,
+    replaceColorInImageArea(imageCtx, 0, 0, canvas.width, canvas.height,
         COLOR_CONVERSION[randomizedCharacterImage.skinColor],
         COLOR_CONVERSION[properties.skinColor]
     );
-    replaceColorInIamgeArea(imageCtx, 0, 0, canvas.width, canvas.height,
+    replaceColorInImageArea(imageCtx, 0, 0, canvas.width, canvas.height,
         COLOR_CONVERSION[randomizedCharacterImage.clothColor],
         COLOR_CONVERSION[properties.clothColor]
     );
