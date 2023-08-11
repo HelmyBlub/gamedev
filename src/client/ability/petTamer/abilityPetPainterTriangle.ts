@@ -22,6 +22,7 @@ export type AbilityObjectPetPainterTriangle = AbilityObjectPetPainter & {
 }
 
 const TRIANGLESIZE = 30;
+const DURATION = 10000;
 const TRIANGLE_DAMAGE_FACTOR = 1;
 const PET_PAINTER_TRIANGLE = "Triangle";
 
@@ -54,7 +55,7 @@ function createAbilityObjectPetPainterTriangle(
         sideLength: size,
         damage: damage * TRIANGLE_DAMAGE_FACTOR,
         faction: faction,
-        deleteTime: gameTime + 5000,
+        deleteTime: gameTime + DURATION,
         subType: PET_PAINTER_TRIANGLE,
         abilityRefId: abilityRefId,
         tickInterval: 100,
@@ -146,7 +147,7 @@ function tickShapeObjectPetPainterTriangle(abilityObject: AbilityObjectPetPainte
     } else {
         triangle.rotation = (triangle.rotation + triangle.rotationSpeed) % (Math.PI * 2);
         const direction = triangle.rotationSpeed < 0 ? -1 : 1;
-        const distance = (5000 - (triangle.deleteTime - game.state.time)) / 50;
+        const distance = (DURATION - (triangle.deleteTime - game.state.time)) / DURATION * 100;
         triangle.x = triangle.centerPos.x + Math.sin(distance / 10 + triangle.rotationOffset) * distance * direction;
         triangle.y = triangle.centerPos.y + Math.cos(distance / 10 + triangle.rotationOffset) * distance * direction;
         if (triangle.nextTickTime === undefined) triangle.nextTickTime = game.state.time + triangle.tickInterval;

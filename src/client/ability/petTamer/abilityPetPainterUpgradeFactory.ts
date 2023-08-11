@@ -34,7 +34,7 @@ function executeOptionPaintFactory(ability: Ability, option: AbilityUpgradeOptio
     } else {
         up = as.upgrades[ABILITY_PET_PAINTER_UPGARDE_FACTORY];
     }
-    up.duration += up.spawnInterval;
+    up.duration += up.spawnInterval * 2;
     up.level++;
 }
 

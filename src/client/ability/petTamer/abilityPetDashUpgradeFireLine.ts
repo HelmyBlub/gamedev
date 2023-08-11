@@ -26,7 +26,7 @@ export function addAbilityPetDashUpgradeFireLine() {
 export function createPetDashUpgradeFireLine(pet: TamerPetCharacter, ability: AbilityPetDash, game: Game){
     const upgrade = ability.upgrades[ABILITY_PET_DASH_UPGARDE_FIRE_LINE] as AbilityPetDashUpgradeFireLine;
     if(!upgrade) return;
-    const width = 10;
+    const width = Math.floor(Math.max(pet.width * 0.75, 10));
     const tickInterval = 100;
     const color = "red";
     const tickDamage = getPetAbilityDashDamage(pet, ability) * (tickInterval / 1000) * upgrade.damageFactor;
@@ -57,14 +57,14 @@ function executeOptionDashFireLine(ability: Ability, option: AbilityUpgradeOptio
         up = { 
             level: 0,
             damageFactor: 0,
-            duration: 3000,
+            duration: 5000,
         };
         as.upgrades[ABILITY_PET_DASH_UPGARDE_FIRE_LINE] = up;
     } else {
         up = as.upgrades[ABILITY_PET_DASH_UPGARDE_FIRE_LINE];
     }
     up.level++;
-    up.duration += 1000;
+    up.duration += 1500;
     up.damageFactor += 1;
 }
 

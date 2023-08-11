@@ -22,7 +22,7 @@ export type AbilityObjectPetPainterSquare = AbilityObjectPetPainter & {
 
 const FADETIME = 500;
 const SQUARESIZE = 30;
-const SQUARE_DAMAGE_FACTOR = 5;
+const SQUARE_DAMAGE_FACTOR = 10;
 const PET_PAINTER_SQUARE = "Square";
 
 export function addAbilityPetPainterSquare() {
@@ -84,11 +84,11 @@ function createAbilityObjectPetPainterSquareFactory(
         damage: damage,
         faction: faction,
         range: range,
-        deleteTime: gameTime + duration,
+        deleteTime: gameTime + duration * 2,
         damageDone: false,
         subType: PET_PAINTER_SQUARE,
         abilityRefId: abilityRefId,
-        tickInterval: spawnInterval,
+        tickInterval: spawnInterval * 2,
         isFactory: true,
     }
 

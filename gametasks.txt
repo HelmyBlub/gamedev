@@ -1,5 +1,4 @@
 current tasks:
-- visualize pet happyness
 - bigest problem: boss fights: hard to pull pets, hard to keep distance to boss
     - trait: "heavy/light bones" might help
         - faster+++
@@ -9,14 +8,12 @@ current tasks:
         - "Dash"
             - upgrade change ideas:
                 - terrainBounce too weak? add additional range or push?
-                - fire line: should exist longer?
         - "painter"
             - bug: circles getting stuck when bouncing from terrain
         - "breath"
             - upgrades
 
     - name pets
-    - Bug: long leash not painted if pet out of screen
 
     - after some leash bending test: remove error throw in getNextWaypoint
 

@@ -19,6 +19,7 @@ export type AbilityObjectPetPainterCircle = AbilityObjectPetPainter & AbilityObj
 
 const PET_PAINTER_CIRCLE = "Circle";
 const CIRCLE_DAMAGE_FACTOR = 1;
+const DURATION = 7000;
 const CIRCLERADIUS = 15;
 
 export function addAbilityPetPainterCircle() {
@@ -49,7 +50,7 @@ function createAbilityObjectPetPainterCircle(
         y: position.y,
         damage: damage,
         faction: faction,
-        deleteTime: gameTime + 5000,
+        deleteTime: gameTime + DURATION,
         subType: PET_PAINTER_CIRCLE,
         abilityRefId: abilityRefId,
         radius: radius,

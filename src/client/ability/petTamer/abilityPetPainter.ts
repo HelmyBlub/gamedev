@@ -10,8 +10,8 @@ import { addAbilityPetPainterCircle } from "./abilityPetPainterCircle.js";
 import { addAbilityPetPainterSquare } from "./abilityPetPainterSquare.js";
 import { addAbilityPetPainterTriangle } from "./abilityPetPainterTriangle.js";
 import { ABILITY_PET_PAINTER_UPGARDE_DUPLICATE, AbilityPetPainterUpgradeDuplicate, addAbilityPetPainterUpgradeDuplicate } from "./abilityPetPainterUpgradeDuplicate.js";
-import { AbilityPetPainterUpgradeFactory, addAbilityPetPainterUpgradeFactory } from "./abilityPetPainterUpgradeFactory.js";
-import { ABILITY_PET_PAINTER_UPGARDE_SPLIT, AbilityPetPainterUpgradeSplit, abilityPetPainerUpgradeSplitCheckForSplit, addAbilityPetPainterUpgradeSplit } from "./abilityPetPainterUpgradeSplit.js";
+import { addAbilityPetPainterUpgradeFactory } from "./abilityPetPainterUpgradeFactory.js";
+import { AbilityPetPainterUpgradeSplit, abilityPetPainerUpgradeSplitCheckForSplit, addAbilityPetPainterUpgradeSplit } from "./abilityPetPainterUpgradeSplit.js";
 
 export type AbilityPetPainter = Ability & {
     baseDamage: number,

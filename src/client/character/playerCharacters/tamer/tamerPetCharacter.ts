@@ -14,6 +14,7 @@ import { Trait, tamerPetIncludesTrait } from "./petTrait.js";
 import { TAMER_PET_TRAIT_EATS_LESS } from "./petTraitEatsLess.js";
 import { TAMER_PET_TRAIT_GETS_FAT_EASILY } from "./petTraitGetFatEasily.js";
 import { TAMER_PET_TRAIT_HAPPY_ONE } from "./petTraitHappyOne.js";
+import { TAMER_PET_TRAIT_NEEDS_MORE_LOVE } from "./petTraitNeedsMoreLove.js";
 import { TAMER_PET_TRAIT_NEVER_GETS_FAT } from "./petTraitNeverGetsFat.js";
 import { TAMER_PET_TRAIT_VERY_HUNGRY } from "./petTraitVeryHungry.js";
 
@@ -125,7 +126,7 @@ export function tickTamerPetCharacter(character: Character, petOwner: Character,
     if (character.isDead) return;
     moveTick(pet, petOwner, game, pathingCache);
     foodIntakeLevelTick(pet, game);
-    if (pet.happines.current > pet.happines.hyperactiveAt || tamerPetIncludesTrait("needs more love", pet)) {
+    if (pet.happines.current > pet.happines.hyperactiveAt || tamerPetIncludesTrait(TAMER_PET_TRAIT_NEEDS_MORE_LOVE, pet)) {
         if (pet.happines.nextTick === undefined || pet.happines.nextTick < game.state.time) {
             pet.happines.nextTick = game.state.time + pet.happines.tickInterval;
             changeTamerPetHappines(pet, -1, game.state.time, false);
@@ -137,6 +138,10 @@ export function tamerPetFeed(pet: TamerPetCharacter, feedValue: number, time: nu
     if (tamerPetIncludesTrait(TAMER_PET_TRAIT_GETS_FAT_EASILY, pet) && feedValue > 0) {
         feedValue *= 2;
     }
+    if (tamerPetIncludesTrait(TAMER_PET_TRAIT_EATS_LESS, pet) && feedValue < 0){
+        feedValue /= 2;
+    } 
+
     const beforeFeed = pet.foodIntakeLevel.current;
     pet.foodIntakeLevel.current += feedValue;
     if (pet.foodIntakeLevel.current > MAX_FOOD_INTAKE) pet.foodIntakeLevel.current = MAX_FOOD_INTAKE;
@@ -305,7 +310,6 @@ function foodIntakeLevelTick(pet: TamerPetCharacter, game: Game) {
         intakeLevel.nextTick = game.state.time + intakeLevel.tickInterval;
         let tickChange = -1;
         if (tamerPetIncludesTrait(TAMER_PET_TRAIT_VERY_HUNGRY, pet)) tickChange = -5;
-        if (tamerPetIncludesTrait(TAMER_PET_TRAIT_EATS_LESS, pet)) tickChange /= 2;
 
         if (intakeLevel.current > 0) tamerPetFeed(pet, tickChange, game.state.time);
     }
