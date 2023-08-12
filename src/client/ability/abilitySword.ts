@@ -75,7 +75,7 @@ function setAbilitySwordToBossLevel(ability: Ability, level: number){
     abilitySword.damage = level * 25;
     abilitySword.swordCount = level > 5 ? 2 : 1;
     abilitySword.swordLength = 30 + level * 25;
-    abilitySword.angleChangePerTick = 0.01 + 0.005 * level;
+    abilitySword.angleChangePerTick = Math.min(0.01 + 0.005 * level, 0.03);
     abilitySword.angleChangePerSword = Math.PI * 2 / abilitySword.swordCount;
 }
 

@@ -133,7 +133,7 @@ function killCharacter(character: Character, game: Game, abilityRefId: number | 
 export function setCharacterAbilityLevel(ability: Ability, character: Character) {
     const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
     if (character.leveling && abilityFunctions && abilityFunctions.setAbilityToLevel) {
-        const abilityLevel = Math.max(1, Math.ceil(character.leveling.level / 10));
+        const abilityLevel = Math.max(1, Math.ceil(character.leveling.level / 2));
         abilityFunctions.setAbilityToLevel(ability, abilityLevel);
     }
 }

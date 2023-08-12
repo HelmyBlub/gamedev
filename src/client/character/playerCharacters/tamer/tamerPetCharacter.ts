@@ -226,7 +226,6 @@ export function paintTamerPetCharacterStatsUI(ctx: CanvasRenderingContext2D, pet
 
 export function paintTamerPetCharacter(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
     let tamerPetCharacter = character as TamerPetCharacter;
-    //paintCharacter(ctx, character, cameraPosition, game);
     let petImage = getImage(TAMER_PET_CHARACTER, character.color);
     if (petImage) {
         const characterImage = GAME_IMAGES[TAMER_PET_CHARACTER];
