@@ -16,7 +16,7 @@ let testInputs: (PlayerInput | Omit<CommandRestart, "executeTime">)[] = [];
 export function testGame(game: Game) {
     if(testInputs.length === 0){
         var request = new XMLHttpRequest();
-        request.open("GET", "/data/testInputs.json", false);
+        request.open("GET", "/data/testInputs2.json", false);
         request.send(null)
         testInputs = JSON.parse(request.responseText);
     }

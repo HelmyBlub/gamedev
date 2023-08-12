@@ -88,14 +88,14 @@ export function createShapeAbilityPetPainter(shape: string, abilityOwner: Abilit
     if (shapeFunction) {
         let numberShapes = 1;
         let duplicateUpgrade = abilityPetPainter.upgrades[ABILITY_PET_PAINTER_UPGARDE_DUPLICATE] as AbilityPetPainterUpgradeDuplicate;
-        if(duplicateUpgrade){
+        if (duplicateUpgrade) {
             numberShapes += duplicateUpgrade.level;
         }
-        for(let i = 0; i< numberShapes; i++){
+        for (let i = 0; i < numberShapes; i++) {
             const shape = shapeFunction.createShape(pet, abilityPetPainter, game);
             game.state.abilityObjects.push(shape);
         }
-    }else{
+    } else {
         throw Error("missing implementation");
     }
 }
@@ -110,7 +110,7 @@ function tickAbilityObjectPetPainter(abilityObject: AbilityObject, game: Game) {
     const shapeFunction = ABILITY_PET_PAINTER_SHAPES_FUNCTIONS[petPainter.subType];
     if (shapeFunction) {
         shapeFunction.tickShapeObject(petPainter, game);
-    }else{
+    } else {
         throw Error("missing implementation");
     }
 }
@@ -118,7 +118,7 @@ function tickAbilityObjectPetPainter(abilityObject: AbilityObject, game: Game) {
 function deleteAbilityObjectPetPainter(abilityObject: AbilityObject, game: Game) {
     const abilityObjectPetPainter = abilityObject as AbilityObjectPetPainter;
     const deleteObject = abilityObjectPetPainter.deleteTime <= game.state.time;
-    if(deleteObject && !abilityObjectPetPainter.isSplit){
+    if (deleteObject && !abilityObjectPetPainter.isSplit) {
         abilityPetPainerUpgradeSplitCheckForSplit(abilityObjectPetPainter, game);
     }
 
@@ -130,7 +130,7 @@ function paintAbilityObjectPetPainter(ctx: CanvasRenderingContext2D, abilityObje
     const shapeFunction = ABILITY_PET_PAINTER_SHAPES_FUNCTIONS[petPainter.subType];
     if (shapeFunction) {
         shapeFunction.paintShapeObject(ctx, petPainter, paintOrder, game);
-    }else{
+    } else {
         throw Error("missing implementation");
     }
 }
@@ -141,7 +141,7 @@ function paintAbilityPetPainter(ctx: CanvasRenderingContext2D, abilityOwner: Abi
     const shapeFunction = ABILITY_PET_PAINTER_SHAPES_FUNCTIONS[abilityPetPainter.currentlyPainting];
     if (shapeFunction) {
         shapeFunction.paintShape(ctx, abilityOwner, abilityPetPainter, cameraPosition, game);
-    }else{
+    } else {
         throw Error("missing implementation");
     }
 }
@@ -152,7 +152,7 @@ function createAbilityPetPainterUpgradeOptions(ability: Ability): UpgradeOptionA
     return upgradeOptions;
 }
 
-function executeAbilityPetPainterUpgradeOption(ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game){
+function executeAbilityPetPainterUpgradeOption(ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game) {
     const abilityUpgradeOption: AbilityUpgradeOption = upgradeOption as AbilityUpgradeOption;
     upgradeAbility(ability, character, abilityUpgradeOption);
 }

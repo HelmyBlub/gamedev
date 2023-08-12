@@ -337,9 +337,13 @@ function foodIntakeLevelTick(pet: TamerPetCharacter, game: Game) {
 
 function moveTick(pet: TamerPetCharacter, petOwner: Character, game: Game, pathingCache: PathingCache) {
     if (pet.forcedMovePosition) {
-        pet.isMoving = true;
-        let direction = calculateDirection(pet, pet.forcedMovePosition);
-        pet.moveDirection = direction;
+        if (pet.happines.current < pet.happines.unhappyAt){
+            pet.isMoving = false;
+        }else{
+            pet.isMoving = true;
+            let direction = calculateDirection(pet, pet.forcedMovePosition);
+            pet.moveDirection = direction;
+        }
     } else {
         let target = getTargetByBehavior(pet, petOwner, game);
         if (target) {

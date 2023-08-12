@@ -1,4 +1,5 @@
 current tasks:
+- Bug: fire line with big width not hitting properly?
 - tamer:    
     - pet traits:
     - abilities

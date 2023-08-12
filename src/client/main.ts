@@ -5,7 +5,7 @@ import { onDomLoadSetDebuffsFunctions } from "./debuff/debuff.js";
 import { runner, setRelativeMousePosition } from "./game.js";
 import { createDefaultGameData, Game } from "./gameModel.js";
 import { keyDown, keyUp, mouseDown, mouseUp } from "./playerInput.js";
-import { addHTMLDebugCheckboxesToSettings } from "./settingsHtmlMenu.js";
+import { addHTMLDebugMenusToSettings } from "./settingsHtmlMenu.js";
 
 var gameCount: number = 0;
 
@@ -40,7 +40,7 @@ export function createGame(canvasElementId: string | undefined, forTesting: bool
         });
         c.height = window.innerHeight - 2;
         c.width = window.innerWidth - 2;
-        addHTMLDebugCheckboxesToSettings(game);
+        addHTMLDebugMenusToSettings(game);
         const commandRestart = {
             command: "restart",
             clientId: game.multiplayer.myClientId,

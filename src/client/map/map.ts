@@ -173,6 +173,7 @@ export function calculateMovePosition(position: Position, moveDirection: number,
 
 export function getChunksTouchingLine(map: GameMap, lineStart: Position, lineEnd: Position, width: number = 20): MapChunk[] {
     const chunkSize = map.chunkLength * map.tileSize;
+    if(width / 2 > chunkSize) width = chunkSize * 2;
     const chunkKeys: Set<string> = new Set<string>();
     const firstKey = positionToMapKey(lineStart, map);
     chunkKeys.add(firstKey);
@@ -234,13 +235,13 @@ export function getChunksTouchingLine(map: GameMap, lineStart: Position, lineEnd
             }
             currentKey = positionToMapKey(currentPos, map);
             chunkKeys.add(currentKey);
-            let tempKey = positionToMapKey({ x: currentPos.x - width, y: currentPos.y }, map);
+            let tempKey = positionToMapKey({ x: currentPos.x - width / 2, y: currentPos.y }, map);
             chunkKeys.add(tempKey);
-            tempKey = positionToMapKey({ x: currentPos.x + width, y: currentPos.y }, map);
+            tempKey = positionToMapKey({ x: currentPos.x + width / 2, y: currentPos.y }, map);
             chunkKeys.add(tempKey);
-            tempKey = positionToMapKey({ x: currentPos.x, y: currentPos.y + width }, map);
+            tempKey = positionToMapKey({ x: currentPos.x, y: currentPos.y + width / 2 }, map);
             chunkKeys.add(tempKey);
-            tempKey = positionToMapKey({ x: currentPos.x, y: currentPos.y - width }, map);
+            tempKey = positionToMapKey({ x: currentPos.x, y: currentPos.y - width / 2 }, map);
             chunkKeys.add(tempKey);
         } while (currentKey !== endKey);
     }

@@ -242,7 +242,8 @@ export function determineCharactersInDistance(position: Position, map: GameMap, 
 }
 
 export function getCharactersTouchingLine(game: Game, lineStart: Position, lineEnd: Position, lineWidth: number = 3): Character[] {
-    let chunks: MapChunk[] = getChunksTouchingLine(game.state.map, lineStart, lineEnd);
+    const enemyMaxWidth = 20;
+    let chunks: MapChunk[] = getChunksTouchingLine(game.state.map, lineStart, lineEnd, lineWidth + enemyMaxWidth);
     let charactersTouchingLine: Character[] = [];
     for (let chunk of chunks) {
         for (let char of chunk.characters) {
