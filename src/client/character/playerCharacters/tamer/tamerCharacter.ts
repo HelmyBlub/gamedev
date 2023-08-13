@@ -39,6 +39,7 @@ function changeCharacterToTamerClass(
     game: Game,
 ) {
     character.type = TAMER_CHARACTER;
+    character.characterClass = TAMER_CHARACTER;
     character.moveSpeed *= 1.2;
     character.maxHp *= 1.5;
     character.hp *= 1.5;

@@ -100,6 +100,7 @@ export type Character = Position & {
     faction: string,
     experienceWorth: number,
     type: string,
+    characterClass?: string,
     isDead: boolean,
     abilities: Ability[],
     debuffs: Debuff[],

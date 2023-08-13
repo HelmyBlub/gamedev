@@ -18,13 +18,13 @@ export type IdCounter = {
 }
 
 export type TestingStuff = {
-    record?:{
+    record?: {
         collectedTestInputs: Omit<PlayerInput, "executeTime">[],
         mapSeed?: number,
         randomStartSeed?: number,
         restartPlayerInput?: Omit<CommandRestart, "executeTime">,
     }
-    replay?:{
+    replay?: {
         zeroTimeout?: boolean,
         doNotPaint?: boolean,
         frameSkipAmount?: number,
@@ -33,6 +33,7 @@ export type TestingStuff = {
         randomStartSeed?: number,
         replayPlayerInputs?: PlayerInput[],
         replayInputCounter?: number,
+        testInputFileQueue?: string[],
     }
     autoPlay: {
         hotkeyEnabled: boolean,
@@ -86,7 +87,10 @@ export type GameState = {
 }
 
 export type Highscores = {
-    scores: number[],
+    scores: {
+        score: number,
+        playerClass: string,
+    }[],
     maxLength: 10,
     lastHighscorePosition: number,
 }
@@ -160,7 +164,7 @@ export type Game = {
     settings: {
         autoSkillEnabled: boolean,
     }
-    UI:{
+    UI: {
         displayMovementKeyHint: boolean,
         movementKeyPressed: boolean,
         displayDamageNumbers: boolean,
@@ -191,12 +195,12 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
                 seed: Math.random(),
             },
             players: [],
-            clientInfos: [{id: -1, name: "Unknown", lastMousePosition: {x: 0, y:0}}],
+            clientInfos: [{ id: -1, name: "Unknown", lastMousePosition: { x: 0, y: 0 } }],
             map: createMap(),
             deathCircleCreated: false,
             bossStuff: {
                 bossSpawnEachXMilliSecond: 60000,
-                bossLevelCounter: 1, 
+                bossLevelCounter: 1,
                 bosses: [],
             },
             paused: false,

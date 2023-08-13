@@ -6,8 +6,10 @@ import { Character } from "../characterModel.js";
 import { changeToLevelingCharacter } from "./levelingCharacterModel.js";
 import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters.js";
 
+const TOWER_BUILDER = "Tower Builder";
+
 export function addTowerClass() {
-    PLAYER_CHARACTER_CLASSES_FUNCTIONS["Tower Builder"] = {
+    PLAYER_CHARACTER_CLASSES_FUNCTIONS[TOWER_BUILDER] = {
         changeCharacterToThisClass: changeCharacterToTowerBuilderClass
     }
 }
@@ -18,6 +20,7 @@ function changeCharacterToTowerBuilderClass(
     game: Game, 
 ) {
     const levelingCharacter = changeToLevelingCharacter(character, game);
+    character.characterClass = TOWER_BUILDER;
     addAbilityToCharacter(levelingCharacter, createAbilityTower(idCounter, "ability1"));
     addAbilityToCharacter(levelingCharacter, createAbilityHpRegen(idCounter));
 }

@@ -233,7 +233,7 @@ function paintHighscores(ctx: CanvasRenderingContext2D, paintX: number, paintY: 
             ctx.fillRect(paintX, paintY + textSpace * (i + 1) + 1, width, textSpace);
             ctx.fillStyle = "black";
         }
-        ctx.fillText((i + 1) + ": " + highscores.scores[i], paintX, paintY + textSpace * (i + 2));
+        ctx.fillText(`${(i + 1)}: ${highscores.scores[i].score} (${highscores.scores[i].playerClass})`, paintX, paintY + textSpace * (i + 2));
     }
 
     return { width, height };

@@ -14,22 +14,47 @@ import { detectAbilityObjectCircleToCharacterHit } from "../ability/ability.js";
 let testInputs: (PlayerInput | Omit<CommandRestart, "executeTime">)[] = [];
 
 export function testGame(game: Game) {
-    if(testInputs.length === 0){
-        var request = new XMLHttpRequest();
-        request.open("GET", "/data/testInputsTamer.json", false);
-        request.send(null)
-        testInputs = JSON.parse(request.responseText);
-    }
     console.log("start test");
     //testPathing(game.ctx);
-    runGameWithPlayerInputs(game, testInputs);
     //runGameWithPlayerInputs(game, testMultiplayerInputs);
-    //testTemp();
+    testPlayerClasses(game);
     console.log("end test");
 }
 
-function testTemp() {
+function testPlayerClasses(game: Game){
+    if (game.state.players.length > 1) return;
+    game.testing.replay = {startTime: performance.now()};
+    const replay = game.testing.replay;
+    replay.testInputFileQueue = [];
+    replay.testInputFileQueue.push("/data/testInputShortBuilder.json");
+    replay.testInputFileQueue.push("/data/testInputShortTamer.json");
+    replay.testInputFileQueue.push("/data/testInputShortSniper.json");
+    replay.frameSkipAmount = 60;
+    replay.zeroTimeout = true;
 
+    replayNextInReplayQueue(game);
+
+}
+
+export function replayNextInReplayQueue(game: Game){
+    const replay = game.testing.replay;
+    if(!replay || !replay.testInputFileQueue || replay.testInputFileQueue.length === 0) return;
+    replay.replayInputCounter = 0;
+    var request = new XMLHttpRequest();
+    const nextInputFile = replay.testInputFileQueue.shift()!;
+    request.open("GET", nextInputFile, false);
+    request.send(null)
+    testInputs = JSON.parse(request.responseText);
+    replay.replayPlayerInputs = testInputs as any;
+
+    game.state.ended = true;
+    if (replay.replayPlayerInputs![0].command === "restart") {
+        let startCommand: CommandRestart = replay.replayPlayerInputs!.shift() as any;
+        startCommand.replay = true;
+        handleCommand(game, startCommand);
+    } else {
+        handleCommand(game, { command: "restart", clientId: game.multiplayer.myClientId, testing: true });
+    }
 }
 
 //---------------------//
@@ -40,6 +65,45 @@ function runGameWithPlayerInputs(game: Game, playerInputs: (PlayerInput | Omit<C
     } else {
         runGameWithPlayerInputsSinglePlayer(game, playerInputs);
     }
+}
+
+function runGameWithPlayerInputsSinglePlayer(game: Game, playerInputs: (PlayerInput | Omit<CommandRestart, "executeTime">)[]) {
+    game.testing.replay = {
+        startTime: performance.now(),
+        replayPlayerInputs: [...playerInputs as any],
+    };
+    if (!game.multiplayer.websocket) {
+        game.testing.replay.frameSkipAmount = 60;
+        game.testing.replay.zeroTimeout = true;
+    }
+    game.state.ended = true;
+    if (playerInputs[0].command === "restart") {
+        let startCommand: CommandRestart = game.testing.replay.replayPlayerInputs!.shift() as any;
+        startCommand.replay = true;
+        handleCommand(game, startCommand);
+    } else {
+        handleCommand(game, { command: "restart", clientId: game.multiplayer.myClientId, testing: true });
+    }
+}
+
+function getClientIds(playerInputs: (PlayerInput | Omit<CommandRestart, "executeTime">)[]): number[] {
+    let clients: Set<number> = new Set<number>();
+    for (const playerInput of playerInputs) {
+        clients.add(playerInput.clientId);
+    }
+    return [...clients];
+}
+
+
+function getUntilPromise(fn: Function, time = 1000) {
+    return new Promise((resolve) => {
+        const timer = setInterval(() => {
+            if (fn()) {
+                clearInterval(timer);
+                resolve(true);
+            }
+        }, time);
+    });
 }
 
 async function runGameWithPlayerInputsMultiplayer(game: Game, playerInputs: PlayerInput[], playerIds: number[]) {
@@ -91,52 +155,6 @@ async function runGameWithPlayerInputsMultiplayer(game: Game, playerInputs: Play
         closeGame(games[i]);
     }
 }
-
-
-//input2 time: 15670.300000000047, kills: 2873, score: 16629
-//input1 time: 131692, kills: 19450, score: 20234
-//input1 time: 89343.89999999944, kills: 19450, score: 20234
-function runGameWithPlayerInputsSinglePlayer(game: Game, playerInputs: (PlayerInput | Omit<CommandRestart, "executeTime">)[]) {
-    game.testing.replay = {
-        startTime: performance.now(),
-        replayPlayerInputs: [...playerInputs as any],
-    };
-    if (!game.multiplayer.websocket) {
-        game.testing.replay.frameSkipAmount = 60;
-        game.testing.replay.zeroTimeout = true;
-    }
-    game.state.ended = true;
-    if (playerInputs[0].command === "restart") {
-        let startCommand: CommandRestart = game.testing.replay.replayPlayerInputs!.shift() as any;
-        startCommand.replay = true;
-        handleCommand(game, startCommand);
-    } else {
-        handleCommand(game, { command: "restart", clientId: game.multiplayer.myClientId, testing: true });
-    }
-}
-
-function getClientIds(playerInputs: (PlayerInput | Omit<CommandRestart, "executeTime">)[]): number[] {
-    let clients: Set<number> = new Set<number>();
-    for (const playerInput of playerInputs) {
-        clients.add(playerInput.clientId);
-    }
-    return [...clients];
-}
-
-
-function getUntilPromise(fn: Function, time = 1000) {
-    return new Promise((resolve) => {
-        const timer = setInterval(() => {
-            if (fn()) {
-                clearInterval(timer);
-                resolve(true);
-            }
-        }, time);
-    });
-}
-
-
-
 
 //---------------------//
 

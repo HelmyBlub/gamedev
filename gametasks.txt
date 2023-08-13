@@ -1,6 +1,7 @@
 current tasks:
-- improve pet ability tooltips
 - improve testing to run all different classes after each other
+    - also check scores: killcounter + distance
+    - create longer runs
 - tamer:    
     - pet traits:
     - abilities

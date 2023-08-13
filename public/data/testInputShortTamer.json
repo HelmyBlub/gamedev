@@ -1,0 +1,92 @@
+[
+    {
+        "command": "restart",
+        "clientId": -1,
+        "recordInputs": true,
+        "replay": false,
+        "testMapSeed": 0.19496473147746574,
+        "testRandomStartSeed": 1.4323775370843899,
+        "executeTime": 1
+    },
+    {
+        "command": "playerInput",
+        "clientId": -1,
+        "data": {
+            "action": "upgrade3",
+            "isKeydown": true
+        },
+        "executeTime": 929
+    },
+    {
+        "command": "playerInput",
+        "clientId": -1,
+        "data": {
+            "action": "left",
+            "isKeydown": true
+        },
+        "executeTime": 1041
+    },
+    {
+        "command": "playerInput",
+        "clientId": -1,
+        "data": {
+            "action": "down",
+            "isKeydown": true
+        },
+        "executeTime": 4577
+    },
+    {
+        "command": "playerInput",
+        "clientId": -1,
+        "data": {
+            "action": "down",
+            "isKeydown": false
+        },
+        "executeTime": 5233
+    },
+    {
+        "command": "playerInput",
+        "clientId": -1,
+        "data": {
+            "action": "down",
+            "isKeydown": true
+        },
+        "executeTime": 6193
+    },
+    {
+        "command": "playerInput",
+        "clientId": -1,
+        "data": {
+            "action": "down",
+            "isKeydown": false
+        },
+        "executeTime": 7681
+    },
+    {
+        "command": "playerInput",
+        "clientId": -1,
+        "data": {
+            "action": "down",
+            "isKeydown": true
+        },
+        "executeTime": 8305
+    },
+    {
+        "command": "playerInput",
+        "clientId": -1,
+        "data": {
+            "action": "down",
+            "isKeydown": false
+        },
+        "executeTime": 8529
+    },
+    {
+        "command": "playerInput",
+        "clientId": -1,
+        "data": {
+            "action": "left",
+            "isKeydown": false
+        },
+        "executeTime": 9009
+    }
+]

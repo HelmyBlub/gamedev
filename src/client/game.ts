@@ -13,6 +13,7 @@ import { garbageCollectPathingCache, getPathingCache } from "./character/pathing
 import { createObjectDeathCircle } from "./ability/abilityDeathCircle.js";
 import { checkForBossSpawn, tickBossCharacters } from "./character/enemy/bossEnemy.js";
 import { autoPlay } from "./test/autoPlay.js";
+import { replayNextInReplayQueue } from "./test/gameTest.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -173,10 +174,10 @@ export function runner(game: Game) {
             console.log("timeoutSleep to big?");
             debugger;
         }
-        setTimeout(() =>{
-            try{
+        setTimeout(() => {
+            try {
                 runner(game);
-            }catch(e){
+            } catch (e) {
                 console.log(game);
                 console.log(game.testing.record?.collectedTestInputs);
                 throw e;
@@ -288,22 +289,30 @@ function gameEndedCheck(game: Game) {
     return false;
 }
 
-function endGame(state: GameState, testing: TestingStuff) {
-    if (testing.replay) {
-        console.log("time:", performance.now() - testing.replay.startTime);
+function endGame(game: Game) {
+    if (game.testing.replay) {
+        console.log("time:", performance.now() - game.testing.replay.startTime);
+        replayNextInReplayQueue(game);
     }
-    if (testing.record) {
-        if (testing.record.collectedTestInputs) console.log("testInputs", testing.record.collectedTestInputs);
+    if (game.testing.record) {
+        if (game.testing.record.collectedTestInputs) console.log("testInputs", game.testing.record.collectedTestInputs);
     }
-    state.ended = true;
+    game.state.ended = true;
     let newScore: number = 0;
-    for (const player of state.players) {
+    let playerClass = "";
+    const state = game.state;
+    for (let i = 0; i < game.state.players.length; i++) {
+        const player = game.state.players[i];
+        if(player.character.characterClass){
+            if(playerClass.length > 1) playerClass += ", ";
+            playerClass += player.character.characterClass;
+        }
         let distance = Math.round(calculateDistance(player.character, getMapMidlePosition(state.map)));
         if (distance > newScore) newScore = distance;
     }
-    state.highscores.scores.push(newScore);
-    state.highscores.scores.sort((a, b) => b - a);
-    state.highscores.lastHighscorePosition = state.highscores.scores.findIndex((e) => e === newScore);
+    state.highscores.scores.push({ score: newScore, playerClass: playerClass });
+    state.highscores.scores.sort((a, b) => b.score - a.score);
+    state.highscores.lastHighscorePosition = state.highscores.scores.findIndex((e) => e.score === newScore);
     if (state.highscores.scores.length > state.highscores.maxLength) {
         state.highscores.scores.pop();
     }
@@ -326,7 +335,7 @@ function tick(gameTimePassed: number, game: Game) {
 
         tickAbilityObjects(game.state.abilityObjects, game);
 
-        if (gameEndedCheck(game)) endGame(game.state, game.testing);
+        if (gameEndedCheck(game)) endGame(game);
         if (game.state.restartAfterTick) gameRestart(game);
 
         garbageCollectPathingCache(game.performance.pathingCache, game.state.time, game);
