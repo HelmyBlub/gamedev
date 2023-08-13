@@ -46,8 +46,12 @@ function getAbilityUpgradeFactoryUiText(ability: Ability): string {
 function getAbilityUpgradeFactoryUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
     const upgrade: AbilityUpgrade | undefined = ability.upgrades[ABILITY_PET_PAINTER_UPGARDE_FACTORY];
-    textLines.push(`Painter creates shape Factory instead of shape.`);
-    textLines.push(`Shape Factory creates multiple shapes per upgrade level`);
+    if(upgrade){
+        textLines.push(`Inrease number of shapes created by factory to ${upgrade.level + 2}`);
+    }else{
+        textLines.push(`Painter creates shape Factory instead of shape.`);
+        textLines.push(`Shape Factory creates multiple shapes over time.`);
+    }
 
     return textLines;
 }

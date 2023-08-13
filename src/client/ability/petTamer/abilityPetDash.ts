@@ -34,6 +34,7 @@ export function addAbilityPetDash() {
         setAbilityToLevel: setAbilityPetDashToLevel,
         setAbilityToBossLevel: setAbilityPetDashToBossLevel,
         onHit: onHit,
+        getLongDescription: getLongDescription,
         abilityUpgradeFunctions: ABILITY_PET_DASH_UPGRADE_FUNCTIONS,
         isPassive: true,
     };
@@ -65,6 +66,14 @@ export function getPetAbilityDashDamage(pet: TamerPetCharacter, ability: Ability
     const upgradeBounce: AbilityPetDashUpgradeTerrainBounce = ability.upgrades[ABILITY_PET_DASH_UPGARDE_TERRAIN_BOUNCE];
     if (upgradeBounce !== undefined) damage * upgradeBounce.currentDamageFactor;
     return damage;
+}
+
+function getLongDescription(): string[]{
+    return [
+        `Ability: ${ABILITY_NAME_PET_DASH}`,
+        `Dashes forward a short distance.`,
+        `Does damage to every enemy it hits`,
+    ];
 }
 
 function onHit(ability: Ability, targetCharacter: Character, game: Game){

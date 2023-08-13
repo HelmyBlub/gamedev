@@ -60,8 +60,12 @@ function getAbilityUpgradeSplitUiText(ability: Ability): string {
 function getAbilityUpgradeSplitUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
     const upgrade: AbilityUpgrade | undefined = ability.upgrades[ABILITY_PET_PAINTER_UPGARDE_SPLIT];
-    textLines.push(`When Shapes disapear, they instead split`);
-    textLines.push(`into new smaller ones`);
+    if(upgrade){
+        textLines.push(`Inrease number of shapes on split to ${upgrade.level + 2}`);
+    }else{
+        textLines.push(`When Shapes disapear, they instead split`);
+        textLines.push(`into 2 smaller ones`);
+    }
 
     return textLines;
 }

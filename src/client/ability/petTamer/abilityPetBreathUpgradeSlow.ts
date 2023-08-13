@@ -12,18 +12,20 @@ export type AbilityPetBreathUpgradeSlow = AbilityUpgrade & {
     duration: number,
 }
 
+const BASEDURATION = 500;
+const DURATIONUP = 500;
 export const ABILITY_PET_BREATH_UPGARDE_SLOW = "Breath Slow";
 
 export function addAbilityPetBreathUpgradeSlow() {
     ABILITY_PET_BREATH_UPGRADE_FUNCTIONS[ABILITY_PET_BREATH_UPGARDE_SLOW] = {
         getStatsDisplayText: getAbilityUpgradeSlowUiText,
-        getLongExplainText: getAbilityUpgradeSlowUiTextLong,   
-        getOptions: getOptionsSlow,     
+        getLongExplainText: getAbilityUpgradeSlowUiTextLong,
+        getOptions: getOptionsSlow,
         executeOption: executeOptionPaintSlow,
     }
 }
 
-export function abilityPetBreathUpgradeSlowApplySlow(ability: AbilityPetBreath, target: Character, game: Game){
+export function abilityPetBreathUpgradeSlowApplySlow(ability: AbilityPetBreath, target: Character, game: Game) {
     let slow = ability.upgrades[ABILITY_PET_BREATH_UPGARDE_SLOW] as AbilityPetBreathUpgradeSlow;
     if (slow === undefined) return;
     let debuffSlow = createDebuffSlow(slow.factor, slow.duration, game.state.time);
@@ -40,14 +42,14 @@ function executeOptionPaintSlow(ability: Ability, option: AbilityUpgradeOption) 
     let as = ability as AbilityPetBreath;
     let up: AbilityPetBreathUpgradeSlow;
     if (as.upgrades[ABILITY_PET_BREATH_UPGARDE_SLOW] === undefined) {
-        up = { level: 0, factor: 1, duration: 500 };
+        up = { level: 0, factor: 1, duration: BASEDURATION };
         as.upgrades[ABILITY_PET_BREATH_UPGARDE_SLOW] = up;
         as.color = "white";
     } else {
         up = as.upgrades[ABILITY_PET_BREATH_UPGARDE_SLOW];
     }
     up.factor += 1;
-    up.duration += 500;
+    up.duration += DURATIONUP;
     up.level++;
 }
 
@@ -58,8 +60,14 @@ function getAbilityUpgradeSlowUiText(ability: Ability): string {
 
 function getAbilityUpgradeSlowUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
-    const upgrade: AbilityUpgrade | undefined = ability.upgrades[ABILITY_PET_BREATH_UPGARDE_SLOW];
-    textLines.push(`Breath slows enemies by 50% per upgrade level`);
+    const upgrade: AbilityPetBreathUpgradeSlow | undefined = ability.upgrades[ABILITY_PET_BREATH_UPGARDE_SLOW];
+    if (upgrade) {
+        const slowAmount = ((1 - 1 / (upgrade.factor + 1)) * 100).toFixed();
+        textLines.push(`Increase Breath slow to ${slowAmount}%`);
+        textLines.push(`and duration to ${(upgrade.duration + DURATIONUP) / 1000}s`);
+    } else {
+        textLines.push(`Breath slows enemies by 50% for ${(BASEDURATION + DURATIONUP) / 1000}s`);
+    }
 
     return textLines;
 }

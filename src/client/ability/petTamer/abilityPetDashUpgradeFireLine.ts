@@ -12,6 +12,9 @@ export type AbilityPetDashUpgradeFireLine = AbilityUpgrade & {
     startPosition?: Position,
 }
 
+const BASEDURATION = 5000;
+const DURATIONUP = 1500;
+const DAMAGEFACTOR = 1;
 export const ABILITY_PET_DASH_UPGARDE_FIRE_LINE = "Dash Fire Line";
 
 export function addAbilityPetDashUpgradeFireLine() {
@@ -23,9 +26,9 @@ export function addAbilityPetDashUpgradeFireLine() {
     }
 }
 
-export function createPetDashUpgradeFireLine(pet: TamerPetCharacter, ability: AbilityPetDash, game: Game){
+export function createPetDashUpgradeFireLine(pet: TamerPetCharacter, ability: AbilityPetDash, game: Game) {
     const upgrade = ability.upgrades[ABILITY_PET_DASH_UPGARDE_FIRE_LINE] as AbilityPetDashUpgradeFireLine;
-    if(!upgrade) return;
+    if (!upgrade) return;
     const width = Math.floor(Math.max(pet.width * 0.75, 10));
     const tickInterval = 100;
     const color = "red";
@@ -33,7 +36,7 @@ export function createPetDashUpgradeFireLine(pet: TamerPetCharacter, ability: Ab
     game.state.abilityObjects.push(createAbilityObjectFireLine(
         pet.faction,
         upgrade.startPosition!,
-        {x: pet.x, y: pet.y},
+        { x: pet.x, y: pet.y },
         tickDamage,
         width,
         upgrade.duration,
@@ -54,18 +57,18 @@ function executeOptionDashFireLine(ability: Ability, option: AbilityUpgradeOptio
     let as = ability as AbilityPetDash;
     let up: AbilityPetDashUpgradeFireLine;
     if (as.upgrades[ABILITY_PET_DASH_UPGARDE_FIRE_LINE] === undefined) {
-        up = { 
+        up = {
             level: 0,
             damageFactor: 0,
-            duration: 5000,
+            duration: BASEDURATION,
         };
         as.upgrades[ABILITY_PET_DASH_UPGARDE_FIRE_LINE] = up;
     } else {
         up = as.upgrades[ABILITY_PET_DASH_UPGARDE_FIRE_LINE];
     }
     up.level++;
-    up.duration += 1500;
-    up.damageFactor += 1;
+    up.duration += DURATIONUP;
+    up.damageFactor += DAMAGEFACTOR;
 }
 
 function getAbilityUpgradeFireLineUiText(ability: Ability): string {
@@ -75,8 +78,15 @@ function getAbilityUpgradeFireLineUiText(ability: Ability): string {
 
 function getAbilityUpgradeFireLineUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
-    const upgrade: AbilityUpgrade | undefined = ability.upgrades[ABILITY_PET_DASH_UPGARDE_FIRE_LINE];
-    textLines.push(`Dash create Fire on the ground`);
+    const upgrade: AbilityPetDashUpgradeFireLine | undefined = ability.upgrades[ABILITY_PET_DASH_UPGARDE_FIRE_LINE];
+    textLines.push(`Dash create Fire on the ground.`);
+    if (upgrade) {
+        textLines.push(`Increase damage to ${(upgrade.damageFactor + DAMAGEFACTOR) * 100}%.`);
+        textLines.push(`Increase duration to ${(upgrade.duration + DURATIONUP) / 1000}s.`);
+    } else {
+        textLines.push(`Damage: ${DAMAGEFACTOR * 100}%`);
+        textLines.push(`Duration: ${(BASEDURATION + DURATIONUP) / 1000}s`);
+    }
 
     return textLines;
 }

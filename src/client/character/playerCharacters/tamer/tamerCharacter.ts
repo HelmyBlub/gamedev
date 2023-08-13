@@ -107,6 +107,10 @@ function createTamerBossUpgradeOptions(character: Character, game: Game): Upgrad
                             },
                             probability: 1,
                         }
+                        const abilityFunctions = ABILITIES_FUNCTIONS[ability];
+                        if(abilityFunctions && abilityFunctions.getLongDescription){
+                            option.option.displayLongText = abilityFunctions.getLongDescription();
+                        }
                         addTraitToUpgradeOption(option.option, trait);
                         options.push(option);
                     }

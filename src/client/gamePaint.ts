@@ -367,7 +367,7 @@ function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Charact
             const choice = character.upgradeChoices[i];
             let upgradeText: string[] = [choice.displayText];
             if(game.UI.displayLongInfos && choice.displayLongText) upgradeText.push(...choice.displayLongText);
-            ctx.globalAlpha = 0.4;
+            ctx.globalAlpha = game.UI.displayLongInfos ? 0.75 : 0.4;
             ctx.fillStyle = "white";
             let textWidthEstimate = maxWidthes[i];
             const rectHeight = firstFontSize + addFontSize * (upgradeText.length - 1) + 6;

@@ -59,6 +59,7 @@ export function addAbilityPetPainter() {
         paintAbilityObject: paintAbilityObjectPetPainter,
         deleteAbilityObject: deleteAbilityObjectPetPainter,
         setAbilityToLevel: setAbilityPetPainterToLevel,
+        getLongDescription: getLongDescription,
         abilityUpgradeFunctions: ABILITY_PET_PAINTER_UPGRADE_FUNCTIONS,
         isPassive: true,
     };
@@ -98,6 +99,15 @@ export function createShapeAbilityPetPainter(shape: string, abilityOwner: Abilit
     } else {
         throw Error("missing implementation");
     }
+}
+
+function getLongDescription(): string[]{
+    return [
+        `Ability: ${ABILITY_NAME_PET_PAINTER}`,
+        `Draw simple shapes on the ground.`,
+        `Finished shapes come alive.`,
+        `Enemies hit by shape take damage.`,
+    ];
 }
 
 function setAbilityPetPainterToLevel(ability: Ability, level: number) {

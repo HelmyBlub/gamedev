@@ -80,6 +80,7 @@ export type AbilityFunctions = {
     canObjectHitMore?: (abilityObject: AbilityObject) => boolean,
     setAbilityToLevel?: (ability: Ability, level: number) => void,
     setAbilityToBossLevel?: (ability: Ability, level: number) => void,
+    getLongDescription?:() => string[],
     abilityUpgradeFunctions?: AbilityUpgradesFunctions,
     notInheritable?: boolean,
     canBeUsedByBosses?: boolean,

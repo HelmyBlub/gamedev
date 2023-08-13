@@ -33,6 +33,7 @@ export function addAbilityPetBreath() {
         paintAbility: paintAbilityPetBreath,
         setAbilityToLevel: setAbilityPetBreathToLevel,
         setAbilityToBossLevel: setAbilityPetBreathToBossLevel,
+        getLongDescription: getLongDescription,
         abilityUpgradeFunctions: ABILITY_PET_BREATH_UPGRADE_FUNCTIONS,
         isPassive: true,
     };
@@ -59,6 +60,16 @@ export function createAbilityPetBreath(
         active: false,
         color: "red",
     };
+}
+export function getPetAbilityBreathDamage(pet: TamerPetCharacter, ability: AbilityPetBreath): number {
+    return ability.damage * pet.sizeFactor;
+}
+
+function getLongDescription(): string[]{
+    return [
+        `Ability: ${ABILITY_NAME_PET_BREATH}`,
+        `Frontal cone attack. Makes pet hungry.`,
+    ];
 }
 
 function createAbilityPetBreathUpgradeOptions(ability: Ability): UpgradeOptionAndProbability[] {
@@ -141,15 +152,11 @@ function tickAbilityPetBreath(abilityOwner: AbilityOwner, ability: Ability, game
     }
 }
 
-function getDamage(pet: TamerPetCharacter, ability: AbilityPetBreath): number{
-    return ability.damage * pet.sizeFactor;
-}
-
 function detectPetBreathToCharactersHit(abilityOwner: TamerPetCharacter, ability: AbilityPetBreath, map: GameMap, players: Player[], bosses: BossEnemyCharacter[], game: Game) {
     let maxEnemySizeEstimate = 40;
 
     let targetCharacters = determineCharactersInDistance(abilityOwner, map, players, bosses, ability.range + maxEnemySizeEstimate);
-    const damage = getDamage(abilityOwner, ability);
+    const damage = getPetAbilityBreathDamage(abilityOwner, ability);
     for (let charIt = targetCharacters.length - 1; charIt >= 0; charIt--) {
         let targetCharacter = targetCharacters[charIt];
         if (targetCharacter.isDead || targetCharacter.faction === abilityOwner.faction) continue;

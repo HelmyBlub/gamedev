@@ -1,5 +1,6 @@
 current tasks:
-- Bug: fire line with big width not hitting properly?
+- improve pet ability tooltips
+- improve testing to run all different classes after each other
 - tamer:    
     - pet traits:
     - abilities
@@ -8,10 +9,6 @@ current tasks:
                 - terrainBounce too weak? add additional range or push?
         - "painter"
             - bug: circles getting stuck when bouncing from terrain
-        - "breath"
-            - upgrades
-
-    - name pets
 
     - after some leash bending test: remove error throw in getNextWaypoint
 
