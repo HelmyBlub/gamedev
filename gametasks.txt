@@ -2,16 +2,6 @@ current tasks:
 - improve testing to run all different classes after each other
     - also check scores: killcounter + distance
     - create longer runs
-- tamer:    
-    - pet traits:
-    - abilities
-        - "Dash"
-            - upgrade change ideas:
-                - terrainBounce too weak? add additional range or push?
-        - "painter"
-            - bug: circles getting stuck when bouncing from terrain
-
-    - after some leash bending test: remove error throw in getNextWaypoint
 
 possible future tasks: (only keep 5)
 1. improvement: getChunksTouchingLine2 does not work, still needs to improve
