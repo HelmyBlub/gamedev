@@ -1,7 +1,8 @@
 current tasks:
-- improve testing to run all different classes after each other
-    - also check scores: killcounter + distance
-    - create longer runs
+- End Bosses?
+    - instead of endless run, the run can be ended with a final boss fight with higher difficulty
+    - the player character which defeats the boss, becomes the new next boss
+        - normal bosses abilities based on end boss
 
 possible future tasks: (only keep 5)
 1. improvement: getChunksTouchingLine2 does not work, still needs to improve
