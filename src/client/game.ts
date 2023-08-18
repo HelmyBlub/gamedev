@@ -1,7 +1,7 @@
 import { countAlivePlayerCharacters, findCharacterById, findMyCharacter, getPlayerCharacters, tickCharacters, tickMapCharacters } from "./character/character.js";
 import { paintAll } from "./gamePaint.js";
 import { findPlayerByCharacterId, gameInitPlayers } from "./player.js";
-import { MOUSE_ACTION, UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.js";
+import { MOUSE_ACTION, PlayerInput, UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.js";
 import { Position, GameState, Game, IdCounter, TestingStuff, Debugging, PaintTextData, ClientInfo } from "./gameModel.js";
 import { createMap, determineMapKeysInDistance, GameMap, getMapMidlePosition, removeAllMapCharacters } from "./map/map.js";
 import { Character, DEFAULT_CHARACTER } from "./character/characterModel.js";
@@ -13,7 +13,7 @@ import { garbageCollectPathingCache, getPathingCache } from "./character/pathing
 import { createObjectDeathCircle } from "./ability/abilityDeathCircle.js";
 import { checkForBossSpawn, tickBossCharacters } from "./character/enemy/bossEnemy.js";
 import { autoPlay } from "./test/autoPlay.js";
-import { replayNextInReplayQueue } from "./test/gameTest.js";
+import { replayGameEndAssert, replayNextInReplayQueue } from "./test/gameTest.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -41,7 +41,7 @@ export function gameRestart(game: Game) {
         setReplaySeeds(game);
     }
     if (game.testing.record) {
-        if (game.testing.record.restartPlayerInput) game.testing.record.collectedTestInputs.push(game.testing.record.restartPlayerInput);
+        if (game.testing.record.restartPlayerInput) game.testing.record.data.replayPlayerInputs.push(game.testing.record.restartPlayerInput);
     }
     gameInit(game);
 }
@@ -179,7 +179,7 @@ export function runner(game: Game) {
                 runner(game);
             } catch (e) {
                 console.log(game);
-                console.log(game.testing.record?.collectedTestInputs);
+                console.log(game.testing.record?.data);
                 throw e;
             }
         }, timeoutSleep);
@@ -290,13 +290,6 @@ function gameEndedCheck(game: Game) {
 }
 
 function endGame(game: Game) {
-    if (game.testing.replay) {
-        console.log("time:", performance.now() - game.testing.replay.startTime);
-        replayNextInReplayQueue(game);
-    }
-    if (game.testing.record) {
-        if (game.testing.record.collectedTestInputs) console.log("testInputs", game.testing.record.collectedTestInputs);
-    }
     game.state.ended = true;
     let newScore: number = 0;
     let playerClass = "";
@@ -315,6 +308,26 @@ function endGame(game: Game) {
     state.highscores.lastHighscorePosition = state.highscores.scores.findIndex((e) => e.score === newScore);
     if (state.highscores.scores.length > state.highscores.maxLength) {
         state.highscores.scores.pop();
+    }
+    endGameReplayStuff(game, newScore);
+    if (game.testing.record) {
+        if (game.testing.record.data.replayPlayerInputs){
+            game.testing.record.data.gameEndAsserts = [];
+            game.testing.record.data.gameEndAsserts.push({type: "score", data: newScore});
+            game.testing.record.data.gameEndAsserts.push({type: "killCounter", data: game.state.killCounter});
+            if(!game.testing.replay){
+                console.log("testData", game.testing.record.data);
+            } 
+        } 
+    }    
+}
+
+function endGameReplayStuff(game: Game, newScore: number){
+    let replay = game.testing.replay;
+    if (replay) {
+        replayGameEndAssert(game, newScore);
+        console.log("time:", performance.now() - replay.startTime);
+        replayNextInReplayQueue(game);
     }
 }
 
@@ -406,10 +419,10 @@ function addTestReplayInputs(game: Game) {
     if (game.testing.replay) {
         let replay = game.testing.replay;
         if (replay.replayInputCounter === undefined) replay.replayInputCounter = 0;
-        while (replay.replayPlayerInputs![replay.replayInputCounter]
-            && replay.replayPlayerInputs![replay.replayInputCounter].executeTime < game.state.time + 1000
+        while (replay.data!.replayPlayerInputs[replay.replayInputCounter]
+            && replay.data!.replayPlayerInputs[replay.replayInputCounter].executeTime < game.state.time + 1000
         ) {
-            let original = replay.replayPlayerInputs![replay.replayInputCounter]
+            let original = replay.data!.replayPlayerInputs[replay.replayInputCounter]
             let data = { ...original };
             if (game.state.players.length === 1
                 || (data.clientId === -1 && game.state.players[0].clientId === game.multiplayer.myClientId)) {

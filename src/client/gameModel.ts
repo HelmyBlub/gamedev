@@ -19,7 +19,13 @@ export type IdCounter = {
 
 export type TestingStuff = {
     record?: {
-        collectedTestInputs: Omit<PlayerInput, "executeTime">[],
+        data:{
+            replayPlayerInputs: Omit<PlayerInput, "executeTime">[],
+            gameEndAsserts?:{
+                type: string,
+                data: any,
+            }[]
+        }
         mapSeed?: number,
         randomStartSeed?: number,
         restartPlayerInput?: Omit<CommandRestart, "executeTime">,
@@ -31,7 +37,13 @@ export type TestingStuff = {
         startTime: number,
         mapSeed?: number,
         randomStartSeed?: number,
-        replayPlayerInputs?: PlayerInput[],
+        data?: {
+            replayPlayerInputs: PlayerInput[],
+            gameEndAsserts?:{
+                type: string,
+                data: any,
+            }[]
+        }
         replayInputCounter?: number,
         testInputFileQueue?: string[],
     }

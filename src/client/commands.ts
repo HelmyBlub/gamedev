@@ -86,14 +86,14 @@ export function executeCommand(game: Game, data: any) {
 }
 
 function playerJoined(game: Game, data: PlayerJoined) {
-    game.state.clientInfos.push({ id: data.clientId, name: data.clientName, lastMousePosition: {x: 0, y:0} });
+    game.state.clientInfos.push({ id: data.clientId, name: data.clientName, lastMousePosition: { x: 0, y: 0 } });
     let textPosition = getCameraPosition(game);
     game.UI.displayTextData.push(createPaintTextData(textPosition, `${data.clientName} joined`, "black", "24", game.state.time, 5000));
 }
 
 function connectInfo(game: Game, data: ConnectInfo) {
     game.multiplayer.myClientId = data.clientId;
-    game.state.clientInfos = [{ id: data.clientId, name: data.clientName, lastMousePosition: {x: 0, y:0} }];
+    game.state.clientInfos = [{ id: data.clientId, name: data.clientName, lastMousePosition: { x: 0, y: 0 } }];
     game.multiplayer.updateInterval = data.updateInterval;
     if (data.numberConnections === 0) {
         game.multiplayer.awaitingGameState.waiting = false;
@@ -133,30 +133,30 @@ function handleReceivedInputsWhichCameBeforeGameState(game: Game) {
 }
 
 function restart(game: Game, data: CommandRestart) {
-    if (game.testing.record?.collectedTestInputs !== undefined) game.testing.record.collectedTestInputs.push(data);
+    if (game.testing.record?.data.replayPlayerInputs !== undefined) game.testing.record.data.replayPlayerInputs.push(data);
     game.state.playerInputs.push(data);
     game.state.triggerRestart = true;
     game.multiplayer.lastRestartReceiveTime = performance.now();
     game.multiplayer.cachePlayerInputs = [];
     if (data.recordInputs) {
-        game.testing.record = {collectedTestInputs: []};
+        game.testing.record = { data: { replayPlayerInputs: [] } };
         game.testing.record.restartPlayerInput = { ...data };
         if (data.testMapSeed !== undefined) game.testing.record.mapSeed = data.testMapSeed;
         if (data.testRandomStartSeed !== undefined) game.testing.record.randomStartSeed = data.testRandomStartSeed;
     } else if (game.testing.record) {
         delete game.testing.record;
     }
-    if(data.replay){
-        if(!game.testing.replay) game.testing.replay = {startTime: performance.now()};
+    if (data.replay) {
+        if (!game.testing.replay) game.testing.replay = { startTime: performance.now() };
         game.testing.replay.mapSeed = data.testMapSeed;
         game.testing.replay.randomStartSeed = data.testRandomStartSeed;
-    }else{
+    } else {
         delete game.testing.replay;
     }
 }
 
 function playerInput(game: Game, data: PlayerInput) {
-    if (game.testing.record !== undefined) game.testing.record.collectedTestInputs.push(data);
+    if (game.testing.record !== undefined) game.testing.record.data.replayPlayerInputs.push(data);
     if (game.state.triggerRestart) {
         game.multiplayer.cachePlayerInputs!.push(data);
     } else {

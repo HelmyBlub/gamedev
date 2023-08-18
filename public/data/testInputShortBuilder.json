@@ -1,605 +1,754 @@
-[
-    {
-        "command": "restart",
-        "clientId": -1,
-        "recordInputs": true,
-        "replay": false,
-        "testMapSeed": 0.7540100986374865,
-        "testRandomStartSeed": 1.499873808563958,
-        "executeTime": 1
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "down",
-            "isKeydown": true
+{
+    "replayPlayerInputs": [
+        {
+            "command": "restart",
+            "clientId": -1,
+            "recordInputs": true,
+            "replay": false,
+            "testMapSeed": 0.9280573769418426,
+            "testRandomStartSeed": 1.849252275329624,
+            "executeTime": 1
         },
-        "executeTime": 833
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "upgrade2",
-            "isKeydown": true
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "left",
+                "isKeydown": true
+            },
+            "executeTime": 1377
         },
-        "executeTime": 1185
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "left",
-            "isKeydown": true
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "upgrade2",
+                "isKeydown": true
+            },
+            "executeTime": 2145
         },
-        "executeTime": 1489
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "ability1",
-            "isKeydown": true,
-            "castPosition": {
-                "x": 207.41673887931486,
-                "y": 225.08326112068562
-            }
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -386,
+                    "y": 112
+                }
+            },
+            "executeTime": 2625
         },
-        "executeTime": 2033
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "ability1",
-            "isKeydown": false,
-            "castPosition": {
-                "x": 200.34567106744942,
-                "y": 232.15432893255115
-            }
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -396,
+                    "y": 112
+                }
+            },
+            "executeTime": 2705
         },
-        "executeTime": 2113
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "ability1",
-            "isKeydown": true,
-            "castPosition": {
-                "x": 175.7893218813454,
-                "y": 287.7106781186553
-            }
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -408,
+                    "y": 112
+                }
+            },
+            "executeTime": 2801
         },
-        "executeTime": 2289
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "ability1",
-            "isKeydown": false,
-            "castPosition": {
-                "x": 172.9608947565992,
-                "y": 290.53910524340154
-            }
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -429,
+                    "y": 50
+                }
+            },
+            "executeTime": 2929
         },
-        "executeTime": 2321
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "down",
-            "isKeydown": false
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -427,
+                    "y": -4
+                }
+            },
+            "executeTime": 3025
         },
-        "executeTime": 2337
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "ability1",
-            "isKeydown": true,
-            "castPosition": {
-                "x": 37.546681194226096,
-                "y": 285.95331880577464
-            }
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -421,
+                    "y": -30
+                }
+            },
+            "executeTime": 3073
         },
-        "executeTime": 2449
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "ability1",
-            "isKeydown": false,
-            "castPosition": {
-                "x": 25.546681194226093,
-                "y": 285.95331880577464
-            }
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -424,
+                    "y": -48
+                }
+            },
+            "executeTime": 3153
         },
-        "executeTime": 2545
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "ability1",
-            "isKeydown": true,
-            "castPosition": {
-                "x": -301.4533188057739,
-                "y": 77.95331880577464
-            }
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -432,
+                    "y": -48
+                }
+            },
+            "executeTime": 3217
         },
-        "executeTime": 3681
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "ability1",
-            "isKeydown": false,
-            "castPosition": {
-                "x": -309.4533188057739,
-                "y": 77.95331880577464
-            }
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -531,
+                    "y": -36
+                }
+            },
+            "executeTime": 3345
         },
-        "executeTime": 3745
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "ability1",
-            "isKeydown": true,
-            "castPosition": {
-                "x": -378.4533188057739,
-                "y": 71.95331880577464
-            }
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -567,
+                    "y": -12
+                }
+            },
+            "executeTime": 3425
         },
-        "executeTime": 3889
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "ability1",
-            "isKeydown": false,
-            "castPosition": {
-                "x": -447.4533188057739,
-                "y": 70.95331880577464
-            }
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -604,
+                    "y": 66
+                }
+            },
+            "executeTime": 3521
         },
-        "executeTime": 3969
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "ability1",
-            "isKeydown": true,
-            "castPosition": {
-                "x": -532.453318805774,
-                "y": 70.95331880577464
-            }
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -614,
+                    "y": 95
+                }
+            },
+            "executeTime": 3601
         },
-        "executeTime": 4081
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "ability1",
-            "isKeydown": false,
-            "castPosition": {
-                "x": -555.453318805774,
-                "y": 70.95331880577464
-            }
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -698,
+                    "y": 111
+                }
+            },
+            "executeTime": 3857
         },
-        "executeTime": 4177
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "ability1",
-            "isKeydown": true,
-            "castPosition": {
-                "x": -595.453318805774,
-                "y": 70.95331880577464
-            }
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -738,
+                    "y": 56
+                }
+            },
+            "executeTime": 3985
         },
-        "executeTime": 4273
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "up",
-            "isKeydown": true
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "down",
+                "isKeydown": true
+            },
+            "executeTime": 4049
         },
-        "executeTime": 4289
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "ability1",
-            "isKeydown": false,
-            "castPosition": {
-                "x": -633.1101730552664,
-                "y": 66.29646455628222
-            }
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -754.4142135623731,
+                    "y": 24.414213562373092
+                }
+            },
+            "executeTime": 4065
         },
-        "executeTime": 4353
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "ability1",
-            "isKeydown": true,
-            "castPosition": {
-                "x": -694.0096679918781,
-                "y": 64.39696961967047
-            }
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -762.4852813742386,
+                    "y": 2.4852813742385536
+                }
+            },
+            "executeTime": 4145
         },
-        "executeTime": 4465
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "ability1",
-            "isKeydown": false,
-            "castPosition": {
-                "x": -722.4949493661168,
-                "y": 61.91168824543183
-            }
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -768.9411254969546,
+                    "y": -2.058874503045729
+                }
+            },
+            "executeTime": 4433
         },
-        "executeTime": 4561
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "ability1",
-            "isKeydown": true,
-            "castPosition": {
-                "x": -751.9802307403554,
-                "y": 61.426406871193194
-            }
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -776.0121933088201,
+                    "y": 5.012193308819803
+                }
+            },
+            "executeTime": 4513
         },
-        "executeTime": 4657
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "ability1",
-            "isKeydown": false,
-            "castPosition": {
-                "x": -767.6370849898478,
-                "y": 59.76955262170077
-            }
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -762.8111831820436,
+                    "y": 17.811183182043294
+                }
+            },
+            "executeTime": 4737
         },
-        "executeTime": 4721
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "ability1",
-            "isKeydown": true,
-            "castPosition": {
-                "x": -799.3650070512058,
-                "y": 55.04163056034281
-            }
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -767.468037431536,
+                    "y": 23.46803743153572
+                }
+            },
+            "executeTime": 4801
         },
-        "executeTime": 4865
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "ability1",
-            "isKeydown": false,
-            "castPosition": {
-                "x": -818.4360748630713,
-                "y": 53.97056274847728
-            }
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -601.6812408671326,
+                    "y": 27.681240867132317
+                }
+            },
+            "executeTime": 5041
         },
-        "executeTime": 4945
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "up",
-            "isKeydown": false
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -592.1665222413712,
+                    "y": 35.166522241370956
+                }
+            },
+            "executeTime": 5137
         },
-        "executeTime": 5041
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "upgrade2",
-            "isKeydown": true
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -453.7228714274754,
+                    "y": 40.72287142747513
+                }
+            },
+            "executeTime": 5313
         },
-        "executeTime": 5489
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "upgrade2",
-            "isKeydown": false
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -462.20815280171405,
+                    "y": 49.208152801713766
+                }
+            },
+            "executeTime": 5409
         },
-        "executeTime": 5585
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "upgrade3",
-            "isKeydown": true
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "down",
+                "isKeydown": false
+            },
+            "executeTime": 5745
         },
-        "executeTime": 5729
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "down",
-            "isKeydown": true
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "down",
+                "isKeydown": true
+            },
+            "executeTime": 6065
         },
-        "executeTime": 6577
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "ability1",
-            "isKeydown": true,
-            "castPosition": {
-                "x": -736.8608798889201,
-                "y": 288.5994082814336
-            }
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -292.9777054234148,
+                    "y": 128.97770542341453
+                }
+            },
+            "executeTime": 6145
         },
-        "executeTime": 7825
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "ability1",
-            "isKeydown": false,
-            "castPosition": {
-                "x": -753.639054481972,
-                "y": 299.3775828744856
-            }
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -297.29141392239967,
+                    "y": 114.29141392239939
+                }
+            },
+            "executeTime": 6273
         },
-        "executeTime": 7905
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "ability1",
-            "isKeydown": true,
-            "castPosition": {
-                "x": -835.5284989122448,
-                "y": 299.26702730475836
-            }
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "down",
+                "isKeydown": false
+            },
+            "executeTime": 7137
         },
-        "executeTime": 8017
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "ability1",
-            "isKeydown": false,
-            "castPosition": {
-                "x": -933.8623084239072,
-                "y": 282.6008368164207
-            }
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -523.6589462905474,
+                    "y": 183.65894629054714
+                }
+            },
+            "executeTime": 7153
         },
-        "executeTime": 8113
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "ability1",
-            "isKeydown": true,
-            "castPosition": {
-                "x": -999.6404830169591,
-                "y": 273.3790114094727
-            }
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -548.6589462905474,
+                    "y": 183.65894629054714
+                }
+            },
+            "executeTime": 7249
         },
-        "executeTime": 8193
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "ability1",
-            "isKeydown": false,
-            "castPosition": {
-                "x": -1032.5299274472318,
-                "y": 237.26845583974546
-            }
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -767.6589462905474,
+                    "y": 197.65894629054714
+                }
+            },
+            "executeTime": 7409
         },
-        "executeTime": 8305
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "ability1",
-            "isKeydown": true,
-            "castPosition": {
-                "x": -1054.3081020402838,
-                "y": 185.04663043279743
-            }
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -807.6589462905474,
+                    "y": 197.65894629054714
+                }
+            },
+            "executeTime": 7505
         },
-        "executeTime": 8385
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "ability1",
-            "isKeydown": false,
-            "castPosition": {
-                "x": -1065.0862766333357,
-                "y": 142.8248050258494
-            }
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -852.6589462905474,
+                    "y": 200.65894629054714
+                }
+            },
+            "executeTime": 7601
         },
-        "executeTime": 8465
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "ability1",
-            "isKeydown": true,
-            "castPosition": {
-                "x": -1061.420086144998,
-                "y": 105.15861453751177
-            }
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -862.6589462905474,
+                    "y": 200.65894629054714
+                }
+            },
+            "executeTime": 7681
         },
-        "executeTime": 8561
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "left",
-            "isKeydown": false
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -873.6589462905474,
+                    "y": 200.65894629054714
+                }
+            },
+            "executeTime": 7809
         },
-        "executeTime": 8625
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "ability1",
-            "isKeydown": false,
-            "castPosition": {
-                "x": -1067.6426258194397,
-                "y": 115.78115421195332
-            }
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -883.6589462905474,
+                    "y": 200.65894629054714
+                }
+            },
+            "executeTime": 7889
         },
-        "executeTime": 8657
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "ability1",
-            "isKeydown": true,
-            "castPosition": {
-                "x": -1071.6426258194397,
-                "y": 131.18115421195324
-            }
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -941.6589462905474,
+                    "y": 221.65894629054714
+                }
+            },
+            "executeTime": 8001
         },
-        "executeTime": 8769
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "right",
-            "isKeydown": true
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -1003.6589462905474,
+                    "y": 250.65894629054714
+                }
+            },
+            "executeTime": 8065
         },
-        "executeTime": 8817
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "ability1",
-            "isKeydown": false,
-            "castPosition": {
-                "x": -1100.5313559822189,
-                "y": 150.892424049174
-            }
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -1076.6589462905474,
+                    "y": 274.65894629054714
+                }
+            },
+            "executeTime": 8161
         },
-        "executeTime": 8849
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "ability1",
-            "isKeydown": true,
-            "castPosition": {
-                "x": -1134.0862766333357,
-                "y": 180.33750339805715
-            }
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -1111.6589462905474,
+                    "y": 287.65894629054714
+                }
+            },
+            "executeTime": 8241
         },
-        "executeTime": 8977
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "ability1",
-            "isKeydown": false,
-            "castPosition": {
-                "x": -1150.3081020402838,
-                "y": 194.11567799110912
-            }
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -1155.6589462905474,
+                    "y": 295.65894629054714
+                }
+            },
+            "executeTime": 8337
         },
-        "executeTime": 9057
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "ability1",
-            "isKeydown": true,
-            "castPosition": {
-                "x": -1229.8630226914006,
-                "y": 231.56075733999228
-            }
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -1193.6589462905474,
+                    "y": 298.65894629054714
+                }
+            },
+            "executeTime": 8417
         },
-        "executeTime": 9185
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "ability1",
-            "isKeydown": false,
-            "castPosition": {
-                "x": -1269.1961179355694,
-                "y": 254.22766209582346
-            }
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -1254.6589462905474,
+                    "y": 299.65894629054714
+                }
+            },
+            "executeTime": 8513
         },
-        "executeTime": 9233
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "right",
-            "isKeydown": false
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -1320.6589462905474,
+                    "y": 300.65894629054714
+                }
+            },
+            "executeTime": 8609
         },
-        "executeTime": 9441
-    },
-    {
-        "command": "playerInput",
-        "clientId": -1,
-        "data": {
-            "action": "down",
-            "isKeydown": false
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "down",
+                "isKeydown": true
+            },
+            "executeTime": 8657
         },
-        "executeTime": 9521
-    }
-]
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -1354.4873734152936,
+                    "y": 303.48737341529335
+                }
+            },
+            "executeTime": 8689
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -1365.5584412271592,
+                    "y": 307.5584412271589
+                }
+            },
+            "executeTime": 8769
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -1399.457936163771,
+                    "y": 279.4579361637706
+                }
+            },
+            "executeTime": 8881
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -1405.1147904132633,
+                    "y": 273.11479041326305
+                }
+            },
+            "executeTime": 8945
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -1354.32799384886,
+                    "y": 286.32799384885965
+                }
+            },
+            "executeTime": 9185
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -1351.2274887854717,
+                    "y": 340.2274887854714
+                }
+            },
+            "executeTime": 9297
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -1337.884343034964,
+                    "y": 387.8843430349638
+                }
+            },
+            "executeTime": 9361
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "left",
+                "isKeydown": false
+            },
+            "executeTime": 9377
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -1335.2985565973372,
+                    "y": 414.2985565973369
+                }
+            },
+            "executeTime": 9473
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "down",
+                "isKeydown": false
+            },
+            "executeTime": 9713
+        }
+    ],
+    "gameEndAsserts": [
+        {
+            "type": "score",
+            "data": 976
+        },
+        {
+            "type": "killCounter",
+            "data": 59
+        }
+    ]
+}

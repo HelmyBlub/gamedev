@@ -27,8 +27,8 @@ function testPlayerClasses(game: Game){
     const replay = game.testing.replay;
     replay.testInputFileQueue = [];
     replay.testInputFileQueue.push("/data/testInputShortBuilder.json");
-    replay.testInputFileQueue.push("/data/testInputShortTamer.json");
     replay.testInputFileQueue.push("/data/testInputShortSniper.json");
+    replay.testInputFileQueue.push("/data/testInputShortTamer.json");
     replay.frameSkipAmount = 60;
     replay.zeroTimeout = true;
 
@@ -45,11 +45,11 @@ export function replayNextInReplayQueue(game: Game){
     request.open("GET", nextInputFile, false);
     request.send(null)
     testInputs = JSON.parse(request.responseText);
-    replay.replayPlayerInputs = testInputs as any;
+    replay.data = testInputs as any;
 
     game.state.ended = true;
-    if (replay.replayPlayerInputs![0].command === "restart") {
-        let startCommand: CommandRestart = replay.replayPlayerInputs!.shift() as any;
+    if (replay.data!.replayPlayerInputs[0].command === "restart") {
+        let startCommand: CommandRestart = replay.data!.replayPlayerInputs.shift() as any;
         startCommand.replay = true;
         handleCommand(game, startCommand);
     } else {
@@ -57,32 +57,27 @@ export function replayNextInReplayQueue(game: Game){
     }
 }
 
-//---------------------//
-function runGameWithPlayerInputs(game: Game, playerInputs: (PlayerInput | Omit<CommandRestart, "executeTime">)[]) {
-    const playerIds = getClientIds(playerInputs);
-    if (playerIds.length > 1) {
-        //runGameWithPlayerInputsMultiplayer(game, playerInputs, playerIds);
-    } else {
-        runGameWithPlayerInputsSinglePlayer(game, playerInputs);
+export function replayGameEndAssert(game: Game, newScore: number){
+    let replay = game.testing.replay;
+    if(replay?.data?.gameEndAsserts){
+        for(let assert of replay.data?.gameEndAsserts){
+            switch(assert.type){
+                case "score":
+                    assertEquals(assert.type, assert.data, newScore);
+                    break;
+                case "killCounter":
+                    assertEquals(assert.type, assert.data, game.state.killCounter);
+                    break;
+            }
+        }
     }
 }
 
-function runGameWithPlayerInputsSinglePlayer(game: Game, playerInputs: (PlayerInput | Omit<CommandRestart, "executeTime">)[]) {
-    game.testing.replay = {
-        startTime: performance.now(),
-        replayPlayerInputs: [...playerInputs as any],
-    };
-    if (!game.multiplayer.websocket) {
-        game.testing.replay.frameSkipAmount = 60;
-        game.testing.replay.zeroTimeout = true;
-    }
-    game.state.ended = true;
-    if (playerInputs[0].command === "restart") {
-        let startCommand: CommandRestart = game.testing.replay.replayPlayerInputs!.shift() as any;
-        startCommand.replay = true;
-        handleCommand(game, startCommand);
-    } else {
-        handleCommand(game, { command: "restart", clientId: game.multiplayer.myClientId, testing: true });
+function assertEquals(type: string, expected: any, actual: any){
+    if(expected === actual){
+        console.debug(`assert ${type} success`);
+    }else{
+        console.log(`assert ${type} failed. Expected: ${expected}, actual: ${actual}`);
     }
 }
 
