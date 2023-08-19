@@ -25,6 +25,8 @@ export let TILE_VALUES: MapTiles = {
     0: { name: "grass", imagePath: "/images/grass.png", blocking: false, layer: "Layer1" },
     1: { name: "tree", imagePath: "/images/tree.png", blocking: true, layer: "Layer2" },
     2: { name: "rock", imagePath: "/images/rock.png", blocking: true, layer: "Layer2" },
+    3: { name: "path1", imagePath: "/images/path1.png", blocking: false, layer: "Layer1" },
+    4: { name: "path2", imagePath: "/images/path2.png", blocking: false, layer: "Layer1" },
 }
 
 export type GameMap = {

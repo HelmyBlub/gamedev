@@ -103,7 +103,7 @@ function paintTile(layer: MapPaintLayer, ctx: CanvasRenderingContext2D, paintPos
                     imageReady = false;
                 } else {
                     const grassid = getTileIdForTileName("grass");
-                    if(tileId !== grassid && layer === "Layer1"){
+                    if(TILE_VALUES[tileId].layer !== "Layer1" && layer === "Layer1"){
                         ctx.drawImage(TILE_VALUES[grassid].imageRef!, paintPosition.x, paintPosition.y);
                     }else if(TILE_VALUES[tileId].layer === layer){
                         ctx.drawImage(TILE_VALUES[tileId].imageRef!, paintPosition.x, paintPosition.y);

@@ -32,35 +32,130 @@ export function generateMissingChunks(map: GameMap, positions: Position[], idCou
 }
 
 export function createNewChunk(map: GameMap, chunkI: number, chunkJ: number, idCounter: IdCounter): MapChunk {
-    let newChunk = { tiles: createNewChunkTiles(map.chunkLength, chunkI, chunkJ, map.seed!), characters: [] };
+    let newChunk = { tiles: createNewChunkTiles(map, chunkI, chunkJ, map.seed!), characters: [] };
     map.chunks[`${chunkI}_${chunkJ}`] = newChunk;
     createFixPositionRespawnEnemies(newChunk, chunkI, chunkJ, map, idCounter);
     return newChunk;
 }
 
-export function createNewChunkTiles(chunkLength: number, chunkI: number, chunkJ: number, seed: number): number[][] {
+export function createNewChunkTiles(map: GameMap, chunkI: number, chunkJ: number, seed: number): number[][] {
     let chunk: number[][] = [];
-    for (let i = 0; i < chunkLength; i++) {
-        chunk.push([]);
-        for (let j = 0; j < chunkLength; j++) {
-            let px = (chunkI * chunkLength + i) / chunkLength;
-            let py = (chunkJ * chunkLength + j) / chunkLength;
-
-            let isTree = perlin_get(px, py, seed);
-            let isStone = perlin_get(px + 1024, py + 1024, seed);
-            let randomTileId: number;
-            if (isStone >= 0.35) {
-                randomTileId = 2;
-            } else if (isTree >= 0.25) {
-                randomTileId = 1;
-            } else {
-                randomTileId = 0;
+    const chunkLength = map.chunkLength;
+    if(chunkI === 0 && chunkJ === 0){
+        for (let i = 0; i < chunkLength; i++) {
+            chunk.push([]);
+            for (let j = 0; j < chunkLength; j++) {
+                chunk[i].push(0);
             }
-            chunk[i].push(randomTileId);
+        }
+    }else{
+        for (let i = 0; i < chunkLength; i++) {
+            chunk.push([]);
+            for (let j = 0; j < chunkLength; j++) {
+                let px = (chunkI * chunkLength + i) / chunkLength;
+                let py = (chunkJ * chunkLength + j) / chunkLength;
+    
+                let isTree = perlin_get(px, py, seed);
+                let isStone = perlin_get(px + 1024, py + 1024, seed);
+                let randomTileId: number;
+                if (isStone >= 0.35) {
+                    randomTileId = 2;
+                } else if (isTree >= 0.25) {
+                    randomTileId = 1;
+                } else {
+                    randomTileId = 0;
+                }
+                chunk[i].push(randomTileId);
+            }
+        }
+        // endBossChunkStuff(chunk, map, chunkI, chunkJ);
+    }
+    return chunk;
+}
+
+function endBossChunkStuff(chunk: number[][], map: GameMap, chunkI: number, chunkJ: number){
+    const chunkLength = map.chunkLength;
+    const pathEnd = 1000;
+    const pathChunkEnd = Math.floor(pathEnd / (chunkLength * map.tileSize));
+    endBossPathForChunkTiles(chunk, chunkLength, chunkI, chunkJ, pathChunkEnd);
+    endBossChunkArea(chunk, chunkLength, chunkI, chunkJ, pathChunkEnd);
+}
+
+function endBossChunkArea(chunk: number[][], chunkLength: number, chunkI: number, chunkJ: number, pathChunkEnd: number){
+    const endBossAreaSize = 2;
+    const isBossAreaChunk1 = Math.abs(chunkJ) >= pathChunkEnd
+        && Math.abs(chunkJ) < pathChunkEnd + endBossAreaSize
+        && Math.abs(chunkI) <= Math.floor(endBossAreaSize / 2);
+    const isBossAreaChunk2 = Math.abs(chunkI) >= pathChunkEnd
+        && Math.abs(chunkI) < pathChunkEnd + endBossAreaSize
+        && Math.abs(chunkJ) <= Math.floor(endBossAreaSize / 2);
+    let hasJStartWall;
+    let hasJEndWall;
+    let hasIStartWall;
+    let hasIEndWall;
+    let areaEntryPointJ: number | undefined = undefined;
+    let areaEntryPointI: number | undefined = undefined;
+    let areaEntryPathTileId = 0;
+    if(isBossAreaChunk1 || isBossAreaChunk2){
+        if(isBossAreaChunk1){
+            hasJStartWall = chunkJ === pathChunkEnd || -chunkJ === pathChunkEnd + endBossAreaSize - 1;
+            hasJEndWall = chunkJ === pathChunkEnd + endBossAreaSize - 1 || -chunkJ === pathChunkEnd;
+            hasIStartWall = -chunkI === Math.floor(endBossAreaSize / 2);
+            hasIEndWall = chunkI === Math.floor(endBossAreaSize / 2);
+            if(chunkI === 0){
+                if(-chunkJ === pathChunkEnd){
+                    areaEntryPointJ = chunkLength - 1; 
+                    areaEntryPointI = Math.floor(chunkLength / 2);
+                }else if(chunkJ === pathChunkEnd){
+                    areaEntryPointJ = 0; 
+                    areaEntryPointI = Math.floor(chunkLength / 2);
+                }
+                areaEntryPathTileId = 3;
+            }
+        }else{
+            hasIStartWall = chunkI === pathChunkEnd || -chunkI === pathChunkEnd + endBossAreaSize - 1;
+            hasIEndWall = chunkI === pathChunkEnd + endBossAreaSize - 1 || -chunkI === pathChunkEnd;
+            hasJStartWall = -chunkJ === Math.floor(endBossAreaSize / 2);
+            hasJEndWall = chunkJ === Math.floor(endBossAreaSize / 2);
+            if(chunkJ === 0){
+                if(-chunkI === pathChunkEnd){
+                    areaEntryPointI = chunkLength - 1; 
+                    areaEntryPointJ = Math.floor(chunkLength / 2);
+                }else if(chunkI === pathChunkEnd){
+                    areaEntryPointI = 0; 
+                    areaEntryPointJ = Math.floor(chunkLength / 2);
+                }
+            }
+            areaEntryPathTileId = 4;
+        }
+        for (let i = 0; i < chunkLength; i++) {
+            for (let j = 0; j < chunkLength; j++) {
+                chunk[i][j] = 0;
+                if(hasJStartWall && j === 0
+                    || hasJEndWall && j === chunkLength - 1
+                    || hasIStartWall && i === 0
+                    || hasIEndWall && i === chunkLength - 1
+                ){
+                    chunk[i][j] = 1;
+                }
+            }
+        }
+        if(areaEntryPointI !== undefined && areaEntryPointJ !== undefined) chunk[areaEntryPointI][areaEntryPointJ] = areaEntryPathTileId;
+    }
+}
+
+function endBossPathForChunkTiles(chunk: number[][], chunkLength: number, chunkI: number, chunkJ: number, pathChunkEnd: number){
+    const pathChunkStart = 0;
+    if(chunkI === 0 && Math.abs(chunkJ) > pathChunkStart && Math.abs(chunkJ) < pathChunkEnd){
+        for(let i = 0; i < chunkLength; i++){
+            chunk[Math.floor(chunkLength / 2)][i] = 3;
         }
     }
-
-    return chunk;
+    if(chunkJ === 0 && Math.abs(chunkI) > pathChunkStart && Math.abs(chunkI) < pathChunkEnd){
+        for(let i = 0; i < chunkLength; i++){
+            chunk[i][Math.floor(chunkLength / 2)] = 4;
+        }
+    }
 }
 
 function perlin_get(x: number, y: number, seed: number) {

@@ -1,8 +1,19 @@
 current tasks:
+- new tamer test run
+- make boss area have no enemies
+- make enemies not run into boss area
+- create a boss for boss area
+- one boss battle begins -> close of entrance
+
 - End Bosses?
     - instead of endless run, the run can be ended with a final boss fight with higher difficulty
+        - where do i fight?
+            - all clecstial directions (north, west, east, south) have a "boss area"
+            - and a path from the middle to it (just a straight path)
+            - boss area will be at ~20k distance (with a simple square area surrounded by blocking tiles)
     - the player character which defeats the boss, becomes the new next boss
-        - normal bosses abilities based on end boss
+    - normal bosses abilities based on end boss (of celecstial direction)
+    - each celestial directions has its own boss
 
 possible future tasks: (only keep 5)
 1. improvement: getChunksTouchingLine2 does not work, still needs to improve
