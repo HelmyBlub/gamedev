@@ -19,6 +19,7 @@ export type MapTile = {
 export type MapChunk = {
     tiles: number[][],
     characters: Character[],
+    isEndBossAreaChunk?: boolean,
 }
 
 export let TILE_VALUES: MapTiles = {
@@ -36,16 +37,24 @@ export type GameMap = {
     activeChunkKeys: string[],
     activeChunkRange: number,
     chunks: { [key: string]: MapChunk },
+    endBossArea?: GameMapEndBossArea,
+}
+
+export type GameMapEndBossArea = {
+    size: number,
+    numberChunksUntil: number,
 }
 
 export function createMap(): GameMap {
-    return {
+    const map: GameMap = {
         tileSize: 40,
         chunkLength: 8,
         activeChunkKeys: [],
         activeChunkRange: 1000,
         chunks: {},
     }
+    //initBossArea(map);
+    return map;
 }
 
 export function addEnemyToMap(map: GameMap, character: Character) {
@@ -168,14 +177,14 @@ export function calculateMovePosition(position: Position, moveDirection: number,
             }
         }
         return { x: position.x, y: position.y };
-    }else{
+    } else {
         return { x, y };
     }
 }
 
 export function getChunksTouchingLine(map: GameMap, lineStart: Position, lineEnd: Position, width: number = 20): MapChunk[] {
     const chunkSize = map.chunkLength * map.tileSize;
-    if(width / 2 > chunkSize) width = chunkSize * 2;
+    if (width / 2 > chunkSize) width = chunkSize * 2;
     const chunkKeys: Set<string> = new Set<string>();
     const firstKey = positionToMapKey(lineStart, map);
     chunkKeys.add(firstKey);
@@ -427,4 +436,12 @@ export function getMapTile(pos: Position, map: GameMap, idCounter: IdCounter): M
     }
 
     return TILE_VALUES[0];
+}
+
+function initBossArea(map: GameMap){
+    const bossAreaDistance = 1000;
+    map.endBossArea = {
+        size: 3,
+        numberChunksUntil: Math.floor(bossAreaDistance / (map.tileSize * map.chunkLength)),
+    }
 }

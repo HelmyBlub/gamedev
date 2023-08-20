@@ -198,6 +198,6 @@ function testDetectProjectileToCharacterHitPerformance() {
 function createNewChunk(map: GameMap, chunkI: number, chunkJ: number) {
     let key = `${chunkI}_${chunkJ}`;
     if (map.chunks[key] !== undefined) return;
-    let newChunk = { tiles: createNewChunkTiles(map, chunkI, chunkJ, map.seed!), characters: [] };
+    let newChunk = createNewChunkTiles(map, chunkI, chunkJ, map.seed!);
     map.chunks[key] = newChunk;
 }

@@ -2,7 +2,7 @@ import { createFixPositionRespawnEnemies } from "../character/enemy/fixPositionR
 import { takeTimeMeasure } from "../game.js";
 import { Game, IdCounter, Position } from "../gameModel.js";
 import { fixedRandom } from "../randomNumberGenerator.js";
-import { GameMap, MapChunk } from "./map.js";
+import { GameMap, GameMapEndBossArea, MapChunk } from "./map.js";
 
 export function generateMissingChunks(map: GameMap, positions: Position[], idCounter: IdCounter, game: Game) {
     takeTimeMeasure(game.debug, "", "generateMissingChunks");
@@ -32,29 +32,30 @@ export function generateMissingChunks(map: GameMap, positions: Position[], idCou
 }
 
 export function createNewChunk(map: GameMap, chunkI: number, chunkJ: number, idCounter: IdCounter): MapChunk {
-    let newChunk = { tiles: createNewChunkTiles(map, chunkI, chunkJ, map.seed!), characters: [] };
+    let newChunk = createNewChunkTiles(map, chunkI, chunkJ, map.seed!);
     map.chunks[`${chunkI}_${chunkJ}`] = newChunk;
     createFixPositionRespawnEnemies(newChunk, chunkI, chunkJ, map, idCounter);
     return newChunk;
 }
 
-export function createNewChunkTiles(map: GameMap, chunkI: number, chunkJ: number, seed: number): number[][] {
-    let chunk: number[][] = [];
+export function createNewChunkTiles(map: GameMap, chunkI: number, chunkJ: number, seed: number): MapChunk {
+    const chunk: number[][] = [];
+    const mapChunk: MapChunk = { tiles: chunk, characters: [] };
     const chunkLength = map.chunkLength;
-    if(chunkI === 0 && chunkJ === 0){
+    if (chunkI === 0 && chunkJ === 0) {
         for (let i = 0; i < chunkLength; i++) {
             chunk.push([]);
             for (let j = 0; j < chunkLength; j++) {
                 chunk[i].push(0);
             }
         }
-    }else{
+    } else {
         for (let i = 0; i < chunkLength; i++) {
             chunk.push([]);
             for (let j = 0; j < chunkLength; j++) {
                 let px = (chunkI * chunkLength + i) / chunkLength;
                 let py = (chunkJ * chunkLength + j) / chunkLength;
-    
+
                 let isTree = perlin_get(px, py, seed);
                 let isStone = perlin_get(px + 1024, py + 1024, seed);
                 let randomTileId: number;
@@ -68,92 +69,95 @@ export function createNewChunkTiles(map: GameMap, chunkI: number, chunkJ: number
                 chunk[i].push(randomTileId);
             }
         }
-        // endBossChunkStuff(chunk, map, chunkI, chunkJ);
+        endBossChunkStuff(mapChunk, map, chunkI, chunkJ);
     }
-    return chunk;
+    return mapChunk;
 }
 
-function endBossChunkStuff(chunk: number[][], map: GameMap, chunkI: number, chunkJ: number){
+function endBossChunkStuff(mapChunk: MapChunk, map: GameMap, chunkI: number, chunkJ: number) {
+    if (!map.endBossArea) return;
     const chunkLength = map.chunkLength;
-    const pathEnd = 1000;
-    const pathChunkEnd = Math.floor(pathEnd / (chunkLength * map.tileSize));
-    endBossPathForChunkTiles(chunk, chunkLength, chunkI, chunkJ, pathChunkEnd);
-    endBossChunkArea(chunk, chunkLength, chunkI, chunkJ, pathChunkEnd);
+    endBossChunkArea(mapChunk, chunkLength, chunkI, chunkJ, map.endBossArea);
+    endBossPathForChunkTiles(mapChunk.tiles, chunkLength, chunkI, chunkJ, map.endBossArea.numberChunksUntil);
 }
 
-function endBossChunkArea(chunk: number[][], chunkLength: number, chunkI: number, chunkJ: number, pathChunkEnd: number){
-    const endBossAreaSize = 2;
-    const isBossAreaChunk1 = Math.abs(chunkJ) >= pathChunkEnd
-        && Math.abs(chunkJ) < pathChunkEnd + endBossAreaSize
-        && Math.abs(chunkI) <= Math.floor(endBossAreaSize / 2);
-    const isBossAreaChunk2 = Math.abs(chunkI) >= pathChunkEnd
-        && Math.abs(chunkI) < pathChunkEnd + endBossAreaSize
-        && Math.abs(chunkJ) <= Math.floor(endBossAreaSize / 2);
-    let hasJStartWall;
-    let hasJEndWall;
-    let hasIStartWall;
-    let hasIEndWall;
-    let areaEntryPointJ: number | undefined = undefined;
-    let areaEntryPointI: number | undefined = undefined;
-    let areaEntryPathTileId = 0;
-    if(isBossAreaChunk1 || isBossAreaChunk2){
-        if(isBossAreaChunk1){
-            hasJStartWall = chunkJ === pathChunkEnd || -chunkJ === pathChunkEnd + endBossAreaSize - 1;
-            hasJEndWall = chunkJ === pathChunkEnd + endBossAreaSize - 1 || -chunkJ === pathChunkEnd;
-            hasIStartWall = -chunkI === Math.floor(endBossAreaSize / 2);
-            hasIEndWall = chunkI === Math.floor(endBossAreaSize / 2);
-            if(chunkI === 0){
-                if(-chunkJ === pathChunkEnd){
-                    areaEntryPointJ = chunkLength - 1; 
-                    areaEntryPointI = Math.floor(chunkLength / 2);
-                }else if(chunkJ === pathChunkEnd){
-                    areaEntryPointJ = 0; 
-                    areaEntryPointI = Math.floor(chunkLength / 2);
+function getTopLeftCornerChunkIJOfBossAreas(bossArea: GameMapEndBossArea): { i: number, j: number }[] {
+    let result: { i: number, j: number }[] = [];
+    result.push({
+        i: bossArea.numberChunksUntil,
+        j: - Math.floor(bossArea.size / 2),
+    });
+    result.push({
+        i: - Math.floor(bossArea.size / 2),
+        j: bossArea.numberChunksUntil,
+    });
+    result.push({
+        i: - bossArea.numberChunksUntil - bossArea.size + 1,
+        j: - Math.floor(bossArea.size / 2),
+    });
+    result.push({
+        i: - Math.floor(bossArea.size / 2),
+        j: - bossArea.numberChunksUntil - bossArea.size + 1,
+    });
+    return result;
+}
+
+function endBossChunkArea(mapChunk: MapChunk, chunkLength: number, chunkI: number, chunkJ: number, area: GameMapEndBossArea) {
+    const tiles = mapChunk.tiles;
+    let areaCorners = getTopLeftCornerChunkIJOfBossAreas(area);
+    for (let corner of areaCorners) {
+        if (corner.i <= chunkI && corner.i + area.size > chunkI
+            && corner.j <= chunkJ && corner.j + area.size > chunkJ) {
+                
+            mapChunk.isEndBossAreaChunk = true;
+            let hasJStartWall = corner.j === chunkJ;
+            let hasJEndWall = corner.j + area.size - 1 === chunkJ;
+            let hasIStartWall = corner.i === chunkI;
+            let hasIEndWall = corner.i + area.size - 1 === chunkI;
+
+            for (let i = 0; i < chunkLength; i++) {
+                for (let j = 0; j < chunkLength; j++) {
+                    tiles[i][j] = 0;
+                    if (hasJStartWall && j === 0
+                        || hasJEndWall && j === chunkLength - 1
+                        || hasIStartWall && i === 0
+                        || hasIEndWall && i === chunkLength - 1
+                    ) {
+                        tiles[i][j] = 1;
+                    }
                 }
-                areaEntryPathTileId = 3;
             }
-        }else{
-            hasIStartWall = chunkI === pathChunkEnd || -chunkI === pathChunkEnd + endBossAreaSize - 1;
-            hasIEndWall = chunkI === pathChunkEnd + endBossAreaSize - 1 || -chunkI === pathChunkEnd;
-            hasJStartWall = -chunkJ === Math.floor(endBossAreaSize / 2);
-            hasJEndWall = chunkJ === Math.floor(endBossAreaSize / 2);
-            if(chunkJ === 0){
-                if(-chunkI === pathChunkEnd){
-                    areaEntryPointI = chunkLength - 1; 
-                    areaEntryPointJ = Math.floor(chunkLength / 2);
-                }else if(chunkI === pathChunkEnd){
-                    areaEntryPointI = 0; 
-                    areaEntryPointJ = Math.floor(chunkLength / 2);
-                }
-            }
-            areaEntryPathTileId = 4;
+            return;
         }
-        for (let i = 0; i < chunkLength; i++) {
-            for (let j = 0; j < chunkLength; j++) {
-                chunk[i][j] = 0;
-                if(hasJStartWall && j === 0
-                    || hasJEndWall && j === chunkLength - 1
-                    || hasIStartWall && i === 0
-                    || hasIEndWall && i === chunkLength - 1
-                ){
-                    chunk[i][j] = 1;
-                }
-            }
-        }
-        if(areaEntryPointI !== undefined && areaEntryPointJ !== undefined) chunk[areaEntryPointI][areaEntryPointJ] = areaEntryPathTileId;
     }
 }
 
-function endBossPathForChunkTiles(chunk: number[][], chunkLength: number, chunkI: number, chunkJ: number, pathChunkEnd: number){
+function endBossPathForChunkTiles(chunk: number[][], chunkLength: number, chunkI: number, chunkJ: number, pathChunkEnd: number) {
     const pathChunkStart = 0;
-    if(chunkI === 0 && Math.abs(chunkJ) > pathChunkStart && Math.abs(chunkJ) < pathChunkEnd){
-        for(let i = 0; i < chunkLength; i++){
-            chunk[Math.floor(chunkLength / 2)][i] = 3;
+    if (chunkI === 0 && Math.abs(chunkJ) > pathChunkStart && Math.abs(chunkJ) <= pathChunkEnd) {
+        if (Math.abs(chunkJ) < pathChunkEnd) {
+            for (let i = 0; i < chunkLength; i++) {
+                chunk[Math.floor(chunkLength / 2)][i] = 3;
+            }
+        } else {
+            if (chunkJ > 0) {
+                chunk[Math.floor(chunkLength / 2)][0] = 3;
+            } else {
+                chunk[Math.floor(chunkLength / 2)][chunkLength - 1] = 3;
+            }
         }
     }
-    if(chunkJ === 0 && Math.abs(chunkI) > pathChunkStart && Math.abs(chunkI) < pathChunkEnd){
-        for(let i = 0; i < chunkLength; i++){
-            chunk[i][Math.floor(chunkLength / 2)] = 4;
+    if (chunkJ === 0 && Math.abs(chunkI) > pathChunkStart && Math.abs(chunkI) <= pathChunkEnd) {
+        if (Math.abs(chunkI) < pathChunkEnd) {
+            for (let i = 0; i < chunkLength; i++) {
+                chunk[i][Math.floor(chunkLength / 2)] = 4;
+            }
+        } else {
+            if (chunkI > 0) {
+                chunk[0][Math.floor(chunkLength / 2)] = 4;
+            } else {
+                chunk[chunkLength - 1][Math.floor(chunkLength / 2)] = 4;
+            }
         }
     }
 }

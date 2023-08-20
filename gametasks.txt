@@ -1,5 +1,4 @@
 current tasks:
-- new tamer test run
 - make boss area have no enemies
 - make enemies not run into boss area
 - create a boss for boss area

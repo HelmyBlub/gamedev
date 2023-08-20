@@ -21,11 +21,11 @@ export function tickFixPositionRespawnEnemyCharacter(character: Character, game:
     } else {
         if (enemy.nextTickTime == undefined || game.state.time >= enemy.nextTickTime || enemy.wasHitRecently) {
             let playerCharacters = getPlayerCharacters(game.state.players);
-            let closest = determineClosestCharacter(enemy, playerCharacters);
+            let closest = determineClosestCharacter(enemy, playerCharacters, true, game.state.map);
             let aggroed = closest.minDistance <= enemy.autoAggroRange
                 || (enemy.isAggroed && closest.minDistance <= enemy.maxAggroRange)
                 || (enemy.wasHitRecently && closest.minDistance <= enemy.maxAggroRange);
-            if (aggroed) {
+            if (closest.minDistanceCharacter && aggroed) {
                 enemy.isAggroed = true;
                 if (enemy.wasHitRecently) {
                     alertCloseEnemies(enemy, game);

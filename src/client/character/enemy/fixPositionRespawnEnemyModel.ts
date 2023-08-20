@@ -71,7 +71,7 @@ export function createFixPositionRespawnEnemies(chunk: MapChunk, chunkI: number,
     if (chunk.characters.length > 0) {
         console.log("unexpected existence of characers in mapChunk", chunk, chunkI, chunkJ);
     }
-
+    if(chunk.isEndBossAreaChunk) return;
     let chunkSize = map.tileSize * map.chunkLength;
     let mapCenter = { x: chunkSize / 2, y: chunkSize / 2 };
     let minSpawnDistanceFromMapCenter = 500;

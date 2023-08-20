@@ -1,5 +1,5 @@
 import { levelingCharacterXpGain } from "./playerCharacters/levelingCharacter.js";
-import { calculateMovePosition, determineMapKeysInDistance, GameMap, getChunksTouchingLine, isPositionBlocking, MapChunk } from "../map/map.js";
+import { calculateMovePosition, determineMapKeysInDistance, GameMap, getChunksTouchingLine, isPositionBlocking, MapChunk, positionToMapKey } from "../map/map.js";
 import { Character, CHARACTER_TYPE_FUNCTIONS, DEFAULT_CHARACTER } from "./characterModel.js";
 import { getNextWaypoint, getPathingCache, PathingCache } from "./pathing.js";
 import { calculateDirection, calculateDistance, calculateDistancePointToLine, createPaintTextData, takeTimeMeasure } from "../game.js";
@@ -190,13 +190,18 @@ export function tickDefaultCharacter(character: Character, game: Game, pathingCa
     moveCharacterTick(character, game.state.map, game.state.idCounter);
 }
 
-export function determineClosestCharacter(position: Position, characters: Character[]) {
+export function determineClosestCharacter(position: Position, characters: Character[], excludeEndbossArea: boolean = false, map: GameMap | undefined = undefined) {
     let minDistance: number = 0;
     let minDistanceCharacter: Character | null = null;
 
     for (let i = 0; i < characters.length; i++) {
         if (characters[i].isDead) continue;
         if (characters[i].isPet) continue;
+        if (excludeEndbossArea && map){
+            const mapKey = positionToMapKey(characters[i], map);
+            const mapChunk = map.chunks[mapKey];
+            if(mapChunk.isEndBossAreaChunk) continue;
+        }
         let distance = calculateDistance(position, characters[i]);
         if (minDistanceCharacter === null || minDistance > distance) {
             minDistance = distance;
