@@ -94,9 +94,35 @@ export function findNearNonBlockingPosition(pos: Position, map: GameMap, idCount
     return currentPosition;
 }
 
+export function changeTileIdOfMapChunk(chunkI: number, chunkJ: number, tileI: number, tileJ: number, newTileId: number, game: Game){
+    const chunkKey = chunkIJToMapKey(chunkI, chunkJ);
+    game.state.map.chunks[chunkKey].tiles[tileI][tileJ] = newTileId;
+    const mapPaintCache = game.performance.mapChunkPaintCache;
+    if(mapPaintCache){
+        let paintCacheKey1 = chunkKey + "_Layer1";
+        if(mapPaintCache[paintCacheKey1]){
+            delete mapPaintCache[paintCacheKey1];
+        }
+        let paintCacheKey2 = chunkKey + "_Layer2";
+        if(mapPaintCache[paintCacheKey2]){
+            delete mapPaintCache[paintCacheKey2];
+        }
+    }
+}
+
 export function positionToMapKey(pos: Position, map: GameMap): string {
     let chunkSize = map.tileSize * map.chunkLength;
-    return `${Math.floor(pos.y / chunkSize)}_${Math.floor(pos.x / chunkSize)}`;
+    const chunkIJ = positionToChunkIJ(pos, map);
+    return chunkIJToMapKey(chunkIJ.i, chunkIJ.j);
+}
+
+export function positionToChunkIJ(pos: Position, map: GameMap){
+    let chunkSize = map.tileSize * map.chunkLength;
+    return {i: Math.floor(pos.y / chunkSize), j: Math.floor(pos.x / chunkSize)};
+}
+
+export function chunkIJToMapKey(chunkI: number, chunkJ:number){
+    return `${chunkI}_${chunkJ}`;
 }
 
 export function mapKeyToChunkIJ(mapKey: string) {

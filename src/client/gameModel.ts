@@ -3,6 +3,7 @@ import { Character } from "./character/characterModel.js";
 import { PathingCache } from "./character/pathing.js";
 import { CommandRestart } from "./commands.js";
 import { createMap, GameMap } from "./map/map.js";
+import { EndBossEntranceData } from "./map/mapEndBossArea.js";
 import { generateMissingChunks } from "./map/mapGeneration.js";
 import { Player } from "./player.js";
 import { PlayerInput } from "./playerInput.js";
@@ -68,6 +69,8 @@ export type MapChunkPaintCache = {
 export type BossStuff = {
     bossLevelCounter: number,
     bossSpawnEachXMilliSecond: number,
+    endBossStarted: boolean,
+    closedOfEndBossEntrance?: EndBossEntranceData,
     bosses: Character[],
 }
 
@@ -213,6 +216,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             bossStuff: {
                 bossSpawnEachXMilliSecond: 60000,
                 bossLevelCounter: 1,
+                endBossStarted: false,
                 bosses: [],
             },
             paused: false,

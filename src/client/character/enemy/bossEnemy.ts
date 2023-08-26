@@ -43,7 +43,7 @@ export function tickBossEnemyCharacter(enemy: BossEnemyCharacter, game: Game, pa
     if (enemy.isDead) return;
     let playerCharacters = getPlayerCharacters(game.state.players);
     let closest = determineClosestCharacter(enemy, playerCharacters);
-    if(closest.minDistance > 1200){
+    if (closest.minDistance > 1200) {
         teleportBossToNearestPlayer(enemy, game);
         closest = determineClosestCharacter(enemy, playerCharacters);
     }
@@ -52,7 +52,7 @@ export function tickBossEnemyCharacter(enemy: BossEnemyCharacter, game: Game, pa
 
     for (let ability of enemy.abilities) {
         let tickAbility = ABILITIES_FUNCTIONS[ability.name].tickAbility;
-        if(tickAbility) tickAbility(enemy, ability, game);
+        if (tickAbility) tickAbility(enemy, ability, game);
     }
     tickCharacterDebuffs(enemy, game);
 }
@@ -64,6 +64,7 @@ export function paintBossCharacters(ctx: CanvasRenderingContext2D, cameraPositio
 }
 
 export function checkForBossSpawn(game: Game) {
+    if (game.state.bossStuff.endBossStarted) return;
     let bossStuff = game.state.bossStuff;
     let nextBossSpawnTime = bossStuff.bossSpawnEachXMilliSecond * bossStuff.bossLevelCounter;
     // if (bossStuff.bossLevelCounter <= 2) nextBossSpawnTime -= 110000; //TESTLINE
@@ -73,13 +74,13 @@ export function checkForBossSpawn(game: Game) {
     }
 }
 
-function teleportBossToNearestPlayer(enemy: BossEnemyCharacter, game: Game){
+function teleportBossToNearestPlayer(enemy: BossEnemyCharacter, game: Game) {
     let newPosition = getBossSpawnPosition(game);
     enemy.x = newPosition.x;
     enemy.y = newPosition.y;
 }
 
-function createBossAbilities(level: number, game: Game): Ability[]{
+function createBossAbilities(level: number, game: Game): Ability[] {
     let abilities: Ability[] = [];
     const abilityKeys = Object.keys(ABILITIES_FUNCTIONS);
     let possibleAbilityKeys: String[] = [];
@@ -98,7 +99,7 @@ function createBossAbilities(level: number, game: Game): Ability[]{
         let abilityFunctions = ABILITIES_FUNCTIONS[key];
         let ability = abilityFunctions.createAbility(game.state.idCounter);
         setAbilityToBossLevel(ability, level);
-        if(!abilityFunctions.isPassive) ability.passive = true;
+        if (!abilityFunctions.isPassive) ability.passive = true;
         abilities.push(ability);
     }
 
@@ -109,11 +110,11 @@ function createBossAbilities(level: number, game: Game): Ability[]{
     return abilities;
 }
 
-function setAbilityToBossLevel(ability: Ability, level: number){
+function setAbilityToBossLevel(ability: Ability, level: number) {
     let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-    if(abilityFunctions.setAbilityToBossLevel){
+    if (abilityFunctions.setAbilityToBossLevel) {
         abilityFunctions.setAbilityToBossLevel(ability, level);
-    }else{
+    } else {
         throw new Error("function setAbilityToBossLevel missing for" + ability.name);
     }
 }

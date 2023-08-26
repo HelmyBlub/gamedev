@@ -3,7 +3,7 @@ import { paintAll } from "./gamePaint.js";
 import { findPlayerByCharacterId, gameInitPlayers } from "./player.js";
 import { MOUSE_ACTION, PlayerInput, UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.js";
 import { Position, GameState, Game, IdCounter, TestingStuff, Debugging, PaintTextData, ClientInfo } from "./gameModel.js";
-import { createMap, determineMapKeysInDistance, GameMap, getMapMidlePosition, removeAllMapCharacters } from "./map/map.js";
+import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap, getMapMidlePosition, positionToGameMapTileIJ, positionToMapKey, removeAllMapCharacters } from "./map/map.js";
 import { Character, DEFAULT_CHARACTER } from "./character/characterModel.js";
 import { generateMissingChunks } from "./map/mapGeneration.js";
 import { createFixPositionRespawnEnemiesOnInit } from "./character/enemy/fixPositionRespawnEnemyModel.js";
@@ -14,6 +14,7 @@ import { createObjectDeathCircle } from "./ability/abilityDeathCircle.js";
 import { checkForBossSpawn, tickBossCharacters } from "./character/enemy/bossEnemy.js";
 import { autoPlay } from "./test/autoPlay.js";
 import { replayGameEndAssert, replayNextInReplayQueue } from "./test/gameTest.js";
+import { checkForEndBossAreaTrigger } from "./map/mapEndBossArea.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -64,8 +65,13 @@ export function gameInit(game: Game) {
     game.state.time = 0;
     game.state.timeFirstKill = undefined;
     game.state.playerInputs = [];
+    if(game.state.bossStuff.closedOfEndBossEntrance){
+        let entrance = game.state.bossStuff.closedOfEndBossEntrance;
+        changeTileIdOfMapChunk(entrance.chunkI, entrance.chunkJ, entrance.tileI, entrance.tileJ, entrance.tileId, game);
+    }
     game.state.bossStuff.bosses = [];
     game.state.bossStuff.bossLevelCounter = 1;
+    game.state.bossStuff.endBossStarted = false;
     game.state.deathCircleCreated = false;
     game.clientKeyBindings = [];
     game.performance = {};
@@ -357,6 +363,7 @@ function tick(gameTimePassed: number, game: Game) {
 }
 
 function doStuff(game: Game) {
+    checkForEndBossAreaTrigger(game);
     checkDeathCircleSpawn(game);
     checkForBossSpawn(game);
     checkMovementKeyPressedHint(game);

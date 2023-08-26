@@ -56,6 +56,7 @@ export function createObjectDeathCircle(map: GameMap): AbilityObjectDeathCircle 
 }
 
 function deleteObjectDeathCircle(abilityObject: AbilityObject, game: Game): boolean {
+    if (game.state.bossStuff.endBossStarted) return true;
     return false;
 }
 

@@ -3,6 +3,7 @@ import { takeTimeMeasure } from "../game.js";
 import { Game, IdCounter, Position } from "../gameModel.js";
 import { fixedRandom } from "../randomNumberGenerator.js";
 import { GameMap, GameMapEndBossArea, MapChunk } from "./map.js";
+import { mapGenerationEndBossChunkStuff } from "./mapEndBossArea.js";
 
 export function generateMissingChunks(map: GameMap, positions: Position[], idCounter: IdCounter, game: Game) {
     takeTimeMeasure(game.debug, "", "generateMissingChunks");
@@ -69,97 +70,9 @@ export function createNewChunkTiles(map: GameMap, chunkI: number, chunkJ: number
                 chunk[i].push(randomTileId);
             }
         }
-        endBossChunkStuff(mapChunk, map, chunkI, chunkJ);
+        mapGenerationEndBossChunkStuff(mapChunk, map, chunkI, chunkJ);
     }
     return mapChunk;
-}
-
-function endBossChunkStuff(mapChunk: MapChunk, map: GameMap, chunkI: number, chunkJ: number) {
-    if (!map.endBossArea) return;
-    const chunkLength = map.chunkLength;
-    endBossChunkArea(mapChunk, chunkLength, chunkI, chunkJ, map.endBossArea);
-    endBossPathForChunkTiles(mapChunk.tiles, chunkLength, chunkI, chunkJ, map.endBossArea.numberChunksUntil);
-}
-
-function getTopLeftCornerChunkIJOfBossAreas(bossArea: GameMapEndBossArea): { i: number, j: number }[] {
-    let result: { i: number, j: number }[] = [];
-    result.push({
-        i: bossArea.numberChunksUntil,
-        j: - Math.floor(bossArea.size / 2),
-    });
-    result.push({
-        i: - Math.floor(bossArea.size / 2),
-        j: bossArea.numberChunksUntil,
-    });
-    result.push({
-        i: - bossArea.numberChunksUntil - bossArea.size + 1,
-        j: - Math.floor(bossArea.size / 2),
-    });
-    result.push({
-        i: - Math.floor(bossArea.size / 2),
-        j: - bossArea.numberChunksUntil - bossArea.size + 1,
-    });
-    return result;
-}
-
-function endBossChunkArea(mapChunk: MapChunk, chunkLength: number, chunkI: number, chunkJ: number, area: GameMapEndBossArea) {
-    const tiles = mapChunk.tiles;
-    let areaCorners = getTopLeftCornerChunkIJOfBossAreas(area);
-    for (let corner of areaCorners) {
-        if (corner.i <= chunkI && corner.i + area.size > chunkI
-            && corner.j <= chunkJ && corner.j + area.size > chunkJ) {
-                
-            mapChunk.isEndBossAreaChunk = true;
-            let hasJStartWall = corner.j === chunkJ;
-            let hasJEndWall = corner.j + area.size - 1 === chunkJ;
-            let hasIStartWall = corner.i === chunkI;
-            let hasIEndWall = corner.i + area.size - 1 === chunkI;
-
-            for (let i = 0; i < chunkLength; i++) {
-                for (let j = 0; j < chunkLength; j++) {
-                    tiles[i][j] = 0;
-                    if (hasJStartWall && j === 0
-                        || hasJEndWall && j === chunkLength - 1
-                        || hasIStartWall && i === 0
-                        || hasIEndWall && i === chunkLength - 1
-                    ) {
-                        tiles[i][j] = 1;
-                    }
-                }
-            }
-            return;
-        }
-    }
-}
-
-function endBossPathForChunkTiles(chunk: number[][], chunkLength: number, chunkI: number, chunkJ: number, pathChunkEnd: number) {
-    const pathChunkStart = 0;
-    if (chunkI === 0 && Math.abs(chunkJ) > pathChunkStart && Math.abs(chunkJ) <= pathChunkEnd) {
-        if (Math.abs(chunkJ) < pathChunkEnd) {
-            for (let i = 0; i < chunkLength; i++) {
-                chunk[Math.floor(chunkLength / 2)][i] = 3;
-            }
-        } else {
-            if (chunkJ > 0) {
-                chunk[Math.floor(chunkLength / 2)][0] = 3;
-            } else {
-                chunk[Math.floor(chunkLength / 2)][chunkLength - 1] = 3;
-            }
-        }
-    }
-    if (chunkJ === 0 && Math.abs(chunkI) > pathChunkStart && Math.abs(chunkI) <= pathChunkEnd) {
-        if (Math.abs(chunkI) < pathChunkEnd) {
-            for (let i = 0; i < chunkLength; i++) {
-                chunk[i][Math.floor(chunkLength / 2)] = 4;
-            }
-        } else {
-            if (chunkI > 0) {
-                chunk[0][Math.floor(chunkLength / 2)] = 4;
-            } else {
-                chunk[chunkLength - 1][Math.floor(chunkLength / 2)] = 4;
-            }
-        }
-    }
 }
 
 function perlin_get(x: number, y: number, seed: number) {

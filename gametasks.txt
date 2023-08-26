@@ -1,8 +1,13 @@
 current tasks:
-- make boss area have no enemies
-- make enemies not run into boss area
-- create a boss for boss area
-- one boss battle begins -> close of entrance
+- create end boss
+    - add endBoss to game.state.bosses model?
+    - createDefaultEndBoss function
+- once all players are inside boss area and no normal boss is alive
+    - bug: tamer pets get closed of if entrace closes
+    - check: tileIdChange does not reset palthing cache. Is it a problem?
+
+- once boss battle begins -> close of entrance
+    - in multiplayer begins once every player in boss area
 
 - End Bosses?
     - instead of endless run, the run can be ended with a final boss fight with higher difficulty
