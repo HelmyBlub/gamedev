@@ -1,5 +1,5 @@
 import { getPlayerCharacters } from "../character/character.js";
-import { createBossWithLevel } from "../character/enemy/bossEnemy.js";
+import { createEndBossWithLevel } from "../character/enemy/endBossEnemy.js";
 import { Game, Position } from "../gameModel.js";
 import { positionToMapKey, positionToGameMapTileIJ, GameMapEndBossArea, GameMap, MapChunk, chunkIJToMapKey, positionToChunkIJ, changeTileIdOfMapChunk } from "./map.js";
 
@@ -40,12 +40,35 @@ export function checkForEndBossAreaTrigger(game: Game) {
     let entrance = getEntranceChunkAndTileIJForPosition(allPlayers[0], game.state.map);
     if (entrance) {
         changeTileIdOfMapChunk(entrance.chunkI, entrance.chunkJ, entrance.tileI, entrance.tileJ, 2, game);
-        game.state.bossStuff.bosses.push(createBossWithLevel(game.state.idCounter, 10, game));
+        game.state.bossStuff.bosses.push(createEndBossWithLevel(allPlayers[0], game.state.idCounter, 1, game));
         game.state.bossStuff.closedOfEndBossEntrance = entrance;
         game.state.bossStuff.endBossStarted = true;
     } else {
         throw new Error("bossArea entrance not found, should not be able to happen");
     }
+}
+
+export function getBossAreaMiddlePosition(positionInsideBossArea: Position, map: GameMap): Position | undefined {
+    const areaCorners = getTopLeftCornerChunkIJOfBossAreas(map.endBossArea!);
+    const bossAreaSize = map.endBossArea!.size * map.chunkLength * map.tileSize
+    for (let corner of areaCorners) {
+        const pos: Position = {
+            x: corner.j * map.chunkLength * map.tileSize,
+            y: corner.i * map.chunkLength * map.tileSize,
+        }
+        if (pos.x <= positionInsideBossArea.x
+            && pos.x + bossAreaSize  > positionInsideBossArea.x
+            && pos.y <= positionInsideBossArea.y
+            && pos.y + bossAreaSize > positionInsideBossArea.y
+        ) {
+            return {
+                x: pos.x + bossAreaSize / 2,
+                y: pos.y + bossAreaSize / 2
+            }
+        }
+    }
+
+    return undefined;
 }
 
 function endBossChunkArea(mapChunk: MapChunk, chunkLength: number, chunkI: number, chunkJ: number, map: GameMap) {

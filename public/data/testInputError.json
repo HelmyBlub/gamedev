@@ -1,0 +1,112 @@
+{
+    "replayPlayerInputs": [
+        {
+            "command": "restart",
+            "clientId": -1,
+            "recordInputs": true,
+            "replay": false,
+            "testMapSeed": 0.012373712537587735,
+            "testRandomStartSeed": 1.937710555587795,
+            "executeTime": 1
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "left",
+                "isKeydown": true
+            },
+            "executeTime": 433
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "down",
+                "isKeydown": true
+            },
+            "executeTime": 609
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "down",
+                "isKeydown": false
+            },
+            "executeTime": 1153
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "down",
+                "isKeydown": true
+            },
+            "executeTime": 1329
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "down",
+                "isKeydown": false
+            },
+            "executeTime": 1425
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "upgrade3",
+                "isKeydown": true
+            },
+            "executeTime": 1761
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "down",
+                "isKeydown": true
+            },
+            "executeTime": 2193
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "down",
+                "isKeydown": false
+            },
+            "executeTime": 2321
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "up",
+                "isKeydown": true
+            },
+            "executeTime": 7649
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "up",
+                "isKeydown": false
+            },
+            "executeTime": 7649
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "left",
+                "isKeydown": false
+            },
+            "executeTime": 7649
+        }
+    ]
+}

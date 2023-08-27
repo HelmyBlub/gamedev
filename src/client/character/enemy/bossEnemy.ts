@@ -11,6 +11,7 @@ import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPa
 import { Character, createCharacter } from "../characterModel.js";
 import { paintCharacterHpBar } from "../characterPaint.js";
 import { getPathingCache, PathingCache } from "../pathing.js";
+import { CHARACTER_TYPE_END_BOSS_ENEMY, tickEndBossEnemyCharacter } from "./endBossEnemy.js";
 
 export type BossEnemyCharacter = Character;
 export const CHARACTER_TYPE_BOSS_ENEMY = "BossEnemyCharacter";
@@ -35,11 +36,13 @@ export function tickBossCharacters(bossStuff: BossStuff, game: Game) {
     for (let i = bosses.length - 1; i >= 0; i--) {
         if (bosses[i].type === CHARACTER_TYPE_BOSS_ENEMY) {
             tickBossEnemyCharacter(bosses[i], game, pathingCache);
+        }else if (bosses[i].type === CHARACTER_TYPE_END_BOSS_ENEMY) {
+            tickEndBossEnemyCharacter(bosses[i], game, pathingCache);
         }
     }
 }
 
-export function tickBossEnemyCharacter(enemy: BossEnemyCharacter, game: Game, pathingCache: PathingCache) {
+function tickBossEnemyCharacter(enemy: BossEnemyCharacter, game: Game, pathingCache: PathingCache) {
     if (enemy.isDead) return;
     let playerCharacters = getPlayerCharacters(game.state.players);
     let closest = determineClosestCharacter(enemy, playerCharacters);
@@ -83,7 +86,7 @@ function teleportBossToNearestPlayer(enemy: BossEnemyCharacter, game: Game) {
 function createBossAbilities(level: number, game: Game): Ability[] {
     let abilities: Ability[] = [];
     const abilityKeys = Object.keys(ABILITIES_FUNCTIONS);
-    let possibleAbilityKeys: String[] = [];
+    let possibleAbilityKeys: string[] = [];
     for (let key of abilityKeys) {
         if (ABILITIES_FUNCTIONS[key].canBeUsedByBosses) {
             possibleAbilityKeys.push(key);

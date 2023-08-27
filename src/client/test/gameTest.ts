@@ -26,6 +26,7 @@ function testPlayerClasses(game: Game){
     game.testing.replay = {startTime: performance.now()};
     const replay = game.testing.replay;
     replay.testInputFileQueue = [];
+    // replay.testInputFileQueue.push("/data/testInputError.json");
     replay.testInputFileQueue.push("/data/testInputShortBuilder.json");
     replay.testInputFileQueue.push("/data/testInputShortSniper.json");
     replay.testInputFileQueue.push("/data/testInputShortTamer.json");
@@ -83,15 +84,6 @@ function assertEquals(type: string, expected: any, actual: any){
         console.log(`assert ${type} failed. Expected: ${expected}, actual: ${actual}`);
     }
 }
-
-function getClientIds(playerInputs: (PlayerInput | Omit<CommandRestart, "executeTime">)[]): number[] {
-    let clients: Set<number> = new Set<number>();
-    for (const playerInput of playerInputs) {
-        clients.add(playerInput.clientId);
-    }
-    return [...clients];
-}
-
 
 function getUntilPromise(fn: Function, time = 1000) {
     return new Promise((resolve) => {

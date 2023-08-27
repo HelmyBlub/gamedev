@@ -84,7 +84,10 @@ function tickAbilityLeash(abilityOwner: AbilityOwner, ability: Ability, game: Ga
             return;
         } 
         findAndRemoveUnnecessaryLeashBends(abilityOwner, connectedOwner, abilityLeash, game);
-        findAndAddNewLeashBends(abilityOwner, connectedOwner, abilityLeash, game);
+        const success = findAndAddNewLeashBends(abilityOwner, connectedOwner, abilityLeash, game);
+        if(!success){
+            teleportAndClearLeashBends(connectedOwner, abilityOwner, abilityLeash);
+        }
 
         let leashLength = calculateLeashLength(abilityOwner, connectedOwner, abilityLeash);
         if(leashLength > abilityLeash.leashMaxLength){
@@ -123,6 +126,12 @@ function tickAbilityLeash(abilityOwner: AbilityOwner, ability: Ability, game: Ga
     }
 }
 
+function teleportAndClearLeashBends(connectedOwner: Character, abilityOwner: AbilityOwner, ability: AbilityLeash){
+    abilityOwner.x = connectedOwner.x;
+    abilityOwner.y = connectedOwner.y;
+    ability.leashBendPoints = [];
+}
+
 function pullCharacterTowardsPosition(pullForce: number, character: Position, pullPosition: Position){
     const direction = calculateDirection(character, pullPosition);
     character.x = character.x + Math.cos(direction) * pullForce;
@@ -154,7 +163,7 @@ function getNewLeashBendPosIfBlocking(startPosition: Position, endPosition: Posi
     return undefined;
 }
 
-function findAndAddNewLeashBends(abilityOwner: Position, connectedOwner: Position, abilityLeash: AbilityLeash, game: Game){
+function findAndAddNewLeashBends(abilityOwner: Position, connectedOwner: Position, abilityLeash: AbilityLeash, game: Game): boolean{
     const map = game.state.map;
     let firstPoint: Position;
     if(abilityLeash.leashBendPoints.length === 0){
@@ -165,6 +174,18 @@ function findAndAddNewLeashBends(abilityOwner: Position, connectedOwner: Positio
     let newLeashBendPos = getNewLeashBendPosIfBlocking(connectedOwner, firstPoint, abilityLeash, game);
     if(newLeashBendPos){
         abilityLeash.leashBendPoints.push(newLeashBendPos);
+        let blockingPos = getFirstBlockingGameMapTilePositionTouchingLine(map, connectedOwner, newLeashBendPos, game);
+        if(blockingPos){
+            console.log("blocking pos after adding bendPos!");
+            return false;
+        }else{
+            const endPoint = abilityLeash.leashBendPoints.length > 1 ? abilityLeash.leashBendPoints[abilityLeash.leashBendPoints.length - 2] : abilityOwner;
+            blockingPos = getFirstBlockingGameMapTilePositionTouchingLine(map, endPoint, newLeashBendPos, game);
+            if(blockingPos){
+                console.log("blocking pos 2 after adding bendPos!");
+                return false;
+            }
+        }
     }
 
     if(abilityLeash.leashBendPoints.length > 0){
@@ -173,6 +194,7 @@ function findAndAddNewLeashBends(abilityOwner: Position, connectedOwner: Positio
             abilityLeash.leashBendPoints.unshift(newLeashBendPos);
         }
     }
+    return true;
 }
 
 function findAndRemoveUnnecessaryLeashBends(abilityOwner: Position, connectedOwner: Position, abilityLeash: AbilityLeash, game: Game){

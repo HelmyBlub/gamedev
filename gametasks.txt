@@ -1,7 +1,4 @@
 current tasks:
-- create end boss
-    - add endBoss to game.state.bosses model?
-    - createDefaultEndBoss function
 - once all players are inside boss area and no normal boss is alive
     - bug: tamer pets get closed of if entrace closes
     - check: tileIdChange does not reset palthing cache. Is it a problem?

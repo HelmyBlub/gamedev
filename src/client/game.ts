@@ -459,6 +459,9 @@ function setReplaySeeds(game: Game) {
     game.state.randomSeed.seed = 0;
     game.state.map = createMap();
     game.state.map.seed = 0;
+    if(game.state.bossStuff.closedOfEndBossEntrance){
+        game.state.bossStuff.closedOfEndBossEntrance = undefined;
+    }
     if (game.testing.replay) {
         if (game.testing.replay.mapSeed !== undefined) game.state.map.seed = game.testing.replay.mapSeed;
         if (game.testing.replay.randomStartSeed !== undefined) game.state.randomSeed.seed = game.testing.replay.randomStartSeed;

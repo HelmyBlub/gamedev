@@ -45,7 +45,8 @@ export function getNextWaypoint(
     time: number,
 ): Position | null {
     if (isPositionBlocking(sourcePos, map, idCounter)) {
-        throw new Error("can't find way to a blocking position");
+        console.log("can't find way to a blocking position");
+        return null;
     }
     let targetIJ: Position = calculatePosToTileIJ(sourcePos, map);
     let startIJ: Position = calculatePosToTileIJ(targetPos, map);
