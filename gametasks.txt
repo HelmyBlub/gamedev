@@ -1,7 +1,5 @@
 current tasks:
 - after end boss defeats
-    - end game screen
-        - additional high score board for boss kill time?
     - player character is next boss
 - paint: give end boss a crown
     - animation: crown moves to player character

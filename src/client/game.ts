@@ -16,6 +16,7 @@ import { autoPlay } from "./test/autoPlay.js";
 import { replayGameEndAssert, replayNextInReplayQueue } from "./test/gameTest.js";
 import { checkForEndBossAreaTrigger } from "./map/mapEndBossArea.js";
 import { calculateHighscoreOnGameEnd } from "./highscores.js";
+import { CHARACTER_TYPE_END_BOSS_ENEMY } from "./character/enemy/endBossEnemy.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -299,6 +300,10 @@ function gameEndedCheck(game: Game) {
 export function endGame(game: Game, isEndbossKill: boolean = false) {
     game.state.ended = true;
     let newScore = calculateHighscoreOnGameEnd(game, isEndbossKill);
+    // if(isEndbossKill && !game.multiplayer.websocket){
+    //     game.state.bossStuff.nextEndboss = game.state.players[0].character;
+    //     game.state.bossStuff.nextEndboss.type = CHARACTER_TYPE_END_BOSS_ENEMY;
+    // }
     endGameReplayStuff(game, newScore);
     if (game.testing.record) {
         if (game.testing.record.data.replayPlayerInputs){

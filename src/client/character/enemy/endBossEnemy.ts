@@ -6,7 +6,8 @@ import { ABILITY_NAME_SWORD } from "../../ability/abilitySword.js";
 import { tickCharacterDebuffs } from "../../debuff/debuff.js";
 import { getNextId } from "../../game.js";
 import { IdCounter, Game, Position } from "../../gameModel.js";
-import { getBossAreaMiddlePosition } from "../../map/mapEndBossArea.js";
+import { changeTileIdOfMapChunk } from "../../map/map.js";
+import { getBossAreaMiddlePosition, getEntranceChunkAndTileIJForPosition } from "../../map/mapEndBossArea.js";
 import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick } from "../character.js";
 import { Character, createCharacter } from "../characterModel.js";
 import { PathingCache } from "../pathing.js";
@@ -14,18 +15,44 @@ import { PathingCache } from "../pathing.js";
 export type EndBossEnemyCharacter = Character;
 export const CHARACTER_TYPE_END_BOSS_ENEMY = "EndBossEnemyCharacter";
 
-export function createEndBossWithLevel(endBossAreaPosition: Position, idCounter: IdCounter, level: number, game: Game): EndBossEnemyCharacter {
+export function createNextDefaultEndBoss(idCounter: IdCounter, game: Game): EndBossEnemyCharacter {
     let bossSize = 60;
     let color = "black";
     let moveSpeed = 1;
     let hp = 50000000;
-    let experienceWorth = Math.pow(level, 2) * 1000;
-    let spawn: Position = getBossAreaMiddlePosition(endBossAreaPosition, game.state.map)!;
-
-    let bossCharacter = createCharacter(getNextId(idCounter), spawn.x, spawn.y, bossSize, bossSize, color, moveSpeed, hp, "enemy", CHARACTER_TYPE_END_BOSS_ENEMY, experienceWorth);
+    let experienceWorth = 0;
+    let bossCharacter = createCharacter(getNextId(idCounter), 0, 0, bossSize, bossSize, color, moveSpeed, hp, "enemy", CHARACTER_TYPE_END_BOSS_ENEMY, experienceWorth);
     let abilities: Ability[] = createEndBossAbilities(1, game);
     bossCharacter.abilities = abilities;
     return bossCharacter;
+}
+
+export function startEndBoss(endBossAreaPosition: Position, game: Game){
+    let entrance = getEntranceChunkAndTileIJForPosition(game.state.players[0].character, game.state.map);
+    if (entrance) {
+        changeTileIdOfMapChunk(entrance.chunkI, entrance.chunkJ, entrance.tileI, entrance.tileJ, 2, game);
+        let spawn: Position = getBossAreaMiddlePosition(endBossAreaPosition, game.state.map)!;
+        let endBoss = game.state.bossStuff.nextEndboss;
+        if(endBoss === undefined){
+            endBoss = createNextDefaultEndBoss(game.state.idCounter, game);
+            console.log("endboss was missing");
+        }else{
+            game.state.bossStuff.nextEndboss = undefined;
+        }
+        endBoss.x = spawn.x;
+        endBoss.y = spawn.y;
+        if(spawn.x < 2000 && spawn.y < 2000){
+            endBoss.hp = 500;
+            endBoss.maxHp = 500;
+        } 
+        game.state.bossStuff.bosses.push(endBoss);
+        game.state.bossStuff.closedOfEndBossEntrance = entrance;
+        game.state.bossStuff.endBossStarted = true;
+    } else {
+        throw new Error("bossArea entrance not found, should not be able to happen");
+    }
+
+
 }
 
 export function tickEndBossEnemyCharacter(enemy: EndBossEnemyCharacter, game: Game, pathingCache: PathingCache) {

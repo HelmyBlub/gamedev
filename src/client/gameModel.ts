@@ -1,5 +1,6 @@
 import { AbilityObject } from "./ability/ability.js";
 import { Character } from "./character/characterModel.js";
+import { createNextDefaultEndBoss } from "./character/enemy/endBossEnemy.js";
 import { PathingCache } from "./character/pathing.js";
 import { CommandRestart } from "./commands.js";
 import { createHighscoreBoards, Highscores } from "./highscores.js";
@@ -71,6 +72,7 @@ export type BossStuff = {
     bossLevelCounter: number,
     bossSpawnEachXMilliSecond: number,
     endBossStarted: boolean,
+    nextEndboss: Character | undefined,
     closedOfEndBossEntrance?: EndBossEntranceData,
     bosses: Character[],
 }
@@ -206,6 +208,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
                 bossLevelCounter: 1,
                 endBossStarted: false,
                 bosses: [],
+                nextEndboss: undefined,
             },
             paused: false,
         },
@@ -264,6 +267,9 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
         }
     }
 
+    if(game.state.map.endBossArea){
+        game.state.bossStuff.nextEndboss = createNextDefaultEndBoss(game.state.idCounter, game);
+    }
     game.state.map.seed = nextRandom(game.state.randomSeed);
     generateMissingChunks(game.state.map, [{ x: 0, y: 0 }], game.state.idCounter, game);
 
