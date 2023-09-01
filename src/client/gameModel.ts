@@ -2,6 +2,7 @@ import { AbilityObject } from "./ability/ability.js";
 import { Character } from "./character/characterModel.js";
 import { PathingCache } from "./character/pathing.js";
 import { CommandRestart } from "./commands.js";
+import { createHighscoreBoards, Highscores } from "./highscores.js";
 import { createMap, GameMap } from "./map/map.js";
 import { EndBossEntranceData } from "./map/mapEndBossArea.js";
 import { generateMissingChunks } from "./map/mapGeneration.js";
@@ -101,15 +102,6 @@ export type GameState = {
     tickOnceInPaused?: boolean,
 }
 
-export type Highscores = {
-    scores: {
-        score: number,
-        playerClass: string,
-    }[],
-    maxLength: 10,
-    lastHighscorePosition: number,
-}
-
 export type Camera = {
     type: string,
     characterId?: number,
@@ -201,11 +193,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             restartAfterTick: false,
             time: 0,
             playerInputs: [],
-            highscores: {
-                scores: [],
-                lastHighscorePosition: 0,
-                maxLength: 10,
-            },
+            highscores: createHighscoreBoards(),
             randomSeed: {
                 seed: Math.random(),
             },

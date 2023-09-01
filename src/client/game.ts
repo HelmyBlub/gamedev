@@ -15,6 +15,7 @@ import { checkForBossSpawn, tickBossCharacters } from "./character/enemy/bossEne
 import { autoPlay } from "./test/autoPlay.js";
 import { replayGameEndAssert, replayNextInReplayQueue } from "./test/gameTest.js";
 import { checkForEndBossAreaTrigger } from "./map/mapEndBossArea.js";
+import { calculateHighscoreOnGameEnd } from "./highscores.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -295,26 +296,9 @@ function gameEndedCheck(game: Game) {
     return false;
 }
 
-function endGame(game: Game) {
+export function endGame(game: Game, isEndbossKill: boolean = false) {
     game.state.ended = true;
-    let newScore: number = 0;
-    let playerClass = "";
-    const state = game.state;
-    for (let i = 0; i < game.state.players.length; i++) {
-        const player = game.state.players[i];
-        if(player.character.characterClass){
-            if(playerClass.length > 1) playerClass += ", ";
-            playerClass += player.character.characterClass;
-        }
-        let distance = Math.round(calculateDistance(player.character, getMapMidlePosition(state.map)));
-        if (distance > newScore) newScore = distance;
-    }
-    state.highscores.scores.push({ score: newScore, playerClass: playerClass });
-    state.highscores.scores.sort((a, b) => b.score - a.score);
-    state.highscores.lastHighscorePosition = state.highscores.scores.findIndex((e) => e.score === newScore);
-    if (state.highscores.scores.length > state.highscores.maxLength) {
-        state.highscores.scores.pop();
-    }
+    let newScore = calculateHighscoreOnGameEnd(game, isEndbossKill);
     endGameReplayStuff(game, newScore);
     if (game.testing.record) {
         if (game.testing.record.data.replayPlayerInputs){

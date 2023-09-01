@@ -6,7 +6,8 @@ import { paintBossCharacters } from "./character/enemy/bossEnemy.js";
 import { LEVELING_CHARACTER, LevelingCharacter } from "./character/playerCharacters/levelingCharacterModel.js";
 import { paintTamerPetCharacterStatsUI } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
 import { calculateDistance, getCameraPosition, getTimeSinceFirstKill } from "./game.js";
-import { Game, Position, Highscores, Debugging, PaintTextData } from "./gameModel.js";
+import { Game, Position, Debugging, PaintTextData } from "./gameModel.js";
+import { Highscores, paintHighscoreEndScreenStuff, paintHighscores } from "./highscores.js";
 import { GAME_IMAGES, loadImage } from "./imageLoad.js";
 import { getMapMidlePosition } from "./map/map.js";
 import { paintMap, paintMapCharacters } from "./map/mapPaint.js";
@@ -66,6 +67,18 @@ export function getPointPaintPosition(ctx: CanvasRenderingContext2D, point: Posi
     return { 
         x: Math.floor(point.x - cameraPosition.x + centerX),
         y: Math.floor(point.y - cameraPosition.y + centerY),
+    }
+}
+
+export function paintKey(ctx: CanvasRenderingContext2D, key: string, paintPosition: Position, offsetX: number = 0, fontSize: number = 16) {
+    let wasdKeyImageString = "blankKey";
+    let wasdKeyImage = GAME_IMAGES[wasdKeyImageString];
+    loadImage(wasdKeyImage);
+    if (wasdKeyImage.imageRef?.complete) {
+        ctx.fillStyle = "black";
+        ctx.font = fontSize + "px Arial";
+        ctx.drawImage(wasdKeyImage.imageRef, paintPosition.x, paintPosition.y);
+        ctx.fillText(key, paintPosition.x + 15 + offsetX, paintPosition.y + 20);
     }
 }
 
@@ -131,18 +144,6 @@ function paintWasdKeys(ctx: CanvasRenderingContext2D, paintX: number, paintY: nu
     paintKey(ctx, "D", { x: paintX + 80, y: paintY + 30 });
 }
 
-function paintKey(ctx: CanvasRenderingContext2D, key: string, paintPosition: Position, offsetX: number = 0, fontSize: number = 16) {
-    let wasdKeyImageString = "blankKey";
-    let wasdKeyImage = GAME_IMAGES[wasdKeyImageString];
-    loadImage(wasdKeyImage);
-    if (wasdKeyImage.imageRef?.complete) {
-        ctx.fillStyle = "black";
-        ctx.font = fontSize + "px Arial";
-        ctx.drawImage(wasdKeyImage.imageRef, paintPosition.x, paintPosition.y);
-        ctx.fillText(key, paintPosition.x + 15 + offsetX, paintPosition.y + 20);
-    }
-}
-
 function paintDamageNumbers(ctx: CanvasRenderingContext2D, damageNumbersData: PaintTextData[] | undefined, cameraPosition: Position, time: number) {
     if (damageNumbersData === undefined) return;
     let centerX = ctx.canvas.width / 2;
@@ -182,80 +183,8 @@ function paintTimeMeasures(ctx: CanvasRenderingContext2D, debug: Debugging | und
 }
 
 function paintEndScreen(ctx: CanvasRenderingContext2D, highscores: Highscores) {
-    if (highscores.scores.length === 0) return;
     paintGameTitle(ctx);
-    let paintMiddle = ctx.canvas.width / 2;
-    let paintY = ctx.canvas.height / 2 - highscores.scores.length * 10;
-
-
-    const fontSize = 18;
-    ctx.font = fontSize + "px Arial";
-
-    const restartText = "Restart with"
-    const restartHintWidth = ctx.measureText(restartText).width + 40;
-    const shortHighscoreDescription = [
-        "Highscore number based on how far away",
-        "from starting point the player died"
-    ]
-    const shortHighscoreDescriptionWidth = Math.max(
-        ctx.measureText(shortHighscoreDescription[0]).width,
-        ctx.measureText(shortHighscoreDescription[1]).width 
-    ) + 2;
-    ctx.fillStyle = "white";
-    ctx.fillRect(paintMiddle - shortHighscoreDescriptionWidth / 2 + 1, paintY - 140, shortHighscoreDescriptionWidth, 40 + 4);
-    ctx.fillStyle = "black";
-    ctx.font = fontSize + "px Arial";
-    ctx.fillText(shortHighscoreDescription[0], paintMiddle - shortHighscoreDescriptionWidth / 2 + 1, paintY - 120);
-    ctx.fillText(shortHighscoreDescription[1], paintMiddle - shortHighscoreDescriptionWidth / 2 + 1, paintY - 100);
-
-    ctx.fillStyle = "white";
-    ctx.fillRect(paintMiddle - restartHintWidth / 2, paintY - 60, restartHintWidth, 20 + 4);
-    ctx.fillStyle = "black";
-    ctx.fillText(restartText, paintMiddle - restartHintWidth / 2, paintY - 40);
-    paintKey(ctx, "R", { x: paintMiddle + restartHintWidth / 2 - 40 - 2, y: paintY - 63 });
-
-
-    const highscoreWidth = getHighscoreWidth(ctx, highscores, fontSize);
-    paintHighscores(ctx, paintMiddle - highscoreWidth / 2, paintY - 20, highscores, fontSize);
-}
-
-function getHighscoreWidth(ctx: CanvasRenderingContext2D, highscores: Highscores, fontSize: number): number{
-    ctx.font = fontSize + "px Arial";
-    let resultWidth = 0;
-    for(let i = 0; i < highscores.scores.length; i++){
-        let width = ctx.measureText(getHighscoreTextLine(i, highscores)).width;
-        if(width > resultWidth) resultWidth = width;
-    }
-    return resultWidth;
-}
-
-function getHighscoreTextLine(index: number, highscores: Highscores): string{
-    return `${(index + 1)}: ${highscores.scores[index].score} (${highscores.scores[index].playerClass})`;
-}
-
-function paintHighscores(ctx: CanvasRenderingContext2D, paintX: number, paintY: number, highscores: Highscores, fontSize: number): { width: number, height: number } {
-    const textGap = 2;
-    const textSpace = fontSize + textGap;
-    ctx.font = fontSize + "px Arial";
-    ctx.fillStyle = "black";
-    const headingText = "Highscores:";
-    let width = getHighscoreWidth(ctx, highscores, fontSize);
-    let height = textSpace * (highscores.scores.length + 1) + 4;
-
-    ctx.fillStyle = "white";
-    ctx.fillRect(paintX, paintY, width, height);
-    ctx.fillStyle = "black";
-    ctx.fillText(headingText, paintX, paintY + textSpace - textGap);
-    for (let i = 0; i < highscores.scores.length; i++) {
-        if (i === highscores.lastHighscorePosition) {
-            ctx.fillStyle = "lightblue";
-            ctx.fillRect(paintX, paintY + textSpace * (i + 1) + 1, width, textSpace);
-            ctx.fillStyle = "black";
-        }
-        ctx.fillText(getHighscoreTextLine(i, highscores), paintX, paintY + textSpace * (i + 2));
-    }
-
-    return { width, height };
+    paintHighscoreEndScreenStuff(ctx, highscores);
 }
 
 function paintGameTitle(ctx: CanvasRenderingContext2D) {
@@ -327,9 +256,16 @@ function paintPlayerStatsUI(ctx: CanvasRenderingContext2D, character: Character,
             paintX += area.width + spacing;
         }
     }
-    if (!game.state.ended && game.state.highscores.scores.length > 0) {
-        area = paintHighscores(ctx, paintX, paintY, game.state.highscores, 14);
-        paintX += area.width + spacing;
+    if (!game.state.ended && game.state.highscores.lastBoard !== "") {
+        const keys = Object.keys(game.state.highscores.scoreBoards);
+        for(let key of keys){
+            const board = game.state.highscores.scoreBoards[key];
+            if(board && board.scores.length > 0){
+                const lastHighscorePosition = game.state.highscores.lastBoard === key ? game.state.highscores.lastHighscorePosition : undefined;
+                area = paintHighscores(ctx, paintX, paintY, board, lastHighscorePosition, 14);
+                paintX += area.width + spacing;
+            }
+        }
     }
 }
 

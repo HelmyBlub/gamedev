@@ -2,7 +2,7 @@ import { levelingCharacterXpGain } from "./playerCharacters/levelingCharacter.js
 import { calculateMovePosition, determineMapKeysInDistance, GameMap, getChunksTouchingLine, isPositionBlocking, MapChunk, positionToMapKey } from "../map/map.js";
 import { Character, CHARACTER_TYPE_FUNCTIONS, DEFAULT_CHARACTER } from "./characterModel.js";
 import { getNextWaypoint, getPathingCache, PathingCache } from "./pathing.js";
-import { calculateDirection, calculateDistance, calculateDistancePointToLine, createPaintTextData, takeTimeMeasure } from "../game.js";
+import { calculateDirection, calculateDistance, calculateDistancePointToLine, createPaintTextData, endGame, takeTimeMeasure } from "../game.js";
 import { Position, Game, IdCounter, Camera } from "../gameModel.js";
 import { findPlayerById, Player } from "../player.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
@@ -13,6 +13,7 @@ import { removeCharacterDebuffs, tickCharacterDebuffs } from "../debuff/debuff.j
 import { createAbilityLeash } from "../ability/abilityLeash.js";
 import { fillRandomUpgradeOptionChoices, UpgradeOption } from "./upgrade.js";
 import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters/playerCharacters.js";
+import { CHARACTER_TYPE_END_BOSS_ENEMY } from "./enemy/endBossEnemy.js";
 
 export function findCharacterById(characters: Character[], id: number): Character | null {
     for (let i = 0; i < characters.length; i++) {
@@ -105,6 +106,9 @@ function killCharacter(character: Character, game: Game, abilityRefId: number | 
     levelingCharacterXpGain(game.state, character, game);
     if (character.type === CHARACTER_TYPE_BOSS_ENEMY) {
         playerCharactersAddBossSkillPoints(game);
+    }
+    if (character.type === CHARACTER_TYPE_END_BOSS_ENEMY) {
+        endGame(game, true);
     }
     if (abilityRefId !== undefined) {
         let ability = findAbilityById(abilityRefId, game);
