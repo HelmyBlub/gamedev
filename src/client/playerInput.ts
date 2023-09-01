@@ -260,7 +260,9 @@ function playerAction(clientId: number, data: any, game: Game) {
         } else if (UPGRADE_ACTIONS.indexOf(action) !== -1) {
             if (isKeydown) {
                 let option = character.upgradeChoices[UPGRADE_ACTIONS.indexOf(action)];
-                executeUpgradeOptionChoice(character, option, game);
+                if(option){
+                    executeUpgradeOptionChoice(character, option, game);
+                }
             }
         } else if (ABILITY_ACTIONS.indexOf(action) !== -1) {
             let ability = character.abilities.find((a) => a.playerInputBinding && a.playerInputBinding === action);
