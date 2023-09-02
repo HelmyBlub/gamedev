@@ -206,6 +206,10 @@ function playerInputChangeEvent(game: Game, inputCode: string, isInputDown: bool
     for (let i = 0; i < game.clientKeyBindings.length; i++) {
         let action = game.clientKeyBindings[i].keyCodeToActionPressed.get(inputCode);
         if (action !== undefined) {
+            if(game.testing.replay){
+                //end replay and let player play
+                game.testing.replay = undefined;
+            }
             const clientId = game.clientKeyBindings[i].clientIdRef;
             if (isInputDown && action.isInputAlreadyDown) {
                 return;

@@ -41,7 +41,7 @@ export function startEndBoss(endBossAreaPosition: Position, game: Game){
         }
         endBoss.x = spawn.x;
         endBoss.y = spawn.y;
-        if(spawn.x < 2000 && spawn.y < 2000){
+        if(Math.abs(spawn.x) < 2000 && Math.abs(spawn.y) < 2000){
             endBoss.hp = 500;
             endBoss.maxHp = 500;
         } 
