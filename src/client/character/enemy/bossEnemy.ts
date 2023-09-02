@@ -2,7 +2,7 @@ import { ABILITIES_FUNCTIONS, Ability } from "../../ability/ability.js";
 import { createAbilityMelee } from "../../ability/abilityMelee.js";
 import { tickCharacterDebuffs } from "../../debuff/debuff.js";
 import { calculateDirection, getNextId, getTimeSinceFirstKill } from "../../game.js";
-import { IdCounter, Game, Position, BossStuff } from "../../gameModel.js";
+import { IdCounter, Game, Position, BossStuff, FACTION_ENEMY } from "../../gameModel.js";
 import { GAME_IMAGES, loadImage } from "../../imageLoad.js";
 import { findNearNonBlockingPosition, getMapMidlePosition, moveByDirectionAndDistance } from "../../map/map.js";
 import { getPlayerFurthestAwayFromSpawn } from "../../player.js";
@@ -24,7 +24,7 @@ export function createBossWithLevel(idCounter: IdCounter, level: number, game: G
     let experienceWorth = Math.pow(level, 2) * 100;
     let spawn: Position = getBossSpawnPosition(game);
 
-    let bossCharacter = createCharacter(getNextId(idCounter), spawn.x, spawn.y, bossSize, bossSize, color, moveSpeed, hp, "enemy", CHARACTER_TYPE_BOSS_ENEMY, experienceWorth);
+    let bossCharacter = createCharacter(getNextId(idCounter), spawn.x, spawn.y, bossSize, bossSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_BOSS_ENEMY, experienceWorth);
     let abilities: Ability[] = createBossAbilities(level, game);
     bossCharacter.abilities = abilities;
     return bossCharacter;
@@ -36,7 +36,7 @@ export function tickBossCharacters(bossStuff: BossStuff, game: Game) {
     for (let i = bosses.length - 1; i >= 0; i--) {
         if (bosses[i].type === CHARACTER_TYPE_BOSS_ENEMY) {
             tickBossEnemyCharacter(bosses[i], game, pathingCache);
-        }else if (bosses[i].type === CHARACTER_TYPE_END_BOSS_ENEMY) {
+        } else if (bosses[i].type === CHARACTER_TYPE_END_BOSS_ENEMY) {
             tickEndBossEnemyCharacter(bosses[i], game, pathingCache);
         }
     }

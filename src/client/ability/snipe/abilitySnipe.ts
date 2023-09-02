@@ -1,4 +1,4 @@
-import { characterTakeDamage, getCharactersTouchingLine } from "../../character/character.js";
+import { characterTakeDamage, getCharactersTouchingLine, getRandomAlivePlayerCharacter } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
 import { UpgradeOptionAndProbability, UpgradeOption, AbilityUpgradeOption } from "../../character/upgrade.js";
 import { calcNewPositionMovedInDirection, calculateDirection, getClientInfoByCharacterId, getNextId } from "../../game.js";
@@ -74,6 +74,7 @@ export function addAbilitySnipe() {
         deleteAbilityObject: deleteAbilityObjectSnipe,
         paintAbilityStatsUI: paintAbilitySnipeStatsUI,
         setAbilityToLevel: setAbilitySnipeToLevel,
+        resetAbility: resetAbility,
         abilityUpgradeFunctions: ABILITY_SNIPE_UPGRADE_FUNCTIONS,
         isPassive: false,
         notInheritable: true,
@@ -155,7 +156,7 @@ export function createAbilityObjectSnipe(
     canSplitOnHit: boolean | undefined,
     damage: number,
     hitSomething: boolean | undefined,
-    triggeredByPlayer: boolean, 
+    triggeredByPlayer: boolean,
     bounceCounter: number,
     gameTime: number
 ): AbilityObjectSnipe {
@@ -197,7 +198,7 @@ export function getAbilitySnipeRange(abilitySnipe: AbilitySnipe) {
 
 export function createAbilityObjectSnipeInitial(startPosition: Position, faction: string, abilitySnipe: AbilitySnipe, castPosition: Position, triggeredByPlayer: boolean, preventBackwardsShot: boolean, game: Game) {
     castSnipeUpgradeFireLine(startPosition, faction, abilitySnipe, castPosition, triggeredByPlayer, game);
-    if(!preventBackwardsShot) castSnipeBackwardsShot(startPosition, faction, abilitySnipe, castPosition, triggeredByPlayer, game);
+    if (!preventBackwardsShot) castSnipeBackwardsShot(startPosition, faction, abilitySnipe, castPosition, triggeredByPlayer, game);
 
     const direction = calculateDirection(startPosition, castPosition);
     const upgardeTerrainBounce: AbilityUpgradeTerrainBounce = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE];
@@ -223,9 +224,9 @@ export function createAbilityObjectSnipeInitial(startPosition: Position, faction
     }
 }
 
-export function getOptionsSnipeUpgrade(ability: Ability, upgradeName:string): UpgradeOptionAndProbability[] {
+export function getOptionsSnipeUpgrade(ability: Ability, upgradeName: string): UpgradeOptionAndProbability[] {
     let options = getAbilityUpgradeOptionDefault(ability, upgradeName);
-    const upgrade: AbilityUpgrade & {upgradeSynergy:boolean} | undefined = ability.upgrades[upgradeName];
+    const upgrade: AbilityUpgrade & { upgradeSynergy: boolean } | undefined = ability.upgrades[upgradeName];
     const upgradeFunctions = ABILITY_SNIPE_UPGRADE_FUNCTIONS[upgradeName];
     options[0].option.displayLongText = upgradeFunctions.getLongExplainText!(ability, options[0].option as AbilityUpgradeOption);
 
@@ -237,7 +238,12 @@ export function getOptionsSnipeUpgrade(ability: Ability, upgradeName:string): Up
     return options;
 }
 
-function getAbilityUpgradeOptionSynergy(abilityName: string, upgradeName: string, probabilityFactor: number): UpgradeOptionAndProbability{
+function resetAbility(ability: Ability){
+    let abilitySnipe = ability as AbilitySnipe;
+    abilitySnipe.nextAllowedShotTime = 0;
+}
+
+function getAbilityUpgradeOptionSynergy(abilityName: string, upgradeName: string, probabilityFactor: number): UpgradeOptionAndProbability {
     const probability = 0.3 * probabilityFactor;
     let option: AbilityUpgradeOption = {
         displayText: `Synergy ${upgradeName}`,
@@ -246,7 +252,7 @@ function getAbilityUpgradeOptionSynergy(abilityName: string, upgradeName: string
         type: "Ability",
         additionalInfo: "Synergy",
         boss: true,
-    }    
+    }
 
     let optionAndProbability: UpgradeOptionAndProbability = {
         option: option,
@@ -338,15 +344,26 @@ function tickAbilitySnipe(abilityOwner: AbilityOwner, ability: Ability, game: Ga
         }
     }
     if (abilitySnipe.currentCharges > 0 && abilitySnipe.shotNextAllowedTime && game.state.time >= abilitySnipe.nextAllowedShotTime) {
-        let castPosition = getClientInfoByCharacterId(abilityOwner.id, game)!.lastMousePosition;
+        const clientInfo: ClientInfo | undefined = getClientInfoByCharacterId(abilityOwner.id, game);
+        let castPosition = {x:0, y:0};
+        if(clientInfo){
+            castPosition = clientInfo.lastMousePosition;
+        }else{
+            const target = getRandomAlivePlayerCharacter(game.state.players, game.state.randomSeed);
+            if(target){
+                castPosition = {x: target.x, y: target.y};
+            }
+        }
         createAbilityObjectSnipeInitialPlayerTriggered(abilityOwner, abilitySnipe, castPosition, game);
     }
     if (abilitySnipe?.upgrades[ABILITY_SNIPE_UPGRADE_STAY_STILL]) {
         tickAbilityUpgradeStayStill(abilitySnipe, abilityOwner, game);
     }
     if (abilitySnipe.shotNextAllowedTime) {
-        const clientInfo: ClientInfo = getClientInfoByCharacterId(abilityOwner.id, game)!;
-        abilitySnipe.lastSniperRiflePaintDirection = calculateDirection(abilityOwner, clientInfo.lastMousePosition);
+        const clientInfo: ClientInfo | undefined = getClientInfoByCharacterId(abilityOwner.id, game);
+        if (clientInfo) {
+            abilitySnipe.lastSniperRiflePaintDirection = calculateDirection(abilityOwner, clientInfo.lastMousePosition);
+        }
     }
     tickAbilityUpgradeMoreRifles(abilitySnipe, abilityOwner, game);
     tickAbilityUpgradeAfterImage(abilitySnipe, abilityOwner, game);
@@ -356,12 +373,12 @@ function tickAbilityObjectSnipe(abilityObject: AbilityObject, game: Game) {
     let abilityObjectSnipe = abilityObject as AbilityObjectSnipe;
     if (!abilityObjectSnipe.damageCalcDone) {
         const endPos = calcNewPositionMovedInDirection(abilityObjectSnipe, abilityObjectSnipe.direction, abilityObjectSnipe.range);
-        let characters: Character[] = getCharactersTouchingLine(game, abilityObjectSnipe, endPos, abilityObjectSnipe.size);
+        let characters: Character[] = getCharactersTouchingLine(game, abilityObjectSnipe, endPos, abilityObject.faction, abilityObjectSnipe.size);
         let abilitySnipe = findAbilityById(abilityObject.abilityRefId!, game) as AbilitySnipe;
         for (let char of characters) {
             if (char.isDead) continue;
             abilityObjectSnipe.hitSomething = true;
-            if(abilitySnipe){
+            if (abilitySnipe) {
                 executeUpgradeExplodeOnDeath(abilitySnipe, abilityObject.faction, char, abilityObjectSnipe.triggeredByPlayer, game);
             }
             const damage = getAbilitySnipeDamage(abilitySnipe, abilityObjectSnipe.damage, abilityObjectSnipe.triggeredByPlayer, abilityObjectSnipe.bounceCounter);
@@ -383,7 +400,7 @@ function createAbilityBossSnipeUpgradeOptions(ability: Ability): UpgradeOptionAn
     return upgradeOptions;
 }
 
-function executeAbilitySnipeUpgradeOption(ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game){
+function executeAbilitySnipeUpgradeOption(ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game) {
     const abilityUpgradeOption: AbilityUpgradeOption = upgradeOption as AbilityUpgradeOption;
     upgradeAbility(ability, character, abilityUpgradeOption);
 }

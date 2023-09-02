@@ -1,6 +1,6 @@
 import { createAbilityMelee } from "../../ability/abilityMelee.js"
 import { calculateDistance, getNextId } from "../../game.js"
-import { Game, IdCounter, Position } from "../../gameModel.js"
+import { FACTION_ENEMY, Game, IdCounter, Position } from "../../gameModel.js"
 import { MapChunk, GameMap, isPositionBlocking, mapKeyToChunkIJ } from "../../map/map.js"
 import { fixedRandom } from "../../randomNumberGenerator.js"
 import { Character, createCharacter } from "../characterModel.js"
@@ -128,7 +128,7 @@ function createEnemy(
     respawnTime: number,
     experienceWorth: number,
 ): FixPositionRespawnEnemyCharacter {
-    let enemy = createCharacter(getNextId(idCounter), x, y, size, size, color, moveSpeed, hp, "enemy", "fixPositionRespawnEnemy", experienceWorth);
+    let enemy = createCharacter(getNextId(idCounter), x, y, size, size, color, moveSpeed, hp, FACTION_ENEMY, "fixPositionRespawnEnemy", experienceWorth);
     return {
         ...enemy,
         autoAggroRange: autoAggroRange,

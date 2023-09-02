@@ -182,6 +182,9 @@ export type Game = {
     }
 }
 
+export const FACTION_ENEMY = "enemy";
+export const FACTION_PLAYER = "player";
+
 export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: CanvasRenderingContext2D | undefined): Game {
     let game: Game = {
         canvasElement: c,

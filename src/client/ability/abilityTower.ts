@@ -361,7 +361,7 @@ function tickEffectConnected(abilityObjectTower: AbilityObjectTower, game: Game)
     let towerConnectionCounter = getTowerConnectionCount(abilityObjects, abilityObjectTower) + getTowerConnectionCount(abilityObjects, connectedTower);
     let damageFactor = 0.7 + (towerConnectionCounter * 0.15);
 
-    let characters: Character[] = getCharactersTouchingLine(game, abilityObjectTower, connectedTower);
+    let characters: Character[] = getCharactersTouchingLine(game, abilityObjectTower, connectedTower, abilityObjectTower.faction);
     for (let char of characters) {
         characterTakeDamage(char, abilityObjectTower.damage * damageFactor, game);
     }

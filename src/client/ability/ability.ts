@@ -2,7 +2,7 @@ import { determineCharactersInDistance, characterTakeDamage } from "../character
 import { Character } from "../character/characterModel.js"
 import { BossEnemyCharacter } from "../character/enemy/bossEnemy.js"
 import { calculateDistance, getCameraPosition, takeTimeMeasure } from "../game.js"
-import { Game, GameState, IdCounter, Position } from "../gameModel.js"
+import { FACTION_ENEMY, FACTION_PLAYER, Game, GameState, IdCounter, Position } from "../gameModel.js"
 import { GameMap } from "../map/map.js"
 import { findPlayerByCharacterId, findPlayerById, Player } from "../player.js"
 import { addAbilityDeathCircle } from "./abilityDeathCircle.js"
@@ -56,7 +56,7 @@ export type AbilityObject = Position & {
 export type AbilityObjectCircle = AbilityObject & {
     radius: number,
 }
-    
+
 export type AbilityOwner = Position & Partial<Character> & {
     faction: string,
     id: number,
@@ -75,12 +75,13 @@ export type AbilityFunctions = {
     paintAbilityObject?: (ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) => void,
     paintAbilityUI?: (ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) => void,
     paintAbilityStatsUI?: (ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, game: Game) => { width: number, height: number },
-    onHit?:(ability: Ability, targetCharacter: Character, game: Game) => void,
+    onHit?: (ability: Ability, targetCharacter: Character, game: Game) => void,
     onObjectHit?: (abilityObject: AbilityObject, targetCharacter: Character, game: Game) => void,
     canObjectHitMore?: (abilityObject: AbilityObject) => boolean,
     setAbilityToLevel?: (ability: Ability, level: number) => void,
     setAbilityToBossLevel?: (ability: Ability, level: number) => void,
-    getLongDescription?:() => string[],
+    getLongDescription?: () => string[],
+    resetAbility?:(ability: Ability) => void,
     abilityUpgradeFunctions?: AbilityUpgradesFunctions,
     notInheritable?: boolean,
     canBeUsedByBosses?: boolean,
@@ -122,8 +123,8 @@ export function addAbilityToCharacter(character: Character, ability: Ability) {
 }
 
 export function paintAbilityObjects(ctx: CanvasRenderingContext2D, abilityObjects: AbilityObject[], game: Game, paintOrder: PaintOrderAbility) {
-    paintAbilityObjectsForFaction(ctx, abilityObjects, game, paintOrder, "player");
-    paintAbilityObjectsForFaction(ctx, abilityObjects, game, paintOrder, "enemy");
+    paintAbilityObjectsForFaction(ctx, abilityObjects, game, paintOrder, FACTION_PLAYER);
+    paintAbilityObjectsForFaction(ctx, abilityObjects, game, paintOrder, FACTION_ENEMY);
 }
 
 export function createAbility(abilityName: string, idCounter: IdCounter, isLeveling: boolean = false, getsBossSkillPoints: boolean = false, playerInputBinding: string | undefined = undefined): Ability {
@@ -189,7 +190,6 @@ export function findAbilityOwnerByAbilityId(abilityId: number, game: Game): Char
 }
 
 export function findAbilityById(abilityId: number, game: Game): Ability | undefined {
-    let ability: Ability | undefined = undefined;
     for (let i = 0; i < game.state.players.length; i++) {
         let playerCharacter = game.state.players[i].character;
         for (let ability of playerCharacter.abilities) {
@@ -199,11 +199,26 @@ export function findAbilityById(abilityId: number, game: Game): Ability | undefi
             for (let pet of playerCharacter.pets) {
                 for (let ability of pet.abilities) {
                     if (ability.id === abilityId) return ability;
-                }        
+                }
             }
         }
     }
-    return ability;
+    for (let i = 0; i < game.state.bossStuff.bosses.length; i++) {
+        const boss = game.state.bossStuff.bosses[i];
+        for (let ability of boss.abilities) {
+            if (ability.id === abilityId) return ability;
+        }
+    }
+    return undefined;
+}
+
+export function resetAllCharacterAbilities(character: Character){
+    for(let ability of character.abilities){
+        const abililtyFunctions = ABILITIES_FUNCTIONS[ability.name];
+        if(abililtyFunctions && abililtyFunctions.resetAbility){
+            abililtyFunctions.resetAbility(ability);
+        }
+    }
 }
 
 export function paintDefaultAbilityStatsUI(ctx: CanvasRenderingContext2D, textLines: string[], drawStartX: number, drawStartY: number): { width: number, height: number } {
@@ -238,7 +253,7 @@ export function detectCircleCharacterHit(map: GameMap, circleCenter: Position, c
         let distance = calculateDistance(c, circleCenter);
         if (distance < circleRadius + c.width / 2) {
             characterTakeDamage(c, damage, game, abilityId);
-            if(abilityObject){
+            if (abilityObject) {
                 let abilityFunction = ABILITIES_FUNCTIONS[abilityObject.type];
                 if (abilityFunction.onObjectHit) {
                     abilityFunction.onObjectHit(abilityObject, c, game);
@@ -246,7 +261,7 @@ export function detectCircleCharacterHit(map: GameMap, circleCenter: Position, c
                         break;
                     }
                 }
-            }else if(ability){
+            } else if (ability) {
                 let abilityFunction = ABILITIES_FUNCTIONS[ability.name];
                 if (abilityFunction.onHit) {
                     abilityFunction.onHit(ability, c, game);
@@ -319,11 +334,11 @@ function paintAbilityObjectsForFaction(ctx: CanvasRenderingContext2D, abilityObj
 function paintDefault(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, cameraPosition: Position, paintOrder: PaintOrderAbility) {
     if (paintOrder === "afterCharacterPaint") {
         let circle = abilityObject as AbilityObjectCircle;
-        if(!circle.radius) return;
+        if (!circle.radius) return;
         let centerX = ctx.canvas.width / 2;
         let centerY = ctx.canvas.height / 2;
 
-        ctx.fillStyle = abilityObject.faction === "enemy" ? "black" : abilityObject.color;
+        ctx.fillStyle = abilityObject.faction === FACTION_ENEMY ? "black" : abilityObject.color;
         ctx.beginPath();
         ctx.arc(
             abilityObject.x - cameraPosition.x + centerX,

@@ -1,7 +1,7 @@
 import { Ability } from "../ability/ability.js";
 import { Debuff } from "../debuff/debuff.js";
 import { getNextId } from "../game.js";
-import { Position, IdCounter, Game } from "../gameModel.js";
+import { Position, IdCounter, Game, FACTION_PLAYER } from "../gameModel.js";
 import { GAME_IMAGES } from "../imageLoad.js";
 import { createRandomizedCharacterImageData, RandomizedCharacterImage } from "../randomizedCharacterImage.js";
 import { RandomSeed } from "../randomNumberGenerator.js";
@@ -67,15 +67,13 @@ let playerImageProperties: CharacterImageLoadProperties = {
     clothColor: "blue",
 }
 
-GAME_IMAGES["player"] = {
+GAME_IMAGES[FACTION_PLAYER] = {
     imagePath: "/images/player.png",
     spriteRowHeights: [13, 14, 13],
     spriteRowWidths: [20, 20, 20],
     properties: playerImageProperties,
 };
 
-export const PLAYER_FACTION = "player";
-export const ENEMY_FACTION = "enemy";
 export const CHARACTER_TYPE_FUNCTIONS: CHARACTER_TYPE_FUNCTIONS = {
     fixPositionRespawnEnemy: {
         tickFunction: tickFixPositionRespawnEnemyCharacter
@@ -157,8 +155,8 @@ export function createCharacter(
 }
 
 export function createPlayerCharacter(idCounter: IdCounter, pos: Position, seed: RandomSeed, game: Game): Character {
-    let playerCharacter = createCharacter(getNextId(idCounter), pos.x, pos.y, 20, 40, "blue", 2, 200, PLAYER_FACTION, DEFAULT_CHARACTER, 1);
-    playerCharacter.randomizedCharacterImage = createRandomizedCharacterImageData(GAME_IMAGES["player"], seed);
+    let playerCharacter = createCharacter(getNextId(idCounter), pos.x, pos.y, 20, 40, "blue", 2, 200, FACTION_PLAYER, DEFAULT_CHARACTER, 1);
+    playerCharacter.randomizedCharacterImage = createRandomizedCharacterImageData(GAME_IMAGES[FACTION_PLAYER], seed);
     playerCharacter.willTurnToPetOnDeath = true;
     playerCharacter.isPet = false;
     initPlayerCharacterChoiceOptions(playerCharacter, game);

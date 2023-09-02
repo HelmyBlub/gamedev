@@ -1,5 +1,5 @@
 import { ABILITIES_FUNCTIONS, paintDefaultAbilityStatsUI } from "../ability/ability.js";
-import { Game, Position } from "../gameModel.js";
+import { FACTION_PLAYER, Game, Position } from "../gameModel.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
 import { randomizedCharacterImageToKey } from "../randomizedCharacterImage.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character } from "./characterModel.js";
@@ -72,7 +72,7 @@ export function paintCharacter(ctx: CanvasRenderingContext2D, character: Charact
         || paintY < -character.height || paintY > ctx.canvas.height) return;
 
     let characterImageId = "slime";
-    if (character.faction === "player" && character.type !== TAMER_PET_CHARACTER) characterImageId = "player";
+    if (character.faction === FACTION_PLAYER && character.type !== TAMER_PET_CHARACTER) characterImageId = FACTION_PLAYER;
     let characterImage = GAME_IMAGES[characterImageId];
     if (characterImage) {
         if (characterImage.imagePath !== undefined) {
@@ -152,7 +152,7 @@ function paintCharacterPets(ctx: CanvasRenderingContext2D, character: Character,
 }
 
 function paintPlayerNameOverCharacter(ctx: CanvasRenderingContext2D, character: Character, paintTopLeft: Position, game: Game) {
-    if (character.faction !== "player") return;
+    if (character.faction !== FACTION_PLAYER) return;
     const fontSize = 12;
     const playerOfCharacter = game.state.players.find((e) => e.character === character);
     if (!playerOfCharacter) return;

@@ -1,7 +1,7 @@
-import { createCharacter, ENEMY_FACTION, PLAYER_FACTION } from "../character/characterModel.js";
+import { createCharacter } from "../character/characterModel.js";
 import { CommandRestart, handleCommand } from "../commands.js";
 import { closeGame } from "../game.js";
-import { Game, Position } from "../gameModel.js";
+import { FACTION_ENEMY, FACTION_PLAYER, Game, Position } from "../gameModel.js";
 import { createGame } from "../main.js";
 import { addEnemyToMap, createMap, GameMap } from "../map/map.js";
 import { createNewChunkTiles } from "../map/mapGeneration.js";
@@ -27,12 +27,12 @@ function testPlayerClasses(game: Game){
     const replay = game.testing.replay;
     replay.testInputFileQueue = [];
     // replay.testInputFileQueue.push("/data/testInputError.json");
-    replay.testInputFileQueue.push("/data/testInputShortBuilder.json");
-    replay.testInputFileQueue.push("/data/testInputShortSniper.json");
-    replay.testInputFileQueue.push("/data/testInputShortTamer.json");
+    // replay.testInputFileQueue.push("/data/testInputShortBuilder.json");
+    // replay.testInputFileQueue.push("/data/testInputShortSniper.json");
+    // replay.testInputFileQueue.push("/data/testInputShortTamer.json");
     replay.testInputFileQueue.push("/data/testInputLongSniper.json");
-    replay.testInputFileQueue.push("/data/testInputLongBuilder.json");
-    replay.testInputFileQueue.push("/data/testInputLongTamer.json");
+    // replay.testInputFileQueue.push("/data/testInputLongBuilder.json");
+    // replay.testInputFileQueue.push("/data/testInputLongTamer.json");
     replay.frameSkipAmount = 60;
     replay.zeroTimeout = true;
 
@@ -149,11 +149,11 @@ async function runGameWithPlayerInputsMultiplayer(game: Game, playerInputs: Play
 //---------------------//
 
 function createTestCharacter(id: number, x: number, y: number) {
-    return createCharacter(id, x, y, 5, 5, "black", 0.5, 1000, ENEMY_FACTION, "randomSpawnFollowingEnemy", 1);
+    return createCharacter(id, x, y, 5, 5, "black", 0.5, 1000, FACTION_ENEMY, "randomSpawnFollowingEnemy", 1);
 }
 
 function createTestProjectiles(x: number, y: number, pierceCount: number = 10, timeToLive: number = 1000) {
-    return createProjectile(x, y, 0, 2, PLAYER_FACTION, 2, 0, pierceCount, timeToLive, "Projectile");
+    return createProjectile(x, y, 0, 2, FACTION_PLAYER, 2, 0, pierceCount, timeToLive, "Projectile");
 }
 
 

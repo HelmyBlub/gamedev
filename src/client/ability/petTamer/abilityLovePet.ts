@@ -2,7 +2,7 @@ import { findCharacterById } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
 import { TamerPetCharacter, changeTamerPetHappines } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { calculateDirection, calculateDistance, getCameraPosition, getNextId } from "../../game.js";
-import { IdCounter, Position, Game } from "../../gameModel.js";
+import { IdCounter, Position, Game, FACTION_PLAYER } from "../../gameModel.js";
 import { GAME_IMAGES, getImage, loadImage } from "../../imageLoad.js";
 import { moveByDirectionAndDistance } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
@@ -160,7 +160,7 @@ function castLovePet(abilityOwner: AbilityOwner, ability: Ability, castPosition:
                 reachedTarget: false,
                 color: "white",
                 damage: 0,
-                faction: "player",
+                faction: FACTION_PLAYER,
                 type: ABILITY_NAME_LOVE_PET,
                 x: abilityOwner.x,
                 y: abilityOwner.y,

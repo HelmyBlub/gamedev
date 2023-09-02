@@ -1,11 +1,11 @@
-import { ABILITIES_FUNCTIONS, Ability } from "../../ability/ability.js";
+import { ABILITIES_FUNCTIONS, Ability, resetAllCharacterAbilities } from "../../ability/ability.js";
 import { ABILITY_NAME_FIRE_CIRCLE } from "../../ability/abilityFireCircle.js";
 import { ABILITY_NAME_MELEE, createAbilityMelee } from "../../ability/abilityMelee.js";
 import { ABILITY_NAME_SHOOT } from "../../ability/abilityShoot.js";
 import { ABILITY_NAME_SWORD } from "../../ability/abilitySword.js";
 import { tickCharacterDebuffs } from "../../debuff/debuff.js";
 import { getNextId } from "../../game.js";
-import { IdCounter, Game, Position } from "../../gameModel.js";
+import { IdCounter, Game, Position, FACTION_ENEMY } from "../../gameModel.js";
 import { changeTileIdOfMapChunk } from "../../map/map.js";
 import { getBossAreaMiddlePosition, getEntranceChunkAndTileIJForPosition } from "../../map/mapEndBossArea.js";
 import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick } from "../character.js";
@@ -21,30 +21,30 @@ export function createNextDefaultEndBoss(idCounter: IdCounter, game: Game): EndB
     let moveSpeed = 1;
     let hp = 50000000;
     let experienceWorth = 0;
-    let bossCharacter = createCharacter(getNextId(idCounter), 0, 0, bossSize, bossSize, color, moveSpeed, hp, "enemy", CHARACTER_TYPE_END_BOSS_ENEMY, experienceWorth);
+    let bossCharacter = createCharacter(getNextId(idCounter), 0, 0, bossSize, bossSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_END_BOSS_ENEMY, experienceWorth);
     let abilities: Ability[] = createEndBossAbilities(1, game);
     bossCharacter.abilities = abilities;
     return bossCharacter;
 }
 
-export function startEndBoss(endBossAreaPosition: Position, game: Game){
+export function startEndBoss(endBossAreaPosition: Position, game: Game) {
     let entrance = getEntranceChunkAndTileIJForPosition(game.state.players[0].character, game.state.map);
     if (entrance) {
         changeTileIdOfMapChunk(entrance.chunkI, entrance.chunkJ, entrance.tileI, entrance.tileJ, 2, game);
         let spawn: Position = getBossAreaMiddlePosition(endBossAreaPosition, game.state.map)!;
         let endBoss = game.state.bossStuff.nextEndboss;
-        if(endBoss === undefined){
+        if (endBoss === undefined) {
             endBoss = createNextDefaultEndBoss(game.state.idCounter, game);
             console.log("endboss was missing");
-        }else{
+        } else {
             game.state.bossStuff.nextEndboss = undefined;
         }
         endBoss.x = spawn.x;
         endBoss.y = spawn.y;
-        if(Math.abs(spawn.x) < 2000 && Math.abs(spawn.y) < 2000){
+        if (Math.abs(spawn.x) < 2000 && Math.abs(spawn.y) < 2000 && !endBoss.characterClass) {
             endBoss.hp = 500;
             endBoss.maxHp = 500;
-        } 
+        }
         game.state.bossStuff.bosses.push(endBoss);
         game.state.bossStuff.closedOfEndBossEntrance = entrance;
         game.state.bossStuff.endBossStarted = true;
@@ -71,13 +71,24 @@ export function tickEndBossEnemyCharacter(enemy: EndBossEnemyCharacter, game: Ga
     tickCharacterDebuffs(enemy, game);
 }
 
-function changeBossAbilityLevelBasedOnHp(enemy: EndBossEnemyCharacter){
+export function convertPlayerToEndBoss(game: Game) {
+    game.state.bossStuff.nextEndboss = game.state.players[0].character;
+    const boss = game.state.bossStuff.nextEndboss;
+    boss.type = CHARACTER_TYPE_END_BOSS_ENEMY;
+    boss.maxHp = 50000000;
+    boss.hp = boss.maxHp;
+    boss.faction = FACTION_ENEMY;
+    boss.moveSpeed = 1;
+    resetAllCharacterAbilities(boss);
+}
+
+function changeBossAbilityLevelBasedOnHp(enemy: EndBossEnemyCharacter) {
     const hpLeftPerCent = enemy.hp / enemy.maxHp;
     const abilityLevel = Math.max(Math.floor((1 - hpLeftPerCent) * 10), 1);
 
-    for(let ability of enemy.abilities){
+    for (let ability of enemy.abilities) {
         let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-        if(abilityFunctions && abilityFunctions.setAbilityToBossLevel){
+        if (abilityFunctions && abilityFunctions.setAbilityToBossLevel) {
             abilityFunctions.setAbilityToBossLevel(ability, abilityLevel);
         }
     }
@@ -92,7 +103,7 @@ function createEndBossAbilities(level: number, game: Game): Ability[] {
         ABILITY_NAME_FIRE_CIRCLE,
     ];
 
-    for(let abilityKey of abilityKeys){
+    for (let abilityKey of abilityKeys) {
         let abilityFunctions = ABILITIES_FUNCTIONS[abilityKey];
         let ability = abilityFunctions.createAbility(game.state.idCounter);
         setAbilityToEndBossLevel(ability, level);

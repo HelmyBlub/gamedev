@@ -12,6 +12,7 @@ export function addHTMLDebugMenusToSettings(game: Game) {
     addSettingCheckbox("paintMarkActiveChunks", game);
     addBossSkillPointButton(game);
     addCloseBossAreaButton(game);
+    addTankyButton(game);
 }
 
 function addSettingCheckbox(checkboxName: keyof Debugging, game: Game) {
@@ -56,6 +57,20 @@ function addCloseBossAreaButton(game: Game) {
     }
 }
 
+function addTankyButton(game: Game) {
+    const buttonName = "Very Tanky";
+    addSettingButton(buttonName);
+    const button = document.getElementById(buttonName) as HTMLButtonElement;
+    if(button){
+        button.addEventListener('click', () => {
+            if(!game.multiplayer.websocket){
+                game.state.players[0].character.maxHp = 10000000;
+                game.state.players[0].character.hp = game.state.players[0].character.maxHp;
+            } 
+        });
+    }
+}
+
 function addBossSkillPointButton(game: Game) {
     const buttonName = "addBossSkillPoint";
     addSettingButton(buttonName);
@@ -73,7 +88,7 @@ function addSettingButton(buttonName: string) {
     let button: HTMLButtonElement = document.getElementById(buttonName) as HTMLButtonElement;
     if (!button) {
         let canvasHTML = `
-            <button type="button" id="${buttonName}" name="${buttonName}">${buttonName}</button>
+            <button type="button" id="${buttonName}" name="${buttonName}">${buttonName}</button><br>
         `;
         settingsElement.insertAdjacentHTML("beforeend", canvasHTML);
     }

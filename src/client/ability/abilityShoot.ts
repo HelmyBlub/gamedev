@@ -1,4 +1,4 @@
-import { Game, IdCounter } from "../gameModel.js";
+import { FACTION_PLAYER, Game, IdCounter } from "../gameModel.js";
 import { Projectile, createProjectile, tickProjectile, deleteProjectile } from "./projectile.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner } from "./ability.js";
@@ -113,7 +113,7 @@ function shoot(abilityOwner: AbilityOwner, ability: AbilityShoot, abilityObjects
         let shotSpread: number = (nextRandom(randomSeed) - 0.5) / 10 * ability.multiShot;
 
         let moveSpeed = ability.moveSpeed;
-        if(abilityOwner.moveSpeed !== undefined && abilityOwner.faction === "player"){
+        if(abilityOwner.moveSpeed !== undefined && abilityOwner.faction === FACTION_PLAYER){
             moveSpeed = abilityOwner.moveSpeed + 2;
         }
         let direction = 0;

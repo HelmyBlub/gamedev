@@ -130,12 +130,12 @@ function tickAbilitySlowTrail(abilityOwner: AbilityOwner, ability: Ability, game
 
 function tickAbilityObjectSlowTrail(abilityObject: AbilityObject, game: Game) {
     let abilityObjectSlowTrail = abilityObject as AbilityObjectSlowTrail;
-    
+
     if (abilityObjectSlowTrail.nextTickTime === undefined) {
         abilityObjectSlowTrail.nextTickTime = game.state.time + abilityObjectSlowTrail.tickInterval;
     }
     if (abilityObjectSlowTrail.nextTickTime <= game.state.time) {
-        let characters: Character[] = getCharactersTouchingLine(game, abilityObjectSlowTrail.startPosition, abilityObjectSlowTrail.endPosition, abilityObjectSlowTrail.width);
+        let characters: Character[] = getCharactersTouchingLine(game, abilityObjectSlowTrail.startPosition, abilityObjectSlowTrail.endPosition, abilityObject.faction, abilityObjectSlowTrail.width);
         for (let char of characters) {
             onHitEffect(char, abilityObjectSlowTrail, game);
         }

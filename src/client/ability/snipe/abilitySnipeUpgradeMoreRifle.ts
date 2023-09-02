@@ -62,10 +62,12 @@ export function tickAbilityUpgradeMoreRifles(abilitySnipe: AbilitySnipe, ability
     upgrade.rotationDirection += 0.02;
 
     if (abilitySnipe.shotNextAllowedTime) {
-        const clientInfo: ClientInfo = getClientInfoByCharacterId(abilityOwner.id, game)!;
-        for (let i = 0; i < upgrade.numberRifles; i++) {
-            const position = getMoreRiflesPosition(abilityOwner, upgrade, i);
-            upgrade.lastSniperRiflePaintDirection[i] = calculateDirection(position, clientInfo.lastMousePosition);
+        const clientInfo: ClientInfo | undefined = getClientInfoByCharacterId(abilityOwner.id, game);
+        if(clientInfo){
+            for (let i = 0; i < upgrade.numberRifles; i++) {
+                const position = getMoreRiflesPosition(abilityOwner, upgrade, i);
+                upgrade.lastSniperRiflePaintDirection[i] = calculateDirection(position, clientInfo.lastMousePosition);
+            }
         }
     }
 }

@@ -1,6 +1,6 @@
 import { getPlayerCharacters, characterTakeDamage } from "../character/character.js";
 import { calculateDistance, getCameraPosition, getNextId } from "../game.js";
-import { Game, IdCounter } from "../gameModel.js";
+import { FACTION_ENEMY, Game, IdCounter } from "../gameModel.js";
 import { GameMap } from "../map/map.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, AbilityObjectCircle } from "./ability.js";
 
@@ -47,7 +47,7 @@ export function createObjectDeathCircle(map: GameMap): AbilityObjectDeathCircle 
         radius: 0,
         color: "black",
         damage: 0.1,
-        faction: "enemy",
+        faction: FACTION_ENEMY,
         growSpeed: 0.25,
         x: mapCenter,
         y: mapCenter,

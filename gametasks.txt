@@ -1,6 +1,14 @@
 current tasks:
+- new tests/replays with boss area fight
+    - tamer
+    - builder
 - after end boss defeats
     - player character is next boss
+        - bug: snipe damage always against enemies
+        - ability reset ("nextShoottimer" and other from last game still in)
+        - every player character needs "AI"
+        - every ability needs a boss ability type which makes it fair
+        - abilities become stronger based on how low boss hp is
 - paint: give end boss a crown
     - animation: crown moves to player character
 - normal bosses abilities based on current end boss

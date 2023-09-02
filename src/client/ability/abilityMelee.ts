@@ -2,7 +2,7 @@ import { characterTakeDamage, determineCharactersInDistance, determineClosestCha
 import { Character } from "../character/characterModel.js";
 import { TAMER_PET_CHARACTER, TamerPetCharacter } from "../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { getNextId } from "../game.js";
-import { Game, IdCounter } from "../gameModel.js";
+import { FACTION_ENEMY, FACTION_PLAYER, Game, IdCounter } from "../gameModel.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner } from "./ability.js";
 
 type AbilityMelee = Ability & {
@@ -54,19 +54,18 @@ function tickAbilityMelee(abilityOwner: AbilityOwner, ability: Ability, game: Ga
     if (abilityMelee.nextTickTime === undefined) abilityMelee.nextTickTime = game.state.time + abilityMelee.tickInterval;
     if (abilityMelee.nextTickTime <= game.state.time) {
         let playerCharacters: Character[] = [];
-        if (abilityOwner.faction === "enemy") {
+        if (abilityOwner.faction === FACTION_ENEMY) {
             playerCharacters = getPlayerCharacters(game.state.players)
-        } else if (abilityOwner.faction === "player" && abilityOwner.width) {
+        } else if (abilityOwner.faction === FACTION_PLAYER && abilityOwner.width) {
             playerCharacters = determineCharactersInDistance(abilityOwner, game.state.map, [], game.state.bossStuff.bosses, abilityOwner.width + 40);
         }
-        if(playerCharacters.length !== 0){
+        if (playerCharacters.length !== 0) {
             let closest = determineClosestCharacter(abilityOwner, playerCharacters);
-    
+
             if (abilityOwner.width !== undefined && closest.minDistanceCharacter
-                && closest.minDistance <= abilityOwner.width / 2 + closest.minDistanceCharacter.width / 2) 
-            {
+                && closest.minDistance <= abilityOwner.width / 2 + closest.minDistanceCharacter.width / 2) {
                 let damage = abilityMelee.damage;
-                if(abilityOwner.type === TAMER_PET_CHARACTER){
+                if (abilityOwner.type === TAMER_PET_CHARACTER) {
                     damage *= (abilityOwner as TamerPetCharacter).sizeFactor;
                 }
                 characterTakeDamage(closest.minDistanceCharacter, damage, game, ability.id);
