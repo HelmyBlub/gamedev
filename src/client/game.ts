@@ -263,6 +263,11 @@ export function calculateDistancePointToLine(point: Position, linestart: Positio
     return Math.sqrt(dx * dx + dy * dy);
 }
 
+export function deepCopy(object: any): any{
+    const json = JSON.stringify(object);
+    return JSON.parse(json);
+}
+
 function determineRunnerTimeout(game: Game): number {
     if (game.testing.replay?.zeroTimeout) {
         return 0;
@@ -303,7 +308,7 @@ export function endGame(game: Game, isEndbossKill: boolean = false) {
     game.state.ended = true;
     let newScore = calculateHighscoreOnGameEnd(game, isEndbossKill);
     if (isEndbossKill && !game.multiplayer.websocket) {
-        //convertPlayerToEndBoss(game);
+        convertPlayerToEndBoss(game);
     }
     endGameReplayStuff(game, newScore);
     if (game.testing.record) {

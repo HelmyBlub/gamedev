@@ -4,7 +4,7 @@ import { ABILITY_NAME_MELEE, createAbilityMelee } from "../../ability/abilityMel
 import { ABILITY_NAME_SHOOT } from "../../ability/abilityShoot.js";
 import { ABILITY_NAME_SWORD } from "../../ability/abilitySword.js";
 import { tickCharacterDebuffs } from "../../debuff/debuff.js";
-import { getNextId } from "../../game.js";
+import { deepCopy, getNextId } from "../../game.js";
 import { IdCounter, Game, Position, FACTION_ENEMY } from "../../gameModel.js";
 import { changeTileIdOfMapChunk } from "../../map/map.js";
 import { getBossAreaMiddlePosition, getEntranceChunkAndTileIJForPosition } from "../../map/mapEndBossArea.js";
@@ -32,12 +32,13 @@ export function startEndBoss(endBossAreaPosition: Position, game: Game) {
     if (entrance) {
         changeTileIdOfMapChunk(entrance.chunkI, entrance.chunkJ, entrance.tileI, entrance.tileJ, 2, game);
         let spawn: Position = getBossAreaMiddlePosition(endBossAreaPosition, game.state.map)!;
-        let endBoss = game.state.bossStuff.nextEndboss;
-        if (endBoss === undefined) {
+        let endBoss: Character;
+        if (game.state.bossStuff.nextEndboss === undefined) {
             endBoss = createNextDefaultEndBoss(game.state.idCounter, game);
+            game.state.bossStuff.nextEndboss = deepCopy(endBoss);
             console.log("endboss was missing");
         } else {
-            game.state.bossStuff.nextEndboss = undefined;
+            endBoss = deepCopy(game.state.bossStuff.nextEndboss);
         }
         endBoss.x = spawn.x;
         endBoss.y = spawn.y;
@@ -80,6 +81,7 @@ export function convertPlayerToEndBoss(game: Game) {
     boss.faction = FACTION_ENEMY;
     boss.moveSpeed = 1;
     resetAllCharacterAbilities(boss);
+    changeBossAbilityLevelBasedOnHp(boss);
 }
 
 function changeBossAbilityLevelBasedOnHp(enemy: EndBossEnemyCharacter) {

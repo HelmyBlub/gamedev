@@ -23,6 +23,7 @@ export function addAbilitySnipeUpgradeStayStill() {
         getDamageFactor: getAbilityUpgradeStayStillDamageFactor,
         getOptions: getOptionsStayStill,
         executeOption: executeOptionStayStill,
+        reset: reset,
     }
 }
 
@@ -52,6 +53,14 @@ export function tickAbilityUpgradeStayStill(abilitySnipe: AbilitySnipe, abilityO
         upgrade.damageMultiplierActive = false;
         upgrade.stayStillStartTime = game.state.time;
     }
+}
+
+function reset(ability: Ability) {
+    const abilitySnipe = ability as AbilitySnipe;
+    let upgrade: AbilityUpgradeStayStill | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_STAY_STILL];
+    if (!upgrade) return;
+    upgrade.damageMultiplierActive = false;
+    upgrade.stayStillStartTime = -1;
 }
 
 function getOptionsStayStill(ability: Ability): UpgradeOptionAndProbability[] {

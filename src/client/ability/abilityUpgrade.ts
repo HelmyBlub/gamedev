@@ -12,6 +12,7 @@ export type AbilityUpgradeFunctions = {
     getStatsDisplayText: (ability: Ability) => string,
     getLongExplainText?: (ability: Ability, option: AbilityUpgradeOption) => string[],
     getDamageFactor?: (ability: Ability, playerTriggered: boolean) => number,
+    reset?:(ability: Ability) => void,
 }
 
 export type AbilityUpgradesFunctions = {

@@ -4,7 +4,7 @@ import { AbilityUpgrade } from "../abilityUpgrade.js";
 import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe, getOptionsSnipeUpgrade } from "./abilitySnipe.js";
 
 export const ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN = "No Miss Chain";
-const DAMAGE_CAP = 200;
+const DAMAGE_COUNT_CAP = 50;
 const DAMAGE_UP_PER_HIT = 0.04;
 
 export type AbilityUpgradeNoMissChain = AbilityUpgrade & {
@@ -21,6 +21,7 @@ export function addAbilitySnipeUpgradeNoMissChain() {
         getDamageFactor: getAbilityUpgradeNoMissChainDamageFactor,
         getOptions: getOptionsNoMissChain,
         executeOption: executeOptionNoMissChain,
+        reset: reset,
     }
 }
 
@@ -36,6 +37,13 @@ export function abilityUpgradeNoMissChainOnObjectSnipeDamageDone(abilitySnipe: A
             upgrades.noMissChainCounter = 0;
         }
     }
+}
+
+function reset(ability: Ability) {
+    const abilitySnipe = ability as AbilitySnipe;
+    let upgrade: AbilityUpgradeNoMissChain | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN];
+    if (!upgrade) return;
+    upgrade.noMissChainCounter = 0;
 }
 
 function getOptionsNoMissChain(ability: Ability): UpgradeOptionAndProbability[] {
@@ -55,7 +63,7 @@ function executeOptionNoMissChain(ability: Ability, option: AbilityUpgradeOption
                 level: 0,
                 noMissChainCounter: 0,
                 noMissBonusDamageFactorAdd: 0,
-                noMissCounterCap: DAMAGE_CAP,
+                noMissCounterCap: DAMAGE_COUNT_CAP,
                 upgradeSynergy: false,
             }
             as.upgrades[ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN] = up;
@@ -84,7 +92,7 @@ function getAbilityUpgradeNoMissChainUiTextLong(ability: Ability, option: Abilit
     } else {
         textLines.push(`Hiting an Enemy increases damage by ${DAMAGE_UP_PER_HIT * 100}% per shot.`);
         textLines.push(`Not hitting any enemy with a shot resets it to 0%.`);
-        textLines.push(`Bonus damage is capped at ${DAMAGE_CAP}%.`);
+        textLines.push(`Bonus damage is capped at ${DAMAGE_COUNT_CAP * DAMAGE_UP_PER_HIT * 100}%.`);
         textLines.push(`Only main shot damage is increased without synergy.`);
     }
 

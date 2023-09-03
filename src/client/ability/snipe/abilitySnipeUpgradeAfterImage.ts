@@ -34,6 +34,7 @@ export function addAbilitySnipeUpgradeAfterImage() {
         getLongExplainText: getAbilityUpgradeAfterImageUiTextLong,
         getOptions: getOptionsAfterImage,
         executeOption: executeOptionAfterImage,
+        reset: reset,
     }
 }
 
@@ -91,6 +92,14 @@ export function tickAbilityUpgradeAfterImage(abilitySnipe: AbilitySnipe, ability
             upgrade.afterImages.splice(i, 1);
         }
     }
+}
+
+function reset(ability: Ability) {
+    const abilitySnipe = ability as AbilitySnipe;
+    let upgrade: AbilityUpgradeAfterImage | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE];
+    if (!upgrade) return;
+    upgrade.afterImages = [];
+    upgrade.nextValidSpawnTime = undefined;
 }
 
 function getOptionsAfterImage(ability: Ability): UpgradeOptionAndProbability[] {

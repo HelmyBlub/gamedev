@@ -2,7 +2,7 @@ import { characterTakeDamage, getCharactersTouchingLine, getRandomAlivePlayerCha
 import { Character } from "../../character/characterModel.js";
 import { UpgradeOptionAndProbability, UpgradeOption, AbilityUpgradeOption } from "../../character/upgrade.js";
 import { calcNewPositionMovedInDirection, calculateDirection, getClientInfoByCharacterId, getNextId } from "../../game.js";
-import { Position, Game, IdCounter, ClientInfo } from "../../gameModel.js";
+import { Position, Game, IdCounter, ClientInfo, FACTION_ENEMY } from "../../gameModel.js";
 import { GAME_IMAGES } from "../../imageLoad.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, findAbilityById } from "../ability.js";
 import { AbilityUpgrade, AbilityUpgradesFunctions, getAbilityUpgradeOptionDefault, getAbilityUpgradesDamageFactor, pushAbilityUpgradesOptions, upgradeAbility } from "../abilityUpgrade.js";
@@ -25,6 +25,7 @@ export type AbilityObjectSnipe = AbilityObject & {
     direction: number,
     damageCalcDone: boolean,
     deleteTime: number,
+    enemyFactionDamageTime?: number,
     remainingRange?: number,
     canSplitOnHit?: boolean,
     bounceCounter: number,
@@ -53,6 +54,7 @@ export type AbilitySnipe = Ability & {
 export const ABILITY_NAME_SNIPE = "Snipe";
 export const ABILITY_SNIPE_PAINT_FADE_DURATION = 500;
 export const ABILITY_SNIPE_UPGRADE_FUNCTIONS: AbilityUpgradesFunctions = {};
+const EMEMY_SNIPE_DAMAGE_DELAY = 750;
 
 GAME_IMAGES[ABILITY_NAME_SNIPE] = {
     imagePath: "/images/sniperRifle.png",
@@ -74,6 +76,7 @@ export function addAbilitySnipe() {
         deleteAbilityObject: deleteAbilityObjectSnipe,
         paintAbilityStatsUI: paintAbilitySnipeStatsUI,
         setAbilityToLevel: setAbilitySnipeToLevel,
+        setAbilityToBossLevel: setAbilityToBossLevel,
         resetAbility: resetAbility,
         abilityUpgradeFunctions: ABILITY_SNIPE_UPGRADE_FUNCTIONS,
         isPassive: false,
@@ -126,6 +129,12 @@ export function createAbilitySnipe(
 }
 
 export function createAbilityObjectSnipeByAbility(abilitySnipe: AbilitySnipe, abilityOwner: AbilityOwner, startPos: Position, direction: number, triggeredByPlayer: boolean, game: Game): AbilityObjectSnipe {
+    let deleteTime: number = game.state.time + abilitySnipe.paintFadeDuration;
+    let enemyDamageTime = undefined;
+    if(abilityOwner.faction === FACTION_ENEMY){
+        deleteTime += EMEMY_SNIPE_DAMAGE_DELAY;
+        enemyDamageTime = game.state.time + EMEMY_SNIPE_DAMAGE_DELAY;
+    }
     let abilityObjectSnipe: AbilityObjectSnipe = {
         type: ABILITY_NAME_SNIPE,
         size: abilitySnipe.size,
@@ -137,7 +146,8 @@ export function createAbilityObjectSnipeByAbility(abilitySnipe: AbilitySnipe, ab
         direction: direction,
         range: getAbilitySnipeRange(abilitySnipe),
         damageCalcDone: false,
-        deleteTime: game.state.time + abilitySnipe.paintFadeDuration,
+        deleteTime: deleteTime,
+        enemyFactionDamageTime: enemyDamageTime,
         isLeveling: abilitySnipe.leveling ? true : undefined,
         abilityRefId: abilitySnipe.id,
         triggeredByPlayer: triggeredByPlayer,
@@ -160,6 +170,12 @@ export function createAbilityObjectSnipe(
     bounceCounter: number,
     gameTime: number
 ): AbilityObjectSnipe {
+    let deleteTime: number = gameTime + abilitySnipe.paintFadeDuration;
+    let enemyDamageTime
+    if(faction === FACTION_ENEMY){
+        deleteTime += EMEMY_SNIPE_DAMAGE_DELAY;
+        enemyDamageTime = gameTime + EMEMY_SNIPE_DAMAGE_DELAY;
+    }
     let abilityObjectSnipe: AbilityObjectSnipe = {
         type: ABILITY_NAME_SNIPE,
         size: abilitySnipe.size,
@@ -171,7 +187,8 @@ export function createAbilityObjectSnipe(
         direction: direction,
         range: range,
         damageCalcDone: false,
-        deleteTime: gameTime + abilitySnipe.paintFadeDuration,
+        deleteTime: deleteTime,
+        enemyFactionDamageTime: enemyDamageTime,
         isLeveling: abilitySnipe.leveling ? true : undefined,
         abilityRefId: abilityRefId,
         canSplitOnHit: canSplitOnHit,
@@ -241,6 +258,17 @@ export function getOptionsSnipeUpgrade(ability: Ability, upgradeName: string): U
 function resetAbility(ability: Ability){
     let abilitySnipe = ability as AbilitySnipe;
     abilitySnipe.nextAllowedShotTime = 0;
+    abilitySnipe.reloadTime = -1;
+
+    const upgradesFunctions = ABILITIES_FUNCTIONS[ABILITY_NAME_SNIPE].abilityUpgradeFunctions;
+    if(!upgradesFunctions) return;
+    const keys = Object.keys(ability.upgrades);
+    for(let key of keys){
+        const functions = upgradesFunctions[key];
+        if(functions.reset){
+            functions.reset(ability);
+        }
+    }
 }
 
 function getAbilityUpgradeOptionSynergy(abilityName: string, upgradeName: string, probabilityFactor: number): UpgradeOptionAndProbability {
@@ -304,6 +332,14 @@ function setAbilitySnipeToLevel(ability: Ability, level: number) {
     abilitySnipe.maxCharges = Math.min(2 + level, abilitySnipe.maxMagazineSize);
     abilitySnipe.baseRange = 800 + level * 10;
     abilitySnipe.shotFrequencyTimeDecreaseFaktor = 1 + level * 0.15;
+}
+
+function setAbilityToBossLevel(ability: Ability, level: number) {
+    let abilitySnipe = ability as AbilitySnipe;
+    abilitySnipe.baseDamage = level * 10;
+    abilitySnipe.maxCharges = Math.min(2 + level, abilitySnipe.maxMagazineSize);
+    abilitySnipe.baseRange = 600 + level * 100;
+    abilitySnipe.shotFrequencyTimeDecreaseFaktor = 0.75 + level * 0.25;
 }
 
 function deleteAbilityObjectSnipe(abilityObject: AbilityObject, game: Game) {
@@ -371,6 +407,11 @@ function tickAbilitySnipe(abilityOwner: AbilityOwner, ability: Ability, game: Ga
 
 function tickAbilityObjectSnipe(abilityObject: AbilityObject, game: Game) {
     let abilityObjectSnipe = abilityObject as AbilityObjectSnipe;
+    if(abilityObject.faction === FACTION_ENEMY){
+        if(abilityObjectSnipe.enemyFactionDamageTime! > game.state.time){
+            return;
+        }
+    }
     if (!abilityObjectSnipe.damageCalcDone) {
         const endPos = calcNewPositionMovedInDirection(abilityObjectSnipe, abilityObjectSnipe.direction, abilityObjectSnipe.range);
         let characters: Character[] = getCharactersTouchingLine(game, abilityObjectSnipe, endPos, abilityObject.faction, abilityObjectSnipe.size);

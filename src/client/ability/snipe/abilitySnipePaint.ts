@@ -1,5 +1,5 @@
 import { calcNewPositionMovedInDirection, getCameraPosition } from "../../game.js";
-import { Game, Position } from "../../gameModel.js";
+import { FACTION_ENEMY, FACTION_PLAYER, Game, Position } from "../../gameModel.js";
 import { GAME_IMAGES, loadImage } from "../../imageLoad.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { Ability, AbilityObject, AbilityOwner, PaintOrderAbility, paintDefaultAbilityStatsUI } from "../ability.js";
@@ -17,12 +17,18 @@ export function paintAbilityObjectSnipe(ctx: CanvasRenderingContext2D, abilityOb
     const endPos = calcNewPositionMovedInDirection(snipe, snipe.direction, snipe.range);
     const centerX = ctx.canvas.width / 2;
     const centerY = ctx.canvas.height / 2;
-    ctx.strokeStyle = "red";
+    const color = abilityObject.faction === FACTION_PLAYER ? "red" : "black";
+    ctx.strokeStyle = color;
     let paintX: number;
     let paintY: number;
 
-    ctx.lineWidth = abilityObjectSnipe.size;
-    ctx.globalAlpha = Math.min((snipe.deleteTime - game.state.time) / ABILITY_SNIPE_PAINT_FADE_DURATION, 1);
+    if(abilityObject.faction === FACTION_ENEMY && abilityObjectSnipe.enemyFactionDamageTime! > game.state.time){
+        ctx.lineWidth = 1;
+        ctx.globalAlpha = 1;
+    }else{
+        ctx.lineWidth = abilityObjectSnipe.size;
+        ctx.globalAlpha = Math.min((snipe.deleteTime - game.state.time) / ABILITY_SNIPE_PAINT_FADE_DURATION, 1);
+    }
     ctx.beginPath();
     paintX = Math.floor(snipe.x - cameraPosition.x + centerX);
     paintY = Math.floor(snipe.y - cameraPosition.y + centerY);
