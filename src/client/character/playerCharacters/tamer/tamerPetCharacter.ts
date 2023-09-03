@@ -412,7 +412,12 @@ function getTargetByBehavior(pet: TamerPetCharacter, petOwner: Character, game: 
         let closest = determineClosestCharacter(pet, playerCharacters);
         target = closest.minDistanceCharacter;
     } else if (pet.petTargetBehavior === "protective") {
-        let playerCharacters = determineCharactersInDistance(petOwner, game.state.map, [], game.state.bossStuff.bosses, 200);
+        let playerCharacters;
+        if(game.state.bossStuff.endBossStarted){
+            playerCharacters = determineCharactersInDistance(petOwner, undefined, [], game.state.bossStuff.bosses, 400);
+        }else{
+            playerCharacters = determineCharactersInDistance(petOwner, game.state.map, [], game.state.bossStuff.bosses, 200);
+        }
         let closest = determineClosestCharacter(petOwner, playerCharacters);
         if (closest.minDistance < 60) {
             target = closest.minDistanceCharacter;

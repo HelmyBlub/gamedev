@@ -4,6 +4,8 @@ current tasks:
 - after end boss defeats
     - player character is next boss
         - sniper:
+            - bug: sniper end boss does not shoot if auto shoot not on
+                - ability get optional function "bossAutoCast" which uses "activeAbilityCast"
             - paint correct character image
         - every ability needs a boss ability type which makes it fair
 - paint: give end boss a crown

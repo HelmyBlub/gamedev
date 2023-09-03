@@ -226,19 +226,22 @@ export function determineClosestCharacter(position: Position, characters: Charac
     return { minDistanceCharacter, minDistance };
 }
 
-export function determineCharactersInDistance(position: Position, map: GameMap, players: Player[], bosses: BossEnemyCharacter[], maxDistance: number, notFaction: string | undefined = undefined): Character[] {
+export function determineCharactersInDistance(position: Position, map: GameMap | undefined, players: Player[], bosses: BossEnemyCharacter[], maxDistance: number, notFaction: string | undefined = undefined): Character[] {
     let result: Character[] = [];
-    let mapKeysInDistance = determineMapKeysInDistance(position, map, maxDistance, true, false);
 
-    for (let i = 0; i < mapKeysInDistance.length; i++) {
-        let chunk = map.chunks[mapKeysInDistance[i]];
-        if (chunk === undefined) continue;
-        let characters: Character[] = chunk.characters;
-        for (let j = 0; j < characters.length; j++) {
-            if (characters[j].faction === notFaction) continue;
-            let distance = calculateDistance(position, characters[j]);
-            if (maxDistance >= distance) {
-                result.push(characters[j]);
+    if(map){
+        let mapKeysInDistance = determineMapKeysInDistance(position, map, maxDistance, true, false);
+    
+        for (let i = 0; i < mapKeysInDistance.length; i++) {
+            let chunk = map.chunks[mapKeysInDistance[i]];
+            if (chunk === undefined) continue;
+            let characters: Character[] = chunk.characters;
+            for (let j = 0; j < characters.length; j++) {
+                if (characters[j].faction === notFaction) continue;
+                let distance = calculateDistance(position, characters[j]);
+                if (maxDistance >= distance) {
+                    result.push(characters[j]);
+                }
             }
         }
     }
