@@ -9,8 +9,9 @@ import { IdCounter, Game, Position, FACTION_ENEMY } from "../../gameModel.js";
 import { changeTileIdOfMapChunk } from "../../map/map.js";
 import { getBossAreaMiddlePosition, getEntranceChunkAndTileIJForPosition } from "../../map/mapEndBossArea.js";
 import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick } from "../character.js";
-import { Character, createCharacter } from "../characterModel.js";
+import { Character, IMAGE_SLIME, createCharacter } from "../characterModel.js";
 import { PathingCache } from "../pathing.js";
+import { CHARACTER_CLASS_SNIPER_NAME } from "../playerCharacters/sniperCharacter.js";
 
 export type EndBossEnemyCharacter = Character;
 export const CHARACTER_TYPE_END_BOSS_ENEMY = "EndBossEnemyCharacter";
@@ -22,6 +23,7 @@ export function createNextDefaultEndBoss(idCounter: IdCounter, game: Game): EndB
     let hp = 50000000;
     let experienceWorth = 0;
     let bossCharacter = createCharacter(getNextId(idCounter), 0, 0, bossSize, bossSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_END_BOSS_ENEMY, experienceWorth);
+    bossCharacter.paint.image = IMAGE_SLIME;
     let abilities: Ability[] = createEndBossAbilities(1, game);
     bossCharacter.abilities = abilities;
     return bossCharacter;
@@ -65,15 +67,20 @@ export function tickEndBossEnemyCharacter(enemy: EndBossEnemyCharacter, game: Ga
     moveCharacterTick(enemy, game.state.map, game.state.idCounter);
 
     for (let ability of enemy.abilities) {
-        let tickAbility = ABILITIES_FUNCTIONS[ability.name].tickAbility;
-        if (tickAbility) tickAbility(enemy, ability, game);
+        let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+        if(abilityFunctions){
+            if (abilityFunctions.tickAbility) abilityFunctions.tickAbility(enemy, ability, game);
+            if (abilityFunctions.tickBossAI) abilityFunctions.tickBossAI(enemy, ability, game);
+        }
     }
     changeBossAbilityLevelBasedOnHp(enemy);
     tickCharacterDebuffs(enemy, game);
 }
 
 export function convertPlayerToEndBoss(game: Game) {
-    game.state.bossStuff.nextEndboss = game.state.players[0].character;
+    let nextBoss = game.state.players[0].character;
+    if(nextBoss.characterClass !== CHARACTER_CLASS_SNIPER_NAME) return;
+    game.state.bossStuff.nextEndboss = nextBoss;
     const boss = game.state.bossStuff.nextEndboss;
     boss.type = CHARACTER_TYPE_END_BOSS_ENEMY;
     boss.maxHp = 50000000;

@@ -3,7 +3,7 @@ import { calculateDistance, getNextId } from "../../game.js"
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../gameModel.js"
 import { MapChunk, GameMap, isPositionBlocking, mapKeyToChunkIJ } from "../../map/map.js"
 import { fixedRandom } from "../../randomNumberGenerator.js"
-import { Character, createCharacter } from "../characterModel.js"
+import { Character, IMAGE_SLIME, createCharacter } from "../characterModel.js"
 
 export type FixPositionRespawnEnemyCharacter = Character & {
     alertEnemyRange?: number,
@@ -129,6 +129,7 @@ function createEnemy(
     experienceWorth: number,
 ): FixPositionRespawnEnemyCharacter {
     let enemy = createCharacter(getNextId(idCounter), x, y, size, size, color, moveSpeed, hp, FACTION_ENEMY, "fixPositionRespawnEnemy", experienceWorth);
+    enemy.paint.image = IMAGE_SLIME;
     return {
         ...enemy,
         autoAggroRange: autoAggroRange,

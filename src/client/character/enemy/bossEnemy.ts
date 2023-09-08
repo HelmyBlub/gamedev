@@ -8,8 +8,8 @@ import { findNearNonBlockingPosition, getMapMidlePosition, moveByDirectionAndDis
 import { getPlayerFurthestAwayFromSpawn } from "../../player.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
 import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, calculateCharacterMovePosition, moveCharacterTick } from "../character.js";
-import { Character, createCharacter } from "../characterModel.js";
-import { paintCharacterHpBar } from "../characterPaint.js";
+import { Character, IMAGE_SLIME, createCharacter } from "../characterModel.js";
+import { paintCharacterDefault, paintCharacterHpBar } from "../characterPaint.js";
 import { getPathingCache, PathingCache } from "../pathing.js";
 import { CHARACTER_TYPE_END_BOSS_ENEMY, tickEndBossEnemyCharacter } from "./endBossEnemy.js";
 
@@ -25,6 +25,7 @@ export function createBossWithLevel(idCounter: IdCounter, level: number, game: G
     let spawn: Position = getBossSpawnPosition(game);
 
     let bossCharacter = createCharacter(getNextId(idCounter), spawn.x, spawn.y, bossSize, bossSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_BOSS_ENEMY, experienceWorth);
+    bossCharacter.paint.image = IMAGE_SLIME;
     let abilities: Ability[] = createBossAbilities(level, game);
     bossCharacter.abilities = abilities;
     return bossCharacter;
@@ -54,8 +55,11 @@ function tickBossEnemyCharacter(enemy: BossEnemyCharacter, game: Game, pathingCa
     moveCharacterTick(enemy, game.state.map, game.state.idCounter);
 
     for (let ability of enemy.abilities) {
-        let tickAbility = ABILITIES_FUNCTIONS[ability.name].tickAbility;
-        if (tickAbility) tickAbility(enemy, ability, game);
+        let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+        if(abilityFunctions){
+            if (abilityFunctions.tickAbility) abilityFunctions.tickAbility(enemy, ability, game);
+            if (abilityFunctions.tickBossAI) abilityFunctions.tickBossAI(enemy, ability, game);
+        }
     }
     tickCharacterDebuffs(enemy, game);
 }
@@ -140,40 +144,14 @@ function getBossSpawnPosition(game: Game): Position {
 
 function paintBossEnemyCharacter(ctx: CanvasRenderingContext2D, character: BossEnemyCharacter, cameraPosition: Position, game: Game) {
     if (character.isDead) return;
-    let characterImageId = "slime";
-    let characterImage = GAME_IMAGES[characterImageId];
-    if (characterImage) {
-        if (characterImage.imagePath !== undefined) {
-            loadImage(characterImage, character.color, character.randomizedCharacterImage);
-            if (characterImage.properties?.canvas) {
-                let centerX = ctx.canvas.width / 2;
-                let centerY = ctx.canvas.height / 2;
-                let paintX = character.x - cameraPosition.x + centerX;
-                let paintY = character.y - cameraPosition.y + centerY;
 
-                let spriteAnimation = Math.floor(performance.now() / 250) % 2;
-                let spriteColor = characterImage.properties.colorToSprite!.indexOf(character.color);
-                let spriteWidth = characterImage.spriteRowWidths[0];
-                let spriteHeight = characterImage.spriteRowHeights[0];
-                let characterX = Math.floor(paintX - character.width / 2);
-                let characterY = Math.floor(paintY - character.height / 2);
-                ctx.drawImage(
-                    characterImage.properties.canvas!,
-                    0 + spriteAnimation * (spriteWidth + 1),
-                    0 + spriteColor * (spriteHeight + 1),
-                    spriteWidth, spriteHeight,
-                    characterX,
-                    characterY,
-                    character.width, character.height
-                );
-                paintCharacterHpBar(ctx, character, { x: characterX, y: characterY });
-            }
-        }
-    }
-    for (let ability of character.abilities) {
-        const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-        if (abilityFunctions.paintAbility !== undefined) {
-            abilityFunctions.paintAbility(ctx, character, ability, cameraPosition, game);
-        }
-    }
+    paintCharacterDefault(ctx, character, cameraPosition, game);
+
+    let centerX = ctx.canvas.width / 2;
+    let centerY = ctx.canvas.height / 2;
+    let paintX = character.x - cameraPosition.x + centerX;
+    let paintY = character.y - cameraPosition.y + centerY;
+    let characterX = Math.floor(paintX - character.width / 2);
+    let characterY = Math.floor(paintY - character.height / 2);
+    paintCharacterHpBar(ctx, character, { x: characterX, y: characterY });
 }

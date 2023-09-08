@@ -1,14 +1,12 @@
 import { ABILITIES_FUNCTIONS, paintDefaultAbilityStatsUI } from "../../../ability/ability.js";
-import { ABILITY_NAME_LEASH, AbilityLeash } from "../../../ability/abilityLeash.js";
 import { calculateDirection, calculateDistance, getNextId } from "../../../game.js";
 import { Game, Position } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
 import { GAME_IMAGES, getImage } from "../../../imageLoad.js";
 import { moveByDirectionAndDistance } from "../../../map/map.js";
 import { nextRandom } from "../../../randomNumberGenerator.js";
-import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, calculateCharacterMovePosition, getPlayerCharacters, setCharacterAbilityLevel } from "../../character.js";
+import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, calculateCharacterMovePosition, getPlayerCharacters } from "../../character.js";
 import { Character, createCharacter } from "../../characterModel.js";
-import { paintCharacter } from "../../characterPaint.js";
 import { PathingCache } from "../../pathing.js";
 import { Trait, tamerPetIncludesTrait } from "./petTrait.js";
 import { TAMER_PET_TRAIT_EATS_LESS } from "./petTraitEatsLess.js";
@@ -189,7 +187,7 @@ function happinessToDisplayText(happines: Happiness): string {
 export function paintTamerPetCharacterStatsUI(ctx: CanvasRenderingContext2D, pet: TamerPetCharacter, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
     const textLines: string[] = [
         `Pet Stats:`,
-        `Color: ${pet.color}`,
+        `Color: ${pet.paint.color}`,
         `food: ${foodIntakeToDisplayText(pet.foodIntakeLevel)}`,
         `Happiness: ${happinessToDisplayText(pet.happines)}`,
         `Movement Speed: ${pet.moveSpeed.toFixed(2)}`,
@@ -226,7 +224,7 @@ export function paintTamerPetCharacterStatsUI(ctx: CanvasRenderingContext2D, pet
 
 export function paintTamerPetCharacter(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
     let tamerPetCharacter = character as TamerPetCharacter;
-    let petImage = getImage(TAMER_PET_CHARACTER, character.color);
+    let petImage = getImage(TAMER_PET_CHARACTER, character.paint.color);
     if (petImage) {
         const characterImage = GAME_IMAGES[TAMER_PET_CHARACTER];
         const spriteAnimation = Math.floor(game.state.time / 250) % 2;
@@ -234,7 +232,7 @@ export function paintTamerPetCharacter(ctx: CanvasRenderingContext2D, character:
         const spriteWidth = characterImage.spriteRowWidths[0];
         const spriteHappinesOffset = happinesToInt * 2 * (spriteWidth + 1);
         const spriteHeight = characterImage.spriteRowHeights[0];
-        const spriteColor = characterImage.properties.colorToSprite!.indexOf(character.color);
+        const spriteColor = characterImage.properties.colorToSprite!.indexOf(character.paint.color);
         const paintPos = getPointPaintPosition(ctx, character, cameraPosition);
         ctx.drawImage(
             petImage,

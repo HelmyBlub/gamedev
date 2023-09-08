@@ -66,6 +66,7 @@ export function addAbilitySnipe() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_SNIPE] = {
         tickAbility: tickAbilitySnipe,
         tickAbilityObject: tickAbilityObjectSnipe,
+        tickBossAI: tickBossAI,
         createAbilityBossUpgradeOptions: createAbilityBossSnipeUpgradeOptions,
         executeUpgradeOption: executeAbilitySnipeUpgradeOption,
         paintAbilityObject: paintAbilityObjectSnipe,
@@ -360,6 +361,8 @@ function castSnipe(abilityOwner: AbilityOwner, ability: Ability, castPosition: P
 }
 
 function createAbilityObjectSnipeInitialPlayerTriggered(abilityOwner: AbilityOwner, abilitySnipe: AbilitySnipe, castPosition: Position, game: Game) {
+    abilitySnipe.lastSniperRiflePaintDirection = calculateDirection(abilityOwner, castPosition);
+
     castSnipeUpgradeMoreRifles(abilityOwner, abilityOwner.faction, abilitySnipe, castPosition, true, game);
     castSnipeAfterImage(abilityOwner, abilitySnipe, castPosition, true, game);
     createAbilityObjectSnipeInitial(abilityOwner, abilityOwner.faction, abilitySnipe, castPosition, true, false, game);
@@ -369,6 +372,10 @@ function createAbilityObjectSnipeInitialPlayerTriggered(abilityOwner: AbilityOwn
     }
     abilitySnipe.nextAllowedShotTime = game.state.time + getAbilitySnipeShotFrequency(abilitySnipe);
 
+}
+function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
+    let abilitySnipe = ability as AbilitySnipe;
+    abilitySnipe.shotNextAllowedTime = true;
 }
 
 function tickAbilitySnipe(abilityOwner: AbilityOwner, ability: Ability, game: Game) {

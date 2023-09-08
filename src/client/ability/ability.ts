@@ -64,6 +64,7 @@ export type AbilityOwner = Position & Partial<Character> & {
 
 export type AbilityFunctions = {
     tickAbility?: (abilityOwner: AbilityOwner, ability: Ability, game: Game) => void,
+    tickBossAI?: (abilityOwner: AbilityOwner, ability: Ability, game: Game) => void,
     tickAbilityObject?: (abilityObject: AbilityObject, game: Game) => void,
     createAbility: (idCounter: IdCounter, playerInputBinding?: string) => Ability,
     createAbilityUpgradeOptions?: (ability: Ability) => UpgradeOptionAndProbability[],

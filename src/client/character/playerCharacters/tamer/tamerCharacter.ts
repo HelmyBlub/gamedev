@@ -59,7 +59,7 @@ function executeTamerBossUpgradeOption(character: Character, upgradeOption: Upgr
     if (upgradeOption.type === "Pet") {
         let upgradeValues = upgradeNameToValues(upgradeOption.identifier);
         const ability = createAbility(upgradeValues.abilityName, game.state.idCounter, false);
-        const pet: TamerPetCharacter = character.pets!.find((p) => p.color === upgradeValues.petName)!;
+        const pet: TamerPetCharacter = character.pets!.find((p) => p.paint.color === upgradeValues.petName)!;
         ability.passive = true;
         pet.abilities.push(ability);
         addTraitToTamerPet(pet, upgradeValues.traitName, game);
@@ -98,7 +98,7 @@ function createTamerBossUpgradeOptions(character: Character, game: Game): Upgrad
                         const randomTraitIndex = Math.floor(nextRandom(game.state.randomSeed) * availableTraits.length);
                         const trait = availableTraits[randomTraitIndex];
                         availableTraits.splice(randomTraitIndex, 1);
-                        const indentifier = valuesToUpgradeName(pet.color, ability, trait);
+                        const indentifier = valuesToUpgradeName(pet.paint.color!, ability, trait);
                         let option: UpgradeOptionAndProbability = {
                             option: {
                                 type: "Pet",
@@ -168,10 +168,6 @@ function addTraitToUpgradeOption(petOption: UpgradeOption, trait: string) {
 function getAvailablePetAbilities(character: Character, pet: TamerPetCharacter): string[] {
     const availableAbilityNames: string[] = [];
     const possibleAbilityNames = [
-        // ABILITY_NAME_ICE_AURA,
-        // ABILITY_NAME_SWORD,
-        // ABILITY_NAME_FIRE_CIRCLE,
-        // ABILITY_NAME_SHOOT,
         ABILITY_NAME_PET_BREATH,
         ABILITY_NAME_PET_PAINTER,
         ABILITY_NAME_PET_DASH

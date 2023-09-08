@@ -47,8 +47,10 @@ export type CharacterImageLoadProperties = {
 }
 
 export const DEFAULT_CHARACTER = "Character";
+export const IMAGE_SLIME = "slime";
+export const IMAGE_PLAYER_PARTS = "playerParts";
 
-GAME_IMAGES["slime"] = { 
+GAME_IMAGES[IMAGE_SLIME] = { 
     properties: { baseColor: "green" },
     imagePath: "/images/slimeEnemy.png",
     spriteRowHeights: [20],
@@ -67,7 +69,7 @@ let playerImageProperties: CharacterImageLoadProperties = {
     clothColor: "blue",
 }
 
-GAME_IMAGES[FACTION_PLAYER] = {
+GAME_IMAGES[IMAGE_PLAYER_PARTS] = {
     imagePath: "/images/player.png",
     spriteRowHeights: [13, 14, 13],
     spriteRowWidths: [20, 20, 20],
@@ -88,7 +90,6 @@ export type Character = Position & {
     id: number,
     width: number,
     height: number,
-    color: string,
     moveSpeed: number,
     moveDirection: number,
     isMoving: boolean,
@@ -103,7 +104,11 @@ export type Character = Position & {
     abilities: Ability[],
     debuffs: Debuff[],
     wasHitRecently?: boolean,
-    randomizedCharacterImage?: RandomizedCharacterImage,
+    paint: {
+        image?: string,
+        color?: string,
+        randomizedCharacterImage?: RandomizedCharacterImage,
+    }
     isPet?: boolean,
     willTurnToPetOnDeath?: boolean,
     upgradeChoices: UpgradeOption[],
@@ -123,7 +128,7 @@ export function createCharacter(
     y: number,
     width: number,
     height: number,
-    color: string,
+    color: string | undefined,
     moveSpeed: number,
     hp: number,
     faction: string,
@@ -136,7 +141,9 @@ export function createCharacter(
         y: y,
         width: width,
         height: height,
-        color: color,
+        paint:{
+            color: color,
+        },
         moveSpeed: moveSpeed,
         moveDirection: 0,
         isMoving: false,
@@ -155,8 +162,8 @@ export function createCharacter(
 }
 
 export function createPlayerCharacter(idCounter: IdCounter, pos: Position, seed: RandomSeed, game: Game): Character {
-    let playerCharacter = createCharacter(getNextId(idCounter), pos.x, pos.y, 20, 40, "blue", 2, 200, FACTION_PLAYER, DEFAULT_CHARACTER, 1);
-    playerCharacter.randomizedCharacterImage = createRandomizedCharacterImageData(GAME_IMAGES[FACTION_PLAYER], seed);
+    let playerCharacter = createCharacter(getNextId(idCounter), pos.x, pos.y, 20, 40, undefined, 2, 200, FACTION_PLAYER, DEFAULT_CHARACTER, 1);
+    playerCharacter.paint.randomizedCharacterImage = createRandomizedCharacterImageData(GAME_IMAGES[IMAGE_PLAYER_PARTS], seed);
     playerCharacter.willTurnToPetOnDeath = true;
     playerCharacter.isPet = false;
     initPlayerCharacterChoiceOptions(playerCharacter, game);

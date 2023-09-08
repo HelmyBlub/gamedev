@@ -308,7 +308,7 @@ export function endGame(game: Game, isEndbossKill: boolean = false) {
     game.state.ended = true;
     let newScore = calculateHighscoreOnGameEnd(game, isEndbossKill);
     if (isEndbossKill && !game.multiplayer.websocket) {
-        //convertPlayerToEndBoss(game);
+        convertPlayerToEndBoss(game);
     }
     endGameReplayStuff(game, newScore);
     if (game.testing.record) {
