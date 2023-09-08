@@ -2,7 +2,10 @@ current tasks:
 - after end boss defeats
     - player character is next boss
         - tamer:
-            - 
+            - boss should feed pet and care for happines
+            - make boss beatable
+        - builder:
+            - ...
         - every ability needs a boss ability type which makes it fair
 - paint: give end boss a crown
     - animation: crown moves to player character

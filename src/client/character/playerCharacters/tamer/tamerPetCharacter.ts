@@ -1,12 +1,13 @@
 import { ABILITIES_FUNCTIONS, paintDefaultAbilityStatsUI } from "../../../ability/ability.js";
 import { calculateDirection, calculateDistance, getNextId } from "../../../game.js";
-import { Game, Position } from "../../../gameModel.js";
+import { FACTION_ENEMY, FACTION_PLAYER, Game, Position } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
 import { GAME_IMAGES, getImage } from "../../../imageLoad.js";
 import { moveByDirectionAndDistance } from "../../../map/map.js";
 import { nextRandom } from "../../../randomNumberGenerator.js";
 import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, calculateCharacterMovePosition, getPlayerCharacters } from "../../character.js";
 import { Character, createCharacter } from "../../characterModel.js";
+import { paintCharacterDefault } from "../../characterPaint.js";
 import { PathingCache } from "../../pathing.js";
 import { Trait, tamerPetIncludesTrait } from "./petTrait.js";
 import { TAMER_PET_TRAIT_EATS_LESS } from "./petTraitEatsLess.js";
@@ -136,9 +137,9 @@ export function tamerPetFeed(pet: TamerPetCharacter, feedValue: number, time: nu
     if (tamerPetIncludesTrait(TAMER_PET_TRAIT_GETS_FAT_EASILY, pet) && feedValue > 0) {
         feedValue *= 2;
     }
-    if (tamerPetIncludesTrait(TAMER_PET_TRAIT_EATS_LESS, pet) && feedValue < 0){
+    if (tamerPetIncludesTrait(TAMER_PET_TRAIT_EATS_LESS, pet) && feedValue < 0) {
         feedValue /= 2;
-    } 
+    }
 
     const beforeFeed = pet.foodIntakeLevel.current;
     pet.foodIntakeLevel.current += feedValue;
@@ -335,9 +336,9 @@ function foodIntakeLevelTick(pet: TamerPetCharacter, game: Game) {
 
 function moveTick(pet: TamerPetCharacter, petOwner: Character, game: Game, pathingCache: PathingCache) {
     if (pet.forcedMovePosition) {
-        if (pet.happines.current < pet.happines.unhappyAt){
+        if (pet.happines.current < pet.happines.unhappyAt) {
             pet.isMoving = false;
-        }else{
+        } else {
             pet.isMoving = true;
             let direction = calculateDirection(pet, pet.forcedMovePosition);
             pet.moveDirection = direction;
@@ -406,27 +407,39 @@ function setMoveDirectionWithNoTarget(pet: TamerPetCharacter, petOwner: Characte
 function getTargetByBehavior(pet: TamerPetCharacter, petOwner: Character, game: Game): Character | null {
     let target: Character | null = null;
     if (pet.petTargetBehavior === "aggressive") {
-        let playerCharacters = determineCharactersInDistance(pet, game.state.map, [], game.state.bossStuff.bosses, 200);
-        let closest = determineClosestCharacter(pet, playerCharacters);
+        let characters = determineTargetsInDistance(pet, game);
+        let closest = determineClosestCharacter(pet, characters);
         target = closest.minDistanceCharacter;
     } else if (pet.petTargetBehavior === "protective") {
-        let playerCharacters;
-        if(game.state.bossStuff.endBossStarted){
-            playerCharacters = determineCharactersInDistance(petOwner, undefined, [], game.state.bossStuff.bosses, 400);
-        }else{
-            playerCharacters = determineCharactersInDistance(petOwner, game.state.map, [], game.state.bossStuff.bosses, 200);
+        let characters;
+        if (game.state.bossStuff.endBossStarted) {
+            characters = determineTargetsInDistance(pet, game, 400, true);
+        } else {
+            characters = determineTargetsInDistance(pet, game, 200);
         }
-        let closest = determineClosestCharacter(petOwner, playerCharacters);
+        let closest = determineClosestCharacter(petOwner, characters);
         if (closest.minDistance < 60) {
             target = closest.minDistanceCharacter;
         } else {
-            let closest = determineClosestCharacter(pet, playerCharacters);
+            let closest = determineClosestCharacter(pet, characters);
             target = closest.minDistanceCharacter;
         }
     } else if (pet.petTargetBehavior === "passive") {
         //not searching for target
     }
     return target;
+}
+
+function determineTargetsInDistance(pet: TamerPetCharacter, game: Game, distance: number = 200, ignoreMapEnemies: boolean = false): Character[] {
+    if (pet.faction === FACTION_PLAYER) {
+        if(ignoreMapEnemies){
+            return determineCharactersInDistance(pet, undefined, [], game.state.bossStuff.bosses, distance);
+        }else{
+            return determineCharactersInDistance(pet, game.state.map, [], game.state.bossStuff.bosses, distance);
+        }
+    } else {
+        return determineCharactersInDistance(pet, undefined, game.state.players, undefined, distance);
+    }
 }
 
 function collisionWithOtherPets(pet: TamerPetCharacter, petOwner: Character, newMovePosition: Position, game: Game): TamerPetCharacter | undefined {

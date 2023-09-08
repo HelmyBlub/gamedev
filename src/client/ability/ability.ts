@@ -220,6 +220,11 @@ export function resetAllCharacterAbilities(character: Character){
             abililtyFunctions.resetAbility(ability);
         }
     }
+    if(character.pets){
+        for(let pet of character.pets){
+            resetAllCharacterAbilities(pet);
+        }
+    }
 }
 
 export function paintDefaultAbilityStatsUI(ctx: CanvasRenderingContext2D, textLines: string[], drawStartX: number, drawStartY: number): { width: number, height: number } {

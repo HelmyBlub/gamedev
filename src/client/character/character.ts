@@ -226,7 +226,7 @@ export function determineClosestCharacter(position: Position, characters: Charac
     return { minDistanceCharacter, minDistance };
 }
 
-export function determineCharactersInDistance(position: Position, map: GameMap | undefined, players: Player[], bosses: BossEnemyCharacter[], maxDistance: number, notFaction: string | undefined = undefined): Character[] {
+export function determineCharactersInDistance(position: Position, map: GameMap | undefined, players: Player[], bosses: BossEnemyCharacter[] | undefined, maxDistance: number, notFaction: string | undefined = undefined): Character[] {
     let result: Character[] = [];
 
     if(map){
@@ -246,11 +246,13 @@ export function determineCharactersInDistance(position: Position, map: GameMap |
         }
     }
 
-    for (let boss of bosses) {
-        if (boss.faction === notFaction) continue;
-        let distance = calculateDistance(position, boss);
-        if (maxDistance >= distance) {
-            result.push(boss);
+    if(bosses){
+        for (let boss of bosses) {
+            if (boss.faction === notFaction) continue;
+            let distance = calculateDistance(position, boss);
+            if (maxDistance >= distance) {
+                result.push(boss);
+            }
         }
     }
 
@@ -351,7 +353,7 @@ export function countAlivePlayerCharacters(players: Player[]) {
     return counter;
 }
 
-export function calculateAndSetMoveDirectionToPositionWithPathing(character: Character, targetPosition: Position | null, map: GameMap, pathingCache: PathingCache, idCounter: IdCounter, time: number) {
+export function calculateAndSetMoveDirectionToPositionWithPathing(character: Character, targetPosition: Position | null, map: GameMap, pathingCache: PathingCache | null, idCounter: IdCounter, time: number) {
     if (targetPosition === null) {
         character.isMoving = false;
         return;

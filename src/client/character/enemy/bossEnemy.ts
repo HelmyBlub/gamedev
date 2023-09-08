@@ -3,18 +3,23 @@ import { createAbilityMelee } from "../../ability/abilityMelee.js";
 import { tickCharacterDebuffs } from "../../debuff/debuff.js";
 import { calculateDirection, getNextId, getTimeSinceFirstKill } from "../../game.js";
 import { IdCounter, Game, Position, BossStuff, FACTION_ENEMY } from "../../gameModel.js";
-import { GAME_IMAGES, loadImage } from "../../imageLoad.js";
 import { findNearNonBlockingPosition, getMapMidlePosition, moveByDirectionAndDistance } from "../../map/map.js";
 import { getPlayerFurthestAwayFromSpawn } from "../../player.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
-import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, calculateCharacterMovePosition, moveCharacterTick } from "../character.js";
-import { Character, IMAGE_SLIME, createCharacter } from "../characterModel.js";
+import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, calculateCharacterMovePosition, moveCharacterTick, tickCharacters } from "../character.js";
+import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, createCharacter } from "../characterModel.js";
 import { paintCharacterDefault, paintCharacterHpBar } from "../characterPaint.js";
 import { getPathingCache, PathingCache } from "../pathing.js";
 import { CHARACTER_TYPE_END_BOSS_ENEMY, tickEndBossEnemyCharacter } from "./endBossEnemy.js";
 
 export type BossEnemyCharacter = Character;
 export const CHARACTER_TYPE_BOSS_ENEMY = "BossEnemyCharacter";
+
+export function addBossType() {
+    CHARACTER_TYPE_FUNCTIONS[CHARACTER_TYPE_BOSS_ENEMY] = {
+        tickFunction: tickBossEnemyCharacter,
+    }
+}
 
 export function createBossWithLevel(idCounter: IdCounter, level: number, game: Game): BossEnemyCharacter {
     let bossSize = 60;
@@ -34,16 +39,10 @@ export function createBossWithLevel(idCounter: IdCounter, level: number, game: G
 export function tickBossCharacters(bossStuff: BossStuff, game: Game) {
     let pathingCache = getPathingCache(game);
     let bosses = bossStuff.bosses;
-    for (let i = bosses.length - 1; i >= 0; i--) {
-        if (bosses[i].type === CHARACTER_TYPE_BOSS_ENEMY) {
-            tickBossEnemyCharacter(bosses[i], game, pathingCache);
-        } else if (bosses[i].type === CHARACTER_TYPE_END_BOSS_ENEMY) {
-            tickEndBossEnemyCharacter(bosses[i], game, pathingCache);
-        }
-    }
+    tickCharacters(bosses, game, pathingCache);
 }
 
-function tickBossEnemyCharacter(enemy: BossEnemyCharacter, game: Game, pathingCache: PathingCache) {
+function tickBossEnemyCharacter(enemy: BossEnemyCharacter, game: Game, pathingCache: PathingCache | null) {
     if (enemy.isDead) return;
     let playerCharacters = getPlayerCharacters(game.state.players);
     let closest = determineClosestCharacter(enemy, playerCharacters);

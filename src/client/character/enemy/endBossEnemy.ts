@@ -9,12 +9,18 @@ import { IdCounter, Game, Position, FACTION_ENEMY } from "../../gameModel.js";
 import { changeTileIdOfMapChunk } from "../../map/map.js";
 import { getBossAreaMiddlePosition, getEntranceChunkAndTileIJForPosition } from "../../map/mapEndBossArea.js";
 import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick } from "../character.js";
-import { Character, IMAGE_SLIME, createCharacter } from "../characterModel.js";
+import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, createCharacter } from "../characterModel.js";
 import { PathingCache } from "../pathing.js";
 import { CHARACTER_CLASS_SNIPER_NAME } from "../playerCharacters/sniperCharacter.js";
 
 export type EndBossEnemyCharacter = Character;
 export const CHARACTER_TYPE_END_BOSS_ENEMY = "EndBossEnemyCharacter";
+
+export function addEndBossType() {
+    CHARACTER_TYPE_FUNCTIONS[CHARACTER_TYPE_END_BOSS_ENEMY] = {
+        tickFunction: tickEndBossEnemyCharacter,
+    }
+}
 
 export function createNextDefaultEndBoss(idCounter: IdCounter, game: Game): EndBossEnemyCharacter {
     let bossSize = 60;
@@ -44,6 +50,12 @@ export function startEndBoss(endBossAreaPosition: Position, game: Game) {
         }
         endBoss.x = spawn.x;
         endBoss.y = spawn.y;
+        if(endBoss.pets){
+            for(let pet of endBoss.pets){
+                pet.x = spawn.x;
+                pet.y = spawn.y;
+            }
+        }
         if (Math.abs(spawn.x) < 2000 && Math.abs(spawn.y) < 2000 && !endBoss.characterClass) {
             endBoss.hp = 500;
             endBoss.maxHp = 500;
@@ -54,11 +66,9 @@ export function startEndBoss(endBossAreaPosition: Position, game: Game) {
     } else {
         throw new Error("bossArea entrance not found, should not be able to happen");
     }
-
-
 }
 
-export function tickEndBossEnemyCharacter(enemy: EndBossEnemyCharacter, game: Game, pathingCache: PathingCache) {
+export function tickEndBossEnemyCharacter(enemy: EndBossEnemyCharacter, game: Game, pathingCache: PathingCache | null) {
     if (enemy.isDead) return;
     let playerCharacters = getPlayerCharacters(game.state.players);
     let closest = determineClosestCharacter(enemy, playerCharacters);
@@ -78,7 +88,7 @@ export function tickEndBossEnemyCharacter(enemy: EndBossEnemyCharacter, game: Ga
 }
 
 export function convertPlayerToEndBoss(game: Game) {
-    let nextBoss = game.state.players[0].character;
+    let nextBoss: Character = deepCopy(game.state.players[0].character);
     if(nextBoss.characterClass !== CHARACTER_CLASS_SNIPER_NAME) return;
     game.state.bossStuff.nextEndboss = nextBoss;
     const boss = game.state.bossStuff.nextEndboss;
@@ -86,6 +96,11 @@ export function convertPlayerToEndBoss(game: Game) {
     boss.maxHp = 50000000;
     boss.hp = boss.maxHp;
     boss.faction = FACTION_ENEMY;
+    if(boss.pets){
+        for(let pet of boss.pets){
+            pet.faction = boss.faction;
+        }
+    }
     boss.moveSpeed = 1;
     resetAllCharacterAbilities(boss);
     changeBossAbilityLevelBasedOnHp(boss);

@@ -1,4 +1,6 @@
 import { onDomLoadSetAbilitiesFunctions } from "./ability/ability.js";
+import { addBossType } from "./character/enemy/bossEnemy.js";
+import { addEndBossType } from "./character/enemy/endBossEnemy.js";
 import { onDomLoadSetCharacterClasses } from "./character/playerCharacters/playerCharacters.js";
 import { handleCommand } from "./commands.js";
 import { onDomLoadSetDebuffsFunctions } from "./debuff/debuff.js";
@@ -59,6 +61,8 @@ export function createGame(canvasElementId: string | undefined, forTesting: bool
 
 document.addEventListener("DOMContentLoaded", function () {
     onDomLoadSetCharacterClasses();
+    addBossType();
+    addEndBossType();
     onDomLoadSetAbilitiesFunctions();
     onDomLoadSetDebuffsFunctions();
 

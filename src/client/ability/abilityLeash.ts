@@ -1,7 +1,7 @@
 import { findCharacterById, getPlayerCharacters } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
 import { calculateDirection, calculateDistance, getNextId } from "../game.js";
-import { Position, Game, IdCounter } from "../gameModel.js";
+import { Position, Game, IdCounter, FACTION_PLAYER } from "../gameModel.js";
 import { getFirstBlockingGameMapTilePositionTouchingLine } from "../map/map.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner } from "./ability.js";
 
@@ -47,8 +47,7 @@ function paintAbilityLeash(ctx: CanvasRenderingContext2D, abilityOwner: AbilityO
         let centerY = ctx.canvas.height / 2;
         let paintX = Math.floor(abilityOwner.x - cameraPosition.x + centerX);
         let paintY = Math.floor(abilityOwner.y - cameraPosition.y + centerY);
-        let characters = getPlayerCharacters(game.state.players);
-        let connectedOwner: Position | null = findCharacterById(characters, abilityLeash.leashedToOwnerId);
+        let connectedOwner: Position | null = findLeashOwner(abilityOwner, abilityLeash, game);;
         if(!connectedOwner){
             return;
         }
@@ -72,12 +71,23 @@ function paintAbilityLeash(ctx: CanvasRenderingContext2D, abilityOwner: AbilityO
 
 }
 
+function findLeashOwner(abilityOwner: AbilityOwner, ability: AbilityLeash, game: Game): Character | null{
+    let characters: Character[];
+    if(ability.leashedToOwnerId === undefined) return null;
+    if(abilityOwner.faction === FACTION_PLAYER){
+        characters = getPlayerCharacters(game.state.players);
+    }else{
+        characters = game.state.bossStuff.bosses;
+    }
+    return findCharacterById(characters, ability.leashedToOwnerId);
+
+}
+
 function tickAbilityLeash(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     let abilityLeash = ability as AbilityLeash;
 
     if(abilityLeash.leashedToOwnerId !== undefined){
-        let characters = getPlayerCharacters(game.state.players);
-        let connectedOwner: Character | null = findCharacterById(characters, abilityLeash.leashedToOwnerId);
+        let connectedOwner: Character | null = findLeashOwner(abilityOwner, abilityLeash, game);
         if(!connectedOwner){
             console.log("leash owner not found", ability);
             delete abilityLeash.leashedToOwnerId;

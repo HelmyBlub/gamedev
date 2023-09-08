@@ -5,7 +5,6 @@ import { randomizedCharacterImageToKey } from "../randomizedCharacterImage.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_PLAYER_PARTS, IMAGE_SLIME } from "./characterModel.js";
 import { ABILITY_LEVELING_CHARACTER, AbilityLevelingCharacter } from "./playerCharacters/abilityLevelingCharacter.js";
 import { LEVELING_CHARACTER, LevelingCharacter } from "./playerCharacters/levelingCharacterModel.js";
-import { TAMER_PET_CHARACTER } from "./playerCharacters/tamer/tamerPetCharacter.js";
 
 export function paintCharacters(ctx: CanvasRenderingContext2D, characters: Character[], cameraPosition: Position, game: Game) {
     for (let i = 0; i < characters.length; i++) {
