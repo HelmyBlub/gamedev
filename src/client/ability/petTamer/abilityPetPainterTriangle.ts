@@ -1,11 +1,11 @@
 import { Character } from "../../character/characterModel.js";
-import { TamerPetCharacter, findPetOwnerInPlayers } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
+import { TamerPetCharacter, findPetOwner } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { calculateDistance, getCameraPosition } from "../../game.js";
-import { Game, Position } from "../../gameModel.js";
+import { FACTION_ENEMY, Game, Position } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { isPositionBlocking, moveByDirectionAndDistance } from "../../map/map.js";
 import { RandomSeed, nextRandom } from "../../randomNumberGenerator.js";
-import { AbilityObject, AbilityOwner, PaintOrderAbility, detectCircleCharacterHit } from "../ability.js";
+import { AbilityOwner, PaintOrderAbility, detectCircleCharacterHit } from "../ability.js";
 import { ABILITY_NAME_PET_PAINTER, ABILITY_PET_PAINTER_SHAPES_FUNCTIONS, AbilityObjectPetPainter, AbilityPetPainter, createShapeAbilityPetPainter } from "./abilityPetPainter.js";
 import { ABILITY_PET_PAINTER_UPGARDE_FACTORY, AbilityPetPainterUpgradeFactory } from "./abilityPetPainterUpgradeFactory.js";
 import { AbilityPetPainterUpgradeSplit } from "./abilityPetPainterUpgradeSplit.js";
@@ -65,7 +65,9 @@ function createAbilityObjectPetPainterTriangle(
         centerPos: position,
         rotationOffset: nextRandom(randomSeed) * Math.PI * 2,
     }
-
+    if(faction === FACTION_ENEMY){
+        abilityObjectPetPainter.color = "black";
+    }
     return abilityObjectPetPainter;
 }
 
@@ -98,7 +100,9 @@ function createAbilityObjectPetPainterTriangleFactory(
         rotationOffset: 0,
         isFactory: true,
     }
-
+    if(faction === FACTION_ENEMY){
+        abilityObjectPetPainter.color = "black";
+    }
     return abilityObjectPetPainter;
 }
 
@@ -153,7 +157,7 @@ function tickShapeObjectPetPainterTriangle(abilityObject: AbilityObjectPetPainte
         if (triangle.nextTickTime === undefined) triangle.nextTickTime = game.state.time + triangle.tickInterval;
         if (triangle.nextTickTime <= game.state.time) {
             let center: Position = triangleCenter(triangle);
-            detectCircleCharacterHit(game.state.map, center, triangle.sideLength / 2, triangle.faction, triangle.abilityRefId!, triangle.damage, [], game.state.bossStuff.bosses, game);
+            detectCircleCharacterHit(game.state.map, center, triangle.sideLength / 2, triangle.faction, triangle.abilityRefId!, triangle.damage, game);
             triangle.nextTickTime += triangle.tickInterval;
             if (triangle.nextTickTime <= game.state.time) {
                 triangle.nextTickTime = game.state.time + triangle.tickInterval;
@@ -208,7 +212,7 @@ function paintShapeTriangle(ctx: CanvasRenderingContext2D, abilityOwner: Ability
 }
 
 function getRandomStartPaintPositionTriangle(pet: TamerPetCharacter, game: Game): Position {
-    let petOwner: Character = findPetOwnerInPlayers(pet, game)!;
+    let petOwner: Character = findPetOwner(pet, game)!;
     let blocking = true;
     let position = { x: 0, y: 0 };
     do {

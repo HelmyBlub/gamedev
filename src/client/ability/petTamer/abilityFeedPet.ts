@@ -1,12 +1,12 @@
 import { findCharacterById } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
-import { TamerPetCharacter, tamerPetFeed } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
+import { PetHunger, TamerPetCharacter, petFoodIntakeToDisplayText, tamerPetFeed } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { calculateDirection, calculateDistance, getCameraPosition, getNextId } from "../../game.js";
 import { IdCounter, Position, Game, FACTION_PLAYER } from "../../gameModel.js";
 import { GAME_IMAGES, getImage, loadImage } from "../../imageLoad.js";
 import { moveByDirectionAndDistance } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility } from "../ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, findAbilityOwnerById } from "../ability.js";
 
 export type AbilityFeedPet = Ability & {
     feedValue: number,
@@ -35,6 +35,7 @@ export function addAbilityFeedPet() {
         paintAbilityUI: paintAbilityFeedPetUI,
         paintAbilityObject: paintAbilityObjectFeedPet,
         tickAbilityObject: tickAbilityObjectFeedPet,
+        tickBossAI: tickBossAI,
         deleteAbilityObject: deleteAbilityObjectFeedPet,
         isPassive: false,
         notInheritable: true,
@@ -64,15 +65,26 @@ function deleteAbilityObjectFeedPet(abilityObject: AbilityObject, game: Game): b
     return abilityObjectFeedPet.reachedTarget;
 }
 
+function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
+    let abilityFeedPet = ability as AbilityFeedPet;
+    if(abilityOwner.pets){
+        for(let pet of abilityOwner.pets){
+            let hunger: PetHunger = petFoodIntakeToDisplayText(pet.foodIntakeLevel);
+            if(hunger === "hungry" && (!abilityFeedPet.nextRechargeTime || abilityFeedPet.nextRechargeTime + 500 <= game.state.time)){
+                castFeedPet(abilityOwner, ability, pet, true, game);
+                break;
+            }            
+        }
+    }
+}
+
 function tickAbilityObjectFeedPet(abilityObject: AbilityObject, game: Game) {
     const abilityObjectFeedPet = abilityObject as AbilityObjectFeedPet;
     if (abilityObjectFeedPet.reachedTarget) return;
     let target: Character | null = null;
-    for (let player of game.state.players) {
-        if (player.character.pets) {
-            target = findCharacterById(player.character.pets, abilityObjectFeedPet.targetCharacterId);
-            if (target !== null) break;
-        }
+    let owner = findAbilityOwnerById(abilityObject.abilityRefId!, game);
+    if (owner && owner.pets) {
+        target = findCharacterById(owner.pets, abilityObjectFeedPet.targetCharacterId);
     }
 
     if (target) {

@@ -35,7 +35,7 @@ export function tickProjectile(abilityObject: AbilityObject, game: Game) {
     moveProjectileTick(projectile);
     if(projectile.nextDamageTickTime === undefined) projectile.nextDamageTickTime = game.state.time + projectile.damageTickInterval;
     if(projectile.nextDamageTickTime <= game.state.time){
-        detectAbilityObjectCircleToCharacterHit(game.state.map, projectile, game.state.players, game.state.bossStuff.bosses, game);
+        detectAbilityObjectCircleToCharacterHit(game.state.map, projectile, game);
         projectile.nextDamageTickTime += projectile.damageTickInterval;
         if(projectile.nextDamageTickTime <= game.state.time){
             projectile.nextDamageTickTime = game.state.time + projectile.damageTickInterval;

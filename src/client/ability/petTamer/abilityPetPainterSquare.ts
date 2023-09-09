@@ -1,8 +1,8 @@
 import { characterTakeDamage, determineCharactersInDistance } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
-import { TamerPetCharacter, findPetOwnerInPlayers } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
+import { TamerPetCharacter, findPetOwner } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { calculateDistance, getCameraPosition } from "../../game.js";
-import { Game, Position } from "../../gameModel.js";
+import { FACTION_ENEMY, Game, Position } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { isPositionBlocking } from "../../map/map.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
@@ -49,7 +49,7 @@ function createAbilityObjectPetPainterSquare(
     let abilityObjectPetPainter: AbilityObjectPetPainterSquare = {
         type: ABILITY_NAME_PET_PAINTER,
         size: size,
-        color: "",
+        color: "red",
         x: position.x,
         y: position.y,
         damage: damage,
@@ -60,7 +60,9 @@ function createAbilityObjectPetPainterSquare(
         subType: PET_PAINTER_SQUARE,
         abilityRefId: abilityRefId,
     }
-
+    if(faction === FACTION_ENEMY){
+        abilityObjectPetPainter.color = "black";
+    }
     return abilityObjectPetPainter;
 }
 
@@ -78,7 +80,7 @@ function createAbilityObjectPetPainterSquareFactory(
     let abilityObjectPetPainter: AbilityObjectPetPainterSquare = {
         type: ABILITY_NAME_PET_PAINTER,
         size: size,
-        color: "",
+        color: "red",
         x: position.x,
         y: position.y,
         damage: damage,
@@ -91,7 +93,9 @@ function createAbilityObjectPetPainterSquareFactory(
         tickInterval: spawnInterval * 2,
         isFactory: true,
     }
-
+    if(faction === FACTION_ENEMY){
+        abilityObjectPetPainter.color = "black";
+    }
     return abilityObjectPetPainter;
 }
 
@@ -185,7 +189,7 @@ function paintShapeObjectPetPainterSquare(ctx: CanvasRenderingContext2D, ability
     const cameraPosition = getCameraPosition(game);
     const square = abilityObject as AbilityObjectPetPainterSquare;
     const paintPos = getPointPaintPosition(ctx, square, cameraPosition);
-    ctx.fillStyle = "red";
+    ctx.fillStyle = abilityObject.color;
     ctx.lineWidth = 1;
     ctx.globalAlpha = (square.deleteTime - game.state.time) / FADETIME;
     if (square.isFactory) {
@@ -215,7 +219,7 @@ function paintShapeSquare(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOw
 }
 
 function getRandomStartPaintPositionSquare(pet: TamerPetCharacter, game: Game): Position {
-    let petOwner: Character = findPetOwnerInPlayers(pet, game)!;
+    let petOwner: Character = findPetOwner(pet, game)!;
     let blocking = true;
     let position = { x: 0, y: 0 };
     do {

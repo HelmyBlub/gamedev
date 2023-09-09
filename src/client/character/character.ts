@@ -228,39 +228,38 @@ export function determineClosestCharacter(position: Position, characters: Charac
 
 export function determineCharactersInDistance(position: Position, map: GameMap | undefined, players: Player[], bosses: BossEnemyCharacter[] | undefined, maxDistance: number, notFaction: string | undefined = undefined): Character[] {
     let result: Character[] = [];
-
-    if(map){
-        let mapKeysInDistance = determineMapKeysInDistance(position, map, maxDistance, true, false);
-    
-        for (let i = 0; i < mapKeysInDistance.length; i++) {
-            let chunk = map.chunks[mapKeysInDistance[i]];
-            if (chunk === undefined) continue;
-            let characters: Character[] = chunk.characters;
-            for (let j = 0; j < characters.length; j++) {
-                if (characters[j].faction === notFaction) continue;
-                let distance = calculateDistance(position, characters[j]);
-                if (maxDistance >= distance) {
-                    result.push(characters[j]);
+    if (notFaction === undefined || FACTION_ENEMY !== notFaction){
+        if(map){
+            let mapKeysInDistance = determineMapKeysInDistance(position, map, maxDistance, true, false);        
+            for (let i = 0; i < mapKeysInDistance.length; i++) {
+                let chunk = map.chunks[mapKeysInDistance[i]];
+                if (chunk === undefined) continue;
+                let characters: Character[] = chunk.characters;
+                for (let j = 0; j < characters.length; j++) {
+                    let distance = calculateDistance(position, characters[j]);
+                    if (maxDistance >= distance) {
+                        result.push(characters[j]);
+                    }
                 }
             }
         }
-    }
-
-    if(bosses){
-        for (let boss of bosses) {
-            if (boss.faction === notFaction) continue;
-            let distance = calculateDistance(position, boss);
-            if (maxDistance >= distance) {
-                result.push(boss);
+        if(bosses){
+            for (let boss of bosses) {
+                let distance = calculateDistance(position, boss);
+                if (maxDistance >= distance) {
+                    result.push(boss);
+                }
             }
-        }
+        }        
     }
 
-    for (let player of players) {
-        if (player.character.faction === notFaction) continue;
-        let distance = calculateDistance(position, player.character);
-        if (maxDistance >= distance) {
-            result.push(player.character);
+    if (notFaction === undefined || FACTION_PLAYER !== notFaction){
+        for (let player of players) {
+            if (player.character.faction === notFaction) continue;
+            let distance = calculateDistance(position, player.character);
+            if (maxDistance >= distance) {
+                result.push(player.character);
+            }
         }
     }
     return result;

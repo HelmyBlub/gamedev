@@ -12,6 +12,7 @@ import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPa
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, createCharacter } from "../characterModel.js";
 import { PathingCache } from "../pathing.js";
 import { CHARACTER_CLASS_SNIPER_NAME } from "../playerCharacters/sniperCharacter.js";
+import { TAMER_CHARACTER } from "../playerCharacters/tamer/tamerCharacter.js";
 
 export type EndBossEnemyCharacter = Character;
 export const CHARACTER_TYPE_END_BOSS_ENEMY = "EndBossEnemyCharacter";
@@ -89,7 +90,7 @@ export function tickEndBossEnemyCharacter(enemy: EndBossEnemyCharacter, game: Ga
 
 export function convertPlayerToEndBoss(game: Game) {
     let nextBoss: Character = deepCopy(game.state.players[0].character);
-    if(nextBoss.characterClass !== CHARACTER_CLASS_SNIPER_NAME) return;
+    if(nextBoss.characterClass !== CHARACTER_CLASS_SNIPER_NAME && nextBoss.characterClass !== TAMER_CHARACTER) return;
     game.state.bossStuff.nextEndboss = nextBoss;
     const boss = game.state.bossStuff.nextEndboss;
     boss.type = CHARACTER_TYPE_END_BOSS_ENEMY;
@@ -114,6 +115,16 @@ function changeBossAbilityLevelBasedOnHp(enemy: EndBossEnemyCharacter) {
         let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
         if (abilityFunctions && abilityFunctions.setAbilityToBossLevel) {
             abilityFunctions.setAbilityToBossLevel(ability, abilityLevel);
+        }
+    }
+    if(enemy.pets){
+        for(let pet of enemy.pets){
+            for (let ability of pet.abilities) {
+                let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+                if (abilityFunctions && abilityFunctions.setAbilityToBossLevel) {
+                    abilityFunctions.setAbilityToBossLevel(ability, abilityLevel);
+                }
+            }           
         }
     }
 }

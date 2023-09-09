@@ -1,9 +1,13 @@
 current tasks:
+- need new sniper boss kill testrun
+- need new tamer boss kill testrun
+
 - after end boss defeats
     - player character is next boss
         - tamer:
-            - boss should feed pet and care for happines
             - make boss beatable
+                - pet leashes shorter for bosses?
+            - reset pet, happines icons spam probably because of it
         - builder:
             - ...
         - every ability needs a boss ability type which makes it fair

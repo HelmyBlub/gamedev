@@ -1,12 +1,12 @@
 import { findCharacterById } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
-import { TamerPetCharacter, changeTamerPetHappines } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
+import { PetHappines, TamerPetCharacter, changeTamerPetHappines, petHappinessToDisplayText } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { calculateDirection, calculateDistance, getCameraPosition, getNextId } from "../../game.js";
 import { IdCounter, Position, Game, FACTION_PLAYER } from "../../gameModel.js";
 import { GAME_IMAGES, getImage, loadImage } from "../../imageLoad.js";
 import { moveByDirectionAndDistance } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility } from "../ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, findAbilityById, findAbilityOwnerById } from "../ability.js";
 
 export type AbilityLovePet = Ability & {
     loveValue: number,
@@ -35,6 +35,7 @@ export function addAbilityLovePet() {
         paintAbilityUI: paintAbilityLovePetUI,
         paintAbilityObject: paintAbilityObjectLovePet,
         tickAbilityObject: tickAbilityObjectLovePet,
+        tickBossAI: tickBossAI,
         deleteAbilityObject: deleteAbilityObjectLovePet,
         isPassive: false,
         notInheritable: true,
@@ -59,6 +60,19 @@ export function createAbilityLovePet(
     };
 }
 
+function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
+    let abilityLovePet = ability as AbilityLovePet;
+    if(abilityOwner.pets){
+        for(let pet of abilityOwner.pets){
+            let happines: PetHappines = petHappinessToDisplayText(pet.happines);
+            if(happines === "unhappy" && (!abilityLovePet.nextRechargeTime || abilityLovePet.nextRechargeTime + 500 <= game.state.time)){
+                castLovePet(abilityOwner, ability, pet, true, game);
+                break;
+            }
+        }
+    }
+}
+
 function deleteAbilityObjectLovePet(abilityObject: AbilityObject, game: Game): boolean {
     const abilityObjectLovePet = abilityObject as AbilityObjectLovePet;
     return abilityObjectLovePet.reachedTarget;
@@ -68,11 +82,9 @@ function tickAbilityObjectLovePet(abilityObject: AbilityObject, game: Game) {
     const abilityObjectLovePet = abilityObject as AbilityObjectLovePet;
     if (abilityObjectLovePet.reachedTarget) return;
     let target: Character | null = null;
-    for (let player of game.state.players) {
-        if (player.character.pets) {
-            target = findCharacterById(player.character.pets, abilityObjectLovePet.targetCharacterId);
-            if (target !== null) break;
-        }
+    let owner = findAbilityOwnerById(abilityObject.abilityRefId!, game);
+    if (owner && owner.pets) {
+        target = findCharacterById(owner.pets, abilityObjectLovePet.targetCharacterId);
     }
 
     if (target) {
@@ -142,21 +154,21 @@ function castLovePet(abilityOwner: AbilityOwner, ability: Ability, castPosition:
 
     if (abilityLovePet.nextRechargeTime === undefined || game.state.time >= abilityLovePet.nextRechargeTime) {
         let distance: number = 40;
-        let closetPet: TamerPetCharacter | undefined = undefined;
+        let closestPet: TamerPetCharacter | undefined = undefined;
         for (let pet of abilityOwner.pets!) {
             let tempRangeToClick = calculateDistance(pet, castPosition);
             let tempRangeToOwner = calculateDistance(pet, abilityOwner);
             if (tempRangeToOwner <= abilityLovePet.range && tempRangeToClick < distance) {
-                closetPet = pet as TamerPetCharacter;
+                closestPet = pet as TamerPetCharacter;
                 distance = tempRangeToClick;
             }
         }
-        if (closetPet) {
+        if (closestPet) {
             abilityLovePet.nextRechargeTime = game.state.time + abilityLovePet.baseRechargeTime;
 
             let objectLovePet: AbilityObjectLovePet = {
                 loveValue: abilityLovePet.loveValue,
-                targetCharacterId: closetPet.id,
+                targetCharacterId: closestPet.id,
                 reachedTarget: false,
                 color: "white",
                 damage: 0,

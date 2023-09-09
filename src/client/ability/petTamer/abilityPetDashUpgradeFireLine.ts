@@ -1,6 +1,6 @@
 import { TamerPetCharacter } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { AbilityUpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
-import { Game, Position } from "../../gameModel.js";
+import { FACTION_PLAYER, Game, Position } from "../../gameModel.js";
 import { Ability } from "../ability.js";
 import { createAbilityObjectFireLine } from "../abilityFireLine.js";
 import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrade.js";
@@ -31,7 +31,7 @@ export function createPetDashUpgradeFireLine(pet: TamerPetCharacter, ability: Ab
     if (!upgrade) return;
     const width = Math.floor(Math.max(pet.width * 0.75, 10));
     const tickInterval = 100;
-    const color = "red";
+    const color = pet.faction === FACTION_PLAYER ? "red" : "black";
     const tickDamage = getPetAbilityDashDamage(pet, ability) * (tickInterval / 1000) * upgrade.damageFactor;
     game.state.abilityObjects.push(createAbilityObjectFireLine(
         pet.faction,

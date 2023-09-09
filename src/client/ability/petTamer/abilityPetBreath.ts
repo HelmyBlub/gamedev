@@ -85,7 +85,7 @@ function setAbilityPetBreathToLevel(ability: Ability, level: number) {
 
 function setAbilityPetBreathToBossLevel(ability: Ability, level: number) {
     let abilityPetBreath = ability as AbilityPetBreath;
-    abilityPetBreath.damage = level * 25;
+    abilityPetBreath.damage = level * 4;
 }
 
 function paintAbilityPetBreath(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {

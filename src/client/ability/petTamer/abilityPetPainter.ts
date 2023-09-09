@@ -59,6 +59,7 @@ export function addAbilityPetPainter() {
         paintAbilityObject: paintAbilityObjectPetPainter,
         deleteAbilityObject: deleteAbilityObjectPetPainter,
         setAbilityToLevel: setAbilityPetPainterToLevel,
+        setAbilityToBossLevel: setAbilityPetPainterToBossLevel,
         getLongDescription: getLongDescription,
         abilityUpgradeFunctions: ABILITY_PET_PAINTER_UPGRADE_FUNCTIONS,
         isPassive: true,
@@ -113,6 +114,11 @@ function getLongDescription(): string[]{
 function setAbilityPetPainterToLevel(ability: Ability, level: number) {
     let abilityPetPainter = ability as AbilityPetPainter;
     abilityPetPainter.baseDamage = level * 200;
+}
+
+function setAbilityPetPainterToBossLevel(ability: Ability, level: number) {
+    let abilityPetPainter = ability as AbilityPetPainter;
+    abilityPetPainter.baseDamage = level * 10;
 }
 
 function tickAbilityObjectPetPainter(abilityObject: AbilityObject, game: Game) {

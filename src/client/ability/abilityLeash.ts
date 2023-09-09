@@ -18,6 +18,7 @@ export function addAbilityLesh() {
         tickAbility: tickAbilityLeash,
         paintAbility: paintAbilityLeash,
         createAbility: createAbilityLeash,
+        setAbilityToBossLevel: setAbilityToBossLevel,
         notInheritable: true,
         isPassive: true,
     };
@@ -38,6 +39,11 @@ export function createAbilityLeash(
         leashBendPoints: [],
         upgrades: {},
     };
+}
+
+function setAbilityToBossLevel(ability: Ability, level: number){
+    let abilityLeash = ability as AbilityLeash;
+    abilityLeash.leashMaxLength = 80 + level * 10;
 }
 
 function paintAbilityLeash(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {

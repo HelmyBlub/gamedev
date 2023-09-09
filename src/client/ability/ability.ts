@@ -190,16 +190,16 @@ export function findAbilityOwnerByAbilityId(abilityId: number, game: Game): Char
     return undefined;
 }
 
-export function findAbilityById(abilityId: number, game: Game): Ability | undefined {
+export function findAbilityAndOwnerById(abilityId: number, game: Game): {ability: Ability, owner: AbilityOwner} | undefined {
     for (let i = 0; i < game.state.players.length; i++) {
         let playerCharacter = game.state.players[i].character;
         for (let ability of playerCharacter.abilities) {
-            if (ability.id === abilityId) return ability;
+            if (ability.id === abilityId) return {ability: ability, owner: playerCharacter};
         }
         if (playerCharacter.pets) {
             for (let pet of playerCharacter.pets) {
                 for (let ability of pet.abilities) {
-                    if (ability.id === abilityId) return ability;
+                    if (ability.id === abilityId) return {ability: ability, owner: pet};
                 }
             }
         }
@@ -207,9 +207,29 @@ export function findAbilityById(abilityId: number, game: Game): Ability | undefi
     for (let i = 0; i < game.state.bossStuff.bosses.length; i++) {
         const boss = game.state.bossStuff.bosses[i];
         for (let ability of boss.abilities) {
-            if (ability.id === abilityId) return ability;
+            if (ability.id === abilityId) return {ability: ability, owner: boss};
+            if (boss.pets) {
+                for (let pet of boss.pets) {
+                    for (let ability of pet.abilities) {
+                        if (ability.id === abilityId) return {ability: ability, owner: pet};
+                    }
+                }
+            }    
         }
     }
+    return undefined;
+}
+
+
+export function findAbilityById(abilityId: number, game: Game): Ability | undefined {
+    let result = findAbilityAndOwnerById(abilityId, game);
+    if(result) return result.ability;
+    return undefined;
+}
+
+export function findAbilityOwnerById(abilityId: number, game: Game): AbilityOwner | undefined {
+    let result = findAbilityAndOwnerById(abilityId, game);
+    if(result) return result.owner;
     return undefined;
 }
 
@@ -245,14 +265,14 @@ export function paintDefaultAbilityStatsUI(ctx: CanvasRenderingContext2D, textLi
     return { width, height };
 }
 
-export function detectAbilityObjectCircleToCharacterHit(map: GameMap, abilityObject: AbilityObjectCircle, players: Player[], bosses: BossEnemyCharacter[], game: Game) {
-    detectCircleCharacterHit(map, abilityObject, abilityObject.radius, abilityObject.faction, abilityObject.abilityRefId!, abilityObject.damage, players, bosses, game, abilityObject);
+export function detectAbilityObjectCircleToCharacterHit(map: GameMap, abilityObject: AbilityObjectCircle, game: Game) {
+    detectCircleCharacterHit(map, abilityObject, abilityObject.radius, abilityObject.faction, abilityObject.abilityRefId!, abilityObject.damage, game, abilityObject);
 }
 
-export function detectCircleCharacterHit(map: GameMap, circleCenter: Position, circleRadius: number, faction: string, abilityId: number, damage: number, players: Player[], bosses: BossEnemyCharacter[], game: Game, abilityObject: AbilityObject | undefined = undefined, ability: Ability | undefined = undefined) {
+export function detectCircleCharacterHit(map: GameMap, circleCenter: Position, circleRadius: number, faction: string, abilityId: number, damage: number, game: Game, abilityObject: AbilityObject | undefined = undefined, ability: Ability | undefined = undefined) {
     let maxEnemySizeEstimate = 40;
 
-    let characters = determineCharactersInDistance(circleCenter, map, players, bosses, circleRadius * 2 + maxEnemySizeEstimate);
+    let characters = determineCharactersInDistance(circleCenter, map, game.state.players, game.state.bossStuff.bosses, circleRadius * 2 + maxEnemySizeEstimate, faction);
     for (let charIt = characters.length - 1; charIt >= 0; charIt--) {
         let c = characters[charIt];
         if (c.isDead || c.faction === faction) continue;

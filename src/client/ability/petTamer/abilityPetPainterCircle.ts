@@ -1,7 +1,7 @@
 import { Character } from "../../character/characterModel.js";
-import { TamerPetCharacter, findPetOwnerInPlayers } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
+import { TamerPetCharacter, findPetOwner } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { calculateDistance, getCameraPosition } from "../../game.js";
-import { Game, Position } from "../../gameModel.js";
+import { FACTION_ENEMY, Game, Position } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { calculateMovePosition, isPositionBlocking, calculateBounceAngle } from "../../map/map.js";
 import { RandomSeed, nextRandom } from "../../randomNumberGenerator.js";
@@ -57,6 +57,10 @@ function createAbilityObjectPetPainterCircle(
         direction: nextRandom(randomSeed) * Math.PI * 2,
         moveSpeed: 4,
         tickInterval: 100,
+    }
+
+    if(faction === FACTION_ENEMY){
+        abilityObjectPetPainter.color = "black";
     }
 
     return abilityObjectPetPainter;
@@ -149,7 +153,7 @@ function tickShapeObjectPetPainterCircle(abilityObject: AbilityObjectPetPainter,
 
         if (circle.nextTickTime === undefined) circle.nextTickTime = game.state.time + circle.tickInterval;
         if (circle.nextTickTime <= game.state.time) {
-            detectAbilityObjectCircleToCharacterHit(game.state.map, circle, [], game.state.bossStuff.bosses, game);
+            detectAbilityObjectCircleToCharacterHit(game.state.map, circle, game);
             circle.nextTickTime += circle.tickInterval;
             if (circle.nextTickTime <= game.state.time) {
                 circle.nextTickTime = game.state.time + circle.tickInterval;
@@ -182,7 +186,7 @@ function paintShapeCircle(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOw
 }
 
 function getRandomStartPaintPositionCircle(pet: TamerPetCharacter, game: Game): Position {
-    let petOwner: Character = findPetOwnerInPlayers(pet, game)!;
+    let petOwner: Character = findPetOwner(pet, game)!;
     let blocking = true;
     let position = { x: 0, y: 0 };
     do {

@@ -229,7 +229,7 @@ function tickAbilityObjectFireCircle(abilityObject: AbilityObject, game: Game) {
     if (abilityObjectFireCircle.subType === "FireCircel") {
         if (abilityObjectFireCircle.nextTickTime === undefined) abilityObjectFireCircle.nextTickTime = game.state.time + abilityObjectFireCircle.tickInterval;
         if (abilityObjectFireCircle.nextTickTime <= game.state.time) {
-            detectAbilityObjectCircleToCharacterHit(game.state.map, abilityObjectFireCircle, game.state.players, game.state.bossStuff.bosses, game);
+            detectAbilityObjectCircleToCharacterHit(game.state.map, abilityObjectFireCircle, game);
             abilityObjectFireCircle.nextTickTime += abilityObjectFireCircle.tickInterval;
         }
     } else if (abilityObjectFireCircle.subType === "FireCircelTraveling") {

@@ -19,6 +19,8 @@ import { TAMER_PET_TRAIT_VERY_HUNGRY } from "./petTraitVeryHungry.js";
 
 export type PetTargetBehavior = "passive" | "aggressive" | "protective";
 export type PetNoTargetBehavior = "stay" | "hyperactive" | "following";
+export type PetHappines = "unhappy" | "happy" | "hyperactive";
+export type PetHunger = "not hungry" | "hungry" | "ate too much";
 
 const MAX_HAPPINES = 150;
 const MAX_FOOD_INTAKE = 500;
@@ -166,7 +168,17 @@ export function tamerPetFeed(pet: TamerPetCharacter, feedValue: number, time: nu
     }
 }
 
-function foodIntakeToDisplayText(foodIntakeLevel: FoodIntakeLevel): string {
+export function petHappinessToDisplayText(happines: Happiness): PetHappines {
+    if (happines.current < happines.unhappyAt) {
+        return "unhappy";
+    } else if (happines.current > happines.hyperactiveAt) {
+        return "hyperactive";
+    } else {
+        return "happy";
+    }
+}
+
+export function petFoodIntakeToDisplayText(foodIntakeLevel: FoodIntakeLevel): PetHunger {
     if (foodIntakeLevel.current < foodIntakeLevel.underfedAt) {
         return "hungry";
     } else if (foodIntakeLevel.current > foodIntakeLevel.overfedAt) {
@@ -175,22 +187,12 @@ function foodIntakeToDisplayText(foodIntakeLevel: FoodIntakeLevel): string {
         return "not hungry";
     }
 }
-function happinessToDisplayText(happines: Happiness): string {
-    if (happines.current < happines.unhappyAt) {
-        return "unhappy";
-    } else if (happines.current > happines.hyperactiveAt) {
-        return "too much";
-    } else {
-        return "happy";
-    }
-}
-
 export function paintTamerPetCharacterStatsUI(ctx: CanvasRenderingContext2D, pet: TamerPetCharacter, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
     const textLines: string[] = [
         `Pet Stats:`,
         `Color: ${pet.paint.color}`,
-        `food: ${foodIntakeToDisplayText(pet.foodIntakeLevel)}`,
-        `Happiness: ${happinessToDisplayText(pet.happines)}`,
+        `food: ${petFoodIntakeToDisplayText(pet.foodIntakeLevel)}`,
+        `Happiness: ${petHappinessToDisplayText(pet.happines)}`,
         `Movement Speed: ${pet.moveSpeed.toFixed(2)}`,
         `Level: ${pet.leveling.level.toFixed(0)}`,
     ];
@@ -292,9 +294,14 @@ export function changeTamerPetHappines(pet: TamerPetCharacter, value: number, ti
     }
 }
 
-export function findPetOwnerInPlayers(pet: TamerPetCharacter, game: Game): Character | undefined {
-    let playerCharacters = getPlayerCharacters(game.state.players);
-    for (let character of playerCharacters) {
+export function findPetOwner(pet: TamerPetCharacter, game: Game): Character | undefined {
+    let characters: Character[];
+    if (pet.faction === FACTION_PLAYER) {
+        characters = getPlayerCharacters(game.state.players);
+    } else {
+        characters = game.state.bossStuff.bosses;
+    }
+    for (let character of characters) {
         if (character.pets?.includes(pet)) {
             return character;
         }
@@ -432,9 +439,9 @@ function getTargetByBehavior(pet: TamerPetCharacter, petOwner: Character, game: 
 
 function determineTargetsInDistance(pet: TamerPetCharacter, game: Game, distance: number = 200, ignoreMapEnemies: boolean = false): Character[] {
     if (pet.faction === FACTION_PLAYER) {
-        if(ignoreMapEnemies){
+        if (ignoreMapEnemies) {
             return determineCharactersInDistance(pet, undefined, [], game.state.bossStuff.bosses, distance);
-        }else{
+        } else {
             return determineCharactersInDistance(pet, game.state.map, [], game.state.bossStuff.bosses, distance);
         }
     } else {

@@ -95,5 +95,5 @@ function tickAbilityObjectExplode(abilityObject: AbilityObject, game: Game) {
     if(abilityObjectExplode.hasDamageDone) return;
     abilityObjectExplode.hasDamageDone = true;
     abilityObjectExplode.removeTime = game.state.time + PAINT_FADE_TIME;
-    detectAbilityObjectCircleToCharacterHit(game.state.map, abilityObjectExplode, game.state.players, game.state.bossStuff.bosses, game);
+    detectAbilityObjectCircleToCharacterHit(game.state.map, abilityObjectExplode, game);
 }

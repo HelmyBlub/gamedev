@@ -5,7 +5,7 @@ import { getNextId } from "../../game.js";
 import { IdCounter, Position, Game } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { calculateBounceAngle, calculateMovePosition, isPositionBlocking, moveByDirectionAndDistance } from "../../map/map.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectCircleCharacterHit, findAbilityById } from "../ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, detectCircleCharacterHit } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions } from "../abilityUpgrade.js";
 import { ABILITY_PET_DASH_UPGARDE_TERRAIN_BOUNCE, AbilityPetDashUpgradeTerrainBounce, addAbilityPetDashUpgradeTerrainBounce } from "./abilityPetDashUpgradeBounce.js";
 import { ABILITY_PET_DASH_UPGARDE_FIRE_LINE, AbilityPetDashUpgradeFireLine, addAbilityPetDashUpgradeFireLine, createPetDashUpgradeFireLine } from "./abilityPetDashUpgradeFireLine.js";
@@ -33,6 +33,7 @@ export function addAbilityPetDash() {
         paintAbility: paintAbilityPetDash,
         setAbilityToLevel: setAbilityPetDashToLevel,
         setAbilityToBossLevel: setAbilityPetDashToBossLevel,
+        resetAbility: resetAbility,
         onHit: onHit,
         getLongDescription: getLongDescription,
         abilityUpgradeFunctions: ABILITY_PET_DASH_UPGRADE_FUNCTIONS,
@@ -68,6 +69,11 @@ export function getPetAbilityDashDamage(pet: TamerPetCharacter, ability: Ability
     return damage;
 }
 
+function resetAbility(ability: Ability){
+    const dash = ability as AbilityPetDash;
+    dash.activeUntilTime = undefined;
+}
+
 function getLongDescription(): string[]{
     return [
         `Ability: ${ABILITY_NAME_PET_DASH}`,
@@ -94,7 +100,8 @@ function setAbilityPetDashToLevel(ability: Ability, level: number) {
 
 function setAbilityPetDashToBossLevel(ability: Ability, level: number) {
     let abilityPetDash = ability as AbilityPetDash;
-    abilityPetDash.baseDamage = level * 25;
+    abilityPetDash.baseDamage = level * 4;
+    abilityPetDash.cooldown = 3000 - level * 150;
 }
 
 function paintAbilityPetDash(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
@@ -145,7 +152,7 @@ function tickAbilityPetDash(abilityOwner: AbilityOwner, ability: Ability, game: 
             moveByDirectionAndDistance(pet, abilityPetDash.direction!, abilityPetDash.baseSpeed, true, game.state.map, game.state.idCounter);
         }
 
-        detectCircleCharacterHit(game.state.map, pet, pet.width / 2 + abilityPetDash.sizeExtension, pet.faction, ability.id, getPetAbilityDashDamage(pet, abilityPetDash), [], game.state.bossStuff.bosses, game, undefined, ability);
+        detectCircleCharacterHit(game.state.map, pet, pet.width / 2 + abilityPetDash.sizeExtension, pet.faction, ability.id, getPetAbilityDashDamage(pet, abilityPetDash), game, undefined, ability);
     } else if (abilityPetDash.readyTime <= game.state.time) {
         if (abilityOwner.isMoving) {
             if (upgradeBounce) upgradeBounce.currentDamageFactor = 1;
