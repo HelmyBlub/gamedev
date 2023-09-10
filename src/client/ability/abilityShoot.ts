@@ -85,7 +85,6 @@ function setAbilityShootToBossLevel(ability: Ability, level: number){
     abilityShoot.shootRandom = true;
 }
 
-
 function tickAbilityShoot(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     let abilityShoot = ability as AbilityShoot;
     if(abilityShoot.nextShotTime === -1) abilityShoot.nextShotTime = game.state.time;

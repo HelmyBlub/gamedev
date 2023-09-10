@@ -21,6 +21,7 @@ export function addAbilitySingleTarget() {
         tickAbility: tickAbilitySingleTarget,
         paintAbility: paintAbilitySingleTarget,
         setAbilityToLevel: setAbilitySingleTargetToLevel,
+        setAbilityToBossLevel: setAbilitySingleTargetToBossLevel,
         createAbility: createAbilitySingleTarget,
         isPassive: true,
         canBeUsedByBosses: false,
@@ -53,6 +54,14 @@ function setAbilitySingleTargetToLevel(ability: Ability, level: number){
     abilitySingleTarget.maxRange = 120 + level * 15;
     abilitySingleTarget.attackTimeDecreaseFaktor = 0.70 + 0.30 * level;
     abilitySingleTarget.damageIncreaseFactorPerAttack = 0.01 * level;
+}
+
+function setAbilitySingleTargetToBossLevel(ability: Ability, level: number){
+    let abilitySingleTarget = ability as AbilitySingleTarget;
+    abilitySingleTarget.damage = 5 * level;
+    abilitySingleTarget.maxRange = 100 + level * 15;
+    abilitySingleTarget.attackTimeDecreaseFaktor = 0.70 + 0.30 * level;
+    abilitySingleTarget.damageIncreaseFactorPerAttack = 0.05 * level;
 }
 
 function paintAbilitySingleTarget(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {

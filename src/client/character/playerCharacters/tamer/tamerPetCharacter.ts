@@ -355,7 +355,6 @@ function reset(character: Character){
     pet.happines.visualizations = [];
     pet.foodIntakeLevel.nextTick = undefined;
     pet.nextMovementUpdateTime = undefined;
-    console.log("pet reset");
 }
 
 function moveTick(pet: TamerPetCharacter, petOwner: Character, game: Game, pathingCache: PathingCache) {

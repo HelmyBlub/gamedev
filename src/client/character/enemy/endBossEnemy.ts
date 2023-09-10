@@ -90,7 +90,7 @@ export function tickEndBossEnemyCharacter(enemy: EndBossEnemyCharacter, game: Ga
 
 export function convertPlayerToEndBoss(game: Game) {
     let nextBoss: Character = deepCopy(game.state.players[0].character);
-    if(nextBoss.characterClass !== CHARACTER_CLASS_SNIPER_NAME && nextBoss.characterClass !== TAMER_CHARACTER) return;
+//    if(nextBoss.characterClass !== CHARACTER_CLASS_SNIPER_NAME && nextBoss.characterClass !== TAMER_CHARACTER) return;
     game.state.bossStuff.nextEndboss = nextBoss;
     const boss = game.state.bossStuff.nextEndboss;
     boss.type = CHARACTER_TYPE_END_BOSS_ENEMY;

@@ -1,8 +1,10 @@
 import { getCharactersTouchingLine, characterTakeDamage } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
+import { CHARACTER_TYPE_BOSS_ENEMY } from "../character/enemy/bossEnemy.js";
+import { CHARACTER_TYPE_END_BOSS_ENEMY } from "../character/enemy/endBossEnemy.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../character/upgrade.js";
 import { calculateDistance, getCameraPosition, getNextId } from "../game.js";
-import { Position, Game, IdCounter } from "../gameModel.js";
+import { Position, Game, IdCounter, FACTION_ENEMY } from "../gameModel.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
 import { positionToMapKey } from "../map/map.js";
 import { findPlayerByCharacterId } from "../player.js";
@@ -18,6 +20,7 @@ type AbilityObjectTower = AbilityObject & {
     ability?: Ability,
     lineDamageTickFrequency: number,
     lineDamageNextDamageTick?: number,
+    isBossTower?: boolean,
 }
 
 type AbilityTower = Ability & {
@@ -27,6 +30,7 @@ type AbilityTower = Ability & {
     availableAbilityKeys: string[],
     orderOfAbilities: number[],
     currentAbilityIndex: number,
+    lastBuildTime?: number,
 }
 
 const ABILITY_NAME_TOWER = "Tower";
@@ -49,6 +53,8 @@ export function addAbilityTower() {
         createAbility: createAbilityTower,
         deleteAbilityObject: deleteAbilityObjectTower,
         paintAbilityStatsUI: paintAbilityTowerStatsUI,
+        tickBossAI: tickBossAI,
+        resetAbility: resetAbility,
         isPassive: false,
     };
 }
@@ -98,6 +104,24 @@ function createAbilityObjectTower(idCounter: IdCounter, ownerId: number, faction
     }
 }
 
+function resetAbility(ability: Ability){
+    const abilityTower = ability as AbilityTower;
+    abilityTower.lastBuildTime = undefined;
+}
+
+function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game){
+    const abilityTower = ability as AbilityTower;
+    const buildFrequency = 1000;
+    if(abilityTower.lastBuildTime === undefined || abilityTower.lastBuildTime + buildFrequency <= game.state.time){
+        let pos: Position = {
+            x: abilityOwner.x + (nextRandom(game.state.randomSeed) * 50 - 25),
+            y: abilityOwner.y + (nextRandom(game.state.randomSeed) * 50 - 25)
+        };
+        castTower(abilityOwner, ability, pos, true, game);
+        console.log("Boss ai build tower");
+    }
+}
+
 function deleteAbilityObjectTower(abilityObject: AbilityObject, game: Game) {
     //nothing to do here, delete happens on cast
     return false;
@@ -105,7 +129,7 @@ function deleteAbilityObjectTower(abilityObject: AbilityObject, game: Game) {
 
 function castTower(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isKeydown: boolean, game: Game) {
     if (!isKeydown) return;
-    let abilityTower = ability as AbilityTower;
+    const abilityTower = ability as AbilityTower;
     let distance = calculateDistance(abilityOwner, castPosition);
     if (distance > abilityTower.maxClickRange) return;
     let abilityObjects = game.state.abilityObjects;
@@ -119,12 +143,16 @@ function castTower(abilityOwner: AbilityOwner, ability: Ability, castPosition: P
     let nextAbility: Ability = ABILITIES_FUNCTIONS[nextAbilityKey].createAbility(game.state.idCounter);
     if (!nextAbility.passive) nextAbility.passive = true;
     abilityTower.currentAbilityIndex = (abilityTower.currentAbilityIndex + 1) % abilityTower.orderOfAbilities.length;
-    let newTower: AbilityObjectTower = createAbilityObjectTower(game.state.idCounter, abilityOwner.id, abilityOwner.faction, castPosition, nextAbility, abilityTower.damage);
-    let nearest = getNearestTower(abilityObjects, newTower, game.state.randomSeed);
+    const newTower: AbilityObjectTower = createAbilityObjectTower(game.state.idCounter, abilityOwner.id, abilityOwner.faction, castPosition, nextAbility, abilityTower.damage);
+    if(abilityOwner.type === CHARACTER_TYPE_BOSS_ENEMY || abilityOwner.type === CHARACTER_TYPE_END_BOSS_ENEMY){
+        newTower.isBossTower = true;
+    }
+    const nearest = getNearestTower(abilityObjects, newTower, game.state.randomSeed);
     if (nearest) {
         newTower.conntetedToId = nearest.id;
     }
     abilityObjects.push(newTower);
+    abilityTower.lastBuildTime = game.state.time;
     updateTowerObjectAbilityLevels(abilityObjects);
 }
 
@@ -192,8 +220,14 @@ function updateTowerObjectAbilityLevels(abilityObjects: AbilityObject[]) {
         let level = getTowerConnectionCount(abilityObjects, tower) + 1;
         if (tower.ability) {
             let abilityFunctions = ABILITIES_FUNCTIONS[tower.ability.name];
-            if (abilityFunctions.setAbilityToLevel) {
-                abilityFunctions.setAbilityToLevel(tower.ability, level);
+            if(tower.isBossTower){
+                if (abilityFunctions.setAbilityToBossLevel) {
+                    abilityFunctions.setAbilityToBossLevel(tower.ability, level);
+                }
+            }else{
+                if (abilityFunctions.setAbilityToLevel) {
+                    abilityFunctions.setAbilityToLevel(tower.ability, level);
+                }
             }
         }
     }
@@ -254,7 +288,7 @@ function paintAbilityObjectTower(ctx: CanvasRenderingContext2D, abilityObject: A
             if (getTowerCountOfOwner(game.state.abilityObjects, tower.ownerId) >= ability.orderOfAbilities.length) {
                 let oldestTower = findOldesTowerOfOwner(game.state.abilityObjects, tower.ownerId)?.tower;
                 if (oldestTower && oldestTower === tower) {
-                    ctx.fillStyle = "black";
+                    ctx.fillStyle = "darkblue";
                 } else {
                     ctx.fillStyle = "blue";
                 }
@@ -262,7 +296,11 @@ function paintAbilityObjectTower(ctx: CanvasRenderingContext2D, abilityObject: A
                 ctx.fillStyle = "blue";
             }
         } else {
-            ctx.fillStyle = "white";
+            if(abilityObject.faction === FACTION_ENEMY){
+                ctx.fillStyle = "black";
+            }else{
+                ctx.fillStyle = "white";
+            }
         }
         ctx.fillRect(paintX, paintY, towerBaseSize, towerHeight);
 
@@ -332,14 +370,16 @@ function getNearestTower(abilityObjects: AbilityObject[], tower: AbilityObjectTo
     let lowestDistance: number = 0;
     let nearest: AbilityObjectTower[] | undefined = undefined;
     for (let i = 0; i < abilityObjects.length; i++) {
-        if (abilityObjects[i] === tower) continue;
-        if (abilityObjects[i].type !== ABILITY_NAME_TOWER) continue;
-        currentDistance = calculateDistance(abilityObjects[i], tower);
+        const curObj = abilityObjects[i];
+        if (curObj.faction !== tower.faction) continue;
+        if (curObj === tower) continue;
+        if (curObj.type !== ABILITY_NAME_TOWER) continue;
+        currentDistance = calculateDistance(curObj, tower);
         if (nearest === undefined || currentDistance < lowestDistance) {
-            nearest = [abilityObjects[i] as AbilityObjectTower];
+            nearest = [curObj as AbilityObjectTower];
             lowestDistance = currentDistance;
         } else if (currentDistance === lowestDistance) {
-            nearest.push(abilityObjects[i] as AbilityObjectTower);
+            nearest.push(curObj as AbilityObjectTower);
         }
     }
     if (nearest) {
