@@ -8,7 +8,7 @@ import { deepCopy, getNextId } from "../../game.js";
 import { IdCounter, Game, Position, FACTION_ENEMY } from "../../gameModel.js";
 import { changeTileIdOfMapChunk } from "../../map/map.js";
 import { getBossAreaMiddlePosition, getEntranceChunkAndTileIJForPosition } from "../../map/mapEndBossArea.js";
-import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick } from "../character.js";
+import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick, resetCharacter } from "../character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, createCharacter } from "../characterModel.js";
 import { PathingCache } from "../pathing.js";
 import { CHARACTER_CLASS_SNIPER_NAME } from "../playerCharacters/sniperCharacter.js";
@@ -103,7 +103,7 @@ export function convertPlayerToEndBoss(game: Game) {
         }
     }
     boss.moveSpeed = 1;
-    resetAllCharacterAbilities(boss);
+    resetCharacter(boss);
     changeBossAbilityLevelBasedOnHp(boss);
 }
 

@@ -4,16 +4,14 @@ current tasks:
 
 - after end boss defeats
     - player character is next boss
-        - tamer:
-            - make boss beatable
-                - pet leashes shorter for bosses?
-            - reset pet, happines icons spam probably because of it
         - builder:
             - ...
-        - every ability needs a boss ability type which makes it fair
 - paint: give end boss a crown
     - animation: crown moves to player character
 - normal bosses abilities based on current end boss
+- test runs need end boss as information
+- balancing:
+    - sniper boss too easy currently. Idea: randomize shoot position a bit
 
 
 - End Bosses?

@@ -20,6 +20,7 @@ export type CHARACTER_TYPE_FUNCTIONS = {
         createBossUpgradeOptions?: (character: Character, game: Game) => UpgradeOptionAndProbability[],
         executeUpgradeOption?: (character: Character, upgradeOptionChoice: UpgradeOption, game: Game) => void,
         paintCharacterType?: (ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) => void,
+        reset?:  (character: Character) => void,
     }
 }
 

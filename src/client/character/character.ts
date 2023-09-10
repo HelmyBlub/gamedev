@@ -6,7 +6,7 @@ import { calculateDirection, calculateDistance, calculateDistancePointToLine, cr
 import { Position, Game, IdCounter, Camera, FACTION_ENEMY, FACTION_PLAYER } from "../gameModel.js";
 import { findPlayerById, Player } from "../player.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, Ability, findAbilityById, findAbilityOwnerByAbilityId, levelingAbilityXpGain } from "../ability/ability.js";
+import { ABILITIES_FUNCTIONS, Ability, findAbilityById, findAbilityOwnerByAbilityId, levelingAbilityXpGain, resetAllCharacterAbilities } from "../ability/ability.js";
 import { LEVELING_CHARACTER, LevelingCharacter } from "./playerCharacters/levelingCharacterModel.js";
 import { BossEnemyCharacter, CHARACTER_TYPE_BOSS_ENEMY } from "./enemy/bossEnemy.js";
 import { removeCharacterDebuffs, tickCharacterDebuffs } from "../debuff/debuff.js";
@@ -224,6 +224,22 @@ export function determineClosestCharacter(position: Position, characters: Charac
         }
     }
     return { minDistanceCharacter, minDistance };
+}
+
+export function resetCharacter(character: Character){
+    const typeFunctions = CHARACTER_TYPE_FUNCTIONS[character.type];
+    if(typeFunctions && typeFunctions.reset){
+        typeFunctions.reset(character);
+    }
+    if(character.pets){
+        for(let pet of character.pets){
+            const petTypeFunctions = CHARACTER_TYPE_FUNCTIONS[pet.type];
+            if(petTypeFunctions && petTypeFunctions.reset){
+                petTypeFunctions.reset(pet);
+            }    
+        }
+    }
+    resetAllCharacterAbilities(character);
 }
 
 export function determineCharactersInDistance(position: Position, map: GameMap | undefined, players: Player[], bosses: BossEnemyCharacter[] | undefined, maxDistance: number, notFaction: string | undefined = undefined): Character[] {

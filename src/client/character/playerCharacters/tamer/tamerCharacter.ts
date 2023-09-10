@@ -5,7 +5,7 @@ import { CHARACTER_TYPE_FUNCTIONS, Character } from "../../characterModel.js";
 import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./../playerCharacters.js";
 import { ABILITY_NAME_LEASH, AbilityLeash, createAbilityLeash } from "../../../ability/abilityLeash.js";
 import { ABILITY_NAME_MELEE } from "../../../ability/abilityMelee.js";
-import { TAMER_PET_CHARACTER, TamerPetCharacter, createTamerPetCharacter, paintTamerPetCharacter, tickTamerPetCharacter } from "./tamerPetCharacter.js";
+import { TamerPetCharacter, addTamerPetFunctions, createTamerPetCharacter } from "./tamerPetCharacter.js";
 import { ABILITY_NAME_FEED_PET } from "../../../ability/petTamer/abilityFeedPet.js";
 import { tickDefaultCharacter } from "../../character.js";
 import { nextRandom } from "../../../randomNumberGenerator.js";
@@ -14,7 +14,7 @@ import { ABILITY_NAME_PET_BREATH } from "../../../ability/petTamer/abilityPetBre
 import { ABILITY_NAME_PET_PAINTER } from "../../../ability/petTamer/abilityPetPainter.js";
 import { ABILITY_NAME_PET_DASH } from "../../../ability/petTamer/abilityPetDash.js";
 import { AbilityUpgradeOption, PetAbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../upgrade.js";
-import { Trait, addTamerPetTraits, addTraitToTamerPet, getAvailableTamerPetTraits, getLongExplainTextForTamerPetTrait } from "./petTrait.js";
+import { addTraitToTamerPet, getAvailableTamerPetTraits, getLongExplainTextForTamerPetTrait } from "./petTrait.js";
 
 export const TAMER_CHARACTER = "Tamer";
 export function addTamerClass() {
@@ -26,11 +26,7 @@ export function addTamerClass() {
         createBossUpgradeOptions: createTamerBossUpgradeOptions,
         executeUpgradeOption: executeTamerBossUpgradeOption,
     }
-    CHARACTER_TYPE_FUNCTIONS[TAMER_PET_CHARACTER] = {
-        tickPetFunction: tickTamerPetCharacter,
-        paintCharacterType: paintTamerPetCharacter,
-    }
-    addTamerPetTraits();
+    addTamerPetFunctions();
 }
 
 function changeCharacterToTamerClass(

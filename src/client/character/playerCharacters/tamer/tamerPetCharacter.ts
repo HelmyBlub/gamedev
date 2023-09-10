@@ -1,15 +1,14 @@
 import { ABILITIES_FUNCTIONS, paintDefaultAbilityStatsUI } from "../../../ability/ability.js";
 import { calculateDirection, calculateDistance, getNextId } from "../../../game.js";
-import { FACTION_ENEMY, FACTION_PLAYER, Game, Position } from "../../../gameModel.js";
+import { FACTION_PLAYER, Game, Position } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
 import { GAME_IMAGES, getImage } from "../../../imageLoad.js";
 import { moveByDirectionAndDistance } from "../../../map/map.js";
 import { nextRandom } from "../../../randomNumberGenerator.js";
 import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, calculateCharacterMovePosition, getPlayerCharacters } from "../../character.js";
-import { Character, createCharacter } from "../../characterModel.js";
-import { paintCharacterDefault } from "../../characterPaint.js";
+import { CHARACTER_TYPE_FUNCTIONS, Character, createCharacter } from "../../characterModel.js";
 import { PathingCache } from "../../pathing.js";
-import { Trait, tamerPetIncludesTrait } from "./petTrait.js";
+import { Trait, addTamerPetTraits, tamerPetIncludesTrait } from "./petTrait.js";
 import { TAMER_PET_TRAIT_EATS_LESS } from "./petTraitEatsLess.js";
 import { TAMER_PET_TRAIT_GETS_FAT_EASILY } from "./petTraitGetFatEasily.js";
 import { TAMER_PET_TRAIT_HAPPY_ONE } from "./petTraitHappyOne.js";
@@ -83,6 +82,15 @@ GAME_IMAGES["UNHAPPY"] = {
     spriteRowWidths: [40],
 };
 
+export function addTamerPetFunctions() {
+    CHARACTER_TYPE_FUNCTIONS[TAMER_PET_CHARACTER] = {
+        tickPetFunction: tickTamerPetCharacter,
+        paintCharacterType: paintTamerPetCharacter,
+        reset: reset,
+    }
+    addTamerPetTraits();
+}
+
 export function createTamerPetCharacter(owner: Character, color: string, game: Game): TamerPetCharacter {
     const defaultSize = 30;
     const baseMoveSpeed = 2;
@@ -118,7 +126,7 @@ export function createTamerPetCharacter(owner: Character, color: string, game: G
     return tamerPetCharacter;
 }
 
-export function tickTamerPetCharacter(character: Character, petOwner: Character, game: Game, pathingCache: PathingCache | null) {
+function tickTamerPetCharacter(character: Character, petOwner: Character, game: Game, pathingCache: PathingCache | null) {
     const pet: TamerPetCharacter = character as TamerPetCharacter;
     if (pathingCache === null) {
         console.log("needs pathing cache");
@@ -225,7 +233,7 @@ export function paintTamerPetCharacterStatsUI(ctx: CanvasRenderingContext2D, pet
     return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
 }
 
-export function paintTamerPetCharacter(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
+function paintTamerPetCharacter(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
     let tamerPetCharacter = character as TamerPetCharacter;
     let petImage = getImage(TAMER_PET_CHARACTER, character.paint.color);
     if (petImage) {
@@ -339,6 +347,15 @@ function foodIntakeLevelTick(pet: TamerPetCharacter, game: Game) {
     pet.width = pet.defaultSize * pet.sizeFactor;
     pet.height = pet.width;
     pet.weight = (pet.width * pet.height) / 3;
+}
+
+function reset(character: Character){
+    const pet: TamerPetCharacter = character as TamerPetCharacter;
+    pet.happines.nextTick = undefined;
+    pet.happines.visualizations = [];
+    pet.foodIntakeLevel.nextTick = undefined;
+    pet.nextMovementUpdateTime = undefined;
+    console.log("pet reset");
 }
 
 function moveTick(pet: TamerPetCharacter, petOwner: Character, game: Game, pathingCache: PathingCache) {
