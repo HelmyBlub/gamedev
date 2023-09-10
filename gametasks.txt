@@ -2,10 +2,6 @@ current tasks:
 - need new sniper boss kill testrun
 - need new tamer boss kill testrun
 
-- after end boss defeats
-    - player character is next boss
-        - builder:
-            - ...
 - paint: give end boss a crown
     - animation: crown moves to player character
 - normal bosses abilities based on current end boss

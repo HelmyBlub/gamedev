@@ -8,9 +8,8 @@ import { getPlayerFurthestAwayFromSpawn } from "../../player.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
 import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, calculateCharacterMovePosition, moveCharacterTick, tickCharacters } from "../character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, createCharacter } from "../characterModel.js";
-import { paintCharacterDefault, paintCharacterHpBar } from "../characterPaint.js";
+import { paintCharacterDefault, paintCharacterHpBar, paintCharacters } from "../characterPaint.js";
 import { getPathingCache, PathingCache } from "../pathing.js";
-import { CHARACTER_TYPE_END_BOSS_ENEMY, tickEndBossEnemyCharacter } from "./endBossEnemy.js";
 
 export type BossEnemyCharacter = Character;
 export const CHARACTER_TYPE_BOSS_ENEMY = "BossEnemyCharacter";
@@ -18,6 +17,7 @@ export const CHARACTER_TYPE_BOSS_ENEMY = "BossEnemyCharacter";
 export function addBossType() {
     CHARACTER_TYPE_FUNCTIONS[CHARACTER_TYPE_BOSS_ENEMY] = {
         tickFunction: tickBossEnemyCharacter,
+        paintCharacterType: paintBossEnemyCharacter,
     }
 }
 
@@ -64,9 +64,7 @@ function tickBossEnemyCharacter(enemy: BossEnemyCharacter, game: Game, pathingCa
 }
 
 export function paintBossCharacters(ctx: CanvasRenderingContext2D, cameraPosition: Position, game: Game) {
-    for (let character of game.state.bossStuff.bosses) {
-        paintBossEnemyCharacter(ctx, character, cameraPosition, game);
-    }
+    paintCharacters(ctx, game.state.bossStuff.bosses, cameraPosition, game);
 }
 
 export function checkForBossSpawn(game: Game) {

@@ -2,6 +2,7 @@ import { ABILITIES_FUNCTIONS, paintDefaultAbilityStatsUI } from "../ability/abil
 import { FACTION_PLAYER, Game, Position } from "../gameModel.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
 import { randomizedCharacterImageToKey } from "../randomizedCharacterImage.js";
+import { getPlayerCharacters } from "./character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_PLAYER_PARTS, IMAGE_SLIME } from "./characterModel.js";
 import { ABILITY_LEVELING_CHARACTER, AbilityLevelingCharacter } from "./playerCharacters/abilityLevelingCharacter.js";
 import { LEVELING_CHARACTER, LevelingCharacter } from "./playerCharacters/levelingCharacterModel.js";
@@ -17,6 +18,22 @@ export function paintCharacters(ctx: CanvasRenderingContext2D, characters: Chara
         }
     }
 }
+
+export function paintCharacterHpBarAboveCharacter(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, offsetY: number = 0) {
+    let centerX = ctx.canvas.width / 2;
+    let centerY = ctx.canvas.height / 2;
+    let paintX = character.x - cameraPosition.x + centerX;
+    let paintY = character.y - cameraPosition.y + centerY;
+    if (paintX < -character.width || paintX > ctx.canvas.width
+        || paintY < -character.height || paintY > ctx.canvas.height) return;
+
+    let heightFactor = 1;
+    if (character.isPet) heightFactor = 0.5;
+    let hpBarX = Math.floor(paintX - character.width / 2);
+    let hpBarY = Math.floor(paintY - character.height / 2 * heightFactor);
+    paintCharacterHpBar(ctx, character, { x: hpBarX, y: hpBarY + offsetY});
+}
+
 
 export function paintCharacterHpBar(ctx: CanvasRenderingContext2D, character: Character, topLeftPaint: Position) {
     if (character.isPet) return;
@@ -63,9 +80,9 @@ export function paintCharacterDefault(ctx: CanvasRenderingContext2D, character: 
     if (character.isDead) return;
     paintCharacterPets(ctx, character, cameraPosition, game);
 
-    if(character.paint.image && character.paint.image === IMAGE_SLIME){
+    if (character.paint.image && character.paint.image === IMAGE_SLIME) {
         slimePaint(ctx, character, cameraPosition, game);
-    }else if(character.paint.randomizedCharacterImage){
+    } else if (character.paint.randomizedCharacterImage) {
         randomizedCharacterImagePaint(ctx, character, cameraPosition, game);
     } else {
         paintCharacterColoredCircle(ctx, character, cameraPosition);
@@ -78,14 +95,23 @@ export function paintCharacterDefault(ctx: CanvasRenderingContext2D, character: 
     }
 }
 
-function paintCharacterColoredCircle(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position){
+export function paintPlayerCharacters(ctx: CanvasRenderingContext2D, cameraPosition: Position, game: Game){
+    const playerCharacters = getPlayerCharacters(game.state.players);
+    paintCharacters(ctx, playerCharacters, cameraPosition, game);
+    for(let playerChar of playerCharacters){
+        paintCharacterHpBarAboveCharacter(ctx, playerChar, cameraPosition);
+        paintPlayerNameOverCharacter(ctx, playerChar, cameraPosition, game, -6);
+    }
+}
+
+function paintCharacterColoredCircle(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position) {
     let centerX = ctx.canvas.width / 2;
     let centerY = ctx.canvas.height / 2;
     let paintX = character.x - cameraPosition.x + centerX;
     let paintY = character.y - cameraPosition.y + centerY;
     if (paintX < -character.width || paintX > ctx.canvas.width
         || paintY < -character.height || paintY > ctx.canvas.height) return;
-        ctx.fillStyle = character.paint.color ?? "black";
+    ctx.fillStyle = character.paint.color ?? "black";
     ctx.beginPath();
     ctx.arc(
         paintX,
@@ -130,8 +156,6 @@ function randomizedCharacterImagePaint(ctx: CanvasRenderingContext2D, character:
             character.width,
             character.height * heightFactor
         );
-        paintCharacterHpBar(ctx, character, { x: characterPaintX, y: characterPaintY });
-        paintPlayerNameOverCharacter(ctx, character, { x: characterPaintX, y: characterPaintY - 6 }, game);
     }
 }
 
@@ -167,7 +191,23 @@ function paintCharacterPets(ctx: CanvasRenderingContext2D, character: Character,
     }
 }
 
-function paintPlayerNameOverCharacter(ctx: CanvasRenderingContext2D, character: Character, paintTopLeft: Position, game: Game) {
+function paintPlayerNameOverCharacter(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game, offsetY: number = 0) {
+    let centerX = ctx.canvas.width / 2;
+    let centerY = ctx.canvas.height / 2;
+    let paintX = character.x - cameraPosition.x + centerX;
+    let paintY = character.y - cameraPosition.y + centerY;
+    if (paintX < -character.width || paintX > ctx.canvas.width
+        || paintY < -character.height || paintY > ctx.canvas.height) return;
+
+    let heightFactor = 1;
+    if (character.isPet) heightFactor = 0.5;
+    let nameX = Math.floor(paintX - character.width / 2);
+    let nameY = Math.floor(paintY - character.height / 2 * heightFactor) - offsetY;
+    paintPlayerName(ctx, character, {x: nameX, y: nameY}, game);
+}
+
+
+function paintPlayerName(ctx: CanvasRenderingContext2D, character: Character, paintTopLeft: Position, game: Game) {
     if (character.faction !== FACTION_PLAYER) return;
     const fontSize = 12;
     const playerOfCharacter = game.state.players.find((e) => e.character === character);

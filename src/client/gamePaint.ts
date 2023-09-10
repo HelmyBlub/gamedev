@@ -1,7 +1,6 @@
 import { ABILITIES_FUNCTIONS, paintAbilityObjects, paintDefaultAbilityStatsUI, paintUiForAbilities } from "./ability/ability.js";
-import { getPlayerCharacters } from "./character/character.js";
 import { Character, DEFAULT_CHARACTER } from "./character/characterModel.js";
-import { paintCharacterStatsUI, paintCharacters } from "./character/characterPaint.js";
+import { paintCharacterStatsUI, paintCharacters, paintPlayerCharacters } from "./character/characterPaint.js";
 import { paintBossCharacters } from "./character/enemy/bossEnemy.js";
 import { LEVELING_CHARACTER, LevelingCharacter } from "./character/playerCharacters/levelingCharacterModel.js";
 import { paintTamerPetCharacterStatsUI } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
@@ -28,7 +27,7 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
     paintMap("Layer2", ctx, cameraPosition, game.state.map, game.performance.mapChunkPaintCache, game.debug, game.state.time);
     paintMapCharacters(ctx, cameraPosition, game.state.map, game);
     paintBossCharacters(ctx, cameraPosition, game);
-    paintCharacters(ctx, getPlayerCharacters(game.state.players), cameraPosition, game);
+    paintPlayerCharacters(ctx, cameraPosition, game);
     paintAbilityObjects(ctx, game.state.abilityObjects, game, "afterCharacterPaint");
     paintDamageNumbers(ctx, game.UI.displayTextData, cameraPosition, game.state.time);
     paintKillCounter(ctx, game.state.killCounter, game);
@@ -191,9 +190,9 @@ function paintGameTitle(ctx: CanvasRenderingContext2D) {
     let middleX = ctx.canvas.width / 2;
 
     ctx.font = "bold 60px Arial";
-    paintTextWithOutline(ctx, "white", "black", "Helmys Game", middleX, 70, true, 3);
+    paintTextWithOutline(ctx, "white", "black", "Helmys Game", middleX, 80, true, 3);
     ctx.font = "bold 24px Arial";
-    paintTextWithOutline(ctx, "white", "black", "(Earliest Early Access)", middleX, 95, true, 2);
+    paintTextWithOutline(ctx, "white", "black", "(Earliest Early Access)", middleX, 105, true, 2);
 }
 
 function paintKillCounter(ctx: CanvasRenderingContext2D, killCounter: number, game: Game) {

@@ -14,6 +14,7 @@ import { createAbilityLeash } from "../ability/abilityLeash.js";
 import { fillRandomUpgradeOptionChoices, UpgradeOption } from "./upgrade.js";
 import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters/playerCharacters.js";
 import { CHARACTER_TYPE_END_BOSS_ENEMY } from "./enemy/endBossEnemy.js";
+import { paintCharacterHpBarAboveCharacter, paintCharacters } from "./characterPaint.js";
 
 export function findCharacterById(characters: Character[], id: number): Character | null {
     for (let i = 0; i < characters.length; i++) {

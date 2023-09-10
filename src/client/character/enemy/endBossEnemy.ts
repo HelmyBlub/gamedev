@@ -6,20 +6,28 @@ import { ABILITY_NAME_SWORD } from "../../ability/abilitySword.js";
 import { tickCharacterDebuffs } from "../../debuff/debuff.js";
 import { deepCopy, getNextId } from "../../game.js";
 import { IdCounter, Game, Position, FACTION_ENEMY } from "../../gameModel.js";
+import { GAME_IMAGES, getImage } from "../../imageLoad.js";
 import { changeTileIdOfMapChunk } from "../../map/map.js";
 import { getBossAreaMiddlePosition, getEntranceChunkAndTileIJForPosition } from "../../map/mapEndBossArea.js";
 import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick, resetCharacter } from "../character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, createCharacter } from "../characterModel.js";
+import { paintCharacterDefault, paintCharacterHpBarAboveCharacter } from "../characterPaint.js";
 import { PathingCache } from "../pathing.js";
-import { CHARACTER_CLASS_SNIPER_NAME } from "../playerCharacters/sniperCharacter.js";
-import { TAMER_CHARACTER } from "../playerCharacters/tamer/tamerCharacter.js";
 
 export type EndBossEnemyCharacter = Character;
 export const CHARACTER_TYPE_END_BOSS_ENEMY = "EndBossEnemyCharacter";
 
+export const IMAGE_CROWN = "Crown";
+GAME_IMAGES[IMAGE_CROWN] = {
+    imagePath: "/images/crown.png",
+    spriteRowHeights: [20],
+    spriteRowWidths: [20],
+};
+
 export function addEndBossType() {
     CHARACTER_TYPE_FUNCTIONS[CHARACTER_TYPE_END_BOSS_ENEMY] = {
         tickFunction: tickEndBossEnemyCharacter,
+        paintCharacterType: paintEndBoss,
     }
 }
 
@@ -51,8 +59,8 @@ export function startEndBoss(endBossAreaPosition: Position, game: Game) {
         }
         endBoss.x = spawn.x;
         endBoss.y = spawn.y;
-        if(endBoss.pets){
-            for(let pet of endBoss.pets){
+        if (endBoss.pets) {
+            for (let pet of endBoss.pets) {
                 pet.x = spawn.x;
                 pet.y = spawn.y;
             }
@@ -79,7 +87,7 @@ export function tickEndBossEnemyCharacter(enemy: EndBossEnemyCharacter, game: Ga
 
     for (let ability of enemy.abilities) {
         let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-        if(abilityFunctions){
+        if (abilityFunctions) {
             if (abilityFunctions.tickAbility) abilityFunctions.tickAbility(enemy, ability, game);
             if (abilityFunctions.tickBossAI) abilityFunctions.tickBossAI(enemy, ability, game);
         }
@@ -90,21 +98,59 @@ export function tickEndBossEnemyCharacter(enemy: EndBossEnemyCharacter, game: Ga
 
 export function convertPlayerToEndBoss(game: Game) {
     let nextBoss: Character = deepCopy(game.state.players[0].character);
-//    if(nextBoss.characterClass !== CHARACTER_CLASS_SNIPER_NAME && nextBoss.characterClass !== TAMER_CHARACTER) return;
     game.state.bossStuff.nextEndboss = nextBoss;
     const boss = game.state.bossStuff.nextEndboss;
     boss.type = CHARACTER_TYPE_END_BOSS_ENEMY;
     boss.maxHp = 50000000;
     boss.hp = boss.maxHp;
     boss.faction = FACTION_ENEMY;
-    if(boss.pets){
-        for(let pet of boss.pets){
+    if (boss.pets) {
+        for (let pet of boss.pets) {
             pet.faction = boss.faction;
         }
     }
     boss.moveSpeed = 1;
     resetCharacter(boss);
     changeBossAbilityLevelBasedOnHp(boss);
+}
+
+function paintEndBoss(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
+    paintCharacterDefault(ctx, character, cameraPosition, game);
+    let crownImage = getImage(IMAGE_CROWN);
+    if (crownImage) {
+        let centerX = ctx.canvas.width / 2;
+        let centerY = ctx.canvas.height / 2;
+        let paintX = character.x - cameraPosition.x + centerX;
+        let paintY = character.y - cameraPosition.y + centerY;
+        let crownX = Math.floor(paintX - Math.floor(crownImage.width / 2));
+        let crownY = Math.floor(paintY - character.height / 2 - crownImage.height);
+        ctx.drawImage(crownImage, crownX, crownY);
+    }
+    paintBossHpBar(ctx, character);
+}
+
+function paintBossHpBar(ctx: CanvasRenderingContext2D, boss: Character) {
+    const fillAmount = Math.max(0, boss.hp / boss.maxHp);
+    if(fillAmount <= 0) return
+    const hpBarWidth = Math.floor(ctx.canvas.width / 2);
+    const hpBarText = `BossHP: ${(boss.hp / boss.maxHp * 100).toFixed(2)}%`;
+    const hpBarLeft = Math.floor(ctx.canvas.width / 4);
+    const hpBarHeight = 20;
+    const fontSize = hpBarHeight - 2;
+    const top = 22;
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = "black";
+    ctx.fillStyle = "red";
+    ctx.fillRect(hpBarLeft, top, Math.ceil(hpBarWidth * fillAmount), hpBarHeight);
+    ctx.beginPath();
+    ctx.rect(hpBarLeft, top, hpBarWidth, hpBarHeight);
+    ctx.stroke();
+
+    ctx.fillStyle = "black";
+    ctx.font = "bold " + fontSize + "px Arial";
+    const textWidth = ctx.measureText(hpBarText).width;
+    console.log( Math.floor(ctx.canvas.width / 2 - textWidth / 2));
+    ctx.fillText(hpBarText, Math.floor(ctx.canvas.width / 2 - textWidth / 2), top + fontSize + 1);
 }
 
 function changeBossAbilityLevelBasedOnHp(enemy: EndBossEnemyCharacter) {
@@ -117,14 +163,14 @@ function changeBossAbilityLevelBasedOnHp(enemy: EndBossEnemyCharacter) {
             abilityFunctions.setAbilityToBossLevel(ability, abilityLevel);
         }
     }
-    if(enemy.pets){
-        for(let pet of enemy.pets){
+    if (enemy.pets) {
+        for (let pet of enemy.pets) {
             for (let ability of pet.abilities) {
                 let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
                 if (abilityFunctions && abilityFunctions.setAbilityToBossLevel) {
                     abilityFunctions.setAbilityToBossLevel(ability, abilityLevel);
                 }
-            }           
+            }
         }
     }
 }
