@@ -1,11 +1,20 @@
 current tasks:
+
+- normal bosses abilities based on current end boss
+    - a lot of problems if i just randomly take an ability for boss
+        - sniper just always only simple snipe
+        - tamer does not have feed/love abilities
+        - works good for default
+        - builder boss just gets more HP, but no changes in abilities
+        - idea:
+            - each player class has a create boss funktion.
+                - easier to balance raising difficulty
+
 - need new sniper boss kill testrun
 - need new tamer boss kill testrun
+- need new builder boss kill testrun
 
-- paint: give end boss a crown
-    - animation: crown moves to player character
-- normal bosses abilities based on current end boss
-- test runs need end boss as information
+
 - balancing:
     - sniper boss too easy currently. Idea: randomize shoot position a bit
 

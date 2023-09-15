@@ -53,8 +53,10 @@ export function addAbilityTower() {
         createAbility: createAbilityTower,
         deleteAbilityObject: deleteAbilityObjectTower,
         paintAbilityStatsUI: paintAbilityTowerStatsUI,
+        setAbilityToBossLevel: setAbilityTowerToBossLevel,
         tickBossAI: tickBossAI,
         resetAbility: resetAbility,
+        canBeUsedByBosses: true,
         isPassive: false,
     };
 }
@@ -108,6 +110,12 @@ function resetAbility(ability: Ability){
     const abilityTower = ability as AbilityTower;
     abilityTower.lastBuildTime = undefined;
 }
+
+function setAbilityTowerToBossLevel(ability: Ability, level: number){
+    let abilityTower = ability as AbilityTower;
+    abilityTower.damage = level * 10;
+}
+
 
 function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game){
     const abilityTower = ability as AbilityTower;

@@ -1,8 +1,8 @@
 import { playerCharactersAddBossSkillPoints } from "./character/character.js";
+import { createBossWithLevel } from "./character/enemy/bossEnemy.js";
 import { gameRestart } from "./game.js";
 import { Debugging, Game } from "./gameModel.js";
 import { createMap } from "./map/map.js";
-import { nextRandom } from "./randomNumberGenerator.js";
 
 export function addHTMLDebugMenusToSettings(game: Game) {
     let settingsElement = document.getElementById("settings");
@@ -13,6 +13,7 @@ export function addHTMLDebugMenusToSettings(game: Game) {
     addBossSkillPointButton(game);
     addCloseBossAreaButton(game);
     addTankyButton(game);
+    addSpawnBossButton(game);
 }
 
 function addSettingCheckbox(checkboxName: keyof Debugging, game: Game) {
@@ -57,6 +58,19 @@ function addCloseBossAreaButton(game: Game) {
     }
 }
 
+function addSpawnBossButton(game: Game) {
+    const buttonName = "next boss spawn";
+    addSettingButton(buttonName);
+    const button = document.getElementById(buttonName) as HTMLButtonElement;
+    if(button){
+        button.addEventListener('click', () => {
+            if(!game.multiplayer.websocket){
+                game.state.bossStuff.bosses.push(createBossWithLevel(game.state.idCounter, game.state.bossStuff.bossLevelCounter, game));
+                game.state.bossStuff.bossLevelCounter++;        
+            } 
+        });
+    }
+}
 function addTankyButton(game: Game) {
     const buttonName = "Very Tanky";
     addSettingButton(buttonName);

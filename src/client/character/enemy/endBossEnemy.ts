@@ -1,5 +1,6 @@
 import { ABILITIES_FUNCTIONS, Ability, resetAllCharacterAbilities } from "../../ability/ability.js";
 import { ABILITY_NAME_FIRE_CIRCLE } from "../../ability/abilityFireCircle.js";
+import { ABILITY_NAME_ICE_AURA } from "../../ability/abilityIceAura.js";
 import { ABILITY_NAME_MELEE, createAbilityMelee } from "../../ability/abilityMelee.js";
 import { ABILITY_NAME_SHOOT } from "../../ability/abilityShoot.js";
 import { ABILITY_NAME_SWORD } from "../../ability/abilitySword.js";
@@ -11,7 +12,7 @@ import { changeTileIdOfMapChunk } from "../../map/map.js";
 import { getBossAreaMiddlePosition, getEntranceChunkAndTileIJForPosition } from "../../map/mapEndBossArea.js";
 import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick, resetCharacter } from "../character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, createCharacter } from "../characterModel.js";
-import { paintCharacterDefault, paintCharacterHpBarAboveCharacter } from "../characterPaint.js";
+import { paintCharacterDefault } from "../characterPaint.js";
 import { PathingCache } from "../pathing.js";
 
 export type EndBossEnemyCharacter = Character;
@@ -181,6 +182,7 @@ function createEndBossAbilities(level: number, game: Game): Ability[] {
         ABILITY_NAME_SHOOT,
         ABILITY_NAME_SWORD,
         ABILITY_NAME_FIRE_CIRCLE,
+        ABILITY_NAME_ICE_AURA
     ];
 
     for (let abilityKey of abilityKeys) {

@@ -10,6 +10,7 @@ import { PlayerInput } from "../playerInput.js";
 import { createProjectile, Projectile } from "../ability/projectile.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
 import { detectAbilityObjectCircleToCharacterHit } from "../ability/ability.js";
+import { createNextDefaultEndBoss } from "../character/enemy/endBossEnemy.js";
 
 let testInputs: (PlayerInput | Omit<CommandRestart, "executeTime">)[] = [];
 
@@ -30,9 +31,9 @@ function testPlayerClasses(game: Game){
     // replay.testInputFileQueue.push("/data/testInputShortBuilder.json");
     // replay.testInputFileQueue.push("/data/testInputShortSniper.json");
     // replay.testInputFileQueue.push("/data/testInputShortTamer.json");
-    replay.testInputFileQueue.push("/data/testInputLongSniper.json");
+    // replay.testInputFileQueue.push("/data/testInputLongSniper.json");
     // replay.testInputFileQueue.push("/data/testInputLongBuilder.json");
-    // replay.testInputFileQueue.push("/data/testInputLongTamer.json");
+    replay.testInputFileQueue.push("/data/testInputLongTamer.json");
     replay.frameSkipAmount = 60;
     replay.zeroTimeout = true;
 
@@ -52,6 +53,13 @@ export function replayNextInReplayQueue(game: Game){
     replay.data = testInputs as any;
 
     game.state.ended = true;
+    if(game.state.map.endBossArea){
+        if(replay.data?.nextEndBoss){
+            game.state.bossStuff.nextEndboss = replay.data?.nextEndBoss;
+        }else{
+            game.state.bossStuff.nextEndboss = createNextDefaultEndBoss(game.state.idCounter, game);
+        }   
+    }
     if (replay.data!.replayPlayerInputs[0].command === "restart") {
         let startCommand: CommandRestart = replay.data!.replayPlayerInputs.shift() as any;
         startCommand.replay = true;

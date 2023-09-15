@@ -1,6 +1,6 @@
 import { AbilityObject } from "./ability/ability.js";
 import { Character } from "./character/characterModel.js";
-import { createNextDefaultEndBoss } from "./character/enemy/endBossEnemy.js";
+import { createNextDefaultEndBoss, EndBossEnemyCharacter } from "./character/enemy/endBossEnemy.js";
 import { PathingCache } from "./character/pathing.js";
 import { CommandRestart } from "./commands.js";
 import { createHighscoreBoards, Highscores } from "./highscores.js";
@@ -42,6 +42,7 @@ export type TestingStuff = {
         randomStartSeed?: number,
         data?: {
             replayPlayerInputs: PlayerInput[],
+            nextEndBoss?: Character,
             gameEndAsserts?:{
                 type: string,
                 data: any,

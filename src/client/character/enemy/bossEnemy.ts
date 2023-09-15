@@ -1,7 +1,8 @@
 import { ABILITIES_FUNCTIONS, Ability } from "../../ability/ability.js";
+import { ABILITY_NAME_LEASH, AbilityLeash } from "../../ability/abilityLeash.js";
 import { createAbilityMelee } from "../../ability/abilityMelee.js";
 import { tickCharacterDebuffs } from "../../debuff/debuff.js";
-import { calculateDirection, getNextId, getTimeSinceFirstKill } from "../../game.js";
+import { calculateDirection, deepCopy, getNextId, getTimeSinceFirstKill } from "../../game.js";
 import { IdCounter, Game, Position, BossStuff, FACTION_ENEMY } from "../../gameModel.js";
 import { findNearNonBlockingPosition, getMapMidlePosition, moveByDirectionAndDistance } from "../../map/map.js";
 import { getPlayerFurthestAwayFromSpawn } from "../../player.js";
@@ -10,6 +11,7 @@ import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPa
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, createCharacter } from "../characterModel.js";
 import { paintCharacterDefault, paintCharacterHpBar, paintCharacters } from "../characterPaint.js";
 import { getPathingCache, PathingCache } from "../pathing.js";
+import { TamerPetCharacter } from "../playerCharacters/tamer/tamerPetCharacter.js";
 
 export type BossEnemyCharacter = Character;
 export const CHARACTER_TYPE_BOSS_ENEMY = "BossEnemyCharacter";
@@ -33,6 +35,8 @@ export function createBossWithLevel(idCounter: IdCounter, level: number, game: G
     bossCharacter.paint.image = IMAGE_SLIME;
     let abilities: Ability[] = createBossAbilities(level, game);
     bossCharacter.abilities = abilities;
+    let pets: TamerPetCharacter[] | undefined = createBossPets(level, bossCharacter, game);
+    bossCharacter.pets = pets;
     return bossCharacter;
 }
 
@@ -71,7 +75,6 @@ export function checkForBossSpawn(game: Game) {
     if (game.state.bossStuff.endBossStarted) return;
     let bossStuff = game.state.bossStuff;
     let nextBossSpawnTime = bossStuff.bossSpawnEachXMilliSecond * bossStuff.bossLevelCounter;
-    // if (bossStuff.bossLevelCounter <= 2) nextBossSpawnTime -= 110000; //TESTLINE
     if (getTimeSinceFirstKill(game.state) >= nextBossSpawnTime) {
         bossStuff.bosses.push(createBossWithLevel(game.state.idCounter, bossStuff.bossLevelCounter, game));
         bossStuff.bossLevelCounter++;
@@ -84,23 +87,37 @@ function teleportBossToNearestPlayer(enemy: BossEnemyCharacter, game: Game) {
     enemy.y = newPosition.y;
 }
 
+function createBossPets(level: number, boss: Character, game: Game): TamerPetCharacter[] | undefined {
+    const nextEndBoss = game.state.bossStuff.nextEndboss;
+    if(nextEndBoss?.pets){
+        const random = Math.floor(nextRandom(game.state.randomSeed) * nextEndBoss.pets.length);
+        const pet: TamerPetCharacter = deepCopy(nextEndBoss.pets[random]);
+        const leash: AbilityLeash | undefined = pet.abilities.find((a) => a.name === ABILITY_NAME_LEASH) as AbilityLeash;
+        if(leash){
+            leash.leashedToOwnerId = boss.id;
+        }
+        return [pet];
+    }
+    return undefined;
+}
+
 function createBossAbilities(level: number, game: Game): Ability[] {
-    let abilities: Ability[] = [];
-    const abilityKeys = Object.keys(ABILITIES_FUNCTIONS);
-    let possibleAbilityKeys: string[] = [];
-    for (let key of abilityKeys) {
-        if (ABILITIES_FUNCTIONS[key].canBeUsedByBosses) {
-            possibleAbilityKeys.push(key);
+    const abilities: Ability[] = [];
+    const endBoss = game.state.bossStuff.nextEndboss;
+    const possibleAbilities: Ability[] = [];
+    for (let ability of endBoss!.abilities) {
+        if (ABILITIES_FUNCTIONS[ability.name].canBeUsedByBosses) {
+            possibleAbilities.push(ability);
         }
     }
 
-    if (possibleAbilityKeys.length > 0) {
+    if (possibleAbilities.length > 0) {
         let randomAbilityChoice = 0;
-        if (possibleAbilityKeys.length > 1) {
-            randomAbilityChoice = Math.floor(nextRandom(game.state.randomSeed) * possibleAbilityKeys.length);
+        if (possibleAbilities.length > 1) {
+            randomAbilityChoice = Math.floor(nextRandom(game.state.randomSeed) * possibleAbilities.length);
         }
-        let key: any = possibleAbilityKeys[randomAbilityChoice];
-        let abilityFunctions = ABILITIES_FUNCTIONS[key];
+        let randomAbility: Ability = possibleAbilities[randomAbilityChoice];
+        let abilityFunctions = ABILITIES_FUNCTIONS[randomAbility.name];
         let ability = abilityFunctions.createAbility(game.state.idCounter);
         setAbilityToBossLevel(ability, level);
         if (!abilityFunctions.isPassive) ability.passive = true;
