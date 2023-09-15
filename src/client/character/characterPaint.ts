@@ -1,6 +1,6 @@
 import { ABILITIES_FUNCTIONS, paintDefaultAbilityStatsUI } from "../ability/ability.js";
 import { FACTION_PLAYER, Game, Position } from "../gameModel.js";
-import { GAME_IMAGES, loadImage } from "../imageLoad.js";
+import { GAME_IMAGES, getImage, loadImage } from "../imageLoad.js";
 import { randomizedCharacterImageToKey } from "../randomizedCharacterImage.js";
 import { getPlayerCharacters } from "./character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_PLAYER_PARTS, IMAGE_SLIME } from "./characterModel.js";
@@ -31,7 +31,7 @@ export function paintCharacterHpBarAboveCharacter(ctx: CanvasRenderingContext2D,
     if (character.isPet) heightFactor = 0.5;
     let hpBarX = Math.floor(paintX - character.width / 2);
     let hpBarY = Math.floor(paintY - character.height / 2 * heightFactor);
-    paintCharacterHpBar(ctx, character, { x: hpBarX, y: hpBarY + offsetY});
+    paintCharacterHpBar(ctx, character, { x: hpBarX, y: hpBarY + offsetY });
 }
 
 
@@ -80,8 +80,12 @@ export function paintCharacterDefault(ctx: CanvasRenderingContext2D, character: 
     if (character.isDead) return;
     paintCharacterPets(ctx, character, cameraPosition, game);
 
-    if (character.paint.image && character.paint.image === IMAGE_SLIME) {
-        slimePaint(ctx, character, cameraPosition, game);
+    if (character.paint.image) {
+        if (character.paint.image === IMAGE_SLIME) {
+            slimePaint(ctx, character, cameraPosition, game);
+        } else {
+            paintCharacterImage(ctx, character, cameraPosition, game);
+        }
     } else if (character.paint.randomizedCharacterImage) {
         randomizedCharacterImagePaint(ctx, character, cameraPosition, game);
     } else {
@@ -95,12 +99,24 @@ export function paintCharacterDefault(ctx: CanvasRenderingContext2D, character: 
     }
 }
 
-export function paintPlayerCharacters(ctx: CanvasRenderingContext2D, cameraPosition: Position, game: Game){
+export function paintPlayerCharacters(ctx: CanvasRenderingContext2D, cameraPosition: Position, game: Game) {
     const playerCharacters = getPlayerCharacters(game.state.players);
     paintCharacters(ctx, playerCharacters, cameraPosition, game);
-    for(let playerChar of playerCharacters){
+    for (let playerChar of playerCharacters) {
         paintCharacterHpBarAboveCharacter(ctx, playerChar, cameraPosition);
         paintPlayerNameOverCharacter(ctx, playerChar, cameraPosition, game, -6);
+    }
+}
+
+function paintCharacterImage(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
+    let centerX = ctx.canvas.width / 2;
+    let centerY = ctx.canvas.height / 2;
+    let paintX = Math.floor(character.x - cameraPosition.x + centerX);
+    let paintY = Math.floor(character.y - cameraPosition.y + centerY);
+
+    let characterImage = getImage(character.paint.image!);
+    if (characterImage) {
+        ctx.drawImage(characterImage, paintX - characterImage.width / 2, paintY - characterImage.height / 2);
     }
 }
 
@@ -203,7 +219,7 @@ function paintPlayerNameOverCharacter(ctx: CanvasRenderingContext2D, character: 
     if (character.isPet) heightFactor = 0.5;
     let nameX = Math.floor(paintX - character.width / 2);
     let nameY = Math.floor(paintY - character.height / 2 * heightFactor) - offsetY;
-    paintPlayerName(ctx, character, {x: nameX, y: nameY}, game);
+    paintPlayerName(ctx, character, { x: nameX, y: nameY }, game);
 }
 
 

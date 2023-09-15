@@ -184,6 +184,7 @@ export type Game = {
 
 export const FACTION_ENEMY = "enemy";
 export const FACTION_PLAYER = "player";
+export const ANIMATION_END_BOSS_CROWN_OVERTAKE = "End Boss Crown Overtake";
 
 export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: CanvasRenderingContext2D | undefined): Game {
     let game: Game = {

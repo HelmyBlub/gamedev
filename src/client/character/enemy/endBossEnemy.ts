@@ -53,7 +53,6 @@ export function startEndBoss(endBossAreaPosition: Position, game: Game) {
         if (game.state.bossStuff.nextEndboss === undefined) {
             endBoss = createNextDefaultEndBoss(game.state.idCounter, game);
             game.state.bossStuff.nextEndboss = deepCopy(endBoss);
-            console.log("endboss was missing");
         } else {
             endBoss = deepCopy(game.state.bossStuff.nextEndboss);
         }
@@ -77,7 +76,7 @@ export function startEndBoss(endBossAreaPosition: Position, game: Game) {
     }
 }
 
-export function tickEndBossEnemyCharacter(enemy: EndBossEnemyCharacter, game: Game, pathingCache: PathingCache | null) {
+function tickEndBossEnemyCharacter(enemy: EndBossEnemyCharacter, game: Game, pathingCache: PathingCache | null) {
     if (enemy.isDead) return;
     let playerCharacters = getPlayerCharacters(game.state.players);
     let closest = determineClosestCharacter(enemy, playerCharacters);
@@ -115,6 +114,7 @@ export function convertPlayerToEndBoss(game: Game) {
 }
 
 function paintEndBoss(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
+    if(character.isDead) return;
     paintCharacterDefault(ctx, character, cameraPosition, game);
     let crownImage = getImage(IMAGE_CROWN);
     if (crownImage) {
@@ -149,7 +149,6 @@ function paintBossHpBar(ctx: CanvasRenderingContext2D, boss: Character) {
     ctx.fillStyle = "black";
     ctx.font = "bold " + fontSize + "px Arial";
     const textWidth = ctx.measureText(hpBarText).width;
-    console.log( Math.floor(ctx.canvas.width / 2 - textWidth / 2));
     ctx.fillText(hpBarText, Math.floor(ctx.canvas.width / 2 - textWidth / 2), top + fontSize + 1);
 }
 

@@ -1,5 +1,6 @@
 import { onDomLoadSetAbilitiesFunctions } from "./ability/ability.js";
 import { addBossType } from "./character/enemy/bossEnemy.js";
+import { addEndBossCrownType } from "./character/enemy/endBossCrown.js";
 import { addEndBossType } from "./character/enemy/endBossEnemy.js";
 import { onDomLoadSetCharacterClasses } from "./character/playerCharacters/playerCharacters.js";
 import { handleCommand } from "./commands.js";
@@ -63,6 +64,7 @@ document.addEventListener("DOMContentLoaded", function () {
     onDomLoadSetCharacterClasses();
     addBossType();
     addEndBossType();
+    addEndBossCrownType();
     onDomLoadSetAbilitiesFunctions();
     onDomLoadSetDebuffsFunctions();
 

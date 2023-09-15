@@ -3,7 +3,7 @@ import { calculateMovePosition, determineMapKeysInDistance, GameMap, getChunksTo
 import { Character, CHARACTER_TYPE_FUNCTIONS, DEFAULT_CHARACTER } from "./characterModel.js";
 import { getNextWaypoint, getPathingCache, PathingCache } from "./pathing.js";
 import { calculateDirection, calculateDistance, calculateDistancePointToLine, createPaintTextData, endGame, takeTimeMeasure } from "../game.js";
-import { Position, Game, IdCounter, Camera, FACTION_ENEMY, FACTION_PLAYER } from "../gameModel.js";
+import { Position, Game, IdCounter, Camera, FACTION_ENEMY, FACTION_PLAYER, ANIMATION_END_BOSS_CROWN_OVERTAKE } from "../gameModel.js";
 import { findPlayerById, Player } from "../player.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS, Ability, findAbilityById, findAbilityOwnerByAbilityId, levelingAbilityXpGain, resetAllCharacterAbilities } from "../ability/ability.js";
@@ -14,7 +14,7 @@ import { createAbilityLeash } from "../ability/abilityLeash.js";
 import { fillRandomUpgradeOptionChoices, UpgradeOption } from "./upgrade.js";
 import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters/playerCharacters.js";
 import { CHARACTER_TYPE_END_BOSS_ENEMY } from "./enemy/endBossEnemy.js";
-import { paintCharacterHpBarAboveCharacter, paintCharacters } from "./characterPaint.js";
+import { createEndBossCrownCharacter } from "./enemy/endBossCrown.js";
 
 export function findCharacterById(characters: Character[], id: number): Character | null {
     for (let i = 0; i < characters.length; i++) {
@@ -36,8 +36,7 @@ export function findCharacterByIdAroundPosition(position: Position, range: numbe
 }
 
 export function characterTakeDamage(character: Character, damage: number, game: Game, abilityRefId: number | undefined = undefined) {
-    if (character.isDead) return;
-    if (character.isPet) return;
+    if (character.isDead || character.isPet || character.isImmune) return;
 
     character.hp -= damage;
     if (character.hp <= 0) {
@@ -109,7 +108,7 @@ function killCharacter(character: Character, game: Game, abilityRefId: number | 
         playerCharactersAddBossSkillPoints(game);
     }
     if (character.type === CHARACTER_TYPE_END_BOSS_ENEMY) {
-        endGame(game, true);
+        game.state.bossStuff.bosses.push(createEndBossCrownCharacter(game.state.idCounter, character));
     }
     if (abilityRefId !== undefined) {
         let ability = findAbilityById(abilityRefId, game);
