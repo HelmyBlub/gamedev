@@ -61,6 +61,7 @@ export function addAbilityPetPainter() {
         setAbilityToLevel: setAbilityPetPainterToLevel,
         setAbilityToBossLevel: setAbilityPetPainterToBossLevel,
         getLongDescription: getLongDescription,
+        resetAbility: resetAbility,
         abilityUpgradeFunctions: ABILITY_PET_PAINTER_UPGRADE_FUNCTIONS,
         isPassive: true,
     };
@@ -109,6 +110,11 @@ function getLongDescription(): string[]{
         `Finished shapes come alive.`,
         `Enemies hit by shape take damage.`,
     ];
+}
+
+function resetAbility(ability: Ability){
+    const paint = ability as AbilityPetPainter;
+    paint.currentlyPainting = undefined;
 }
 
 function setAbilityPetPainterToLevel(ability: Ability, level: number) {

@@ -18,6 +18,7 @@ export function addAbilityMelee() {
         createAbility: createAbilityMelee,
         setAbilityToLevel: setAbilityMeleeToLevel,
         setAbilityToBossLevel: setAbilityMeleeToBossLevel,
+        resetAbility: resetAbility,
         isPassive: true,
         notInheritable: true,
     };
@@ -36,6 +37,11 @@ export function createAbilityMelee(
         tickInterval: 250,
         upgrades: {},
     };
+}
+
+function resetAbility(ability: Ability){
+    let abilityMelee = ability as AbilityMelee;
+    abilityMelee.nextTickTime = undefined;
 }
 
 function setAbilityMeleeToLevel(ability: Ability, level: number) {

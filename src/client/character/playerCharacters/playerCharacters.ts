@@ -1,4 +1,4 @@
-import { Game, IdCounter } from "../../gameModel.js"
+import { Game, IdCounter, Position } from "../../gameModel.js"
 import { Character } from "../characterModel.js"
 import { UpgradeOption } from "../upgrade.js"
 import { addAbilityLevelingCharacter } from "./abilityLevelingCharacter.js"
@@ -9,6 +9,7 @@ import { addTowerClass } from "./towerCharacterClass.js"
 
 export type PlayerCharacterClassFunctions = {
     changeCharacterToThisClass: (character: Character, idCounter: IdCounter, game: Game) => void,
+    createBossBasedOnClassAndCharacter?: (basedOnCharacter: Character, level: number, spawn: Position, game: Game) => Character,
 }
 
 export type PlayerCharacterClassesFunctions = {

@@ -1,7 +1,7 @@
 import { ABILITIES_FUNCTIONS, paintAbilityObjects, paintDefaultAbilityStatsUI, paintUiForAbilities } from "./ability/ability.js";
 import { Character, DEFAULT_CHARACTER } from "./character/characterModel.js";
 import { paintCharacterStatsUI, paintCharacters, paintPlayerCharacters } from "./character/characterPaint.js";
-import { paintBossCharacters } from "./character/enemy/bossEnemy.js";
+import { paintBossCharacters, paintBossCrown } from "./character/enemy/bossEnemy.js";
 import { LEVELING_CHARACTER, LevelingCharacter } from "./character/playerCharacters/levelingCharacterModel.js";
 import { paintTamerPetCharacterStatsUI } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
 import { calculateDistance, getCameraPosition, getTimeSinceFirstKill } from "./game.js";
@@ -28,6 +28,7 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
     paintMapCharacters(ctx, cameraPosition, game.state.map, game);
     paintBossCharacters(ctx, cameraPosition, game);
     paintPlayerCharacters(ctx, cameraPosition, game);
+    paintBossCrown(ctx, cameraPosition, game);
     paintAbilityObjects(ctx, game.state.abilityObjects, game, "afterCharacterPaint");
     paintDamageNumbers(ctx, game.UI.displayTextData, cameraPosition, game.state.time);
     paintKillCounter(ctx, game.state.killCounter, game);

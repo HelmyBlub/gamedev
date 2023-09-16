@@ -20,6 +20,8 @@ export type AbilityPetDash = Ability & {
     readyTime?: number,
     sizeExtension: number,
     activeUntilTime?: number,
+    tickInterval: number,
+    nextTickTime?: number,
 }
 
 export const ABILITY_NAME_PET_DASH = "Dash";
@@ -58,6 +60,7 @@ export function createAbilityPetDash(
         duration: 500,
         sizeExtension: 10,
         passive: true,
+        tickInterval: 100,
         upgrades: {},
     };
 }
@@ -72,6 +75,7 @@ export function getPetAbilityDashDamage(pet: TamerPetCharacter, ability: Ability
 function resetAbility(ability: Ability){
     const dash = ability as AbilityPetDash;
     dash.activeUntilTime = undefined;
+    dash.nextTickTime = undefined;
 }
 
 function getLongDescription(): string[]{
@@ -151,14 +155,17 @@ function tickAbilityPetDash(abilityOwner: AbilityOwner, ability: Ability, game: 
         } else {
             moveByDirectionAndDistance(pet, abilityPetDash.direction!, abilityPetDash.baseSpeed, true, game.state.map, game.state.idCounter);
         }
-
-        detectCircleCharacterHit(game.state.map, pet, pet.width / 2 + abilityPetDash.sizeExtension, pet.faction, ability.id, getPetAbilityDashDamage(pet, abilityPetDash), game, undefined, ability);
+        if(abilityPetDash.nextTickTime && abilityPetDash.nextTickTime <= game.state.time){
+            abilityPetDash.nextTickTime += abilityPetDash.tickInterval;
+            detectCircleCharacterHit(game.state.map, pet, pet.width / 2 + abilityPetDash.sizeExtension, pet.faction, ability.id, getPetAbilityDashDamage(pet, abilityPetDash), game, undefined, ability);
+        }
     } else if (abilityPetDash.readyTime <= game.state.time) {
         if (abilityOwner.isMoving) {
             if (upgradeBounce) upgradeBounce.currentDamageFactor = 1;
             if (upgradeFireLine) upgradeFireLine.startPosition = {x: pet.x, y: pet.y};
             abilityPetDash.readyTime = game.state.time + abilityPetDash.cooldown;
             abilityPetDash.activeUntilTime = game.state.time + abilityPetDash.duration;
+            abilityPetDash.nextTickTime = game.state.time;
             abilityPetDash.direction = abilityOwner.moveDirection;
         }
     }

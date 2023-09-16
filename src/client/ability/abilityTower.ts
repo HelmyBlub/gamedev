@@ -33,7 +33,7 @@ type AbilityTower = Ability & {
     lastBuildTime?: number,
 }
 
-const ABILITY_NAME_TOWER = "Tower";
+export const ABILITY_NAME_TOWER = "Tower";
 GAME_IMAGES[ABILITY_NAME_TOWER] = {
     imagePath: "/images/hammer.png",
     spriteRowHeights: [20],

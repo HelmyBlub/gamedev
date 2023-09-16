@@ -355,6 +355,7 @@ function reset(character: Character){
     pet.happines.visualizations = [];
     pet.foodIntakeLevel.nextTick = undefined;
     pet.nextMovementUpdateTime = undefined;
+    pet.forcedMovePosition = undefined;
 }
 
 function moveTick(pet: TamerPetCharacter, petOwner: Character, game: Game, pathingCache: PathingCache) {
@@ -441,7 +442,7 @@ function getTargetByBehavior(pet: TamerPetCharacter, petOwner: Character, game: 
             characters = determineTargetsInDistance(pet, game, 200);
         }
         let closest = determineClosestCharacter(petOwner, characters);
-        if (closest.minDistance < 60) {
+        if (closest.minDistance < 80) {
             target = closest.minDistanceCharacter;
         } else {
             let closest = determineClosestCharacter(pet, characters);

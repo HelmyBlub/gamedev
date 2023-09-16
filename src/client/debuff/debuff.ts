@@ -33,6 +33,7 @@ export function onDomLoadSetDebuffsFunctions() {
 }
 
 export function applyDebuff(debuff: Debuff, character: Character, game: Game) {
+    if(character.isImmune) return;
     const currentDebuff = character.debuffs.find((d) => d.name === debuff.name);
     const debuffFunctions = DEBUFFS_FUNCTIONS[debuff.name];
     if (currentDebuff) {
