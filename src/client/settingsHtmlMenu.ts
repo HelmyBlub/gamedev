@@ -71,6 +71,7 @@ function addSpawnBossButton(game: Game) {
         });
     }
 }
+
 function addTankyButton(game: Game) {
     const buttonName = "Very Tanky";
     addSettingButton(buttonName);

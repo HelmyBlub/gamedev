@@ -279,7 +279,10 @@ function playerAction(clientId: number, data: any, game: Game) {
                 }
             }
         } else if (MOUSE_ACTION === action) {
-            getClientInfo(clientId, game)!.lastMousePosition = data.mousePosition;
+            const client = getClientInfo(clientId, game);
+            if(client){
+                client.lastMousePosition = data.mousePosition;
+            }
         }
     }
 }
