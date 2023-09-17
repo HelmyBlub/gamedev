@@ -22,9 +22,9 @@ export type IdCounter = {
 
 export type TestingStuff = {
     record?: {
-        data:{
+        data: {
             replayPlayerInputs: Omit<PlayerInput, "executeTime">[],
-            gameEndAsserts?:{
+            gameEndAsserts?: {
                 type: string,
                 data: any,
             }[]
@@ -42,8 +42,8 @@ export type TestingStuff = {
         randomStartSeed?: number,
         data?: {
             replayPlayerInputs: PlayerInput[],
-            nextEndBoss?: Character,
-            gameEndAsserts?:{
+            nextEndBosses?: NextEndBosses,
+            gameEndAsserts?: {
                 type: string,
                 data: any,
             }[]
@@ -69,11 +69,19 @@ export type MapChunkPaintCache = {
     [key: string]: CanvasRenderingContext2D
 }
 
+export type CeilestialDirection = "north" | "west" | "south" | "east";
+export type NextEndBosses = {
+    north?: Character,
+    west?: Character,
+    south?: Character,
+    east?: Character,
+};
+
 export type BossStuff = {
     bossLevelCounter: number,
     bossSpawnEachXMilliSecond: number,
     endBossStarted: boolean,
-    nextEndboss: Character | undefined,
+    nextEndbosses: NextEndBosses,
     closedOfEndBossEntrance?: EndBossEntranceData,
     bosses: Character[],
 }
@@ -213,7 +221,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
                 bossLevelCounter: 1,
                 endBossStarted: false,
                 bosses: [],
-                nextEndboss: undefined,
+                nextEndbosses: {},
             },
             paused: false,
         },
@@ -272,11 +280,18 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
         }
     }
 
-    if(game.state.map.endBossArea){
-        game.state.bossStuff.nextEndboss = createNextDefaultEndBoss(game.state.idCounter, game);
+    if (game.state.map.endBossArea) {
+        setDefaultNextEndbosses(game);
     }
     game.state.map.seed = nextRandom(game.state.randomSeed);
     generateMissingChunks(game.state.map, [{ x: 0, y: 0 }], game.state.idCounter, game);
 
     return game;
+}
+
+export function setDefaultNextEndbosses(game: Game) {
+    game.state.bossStuff.nextEndbosses.north = createNextDefaultEndBoss(game.state.idCounter, game);
+    game.state.bossStuff.nextEndbosses.west = createNextDefaultEndBoss(game.state.idCounter, game);
+    game.state.bossStuff.nextEndbosses.south = createNextDefaultEndBoss(game.state.idCounter, game);
+    game.state.bossStuff.nextEndbosses.east = createNextDefaultEndBoss(game.state.idCounter, game);
 }

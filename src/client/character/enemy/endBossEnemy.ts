@@ -14,6 +14,7 @@ import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPa
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, createCharacter } from "../characterModel.js";
 import { paintCharacterDefault } from "../characterPaint.js";
 import { PathingCache } from "../pathing.js";
+import { getCeilestialDirection } from "./bossEnemy.js";
 
 export type EndBossEnemyCharacter = Character;
 export const CHARACTER_TYPE_END_BOSS_ENEMY = "EndBossEnemyCharacter";
@@ -51,12 +52,9 @@ export function startEndBoss(endBossAreaPosition: Position, game: Game) {
         changeTileIdOfMapChunk(entrance.chunkI, entrance.chunkJ, entrance.tileI, entrance.tileJ, 2, game);
         let spawn: Position = getBossAreaMiddlePosition(endBossAreaPosition, game.state.map)!;
         let endBoss: Character;
-        if (game.state.bossStuff.nextEndboss === undefined) {
-            endBoss = createNextDefaultEndBoss(game.state.idCounter, game);
-            game.state.bossStuff.nextEndboss = deepCopy(endBoss);
-        } else {
-            endBoss = deepCopy(game.state.bossStuff.nextEndboss);
-        }
+        const ceilestialDirection = getCeilestialDirection(spawn);
+        endBoss = deepCopy(game.state.bossStuff.nextEndbosses[ceilestialDirection]);
+        console.log(`spawn ${ceilestialDirection} boss. type: ${endBoss.characterClass}`);
         endBoss.x = spawn.x;
         endBoss.y = spawn.y;
         if (endBoss.pets) {
@@ -97,9 +95,10 @@ function tickEndBossEnemyCharacter(enemy: EndBossEnemyCharacter, game: Game, pat
 }
 
 export function convertPlayerToEndBoss(game: Game) {
-    let nextBoss: Character = deepCopy(game.state.players[0].character);
-    game.state.bossStuff.nextEndboss = nextBoss;
-    const boss = game.state.bossStuff.nextEndboss;
+    let boss: Character = deepCopy(game.state.players[0].character);
+    const ceilestialDirection = getCeilestialDirection(boss);
+    game.state.bossStuff.nextEndbosses[ceilestialDirection] = boss;
+    console.log(`convert ${ceilestialDirection} boss to ${boss.characterClass}`);
     boss.type = CHARACTER_TYPE_END_BOSS_ENEMY;
     boss.maxHp = 50000000;
     boss.hp = boss.maxHp;

@@ -1,7 +1,7 @@
 import { createCharacter } from "../character/characterModel.js";
 import { CommandRestart, handleCommand } from "../commands.js";
 import { closeGame } from "../game.js";
-import { FACTION_ENEMY, FACTION_PLAYER, Game, Position } from "../gameModel.js";
+import { FACTION_ENEMY, FACTION_PLAYER, Game, Position, setDefaultNextEndbosses } from "../gameModel.js";
 import { createGame } from "../main.js";
 import { addEnemyToMap, createMap, GameMap } from "../map/map.js";
 import { createNewChunkTiles } from "../map/mapGeneration.js";
@@ -54,10 +54,10 @@ export function replayNextInReplayQueue(game: Game){
 
     game.state.ended = true;
     if(game.state.map.endBossArea){
-        if(replay.data?.nextEndBoss){
-            game.state.bossStuff.nextEndboss = replay.data?.nextEndBoss;
+        if(replay.data?.nextEndBosses){
+            game.state.bossStuff.nextEndbosses = replay.data?.nextEndBosses;
         }else{
-            game.state.bossStuff.nextEndboss = createNextDefaultEndBoss(game.state.idCounter, game);
+            setDefaultNextEndbosses(game);
         }   
     }
     if (replay.data!.replayPlayerInputs[0].command === "restart") {

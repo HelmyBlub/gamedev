@@ -1,9 +1,9 @@
 current tasks:
+
 - need new tamer boss kill testrun
     - tamer replay did not work?
+    - how to find out why tamer replays don't work sometimes?
 
-- End Bosses?
-    - each celestial directions has its own boss
 
 - balancing:
     - sniper boss too easy currently. Idea: randomize shoot position a bit

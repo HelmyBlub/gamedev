@@ -349,7 +349,7 @@ function foodIntakeLevelTick(pet: TamerPetCharacter, game: Game) {
     pet.weight = (pet.width * pet.height) / 3;
 }
 
-function reset(character: Character){
+function reset(character: Character) {
     const pet: TamerPetCharacter = character as TamerPetCharacter;
     pet.happines.nextTick = undefined;
     pet.happines.visualizations = [];
@@ -431,15 +431,15 @@ function setMoveDirectionWithNoTarget(pet: TamerPetCharacter, petOwner: Characte
 function getTargetByBehavior(pet: TamerPetCharacter, petOwner: Character, game: Game): Character | null {
     let target: Character | null = null;
     if (pet.petTargetBehavior === "aggressive") {
-        let characters = determineTargetsInDistance(pet, game);
+        let characters = determineTargetsInDistance(pet, pet, game);
         let closest = determineClosestCharacter(pet, characters);
         target = closest.minDistanceCharacter;
     } else if (pet.petTargetBehavior === "protective") {
         let characters;
         if (game.state.bossStuff.endBossStarted) {
-            characters = determineTargetsInDistance(pet, game, 400, true);
+            characters = determineTargetsInDistance(pet, petOwner, game, 400, true);
         } else {
-            characters = determineTargetsInDistance(pet, game, 200);
+            characters = determineTargetsInDistance(pet, petOwner, game, 200);
         }
         let closest = determineClosestCharacter(petOwner, characters);
         if (closest.minDistance < 80) {
@@ -454,15 +454,15 @@ function getTargetByBehavior(pet: TamerPetCharacter, petOwner: Character, game: 
     return target;
 }
 
-function determineTargetsInDistance(pet: TamerPetCharacter, game: Game, distance: number = 200, ignoreMapEnemies: boolean = false): Character[] {
+function determineTargetsInDistance(pet: TamerPetCharacter, center: Position, game: Game, distance: number = 200, ignoreMapEnemies: boolean = false): Character[] {
     if (pet.faction === FACTION_PLAYER) {
         if (ignoreMapEnemies) {
-            return determineCharactersInDistance(pet, undefined, [], game.state.bossStuff.bosses, distance);
+            return determineCharactersInDistance(center, undefined, [], game.state.bossStuff.bosses, distance);
         } else {
-            return determineCharactersInDistance(pet, game.state.map, [], game.state.bossStuff.bosses, distance);
+            return determineCharactersInDistance(center, game.state.map, [], game.state.bossStuff.bosses, distance);
         }
     } else {
-        return determineCharactersInDistance(pet, undefined, game.state.players, undefined, distance);
+        return determineCharactersInDistance(center, undefined, game.state.players, undefined, distance);
     }
 }
 

@@ -3,7 +3,7 @@ import { ABILITY_NAME_LEASH, AbilityLeash } from "../../ability/abilityLeash.js"
 import { createAbilityMelee } from "../../ability/abilityMelee.js";
 import { tickCharacterDebuffs } from "../../debuff/debuff.js";
 import { calculateDirection, deepCopy, getNextId, getTimeSinceFirstKill } from "../../game.js";
-import { IdCounter, Game, Position, BossStuff, FACTION_ENEMY } from "../../gameModel.js";
+import { IdCounter, Game, Position, BossStuff, FACTION_ENEMY, CeilestialDirection } from "../../gameModel.js";
 import { findNearNonBlockingPosition, getMapMidlePosition, moveByDirectionAndDistance } from "../../map/map.js";
 import { getPlayerFurthestAwayFromSpawn } from "../../player.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
@@ -26,15 +26,17 @@ export function addBossType() {
 }
 
 export function createBossWithLevel(idCounter: IdCounter, level: number, game: Game): BossEnemyCharacter {
-    let spawn: Position = getBossSpawnPosition(game);
-    const nextBossClass = game.state.bossStuff.nextEndboss?.characterClass;
+    const spawn: Position = getBossSpawnPosition(game);
+    const ceilestialDirection = getCeilestialDirection(spawn);
+    const nextEndBoss = game.state.bossStuff.nextEndbosses[ceilestialDirection]!;
+    const nextBossClass = nextEndBoss.characterClass;
     if (nextBossClass) {
         let classFuntions = PLAYER_CHARACTER_CLASSES_FUNCTIONS[nextBossClass];
         if (classFuntions && classFuntions.createBossBasedOnClassAndCharacter) {
-            return classFuntions.createBossBasedOnClassAndCharacter(game.state.bossStuff.nextEndboss!, level, spawn, game);
+            return classFuntions.createBossBasedOnClassAndCharacter(nextEndBoss, level, spawn, game);
         }
     }
-    return createDefaultBossWithLevel(idCounter, level, spawn, game);
+    return createDefaultBossWithLevel(idCounter, level, spawn, nextEndBoss, game);
 }
 
 export function tickBossCharacters(bossStuff: BossStuff, game: Game) {
@@ -43,7 +45,23 @@ export function tickBossCharacters(bossStuff: BossStuff, game: Game) {
     tickCharacters(bosses, game, pathingCache);
 }
 
-function createDefaultBossWithLevel(idCounter: IdCounter, level: number, spawn: Position, game: Game): Character{
+export function getCeilestialDirection(position: Position): CeilestialDirection {
+    if (Math.abs(position.x) > Math.abs(position.y)) {
+        if (position.x > 0) {
+            return "east";
+        } else {
+            return "west";
+        }
+    } else {
+        if (position.y > 0) {
+            return "south";
+        } else {
+            return "north";
+        }
+    }
+}
+
+function createDefaultBossWithLevel(idCounter: IdCounter, level: number, spawn: Position, nextEndBoss: Character, game: Game): Character {
     let bossSize = 60;
     let color = "black";
     let moveSpeed = Math.min(6, 1.5 + level * 0.5);
@@ -52,9 +70,9 @@ function createDefaultBossWithLevel(idCounter: IdCounter, level: number, spawn: 
 
     let bossCharacter = createCharacter(getNextId(idCounter), spawn.x, spawn.y, bossSize, bossSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_BOSS_ENEMY, experienceWorth);
     bossCharacter.paint.image = IMAGE_SLIME;
-    let abilities: Ability[] = createBossAbilities(level, game);
+    let abilities: Ability[] = createBossAbilities(level, nextEndBoss, game);
     bossCharacter.abilities = abilities;
-    let pets: TamerPetCharacter[] | undefined = createBossPets(level, bossCharacter, game);
+    let pets: TamerPetCharacter[] | undefined = createBossPets(level, bossCharacter, nextEndBoss, game);
     bossCharacter.pets = pets;
     return bossCharacter;
 }
@@ -81,16 +99,16 @@ function tickBossEnemyCharacter(enemy: BossEnemyCharacter, game: Game, pathingCa
 }
 
 export function paintBossCharacters(ctx: CanvasRenderingContext2D, cameraPosition: Position, game: Game) {
-    for(let boss of game.state.bossStuff.bosses){
-        if(boss.type !== CHARACTER_TYPE_END_BOSS_CROWN_ENEMY){
+    for (let boss of game.state.bossStuff.bosses) {
+        if (boss.type !== CHARACTER_TYPE_END_BOSS_CROWN_ENEMY) {
             paintCharacters(ctx, [boss], cameraPosition, game);
         }
     }
 }
 
-export function paintBossCrown(ctx: CanvasRenderingContext2D, cameraPosition: Position, game: Game){
-    for(let boss of game.state.bossStuff.bosses){
-        if(boss.type === CHARACTER_TYPE_END_BOSS_CROWN_ENEMY){
+export function paintBossCrown(ctx: CanvasRenderingContext2D, cameraPosition: Position, game: Game) {
+    for (let boss of game.state.bossStuff.bosses) {
+        if (boss.type === CHARACTER_TYPE_END_BOSS_CROWN_ENEMY) {
             paintCharacters(ctx, [boss], cameraPosition, game);
         }
     }
@@ -112,8 +130,7 @@ function teleportBossToNearestPlayer(enemy: BossEnemyCharacter, game: Game) {
     enemy.y = newPosition.y;
 }
 
-function createBossPets(level: number, boss: Character, game: Game): TamerPetCharacter[] | undefined {
-    const nextEndBoss = game.state.bossStuff.nextEndboss;
+function createBossPets(level: number, boss: Character, nextEndBoss: Character, game: Game): TamerPetCharacter[] | undefined {
     if (nextEndBoss?.pets) {
         const random = Math.floor(nextRandom(game.state.randomSeed) * nextEndBoss.pets.length);
         const pet: TamerPetCharacter = deepCopy(nextEndBoss.pets[random]);
@@ -126,11 +143,10 @@ function createBossPets(level: number, boss: Character, game: Game): TamerPetCha
     return undefined;
 }
 
-function createBossAbilities(level: number, game: Game): Ability[] {
+function createBossAbilities(level: number, nextEndBoss: Character, game: Game): Ability[] {
     const abilities: Ability[] = [];
-    const endBoss = game.state.bossStuff.nextEndboss;
     const possibleAbilities: Ability[] = [];
-    for (let ability of endBoss!.abilities) {
+    for (let ability of nextEndBoss!.abilities) {
         if (ABILITIES_FUNCTIONS[ability.name].canBeUsedByBosses) {
             possibleAbilities.push(ability);
         }
