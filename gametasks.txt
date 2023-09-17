@@ -4,12 +4,20 @@ current tasks:
     - tamer replay did not work?
     - how to find out why tamer replays don't work sometimes?
 
+- take last characters abilities
+    - you can see last character in the middle/start area
+    - you can "talk" with them
+        - to get their main skill (one time only) (hammer, sniper, pets)
+            - be able to give back as long as timer did not start
+        - see what they died from, their level
+    - only the last 12 will be saved, after they rotate out
+    - when End Boss is defeated => check if normal boss & end boss works with them
 
-- balancing:
-    - sniper boss too easy currently. Idea: randomize shoot position a bit
+- visualization of Next End Bosses on start area
+    - sign which says: "<type> endboss in 20k distance"
 
 possible future tasks: (only keep 5)
-- take last characters abilities
+- save stuff to be able to continue playing after browser refresh/restart?
 - refactoring
 - improvement: getChunksTouchingLine2 does not work, still needs to improve
 
