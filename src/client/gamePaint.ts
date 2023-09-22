@@ -11,6 +11,7 @@ import { GAME_IMAGES, loadImage } from "./imageLoad.js";
 import { getMapMidlePosition } from "./map/map.js";
 import { paintMap, paintMapCharacters } from "./map/mapPaint.js";
 import { findPlayerById } from "./player.js";
+import { findNearesPastPlayerCharacter } from "./playerInput.js";
 
 GAME_IMAGES["blankKey"] = {
     imagePath: "/images/singleBlankKey.png",
@@ -32,6 +33,7 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
     paintAbilityObjects(ctx, game.state.abilityObjects, game, "afterCharacterPaint");
     paintDamageNumbers(ctx, game.UI.displayTextData, cameraPosition, game.state.time);
     paintKillCounter(ctx, game.state.killCounter, game);
+    paintTakeoverInfo(ctx, cameraPosition, game);
     paintKeyInfo(ctx, game);
 
     if (game.state.ended) {
@@ -61,10 +63,27 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
     paintUiForAbilities(ctx, game);
 }
 
-export function getPointPaintPosition(ctx: CanvasRenderingContext2D, point: Position, cameraPosition: Position): Position{
+function paintTakeoverInfo(ctx: CanvasRenderingContext2D, cameraPosition: Position, game: Game) {
+    if (game.state.ended) return;
+    const player = findPlayerById(game.state.players, game.multiplayer.myClientId);
+    if (player === null) return;
+    const character = player.character;
+    let pastCharacter = findNearesPastPlayerCharacter(character, game);
+    if (pastCharacter) {
+        let paintPos: Position = getPointPaintPosition(ctx, pastCharacter, cameraPosition);
+        paintPos.y -= 60;
+        const text = `Takeover skills (one time only) press`;
+        ctx.fillStyle = "black";
+        ctx.font = "20px Arial";
+        paintKey(ctx, "F", { x: paintPos.x - 15, y: paintPos.y });
+        paintTextWithOutline(ctx, "white", "black", text, paintPos.x, paintPos.y - 5, true);
+    }
+}
+
+export function getPointPaintPosition(ctx: CanvasRenderingContext2D, point: Position, cameraPosition: Position): Position {
     const centerX = ctx.canvas.width / 2;
     const centerY = ctx.canvas.height / 2;
-    return { 
+    return {
         x: Math.floor(point.x - cameraPosition.x + centerX),
         y: Math.floor(point.y - cameraPosition.y + centerY),
     }
@@ -242,9 +261,9 @@ function paintPlayerStatsUI(ctx: CanvasRenderingContext2D, character: Character,
     paintX += area.width + spacing;
     area = paintCharacterStatsUI(ctx, character, paintX, paintY, game);
     paintX += area.width + spacing;
-    if(character.pets){
+    if (character.pets) {
         for (let pet of character.pets) {
-            area = paintTamerPetCharacterStatsUI(ctx, pet, paintX, paintY, game);   
+            area = paintTamerPetCharacterStatsUI(ctx, pet, paintX, paintY, game);
             paintX += area.width + spacing;
         }
     }
@@ -258,9 +277,9 @@ function paintPlayerStatsUI(ctx: CanvasRenderingContext2D, character: Character,
     }
     if (!game.state.ended && game.state.highscores.lastBoard !== "") {
         const keys = Object.keys(game.state.highscores.scoreBoards);
-        for(let key of keys){
+        for (let key of keys) {
             const board = game.state.highscores.scoreBoards[key];
-            if(board && board.scores.length > 0){
+            if (board && board.scores.length > 0) {
                 const lastHighscorePosition = game.state.highscores.lastBoard === key ? game.state.highscores.lastHighscorePosition : undefined;
                 area = paintHighscores(ctx, paintX, paintY, board, lastHighscorePosition, 14);
                 paintX += area.width + spacing;
@@ -296,12 +315,12 @@ function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Charact
             ctx.font = firstFontSize + "px Arial";
             let maxWidth = ctx.measureText(choice.displayText).width + keyDisplayWidth;;
 
-            if(!game.UI.displayLongInfos && choice.displayLongText) displayKeyHint = true;
-            if(game.UI.displayLongInfos && choice.displayLongText){
+            if (!game.UI.displayLongInfos && choice.displayLongText) displayKeyHint = true;
+            if (game.UI.displayLongInfos && choice.displayLongText) {
                 for (let textIt = 0; textIt < choice.displayLongText.length; textIt++) {
                     let text = choice.displayLongText[textIt];
                     ctx.font = addFontSize + "px Arial";
-    
+
                     let width = ctx.measureText(text).width;
                     if (width > maxWidth) maxWidth = width;
                 }
@@ -311,7 +330,7 @@ function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Charact
         }
 
         let currentX = Math.max(5, ctx.canvas.width / 2 - totalWidthEsitmate / 2);
-        if(displayKeyHint){
+        if (displayKeyHint) {
             const hintX = ctx.canvas.width / 2;
             const hintY = startY;
             paintKey(ctx, "TAB", { x: hintX - 70, y: hintY - 60 }, -9, 14);
@@ -321,7 +340,7 @@ function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Charact
         for (let i = 0; i < character.upgradeChoices.length; i++) {
             const choice = character.upgradeChoices[i];
             let upgradeText: string[] = [choice.displayText];
-            if(game.UI.displayLongInfos && choice.displayLongText) upgradeText.push(...choice.displayLongText);
+            if (game.UI.displayLongInfos && choice.displayLongText) upgradeText.push(...choice.displayLongText);
             ctx.globalAlpha = game.UI.displayLongInfos ? 0.75 : 0.4;
             ctx.fillStyle = "white";
             let textWidthEstimate = maxWidthes[i];

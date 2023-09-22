@@ -36,6 +36,7 @@ export function addAbilityLovePet() {
         paintAbilityObject: paintAbilityObjectLovePet,
         tickAbilityObject: tickAbilityObjectLovePet,
         tickBossAI: tickBossAI,
+        resetAbility: resetAbility,
         deleteAbilityObject: deleteAbilityObjectLovePet,
         isPassive: false,
         notInheritable: true,
@@ -57,7 +58,14 @@ export function createAbilityLovePet(
         range: range,
         upgrades: {},
         loveValue: 30,
+        tradable: true,
+        unique: true,
     };
+}
+
+function resetAbility(ability: Ability){
+    const feed = ability as AbilityLovePet;
+    feed.nextRechargeTime = undefined;
 }
 
 function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {

@@ -127,6 +127,7 @@ export function createAbilitySnipe(
         lastSniperRiflePaintDirection: 0,
         maxMagazineSize: 99,
         minimumShotFrequency: 100,
+        tradable: true,
     };
 }
 

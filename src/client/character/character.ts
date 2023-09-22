@@ -56,7 +56,7 @@ export function playerCharactersAddBossSkillPoints(game: Game) {
     for (let character of playerCharacters) {
         if (!character.isDead && !character.isPet) {
             let gotSkillPoint = false;
-            if (character.bossSkillPoints) {
+            if (character.bossSkillPoints !== undefined) {
                 character.bossSkillPoints++;
                 gotSkillPoint = true;
             }
@@ -231,6 +231,8 @@ export function resetCharacter(character: Character){
     if(typeFunctions && typeFunctions.reset){
         typeFunctions.reset(character);
     }
+    if(character.isDead) character.isDead = false;
+    if(character.isPet) character.isPet = false;
     if(character.pets){
         for(let pet of character.pets){
             const petTypeFunctions = CHARACTER_TYPE_FUNCTIONS[pet.type];

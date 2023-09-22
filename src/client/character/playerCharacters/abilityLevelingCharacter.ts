@@ -20,7 +20,7 @@ export function addAbilityLevelingCharacter(){
 function executeAbilityLevelingCharacterUpgradeOption(character: Character, upgradeOption: UpgradeOption, game: Game){
     const abilityUpgradeOption: AbilityUpgradeOption = upgradeOption as AbilityUpgradeOption;
     const functions = ABILITIES_FUNCTIONS[abilityUpgradeOption.name];
-    const ability = character.abilities.find((a) => a.name === abilityUpgradeOption.name);
+    const ability = character.abilities.find((a) => a.name === abilityUpgradeOption.name && a.bossSkillPoints && a.bossSkillPoints > 0);
     functions.executeUpgradeOption!(ability! ,character, upgradeOption, game);
 }
 

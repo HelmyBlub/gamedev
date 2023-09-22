@@ -1,4 +1,5 @@
 import { ABILITIES_FUNCTIONS, paintDefaultAbilityStatsUI } from "../../../ability/ability.js";
+import { ABILITY_NAME_LEASH, AbilityLeash } from "../../../ability/abilityLeash.js";
 import { calculateDirection, calculateDistance, getNextId } from "../../../game.js";
 import { FACTION_PLAYER, Game, Position } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
@@ -42,6 +43,7 @@ export type TamerPetCharacter = Character & {
     }
     traits: Trait[],
     forcedMovePosition?: Position,
+    tradable: boolean,
 }
 
 type Happiness = {
@@ -91,6 +93,24 @@ export function addTamerPetFunctions() {
     addTamerPetTraits();
 }
 
+export function tradePets(fromCharacter: Character, toCharacter: Character, game: Game){
+    if(fromCharacter.pets){
+        for (let i = fromCharacter.pets.length - 1; i >= 0; i--) {
+            const pet = fromCharacter.pets[i];
+            if(pet.tradable){
+                if(!toCharacter.pets) toCharacter.pets = [];
+                fromCharacter.pets.splice(i,1);
+                pet.tradable = false;
+                reset(pet);
+                toCharacter.pets.push(pet);
+
+                const leash: AbilityLeash = pet.abilities.find((a) => a.name === ABILITY_NAME_LEASH) as AbilityLeash;
+                if(leash) leash.leashedToOwnerId = toCharacter.id;
+            }
+        }
+    }
+}
+
 export function createTamerPetCharacter(owner: Character, color: string, game: Game): TamerPetCharacter {
     const defaultSize = 30;
     const baseMoveSpeed = 2;
@@ -122,6 +142,7 @@ export function createTamerPetCharacter(owner: Character, color: string, game: G
             visualizations: [],
         },
         traits: [],
+        tradable: true,
     };
     return tamerPetCharacter;
 }

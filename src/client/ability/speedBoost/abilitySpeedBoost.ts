@@ -35,6 +35,7 @@ export function addAbilitySpeedBoost() {
         createAbilityBossUpgradeOptions: createAbilityBossSpeedBoostUpgradeOptions,
         executeUpgradeOption: executeAbilitySpeedBoostUpgradeOption,
         paintAbilityStatsUI: paintAbilitySpeedBoostStatsUI,
+        resetAbility: resetAbility,
         abilityUpgradeFunctions: ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS,
         isPassive: false,
         notInheritable: true,
@@ -61,7 +62,13 @@ export function createAbilitySpeedBoost(
         id: getNextId(idCounter),
         passive: false,
         upgrades: {},
+        tradable: true,
     };
+}
+
+function resetAbility(ability: Ability){
+    const speed = ability as AbilitySpeedBoost;
+    speed.cooldownFinishTime = 0;
 }
 
 function tickAbilitySpeedBoost(abilityOwner: AbilityOwner, ability: Ability, game: Game){

@@ -5,12 +5,14 @@ import { Game, Position } from "./gameModel.js";
 import { testGame } from "./test/gameTest.js";
 import { websocketConnect } from "./multiplayerConenction.js";
 import { ABILITIES_FUNCTIONS } from "./ability/ability.js";
-import { calculateDirection, getCameraPosition, getClientInfo, takeTimeMeasure } from "./game.js";
+import { calculateDirection, calculateDistance, getCameraPosition, getClientInfo, takeTimeMeasure } from "./game.js";
 import { executeUpgradeOptionChoice } from "./character/upgrade.js";
+import { tradePets } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
 
 export const MOVE_ACTIONS = ["left", "down", "right", "up"];
 export const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3"];
 export const ABILITY_ACTIONS = ["ability1", "ability2", "ability3"];
+export const SPECIAL_ACTIONS = ["interact"];
 export const MOUSE_ACTION = "mousePositionUpdate";
 
 export type ActionsPressed = {
@@ -36,6 +38,7 @@ export function createActionsPressed(): ActionsPressed {
         ability1: false,
         ability2: false,
         ability3: false,
+        interact: false,
     }
 }
 
@@ -80,13 +83,13 @@ export function keyDown(event: { code: string, preventDefault?: Function, stopPr
             multiplayerConnectMenu(game);
             break;
         case "KeyP":
-            if(!game.multiplayer.websocket){
+            if (!game.multiplayer.websocket) {
                 game.state.paused = !game.state.paused;
             }
             break;
         case "Tab":
             game.UI.displayLongInfos = true;
-            if(!game.multiplayer.websocket){
+            if (!game.multiplayer.websocket) {
                 game.state.paused = true;
             }
             break;
@@ -156,7 +159,7 @@ export function keyUp(event: KeyboardEvent, game: Game) {
     switch (event.code) {
         case "Tab":
             game.UI.displayLongInfos = false;
-            if(!game.multiplayer.websocket){
+            if (!game.multiplayer.websocket) {
                 game.state.paused = false;
             }
             break;
@@ -206,7 +209,7 @@ function playerInputChangeEvent(game: Game, inputCode: string, isInputDown: bool
     for (let i = 0; i < game.clientKeyBindings.length; i++) {
         let action = game.clientKeyBindings[i].keyCodeToActionPressed.get(inputCode);
         if (action !== undefined) {
-            if(game.testing.replay){
+            if (game.testing.replay) {
                 //end replay and let player play
                 game.testing.replay = undefined;
             }
@@ -227,12 +230,12 @@ function playerInputChangeEvent(game: Game, inputCode: string, isInputDown: bool
                     data: { action: action.action, isKeydown: isInputDown, castPosition: castPosition },
                 });
             } else {
-                if(action.action.indexOf("upgrade") > -1){
+                if (action.action.indexOf("upgrade") > -1) {
                     let character = findPlayerById(game.state.players, clientId)?.character;
-                    if(!character || character.upgradeChoices.length === 0){
+                    if (!character || character.upgradeChoices.length === 0) {
                         return;
                     }
-                    if(game.state.paused){
+                    if (game.state.paused) {
                         game.state.tickOnceInPaused = true;
                     }
                 }
@@ -264,25 +267,69 @@ function playerAction(clientId: number, data: any, game: Game) {
         } else if (UPGRADE_ACTIONS.indexOf(action) !== -1) {
             if (isKeydown) {
                 let option = character.upgradeChoices[UPGRADE_ACTIONS.indexOf(action)];
-                if(option){
+                if (option) {
                     executeUpgradeOptionChoice(character, option, game);
                 }
             }
         } else if (ABILITY_ACTIONS.indexOf(action) !== -1) {
-            let ability = character.abilities.find((a) => a.playerInputBinding && a.playerInputBinding === action);
-            if (ability) {
-                let functions = ABILITIES_FUNCTIONS[ability.name];
-                if (functions.activeAbilityCast !== undefined) {
-                    functions.activeAbilityCast(character, ability, data.castPosition, isKeydown, game);
-                } else {
-                    console.log("missing activeAbilityCast function for", action, ability);
+            for(let ability of character.abilities){
+                if(ability.playerInputBinding && ability.playerInputBinding === action ){
+                    let functions = ABILITIES_FUNCTIONS[ability.name];
+                    if (functions.activeAbilityCast !== undefined) {
+                        functions.activeAbilityCast(character, ability, data.castPosition, isKeydown, game);
+                    } else {
+                        console.log("missing activeAbilityCast function for", action, ability);
+                    }
+                }
+            }
+        } else if (SPECIAL_ACTIONS.indexOf(action) !== -1) {
+            if (isKeydown) {
+                let special = SPECIAL_ACTIONS[SPECIAL_ACTIONS.indexOf(action)];
+                if (special === "interact") {
+                    const closestPast = findNearesPastPlayerCharacter(character, game);
+                    if (closestPast) {
+                        tradeAbilityAndPets(closestPast, character, game);
+                    }
                 }
             }
         } else if (MOUSE_ACTION === action) {
             const client = getClientInfo(clientId, game);
-            if(client){
+            if (client) {
                 client.lastMousePosition = data.mousePosition;
             }
         }
     }
+}
+
+function tradeAbilityAndPets(fromCharacter: Character, toCharacter: Character, game: Game){
+    for (let i = fromCharacter.abilities.length - 1; i >= 0; i--) {
+        let ability = fromCharacter.abilities[i];
+        if (ability.tradable) {
+            if(ability.unique){
+                if(toCharacter.abilities.find((a) => a.name === ability.name)){
+                    continue;
+                }
+            }
+            fromCharacter.abilities.splice(i, 1);
+            ability.tradable = false;
+            if(ability.bossSkillPoints != undefined) ability.bossSkillPoints = undefined;
+            if(ability.leveling) ability.leveling = undefined;
+            toCharacter.abilities.push(ability);
+        }
+    }
+    tradePets(fromCharacter, toCharacter, game);
+}
+
+export function findNearesPastPlayerCharacter(character: Character, game: Game, maxDistance: number = 60): Character | undefined {
+    let pastCharacters = game.state.pastPlayerCharacters.characters;
+    let minDistance = maxDistance;
+    let currentClosest: Character | undefined = undefined;
+    for (let pastCharacter of pastCharacters) {
+        const distance = calculateDistance(pastCharacter, character);
+        if (distance <= minDistance) {
+            minDistance = distance;
+            currentClosest = pastCharacter;
+        }
+    }
+    return currentClosest;
 }

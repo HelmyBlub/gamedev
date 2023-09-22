@@ -76,9 +76,15 @@ export function paintCharacterStatsUI(ctx: CanvasRenderingContext2D, character: 
     return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
 }
 
+export function paintCharatersPets(ctx: CanvasRenderingContext2D, characters: Character[], cameraPosition: Position, game: Game){
+    for(let character of characters){
+        if (character.isDead) return;
+        paintCharacterPets(ctx, character, cameraPosition, game);
+    }
+}
+
 export function paintCharacterDefault(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
     if (character.isDead) return;
-    paintCharacterPets(ctx, character, cameraPosition, game);
 
     if (character.paint.image) {
         if (character.paint.image === IMAGE_SLIME) {
@@ -101,11 +107,14 @@ export function paintCharacterDefault(ctx: CanvasRenderingContext2D, character: 
 
 export function paintPlayerCharacters(ctx: CanvasRenderingContext2D, cameraPosition: Position, game: Game) {
     const playerCharacters = getPlayerCharacters(game.state.players);
+    paintCharatersPets(ctx, playerCharacters, cameraPosition, game);
+    paintCharatersPets(ctx, game.state.pastPlayerCharacters.characters, cameraPosition, game);
     paintCharacters(ctx, playerCharacters, cameraPosition, game);
     for (let playerChar of playerCharacters) {
         paintCharacterHpBarAboveCharacter(ctx, playerChar, cameraPosition);
         paintPlayerNameOverCharacter(ctx, playerChar, cameraPosition, game, -6);
     }
+    paintCharacters(ctx, game.state.pastPlayerCharacters.characters, cameraPosition, game);
 }
 
 function paintCharacterImage(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {

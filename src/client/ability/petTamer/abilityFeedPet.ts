@@ -36,6 +36,7 @@ export function addAbilityFeedPet() {
         paintAbilityObject: paintAbilityObjectFeedPet,
         tickAbilityObject: tickAbilityObjectFeedPet,
         tickBossAI: tickBossAI,
+        resetAbility: resetAbility,
         deleteAbilityObject: deleteAbilityObjectFeedPet,
         isPassive: false,
         notInheritable: true,
@@ -57,7 +58,14 @@ export function createAbilityFeedPet(
         range: range,
         upgrades: {},
         feedValue: 30,
+        tradable: true,
+        unique: true,
     };
+}
+
+function resetAbility(ability: Ability){
+    const feed = ability as AbilityFeedPet;
+    feed.nextRechargeTime = undefined;
 }
 
 function deleteAbilityObjectFeedPet(abilityObject: AbilityObject, game: Game): boolean {

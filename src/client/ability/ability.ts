@@ -2,9 +2,9 @@ import { determineCharactersInDistance, characterTakeDamage } from "../character
 import { Character } from "../character/characterModel.js"
 import { BossEnemyCharacter } from "../character/enemy/bossEnemy.js"
 import { calculateDistance, getCameraPosition, takeTimeMeasure } from "../game.js"
-import { FACTION_ENEMY, FACTION_PLAYER, Game, GameState, IdCounter, Position } from "../gameModel.js"
+import { FACTION_ENEMY, FACTION_PLAYER, Game, IdCounter, Position } from "../gameModel.js"
 import { GameMap } from "../map/map.js"
-import { findPlayerByCharacterId, findPlayerById, Player } from "../player.js"
+import { findPlayerByCharacterId, Player } from "../player.js"
 import { addAbilityDeathCircle } from "./abilityDeathCircle.js"
 import { addAbilityFireCircle } from "./abilityFireCircle.js"
 import { addAbilityLesh } from "./abilityLeash.js"
@@ -19,7 +19,7 @@ import { addAbilitySnipe } from "./snipe/abilitySnipe.js"
 import { addAbilitySpeedBoost } from "./speedBoost/abilitySpeedBoost.js"
 import { addAbilitySlowTrail } from "./abilitySlowTrail.js"
 import { addAbilityFireLine } from "./abilityFireLine.js"
-import { AbilityUpgrade, AbilityUpgradesFunctions } from "./abilityUpgrade.js"
+import { AbilityUpgradesFunctions } from "./abilityUpgrade.js"
 import { addAbilityExplode } from "./abilityExplode.js"
 import { addAbilityFeedPet } from "./petTamer/abilityFeedPet.js"
 import { addAbilityLovePet } from "./petTamer/abilityLovePet.js"
@@ -41,7 +41,9 @@ export type Ability = {
     bossSkillPoints?: number,
     upgrades: {
         [key: string]: any,
-    }
+    },
+    tradable?: boolean,
+    unique?: boolean,
 }
 export type PaintOrderAbility = "beforeCharacterPaint" | "afterCharacterPaint";
 export type AbilityObject = Position & {

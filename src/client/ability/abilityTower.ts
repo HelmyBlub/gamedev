@@ -87,6 +87,7 @@ export function createAbilityTower(
         availableAbilityKeys: availableAbilities,
         orderOfAbilities: orderOfAbilities,
         upgrades: {},
+        tradable: true,
     };
 }
 

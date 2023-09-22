@@ -111,6 +111,10 @@ export type GameState = {
     deathCircleCreated: boolean,
     paused: boolean,
     tickOnceInPaused?: boolean,
+    pastPlayerCharacters: {
+        characters: Character[]
+        maxNumber: number,
+    },
 }
 
 export type Camera = {
@@ -224,6 +228,10 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
                 nextEndbosses: {},
             },
             paused: false,
+            pastPlayerCharacters: {
+                characters: [],
+                maxNumber: 12,
+            },
         },
         clientKeyBindings: [],
         tickInterval: 16,

@@ -1,14 +1,18 @@
 current tasks:
 - take past characters abilities
-    - you can see last character in the middle/start area
-        - middle has some kind of camp:
-            - fire in the middle, character "sitting" around on a log
     - you can "talk" with them
         - to get their main skill (one time only) (hammer, sniper, pets)
-            - be able to give back as long as timer did not start
-        - see what they died from, their level
+            - new buttone "take" Key-F
+                - new action
+                - searches closest pastPlayer
+                    - limit in range
+                - takes "main" skill
+                    - visualize somehow
     - only the last 12 will be saved, after they rotate out
     - when End Boss is defeated => check if normal boss & end boss works with them
+    - middle has some kind of camp:
+        - fire in the middle, character "sitting" around on a log
+    - see what they died from, their level
 
 - visualization of Next End Bosses on start area
     - sign which says: "<type> endboss in 20k distance"

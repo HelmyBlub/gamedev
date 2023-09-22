@@ -35,6 +35,8 @@ export function createDefaultKeyBindings1() {
     keyBindings.set("KeyE", { action: "ability2", uiDisplayInputValue: "E", isInputAlreadyDown: false });
     keyBindings.set("KeyR", { action: "ability3", uiDisplayInputValue: "R", isInputAlreadyDown: false });
 
+    keyBindings.set("KeyF", { action: "interact", uiDisplayInputValue: "F", isInputAlreadyDown: false });
+
     return keyBindings;
 }
 

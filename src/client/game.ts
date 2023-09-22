@@ -1,4 +1,4 @@
-import { countAlivePlayerCharacters, findCharacterById, findMyCharacter, getPlayerCharacters, tickCharacters, tickMapCharacters } from "./character/character.js";
+import { countAlivePlayerCharacters, findCharacterById, findMyCharacter, getPlayerCharacters, resetCharacter, tickCharacters, tickMapCharacters } from "./character/character.js";
 import { paintAll } from "./gamePaint.js";
 import { findPlayerByCharacterId, gameInitPlayers } from "./player.js";
 import { MOUSE_ACTION, UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.js";
@@ -310,6 +310,7 @@ export function endGame(game: Game, isEndbossKill: boolean = false) {
     if (isEndbossKill && !game.multiplayer.websocket) {
         convertPlayerToEndBoss(game);
     }
+    savePlayerCharaters(game);
     endGameReplayStuff(game, newScore);
     if (game.testing.record) {
         if (game.testing.record.data.replayPlayerInputs) {
@@ -318,6 +319,31 @@ export function endGame(game: Game, isEndbossKill: boolean = false) {
             game.testing.record.data.gameEndAsserts.push({ type: "killCounter", data: game.state.killCounter });
             if (!game.testing.replay) {
                 console.log("testData", game.testing.record.data);
+            }
+        }
+    }
+}
+
+function savePlayerCharaters(game: Game){
+    const players = game.state.players;
+    const pastCharacters = game.state.pastPlayerCharacters.characters;
+    for(let player of players){
+        const character: Character = deepCopy(player.character);
+        resetCharacter(character);
+        pastCharacters.push(character);
+    }
+    if(pastCharacters.length > game.state.pastPlayerCharacters.maxNumber){
+        const removeCount =  pastCharacters.length - game.state.pastPlayerCharacters.maxNumber;
+        pastCharacters.splice(0, removeCount);
+    }
+    for(let i = 0; i < pastCharacters.length; i++){
+        const pastCharacter = pastCharacters[i];
+        pastCharacter.x = i * 20;
+        pastCharacter.y = 0;
+        if(pastCharacter.pets){
+            for(let pet of pastCharacter.pets){
+                pet.x = i * 20;
+                pet.y = 0;
             }
         }
     }
