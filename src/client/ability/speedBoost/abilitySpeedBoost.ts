@@ -7,7 +7,7 @@ import { applyDebuff } from "../../debuff/debuff.js";
 import { getNextId } from "../../game.js";
 import { Game, IdCounter, Position } from "../../gameModel.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, paintDefaultAbilityStatsUI } from "../ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, getAbilityNameUiText, paintDefaultAbilityStatsUI } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
 import { ABILITY_SPEED_BOOST_UPGARDE_ADD_CHARGE, AbilitySpeedBoostUpgradeAddCharge, addAbilitySpeedBoostUpgradeAddCharge, tickAbilitySpeedBoostUpgradeAddCharge } from "./abilitySpeedBoostUpgradeAddCharge.js";
 import { addAbilitySpeedBoostUpgradeDuration } from "./abilitySpeedBoostUpgradeDuration.js";
@@ -145,14 +145,14 @@ function paintAbilitySpeedBoostUI(ctx: CanvasRenderingContext2D, ability: Abilit
 
 function paintAbilitySpeedBoostStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
     const abilitySpeedBoost = ability as AbilitySpeedBoost;
-    const textLines: string[] = [
-        `Ability: ${abilitySpeedBoost.name}`,
+    const textLines: string[] = getAbilityNameUiText(ability);
+    textLines.push(    
         `Key: ${playerInputBindingToDisplayValue(abilitySpeedBoost.playerInputBinding!, game)}`,
         `Ability stats: `,
         `Speed Increase: ${((abilitySpeedBoost.speedFactor - 1) * 100).toFixed()}%`,
         `Speed Duration: ${(abilitySpeedBoost.duration / 1000).toFixed(2)}s`,
         `Speed Cooldown: ${(abilitySpeedBoost.cooldown / 1000).toFixed(2)}s`,
-    ];
+    );
     pushAbilityUpgradesUiTexts(ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS, textLines, ability);
 
     return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);

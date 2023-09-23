@@ -59,7 +59,7 @@ function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: 
     const hp = 1000 * Math.pow(level, 4);
     const experienceWorth = Math.pow(level, 2) * 100;
 
-    const bossCharacter = createCharacter(getNextId(idCounter), spawn.x, spawn.y, bossSize, bossSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_BOSS_ENEMY, experienceWorth);
+    const bossCharacter = createCharacter(getNextId(idCounter), spawn.x, spawn.y, bossSize, bossSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_BOSS_ENEMY, experienceWorth);    
     addAbilityToCharacter(bossCharacter, createAbility(ABILITY_NAME_FEED_PET, idCounter, false, false, "ability1"));
     addAbilityToCharacter(bossCharacter, createAbility(ABILITY_NAME_LOVE_PET, idCounter, false, false, "ability2"));
     

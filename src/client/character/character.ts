@@ -10,11 +10,12 @@ import { ABILITIES_FUNCTIONS, Ability, findAbilityById, findAbilityOwnerByAbilit
 import { LEVELING_CHARACTER, LevelingCharacter } from "./playerCharacters/levelingCharacterModel.js";
 import { BossEnemyCharacter, CHARACTER_TYPE_BOSS_ENEMY } from "./enemy/bossEnemy.js";
 import { removeCharacterDebuffs, tickCharacterDebuffs } from "../debuff/debuff.js";
-import { createAbilityLeash } from "../ability/abilityLeash.js";
+import { ABILITY_NAME_LEASH, AbilityLeash, createAbilityLeash } from "../ability/abilityLeash.js";
 import { fillRandomUpgradeOptionChoices, UpgradeOption } from "./upgrade.js";
 import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters/playerCharacters.js";
 import { CHARACTER_TYPE_END_BOSS_ENEMY } from "./enemy/endBossEnemy.js";
 import { createEndBossCrownCharacter } from "./enemy/endBossCrown.js";
+import { tradePets } from "./playerCharacters/tamer/tamerPetCharacter.js";
 
 export function findCharacterById(characters: Character[], id: number): Character | null {
     for (let i = 0; i < characters.length; i++) {
@@ -83,6 +84,49 @@ export function playerCharactersAddBossSkillPoints(game: Game) {
             if (gotSkillPoint && character.upgradeChoices.length === 0) {
                 fillRandomUpgradeOptionChoices(character, game);
             }
+        }
+    }
+}
+
+export function canCharacterTradeAbilityOrPets(character: Character): boolean{
+    for(let ability of character.abilities){
+        if(ability.tradable) return true;
+    }
+    if(character.pets){
+        for(let pet of character.pets){
+            if(pet.tradable) return true;
+        }
+    }
+    return false;
+}
+
+export function characterTradeAbilityAndPets(fromCharacter: Character, toCharacter: Character, game: Game){
+    for (let i = fromCharacter.abilities.length - 1; i >= 0; i--) {
+        let ability = fromCharacter.abilities[i];
+        if (ability.tradable) {
+            if(ability.unique){
+                if(toCharacter.abilities.find((a) => a.name === ability.name)){
+                    continue;
+                }
+            }
+            fromCharacter.abilities.splice(i, 1);
+            ability.tradable = false;
+            ability.gifted = true;
+            if(ability.bossSkillPoints != undefined) ability.bossSkillPoints = undefined;
+            if(ability.leveling) ability.leveling = undefined;
+            toCharacter.abilities.push(ability);
+        }
+    }
+    tradePets(fromCharacter, toCharacter, game);
+    resetAllCharacterAbilities(toCharacter);
+}
+
+export function changeCharacterId(character: Character, newId: number){
+    character.id = newId;
+    if(character.pets){
+        for(let pet of character.pets){
+            const leash: AbilityLeash = pet.abilities.find((a) => a.name === ABILITY_NAME_LEASH) as AbilityLeash;
+            if(leash) leash.leashedToOwnerId = character.id;
         }
     }
 }

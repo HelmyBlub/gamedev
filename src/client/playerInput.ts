@@ -1,5 +1,5 @@
 import { CommandRestart, handleCommand } from "./commands.js";
-import { findPlayerById } from "./player.js";
+import { findNearesPastPlayerCharacter, findPlayerById } from "./player.js";
 import { Character } from "./character/characterModel.js";
 import { Game, Position } from "./gameModel.js";
 import { testGame } from "./test/gameTest.js";
@@ -8,6 +8,7 @@ import { ABILITIES_FUNCTIONS } from "./ability/ability.js";
 import { calculateDirection, calculateDistance, getCameraPosition, getClientInfo, takeTimeMeasure } from "./game.js";
 import { executeUpgradeOptionChoice } from "./character/upgrade.js";
 import { tradePets } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
+import { characterTradeAbilityAndPets } from "./character/character.js";
 
 export const MOVE_ACTIONS = ["left", "down", "right", "up"];
 export const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3"];
@@ -66,6 +67,7 @@ export function keyDown(event: { code: string, preventDefault?: Function, stopPr
         //            handleCommand(game, commandRestart);
         //            break;
         case "KeyZ":
+            game.state.paused = false;
             commandRestart = {
                 command: "restart",
                 clientId: game.multiplayer.myClientId,
@@ -288,7 +290,7 @@ function playerAction(clientId: number, data: any, game: Game) {
                 if (special === "interact") {
                     const closestPast = findNearesPastPlayerCharacter(character, game);
                     if (closestPast) {
-                        tradeAbilityAndPets(closestPast, character, game);
+                        characterTradeAbilityAndPets(closestPast, character, game);
                     }
                 }
             }
@@ -299,37 +301,4 @@ function playerAction(clientId: number, data: any, game: Game) {
             }
         }
     }
-}
-
-function tradeAbilityAndPets(fromCharacter: Character, toCharacter: Character, game: Game){
-    for (let i = fromCharacter.abilities.length - 1; i >= 0; i--) {
-        let ability = fromCharacter.abilities[i];
-        if (ability.tradable) {
-            if(ability.unique){
-                if(toCharacter.abilities.find((a) => a.name === ability.name)){
-                    continue;
-                }
-            }
-            fromCharacter.abilities.splice(i, 1);
-            ability.tradable = false;
-            if(ability.bossSkillPoints != undefined) ability.bossSkillPoints = undefined;
-            if(ability.leveling) ability.leveling = undefined;
-            toCharacter.abilities.push(ability);
-        }
-    }
-    tradePets(fromCharacter, toCharacter, game);
-}
-
-export function findNearesPastPlayerCharacter(character: Character, game: Game, maxDistance: number = 60): Character | undefined {
-    let pastCharacters = game.state.pastPlayerCharacters.characters;
-    let minDistance = maxDistance;
-    let currentClosest: Character | undefined = undefined;
-    for (let pastCharacter of pastCharacters) {
-        const distance = calculateDistance(pastCharacter, character);
-        if (distance <= minDistance) {
-            minDistance = distance;
-            currentClosest = pastCharacter;
-        }
-    }
-    return currentClosest;
 }

@@ -20,6 +20,20 @@ export function createPlayer(clientId: number, character: Character): Player {
     }
 }
 
+export function findNearesPastPlayerCharacter(character: Character, game: Game, maxDistance: number = 60): Character | undefined {
+    let pastCharacters = game.state.pastPlayerCharacters.characters;
+    let minDistance = maxDistance;
+    let currentClosest: Character | undefined = undefined;
+    for (let pastCharacter of pastCharacters) {
+        const distance = calculateDistance(pastCharacter, character);
+        if (distance <= minDistance) {
+            minDistance = distance;
+            currentClosest = pastCharacter;
+        }
+    }
+    return currentClosest;
+}
+
 export function createDefaultKeyBindings1() {
     let keyBindings: KeyCodeToAction = new Map();
     keyBindings.set("KeyA", { action: "left", uiDisplayInputValue: "A", isInputAlreadyDown: false });

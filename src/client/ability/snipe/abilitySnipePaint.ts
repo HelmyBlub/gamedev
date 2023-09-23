@@ -2,9 +2,9 @@ import { calcNewPositionMovedInDirection, getCameraPosition } from "../../game.j
 import { FACTION_ENEMY, FACTION_PLAYER, Game, Position } from "../../gameModel.js";
 import { GAME_IMAGES, loadImage } from "../../imageLoad.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
-import { Ability, AbilityObject, AbilityOwner, PaintOrderAbility, paintDefaultAbilityStatsUI } from "../ability.js";
+import { Ability, AbilityObject, AbilityOwner, PaintOrderAbility, getAbilityNameUiText, paintDefaultAbilityStatsUI } from "../ability.js";
 import { pushAbilityUpgradesUiTexts } from "../abilityUpgrade.js";
-import { ABILITY_NAME_SNIPE, ABILITY_SNIPE_PAINT_FADE_DURATION, ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe, getAbilitySnipeDamage, getAbilitySnipeRange, getAbilitySnipeShotFrequency } from "./abilitySnipe.js";
+import { ABILITY_NAME_SNIPE, ABILITY_SNIPE_PAINT_FADE_DURATION, ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe, getAbilitySnipeDamage, getAbilitySnipeRange, getAbilitySnipeShotFrequency, getSniperRiflePosition } from "./abilitySnipe.js";
 import { paintVisualizationAfterImage } from "./abilitySnipeUpgradeAfterImage.js";
 import { paintVisualizationMoreRifles } from "./abilitySnipeUpgradeMoreRifle.js";
 import { paintVisualizationStayStill } from "./abilitySnipeUpgradeStayStill.js";
@@ -44,8 +44,9 @@ export function paintAbilitySnipe(ctx: CanvasRenderingContext2D, abilityOwner: A
     const abilitySnipe = ability as AbilitySnipe;
     const centerX = ctx.canvas.width / 2;
     const centerY = ctx.canvas.height / 2;
-    let paintX = Math.floor(abilityOwner.x - cameraPosition.x + centerX);
-    let paintY = Math.floor(abilityOwner.y - cameraPosition.y + centerY);
+    const riflePos = getSniperRiflePosition(abilitySnipe, abilityOwner);
+    let paintX = Math.floor(riflePos.x - cameraPosition.x + centerX);
+    let paintY = Math.floor(riflePos.y - cameraPosition.y + centerY);
 
     const direction = abilitySnipe.lastSniperRiflePaintDirection;
     const distance = 20;
@@ -121,26 +122,30 @@ export function paintAbilitySnipeUI(ctx: CanvasRenderingContext2D, ability: Abil
 
 export function paintAbilitySnipeStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
     let abilitySnipe = ability as AbilitySnipe;
-    const textLines: string[] = [
-        `Ability: ${abilitySnipe.name}`,
+    const textLines: string[] = getAbilityNameUiText(ability);
+    textLines.push(    
         `Key: ${playerInputBindingToDisplayValue(abilitySnipe.playerInputBinding!, game)}`,
         "Snipe in direction of click. Enemies hit by line take damage",
         "Gets XP for killing enemies. More XP more Damage",
         `Ability stats:`,
         `Base Damage: ${Math.round(abilitySnipe.baseDamage)}`,
         `Range: ${getAbilitySnipeRange(abilitySnipe)}`,
-    ];
+    );
 
     if (abilitySnipe.leveling) {
         textLines.push(
             `Level: ${abilitySnipe.leveling.level}`,
-            `Magazine Size: ${abilitySnipe.maxCharges}`,
-            `Shoot Cooldown: ${(getAbilitySnipeShotFrequency(abilitySnipe) / 1000).toFixed(2)}s`,
-            `Reload Time: ${(abilitySnipe.baseRechargeTime / 1000).toFixed(2)}s`,
             `Current XP: ${abilitySnipe.leveling.experience.toFixed(0)}`,
             `XP required for Level Up: ${abilitySnipe.leveling.experienceForLevelUp}`,
         );
     }
+
+    textLines.push(
+        `Magazine Size: ${abilitySnipe.maxCharges}`,
+        `Shoot Cooldown: ${(getAbilitySnipeShotFrequency(abilitySnipe) / 1000).toFixed(2)}s`,
+        `Reload Time: ${(abilitySnipe.baseRechargeTime / 1000).toFixed(2)}s`,
+    );
+
     pushAbilityUpgradesUiTexts(ABILITY_SNIPE_UPGRADE_FUNCTIONS, textLines, ability);
 
     return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);

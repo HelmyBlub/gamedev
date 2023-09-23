@@ -5,7 +5,7 @@ import { ABILITY_NAME_MELEE, createAbilityMelee } from "../../ability/abilityMel
 import { ABILITY_NAME_SHOOT } from "../../ability/abilityShoot.js";
 import { ABILITY_NAME_SWORD } from "../../ability/abilitySword.js";
 import { tickCharacterDebuffs } from "../../debuff/debuff.js";
-import { deepCopy, getNextId } from "../../game.js";
+import { deepCopy, getNextId, saveCharacterAsPastCharacter } from "../../game.js";
 import { IdCounter, Game, Position, FACTION_ENEMY } from "../../gameModel.js";
 import { GAME_IMAGES, getImage } from "../../imageLoad.js";
 import { changeTileIdOfMapChunk } from "../../map/map.js";
@@ -14,7 +14,7 @@ import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPa
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, createCharacter } from "../characterModel.js";
 import { paintCharacterDefault, paintCharatersPets } from "../characterPaint.js";
 import { PathingCache } from "../pathing.js";
-import { getCeilestialDirection } from "./bossEnemy.js";
+import { getCelestialDirection } from "./bossEnemy.js";
 
 export type EndBossEnemyCharacter = Character;
 export const CHARACTER_TYPE_END_BOSS_ENEMY = "EndBossEnemyCharacter";
@@ -46,15 +46,25 @@ export function createNextDefaultEndBoss(idCounter: IdCounter, game: Game): EndB
     return bossCharacter;
 }
 
+export function setPlayerAsEndBoss(game: Game) {
+    let boss: Character = deepCopy(game.state.players[0].character);
+    const celestialDirection = getCelestialDirection(boss);
+    const oldBoss = game.state.bossStuff.nextEndbosses[celestialDirection];
+    game.state.bossStuff.nextEndbosses[celestialDirection] = boss;
+    if(oldBoss?.characterClass){
+        saveCharacterAsPastCharacter(oldBoss, game);
+    }
+}
+
 export function startEndBoss(endBossAreaPosition: Position, game: Game) {
     let entrance = getEntranceChunkAndTileIJForPosition(game.state.players[0].character, game.state.map);
     if (entrance) {
         changeTileIdOfMapChunk(entrance.chunkI, entrance.chunkJ, entrance.tileI, entrance.tileJ, 2, game);
         let spawn: Position = getBossAreaMiddlePosition(endBossAreaPosition, game.state.map)!;
         let endBoss: Character;
-        const ceilestialDirection = getCeilestialDirection(spawn);
-        endBoss = deepCopy(game.state.bossStuff.nextEndbosses[ceilestialDirection]);
-        console.log(`spawn ${ceilestialDirection} boss. type: ${endBoss.characterClass}`);
+        const celestialDirection = getCelestialDirection(spawn);
+        endBoss = deepCopy(game.state.bossStuff.nextEndbosses[celestialDirection]);
+        modifyCharacterToEndBoss(endBoss);
         endBoss.x = spawn.x;
         endBoss.y = spawn.y;
         if (endBoss.pets) {
@@ -94,11 +104,7 @@ function tickEndBossEnemyCharacter(enemy: EndBossEnemyCharacter, game: Game, pat
     tickCharacterDebuffs(enemy, game);
 }
 
-export function convertPlayerToEndBoss(game: Game) {
-    let boss: Character = deepCopy(game.state.players[0].character);
-    const ceilestialDirection = getCeilestialDirection(boss);
-    game.state.bossStuff.nextEndbosses[ceilestialDirection] = boss;
-    console.log(`convert ${ceilestialDirection} boss to ${boss.characterClass}`);
+function modifyCharacterToEndBoss(boss: Character){
     boss.type = CHARACTER_TYPE_END_BOSS_ENEMY;
     boss.maxHp = 50000000;
     boss.hp = boss.maxHp;

@@ -1,4 +1,5 @@
 import { ABILITIES_FUNCTIONS, paintAbilityObjects, paintDefaultAbilityStatsUI, paintUiForAbilities } from "./ability/ability.js";
+import { canCharacterTradeAbilityOrPets } from "./character/character.js";
 import { Character, DEFAULT_CHARACTER } from "./character/characterModel.js";
 import { paintCharacterStatsUI, paintCharacters, paintPlayerCharacters } from "./character/characterPaint.js";
 import { paintBossCharacters, paintBossCrown } from "./character/enemy/bossEnemy.js";
@@ -10,8 +11,7 @@ import { Highscores, paintHighscoreEndScreenStuff, paintHighscores } from "./hig
 import { GAME_IMAGES, loadImage } from "./imageLoad.js";
 import { getMapMidlePosition } from "./map/map.js";
 import { paintMap, paintMapCharacters } from "./map/mapPaint.js";
-import { findPlayerById } from "./player.js";
-import { findNearesPastPlayerCharacter } from "./playerInput.js";
+import { findNearesPastPlayerCharacter, findPlayerById } from "./player.js";
 
 GAME_IMAGES["blankKey"] = {
     imagePath: "/images/singleBlankKey.png",
@@ -70,12 +70,19 @@ function paintTakeoverInfo(ctx: CanvasRenderingContext2D, cameraPosition: Positi
     const character = player.character;
     let pastCharacter = findNearesPastPlayerCharacter(character, game);
     if (pastCharacter) {
+        const canTrade = canCharacterTradeAbilityOrPets(pastCharacter);
         let paintPos: Position = getPointPaintPosition(ctx, pastCharacter, cameraPosition);
-        paintPos.y -= 60;
-        const text = `Takeover skills (one time only) press`;
+        paintPos.y -= 40;
+        let text = "";
+        if(canTrade){
+            text = `Takeover abilities (one time only)`;
+            paintPos.y -= 20;
+            paintKey(ctx, "F", { x: paintPos.x - 15, y: paintPos.y });
+        }else{
+            text = `already taken`;
+        }
         ctx.fillStyle = "black";
         ctx.font = "20px Arial";
-        paintKey(ctx, "F", { x: paintPos.x - 15, y: paintPos.y });
         paintTextWithOutline(ctx, "white", "black", text, paintPos.x, paintPos.y - 5, true);
     }
 }

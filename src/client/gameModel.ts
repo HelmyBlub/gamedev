@@ -69,7 +69,7 @@ export type MapChunkPaintCache = {
     [key: string]: CanvasRenderingContext2D
 }
 
-export type CeilestialDirection = "north" | "west" | "south" | "east";
+export type CelestialDirection = "north" | "west" | "south" | "east";
 export type NextEndBosses = {
     north?: Character,
     west?: Character,

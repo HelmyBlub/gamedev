@@ -44,6 +44,7 @@ export type Ability = {
     },
     tradable?: boolean,
     unique?: boolean,
+    gifted?: boolean,
 }
 export type PaintOrderAbility = "beforeCharacterPaint" | "afterCharacterPaint";
 export type AbilityObject = Position & {
@@ -122,6 +123,16 @@ export function onDomLoadSetAbilitiesFunctions() {
 }
 
 export function addAbilityToCharacter(character: Character, ability: Ability) {
+    if(ability.unique){
+        const dupIndex = character.abilities.findIndex((a)=> a.name === ability.name);
+        if(dupIndex !== -1){
+            if(!character.abilities[dupIndex].gifted){
+                return;
+            }else{
+                character.abilities.splice(dupIndex, 1);
+            }
+        }
+    }
     character.abilities.push(ability);
 }
 
@@ -265,6 +276,15 @@ export function paintDefaultAbilityStatsUI(ctx: CanvasRenderingContext2D, textLi
         ctx.fillText(textLines[i], drawStartX + 2, drawStartY + fontSize * (i + 1) + 2);
     }
     return { width, height };
+}
+
+export function getAbilityNameUiText(ability: Ability): string[]{
+    let text: string[] = [`Ability: ${ability.name}`];
+    if(ability.gifted){
+        text[0] += " (gifted)";
+        text.push("gifted abilities can not get stronger");
+    } 
+    return text;
 }
 
 export function detectAbilityObjectCircleToCharacterHit(map: GameMap, abilityObject: AbilityObjectCircle, game: Game) {

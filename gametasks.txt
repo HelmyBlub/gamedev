@@ -1,15 +1,9 @@
 current tasks:
 - take past characters abilities
-    - you can "talk" with them
-        - to get their main skill (one time only) (hammer, sniper, pets)
-            - new buttone "take" Key-F
-                - new action
-                - searches closest pastPlayer
-                    - limit in range
-                - takes "main" skill
-                    - visualize somehow
-    - only the last 12 will be saved, after they rotate out
-    - when End Boss is defeated => check if normal boss & end boss works with them
+    - fix bugs with weapon takeover:
+        - tick past characters
+            - pets moving around
+            - sniper "more rifles" rotating around
     - middle has some kind of camp:
         - fire in the middle, character "sitting" around on a log
     - see what they died from, their level
@@ -18,7 +12,8 @@ current tasks:
     - sign which says: "<type> endboss in 20k distance"
 
 possible future tasks: (only keep 5)
-- save stuff to be able to continue playing after browser refresh/restart?
+- replay/record works with ability takeover and pastCharacters
+- save stuff to be able to continue playing after browser refresh/restart
 - refactoring
 - balancing
 - improvement: getChunksTouchingLine2 does not work, still needs to improve

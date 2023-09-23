@@ -34,6 +34,8 @@ export type AbilityObjectSnipe = AbilityObject & {
 }
 
 export type AbilitySnipe = Ability & {
+    abilitySnipeCounter?: number,
+    abilitySnipeCharacterTotal?: number,
     baseDamage: number,
     baseRange: number,
     size: number,
@@ -258,10 +260,23 @@ export function getOptionsSnipeUpgrade(ability: Ability, upgradeName: string): U
     return options;
 }
 
+export function getSniperRiflePosition(snipe: AbilitySnipe, owner: AbilityOwner): Position{
+    if(!snipe.abilitySnipeCharacterTotal || snipe.abilitySnipeCharacterTotal  < 2) return {x: owner.x, y:owner.y};
+    const distance = 10;
+    const angle = Math.PI * 2 / snipe.abilitySnipeCharacterTotal;
+    return {
+        x: owner.x + Math.cos(angle * snipe.abilitySnipeCounter!) * distance,
+        y: owner.y + Math.sin(angle * snipe.abilitySnipeCounter!) * distance,
+    }
+}
+
 function resetAbility(ability: Ability){
     let abilitySnipe = ability as AbilitySnipe;
     abilitySnipe.nextAllowedShotTime = 0;
+    abilitySnipe.shotNextAllowedTime = false;
     abilitySnipe.reloadTime = -1;
+    abilitySnipe.abilitySnipeCounter = undefined;
+    abilitySnipe.abilitySnipeCharacterTotal = undefined;
 
     const upgradesFunctions = ABILITIES_FUNCTIONS[ABILITY_NAME_SNIPE].abilityUpgradeFunctions;
     if(!upgradesFunctions) return;
@@ -270,6 +285,24 @@ function resetAbility(ability: Ability){
         const functions = upgradesFunctions[key];
         if(functions.reset){
             functions.reset(ability);
+        }
+    }
+}
+
+function calculateAbilitySnipeCounter(character: AbilityOwner){
+    if(!character.abilities) return;
+    let snipeCounter = 0;
+    for(let ability of character.abilities){
+        if(ability.name === ABILITY_NAME_SNIPE){
+            const snipe = ability as AbilitySnipe;
+            snipe.abilitySnipeCounter = snipeCounter;
+            snipeCounter++;
+        }
+    }
+    for(let ability of character.abilities){
+        if(ability.name === ABILITY_NAME_SNIPE){
+            const snipe = ability as AbilitySnipe;
+            snipe.abilitySnipeCharacterTotal = snipeCounter;
         }
     }
 }
@@ -366,8 +399,9 @@ function createAbilityObjectSnipeInitialPlayerTriggered(abilityOwner: AbilityOwn
     abilitySnipe.lastSniperRiflePaintDirection = calculateDirection(abilityOwner, castPosition);
 
     castSnipeUpgradeMoreRifles(abilityOwner, abilityOwner.faction, abilitySnipe, castPosition, true, game);
-    castSnipeAfterImage(abilityOwner, abilitySnipe, castPosition, true, game);
-    createAbilityObjectSnipeInitial(abilityOwner, abilityOwner.faction, abilitySnipe, castPosition, true, false, game);
+    const startPosition = getSniperRiflePosition(abilitySnipe, abilityOwner);
+    castSnipeAfterImage(startPosition, abilitySnipe, castPosition, true, game);
+    createAbilityObjectSnipeInitial(startPosition, abilityOwner.faction, abilitySnipe, castPosition, true, false, game);
     abilitySnipe.currentCharges--;
     if (abilitySnipe.currentCharges === 0) {
         abilitySnipe.reloadTime = game.state.time + abilitySnipe.baseRechargeTime;
@@ -382,6 +416,9 @@ function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
 
 function tickAbilitySnipe(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     let abilitySnipe = ability as AbilitySnipe;
+    if(abilitySnipe.abilitySnipeCounter === undefined){
+        calculateAbilitySnipeCounter(abilityOwner);
+    }
     if (abilitySnipe.currentCharges === 0) {
         if (game.state.time >= abilitySnipe.reloadTime) {
             abilitySnipe.currentCharges = abilitySnipe.maxCharges;

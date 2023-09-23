@@ -1,4 +1,4 @@
-import { countAlivePlayerCharacters, findCharacterById, findMyCharacter, getPlayerCharacters, resetCharacter, tickCharacters, tickMapCharacters } from "./character/character.js";
+import { changeCharacterId, countAlivePlayerCharacters, findCharacterById, findMyCharacter, getPlayerCharacters, resetCharacter, tickCharacters, tickMapCharacters } from "./character/character.js";
 import { paintAll } from "./gamePaint.js";
 import { findPlayerByCharacterId, gameInitPlayers } from "./player.js";
 import { MOUSE_ACTION, UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.js";
@@ -16,7 +16,7 @@ import { autoPlay } from "./test/autoPlay.js";
 import { replayGameEndAssert, replayNextInReplayQueue } from "./test/gameTest.js";
 import { checkForEndBossAreaTrigger } from "./map/mapEndBossArea.js";
 import { calculateHighscoreOnGameEnd } from "./highscores.js";
-import { convertPlayerToEndBoss } from "./character/enemy/endBossEnemy.js";
+import { setPlayerAsEndBoss } from "./character/enemy/endBossEnemy.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -307,10 +307,11 @@ function gameEndedCheck(game: Game) {
 export function endGame(game: Game, isEndbossKill: boolean = false) {
     game.state.ended = true;
     let newScore = calculateHighscoreOnGameEnd(game, isEndbossKill);
-    if (isEndbossKill && !game.multiplayer.websocket) {
-        convertPlayerToEndBoss(game);
+    if (isEndbossKill) {
+        setPlayerAsEndBoss(game);
+    }else{
+        savePlayerCharaters(game);
     }
-    savePlayerCharaters(game);
     endGameReplayStuff(game, newScore);
     if (game.testing.record) {
         if (game.testing.record.data.replayPlayerInputs) {
@@ -324,17 +325,14 @@ export function endGame(game: Game, isEndbossKill: boolean = false) {
     }
 }
 
-function savePlayerCharaters(game: Game){
-    const players = game.state.players;
+export function saveCharacterAsPastCharacter(character: Character, game: Game){
+    const newPastCharacter: Character = deepCopy(character);
+    resetCharacter(newPastCharacter);
+    changeCharacterId(newPastCharacter, getNextId(game.state.idCounter));
     const pastCharacters = game.state.pastPlayerCharacters.characters;
-    for(let player of players){
-        const character: Character = deepCopy(player.character);
-        resetCharacter(character);
-        pastCharacters.push(character);
-    }
+    pastCharacters.push(newPastCharacter);
     if(pastCharacters.length > game.state.pastPlayerCharacters.maxNumber){
-        const removeCount =  pastCharacters.length - game.state.pastPlayerCharacters.maxNumber;
-        pastCharacters.splice(0, removeCount);
+        pastCharacters.splice(0, 1);
     }
     for(let i = 0; i < pastCharacters.length; i++){
         const pastCharacter = pastCharacters[i];
@@ -346,6 +344,13 @@ function savePlayerCharaters(game: Game){
                 pet.y = 0;
             }
         }
+    }
+}
+
+function savePlayerCharaters(game: Game){
+    const players = game.state.players;
+    for(let player of players){
+        saveCharacterAsPastCharacter(player.character, game);
     }
 }
 

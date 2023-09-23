@@ -3,7 +3,7 @@ import { ABILITY_NAME_LEASH, AbilityLeash } from "../../ability/abilityLeash.js"
 import { createAbilityMelee } from "../../ability/abilityMelee.js";
 import { tickCharacterDebuffs } from "../../debuff/debuff.js";
 import { calculateDirection, deepCopy, getNextId, getTimeSinceFirstKill } from "../../game.js";
-import { IdCounter, Game, Position, BossStuff, FACTION_ENEMY, CeilestialDirection } from "../../gameModel.js";
+import { IdCounter, Game, Position, BossStuff, FACTION_ENEMY, CelestialDirection } from "../../gameModel.js";
 import { findNearNonBlockingPosition, getMapMidlePosition, moveByDirectionAndDistance } from "../../map/map.js";
 import { getPlayerFurthestAwayFromSpawn } from "../../player.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
@@ -27,8 +27,8 @@ export function addBossType() {
 
 export function createBossWithLevel(idCounter: IdCounter, level: number, game: Game): BossEnemyCharacter {
     const spawn: Position = getBossSpawnPosition(game);
-    const ceilestialDirection = getCeilestialDirection(spawn);
-    const nextEndBoss = game.state.bossStuff.nextEndbosses[ceilestialDirection]!;
+    const celestialDirection = getCelestialDirection(spawn);
+    const nextEndBoss = game.state.bossStuff.nextEndbosses[celestialDirection]!;
     const nextBossClass = nextEndBoss.characterClass;
     if (nextBossClass) {
         let classFuntions = PLAYER_CHARACTER_CLASSES_FUNCTIONS[nextBossClass];
@@ -45,7 +45,7 @@ export function tickBossCharacters(bossStuff: BossStuff, game: Game) {
     tickCharacters(bosses, game, pathingCache);
 }
 
-export function getCeilestialDirection(position: Position): CeilestialDirection {
+export function getCelestialDirection(position: Position): CelestialDirection {
     if (Math.abs(position.x) > Math.abs(position.y)) {
         if (position.x > 0) {
             return "east";
