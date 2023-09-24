@@ -14,6 +14,7 @@ export function addHTMLDebugMenusToSettings(game: Game) {
     addCloseBossAreaButton(game);
     addTankyButton(game);
     addSpawnBossButton(game);
+    addClearLocalStorageButton(game);
 }
 
 function addSettingCheckbox(checkboxName: keyof Debugging, game: Game) {
@@ -54,6 +55,17 @@ function addCloseBossAreaButton(game: Game) {
                 game.state.map.seed = lastSeed;
                 gameRestart(game);
             }
+        });
+    }
+}
+
+function addClearLocalStorageButton(game: Game) {
+    const buttonName = "clear local storage";
+    addSettingButton(buttonName);
+    const button = document.getElementById(buttonName) as HTMLButtonElement;
+    if(button){
+        button.addEventListener('click', () => {
+            localStorage.clear();
         });
     }
 }

@@ -15,7 +15,7 @@ import { fillRandomUpgradeOptionChoices, UpgradeOption } from "./upgrade.js";
 import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters/playerCharacters.js";
 import { CHARACTER_TYPE_END_BOSS_ENEMY } from "./enemy/endBossEnemy.js";
 import { createEndBossCrownCharacter } from "./enemy/endBossCrown.js";
-import { tradePets } from "./playerCharacters/tamer/tamerPetCharacter.js";
+import { TamerPetCharacter, tradePets } from "./playerCharacters/tamer/tamerPetCharacter.js";
 
 export function findCharacterById(characters: Character[], id: number): Character | null {
     for (let i = 0; i < characters.length; i++) {
@@ -62,6 +62,7 @@ export function playerCharactersAddBossSkillPoints(game: Game) {
                 gotSkillPoint = true;
             }
             for (let ability of character.abilities) {
+                if (ability.gifted) continue;
                 if (ability.bossSkillPoints !== undefined) {
                     ability.bossSkillPoints++;
                     gotSkillPoint = true;
@@ -69,6 +70,7 @@ export function playerCharactersAddBossSkillPoints(game: Game) {
             }
             if (character.pets) {
                 for (let pet of character.pets) {
+                    if (pet.gifted) continue;
                     if (pet.bossSkillPoints !== undefined) {
                         pet.bossSkillPoints++;
                         gotSkillPoint = true;
@@ -88,32 +90,33 @@ export function playerCharactersAddBossSkillPoints(game: Game) {
     }
 }
 
-export function canCharacterTradeAbilityOrPets(character: Character): boolean{
-    for(let ability of character.abilities){
-        if(ability.tradable) return true;
+export function canCharacterTradeAbilityOrPets(character: Character): boolean {
+    for (let ability of character.abilities) {
+        if (ability.tradable) return true;
     }
-    if(character.pets){
-        for(let pet of character.pets){
-            if(pet.tradable) return true;
+    if (character.pets) {
+        for (let pet of character.pets) {
+            if (pet.tradable) return true;
         }
     }
     return false;
 }
 
-export function characterTradeAbilityAndPets(fromCharacter: Character, toCharacter: Character, game: Game){
+export function characterTradeAbilityAndPets(fromCharacter: Character, toCharacter: Character, game: Game) {
     for (let i = fromCharacter.abilities.length - 1; i >= 0; i--) {
         let ability = fromCharacter.abilities[i];
         if (ability.tradable) {
-            if(ability.unique){
-                if(toCharacter.abilities.find((a) => a.name === ability.name)){
+            if (ability.unique) {
+                if (toCharacter.abilities.find((a) => a.name === ability.name)) {
+                    fromCharacter.abilities.splice(i, 1);
                     continue;
                 }
             }
             fromCharacter.abilities.splice(i, 1);
             ability.tradable = false;
             ability.gifted = true;
-            if(ability.bossSkillPoints != undefined) ability.bossSkillPoints = undefined;
-            if(ability.leveling) ability.leveling = undefined;
+            if (ability.bossSkillPoints != undefined) ability.bossSkillPoints = undefined;
+            if (ability.leveling) ability.leveling = undefined;
             toCharacter.abilities.push(ability);
         }
     }
@@ -121,12 +124,12 @@ export function characterTradeAbilityAndPets(fromCharacter: Character, toCharact
     resetAllCharacterAbilities(toCharacter);
 }
 
-export function changeCharacterId(character: Character, newId: number){
+export function changeCharacterId(character: Character, newId: number) {
     character.id = newId;
-    if(character.pets){
-        for(let pet of character.pets){
+    if (character.pets) {
+        for (let pet of character.pets) {
             const leash: AbilityLeash = pet.abilities.find((a) => a.name === ABILITY_NAME_LEASH) as AbilityLeash;
-            if(leash) leash.leashedToOwnerId = character.id;
+            if (leash) leash.leashedToOwnerId = character.id;
         }
     }
 }
@@ -159,16 +162,17 @@ function killCharacter(character: Character, game: Game, abilityRefId: number | 
         if (ability) {
             levelingAbilityXpGain(ability, character.experienceWorth, game);
             const owner = findAbilityOwnerByAbilityId(ability.id, game);
-            if (owner && owner.leveling && owner.type !== LEVELING_CHARACTER) {
-                if (!owner.isDead && !owner.isPet) {
-                    owner.leveling.experience += character.experienceWorth;
-                    while (owner.leveling.experience >= owner.leveling.experienceForLevelUp) {
-                        owner.leveling.level++;
-                        owner.leveling.experience -= owner.leveling.experienceForLevelUp;
-                        owner.leveling.experienceForLevelUp += Math.floor(owner.leveling.level / 2);
-                        for (let abilityIt of owner.abilities) {
-                            setCharacterAbilityLevel(abilityIt, owner);
-                        }
+            if (owner && owner.leveling && owner.type !== LEVELING_CHARACTER
+                && !owner.isDead && !owner.isPet
+                && !(owner as TamerPetCharacter).gifted
+            ) {
+                owner.leveling.experience += character.experienceWorth;
+                while (owner.leveling.experience >= owner.leveling.experienceForLevelUp) {
+                    owner.leveling.level++;
+                    owner.leveling.experience -= owner.leveling.experienceForLevelUp;
+                    owner.leveling.experienceForLevelUp += Math.floor(owner.leveling.level / 2);
+                    for (let abilityIt of owner.abilities) {
+                        setCharacterAbilityLevel(abilityIt, owner);
                     }
                 }
             }
@@ -225,11 +229,11 @@ export function getPlayerCharacters(players: Player[]) {
     return playerCharacters;
 }
 
-export function getRandomAlivePlayerCharacter(players: Player[], randomSeed: RandomSeed): Character | undefined{
+export function getRandomAlivePlayerCharacter(players: Player[], randomSeed: RandomSeed): Character | undefined {
     const random = Math.floor(nextRandom(randomSeed) * players.length);
     for (let i = 0; i < players.length; i++) {
         let player = players[(random + i) % players.length];
-        if(!player.character.isPet && !player.character.isDead){
+        if (!player.character.isPet && !player.character.isDead) {
             return player.character;
         }
     }
@@ -270,19 +274,20 @@ export function determineClosestCharacter(position: Position, characters: Charac
     return { minDistanceCharacter, minDistance };
 }
 
-export function resetCharacter(character: Character){
+export function resetCharacter(character: Character) {
     const typeFunctions = CHARACTER_TYPE_FUNCTIONS[character.type];
-    if(typeFunctions && typeFunctions.reset){
+    if (typeFunctions && typeFunctions.reset) {
         typeFunctions.reset(character);
     }
-    if(character.isDead) character.isDead = false;
-    if(character.isPet) character.isPet = false;
-    if(character.pets){
-        for(let pet of character.pets){
+    if (character.isDead) character.isDead = false;
+    if (character.isPet) character.isPet = false;
+    character.isMoving = false;
+    if (character.pets) {
+        for (let pet of character.pets) {
             const petTypeFunctions = CHARACTER_TYPE_FUNCTIONS[pet.type];
-            if(petTypeFunctions && petTypeFunctions.reset){
+            if (petTypeFunctions && petTypeFunctions.reset) {
                 petTypeFunctions.reset(pet);
-            }    
+            }
         }
     }
     resetAllCharacterAbilities(character);
@@ -290,9 +295,9 @@ export function resetCharacter(character: Character){
 
 export function determineCharactersInDistance(position: Position, map: GameMap | undefined, players: Player[], bosses: BossEnemyCharacter[] | undefined, maxDistance: number, notFaction: string | undefined = undefined): Character[] {
     let result: Character[] = [];
-    if (notFaction === undefined || FACTION_ENEMY !== notFaction){
-        if(map){
-            let mapKeysInDistance = determineMapKeysInDistance(position, map, maxDistance, true, false);        
+    if (notFaction === undefined || FACTION_ENEMY !== notFaction) {
+        if (map) {
+            let mapKeysInDistance = determineMapKeysInDistance(position, map, maxDistance, true, false);
             for (let i = 0; i < mapKeysInDistance.length; i++) {
                 let chunk = map.chunks[mapKeysInDistance[i]];
                 if (chunk === undefined) continue;
@@ -305,17 +310,17 @@ export function determineCharactersInDistance(position: Position, map: GameMap |
                 }
             }
         }
-        if(bosses){
+        if (bosses) {
             for (let boss of bosses) {
                 let distance = calculateDistance(position, boss);
                 if (maxDistance >= distance) {
                     result.push(boss);
                 }
             }
-        }        
+        }
     }
 
-    if (notFaction === undefined || FACTION_PLAYER !== notFaction){
+    if (notFaction === undefined || FACTION_PLAYER !== notFaction) {
         for (let player of players) {
             if (player.character.faction === notFaction) continue;
             let distance = calculateDistance(position, player.character);

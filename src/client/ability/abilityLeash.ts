@@ -82,6 +82,7 @@ function findLeashOwner(abilityOwner: AbilityOwner, ability: AbilityLeash, game:
     if(ability.leashedToOwnerId === undefined) return null;
     if(abilityOwner.faction === FACTION_PLAYER){
         characters = getPlayerCharacters(game.state.players);
+        characters.push(...game.state.pastPlayerCharacters.characters);
     }else{
         characters = game.state.bossStuff.bosses;
     }
@@ -123,7 +124,9 @@ function tickAbilityLeash(abilityOwner: AbilityOwner, ability: Ability, game: Ga
                 if(weightFactor > 1){
                     weightFactor = 1;
                 }
-                pullCharacterTowardsPosition(pullForce * weightFactor, abilityOwner, pullPosition);
+                if(!abilityOwner.isUnMoveAble){
+                    pullCharacterTowardsPosition(pullForce * weightFactor, abilityOwner, pullPosition);
+                }
     
                 if(abilityLeash.leashBendPoints.length > 0){
                     pullPosition =  abilityLeash.leashBendPoints[abilityLeash.leashBendPoints.length-1];
@@ -136,7 +139,9 @@ function tickAbilityLeash(abilityOwner: AbilityOwner, ability: Ability, game: Ga
                 if(weightFactor > 1){
                     weightFactor = 1;
                 }
-                pullCharacterTowardsPosition(pullForce * weightFactor, connectedOwner, pullPosition);
+                if(!connectedOwner.isUnMoveAble){
+                    pullCharacterTowardsPosition(pullForce * weightFactor, connectedOwner, pullPosition);
+                }
             }
         }
     }

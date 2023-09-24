@@ -6,7 +6,7 @@ import { ABILITY_NAME_SHOOT } from "../../ability/abilityShoot.js";
 import { ABILITY_NAME_SWORD } from "../../ability/abilitySword.js";
 import { tickCharacterDebuffs } from "../../debuff/debuff.js";
 import { deepCopy, getNextId, saveCharacterAsPastCharacter } from "../../game.js";
-import { IdCounter, Game, Position, FACTION_ENEMY } from "../../gameModel.js";
+import { IdCounter, Game, Position, FACTION_ENEMY, LOCALSTORAGE_NEXTENDBOSSES } from "../../gameModel.js";
 import { GAME_IMAGES, getImage } from "../../imageLoad.js";
 import { changeTileIdOfMapChunk } from "../../map/map.js";
 import { getBossAreaMiddlePosition, getEntranceChunkAndTileIJForPosition } from "../../map/mapEndBossArea.js";
@@ -33,7 +33,7 @@ export function addEndBossType() {
     }
 }
 
-export function createNextDefaultEndBoss(idCounter: IdCounter, game: Game): EndBossEnemyCharacter {
+export function createDefaultNextEndBoss(idCounter: IdCounter, game: Game): EndBossEnemyCharacter {
     let bossSize = 60;
     let color = "black";
     let moveSpeed = 1;
@@ -51,6 +51,8 @@ export function setPlayerAsEndBoss(game: Game) {
     const celestialDirection = getCelestialDirection(boss);
     const oldBoss = game.state.bossStuff.nextEndbosses[celestialDirection];
     game.state.bossStuff.nextEndbosses[celestialDirection] = boss;
+    localStorage.setItem(LOCALSTORAGE_NEXTENDBOSSES, JSON.stringify(game.state.bossStuff.nextEndbosses));
+
     if(oldBoss?.characterClass){
         saveCharacterAsPastCharacter(oldBoss, game);
     }

@@ -1,19 +1,14 @@
 current tasks:
 - take past characters abilities
-    - fix bugs with weapon takeover:
-        - tick past characters
-            - pets moving around
-            - sniper "more rifles" rotating around
     - middle has some kind of camp:
         - fire in the middle, character "sitting" around on a log
-    - see what they died from, their level
+    - see what they died from, their level, their abilities
 
 - visualization of Next End Bosses on start area
     - sign which says: "<type> endboss in 20k distance"
 
 possible future tasks: (only keep 5)
 - replay/record works with ability takeover and pastCharacters
-- save stuff to be able to continue playing after browser refresh/restart
 - refactoring
 - balancing
 - improvement: getChunksTouchingLine2 does not work, still needs to improve

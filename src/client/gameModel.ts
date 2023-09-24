@@ -1,6 +1,6 @@
 import { AbilityObject } from "./ability/ability.js";
 import { Character } from "./character/characterModel.js";
-import { createNextDefaultEndBoss, EndBossEnemyCharacter } from "./character/enemy/endBossEnemy.js";
+import { createDefaultNextEndBoss, EndBossEnemyCharacter } from "./character/enemy/endBossEnemy.js";
 import { PathingCache } from "./character/pathing.js";
 import { CommandRestart } from "./commands.js";
 import { createHighscoreBoards, Highscores } from "./highscores.js";
@@ -197,6 +197,8 @@ export type Game = {
 
 export const FACTION_ENEMY = "enemy";
 export const FACTION_PLAYER = "player";
+export const LOCALSTORAGE_PASTCHARACTERS = "pastCharacters";
+export const LOCALSTORAGE_NEXTENDBOSSES = "nextEndBosses";
 export const ANIMATION_END_BOSS_CROWN_OVERTAKE = "End Boss Crown Overtake";
 
 export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: CanvasRenderingContext2D | undefined): Game {
@@ -298,8 +300,8 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
 }
 
 export function setDefaultNextEndbosses(game: Game) {
-    game.state.bossStuff.nextEndbosses.north = createNextDefaultEndBoss(game.state.idCounter, game);
-    game.state.bossStuff.nextEndbosses.west = createNextDefaultEndBoss(game.state.idCounter, game);
-    game.state.bossStuff.nextEndbosses.south = createNextDefaultEndBoss(game.state.idCounter, game);
-    game.state.bossStuff.nextEndbosses.east = createNextDefaultEndBoss(game.state.idCounter, game);
+    game.state.bossStuff.nextEndbosses.north = createDefaultNextEndBoss(game.state.idCounter, game);
+    game.state.bossStuff.nextEndbosses.west = createDefaultNextEndBoss(game.state.idCounter, game);
+    game.state.bossStuff.nextEndbosses.south = createDefaultNextEndBoss(game.state.idCounter, game);
+    game.state.bossStuff.nextEndbosses.east = createDefaultNextEndBoss(game.state.idCounter, game);
 }

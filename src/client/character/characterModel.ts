@@ -112,6 +112,7 @@ export type Character = Position & {
     }
     isPet?: boolean,
     isImmune?: boolean,
+    isUnMoveAble?: boolean,
     willTurnToPetOnDeath?: boolean,
     upgradeChoices: UpgradeOption[],
     pets?: TamerPetCharacter[],

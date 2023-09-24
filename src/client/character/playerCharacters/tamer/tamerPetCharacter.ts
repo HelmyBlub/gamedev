@@ -44,6 +44,7 @@ export type TamerPetCharacter = Character & {
     traits: Trait[],
     forcedMovePosition?: Position,
     tradable: boolean,
+    gifted?: boolean,
 }
 
 type Happiness = {
@@ -93,19 +94,20 @@ export function addTamerPetFunctions() {
     addTamerPetTraits();
 }
 
-export function tradePets(fromCharacter: Character, toCharacter: Character, game: Game){
-    if(fromCharacter.pets){
+export function tradePets(fromCharacter: Character, toCharacter: Character, game: Game) {
+    if (fromCharacter.pets) {
         for (let i = fromCharacter.pets.length - 1; i >= 0; i--) {
             const pet = fromCharacter.pets[i];
-            if(pet.tradable){
-                if(!toCharacter.pets) toCharacter.pets = [];
-                fromCharacter.pets.splice(i,1);
+            if (pet.tradable) {
+                if (!toCharacter.pets) toCharacter.pets = [];
+                fromCharacter.pets.splice(i, 1);
                 pet.tradable = false;
+                pet.gifted = true;
                 reset(pet);
                 toCharacter.pets.push(pet);
 
                 const leash: AbilityLeash = pet.abilities.find((a) => a.name === ABILITY_NAME_LEASH) as AbilityLeash;
-                if(leash) leash.leashedToOwnerId = toCharacter.id;
+                if (leash) leash.leashedToOwnerId = toCharacter.id;
             }
         }
     }
@@ -217,14 +219,19 @@ export function petFoodIntakeToDisplayText(foodIntakeLevel: FoodIntakeLevel): Pe
     }
 }
 export function paintTamerPetCharacterStatsUI(ctx: CanvasRenderingContext2D, pet: TamerPetCharacter, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
-    const textLines: string[] = [
-        `Pet Stats:`,
+    const textLines: string[] = [`Pet Stats:`];
+    if(pet.gifted){
+        textLines[0] += " (gifted)"
+        textLines.push("gifted pets don't get stronger");
+    }
+    
+    textLines.push(
         `Color: ${pet.paint.color}`,
         `food: ${petFoodIntakeToDisplayText(pet.foodIntakeLevel)}`,
         `Happiness: ${petHappinessToDisplayText(pet.happines)}`,
         `Movement Speed: ${pet.moveSpeed.toFixed(2)}`,
         `Level: ${pet.leveling.level.toFixed(0)}`,
-    ];
+    );
 
     if (pet.abilities.length > 0) {
         textLines.push("");

@@ -10,7 +10,6 @@ import { PlayerInput } from "../playerInput.js";
 import { createProjectile, Projectile } from "../ability/projectile.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
 import { detectAbilityObjectCircleToCharacterHit } from "../ability/ability.js";
-import { createNextDefaultEndBoss } from "../character/enemy/endBossEnemy.js";
 
 let testInputs: (PlayerInput | Omit<CommandRestart, "executeTime">)[] = [];
 

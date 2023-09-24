@@ -6,14 +6,22 @@ import { onDomLoadSetCharacterClasses } from "./character/playerCharacters/playe
 import { handleCommand } from "./commands.js";
 import { onDomLoadSetDebuffsFunctions } from "./debuff/debuff.js";
 import { runner, setRelativeMousePosition } from "./game.js";
-import { createDefaultGameData, Game } from "./gameModel.js";
+import { createDefaultGameData, Game, LOCALSTORAGE_NEXTENDBOSSES, LOCALSTORAGE_PASTCHARACTERS } from "./gameModel.js";
 import { keyDown, keyUp, mouseDown, mouseUp } from "./playerInput.js";
 import { addHTMLDebugMenusToSettings } from "./settingsHtmlMenu.js";
 
 var gameCount: number = 0;
 
 export function start() {
-    createGame("myCanvas");
+    const game = createGame("myCanvas");
+    const pastCharactersString = localStorage.getItem(LOCALSTORAGE_PASTCHARACTERS);
+    if(pastCharactersString){
+        game.state.pastPlayerCharacters = JSON.parse(pastCharactersString);
+    }
+    const nextEndbossesString = localStorage.getItem(LOCALSTORAGE_NEXTENDBOSSES);
+    if(nextEndbossesString){
+        game.state.bossStuff.nextEndbosses = JSON.parse(nextEndbossesString);
+    }
 }
 
 export function startMore() {

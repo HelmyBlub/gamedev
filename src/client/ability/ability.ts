@@ -204,18 +204,13 @@ export function findAbilityOwnerByAbilityId(abilityId: number, game: Game): Char
 }
 
 export function findAbilityAndOwnerById(abilityId: number, game: Game): {ability: Ability, owner: AbilityOwner} | undefined {
-    for (let i = 0; i < game.state.players.length; i++) {
-        let playerCharacter = game.state.players[i].character;
-        for (let ability of playerCharacter.abilities) {
-            if (ability.id === abilityId) return {ability: ability, owner: playerCharacter};
-        }
-        if (playerCharacter.pets) {
-            for (let pet of playerCharacter.pets) {
-                for (let ability of pet.abilities) {
-                    if (ability.id === abilityId) return {ability: ability, owner: pet};
-                }
-            }
-        }
+    for (let player of game.state.players) {
+        const result = findAbilityAndOwnerInCharacterById(player.character, abilityId);
+        if(result) return result;
+    }
+    for (let pastChar of game.state.pastPlayerCharacters.characters) {
+        const result = findAbilityAndOwnerInCharacterById(pastChar, abilityId);
+        if(result) return result;
     }
     for (let i = 0; i < game.state.bossStuff.bosses.length; i++) {
         const boss = game.state.bossStuff.bosses[i];
@@ -233,6 +228,19 @@ export function findAbilityAndOwnerById(abilityId: number, game: Game): {ability
     return undefined;
 }
 
+function findAbilityAndOwnerInCharacterById(character: Character, abilityId: number): {ability: Ability, owner: AbilityOwner} | undefined{
+    for (let ability of character.abilities) {
+        if (ability.id === abilityId) return {ability: ability, owner: character};
+    }
+    if (character.pets) {
+        for (let pet of character.pets) {
+            for (let ability of pet.abilities) {
+                if (ability.id === abilityId) return {ability: ability, owner: pet};
+            }
+        }
+    }
+    return undefined;
+}
 
 export function findAbilityById(abilityId: number, game: Game): Ability | undefined {
     let result = findAbilityAndOwnerById(abilityId, game);

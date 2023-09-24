@@ -2,13 +2,13 @@ import { changeCharacterId, countAlivePlayerCharacters, findCharacterById, findM
 import { paintAll } from "./gamePaint.js";
 import { findPlayerByCharacterId, gameInitPlayers } from "./player.js";
 import { MOUSE_ACTION, UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.js";
-import { Position, GameState, Game, IdCounter, Debugging, PaintTextData, ClientInfo } from "./gameModel.js";
+import { Position, GameState, Game, IdCounter, Debugging, PaintTextData, ClientInfo, LOCALSTORAGE_PASTCHARACTERS } from "./gameModel.js";
 import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap, removeAllMapCharacters } from "./map/map.js";
 import { Character, DEFAULT_CHARACTER } from "./character/characterModel.js";
 import { generateMissingChunks } from "./map/mapGeneration.js";
 import { createFixPositionRespawnEnemiesOnInit } from "./character/enemy/fixPositionRespawnEnemyModel.js";
 import { handleCommand } from "./commands.js";
-import { tickAbilityObjects } from "./ability/ability.js";
+import { ABILITIES_FUNCTIONS, tickAbilityObjects } from "./ability/ability.js";
 import { garbageCollectPathingCache, getPathingCache } from "./character/pathing.js";
 import { createObjectDeathCircle } from "./ability/abilityDeathCircle.js";
 import { checkForBossSpawn, tickBossCharacters } from "./character/enemy/bossEnemy.js";
@@ -17,6 +17,8 @@ import { replayGameEndAssert, replayNextInReplayQueue } from "./test/gameTest.js
 import { checkForEndBossAreaTrigger } from "./map/mapEndBossArea.js";
 import { calculateHighscoreOnGameEnd } from "./highscores.js";
 import { setPlayerAsEndBoss } from "./character/enemy/endBossEnemy.js";
+import { ABILITY_NAME_FEED_PET } from "./ability/petTamer/abilityFeedPet.js";
+import { ABILITY_NAME_LOVE_PET } from "./ability/petTamer/abilityLovePet.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -87,6 +89,7 @@ export function gameInit(game: Game) {
         game.multiplayer.maxServerGameTime = 0;
         game.state.playerInputs = game.multiplayer.cachePlayerInputs!;
     }
+    resetPastCharacters(game);
 }
 
 export function getCameraPosition(game: Game): Position {
@@ -263,9 +266,30 @@ export function calculateDistancePointToLine(point: Position, linestart: Positio
     return Math.sqrt(dx * dx + dy * dy);
 }
 
-export function deepCopy(object: any): any{
+export function deepCopy(object: any): any {
     const json = JSON.stringify(object);
     return JSON.parse(json);
+}
+
+function resetPastCharacters(game: Game) {
+    for (let character of game.state.pastPlayerCharacters.characters) {
+        resetCharacter(character);
+    }
+}
+
+function tickPastCharacters(game: Game) {
+    const pastCharacters = game.state.pastPlayerCharacters.characters;
+    tickCharacters(pastCharacters, game, getPathingCache(game));
+    for (let character of pastCharacters) {
+        if (character.pets) {
+            for (let ability of character.abilities) {
+                if (ability.name === ABILITY_NAME_FEED_PET || ability.name === ABILITY_NAME_LOVE_PET) {
+                    let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+                    if (abilityFunctions.tickBossAI) abilityFunctions.tickBossAI(character, ability, game);
+                }
+            }
+        }
+    }
 }
 
 function determineRunnerTimeout(game: Game): number {
@@ -309,7 +333,7 @@ export function endGame(game: Game, isEndbossKill: boolean = false) {
     let newScore = calculateHighscoreOnGameEnd(game, isEndbossKill);
     if (isEndbossKill) {
         setPlayerAsEndBoss(game);
-    }else{
+    } else {
         savePlayerCharaters(game);
     }
     endGameReplayStuff(game, newScore);
@@ -325,31 +349,33 @@ export function endGame(game: Game, isEndbossKill: boolean = false) {
     }
 }
 
-export function saveCharacterAsPastCharacter(character: Character, game: Game){
+export function saveCharacterAsPastCharacter(character: Character, game: Game) {
     const newPastCharacter: Character = deepCopy(character);
     resetCharacter(newPastCharacter);
     changeCharacterId(newPastCharacter, getNextId(game.state.idCounter));
+    newPastCharacter.isUnMoveAble = true;
     const pastCharacters = game.state.pastPlayerCharacters.characters;
     pastCharacters.push(newPastCharacter);
-    if(pastCharacters.length > game.state.pastPlayerCharacters.maxNumber){
+    if (pastCharacters.length > game.state.pastPlayerCharacters.maxNumber) {
         pastCharacters.splice(0, 1);
     }
-    for(let i = 0; i < pastCharacters.length; i++){
+    for (let i = 0; i < pastCharacters.length; i++) {
         const pastCharacter = pastCharacters[i];
         pastCharacter.x = i * 20;
         pastCharacter.y = 0;
-        if(pastCharacter.pets){
-            for(let pet of pastCharacter.pets){
+        if (pastCharacter.pets) {
+            for (let pet of pastCharacter.pets) {
                 pet.x = i * 20;
                 pet.y = 0;
             }
         }
     }
+    localStorage.setItem(LOCALSTORAGE_PASTCHARACTERS, JSON.stringify(game.state.pastPlayerCharacters));
 }
 
-function savePlayerCharaters(game: Game){
+function savePlayerCharaters(game: Game) {
     const players = game.state.players;
-    for(let player of players){
+    for (let player of players) {
         saveCharacterAsPastCharacter(player.character, game);
     }
 }
@@ -376,6 +402,7 @@ function tick(gameTimePassed: number, game: Game) {
 
         takeTimeMeasure(game.debug, "", "playerTick");
         tickCharacters(getPlayerCharacters(game.state.players), game, getPathingCache(game));
+        tickPastCharacters(game);
         takeTimeMeasure(game.debug, "playerTick", "");
 
         tickAbilityObjects(game.state.abilityObjects, game);
