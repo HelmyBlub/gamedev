@@ -2,9 +2,23 @@ import { createFixPositionRespawnEnemies } from "../character/enemy/fixPositionR
 import { takeTimeMeasure } from "../game.js";
 import { Game, IdCounter, Position } from "../gameModel.js";
 import { fixedRandom } from "../randomNumberGenerator.js";
-import { GameMap, GameMapEndBossArea, MapChunk } from "./map.js";
+import { GameMap, MapChunk } from "./map.js";
 import { mapGenerationEndBossChunkStuff } from "./mapEndBossArea.js";
 
+export const pastCharactersMapTilePositions = [
+    {i:2, j:3, tileId: 5, lookDirection: Math.PI / 2},
+    {i:2, j:4, tileId: 5, lookDirection: Math.PI / 2},
+    {i:2, j:5, tileId: 5, lookDirection: Math.PI / 2},
+    {i:6, j:3, tileId: 5, lookDirection: Math.PI / 2 * 3},
+    {i:6, j:4, tileId: 5, lookDirection: Math.PI / 2 * 3},
+    {i:6, j:5, tileId: 5, lookDirection: Math.PI / 2 * 3},
+    {i:3, j:2, tileId: 6, lookDirection: 0},
+    {i:4, j:2, tileId: 6, lookDirection: 0},
+    {i:5, j:2, tileId: 6, lookDirection: 0},
+    {i:3, j:6, tileId: 6, lookDirection: Math.PI},
+    {i:4, j:6, tileId: 6, lookDirection: Math.PI},
+    {i:5, j:6, tileId: 6, lookDirection: Math.PI},
+]
 export function generateMissingChunks(map: GameMap, positions: Position[], idCounter: IdCounter, game: Game) {
     takeTimeMeasure(game.debug, "", "generateMissingChunks");
 
@@ -44,12 +58,7 @@ export function createNewChunkTiles(map: GameMap, chunkI: number, chunkJ: number
     const mapChunk: MapChunk = { tiles: chunk, characters: [] };
     const chunkLength = map.chunkLength;
     if (chunkI === 0 && chunkJ === 0) {
-        for (let i = 0; i < chunkLength; i++) {
-            chunk.push([]);
-            for (let j = 0; j < chunkLength; j++) {
-                chunk[i].push(0);
-            }
-        }
+        createSpawnChunk(chunk, chunkLength);
     } else {
         for (let i = 0; i < chunkLength; i++) {
             chunk.push([]);
@@ -73,6 +82,18 @@ export function createNewChunkTiles(map: GameMap, chunkI: number, chunkJ: number
         mapGenerationEndBossChunkStuff(mapChunk, map, chunkI, chunkJ);
     }
     return mapChunk;
+}
+
+function createSpawnChunk(chunk: number[][], chunkLength: number){
+    for (let i = 0; i < chunkLength; i++) {
+        chunk.push([]);
+        for (let j = 0; j < chunkLength; j++) {
+            chunk[i].push(0);
+        }
+    }
+    for(let iter of pastCharactersMapTilePositions){
+        chunk[iter.i][iter.j] = iter.tileId;
+    }
 }
 
 function perlin_get(x: number, y: number, seed: number) {

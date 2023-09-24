@@ -1,7 +1,7 @@
 current tasks:
 - take past characters abilities
     - middle has some kind of camp:
-        - fire in the middle, character "sitting" around on a log
+        - fire in the middle
     - see what they died from, their level, their abilities
 
 - visualization of Next End Bosses on start area

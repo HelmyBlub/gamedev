@@ -1,4 +1,5 @@
 import { onDomLoadSetAbilitiesFunctions } from "./ability/ability.js";
+import { resetCharacter } from "./character/character.js";
 import { addBossType } from "./character/enemy/bossEnemy.js";
 import { addEndBossCrownType } from "./character/enemy/endBossCrown.js";
 import { addEndBossType } from "./character/enemy/endBossEnemy.js";
@@ -17,6 +18,9 @@ export function start() {
     const pastCharactersString = localStorage.getItem(LOCALSTORAGE_PASTCHARACTERS);
     if(pastCharactersString){
         game.state.pastPlayerCharacters = JSON.parse(pastCharactersString);
+        for(let pastChar of game.state.pastPlayerCharacters.characters){
+            resetCharacter(pastChar);
+        }
     }
     const nextEndbossesString = localStorage.getItem(LOCALSTORAGE_NEXTENDBOSSES);
     if(nextEndbossesString){

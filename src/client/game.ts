@@ -5,7 +5,7 @@ import { MOUSE_ACTION, UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.j
 import { Position, GameState, Game, IdCounter, Debugging, PaintTextData, ClientInfo, LOCALSTORAGE_PASTCHARACTERS } from "./gameModel.js";
 import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap, removeAllMapCharacters } from "./map/map.js";
 import { Character, DEFAULT_CHARACTER } from "./character/characterModel.js";
-import { generateMissingChunks } from "./map/mapGeneration.js";
+import { generateMissingChunks, pastCharactersMapTilePositions } from "./map/mapGeneration.js";
 import { createFixPositionRespawnEnemiesOnInit } from "./character/enemy/fixPositionRespawnEnemyModel.js";
 import { handleCommand } from "./commands.js";
 import { ABILITIES_FUNCTIONS, tickAbilityObjects } from "./ability/ability.js";
@@ -359,14 +359,28 @@ export function saveCharacterAsPastCharacter(character: Character, game: Game) {
     if (pastCharacters.length > game.state.pastPlayerCharacters.maxNumber) {
         pastCharacters.splice(0, 1);
     }
+    
     for (let i = 0; i < pastCharacters.length; i++) {
         const pastCharacter = pastCharacters[i];
-        pastCharacter.x = i * 20;
-        pastCharacter.y = 0;
-        if (pastCharacter.pets) {
-            for (let pet of pastCharacter.pets) {
-                pet.x = i * 20;
-                pet.y = 0;
+        if(pastCharactersMapTilePositions.length > i){
+            const nextTileInfo = pastCharactersMapTilePositions[i];
+            pastCharacter.x = nextTileInfo.j * 40 + 20;
+            pastCharacter.y = nextTileInfo.i * 40 + 20;
+            pastCharacter.moveDirection = nextTileInfo.lookDirection;
+            if (pastCharacter.pets) {
+                for (let pet of pastCharacter.pets) {
+                    pet.x = nextTileInfo.j * 40 + 20;
+                    pet.y = nextTileInfo.i * 40 + 20;
+                }
+            }
+        }else{
+            pastCharacter.x = i * 20;
+            pastCharacter.y = 0;
+            if (pastCharacter.pets) {
+                for (let pet of pastCharacter.pets) {
+                    pet.x = i * 20;
+                    pet.y = 0;
+                }
             }
         }
     }
