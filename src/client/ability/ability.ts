@@ -209,6 +209,7 @@ export function findAbilityAndOwnerById(abilityId: number, game: Game): {ability
         if(result) return result;
     }
     for (let pastChar of game.state.pastPlayerCharacters.characters) {
+        if(!pastChar) continue;
         const result = findAbilityAndOwnerInCharacterById(pastChar, abilityId);
         if(result) return result;
     }

@@ -156,7 +156,7 @@ function canvas_arrow(ctx: CanvasRenderingContext2D, fromx: number, fromy: numbe
 function testPathingNotEndInInfiniteLoop() {
     let idCounter = { nextId: 0 };
     let map: GameMap = createMap();
-    map.chunks["0_0"] = { tiles: [], characters: [] };
+    map.chunks["0_0"] = { tiles: [], characters: [], animatedTiles: [] };
     map.chunks["0_0"].tiles = [
         [0, 0, 0, 0, 0, 0, 0, 0],
         [1, 1, 0, 0, 0, 0, 0, 0],

@@ -112,7 +112,7 @@ export type GameState = {
     paused: boolean,
     tickOnceInPaused?: boolean,
     pastPlayerCharacters: {
-        characters: Character[]
+        characters: (Character | undefined) []
         maxNumber: number,
     },
 }

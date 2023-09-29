@@ -273,7 +273,7 @@ export function deepCopy(object: any): any {
 
 function resetPastCharacters(game: Game) {
     for (let character of game.state.pastPlayerCharacters.characters) {
-        resetCharacter(character);
+        if(character) resetCharacter(character);
     }
 }
 
@@ -281,7 +281,7 @@ function tickPastCharacters(game: Game) {
     const pastCharacters = game.state.pastPlayerCharacters.characters;
     tickCharacters(pastCharacters, game, getPathingCache(game));
     for (let character of pastCharacters) {
-        if (character.pets) {
+        if (character && character.pets) {
             for (let ability of character.abilities) {
                 if (ability.name === ABILITY_NAME_FEED_PET || ability.name === ABILITY_NAME_LOVE_PET) {
                     let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
@@ -356,12 +356,19 @@ export function saveCharacterAsPastCharacter(character: Character, game: Game) {
     newPastCharacter.isUnMoveAble = true;
     const pastCharacters = game.state.pastPlayerCharacters.characters;
     pastCharacters.push(newPastCharacter);
+    for (let i = 0; i < pastCharacters.length; i++) {
+        while(!pastCharacters[i]){
+            pastCharacters.splice(i,1);
+        }
+    }
+
     if (pastCharacters.length > game.state.pastPlayerCharacters.maxNumber) {
         pastCharacters.splice(0, 1);
     }
     
     for (let i = 0; i < pastCharacters.length; i++) {
         const pastCharacter = pastCharacters[i];
+        if(!pastCharacter) continue;
         if(pastCharactersMapTilePositions.length > i){
             const nextTileInfo = pastCharactersMapTilePositions[i];
             pastCharacter.x = nextTileInfo.j * 40 + 20;

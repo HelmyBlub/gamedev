@@ -82,7 +82,9 @@ function findLeashOwner(abilityOwner: AbilityOwner, ability: AbilityLeash, game:
     if(ability.leashedToOwnerId === undefined) return null;
     if(abilityOwner.faction === FACTION_PLAYER){
         characters = getPlayerCharacters(game.state.players);
-        characters.push(...game.state.pastPlayerCharacters.characters);
+        for(let char of game.state.pastPlayerCharacters.characters){
+            if(char) characters.push(char);
+        }
     }else{
         characters = game.state.bossStuff.bosses;
     }

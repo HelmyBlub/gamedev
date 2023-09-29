@@ -8,7 +8,7 @@ import { ABILITIES_FUNCTIONS } from "./ability/ability.js";
 import { calculateDirection, calculateDistance, getCameraPosition, getClientInfo, takeTimeMeasure } from "./game.js";
 import { executeUpgradeOptionChoice } from "./character/upgrade.js";
 import { tradePets } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
-import { characterTradeAbilityAndPets } from "./character/character.js";
+import { canCharacterTradeAbilityOrPets, characterTradeAbilityAndPets } from "./character/character.js";
 
 export const MOVE_ACTIONS = ["left", "down", "right", "up"];
 export const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3"];
@@ -290,7 +290,17 @@ function playerAction(clientId: number, data: any, game: Game) {
                 if (special === "interact") {
                     const closestPast = findNearesPastPlayerCharacter(character, game);
                     if (closestPast) {
-                        characterTradeAbilityAndPets(closestPast, character, game);
+                        if(canCharacterTradeAbilityOrPets(closestPast)){
+                            characterTradeAbilityAndPets(closestPast, character, game);
+                        }else{
+                            const pastCharactes = game.state.pastPlayerCharacters.characters;
+                            for(let i = pastCharactes.length - 1; i>= 0; i--){
+                                if(pastCharactes[i] === closestPast){
+                                    pastCharactes[i] = undefined;
+                                    break;
+                                }
+                            }
+                        }
                     }
                 }
             }

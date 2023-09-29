@@ -202,21 +202,23 @@ export function tickMapCharacters(map: GameMap, game: Game) {
     takeTimeMeasure(game.debug, "tickMapCharacters", "");
 }
 
-export function tickCharacters(characters: Character[], game: Game, pathingCache: PathingCache | null, petOwner: Character | undefined = undefined) {
+export function tickCharacters(characters: (Character | undefined)[], game: Game, pathingCache: PathingCache | null, petOwner: Character | undefined = undefined) {
     for (let j = characters.length - 1; j >= 0; j--) {
-        const functions = CHARACTER_TYPE_FUNCTIONS[characters[j].type];
+        let char = characters[j];
+        if(!char) continue;
+        const functions = CHARACTER_TYPE_FUNCTIONS[char.type];
         if (functions?.tickFunction) {
-            functions.tickFunction(characters[j], game, pathingCache);
+            functions.tickFunction(char, game, pathingCache);
         } else if (functions?.tickPetFunction && petOwner) {
-            functions.tickPetFunction(characters[j], petOwner, game, pathingCache);
+            functions.tickPetFunction(char, petOwner, game, pathingCache);
         }
-        if (!characters[j].isDead) {
-            for (let ability of characters[j].abilities) {
+        if (!char.isDead) {
+            for (let ability of char.abilities) {
                 let tickAbility = ABILITIES_FUNCTIONS[ability.name].tickAbility;
-                if (tickAbility) tickAbility(characters[j], ability, game);
+                if (tickAbility) tickAbility(char, ability, game);
             }
-            tickCharacterDebuffs(characters[j], game);
-            tickCharacterPets(characters[j], game, pathingCache);
+            tickCharacterDebuffs(char, game);
+            tickCharacterPets(char, game, pathingCache);
         }
     }
 }

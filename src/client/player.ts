@@ -25,6 +25,7 @@ export function findNearesPastPlayerCharacter(character: Character, game: Game, 
     let minDistance = maxDistance;
     let currentClosest: Character | undefined = undefined;
     for (let pastCharacter of pastCharacters) {
+        if(!pastCharacter) continue;
         const distance = calculateDistance(pastCharacter, character);
         if (distance <= minDistance) {
             minDistance = distance;

@@ -1,5 +1,6 @@
 import { Character } from "../character/characterModel.js";
 import { Game, IdCounter, Position } from "../gameModel.js"
+import { GAME_IMAGES } from "../imageLoad.js";
 import { createNewChunk } from "./mapGeneration.js";
 import { MapPaintLayer } from "./mapPaint.js";
 
@@ -16,11 +17,25 @@ export type MapTile = {
     layer: MapPaintLayer,
 }
 
+export type MapTileAnimation = {
+    i: number,
+    j: number,
+    name: string,
+}
+
 export type MapChunk = {
     tiles: number[][],
+    animatedTiles: MapTileAnimation[],
     characters: Character[],
     isEndBossAreaChunk?: boolean,
 }
+
+export const IMAGE_FIRE_ANIMATION = "FireAnimation";
+GAME_IMAGES[IMAGE_FIRE_ANIMATION] = {
+    imagePath: "/images/firepitFireAnimation.png",
+    spriteRowHeights: [40],
+    spriteRowWidths: [40],
+};
 
 export let TILE_VALUES: MapTiles = {
     0: { name: "grass", imagePath: "/images/grass.png", blocking: false, layer: "Layer1" },
@@ -30,6 +45,7 @@ export let TILE_VALUES: MapTiles = {
     4: { name: "path2", imagePath: "/images/path2.png", blocking: false, layer: "Layer1" },
     5: { name: "logHorizontal", imagePath: "/images/log_Horizontal.png", blocking: false, layer: "Layer2" },
     6: { name: "logVertical", imagePath: "/images/log_Vertical.png", blocking: false, layer: "Layer2" },
+    7: { name: "firepit", imagePath: "/images/firepit.png", blocking: false, layer: "Layer2" },
 }
 
 export type GameMap = {

@@ -158,7 +158,7 @@ function tickTamerPetCharacter(character: Character, petOwner: Character, game: 
     if (character.isDead) return;
     moveTick(pet, petOwner, game, pathingCache);
     foodIntakeLevelTick(pet, game);
-    if (pet.happines.current > pet.happines.hyperactiveAt || tamerPetIncludesTrait(TAMER_PET_TRAIT_NEEDS_MORE_LOVE, pet)) {
+    if (pet.happines.current >= pet.happines.hyperactiveAt - 10 || tamerPetIncludesTrait(TAMER_PET_TRAIT_NEEDS_MORE_LOVE, pet)) {
         if (pet.happines.nextTick === undefined || pet.happines.nextTick < game.state.time) {
             pet.happines.nextTick = game.state.time + pet.happines.tickInterval;
             changeTamerPetHappines(pet, -1, game.state.time, false);
@@ -184,7 +184,7 @@ export function tamerPetFeed(pet: TamerPetCharacter, feedValue: number, time: nu
             changeTamerPetHappines(pet, -5, time, true);
         } else {
             if (beforeFeed < pet.foodIntakeLevel.underfedAt) {
-                changeTamerPetHappines(pet, 20, time, true);
+                changeTamerPetHappines(pet, 10, time, true);
             } else if (beforeFeed > pet.foodIntakeLevel.overfedAt * 1.2) {
                 changeTamerPetHappines(pet, -10, time, true);
             } else {

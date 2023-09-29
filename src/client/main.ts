@@ -19,6 +19,7 @@ export function start() {
     if(pastCharactersString){
         game.state.pastPlayerCharacters = JSON.parse(pastCharactersString);
         for(let pastChar of game.state.pastPlayerCharacters.characters){
+            if(!pastChar) continue;
             resetCharacter(pastChar);
         }
     }

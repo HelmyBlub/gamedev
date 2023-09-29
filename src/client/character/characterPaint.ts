@@ -7,9 +7,10 @@ import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_PLAYER_PARTS, IMAGE_SLIME } 
 import { ABILITY_LEVELING_CHARACTER, AbilityLevelingCharacter } from "./playerCharacters/abilityLevelingCharacter.js";
 import { LEVELING_CHARACTER, LevelingCharacter } from "./playerCharacters/levelingCharacterModel.js";
 
-export function paintCharacters(ctx: CanvasRenderingContext2D, characters: Character[], cameraPosition: Position, game: Game) {
+export function paintCharacters(ctx: CanvasRenderingContext2D, characters: (Character | undefined)[], cameraPosition: Position, game: Game) {
     for (let i = 0; i < characters.length; i++) {
         const character = characters[i];
+        if(!character) continue;
         const characterFunctions = CHARACTER_TYPE_FUNCTIONS[character.type];
         if (characterFunctions && characterFunctions.paintCharacterType) {
             characterFunctions.paintCharacterType(ctx, character, cameraPosition, game);
@@ -76,9 +77,9 @@ export function paintCharacterStatsUI(ctx: CanvasRenderingContext2D, character: 
     return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
 }
 
-export function paintCharatersPets(ctx: CanvasRenderingContext2D, characters: Character[], cameraPosition: Position, game: Game){
+export function paintCharatersPets(ctx: CanvasRenderingContext2D, characters: (Character | undefined)[], cameraPosition: Position, game: Game){
     for(let character of characters){
-        if (character.isDead) return;
+        if (!character || character.isDead) continue;
         paintCharacterPets(ctx, character, cameraPosition, game);
     }
 }

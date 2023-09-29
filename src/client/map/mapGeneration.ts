@@ -2,7 +2,7 @@ import { createFixPositionRespawnEnemies } from "../character/enemy/fixPositionR
 import { takeTimeMeasure } from "../game.js";
 import { Game, IdCounter, Position } from "../gameModel.js";
 import { fixedRandom } from "../randomNumberGenerator.js";
-import { GameMap, MapChunk } from "./map.js";
+import { GameMap, IMAGE_FIRE_ANIMATION, MapChunk } from "./map.js";
 import { mapGenerationEndBossChunkStuff } from "./mapEndBossArea.js";
 
 export const pastCharactersMapTilePositions = [
@@ -55,10 +55,10 @@ export function createNewChunk(map: GameMap, chunkI: number, chunkJ: number, idC
 
 export function createNewChunkTiles(map: GameMap, chunkI: number, chunkJ: number, seed: number): MapChunk {
     const chunk: number[][] = [];
-    const mapChunk: MapChunk = { tiles: chunk, characters: [] };
+    const mapChunk: MapChunk = { tiles: chunk, characters: [], animatedTiles: [] };
     const chunkLength = map.chunkLength;
     if (chunkI === 0 && chunkJ === 0) {
-        createSpawnChunk(chunk, chunkLength);
+        createSpawnChunk(mapChunk, chunkLength);
     } else {
         for (let i = 0; i < chunkLength; i++) {
             chunk.push([]);
@@ -84,7 +84,13 @@ export function createNewChunkTiles(map: GameMap, chunkI: number, chunkJ: number
     return mapChunk;
 }
 
-function createSpawnChunk(chunk: number[][], chunkLength: number){
+function createSpawnChunk(mapChunk: MapChunk, chunkLength: number){
+    const chunk = mapChunk.tiles;
+    mapChunk.animatedTiles.push({
+        i: 4,
+        j: 4,
+        name: IMAGE_FIRE_ANIMATION,
+    });
     for (let i = 0; i < chunkLength; i++) {
         chunk.push([]);
         for (let j = 0; j < chunkLength; j++) {
@@ -94,6 +100,7 @@ function createSpawnChunk(chunk: number[][], chunkLength: number){
     for(let iter of pastCharactersMapTilePositions){
         chunk[iter.i][iter.j] = iter.tileId;
     }
+    chunk[4][4] = 7;
 }
 
 function perlin_get(x: number, y: number, seed: number) {

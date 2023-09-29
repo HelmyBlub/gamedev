@@ -1,6 +1,7 @@
 import { paintCharacters } from "../character/characterPaint.js";
 import { Debugging, Game, MapChunkPaintCache, Position } from "../gameModel.js";
-import { GameMap, getTileIdForTileName, MapChunk, TILE_VALUES } from "./map.js";
+import { GAME_IMAGES, loadImage } from "../imageLoad.js";
+import { GameMap, getTileIdForTileName, IMAGE_FIRE_ANIMATION, MapChunk, MapTileAnimation, TILE_VALUES } from "./map.js";
 
 export type MapPaintLayer = "Layer1" | "Layer2";
 
@@ -25,7 +26,7 @@ export function paintMap(layer: MapPaintLayer, ctx: CanvasRenderingContext2D, ca
             }
             let x = chunkJ * chunkSize - startX;
             let y = chunkI * chunkSize - startY;
-            paintChunk(layer, ctx, { x, y }, chunk, map.tileSize, { x: chunkJ, y: chunkI }, mapChunkPaintCache, debug);
+            paintChunk(layer, ctx, { x, y }, chunk, map.tileSize, { x: chunkJ, y: chunkI }, mapChunkPaintCache, time, debug);
             if (debug?.paintMarkActiveChunks && layer === "Layer2") {
                 if (map.activeChunkKeys.indexOf(chunkKey) > -1) {
                     ctx.lineWidth = 1;
@@ -60,7 +61,7 @@ export function paintMapCharacters(ctx: CanvasRenderingContext2D, cameraPosition
     }
 }
 
-function paintChunk(layer: MapPaintLayer, ctx: CanvasRenderingContext2D, paintTopLeftPosition: Position, chunk: MapChunk, tileSize: number, chunkIJ: Position, mapChunkPaintCache: MapChunkPaintCache, debug: Debugging | undefined) {
+function paintChunk(layer: MapPaintLayer, ctx: CanvasRenderingContext2D, paintTopLeftPosition: Position, chunk: MapChunk, tileSize: number, chunkIJ: Position, mapChunkPaintCache: MapChunkPaintCache, time: number, debug: Debugging | undefined) {
     let chunkSize = tileSize * chunk.tiles.length;
     let chunkKey = `${chunkIJ.y}_${chunkIJ.x}_${layer}`;
     let readyForCache = true;
@@ -86,7 +87,33 @@ function paintChunk(layer: MapPaintLayer, ctx: CanvasRenderingContext2D, paintTo
     }
     if (readyForCache) {
         ctx.drawImage(mapChunkPaintCache[chunkKey].canvas, paintTopLeftPosition.x, paintTopLeftPosition.y);
+        if(chunk.animatedTiles.length > 0 && layer === "Layer2"){
+            for(let animation of chunk.animatedTiles){
+                paintTileAnimation(ctx, animation, paintTopLeftPosition, tileSize, time);
+            }
+        }
     }
+}
+
+function paintTileAnimation(ctx: CanvasRenderingContext2D, animation: MapTileAnimation, paintTopLeftPosition: Position, tileSize: number, time: number){
+    let animationImage = GAME_IMAGES[animation.name];
+    loadImage(animationImage);
+    if (animationImage.imageRef?.complete) {
+        let paintX = paintTopLeftPosition.x + animation.j * tileSize;
+        let paintY = paintTopLeftPosition.y + animation.i * tileSize;
+        let spriteAnimation = Math.floor(time / 150) % 2;
+        let spriteWidth = animationImage.spriteRowWidths[0];
+        let spriteHeight = animationImage.spriteRowHeights[0];
+        ctx.drawImage(
+            animationImage.imageRef,
+            0 + spriteAnimation * spriteWidth,
+            0,
+            spriteWidth, spriteHeight,
+            Math.floor(paintX),
+            Math.floor(paintY),
+            spriteWidth, spriteHeight
+        );
+    }    
 }
 
 function paintTile(layer: MapPaintLayer, ctx: CanvasRenderingContext2D, paintPosition: Position, tileSize: number, tileId: number): boolean {

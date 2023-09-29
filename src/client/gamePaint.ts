@@ -78,8 +78,29 @@ function paintTakeoverInfo(ctx: CanvasRenderingContext2D, cameraPosition: Positi
             text = `Takeover abilities (one time only)`;
             paintPos.y -= 20;
             paintKey(ctx, "F", { x: paintPos.x - 15, y: paintPos.y });
+
+            let offsetX = 0;
+            const tooltipY = 60;
+            const spacing = 5;
+            if (pastCharacter.pets) {
+                for (let pet of pastCharacter.pets) {
+                    const area = paintTamerPetCharacterStatsUI(ctx, pet, 20 + offsetX, tooltipY, game);
+                    offsetX += area.width + spacing;
+                }
+            }            
+            for (let ability of pastCharacter.abilities) {
+                if(!ability.tradable) continue;
+                let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+                if (abilityFunctions.paintAbilityStatsUI) {
+                    const area = abilityFunctions.paintAbilityStatsUI(ctx, ability, 20 + offsetX, tooltipY, game);
+                    offsetX += area.width + spacing;
+                }
+            }
+        
         }else{
-            text = `already taken`;
+            text = `already taken. Kick Out?`;
+            paintPos.y -= 20;
+            paintKey(ctx, "F", { x: paintPos.x - 15, y: paintPos.y });
         }
         ctx.fillStyle = "black";
         ctx.font = "20px Arial";
