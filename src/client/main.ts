@@ -8,6 +8,7 @@ import { handleCommand } from "./commands.js";
 import { onDomLoadSetDebuffsFunctions } from "./debuff/debuff.js";
 import { runner, setRelativeMousePosition } from "./game.js";
 import { createDefaultGameData, Game, LOCALSTORAGE_NEXTENDBOSSES, LOCALSTORAGE_PASTCHARACTERS } from "./gameModel.js";
+import { addMapObjectsFunctions } from "./map/mapObjects.js";
 import { keyDown, keyUp, mouseDown, mouseUp } from "./playerInput.js";
 import { addHTMLDebugMenusToSettings } from "./settingsHtmlMenu.js";
 
@@ -78,6 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
     addBossType();
     addEndBossType();
     addEndBossCrownType();
+    addMapObjectsFunctions();
     onDomLoadSetAbilitiesFunctions();
     onDomLoadSetDebuffsFunctions();
 

@@ -1,7 +1,7 @@
 import { Character } from "../character/characterModel.js";
 import { Game, IdCounter, Position } from "../gameModel.js"
-import { GAME_IMAGES } from "../imageLoad.js";
 import { createNewChunk } from "./mapGeneration.js";
+import { MapTileObject } from "./mapObjects.js";
 import { MapPaintLayer } from "./mapPaint.js";
 
 export type MapTiles = {
@@ -17,25 +17,12 @@ export type MapTile = {
     layer: MapPaintLayer,
 }
 
-export type MapTileAnimation = {
-    i: number,
-    j: number,
-    name: string,
-}
-
 export type MapChunk = {
     tiles: number[][],
-    animatedTiles: MapTileAnimation[],
+    objects: MapTileObject[],
     characters: Character[],
     isEndBossAreaChunk?: boolean,
 }
-
-export const IMAGE_FIRE_ANIMATION = "FireAnimation";
-GAME_IMAGES[IMAGE_FIRE_ANIMATION] = {
-    imagePath: "/images/firepitFireAnimation.png",
-    spriteRowHeights: [40],
-    spriteRowWidths: [40],
-};
 
 export let TILE_VALUES: MapTiles = {
     0: { name: "grass", imagePath: "/images/grass.png", blocking: false, layer: "Layer1" },
@@ -129,9 +116,17 @@ export function changeTileIdOfMapChunk(chunkI: number, chunkJ: number, tileI: nu
 }
 
 export function positionToMapKey(pos: Position, map: GameMap): string {
-    let chunkSize = map.tileSize * map.chunkLength;
     const chunkIJ = positionToChunkIJ(pos, map);
     return chunkIJToMapKey(chunkIJ.i, chunkIJ.j);
+}
+
+export function mapKeyAndTileIjToPosition(mapKey: string, tileI: number, tileJ: number, map: GameMap): Position{
+    let chunkSize = map.tileSize * map.chunkLength;
+    let chunkIJ = mapKeyToChunkIJ(mapKey);
+    return {
+        x: chunkIJ.chunkJ * chunkSize + tileI * map.tileSize + map.tileSize / 2,
+        y: chunkIJ.chunkI * chunkSize + tileJ * map.tileSize + map.tileSize / 2,
+    }
 }
 
 export function positionToChunkIJ(pos: Position, map: GameMap) {

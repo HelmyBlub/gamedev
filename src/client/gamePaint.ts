@@ -10,6 +10,7 @@ import { Game, Position, Debugging, PaintTextData } from "./gameModel.js";
 import { Highscores, paintHighscoreEndScreenStuff, paintHighscores } from "./highscores.js";
 import { GAME_IMAGES, loadImage } from "./imageLoad.js";
 import { getMapMidlePosition } from "./map/map.js";
+import { MAP_OBJECTS_FUNCTIONS, findNearesInteractableMapChunkObject } from "./map/mapObjects.js";
 import { paintMap, paintMapCharacters } from "./map/mapPaint.js";
 import { findNearesPastPlayerCharacter, findPlayerById } from "./player.js";
 
@@ -23,9 +24,9 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
     if (!ctx) return;
     if (game.performance.mapChunkPaintCache === undefined) game.performance.mapChunkPaintCache = {};
     let cameraPosition: Position = getCameraPosition(game);
-    paintMap("Layer1", ctx, cameraPosition, game.state.map, game.performance.mapChunkPaintCache, game.debug, game.state.time);
+    paintMap("Layer1", ctx, cameraPosition, game.state.map, game.performance.mapChunkPaintCache, game.debug, game);
     paintAbilityObjects(ctx, game.state.abilityObjects, game, "beforeCharacterPaint");
-    paintMap("Layer2", ctx, cameraPosition, game.state.map, game.performance.mapChunkPaintCache, game.debug, game.state.time);
+    paintMap("Layer2", ctx, cameraPosition, game.state.map, game.performance.mapChunkPaintCache, game.debug, game);
     paintMapCharacters(ctx, cameraPosition, game.state.map, game);
     paintBossCharacters(ctx, cameraPosition, game);
     paintPlayerCharacters(ctx, cameraPosition, game);
@@ -33,7 +34,7 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
     paintAbilityObjects(ctx, game.state.abilityObjects, game, "afterCharacterPaint");
     paintDamageNumbers(ctx, game.UI.displayTextData, cameraPosition, game.state.time);
     paintKillCounter(ctx, game.state.killCounter, game);
-    paintTakeoverInfo(ctx, cameraPosition, game);
+    paintClosestInteractable(ctx, cameraPosition, game);
     paintKeyInfo(ctx, game);
 
     if (game.state.ended) {
@@ -63,49 +64,71 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
     paintUiForAbilities(ctx, game);
 }
 
-function paintTakeoverInfo(ctx: CanvasRenderingContext2D, cameraPosition: Position, game: Game) {
+export function paintTextWithOutline(ctx: CanvasRenderingContext2D, outlineColor: string, textColor: string, text: string, x: number, y: number, centered: boolean = false, lineWidth: number = 1) {
+    ctx.strokeStyle = outlineColor;
+    ctx.fillStyle = textColor;
+    ctx.lineWidth = lineWidth;
+    if (centered) {
+        let width = ctx.measureText(text).width;
+        x -= width / 2;
+    }
+    ctx.strokeText(text, x, y);
+    ctx.fillText(text, x, y);
+}
+
+function paintClosestInteractable(ctx: CanvasRenderingContext2D, cameraPosition: Position, game: Game) {
     if (game.state.ended) return;
     const player = findPlayerById(game.state.players, game.multiplayer.myClientId);
     if (player === null) return;
     const character = player.character;
     let pastCharacter = findNearesPastPlayerCharacter(character, game);
+    let interactableMapObject = findNearesInteractableMapChunkObject(character, game);
     if (pastCharacter) {
-        const canTrade = canCharacterTradeAbilityOrPets(pastCharacter);
-        let paintPos: Position = getPointPaintPosition(ctx, pastCharacter, cameraPosition);
-        paintPos.y -= 40;
-        let text = "";
-        if(canTrade){
-            text = `Takeover abilities (one time only)`;
-            paintPos.y -= 20;
-            paintKey(ctx, "F", { x: paintPos.x - 15, y: paintPos.y });
-
-            let offsetX = 0;
-            const tooltipY = 60;
-            const spacing = 5;
-            if (pastCharacter.pets) {
-                for (let pet of pastCharacter.pets) {
-                    const area = paintTamerPetCharacterStatsUI(ctx, pet, 20 + offsetX, tooltipY, game);
-                    offsetX += area.width + spacing;
-                }
-            }            
-            for (let ability of pastCharacter.abilities) {
-                if(!ability.tradable) continue;
-                let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-                if (abilityFunctions.paintAbilityStatsUI) {
-                    const area = abilityFunctions.paintAbilityStatsUI(ctx, ability, 20 + offsetX, tooltipY, game);
-                    offsetX += area.width + spacing;
-                }
-            }
-        
-        }else{
-            text = `already taken. Kick Out?`;
-            paintPos.y -= 20;
-            paintKey(ctx, "F", { x: paintPos.x - 15, y: paintPos.y });
+        paintPastPlayerTakeoverInfo(ctx, pastCharacter, cameraPosition, game);
+    }else if(interactableMapObject){
+        const mapObejctFunctions = MAP_OBJECTS_FUNCTIONS[interactableMapObject.name];
+        if(mapObejctFunctions && mapObejctFunctions.paintInteract){
+            mapObejctFunctions.paintInteract(ctx, interactableMapObject, game);
         }
-        ctx.fillStyle = "black";
-        ctx.font = "20px Arial";
-        paintTextWithOutline(ctx, "white", "black", text, paintPos.x, paintPos.y - 5, true);
     }
+}
+
+function paintPastPlayerTakeoverInfo(ctx: CanvasRenderingContext2D, pastCharacter: Character, cameraPosition: Position, game: Game) {
+    const canTrade = canCharacterTradeAbilityOrPets(pastCharacter);
+    let paintPos: Position = getPointPaintPosition(ctx, pastCharacter, cameraPosition);
+    paintPos.y -= 40;
+    let text = "";
+    if (canTrade) {
+        text = `Takeover abilities (one time only)`;
+        paintPos.y -= 20;
+        paintKey(ctx, "F", { x: paintPos.x - 15, y: paintPos.y });
+
+        let offsetX = 0;
+        const tooltipY = 60;
+        const spacing = 5;
+        if (pastCharacter.pets) {
+            for (let pet of pastCharacter.pets) {
+                const area = paintTamerPetCharacterStatsUI(ctx, pet, 20 + offsetX, tooltipY, game);
+                offsetX += area.width + spacing;
+            }
+        }
+        for (let ability of pastCharacter.abilities) {
+            if (!ability.tradable) continue;
+            let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+            if (abilityFunctions.paintAbilityStatsUI) {
+                const area = abilityFunctions.paintAbilityStatsUI(ctx, ability, 20 + offsetX, tooltipY, game);
+                offsetX += area.width + spacing;
+            }
+        }
+    } else {
+        text = `already taken. Kick Out?`;
+        paintPos.y -= 20;
+        paintKey(ctx, "F", { x: paintPos.x - 15, y: paintPos.y });
+    }
+    ctx.fillStyle = "black";
+    ctx.font = "20px Arial";
+    paintTextWithOutline(ctx, "white", "black", text, paintPos.x, paintPos.y - 5, true);
+
 }
 
 export function getPointPaintPosition(ctx: CanvasRenderingContext2D, point: Position, cameraPosition: Position): Position {
@@ -391,16 +414,4 @@ function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Charact
             currentX += textWidthEstimate + optionSpacer;
         }
     }
-}
-
-function paintTextWithOutline(ctx: CanvasRenderingContext2D, outlineColor: string, textColor: string, text: string, x: number, y: number, centered: boolean = false, lineWidth: number = 1) {
-    ctx.strokeStyle = outlineColor;
-    ctx.fillStyle = textColor;
-    ctx.lineWidth = lineWidth;
-    if (centered) {
-        let width = ctx.measureText(text).width;
-        x -= width / 2;
-    }
-    ctx.strokeText(text, x, y);
-    ctx.fillText(text, x, y);
 }
