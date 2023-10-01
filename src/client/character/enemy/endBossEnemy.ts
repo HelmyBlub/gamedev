@@ -47,11 +47,14 @@ export function createDefaultNextEndBoss(idCounter: IdCounter, game: Game): EndB
 }
 
 export function setPlayerAsEndBoss(game: Game) {
+    if (game.testing.replay) return;
     let boss: Character = deepCopy(game.state.players[0].character);
     const celestialDirection = getCelestialDirection(boss);
     const oldBoss = game.state.bossStuff.nextEndbosses[celestialDirection];
     game.state.bossStuff.nextEndbosses[celestialDirection] = boss;
-    localStorage.setItem(LOCALSTORAGE_NEXTENDBOSSES, JSON.stringify(game.state.bossStuff.nextEndbosses));
+    if(!game.multiplayer.disableLocalStorage){
+        localStorage.setItem(LOCALSTORAGE_NEXTENDBOSSES, JSON.stringify(game.state.bossStuff.nextEndbosses));
+    }
 
     if(oldBoss?.characterClass){
         saveCharacterAsPastCharacter(oldBoss, game);
@@ -135,7 +138,7 @@ function paintEndBoss(ctx: CanvasRenderingContext2D, character: Character, camer
         let crownY = Math.floor(paintY - character.height / 2 - crownImage.height);
         ctx.drawImage(crownImage, crownX, crownY);
     }
-    paintBossHpBar(ctx, character);
+    if(game.state.bossStuff.endBossStarted) paintBossHpBar(ctx, character);
 }
 
 function paintBossHpBar(ctx: CanvasRenderingContext2D, boss: Character) {

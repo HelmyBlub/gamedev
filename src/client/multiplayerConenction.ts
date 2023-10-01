@@ -20,6 +20,7 @@ export function websocketConnect(game: Game, clientName: string = "Unknown", lob
 
     socket.onopen = function (e) {
         console.log("websocket open");
+        game.multiplayer.disableLocalStorage = true;
         document.getElementById('stringInput')?.classList.add('hide');
         let textPosition1 = getCameraPosition(game);
         textPosition1.y += 24;

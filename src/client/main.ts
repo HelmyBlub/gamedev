@@ -6,7 +6,7 @@ import { addEndBossType } from "./character/enemy/endBossEnemy.js";
 import { onDomLoadSetCharacterClasses } from "./character/playerCharacters/playerCharacters.js";
 import { handleCommand } from "./commands.js";
 import { onDomLoadSetDebuffsFunctions } from "./debuff/debuff.js";
-import { runner, setRelativeMousePosition } from "./game.js";
+import { loadFromLocalStorage, runner, setRelativeMousePosition } from "./game.js";
 import { createDefaultGameData, Game, LOCALSTORAGE_NEXTENDBOSSES, LOCALSTORAGE_PASTCHARACTERS } from "./gameModel.js";
 import { addMapObjectsFunctions } from "./map/mapObjects.js";
 import { keyDown, keyUp, mouseDown, mouseUp } from "./playerInput.js";
@@ -16,18 +16,6 @@ var gameCount: number = 0;
 
 export function start() {
     const game = createGame("myCanvas");
-    const pastCharactersString = localStorage.getItem(LOCALSTORAGE_PASTCHARACTERS);
-    if(pastCharactersString){
-        game.state.pastPlayerCharacters = JSON.parse(pastCharactersString);
-        for(let pastChar of game.state.pastPlayerCharacters.characters){
-            if(!pastChar) continue;
-            resetCharacter(pastChar);
-        }
-    }
-    const nextEndbossesString = localStorage.getItem(LOCALSTORAGE_NEXTENDBOSSES);
-    if(nextEndbossesString){
-        game.state.bossStuff.nextEndbosses = JSON.parse(nextEndbossesString);
-    }
 }
 
 export function startMore() {
@@ -66,6 +54,7 @@ export function createGame(canvasElementId: string | undefined, forTesting: bool
             testMapSeed: game.state.map.seed,
             testRandomStartSeed: game.state.randomSeed.seed
         };
+        loadFromLocalStorage(game);
         handleCommand(game, commandRestart);
     } else {
         game = createDefaultGameData(undefined, undefined);

@@ -1,8 +1,5 @@
 current tasks:
-- visualization of Next End Bosses on start area
-    - paint endboss character into sign message
 - whats up with i/j vs x/y and chunkIJ tileIJ naming?
-- replay/record works with ability takeover and pastCharacters
 
 possible future tasks: (only keep 5)
 - refactoring

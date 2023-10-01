@@ -2,7 +2,7 @@ import { changeCharacterId, countAlivePlayerCharacters, findCharacterById, findM
 import { paintAll } from "./gamePaint.js";
 import { findPlayerByCharacterId, gameInitPlayers } from "./player.js";
 import { MOUSE_ACTION, UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.js";
-import { Position, GameState, Game, IdCounter, Debugging, PaintTextData, ClientInfo, LOCALSTORAGE_PASTCHARACTERS } from "./gameModel.js";
+import { Position, GameState, Game, IdCounter, Debugging, PaintTextData, ClientInfo, LOCALSTORAGE_PASTCHARACTERS, LOCALSTORAGE_NEXTENDBOSSES } from "./gameModel.js";
 import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap, removeAllMapCharacters } from "./map/map.js";
 import { Character, DEFAULT_CHARACTER } from "./character/characterModel.js";
 import { generateMissingChunks, pastCharactersMapTilePositions } from "./map/mapGeneration.js";
@@ -47,6 +47,8 @@ export function gameRestart(game: Game) {
     }
     if (game.testing.record) {
         if (game.testing.record.restartPlayerInput) game.testing.record.data.replayPlayerInputs.push(game.testing.record.restartPlayerInput);
+        game.testing.record.data.nextEndBosses = deepCopy(game.state.bossStuff.nextEndbosses);
+        game.testing.record.data.pastCharacters = deepCopy(game.state.pastPlayerCharacters);
     }
     gameInit(game);
 }
@@ -334,7 +336,7 @@ export function endGame(game: Game, isEndbossKill: boolean = false) {
     if (isEndbossKill) {
         setPlayerAsEndBoss(game);
     } else {
-        savePlayerCharaters(game);
+        savePlayerCharatersAsPastCharacters(game);
     }
     endGameReplayStuff(game, newScore);
     if (game.testing.record) {
@@ -343,13 +345,30 @@ export function endGame(game: Game, isEndbossKill: boolean = false) {
             game.testing.record.data.gameEndAsserts.push({ type: "score", data: newScore });
             game.testing.record.data.gameEndAsserts.push({ type: "killCounter", data: game.state.killCounter });
             if (!game.testing.replay) {
-                console.log("testData", game.testing.record.data);
+                console.log("testData", deepCopy(game.testing.record.data));
             }
         }
     }
 }
 
+export function loadFromLocalStorage(game: Game){
+    const pastCharactersString = localStorage.getItem(LOCALSTORAGE_PASTCHARACTERS);
+    if(pastCharactersString){
+        game.state.pastPlayerCharacters = JSON.parse(pastCharactersString);
+        for(let pastChar of game.state.pastPlayerCharacters.characters){
+            if(!pastChar) continue;
+            resetCharacter(pastChar);
+        }
+    }
+    const nextEndbossesString = localStorage.getItem(LOCALSTORAGE_NEXTENDBOSSES);
+    if(nextEndbossesString){
+        game.state.bossStuff.nextEndbosses = JSON.parse(nextEndbossesString);
+    }
+}
+
+
 export function saveCharacterAsPastCharacter(character: Character, game: Game) {
+    if (game.testing.replay) return;
     const newPastCharacter: Character = deepCopy(character);
     resetCharacter(newPastCharacter);
     changeCharacterId(newPastCharacter, getNextId(game.state.idCounter));
@@ -391,10 +410,12 @@ export function saveCharacterAsPastCharacter(character: Character, game: Game) {
             }
         }
     }
-    localStorage.setItem(LOCALSTORAGE_PASTCHARACTERS, JSON.stringify(game.state.pastPlayerCharacters));
+    if(!game.multiplayer.disableLocalStorage){
+        localStorage.setItem(LOCALSTORAGE_PASTCHARACTERS, JSON.stringify(game.state.pastPlayerCharacters));
+    }
 }
 
-function savePlayerCharaters(game: Game) {
+function savePlayerCharatersAsPastCharacters(game: Game) {
     const players = game.state.players;
     for (let player of players) {
         saveCharacterAsPastCharacter(player.character, game);
@@ -406,7 +427,10 @@ function endGameReplayStuff(game: Game, newScore: number) {
     if (replay) {
         replayGameEndAssert(game, newScore);
         console.log("time:", performance.now() - replay.startTime);
-        replayNextInReplayQueue(game);
+        const moreReplays = replayNextInReplayQueue(game);
+        if(!moreReplays){
+            loadFromLocalStorage(game);
+        }
     }
 }
 

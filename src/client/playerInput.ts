@@ -5,7 +5,7 @@ import { Game, Position } from "./gameModel.js";
 import { testGame } from "./test/gameTest.js";
 import { websocketConnect } from "./multiplayerConenction.js";
 import { ABILITIES_FUNCTIONS } from "./ability/ability.js";
-import { calculateDirection, calculateDistance, getCameraPosition, getClientInfo, takeTimeMeasure } from "./game.js";
+import { calculateDirection, calculateDistance, getCameraPosition, getClientInfo, loadFromLocalStorage, takeTimeMeasure } from "./game.js";
 import { executeUpgradeOptionChoice } from "./character/upgrade.js";
 import { tradePets } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
 import { canCharacterTradeAbilityOrPets, characterTradeAbilityAndPets } from "./character/character.js";
@@ -214,6 +214,7 @@ function playerInputChangeEvent(game: Game, inputCode: string, isInputDown: bool
             if (game.testing.replay) {
                 //end replay and let player play
                 game.testing.replay = undefined;
+                loadFromLocalStorage(game);
             }
             const clientId = game.clientKeyBindings[i].clientIdRef;
             if (isInputDown && action.isInputAlreadyDown) {

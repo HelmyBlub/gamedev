@@ -1,4 +1,8 @@
-import { getCameraPosition } from "../game.js";
+import { resetCharacter } from "../character/character.js";
+import { Character } from "../character/characterModel.js";
+import { paintCharacters } from "../character/characterPaint.js";
+import { CHARACTER_TYPE_END_BOSS_ENEMY } from "../character/enemy/endBossEnemy.js";
+import { deepCopy, getCameraPosition } from "../game.js";
 import { CelestialDirection, Game, Position } from "../gameModel.js";
 import { getPointPaintPosition, paintTextWithOutline } from "../gamePaint.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
@@ -31,16 +35,18 @@ function paintInteractSign(ctx: CanvasRenderingContext2D, mapObject: MapTileObje
     const endBossSign = mapObject as MapTileObjectNextEndbossSign;
     const map = game.state.map;
     const cameraPosition = getCameraPosition(game);
-    const position = mapKeyAndTileIjToPosition(key, mapObject.i, mapObject.j, map);
-    const paintPos = getPointPaintPosition(ctx, position, cameraPosition);
+    let topMiddlePos = mapKeyAndTileIjToPosition(key, mapObject.i, mapObject.j, map);
     const fontSize = 20;
     let texts = [
         `King of the ${endBossSign.endBossDirection}`,
         `Distance = ${map.endBossArea!.numberChunksUntil * map.chunkLength * map.tileSize}`
     ]
-    paintPos.y -= texts.length * fontSize + map.tileSize / 2;
+    const endBoss = game.state.bossStuff.nextEndbosses[endBossSign.endBossDirection];
+    let textMaxWidth = endBoss!.width;
+    const rectHeight = fontSize * texts.length + 2 + endBoss!.height + 60;
+    topMiddlePos.y -= rectHeight + map.tileSize / 2;
+    const paintPos = getPointPaintPosition(ctx, topMiddlePos, cameraPosition);
 
-    let textMaxWidth = 0;
     ctx.font = `${fontSize}px Arial`;
     for (let text of texts) {
         const textWidth = ctx.measureText(text).width;
@@ -48,14 +54,35 @@ function paintInteractSign(ctx: CanvasRenderingContext2D, mapObject: MapTileObje
     }
     ctx.globalAlpha = 0.6;
     ctx.fillStyle = "white";
-    ctx.fillRect(paintPos.x - Math.floor(textMaxWidth / 2) - 1, paintPos.y - fontSize - 1, textMaxWidth + 2, fontSize * texts.length + 2)
+    ctx.fillRect(paintPos.x - Math.floor(textMaxWidth / 2) - 1, paintPos.y - 1, textMaxWidth + 2, rectHeight)
     ctx.globalAlpha = 1;
+    ctx.font = `${fontSize}px Arial`;
     ctx.fillStyle = "black";
     for (let text of texts) {
-        paintTextWithOutline(ctx, "white", "black", text, paintPos.x, paintPos.y, true);
         paintPos.y += fontSize;
+        topMiddlePos.y += fontSize;
+        paintTextWithOutline(ctx, "white", "black", text, paintPos.x, paintPos.y, true);
     }
 
+    if (endBoss) {
+        const endBossCopy: Character = deepCopy(endBoss);
+        topMiddlePos.y += endBoss!.height / 2 + 20;
+        endBossCopy.x = topMiddlePos.x;
+        endBossCopy.y = topMiddlePos.y;
+        endBossCopy.moveDirection = Math.PI / 2;
+        endBossCopy.type = CHARACTER_TYPE_END_BOSS_ENEMY;
+        resetCharacter(endBossCopy);
+        topMiddlePos.y += 20;
+        if (endBossCopy.pets) {
+            let offsetX = -endBossCopy.pets.length * 10;
+            for (let pet of endBossCopy.pets) {
+                pet.x = topMiddlePos.x + offsetX;
+                pet.y = topMiddlePos.y;
+                offsetX += 20;
+            }
+        }
+        paintCharacters(ctx, [endBossCopy], cameraPosition, game);
+    }
 }
 
 function paintEndBossSign(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, paintTopLeft: Position, game: Game) {

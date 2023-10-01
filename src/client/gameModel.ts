@@ -24,6 +24,8 @@ export type TestingStuff = {
     record?: {
         data: {
             replayPlayerInputs: Omit<PlayerInput, "executeTime">[],
+            pastCharacters?: PastPlayerCharacters,
+            nextEndBosses?: NextEndBosses,
             gameEndAsserts?: {
                 type: string,
                 data: any,
@@ -42,6 +44,7 @@ export type TestingStuff = {
         randomStartSeed?: number,
         data?: {
             replayPlayerInputs: PlayerInput[],
+            pastCharacters?: PastPlayerCharacters,
             nextEndBosses?: NextEndBosses,
             gameEndAsserts?: {
                 type: string,
@@ -111,10 +114,12 @@ export type GameState = {
     deathCircleCreated: boolean,
     paused: boolean,
     tickOnceInPaused?: boolean,
-    pastPlayerCharacters: {
-        characters: (Character | undefined) []
-        maxNumber: number,
-    },
+    pastPlayerCharacters: PastPlayerCharacters,
+}
+
+export type PastPlayerCharacters = {
+    characters: (Character | undefined) []
+    maxNumber: number,
 }
 
 export type Camera = {
@@ -156,6 +161,7 @@ export type Multiplayer = {
     multiplayerIdentifier?: string,
     intentionalDisconnect: boolean,
     timePassedWithoutSeverUpdate: number,
+    disableLocalStorage?: boolean,
     autosendMousePosition: {
         active: boolean,
         interval: number,

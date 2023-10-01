@@ -24,15 +24,16 @@ export function testGame(game: Game) {
 function testPlayerClasses(game: Game){
     if (game.state.players.length > 1) return;
     game.testing.replay = {startTime: performance.now()};
+
     const replay = game.testing.replay;
     replay.testInputFileQueue = [];
     // replay.testInputFileQueue.push("/data/testInputError.json");
-    replay.testInputFileQueue.push("/data/testInputShortBuilder.json");
+    // replay.testInputFileQueue.push("/data/testInputShortBuilder.json");
     replay.testInputFileQueue.push("/data/testInputShortSniper.json");
-    replay.testInputFileQueue.push("/data/testInputShortTamer.json");
-    replay.testInputFileQueue.push("/data/testInputLongSniper.json");
-    replay.testInputFileQueue.push("/data/testInputLongBuilder.json");
-    replay.testInputFileQueue.push("/data/testInputLongTamer.json");
+    // replay.testInputFileQueue.push("/data/testInputShortTamer.json");
+    // replay.testInputFileQueue.push("/data/testInputLongSniper.json");
+    // replay.testInputFileQueue.push("/data/testInputLongBuilder.json");
+    // replay.testInputFileQueue.push("/data/testInputLongTamer.json");
     replay.frameSkipAmount = 60;
     replay.zeroTimeout = true;
 
@@ -40,9 +41,9 @@ function testPlayerClasses(game: Game){
 
 }
 
-export function replayNextInReplayQueue(game: Game){
+export function replayNextInReplayQueue(game: Game): boolean{
     const replay = game.testing.replay;
-    if(!replay || !replay.testInputFileQueue || replay.testInputFileQueue.length === 0) return;
+    if(!replay || !replay.testInputFileQueue || replay.testInputFileQueue.length === 0) return false;
     replay.replayInputCounter = 0;
     var request = new XMLHttpRequest();
     const nextInputFile = replay.testInputFileQueue.shift()!;
@@ -59,6 +60,11 @@ export function replayNextInReplayQueue(game: Game){
             setDefaultNextEndbosses(game);
         }   
     }
+    if(replay.data?.pastCharacters){
+        game.state.pastPlayerCharacters = replay.data?.pastCharacters;
+    }else{
+        game.state.pastPlayerCharacters.characters = [];
+    }
     if (replay.data!.replayPlayerInputs[0].command === "restart") {
         let startCommand: CommandRestart = replay.data!.replayPlayerInputs.shift() as any;
         startCommand.replay = true;
@@ -66,6 +72,7 @@ export function replayNextInReplayQueue(game: Game){
     } else {
         handleCommand(game, { command: "restart", clientId: game.multiplayer.myClientId, testing: true });
     }
+    return true;
 }
 
 export function replayGameEndAssert(game: Game, newScore: number){

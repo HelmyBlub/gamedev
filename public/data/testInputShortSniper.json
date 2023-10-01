@@ -5,8 +5,8 @@
             "clientId": -1,
             "recordInputs": true,
             "replay": false,
-            "testMapSeed": 0.15973502940367876,
-            "testRandomStartSeed": 1.2853077829596589,
+            "testMapSeed": 0.20639047093082985,
+            "testRandomStartSeed": 1.1728497677502225,
             "executeTime": 1
         },
         {
@@ -16,16 +16,7 @@
                 "action": "left",
                 "isKeydown": true
             },
-            "executeTime": 801
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "upgrade1",
-                "isKeydown": true
-            },
-            "executeTime": 1201
+            "executeTime": 625
         },
         {
             "command": "playerInput",
@@ -34,654 +25,7 @@
                 "action": "down",
                 "isKeydown": true
             },
-            "executeTime": 1809
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "down",
-                "isKeydown": false
-            },
-            "executeTime": 2305
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "ability1",
-                "isKeydown": true,
-                "castPosition": {
-                    "x": -313.84062043356585,
-                    "y": 67.84062043356602
-                }
-            },
-            "executeTime": 3041
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -315.84062043356585,
-                    "y": 67.84062043356602
-                }
-            },
-            "executeTime": 3057
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -329.84062043356585,
-                    "y": 67.84062043356602
-                }
-            },
-            "executeTime": 3169
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -343.84062043356585,
-                    "y": 67.84062043356602
-                }
-            },
-            "executeTime": 3281
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "up",
-                "isKeydown": true
-            },
-            "executeTime": 3393
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -357.84062043356585,
-                    "y": 67.84062043356602
-                }
-            },
-            "executeTime": 3393
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -385.7401153701776,
-                    "y": 79.94112549695427
-                }
-            },
-            "executeTime": 3505
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -415.63961030678934,
-                    "y": 86.04163056034257
-                }
-            },
-            "executeTime": 3617
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "up",
-                "isKeydown": false
-            },
-            "executeTime": 3697
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -441.71067811865487,
-                    "y": 94.97056274847711
-                }
-            },
-            "executeTime": 3729
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -457.71067811865487,
-                    "y": 97.97056274847711
-                }
-            },
-            "executeTime": 3841
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -471.71067811865487,
-                    "y": 97.97056274847711
-                }
-            },
-            "executeTime": 3953
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "up",
-                "isKeydown": true
-            },
-            "executeTime": 4033
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -484.5391052434011,
-                    "y": 95.14213562373092
-                }
-            },
-            "executeTime": 4065
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -494.4386001800128,
-                    "y": 85.24264068711928
-                }
-            },
-            "executeTime": 4177
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "up",
-                "isKeydown": false
-            },
-            "executeTime": 4257
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -505.50966799187836,
-                    "y": 78.17157287525382
-                }
-            },
-            "executeTime": 4289
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -529.5096679918784,
-                    "y": 95.17157287525382
-                }
-            },
-            "executeTime": 4401
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -552.5096679918784,
-                    "y": 100.17157287525382
-                }
-            },
-            "executeTime": 4513
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -576.5096679918784,
-                    "y": 112.17157287525382
-                }
-            },
-            "executeTime": 4625
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -590.5096679918784,
-                    "y": 112.17157287525382
-                }
-            },
-            "executeTime": 4737
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -604.5096679918784,
-                    "y": 112.17157287525382
-                }
-            },
-            "executeTime": 4849
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -618.5096679918784,
-                    "y": 112.17157287525382
-                }
-            },
-            "executeTime": 4961
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -632.5096679918784,
-                    "y": 112.17157287525382
-                }
-            },
-            "executeTime": 5073
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -646.5096679918784,
-                    "y": 112.17157287525382
-                }
-            },
-            "executeTime": 5185
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -660.5096679918784,
-                    "y": 115.17157287525382
-                }
-            },
-            "executeTime": 5297
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -655.5096679918784,
-                    "y": 154.17157287525382
-                }
-            },
-            "executeTime": 5409
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -664.5096679918784,
-                    "y": 164.17157287525382
-                }
-            },
-            "executeTime": 5521
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -678.5096679918784,
-                    "y": 164.17157287525382
-                }
-            },
-            "executeTime": 5633
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -692.5096679918784,
-                    "y": 164.17157287525382
-                }
-            },
-            "executeTime": 5745
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -701.5096679918784,
-                    "y": 171.17157287525382
-                }
-            },
-            "executeTime": 5857
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -715.5096679918784,
-                    "y": 171.17157287525382
-                }
-            },
-            "executeTime": 5969
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -729.5096679918784,
-                    "y": 171.17157287525382
-                }
-            },
-            "executeTime": 6081
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -743.5096679918784,
-                    "y": 171.17157287525382
-                }
-            },
-            "executeTime": 6193
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -757.5096679918784,
-                    "y": 171.17157287525382
-                }
-            },
-            "executeTime": 6305
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -771.5096679918784,
-                    "y": 171.17157287525382
-                }
-            },
-            "executeTime": 6417
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -783.5096679918784,
-                    "y": 170.17157287525382
-                }
-            },
-            "executeTime": 6529
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "down",
-                "isKeydown": true
-            },
-            "executeTime": 6561
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -783.5807358037439,
-                    "y": 141.24264068711926
-                }
-            },
-            "executeTime": 6641
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -785.4802307403556,
-                    "y": 131.14213562373092
-                }
-            },
-            "executeTime": 6753
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -793.3797256769674,
-                    "y": 136.04163056034258
-                }
-            },
-            "executeTime": 6865
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "down",
-                "isKeydown": false
-            },
-            "executeTime": 6961
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -803.865007051206,
-                    "y": 144.52691193458116
-                }
-            },
-            "executeTime": 6977
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -817.865007051206,
-                    "y": 144.52691193458116
-                }
-            },
-            "executeTime": 7089
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -831.865007051206,
-                    "y": 144.52691193458116
-                }
-            },
-            "executeTime": 7201
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -845.865007051206,
-                    "y": 144.52691193458116
-                }
-            },
-            "executeTime": 7313
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -859.865007051206,
-                    "y": 144.52691193458116
-                }
-            },
-            "executeTime": 7425
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -874.865007051206,
-                    "y": 149.52691193458116
-                }
-            },
-            "executeTime": 7537
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -888.865007051206,
-                    "y": 149.52691193458116
-                }
-            },
-            "executeTime": 7649
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -929.865007051206,
-                    "y": 158.52691193458116
-                }
-            },
-            "executeTime": 7761
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "down",
-                "isKeydown": true
-            },
-            "executeTime": 7777
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -940.3502884254447,
-                    "y": 167.0121933088198
-                }
-            },
-            "executeTime": 7873
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "ability1",
-                "isKeydown": false,
-                "castPosition": {
-                    "x": -950.2497833620564,
-                    "y": 176.91168824543155
-                }
-            },
-            "executeTime": 7985
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -950.2497833620564,
-                    "y": 176.91168824543155
-                }
-            },
-            "executeTime": 7985
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "down",
-                "isKeydown": false
-            },
-            "executeTime": 8177
+            "executeTime": 689
         },
         {
             "command": "playerInput",
@@ -690,17 +34,3905 @@
                 "action": "left",
                 "isKeydown": false
             },
-            "executeTime": 8209
+            "executeTime": 1521
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "down",
+                "isKeydown": false
+            },
+            "executeTime": 1537
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "right",
+                "isKeydown": true
+            },
+            "executeTime": 2337
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "down",
+                "isKeydown": true
+            },
+            "executeTime": 2433
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "down",
+                "isKeydown": false
+            },
+            "executeTime": 2529
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "right",
+                "isKeydown": false
+            },
+            "executeTime": 2705
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "right",
+                "isKeydown": true
+            },
+            "executeTime": 2961
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "right",
+                "isKeydown": false
+            },
+            "executeTime": 3073
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "interact",
+                "isKeydown": true
+            },
+            "executeTime": 3265
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "interact",
+                "isKeydown": false
+            },
+            "executeTime": 3345
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "interact",
+                "isKeydown": true
+            },
+            "executeTime": 3425
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "interact",
+                "isKeydown": false
+            },
+            "executeTime": 3521
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "up",
+                "isKeydown": true
+            },
+            "executeTime": 3697
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "up",
+                "isKeydown": false
+            },
+            "executeTime": 3889
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "interact",
+                "isKeydown": true
+            },
+            "executeTime": 4065
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "interact",
+                "isKeydown": false
+            },
+            "executeTime": 4145
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "interact",
+                "isKeydown": true
+            },
+            "executeTime": 4257
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "interact",
+                "isKeydown": false
+            },
+            "executeTime": 4289
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "down",
+                "isKeydown": true
+            },
+            "executeTime": 4593
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "right",
+                "isKeydown": true
+            },
+            "executeTime": 4705
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "down",
+                "isKeydown": false
+            },
+            "executeTime": 6065
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "right",
+                "isKeydown": false
+            },
+            "executeTime": 6305
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "interact",
+                "isKeydown": true
+            },
+            "executeTime": 6657
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "interact",
+                "isKeydown": false
+            },
+            "executeTime": 6753
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "left",
+                "isKeydown": true
+            },
+            "executeTime": 7041
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "down",
+                "isKeydown": true
+            },
+            "executeTime": 8001
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -246.34062043356528,
+                    "y": 466.7274887854714
+                }
+            },
+            "executeTime": 9121
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -248.75483399593838,
+                    "y": 468.1417023478445
+                }
+            },
+            "executeTime": 9137
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -258.6543289325501,
+                    "y": 478.04119728445625
+                }
+            },
+            "executeTime": 9249
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -268.5538238691617,
+                    "y": 487.940692221068
+                }
+            },
+            "executeTime": 9361
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -279.4533188057734,
+                    "y": 500.84018715767974
+                }
+            },
+            "executeTime": 9473
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "down",
+                "isKeydown": false
+            },
+            "executeTime": 9569
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -288.938600180012,
+                    "y": 511.3254685319184
+                }
+            },
+            "executeTime": 9585
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -302.938600180012,
+                    "y": 511.3254685319184
+                }
+            },
+            "executeTime": 9697
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -315.938600180012,
+                    "y": 511.3254685319184
+                }
+            },
+            "executeTime": 9809
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -320.938600180012,
+                    "y": 514.3254685319184
+                }
+            },
+            "executeTime": 9921
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -322.938600180012,
+                    "y": 514.3254685319184
+                }
+            },
+            "executeTime": 10033
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -322.938600180012,
+                    "y": 514.3254685319184
+                }
+            },
+            "executeTime": 10145
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -318.938600180012,
+                    "y": 513.3254685319184
+                }
+            },
+            "executeTime": 10257
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -317.938600180012,
+                    "y": 511.3254685319184
+                }
+            },
+            "executeTime": 10369
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "down",
+                "isKeydown": true
+            },
+            "executeTime": 10433
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -317.938600180012,
+                    "y": 514.5681092190378
+                }
+            },
+            "executeTime": 10481
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -325.00966799187745,
+                    "y": 505.46760415564944
+                }
+            },
+            "executeTime": 10593
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "down",
+                "isKeydown": false
+            },
+            "executeTime": 10705
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -334.9091629284891,
+                    "y": 515.3670990922612
+                }
+            },
+            "executeTime": 10705
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -348.9091629284891,
+                    "y": 502.3670990922612
+                }
+            },
+            "executeTime": 10817
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -367.9091629284891,
+                    "y": 444.3670990922612
+                }
+            },
+            "executeTime": 10929
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -381.9091629284891,
+                    "y": 419.3670990922612
+                }
+            },
+            "executeTime": 11041
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -389.9091629284891,
+                    "y": 409.3670990922612
+                }
+            },
+            "executeTime": 11153
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -397.9091629284891,
+                    "y": 400.3670990922612
+                }
+            },
+            "executeTime": 11265
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -403.9091629284891,
+                    "y": 392.3670990922612
+                }
+            },
+            "executeTime": 11377
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -406.9091629284891,
+                    "y": 383.3670990922612
+                }
+            },
+            "executeTime": 11489
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -404.9091629284891,
+                    "y": 370.3670990922612
+                }
+            },
+            "executeTime": 11601
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -408.9091629284891,
+                    "y": 363.3670990922612
+                }
+            },
+            "executeTime": 11713
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -415.9091629284891,
+                    "y": 359.3670990922612
+                }
+            },
+            "executeTime": 11825
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -429.9091629284891,
+                    "y": 359.3670990922612
+                }
+            },
+            "executeTime": 11937
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -447.9091629284891,
+                    "y": 363.3670990922612
+                }
+            },
+            "executeTime": 12049
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -479.9091629284891,
+                    "y": 384.3670990922612
+                }
+            },
+            "executeTime": 12161
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -506.9091629284891,
+                    "y": 408.3670990922612
+                }
+            },
+            "executeTime": 12273
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -529.9091629284891,
+                    "y": 425.3670990922612
+                }
+            },
+            "executeTime": 12385
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -549.9091629284891,
+                    "y": 437.3670990922612
+                }
+            },
+            "executeTime": 12497
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -568.9091629284891,
+                    "y": 449.3670990922612
+                }
+            },
+            "executeTime": 12609
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -589.9091629284891,
+                    "y": 459.3670990922612
+                }
+            },
+            "executeTime": 12721
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -604.9091629284891,
+                    "y": 464.3670990922612
+                }
+            },
+            "executeTime": 12833
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -620.9091629284891,
+                    "y": 472.3670990922612
+                }
+            },
+            "executeTime": 12945
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -638.9091629284891,
+                    "y": 479.3670990922612
+                }
+            },
+            "executeTime": 13057
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -652.9091629284891,
+                    "y": 485.3670990922612
+                }
+            },
+            "executeTime": 13169
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -667.9091629284891,
+                    "y": 490.3670990922612
+                }
+            },
+            "executeTime": 13281
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -681.9091629284891,
+                    "y": 499.3670990922612
+                }
+            },
+            "executeTime": 13393
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -695.9091629284891,
+                    "y": 508.3670990922612
+                }
+            },
+            "executeTime": 13505
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -709.9091629284891,
+                    "y": 525.3670990922612
+                }
+            },
+            "executeTime": 13617
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -722.9091629284891,
+                    "y": 535.3670990922612
+                }
+            },
+            "executeTime": 13729
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -735.9091629284891,
+                    "y": 549.3670990922612
+                }
+            },
+            "executeTime": 13841
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -745.9091629284891,
+                    "y": 563.3670990922612
+                }
+            },
+            "executeTime": 13953
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -755.9091629284891,
+                    "y": 577.3670990922612
+                }
+            },
+            "executeTime": 14065
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -766.9091629284891,
+                    "y": 590.3670990922612
+                }
+            },
+            "executeTime": 14177
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -773.9091629284891,
+                    "y": 604.3670990922612
+                }
+            },
+            "executeTime": 14289
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -775.9091629284891,
+                    "y": 625.3670990922612
+                }
+            },
+            "executeTime": 14401
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "down",
+                "isKeydown": true
+            },
+            "executeTime": 14465
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -780.1518036156084,
+                    "y": 636.6097397793806
+                }
+            },
+            "executeTime": 14513
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -790.0512985522201,
+                    "y": 646.5092347159923
+                }
+            },
+            "executeTime": 14625
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -794.9507934888319,
+                    "y": 614.408729652604
+                }
+            },
+            "executeTime": 14737
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -804.8502884254436,
+                    "y": 568.3082245892158
+                }
+            },
+            "executeTime": 14849
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -814.7497833620554,
+                    "y": 561.2077195258275
+                }
+            },
+            "executeTime": 14961
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "down",
+                "isKeydown": false
+            },
+            "executeTime": 15057
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -827.235064736294,
+                    "y": 559.6930009000662
+                }
+            },
+            "executeTime": 15073
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -842.235064736294,
+                    "y": 556.6930009000662
+                }
+            },
+            "executeTime": 15185
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -856.235064736294,
+                    "y": 550.6930009000662
+                }
+            },
+            "executeTime": 15297
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "upgrade1",
+                "isKeydown": true
+            },
+            "executeTime": 15345
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -871.235064736294,
+                    "y": 541.6930009000662
+                }
+            },
+            "executeTime": 15409
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -885.235064736294,
+                    "y": 521.6930009000662
+                }
+            },
+            "executeTime": 15521
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -899.235064736294,
+                    "y": 500.6930009000661
+                }
+            },
+            "executeTime": 15633
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -913.235064736294,
+                    "y": 471.6930009000661
+                }
+            },
+            "executeTime": 15745
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "down",
+                "isKeydown": true
+            },
+            "executeTime": 15857
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -925.235064736294,
+                    "y": 456.6930009000661
+                }
+            },
+            "executeTime": 15857
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -927.1345596729058,
+                    "y": 431.5924958366778
+                }
+            },
+            "executeTime": 15969
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -923.0340546095175,
+                    "y": 397.49199077328956
+                }
+            },
+            "executeTime": 16081
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -921.9335495461293,
+                    "y": 381.3914857099013
+                }
+            },
+            "executeTime": 16193
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -929.833044482741,
+                    "y": 385.29098064651305
+                }
+            },
+            "executeTime": 16305
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -935.4898987322334,
+                    "y": 390.9478348960055
+                }
+            },
+            "executeTime": 16369
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -945.3893936688452,
+                    "y": 404.8473298326172
+                }
+            },
+            "executeTime": 16481
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -946.8036072312183,
+                    "y": 409.2615433949903
+                }
+            },
+            "executeTime": 16497
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -956.70310216783,
+                    "y": 419.1610383316021
+                }
+            },
+            "executeTime": 16609
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -967.6025971044418,
+                    "y": 437.0605332682138
+                }
+            },
+            "executeTime": 16721
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -1001.5020920410535,
+                    "y": 498.96002820482556
+                }
+            },
+            "executeTime": 16833
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -1018.4015869776653,
+                    "y": 552.8595231414373
+                }
+            },
+            "executeTime": 16945
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -1029.301081914277,
+                    "y": 597.759018078049
+                }
+            },
+            "executeTime": 17057
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -1037.2005768508889,
+                    "y": 627.6585130146608
+                }
+            },
+            "executeTime": 17169
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -1042.1000717875004,
+                    "y": 657.5580079512725
+                }
+            },
+            "executeTime": 17281
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -1043.9995667241124,
+                    "y": 686.4575028878843
+                }
+            },
+            "executeTime": 17393
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -1043.8990616607239,
+                    "y": 722.356997824496
+                }
+            },
+            "executeTime": 17505
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -1041.7985565973358,
+                    "y": 751.2564927611078
+                }
+            },
+            "executeTime": 17617
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "left",
+                "isKeydown": false
+            },
+            "executeTime": 17665
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -1031.041197284455,
+                    "y": 775.4991334482271
+                }
+            },
+            "executeTime": 17729
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -1001.041197284455,
+                    "y": 803.4991334482271
+                }
+            },
+            "executeTime": 17841
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -931.041197284455,
+                    "y": 828.4991334482271
+                }
+            },
+            "executeTime": 17953
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -866.041197284455,
+                    "y": 842.4991334482271
+                }
+            },
+            "executeTime": 18065
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -820.041197284455,
+                    "y": 856.4991334482271
+                }
+            },
+            "executeTime": 18177
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -782.041197284455,
+                    "y": 859.4991334482271
+                }
+            },
+            "executeTime": 18289
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -732.041197284455,
+                    "y": 852.4991334482271
+                }
+            },
+            "executeTime": 18401
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -661.041197284455,
+                    "y": 823.4991334482271
+                }
+            },
+            "executeTime": 18513
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "right",
+                "isKeydown": true
+            },
+            "executeTime": 18577
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -632.7985565973357,
+                    "y": 798.7417741353464
+                }
+            },
+            "executeTime": 18625
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -612.899061660724,
+                    "y": 778.6412690719582
+                }
+            },
+            "executeTime": 18737
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -592.9995667241122,
+                    "y": 755.5407640085699
+                }
+            },
+            "executeTime": 18849
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -572.1000717875005,
+                    "y": 719.4402589451817
+                }
+            },
+            "executeTime": 18961
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -562.2005768508888,
+                    "y": 699.3397538817934
+                }
+            },
+            "executeTime": 19073
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -557.301081914277,
+                    "y": 692.2392488184051
+                }
+            },
+            "executeTime": 19185
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -553.4015869776653,
+                    "y": 693.1387437550169
+                }
+            },
+            "executeTime": 19297
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -573.5020920410535,
+                    "y": 693.0382386916286
+                }
+            },
+            "executeTime": 19409
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "right",
+                "isKeydown": false
+            },
+            "executeTime": 19489
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "left",
+                "isKeydown": true
+            },
+            "executeTime": 19505
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -631.8452377915611,
+                    "y": 703.5235200658673
+                }
+            },
+            "executeTime": 19521
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -750.7447327281728,
+                    "y": 734.423015002479
+                }
+            },
+            "executeTime": 19633
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -803.6442276647846,
+                    "y": 758.3225099390908
+                }
+            },
+            "executeTime": 19745
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -848.5437226013963,
+                    "y": 789.2220048757025
+                }
+            },
+            "executeTime": 19857
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "down",
+                "isKeydown": false
+            },
+            "executeTime": 19873
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -898.9579361637694,
+                    "y": 875.6362184380756
+                }
+            },
+            "executeTime": 19969
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -918.9579361637694,
+                    "y": 924.6362184380756
+                }
+            },
+            "executeTime": 20081
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -932.9579361637694,
+                    "y": 954.6362184380756
+                }
+            },
+            "executeTime": 20193
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -946.9579361637694,
+                    "y": 985.6362184380756
+                }
+            },
+            "executeTime": 20305
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "down",
+                "isKeydown": true
+            },
+            "executeTime": 20353
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -952.6147904132619,
+                    "y": 1016.293072687568
+                }
+            },
+            "executeTime": 20417
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -922.5142853498736,
+                    "y": 1054.19256762418
+                }
+            },
+            "executeTime": 20529
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -904.4137802864853,
+                    "y": 1076.0920625607914
+                }
+            },
+            "executeTime": 20641
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -849.3132752230971,
+                    "y": 1088.9915574974034
+                }
+            },
+            "executeTime": 20753
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -753.2127701597088,
+                    "y": 1056.891052434015
+                }
+            },
+            "executeTime": 20865
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -743.1122650963206,
+                    "y": 1018.7905473706268
+                }
+            },
+            "executeTime": 20977
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -749.0117600329323,
+                    "y": 969.6900423072385
+                }
+            },
+            "executeTime": 21089
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -763.9112549695441,
+                    "y": 911.5895372438503
+                }
+            },
+            "executeTime": 21201
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -789.8107499061558,
+                    "y": 878.489032180462
+                }
+            },
+            "executeTime": 21313
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -831.7102448427676,
+                    "y": 856.3885271170737
+                }
+            },
+            "executeTime": 21425
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -888.6097397793793,
+                    "y": 855.2880220536855
+                }
+            },
+            "executeTime": 21537
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -1011.509234715991,
+                    "y": 865.1875169902972
+                }
+            },
+            "executeTime": 21649
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "left",
+                "isKeydown": false
+            },
+            "executeTime": 21697
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -1070.7518754031103,
+                    "y": 891.4301576774164
+                }
+            },
+            "executeTime": 21761
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -1150.7518754031103,
+                    "y": 974.4301576774164
+                }
+            },
+            "executeTime": 21873
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -1180.7518754031103,
+                    "y": 1068.4301576774164
+                }
+            },
+            "executeTime": 21985
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -1177.7518754031103,
+                    "y": 1134.4301576774164
+                }
+            },
+            "executeTime": 22097
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -1163.7518754031103,
+                    "y": 1178.4301576774164
+                }
+            },
+            "executeTime": 22209
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "left",
+                "isKeydown": true
+            },
+            "executeTime": 22257
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -1141.4087296526027,
+                    "y": 1213.0870119269089
+                }
+            },
+            "executeTime": 22321
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -1096.3082245892144,
+                    "y": 1243.9865068635206
+                }
+            },
+            "executeTime": 22433
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "down",
+                "isKeydown": false
+            },
+            "executeTime": 22449
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -1050.7224381515875,
+                    "y": 1257.4007204258937
+                }
+            },
+            "executeTime": 22545
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "left",
+                "isKeydown": false
+            },
+            "executeTime": 22561
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -1051.7224381515875,
+                    "y": 1257.4007204258937
+                }
+            },
+            "executeTime": 22577
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -1183.7224381515875,
+                    "y": 1256.4007204258937
+                }
+            },
+            "executeTime": 23217
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -1183.7224381515875,
+                    "y": 1256.4007204258937
+                }
+            },
+            "executeTime": 23233
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -1209.7224381515875,
+                    "y": 1240.4007204258937
+                }
+            },
+            "executeTime": 23345
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -1247.7224381515875,
+                    "y": 1204.4007204258937
+                }
+            },
+            "executeTime": 23457
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -1251.7224381515875,
+                    "y": 1196.4007204258937
+                }
+            },
+            "executeTime": 23569
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -1251.7224381515875,
+                    "y": 1196.4007204258937
+                }
+            },
+            "executeTime": 23617
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -1341.7224381515875,
+                    "y": 1315.4007204258937
+                }
+            },
+            "executeTime": 24017
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -1341.7224381515875,
+                    "y": 1315.4007204258937
+                }
+            },
+            "executeTime": 24017
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability3",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -1341.7224381515875,
+                    "y": 1315.4007204258937
+                }
+            },
+            "executeTime": 24017
         }
     ],
+    "nextEndBosses": {
+        "north": {
+            "id": 12092,
+            "x": 446.37093474990024,
+            "y": -19712.5501107606,
+            "width": 20,
+            "height": 40,
+            "paint": {
+                "randomizedCharacterImage": {
+                    "headIndex": 1,
+                    "chestIndex": 1,
+                    "legsIndex": 0,
+                    "skinColor": "blue",
+                    "clothColor": "red"
+                }
+            },
+            "moveSpeed": 9.400000000000002,
+            "moveDirection": -3.141592653589793,
+            "isMoving": false,
+            "hp": 1450,
+            "maxHp": 1450,
+            "faction": "player",
+            "experienceWorth": 1,
+            "type": "levelingCharacter",
+            "isDead": false,
+            "abilities": [
+                {
+                    "id": 12629,
+                    "name": "Tower",
+                    "damage": 1250,
+                    "passive": false,
+                    "playerInputBinding": "ability1",
+                    "idCounter": 0,
+                    "maxClickRange": 1500,
+                    "currentAbilityIndex": 21,
+                    "availableAbilityKeys": [
+                        "Shoot",
+                        "FireCircle",
+                        "Sword",
+                        "Ice Aura",
+                        "SingleTarget"
+                    ],
+                    "orderOfAbilities": [
+                        3,
+                        0,
+                        1,
+                        1,
+                        3,
+                        4,
+                        4,
+                        2,
+                        4,
+                        4,
+                        4,
+                        1,
+                        4,
+                        1,
+                        1,
+                        1,
+                        2,
+                        0,
+                        3,
+                        1,
+                        1,
+                        1,
+                        4,
+                        3,
+                        3,
+                        2,
+                        1,
+                        3,
+                        0,
+                        1,
+                        2,
+                        3,
+                        1,
+                        1,
+                        0,
+                        1,
+                        3,
+                        2,
+                        4,
+                        0,
+                        3,
+                        2,
+                        2,
+                        4,
+                        0,
+                        3,
+                        3,
+                        4,
+                        2,
+                        3,
+                        4,
+                        2,
+                        3,
+                        3,
+                        3,
+                        2,
+                        2,
+                        3,
+                        3,
+                        0,
+                        1,
+                        4,
+                        2,
+                        1,
+                        1,
+                        1,
+                        1,
+                        3,
+                        3,
+                        1,
+                        2,
+                        2,
+                        2,
+                        4,
+                        0,
+                        0,
+                        2,
+                        2,
+                        1,
+                        0,
+                        1,
+                        2,
+                        4,
+                        4,
+                        3,
+                        4,
+                        4,
+                        1,
+                        2,
+                        2,
+                        3,
+                        1,
+                        0,
+                        2,
+                        2,
+                        3,
+                        4,
+                        3,
+                        3,
+                        3,
+                        4,
+                        2,
+                        0,
+                        2,
+                        1,
+                        4,
+                        3,
+                        0,
+                        3,
+                        0,
+                        3,
+                        2,
+                        1,
+                        1,
+                        1,
+                        3,
+                        1,
+                        1,
+                        2,
+                        1,
+                        0,
+                        0,
+                        2,
+                        3,
+                        1,
+                        4,
+                        1,
+                        4,
+                        4,
+                        0,
+                        2,
+                        3,
+                        0,
+                        1,
+                        4,
+                        4,
+                        1,
+                        3,
+                        3,
+                        1,
+                        2,
+                        1,
+                        4
+                    ],
+                    "upgrades": {},
+                    "tradable": true,
+                    "lastBuildTime": 359008
+                },
+                {
+                    "id": 12630,
+                    "name": "HP Regen",
+                    "amount": 23,
+                    "tickInterval": 500,
+                    "passive": true,
+                    "upgrades": {},
+                    "nextIntervalTick": 368700
+                }
+            ],
+            "debuffs": [],
+            "upgradeChoices": [],
+            "weight": 800,
+            "isRooted": false,
+            "willTurnToPetOnDeath": true,
+            "isPet": false,
+            "leveling": {
+                "experience": 1756.5,
+                "experienceForLevelUp": 15016,
+                "level": 245
+            },
+            "availableSkillPoints": 0,
+            "characterClass": "Tower Builder"
+        },
+        "west": {
+            "id": 6,
+            "x": 0,
+            "y": 0,
+            "width": 60,
+            "height": 60,
+            "paint": {
+                "color": "black",
+                "image": "slime"
+            },
+            "moveSpeed": 1,
+            "moveDirection": 0,
+            "isMoving": false,
+            "hp": 50000000,
+            "maxHp": 50000000,
+            "faction": "enemy",
+            "experienceWorth": 0,
+            "type": "EndBossEnemyCharacter",
+            "isDead": false,
+            "abilities": [
+                {
+                    "id": 7,
+                    "name": "Melee",
+                    "damage": 10,
+                    "passive": true,
+                    "tickInterval": 250,
+                    "upgrades": {}
+                },
+                {
+                    "id": 8,
+                    "name": "Shoot",
+                    "baseFrequency": 1000,
+                    "frequencyIncrease": 1.2,
+                    "damage": 50,
+                    "nextShotTime": -1,
+                    "pierceCount": 0,
+                    "multiShot": 0,
+                    "timeToLive": 3000,
+                    "passive": true,
+                    "moveSpeed": 2.7,
+                    "bulletSize": 8,
+                    "upgrades": {},
+                    "shootRandom": true
+                },
+                {
+                    "id": 9,
+                    "name": "Sword",
+                    "damage": 25,
+                    "swordLength": 55,
+                    "swordCount": 1,
+                    "angleChangePerTick": 0.015,
+                    "currentSwordAngle": 0,
+                    "angleChangePerSword": 6.283185307179586,
+                    "passive": true,
+                    "tickInterval": 100,
+                    "upgrades": {}
+                },
+                {
+                    "id": 10,
+                    "name": "FireCircle",
+                    "objectDuration": 5000,
+                    "damage": 10,
+                    "radius": 20,
+                    "baseRechargeTime": 2000,
+                    "rechargeTimeDecreaseFaktor": 1.5,
+                    "maxCharges": 3,
+                    "currentCharges": 0,
+                    "nextRechargeTime": -1,
+                    "passive": true,
+                    "moveSpeed": 2,
+                    "upgrades": {}
+                },
+                {
+                    "id": 11,
+                    "name": "Ice Aura",
+                    "damage": 10,
+                    "radius": 72,
+                    "slowFactor": 2,
+                    "passive": true,
+                    "tickInterval": 250,
+                    "upgrades": {}
+                }
+            ],
+            "debuffs": [],
+            "upgradeChoices": [],
+            "weight": 3600,
+            "isRooted": false
+        },
+        "south": {
+            "id": 12,
+            "x": 0,
+            "y": 0,
+            "width": 60,
+            "height": 60,
+            "paint": {
+                "color": "black",
+                "image": "slime"
+            },
+            "moveSpeed": 1,
+            "moveDirection": 0,
+            "isMoving": false,
+            "hp": 50000000,
+            "maxHp": 50000000,
+            "faction": "enemy",
+            "experienceWorth": 0,
+            "type": "EndBossEnemyCharacter",
+            "isDead": false,
+            "abilities": [
+                {
+                    "id": 13,
+                    "name": "Melee",
+                    "damage": 10,
+                    "passive": true,
+                    "tickInterval": 250,
+                    "upgrades": {}
+                },
+                {
+                    "id": 14,
+                    "name": "Shoot",
+                    "baseFrequency": 1000,
+                    "frequencyIncrease": 1.2,
+                    "damage": 50,
+                    "nextShotTime": -1,
+                    "pierceCount": 0,
+                    "multiShot": 0,
+                    "timeToLive": 3000,
+                    "passive": true,
+                    "moveSpeed": 2.7,
+                    "bulletSize": 8,
+                    "upgrades": {},
+                    "shootRandom": true
+                },
+                {
+                    "id": 15,
+                    "name": "Sword",
+                    "damage": 25,
+                    "swordLength": 55,
+                    "swordCount": 1,
+                    "angleChangePerTick": 0.015,
+                    "currentSwordAngle": 0,
+                    "angleChangePerSword": 6.283185307179586,
+                    "passive": true,
+                    "tickInterval": 100,
+                    "upgrades": {}
+                },
+                {
+                    "id": 16,
+                    "name": "FireCircle",
+                    "objectDuration": 5000,
+                    "damage": 10,
+                    "radius": 20,
+                    "baseRechargeTime": 2000,
+                    "rechargeTimeDecreaseFaktor": 1.5,
+                    "maxCharges": 3,
+                    "currentCharges": 0,
+                    "nextRechargeTime": -1,
+                    "passive": true,
+                    "moveSpeed": 2,
+                    "upgrades": {}
+                },
+                {
+                    "id": 17,
+                    "name": "Ice Aura",
+                    "damage": 10,
+                    "radius": 72,
+                    "slowFactor": 2,
+                    "passive": true,
+                    "tickInterval": 250,
+                    "upgrades": {}
+                }
+            ],
+            "debuffs": [],
+            "upgradeChoices": [],
+            "weight": 3600,
+            "isRooted": false
+        },
+        "east": {
+            "id": 12636,
+            "x": 20513.336982506473,
+            "y": -72.31081150234749,
+            "width": 20,
+            "height": 40,
+            "paint": {
+                "randomizedCharacterImage": {
+                    "headIndex": 0,
+                    "chestIndex": 0,
+                    "legsIndex": 0,
+                    "skinColor": "green",
+                    "clothColor": "green"
+                }
+            },
+            "moveSpeed": 2.4,
+            "moveDirection": -4.71238898038469,
+            "isMoving": false,
+            "hp": 172,
+            "maxHp": 300,
+            "faction": "player",
+            "experienceWorth": 1,
+            "type": "Tamer",
+            "isDead": false,
+            "abilities": [
+                {
+                    "id": 13117,
+                    "name": "HP Regen",
+                    "amount": 1,
+                    "tickInterval": 500,
+                    "passive": true,
+                    "upgrades": {},
+                    "nextIntervalTick": 505812
+                },
+                {
+                    "id": 13118,
+                    "name": "FeedPet",
+                    "passive": false,
+                    "playerInputBinding": "ability1",
+                    "baseRechargeTime": 100,
+                    "range": 200,
+                    "upgrades": {},
+                    "feedValue": 30,
+                    "tradable": true,
+                    "unique": true,
+                    "nextRechargeTime": 488468
+                },
+                {
+                    "id": 13119,
+                    "name": "LovePet",
+                    "passive": false,
+                    "playerInputBinding": "ability2",
+                    "baseRechargeTime": 100,
+                    "range": 200,
+                    "upgrades": {},
+                    "loveValue": 30,
+                    "tradable": true,
+                    "unique": true,
+                    "nextRechargeTime": 489524
+                }
+            ],
+            "debuffs": [],
+            "upgradeChoices": [],
+            "weight": 800,
+            "isRooted": false,
+            "willTurnToPetOnDeath": true,
+            "isPet": false,
+            "characterClass": "Tamer",
+            "pets": [
+                {
+                    "id": 13120,
+                    "x": 20480.798900786413,
+                    "y": -89.87224101130275,
+                    "width": 30,
+                    "height": 30,
+                    "paint": {
+                        "color": "blue"
+                    },
+                    "moveSpeed": 2,
+                    "moveDirection": -0.4853713637100838,
+                    "isMoving": true,
+                    "hp": 20,
+                    "maxHp": 20,
+                    "faction": "player",
+                    "experienceWorth": 10,
+                    "type": "tamerPet",
+                    "isDead": false,
+                    "abilities": [
+                        {
+                            "id": 13121,
+                            "name": "Leash",
+                            "leashMaxLength": 275,
+                            "leashedToOwnerId": 12636,
+                            "passive": true,
+                            "leashBendPoints": [],
+                            "upgrades": {}
+                        },
+                        {
+                            "id": 13122,
+                            "name": "Melee",
+                            "damage": 11700,
+                            "passive": true,
+                            "tickInterval": 250,
+                            "upgrades": {},
+                            "nextTickTime": 505812
+                        },
+                        {
+                            "id": 17782,
+                            "name": "Breath",
+                            "damage": 11700,
+                            "angleSize": 2.356194490192345,
+                            "directionAngle": -0.4853713637100838,
+                            "range": 147.30249470757707,
+                            "passive": true,
+                            "tickInterval": 100,
+                            "upgrades": {
+                                "Breath Slow": {
+                                    "level": 1,
+                                    "factor": 2,
+                                    "duration": 1000
+                                },
+                                "Breath Range+": {
+                                    "level": 2,
+                                    "foodIntakeUp": 6,
+                                    "rangeUp": 20
+                                },
+                                "Breath Explode": {
+                                    "level": 3,
+                                    "damageFactor": 30,
+                                    "radius": 50
+                                }
+                            },
+                            "active": true,
+                            "color": "white",
+                            "nextTickTime": 505836
+                        }
+                    ],
+                    "debuffs": [],
+                    "upgradeChoices": [],
+                    "weight": 300,
+                    "isRooted": false,
+                    "petTargetBehavior": "protective",
+                    "petNoTargetBehavior": "following",
+                    "defaultSize": 30,
+                    "sizeFactor": 1,
+                    "baseMoveSpeed": 2,
+                    "bossSkillPoints": 0,
+                    "leveling": {
+                        "experience": 9376,
+                        "experienceForLevelUp": 13582,
+                        "level": 233
+                    },
+                    "foodIntakeLevel": {
+                        "current": 175.99999999999386,
+                        "underfedAt": 34,
+                        "overfedAt": 75,
+                        "tickInterval": 1002,
+                        "nextTick": 506250
+                    },
+                    "happines": {
+                        "current": 113,
+                        "unhappyAt": 29,
+                        "hyperactiveAt": 114,
+                        "tickInterval": 1005,
+                        "visualizations": [],
+                        "nextTick": 506173
+                    },
+                    "traits": [
+                        {
+                            "name": "longer leash",
+                            "opposite": "shorter leash"
+                        },
+                        {
+                            "name": "wants to stay slim",
+                            "opposite": "loves food"
+                        },
+                        {
+                            "name": "eats less",
+                            "opposite": "very hungry"
+                        },
+                        {
+                            "name": "never gets fat",
+                            "opposite": "gets fat easily"
+                        },
+                        {
+                            "name": "happy one",
+                            "opposite": "needs more love"
+                        }
+                    ],
+                    "tradable": true,
+                    "nextMovementUpdateTime": 486708
+                },
+                {
+                    "id": 13123,
+                    "x": 20515.98622742507,
+                    "y": -89.95474194402135,
+                    "width": 30,
+                    "height": 30,
+                    "paint": {
+                        "color": "green"
+                    },
+                    "moveSpeed": 2,
+                    "moveDirection": -2.40473594628157,
+                    "isMoving": true,
+                    "hp": 20,
+                    "maxHp": 20,
+                    "faction": "player",
+                    "experienceWorth": 10,
+                    "type": "tamerPet",
+                    "isDead": false,
+                    "abilities": [
+                        {
+                            "id": 13124,
+                            "name": "Leash",
+                            "leashMaxLength": 375,
+                            "leashedToOwnerId": 12636,
+                            "passive": true,
+                            "leashBendPoints": [],
+                            "upgrades": {}
+                        },
+                        {
+                            "id": 13125,
+                            "name": "Melee",
+                            "damage": 8400,
+                            "passive": true,
+                            "tickInterval": 250,
+                            "upgrades": {},
+                            "nextTickTime": 505812
+                        },
+                        {
+                            "id": 17783,
+                            "name": "Painter",
+                            "baseDamage": 16800,
+                            "passive": true,
+                            "upgrades": {
+                                "Paint Duplicate": {
+                                    "level": 1
+                                },
+                                "Paint Split": {
+                                    "level": 4,
+                                    "count": 5,
+                                    "damageFactor": 0.5
+                                },
+                                "Paint Factory": {
+                                    "level": 1,
+                                    "duration": 1500,
+                                    "spawnInterval": 500
+                                }
+                            },
+                            "currentlyPainting": "Square",
+                            "paintPoints": [],
+                            "paintCircle": {
+                                "middle": {
+                                    "x": 20540,
+                                    "y": -60
+                                },
+                                "currentAngle": 6.5973445725385655
+                            }
+                        }
+                    ],
+                    "debuffs": [],
+                    "upgradeChoices": [],
+                    "weight": 300,
+                    "isRooted": false,
+                    "petTargetBehavior": "protective",
+                    "petNoTargetBehavior": "following",
+                    "defaultSize": 30,
+                    "sizeFactor": 1,
+                    "baseMoveSpeed": 2,
+                    "bossSkillPoints": 0,
+                    "leveling": {
+                        "experience": 1673,
+                        "experienceForLevelUp": 6982,
+                        "level": 167
+                    },
+                    "foodIntakeLevel": {
+                        "current": 324,
+                        "underfedAt": 40,
+                        "overfedAt": 77,
+                        "tickInterval": 791,
+                        "nextTick": 506103
+                    },
+                    "happines": {
+                        "current": 67,
+                        "unhappyAt": 31,
+                        "hyperactiveAt": 112,
+                        "tickInterval": 1136,
+                        "visualizations": [],
+                        "nextTick": 506352
+                    },
+                    "traits": [
+                        {
+                            "name": "eats less",
+                            "opposite": "very hungry"
+                        },
+                        {
+                            "name": "never gets fat",
+                            "opposite": "gets fat easily"
+                        },
+                        {
+                            "name": "wants to stay slim",
+                            "opposite": "loves food"
+                        },
+                        {
+                            "name": "longer leash",
+                            "opposite": "shorter leash"
+                        },
+                        {
+                            "name": "needs more love",
+                            "opposite": "happy one"
+                        }
+                    ],
+                    "tradable": true,
+                    "nextMovementUpdateTime": 484564,
+                    "forcedMovePosition": {
+                        "x": 20479.856015630325,
+                        "y": -122.75405855892396
+                    }
+                },
+                {
+                    "id": 13126,
+                    "x": 20518.006175195707,
+                    "y": -117.00987643818488,
+                    "width": 37.82608695652174,
+                    "height": 37.82608695652174,
+                    "paint": {
+                        "color": "black"
+                    },
+                    "moveSpeed": 1.586206896551724,
+                    "moveDirection": -4.589615097726686,
+                    "isMoving": true,
+                    "hp": 20,
+                    "maxHp": 20,
+                    "faction": "player",
+                    "experienceWorth": 10,
+                    "type": "tamerPet",
+                    "isDead": false,
+                    "abilities": [
+                        {
+                            "id": 13127,
+                            "name": "Leash",
+                            "leashMaxLength": 175,
+                            "leashedToOwnerId": 12636,
+                            "passive": true,
+                            "leashBendPoints": [],
+                            "upgrades": {}
+                        },
+                        {
+                            "id": 13128,
+                            "name": "Melee",
+                            "damage": 10000,
+                            "passive": true,
+                            "tickInterval": 250,
+                            "upgrades": {},
+                            "nextTickTime": 505812
+                        },
+                        {
+                            "id": 17784,
+                            "name": "Dash",
+                            "baseDamage": 10000,
+                            "baseSpeed": 4,
+                            "cooldown": 1000,
+                            "duration": 500,
+                            "sizeExtension": 10,
+                            "passive": true,
+                            "tickInterval": 100,
+                            "upgrades": {
+                                "Dash Fire Line": {
+                                    "level": 4,
+                                    "damageFactor": 4,
+                                    "duration": 11000,
+                                    "startPosition": {
+                                        "x": 20429.45949878823,
+                                        "y": -88.48065347488408
+                                    }
+                                },
+                                "Dash Root on Hit": {
+                                    "level": 2,
+                                    "duration": 1000
+                                }
+                            },
+                            "readyTime": 506408,
+                            "activeUntilTime": 505908,
+                            "nextTickTime": 505808,
+                            "direction": -0.36613898386812926
+                        }
+                    ],
+                    "debuffs": [],
+                    "upgradeChoices": [],
+                    "weight": 476.9376181474481,
+                    "isRooted": false,
+                    "petTargetBehavior": "protective",
+                    "petNoTargetBehavior": "following",
+                    "defaultSize": 30,
+                    "sizeFactor": 1.2608695652173914,
+                    "baseMoveSpeed": 2,
+                    "bossSkillPoints": 0,
+                    "leveling": {
+                        "experience": 5135,
+                        "experienceForLevelUp": 10010,
+                        "level": 200
+                    },
+                    "foodIntakeLevel": {
+                        "current": 87,
+                        "underfedAt": 30,
+                        "overfedAt": 69,
+                        "tickInterval": 1187,
+                        "nextTick": 506099
+                    },
+                    "happines": {
+                        "current": 71,
+                        "unhappyAt": 34,
+                        "hyperactiveAt": 113,
+                        "tickInterval": 1219,
+                        "visualizations": [],
+                        "nextTick": 506211
+                    },
+                    "traits": [
+                        {
+                            "name": "needs more love",
+                            "opposite": "happy one"
+                        },
+                        {
+                            "name": "gets fat easily",
+                            "opposite": "never gets fat"
+                        },
+                        {
+                            "name": "wants to stay slim",
+                            "opposite": "loves food"
+                        },
+                        {
+                            "name": "very hungry",
+                            "opposite": "eats less"
+                        }
+                    ],
+                    "tradable": true,
+                    "nextMovementUpdateTime": 486756
+                }
+            ]
+        }
+    },
+    "pastCharacters": {
+        "characters": [
+            {
+                "id": 73030,
+                "x": 140,
+                "y": 100,
+                "width": 20,
+                "height": 40,
+                "paint": {
+                    "randomizedCharacterImage": {
+                        "headIndex": 2,
+                        "chestIndex": 0,
+                        "legsIndex": 2,
+                        "skinColor": "white",
+                        "clothColor": "green"
+                    }
+                },
+                "moveSpeed": 3.200000000000001,
+                "moveDirection": 1.5707963267948966,
+                "isMoving": false,
+                "hp": 300,
+                "maxHp": 300,
+                "faction": "player",
+                "experienceWorth": 1,
+                "type": "levelingCharacter",
+                "isDead": false,
+                "abilities": [
+                    {
+                        "id": 61189,
+                        "name": "Tower",
+                        "damage": 150,
+                        "passive": false,
+                        "playerInputBinding": "ability1",
+                        "idCounter": 0,
+                        "maxClickRange": 1500,
+                        "currentAbilityIndex": 8,
+                        "availableAbilityKeys": [
+                            "Shoot",
+                            "FireCircle",
+                            "Sword",
+                            "Ice Aura",
+                            "SingleTarget"
+                        ],
+                        "orderOfAbilities": [
+                            0,
+                            1,
+                            4,
+                            4,
+                            1,
+                            1,
+                            4,
+                            3,
+                            0,
+                            2,
+                            1,
+                            1,
+                            3,
+                            3,
+                            4,
+                            4
+                        ],
+                        "upgrades": {},
+                        "tradable": true
+                    },
+                    {
+                        "id": 61190,
+                        "name": "HP Regen",
+                        "amount": 3,
+                        "tickInterval": 500,
+                        "passive": true,
+                        "upgrades": {},
+                        "nextIntervalTick": 345156
+                    },
+                    {
+                        "id": 73029,
+                        "name": "Leash",
+                        "leashMaxLength": 100,
+                        "passive": true,
+                        "leashBendPoints": [],
+                        "upgrades": {}
+                    }
+                ],
+                "debuffs": [],
+                "upgradeChoices": [],
+                "weight": 800,
+                "isRooted": false,
+                "willTurnToPetOnDeath": true,
+                "isPet": false,
+                "leveling": {
+                    "experience": 66,
+                    "experienceForLevelUp": 142,
+                    "level": 23
+                },
+                "availableSkillPoints": 0,
+                "characterClass": "Tower Builder",
+                "isUnMoveAble": true
+            },
+            {
+                "id": 84020,
+                "x": 180,
+                "y": 100,
+                "width": 20,
+                "height": 40,
+                "paint": {
+                    "randomizedCharacterImage": {
+                        "headIndex": 2,
+                        "chestIndex": 1,
+                        "legsIndex": 1,
+                        "skinColor": "green",
+                        "clothColor": "white"
+                    }
+                },
+                "moveSpeed": 2.4,
+                "moveDirection": 1.5707963267948966,
+                "isMoving": false,
+                "hp": 300,
+                "maxHp": 300,
+                "faction": "player",
+                "experienceWorth": 1,
+                "type": "Tamer",
+                "isDead": false,
+                "abilities": [
+                    {
+                        "id": 79082,
+                        "name": "HP Regen",
+                        "amount": 1,
+                        "tickInterval": 500,
+                        "passive": true,
+                        "upgrades": {},
+                        "nextIntervalTick": 345376
+                    },
+                    {
+                        "id": 79083,
+                        "name": "FeedPet",
+                        "passive": false,
+                        "playerInputBinding": "ability1",
+                        "baseRechargeTime": 100,
+                        "range": 200,
+                        "upgrades": {},
+                        "feedValue": 30,
+                        "tradable": true,
+                        "unique": true
+                    },
+                    {
+                        "id": 79084,
+                        "name": "LovePet",
+                        "passive": false,
+                        "playerInputBinding": "ability2",
+                        "baseRechargeTime": 100,
+                        "range": 200,
+                        "upgrades": {},
+                        "loveValue": 30,
+                        "tradable": true,
+                        "unique": true
+                    }
+                ],
+                "debuffs": [],
+                "upgradeChoices": [],
+                "weight": 800,
+                "isRooted": false,
+                "willTurnToPetOnDeath": true,
+                "isPet": false,
+                "characterClass": "Tamer",
+                "pets": [
+                    {
+                        "id": 79085,
+                        "x": 180,
+                        "y": 100,
+                        "width": 30,
+                        "height": 30,
+                        "paint": {
+                            "color": "blue"
+                        },
+                        "moveSpeed": 2,
+                        "moveDirection": -1.869466427742687,
+                        "isMoving": true,
+                        "hp": 20,
+                        "maxHp": 20,
+                        "faction": "player",
+                        "experienceWorth": 10,
+                        "type": "tamerPet",
+                        "isDead": false,
+                        "abilities": [
+                            {
+                                "id": 79086,
+                                "name": "Leash",
+                                "leashMaxLength": 175,
+                                "leashedToOwnerId": 84020,
+                                "passive": true,
+                                "leashBendPoints": [],
+                                "upgrades": {}
+                            },
+                            {
+                                "id": 79087,
+                                "name": "Melee",
+                                "damage": 300,
+                                "passive": true,
+                                "tickInterval": 250,
+                                "upgrades": {}
+                            }
+                        ],
+                        "debuffs": [],
+                        "upgradeChoices": [],
+                        "weight": 300,
+                        "isRooted": false,
+                        "petTargetBehavior": "protective",
+                        "petNoTargetBehavior": "following",
+                        "defaultSize": 30,
+                        "sizeFactor": 1,
+                        "baseMoveSpeed": 2,
+                        "bossSkillPoints": 0,
+                        "leveling": {
+                            "experience": 1,
+                            "experienceForLevelUp": 19,
+                            "level": 6
+                        },
+                        "foodIntakeLevel": {
+                            "current": 44,
+                            "underfedAt": 22,
+                            "overfedAt": 76,
+                            "tickInterval": 1126
+                        },
+                        "happines": {
+                            "current": 96,
+                            "unhappyAt": 37,
+                            "hyperactiveAt": 105,
+                            "tickInterval": 1237,
+                            "visualizations": []
+                        },
+                        "traits": [],
+                        "tradable": true
+                    },
+                    {
+                        "id": 79088,
+                        "x": 180,
+                        "y": 100,
+                        "width": 30,
+                        "height": 30,
+                        "paint": {
+                            "color": "green"
+                        },
+                        "moveSpeed": 2,
+                        "moveDirection": 1.1747089228143288,
+                        "isMoving": false,
+                        "hp": 20,
+                        "maxHp": 20,
+                        "faction": "player",
+                        "experienceWorth": 10,
+                        "type": "tamerPet",
+                        "isDead": false,
+                        "abilities": [
+                            {
+                                "id": 79089,
+                                "name": "Leash",
+                                "leashMaxLength": 175,
+                                "leashedToOwnerId": 84020,
+                                "passive": true,
+                                "leashBendPoints": [],
+                                "upgrades": {}
+                            },
+                            {
+                                "id": 79090,
+                                "name": "Melee",
+                                "damage": 700,
+                                "passive": true,
+                                "tickInterval": 250,
+                                "upgrades": {}
+                            }
+                        ],
+                        "debuffs": [],
+                        "upgradeChoices": [],
+                        "weight": 300,
+                        "isRooted": false,
+                        "petTargetBehavior": "protective",
+                        "petNoTargetBehavior": "following",
+                        "defaultSize": 30,
+                        "sizeFactor": 1,
+                        "baseMoveSpeed": 2,
+                        "bossSkillPoints": 0,
+                        "leveling": {
+                            "experience": 17,
+                            "experienceForLevelUp": 52,
+                            "level": 13
+                        },
+                        "foodIntakeLevel": {
+                            "current": 27,
+                            "underfedAt": 25,
+                            "overfedAt": 73,
+                            "tickInterval": 792
+                        },
+                        "happines": {
+                            "current": 105,
+                            "unhappyAt": 23,
+                            "hyperactiveAt": 116,
+                            "tickInterval": 1246,
+                            "visualizations": []
+                        },
+                        "traits": [],
+                        "tradable": true
+                    },
+                    {
+                        "id": 79091,
+                        "x": 180,
+                        "y": 100,
+                        "width": 30,
+                        "height": 30,
+                        "paint": {
+                            "color": "black"
+                        },
+                        "moveSpeed": 2,
+                        "moveDirection": -2.5458585265032063,
+                        "isMoving": false,
+                        "hp": 20,
+                        "maxHp": 20,
+                        "faction": "player",
+                        "experienceWorth": 10,
+                        "type": "tamerPet",
+                        "isDead": false,
+                        "abilities": [
+                            {
+                                "id": 79092,
+                                "name": "Leash",
+                                "leashMaxLength": 175,
+                                "leashedToOwnerId": 84020,
+                                "passive": true,
+                                "leashBendPoints": [],
+                                "upgrades": {}
+                            },
+                            {
+                                "id": 79093,
+                                "name": "Melee",
+                                "damage": 500,
+                                "passive": true,
+                                "tickInterval": 250,
+                                "upgrades": {}
+                            }
+                        ],
+                        "debuffs": [],
+                        "upgradeChoices": [],
+                        "weight": 300,
+                        "isRooted": false,
+                        "petTargetBehavior": "protective",
+                        "petNoTargetBehavior": "following",
+                        "defaultSize": 30,
+                        "sizeFactor": 1,
+                        "baseMoveSpeed": 2,
+                        "bossSkillPoints": 0,
+                        "leveling": {
+                            "experience": 4,
+                            "experienceForLevelUp": 35,
+                            "level": 10
+                        },
+                        "foodIntakeLevel": {
+                            "current": 49,
+                            "underfedAt": 23,
+                            "overfedAt": 71,
+                            "tickInterval": 1092
+                        },
+                        "happines": {
+                            "current": 112,
+                            "unhappyAt": 39,
+                            "hyperactiveAt": 118,
+                            "tickInterval": 976,
+                            "visualizations": []
+                        },
+                        "traits": [],
+                        "tradable": true
+                    }
+                ],
+                "isUnMoveAble": true
+            },
+            {
+                "id": 50881,
+                "x": 220,
+                "y": 100,
+                "width": 20,
+                "height": 40,
+                "paint": {
+                    "randomizedCharacterImage": {
+                        "headIndex": 1,
+                        "chestIndex": 1,
+                        "legsIndex": 1,
+                        "skinColor": "red",
+                        "clothColor": "blue"
+                    }
+                },
+                "moveSpeed": 2,
+                "moveDirection": 1.5707963267948966,
+                "isMoving": false,
+                "hp": 200,
+                "maxHp": 200,
+                "faction": "player",
+                "experienceWorth": 1,
+                "type": "abilityLevelingCharacter",
+                "isDead": false,
+                "abilities": [
+                    {
+                        "id": 12825,
+                        "name": "Snipe",
+                        "baseDamage": 11700,
+                        "passive": false,
+                        "playerInputBinding": "ability1",
+                        "baseRechargeTime": 1000,
+                        "currentCharges": 68,
+                        "maxCharges": 99,
+                        "reloadTime": -1,
+                        "baseRange": 1970,
+                        "shotFrequencyTimeDecreaseFaktor": 18.55,
+                        "size": 5,
+                        "paintFadeDuration": 500,
+                        "upgrades": {
+                            "More Rifles": {
+                                "level": 1,
+                                "rotationDirection": 1053.6199999993319,
+                                "rotationDistance": 80,
+                                "lastSniperRiflePaintDirection": [
+                                    -1.4167111095759173,
+                                    0
+                                ],
+                                "numberRifles": 1,
+                                "upgradeSynergy": false
+                            },
+                            "Split Shot": {
+                                "level": 1,
+                                "shotSplitsPerHit": 1,
+                                "upgradeSynergy": false
+                            },
+                            "Fire Line": {
+                                "level": 2,
+                                "duration": 3000,
+                                "damageTotalFactor": 4,
+                                "tickInterval": 200,
+                                "range": 150,
+                                "upgradeSynergy": false
+                            },
+                            "+Damage and -Range": {
+                                "level": 1,
+                                "damageMultiplier": 3,
+                                "rangeMultiplier": 0.5
+                            }
+                        },
+                        "maxShootFrequency": 1000,
+                        "shotNextAllowedTime": false,
+                        "nextAllowedShotTime": 0,
+                        "lastSniperRiflePaintDirection": -1.6092389168160846,
+                        "maxMagazineSize": 99,
+                        "minimumShotFrequency": 100,
+                        "tradable": true,
+                        "leveling": {
+                            "experience": 34117,
+                            "experienceForLevelUp": 40027,
+                            "level": 117
+                        },
+                        "bossSkillPoints": 0
+                    },
+                    {
+                        "id": 12826,
+                        "name": "HP Regen",
+                        "amount": 1,
+                        "tickInterval": 500,
+                        "passive": true,
+                        "upgrades": {},
+                        "nextIntervalTick": 345528
+                    },
+                    {
+                        "name": "SpeedBoost",
+                        "speedFactor": 2,
+                        "cooldown": 15300,
+                        "cooldownFinishTime": 0,
+                        "duration": 3000,
+                        "playerInputBinding": "ability2",
+                        "id": 12827,
+                        "passive": false,
+                        "upgrades": {
+                            "Slow Trail": {
+                                "level": 1
+                            },
+                            "Additional Charge": {
+                                "level": 2,
+                                "maxCharges": 3,
+                                "currentCharges": 3
+                            },
+                            "Speed Boost +Speed": {
+                                "level": 1
+                            },
+                            "Speed Boost -Cooldown": {
+                                "level": 1
+                            }
+                        },
+                        "tradable": true,
+                        "leveling": {
+                            "experience": 0,
+                            "experienceForLevelUp": 10,
+                            "level": 1
+                        },
+                        "bossSkillPoints": 0
+                    },
+                    {
+                        "id": 50880,
+                        "name": "Leash",
+                        "leashMaxLength": 100,
+                        "passive": true,
+                        "leashBendPoints": [],
+                        "upgrades": {}
+                    }
+                ],
+                "debuffs": [],
+                "upgradeChoices": [],
+                "weight": 800,
+                "isRooted": false,
+                "willTurnToPetOnDeath": true,
+                "isPet": false,
+                "characterClass": "Sniper",
+                "isUnMoveAble": true
+            },
+            {
+                "id": 21718,
+                "x": 140,
+                "y": 260,
+                "width": 20,
+                "height": 40,
+                "paint": {
+                    "randomizedCharacterImage": {
+                        "headIndex": 1,
+                        "chestIndex": 0,
+                        "legsIndex": 1,
+                        "skinColor": "black",
+                        "clothColor": "white"
+                    }
+                },
+                "moveSpeed": 2,
+                "moveDirection": 4.71238898038469,
+                "isMoving": false,
+                "hp": 200,
+                "maxHp": 200,
+                "faction": "player",
+                "experienceWorth": 1,
+                "type": "levelingCharacter",
+                "isDead": false,
+                "abilities": [
+                    {
+                        "id": 18781,
+                        "name": "Tower",
+                        "damage": 50,
+                        "passive": false,
+                        "playerInputBinding": "ability1",
+                        "idCounter": 0,
+                        "maxClickRange": 1500,
+                        "currentAbilityIndex": 6,
+                        "availableAbilityKeys": [
+                            "Shoot",
+                            "FireCircle",
+                            "Sword",
+                            "Ice Aura",
+                            "SingleTarget"
+                        ],
+                        "orderOfAbilities": [
+                            0,
+                            0,
+                            0,
+                            1,
+                            0,
+                            0,
+                            1,
+                            2,
+                            2,
+                            1,
+                            3,
+                            4
+                        ],
+                        "upgrades": {},
+                        "tradable": true
+                    },
+                    {
+                        "id": 18782,
+                        "name": "HP Regen",
+                        "amount": 2,
+                        "tickInterval": 500,
+                        "passive": true,
+                        "upgrades": {},
+                        "nextIntervalTick": 193768
+                    },
+                    {
+                        "id": 21717,
+                        "name": "Leash",
+                        "leashMaxLength": 100,
+                        "passive": true,
+                        "leashBendPoints": [],
+                        "upgrades": {}
+                    }
+                ],
+                "debuffs": [],
+                "upgradeChoices": [],
+                "weight": 800,
+                "isRooted": false,
+                "willTurnToPetOnDeath": true,
+                "isPet": false,
+                "leveling": {
+                    "experience": 4,
+                    "experienceForLevelUp": 26,
+                    "level": 8
+                },
+                "availableSkillPoints": 0,
+                "characterClass": "Tower Builder",
+                "isUnMoveAble": true
+            },
+            {
+                "id": 38502,
+                "x": 180,
+                "y": 260,
+                "width": 20,
+                "height": 40,
+                "paint": {
+                    "randomizedCharacterImage": {
+                        "headIndex": 1,
+                        "chestIndex": 0,
+                        "legsIndex": 1,
+                        "skinColor": "black",
+                        "clothColor": "white"
+                    }
+                },
+                "moveSpeed": 2,
+                "moveDirection": 4.71238898038469,
+                "isMoving": false,
+                "hp": 200,
+                "maxHp": 200,
+                "faction": "player",
+                "experienceWorth": 1,
+                "type": "abilityLevelingCharacter",
+                "isDead": false,
+                "abilities": [
+                    {
+                        "name": "SpeedBoost",
+                        "speedFactor": 1.5,
+                        "cooldown": 18000,
+                        "cooldownFinishTime": 0,
+                        "duration": 3000,
+                        "playerInputBinding": "ability2",
+                        "id": 26147,
+                        "passive": false,
+                        "upgrades": {},
+                        "tradable": false,
+                        "gifted": true
+                    },
+                    {
+                        "id": 26145,
+                        "name": "Snipe",
+                        "baseDamage": 300,
+                        "passive": false,
+                        "playerInputBinding": "ability1",
+                        "baseRechargeTime": 1000,
+                        "currentCharges": 2,
+                        "maxCharges": 5,
+                        "reloadTime": -1,
+                        "baseRange": 830,
+                        "shotFrequencyTimeDecreaseFaktor": 1.45,
+                        "size": 5,
+                        "paintFadeDuration": 500,
+                        "upgrades": {},
+                        "maxShootFrequency": 1000,
+                        "shotNextAllowedTime": false,
+                        "nextAllowedShotTime": 0,
+                        "lastSniperRiflePaintDirection": -0.8097835725701669,
+                        "maxMagazineSize": 99,
+                        "minimumShotFrequency": 100,
+                        "tradable": false,
+                        "gifted": true
+                    },
+                    {
+                        "name": "SpeedBoost",
+                        "speedFactor": 2,
+                        "cooldown": 18000,
+                        "cooldownFinishTime": 0,
+                        "duration": 3000,
+                        "playerInputBinding": "ability2",
+                        "id": 43019,
+                        "passive": false,
+                        "upgrades": {
+                            "Slow Trail": {
+                                "level": 1
+                            },
+                            "Speed Boost +Speed": {
+                                "level": 1
+                            }
+                        },
+                        "tradable": false,
+                        "gifted": true
+                    },
+                    {
+                        "id": 43017,
+                        "name": "Snipe",
+                        "baseDamage": 4100,
+                        "passive": false,
+                        "playerInputBinding": "ability1",
+                        "baseRechargeTime": 1000,
+                        "currentCharges": 37,
+                        "maxCharges": 43,
+                        "reloadTime": -1,
+                        "baseRange": 1210,
+                        "shotFrequencyTimeDecreaseFaktor": 7.1499999999999995,
+                        "size": 5,
+                        "paintFadeDuration": 500,
+                        "upgrades": {
+                            "More Rifles": {
+                                "level": 1,
+                                "rotationDirection": 1401.2399999990157,
+                                "rotationDistance": 80,
+                                "lastSniperRiflePaintDirection": [
+                                    -0.8301401457613855,
+                                    0
+                                ],
+                                "numberRifles": 1,
+                                "upgradeSynergy": false
+                            },
+                            "Backwards Shot": {
+                                "level": 1,
+                                "upgradeSynergy": false
+                            }
+                        },
+                        "maxShootFrequency": 1000,
+                        "shotNextAllowedTime": false,
+                        "nextAllowedShotTime": 0,
+                        "lastSniperRiflePaintDirection": -0.8097835725701669,
+                        "maxMagazineSize": 99,
+                        "minimumShotFrequency": 100,
+                        "tradable": false,
+                        "gifted": true
+                    },
+                    {
+                        "id": 12629,
+                        "name": "Snipe",
+                        "baseDamage": 7800,
+                        "passive": false,
+                        "playerInputBinding": "ability1",
+                        "baseRechargeTime": 1000,
+                        "currentCharges": 17,
+                        "maxCharges": 80,
+                        "reloadTime": -1,
+                        "baseRange": 1580,
+                        "shotFrequencyTimeDecreaseFaktor": 12.7,
+                        "size": 5,
+                        "paintFadeDuration": 500,
+                        "upgrades": {
+                            "After Image": {
+                                "level": 1,
+                                "afterImages": [],
+                                "cooldown": 1500,
+                                "upgradeSynergy": false
+                            },
+                            "Split Shot": {
+                                "level": 1,
+                                "shotSplitsPerHit": 1,
+                                "upgradeSynergy": false
+                            }
+                        },
+                        "maxShootFrequency": 1000,
+                        "shotNextAllowedTime": false,
+                        "nextAllowedShotTime": 0,
+                        "lastSniperRiflePaintDirection": -0.8097835725701669,
+                        "maxMagazineSize": 99,
+                        "minimumShotFrequency": 100,
+                        "tradable": true,
+                        "leveling": {
+                            "experience": 11743.5,
+                            "experienceForLevelUp": 15410,
+                            "level": 78
+                        },
+                        "bossSkillPoints": 0
+                    },
+                    {
+                        "id": 12630,
+                        "name": "HP Regen",
+                        "amount": 1,
+                        "tickInterval": 500,
+                        "passive": true,
+                        "upgrades": {},
+                        "nextIntervalTick": 193584
+                    },
+                    {
+                        "name": "SpeedBoost",
+                        "speedFactor": 1.5,
+                        "cooldown": 15300,
+                        "cooldownFinishTime": 0,
+                        "duration": 3000,
+                        "playerInputBinding": "ability2",
+                        "id": 12631,
+                        "passive": false,
+                        "upgrades": {
+                            "Additional Charge": {
+                                "level": 1,
+                                "maxCharges": 2,
+                                "currentCharges": 2
+                            },
+                            "Speed Boost -Cooldown": {
+                                "level": 1
+                            }
+                        },
+                        "tradable": true,
+                        "leveling": {
+                            "experience": 0,
+                            "experienceForLevelUp": 10,
+                            "level": 1
+                        },
+                        "bossSkillPoints": 0
+                    },
+                    {
+                        "id": 38501,
+                        "name": "Leash",
+                        "leashMaxLength": 100,
+                        "passive": true,
+                        "leashBendPoints": [],
+                        "upgrades": {}
+                    }
+                ],
+                "debuffs": [],
+                "upgradeChoices": [],
+                "weight": 800,
+                "isRooted": false,
+                "willTurnToPetOnDeath": true,
+                "isPet": false,
+                "characterClass": "Sniper",
+                "isUnMoveAble": true
+            },
+            {
+                "id": 113315,
+                "x": 220,
+                "y": 260,
+                "width": 20,
+                "height": 40,
+                "paint": {
+                    "randomizedCharacterImage": {
+                        "headIndex": 2,
+                        "chestIndex": 0,
+                        "legsIndex": 1,
+                        "skinColor": "white",
+                        "clothColor": "white"
+                    }
+                },
+                "moveSpeed": 2,
+                "moveDirection": 4.71238898038469,
+                "isMoving": false,
+                "hp": 0,
+                "maxHp": 200,
+                "faction": "player",
+                "experienceWorth": 1,
+                "type": "Character",
+                "isDead": false,
+                "abilities": [],
+                "debuffs": [],
+                "upgradeChoices": [
+                    {
+                        "displayText": "Sniper",
+                        "type": "Character",
+                        "identifier": "Sniper"
+                    },
+                    {
+                        "displayText": "Tower Builder",
+                        "type": "Character",
+                        "identifier": "Tower Builder"
+                    },
+                    {
+                        "displayText": "Tamer",
+                        "type": "Character",
+                        "identifier": "Tamer"
+                    }
+                ],
+                "weight": 800,
+                "isRooted": false,
+                "willTurnToPetOnDeath": true,
+                "isPet": false,
+                "isUnMoveAble": true
+            },
+            {
+                "id": 15961,
+                "x": 100,
+                "y": 140,
+                "width": 20,
+                "height": 40,
+                "paint": {
+                    "randomizedCharacterImage": {
+                        "headIndex": 0,
+                        "chestIndex": 0,
+                        "legsIndex": 0,
+                        "skinColor": "blue",
+                        "clothColor": "black"
+                    }
+                },
+                "moveSpeed": 2,
+                "moveDirection": 0,
+                "isMoving": false,
+                "hp": 200,
+                "maxHp": 200,
+                "faction": "player",
+                "experienceWorth": 1,
+                "type": "abilityLevelingCharacter",
+                "isDead": false,
+                "abilities": [
+                    {
+                        "id": 12883,
+                        "name": "Snipe",
+                        "baseDamage": 700,
+                        "passive": false,
+                        "playerInputBinding": "ability1",
+                        "baseRechargeTime": 1000,
+                        "currentCharges": 9,
+                        "maxCharges": 9,
+                        "reloadTime": -1,
+                        "baseRange": 870,
+                        "shotFrequencyTimeDecreaseFaktor": 2.05,
+                        "size": 5,
+                        "paintFadeDuration": 500,
+                        "upgrades": {},
+                        "maxShootFrequency": 1000,
+                        "shotNextAllowedTime": false,
+                        "nextAllowedShotTime": 0,
+                        "lastSniperRiflePaintDirection": -0.6608436370690802,
+                        "maxMagazineSize": 99,
+                        "minimumShotFrequency": 100,
+                        "tradable": true,
+                        "leveling": {
+                            "experience": 12,
+                            "experienceForLevelUp": 145,
+                            "level": 7
+                        },
+                        "bossSkillPoints": 0
+                    },
+                    {
+                        "id": 12884,
+                        "name": "HP Regen",
+                        "amount": 1,
+                        "tickInterval": 500,
+                        "passive": true,
+                        "upgrades": {},
+                        "nextIntervalTick": 48020
+                    },
+                    {
+                        "name": "SpeedBoost",
+                        "speedFactor": 1.5,
+                        "cooldown": 18000,
+                        "cooldownFinishTime": 0,
+                        "duration": 3000,
+                        "playerInputBinding": "ability2",
+                        "id": 12885,
+                        "passive": false,
+                        "upgrades": {},
+                        "tradable": true,
+                        "leveling": {
+                            "experience": 0,
+                            "experienceForLevelUp": 10,
+                            "level": 1
+                        },
+                        "bossSkillPoints": 0
+                    },
+                    {
+                        "id": 15960,
+                        "name": "Leash",
+                        "leashMaxLength": 100,
+                        "passive": true,
+                        "leashBendPoints": [],
+                        "upgrades": {}
+                    }
+                ],
+                "debuffs": [],
+                "upgradeChoices": [],
+                "weight": 800,
+                "isRooted": false,
+                "willTurnToPetOnDeath": true,
+                "isPet": false,
+                "characterClass": "Sniper",
+                "isUnMoveAble": true
+            },
+            {
+                "id": 26943,
+                "x": 100,
+                "y": 180,
+                "width": 20,
+                "height": 40,
+                "paint": {
+                    "randomizedCharacterImage": {
+                        "headIndex": 2,
+                        "chestIndex": 0,
+                        "legsIndex": 1,
+                        "skinColor": "red",
+                        "clothColor": "red"
+                    }
+                },
+                "moveSpeed": 2,
+                "moveDirection": 0,
+                "isMoving": false,
+                "hp": 200,
+                "maxHp": 200,
+                "faction": "player",
+                "experienceWorth": 1,
+                "type": "abilityLevelingCharacter",
+                "isDead": false,
+                "abilities": [
+                    {
+                        "id": 25747,
+                        "name": "Snipe",
+                        "baseDamage": 400,
+                        "passive": false,
+                        "playerInputBinding": "ability1",
+                        "baseRechargeTime": 1000,
+                        "currentCharges": 1,
+                        "maxCharges": 6,
+                        "reloadTime": -1,
+                        "baseRange": 840,
+                        "shotFrequencyTimeDecreaseFaktor": 1.6,
+                        "size": 5,
+                        "paintFadeDuration": 500,
+                        "upgrades": {},
+                        "maxShootFrequency": 1000,
+                        "shotNextAllowedTime": false,
+                        "nextAllowedShotTime": 0,
+                        "lastSniperRiflePaintDirection": -0.3707005340620033,
+                        "maxMagazineSize": 99,
+                        "minimumShotFrequency": 100,
+                        "tradable": true,
+                        "leveling": {
+                            "experience": 24,
+                            "experienceForLevelUp": 55,
+                            "level": 4
+                        },
+                        "bossSkillPoints": 0
+                    },
+                    {
+                        "id": 25748,
+                        "name": "HP Regen",
+                        "amount": 1,
+                        "tickInterval": 500,
+                        "passive": true,
+                        "upgrades": {},
+                        "nextIntervalTick": 48276
+                    },
+                    {
+                        "name": "SpeedBoost",
+                        "speedFactor": 1.5,
+                        "cooldown": 18000,
+                        "cooldownFinishTime": 0,
+                        "duration": 3000,
+                        "playerInputBinding": "ability2",
+                        "id": 25749,
+                        "passive": false,
+                        "upgrades": {},
+                        "tradable": true,
+                        "leveling": {
+                            "experience": 0,
+                            "experienceForLevelUp": 10,
+                            "level": 1
+                        },
+                        "bossSkillPoints": 0
+                    },
+                    {
+                        "id": 26942,
+                        "name": "Leash",
+                        "leashMaxLength": 100,
+                        "passive": true,
+                        "leashBendPoints": [],
+                        "upgrades": {}
+                    }
+                ],
+                "debuffs": [],
+                "upgradeChoices": [],
+                "weight": 800,
+                "isRooted": false,
+                "willTurnToPetOnDeath": true,
+                "isPet": false,
+                "characterClass": "Sniper",
+                "isUnMoveAble": true
+            }
+        ],
+        "maxNumber": 12
+    },
     "gameEndAsserts": [
         {
             "type": "score",
-            "data": 919
+            "data": 1527
         },
         {
             "type": "killCounter",
-            "data": 33
+            "data": 177
         }
     ]
 }

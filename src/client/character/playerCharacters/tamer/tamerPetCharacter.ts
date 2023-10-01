@@ -316,6 +316,12 @@ export function changeTamerPetHappines(pet: TamerPetCharacter, value: number, ti
         pet.happines.current = pet.happines.hyperactiveAt - 1;
     }
     if (visualizeChange) pet.happines.visualizations.push({ happy: value > 0, displayUntil: time + 500 });
+    for(let i = pet.happines.visualizations.length - 1; i >= 0; i--){
+        if(pet.happines.visualizations[i].displayUntil < time){
+            pet.happines.visualizations.splice(i,1);
+        }
+    }
+
     if (pet.happines.current < 0) pet.happines.current = 0;
     if (pet.happines.current > MAX_HAPPINES) pet.happines.current = MAX_HAPPINES;
     if (pet.happines.current < pet.happines.unhappyAt) {
