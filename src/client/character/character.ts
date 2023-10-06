@@ -1,5 +1,5 @@
 import { levelingCharacterXpGain } from "./playerCharacters/levelingCharacter.js";
-import { calculateMovePosition, determineMapKeysInDistance, GameMap, getChunksTouchingLine, isPositionBlocking, MapChunk, positionToMapKey } from "../map/map.js";
+import { calculateMovePosition, chunkXYToMapKey, determineMapKeysInDistance, GameMap, getChunksTouchingLine, isPositionBlocking, MapChunk, positionToMapKey } from "../map/map.js";
 import { Character, CHARACTER_TYPE_FUNCTIONS, DEFAULT_CHARACTER } from "./characterModel.js";
 import { getNextWaypoint, getPathingCache, PathingCache } from "./pathing.js";
 import { calculateDirection, calculateDistance, calculateDistancePointToLine, createPaintTextData, endGame, takeTimeMeasure } from "../game.js";
@@ -494,13 +494,13 @@ function tickCharacterPets(character: Character, game: Game, pathingCache: Pathi
 }
 
 function mapCharacterCheckForChunkChange(character: Character, map: GameMap, newX: number, newY: number) {
-    let currentChunkI = Math.floor(character.y / (map.tileSize * map.chunkLength));
-    let newChunkI = Math.floor(newY / (map.tileSize * map.chunkLength));
-    let currentChunkJ = Math.floor(character.x / (map.tileSize * map.chunkLength));
-    let newChunkJ = Math.floor(newX / (map.tileSize * map.chunkLength));
-    if (currentChunkI !== newChunkI || currentChunkJ !== newChunkJ) {
-        let currentChunkKey = `${currentChunkI}_${currentChunkJ}`;
-        let newChunkKey = `${newChunkI}_${newChunkJ}`;
+    let currentChunkY = Math.floor(character.y / (map.tileSize * map.chunkLength));
+    let newChunkY = Math.floor(newY / (map.tileSize * map.chunkLength));
+    let currentChunkX = Math.floor(character.x / (map.tileSize * map.chunkLength));
+    let newChunkX = Math.floor(newX / (map.tileSize * map.chunkLength));
+    if (currentChunkY !== newChunkY || currentChunkX !== newChunkX) {
+        let currentChunkKey = chunkXYToMapKey(currentChunkX, currentChunkY);
+        let newChunkKey = chunkXYToMapKey(newChunkX, newChunkY);
         map.chunks[currentChunkKey].characters = map.chunks[currentChunkKey].characters.filter(el => el !== character);
         map.chunks[newChunkKey].characters.push(character);
     }

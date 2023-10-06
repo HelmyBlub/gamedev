@@ -1,6 +1,6 @@
 import { paintCharacters } from "../character/characterPaint.js";
 import { Debugging, Game, MapChunkPaintCache, Position } from "../gameModel.js";
-import { GameMap, getTileIdForTileName, MapChunk, TILE_VALUES } from "./map.js";
+import { chunkXYToMapKey, GameMap, getTileIdForTileName, MapChunk, TILE_VALUES } from "./map.js";
 import { paintMapChunkObjects } from "./mapObjects.js";
 
 export type MapPaintLayer = "Layer1" | "Layer2";
@@ -11,22 +11,22 @@ export function paintMap(layer: MapPaintLayer, ctx: CanvasRenderingContext2D, ca
     let height = ctx.canvas.height;
     let startX = (cameraPosition.x - width / 2);
     let startY = (cameraPosition.y - height / 2);
-    let startChunkI = Math.floor(startY / chunkSize);
-    let startChunkJ = Math.floor(startX / chunkSize);
+    let startChunkX = Math.floor(startX / chunkSize);
+    let startChunkY = Math.floor(startY / chunkSize);
 
-    for (let i = 0; i < Math.ceil(height / chunkSize) + 1; i++) {
-        let chunkI = startChunkI + i;
-        for (let j = 0; j < Math.ceil(width / chunkSize) + 1; j++) {
-            let chunkJ = startChunkJ + j;
-            let chunkKey = `${chunkI}_${chunkJ}`;
+    for (let chunkYIndex = 0; chunkYIndex < Math.ceil(height / chunkSize) + 1; chunkYIndex++) {
+        let chunkY = startChunkY + chunkYIndex;
+        for (let chunkXIndex = 0; chunkXIndex < Math.ceil(width / chunkSize) + 1; chunkXIndex++) {
+            let chunkX = startChunkX + chunkXIndex;
+            let chunkKey = chunkXYToMapKey(chunkX, chunkY);
             let chunk = map.chunks[chunkKey];
             if (chunk === undefined) {
                 if(game.state.time > 1000) console.log("missing chunk creation", chunkKey);
                 continue;
             }
-            let x = chunkJ * chunkSize - startX;
-            let y = chunkI * chunkSize - startY;
-            paintChunk(layer, ctx, { x, y }, chunk, map.tileSize, { x: chunkJ, y: chunkI }, mapChunkPaintCache, game, debug);
+            let x = chunkX * chunkSize - startX;
+            let y = chunkY * chunkSize - startY;
+            paintChunk(layer, ctx, { x, y }, chunk, map.tileSize, { x: chunkX, y: chunkY }, mapChunkPaintCache, game, debug);
             if (debug?.paintMarkActiveChunks && layer === "Layer2") {
                 if (map.activeChunkKeys.indexOf(chunkKey) > -1) {
                     ctx.lineWidth = 1;
@@ -47,25 +47,25 @@ export function paintMapCharacters(ctx: CanvasRenderingContext2D, cameraPosition
     let height = ctx.canvas.height;
     let startX = (cameraPosition.x - width / 2);
     let startY = (cameraPosition.y - height / 2);
-    let startChunkI = Math.floor(startY / chunkSize);
-    let startChunkJ = Math.floor(startX / chunkSize);
+    let startChunkX = Math.floor(startX / chunkSize);
+    let startChunkY = Math.floor(startY / chunkSize);
 
-    for (let i = 0; i < Math.ceil(height / chunkSize) + 1; i++) {
-        let chunkI = startChunkI + i;
-        for (let j = 0; j < Math.ceil(width / chunkSize) + 1; j++) {
-            let chunkJ = startChunkJ + j;
-            let chunk = map.chunks[`${chunkI}_${chunkJ}`];
+    for (let chunkYIndex = 0; chunkYIndex < Math.ceil(height / chunkSize) + 1; chunkYIndex++) {
+        let chunkY = startChunkY + chunkYIndex;
+        for (let chunkXIndex = 0; chunkXIndex < Math.ceil(width / chunkSize) + 1; chunkXIndex++) {
+            let chunkX = startChunkX + chunkXIndex;
+            let chunk = map.chunks[chunkXYToMapKey(chunkX, chunkY)];
             if (chunk === undefined) continue;
             paintCharacters(ctx, chunk.characters, cameraPosition, game);
         }
     }
 }
 
-function paintChunk(layer: MapPaintLayer, ctx: CanvasRenderingContext2D, paintTopLeftPosition: Position, chunk: MapChunk, tileSize: number, chunkIJ: Position, mapChunkPaintCache: MapChunkPaintCache, game: Game, debug: Debugging | undefined) {
+function paintChunk(layer: MapPaintLayer, ctx: CanvasRenderingContext2D, paintTopLeftPosition: Position, chunk: MapChunk, tileSize: number, chunkXY: Position, mapChunkPaintCache: MapChunkPaintCache, game: Game, debug: Debugging | undefined) {
     let chunkSize = tileSize * chunk.tiles.length;
-    let chunkKey = `${chunkIJ.y}_${chunkIJ.x}_${layer}`;
+    let chunkLayerKey = `${chunkXY.x}_${chunkXY.y}_${layer}`;
     let readyForCache = true;
-    if (mapChunkPaintCache[chunkKey] === undefined) {
+    if (mapChunkPaintCache[chunkLayerKey] === undefined) {
         let canvas = document.createElement('canvas');
         canvas.width = chunkSize;
         canvas.height = chunkSize;
@@ -78,15 +78,15 @@ function paintChunk(layer: MapPaintLayer, ctx: CanvasRenderingContext2D, paintTo
                 if (debug?.paintTileXYNumbers && layer === "Layer2") {
                     cacheCtx.fillStyle = "black";
                     cacheCtx.font = "8px Arial";
-                    cacheCtx.fillText((chunkIJ.x * chunk.tiles.length + tileX) + "_" + (chunkIJ.y * chunk.tiles.length + tileY), x, y + 10);
+                    cacheCtx.fillText((chunkXY.x * chunk.tiles.length + tileX) + "_" + (chunkXY.y * chunk.tiles.length + tileY), x, y + 10);
                 }
                 readyForCache = readyForCache && tileReady;
             }
         }
-        if (readyForCache) mapChunkPaintCache[chunkKey] = cacheCtx;
+        if (readyForCache) mapChunkPaintCache[chunkLayerKey] = cacheCtx;
     }
     if (readyForCache) {
-        ctx.drawImage(mapChunkPaintCache[chunkKey].canvas, paintTopLeftPosition.x, paintTopLeftPosition.y);
+        ctx.drawImage(mapChunkPaintCache[chunkLayerKey].canvas, paintTopLeftPosition.x, paintTopLeftPosition.y);
         if(chunk.objects.length > 0 && layer === "Layer2"){
             paintMapChunkObjects(ctx, chunk, paintTopLeftPosition, game);
         }

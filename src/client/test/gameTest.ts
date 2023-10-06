@@ -3,7 +3,7 @@ import { CommandRestart, handleCommand } from "../commands.js";
 import { changeCharacterAndAbilityIds, closeGame } from "../game.js";
 import { CelestialDirection, FACTION_ENEMY, FACTION_PLAYER, Game, NextEndbosses, Position, setDefaultNextEndbosses } from "../gameModel.js";
 import { createGame } from "../main.js";
-import { addEnemyToMap, createMap, GameMap } from "../map/map.js";
+import { addEnemyToMap, chunkXYToMapKey, createMap, GameMap } from "../map/map.js";
 import { createNewChunkTiles } from "../map/mapGeneration.js";
 import { websocketConnect } from "../multiplayerConenction.js";
 import { PlayerInput } from "../playerInput.js";
@@ -193,7 +193,7 @@ function testDetectProjectileToCharacterHitPerformance() {
     for (let i = 0; i < numberEnemies; i++) {
         let posX = nextRandom(randomSeed) * 10000;
         let posY = nextRandom(randomSeed) * 10000;
-        createNewChunk(map, Math.floor(posY / (map.tileSize * map.chunkLength)), Math.floor(posX / (map.tileSize * map.chunkLength)));
+        createNewChunk(map, Math.floor(posX / (map.tileSize * map.chunkLength)), Math.floor(posY / (map.tileSize * map.chunkLength)));
         addEnemyToMap(map, createTestCharacter(i, posX, posY));
     }
     for (let i = 0; i < numberProjectiles; i++) {
@@ -210,9 +210,9 @@ function testDetectProjectileToCharacterHitPerformance() {
     console.log("time", time / iterations, time);
 }
 
-function createNewChunk(map: GameMap, chunkI: number, chunkJ: number) {
-    let key = `${chunkI}_${chunkJ}`;
+function createNewChunk(map: GameMap, chunkX: number, chunkY: number) {
+    let key = chunkXYToMapKey(chunkX, chunkY);
     if (map.chunks[key] !== undefined) return;
-    let newChunk = createNewChunkTiles(map, chunkI, chunkJ, map.seed!);
+    let newChunk = createNewChunkTiles(map, chunkX, chunkY, map.seed!);
     map.chunks[key] = newChunk;
 }

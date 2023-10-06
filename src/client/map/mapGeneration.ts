@@ -2,7 +2,7 @@ import { createFixPositionRespawnEnemies } from "../character/enemy/fixPositionR
 import { takeTimeMeasure } from "../game.js";
 import { Game, IdCounter, Position } from "../gameModel.js";
 import { fixedRandom } from "../randomNumberGenerator.js";
-import { GameMap, MapChunk } from "./map.js";
+import { GameMap, MapChunk, chunkXYToMapKey } from "./map.js";
 import { mapGenerationEndBossChunkStuff } from "./mapEndBossArea.js";
 import { MAP_OBJECT_FIRE_ANIMATION } from "./mapObjectFireAnimation.js";
 
@@ -29,17 +29,17 @@ export function generateMissingChunks(map: GameMap, positions: Position[], idCou
     for (const position of positions) {
         let startX = (position.x - generationRadius);
         let startY = (position.y - generationRadius);
-        let startChunkI = Math.floor(startY / chunkSize);
-        let startChunkJ = Math.floor(startX / chunkSize);
+        let startChunkY = Math.floor(startY / chunkSize);
+        let startChunkX = Math.floor(startX / chunkSize);
 
         for (let i = 0; i < Math.ceil(generationRadius / chunkSize * 2); i++) {
-            let chunkI = startChunkI + i;
+            let chunkY = startChunkY + i;
             for (let j = 0; j < Math.ceil(generationRadius / chunkSize * 2); j++) {
-                let chunkJ = startChunkJ + j;
-                let chunk = map.chunks[`${chunkI}_${chunkJ}`];
+                let chunkX = startChunkX + j;
+                let chunk = map.chunks[`${chunkY}_${chunkX}`];
                 if (chunk === undefined) {
-                    chunk = createNewChunk(map, chunkI, chunkJ, idCounter);
-                    map.chunks[`${chunkI}_${chunkJ}`] = chunk;
+                    chunk = createNewChunk(map, chunkX, chunkY, idCounter);
+                    map.chunks[`${chunkY}_${chunkX}`] = chunk;
                 }
             }
         }
@@ -47,25 +47,25 @@ export function generateMissingChunks(map: GameMap, positions: Position[], idCou
     takeTimeMeasure(game.debug, "generateMissingChunks", "");
 }
 
-export function createNewChunk(map: GameMap, chunkI: number, chunkJ: number, idCounter: IdCounter): MapChunk {
-    let newChunk = createNewChunkTiles(map, chunkI, chunkJ, map.seed!);
-    map.chunks[`${chunkI}_${chunkJ}`] = newChunk;
-    createFixPositionRespawnEnemies(newChunk, chunkI, chunkJ, map, idCounter);
+export function createNewChunk(map: GameMap, chunkX: number, chunkY: number, idCounter: IdCounter): MapChunk {
+    let newChunk = createNewChunkTiles(map, chunkX, chunkY, map.seed!);
+    map.chunks[chunkXYToMapKey(chunkX, chunkY)] = newChunk;
+    createFixPositionRespawnEnemies(newChunk, chunkX, chunkY, map, idCounter);
     return newChunk;
 }
 
-export function createNewChunkTiles(map: GameMap, chunkI: number, chunkJ: number, seed: number): MapChunk {
+export function createNewChunkTiles(map: GameMap, chunkX: number, chunkY: number, seed: number): MapChunk {
     const tiles: number[][] = [];
     const mapChunk: MapChunk = { tiles: tiles, characters: [], objects: [] };
     const chunkLength = map.chunkLength;
-    if (chunkI === 0 && chunkJ === 0) {
+    if (chunkY === 0 && chunkX === 0) {
         createSpawnChunk(mapChunk, chunkLength);
     } else {
         for (let tileX = 0; tileX < chunkLength; tileX++) {
             tiles.push([]);
             for (let tileY = 0; tileY < chunkLength; tileY++) {
-                let px = (chunkJ * chunkLength + tileX) / chunkLength;
-                let py = (chunkI * chunkLength + tileY) / chunkLength;
+                let px = (chunkX * chunkLength + tileX) / chunkLength;
+                let py = (chunkY * chunkLength + tileY) / chunkLength;
 
                 let isTree = perlin_get(px, py, seed);
                 let isStone = perlin_get(px + 1024, py + 1024, seed);
@@ -80,7 +80,7 @@ export function createNewChunkTiles(map: GameMap, chunkI: number, chunkJ: number
                 tiles[tileX].push(randomTileId);
             }
         }
-        mapGenerationEndBossChunkStuff(mapChunk, map, chunkI, chunkJ);
+        mapGenerationEndBossChunkStuff(mapChunk, map, chunkY, chunkX);
     }
     return mapChunk;
 }

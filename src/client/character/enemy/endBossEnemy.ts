@@ -9,7 +9,7 @@ import { deepCopy, getNextId, saveCharacterAsPastCharacter } from "../../game.js
 import { IdCounter, Game, Position, FACTION_ENEMY, LOCALSTORAGE_NEXTENDBOSSES } from "../../gameModel.js";
 import { GAME_IMAGES, getImage } from "../../imageLoad.js";
 import { changeTileIdOfMapChunk } from "../../map/map.js";
-import { getBossAreaMiddlePosition, getEntranceChunkIJAndTileXYForPosition } from "../../map/mapEndBossArea.js";
+import { getBossAreaMiddlePosition, getEntranceChunkAndTileXYForPosition } from "../../map/mapEndBossArea.js";
 import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick, resetCharacter } from "../character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, createCharacter } from "../characterModel.js";
 import { paintCharacterDefault, paintCharatersPets } from "../characterPaint.js";
@@ -62,9 +62,9 @@ export function setPlayerAsEndBoss(game: Game) {
 }
 
 export function startEndBoss(endBossAreaPosition: Position, game: Game) {
-    let entrance = getEntranceChunkIJAndTileXYForPosition(game.state.players[0].character, game.state.map);
+    let entrance = getEntranceChunkAndTileXYForPosition(game.state.players[0].character, game.state.map);
     if (entrance) {
-        changeTileIdOfMapChunk(entrance.chunkI, entrance.chunkJ, entrance.tileX, entrance.tileY, 2, game);
+        changeTileIdOfMapChunk(entrance.chunkY, entrance.chunkX, entrance.tileX, entrance.tileY, 2, game);
         let spawn: Position = getBossAreaMiddlePosition(endBossAreaPosition, game.state.map)!;
         let endBoss: Character;
         const celestialDirection = getCelestialDirection(spawn);

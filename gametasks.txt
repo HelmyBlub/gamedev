@@ -1,5 +1,5 @@
 current tasks:
-- whats up with i/j vs x/y and chunkIJ tileIJ naming?
+- whats up with i/j vs x/y and chunkIJ naming?
 - refactoring
 - balancing
 

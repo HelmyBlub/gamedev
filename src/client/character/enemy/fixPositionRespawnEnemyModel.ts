@@ -1,7 +1,7 @@
 import { createAbilityMelee } from "../../ability/abilityMelee.js"
 import { calculateDistance, getNextId } from "../../game.js"
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../gameModel.js"
-import { MapChunk, GameMap, isPositionBlocking, mapKeyToChunkIJ } from "../../map/map.js"
+import { MapChunk, GameMap, isPositionBlocking, mapKeyToChunkXY } from "../../map/map.js"
 import { fixedRandom } from "../../randomNumberGenerator.js"
 import { Character, IMAGE_SLIME, createCharacter } from "../characterModel.js"
 
@@ -61,15 +61,15 @@ export function createFixPositionRespawnEnemiesOnInit(game: Game) {
     for (let i = 0; i < existingMapKeys.length; i++) {
         let chunk = map.chunks[existingMapKeys[i]];
         if (chunk.characters.length === 0) {
-            let chunkIJ = mapKeyToChunkIJ(existingMapKeys[i]);
-            createFixPositionRespawnEnemies(chunk, chunkIJ.chunkI, chunkIJ.chunkJ, map, game.state.idCounter);
+            let chunkXY = mapKeyToChunkXY(existingMapKeys[i]);
+            createFixPositionRespawnEnemies(chunk, chunkXY.chunkX, chunkXY.chunkY, map, game.state.idCounter);
         }
     }
 }
 
-export function createFixPositionRespawnEnemies(chunk: MapChunk, chunkI: number, chunkJ: number, map: GameMap, idCounter: IdCounter) {
+export function createFixPositionRespawnEnemies(chunk: MapChunk, chunkX: number, chunkY: number, map: GameMap, idCounter: IdCounter) {
     if (chunk.characters.length > 0) {
-        console.log("unexpected existence of characers in mapChunk", chunk, chunkI, chunkJ);
+        console.log("unexpected existence of characers in mapChunk", chunk, chunkX, chunkY);
     }
     if(chunk.isEndBossAreaChunk) return;
     let chunkSize = map.tileSize * map.chunkLength;
@@ -77,8 +77,8 @@ export function createFixPositionRespawnEnemies(chunk: MapChunk, chunkI: number,
     let minSpawnDistanceFromMapCenter = 500;
 
     let topLeftMapKeyPos: Position = {
-        x: chunkJ * chunkSize,
-        y: chunkI * chunkSize
+        x: chunkX * chunkSize,
+        y: chunkY * chunkSize
     }
     let centerMapKeyPos: Position = {
         x: topLeftMapKeyPos.x + chunkSize / 2,
@@ -86,9 +86,9 @@ export function createFixPositionRespawnEnemies(chunk: MapChunk, chunkI: number,
     }
     let chunkDistance = calculateDistance(mapCenter, centerMapKeyPos);
     let enemyType: string;
-    if (chunkI > 0 && Math.abs(chunkI) >= Math.abs(chunkJ)) {
+    if (chunkY > 0 && Math.abs(chunkY) >= Math.abs(chunkX)) {
         enemyType = "big";
-    } else if (chunkI < 0 && Math.abs(chunkI) >= Math.abs(chunkJ)) {
+    } else if (chunkY < 0 && Math.abs(chunkY) >= Math.abs(chunkX)) {
         enemyType = "small";
     } else {
         enemyType = "default";
@@ -96,7 +96,7 @@ export function createFixPositionRespawnEnemies(chunk: MapChunk, chunkI: number,
     if (minSpawnDistanceFromMapCenter < chunkDistance + chunkSize) {
         for (let x = 0; x < chunk.tiles.length; x++) {
             for (let y = 0; y < chunk.tiles[x].length; y++) {
-                let spawnEnemy = fixedRandom(x + chunkI * chunk.tiles.length, y + chunkJ * chunk.tiles[x].length, map.seed!) / 256;
+                let spawnEnemy = fixedRandom(x + chunkX * chunk.tiles.length, y + chunkY * chunk.tiles[x].length, map.seed!) / 256;
                 if (spawnEnemy <= ENEMY_TYPES[enemyType].spawnAmountFactor) {
                     let enemyPos: Position = {
                         x: topLeftMapKeyPos.x + x * map.tileSize + map.tileSize / 2,

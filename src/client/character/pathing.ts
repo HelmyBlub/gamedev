@@ -188,15 +188,15 @@ function getPathNeighborsXY(pos: Position, map: GameMap, idCounter: IdCounter): 
 
 export function calculatePosToTileXY(pos: Position, map: GameMap): Position {
     let chunkSize = map.tileSize * map.chunkLength;
-    let startChunkI = Math.floor(pos.y / chunkSize);
-    let startChunkJ = Math.floor(pos.x / chunkSize);
+    let startChunkY = Math.floor(pos.y / chunkSize);
+    let startChunkX = Math.floor(pos.x / chunkSize);
     let tileY = Math.floor((pos.y / map.tileSize) % map.chunkLength);
     if (tileY < 0) tileY += map.chunkLength;
     let tileX = Math.floor((pos.x / map.tileSize) % map.chunkLength);
     if (tileX < 0) tileX += map.chunkLength;
 
     return {
-        x: startChunkJ * map.chunkLength + tileX,
-        y: startChunkI * map.chunkLength + tileY,
+        x: startChunkX * map.chunkLength + tileX,
+        y: startChunkY * map.chunkLength + tileY,
     };
 }
