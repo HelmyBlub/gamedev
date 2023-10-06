@@ -70,15 +70,15 @@ function paintChunk(layer: MapPaintLayer, ctx: CanvasRenderingContext2D, paintTo
         canvas.width = chunkSize;
         canvas.height = chunkSize;
         let cacheCtx: CanvasRenderingContext2D = canvas.getContext("2d")!;
-        for (let i = 0; i < chunk.tiles.length; i++) {
-            for (let j = 0; j < chunk.tiles[i].length; j++) {
-                let x = j * tileSize;
-                let y = i * tileSize;
-                let tileReady = paintTile(layer, cacheCtx, { x, y }, tileSize, chunk.tiles[i][j]);
-                if (debug?.paintTileIJNumbers && layer === "Layer2") {
+        for (let tileX = 0; tileX < chunk.tiles.length; tileX++) {
+            for (let tileY = 0; tileY < chunk.tiles[tileX].length; tileY++) {
+                let x = tileX * tileSize;
+                let y = tileY * tileSize;
+                let tileReady = paintTile(layer, cacheCtx, { x, y }, tileSize, chunk.tiles[tileX][tileY]);
+                if (debug?.paintTileXYNumbers && layer === "Layer2") {
                     cacheCtx.fillStyle = "black";
                     cacheCtx.font = "8px Arial";
-                    cacheCtx.fillText((chunkIJ.x * chunk.tiles.length + j) + "_" + (chunkIJ.y * chunk.tiles.length + i), x, y + 10);
+                    cacheCtx.fillText((chunkIJ.x * chunk.tiles.length + tileX) + "_" + (chunkIJ.y * chunk.tiles.length + tileY), x, y + 10);
                 }
                 readyForCache = readyForCache && tileReady;
             }

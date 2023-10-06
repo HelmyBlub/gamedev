@@ -73,7 +73,7 @@ export function gameInit(game: Game) {
     game.state.playerInputs = [];
     if (game.state.bossStuff.closedOfEndBossEntrance) {
         let entrance = game.state.bossStuff.closedOfEndBossEntrance;
-        changeTileIdOfMapChunk(entrance.chunkI, entrance.chunkJ, entrance.tileI, entrance.tileJ, entrance.tileId, game);
+        changeTileIdOfMapChunk(entrance.chunkI, entrance.chunkJ, entrance.tileX, entrance.tileY, entrance.tileId, game);
     }
     game.state.bossStuff.bosses = [];
     game.state.bossStuff.bossLevelCounter = 1;
@@ -403,13 +403,13 @@ export function saveCharacterAsPastCharacter(character: Character, game: Game) {
         if (!pastCharacter) continue;
         if (pastCharactersMapTilePositions.length > i) {
             const nextTileInfo = pastCharactersMapTilePositions[i];
-            pastCharacter.x = nextTileInfo.j * 40 + 20;
-            pastCharacter.y = nextTileInfo.i * 40 + 20;
+            pastCharacter.x = nextTileInfo.x * 40 + 20;
+            pastCharacter.y = nextTileInfo.y * 40 + 20;
             pastCharacter.moveDirection = nextTileInfo.lookDirection;
             if (pastCharacter.pets) {
                 for (let pet of pastCharacter.pets) {
-                    pet.x = nextTileInfo.j * 40 + 20;
-                    pet.y = nextTileInfo.i * 40 + 20;
+                    pet.x = nextTileInfo.x * 40 + 20;
+                    pet.y = nextTileInfo.y * 40 + 20;
                 }
             }
         } else {

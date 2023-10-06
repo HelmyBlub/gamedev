@@ -1,15 +1,15 @@
 import { getPlayerCharacters } from "../character/character.js";
 import { startEndBoss } from "../character/enemy/endBossEnemy.js";
 import { Game, Position } from "../gameModel.js";
-import { positionToMapKey, positionToGameMapTileIJ, GameMapEndBossArea, GameMap, MapChunk, chunkIJToMapKey, positionToChunkIJ, changeTileIdOfMapChunk } from "./map.js";
+import { positionToMapKey, GameMapEndBossArea, GameMap, MapChunk, positionToChunkIJ } from "./map.js";
 import { MAP_OBJECT_END_BOSS_SIGN, MapTileObjectNextEndbossSign } from "./mapObjectSign.js";
 
-type TileData = { i: number, j: number, tileId: number };
+type TileData = { x: number, y: number, tileId: number };
 export type EndBossEntranceData = {
     chunkI: number,
     chunkJ: number,
-    tileI: number,
-    tileJ: number,
+    tileX: number,
+    tileY: number,
     tileId: number
 }
 
@@ -90,16 +90,16 @@ function endBossChunkArea(mapChunk: MapChunk, chunkLength: number, chunkI: numbe
                     }
                 }
             }
-            let entranceTile = getEntranceTileIJForBossChunkIJIfExists(chunkI, chunkJ, map);
+            let entranceTile = getEntranceTileXYForBossChunkIjIfExists(chunkI, chunkJ, map);
             if (entranceTile) {
-                tiles[entranceTile.i][entranceTile.j] = entranceTile.tileId;
+                tiles[entranceTile.x][entranceTile.y] = entranceTile.tileId;
             }
             return;
         }
     }
 }
 
-export function getEntranceChunkAndTileIJForPosition(position: Position, map: GameMap): EndBossEntranceData | undefined {
+export function getEntranceChunkIJAndTileXYForPosition(position: Position, map: GameMap): EndBossEntranceData | undefined {
     const chunkIJ = positionToChunkIJ(position, map);
     const area = map.endBossArea!;
     let tile: TileData | undefined;
@@ -120,33 +120,33 @@ export function getEntranceChunkAndTileIJForPosition(position: Position, map: Ga
             chunkI = -area.numberChunksUntil;
         }
     }
-    tile = getEntranceTileIJForBossChunkIJIfExists(chunkI, chunkJ, map);
+    tile = getEntranceTileXYForBossChunkIjIfExists(chunkI, chunkJ, map);
     if (tile) {
         return {
             chunkI,
             chunkJ,
-            tileI: tile.i,
-            tileJ: tile.j,
+            tileX: tile.x,
+            tileY: tile.y,
             tileId: tile.tileId,
         }
     }
     return undefined;
 }
 
-function getEntranceTileIJForBossChunkIJIfExists(chunkI: number, chunkJ: number, map: GameMap): TileData | undefined {
+function getEntranceTileXYForBossChunkIjIfExists(chunkI: number, chunkJ: number, map: GameMap): TileData | undefined {
     const pathChunkEnd = map.endBossArea!.numberChunksUntil;
     const chunkLength = map.chunkLength;
     if (chunkI === 0) {
         if (chunkJ == pathChunkEnd) {
-            return { i: Math.floor(chunkLength / 2), j: 0, tileId: 3 };
+            return { x: Math.floor(chunkLength / 2), y: 0, tileId: 3 };
         } else if (chunkJ == -pathChunkEnd) {
-            return { i: Math.floor(chunkLength / 2), j: chunkLength - 1, tileId: 3 };
+            return { x: Math.floor(chunkLength / 2), y: chunkLength - 1, tileId: 3 };
         }
     } else if (chunkJ == 0) {
         if (chunkI == pathChunkEnd) {
-            return { i: 0, j: Math.floor(chunkLength / 2), tileId: 4 };
+            return { x: 0, y: Math.floor(chunkLength / 2), tileId: 4 };
         } else if (chunkI == -pathChunkEnd) {
-            return { i: chunkLength - 1, j: Math.floor(chunkLength / 2), tileId: 4 };
+            return { x: chunkLength - 1, y: Math.floor(chunkLength / 2), tileId: 4 };
         }
     }
 
@@ -154,19 +154,19 @@ function getEntranceTileIJForBossChunkIJIfExists(chunkI: number, chunkJ: number,
 }
 
 function endBossPathForChunkTiles(mapChunk: MapChunk, chunkLength: number, chunkI: number, chunkJ: number, pathChunkEnd: number) {
-    const chunk: number[][] = mapChunk.tiles;
+    const tiles: number[][] = mapChunk.tiles;
     const pathChunkStart = 1;
     if (chunkI === 0 && Math.abs(chunkJ) >= pathChunkStart && Math.abs(chunkJ) <= pathChunkEnd) {
         if (Math.abs(chunkJ) < pathChunkEnd) {
-            for (let i = 0; i < chunkLength; i++) {
-                chunk[Math.floor(chunkLength / 2)][i] = 3;
+            for (let tileX = 0; tileX < chunkLength; tileX++) {
+                tiles[tileX][Math.floor(chunkLength / 2)] = 3;
             }
         }
     }
     if (chunkJ === 0 && Math.abs(chunkI) >= pathChunkStart && Math.abs(chunkI) <= pathChunkEnd) {
         if (Math.abs(chunkI) < pathChunkEnd) {
-            for (let i = 0; i < chunkLength; i++) {
-                chunk[i][Math.floor(chunkLength / 2)] = 4;
+            for (let tileY = 0; tileY < chunkLength; tileY++) {
+                tiles[Math.floor(chunkLength / 2)][tileY] = 4;
             }
         }
     }
@@ -177,48 +177,48 @@ function placeEndBossSignObjects(mapChunk: MapChunk, chunkLength: number, chunkI
     if (chunkI === 0) {
         if (chunkJ === pathChunkStart) {
             const sign: MapTileObjectNextEndbossSign = {
-                i: 0,
-                j: Math.floor(chunkLength / 2) - 1,
+                x: 0,
+                y: Math.floor(chunkLength / 2) - 1,
                 name: MAP_OBJECT_END_BOSS_SIGN,
                 endBossDirection: "east",
                 interactable: true,
             }
-            mapChunk.tiles[sign.j][sign.i] = 0;
+            mapChunk.tiles[sign.x][sign.y] = 0;
             mapChunk.objects.push(sign);
         }
         if (chunkJ === -pathChunkStart) {
             const sign: MapTileObjectNextEndbossSign = {
-                i: chunkLength - 1,
-                j: Math.floor(chunkLength / 2) - 1,
+                x: chunkLength - 1,
+                y: Math.floor(chunkLength / 2) - 1,
                 name: MAP_OBJECT_END_BOSS_SIGN,
                 endBossDirection: "west",
                 interactable: true,
             }
-            mapChunk.tiles[sign.j][sign.i] = 0;
+            mapChunk.tiles[sign.x][sign.y] = 0;
             mapChunk.objects.push(sign);
         }
     }
     if (chunkJ === 0) {
         if (chunkI === pathChunkStart) {
             const sign: MapTileObjectNextEndbossSign = {
-                i: Math.floor(chunkLength / 2) - 1,
-                j: 0,
+                x: Math.floor(chunkLength / 2) - 1,
+                y: 0,
                 name: MAP_OBJECT_END_BOSS_SIGN,
                 endBossDirection: "south",
                 interactable: true,
             }
-            mapChunk.tiles[sign.j][sign.i] = 0;
+            mapChunk.tiles[sign.x][sign.y] = 0;
             mapChunk.objects.push(sign);
         }
         if (chunkI === -pathChunkStart) {
             const sign: MapTileObjectNextEndbossSign = {
-                i: Math.floor(chunkLength / 2) - 1,
-                j: chunkLength - 1,
+                x: Math.floor(chunkLength / 2) - 1,
+                y: chunkLength - 1,
                 name: MAP_OBJECT_END_BOSS_SIGN,
                 endBossDirection: "north",
                 interactable: true,
             }
-            mapChunk.tiles[sign.j][sign.i] = 0;
+            mapChunk.tiles[sign.x][sign.y] = 0;
             mapChunk.objects.push(sign);
         }
     }

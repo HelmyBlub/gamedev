@@ -1,7 +1,7 @@
-import { calculatePosToTileIJ } from "../character/pathing.js";
+import { calculatePosToTileXY } from "../character/pathing.js";
 import { calculateDistance } from "../game.js";
 import { Position, Game } from "../gameModel.js";
-import { GameMap, MapChunk, determineMapKeysInDistance, mapKeyAndTileIjToPosition } from "./map.js";
+import { GameMap, MapChunk, determineMapKeysInDistance, mapKeyAndTileXYToPosition } from "./map.js";
 import { addMapObjectFireAnimation } from "./mapObjectFireAnimation.js";
 import { addMapObjectBossSign } from "./mapObjectSign.js";
 
@@ -15,8 +15,8 @@ export type MapObjectsFunctions = {
 }
 
 export type MapTileObject = {
-    i: number,
-    j: number,
+    x: number,
+    y: number,
     name: string,
     interactable?: boolean,
 }
@@ -37,7 +37,7 @@ export function findNearesInteractableMapChunkObject(position: Position, game: G
         const mapChunk = map.chunks[key];
         for(let object of mapChunk.objects){
             if(object.interactable){
-                const objectPosition = mapKeyAndTileIjToPosition(key, object.i, object.j, game.state.map);
+                const objectPosition = mapKeyAndTileXYToPosition(key, object.x, object.y, game.state.map);
                 const distance = calculateDistance(objectPosition, position);
                 if(distance < maxDistance && (!mapTileObject || distance < minDistance)){
                     mapTileObject = object;

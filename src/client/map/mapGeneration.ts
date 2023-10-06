@@ -5,21 +5,20 @@ import { fixedRandom } from "../randomNumberGenerator.js";
 import { GameMap, MapChunk } from "./map.js";
 import { mapGenerationEndBossChunkStuff } from "./mapEndBossArea.js";
 import { MAP_OBJECT_FIRE_ANIMATION } from "./mapObjectFireAnimation.js";
-import { MAP_OBJECT_END_BOSS_SIGN } from "./mapObjectSign.js";
 
 export const pastCharactersMapTilePositions = [
-    {i:2, j:3, tileId: 5, lookDirection: Math.PI / 2},
-    {i:2, j:4, tileId: 5, lookDirection: Math.PI / 2},
-    {i:2, j:5, tileId: 5, lookDirection: Math.PI / 2},
-    {i:6, j:3, tileId: 5, lookDirection: Math.PI / 2 * 3},
-    {i:6, j:4, tileId: 5, lookDirection: Math.PI / 2 * 3},
-    {i:6, j:5, tileId: 5, lookDirection: Math.PI / 2 * 3},
-    {i:3, j:2, tileId: 6, lookDirection: 0},
-    {i:4, j:2, tileId: 6, lookDirection: 0},
-    {i:5, j:2, tileId: 6, lookDirection: 0},
-    {i:3, j:6, tileId: 6, lookDirection: Math.PI},
-    {i:4, j:6, tileId: 6, lookDirection: Math.PI},
-    {i:5, j:6, tileId: 6, lookDirection: Math.PI},
+    {x:3, y:2, tileId: 5, lookDirection: 0},
+    {x:4, y:2, tileId: 5, lookDirection: 0},
+    {x:5, y:2, tileId: 5, lookDirection: 0},
+    {x:3, y:6, tileId: 5, lookDirection: Math.PI},
+    {x:4, y:6, tileId: 5, lookDirection: Math.PI},
+    {x:5, y:6, tileId: 5, lookDirection: Math.PI},
+    {x:2, y:3, tileId: 6, lookDirection: Math.PI / 2},
+    {x:2, y:4, tileId: 6, lookDirection: Math.PI / 2},
+    {x:2, y:5, tileId: 6, lookDirection: Math.PI / 2},
+    {x:6, y:3, tileId: 6, lookDirection: Math.PI / 2 * 3},
+    {x:6, y:4, tileId: 6, lookDirection: Math.PI / 2 * 3},
+    {x:6, y:5, tileId: 6, lookDirection: Math.PI / 2 * 3},
 ]
 export function generateMissingChunks(map: GameMap, positions: Position[], idCounter: IdCounter, game: Game) {
     takeTimeMeasure(game.debug, "", "generateMissingChunks");
@@ -56,17 +55,17 @@ export function createNewChunk(map: GameMap, chunkI: number, chunkJ: number, idC
 }
 
 export function createNewChunkTiles(map: GameMap, chunkI: number, chunkJ: number, seed: number): MapChunk {
-    const chunk: number[][] = [];
-    const mapChunk: MapChunk = { tiles: chunk, characters: [], objects: [] };
+    const tiles: number[][] = [];
+    const mapChunk: MapChunk = { tiles: tiles, characters: [], objects: [] };
     const chunkLength = map.chunkLength;
     if (chunkI === 0 && chunkJ === 0) {
         createSpawnChunk(mapChunk, chunkLength);
     } else {
-        for (let i = 0; i < chunkLength; i++) {
-            chunk.push([]);
-            for (let j = 0; j < chunkLength; j++) {
-                let px = (chunkI * chunkLength + i) / chunkLength;
-                let py = (chunkJ * chunkLength + j) / chunkLength;
+        for (let tileX = 0; tileX < chunkLength; tileX++) {
+            tiles.push([]);
+            for (let tileY = 0; tileY < chunkLength; tileY++) {
+                let px = (chunkJ * chunkLength + tileX) / chunkLength;
+                let py = (chunkI * chunkLength + tileY) / chunkLength;
 
                 let isTree = perlin_get(px, py, seed);
                 let isStone = perlin_get(px + 1024, py + 1024, seed);
@@ -78,7 +77,7 @@ export function createNewChunkTiles(map: GameMap, chunkI: number, chunkJ: number
                 } else {
                     randomTileId = 0;
                 }
-                chunk[i].push(randomTileId);
+                tiles[tileX].push(randomTileId);
             }
         }
         mapGenerationEndBossChunkStuff(mapChunk, map, chunkI, chunkJ);
@@ -89,8 +88,8 @@ export function createNewChunkTiles(map: GameMap, chunkI: number, chunkJ: number
 function createSpawnChunk(mapChunk: MapChunk, chunkLength: number){
     const chunk = mapChunk.tiles;
     mapChunk.objects.push({
-        i: 4,
-        j: 4,
+        x: 4,
+        y: 4,
         name: MAP_OBJECT_FIRE_ANIMATION,
     });
     for (let i = 0; i < chunkLength; i++) {
@@ -100,7 +99,7 @@ function createSpawnChunk(mapChunk: MapChunk, chunkLength: number){
         }
     }
     for(let iter of pastCharactersMapTilePositions){
-        chunk[iter.i][iter.j] = iter.tileId;
+        chunk[iter.x][iter.y] = iter.tileId;
     }
     chunk[4][4] = 7;
 }

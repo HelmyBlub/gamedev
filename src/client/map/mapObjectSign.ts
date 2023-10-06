@@ -6,7 +6,7 @@ import { deepCopy, getCameraPosition } from "../game.js";
 import { CelestialDirection, Game, Position } from "../gameModel.js";
 import { getPointPaintPosition, paintTextWithOutline } from "../gamePaint.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
-import { mapKeyAndTileIjToPosition } from "./map.js";
+import { mapKeyAndTileXYToPosition } from "./map.js";
 import { MAP_OBJECTS_FUNCTIONS, MapTileObject, findMapKeyForMapObject } from "./mapObjects.js";
 
 export type MapTileObjectNextEndbossSign = MapTileObject & {
@@ -35,7 +35,7 @@ function paintInteractSign(ctx: CanvasRenderingContext2D, mapObject: MapTileObje
     const endBossSign = mapObject as MapTileObjectNextEndbossSign;
     const map = game.state.map;
     const cameraPosition = getCameraPosition(game);
-    let topMiddlePos = mapKeyAndTileIjToPosition(key, mapObject.i, mapObject.j, map);
+    let topMiddlePos = mapKeyAndTileXYToPosition(key, mapObject.x, mapObject.y, map);
     const fontSize = 20;
     let texts = [
         `King of the ${endBossSign.endBossDirection}`,
@@ -91,8 +91,8 @@ function paintEndBossSign(ctx: CanvasRenderingContext2D, mapObject: MapTileObjec
     const signImage = GAME_IMAGES[IMAGE_SIGN];
     loadImage(signImage);
     if (signImage.imageRef?.complete) {
-        const paintX = paintTopLeft.x + mapObject.i * tileSize;
-        const paintY = paintTopLeft.y + mapObject.j * tileSize;
+        const paintX = paintTopLeft.x + mapObject.x * tileSize;
+        const paintY = paintTopLeft.y + mapObject.y * tileSize;
         const spriteWidth = signImage.spriteRowWidths[0];
         const spriteHeight = signImage.spriteRowHeights[0];
         switch (endBossSign.endBossDirection) {

@@ -8,7 +8,7 @@ export function addHTMLDebugMenusToSettings(game: Game) {
     let settingsElement = document.getElementById("settings");
     if (!settingsElement) return;
     addSettingCheckbox("takeTimeMeasures", game);
-    addSettingCheckbox("paintTileIJNumbers", game);
+    addSettingCheckbox("paintTileXYNumbers", game);
     addSettingCheckbox("paintMarkActiveChunks", game);
     addBossSkillPointButton(game);
     addCloseBossAreaButton(game);

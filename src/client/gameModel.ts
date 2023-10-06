@@ -63,7 +63,7 @@ export type TestingStuff = {
 
 export type Debugging = {
     paintMarkActiveChunks?: boolean,
-    paintTileIJNumbers?: boolean,
+    paintTileXYNumbers?: boolean,
     takeTimeMeasures?: boolean,
     timeMeasuresData?: { name: string, timeMeasures: number[], tempTime: number }[],
 }

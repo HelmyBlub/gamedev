@@ -1,7 +1,7 @@
 import { IdCounter, Position } from "../../gameModel.js";
 import { createMap, findNearNonBlockingPosition, GameMap } from "../../map/map.js";
 import { nextRandom, RandomSeed } from "../../randomNumberGenerator.js";
-import { calculatePosToTileIJ, getNextWaypoint, PathingCache, PathingCacheIJ, tileIjToPathingCacheKey } from "../pathing.js";
+import { calculatePosToTileXY, getNextWaypoint, PathingCache, PathingCacheXY, tileXyToPathingCacheKey } from "../pathing.js";
 
 export function testPathing(ctx: CanvasRenderingContext2D | undefined = undefined) {
     console.log("started test");
@@ -50,7 +50,7 @@ function testPathingPerformanceCacheNotChangingResults(ctx: CanvasRenderingConte
     let height = 12 * map.tileSize;
     let pathingCache: PathingCache = {};
     let idCounter = { nextId: 0 };
-    let resultMap: Map<string, { pos: Position | null, pathingCacheIJ: PathingCacheIJ }> = new Map<string, { pos: Position | null, pathingCacheIJ: PathingCacheIJ }>();
+    let resultMap: Map<string, { pos: Position | null, pathingCacheIJ: PathingCacheXY }> = new Map<string, { pos: Position | null, pathingCacheIJ: PathingCacheXY }>();
     map.seed = 0;
 
     let sourcePositions = createRandomPositions(numberEnemies, randomSeed, width, height, map, idCounter);
@@ -63,8 +63,8 @@ function testPathingPerformanceCacheNotChangingResults(ctx: CanvasRenderingConte
         if (i % 234 === 0) pathingCache = {};
         let result: Position | null;
         let tempCache: PathingCache;
-        let tempSourceTile = calculatePosToTileIJ(sourcePositions[i % numberEnemies], map);
-        let tempTargtTile = calculatePosToTileIJ(targetPositions[i % numberPlayers], map);
+        let tempSourceTile = calculatePosToTileXY(sourcePositions[i % numberEnemies], map);
+        let tempTargtTile = calculatePosToTileXY(targetPositions[i % numberPlayers], map);
         let key = `${tempSourceTile.x}_${tempSourceTile.y}|${tempTargtTile.x}_${tempTargtTile.y}`;
         if (i % 3 === 0) {
             tempCache = {};
@@ -84,8 +84,8 @@ function testPathingPerformanceCacheNotChangingResults(ctx: CanvasRenderingConte
                 if (result.x !== resultFromMap.pos!.x || result.y !== resultFromMap.pos!.y) {
                     console.log("oh no", i, key, result, resultFromMap, sourcePositions[i % numberEnemies], targetPositions[i % numberPlayers], pathingCache);
                     if (ctx) {
-                        let key2 = tileIjToPathingCacheKey(tempTargtTile);
-                        let tempPathingCachIJ: PathingCacheIJ = tempCache[key2];
+                        let key2 = tileXyToPathingCacheKey(tempTargtTile);
+                        let tempPathingCachIJ: PathingCacheXY = tempCache[key2];
                         paintPathingArrows(ctx, map, tempPathingCachIJ, resultFromMap.pathingCacheIJ, tempTargtTile);
                         debugger;
                         break;
@@ -93,7 +93,7 @@ function testPathingPerformanceCacheNotChangingResults(ctx: CanvasRenderingConte
                 }
             }
         } else {
-            let key2 = tileIjToPathingCacheKey(tempTargtTile);
+            let key2 = tileXyToPathingCacheKey(tempTargtTile);
             resultMap.set(key, { pos: result, pathingCacheIJ: tempCache[key2] });
         }
     }
@@ -101,7 +101,7 @@ function testPathingPerformanceCacheNotChangingResults(ctx: CanvasRenderingConte
     let time = performance.now() - startTime;
 }
 
-export function paintPathingArrows(ctx: CanvasRenderingContext2D, map: GameMap, pathingCache1: PathingCacheIJ, pathingCache2: PathingCacheIJ | undefined, targetIJ: Position) {
+export function paintPathingArrows(ctx: CanvasRenderingContext2D, map: GameMap, pathingCache1: PathingCacheXY, pathingCache2: PathingCacheXY | undefined, targetIJ: Position) {
     let arrowOffsetX = 100;
     let arrowOffsetY = 100;
     let arrowSize = 15;
@@ -110,24 +110,24 @@ export function paintPathingArrows(ctx: CanvasRenderingContext2D, map: GameMap, 
 
     let keys = pathingCache1.cameFromCache.keys();
     for (const key of keys) {
-        let sourceTileIJ: Position = { x: parseInt(key.split("_")[0]), y: parseInt(key.split("_")[1]) };
-        let targetTileIJ1 = pathingCache1.cameFromCache.get(key);
+        let sourceTileXY: Position = { x: parseInt(key.split("_")[0]), y: parseInt(key.split("_")[1]) };
+        let targetTileXY1 = pathingCache1.cameFromCache.get(key);
         canvas_arrow(
             ctx,
-            sourceTileIJ.x * arrowSize + arrowOffsetX,
-            sourceTileIJ.y * arrowSize + arrowOffsetY,
-            targetTileIJ1!.x * arrowSize + arrowOffsetX,
-            targetTileIJ1!.y * arrowSize + arrowOffsetY
+            sourceTileXY.x * arrowSize + arrowOffsetX,
+            sourceTileXY.y * arrowSize + arrowOffsetY,
+            targetTileXY1!.x * arrowSize + arrowOffsetX,
+            targetTileXY1!.y * arrowSize + arrowOffsetY
         );
         if (pathingCache2) {
-            let targetTileIJ2 = pathingCache2.cameFromCache.get(key);
-            if (targetTileIJ2 !== undefined && (targetTileIJ1!.x !== targetTileIJ2!.x || targetTileIJ1!.y !== targetTileIJ2!.y)) {
+            let targetTileXY2 = pathingCache2.cameFromCache.get(key);
+            if (targetTileXY2 !== undefined && (targetTileXY1!.x !== targetTileXY2!.x || targetTileXY1!.y !== targetTileXY2!.y)) {
                 canvas_arrow(
                     ctx,
-                    sourceTileIJ.x * arrowSize + arrowOffsetX,
-                    sourceTileIJ.y * arrowSize + arrowOffsetY,
-                    targetTileIJ2!.x * arrowSize + arrowOffsetX,
-                    targetTileIJ2!.y * arrowSize + arrowOffsetY,
+                    sourceTileXY.x * arrowSize + arrowOffsetX,
+                    sourceTileXY.y * arrowSize + arrowOffsetY,
+                    targetTileXY2!.x * arrowSize + arrowOffsetX,
+                    targetTileXY2!.y * arrowSize + arrowOffsetY,
                     "blue"
                 );
             }

@@ -99,9 +99,9 @@ export function findNearNonBlockingPosition(pos: Position, map: GameMap, idCount
     return currentPosition;
 }
 
-export function changeTileIdOfMapChunk(chunkI: number, chunkJ: number, tileI: number, tileJ: number, newTileId: number, game: Game) {
+export function changeTileIdOfMapChunk(chunkI: number, chunkJ: number, tileX: number, tileY: number, newTileId: number, game: Game) {
     const chunkKey = chunkIJToMapKey(chunkI, chunkJ);
-    game.state.map.chunks[chunkKey].tiles[tileI][tileJ] = newTileId;
+    game.state.map.chunks[chunkKey].tiles[tileX][tileY] = newTileId;
     const mapPaintCache = game.performance.mapChunkPaintCache;
     if (mapPaintCache) {
         let paintCacheKey1 = chunkKey + "_Layer1";
@@ -120,12 +120,12 @@ export function positionToMapKey(pos: Position, map: GameMap): string {
     return chunkIJToMapKey(chunkIJ.i, chunkIJ.j);
 }
 
-export function mapKeyAndTileIjToPosition(mapKey: string, tileI: number, tileJ: number, map: GameMap): Position{
+export function mapKeyAndTileXYToPosition(mapKey: string, tileX: number, tileY: number, map: GameMap): Position{
     let chunkSize = map.tileSize * map.chunkLength;
     let chunkIJ = mapKeyToChunkIJ(mapKey);
     return {
-        x: chunkIJ.chunkJ * chunkSize + tileI * map.tileSize + map.tileSize / 2,
-        y: chunkIJ.chunkI * chunkSize + tileJ * map.tileSize + map.tileSize / 2,
+        x: chunkIJ.chunkJ * chunkSize + tileX * map.tileSize + map.tileSize / 2,
+        y: chunkIJ.chunkI * chunkSize + tileY * map.tileSize + map.tileSize / 2,
     }
 }
 
@@ -305,18 +305,18 @@ export function getChunksTouchingLine(map: GameMap, lineStart: Position, lineEnd
     return chunks;
 }
 
-export function positionToGameMapTileIJ(map: GameMap, position: Position): { i: number, j: number } {
+export function positionToGameMapTileXY(map: GameMap, position: Position): Position {
     return {
-        i: Math.floor(position.x / map.tileSize),
-        j: Math.floor(position.y / map.tileSize),
+        x: Math.floor(position.x / map.tileSize),
+        y: Math.floor(position.y / map.tileSize),
     }
 }
 
 export function getFirstBlockingGameMapTilePositionTouchingLine(map: GameMap, lineStart: Position, lineEnd: Position, game: Game): Position | undefined {
     let tileSize = map.tileSize;
-    let currentTileIJ = positionToGameMapTileIJ(map, lineStart);
-    let endTileIJ = positionToGameMapTileIJ(map, lineEnd);
-    if (currentTileIJ.i !== endTileIJ.i || currentTileIJ.j !== endTileIJ.j) {
+    let currentTileXY = positionToGameMapTileXY(map, lineStart);
+    let endTileXY = positionToGameMapTileXY(map, lineEnd);
+    if (currentTileXY.x !== endTileXY.x || currentTileXY.y !== endTileXY.y) {
         let xDiff = lineEnd.x - lineStart.x;
         let yDiff = lineEnd.y - lineStart.y;
         let currentPos = { x: lineStart.x, y: lineStart.y };
@@ -371,11 +371,11 @@ export function getFirstBlockingGameMapTilePositionTouchingLine(map: GameMap, li
                 console.log("should not happen?");
             }
             const currentTile = getMapTile(currentPos, map, game.state.idCounter);
-            currentTileIJ = positionToGameMapTileIJ(map, currentPos);
+            currentTileXY = positionToGameMapTileXY(map, currentPos);
             if (currentTile.blocking) {
                 return currentPos;
             }
-        } while (currentTileIJ.i !== endTileIJ.i || currentTileIJ.j !== endTileIJ.j);
+        } while (currentTileXY.x !== endTileXY.x || currentTileXY.y !== endTileXY.y);
     }
 
     return undefined;
@@ -463,14 +463,14 @@ export function getMapTile(pos: Position, map: GameMap, idCounter: IdCounter): M
     }
 
     if (chunk) {
-        let i = Math.floor((pos.y / map.tileSize) % map.chunkLength);
-        if (i < 0) i += map.chunkLength;
-        let j = Math.floor((pos.x / map.tileSize) % map.chunkLength);
-        if (j < 0) j += map.chunkLength;
-        if (i >= 0 && j >= 0 && chunk.tiles.length > i && chunk.tiles[i].length > j) {
-            return TILE_VALUES[chunk.tiles[i][j]];
+        let y = Math.floor((pos.y / map.tileSize) % map.chunkLength);
+        if (y < 0) y += map.chunkLength;
+        let x = Math.floor((pos.x / map.tileSize) % map.chunkLength);
+        if (x < 0) x += map.chunkLength;
+        if (y >= 0 && x >= 0 && chunk.tiles.length > x && chunk.tiles[x].length > y) {
+            return TILE_VALUES[chunk.tiles[x][y]];
         } else {
-            console.log("invalid chunk", i, j, chunk);
+            console.log("invalid chunk", x, y, chunk);
         }
     }
 

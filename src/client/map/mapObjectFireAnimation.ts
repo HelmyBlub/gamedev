@@ -22,8 +22,8 @@ function paintFireAnimation(ctx: CanvasRenderingContext2D, mapObject: MapTileObj
     const animationImage = GAME_IMAGES[mapObject.name];
     loadImage(animationImage);
     if (animationImage.imageRef?.complete) {
-        const paintX = paintTopLeft.x + mapObject.j * tileSize;
-        const paintY = paintTopLeft.y + mapObject.i * tileSize;
+        const paintX = paintTopLeft.x + mapObject.y * tileSize;
+        const paintY = paintTopLeft.y + mapObject.x * tileSize;
         const spriteAnimation = Math.floor(game.state.time / 150) % 2;
         const spriteWidth = animationImage.spriteRowWidths[0];
         const spriteHeight = animationImage.spriteRowHeights[0];
