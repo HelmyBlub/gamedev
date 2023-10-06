@@ -25,7 +25,7 @@ export type TestingStuff = {
         data: {
             replayPlayerInputs: Omit<PlayerInput, "executeTime">[],
             pastCharacters?: PastPlayerCharacters,
-            nextEndBosses?: NextEndBosses,
+            nextEndBosses?: NextEndbosses,
             gameEndAsserts?: {
                 type: string,
                 data: any,
@@ -45,7 +45,7 @@ export type TestingStuff = {
         data?: {
             replayPlayerInputs: PlayerInput[],
             pastCharacters?: PastPlayerCharacters,
-            nextEndBosses?: NextEndBosses,
+            nextEndBosses?: NextEndbosses,
             gameEndAsserts?: {
                 type: string,
                 data: any,
@@ -73,7 +73,7 @@ export type MapChunkPaintCache = {
 }
 
 export type CelestialDirection = "north" | "west" | "south" | "east";
-export type NextEndBosses = {
+export type NextEndbosses = {
     north?: Character,
     west?: Character,
     south?: Character,
@@ -84,7 +84,7 @@ export type BossStuff = {
     bossLevelCounter: number,
     bossSpawnEachXMilliSecond: number,
     endBossStarted: boolean,
-    nextEndbosses: NextEndBosses,
+    nextEndbosses: NextEndbosses,
     closedOfEndBossEntrance?: EndBossEntranceData,
     bosses: Character[],
 }

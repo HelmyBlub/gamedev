@@ -1,8 +1,8 @@
 current tasks:
 - whats up with i/j vs x/y and chunkIJ tileIJ naming?
-
-possible future tasks: (only keep 5)
 - refactoring
 - balancing
+
+possible future tasks: (only keep 5)
 - improvement: getChunksTouchingLine2 does not work, still needs to improve
 

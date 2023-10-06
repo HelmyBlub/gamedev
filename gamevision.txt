@@ -5,11 +5,6 @@ broad game goal:
 - somehow should be randomized content for much replayability
 
 game ideas:
-- infinite map, the further from the middle the stronger the enemies
-    - different directions from the center -> different types of enemies
-    - bosses after cedrtain amount of distance of center -> bosses give better rewards but challenging
-    - map middle is safe area, could be a base area
-
 - a lot of different "classes" to choose from
     - melee
         - big slow weapon, warrior
@@ -21,7 +16,6 @@ game ideas:
     - tamer
         - tame enemies
         - revive dead enemies
-- some upgrade system to be stronger for each new run, or for different start options
 - gathering some ressources for a upgrade system
 - multiplayer ideas:
     - parallel mind: multiple players same character

@@ -1,7 +1,7 @@
 import { createCharacter } from "../character/characterModel.js";
 import { CommandRestart, handleCommand } from "../commands.js";
-import { closeGame } from "../game.js";
-import { FACTION_ENEMY, FACTION_PLAYER, Game, Position, setDefaultNextEndbosses } from "../gameModel.js";
+import { changeCharacterAndAbilityIds, closeGame } from "../game.js";
+import { CelestialDirection, FACTION_ENEMY, FACTION_PLAYER, Game, NextEndbosses, Position, setDefaultNextEndbosses } from "../gameModel.js";
 import { createGame } from "../main.js";
 import { addEnemyToMap, createMap, GameMap } from "../map/map.js";
 import { createNewChunkTiles } from "../map/mapGeneration.js";
@@ -21,16 +21,16 @@ export function testGame(game: Game) {
     console.log("end test");
 }
 
-function testPlayerClasses(game: Game){
+function testPlayerClasses(game: Game) {
     if (game.state.players.length > 1) return;
-    game.testing.replay = {startTime: performance.now()};
+    game.testing.replay = { startTime: performance.now() };
 
     const replay = game.testing.replay;
     replay.testInputFileQueue = [];
     // replay.testInputFileQueue.push("/data/testInputError.json");
     // replay.testInputFileQueue.push("/data/testInputShortBuilder.json");
     replay.testInputFileQueue.push("/data/testInputShortSniper.json");
-    // replay.testInputFileQueue.push("/data/testInputShortTamer.json");
+    replay.testInputFileQueue.push("/data/testInputShortTamer.json");
     // replay.testInputFileQueue.push("/data/testInputLongSniper.json");
     // replay.testInputFileQueue.push("/data/testInputLongBuilder.json");
     // replay.testInputFileQueue.push("/data/testInputLongTamer.json");
@@ -41,9 +41,9 @@ function testPlayerClasses(game: Game){
 
 }
 
-export function replayNextInReplayQueue(game: Game): boolean{
+export function replayNextInReplayQueue(game: Game): boolean {
     const replay = game.testing.replay;
-    if(!replay || !replay.testInputFileQueue || replay.testInputFileQueue.length === 0) return false;
+    if (!replay || !replay.testInputFileQueue || replay.testInputFileQueue.length === 0) return false;
     replay.replayInputCounter = 0;
     var request = new XMLHttpRequest();
     const nextInputFile = replay.testInputFileQueue.shift()!;
@@ -53,16 +53,25 @@ export function replayNextInReplayQueue(game: Game): boolean{
     replay.data = testInputs as any;
 
     game.state.ended = true;
-    if(game.state.map.endBossArea){
-        if(replay.data?.nextEndBosses){
+    if (game.state.map.endBossArea) {
+        if (replay.data?.nextEndBosses) {
             game.state.bossStuff.nextEndbosses = replay.data?.nextEndBosses;
-        }else{
+            let nextEndbosses: NextEndbosses = game.state.bossStuff.nextEndbosses;
+            const keys = Object.keys(nextEndbosses) as CelestialDirection[];
+            for (let key of keys) {
+                let endboss = nextEndbosses[key];
+                if (endboss) changeCharacterAndAbilityIds(endboss, game.state.idCounter);
+            }    
+        } else {
             setDefaultNextEndbosses(game);
-        }   
+        }
     }
-    if(replay.data?.pastCharacters){
-        game.state.pastPlayerCharacters = replay.data?.pastCharacters;
-    }else{
+    if (replay.data?.pastCharacters) {
+        game.state.pastPlayerCharacters = replay.data.pastCharacters;
+        for (let pastChar of game.state.pastPlayerCharacters.characters) {
+            if (pastChar) changeCharacterAndAbilityIds(pastChar, game.state.idCounter);
+        }
+    } else {
         game.state.pastPlayerCharacters.characters = [];
     }
     if (replay.data!.replayPlayerInputs[0].command === "restart") {
@@ -75,11 +84,11 @@ export function replayNextInReplayQueue(game: Game): boolean{
     return true;
 }
 
-export function replayGameEndAssert(game: Game, newScore: number){
+export function replayGameEndAssert(game: Game, newScore: number) {
     let replay = game.testing.replay;
-    if(replay?.data?.gameEndAsserts){
-        for(let assert of replay.data?.gameEndAsserts){
-            switch(assert.type){
+    if (replay?.data?.gameEndAsserts) {
+        for (let assert of replay.data?.gameEndAsserts) {
+            switch (assert.type) {
                 case "score":
                     assertEquals(assert.type, assert.data, newScore);
                     break;
@@ -91,10 +100,10 @@ export function replayGameEndAssert(game: Game, newScore: number){
     }
 }
 
-function assertEquals(type: string, expected: any, actual: any){
-    if(expected === actual){
+function assertEquals(type: string, expected: any, actual: any) {
+    if (expected === actual) {
         console.debug(`assert ${type} success`);
-    }else{
+    } else {
         console.log(`assert ${type} failed. Expected: ${expected}, actual: ${actual}`);
     }
 }

@@ -2,7 +2,7 @@ import { changeCharacterId, countAlivePlayerCharacters, findCharacterById, findM
 import { paintAll } from "./gamePaint.js";
 import { findPlayerByCharacterId, gameInitPlayers } from "./player.js";
 import { MOUSE_ACTION, UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.js";
-import { Position, GameState, Game, IdCounter, Debugging, PaintTextData, ClientInfo, LOCALSTORAGE_PASTCHARACTERS, LOCALSTORAGE_NEXTENDBOSSES } from "./gameModel.js";
+import { Position, GameState, Game, IdCounter, Debugging, PaintTextData, ClientInfo, LOCALSTORAGE_PASTCHARACTERS, LOCALSTORAGE_NEXTENDBOSSES, NextEndbosses, CelestialDirection } from "./gameModel.js";
 import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap, removeAllMapCharacters } from "./map/map.js";
 import { Character, DEFAULT_CHARACTER } from "./character/characterModel.js";
 import { generateMissingChunks, pastCharactersMapTilePositions } from "./map/mapGeneration.js";
@@ -275,7 +275,7 @@ export function deepCopy(object: any): any {
 
 function resetPastCharacters(game: Game) {
     for (let character of game.state.pastPlayerCharacters.characters) {
-        if(character) resetCharacter(character);
+        if (character) resetCharacter(character);
     }
 }
 
@@ -351,21 +351,34 @@ export function endGame(game: Game, isEndbossKill: boolean = false) {
     }
 }
 
-export function loadFromLocalStorage(game: Game){
+export function loadFromLocalStorage(game: Game) {
     const pastCharactersString = localStorage.getItem(LOCALSTORAGE_PASTCHARACTERS);
-    if(pastCharactersString){
+    if (pastCharactersString) {
         game.state.pastPlayerCharacters = JSON.parse(pastCharactersString);
-        for(let pastChar of game.state.pastPlayerCharacters.characters){
-            if(!pastChar) continue;
+        for (let pastChar of game.state.pastPlayerCharacters.characters) {
+            if (!pastChar) continue;
             resetCharacter(pastChar);
+            changeCharacterAndAbilityIds(pastChar, game.state.idCounter);
         }
     }
     const nextEndbossesString = localStorage.getItem(LOCALSTORAGE_NEXTENDBOSSES);
-    if(nextEndbossesString){
-        game.state.bossStuff.nextEndbosses = JSON.parse(nextEndbossesString);
+    if (nextEndbossesString) {
+        let nextEndbosses: NextEndbosses = JSON.parse(nextEndbossesString);
+        game.state.bossStuff.nextEndbosses = nextEndbosses;
+        const keys = Object.keys(nextEndbosses) as CelestialDirection[];
+        for (let key of keys) {
+            let endboss = nextEndbosses[key];
+            if (endboss) changeCharacterAndAbilityIds(endboss, game.state.idCounter);
+        }
     }
 }
 
+export function changeCharacterAndAbilityIds(character: Character, idCounter: IdCounter) {
+    changeCharacterId(character, getNextId(idCounter));
+    for (let ability of character.abilities) {
+        ability.id = getNextId(idCounter);
+    }
+}
 
 export function saveCharacterAsPastCharacter(character: Character, game: Game) {
     if (game.testing.replay) return;
@@ -376,19 +389,19 @@ export function saveCharacterAsPastCharacter(character: Character, game: Game) {
     const pastCharacters = game.state.pastPlayerCharacters.characters;
     pastCharacters.push(newPastCharacter);
     for (let i = 0; i < pastCharacters.length; i++) {
-        while(!pastCharacters[i]){
-            pastCharacters.splice(i,1);
+        while (!pastCharacters[i]) {
+            pastCharacters.splice(i, 1);
         }
     }
 
     if (pastCharacters.length > game.state.pastPlayerCharacters.maxNumber) {
         pastCharacters.splice(0, 1);
     }
-    
+
     for (let i = 0; i < pastCharacters.length; i++) {
         const pastCharacter = pastCharacters[i];
-        if(!pastCharacter) continue;
-        if(pastCharactersMapTilePositions.length > i){
+        if (!pastCharacter) continue;
+        if (pastCharactersMapTilePositions.length > i) {
             const nextTileInfo = pastCharactersMapTilePositions[i];
             pastCharacter.x = nextTileInfo.j * 40 + 20;
             pastCharacter.y = nextTileInfo.i * 40 + 20;
@@ -399,7 +412,7 @@ export function saveCharacterAsPastCharacter(character: Character, game: Game) {
                     pet.y = nextTileInfo.i * 40 + 20;
                 }
             }
-        }else{
+        } else {
             pastCharacter.x = i * 20;
             pastCharacter.y = 0;
             if (pastCharacter.pets) {
@@ -410,7 +423,7 @@ export function saveCharacterAsPastCharacter(character: Character, game: Game) {
             }
         }
     }
-    if(!game.multiplayer.disableLocalStorage){
+    if (!game.multiplayer.disableLocalStorage) {
         localStorage.setItem(LOCALSTORAGE_PASTCHARACTERS, JSON.stringify(game.state.pastPlayerCharacters));
     }
 }
@@ -428,7 +441,7 @@ function endGameReplayStuff(game: Game, newScore: number) {
         replayGameEndAssert(game, newScore);
         console.log("time:", performance.now() - replay.startTime);
         const moreReplays = replayNextInReplayQueue(game);
-        if(!moreReplays){
+        if (!moreReplays) {
             loadFromLocalStorage(game);
         }
     }

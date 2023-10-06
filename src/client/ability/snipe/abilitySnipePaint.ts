@@ -10,7 +10,8 @@ import { paintVisualizationMoreRifles } from "./abilitySnipeUpgradeMoreRifle.js"
 import { paintVisualizationStayStill } from "./abilitySnipeUpgradeStayStill.js";
 
 export function paintAbilityObjectSnipe(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
-    if (paintOrder !== "beforeCharacterPaint") return;
+    if (paintOrder !== "beforeCharacterPaint" && abilityObject.faction === FACTION_PLAYER) return;
+    if (paintOrder !== "afterCharacterPaint" && abilityObject.faction === FACTION_ENEMY) return;
     let abilityObjectSnipe = abilityObject as AbilityObjectSnipe;
     const cameraPosition = getCameraPosition(game);
     const snipe = abilityObject as AbilityObjectSnipe;
