@@ -34,6 +34,7 @@ export function addAbilityPetBreath() {
         setAbilityToLevel: setAbilityPetBreathToLevel,
         setAbilityToBossLevel: setAbilityPetBreathToBossLevel,
         getLongDescription: getLongDescription,
+        resetAbility: resetAbility,
         abilityUpgradeFunctions: ABILITY_PET_BREATH_UPGRADE_FUNCTIONS,
         isPassive: true,
     };
@@ -63,6 +64,11 @@ export function createAbilityPetBreath(
 }
 export function getPetAbilityBreathDamage(pet: TamerPetCharacter, ability: AbilityPetBreath): number {
     return ability.damage * pet.sizeFactor;
+}
+
+function resetAbility(ability: Ability){
+    let abilityPetBreath = ability as AbilityPetBreath;
+    abilityPetBreath.nextTickTime = undefined;
 }
 
 function getLongDescription(): string[]{
@@ -124,6 +130,11 @@ function paintAbilityPetBreath(ctx: CanvasRenderingContext2D, abilityOwner: Abil
 function tickAbilityPetBreath(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     let abilityPetBreath = ability as AbilityPetBreath;
     let pet = abilityOwner as TamerPetCharacter;
+    if(ability.disabled){
+        abilityPetBreath.active = false;
+        return;
+    }
+
     const activeUntil = pet.foodIntakeLevel.underfedAt / 2;
     abilityPetBreath.active = pet.foodIntakeLevel.current > activeUntil;
     const underfed = pet.foodIntakeLevel.current < pet.foodIntakeLevel.underfedAt;

@@ -45,6 +45,7 @@ export type Ability = {
     tradable?: boolean,
     unique?: boolean,
     gifted?: boolean,
+    disabled?: boolean,
 }
 export type PaintOrderAbility = "beforeCharacterPaint" | "afterCharacterPaint";
 export type AbilityObject = Position & {

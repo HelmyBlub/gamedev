@@ -1,4 +1,4 @@
-import { ABILITIES_FUNCTIONS, paintDefaultAbilityStatsUI } from "../../../ability/ability.js";
+import { ABILITIES_FUNCTIONS, paintDefaultAbilityStatsUI, resetAllCharacterAbilities } from "../../../ability/ability.js";
 import { ABILITY_NAME_LEASH, AbilityLeash } from "../../../ability/abilityLeash.js";
 import { calculateDirection, calculateDistance, getNextId } from "../../../game.js";
 import { FACTION_PLAYER, Game, Position } from "../../../gameModel.js";
@@ -105,7 +105,9 @@ export function tradePets(fromCharacter: Character, toCharacter: Character, game
                 pet.gifted = true;
                 reset(pet);
                 toCharacter.pets.push(pet);
-
+                for(let ability of pet.abilities){
+                    ability.disabled = false;
+                }
                 const leash: AbilityLeash = pet.abilities.find((a) => a.name === ABILITY_NAME_LEASH) as AbilityLeash;
                 if (leash) leash.leashedToOwnerId = toCharacter.id;
             }
@@ -220,11 +222,11 @@ export function petFoodIntakeToDisplayText(foodIntakeLevel: FoodIntakeLevel): Pe
 }
 export function paintTamerPetCharacterStatsUI(ctx: CanvasRenderingContext2D, pet: TamerPetCharacter, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
     const textLines: string[] = [`Pet Stats:`];
-    if(pet.gifted){
+    if (pet.gifted) {
         textLines[0] += " (gifted)"
         textLines.push("gifted pets don't get stronger");
     }
-    
+
     textLines.push(
         `Color: ${pet.paint.color}`,
         `food: ${petFoodIntakeToDisplayText(pet.foodIntakeLevel)}`,
@@ -316,9 +318,9 @@ export function changeTamerPetHappines(pet: TamerPetCharacter, value: number, ti
         pet.happines.current = pet.happines.hyperactiveAt - 1;
     }
     if (visualizeChange) pet.happines.visualizations.push({ happy: value > 0, displayUntil: time + 500 });
-    for(let i = pet.happines.visualizations.length - 1; i >= 0; i--){
-        if(pet.happines.visualizations[i].displayUntil < time){
-            pet.happines.visualizations.splice(i,1);
+    for (let i = pet.happines.visualizations.length - 1; i >= 0; i--) {
+        if (pet.happines.visualizations[i].displayUntil < time) {
+            pet.happines.visualizations.splice(i, 1);
         }
     }
 
@@ -340,6 +342,11 @@ export function findPetOwner(pet: TamerPetCharacter, game: Game): Character | un
     let characters: Character[];
     if (pet.faction === FACTION_PLAYER) {
         characters = getPlayerCharacters(game.state.players);
+        const pastCharacters = game.state.pastPlayerCharacters.characters;
+        for (let i = 0; i < pastCharacters.length; i++) {
+            let pastChar = pastCharacters[i];
+            if (pastChar) characters.push(pastChar);
+        }
     } else {
         characters = game.state.bossStuff.bosses;
     }

@@ -72,13 +72,14 @@ export function getPetAbilityDashDamage(pet: TamerPetCharacter, ability: Ability
     return damage;
 }
 
-function resetAbility(ability: Ability){
+function resetAbility(ability: Ability) {
     const dash = ability as AbilityPetDash;
     dash.activeUntilTime = undefined;
     dash.nextTickTime = undefined;
+    dash.readyTime = undefined;
 }
 
-function getLongDescription(): string[]{
+function getLongDescription(): string[] {
     return [
         `Ability: ${ABILITY_NAME_PET_DASH}`,
         `Dashes forward a short distance.`,
@@ -86,7 +87,7 @@ function getLongDescription(): string[]{
     ];
 }
 
-function onHit(ability: Ability, targetCharacter: Character, game: Game){
+function onHit(ability: Ability, targetCharacter: Character, game: Game) {
     const dash = ability as AbilityPetDash;
     abilityPetDashUpgradeRootApplyRoot(dash, targetCharacter, game);
 }
@@ -136,11 +137,12 @@ function paintSpeedLine(ctx: CanvasRenderingContext2D, startPos: Position, direc
 }
 
 function tickAbilityPetDash(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
+    if (ability.disabled) return;
     let abilityPetDash = ability as AbilityPetDash;
     let pet = abilityOwner as TamerPetCharacter;
     if (abilityPetDash.readyTime === undefined) abilityPetDash.readyTime = game.state.time + abilityPetDash.cooldown;
     const upgradeBounce: AbilityPetDashUpgradeTerrainBounce = abilityPetDash.upgrades[ABILITY_PET_DASH_UPGARDE_TERRAIN_BOUNCE];
-    const upgradeFireLine: AbilityPetDashUpgradeFireLine =  abilityPetDash.upgrades[ABILITY_PET_DASH_UPGARDE_FIRE_LINE];
+    const upgradeFireLine: AbilityPetDashUpgradeFireLine = abilityPetDash.upgrades[ABILITY_PET_DASH_UPGARDE_FIRE_LINE];
     if (abilityPetDash.activeUntilTime && abilityPetDash.activeUntilTime > game.state.time) {
         if (upgradeBounce !== undefined) {
             let newPosition = calculateMovePosition(pet, abilityPetDash.direction!, abilityPetDash.baseSpeed, false);
@@ -155,22 +157,22 @@ function tickAbilityPetDash(abilityOwner: AbilityOwner, ability: Ability, game: 
         } else {
             moveByDirectionAndDistance(pet, abilityPetDash.direction!, abilityPetDash.baseSpeed, true, game.state.map, game.state.idCounter);
         }
-        if(abilityPetDash.nextTickTime && abilityPetDash.nextTickTime <= game.state.time){
+        if (abilityPetDash.nextTickTime && abilityPetDash.nextTickTime <= game.state.time) {
             abilityPetDash.nextTickTime += abilityPetDash.tickInterval;
             detectCircleCharacterHit(game.state.map, pet, pet.width / 2 + abilityPetDash.sizeExtension, pet.faction, ability.id, getPetAbilityDashDamage(pet, abilityPetDash), game, undefined, ability);
         }
     } else if (abilityPetDash.readyTime <= game.state.time) {
         if (abilityOwner.isMoving) {
             if (upgradeBounce) upgradeBounce.currentDamageFactor = 1;
-            if (upgradeFireLine) upgradeFireLine.startPosition = {x: pet.x, y: pet.y};
+            if (upgradeFireLine) upgradeFireLine.startPosition = { x: pet.x, y: pet.y };
             abilityPetDash.readyTime = game.state.time + abilityPetDash.cooldown;
             abilityPetDash.activeUntilTime = game.state.time + abilityPetDash.duration;
             abilityPetDash.nextTickTime = game.state.time;
             abilityPetDash.direction = abilityOwner.moveDirection;
         }
     }
-    if(upgradeFireLine && upgradeFireLine.startPosition){
-        if(abilityPetDash.activeUntilTime! <= game.state.time){
+    if (upgradeFireLine && upgradeFireLine.startPosition) {
+        if (abilityPetDash.activeUntilTime! <= game.state.time) {
             createPetDashUpgradeFireLine(pet, abilityPetDash, game);
             upgradeFireLine.startPosition = undefined;
         }

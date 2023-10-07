@@ -180,6 +180,7 @@ function executeAbilityPetPainterUpgradeOption(ability: Ability, character: Char
 }
 
 function tickAbilityPetPainter(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
+    if(ability.disabled) return;
     const abilityPetPainter = ability as AbilityPetPainter;
     const pet = abilityOwner as TamerPetCharacter;
     if (!abilityPetPainter.currentlyPainting) {

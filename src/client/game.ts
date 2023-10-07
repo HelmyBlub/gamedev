@@ -391,6 +391,13 @@ export function saveCharacterAsPastCharacter(character: Character, game: Game) {
     const newPastCharacter: Character = deepCopy(character);
     resetCharacter(newPastCharacter);
     changeCharacterId(newPastCharacter, getNextId(game.state.idCounter));
+    if(newPastCharacter.pets){
+        for(let pet of newPastCharacter.pets){
+            for(let ability of pet.abilities){
+                ability.disabled = true;
+            }
+        }
+    }
     newPastCharacter.isUnMoveAble = true;
     const pastCharacters = game.state.pastPlayerCharacters.characters;
     pastCharacters.push(newPastCharacter);

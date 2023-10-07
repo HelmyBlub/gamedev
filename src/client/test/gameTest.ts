@@ -33,7 +33,7 @@ function testPlayerClasses(game: Game) {
     replay.testInputFileQueue.push("/data/testInputShortTamer.json");
     // replay.testInputFileQueue.push("/data/testInputLongSniper.json");
     // replay.testInputFileQueue.push("/data/testInputLongBuilder.json");
-    // replay.testInputFileQueue.push("/data/testInputLongTamer.json");
+    replay.testInputFileQueue.push("/data/testInputLongTamer.json");
     replay.frameSkipAmount = 60;
     replay.zeroTimeout = true;
 

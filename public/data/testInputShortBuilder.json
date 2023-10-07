@@ -4287,11 +4287,11 @@
     "gameEndAsserts": [
         {
             "type": "score",
-            "data": 1558
+            "data": 1478
         },
         {
             "type": "killCounter",
-            "data": 391
+            "data": 380
         }
     ]
 }
