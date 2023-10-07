@@ -533,7 +533,8 @@ function executeAbilityTowerUpgradeOption(ability: Ability, character: Character
     for (let i = 0; i < abilityTower.availableAbilityKeys.length; i++) {
         const key = abilityTower.availableAbilityKeys[i];
         if (key === upgradeOption.identifier) {
-            abilityTower.orderOfAbilities.splice(abilityTower.currentAbilityIndex, 0, i);
+            const addIndex = (abilityTower.currentAbilityIndex + 1) % abilityTower.orderOfAbilities.length;
+            abilityTower.orderOfAbilities.splice(addIndex, 0, i);
             return;
         }
     }

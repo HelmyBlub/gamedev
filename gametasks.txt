@@ -1,6 +1,6 @@
 current tasks:
 - new test runs
-    - check again why tamer runs don't always work/ differentiate
+    - tower builder: new skill point tower not chaning next tower
 - refactoring
 - balancing
 

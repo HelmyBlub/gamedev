@@ -123,8 +123,8 @@ export function getEntranceChunkAndTileXYForPosition(position: Position, map: Ga
     tile = getEntranceTileXYForBossChunkXyIfExists(chunkX, chunkY, map);
     if (tile) {
         return {
-            chunkY: chunkY,
             chunkX: chunkX,
+            chunkY: chunkY,
             tileX: tile.x,
             tileY: tile.y,
             tileId: tile.tileId,

@@ -64,7 +64,7 @@ export function setPlayerAsEndBoss(game: Game) {
 export function startEndBoss(endBossAreaPosition: Position, game: Game) {
     let entrance = getEntranceChunkAndTileXYForPosition(game.state.players[0].character, game.state.map);
     if (entrance) {
-        changeTileIdOfMapChunk(entrance.chunkY, entrance.chunkX, entrance.tileX, entrance.tileY, 2, game);
+        changeTileIdOfMapChunk(entrance.chunkX, entrance.chunkY, entrance.tileX, entrance.tileY, 2, game);
         let spawn: Position = getBossAreaMiddlePosition(endBossAreaPosition, game.state.map)!;
         let endBoss: Character;
         const celestialDirection = getCelestialDirection(spawn);

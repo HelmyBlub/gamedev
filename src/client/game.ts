@@ -79,7 +79,7 @@ export function gameInit(game: Game) {
     game.state.playerInputs = [];
     if (game.state.bossStuff.closedOfEndBossEntrance) {
         let entrance = game.state.bossStuff.closedOfEndBossEntrance;
-        changeTileIdOfMapChunk(entrance.chunkY, entrance.chunkX, entrance.tileX, entrance.tileY, entrance.tileId, game);
+        changeTileIdOfMapChunk(entrance.chunkX, entrance.chunkY, entrance.tileX, entrance.tileY, entrance.tileId, game);
     }
     game.state.bossStuff.bosses = [];
     game.state.bossStuff.bossLevelCounter = 1;
