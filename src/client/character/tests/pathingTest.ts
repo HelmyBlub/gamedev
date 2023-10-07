@@ -50,7 +50,7 @@ function testPathingPerformanceCacheNotChangingResults(ctx: CanvasRenderingConte
     let height = 12 * map.tileSize;
     let pathingCache: PathingCache = {};
     let idCounter = { nextId: 0 };
-    let resultMap: Map<string, { pos: Position | null, pathingCacheIJ: PathingCacheXY }> = new Map<string, { pos: Position | null, pathingCacheIJ: PathingCacheXY }>();
+    let resultMap: Map<string, { pos: Position | null, pathingCacheXY: PathingCacheXY }> = new Map<string, { pos: Position | null, pathingCacheXY: PathingCacheXY }>();
     map.seed = 0;
 
     let sourcePositions = createRandomPositions(numberEnemies, randomSeed, width, height, map, idCounter);
@@ -85,8 +85,8 @@ function testPathingPerformanceCacheNotChangingResults(ctx: CanvasRenderingConte
                     console.log("oh no", i, key, result, resultFromMap, sourcePositions[i % numberEnemies], targetPositions[i % numberPlayers], pathingCache);
                     if (ctx) {
                         let key2 = tileXyToPathingCacheKey(tempTargtTile);
-                        let tempPathingCachIJ: PathingCacheXY = tempCache[key2];
-                        paintPathingArrows(ctx, map, tempPathingCachIJ, resultFromMap.pathingCacheIJ, tempTargtTile);
+                        let tempPathingCachXY: PathingCacheXY = tempCache[key2];
+                        paintPathingArrows(ctx, map, tempPathingCachXY, resultFromMap.pathingCacheXY, tempTargtTile);
                         debugger;
                         break;
                     }
@@ -94,14 +94,14 @@ function testPathingPerformanceCacheNotChangingResults(ctx: CanvasRenderingConte
             }
         } else {
             let key2 = tileXyToPathingCacheKey(tempTargtTile);
-            resultMap.set(key, { pos: result, pathingCacheIJ: tempCache[key2] });
+            resultMap.set(key, { pos: result, pathingCacheXY: tempCache[key2] });
         }
     }
     console.log(counter);
     let time = performance.now() - startTime;
 }
 
-export function paintPathingArrows(ctx: CanvasRenderingContext2D, map: GameMap, pathingCache1: PathingCacheXY, pathingCache2: PathingCacheXY | undefined, targetIJ: Position) {
+export function paintPathingArrows(ctx: CanvasRenderingContext2D, map: GameMap, pathingCache1: PathingCacheXY, pathingCache2: PathingCacheXY | undefined, targetXY: Position) {
     let arrowOffsetX = 100;
     let arrowOffsetY = 100;
     let arrowSize = 15;
@@ -134,7 +134,7 @@ export function paintPathingArrows(ctx: CanvasRenderingContext2D, map: GameMap, 
         }
     }
     ctx.fillStyle = "blue";
-    ctx.fillRect(targetIJ.x * arrowSize + arrowOffsetX, targetIJ.y * arrowSize + arrowOffsetY, arrowSize*0.5, arrowSize*0.5);
+    ctx.fillRect(targetXY.x * arrowSize + arrowOffsetX, targetXY.y * arrowSize + arrowOffsetY, arrowSize*0.5, arrowSize*0.5);
 }
 
 function canvas_arrow(ctx: CanvasRenderingContext2D, fromx: number, fromy: number, tox: number, toy: number, color: string = "black") {

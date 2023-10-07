@@ -29,17 +29,17 @@ export function generateMissingChunks(map: GameMap, positions: Position[], idCou
     for (const position of positions) {
         let startX = (position.x - generationRadius);
         let startY = (position.y - generationRadius);
-        let startChunkY = Math.floor(startY / chunkSize);
         let startChunkX = Math.floor(startX / chunkSize);
+        let startChunkY = Math.floor(startY / chunkSize);
 
-        for (let i = 0; i < Math.ceil(generationRadius / chunkSize * 2); i++) {
-            let chunkY = startChunkY + i;
-            for (let j = 0; j < Math.ceil(generationRadius / chunkSize * 2); j++) {
-                let chunkX = startChunkX + j;
-                let chunk = map.chunks[`${chunkY}_${chunkX}`];
+        for (let yIndex = 0; yIndex < Math.ceil(generationRadius / chunkSize * 2); yIndex++) {
+            let chunkY = startChunkY + yIndex;
+            for (let xIndex = 0; xIndex < Math.ceil(generationRadius / chunkSize * 2); xIndex++) {
+                let chunkX = startChunkX + xIndex;
+                let chunk = map.chunks[chunkXYToMapKey(chunkX, chunkY)];
                 if (chunk === undefined) {
                     chunk = createNewChunk(map, chunkX, chunkY, idCounter);
-                    map.chunks[`${chunkY}_${chunkX}`] = chunk;
+                    map.chunks[chunkXYToMapKey(chunkX, chunkY)] = chunk;
                 }
             }
         }
@@ -80,7 +80,7 @@ export function createNewChunkTiles(map: GameMap, chunkX: number, chunkY: number
                 tiles[tileX].push(randomTileId);
             }
         }
-        mapGenerationEndBossChunkStuff(mapChunk, map, chunkY, chunkX);
+        mapGenerationEndBossChunkStuff(mapChunk, map, chunkX, chunkY);
     }
     return mapChunk;
 }
