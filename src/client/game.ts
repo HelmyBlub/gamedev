@@ -7,7 +7,7 @@ import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap,
 import { Character, DEFAULT_CHARACTER } from "./character/characterModel.js";
 import { generateMissingChunks, pastCharactersMapTilePositions } from "./map/mapGeneration.js";
 import { createFixPositionRespawnEnemiesOnInit } from "./character/enemy/fixPositionRespawnEnemyModel.js";
-import { handleCommand } from "./commands.js";
+import { CommandRestart, handleCommand } from "./commands.js";
 import { ABILITIES_FUNCTIONS, tickAbilityObjects } from "./ability/ability.js";
 import { garbageCollectPathingCache, getPathingCache } from "./character/pathing.js";
 import { createObjectDeathCircle } from "./ability/abilityDeathCircle.js";
@@ -19,6 +19,7 @@ import { calculateHighscoreOnGameEnd } from "./highscores.js";
 import { setPlayerAsEndBoss } from "./character/enemy/endBossEnemy.js";
 import { ABILITY_NAME_FEED_PET } from "./ability/petTamer/abilityFeedPet.js";
 import { ABILITY_NAME_LOVE_PET } from "./ability/petTamer/abilityLovePet.js";
+import { COMMAND_RESTART } from "./globalVars.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -46,9 +47,14 @@ export function gameRestart(game: Game) {
         setReplaySeeds(game);
     }
     if (game.testing.record) {
-        if (game.testing.record.restartPlayerInput) game.testing.record.data.replayPlayerInputs.push(game.testing.record.restartPlayerInput);
-        game.testing.record.data.nextEndBosses = deepCopy(game.state.bossStuff.nextEndbosses);
-        game.testing.record.data.pastCharacters = deepCopy(game.state.pastPlayerCharacters);
+        const record = game.testing.record;
+        if (record.restartPlayerInput) record.data.replayPlayerInputs.push(record.restartPlayerInput);
+        const restart: CommandRestart = record.data.replayPlayerInputs[0] as any;
+        if(restart.command && restart.command === COMMAND_RESTART){
+            restart.testRandomStartSeed = game.state.randomSeed.seed;
+        }
+        record.data.nextEndBosses = deepCopy(game.state.bossStuff.nextEndbosses);
+        record.data.pastCharacters = deepCopy(game.state.pastPlayerCharacters);
     }
     gameInit(game);
 }

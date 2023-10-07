@@ -74,7 +74,6 @@ export function keyDown(event: { code: string, preventDefault?: Function, stopPr
                 recordInputs: true,
                 replay: false,
                 testMapSeed: game.state.map.seed,
-                testRandomStartSeed: game.state.randomSeed.seed
             };
             handleCommand(game, commandRestart);
             break;

@@ -142,7 +142,6 @@ function restart(game: Game, data: CommandRestart) {
         game.testing.record = { data: { replayPlayerInputs: [] } };
         game.testing.record.restartPlayerInput = { ...data };
         if (data.testMapSeed !== undefined) game.testing.record.mapSeed = data.testMapSeed;
-        if (data.testRandomStartSeed !== undefined) game.testing.record.randomStartSeed = data.testRandomStartSeed;
     } else if (game.testing.record) {
         delete game.testing.record;
     }

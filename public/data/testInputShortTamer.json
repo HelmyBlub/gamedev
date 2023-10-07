@@ -5,9 +5,31 @@
             "clientId": -1,
             "recordInputs": true,
             "replay": false,
-            "testMapSeed": 0.2641222653137996,
-            "testRandomStartSeed": 1.529573323005938,
+            "testMapSeed": 0.45925303093754105,
+            "executeTime": 23409,
+            "testRandomStartSeed": 1991.7906599052033
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "up",
+                "isKeydown": true
+            },
             "executeTime": 1
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability3",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": 245,
+                    "y": 137.5
+                }
+            },
+            "executeTime": 17
         },
         {
             "command": "playerInput",
@@ -16,16 +38,7 @@
                 "action": "left",
                 "isKeydown": true
             },
-            "executeTime": 1969
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "down",
-                "isKeydown": true
-            },
-            "executeTime": 2177
+            "executeTime": 385
         },
         {
             "command": "playerInput",
@@ -34,38 +47,64 @@
                 "action": "upgrade3",
                 "isKeydown": true
             },
-            "executeTime": 2705
+            "executeTime": 849
         },
         {
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "action": "down",
+                "action": "up",
                 "isKeydown": false
             },
-            "executeTime": 3265
+            "executeTime": 1969
         },
         {
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "action": "down",
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -26.40613254815969,
+                    "y": -103.30613254815957
+                }
+            },
+            "executeTime": 2353
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -38.40613254815972,
+                    "y": -104.30613254815957
+                }
+            },
+            "executeTime": 2433
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -111.6061325481599,
+                    "y": -93.30613254815957
+                }
+            },
+            "executeTime": 2961
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "up",
                 "isKeydown": true
             },
-            "executeTime": 4289
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "ability1",
-                "isKeydown": true,
-                "castPosition": {
-                    "x": -66.06012972767775,
-                    "y": 202.96012972767753
-                }
-            },
-            "executeTime": 4321
+            "executeTime": 2977
         },
         {
             "command": "playerInput",
@@ -74,46 +113,20 @@
                 "action": "ability1",
                 "isKeydown": false,
                 "castPosition": {
-                    "x": -74.5454111019163,
-                    "y": 211.44541110191608
+                    "x": -119.09730137270304,
+                    "y": -98.3973013727027
                 }
             },
-            "executeTime": 4401
+            "executeTime": 3025
         },
         {
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "action": "ability1",
-                "isKeydown": true,
-                "castPosition": {
-                    "x": -92.00125522463196,
-                    "y": 244.90125522463174
-                }
-            },
-            "executeTime": 4641
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "down",
+                "action": "up",
                 "isKeydown": false
             },
-            "executeTime": 4657
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "ability1",
-                "isKeydown": false,
-                "castPosition": {
-                    "x": -100.89831149947969,
-                    "y": 246.59831149947945
-                }
-            },
-            "executeTime": 4705
+            "executeTime": 4497
         },
         {
             "command": "playerInput",
@@ -122,11 +135,11 @@
                 "action": "ability1",
                 "isKeydown": true,
                 "castPosition": {
-                    "x": -104.29322087212921,
-                    "y": 183.59679515115323
+                    "x": -324.24548608801507,
+                    "y": -276.1550065232702
                 }
             },
-            "executeTime": 5041
+            "executeTime": 5505
         },
         {
             "command": "playerInput",
@@ -135,27 +148,35 @@
                 "action": "ability1",
                 "isKeydown": false,
                 "castPosition": {
-                    "x": -113.78937477368396,
-                    "y": 183.56879849979805
+                    "x": -335.097317315121,
+                    "y": -276.05004415248465
                 }
             },
-            "executeTime": 5105
+            "executeTime": 5585
         },
         {
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "action": "down",
-                "isKeydown": true
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -345.9689743423737,
+                    "y": -279.95395445524434
+                }
             },
-            "executeTime": 5489
+            "executeTime": 5665
         },
         {
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "action": "down",
-                "isKeydown": false
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -354.6205175056941,
+                    "y": -279.8791982170332
+                }
             },
             "executeTime": 5729
         },
@@ -163,133 +184,10 @@
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "action": "ability2",
-                "isKeydown": true,
-                "castPosition": {
-                    "x": -251.84668675098237,
-                    "y": 245.02637505447956
-                }
-            },
-            "executeTime": 6017
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "ability2",
-                "isKeydown": false,
-                "castPosition": {
-                    "x": -266.1014944969325,
-                    "y": 246.8893243755823
-                }
-            },
-            "executeTime": 6113
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "ability2",
-                "isKeydown": true,
-                "castPosition": {
-                    "x": -320.8192250343477,
-                    "y": 286.31593389484715
-                }
-            },
-            "executeTime": 6513
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "ability2",
-                "isKeydown": false,
-                "castPosition": {
-                    "x": -322.9774544896609,
-                    "y": 289.20718686324165
-                }
-            },
-            "executeTime": 6609
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "ability2",
-                "isKeydown": true,
-                "castPosition": {
-                    "x": -425.33535696755325,
-                    "y": 229.63346348057388
-                }
-            },
-            "executeTime": 7441
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "ability2",
-                "isKeydown": false,
-                "castPosition": {
-                    "x": -436.2201042540853,
-                    "y": 229.6063936762684
-                }
-            },
-            "executeTime": 7521
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "down",
-                "isKeydown": true
-            },
-            "executeTime": 10321
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "down",
-                "isKeydown": false
-            },
-            "executeTime": 10801
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "down",
-                "isKeydown": true
-            },
-            "executeTime": 11089
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "down",
-                "isKeydown": false
-            },
-            "executeTime": 11281
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
                 "action": "up",
                 "isKeydown": true
             },
-            "executeTime": 13089
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "up",
-                "isKeydown": false
-            },
-            "executeTime": 13553
+            "executeTime": 6129
         },
         {
             "command": "playerInput",
@@ -298,17 +196,1731 @@
                 "action": "left",
                 "isKeydown": false
             },
-            "executeTime": 13793
+            "executeTime": 6449
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "right",
+                "isKeydown": true
+            },
+            "executeTime": 6577
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "up",
+                "isKeydown": false
+            },
+            "executeTime": 6865
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "down",
+                "isKeydown": true
+            },
+            "executeTime": 7153
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "down",
+                "isKeydown": false
+            },
+            "executeTime": 7777
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "up",
+                "isKeydown": true
+            },
+            "executeTime": 8241
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "up",
+                "isKeydown": false
+            },
+            "executeTime": 8465
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability2",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -431.74745650677795,
+                    "y": -300.0719171733087
+                }
+            },
+            "executeTime": 8593
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability2",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -430.14745650677804,
+                    "y": -299.0719171733087
+                }
+            },
+            "executeTime": 8657
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability2",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -438.7474565067782,
+                    "y": -298.0719171733087
+                }
+            },
+            "executeTime": 8753
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability2",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -483.3474565067783,
+                    "y": -305.0719171733087
+                }
+            },
+            "executeTime": 8849
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability2",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -477.94745650677845,
+                    "y": -310.0719171733087
+                }
+            },
+            "executeTime": 8945
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability2",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -470.94745650677856,
+                    "y": -314.0719171733087
+                }
+            },
+            "executeTime": 9025
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "up",
+                "isKeydown": true
+            },
+            "executeTime": 9329
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "right",
+                "isKeydown": false
+            },
+            "executeTime": 9393
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability2",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -418.55923140738815,
+                    "y": -313.2601422726994
+                }
+            },
+            "executeTime": 9569
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability2",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -414.55923140738815,
+                    "y": -315.66014227269926
+                }
+            },
+            "executeTime": 9665
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability2",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -404.55923140738815,
+                    "y": -314.26014227269917
+                }
+            },
+            "executeTime": 9729
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability2",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -391.55923140738815,
+                    "y": -329.460142272699
+                }
+            },
+            "executeTime": 9857
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability2",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -385.55923140738815,
+                    "y": -339.0601422726989
+                }
+            },
+            "executeTime": 9921
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability2",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -369.55923140738815,
+                    "y": -346.2601422726987
+                }
+            },
+            "executeTime": 10049
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability2",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -360.55923140738815,
+                    "y": -349.8601422726986
+                }
+            },
+            "executeTime": 10113
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability2",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -339.55923140738815,
+                    "y": -386.06014227269844
+                }
+            },
+            "executeTime": 10241
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability2",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -334.55923140738815,
+                    "y": -400.06014227269833
+                }
+            },
+            "executeTime": 10321
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability2",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -317.55923140738815,
+                    "y": -411.86014227269817
+                }
+            },
+            "executeTime": 10433
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "right",
+                "isKeydown": true
+            },
+            "executeTime": 11121
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "right",
+                "isKeydown": false
+            },
+            "executeTime": 12721
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "left",
+                "isKeydown": true
+            },
+            "executeTime": 13105
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "up",
+                "isKeydown": false
+            },
+            "executeTime": 13697
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "left",
+                "isKeydown": false
+            },
+            "executeTime": 13889
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "up",
+                "isKeydown": true
+            },
+            "executeTime": 14225
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "right",
+                "isKeydown": true
+            },
+            "executeTime": 14289
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "up",
+                "isKeydown": false
+            },
+            "executeTime": 14673
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "right",
+                "isKeydown": false
+            },
+            "executeTime": 15617
         }
     ],
+    "nextEndBosses": {
+        "north": {
+            "id": 6108,
+            "x": 0,
+            "y": 0,
+            "width": 60,
+            "height": 60,
+            "paint": {
+                "color": "black",
+                "image": "slime"
+            },
+            "moveSpeed": 1,
+            "moveDirection": 0,
+            "isMoving": false,
+            "hp": 50000000,
+            "maxHp": 50000000,
+            "faction": "enemy",
+            "experienceWorth": 0,
+            "type": "EndBossEnemyCharacter",
+            "isDead": false,
+            "abilities": [
+                {
+                    "id": 6109,
+                    "name": "Melee",
+                    "damage": 10,
+                    "passive": true,
+                    "tickInterval": 250,
+                    "upgrades": {}
+                },
+                {
+                    "id": 6110,
+                    "name": "Shoot",
+                    "baseFrequency": 1000,
+                    "frequencyIncrease": 1.2,
+                    "damage": 50,
+                    "nextShotTime": -1,
+                    "pierceCount": 0,
+                    "multiShot": 0,
+                    "timeToLive": 3000,
+                    "passive": true,
+                    "moveSpeed": 2.7,
+                    "bulletSize": 8,
+                    "upgrades": {},
+                    "shootRandom": true
+                },
+                {
+                    "id": 6111,
+                    "name": "Sword",
+                    "damage": 25,
+                    "swordLength": 55,
+                    "swordCount": 1,
+                    "angleChangePerTick": 0.015,
+                    "currentSwordAngle": 0,
+                    "angleChangePerSword": 6.283185307179586,
+                    "passive": true,
+                    "tickInterval": 100,
+                    "upgrades": {}
+                },
+                {
+                    "id": 6112,
+                    "name": "FireCircle",
+                    "objectDuration": 5000,
+                    "damage": 10,
+                    "radius": 20,
+                    "baseRechargeTime": 2000,
+                    "rechargeTimeDecreaseFaktor": 1.5,
+                    "maxCharges": 3,
+                    "currentCharges": 0,
+                    "nextRechargeTime": -1,
+                    "passive": true,
+                    "moveSpeed": 2,
+                    "upgrades": {}
+                },
+                {
+                    "id": 6113,
+                    "name": "Ice Aura",
+                    "damage": 10,
+                    "radius": 72,
+                    "slowFactor": 2,
+                    "passive": true,
+                    "tickInterval": 250,
+                    "upgrades": {}
+                }
+            ],
+            "debuffs": [],
+            "upgradeChoices": [],
+            "weight": 3600,
+            "isRooted": false
+        },
+        "west": {
+            "id": 6114,
+            "x": -783.9827560572969,
+            "y": 331.0954544295054,
+            "width": 20,
+            "height": 40,
+            "paint": {
+                "randomizedCharacterImage": {
+                    "headIndex": 1,
+                    "chestIndex": 0,
+                    "legsIndex": 1,
+                    "skinColor": "black",
+                    "clothColor": "black"
+                }
+            },
+            "moveSpeed": 2,
+            "moveDirection": -3.141592653589793,
+            "isMoving": false,
+            "hp": 162,
+            "maxHp": 200,
+            "faction": "player",
+            "experienceWorth": 1,
+            "type": "abilityLevelingCharacter",
+            "isDead": false,
+            "abilities": [
+                {
+                    "id": 6115,
+                    "name": "Snipe",
+                    "baseDamage": 200,
+                    "passive": false,
+                    "playerInputBinding": "ability1",
+                    "baseRechargeTime": 1000,
+                    "currentCharges": 1,
+                    "maxCharges": 4,
+                    "reloadTime": -1,
+                    "baseRange": 820,
+                    "shotFrequencyTimeDecreaseFaktor": 1.3,
+                    "size": 5,
+                    "paintFadeDuration": 500,
+                    "upgrades": {},
+                    "maxShootFrequency": 1000,
+                    "shotNextAllowedTime": false,
+                    "nextAllowedShotTime": 10817.23076923077,
+                    "lastSniperRiflePaintDirection": -2.7089367082762426,
+                    "maxMagazineSize": 99,
+                    "minimumShotFrequency": 100,
+                    "tradable": true,
+                    "leveling": {
+                        "experience": 1,
+                        "experienceForLevelUp": 20,
+                        "level": 2
+                    },
+                    "bossSkillPoints": 0,
+                    "abilitySnipeCounter": 0,
+                    "abilitySnipeCharacterTotal": 1
+                },
+                {
+                    "id": 6116,
+                    "name": "HP Regen",
+                    "amount": 1,
+                    "tickInterval": 500,
+                    "passive": true,
+                    "upgrades": {},
+                    "nextIntervalTick": 11952
+                },
+                {
+                    "name": "SpeedBoost",
+                    "speedFactor": 1.5,
+                    "cooldown": 18000,
+                    "cooldownFinishTime": 0,
+                    "duration": 3000,
+                    "playerInputBinding": "ability2",
+                    "id": 6117,
+                    "passive": false,
+                    "upgrades": {},
+                    "tradable": true,
+                    "leveling": {
+                        "experience": 0,
+                        "experienceForLevelUp": 10,
+                        "level": 1
+                    },
+                    "bossSkillPoints": 0
+                }
+            ],
+            "debuffs": [],
+            "upgradeChoices": [],
+            "weight": 800,
+            "isRooted": false,
+            "willTurnToPetOnDeath": true,
+            "isPet": false,
+            "characterClass": "Sniper"
+        },
+        "south": {
+            "id": 6118,
+            "x": 0,
+            "y": 0,
+            "width": 60,
+            "height": 60,
+            "paint": {
+                "color": "black",
+                "image": "slime"
+            },
+            "moveSpeed": 1,
+            "moveDirection": 0,
+            "isMoving": false,
+            "hp": 50000000,
+            "maxHp": 50000000,
+            "faction": "enemy",
+            "experienceWorth": 0,
+            "type": "EndBossEnemyCharacter",
+            "isDead": false,
+            "abilities": [
+                {
+                    "id": 6119,
+                    "name": "Melee",
+                    "damage": 10,
+                    "passive": true,
+                    "tickInterval": 250,
+                    "upgrades": {}
+                },
+                {
+                    "id": 6120,
+                    "name": "Shoot",
+                    "baseFrequency": 1000,
+                    "frequencyIncrease": 1.2,
+                    "damage": 50,
+                    "nextShotTime": -1,
+                    "pierceCount": 0,
+                    "multiShot": 0,
+                    "timeToLive": 3000,
+                    "passive": true,
+                    "moveSpeed": 2.7,
+                    "bulletSize": 8,
+                    "upgrades": {},
+                    "shootRandom": true
+                },
+                {
+                    "id": 6121,
+                    "name": "Sword",
+                    "damage": 25,
+                    "swordLength": 55,
+                    "swordCount": 1,
+                    "angleChangePerTick": 0.015,
+                    "currentSwordAngle": 0,
+                    "angleChangePerSword": 6.283185307179586,
+                    "passive": true,
+                    "tickInterval": 100,
+                    "upgrades": {}
+                },
+                {
+                    "id": 6122,
+                    "name": "FireCircle",
+                    "objectDuration": 5000,
+                    "damage": 10,
+                    "radius": 20,
+                    "baseRechargeTime": 2000,
+                    "rechargeTimeDecreaseFaktor": 1.5,
+                    "maxCharges": 3,
+                    "currentCharges": 0,
+                    "nextRechargeTime": -1,
+                    "passive": true,
+                    "moveSpeed": 2,
+                    "upgrades": {}
+                },
+                {
+                    "id": 6123,
+                    "name": "Ice Aura",
+                    "damage": 10,
+                    "radius": 72,
+                    "slowFactor": 2,
+                    "passive": true,
+                    "tickInterval": 250,
+                    "upgrades": {}
+                }
+            ],
+            "debuffs": [],
+            "upgradeChoices": [],
+            "weight": 3600,
+            "isRooted": false
+        },
+        "east": {
+            "id": 6124,
+            "x": 0,
+            "y": 0,
+            "width": 60,
+            "height": 60,
+            "paint": {
+                "color": "black",
+                "image": "slime"
+            },
+            "moveSpeed": 1,
+            "moveDirection": 0,
+            "isMoving": false,
+            "hp": 50000000,
+            "maxHp": 50000000,
+            "faction": "enemy",
+            "experienceWorth": 0,
+            "type": "EndBossEnemyCharacter",
+            "isDead": false,
+            "abilities": [
+                {
+                    "id": 6125,
+                    "name": "Melee",
+                    "damage": 10,
+                    "passive": true,
+                    "tickInterval": 250,
+                    "upgrades": {}
+                },
+                {
+                    "id": 6126,
+                    "name": "Shoot",
+                    "baseFrequency": 1000,
+                    "frequencyIncrease": 1.2,
+                    "damage": 50,
+                    "nextShotTime": -1,
+                    "pierceCount": 0,
+                    "multiShot": 0,
+                    "timeToLive": 3000,
+                    "passive": true,
+                    "moveSpeed": 2.7,
+                    "bulletSize": 8,
+                    "upgrades": {},
+                    "shootRandom": true
+                },
+                {
+                    "id": 6127,
+                    "name": "Sword",
+                    "damage": 25,
+                    "swordLength": 55,
+                    "swordCount": 1,
+                    "angleChangePerTick": 0.015,
+                    "currentSwordAngle": 0,
+                    "angleChangePerSword": 6.283185307179586,
+                    "passive": true,
+                    "tickInterval": 100,
+                    "upgrades": {}
+                },
+                {
+                    "id": 6128,
+                    "name": "FireCircle",
+                    "objectDuration": 5000,
+                    "damage": 10,
+                    "radius": 20,
+                    "baseRechargeTime": 2000,
+                    "rechargeTimeDecreaseFaktor": 1.5,
+                    "maxCharges": 3,
+                    "currentCharges": 0,
+                    "nextRechargeTime": -1,
+                    "passive": true,
+                    "moveSpeed": 2,
+                    "upgrades": {}
+                },
+                {
+                    "id": 6129,
+                    "name": "Ice Aura",
+                    "damage": 10,
+                    "radius": 72,
+                    "slowFactor": 2,
+                    "passive": true,
+                    "tickInterval": 250,
+                    "upgrades": {}
+                }
+            ],
+            "debuffs": [],
+            "upgradeChoices": [],
+            "weight": 3600,
+            "isRooted": false
+        }
+    },
+    "pastCharacters": {
+        "characters": [
+            {
+                "id": 6060,
+                "x": 140,
+                "y": 100,
+                "width": 20,
+                "height": 40,
+                "paint": {
+                    "randomizedCharacterImage": {
+                        "headIndex": 1,
+                        "chestIndex": 0,
+                        "legsIndex": 1,
+                        "skinColor": "black",
+                        "clothColor": "white"
+                    }
+                },
+                "moveSpeed": 2,
+                "moveDirection": 0,
+                "isMoving": false,
+                "hp": 200,
+                "maxHp": 200,
+                "faction": "player",
+                "experienceWorth": 1,
+                "type": "levelingCharacter",
+                "isDead": false,
+                "abilities": [
+                    {
+                        "id": 6061,
+                        "name": "Tower",
+                        "damage": 50,
+                        "passive": false,
+                        "playerInputBinding": "ability1",
+                        "idCounter": 0,
+                        "maxClickRange": 1500,
+                        "currentAbilityIndex": 6,
+                        "availableAbilityKeys": [
+                            "Shoot",
+                            "FireCircle",
+                            "Sword",
+                            "Ice Aura",
+                            "SingleTarget"
+                        ],
+                        "orderOfAbilities": [
+                            0,
+                            0,
+                            0,
+                            1,
+                            0,
+                            0,
+                            1,
+                            2,
+                            2,
+                            1,
+                            3,
+                            4
+                        ],
+                        "upgrades": {},
+                        "tradable": true
+                    },
+                    {
+                        "id": 6062,
+                        "name": "HP Regen",
+                        "amount": 2,
+                        "tickInterval": 500,
+                        "passive": true,
+                        "upgrades": {},
+                        "nextIntervalTick": 427268
+                    },
+                    {
+                        "id": 6063,
+                        "name": "Leash",
+                        "leashMaxLength": 100,
+                        "passive": true,
+                        "leashBendPoints": [],
+                        "upgrades": {}
+                    }
+                ],
+                "debuffs": [],
+                "upgradeChoices": [],
+                "weight": 800,
+                "isRooted": false,
+                "willTurnToPetOnDeath": true,
+                "isPet": false,
+                "leveling": {
+                    "experience": 4,
+                    "experienceForLevelUp": 26,
+                    "level": 8
+                },
+                "availableSkillPoints": 0,
+                "characterClass": "Tower Builder",
+                "isUnMoveAble": true
+            },
+            {
+                "id": 6064,
+                "x": 180,
+                "y": 100,
+                "width": 20,
+                "height": 40,
+                "paint": {
+                    "randomizedCharacterImage": {
+                        "headIndex": 1,
+                        "chestIndex": 0,
+                        "legsIndex": 1,
+                        "skinColor": "black",
+                        "clothColor": "white"
+                    }
+                },
+                "moveSpeed": 2,
+                "moveDirection": 0,
+                "isMoving": false,
+                "hp": 200,
+                "maxHp": 200,
+                "faction": "player",
+                "experienceWorth": 1,
+                "type": "abilityLevelingCharacter",
+                "isDead": false,
+                "abilities": [
+                    {
+                        "name": "SpeedBoost",
+                        "speedFactor": 1.5,
+                        "cooldown": 18000,
+                        "cooldownFinishTime": 0,
+                        "duration": 3000,
+                        "playerInputBinding": "ability2",
+                        "id": 6065,
+                        "passive": false,
+                        "upgrades": {},
+                        "tradable": false,
+                        "gifted": true
+                    },
+                    {
+                        "id": 6066,
+                        "name": "Snipe",
+                        "baseDamage": 300,
+                        "passive": false,
+                        "playerInputBinding": "ability1",
+                        "baseRechargeTime": 1000,
+                        "currentCharges": 2,
+                        "maxCharges": 5,
+                        "reloadTime": -1,
+                        "baseRange": 830,
+                        "shotFrequencyTimeDecreaseFaktor": 1.45,
+                        "size": 5,
+                        "paintFadeDuration": 500,
+                        "upgrades": {},
+                        "maxShootFrequency": 1000,
+                        "shotNextAllowedTime": false,
+                        "nextAllowedShotTime": 0,
+                        "lastSniperRiflePaintDirection": -0.8097835725701669,
+                        "maxMagazineSize": 99,
+                        "minimumShotFrequency": 100,
+                        "tradable": false,
+                        "abilitySnipeCounter": 0,
+                        "abilitySnipeCharacterTotal": 3,
+                        "gifted": true
+                    },
+                    {
+                        "name": "SpeedBoost",
+                        "speedFactor": 2,
+                        "cooldown": 18000,
+                        "cooldownFinishTime": 0,
+                        "duration": 3000,
+                        "playerInputBinding": "ability2",
+                        "id": 6067,
+                        "passive": false,
+                        "upgrades": {
+                            "Slow Trail": {
+                                "level": 1
+                            },
+                            "Speed Boost +Speed": {
+                                "level": 1
+                            }
+                        },
+                        "tradable": false,
+                        "gifted": true
+                    },
+                    {
+                        "id": 6068,
+                        "name": "Snipe",
+                        "baseDamage": 4100,
+                        "passive": false,
+                        "playerInputBinding": "ability1",
+                        "baseRechargeTime": 1000,
+                        "currentCharges": 37,
+                        "maxCharges": 43,
+                        "reloadTime": -1,
+                        "baseRange": 1210,
+                        "shotFrequencyTimeDecreaseFaktor": 7.1499999999999995,
+                        "size": 5,
+                        "paintFadeDuration": 500,
+                        "upgrades": {
+                            "More Rifles": {
+                                "level": 1,
+                                "rotationDirection": 3672.9199999969496,
+                                "rotationDistance": 80,
+                                "lastSniperRiflePaintDirection": [
+                                    -0.8301401457613855,
+                                    0
+                                ],
+                                "numberRifles": 1,
+                                "upgradeSynergy": false
+                            },
+                            "Backwards Shot": {
+                                "level": 1,
+                                "upgradeSynergy": false
+                            }
+                        },
+                        "maxShootFrequency": 1000,
+                        "shotNextAllowedTime": false,
+                        "nextAllowedShotTime": 0,
+                        "lastSniperRiflePaintDirection": -0.8097835725701669,
+                        "maxMagazineSize": 99,
+                        "minimumShotFrequency": 100,
+                        "tradable": false,
+                        "abilitySnipeCounter": 1,
+                        "abilitySnipeCharacterTotal": 3,
+                        "gifted": true
+                    },
+                    {
+                        "id": 6069,
+                        "name": "Snipe",
+                        "baseDamage": 7800,
+                        "passive": false,
+                        "playerInputBinding": "ability1",
+                        "baseRechargeTime": 1000,
+                        "currentCharges": 17,
+                        "maxCharges": 80,
+                        "reloadTime": -1,
+                        "baseRange": 1580,
+                        "shotFrequencyTimeDecreaseFaktor": 12.7,
+                        "size": 5,
+                        "paintFadeDuration": 500,
+                        "upgrades": {
+                            "After Image": {
+                                "level": 1,
+                                "afterImages": [],
+                                "cooldown": 1500,
+                                "upgradeSynergy": false
+                            },
+                            "Split Shot": {
+                                "level": 1,
+                                "shotSplitsPerHit": 1,
+                                "upgradeSynergy": false
+                            }
+                        },
+                        "maxShootFrequency": 1000,
+                        "shotNextAllowedTime": false,
+                        "nextAllowedShotTime": 0,
+                        "lastSniperRiflePaintDirection": -0.8097835725701669,
+                        "maxMagazineSize": 99,
+                        "minimumShotFrequency": 100,
+                        "tradable": true,
+                        "leveling": {
+                            "experience": 11743.5,
+                            "experienceForLevelUp": 15410,
+                            "level": 78
+                        },
+                        "bossSkillPoints": 0,
+                        "abilitySnipeCounter": 2,
+                        "abilitySnipeCharacterTotal": 3
+                    },
+                    {
+                        "id": 6070,
+                        "name": "HP Regen",
+                        "amount": 1,
+                        "tickInterval": 500,
+                        "passive": true,
+                        "upgrades": {},
+                        "nextIntervalTick": 427584
+                    },
+                    {
+                        "name": "SpeedBoost",
+                        "speedFactor": 1.5,
+                        "cooldown": 15300,
+                        "cooldownFinishTime": 0,
+                        "duration": 3000,
+                        "playerInputBinding": "ability2",
+                        "id": 6071,
+                        "passive": false,
+                        "upgrades": {
+                            "Additional Charge": {
+                                "level": 1,
+                                "maxCharges": 2,
+                                "currentCharges": 2
+                            },
+                            "Speed Boost -Cooldown": {
+                                "level": 1
+                            }
+                        },
+                        "tradable": true,
+                        "leveling": {
+                            "experience": 0,
+                            "experienceForLevelUp": 10,
+                            "level": 1
+                        },
+                        "bossSkillPoints": 0
+                    },
+                    {
+                        "id": 6072,
+                        "name": "Leash",
+                        "leashMaxLength": 100,
+                        "passive": true,
+                        "leashBendPoints": [],
+                        "upgrades": {}
+                    }
+                ],
+                "debuffs": [],
+                "upgradeChoices": [],
+                "weight": 800,
+                "isRooted": false,
+                "willTurnToPetOnDeath": true,
+                "isPet": false,
+                "characterClass": "Sniper",
+                "isUnMoveAble": true
+            },
+            {
+                "id": 6073,
+                "x": 220,
+                "y": 100,
+                "width": 20,
+                "height": 40,
+                "paint": {
+                    "randomizedCharacterImage": {
+                        "headIndex": 2,
+                        "chestIndex": 2,
+                        "legsIndex": 2,
+                        "skinColor": "green",
+                        "clothColor": "red"
+                    }
+                },
+                "moveSpeed": 2,
+                "moveDirection": 0,
+                "isMoving": false,
+                "hp": -150,
+                "maxHp": 200,
+                "faction": "player",
+                "experienceWorth": 1,
+                "type": "abilityLevelingCharacter",
+                "isDead": false,
+                "abilities": [
+                    {
+                        "id": 6074,
+                        "name": "Snipe",
+                        "baseDamage": 14000,
+                        "passive": false,
+                        "playerInputBinding": "ability1",
+                        "baseRechargeTime": 1000,
+                        "currentCharges": 96,
+                        "maxCharges": 99,
+                        "reloadTime": -1,
+                        "baseRange": 2200,
+                        "shotFrequencyTimeDecreaseFaktor": 22,
+                        "size": 5,
+                        "paintFadeDuration": 500,
+                        "upgrades": {
+                            "Fire Line": {
+                                "level": 1,
+                                "duration": 3000,
+                                "damageTotalFactor": 2,
+                                "tickInterval": 200,
+                                "range": 150,
+                                "upgradeSynergy": false
+                            },
+                            "Terrain Bounce": {
+                                "level": 1,
+                                "active": true,
+                                "damageUpPerBounceFactor": 0.5,
+                                "upgradeSynergy": false
+                            },
+                            "Backwards Shot": {
+                                "level": 1,
+                                "upgradeSynergy": false
+                            },
+                            "Explode on Death": {
+                                "level": 1,
+                                "damageFactor": 0.5,
+                                "radius": 50,
+                                "upgradeSynergy": false
+                            },
+                            "More Rifles": {
+                                "level": 1,
+                                "rotationDirection": 1463.1999999989594,
+                                "rotationDistance": 80,
+                                "lastSniperRiflePaintDirection": [
+                                    0.47603109391860987,
+                                    0
+                                ],
+                                "numberRifles": 1,
+                                "upgradeSynergy": false
+                            }
+                        },
+                        "maxShootFrequency": 1000,
+                        "shotNextAllowedTime": false,
+                        "nextAllowedShotTime": 0,
+                        "lastSniperRiflePaintDirection": 0.6461497347105047,
+                        "maxMagazineSize": 99,
+                        "minimumShotFrequency": 100,
+                        "tradable": true,
+                        "leveling": {
+                            "experience": 12803,
+                            "experienceForLevelUp": 67004,
+                            "level": 140
+                        },
+                        "bossSkillPoints": 0,
+                        "abilitySnipeCounter": 0,
+                        "abilitySnipeCharacterTotal": 1
+                    },
+                    {
+                        "id": 6075,
+                        "name": "HP Regen",
+                        "amount": 1,
+                        "tickInterval": 500,
+                        "passive": true,
+                        "upgrades": {},
+                        "nextIntervalTick": 427256
+                    },
+                    {
+                        "name": "SpeedBoost",
+                        "speedFactor": 2,
+                        "cooldown": 13005,
+                        "cooldownFinishTime": 0,
+                        "duration": 3000,
+                        "playerInputBinding": "ability2",
+                        "id": 6076,
+                        "passive": false,
+                        "upgrades": {
+                            "Additional Charge": {
+                                "level": 1,
+                                "maxCharges": 2,
+                                "currentCharges": 2
+                            },
+                            "Speed Boost +Speed": {
+                                "level": 1
+                            },
+                            "Slow Trail": {
+                                "level": 1
+                            },
+                            "Speed Boost -Cooldown": {
+                                "level": 2
+                            }
+                        },
+                        "tradable": true,
+                        "leveling": {
+                            "experience": 0,
+                            "experienceForLevelUp": 10,
+                            "level": 1
+                        },
+                        "bossSkillPoints": 0
+                    }
+                ],
+                "debuffs": [],
+                "upgradeChoices": [],
+                "weight": 800,
+                "isRooted": false,
+                "willTurnToPetOnDeath": true,
+                "isPet": false,
+                "characterClass": "Sniper",
+                "isUnMoveAble": true
+            },
+            {
+                "id": 6077,
+                "x": 140,
+                "y": 260,
+                "width": 20,
+                "height": 40,
+                "paint": {
+                    "randomizedCharacterImage": {
+                        "headIndex": 2,
+                        "chestIndex": 2,
+                        "legsIndex": 2,
+                        "skinColor": "red",
+                        "clothColor": "green"
+                    }
+                },
+                "moveSpeed": 2,
+                "moveDirection": 3.141592653589793,
+                "isMoving": false,
+                "hp": -40,
+                "maxHp": 200,
+                "faction": "player",
+                "experienceWorth": 1,
+                "type": "abilityLevelingCharacter",
+                "isDead": false,
+                "abilities": [
+                    {
+                        "id": 6078,
+                        "name": "Snipe",
+                        "baseDamage": 12500,
+                        "passive": false,
+                        "playerInputBinding": "ability1",
+                        "baseRechargeTime": 1000,
+                        "currentCharges": 76,
+                        "maxCharges": 99,
+                        "reloadTime": -1,
+                        "baseRange": 2050,
+                        "shotFrequencyTimeDecreaseFaktor": 19.75,
+                        "size": 5,
+                        "paintFadeDuration": 500,
+                        "upgrades": {
+                            "Split Shot": {
+                                "level": 1,
+                                "shotSplitsPerHit": 1,
+                                "upgradeSynergy": false
+                            },
+                            "Fire Line": {
+                                "level": 1,
+                                "duration": 3000,
+                                "damageTotalFactor": 2,
+                                "tickInterval": 200,
+                                "range": 150,
+                                "upgradeSynergy": false
+                            },
+                            "Stay Still": {
+                                "level": 1,
+                                "damageMultiplier": 1,
+                                "stayStillStartTime": 16,
+                                "damageMultiplierActive": true,
+                                "stayStillTime": 2500,
+                                "upgradeSynergy": false
+                            },
+                            "Terrain Bounce": {
+                                "level": 1,
+                                "active": true,
+                                "damageUpPerBounceFactor": 0.5,
+                                "upgradeSynergy": false
+                            }
+                        },
+                        "maxShootFrequency": 1000,
+                        "shotNextAllowedTime": false,
+                        "nextAllowedShotTime": 0,
+                        "lastSniperRiflePaintDirection": -3.388014317158095,
+                        "maxMagazineSize": 99,
+                        "minimumShotFrequency": 100,
+                        "tradable": true,
+                        "leveling": {
+                            "experience": 34253.5,
+                            "experienceForLevelUp": 48422,
+                            "level": 125
+                        },
+                        "bossSkillPoints": 0,
+                        "abilitySnipeCounter": 0,
+                        "abilitySnipeCharacterTotal": 1
+                    },
+                    {
+                        "id": 6079,
+                        "name": "HP Regen",
+                        "amount": 1,
+                        "tickInterval": 500,
+                        "passive": true,
+                        "upgrades": {},
+                        "nextIntervalTick": 316372
+                    },
+                    {
+                        "name": "SpeedBoost",
+                        "speedFactor": 2,
+                        "cooldown": 15300,
+                        "cooldownFinishTime": 0,
+                        "duration": 3000,
+                        "playerInputBinding": "ability2",
+                        "id": 6080,
+                        "passive": false,
+                        "upgrades": {
+                            "Slow Trail": {
+                                "level": 1
+                            },
+                            "Additional Charge": {
+                                "level": 1,
+                                "maxCharges": 2,
+                                "currentCharges": 2
+                            },
+                            "Speed Boost -Cooldown": {
+                                "level": 1
+                            },
+                            "Speed Boost +Speed": {
+                                "level": 1
+                            }
+                        },
+                        "tradable": true,
+                        "leveling": {
+                            "experience": 0,
+                            "experienceForLevelUp": 10,
+                            "level": 1
+                        },
+                        "bossSkillPoints": 0
+                    }
+                ],
+                "debuffs": [],
+                "upgradeChoices": [],
+                "weight": 800,
+                "isRooted": false,
+                "willTurnToPetOnDeath": true,
+                "isPet": false,
+                "characterClass": "Sniper",
+                "isUnMoveAble": true
+            },
+            {
+                "id": 6095,
+                "x": 180,
+                "y": 260,
+                "width": 20,
+                "height": 40,
+                "paint": {
+                    "randomizedCharacterImage": {
+                        "headIndex": 0,
+                        "chestIndex": 1,
+                        "legsIndex": 1,
+                        "skinColor": "red",
+                        "clothColor": "red"
+                    }
+                },
+                "moveSpeed": 2.4,
+                "moveDirection": 3.141592653589793,
+                "isMoving": false,
+                "hp": 54,
+                "maxHp": 300,
+                "faction": "player",
+                "experienceWorth": 1,
+                "type": "Tamer",
+                "isDead": false,
+                "abilities": [
+                    {
+                        "id": 6096,
+                        "name": "HP Regen",
+                        "amount": 1,
+                        "tickInterval": 500,
+                        "passive": true,
+                        "upgrades": {},
+                        "nextIntervalTick": 47980
+                    },
+                    {
+                        "id": 6097,
+                        "name": "FeedPet",
+                        "passive": false,
+                        "playerInputBinding": "ability1",
+                        "baseRechargeTime": 100,
+                        "range": 200,
+                        "upgrades": {},
+                        "feedValue": 30,
+                        "tradable": true,
+                        "unique": true,
+                        "nextRechargeTime": 17524
+                    },
+                    {
+                        "id": 6098,
+                        "name": "LovePet",
+                        "passive": false,
+                        "playerInputBinding": "ability2",
+                        "baseRechargeTime": 100,
+                        "range": 200,
+                        "upgrades": {},
+                        "loveValue": 30,
+                        "tradable": true,
+                        "unique": true
+                    }
+                ],
+                "debuffs": [],
+                "upgradeChoices": [],
+                "weight": 800,
+                "isRooted": false,
+                "willTurnToPetOnDeath": true,
+                "isPet": false,
+                "characterClass": "Tamer",
+                "pets": [
+                    {
+                        "id": 55559,
+                        "x": 217.15058076577958,
+                        "y": 258.8974432186704,
+                        "width": 30,
+                        "height": 30,
+                        "paint": {
+                            "color": "blue"
+                        },
+                        "moveSpeed": 2,
+                        "moveDirection": 0.40044645866997863,
+                        "isMoving": false,
+                        "hp": 20,
+                        "maxHp": 20,
+                        "faction": "player",
+                        "experienceWorth": 10,
+                        "type": "tamerPet",
+                        "isDead": false,
+                        "abilities": [
+                            {
+                                "id": 55560,
+                                "name": "Leash",
+                                "leashMaxLength": 175,
+                                "leashedToOwnerId": 6095,
+                                "passive": true,
+                                "leashBendPoints": [],
+                                "upgrades": {}
+                            },
+                            {
+                                "id": 55561,
+                                "name": "Melee",
+                                "damage": 200,
+                                "passive": true,
+                                "tickInterval": 250,
+                                "upgrades": {},
+                                "nextTickTime": 23516
+                            }
+                        ],
+                        "debuffs": [],
+                        "upgradeChoices": [],
+                        "weight": 300,
+                        "isRooted": false,
+                        "petTargetBehavior": "protective",
+                        "petNoTargetBehavior": "following",
+                        "defaultSize": 30,
+                        "sizeFactor": 1,
+                        "baseMoveSpeed": 2,
+                        "bossSkillPoints": 0,
+                        "leveling": {
+                            "experience": 2,
+                            "experienceForLevelUp": 14,
+                            "level": 4
+                        },
+                        "foodIntakeLevel": {
+                            "current": 60,
+                            "underfedAt": 36,
+                            "overfedAt": 65,
+                            "tickInterval": 1011,
+                            "nextTick": 23555
+                        },
+                        "happines": {
+                            "current": 96,
+                            "unhappyAt": 30,
+                            "hyperactiveAt": 105,
+                            "tickInterval": 848,
+                            "visualizations": [],
+                            "nextTick": 23616
+                        },
+                        "traits": [],
+                        "tradable": true,
+                        "nextMovementUpdateTime": 23556
+                    },
+                    {
+                        "id": 55562,
+                        "x": 200.86259497953253,
+                        "y": 295.729796776053,
+                        "width": 30,
+                        "height": 30,
+                        "paint": {
+                            "color": "green"
+                        },
+                        "moveSpeed": 2,
+                        "moveDirection": 0.6575609475218032,
+                        "isMoving": false,
+                        "hp": 20,
+                        "maxHp": 20,
+                        "faction": "player",
+                        "experienceWorth": 10,
+                        "type": "tamerPet",
+                        "isDead": false,
+                        "abilities": [
+                            {
+                                "id": 55563,
+                                "name": "Leash",
+                                "leashMaxLength": 175,
+                                "leashedToOwnerId": 6095,
+                                "passive": true,
+                                "leashBendPoints": [],
+                                "upgrades": {}
+                            },
+                            {
+                                "id": 55564,
+                                "name": "Melee",
+                                "damage": 300,
+                                "passive": true,
+                                "tickInterval": 250,
+                                "upgrades": {},
+                                "nextTickTime": 23516
+                            }
+                        ],
+                        "debuffs": [],
+                        "upgradeChoices": [],
+                        "weight": 300,
+                        "isRooted": false,
+                        "petTargetBehavior": "protective",
+                        "petNoTargetBehavior": "following",
+                        "defaultSize": 30,
+                        "sizeFactor": 1,
+                        "baseMoveSpeed": 2,
+                        "bossSkillPoints": 0,
+                        "leveling": {
+                            "experience": 9,
+                            "experienceForLevelUp": 19,
+                            "level": 6
+                        },
+                        "foodIntakeLevel": {
+                            "current": 55,
+                            "underfedAt": 34,
+                            "overfedAt": 79,
+                            "tickInterval": 978,
+                            "nextTick": 23810
+                        },
+                        "happines": {
+                            "current": 100,
+                            "unhappyAt": 38,
+                            "hyperactiveAt": 111,
+                            "tickInterval": 775,
+                            "visualizations": [],
+                            "nextTick": 22039
+                        },
+                        "traits": [],
+                        "tradable": true,
+                        "nextMovementUpdateTime": 23556
+                    },
+                    {
+                        "id": 55565,
+                        "x": 140.12169533512554,
+                        "y": 257.9181362671571,
+                        "width": 30,
+                        "height": 30,
+                        "paint": {
+                            "color": "black"
+                        },
+                        "moveSpeed": 2,
+                        "moveDirection": -3.5074856100078575,
+                        "isMoving": false,
+                        "hp": 20,
+                        "maxHp": 20,
+                        "faction": "player",
+                        "experienceWorth": 10,
+                        "type": "tamerPet",
+                        "isDead": false,
+                        "abilities": [
+                            {
+                                "id": 55566,
+                                "name": "Leash",
+                                "leashMaxLength": 175,
+                                "leashedToOwnerId": 6095,
+                                "passive": true,
+                                "leashBendPoints": [],
+                                "upgrades": {}
+                            },
+                            {
+                                "id": 55567,
+                                "name": "Melee",
+                                "damage": 300,
+                                "passive": true,
+                                "tickInterval": 250,
+                                "upgrades": {},
+                                "nextTickTime": 23516
+                            }
+                        ],
+                        "debuffs": [],
+                        "upgradeChoices": [],
+                        "weight": 300,
+                        "isRooted": false,
+                        "petTargetBehavior": "protective",
+                        "petNoTargetBehavior": "following",
+                        "defaultSize": 30,
+                        "sizeFactor": 1,
+                        "baseMoveSpeed": 2,
+                        "bossSkillPoints": 0,
+                        "leveling": {
+                            "experience": 4,
+                            "experienceForLevelUp": 16,
+                            "level": 5
+                        },
+                        "foodIntakeLevel": {
+                            "current": 41,
+                            "underfedAt": 22,
+                            "overfedAt": 76,
+                            "tickInterval": 1114,
+                            "nextTick": 23530
+                        },
+                        "happines": {
+                            "current": 82,
+                            "unhappyAt": 35,
+                            "hyperactiveAt": 119,
+                            "tickInterval": 987,
+                            "visualizations": [
+                                {
+                                    "happy": false,
+                                    "displayUntil": 11716
+                                },
+                                {
+                                    "happy": true,
+                                    "displayUntil": 11828
+                                }
+                            ]
+                        },
+                        "traits": [],
+                        "tradable": true,
+                        "nextMovementUpdateTime": 23556
+                    }
+                ],
+                "isUnMoveAble": true
+            },
+            {
+                "id": 21945,
+                "x": 220,
+                "y": 260,
+                "width": 20,
+                "height": 40,
+                "paint": {
+                    "randomizedCharacterImage": {
+                        "headIndex": 2,
+                        "chestIndex": 0,
+                        "legsIndex": 1,
+                        "skinColor": "black",
+                        "clothColor": "green"
+                    }
+                },
+                "moveSpeed": 2,
+                "moveDirection": 3.141592653589793,
+                "isMoving": false,
+                "hp": 200,
+                "maxHp": 200,
+                "faction": "player",
+                "experienceWorth": 1,
+                "type": "abilityLevelingCharacter",
+                "isDead": false,
+                "abilities": [
+                    {
+                        "id": 21941,
+                        "name": "Snipe",
+                        "baseDamage": 50,
+                        "passive": false,
+                        "playerInputBinding": "ability1",
+                        "baseRechargeTime": 1000,
+                        "currentCharges": 1,
+                        "maxCharges": 3,
+                        "reloadTime": -1,
+                        "baseRange": 800,
+                        "shotFrequencyTimeDecreaseFaktor": 1,
+                        "size": 5,
+                        "paintFadeDuration": 500,
+                        "upgrades": {},
+                        "maxShootFrequency": 1000,
+                        "shotNextAllowedTime": false,
+                        "nextAllowedShotTime": 0,
+                        "lastSniperRiflePaintDirection": -3.1524989615493464,
+                        "maxMagazineSize": 99,
+                        "minimumShotFrequency": 100,
+                        "tradable": true,
+                        "leveling": {
+                            "experience": 9,
+                            "experienceForLevelUp": 10,
+                            "level": 1
+                        },
+                        "bossSkillPoints": 0,
+                        "abilitySnipeCounter": 0,
+                        "abilitySnipeCharacterTotal": 1
+                    },
+                    {
+                        "id": 21942,
+                        "name": "HP Regen",
+                        "amount": 1,
+                        "tickInterval": 500,
+                        "passive": true,
+                        "upgrades": {},
+                        "nextIntervalTick": 23680
+                    },
+                    {
+                        "name": "SpeedBoost",
+                        "speedFactor": 1.5,
+                        "cooldown": 18000,
+                        "cooldownFinishTime": 0,
+                        "duration": 3000,
+                        "playerInputBinding": "ability2",
+                        "id": 21943,
+                        "passive": false,
+                        "upgrades": {},
+                        "tradable": true,
+                        "leveling": {
+                            "experience": 0,
+                            "experienceForLevelUp": 10,
+                            "level": 1
+                        },
+                        "bossSkillPoints": 0
+                    },
+                    {
+                        "id": 21944,
+                        "name": "Leash",
+                        "leashMaxLength": 100,
+                        "passive": true,
+                        "leashBendPoints": [],
+                        "upgrades": {}
+                    }
+                ],
+                "debuffs": [],
+                "upgradeChoices": [],
+                "weight": 800,
+                "isRooted": false,
+                "willTurnToPetOnDeath": true,
+                "isPet": false,
+                "characterClass": "Sniper",
+                "isUnMoveAble": true
+            }
+        ],
+        "maxNumber": 12
+    },
     "gameEndAsserts": [
         {
             "type": "score",
-            "data": 1601
+            "data": 1004
         },
         {
             "type": "killCounter",
-            "data": 54
+            "data": 98
         }
     ]
 }
