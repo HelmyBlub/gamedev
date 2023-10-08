@@ -11,7 +11,7 @@ import { createProjectile, Projectile } from "../ability/projectile.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
 import { detectAbilityObjectCircleToCharacterHit } from "../ability/ability.js";
 
-let testInputs: (PlayerInput | Omit<CommandRestart, "executeTime">)[] = [];
+let testData: (PlayerInput | Omit<CommandRestart, "executeTime">)[] = [];
 
 export function testGame(game: Game) {
     console.log("start test");
@@ -28,9 +28,9 @@ function testPlayerClasses(game: Game) {
     const replay = game.testing.replay;
     replay.testInputFileQueue = [];
     // replay.testInputFileQueue.push("/data/testInputError.json");
-    replay.testInputFileQueue.push("/data/testInputShortBuilder.json");
-    replay.testInputFileQueue.push("/data/testInputShortSniper.json");
-    replay.testInputFileQueue.push("/data/testInputShortTamer.json");
+    // replay.testInputFileQueue.push("/data/testInputShortBuilder.json");
+    // replay.testInputFileQueue.push("/data/testInputShortSniper.json");
+    // replay.testInputFileQueue.push("/data/testInputShortTamer.json");
     // replay.testInputFileQueue.push("/data/testInputLongSniper.json");
     // replay.testInputFileQueue.push("/data/testInputLongBuilder.json");
     replay.testInputFileQueue.push("/data/testInputLongTamer.json");
@@ -49,10 +49,23 @@ export function replayNextInReplayQueue(game: Game): boolean {
     const nextInputFile = replay.testInputFileQueue.shift()!;
     request.open("GET", nextInputFile, false);
     request.send(null)
-    testInputs = JSON.parse(request.responseText);
-    replay.data = testInputs as any;
+    testData = JSON.parse(request.responseText);
+    replay.data = testData as any;
 
     game.state.ended = true;
+    if (replay.data!.replayPlayerInputs[0].command === "restart") {
+        let startCommand: CommandRestart = replay.data!.replayPlayerInputs.shift() as any;
+        startCommand.replay = true;
+        handleCommand(game, startCommand);
+    } else {
+        handleCommand(game, { command: "restart", clientId: game.multiplayer.myClientId, testing: true });
+    }
+    return true;
+}
+// 2772, 239
+export function setPastCharactersAndEndBossesForReplayFromReplayData(game: Game){
+    const replay = game.testing.replay;
+    if(!replay) return;
     if (game.state.map.endBossArea) {
         if (replay.data?.nextEndBosses) {
             game.state.bossStuff.nextEndbosses = replay.data?.nextEndBosses;
@@ -73,15 +86,7 @@ export function replayNextInReplayQueue(game: Game): boolean {
         }
     } else {
         game.state.pastPlayerCharacters.characters = [];
-    }
-    if (replay.data!.replayPlayerInputs[0].command === "restart") {
-        let startCommand: CommandRestart = replay.data!.replayPlayerInputs.shift() as any;
-        startCommand.replay = true;
-        handleCommand(game, startCommand);
-    } else {
-        handleCommand(game, { command: "restart", clientId: game.multiplayer.myClientId, testing: true });
-    }
-    return true;
+    }    
 }
 
 export function replayGameEndAssert(game: Game, newScore: number) {

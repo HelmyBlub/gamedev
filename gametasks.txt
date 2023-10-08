@@ -1,6 +1,8 @@
 current tasks:
 - new test runs
-    - tower builder: new skill point tower not chaning next tower
+    - check tamer run -> make him win bossfight
+        - tamer run do not replay correctly again
+    - get a end boss defeating snipe run
 - refactoring
 - balancing
 

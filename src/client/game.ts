@@ -13,7 +13,7 @@ import { garbageCollectPathingCache, getPathingCache } from "./character/pathing
 import { createObjectDeathCircle } from "./ability/abilityDeathCircle.js";
 import { checkForBossSpawn, tickBossCharacters } from "./character/enemy/bossEnemy.js";
 import { autoPlay } from "./test/autoPlay.js";
-import { replayGameEndAssert, replayNextInReplayQueue } from "./test/gameTest.js";
+import { replayGameEndAssert, replayNextInReplayQueue, setPastCharactersAndEndBossesForReplayFromReplayData } from "./test/gameTest.js";
 import { checkForEndBossAreaTrigger } from "./map/mapEndBossArea.js";
 import { calculateHighscoreOnGameEnd } from "./highscores.js";
 import { setPlayerAsEndBoss } from "./character/enemy/endBossEnemy.js";
@@ -45,6 +45,7 @@ export function getNextId(idCounter: IdCounter) {
 export function gameRestart(game: Game) {
     if (game.testing.replay) {
         setReplaySeeds(game);
+        setPastCharactersAndEndBossesForReplayFromReplayData(game);
     }
     if (game.testing.record) {
         const record = game.testing.record;
