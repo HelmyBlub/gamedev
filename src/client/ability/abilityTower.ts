@@ -216,22 +216,13 @@ function getTowerCountOfOwner(abilityObjects: AbilityObject[], ownerId: number):
 }
 
 function getRandomPassiveAbilitiyKeys(): string[] {    
-    let abilityFunctionKeys: string[] = [
+    return [
         ABILITY_NAME_SHOOT,
         ABILITY_NAME_FIRE_CIRCLE,
         ABILITY_NAME_SWORD,
         ABILITY_NAME_ICE_AURA,
         ABILITY_NAME_SINGLETARGET
     ];
-
-    let passiveAbilitiesFunctionKeys: string[] = [];
-    for (let abilityFunctionKey of abilityFunctionKeys) {
-        let abilityFunctions = ABILITIES_FUNCTIONS[abilityFunctionKey];
-        if ((abilityFunctions.isPassive || abilityFunctions.hasAutoCast)) {
-            passiveAbilitiesFunctionKeys.push(abilityFunctionKey);
-        }
-    }
-    return passiveAbilitiesFunctionKeys;
 }
 
 function updateTowerObjectAbilityLevels(abilityObjects: AbilityObject[]) {

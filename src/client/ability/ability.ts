@@ -90,7 +90,6 @@ export type AbilityFunctions = {
     abilityUpgradeFunctions?: AbilityUpgradesFunctions,
     canBeUsedByBosses?: boolean,
     isPassive: boolean,
-    hasAutoCast?: boolean,
 }
 
 export type AbilitiesFunctions = {

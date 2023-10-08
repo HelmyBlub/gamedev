@@ -44,7 +44,6 @@ export function addAbilityFireCircle() {
         setAbilityToBossLevel: setAbilityFireCircleToBossLevel,
         canBeUsedByBosses: true,
         isPassive: false,
-        hasAutoCast: true,
     };
 }
 
