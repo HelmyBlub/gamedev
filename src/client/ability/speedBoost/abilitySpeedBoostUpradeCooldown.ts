@@ -19,14 +19,13 @@ export function addAbilitySpeedBoostUpgradeCooldown() {
 }
 
 function getOptionsCooldown(ability: Ability): UpgradeOptionAndProbability[] {
-    let options = getAbilityUpgradeOptionDefault(ability, ABILITY_SPEED_BOOST_UPGARDE_COOLDOWN);
-    const upgrade: AbilitySpeedBoostUpgradeCooldown | undefined = ability.upgrades[ABILITY_SPEED_BOOST_UPGARDE_COOLDOWN];
+    const options = getAbilityUpgradeOptionDefault(ability, ABILITY_SPEED_BOOST_UPGARDE_COOLDOWN);
     options[0].option.displayLongText = getAbilityUpgradeCooldownUiTextLong(ability);
     return options;
 }
 
-function executeOptionCooldown(ability: Ability, option: AbilityUpgradeOption){
-    let as = ability as AbilitySpeedBoost;
+function executeOptionCooldown(ability: Ability, option: AbilityUpgradeOption) {
+    const as = ability as AbilitySpeedBoost;
     let up: AbilitySpeedBoostUpgradeCooldown;
     if (as.upgrades[ABILITY_SPEED_BOOST_UPGARDE_COOLDOWN] === undefined) {
         up = { level: 0 };
@@ -39,15 +38,13 @@ function executeOptionCooldown(ability: Ability, option: AbilityUpgradeOption){
 }
 
 function getAbilityUpgradeCooldownUiText(ability: Ability): string {
-    let up: AbilitySpeedBoostUpgradeCooldown = ability.upgrades[ABILITY_SPEED_BOOST_UPGARDE_COOLDOWN];
-    let cooldownPerCent = 1 - Math.pow(1 - REDUCED_COOLDOWN_PER_LEVEL, up.level);
+    const up: AbilitySpeedBoostUpgradeCooldown = ability.upgrades[ABILITY_SPEED_BOOST_UPGARDE_COOLDOWN];
+    const cooldownPerCent = 1 - Math.pow(1 - REDUCED_COOLDOWN_PER_LEVEL, up.level);
     return `${ABILITY_SPEED_BOOST_UPGARDE_COOLDOWN}: ${(cooldownPerCent * 100).toFixed(2)}%`;
 }
 
 function getAbilityUpgradeCooldownUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
-    const upgrade: AbilityUpgrade | undefined  = ability.upgrades[ABILITY_SPEED_BOOST_UPGARDE_COOLDOWN];
     textLines.push(`Speed Boost -${REDUCED_COOLDOWN_PER_LEVEL * 100}% cooldown`);
-
     return textLines;
 }

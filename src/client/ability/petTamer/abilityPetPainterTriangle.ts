@@ -47,7 +47,7 @@ function createAbilityObjectPetPainterTriangle(
     randomSeed: RandomSeed,
     gameTime: number
 ): AbilityObjectPetPainterTriangle {
-    let abilityObjectPetPainter: AbilityObjectPetPainterTriangle = {
+    const abilityObjectPetPainter: AbilityObjectPetPainterTriangle = {
         type: ABILITY_NAME_PET_PAINTER,
         color: "red",
         x: position.x,
@@ -65,7 +65,7 @@ function createAbilityObjectPetPainterTriangle(
         centerPos: position,
         rotationOffset: nextRandom(randomSeed) * Math.PI * 2,
     }
-    if(faction === FACTION_ENEMY){
+    if (faction === FACTION_ENEMY) {
         abilityObjectPetPainter.color = "black";
     }
     return abilityObjectPetPainter;
@@ -81,7 +81,7 @@ function createAbilityObjectPetPainterTriangleFactory(
     spawnInterval: number,
     gameTime: number
 ): AbilityObjectPetPainterTriangle {
-    let abilityObjectPetPainter: AbilityObjectPetPainterTriangle = {
+    const abilityObjectPetPainter: AbilityObjectPetPainterTriangle = {
         type: ABILITY_NAME_PET_PAINTER,
         color: "red",
         x: position.x,
@@ -100,13 +100,13 @@ function createAbilityObjectPetPainterTriangleFactory(
         rotationOffset: 0,
         isFactory: true,
     }
-    if(faction === FACTION_ENEMY){
+    if (faction === FACTION_ENEMY) {
         abilityObjectPetPainter.color = "black";
     }
     return abilityObjectPetPainter;
 }
 
-function createSplitShape(abilityObject: AbilityObjectPetPainter, upgrade: AbilityPetPainterUpgradeSplit, game: Game): AbilityObjectPetPainter{
+function createSplitShape(abilityObject: AbilityObjectPetPainter, upgrade: AbilityPetPainterUpgradeSplit, game: Game): AbilityObjectPetPainter {
     const triangle = abilityObject as AbilityObjectPetPainterTriangle;
     return createAbilityObjectPetPainterTriangle(
         triangle,
@@ -156,7 +156,7 @@ function tickShapeObjectPetPainterTriangle(abilityObject: AbilityObjectPetPainte
         triangle.y = triangle.centerPos.y + Math.cos(distance / 10 + triangle.rotationOffset) * distance * direction;
         if (triangle.nextTickTime === undefined) triangle.nextTickTime = game.state.time + triangle.tickInterval;
         if (triangle.nextTickTime <= game.state.time) {
-            let center: Position = triangleCenter(triangle);
+            const center: Position = triangleCenter(triangle);
             detectCircleCharacterHit(game.state.map, center, triangle.sideLength / 2, triangle.faction, triangle.abilityRefId!, triangle.damage, game);
             triangle.nextTickTime += triangle.tickInterval;
             if (triangle.nextTickTime <= game.state.time) {
@@ -167,7 +167,6 @@ function tickShapeObjectPetPainterTriangle(abilityObject: AbilityObjectPetPainte
 }
 
 function triangleCenter(triangle: AbilityObjectPetPainterTriangle): Position {
-    const halfSideLength = triangle.sideLength / 2;
     const p2 = { x: triangle.x, y: triangle.y };
     moveByDirectionAndDistance(p2, triangle.rotation, triangle.sideLength, false);
     const p3 = { x: p2.x, y: p2.y };
@@ -181,7 +180,7 @@ function paintShapeObjectPetPainterTriangle(ctx: CanvasRenderingContext2D, abili
     if (paintOrder !== "beforeCharacterPaint") return;
     const cameraPosition = getCameraPosition(game);
     const triangle = abilityObject as AbilityObjectPetPainterTriangle;
-    let paintPos = getPointPaintPosition(ctx, triangle, cameraPosition);
+    const paintPos = getPointPaintPosition(ctx, triangle, cameraPosition);
     const startPos = { x: paintPos.x, y: paintPos.y };
     ctx.fillStyle = triangle.color;
     ctx.strokeStyle = triangle.color;
@@ -212,7 +211,7 @@ function paintShapeTriangle(ctx: CanvasRenderingContext2D, abilityOwner: Ability
 }
 
 function getRandomStartPaintPositionTriangle(pet: TamerPetCharacter, game: Game): Position {
-    let petOwner: Character = findPetOwner(pet, game)!;
+    const petOwner: Character = findPetOwner(pet, game)!;
     let blocking = true;
     let position = { x: 0, y: 0 };
     do {
@@ -221,7 +220,7 @@ function getRandomStartPaintPositionTriangle(pet: TamerPetCharacter, game: Game)
         position = { x: petOwner.x + randomOffsetX, y: petOwner.y + randomOffsetY };
         blocking = isPositionBlocking(position, game.state.map, game.state.idCounter);
         if (!blocking) {
-            let tempPosition = { x: position.x, y: position.y };
+            const tempPosition = { x: position.x, y: position.y };
             let direction = 0;
             moveByDirectionAndDistance(tempPosition, direction, TRIANGLESIZE, false);
             blocking = isPositionBlocking(tempPosition, game.state.map, game.state.idCounter);

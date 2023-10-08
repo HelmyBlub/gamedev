@@ -47,16 +47,16 @@ export function createAbilitySingleTarget(
     };
 }
 
-function setAbilitySingleTargetToLevel(ability: Ability, level: number){
-    let abilitySingleTarget = ability as AbilitySingleTarget;
+function setAbilitySingleTargetToLevel(ability: Ability, level: number) {
+    const abilitySingleTarget = ability as AbilitySingleTarget;
     abilitySingleTarget.damage = 100 * level;
     abilitySingleTarget.maxRange = 120 + level * 15;
     abilitySingleTarget.attackTimeDecreaseFaktor = 0.70 + 0.30 * level;
     abilitySingleTarget.damageIncreaseFactorPerAttack = 0.01 * level;
 }
 
-function setAbilitySingleTargetToBossLevel(ability: Ability, level: number){
-    let abilitySingleTarget = ability as AbilitySingleTarget;
+function setAbilitySingleTargetToBossLevel(ability: Ability, level: number) {
+    const abilitySingleTarget = ability as AbilitySingleTarget;
     abilitySingleTarget.damage = 5 * level;
     abilitySingleTarget.maxRange = 100 + level * 15;
     abilitySingleTarget.attackTimeDecreaseFaktor = 0.70 + 0.30 * level;
@@ -64,19 +64,19 @@ function setAbilitySingleTargetToBossLevel(ability: Ability, level: number){
 }
 
 function paintAbilitySingleTarget(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
-    let abilitySingleTarget = ability as AbilitySingleTarget;
+    const abilitySingleTarget = ability as AbilitySingleTarget;
 
-    if(abilitySingleTarget.targetId !== undefined){
+    if (abilitySingleTarget.targetId !== undefined) {
         ctx.strokeStyle = "black";
         ctx.lineWidth = 1;
         ctx.beginPath();
-        let centerX = ctx.canvas.width / 2;
-        let centerY = ctx.canvas.height / 2;
+        const centerX = ctx.canvas.width / 2;
+        const centerY = ctx.canvas.height / 2;
         let paintX = Math.floor(abilityOwner.x - cameraPosition.x + centerX);
         let paintY = Math.floor(abilityOwner.y - cameraPosition.y + centerY);
         ctx.moveTo(paintX, paintY);
-        let target: Character | null = findCharacterByIdAroundPosition(abilityOwner, abilitySingleTarget.maxRange, game, abilitySingleTarget.targetId);
-        if(target){
+        const target: Character | null = findCharacterByIdAroundPosition(abilityOwner, abilitySingleTarget.maxRange, game, abilitySingleTarget.targetId);
+        if (target) {
             paintX = Math.floor(target.x - cameraPosition.x + centerX);
             paintY = Math.floor(target.y - cameraPosition.y + centerY);
             ctx.lineTo(paintX, paintY);
@@ -86,33 +86,33 @@ function paintAbilitySingleTarget(ctx: CanvasRenderingContext2D, abilityOwner: A
 }
 
 function tickAbilitySingleTarget(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
-    let abilitySingleTarget = ability as AbilitySingleTarget;
+    const abilitySingleTarget = ability as AbilitySingleTarget;
 
-    if(abilitySingleTarget.nextAttackTime === undefined) abilitySingleTarget.nextAttackTime = game.state.time + abilitySingleTarget.attackInterval / abilitySingleTarget.attackTimeDecreaseFaktor;
-    if(abilitySingleTarget.nextAttackTime <= game.state.time){        
+    if (abilitySingleTarget.nextAttackTime === undefined) abilitySingleTarget.nextAttackTime = game.state.time + abilitySingleTarget.attackInterval / abilitySingleTarget.attackTimeDecreaseFaktor;
+    if (abilitySingleTarget.nextAttackTime <= game.state.time) {
         let target: Character | null = null;
-        if(abilitySingleTarget.targetId === undefined){
-            let closest = determineClosestCharacter(abilityOwner, determineCharactersInDistance(abilityOwner, game.state.map, game.state.players, game.state.bossStuff.bosses, abilitySingleTarget.maxRange, abilityOwner.faction));
-            if(closest.minDistanceCharacter){
+        if (abilitySingleTarget.targetId === undefined) {
+            const closest = determineClosestCharacter(abilityOwner, determineCharactersInDistance(abilityOwner, game.state.map, game.state.players, game.state.bossStuff.bosses, abilitySingleTarget.maxRange, abilityOwner.faction));
+            if (closest.minDistanceCharacter) {
                 abilitySingleTarget.targetId = closest.minDistanceCharacter.id;
                 target = closest.minDistanceCharacter;
                 abilitySingleTarget.sameTargetAttackCounter = 0;
             }
-        }else{
+        } else {
             target = findCharacterByIdAroundPosition(abilityOwner, abilitySingleTarget.maxRange, game, abilitySingleTarget.targetId);
         }
-        if(target){
-            if(!target.isDead){
-                let damage = abilitySingleTarget.damage * (1 + abilitySingleTarget.sameTargetAttackCounter * abilitySingleTarget.damageIncreaseFactorPerAttack);
+        if (target) {
+            if (!target.isDead) {
+                const damage = abilitySingleTarget.damage * (1 + abilitySingleTarget.sameTargetAttackCounter * abilitySingleTarget.damageIncreaseFactorPerAttack);
                 abilitySingleTarget.sameTargetAttackCounter++;
                 characterTakeDamage(target, damage, game);
-            }else{
+            } else {
                 abilitySingleTarget.targetId = undefined;
             }
         }
-    
+
         abilitySingleTarget.nextAttackTime += abilitySingleTarget.attackInterval / abilitySingleTarget.attackTimeDecreaseFaktor;
-        if(abilitySingleTarget.nextAttackTime <= game.state.time){
+        if (abilitySingleTarget.nextAttackTime <= game.state.time) {
             abilitySingleTarget.nextAttackTime = game.state.time + abilitySingleTarget.attackInterval / abilitySingleTarget.attackTimeDecreaseFaktor;
         }
     }

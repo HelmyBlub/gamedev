@@ -4,7 +4,7 @@ import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from
 import { getNextId } from "../../game.js";
 import { Position, Game, IdCounter } from "../../gameModel.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
-import { Ability, AbilityObject, AbilityOwner, PaintOrderAbility, ABILITIES_FUNCTIONS, findAbilityById } from "../ability.js";
+import { Ability, AbilityObject, AbilityOwner, PaintOrderAbility, ABILITIES_FUNCTIONS } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, upgradeAbility } from "../abilityUpgrade.js";
 import { addAbilityPetPainterCircle } from "./abilityPetPainterCircle.js";
 import { addAbilityPetPainterSquare } from "./abilityPetPainterSquare.js";
@@ -73,7 +73,7 @@ export function addAbilityPetPainter() {
     addAbilityPetPainterUpgradeSplit();
 }
 
-export function createAbilityPetPainter(idCounter: IdCounter): AbilityPetPainter {
+function createAbilityPetPainter(idCounter: IdCounter): AbilityPetPainter {
     return {
         id: getNextId(idCounter),
         name: ABILITY_NAME_PET_PAINTER,
@@ -89,7 +89,7 @@ export function createShapeAbilityPetPainter(shape: string, abilityOwner: Abilit
     const shapeFunction = ABILITY_PET_PAINTER_SHAPES_FUNCTIONS[shape];
     if (shapeFunction) {
         let numberShapes = 1;
-        let duplicateUpgrade = abilityPetPainter.upgrades[ABILITY_PET_PAINTER_UPGARDE_DUPLICATE] as AbilityPetPainterUpgradeDuplicate;
+        const duplicateUpgrade = abilityPetPainter.upgrades[ABILITY_PET_PAINTER_UPGARDE_DUPLICATE] as AbilityPetPainterUpgradeDuplicate;
         if (duplicateUpgrade) {
             numberShapes += duplicateUpgrade.level;
         }
@@ -102,7 +102,7 @@ export function createShapeAbilityPetPainter(shape: string, abilityOwner: Abilit
     }
 }
 
-function getLongDescription(): string[]{
+function getLongDescription(): string[] {
     return [
         `Ability: ${ABILITY_NAME_PET_PAINTER}`,
         `Draw simple shapes on the ground.`,
@@ -111,23 +111,23 @@ function getLongDescription(): string[]{
     ];
 }
 
-function resetAbility(ability: Ability){
+function resetAbility(ability: Ability) {
     const paint = ability as AbilityPetPainter;
     paint.currentlyPainting = undefined;
 }
 
 function setAbilityPetPainterToLevel(ability: Ability, level: number) {
-    let abilityPetPainter = ability as AbilityPetPainter;
+    const abilityPetPainter = ability as AbilityPetPainter;
     abilityPetPainter.baseDamage = level * 200;
 }
 
 function setAbilityPetPainterToBossLevel(ability: Ability, level: number) {
-    let abilityPetPainter = ability as AbilityPetPainter;
+    const abilityPetPainter = ability as AbilityPetPainter;
     abilityPetPainter.baseDamage = level * 10;
 }
 
 function tickAbilityObjectPetPainter(abilityObject: AbilityObject, game: Game) {
-    let petPainter = abilityObject as AbilityObjectPetPainter;
+    const petPainter = abilityObject as AbilityObjectPetPainter;
     const shapeFunction = ABILITY_PET_PAINTER_SHAPES_FUNCTIONS[petPainter.subType];
     if (shapeFunction) {
         shapeFunction.tickShapeObject(petPainter, game);
@@ -147,7 +147,7 @@ function deleteAbilityObjectPetPainter(abilityObject: AbilityObject, game: Game)
 }
 
 function paintAbilityObjectPetPainter(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
-    let petPainter = abilityObject as AbilityObjectPetPainter;
+    const petPainter = abilityObject as AbilityObjectPetPainter;
     const shapeFunction = ABILITY_PET_PAINTER_SHAPES_FUNCTIONS[petPainter.subType];
     if (shapeFunction) {
         shapeFunction.paintShapeObject(ctx, petPainter, paintOrder, game);
@@ -157,7 +157,7 @@ function paintAbilityObjectPetPainter(ctx: CanvasRenderingContext2D, abilityObje
 }
 
 function paintAbilityPetPainter(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
-    let abilityPetPainter = ability as AbilityPetPainter;
+    const abilityPetPainter = ability as AbilityPetPainter;
     if (!abilityPetPainter.currentlyPainting) return;
     const shapeFunction = ABILITY_PET_PAINTER_SHAPES_FUNCTIONS[abilityPetPainter.currentlyPainting];
     if (shapeFunction) {
@@ -168,7 +168,7 @@ function paintAbilityPetPainter(ctx: CanvasRenderingContext2D, abilityOwner: Abi
 }
 
 function createAbilityPetPainterUpgradeOptions(ability: Ability): UpgradeOptionAndProbability[] {
-    let upgradeOptions: UpgradeOptionAndProbability[] = [];
+    const upgradeOptions: UpgradeOptionAndProbability[] = [];
     pushAbilityUpgradesOptions(ABILITY_PET_PAINTER_UPGRADE_FUNCTIONS, upgradeOptions, ability);
     return upgradeOptions;
 }
@@ -179,12 +179,12 @@ function executeAbilityPetPainterUpgradeOption(ability: Ability, character: Char
 }
 
 function tickAbilityPetPainter(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
-    if(ability.disabled) return;
+    if (ability.disabled) return;
     const abilityPetPainter = ability as AbilityPetPainter;
     const pet = abilityOwner as TamerPetCharacter;
     if (!abilityPetPainter.currentlyPainting) {
         const shapes = Object.keys(ABILITY_PET_PAINTER_SHAPES_FUNCTIONS);
-        let randomShape = shapes[Math.floor(shapes.length * nextRandom(game.state.randomSeed))];
+        const randomShape = shapes[Math.floor(shapes.length * nextRandom(game.state.randomSeed))];
         const shapeFunction = ABILITY_PET_PAINTER_SHAPES_FUNCTIONS[randomShape];
         if (shapeFunction) {
             shapeFunction.initShapePaint(pet, abilityPetPainter, game);

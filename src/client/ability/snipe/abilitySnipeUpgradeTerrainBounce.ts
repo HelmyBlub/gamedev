@@ -4,7 +4,10 @@ import { Position, Game } from "../../gameModel.js";
 import { calculateBounceAngle, getFirstBlockingGameMapTilePositionTouchingLine } from "../../map/map.js";
 import { Ability } from "../ability.js";
 import { AbilityUpgrade } from "../abilityUpgrade.js";
-import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe, createAbilityObjectSnipe, getAbilitySnipeDamage, getAbilitySnipeRange, getOptionsSnipeUpgrade } from "./abilitySnipe.js";
+import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe, createAbilityObjectSnipe, getOptionsSnipeUpgrade } from "./abilitySnipe.js";
+import { ABILITY_SNIPE_UPGRADE_AFTER_IMAGE } from "./abilitySnipeUpgradeAfterImage.js";
+import { ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT } from "./abilitySnipeUpgradeBackwardsShot.js";
+import { ABILITY_SNIPE_UPGRADE_MORE_RIFLES } from "./abilitySnipeUpgradeMoreRifle.js";
 
 export const ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE = "Terrain Bounce";
 const DAMAGE_UP_BOUNCE = 0.5;
@@ -68,18 +71,18 @@ export function createAndPushAbilityObjectSnipeTerrainBounceBounce(abilityObject
 }
 
 export function getAbilityUpgradeTerrainBounceDamageFactor(abilitySnipe: AbilitySnipe, bounceCounter: number): number {
-    let terrainBounce: AbilityUpgradeTerrainBounce | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE];
+    const terrainBounce: AbilityUpgradeTerrainBounce | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE];
     if (!terrainBounce) return 1;
     return 1 + bounceCounter * terrainBounce.damageUpPerBounceFactor;
 }
 
 function getOptionsTerrainBounce(ability: Ability): UpgradeOptionAndProbability[] {
-    let options = getOptionsSnipeUpgrade(ability, ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE);
+    const options = getOptionsSnipeUpgrade(ability, ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE);
     return options;
 }
 
 function executeOptionTerrainBounce(ability: Ability, option: AbilityUpgradeOption) {
-    let as = ability as AbilitySnipe;
+    const as = ability as AbilitySnipe;
     let up: AbilityUpgradeTerrainBounce;
     if (option.additionalInfo === "Synergy") {
         up = as.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE];
@@ -102,18 +105,19 @@ function executeOptionTerrainBounce(ability: Ability, option: AbilityUpgradeOpti
 }
 
 function getAbilityUpgradeTerrainBounceUiText(ability: Ability): string {
-    let abilitySnipe = ability as AbilitySnipe;
-    let upgrade: AbilityUpgradeTerrainBounce = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE];
+    const abilitySnipe = ability as AbilitySnipe;
+    const upgrade: AbilityUpgradeTerrainBounce = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE];
 
     return `Terrain Bounce and +${upgrade.damageUpPerBounceFactor * 100}% damage for each bounce` + (upgrade.upgradeSynergy ? " (Synergy)" : "");
 }
 
 function getAbilityUpgradeTerrainBounceUiTextLong(ability: Ability, option: AbilityUpgradeOption): string[] {
-    let abilitySnipe = ability as AbilitySnipe;
-    let upgrade: AbilityUpgradeTerrainBounce | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE];
     const textLines: string[] = [];
     if (option.additionalInfo && option.additionalInfo === "Synergy") {
-        textLines.push(`Most other upgrades will benefit from terrain bounce`);
+        textLines.push(`List of synergies:`);
+        textLines.push(`- ${ABILITY_SNIPE_UPGRADE_AFTER_IMAGE}`);
+        textLines.push(`- ${ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT}`);
+        textLines.push(`- ${ABILITY_SNIPE_UPGRADE_MORE_RIFLES}`);
     } else {
         textLines.push(`Main shots will bounce of blocking tiles.`);
         textLines.push(`Each bounce will increase damage by ${DAMAGE_UP_BOUNCE * 100}%`);
@@ -143,7 +147,7 @@ function createAndPush(
         range = calculateDistance(startPosition, nextBlockingPosistion);
         remainingRange = availableRange - range;
     }
-    let abilityObjectSnipe = createAbilityObjectSnipe(
+    const abilityObjectSnipe = createAbilityObjectSnipe(
         startPosition,
         refId,
         abilitySnipe,

@@ -70,10 +70,10 @@ export function createAbilityTower(
     playerInputBinding?: string,
     damage: number = 50,
 ): AbilityTower {
-    let maxNumberTowers = 5;
-    let keys = getRandomPassiveAbilitiyKeys();
-    let availableAbilities = [];
-    let orderOfAbilities = [];
+    const maxNumberTowers = 5;
+    const keys = getRandomPassiveAbilitiyKeys();
+    const availableAbilities = [];
+    const orderOfAbilities = [];
     for (let i = 0; i < maxNumberTowers; i++) {
         if (i < keys.length) availableAbilities.push(keys[i]);
         orderOfAbilities.push(i % keys.length);
@@ -117,7 +117,7 @@ function resetAbility(ability: Ability) {
 }
 
 function setAbilityTowerToBossLevel(ability: Ability, level: number) {
-    let abilityTower = ability as AbilityTower;
+    const abilityTower = ability as AbilityTower;
     abilityTower.damage = level * 10;
 }
 
@@ -126,7 +126,7 @@ function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     const abilityTower = ability as AbilityTower;
     const buildFrequency = 1000;
     if (abilityTower.lastBuildTime === undefined || abilityTower.lastBuildTime + buildFrequency <= game.state.time) {
-        let pos: Position = {
+        const pos: Position = {
             x: abilityOwner.x + (nextRandom(game.state.randomSeed) * 50 - 25),
             y: abilityOwner.y + (nextRandom(game.state.randomSeed) * 50 - 25)
         };
@@ -143,17 +143,17 @@ function deleteAbilityObjectTower(abilityObject: AbilityObject, game: Game) {
 function castTower(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isKeydown: boolean, game: Game) {
     if (!isKeydown) return;
     const abilityTower = ability as AbilityTower;
-    let distance = calculateDistance(abilityOwner, castPosition);
+    const distance = calculateDistance(abilityOwner, castPosition);
     if (distance > abilityTower.maxClickRange) return;
-    let abilityObjects = game.state.abilityObjects;
+    const abilityObjects = game.state.abilityObjects;
 
     if (getTowerCountOfOwner(abilityObjects, abilityOwner.id) >= abilityTower.orderOfAbilities.length) {
-        let deletedId = deleteOldesTowerOfOwnerAndReturnDeletedId(abilityObjects, abilityOwner.id);
+        const deletedId = deleteOldesTowerOfOwnerAndReturnDeletedId(abilityObjects, abilityOwner.id);
         updateTowersWhichHadDeletedId(abilityObjects, deletedId);
     }
 
-    let nextAbilityKey = abilityTower.availableAbilityKeys[abilityTower.orderOfAbilities[abilityTower.currentAbilityIndex]];
-    let nextAbility: Ability = ABILITIES_FUNCTIONS[nextAbilityKey].createAbility(game.state.idCounter);
+    const nextAbilityKey = abilityTower.availableAbilityKeys[abilityTower.orderOfAbilities[abilityTower.currentAbilityIndex]];
+    const nextAbility: Ability = ABILITIES_FUNCTIONS[nextAbilityKey].createAbility(game.state.idCounter);
     if (!nextAbility.passive) nextAbility.passive = true;
     abilityTower.currentAbilityIndex = (abilityTower.currentAbilityIndex + 1) % abilityTower.orderOfAbilities.length;
     const newTower: AbilityObjectTower = createAbilityObjectTower(game.state.idCounter, abilityOwner.id, abilityOwner.faction, castPosition, nextAbility, abilityTower.damage);
@@ -172,7 +172,7 @@ function castTower(abilityOwner: AbilityOwner, ability: Ability, castPosition: P
 function updateTowersWhichHadDeletedId(abilityObjects: AbilityObject[], deletedId: number) {
     for (let abilityObject of abilityObjects) {
         if (abilityObject.type === ABILITY_NAME_TOWER) {
-            let abilityTower = abilityObject as AbilityObjectTower;
+            const abilityTower = abilityObject as AbilityObjectTower;
             if (abilityTower.conntetedToId !== undefined && abilityTower.conntetedToId === deletedId) {
                 delete abilityTower.conntetedToId;
             }
@@ -183,7 +183,7 @@ function updateTowersWhichHadDeletedId(abilityObjects: AbilityObject[], deletedI
 function findOldesTowerOfOwner(abilityObjects: AbilityObject[], ownerId: number): { tower: AbilityObjectTower, index: number } | undefined {
     for (let i = 0; i < abilityObjects.length; i++) {
         if (abilityObjects[i].type === ABILITY_NAME_TOWER) {
-            let abilityTower = abilityObjects[i] as AbilityObjectTower;
+            const abilityTower = abilityObjects[i] as AbilityObjectTower;
             if (abilityTower.ownerId === ownerId) {
                 return { tower: abilityTower, index: i };
             }
@@ -193,7 +193,7 @@ function findOldesTowerOfOwner(abilityObjects: AbilityObject[], ownerId: number)
 }
 
 function deleteOldesTowerOfOwnerAndReturnDeletedId(abilityObjects: AbilityObject[], ownerId: number): number {
-    let oldestTowerIndex = findOldesTowerOfOwner(abilityObjects, ownerId)?.index;
+    const oldestTowerIndex = findOldesTowerOfOwner(abilityObjects, ownerId)?.index;
     if (oldestTowerIndex !== undefined) {
         return (abilityObjects.splice(oldestTowerIndex, 1)[0] as AbilityObjectTower).id;
     }
@@ -227,10 +227,10 @@ function getRandomPassiveAbilitiyKeys(): string[] {
 function updateTowerObjectAbilityLevels(abilityObjects: AbilityObject[]) {
     for (let abilityObject of abilityObjects) {
         if (abilityObject.type !== ABILITY_NAME_TOWER) continue;
-        let tower: AbilityObjectTower = abilityObject as AbilityObjectTower;
-        let level = getTowerConnectionCount(abilityObjects, tower) + 1;
+        const tower: AbilityObjectTower = abilityObject as AbilityObjectTower;
+        const level = getTowerConnectionCount(abilityObjects, tower) + 1;
         if (tower.ability) {
-            let abilityFunctions = ABILITIES_FUNCTIONS[tower.ability.name];
+            const abilityFunctions = ABILITIES_FUNCTIONS[tower.ability.name];
             if (tower.isBossTower) {
                 if (abilityFunctions.setAbilityToBossLevel) {
                     abilityFunctions.setAbilityToBossLevel(tower.ability, level);
@@ -254,10 +254,10 @@ function paintAbilityTower(ctx: CanvasRenderingContext2D, abilityOwner: AbilityO
 }
 
 function paintHammer(ctx: CanvasRenderingContext2D, abilityTower: AbilityTower, paintX: number, paintY: number, game: Game) {
-    let hammerImageRef = GAME_IMAGES[ABILITY_NAME_TOWER];
+    const hammerImageRef = GAME_IMAGES[ABILITY_NAME_TOWER];
     loadImage(hammerImageRef);
     if (hammerImageRef.imageRef?.complete) {
-        let hammerImage: HTMLImageElement = hammerImageRef.imageRef;
+        const hammerImage: HTMLImageElement = hammerImageRef.imageRef;
         ctx.translate(paintX, paintY);
         ctx.rotate(-Math.PI / 4);
         ctx.translate(-paintX, -paintY);
@@ -280,24 +280,24 @@ function paintHammer(ctx: CanvasRenderingContext2D, abilityTower: AbilityTower, 
 }
 
 function paintAbilityObjectTower(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
-    let cameraPosition = getCameraPosition(game);
-    let tower = abilityObject as AbilityObjectTower;
+    const cameraPosition = getCameraPosition(game);
+    const tower = abilityObject as AbilityObjectTower;
 
     if (paintOrder === "beforeCharacterPaint") {
         paintEffectConnected(ctx, tower, cameraPosition, game.state.abilityObjects);
     } else if (paintOrder === "afterCharacterPaint") {
-        let owner = findPlayerByCharacterId(game.state.players, tower.ownerId);
-        let centerX = ctx.canvas.width / 2;
-        let centerY = ctx.canvas.height / 2;
-        let towerBaseSize = tower.size;
+        const owner = findPlayerByCharacterId(game.state.players, tower.ownerId);
+        const centerX = ctx.canvas.width / 2;
+        const centerY = ctx.canvas.height / 2;
+        const towerBaseSize = tower.size;
 
-        let towerHeight = towerBaseSize + 5;
-        let paintX = Math.floor(tower.x - cameraPosition.x + centerX - towerBaseSize / 2);
-        let paintY = Math.floor(tower.y - cameraPosition.y + centerY - towerBaseSize / 2);
+        const towerHeight = towerBaseSize + 5;
+        const paintX = Math.floor(tower.x - cameraPosition.x + centerX - towerBaseSize / 2);
+        const paintY = Math.floor(tower.y - cameraPosition.y + centerY - towerBaseSize / 2);
         if (owner?.clientId === game.multiplayer.myClientId) {
-            let ability = owner.character.abilities.find((e) => e.name === ABILITY_NAME_TOWER) as AbilityTower;
+            const ability = owner.character.abilities.find((e) => e.name === ABILITY_NAME_TOWER) as AbilityTower;
             if (getTowerCountOfOwner(game.state.abilityObjects, tower.ownerId) >= ability.orderOfAbilities.length) {
-                let oldestTower = findOldesTowerOfOwner(game.state.abilityObjects, tower.ownerId)?.tower;
+                const oldestTower = findOldesTowerOfOwner(game.state.abilityObjects, tower.ownerId)?.tower;
                 if (oldestTower && oldestTower === tower) {
                     ctx.fillStyle = "darkblue";
                 } else {
@@ -316,7 +316,7 @@ function paintAbilityObjectTower(ctx: CanvasRenderingContext2D, abilityObject: A
         ctx.fillRect(paintX, paintY, towerBaseSize, towerHeight);
 
         if (tower.ability) {
-            let abilityFunction = ABILITIES_FUNCTIONS[tower.ability.name];
+            const abilityFunction = ABILITIES_FUNCTIONS[tower.ability.name];
             if (abilityFunction.paintAbility) {
                 abilityFunction.paintAbility(ctx, tower, tower.ability, cameraPosition, game);
             }
@@ -329,7 +329,7 @@ function getTowerConnectionCount(abilityObjects: AbilityObject[], tower: Ability
     if (tower.conntetedToId !== undefined) counter++;
     for (let abilityObject of abilityObjects) {
         if (abilityObject.type === ABILITY_NAME_TOWER) {
-            let abilityTower = abilityObject as AbilityObjectTower;
+            const abilityTower = abilityObject as AbilityObjectTower;
             if (abilityTower.conntetedToId !== undefined && abilityTower.conntetedToId === tower.id) {
                 counter++;
             }
@@ -341,18 +341,18 @@ function getTowerConnectionCount(abilityObjects: AbilityObject[], tower: Ability
 
 function paintEffectConnected(ctx: CanvasRenderingContext2D, abilityObjectTower: AbilityObjectTower, cameraPosition: Position, abilityObjects: AbilityObject[]) {
     if (abilityObjectTower.conntetedToId !== undefined) {
-        let centerX = ctx.canvas.width / 2;
-        let centerY = ctx.canvas.height / 2;
+        const centerX = ctx.canvas.width / 2;
+        const centerY = ctx.canvas.height / 2;
         ctx.strokeStyle = "red";
         let paintX: number;
         let paintY: number;
 
-        let connectedTower = getTowerById(abilityObjects, abilityObjectTower.conntetedToId);
+        const connectedTower = getTowerById(abilityObjects, abilityObjectTower.conntetedToId);
         if (connectedTower === undefined) {
             console.log("tower connection not cleaned up");
             return;
         }
-        let totalConnection = getTowerConnectionCount(abilityObjects, abilityObjectTower) + getTowerConnectionCount(abilityObjects, connectedTower);
+        const totalConnection = getTowerConnectionCount(abilityObjects, abilityObjectTower) + getTowerConnectionCount(abilityObjects, connectedTower);
         ctx.lineWidth = totalConnection;
 
         ctx.beginPath();
@@ -369,7 +369,7 @@ function paintEffectConnected(ctx: CanvasRenderingContext2D, abilityObjectTower:
 function getTowerById(abilityObjects: AbilityObject[], id: number): AbilityObjectTower | undefined {
     for (let i = 0; i < abilityObjects.length; i++) {
         if (abilityObjects[i].type === ABILITY_NAME_TOWER) {
-            let tower: AbilityObjectTower = abilityObjects[i] as AbilityObjectTower;
+            const tower: AbilityObjectTower = abilityObjects[i] as AbilityObjectTower;
             if (tower.id === id) return tower;
         }
     }
@@ -394,7 +394,7 @@ function getNearestTower(abilityObjects: AbilityObject[], tower: AbilityObjectTo
         }
     }
     if (nearest) {
-        let randomIndex = nearest.length > 1 ? Math.floor(nextRandom(randomSeed) * nearest.length) : 0;
+        const randomIndex = nearest.length > 1 ? Math.floor(nextRandom(randomSeed) * nearest.length) : 0;
         return nearest[randomIndex];
     } else {
         return undefined;
@@ -403,25 +403,25 @@ function getNearestTower(abilityObjects: AbilityObject[], tower: AbilityObjectTo
 
 function tickEffectConnected(abilityObjectTower: AbilityObjectTower, game: Game) {
     if (abilityObjectTower.conntetedToId === undefined) return;
-    let abilityObjects = game.state.abilityObjects;
-    let connectedTower = getTowerById(abilityObjects, abilityObjectTower.conntetedToId);
+    const abilityObjects = game.state.abilityObjects;
+    const connectedTower = getTowerById(abilityObjects, abilityObjectTower.conntetedToId);
     if (connectedTower === undefined) {
         console.log("tower connection not cleaned up");
         return;
     }
-    let towerConnectionCounter = getTowerConnectionCount(abilityObjects, abilityObjectTower) + getTowerConnectionCount(abilityObjects, connectedTower);
-    let damageFactor = 0.7 + (towerConnectionCounter * 0.15);
+    const towerConnectionCounter = getTowerConnectionCount(abilityObjects, abilityObjectTower) + getTowerConnectionCount(abilityObjects, connectedTower);
+    const damageFactor = 0.7 + (towerConnectionCounter * 0.15);
 
-    let characters: Character[] = getCharactersTouchingLine(game, abilityObjectTower, connectedTower, abilityObjectTower.faction);
+    const characters: Character[] = getCharactersTouchingLine(game, abilityObjectTower, connectedTower, abilityObjectTower.faction);
     for (let char of characters) {
         characterTakeDamage(char, abilityObjectTower.damage * damageFactor, game);
     }
 }
 
 function paintAbilityTowerUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
-    let tower = ability as AbilityTower;
-    let fontSize = 12;
-    let rectSize = size;
+    const tower = ability as AbilityTower;
+    const fontSize = 12;
+    const rectSize = size;
 
     ctx.lineWidth = 1;
     ctx.strokeStyle = "black";
@@ -437,7 +437,7 @@ function paintAbilityTowerUI(ctx: CanvasRenderingContext2D, ability: Ability, dr
     ctx.fillText(nextTower, drawStartX + 1, drawStartY + rectSize - (rectSize - fontSize) / 2);
 
     if (tower.playerInputBinding) {
-        let keyBind = playerInputBindingToDisplayValue(tower.playerInputBinding, game);
+        const keyBind = playerInputBindingToDisplayValue(tower.playerInputBinding, game);
         ctx.fillStyle = "black";
         ctx.font = "10px Arial";
         ctx.fillText(keyBind, drawStartX + 1, drawStartY + 8);
@@ -461,7 +461,7 @@ function paintAbilityTowerStatsUI(ctx: CanvasRenderingContext2D, ability: Abilit
     );
 
     for (let i = 0; i < abilityTower.availableAbilityKeys.length; i++) {
-        let key = abilityTower.availableAbilityKeys[i];
+        const key = abilityTower.availableAbilityKeys[i];
         let counter = 0;
         for (let j = 0; j < abilityTower.orderOfAbilities.length; j++) {
             if (abilityTower.orderOfAbilities[j] === i) counter++;
@@ -473,12 +473,12 @@ function paintAbilityTowerStatsUI(ctx: CanvasRenderingContext2D, ability: Abilit
 }
 
 function tickAbilityTower(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
-    let abilityTower = ability as AbilityTower;
+    const abilityTower = ability as AbilityTower;
 }
 
 function tickAbilityObjectTower(abilityObject: AbilityObject, game: Game) {
-    let abilityTower = abilityObject as AbilityObjectTower;
-    let mapKeyOfCharacterPosistion = positionToMapKey(abilityObject, game.state.map);
+    const abilityTower = abilityObject as AbilityObjectTower;
+    const mapKeyOfCharacterPosistion = positionToMapKey(abilityObject, game.state.map);
     if (!game.state.map.activeChunkKeys.includes(mapKeyOfCharacterPosistion)) return;
 
     if (abilityTower.lineDamageNextDamageTick === undefined) abilityTower.lineDamageNextDamageTick = game.state.time + abilityTower.lineDamageTickFrequency;
@@ -491,14 +491,14 @@ function tickAbilityObjectTower(abilityObject: AbilityObject, game: Game) {
     }
 
     if (abilityTower.ability) {
-        let abilityFunction = ABILITIES_FUNCTIONS[abilityTower.ability.name];
+        const abilityFunction = ABILITIES_FUNCTIONS[abilityTower.ability.name];
         if (abilityFunction.tickAbility) abilityFunction.tickAbility(abilityTower, abilityTower.ability, game);
     }
 }
 
 function createAbilityTowerUpgradeOptionsNew(ability: Ability): UpgradeOptionAndProbability[] {
-    let abilityTower = ability as AbilityTower;
-    let upgradeOptions: UpgradeOptionAndProbability[] = [];
+    const abilityTower = ability as AbilityTower;
+    const upgradeOptions: UpgradeOptionAndProbability[] = [];
     const option: AbilityUpgradeOption = {
         displayText: "Line Damage+50",
         type: "Ability",
@@ -511,7 +511,7 @@ function createAbilityTowerUpgradeOptionsNew(ability: Ability): UpgradeOptionAnd
     });
 
     for (let i = 0; i < abilityTower.availableAbilityKeys.length; i++) {
-        let abilityOption: AbilityUpgradeOption = {
+        const abilityOption: AbilityUpgradeOption = {
             displayText: `Tower ${abilityTower.availableAbilityKeys[i]}+`,
             identifier: abilityTower.availableAbilityKeys[i],
             type: "Ability",

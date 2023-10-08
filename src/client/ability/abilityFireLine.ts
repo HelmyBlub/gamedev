@@ -30,21 +30,6 @@ export function addAbilityFireLine() {
     };
 }
 
-export function createAbilityFireLine(
-    idCounter: IdCounter,
-    playerInputBinding?: string,
-): AbilityFireLine {
-    return {
-        id: getNextId(idCounter),
-        name: ABILITY_NAME_FIRE_LINE,
-        width: 10,
-        passive: true,
-        tickInterval: 100,
-        duration: 3000,
-        upgrades: {},
-    };
-}
-
 export function createAbilityObjectFireLine(
     faction: string,
     startPosition: Position,
@@ -72,17 +57,31 @@ export function createAbilityObjectFireLine(
     };
 }
 
+function createAbilityFireLine(
+    idCounter: IdCounter,
+): AbilityFireLine {
+    return {
+        id: getNextId(idCounter),
+        name: ABILITY_NAME_FIRE_LINE,
+        width: 10,
+        passive: true,
+        tickInterval: 100,
+        duration: 3000,
+        upgrades: {},
+    };
+}
+
 function deleteAbilityObjectFireLine(abilityObject: AbilityObject, game: Game): boolean {
-    let abilityObjectFireLine = abilityObject as AbilityObjectFireLine;
+    const abilityObjectFireLine = abilityObject as AbilityObjectFireLine;
     return abilityObjectFireLine.endTime <= game.state.time;
 }
 
 function paintAbilityObjectFireLine(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
     if (paintOrder !== "beforeCharacterPaint") return;
-    let abilityObjectFireLine = abilityObject as AbilityObjectFireLine;
-    let cameraPosition = getCameraPosition(game);
-    let centerX = ctx.canvas.width / 2;
-    let centerY = ctx.canvas.height / 2;
+    const abilityObjectFireLine = abilityObject as AbilityObjectFireLine;
+    const cameraPosition = getCameraPosition(game);
+    const centerX = ctx.canvas.width / 2;
+    const centerY = ctx.canvas.height / 2;
 
     ctx.globalAlpha = 0.50;
     const color = abilityObject.faction === FACTION_PLAYER ? "red" : "black";
@@ -100,13 +99,13 @@ function paintAbilityObjectFireLine(ctx: CanvasRenderingContext2D, abilityObject
 }
 
 function tickAbilityObjectFireLine(abilityObject: AbilityObject, game: Game) {
-    let abilityObjectFireLine = abilityObject as AbilityObjectFireLine;
+    const abilityObjectFireLine = abilityObject as AbilityObjectFireLine;
 
     if (abilityObjectFireLine.nextTickTime === undefined) {
         abilityObjectFireLine.nextTickTime = game.state.time + abilityObjectFireLine.tickInterval;
     }
     if (abilityObjectFireLine.nextTickTime <= game.state.time) {
-        let characters: Character[] = getCharactersTouchingLine(game, abilityObjectFireLine, abilityObjectFireLine.endPosition, abilityObject.faction, abilityObjectFireLine.width);
+        const characters: Character[] = getCharactersTouchingLine(game, abilityObjectFireLine, abilityObjectFireLine.endPosition, abilityObject.faction, abilityObjectFireLine.width);
         for (let char of characters) {
             characterTakeDamage(char, abilityObjectFireLine.damage, game, abilityObjectFireLine.abilityRefId);
         }

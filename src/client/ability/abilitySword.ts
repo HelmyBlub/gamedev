@@ -61,7 +61,7 @@ export function createAbilitySword(
 }
 
 function setAbilitySwordToLevel(ability: Ability, level: number){
-    let abilitySword = ability as AbilitySword;
+    const abilitySword = ability as AbilitySword;
     abilitySword.damage = level * 50;
     abilitySword.swordCount = level;
     abilitySword.swordLength = 30 + level * 10;
@@ -70,7 +70,7 @@ function setAbilitySwordToLevel(ability: Ability, level: number){
 }
 
 function setAbilitySwordToBossLevel(ability: Ability, level: number){
-    let abilitySword = ability as AbilitySword;
+    const abilitySword = ability as AbilitySword;
     abilitySword.damage = level * 25;
     abilitySword.swordCount = level > 5 ? 2 : 1;
     abilitySword.swordLength = 30 + level * 25;
@@ -79,7 +79,7 @@ function setAbilitySwordToBossLevel(ability: Ability, level: number){
 }
 
 function createBiggerSwordImage(newSwordSize: number) {
-    let swordImage = GAME_IMAGES[ABILITY_NAME_SWORD];
+    const swordImage = GAME_IMAGES[ABILITY_NAME_SWORD];
     if (swordImage.imageRef === undefined) return;
     if (swordImage.properties === undefined) swordImage.properties = {};
     if (swordImage.properties.canvases === undefined) swordImage.properties.canvases = {};
@@ -87,10 +87,10 @@ function createBiggerSwordImage(newSwordSize: number) {
         if (newSwordSize < 25) {
             throw new Error("newSwordSize too small");
         }
-        let canvas = document.createElement('canvas');
+        const canvas = document.createElement('canvas');
         canvas.width = swordImage.imageRef.width;
         canvas.height = Math.floor(newSwordSize);
-        let imageCtx: CanvasRenderingContext2D = canvas.getContext("2d")!;
+        const imageCtx: CanvasRenderingContext2D = canvas.getContext("2d")!;
         //sword tip
         imageCtx.drawImage(
             swordImage.imageRef,
@@ -133,14 +133,14 @@ function createBiggerSwordImage(newSwordSize: number) {
 }
 
 function paintAbilitySword(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
-    let abilitySword = ability as AbilitySword;
-    let centerX = ctx.canvas.width / 2;
-    let centerY = ctx.canvas.height / 2;
-    let paintX = Math.floor(abilityOwner.x - cameraPosition.x + centerX);
-    let paintY = Math.floor(abilityOwner.y - cameraPosition.y + centerY);
+    const abilitySword = ability as AbilitySword;
+    const centerX = ctx.canvas.width / 2;
+    const centerY = ctx.canvas.height / 2;
+    const paintX = Math.floor(abilityOwner.x - cameraPosition.x + centerX);
+    const paintY = Math.floor(abilityOwner.y - cameraPosition.y + centerY);
 
     //ctx.fillStyle = character.color;
-    let swordImage = GAME_IMAGES[ABILITY_NAME_SWORD];
+    const swordImage = GAME_IMAGES[ABILITY_NAME_SWORD];
     loadImage(swordImage);
 
     for (let i = 0; i < abilitySword.swordCount; i++) {
@@ -150,7 +150,7 @@ function paintAbilitySword(ctx: CanvasRenderingContext2D, abilityOwner: AbilityO
         if (swordImage.imageRef?.complete) {
             let swordSizeImage: HTMLImageElement = swordImage.imageRef;
             if (abilitySword.swordLength > swordSizeImage.height + 10) {
-                let imageSwordSize = Math.round(abilitySword.swordLength / 10) * 10;
+                const imageSwordSize = Math.round(abilitySword.swordLength / 10) * 10;
                 createBiggerSwordImage(imageSwordSize);
                 swordSizeImage = swordImage.properties!.canvases![imageSwordSize];
             }
@@ -181,7 +181,7 @@ function swordDistanceToHolder(abilityOwner: AbilityOwner): number{
 }
 
 function tickAbilitySword(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
-    let abilitySword = ability as AbilitySword;
+    const abilitySword = ability as AbilitySword;
     abilitySword.currentSwordAngle = (abilitySword.currentSwordAngle + abilitySword.angleChangePerTick) % (Math.PI * 2);    
 
     if(abilitySword.nextTickTime === undefined) abilitySword.nextTickTime = game.state.time + abilitySword.tickInterval;
@@ -195,14 +195,14 @@ function tickAbilitySword(abilityOwner: AbilityOwner, ability: Ability, game: Ga
 }
 
 function detectSwordToCharactersHit(abilityOwner: AbilityOwner, ability: AbilitySword, map: GameMap, players: Player[], bosses: BossEnemyCharacter[], game: Game) {
-    let maxEnemySizeEstimate = 40;
+    const maxEnemySizeEstimate = 40;
 
-    let targetCharacters = determineCharactersInDistance(abilityOwner, map, players, bosses ,ability.swordLength + maxEnemySizeEstimate);
+    const targetCharacters = determineCharactersInDistance(abilityOwner, map, players, bosses ,ability.swordLength + maxEnemySizeEstimate);
     for (let charIt = targetCharacters.length - 1; charIt >= 0; charIt--) {
-        let targetCharacter = targetCharacters[charIt];
+        const targetCharacter = targetCharacters[charIt];
         if (targetCharacter.isDead || targetCharacter.faction === abilityOwner.faction) continue;
         for (let swordIndex = 0; swordIndex < ability.swordCount; swordIndex++) {
-            let isHit = detectSwordToCharacterHit(abilityOwner, ability, targetCharacter, targetCharacter.width, swordIndex);
+            const isHit = detectSwordToCharacterHit(abilityOwner, ability, targetCharacter, targetCharacter.width, swordIndex);
             if (isHit) {
                 characterTakeDamage(targetCharacter, ability.damage, game, ability.id);
             }
@@ -213,9 +213,9 @@ function detectSwordToCharactersHit(abilityOwner: AbilityOwner, ability: Ability
 function detectSwordToCharacterHit(abilityOwner: AbilityOwner, ability: AbilitySword, pos: Position, enemyWidth: number, swordIndex: number): boolean {
     let angle = calculateDirection(abilityOwner, pos);
     if (angle < 0) angle += Math.PI * 2;
-    let currentSwordAngle = (ability.currentSwordAngle + (ability.angleChangePerSword * swordIndex)) % (Math.PI * 2);
-    let angleSizeToCheck = (ability.angleChangePerTick * (ability.tickInterval / 16)) + 0.1;
-    let startAngle = currentSwordAngle - angleSizeToCheck;
+    const currentSwordAngle = (ability.currentSwordAngle + (ability.angleChangePerSword * swordIndex)) % (Math.PI * 2);
+    const angleSizeToCheck = (ability.angleChangePerTick * (ability.tickInterval / 16)) + 0.1;
+    const startAngle = currentSwordAngle - angleSizeToCheck;
     angle = (angle - startAngle) % (Math.PI * 2);
     if (angle < 0) angle += Math.PI * 2;
 

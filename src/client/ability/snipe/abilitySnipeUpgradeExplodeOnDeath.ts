@@ -6,6 +6,10 @@ import { Game } from "../../gameModel.js";
 import { Ability } from "../ability.js";
 import { AbilityUpgrade } from "../abilityUpgrade.js";
 import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilitySnipe, getAbilitySnipeDamage, getOptionsSnipeUpgrade } from "./abilitySnipe.js";
+import { ABILITY_SNIPE_UPGRADE_AFTER_IMAGE } from "./abilitySnipeUpgradeAfterImage.js";
+import { ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT } from "./abilitySnipeUpgradeBackwardsShot.js";
+import { ABILITY_SNIPE_UPGRADE_MORE_RIFLES } from "./abilitySnipeUpgradeMoreRifle.js";
+import { ABILITY_SNIPE_UPGRADE_SPLIT_SHOT } from "./abilitySnipeUpgradeSplitShot.js";
 
 export const ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH = "Explode on Death";
 
@@ -38,12 +42,12 @@ export function executeUpgradeExplodeOnDeath(ability: AbilitySnipe, faction: str
 }
 
 function getOptionsExplodeOnDeath(ability: Ability): UpgradeOptionAndProbability[] {
-    let options = getOptionsSnipeUpgrade(ability, ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH);
+    const options = getOptionsSnipeUpgrade(ability, ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH);
     return options;
 }
 
 function executeOptionExplodeOnDeath(ability: Ability, option: AbilityUpgradeOption) {
-    let as = ability as AbilitySnipe;
+    const as = ability as AbilitySnipe;
     let up: AbilityUpgradeExplodeOnDeath;
     if (option.additionalInfo === "Synergy") {
         up = as.upgrades[ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH];
@@ -66,22 +70,19 @@ function executeOptionExplodeOnDeath(ability: Ability, option: AbilityUpgradeOpt
 }
 
 function getAbilityUpgradeExplodeOnDeathUiText(ability: Ability): string {
-    let abilitySnipe = ability as AbilitySnipe;
+    const abilitySnipe = ability as AbilitySnipe;
     let upgrade: AbilityUpgradeExplodeOnDeath = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH];
     return `${ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH}: Damage ${(upgrade.damageFactor) * 100}%` + (upgrade.upgradeSynergy ? " (Synergy)" : "");
 }
 
 function getAbilityUpgradeExplodeOnDeathUiTextLong(ability: Ability, option: AbilityUpgradeOption): string[] {
-    let abilitySnipe = ability as AbilitySnipe;
-    let upgrade: AbilityUpgradeExplodeOnDeath | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH];
-
     const textLines: string[] = [];
     if (option.additionalInfo && option.additionalInfo === "Synergy") {
         textLines.push(`List of synergies:`);
-        textLines.push(`- After Image`);
-        textLines.push(`- Backwards Shot`);
-        textLines.push(`- More Rifles`);
-        textLines.push(`- Split Shot`);
+        textLines.push(`- ${ABILITY_SNIPE_UPGRADE_AFTER_IMAGE}`);
+        textLines.push(`- ${ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT}`);
+        textLines.push(`- ${ABILITY_SNIPE_UPGRADE_MORE_RIFLES}`);
+        textLines.push(`- ${ABILITY_SNIPE_UPGRADE_SPLIT_SHOT}`);
     } else {
         textLines.push(`Enemies hit by the main shot explode on death`);
         textLines.push(`They explode for ${(DAMAGE_FACTOR * 100).toFixed(2)}% damage.`);

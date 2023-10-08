@@ -43,9 +43,12 @@ export function addAbilityPetBreath() {
     addAbilityPetBreathUpgradeRangeUp();
 }
 
-export function createAbilityPetBreath(
+export function getPetAbilityBreathDamage(pet: TamerPetCharacter, ability: AbilityPetBreath): number {
+    return ability.damage * pet.sizeFactor;
+}
+
+function createAbilityPetBreath(
     idCounter: IdCounter,
-    playerInputBinding?: string,
 ): AbilityPetBreath {
     return {
         id: getNextId(idCounter),
@@ -61,16 +64,13 @@ export function createAbilityPetBreath(
         color: "red",
     };
 }
-export function getPetAbilityBreathDamage(pet: TamerPetCharacter, ability: AbilityPetBreath): number {
-    return ability.damage * pet.sizeFactor;
-}
 
-function resetAbility(ability: Ability){
-    let abilityPetBreath = ability as AbilityPetBreath;
+function resetAbility(ability: Ability) {
+    const abilityPetBreath = ability as AbilityPetBreath;
     abilityPetBreath.nextTickTime = undefined;
 }
 
-function getLongDescription(): string[]{
+function getLongDescription(): string[] {
     return [
         `Ability: ${ABILITY_NAME_PET_BREATH}`,
         `Frontal cone attack. Makes pet hungry.`,
@@ -78,35 +78,35 @@ function getLongDescription(): string[]{
 }
 
 function createAbilityPetBreathUpgradeOptions(ability: Ability): UpgradeOptionAndProbability[] {
-    let upgradeOptions: UpgradeOptionAndProbability[] = [];
+    const upgradeOptions: UpgradeOptionAndProbability[] = [];
     pushAbilityUpgradesOptions(ABILITY_PET_BREATH_UPGRADE_FUNCTIONS, upgradeOptions, ability);
     return upgradeOptions;
 }
 
 function setAbilityPetBreathToLevel(ability: Ability, level: number) {
-    let abilityPetBreath = ability as AbilityPetBreath;
+    const abilityPetBreath = ability as AbilityPetBreath;
     abilityPetBreath.damage = level * 100;
 }
 
 function setAbilityPetBreathToBossLevel(ability: Ability, level: number) {
-    let abilityPetBreath = ability as AbilityPetBreath;
+    const abilityPetBreath = ability as AbilityPetBreath;
     abilityPetBreath.damage = level * 4;
 }
 
 function paintAbilityPetBreath(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
-    let abilityPetBreath = ability as AbilityPetBreath;
+    const abilityPetBreath = ability as AbilityPetBreath;
     if (!abilityPetBreath.active) return;
-    let centerX = ctx.canvas.width / 2;
-    let centerY = ctx.canvas.height / 2;
-    let paintX = Math.floor(abilityOwner.x - cameraPosition.x + centerX);
-    let paintY = Math.floor(abilityOwner.y - cameraPosition.y + centerY);
+    const centerX = ctx.canvas.width / 2;
+    const centerY = ctx.canvas.height / 2;
+    const paintX = Math.floor(abilityOwner.x - cameraPosition.x + centerX);
+    const paintY = Math.floor(abilityOwner.y - cameraPosition.y + centerY);
 
     const startAngle = abilityPetBreath.directionAngle - abilityPetBreath.angleSize / 2;
     ctx.globalAlpha = 0.5;
     ctx.fillStyle = abilityPetBreath.color;
     ctx.beginPath();
-    let pos1 = { x: paintX, y: paintY };
-    let pos2 = { x: paintX, y: paintY };
+    const pos1 = { x: paintX, y: paintY };
+    const pos2 = { x: paintX, y: paintY };
     moveByDirectionAndDistance(pos1, abilityPetBreath.directionAngle - abilityPetBreath.angleSize / 2, abilityPetBreath.range, false);
     moveByDirectionAndDistance(pos2, abilityPetBreath.directionAngle + abilityPetBreath.angleSize / 2, abilityPetBreath.range, false);
     ctx.moveTo(paintX, paintY);
@@ -127,9 +127,9 @@ function paintAbilityPetBreath(ctx: CanvasRenderingContext2D, abilityOwner: Abil
 }
 
 function tickAbilityPetBreath(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
-    let abilityPetBreath = ability as AbilityPetBreath;
-    let pet = abilityOwner as TamerPetCharacter;
-    if(ability.disabled){
+    const abilityPetBreath = ability as AbilityPetBreath;
+    const pet = abilityOwner as TamerPetCharacter;
+    if (ability.disabled) {
         abilityPetBreath.active = false;
         return;
     }
@@ -142,18 +142,18 @@ function tickAbilityPetBreath(abilityOwner: AbilityOwner, ability: Ability, game
     abilityPetBreath.directionAngle = pet.moveDirection;
     const rangeUpgrade = abilityPetBreath.upgrades[ABILITY_PET_BREATH_UPGARDE_RANGE_UP] as AbilityPetBreathUpgradeRangeUp;
     let rangeBonus = 0;
-    if(rangeUpgrade) rangeBonus = abilityPetBreathUpgradeRangeUpGetAdditionRange(pet, rangeUpgrade);
+    if (rangeUpgrade) rangeBonus = abilityPetBreathUpgradeRangeUpGetAdditionRange(pet, rangeUpgrade);
     abilityPetBreath.range = Math.sqrt(pet.width * 3) / 3 * (25 + rangeBonus) + 5;
-    if(underfed){
+    if (underfed) {
         const underfedFactor = (pet.foodIntakeLevel.current - activeUntil) / activeUntil;
         abilityPetBreath.range *= underfedFactor;
-    } 
-    
+    }
+
     if (abilityPetBreath.nextTickTime === undefined) abilityPetBreath.nextTickTime = game.state.time + abilityPetBreath.tickInterval;
     if (abilityPetBreath.nextTickTime <= game.state.time) {
         detectPetBreathToCharactersHit(pet, abilityPetBreath, game.state.map, game.state.players, game.state.bossStuff.bosses, game);
         let foodChangePerSec = 5;
-        if(rangeUpgrade) foodChangePerSec += abilityPetBreathUpgradeRangeUpGetAdditionFoodIntake(pet, rangeUpgrade);
+        if (rangeUpgrade) foodChangePerSec += abilityPetBreathUpgradeRangeUpGetAdditionFoodIntake(pet, rangeUpgrade);
         tamerPetFeed(pet, - abilityPetBreath.tickInterval / 1000 * foodChangePerSec, game.state.time);
         abilityPetBreath.nextTickTime += abilityPetBreath.tickInterval;
         if (abilityPetBreath.nextTickTime <= game.state.time) {
@@ -163,14 +163,14 @@ function tickAbilityPetBreath(abilityOwner: AbilityOwner, ability: Ability, game
 }
 
 function detectPetBreathToCharactersHit(abilityOwner: TamerPetCharacter, ability: AbilityPetBreath, map: GameMap, players: Player[], bosses: BossEnemyCharacter[], game: Game) {
-    let maxEnemySizeEstimate = 40;
+    const maxEnemySizeEstimate = 40;
 
-    let targetCharacters = determineCharactersInDistance(abilityOwner, map, players, bosses, ability.range + maxEnemySizeEstimate);
+    const targetCharacters = determineCharactersInDistance(abilityOwner, map, players, bosses, ability.range + maxEnemySizeEstimate);
     const damage = getPetAbilityBreathDamage(abilityOwner, ability);
     for (let charIt = targetCharacters.length - 1; charIt >= 0; charIt--) {
-        let targetCharacter = targetCharacters[charIt];
+        const targetCharacter = targetCharacters[charIt];
         if (targetCharacter.isDead || targetCharacter.faction === abilityOwner.faction) continue;
-        let isHit = detectPetBreathToCharacterHit(abilityOwner, ability, targetCharacter, targetCharacter.width);
+        const isHit = detectPetBreathToCharacterHit(abilityOwner, ability, targetCharacter, targetCharacter.width);
         if (isHit) {
             abilityPetBreathUpgradeExplodeApplyExplode(ability, abilityOwner, targetCharacter, game);
             abilityPetBreathUpgradeSlowApplySlow(ability, targetCharacter, game);
@@ -182,13 +182,13 @@ function detectPetBreathToCharactersHit(abilityOwner: TamerPetCharacter, ability
 function detectPetBreathToCharacterHit(abilityOwner: AbilityOwner, ability: AbilityPetBreath, pos: Position, enemyWidth: number): boolean {
     let angle = calculateDirection(abilityOwner, pos);
     if (angle < 0) angle += Math.PI * 2;
-    let currentPetBreathAngle = ability.directionAngle % (Math.PI * 2);
-    let startAngle = currentPetBreathAngle - ability.angleSize / 2;
+    const currentPetBreathAngle = ability.directionAngle % (Math.PI * 2);
+    const startAngle = currentPetBreathAngle - ability.angleSize / 2;
     angle = (angle - startAngle) % (Math.PI * 2);
     if (angle < 0) angle += Math.PI * 2;
 
     if (angle <= ability.angleSize) {
-        let distance = calculateDistance(abilityOwner, pos);
+        const distance = calculateDistance(abilityOwner, pos);
         if (distance < ability.range + enemyWidth) {
             return true;
         }

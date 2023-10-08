@@ -44,26 +44,26 @@ export function createAbilityIce(
     };
 }
 
-function setAbilityIceToLevel(ability: Ability, level: number){
-    let abilityIce = ability as AbilityIce;
+function setAbilityIceToLevel(ability: Ability, level: number) {
+    const abilityIce = ability as AbilityIce;
     abilityIce.damage = level * 100;
     abilityIce.radius = 30 + level * 10;
     abilityIce.slowFactor = 1 + 0.25 * level;
 }
 
-function setAbilityIceToBossLevel(ability: Ability, level: number){
-    let abilityIce = ability as AbilityIce;
+function setAbilityIceToBossLevel(ability: Ability, level: number) {
+    const abilityIce = ability as AbilityIce;
     abilityIce.damage = level * 10;
     abilityIce.radius = 60 + level * 12;
     abilityIce.slowFactor = 2;
 }
 
 function paintAbilityIce(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
-    let abilityIce = ability as AbilityIce;
-    let centerX = ctx.canvas.width / 2;
-    let centerY = ctx.canvas.height / 2;
-    let paintX = Math.floor(abilityOwner.x - cameraPosition.x + centerX);
-    let paintY = Math.floor(abilityOwner.y - cameraPosition.y + centerY);
+    const abilityIce = ability as AbilityIce;
+    const centerX = ctx.canvas.width / 2;
+    const centerY = ctx.canvas.height / 2;
+    const paintX = Math.floor(abilityOwner.x - cameraPosition.x + centerX);
+    const paintY = Math.floor(abilityOwner.y - cameraPosition.y + centerY);
 
     ctx.globalAlpha = 0.30;
     ctx.fillStyle = "white";
@@ -77,21 +77,21 @@ function paintAbilityIce(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwn
     ctx.globalAlpha = 1;
 }
 
-function onHitEffect(target: Character, abilityIce: AbilityIce, game: Game): boolean{
-    let debuffSlow = createDebuffSlow(abilityIce.slowFactor, 1000, game.state.time);
+function onHitEffect(target: Character, abilityIce: AbilityIce, game: Game): boolean {
+    const debuffSlow = createDebuffSlow(abilityIce.slowFactor, 1000, game.state.time);
     applyDebuff(debuffSlow, target, game);
     return true;
 }
 
 function tickAbilityIce(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
-    let abilityIce = ability as AbilityIce;
+    const abilityIce = ability as AbilityIce;
 
-    if(abilityIce.nextTickTime === undefined) abilityIce.nextTickTime = game.state.time + abilityIce.tickInterval;
-    if(abilityIce.nextTickTime <= game.state.time){
+    if (abilityIce.nextTickTime === undefined) abilityIce.nextTickTime = game.state.time + abilityIce.tickInterval;
+    if (abilityIce.nextTickTime <= game.state.time) {
         detectSomethingToCharacterHit(
             game.state.map,
             abilityOwner,
-            abilityIce.radius*2,
+            abilityIce.radius * 2,
             abilityOwner.faction,
             abilityIce.damage,
             game.state.players,
@@ -102,7 +102,7 @@ function tickAbilityIce(abilityOwner: AbilityOwner, ability: Ability, game: Game
         );
 
         abilityIce.nextTickTime += abilityIce.tickInterval;
-        if(abilityIce.nextTickTime <= game.state.time){
+        if (abilityIce.nextTickTime <= game.state.time) {
             abilityIce.nextTickTime = game.state.time + abilityIce.tickInterval;
         }
     }

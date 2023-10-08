@@ -18,7 +18,7 @@ export type AbilityShoot = Ability & {
     shootRandom?: boolean,
 }
 
-export function addAbilityShoot(){
+export function addAbilityShoot() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_SHOOT] = {
         tickAbility: tickAbilityShoot,
         tickAbilityObject: tickProjectile,
@@ -61,8 +61,8 @@ export function createAbilityShoot(
     };
 }
 
-function setAbilityShootToLevel(ability: Ability, level: number){
-    let abilityShoot = ability as AbilityShoot;
+function setAbilityShootToLevel(ability: Ability, level: number) {
+    const abilityShoot = ability as AbilityShoot;
     abilityShoot.damage = level * 100;
     abilityShoot.frequencyIncrease = 1 + 0.2 * level;
     abilityShoot.multiShot = level - 1;
@@ -71,8 +71,8 @@ function setAbilityShootToLevel(ability: Ability, level: number){
     abilityShoot.bulletSize = 5 + level;
 }
 
-function setAbilityShootToBossLevel(ability: Ability, level: number){
-    let abilityShoot = ability as AbilityShoot;
+function setAbilityShootToBossLevel(ability: Ability, level: number) {
+    const abilityShoot = ability as AbilityShoot;
     abilityShoot.damage = level * 50;
     abilityShoot.frequencyIncrease = 1 + 0.2 * level;
     abilityShoot.multiShot = Math.min(level - 1, 7);
@@ -85,39 +85,39 @@ function setAbilityShootToBossLevel(ability: Ability, level: number){
 }
 
 function tickAbilityShoot(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
-    let abilityShoot = ability as AbilityShoot;
-    if(abilityShoot.nextShotTime === -1) abilityShoot.nextShotTime = game.state.time;
+    const abilityShoot = ability as AbilityShoot;
+    if (abilityShoot.nextShotTime === -1) abilityShoot.nextShotTime = game.state.time;
     while (abilityShoot.nextShotTime <= game.state.time) {
         shoot(abilityOwner, abilityShoot, game.state.abilityObjects, game.state.time, game.state.randomSeed);
         abilityShoot.nextShotTime += abilityShoot.baseFrequency / abilityShoot.frequencyIncrease;
-        if(abilityShoot.nextShotTime <= game.state.time){
+        if (abilityShoot.nextShotTime <= game.state.time) {
             abilityShoot.nextShotTime = game.state.time + abilityShoot.baseFrequency / abilityShoot.frequencyIncrease;
         }
     }
 }
 
-function onShootHit(abilityObject: AbilityObject){
-    let projectile = abilityObject as Projectile;
+function onShootHit(abilityObject: AbilityObject) {
+    const projectile = abilityObject as Projectile;
     projectile.pierceCount--;
 }
 
-function canShootHitMore(abilityObject: AbilityObject){
-    let projectile = abilityObject as Projectile;
+function canShootHitMore(abilityObject: AbilityObject) {
+    const projectile = abilityObject as Projectile;
     return projectile.pierceCount >= 0;
 }
 
 function shoot(abilityOwner: AbilityOwner, ability: AbilityShoot, abilityObjects: AbilityObject[], gameTime: number, randomSeed: RandomSeed) {
     for (let i = 0; i <= ability.multiShot; i++) {
-        let shotSpread: number = (nextRandom(randomSeed) - 0.5) / 10 * ability.multiShot;
+        const shotSpread: number = (nextRandom(randomSeed) - 0.5) / 10 * ability.multiShot;
 
         let moveSpeed = ability.moveSpeed;
-        if(abilityOwner.moveSpeed !== undefined && abilityOwner.faction === FACTION_PLAYER){
+        if (abilityOwner.moveSpeed !== undefined && abilityOwner.faction === FACTION_PLAYER) {
             moveSpeed = abilityOwner.moveSpeed + 2;
         }
         let direction = 0;
-        if(!ability.shootRandom && abilityOwner.moveDirection !== undefined){
+        if (!ability.shootRandom && abilityOwner.moveDirection !== undefined) {
             direction = abilityOwner.moveDirection;
-        }else{
+        } else {
             direction = nextRandom(randomSeed) * Math.PI * 2;
         }
         abilityObjects.push(createProjectile(

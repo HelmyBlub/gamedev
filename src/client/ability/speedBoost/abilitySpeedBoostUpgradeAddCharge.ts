@@ -35,14 +35,13 @@ export function tickAbilitySpeedBoostUpgradeAddCharge(abilitySpeedBoost: Ability
 }
 
 function getOptionsAddCharge(ability: Ability): UpgradeOptionAndProbability[] {
-    let options = getAbilityUpgradeOptionDefault(ability, ABILITY_SPEED_BOOST_UPGARDE_ADD_CHARGE);
-    const upgrade: AbilitySpeedBoostUpgradeAddCharge | undefined = ability.upgrades[ABILITY_SPEED_BOOST_UPGARDE_ADD_CHARGE];
+    const options = getAbilityUpgradeOptionDefault(ability, ABILITY_SPEED_BOOST_UPGARDE_ADD_CHARGE);
     options[0].option.displayLongText = getAbilityUpgradeAddChargeUiTextLong(ability);
     return options;
 }
 
-function executeAddCharge(ability: Ability, option: AbilityUpgradeOption){
-    let as = ability as AbilitySpeedBoost;
+function executeAddCharge(ability: Ability, option: AbilityUpgradeOption) {
+    const as = ability as AbilitySpeedBoost;
     let up: AbilitySpeedBoostUpgradeAddCharge;
     if (as.upgrades[ABILITY_SPEED_BOOST_UPGARDE_ADD_CHARGE] === undefined) {
         up = {
@@ -61,14 +60,11 @@ function executeAddCharge(ability: Ability, option: AbilityUpgradeOption){
 
 function getAbilityUpgradeAddChargeUiText(ability: Ability): string {
     const upgrade: AbilitySpeedBoostUpgradeAddCharge = ability.upgrades[ABILITY_SPEED_BOOST_UPGARDE_ADD_CHARGE];
-    return `${ABILITY_SPEED_BOOST_UPGARDE_ADD_CHARGE}s: +${upgrade.maxCharges-1}`;
+    return `${ABILITY_SPEED_BOOST_UPGARDE_ADD_CHARGE}s: +${upgrade.maxCharges - 1}`;
 }
 
 function getAbilityUpgradeAddChargeUiTextLong(ability: Ability): string[] {
-    const abilitySpeedBoost = ability as AbilitySpeedBoost;
-    const upgrade: AbilityUpgrade | undefined = abilitySpeedBoost.upgrades[ABILITY_SPEED_BOOST_UPGARDE_ADD_CHARGE];
     const textLines: string[] = [];
-
     textLines.push(`Add an additional charge to speed boost ability.`);
     return textLines;
 }

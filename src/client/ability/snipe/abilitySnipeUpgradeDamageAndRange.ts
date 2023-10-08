@@ -23,8 +23,8 @@ export function addAbilitySnipeUpgradeDamageAndRange() {
 }
 
 export function abilityUpgradeDamageAndRangeRangeFactor(ability: Ability) {
-    let abilitySnipe = ability as AbilitySnipe;
-    let upgrades: AbilityUpgradeDamageAndRange | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_DAMAGE_AND_RANGE];
+    const abilitySnipe = ability as AbilitySnipe;
+    const upgrades: AbilityUpgradeDamageAndRange | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_DAMAGE_AND_RANGE];
     let factor = 1;
     if (upgrades?.rangeMultiplier) {
         factor = upgrades.rangeMultiplier;
@@ -33,7 +33,7 @@ export function abilityUpgradeDamageAndRangeRangeFactor(ability: Ability) {
 }
 
 function getOptionsDamageAndRange(ability: Ability): UpgradeOptionAndProbability[] {
-    let options = getAbilityUpgradeOptionDefault(ability, ABILITY_SNIPE_UPGRADE_DAMAGE_AND_RANGE);
+    const options = getAbilityUpgradeOptionDefault(ability, ABILITY_SNIPE_UPGRADE_DAMAGE_AND_RANGE);
     const upgrade: AbilityUpgradeDamageAndRange | undefined = ability.upgrades[ABILITY_SNIPE_UPGRADE_DAMAGE_AND_RANGE];
     const levelText = upgrade === undefined ? "" : `(${upgrade.level})`;
     options[0].option.displayText += levelText;
@@ -43,24 +43,21 @@ function getOptionsDamageAndRange(ability: Ability): UpgradeOptionAndProbability
 }
 
 function getAbilityUpgradeDamageAndRangeUiText(ability: Ability): string {
-    let abilitySnipe = ability as AbilitySnipe;
-    let upgrade: AbilityUpgradeDamageAndRange = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_DAMAGE_AND_RANGE];
+    const abilitySnipe = ability as AbilitySnipe;
+    const upgrade: AbilityUpgradeDamageAndRange = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_DAMAGE_AND_RANGE];
     return `${ABILITY_SNIPE_UPGRADE_DAMAGE_AND_RANGE}: Damage ${(upgrade.damageMultiplier - 1) * 100}%, Range ${(upgrade.rangeMultiplier - 1) * 100}%`
 }
 
 function getAbilityUpgradeDamageAndRangeUiTextLong(ability: Ability): string[] {
-    let abilitySnipe = ability as AbilitySnipe;
-    let upgrade: AbilityUpgradeDamageAndRange | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_DAMAGE_AND_RANGE];
-
     const textLines: string[] = [];
-    textLines.push(`All Bonus damage +${DAMAGE_UP * 100}%.`);
+    textLines.push(`All damage +${DAMAGE_UP * 100}%.`);
     textLines.push(`Range is reduced by ${(1 / RANGE_DOWN * 100).toFixed(2)}%.`);
 
     return textLines;
 }
 
 function executeOptionDamageAndRange(ability: Ability, option: AbilityUpgradeOption) {
-    let as = ability as AbilitySnipe;
+    const as = ability as AbilitySnipe;
     let up: AbilityUpgradeDamageAndRange;
     if (as.upgrades[ABILITY_SNIPE_UPGRADE_DAMAGE_AND_RANGE] === undefined) {
         up = {
@@ -78,8 +75,8 @@ function executeOptionDamageAndRange(ability: Ability, option: AbilityUpgradeOpt
 }
 
 function getAbilityUpgradeDamageAndRangeDamageFactor(ability: Ability): number {
-    let abilitySnipe = ability as AbilitySnipe;
-    let upgrades: AbilityUpgradeDamageAndRange | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_DAMAGE_AND_RANGE];
+    const abilitySnipe = ability as AbilitySnipe;
+    const upgrades: AbilityUpgradeDamageAndRange | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_DAMAGE_AND_RANGE];
     let factor = 1;
     if (upgrades?.damageMultiplier) {
         factor = upgrades.damageMultiplier;

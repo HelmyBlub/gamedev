@@ -28,21 +28,21 @@ export function addAbilityPetBreathUpgradeExplode() {
 }
 
 export function abilityPetBreathUpgradeExplodeApplyExplode(ability: AbilityPetBreath, pet: TamerPetCharacter, target: Character, game: Game) {
-    let explode = ability.upgrades[ABILITY_PET_BREATH_UPGARDE_EXPLODE] as AbilityPetBreathUpgradeExplode;
+    const explode = ability.upgrades[ABILITY_PET_BREATH_UPGARDE_EXPLODE] as AbilityPetBreathUpgradeExplode;
     if (explode === undefined) return;
     const damage = getPetAbilityBreathDamage(pet, ability) * explode.damageFactor;
-    let debuffExplode = createDebuffExplodeOnDeath(damage, pet.faction, explode.radius, ability.id);
+    const debuffExplode = createDebuffExplodeOnDeath(damage, pet.faction, explode.radius, ability.id);
     applyDebuff(debuffExplode, target, game);
 }
 
 function getOptionsExplode(ability: Ability): UpgradeOptionAndProbability[] {
-    let options = getAbilityUpgradeOptionDefault(ability, ABILITY_PET_BREATH_UPGARDE_EXPLODE);
+    const options = getAbilityUpgradeOptionDefault(ability, ABILITY_PET_BREATH_UPGARDE_EXPLODE);
     options[0].option.displayLongText = getAbilityUpgradeExplodeUiTextLong(ability);
     return options;
 }
 
 function executeOptionPaintExplode(ability: Ability, option: AbilityUpgradeOption) {
-    let as = ability as AbilityPetBreath;
+    const as = ability as AbilityPetBreath;
     let up: AbilityPetBreathUpgradeExplode;
     if (as.upgrades[ABILITY_PET_BREATH_UPGARDE_EXPLODE] === undefined) {
         up = { level: 0, damageFactor: 0, radius: RADIUS };
@@ -55,7 +55,7 @@ function executeOptionPaintExplode(ability: Ability, option: AbilityUpgradeOptio
 }
 
 function getAbilityUpgradeExplodeUiText(ability: Ability): string {
-    let up: AbilityPetBreathUpgradeExplode = ability.upgrades[ABILITY_PET_BREATH_UPGARDE_EXPLODE];
+    const up: AbilityPetBreathUpgradeExplode = ability.upgrades[ABILITY_PET_BREATH_UPGARDE_EXPLODE];
     return `${ABILITY_PET_BREATH_UPGARDE_EXPLODE}: Level ${up.level}`;
 }
 

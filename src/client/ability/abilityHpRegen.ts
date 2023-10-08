@@ -34,16 +34,16 @@ export function createAbilityHpRegen(idCounter: IdCounter): AbilityHpRegen {
 }
 
 function tickAbilityHpRegen(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
-    let abilityHpRegen= ability as AbilityHpRegen;
-    if(abilityHpRegen.nextIntervalTick === undefined){
+    const abilityHpRegen = ability as AbilityHpRegen;
+    if (abilityHpRegen.nextIntervalTick === undefined) {
         abilityHpRegen.nextIntervalTick = game.state.time + abilityHpRegen.tickInterval;
-    } 
-    if(abilityHpRegen.nextIntervalTick <= game.state.time){
-        if(abilityOwner.hp === undefined || abilityOwner.maxHp === undefined) throw new Error("abilityOwner does not have HP for HPRegen ability");
+    }
+    if (abilityHpRegen.nextIntervalTick <= game.state.time) {
+        if (abilityOwner.hp === undefined || abilityOwner.maxHp === undefined) throw new Error("abilityOwner does not have HP for HPRegen ability");
         abilityHpRegen.nextIntervalTick += abilityHpRegen.tickInterval;
-        if(abilityOwner.hp < abilityOwner.maxHp){
+        if (abilityOwner.hp < abilityOwner.maxHp) {
             abilityOwner.hp += abilityHpRegen.amount;
-            if(abilityOwner.hp > abilityOwner.maxHp){
+            if (abilityOwner.hp > abilityOwner.maxHp) {
                 abilityOwner.hp = abilityOwner.maxHp;
             }
         }
@@ -51,7 +51,7 @@ function tickAbilityHpRegen(abilityOwner: AbilityOwner, ability: Ability, game: 
 }
 
 function createAbilityHpRegenUpgradeOptions(ability: Ability): UpgradeOptionAndProbability[] {
-    let upgradeOptions: UpgradeOptionAndProbability[] = [];
+    const upgradeOptions: UpgradeOptionAndProbability[] = [];
     const option: AbilityUpgradeOption = {
         displayText: "Hp Regen +1",
         type: "Ability",
@@ -65,9 +65,9 @@ function createAbilityHpRegenUpgradeOptions(ability: Ability): UpgradeOptionAndP
     return upgradeOptions;
 }
 
-function executeAbilityHpRegenUpgradeOption(ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game){
-    let abilityHpRegen= ability as AbilityHpRegen;
-    if(upgradeOption.identifier === "Hp Regen+1"){
+function executeAbilityHpRegenUpgradeOption(ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game) {
+    const abilityHpRegen = ability as AbilityHpRegen;
+    if (upgradeOption.identifier === "Hp Regen+1") {
         abilityHpRegen.amount += 1;
         return;
     }
@@ -79,8 +79,8 @@ function paintAbilityHpRegenStatsUI(ctx: CanvasRenderingContext2D, ability: Abil
     const textLines: string[] = [
         `Ability: ${abilityHpRegen.name}`,
         `Ability stats:`,
-        `Hp Tick Interval: ${(abilityHpRegen.tickInterval/1000).toFixed(2)}s`,
-        `Hp Tick Amount: ${abilityHpRegen.amount}`,    
+        `Hp Tick Interval: ${(abilityHpRegen.tickInterval / 1000).toFixed(2)}s`,
+        `Hp Tick Amount: ${abilityHpRegen.amount}`,
     ];
     return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
 }

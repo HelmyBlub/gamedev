@@ -26,20 +26,20 @@ export function addAbilityPetBreathUpgradeSlow() {
 }
 
 export function abilityPetBreathUpgradeSlowApplySlow(ability: AbilityPetBreath, target: Character, game: Game) {
-    let slow = ability.upgrades[ABILITY_PET_BREATH_UPGARDE_SLOW] as AbilityPetBreathUpgradeSlow;
+    const slow = ability.upgrades[ABILITY_PET_BREATH_UPGARDE_SLOW] as AbilityPetBreathUpgradeSlow;
     if (slow === undefined) return;
-    let debuffSlow = createDebuffSlow(slow.factor, slow.duration, game.state.time);
+    const debuffSlow = createDebuffSlow(slow.factor, slow.duration, game.state.time);
     applyDebuff(debuffSlow, target, game);
 }
 
 function getOptionsSlow(ability: Ability): UpgradeOptionAndProbability[] {
-    let options = getAbilityUpgradeOptionDefault(ability, ABILITY_PET_BREATH_UPGARDE_SLOW);
+    const options = getAbilityUpgradeOptionDefault(ability, ABILITY_PET_BREATH_UPGARDE_SLOW);
     options[0].option.displayLongText = getAbilityUpgradeSlowUiTextLong(ability);
     return options;
 }
 
 function executeOptionPaintSlow(ability: Ability, option: AbilityUpgradeOption) {
-    let as = ability as AbilityPetBreath;
+    const as = ability as AbilityPetBreath;
     let up: AbilityPetBreathUpgradeSlow;
     if (as.upgrades[ABILITY_PET_BREATH_UPGARDE_SLOW] === undefined) {
         up = { level: 0, factor: 1, duration: BASEDURATION };
@@ -54,7 +54,7 @@ function executeOptionPaintSlow(ability: Ability, option: AbilityUpgradeOption) 
 }
 
 function getAbilityUpgradeSlowUiText(ability: Ability): string {
-    let up: AbilityPetBreathUpgradeSlow = ability.upgrades[ABILITY_PET_BREATH_UPGARDE_SLOW];
+    const up: AbilityPetBreathUpgradeSlow = ability.upgrades[ABILITY_PET_BREATH_UPGARDE_SLOW];
     return `${ABILITY_PET_BREATH_UPGARDE_SLOW}: Level ${up.level}`;
 }
 

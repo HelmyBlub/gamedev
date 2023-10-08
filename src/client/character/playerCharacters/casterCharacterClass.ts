@@ -1,5 +1,5 @@
-import { addAbilityToCharacter } from "../../ability/ability.js";
-import { createAbilityFireCircle } from "../../ability/abilityFireCircle.js";
+import { addAbilityToCharacter, createAbility } from "../../ability/ability.js";
+import { ABILITY_NAME_FIRE_CIRCLE } from "../../ability/abilityFireCircle.js";
 import { Game, IdCounter } from "../../gameModel.js";
 import { Character } from "../characterModel.js";
 import { changeToLevelingCharacter } from "./levelingCharacterModel.js";
@@ -17,5 +17,5 @@ function changeCharacterToCasterClass(
     game: Game, 
 ) {
     const levelingCharacter = changeToLevelingCharacter(character, game);
-    addAbilityToCharacter(levelingCharacter, createAbilityFireCircle(idCounter, "ability1"));
+    addAbilityToCharacter(character, createAbility(ABILITY_NAME_FIRE_CIRCLE, idCounter, false, false, "ability1"));
 }

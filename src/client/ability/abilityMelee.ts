@@ -37,23 +37,23 @@ export function createAbilityMelee(
     };
 }
 
-function resetAbility(ability: Ability){
-    let abilityMelee = ability as AbilityMelee;
+function resetAbility(ability: Ability) {
+    const abilityMelee = ability as AbilityMelee;
     abilityMelee.nextTickTime = undefined;
 }
 
 function setAbilityMeleeToLevel(ability: Ability, level: number) {
-    let abilityMelee = ability as AbilityMelee;
+    const abilityMelee = ability as AbilityMelee;
     abilityMelee.damage = level * 100;
 }
 
 function setAbilityMeleeToBossLevel(ability: Ability, level: number) {
-    let abilityMelee = ability as AbilityMelee;
+    const abilityMelee = ability as AbilityMelee;
     abilityMelee.damage = level * 10;
 }
 
 function tickAbilityMelee(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
-    let abilityMelee = ability as AbilityMelee;
+    const abilityMelee = ability as AbilityMelee;
 
     if (abilityMelee.nextTickTime === undefined) abilityMelee.nextTickTime = game.state.time + abilityMelee.tickInterval;
     if (abilityMelee.nextTickTime <= game.state.time) {
@@ -64,7 +64,7 @@ function tickAbilityMelee(abilityOwner: AbilityOwner, ability: Ability, game: Ga
             playerCharacters = determineCharactersInDistance(abilityOwner, game.state.map, [], game.state.bossStuff.bosses, abilityOwner.width + 40);
         }
         if (playerCharacters.length !== 0) {
-            let closest = determineClosestCharacter(abilityOwner, playerCharacters);
+            const closest = determineClosestCharacter(abilityOwner, playerCharacters);
 
             if (abilityOwner.width !== undefined && closest.minDistanceCharacter
                 && closest.minDistance <= abilityOwner.width / 2 + closest.minDistanceCharacter.width / 2) {

@@ -18,13 +18,13 @@ export function addAbilityPetPainterUpgradeDuplicate() {
 }
 
 function getOptionsDuplicate(ability: Ability): UpgradeOptionAndProbability[] {
-    let options = getAbilityUpgradeOptionDefault(ability, ABILITY_PET_PAINTER_UPGARDE_DUPLICATE);
+    const options = getAbilityUpgradeOptionDefault(ability, ABILITY_PET_PAINTER_UPGARDE_DUPLICATE);
     options[0].option.displayLongText = getAbilityUpgradeDuplicateUiTextLong(ability);
     return options;
 }
 
 function executeOptionPaintDuplicate(ability: Ability, option: AbilityUpgradeOption) {
-    let as = ability as AbilityPetPainter;
+    const as = ability as AbilityPetPainter;
     let up: AbilityPetPainterUpgradeDuplicate;
     if (as.upgrades[ABILITY_PET_PAINTER_UPGARDE_DUPLICATE] === undefined) {
         up = { level: 0 };
@@ -36,16 +36,16 @@ function executeOptionPaintDuplicate(ability: Ability, option: AbilityUpgradeOpt
 }
 
 function getAbilityUpgradeDuplicateUiText(ability: Ability): string {
-    let up: AbilityPetPainterUpgradeDuplicate = ability.upgrades[ABILITY_PET_PAINTER_UPGARDE_DUPLICATE];
+    const up: AbilityPetPainterUpgradeDuplicate = ability.upgrades[ABILITY_PET_PAINTER_UPGARDE_DUPLICATE];
     return `${ABILITY_PET_PAINTER_UPGARDE_DUPLICATE}: Level ${up.level}`;
 }
 
 function getAbilityUpgradeDuplicateUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
     const upgrade: AbilityUpgrade | undefined = ability.upgrades[ABILITY_PET_PAINTER_UPGARDE_DUPLICATE];
-    if(upgrade){
+    if (upgrade) {
         textLines.push(`Inrease number of shapes per paint to ${upgrade.level + 2}`);
-    }else{
+    } else {
         textLines.push(`Painter creates multiple shapes with one paint`);
     }
 

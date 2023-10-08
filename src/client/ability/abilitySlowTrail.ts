@@ -78,16 +78,16 @@ function createAbilityObjectSlowTrail(
 }
 
 function deleteAbilityObjectSlowTrail(abilityObject: AbilityObject, game: Game): boolean {
-    let abilityObjectSlowTrail = abilityObject as AbilityObjectSlowTrail;
+    const abilityObjectSlowTrail = abilityObject as AbilityObjectSlowTrail;
     return abilityObjectSlowTrail.endTime <= game.state.time;
 }
 
 function paintAbilityObjectSlowTrail(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
     if (paintOrder !== "beforeCharacterPaint") return;
-    let abilityObjectSlowTrail = abilityObject as AbilityObjectSlowTrail;
-    let cameraPosition = getCameraPosition(game);
-    let centerX = ctx.canvas.width / 2;
-    let centerY = ctx.canvas.height / 2;
+    const abilityObjectSlowTrail = abilityObject as AbilityObjectSlowTrail;
+    const cameraPosition = getCameraPosition(game);
+    const centerX = ctx.canvas.width / 2;
+    const centerY = ctx.canvas.height / 2;
 
     ctx.globalAlpha = 0.50;
     ctx.strokeStyle = "white";
@@ -104,13 +104,13 @@ function paintAbilityObjectSlowTrail(ctx: CanvasRenderingContext2D, abilityObjec
 }
 
 function onHitEffect(target: Character, abilityObjectSlowTrail: AbilityObjectSlowTrail, game: Game): boolean {
-    let debuffSlow = createDebuffSlow(abilityObjectSlowTrail.slowFactor, 1000, game.state.time);
+    const debuffSlow = createDebuffSlow(abilityObjectSlowTrail.slowFactor, 1000, game.state.time);
     applyDebuff(debuffSlow, target, game);
     return true;
 }
 
 function tickAbilitySlowTrail(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
-    let abilitySlowTrail = ability as AbilitySlowTrail;
+    const abilitySlowTrail = ability as AbilitySlowTrail;
 
     if (abilitySlowTrail.nextTickTime === undefined) {
         abilitySlowTrail.nextTickTime = game.state.time + abilitySlowTrail.tickInterval;
@@ -127,13 +127,13 @@ function tickAbilitySlowTrail(abilityOwner: AbilityOwner, ability: Ability, game
 }
 
 function tickAbilityObjectSlowTrail(abilityObject: AbilityObject, game: Game) {
-    let abilityObjectSlowTrail = abilityObject as AbilityObjectSlowTrail;
+    const abilityObjectSlowTrail = abilityObject as AbilityObjectSlowTrail;
 
     if (abilityObjectSlowTrail.nextTickTime === undefined) {
         abilityObjectSlowTrail.nextTickTime = game.state.time + abilityObjectSlowTrail.tickInterval;
     }
     if (abilityObjectSlowTrail.nextTickTime <= game.state.time) {
-        let characters: Character[] = getCharactersTouchingLine(game, abilityObjectSlowTrail.startPosition, abilityObjectSlowTrail.endPosition, abilityObject.faction, abilityObjectSlowTrail.width);
+        const characters: Character[] = getCharactersTouchingLine(game, abilityObjectSlowTrail.startPosition, abilityObjectSlowTrail.endPosition, abilityObject.faction, abilityObjectSlowTrail.width);
         for (let char of characters) {
             onHitEffect(char, abilityObjectSlowTrail, game);
         }
@@ -141,8 +141,8 @@ function tickAbilityObjectSlowTrail(abilityObject: AbilityObject, game: Game) {
 }
 
 function placeNewSlowTrail(abilityOwner: AbilityOwner, abilitySlowTrail: AbilitySlowTrail, game: Game) {
-    let endPosition = { x: abilityOwner.x, y: abilityOwner.y };
-    let slowTrail = createAbilityObjectSlowTrail(abilitySlowTrail, abilityOwner, abilitySlowTrail.lastPosition!, endPosition, game);
+    const endPosition = { x: abilityOwner.x, y: abilityOwner.y };
+    const slowTrail = createAbilityObjectSlowTrail(abilitySlowTrail, abilityOwner, abilitySlowTrail.lastPosition!, endPosition, game);
     game.state.abilityObjects.push(slowTrail);
     abilitySlowTrail.lastPosition = { x: abilityOwner.x, y: abilityOwner.y };
 }

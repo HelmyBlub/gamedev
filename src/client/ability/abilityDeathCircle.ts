@@ -39,7 +39,7 @@ export function createAbilityDeathCircle(idCounter: IdCounter): AbilityDeathCirc
 }
 
 export function createObjectDeathCircle(map: GameMap): AbilityObjectDeathCircle {
-    let mapCenter = (map.tileSize * map.chunkLength) / 2;
+    const mapCenter = (map.tileSize * map.chunkLength) / 2;
     return {
         type: ABILITY_NAME_DEATH_CIRCLE,
         radius: 0,
@@ -62,30 +62,30 @@ function tickAbilityDeathCircle(abilityOwner: AbilityOwner, ability: Ability, ga
 }
 
 function tickAbilityObjectDeathCircle(abilityObject: AbilityObject, game: Game) {
-    let abilityObjectDeathCircle = abilityObject as AbilityObjectDeathCircle;
+    const abilityObjectDeathCircle = abilityObject as AbilityObjectDeathCircle;
     abilityObjectDeathCircle.radius += abilityObjectDeathCircle.growSpeed;
-    if(abilityObjectDeathCircle.nextTickTime === undefined) abilityObjectDeathCircle.nextTickTime = game.state.time + abilityObjectDeathCircle.tickInterval;
-    if(abilityObjectDeathCircle.nextTickTime > game.state.time) return;
+    if (abilityObjectDeathCircle.nextTickTime === undefined) abilityObjectDeathCircle.nextTickTime = game.state.time + abilityObjectDeathCircle.tickInterval;
+    if (abilityObjectDeathCircle.nextTickTime > game.state.time) return;
 
     abilityObjectDeathCircle.nextTickTime += abilityObjectDeathCircle.tickInterval;
     abilityObjectDeathCircle.damage = Math.max(1, abilityObjectDeathCircle.radius / 200);
 
-    let playerCharacters = getPlayerCharacters(game.state.players);
-    for(let playerCharacter of playerCharacters){
-        let distance = calculateDistance(playerCharacter, abilityObject);
-        if(distance < abilityObjectDeathCircle.radius){
+    const playerCharacters = getPlayerCharacters(game.state.players);
+    for (let playerCharacter of playerCharacters) {
+        const distance = calculateDistance(playerCharacter, abilityObject);
+        if (distance < abilityObjectDeathCircle.radius) {
             characterTakeDamage(playerCharacter, abilityObject.damage, game);
         }
     }
 }
 
 function paintAbilityObjectDeathCircle(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
-    if(paintOrder === "beforeCharacterPaint"){
-        let abilityObjectDeathCircle = abilityObject as AbilityObjectDeathCircle;
-        let cameraPosition = getCameraPosition(game);
-        let centerX = ctx.canvas.width / 2;
-        let centerY = ctx.canvas.height / 2;
-    
+    if (paintOrder === "beforeCharacterPaint") {
+        const abilityObjectDeathCircle = abilityObject as AbilityObjectDeathCircle;
+        const cameraPosition = getCameraPosition(game);
+        const centerX = ctx.canvas.width / 2;
+        const centerY = ctx.canvas.height / 2;
+
         ctx.fillStyle = abilityObject.color;
         ctx.globalAlpha = 0.65;
         ctx.beginPath();

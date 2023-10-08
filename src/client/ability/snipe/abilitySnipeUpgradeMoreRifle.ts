@@ -5,7 +5,7 @@ import { Ability, AbilityOwner } from "../ability.js";
 import { AbilityUpgrade } from "../abilityUpgrade.js";
 import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilitySnipe, createAbilityObjectSnipeInitial, getOptionsSnipeUpgrade } from "./abilitySnipe.js";
 import { paintSniperRifle } from "./abilitySnipePaint.js";
-import { castSnipeAfterImage } from "./abilitySnipeUpgradeAfterImage.js";
+import { ABILITY_SNIPE_UPGRADE_AFTER_IMAGE, castSnipeAfterImage } from "./abilitySnipeUpgradeAfterImage.js";
 
 export const ABILITY_SNIPE_UPGRADE_MORE_RIFLES = "More Rifles";
 
@@ -42,8 +42,8 @@ export function paintVisualizationMoreRifles(ctx: CanvasRenderingContext2D, posi
     if (!upgradeMoreRifles) return;
     const centerX = ctx.canvas.width / 2;
     const centerY = ctx.canvas.height / 2;
-    let paintX = Math.floor(position.x - cameraPosition.x + centerX);
-    let paintY = Math.floor(position.y - cameraPosition.y + centerY);
+    const paintX = Math.floor(position.x - cameraPosition.x + centerX);
+    const paintY = Math.floor(position.y - cameraPosition.y + centerY);
 
     for (let i = 0; i < upgradeMoreRifles.numberRifles; i++) {
         let pointDirection = upgradeMoreRifles.lastSniperRiflePaintDirection[i];
@@ -57,13 +57,13 @@ export function paintVisualizationMoreRifles(ctx: CanvasRenderingContext2D, posi
 }
 
 export function tickAbilityUpgradeMoreRifles(abilitySnipe: AbilitySnipe, abilityOwner: AbilityOwner, game: Game) {
-    let upgrade: AbilityUpgradeMoreRifles | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES];
+    const upgrade: AbilityUpgradeMoreRifles | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES];
     if (!upgrade) return;
     upgrade.rotationDirection += 0.02;
 
     if (abilitySnipe.shotNextAllowedTime) {
         const clientInfo: ClientInfo | undefined = getClientInfoByCharacterId(abilityOwner.id, game);
-        if(clientInfo){
+        if (clientInfo) {
             for (let i = 0; i < upgrade.numberRifles; i++) {
                 const position = getMoreRiflesPosition(abilityOwner, upgrade, i);
                 upgrade.lastSniperRiflePaintDirection[i] = calculateDirection(position, clientInfo.lastMousePosition);
@@ -73,12 +73,12 @@ export function tickAbilityUpgradeMoreRifles(abilitySnipe: AbilitySnipe, ability
 }
 
 function getOptionsMoreRifles(ability: Ability): UpgradeOptionAndProbability[] {
-    let options = getOptionsSnipeUpgrade(ability, ABILITY_SNIPE_UPGRADE_MORE_RIFLES);
+    const options = getOptionsSnipeUpgrade(ability, ABILITY_SNIPE_UPGRADE_MORE_RIFLES);
     return options;
 }
 
 function executeOptionMoreRifles(ability: Ability, option: AbilityUpgradeOption) {
-    let as = ability as AbilitySnipe;
+    const as = ability as AbilitySnipe;
     let up: AbilityUpgradeMoreRifles;
     if (option.additionalInfo === "Synergy") {
         up = as.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES];
@@ -105,17 +105,15 @@ function executeOptionMoreRifles(ability: Ability, option: AbilityUpgradeOption)
 
 function getAbilityUpgradeMoreRiflesUiText(ability: Ability): string {
     const abilitySnipe = ability as AbilitySnipe;
-    let upgrade: AbilityUpgradeMoreRifles = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES];
+    const upgrade: AbilityUpgradeMoreRifles = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES];
     return `${ABILITY_SNIPE_UPGRADE_MORE_RIFLES} +${upgrade.numberRifles}` + (upgrade.upgradeSynergy ? " (Synergy)" : "");
 }
 
 function getAbilityUpgradeMoreRiflesUiTextLong(ability: Ability, option: AbilityUpgradeOption): string[] {
-    const abilitySnipe = ability as AbilitySnipe;
-    const upgrade: AbilityUpgradeMoreRifles | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES];
     const textLines: string[] = [];
     if (option.additionalInfo && option.additionalInfo === "Synergy") {
         textLines.push(`List of synergies:`);
-        textLines.push(`- After Image`);
+        textLines.push(`- ${ABILITY_SNIPE_UPGRADE_AFTER_IMAGE}`);
     } else {
         textLines.push(`Add one rifle rotating around.`);
         textLines.push(`It copies your shooting actions.`);

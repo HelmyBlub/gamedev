@@ -46,7 +46,7 @@ export function addAbilityFireCircle() {
     };
 }
 
-export function createAbilityFireCircle(
+function createAbilityFireCircle(
     idCounter: IdCounter,
     playerInputBinding?: string,
     objectDuration: number = 2000,
@@ -106,10 +106,10 @@ function createObjectFireCircle(abilityObject: AbilityObjectFireCircleTraveling,
 }
 
 function paintAbilityObjectFireCircle(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
-    let abilityObjectFireCircle = abilityObject as AbilityObjectFireCircle;
-    let cameraPosition = getCameraPosition(game);
-    let centerX = ctx.canvas.width / 2;
-    let centerY = ctx.canvas.height / 2;
+    const abilityObjectFireCircle = abilityObject as AbilityObjectFireCircle;
+    const cameraPosition = getCameraPosition(game);
+    const centerX = ctx.canvas.width / 2;
+    const centerY = ctx.canvas.height / 2;
 
     ctx.fillStyle = abilityObject.color;
     if (abilityObject.faction === FACTION_ENEMY) ctx.fillStyle = "black";
@@ -139,7 +139,7 @@ function paintAbilityObjectFireCircle(ctx: CanvasRenderingContext2D, abilityObje
 }
 
 function setAbilityFireCircleToLevel(ability: Ability, level: number) {
-    let abilityFireCircle = ability as AbilityFireCircle;
+    const abilityFireCircle = ability as AbilityFireCircle;
     abilityFireCircle.damage = level * 100;
     abilityFireCircle.radius = 10 + level * 5;
     abilityFireCircle.objectDuration = 2000 + level * 500;
@@ -147,7 +147,7 @@ function setAbilityFireCircleToLevel(ability: Ability, level: number) {
 }
 
 function setAbilityFireCircleToBossLevel(ability: Ability, level: number) {
-    let abilityFireCircle = ability as AbilityFireCircle;
+    const abilityFireCircle = ability as AbilityFireCircle;
     abilityFireCircle.damage = level * 10;
     abilityFireCircle.radius = 15 + level * 5;
     abilityFireCircle.objectDuration = 5000;
@@ -157,7 +157,7 @@ function setAbilityFireCircleToBossLevel(ability: Ability, level: number) {
 }
 
 function tickAbilityFireCircle(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
-    let abilityFireCircle = ability as AbilityFireCircle;
+    const abilityFireCircle = ability as AbilityFireCircle;
     if (abilityFireCircle.nextRechargeTime === -1) {
         abilityFireCircle.nextRechargeTime = game.state.time + abilityFireCircle.baseRechargeTime / abilityFireCircle.rechargeTimeDecreaseFaktor;
     }
@@ -181,7 +181,7 @@ function tickAbilityFireCircle(abilityOwner: AbilityOwner, ability: Ability, gam
 function autoCastAbility(abilityOwner: AbilityOwner, abilityFireCircle: AbilityFireCircle, game: Game) {
     let areaSize = 20 + abilityFireCircle.radius * 2;
     if (abilityOwner.faction === FACTION_ENEMY) areaSize += 50;
-    let castRandomPosition = {
+    const castRandomPosition = {
         x: abilityOwner.x + nextRandom(game.state.randomSeed) * areaSize * 2 - areaSize,
         y: abilityOwner.y + nextRandom(game.state.randomSeed) * areaSize * 2 - areaSize
     };
@@ -190,9 +190,9 @@ function autoCastAbility(abilityOwner: AbilityOwner, abilityFireCircle: AbilityF
 }
 
 function paintAbilityFireCircleUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
-    let fireCircle = ability as AbilityFireCircle;
-    let fontSize = size;
-    let rectSize = size;
+    const fireCircle = ability as AbilityFireCircle;
+    const fontSize = size;
+    const rectSize = size;
     ctx.strokeStyle = "black";
     ctx.fillStyle = "white";
     ctx.fillRect(drawStartX, drawStartY, rectSize, rectSize);
@@ -201,7 +201,7 @@ function paintAbilityFireCircleUI(ctx: CanvasRenderingContext2D, ability: Abilit
     ctx.stroke();
     if (fireCircle.currentCharges < fireCircle.maxCharges) {
         ctx.fillStyle = "gray";
-        let heightFactor = (fireCircle.nextRechargeTime - game.state.time) / (fireCircle.baseRechargeTime / fireCircle.rechargeTimeDecreaseFaktor);
+        const heightFactor = (fireCircle.nextRechargeTime - game.state.time) / (fireCircle.baseRechargeTime / fireCircle.rechargeTimeDecreaseFaktor);
         ctx.fillRect(drawStartX, drawStartY, rectSize, rectSize * heightFactor);
     }
 
@@ -223,7 +223,7 @@ function paintAbilityFireCircleUI(ctx: CanvasRenderingContext2D, ability: Abilit
 }
 
 function tickAbilityObjectFireCircle(abilityObject: AbilityObject, game: Game) {
-    let abilityObjectFireCircle = abilityObject as AbilityObjectFireCircle;
+    const abilityObjectFireCircle = abilityObject as AbilityObjectFireCircle;
     if (abilityObjectFireCircle.subType === "FireCircel") {
         if (abilityObjectFireCircle.nextTickTime === undefined) abilityObjectFireCircle.nextTickTime = game.state.time + abilityObjectFireCircle.tickInterval;
         if (abilityObjectFireCircle.nextTickTime <= game.state.time) {
@@ -231,15 +231,15 @@ function tickAbilityObjectFireCircle(abilityObject: AbilityObject, game: Game) {
             abilityObjectFireCircle.nextTickTime += abilityObjectFireCircle.tickInterval;
         }
     } else if (abilityObjectFireCircle.subType === "FireCircelTraveling") {
-        let ability = abilityObject as AbilityObjectFireCircleTraveling;
+        const ability = abilityObject as AbilityObjectFireCircleTraveling;
         if (ability.toDelete) return;
-        let distance = calculateDistance(ability, ability.targetPosition);
+        const distance = calculateDistance(ability, ability.targetPosition);
         if (distance <= ability.moveSpeed) {
-            let fireCircle = createObjectFireCircle(ability, game.state.time);
+            const fireCircle = createObjectFireCircle(ability, game.state.time);
             game.state.abilityObjects.push(fireCircle);
             ability.toDelete = true;
         } else {
-            let direction = calculateDirection(ability, ability.targetPosition);
+            const direction = calculateDirection(ability, ability.targetPosition);
             ability.x = ability.x + Math.cos(direction) * ability.moveSpeed;
             ability.y = ability.y + Math.sin(direction) * ability.moveSpeed;
         }
@@ -247,18 +247,18 @@ function tickAbilityObjectFireCircle(abilityObject: AbilityObject, game: Game) {
 }
 
 function deleteObjectFireCircle(abilityObject: AbilityObject, game: Game): boolean {
-    let abilityObjectFireCircle = abilityObject as AbilityObjectFireCircle;
+    const abilityObjectFireCircle = abilityObject as AbilityObjectFireCircle;
     if (abilityObjectFireCircle.subType === "FireCircel") {
         return abilityObjectFireCircle.deleteTime <= game.state.time;
     } else {
-        let abilityObjectFireCircleTraveling = abilityObject as AbilityObjectFireCircleTraveling;
+        const abilityObjectFireCircleTraveling = abilityObject as AbilityObjectFireCircleTraveling;
         return abilityObjectFireCircleTraveling.toDelete;
     }
 }
 
 function castFireCircle(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isKeydown: boolean, game: Game) {
     if (!isKeydown) return;
-    let abilityFireCircle = ability as AbilityFireCircle;
+    const abilityFireCircle = ability as AbilityFireCircle;
     if (abilityFireCircle.currentCharges > 0) {
         game.state.abilityObjects.push(createObjectFireCircleTraveling(
             castPosition.x,

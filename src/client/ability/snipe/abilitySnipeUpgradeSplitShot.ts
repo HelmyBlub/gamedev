@@ -5,6 +5,9 @@ import { nextRandom } from "../../randomNumberGenerator.js";
 import { Ability } from "../ability.js";
 import { AbilityUpgrade } from "../abilityUpgrade.js";
 import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe, createAbilityObjectSnipeBranch, getOptionsSnipeUpgrade } from "./abilitySnipe.js";
+import { ABILITY_SNIPE_UPGRADE_AFTER_IMAGE } from "./abilitySnipeUpgradeAfterImage.js";
+import { ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT } from "./abilitySnipeUpgradeBackwardsShot.js";
+import { ABILITY_SNIPE_UPGRADE_MORE_RIFLES } from "./abilitySnipeUpgradeMoreRifle.js";
 
 export const ABILITY_SNIPE_UPGRADE_SPLIT_SHOT = "Split Shot";
 
@@ -23,7 +26,7 @@ export function addAbilitySnipeUpgradeSplitShot() {
 }
 
 export function abilityUpgradeSplitShotOnSnipeHit(position: Position, abilitySnipe: AbilitySnipe | undefined, abilityObjectSnipe: AbilityObjectSnipe, game: Game) {
-    let upgrades: AbilityUpgradeSplitShot | undefined = abilitySnipe?.upgrades[ABILITY_SNIPE_UPGRADE_SPLIT_SHOT];
+    const upgrades: AbilityUpgradeSplitShot | undefined = abilitySnipe?.upgrades[ABILITY_SNIPE_UPGRADE_SPLIT_SHOT];
     if (abilityObjectSnipe.canSplitOnHit && upgrades && abilitySnipe) {
         if (abilityObjectSnipe.triggeredByPlayer || upgrades.upgradeSynergy) {
             for (let i = 0; i < upgrades.shotSplitsPerHit!; i++) {
@@ -38,12 +41,12 @@ export function abilityUpgradeSplitShotOnSnipeHit(position: Position, abilitySni
 }
 
 function getOptionsSplitShot(ability: Ability): UpgradeOptionAndProbability[] {
-    let options = getOptionsSnipeUpgrade(ability, ABILITY_SNIPE_UPGRADE_SPLIT_SHOT);
+    const options = getOptionsSnipeUpgrade(ability, ABILITY_SNIPE_UPGRADE_SPLIT_SHOT);
     return options;
 }
 
 function executeOptionSplitShot(ability: Ability, option: AbilityUpgradeOption) {
-    let as = ability as AbilitySnipe;
+    const as = ability as AbilitySnipe;
     let up: AbilityUpgradeSplitShot;
     if (option.additionalInfo === "Synergy") {
         up = as.upgrades[ABILITY_SNIPE_UPGRADE_SPLIT_SHOT];
@@ -71,15 +74,12 @@ function getAbilityUpgradeSplitShotUiText(ability: Ability): string {
 }
 
 function getAbilityUpgradeSplitShotUiTextLong(ability: Ability, option: AbilityUpgradeOption): string[] {
-    const abilitySnipe = ability as AbilitySnipe;
-    const upgrade: AbilityUpgrade | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_SPLIT_SHOT];
-
     const textLines: string[] = [];
     if (option.additionalInfo && option.additionalInfo === "Synergy") {
         textLines.push(`List of synergies:`);
-        textLines.push(`- After Image`);
-        textLines.push(`- Backwards Shot`);
-        textLines.push(`- More Rifles`);
+        textLines.push(`- ${ABILITY_SNIPE_UPGRADE_AFTER_IMAGE}`);
+        textLines.push(`- ${ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT}`);
+        textLines.push(`- ${ABILITY_SNIPE_UPGRADE_MORE_RIFLES}`);
     } else {
         textLines.push(`For every enemy hit with the main shot,`);
         textLines.push(`it will split in two.`);

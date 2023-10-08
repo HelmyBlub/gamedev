@@ -46,7 +46,7 @@ function createAbilityObjectPetPainterSquare(
     range: number,
     gameTime: number
 ): AbilityObjectPetPainter {
-    let abilityObjectPetPainter: AbilityObjectPetPainterSquare = {
+    const abilityObjectPetPainter: AbilityObjectPetPainterSquare = {
         type: ABILITY_NAME_PET_PAINTER,
         size: size,
         color: "red",
@@ -60,7 +60,7 @@ function createAbilityObjectPetPainterSquare(
         subType: PET_PAINTER_SQUARE,
         abilityRefId: abilityRefId,
     }
-    if(faction === FACTION_ENEMY){
+    if (faction === FACTION_ENEMY) {
         abilityObjectPetPainter.color = "black";
     }
     return abilityObjectPetPainter;
@@ -77,7 +77,7 @@ function createAbilityObjectPetPainterSquareFactory(
     spawnInterval: number,
     gameTime: number
 ): AbilityObjectPetPainter {
-    let abilityObjectPetPainter: AbilityObjectPetPainterSquare = {
+    const abilityObjectPetPainter: AbilityObjectPetPainterSquare = {
         type: ABILITY_NAME_PET_PAINTER,
         size: size,
         color: "red",
@@ -93,7 +93,7 @@ function createAbilityObjectPetPainterSquareFactory(
         tickInterval: spawnInterval * 2,
         isFactory: true,
     }
-    if(faction === FACTION_ENEMY){
+    if (faction === FACTION_ENEMY) {
         abilityObjectPetPainter.color = "black";
     }
     return abilityObjectPetPainter;
@@ -102,7 +102,7 @@ function createAbilityObjectPetPainterSquareFactory(
 function createSplitShape(abilityObject: AbilityObjectPetPainter, upgrade: AbilityPetPainterUpgradeSplit, game: Game): AbilityObjectPetPainter {
     const square = abilityObject as AbilityObjectPetPainterSquare;
     const random = Math.floor(nextRandom(game.state.randomSeed) * 4);
-    let position: Position = { x: square.x + square.size / 4, y: square.y + square.size / 4 };
+    const position: Position = { x: square.x + square.size / 4, y: square.y + square.size / 4 };
     switch (random) {
         case 0:
             position.x += square.range;
@@ -165,10 +165,10 @@ function tickShapeObjectPetPainterSquare(abilityObject: AbilityObjectPetPainter,
 function detectSquareToCharacterHit(petPainter: AbilityObjectPetPainterSquare, game: Game) {
     if (petPainter.damageDone) return;
     petPainter.damageDone = true;
-    let maxEnemySizeEstimate = 40;
-    let characters = determineCharactersInDistance(petPainter, game.state.map, [], game.state.bossStuff.bosses, petPainter.size + petPainter.range + maxEnemySizeEstimate);
+    const maxEnemySizeEstimate = 40;
+    const characters = determineCharactersInDistance(petPainter, game.state.map, [], game.state.bossStuff.bosses, petPainter.size + petPainter.range + maxEnemySizeEstimate);
     for (let charIt = characters.length - 1; charIt >= 0; charIt--) {
-        let c = characters[charIt];
+        const c = characters[charIt];
         if (c.isDead || c.faction === petPainter.faction) continue;
         let getHit = false;
         if (c.x >= petPainter.x - petPainter.range && c.x <= petPainter.x + petPainter.size + petPainter.range
@@ -219,7 +219,7 @@ function paintShapeSquare(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOw
 }
 
 function getRandomStartPaintPositionSquare(pet: TamerPetCharacter, game: Game): Position {
-    let petOwner: Character = findPetOwner(pet, game)!;
+    const petOwner: Character = findPetOwner(pet, game)!;
     let blocking = true;
     let position = { x: 0, y: 0 };
     do {

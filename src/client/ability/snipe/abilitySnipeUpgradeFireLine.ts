@@ -5,6 +5,9 @@ import { Ability } from "../ability.js";
 import { createAbilityObjectFireLine } from "../abilityFireLine.js";
 import { AbilityUpgrade } from "../abilityUpgrade.js";
 import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilitySnipe, getAbilitySnipeDamage, getOptionsSnipeUpgrade } from "./abilitySnipe.js";
+import { ABILITY_SNIPE_UPGRADE_AFTER_IMAGE } from "./abilitySnipeUpgradeAfterImage.js";
+import { ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT } from "./abilitySnipeUpgradeBackwardsShot.js";
+import { ABILITY_SNIPE_UPGRADE_MORE_RIFLES } from "./abilitySnipeUpgradeMoreRifle.js";
 
 export const ABILITY_SNIPE_UPGRADE_FIRE_LINE = "Fire Line";
 const DURATION = 3000;
@@ -40,12 +43,12 @@ export function castSnipeFireLine(startPosition: Position, faction: string, abil
 }
 
 function getOptionsFireLine(ability: Ability): UpgradeOptionAndProbability[] {
-    let options = getOptionsSnipeUpgrade(ability, ABILITY_SNIPE_UPGRADE_FIRE_LINE);
+    const options = getOptionsSnipeUpgrade(ability, ABILITY_SNIPE_UPGRADE_FIRE_LINE);
     return options;
 }
 
 function executeOptionFireLine(ability: Ability, option: AbilityUpgradeOption) {
-    let as = ability as AbilitySnipe;
+    const as = ability as AbilitySnipe;
     let up: AbilityUpgradeFireLine;
     if (option.additionalInfo === "Synergy") {
         up = as.upgrades[ABILITY_SNIPE_UPGRADE_FIRE_LINE];
@@ -76,15 +79,12 @@ function getAbilityUpgradeFireLineUiText(ability: Ability): string {
 }
 
 function getAbilityUpgradeFireLineUiTextLong(ability: Ability, option: AbilityUpgradeOption): string[] {
-    const abilitySnipe = ability as AbilitySnipe;
-    const upgrade: AbilityUpgradeFireLine | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_FIRE_LINE];
-
     const textLines: string[] = [];
     if (option.additionalInfo && option.additionalInfo === "Synergy") {
         textLines.push(`List of synergies:`);
-        textLines.push(`- After Image`);
-        textLines.push(`- More Rifles`);
-        textLines.push(`- Backwards Shot`);
+        textLines.push(`- ${ABILITY_SNIPE_UPGRADE_AFTER_IMAGE}`);
+        textLines.push(`- ${ABILITY_SNIPE_UPGRADE_MORE_RIFLES}`);
+        textLines.push(`- ${ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT}`);
     } else {
         textLines.push(`The main shot create a fire line.`);
         textLines.push(`It stays on the ground for ${DURATION / 1000}s.`);

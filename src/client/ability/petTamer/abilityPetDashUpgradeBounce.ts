@@ -22,16 +22,16 @@ export function addAbilityPetDashUpgradeTerrainBounce() {
 }
 
 function getOptionsBounce(ability: Ability): UpgradeOptionAndProbability[] {
-    let options = getAbilityUpgradeOptionDefault(ability, ABILITY_PET_DASH_UPGARDE_TERRAIN_BOUNCE);
+    const options = getAbilityUpgradeOptionDefault(ability, ABILITY_PET_DASH_UPGARDE_TERRAIN_BOUNCE);
     options[0].option.displayLongText = getAbilityUpgradeTerrainBounceUiTextLong(ability);
     return options;
 }
 
 function executeOptionDashTerrainBounce(ability: Ability, option: AbilityUpgradeOption) {
-    let as = ability as AbilityPetDash;
+    const as = ability as AbilityPetDash;
     let up: AbilityPetDashUpgradeTerrainBounce;
     if (as.upgrades[ABILITY_PET_DASH_UPGARDE_TERRAIN_BOUNCE] === undefined) {
-        up = { 
+        up = {
             level: 0,
             damageFactorPerBounce: 0,
             currentDamageFactor: 1,
@@ -46,7 +46,7 @@ function executeOptionDashTerrainBounce(ability: Ability, option: AbilityUpgrade
 }
 
 function getAbilityUpgradeTerrainBounceUiText(ability: Ability): string {
-    let up: AbilityPetDashUpgradeTerrainBounce = ability.upgrades[ABILITY_PET_DASH_UPGARDE_TERRAIN_BOUNCE];
+    const up: AbilityPetDashUpgradeTerrainBounce = ability.upgrades[ABILITY_PET_DASH_UPGARDE_TERRAIN_BOUNCE];
     return `${ABILITY_PET_DASH_UPGARDE_TERRAIN_BOUNCE}: Bonus damage per Bounce ${up.damageFactorPerBounce * 100}%, Level ${up.level}`;
 }
 
@@ -54,9 +54,9 @@ function getAbilityUpgradeTerrainBounceUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
     const upgrade: AbilityPetDashUpgradeTerrainBounce | undefined = ability.upgrades[ABILITY_PET_DASH_UPGARDE_TERRAIN_BOUNCE];
     textLines.push(`Dash bounces of blocking terain tiles`);
-    if(upgrade){
+    if (upgrade) {
         textLines.push(`Increases damage to ${(upgrade.damageFactorPerBounce + DAMAGE_FACTOR_BOUNCE) * 100}% for each bounce`);
-    }else{
+    } else {
         textLines.push(`Damage increases for each bounce by ${DAMAGE_FACTOR_BOUNCE * 100}%`);
     }
 

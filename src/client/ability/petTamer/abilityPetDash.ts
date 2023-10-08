@@ -46,9 +46,15 @@ export function addAbilityPetDash() {
     addAbilityPetDashUpgradeTerrainRoot();
 }
 
-export function createAbilityPetDash(
+export function getPetAbilityDashDamage(pet: TamerPetCharacter, ability: AbilityPetDash): number {
+    const damage = ability.baseDamage * pet.sizeFactor * pet.moveSpeed;
+    const upgradeBounce: AbilityPetDashUpgradeTerrainBounce = ability.upgrades[ABILITY_PET_DASH_UPGARDE_TERRAIN_BOUNCE];
+    if (upgradeBounce !== undefined) damage * upgradeBounce.currentDamageFactor;
+    return damage;
+}
+
+function createAbilityPetDash(
     idCounter: IdCounter,
-    playerInputBinding?: string,
 ): AbilityPetDash {
     return {
         id: getNextId(idCounter),
@@ -62,13 +68,6 @@ export function createAbilityPetDash(
         tickInterval: 100,
         upgrades: {},
     };
-}
-
-export function getPetAbilityDashDamage(pet: TamerPetCharacter, ability: AbilityPetDash): number {
-    let damage = ability.baseDamage * pet.sizeFactor * pet.moveSpeed;
-    const upgradeBounce: AbilityPetDashUpgradeTerrainBounce = ability.upgrades[ABILITY_PET_DASH_UPGARDE_TERRAIN_BOUNCE];
-    if (upgradeBounce !== undefined) damage * upgradeBounce.currentDamageFactor;
-    return damage;
 }
 
 function resetAbility(ability: Ability) {
@@ -92,24 +91,24 @@ function onHit(ability: Ability, targetCharacter: Character, game: Game) {
 }
 
 function createAbilityPetDashUpgradeOptions(ability: Ability): UpgradeOptionAndProbability[] {
-    let upgradeOptions: UpgradeOptionAndProbability[] = [];
+    const upgradeOptions: UpgradeOptionAndProbability[] = [];
     pushAbilityUpgradesOptions(ABILITY_PET_DASH_UPGRADE_FUNCTIONS, upgradeOptions, ability);
     return upgradeOptions;
 }
 
 function setAbilityPetDashToLevel(ability: Ability, level: number) {
-    let abilityPetDash = ability as AbilityPetDash;
+    const abilityPetDash = ability as AbilityPetDash;
     abilityPetDash.baseDamage = level * 100;
 }
 
 function setAbilityPetDashToBossLevel(ability: Ability, level: number) {
-    let abilityPetDash = ability as AbilityPetDash;
+    const abilityPetDash = ability as AbilityPetDash;
     abilityPetDash.baseDamage = level * 4;
     abilityPetDash.cooldown = 3000 - level * 150;
 }
 
 function paintAbilityPetDash(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
-    let abilityPetDash = ability as AbilityPetDash;
+    const abilityPetDash = ability as AbilityPetDash;
     if (abilityPetDash.activeUntilTime === undefined || abilityPetDash.activeUntilTime <= game.state.time) return;
     ctx.strokeStyle = "white";
     ctx.lineWidth = 2;
@@ -117,7 +116,7 @@ function paintAbilityPetDash(ctx: CanvasRenderingContext2D, abilityOwner: Abilit
     const lineDirection = abilityPetDash.direction! + Math.PI;
     const startPaintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
     const lineSpacer = 4;
-    let tempPos = { x: startPaintPos.x, y: startPaintPos.y };
+    const tempPos = { x: startPaintPos.x, y: startPaintPos.y };
     moveByDirectionAndDistance(tempPos, lineDirection, abilityOwner.width! / 2, false);
     paintSpeedLine(ctx, tempPos, lineDirection, lineLength);
     moveByDirectionAndDistance(tempPos, lineDirection + Math.PI / 2, lineSpacer, false);
@@ -127,7 +126,7 @@ function paintAbilityPetDash(ctx: CanvasRenderingContext2D, abilityOwner: Abilit
 }
 
 function paintSpeedLine(ctx: CanvasRenderingContext2D, startPos: Position, direction: number, length: number) {
-    let tempPos = { x: startPos.x, y: startPos.y };
+    const tempPos = { x: startPos.x, y: startPos.y };
     ctx.beginPath();
     ctx.moveTo(tempPos.x, tempPos.y);
     moveByDirectionAndDistance(tempPos, direction, length, false);
@@ -137,14 +136,14 @@ function paintSpeedLine(ctx: CanvasRenderingContext2D, startPos: Position, direc
 
 function tickAbilityPetDash(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     if (ability.disabled) return;
-    let abilityPetDash = ability as AbilityPetDash;
-    let pet = abilityOwner as TamerPetCharacter;
+    const abilityPetDash = ability as AbilityPetDash;
+    const pet = abilityOwner as TamerPetCharacter;
     if (abilityPetDash.readyTime === undefined) abilityPetDash.readyTime = game.state.time + abilityPetDash.cooldown;
     const upgradeBounce: AbilityPetDashUpgradeTerrainBounce = abilityPetDash.upgrades[ABILITY_PET_DASH_UPGARDE_TERRAIN_BOUNCE];
     const upgradeFireLine: AbilityPetDashUpgradeFireLine = abilityPetDash.upgrades[ABILITY_PET_DASH_UPGARDE_FIRE_LINE];
     if (abilityPetDash.activeUntilTime && abilityPetDash.activeUntilTime > game.state.time) {
         if (upgradeBounce !== undefined) {
-            let newPosition = calculateMovePosition(pet, abilityPetDash.direction!, abilityPetDash.baseSpeed, false);
+            const newPosition = calculateMovePosition(pet, abilityPetDash.direction!, abilityPetDash.baseSpeed, false);
             if (isPositionBlocking(newPosition, game.state.map, game.state.idCounter)) {
                 abilityPetDash.activeUntilTime += upgradeBounce.durationUpPerBounce;
                 abilityPetDash.direction = calculateBounceAngle(newPosition, abilityPetDash.direction!, game.state.map);

@@ -41,7 +41,7 @@ export function addAbilityFeedPet() {
     };
 }
 
-export function createAbilityFeedPet(
+function createAbilityFeedPet(
     idCounter: IdCounter,
     playerInputBinding?: string,
     range: number = 200,
@@ -72,10 +72,10 @@ function deleteAbilityObjectFeedPet(abilityObject: AbilityObject, game: Game): b
 }
 
 function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
-    let abilityFeedPet = ability as AbilityFeedPet;
+    const abilityFeedPet = ability as AbilityFeedPet;
     if (abilityOwner.pets) {
         for (let pet of abilityOwner.pets) {
-            let hunger: PetHunger = petFoodIntakeToDisplayText(pet.foodIntakeLevel);
+            const hunger: PetHunger = petFoodIntakeToDisplayText(pet.foodIntakeLevel);
             if (hunger === "hungry" && (!abilityFeedPet.nextRechargeTime || abilityFeedPet.nextRechargeTime + 500 <= game.state.time)) {
                 castFeedPet(abilityOwner, ability, pet, true, game);
                 break;
@@ -88,7 +88,7 @@ function tickAbilityObjectFeedPet(abilityObject: AbilityObject, game: Game) {
     const abilityObjectFeedPet = abilityObject as AbilityObjectFeedPet;
     if (abilityObjectFeedPet.reachedTarget) return;
     let target: Character | null = null;
-    let owner = findAbilityOwnerById(abilityObject.abilityRefId!, game);
+    const owner = findAbilityOwnerById(abilityObject.abilityRefId!, game);
     if (owner && owner.pets) {
         target = findCharacterById(owner.pets, abilityObjectFeedPet.targetCharacterId);
     }
@@ -98,7 +98,7 @@ function tickAbilityObjectFeedPet(abilityObject: AbilityObject, game: Game) {
         moveByDirectionAndDistance(abilityObject, moveDirection, 3, false);
         const distance = calculateDistance(abilityObject, target);
         if (distance < 3) {
-            let pet = target as TamerPetCharacter;
+            const pet = target as TamerPetCharacter;
             tamerPetFeed(pet, abilityObjectFeedPet.feedValue, game.state.time);
             abilityObjectFeedPet.reachedTarget = true;
         }
@@ -107,22 +107,22 @@ function tickAbilityObjectFeedPet(abilityObject: AbilityObject, game: Game) {
 
 function paintAbilityObjectFeedPet(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
     if (paintOrder !== "afterCharacterPaint") return;
-    let cameraPosition = getCameraPosition(game);
-    let centerX = ctx.canvas.width / 2;
-    let centerY = ctx.canvas.height / 2;
-    let paintX = Math.floor(abilityObject.x - cameraPosition.x + centerX);
-    let paintY = Math.floor(abilityObject.y - cameraPosition.y + centerY);
+    const cameraPosition = getCameraPosition(game);
+    const centerX = ctx.canvas.width / 2;
+    const centerY = ctx.canvas.height / 2;
+    const paintX = Math.floor(abilityObject.x - cameraPosition.x + centerX);
+    const paintY = Math.floor(abilityObject.y - cameraPosition.y + centerY);
 
-    let meatImage = getImage(ABILITY_NAME_FEED_PET);
+    const meatImage = getImage(ABILITY_NAME_FEED_PET);
     if (meatImage) {
         ctx.drawImage(meatImage, paintX - 20, paintY - 20);
     }
 }
 
 function paintAbilityFeedPetUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
-    let feedPet = ability as AbilityFeedPet;
-    let fontSize = 12;
-    let rectSize = size;
+    const feedPet = ability as AbilityFeedPet;
+    const fontSize = 12;
+    const rectSize = size;
 
     ctx.lineWidth = 1;
     ctx.strokeStyle = "black";
@@ -141,13 +141,13 @@ function paintAbilityFeedPetUI(ctx: CanvasRenderingContext2D, ability: Ability, 
         ctx.fillRect(drawStartX, drawStartY, rectSize, rectSize * heightFactor);
     }
 
-    let meatImage = getImage(ABILITY_NAME_FEED_PET);
+    const meatImage = getImage(ABILITY_NAME_FEED_PET);
     if (meatImage) {
         ctx.drawImage(meatImage, drawStartX, drawStartY);
     }
 
     if (feedPet.playerInputBinding) {
-        let keyBind = playerInputBindingToDisplayValue(feedPet.playerInputBinding, game);
+        const keyBind = playerInputBindingToDisplayValue(feedPet.playerInputBinding, game);
         ctx.fillStyle = "black";
         ctx.font = "10px Arial";
         ctx.fillText(keyBind, drawStartX + 1, drawStartY + 8);
@@ -162,8 +162,8 @@ function castFeedPet(abilityOwner: AbilityOwner, ability: Ability, castPosition:
         let distance: number = 40;
         let closetPet: TamerPetCharacter | undefined = undefined;
         for (let pet of abilityOwner.pets!) {
-            let tempRangeToClick = calculateDistance(pet, castPosition);
-            let tempRangeToOwner = calculateDistance(pet, abilityOwner);
+            const tempRangeToClick = calculateDistance(pet, castPosition);
+            const tempRangeToOwner = calculateDistance(pet, abilityOwner);
             if (tempRangeToOwner <= abilityFeedPet.range && tempRangeToClick < distance) {
                 closetPet = pet as TamerPetCharacter;
                 distance = tempRangeToClick;
@@ -172,7 +172,7 @@ function castFeedPet(abilityOwner: AbilityOwner, ability: Ability, castPosition:
         if (closetPet) {
             abilityFeedPet.nextRechargeTime = game.state.time + abilityFeedPet.baseRechargeTime;
 
-            let objectFeedPet: AbilityObjectFeedPet = {
+            const objectFeedPet: AbilityObjectFeedPet = {
                 feedValue: abilityFeedPet.feedValue,
                 targetCharacterId: closetPet.id,
                 reachedTarget: false,
@@ -186,6 +186,5 @@ function castFeedPet(abilityOwner: AbilityOwner, ability: Ability, castPosition:
             }
             game.state.abilityObjects.push(objectFeedPet);
         }
-
     }
 }

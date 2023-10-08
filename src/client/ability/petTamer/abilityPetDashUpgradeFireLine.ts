@@ -48,13 +48,13 @@ export function createPetDashUpgradeFireLine(pet: TamerPetCharacter, ability: Ab
 }
 
 function getOptionsFireLine(ability: Ability): UpgradeOptionAndProbability[] {
-    let options = getAbilityUpgradeOptionDefault(ability, ABILITY_PET_DASH_UPGARDE_FIRE_LINE);
+    const options = getAbilityUpgradeOptionDefault(ability, ABILITY_PET_DASH_UPGARDE_FIRE_LINE);
     options[0].option.displayLongText = getAbilityUpgradeFireLineUiTextLong(ability);
     return options;
 }
 
 function executeOptionDashFireLine(ability: Ability, option: AbilityUpgradeOption) {
-    let as = ability as AbilityPetDash;
+    const as = ability as AbilityPetDash;
     let up: AbilityPetDashUpgradeFireLine;
     if (as.upgrades[ABILITY_PET_DASH_UPGARDE_FIRE_LINE] === undefined) {
         up = {
@@ -72,7 +72,7 @@ function executeOptionDashFireLine(ability: Ability, option: AbilityUpgradeOptio
 }
 
 function getAbilityUpgradeFireLineUiText(ability: Ability): string {
-    let up: AbilityPetDashUpgradeFireLine = ability.upgrades[ABILITY_PET_DASH_UPGARDE_FIRE_LINE];
+    const up: AbilityPetDashUpgradeFireLine = ability.upgrades[ABILITY_PET_DASH_UPGARDE_FIRE_LINE];
     return `${ABILITY_PET_DASH_UPGARDE_FIRE_LINE}, Level ${up.level}`;
 }
 

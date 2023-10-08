@@ -1,5 +1,5 @@
 import { Character } from "../character/characterModel.js";
-import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../character/upgrade.js";
+import { AbilityUpgradeOption, UpgradeOptionAndProbability } from "../character/upgrade.js";
 import { ABILITIES_FUNCTIONS, Ability } from "./ability.js"
 
 export type AbilityUpgrade = {
@@ -71,8 +71,8 @@ export function getAbilityUpgradesDamageFactor(upgradeFunctions: AbilityUpgrades
 }
 
 export function getAbilityUpgradeOptionDefault(ability: Ability, upgradeName: string): UpgradeOptionAndProbability[] {
-    let upgrade = ability.upgrades[upgradeName] as AbilityUpgrade;
-    let option: AbilityUpgradeOption = {
+    const upgrade = ability.upgrades[upgradeName] as AbilityUpgrade;
+    const option: AbilityUpgradeOption = {
         displayText: upgradeName + (upgrade ? `(${upgrade.level + 1})` : ""),
         identifier: upgradeName,
         name: ability.name,

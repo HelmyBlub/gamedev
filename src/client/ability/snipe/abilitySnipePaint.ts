@@ -4,7 +4,7 @@ import { GAME_IMAGES, loadImage } from "../../imageLoad.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { Ability, AbilityObject, AbilityOwner, PaintOrderAbility, getAbilityNameUiText, paintDefaultAbilityStatsUI } from "../ability.js";
 import { pushAbilityUpgradesUiTexts } from "../abilityUpgrade.js";
-import { ABILITY_NAME_SNIPE, ABILITY_SNIPE_PAINT_FADE_DURATION, ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe, getAbilitySnipeDamage, getAbilitySnipeRange, getAbilitySnipeShotFrequency, getSniperRiflePosition } from "./abilitySnipe.js";
+import { ABILITY_NAME_SNIPE, ABILITY_SNIPE_PAINT_FADE_DURATION, ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe, getAbilitySnipeRange, getAbilitySnipeShotFrequency, getSniperRiflePosition } from "./abilitySnipe.js";
 import { paintVisualizationAfterImage } from "./abilitySnipeUpgradeAfterImage.js";
 import { paintVisualizationMoreRifles } from "./abilitySnipeUpgradeMoreRifle.js";
 import { paintVisualizationStayStill } from "./abilitySnipeUpgradeStayStill.js";
@@ -12,7 +12,7 @@ import { paintVisualizationStayStill } from "./abilitySnipeUpgradeStayStill.js";
 export function paintAbilityObjectSnipe(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
     if (paintOrder !== "beforeCharacterPaint" && abilityObject.faction === FACTION_PLAYER) return;
     if (paintOrder !== "afterCharacterPaint" && abilityObject.faction === FACTION_ENEMY) return;
-    let abilityObjectSnipe = abilityObject as AbilityObjectSnipe;
+    const abilityObjectSnipe = abilityObject as AbilityObjectSnipe;
     const cameraPosition = getCameraPosition(game);
     const snipe = abilityObject as AbilityObjectSnipe;
     const endPos = calcNewPositionMovedInDirection(snipe, snipe.direction, snipe.range);
@@ -23,10 +23,10 @@ export function paintAbilityObjectSnipe(ctx: CanvasRenderingContext2D, abilityOb
     let paintX: number;
     let paintY: number;
 
-    if(abilityObject.faction === FACTION_ENEMY && abilityObjectSnipe.enemyFactionDamageTime! > game.state.time){
+    if (abilityObject.faction === FACTION_ENEMY && abilityObjectSnipe.enemyFactionDamageTime! > game.state.time) {
         ctx.lineWidth = 1;
         ctx.globalAlpha = 1;
-    }else{
+    } else {
         ctx.lineWidth = abilityObjectSnipe.size;
         ctx.globalAlpha = Math.min((snipe.deleteTime - game.state.time) / ABILITY_SNIPE_PAINT_FADE_DURATION, 1);
     }
@@ -46,8 +46,8 @@ export function paintAbilitySnipe(ctx: CanvasRenderingContext2D, abilityOwner: A
     const centerX = ctx.canvas.width / 2;
     const centerY = ctx.canvas.height / 2;
     const riflePos = getSniperRiflePosition(abilitySnipe, abilityOwner);
-    let paintX = Math.floor(riflePos.x - cameraPosition.x + centerX);
-    let paintY = Math.floor(riflePos.y - cameraPosition.y + centerY);
+    const paintX = Math.floor(riflePos.x - cameraPosition.x + centerX);
+    const paintY = Math.floor(riflePos.y - cameraPosition.y + centerY);
 
     const direction = abilitySnipe.lastSniperRiflePaintDirection;
     const distance = 20;
@@ -57,14 +57,14 @@ export function paintAbilitySnipe(ctx: CanvasRenderingContext2D, abilityOwner: A
 }
 
 export function paintSniperRifle(ctx: CanvasRenderingContext2D, abilitySnipe: AbilitySnipe, paintX: number, paintY: number, pointDirection: number, distance: number, playerMainRifle: boolean, game: Game) {
-    let sniperRifleImageRef = GAME_IMAGES[ABILITY_NAME_SNIPE];
+    const sniperRifleImageRef = GAME_IMAGES[ABILITY_NAME_SNIPE];
     loadImage(sniperRifleImageRef);
     if (sniperRifleImageRef.imageRef?.complete) {
-        let sniperRifleImage: HTMLImageElement = sniperRifleImageRef.imageRef;
+        const sniperRifleImage: HTMLImageElement = sniperRifleImageRef.imageRef;
         ctx.translate(paintX, paintY);
         ctx.rotate(pointDirection + Math.PI);
         ctx.translate(-paintX, -paintY);
-        paintX -= Math.floor(sniperRifleImage.width / 2  + distance);
+        paintX -= Math.floor(sniperRifleImage.width / 2 + distance);
         paintY -= Math.floor(sniperRifleImage.height / 2);
         paintVisualizationStayStill(ctx, abilitySnipe, paintX, paintY, playerMainRifle, game);
         ctx.drawImage(
@@ -83,9 +83,9 @@ export function paintSniperRifle(ctx: CanvasRenderingContext2D, abilitySnipe: Ab
 }
 
 export function paintAbilitySnipeUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
-    let snipe = ability as AbilitySnipe;
-    let fontSize = size;
-    let rectSize = size;
+    const snipe = ability as AbilitySnipe;
+    const fontSize = size;
+    const rectSize = size;
     ctx.strokeStyle = "black";
     ctx.fillStyle = "white";
     ctx.lineWidth = 1;
@@ -122,9 +122,9 @@ export function paintAbilitySnipeUI(ctx: CanvasRenderingContext2D, ability: Abil
 }
 
 export function paintAbilitySnipeStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
-    let abilitySnipe = ability as AbilitySnipe;
+    const abilitySnipe = ability as AbilitySnipe;
     const textLines: string[] = getAbilityNameUiText(ability);
-    textLines.push(    
+    textLines.push(
         `Key: ${playerInputBindingToDisplayValue(abilitySnipe.playerInputBinding!, game)}`,
         "Snipe in direction of click. Enemies hit by line take damage",
         "Gets XP for killing enemies. More XP more Damage",

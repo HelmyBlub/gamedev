@@ -20,16 +20,16 @@ export function addAbilityPetPainterUpgradeFactory() {
 }
 
 function getOptionsFactory(ability: Ability): UpgradeOptionAndProbability[] {
-    let options = getAbilityUpgradeOptionDefault(ability, ABILITY_PET_PAINTER_UPGARDE_FACTORY);
+    const options = getAbilityUpgradeOptionDefault(ability, ABILITY_PET_PAINTER_UPGARDE_FACTORY);
     options[0].option.displayLongText = getAbilityUpgradeFactoryUiTextLong(ability);
     return options;
 }
 
 function executeOptionPaintFactory(ability: Ability, option: AbilityUpgradeOption) {
-    let as = ability as AbilityPetPainter;
+    const as = ability as AbilityPetPainter;
     let up: AbilityPetPainterUpgradeFactory;
     if (as.upgrades[ABILITY_PET_PAINTER_UPGARDE_FACTORY] === undefined) {
-        up = { level: 0, duration: 500, spawnInterval: 500};
+        up = { level: 0, duration: 500, spawnInterval: 500 };
         as.upgrades[ABILITY_PET_PAINTER_UPGARDE_FACTORY] = up;
     } else {
         up = as.upgrades[ABILITY_PET_PAINTER_UPGARDE_FACTORY];
@@ -39,16 +39,16 @@ function executeOptionPaintFactory(ability: Ability, option: AbilityUpgradeOptio
 }
 
 function getAbilityUpgradeFactoryUiText(ability: Ability): string {
-    let up: AbilityPetPainterUpgradeFactory = ability.upgrades[ABILITY_PET_PAINTER_UPGARDE_FACTORY];
+    const up: AbilityPetPainterUpgradeFactory = ability.upgrades[ABILITY_PET_PAINTER_UPGARDE_FACTORY];
     return `${ABILITY_PET_PAINTER_UPGARDE_FACTORY}: Level ${up.level}`;
 }
 
 function getAbilityUpgradeFactoryUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
     const upgrade: AbilityUpgrade | undefined = ability.upgrades[ABILITY_PET_PAINTER_UPGARDE_FACTORY];
-    if(upgrade){
+    if (upgrade) {
         textLines.push(`Inrease number of shapes created by factory to ${upgrade.level + 2}`);
-    }else{
+    } else {
         textLines.push(`Painter creates shape Factory instead of shape.`);
         textLines.push(`Shape Factory creates multiple shapes over time.`);
     }

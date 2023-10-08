@@ -19,14 +19,13 @@ export function addAbilitySpeedBoostUpgradeSpeed() {
 }
 
 function getOptionsSpeed(ability: Ability): UpgradeOptionAndProbability[] {
-    let options = getAbilityUpgradeOptionDefault(ability, ABILITY_SPEED_BOOST_UPGARDE_SPEED);
-    const upgrade: AbilitySpeedBoostUpgradeSpeed | undefined = ability.upgrades[ABILITY_SPEED_BOOST_UPGARDE_SPEED];
+    const options = getAbilityUpgradeOptionDefault(ability, ABILITY_SPEED_BOOST_UPGARDE_SPEED);
     options[0].option.displayLongText = getAbilityUpgradeSpeedUiTextLong(ability);
     return options;
 }
 
 function executeOptionSpeed(ability: Ability, option: AbilityUpgradeOption){
-    let as = ability as AbilitySpeedBoost;
+    const as = ability as AbilitySpeedBoost;
     let up: AbilitySpeedBoostUpgradeSpeed;
     if (as.upgrades[ABILITY_SPEED_BOOST_UPGARDE_SPEED] === undefined) {
         up = {level: 0};
@@ -39,14 +38,12 @@ function executeOptionSpeed(ability: Ability, option: AbilityUpgradeOption){
 }
 
 function getAbilityUpgradeSpeedUiText(ability: Ability): string {
-    let up: AbilitySpeedBoostUpgradeSpeed = ability.upgrades[ABILITY_SPEED_BOOST_UPGARDE_SPEED];
+    const up: AbilitySpeedBoostUpgradeSpeed = ability.upgrades[ABILITY_SPEED_BOOST_UPGARDE_SPEED];
     return `${ABILITY_SPEED_BOOST_UPGARDE_SPEED}: ${(up.level * BONUS_SPEED_PER_LEVEL) * 100}%`;
 }
 
 function getAbilityUpgradeSpeedUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
-    const upgrade: AbilityUpgrade | undefined  = ability.upgrades[ABILITY_SPEED_BOOST_UPGARDE_SPEED];
     textLines.push(`Speed Boost +${BONUS_SPEED_PER_LEVEL*100}% increased speed`);
-
     return textLines;
 }

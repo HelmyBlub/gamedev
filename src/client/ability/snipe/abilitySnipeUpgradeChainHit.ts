@@ -26,8 +26,8 @@ export function addAbilitySnipeUpgradeNoMissChain() {
 }
 
 export function abilityUpgradeNoMissChainOnObjectSnipeDamageDone(abilitySnipe: AbilitySnipe, abilityObjectSnipe: AbilityObjectSnipe) {
-    let upgrades: AbilityUpgradeNoMissChain | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN];
-    let isPlayerTriggeredMainShot = abilityObjectSnipe.triggeredByPlayer;
+    const upgrades: AbilityUpgradeNoMissChain | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN];
+    const isPlayerTriggeredMainShot = abilityObjectSnipe.triggeredByPlayer;
     if (upgrades && upgrades.noMissChainCounter !== undefined && abilityObjectSnipe.remainingRange === undefined && isPlayerTriggeredMainShot) {
         if (abilityObjectSnipe.hitSomething) {
             if (upgrades.noMissChainCounter < upgrades.noMissCounterCap!) {
@@ -41,18 +41,18 @@ export function abilityUpgradeNoMissChainOnObjectSnipeDamageDone(abilitySnipe: A
 
 function reset(ability: Ability) {
     const abilitySnipe = ability as AbilitySnipe;
-    let upgrade: AbilityUpgradeNoMissChain | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN];
+    const upgrade: AbilityUpgradeNoMissChain | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN];
     if (!upgrade) return;
     upgrade.noMissChainCounter = 0;
 }
 
 function getOptionsNoMissChain(ability: Ability): UpgradeOptionAndProbability[] {
-    let options = getOptionsSnipeUpgrade(ability, ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN);
+    const options = getOptionsSnipeUpgrade(ability, ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN);
     return options;
 }
 
 function executeOptionNoMissChain(ability: Ability, option: AbilityUpgradeOption) {
-    let as = ability as AbilitySnipe;
+    const as = ability as AbilitySnipe;
     let up: AbilityUpgradeNoMissChain;
     if (option.additionalInfo === "Synergy") {
         up = as.upgrades[ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN];
@@ -76,15 +76,12 @@ function executeOptionNoMissChain(ability: Ability, option: AbilityUpgradeOption
 }
 
 function getAbilityUpgradeNoMissChainUiText(ability: Ability): string {
-    let abilitySnipe = ability as AbilitySnipe;
-    let upgrade: AbilityUpgradeNoMissChain = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN];
+    const abilitySnipe = ability as AbilitySnipe;
+    const upgrade: AbilityUpgradeNoMissChain = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN];
     return "Chain Bonus: " + (upgrade.noMissChainCounter * upgrade.noMissBonusDamageFactorAdd * 100).toFixed() + "%" + (upgrade.upgradeSynergy ? " (Synergy)" : "");
 }
 
 function getAbilityUpgradeNoMissChainUiTextLong(ability: Ability, option: AbilityUpgradeOption): string[] {
-    const abilitySnipe = ability as AbilitySnipe;
-    const upgrade: AbilityUpgradeNoMissChain | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN];
-
     const textLines: string[] = [];
     if (option.additionalInfo && option.additionalInfo === "Synergy") {
         textLines.push(`All other upgrades will benefit`);
@@ -100,12 +97,11 @@ function getAbilityUpgradeNoMissChainUiTextLong(ability: Ability, option: Abilit
 }
 
 function getAbilityUpgradeNoMissChainDamageFactor(ability: Ability, playerTriggered: boolean): number {
-    let abilitySnipe = ability as AbilitySnipe;
-    let upgrade: AbilityUpgradeNoMissChain | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN];
+    const abilitySnipe = ability as AbilitySnipe;
+    const upgrade: AbilityUpgradeNoMissChain | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN];
     let factor = 1;
     if (upgrade?.noMissChainCounter && (playerTriggered || upgrade.upgradeSynergy)) {
         factor = 1 + (upgrade.noMissChainCounter * upgrade.noMissBonusDamageFactorAdd);
     }
     return factor;
-
 }

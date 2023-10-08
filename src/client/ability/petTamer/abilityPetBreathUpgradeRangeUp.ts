@@ -14,28 +14,28 @@ export const ABILITY_PET_BREATH_UPGARDE_RANGE_UP = "Breath Range+";
 export function addAbilityPetBreathUpgradeRangeUp() {
     ABILITY_PET_BREATH_UPGRADE_FUNCTIONS[ABILITY_PET_BREATH_UPGARDE_RANGE_UP] = {
         getStatsDisplayText: getAbilityUpgradeRangeUpUiText,
-        getLongExplainText: getAbilityUpgradeRangeUpUiTextLong,   
-        getOptions: getOptionsRangeUp,     
+        getLongExplainText: getAbilityUpgradeRangeUpUiTextLong,
+        getOptions: getOptionsRangeUp,
         executeOption: executeOptionPaintRangeUp,
     }
 }
 
-export function abilityPetBreathUpgradeRangeUpGetAdditionRange(pet: TamerPetCharacter, upgrade: AbilityPetBreathUpgradeRangeUp): number{
+export function abilityPetBreathUpgradeRangeUpGetAdditionRange(pet: TamerPetCharacter, upgrade: AbilityPetBreathUpgradeRangeUp): number {
     return upgrade.rangeUp;
 }
 
-export function abilityPetBreathUpgradeRangeUpGetAdditionFoodIntake(pet: TamerPetCharacter, upgrade: AbilityPetBreathUpgradeRangeUp): number{
+export function abilityPetBreathUpgradeRangeUpGetAdditionFoodIntake(pet: TamerPetCharacter, upgrade: AbilityPetBreathUpgradeRangeUp): number {
     return upgrade.foodIntakeUp;
 }
 
 function getOptionsRangeUp(ability: Ability): UpgradeOptionAndProbability[] {
-    let options = getAbilityUpgradeOptionDefault(ability, ABILITY_PET_BREATH_UPGARDE_RANGE_UP);
+    const options = getAbilityUpgradeOptionDefault(ability, ABILITY_PET_BREATH_UPGARDE_RANGE_UP);
     options[0].option.displayLongText = getAbilityUpgradeRangeUpUiTextLong(ability);
     return options;
 }
 
 function executeOptionPaintRangeUp(ability: Ability, option: AbilityUpgradeOption) {
-    let as = ability as AbilityPetBreath;
+    const as = ability as AbilityPetBreath;
     let up: AbilityPetBreathUpgradeRangeUp;
     if (as.upgrades[ABILITY_PET_BREATH_UPGARDE_RANGE_UP] === undefined) {
         up = { level: 0, foodIntakeUp: 0, rangeUp: 0 };
@@ -49,7 +49,7 @@ function executeOptionPaintRangeUp(ability: Ability, option: AbilityUpgradeOptio
 }
 
 function getAbilityUpgradeRangeUpUiText(ability: Ability): string {
-    let up: AbilityPetBreathUpgradeRangeUp = ability.upgrades[ABILITY_PET_BREATH_UPGARDE_RANGE_UP];
+    const up: AbilityPetBreathUpgradeRangeUp = ability.upgrades[ABILITY_PET_BREATH_UPGARDE_RANGE_UP];
     return `${ABILITY_PET_BREATH_UPGARDE_RANGE_UP}: Level ${up.level}`;
 }
 

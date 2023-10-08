@@ -19,13 +19,13 @@ export function addAbilitySpeedBoostUpgradeSlowTrail() {
 
 function getOptionsSlowTrail(ability: Ability): UpgradeOptionAndProbability[]{
     if (ability.upgrades[ABILITY_SPEED_BOOST_UPGARDE_SLOW_TRAIL]) return [];
-    let options =  getAbilityUpgradeOptionDefault(ability, ABILITY_SPEED_BOOST_UPGARDE_SLOW_TRAIL);
+    const options =  getAbilityUpgradeOptionDefault(ability, ABILITY_SPEED_BOOST_UPGARDE_SLOW_TRAIL);
     options[0].option.displayLongText = getAbilityUpgradeSlowTrailUiTextLong(ability);
     return options;
 }
 
 function executeOptionSlowTrail(ability: Ability, option: AbilityUpgradeOption){
-    let as = ability as AbilitySpeedBoost;
+    const as = ability as AbilitySpeedBoost;
     let up: AbilitySpeedBoostUpgradeSlowTrail;
     if (as.upgrades[ABILITY_SPEED_BOOST_UPGARDE_SLOW_TRAIL] === undefined) {
         up = {level: 1};

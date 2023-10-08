@@ -46,7 +46,7 @@ export function addAbilitySpeedBoost() {
     addAbilitySpeedBoostUpgradeCooldown();
 }
 
-export function createAbilitySpeedBoost(
+function createAbilitySpeedBoost(
     idCounter: IdCounter,
     playerInputBinding?: string,
 ): AbilitySpeedBoost {
@@ -64,18 +64,18 @@ export function createAbilitySpeedBoost(
     };
 }
 
-function resetAbility(ability: Ability){
+function resetAbility(ability: Ability) {
     const speed = ability as AbilitySpeedBoost;
     speed.cooldownFinishTime = 0;
 }
 
-function tickAbilitySpeedBoost(abilityOwner: AbilityOwner, ability: Ability, game: Game){
+function tickAbilitySpeedBoost(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     const abilitySpeedBoost = ability as AbilitySpeedBoost;
     tickAbilitySpeedBoostUpgradeAddCharge(abilitySpeedBoost, game);
 }
 
 function castSpeedBoost(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isInputdown: boolean, game: Game) {
-    if(!isInputdown) return;
+    if (!isInputdown) return;
     const abilitySpeedBoost = ability as AbilitySpeedBoost;
     const chargeUpgrade: AbilitySpeedBoostUpgradeAddCharge | undefined = ability.upgrades[ABILITY_SPEED_BOOST_UPGARDE_ADD_CHARGE];
     const readyToCast = (chargeUpgrade && chargeUpgrade.currentCharges > 0) || (!chargeUpgrade && abilitySpeedBoost.cooldownFinishTime <= game.state.time);
@@ -83,16 +83,16 @@ function castSpeedBoost(abilityOwner: AbilityOwner, ability: Ability, castPositi
         const speedBuff = createBuffSpeed(abilitySpeedBoost.speedFactor, abilitySpeedBoost.duration, game.state.time);
         const character = findCharacterById(getPlayerCharacters(game.state.players), abilityOwner.id)!;
         applyDebuff(speedBuff, character, game);
-        if(!chargeUpgrade){
+        if (!chargeUpgrade) {
             abilitySpeedBoost.cooldownFinishTime = game.state.time + abilitySpeedBoost.cooldown;
-        }else{
-            if(chargeUpgrade.currentCharges === chargeUpgrade.maxCharges){
+        } else {
+            if (chargeUpgrade.currentCharges === chargeUpgrade.maxCharges) {
                 abilitySpeedBoost.cooldownFinishTime = game.state.time + abilitySpeedBoost.cooldown;
             }
             chargeUpgrade.currentCharges--;
         }
 
-        if(ability.upgrades[ABILITY_SPEED_BOOST_UPGARDE_SLOW_TRAIL]){
+        if (ability.upgrades[ABILITY_SPEED_BOOST_UPGARDE_SLOW_TRAIL]) {
             const slowTrail = createBuffSlowTrail(abilitySpeedBoost.duration, game.state.time);
             applyDebuff(slowTrail, character, game);
         }
@@ -100,9 +100,9 @@ function castSpeedBoost(abilityOwner: AbilityOwner, ability: Ability, castPositi
 }
 
 function paintAbilitySpeedBoostUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
-    let abilitySpeedBoost = ability as AbilitySpeedBoost;
-    let fontSize = size;
-    let rectSize = size;
+    const abilitySpeedBoost = ability as AbilitySpeedBoost;
+    const fontSize = Math.floor(size * 0.8);
+    const rectSize = size;
     ctx.strokeStyle = "black";
     ctx.fillStyle = "white";
     ctx.lineWidth = 1;
@@ -117,14 +117,13 @@ function paintAbilitySpeedBoostUI(ctx: CanvasRenderingContext2D, ability: Abilit
         ctx.fillRect(drawStartX, drawStartY, rectSize, rectSize * heightFactor);
 
         ctx.fillStyle = "black";
-        const fontSize2 = Math.floor(size * 0.8);
-        ctx.font = fontSize2 + "px Arial";
+        ctx.font = fontSize + "px Arial";
         const cooldownSeconds = Math.ceil((abilitySpeedBoost.cooldownFinishTime - game.state.time) / 1000);
         let displayNumber = cooldownSeconds;
-        if(upgrade){
+        if (upgrade) {
             displayNumber = upgrade.currentCharges;
         }
-        ctx.fillText("" + displayNumber, drawStartX, drawStartY + rectSize - (rectSize - fontSize2 * 0.9));
+        ctx.fillText("" + displayNumber, drawStartX, drawStartY + rectSize - (rectSize - fontSize * 0.9));
     }
 
 
@@ -144,7 +143,7 @@ function paintAbilitySpeedBoostUI(ctx: CanvasRenderingContext2D, ability: Abilit
 function paintAbilitySpeedBoostStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
     const abilitySpeedBoost = ability as AbilitySpeedBoost;
     const textLines: string[] = getAbilityNameUiText(ability);
-    textLines.push(    
+    textLines.push(
         `Key: ${playerInputBindingToDisplayValue(abilitySpeedBoost.playerInputBinding!, game)}`,
         `Ability stats: `,
         `Speed Increase: ${((abilitySpeedBoost.speedFactor - 1) * 100).toFixed()}%`,
@@ -157,17 +156,17 @@ function paintAbilitySpeedBoostStatsUI(ctx: CanvasRenderingContext2D, ability: A
 }
 
 function setAbilitySpeedBoostToLevel(ability: Ability, level: number) {
-    let abilitySpeedBoost = ability as AbilitySpeedBoost;
+    const abilitySpeedBoost = ability as AbilitySpeedBoost;
     abilitySpeedBoost.speedFactor = 1.20 + 0.05 * level;
 }
 
 function createAbilityBossSpeedBoostUpgradeOptions(ability: Ability): UpgradeOptionAndProbability[] {
-    let upgradeOptions: UpgradeOptionAndProbability[] = [];
+    const upgradeOptions: UpgradeOptionAndProbability[] = [];
     pushAbilityUpgradesOptions(ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS, upgradeOptions, ability);
     return upgradeOptions;
 }
 
-function executeAbilitySpeedBoostUpgradeOption(ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game){
+function executeAbilitySpeedBoostUpgradeOption(ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game) {
     const abilityUpgradeOption: AbilityUpgradeOption = upgradeOption as AbilityUpgradeOption;
     upgradeAbility(ability, character, abilityUpgradeOption);
 }
