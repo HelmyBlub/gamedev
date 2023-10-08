@@ -21,7 +21,6 @@ export function addAbilityIceAura() {
         setAbilityToLevel: setAbilityIceToLevel,
         createAbility: createAbilityIce,
         setAbilityToBossLevel: setAbilityIceToBossLevel,
-        isPassive: true,
         canBeUsedByBosses: true,
     };
 }

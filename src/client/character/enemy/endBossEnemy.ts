@@ -200,7 +200,7 @@ function createEndBossAbilities(level: number, game: Game): Ability[] {
         let abilityFunctions = ABILITIES_FUNCTIONS[abilityKey];
         let ability = abilityFunctions.createAbility(game.state.idCounter);
         setAbilityToEndBossLevel(ability, level);
-        if (!abilityFunctions.isPassive) ability.passive = true;
+        ability.passive = true;
         abilities.push(ability);
     }
 

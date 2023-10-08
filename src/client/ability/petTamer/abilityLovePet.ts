@@ -38,7 +38,6 @@ export function addAbilityLovePet() {
         tickBossAI: tickBossAI,
         resetAbility: resetAbility,
         deleteAbilityObject: deleteAbilityObjectLovePet,
-        isPassive: false,
     };
 }
 

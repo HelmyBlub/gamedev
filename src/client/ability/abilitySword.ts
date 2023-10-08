@@ -32,7 +32,6 @@ export function addAbilitySword() {
         setAbilityToLevel: setAbilitySwordToLevel,
         createAbility: createAbilitySword,
         setAbilityToBossLevel: setAbilitySwordToBossLevel,
-        isPassive: true,
         canBeUsedByBosses: true,
     };
 }

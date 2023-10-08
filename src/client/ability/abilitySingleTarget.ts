@@ -23,7 +23,6 @@ export function addAbilitySingleTarget() {
         setAbilityToLevel: setAbilitySingleTargetToLevel,
         setAbilityToBossLevel: setAbilitySingleTargetToBossLevel,
         createAbility: createAbilitySingleTarget,
-        isPassive: true,
         canBeUsedByBosses: false,
     };
 }

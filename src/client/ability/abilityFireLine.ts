@@ -27,7 +27,6 @@ export function addAbilityFireLine() {
         createAbility: createAbilityFireLine,
         deleteAbilityObject: deleteAbilityObjectFireLine,
         paintAbilityObject: paintAbilityObjectFireLine,
-        isPassive: true,
     };
 }
 

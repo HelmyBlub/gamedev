@@ -37,7 +37,6 @@ export function addAbilitySpeedBoost() {
         paintAbilityStatsUI: paintAbilitySpeedBoostStatsUI,
         resetAbility: resetAbility,
         abilityUpgradeFunctions: ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS,
-        isPassive: false,
     };
 
     addAbilitySpeedBoostUpgradeAddCharge();

@@ -89,7 +89,6 @@ export type AbilityFunctions = {
     resetAbility?:(ability: Ability) => void,
     abilityUpgradeFunctions?: AbilityUpgradesFunctions,
     canBeUsedByBosses?: boolean,
-    isPassive: boolean,
 }
 
 export type AbilitiesFunctions = {

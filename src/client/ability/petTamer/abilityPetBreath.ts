@@ -36,7 +36,6 @@ export function addAbilityPetBreath() {
         getLongDescription: getLongDescription,
         resetAbility: resetAbility,
         abilityUpgradeFunctions: ABILITY_PET_BREATH_UPGRADE_FUNCTIONS,
-        isPassive: true,
     };
 
     addAbilityPetBreathUpgradeSlow();

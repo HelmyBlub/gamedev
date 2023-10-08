@@ -161,7 +161,7 @@ function createBossAbilities(level: number, nextEndBoss: Character, game: Game):
         let abilityFunctions = ABILITIES_FUNCTIONS[randomAbility.name];
         let ability = abilityFunctions.createAbility(game.state.idCounter);
         setAbilityToBossLevel(ability, level);
-        if (!abilityFunctions.isPassive) ability.passive = true;
+        ability.passive = true;
         abilities.push(ability);
     }
 

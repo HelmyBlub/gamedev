@@ -22,7 +22,6 @@ export function addAbilityExplode() {
         createAbility: createAbilityExplode,
         deleteAbilityObject: deleteAbilityObjectExplode,
         paintAbilityObject: paintAbilityObjectExplode,
-        isPassive: true,
     };
 }
 

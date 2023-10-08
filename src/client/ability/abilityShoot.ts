@@ -28,7 +28,6 @@ export function addAbilityShoot(){
         setAbilityToLevel: setAbilityShootToLevel,
         createAbility: createAbilityShoot,
         setAbilityToBossLevel: setAbilityShootToBossLevel,
-        isPassive: true,
         canBeUsedByBosses: true,
     };
 }

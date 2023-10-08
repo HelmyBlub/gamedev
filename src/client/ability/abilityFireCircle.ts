@@ -43,7 +43,6 @@ export function addAbilityFireCircle() {
         paintAbilityObject: paintAbilityObjectFireCircle,
         setAbilityToBossLevel: setAbilityFireCircleToBossLevel,
         canBeUsedByBosses: true,
-        isPassive: false,
     };
 }
 

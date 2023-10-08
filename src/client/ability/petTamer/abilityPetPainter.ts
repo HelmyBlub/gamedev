@@ -63,7 +63,6 @@ export function addAbilityPetPainter() {
         getLongDescription: getLongDescription,
         resetAbility: resetAbility,
         abilityUpgradeFunctions: ABILITY_PET_PAINTER_UPGRADE_FUNCTIONS,
-        isPassive: true,
     };
     addAbilityPetPainterCircle();
     addAbilityPetPainterSquare();

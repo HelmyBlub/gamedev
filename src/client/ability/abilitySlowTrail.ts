@@ -34,7 +34,6 @@ export function addAbilitySlowTrail() {
         createAbility: createAbilitySlowTrail,
         deleteAbilityObject: deleteAbilityObjectSlowTrail,
         paintAbilityObject: paintAbilityObjectSlowTrail,
-        isPassive: true,
     };
 }
 

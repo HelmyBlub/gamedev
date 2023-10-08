@@ -39,7 +39,6 @@ export function addAbilityPetDash() {
         onHit: onHit,
         getLongDescription: getLongDescription,
         abilityUpgradeFunctions: ABILITY_PET_DASH_UPGRADE_FUNCTIONS,
-        isPassive: true,
     };
 
     addAbilityPetDashUpgradeTerrainBounce();

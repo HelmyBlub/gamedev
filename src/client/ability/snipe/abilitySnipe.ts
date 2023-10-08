@@ -83,7 +83,6 @@ export function addAbilitySnipe() {
         resetAbility: resetAbility,
         abilityUpgradeFunctions: ABILITY_SNIPE_UPGRADE_FUNCTIONS,
         canBeUsedByBosses: true,
-        isPassive: false,
     };
 
     addAbilitySnipeUpgradeAfterImage();

@@ -19,7 +19,6 @@ export function addAbilityLesh() {
         paintAbility: paintAbilityLeash,
         createAbility: createAbilityLeash,
         setAbilityToBossLevel: setAbilityToBossLevel,
-        isPassive: true,
     };
 }
 

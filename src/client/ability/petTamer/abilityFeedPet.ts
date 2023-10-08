@@ -38,7 +38,6 @@ export function addAbilityFeedPet() {
         tickBossAI: tickBossAI,
         resetAbility: resetAbility,
         deleteAbilityObject: deleteAbilityObjectFeedPet,
-        isPassive: false,
     };
 }
 

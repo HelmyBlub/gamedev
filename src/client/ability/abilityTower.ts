@@ -62,7 +62,6 @@ export function addAbilityTower() {
         tickBossAI: tickBossAI,
         resetAbility: resetAbility,
         canBeUsedByBosses: true,
-        isPassive: false,
     };
 }
 
