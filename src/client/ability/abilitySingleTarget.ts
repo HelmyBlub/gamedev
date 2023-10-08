@@ -14,7 +14,7 @@ type AbilitySingleTarget = Ability & {
     sameTargetAttackCounter: number,
     damageIncreaseFactorPerAttack: number,
 }
-const ABILITY_NAME_SINGLETARGET = "SingleTarget";
+export const ABILITY_NAME_SINGLETARGET = "SingleTarget";
 
 export function addAbilitySingleTarget() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_SINGLETARGET] = {

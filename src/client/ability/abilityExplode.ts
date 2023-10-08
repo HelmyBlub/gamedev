@@ -23,7 +23,6 @@ export function addAbilityExplode() {
         deleteAbilityObject: deleteAbilityObjectExplode,
         paintAbilityObject: paintAbilityObjectExplode,
         isPassive: true,
-        notInheritable: false,
     };
 }
 

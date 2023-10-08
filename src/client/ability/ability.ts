@@ -88,7 +88,6 @@ export type AbilityFunctions = {
     getLongDescription?: () => string[],
     resetAbility?:(ability: Ability) => void,
     abilityUpgradeFunctions?: AbilityUpgradesFunctions,
-    notInheritable?: boolean,
     canBeUsedByBosses?: boolean,
     isPassive: boolean,
     hasAutoCast?: boolean,

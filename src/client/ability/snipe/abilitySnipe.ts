@@ -84,7 +84,6 @@ export function addAbilitySnipe() {
         abilityUpgradeFunctions: ABILITY_SNIPE_UPGRADE_FUNCTIONS,
         canBeUsedByBosses: true,
         isPassive: false,
-        notInheritable: true,
     };
 
     addAbilitySnipeUpgradeAfterImage();

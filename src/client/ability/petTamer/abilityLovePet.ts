@@ -3,10 +3,10 @@ import { Character } from "../../character/characterModel.js";
 import { PetHappines, TamerPetCharacter, changeTamerPetHappines, petHappinessToDisplayText } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { calculateDirection, calculateDistance, getCameraPosition, getNextId } from "../../game.js";
 import { IdCounter, Position, Game, FACTION_PLAYER } from "../../gameModel.js";
-import { GAME_IMAGES, getImage, loadImage } from "../../imageLoad.js";
+import { GAME_IMAGES, getImage } from "../../imageLoad.js";
 import { moveByDirectionAndDistance } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, findAbilityById, findAbilityOwnerById } from "../ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, findAbilityOwnerById } from "../ability.js";
 
 export type AbilityLovePet = Ability & {
     loveValue: number,
@@ -39,7 +39,6 @@ export function addAbilityLovePet() {
         resetAbility: resetAbility,
         deleteAbilityObject: deleteAbilityObjectLovePet,
         isPassive: false,
-        notInheritable: true,
     };
 }
 

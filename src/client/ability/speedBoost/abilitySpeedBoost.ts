@@ -38,7 +38,6 @@ export function addAbilitySpeedBoost() {
         resetAbility: resetAbility,
         abilityUpgradeFunctions: ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS,
         isPassive: false,
-        notInheritable: true,
     };
 
     addAbilitySpeedBoostUpgradeAddCharge();

@@ -35,7 +35,6 @@ export function addAbilitySlowTrail() {
         deleteAbilityObject: deleteAbilityObjectSlowTrail,
         paintAbilityObject: paintAbilityObjectSlowTrail,
         isPassive: true,
-        notInheritable: true,
     };
 }
 

@@ -11,6 +11,11 @@ import { findPlayerByCharacterId } from "../player.js";
 import { playerInputBindingToDisplayValue } from "../playerInput.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, getAbilityNameUiText, paintDefaultAbilityStatsUI } from "./ability.js";
+import { ABILITY_NAME_FIRE_CIRCLE } from "./abilityFireCircle.js";
+import { ABILITY_NAME_ICE_AURA } from "./abilityIceAura.js";
+import { ABILITY_NAME_SHOOT } from "./abilityShoot.js";
+import { ABILITY_NAME_SINGLETARGET } from "./abilitySingleTarget.js";
+import { ABILITY_NAME_SWORD } from "./abilitySword.js";
 
 type AbilityObjectTower = AbilityObject & {
     ownerId: number,
@@ -210,12 +215,19 @@ function getTowerCountOfOwner(abilityObjects: AbilityObject[], ownerId: number):
     return counter;
 }
 
-function getRandomPassiveAbilitiyKeys(): string[] {
-    let abilityFunctionKeys = Object.keys(ABILITIES_FUNCTIONS);
+function getRandomPassiveAbilitiyKeys(): string[] {    
+    let abilityFunctionKeys: string[] = [
+        ABILITY_NAME_SHOOT,
+        ABILITY_NAME_FIRE_CIRCLE,
+        ABILITY_NAME_SWORD,
+        ABILITY_NAME_ICE_AURA,
+        ABILITY_NAME_SINGLETARGET
+    ];
+
     let passiveAbilitiesFunctionKeys: string[] = [];
     for (let abilityFunctionKey of abilityFunctionKeys) {
         let abilityFunctions = ABILITIES_FUNCTIONS[abilityFunctionKey];
-        if (!abilityFunctions.notInheritable && (abilityFunctions.isPassive || abilityFunctions.hasAutoCast)) {
+        if ((abilityFunctions.isPassive || abilityFunctions.hasAutoCast)) {
             passiveAbilitiesFunctionKeys.push(abilityFunctionKey);
         }
     }

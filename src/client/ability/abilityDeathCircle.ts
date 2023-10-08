@@ -25,7 +25,6 @@ export function addAbilityDeathCircle() {
         createAbility: createAbilityDeathCircle,
         paintAbilityObject: paintAbilityObjectDeathCircle,
         isPassive: true,
-        notInheritable: true,
     };
 }
 export function createAbilityDeathCircle(idCounter: IdCounter): AbilityDeathCircle {

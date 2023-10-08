@@ -19,7 +19,6 @@ export function addAbilityHpRegen() {
         executeUpgradeOption: executeAbilityHpRegenUpgradeOption,
         createAbility: createAbilityHpRegen,
         paintAbilityStatsUI: paintAbilityHpRegenStatsUI,
-        notInheritable: true,
         isPassive: true,
     };
 }

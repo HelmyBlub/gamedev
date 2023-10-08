@@ -28,7 +28,6 @@ export function addAbilityFireLine() {
         deleteAbilityObject: deleteAbilityObjectFireLine,
         paintAbilityObject: paintAbilityObjectFireLine,
         isPassive: true,
-        notInheritable: true,
     };
 }
 

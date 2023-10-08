@@ -3,7 +3,7 @@ import { Character } from "../../character/characterModel.js";
 import { PetHunger, TamerPetCharacter, petFoodIntakeToDisplayText, tamerPetFeed } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { calculateDirection, calculateDistance, getCameraPosition, getNextId } from "../../game.js";
 import { IdCounter, Position, Game, FACTION_PLAYER } from "../../gameModel.js";
-import { GAME_IMAGES, getImage, loadImage } from "../../imageLoad.js";
+import { GAME_IMAGES, getImage } from "../../imageLoad.js";
 import { moveByDirectionAndDistance } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, findAbilityOwnerById } from "../ability.js";
@@ -39,7 +39,6 @@ export function addAbilityFeedPet() {
         resetAbility: resetAbility,
         deleteAbilityObject: deleteAbilityObjectFeedPet,
         isPassive: false,
-        notInheritable: true,
     };
 }
 
@@ -63,7 +62,7 @@ export function createAbilityFeedPet(
     };
 }
 
-function resetAbility(ability: Ability){
+function resetAbility(ability: Ability) {
     const feed = ability as AbilityFeedPet;
     feed.nextRechargeTime = undefined;
 }
@@ -75,13 +74,13 @@ function deleteAbilityObjectFeedPet(abilityObject: AbilityObject, game: Game): b
 
 function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     let abilityFeedPet = ability as AbilityFeedPet;
-    if(abilityOwner.pets){
-        for(let pet of abilityOwner.pets){
+    if (abilityOwner.pets) {
+        for (let pet of abilityOwner.pets) {
             let hunger: PetHunger = petFoodIntakeToDisplayText(pet.foodIntakeLevel);
-            if(hunger === "hungry" && (!abilityFeedPet.nextRechargeTime || abilityFeedPet.nextRechargeTime + 500 <= game.state.time)){
+            if (hunger === "hungry" && (!abilityFeedPet.nextRechargeTime || abilityFeedPet.nextRechargeTime + 500 <= game.state.time)) {
                 castFeedPet(abilityOwner, ability, pet, true, game);
                 break;
-            }            
+            }
         }
     }
 }
@@ -190,7 +189,4 @@ function castFeedPet(abilityOwner: AbilityOwner, ability: Ability, castPosition:
         }
 
     }
-
-
 }
-
