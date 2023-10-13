@@ -1,5 +1,6 @@
 import { calcNewPositionMovedInDirection, getCameraPosition } from "../../game.js";
 import { FACTION_ENEMY, FACTION_PLAYER, Game, Position } from "../../gameModel.js";
+import { getPointPaintPosition } from "../../gamePaint.js";
 import { GAME_IMAGES, loadImage } from "../../imageLoad.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { Ability, AbilityObject, AbilityOwner, PaintOrderAbility, getAbilityNameUiText, paintDefaultAbilityStatsUI } from "../ability.js";
@@ -16,12 +17,8 @@ export function paintAbilityObjectSnipe(ctx: CanvasRenderingContext2D, abilityOb
     const cameraPosition = getCameraPosition(game);
     const snipe = abilityObject as AbilityObjectSnipe;
     const endPos = calcNewPositionMovedInDirection(snipe, snipe.direction, snipe.range);
-    const centerX = ctx.canvas.width / 2;
-    const centerY = ctx.canvas.height / 2;
     const color = abilityObject.faction === FACTION_PLAYER ? "red" : "black";
     ctx.strokeStyle = color;
-    let paintX: number;
-    let paintY: number;
 
     if (abilityObject.faction === FACTION_ENEMY && abilityObjectSnipe.enemyFactionDamageTime! > game.state.time) {
         ctx.lineWidth = 1;
@@ -31,27 +28,21 @@ export function paintAbilityObjectSnipe(ctx: CanvasRenderingContext2D, abilityOb
         ctx.globalAlpha = Math.min((snipe.deleteTime - game.state.time) / ABILITY_SNIPE_PAINT_FADE_DURATION, 1);
     }
     ctx.beginPath();
-    paintX = Math.floor(snipe.x - cameraPosition.x + centerX);
-    paintY = Math.floor(snipe.y - cameraPosition.y + centerY);
-    ctx.moveTo(paintX, paintY);
-    paintX = Math.floor(endPos.x - cameraPosition.x + centerX);
-    paintY = Math.floor(endPos.y - cameraPosition.y + centerY);
-    ctx.lineTo(paintX, paintY);
+    let paintPos = getPointPaintPosition(ctx, snipe, cameraPosition);
+    ctx.moveTo(paintPos.x, paintPos.y);
+    paintPos = getPointPaintPosition(ctx, endPos, cameraPosition);
+    ctx.lineTo(paintPos.x, paintPos.y);
     ctx.stroke();
     ctx.globalAlpha = 1;
 }
 
 export function paintAbilitySnipe(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
     const abilitySnipe = ability as AbilitySnipe;
-    const centerX = ctx.canvas.width / 2;
-    const centerY = ctx.canvas.height / 2;
     const riflePos = getSniperRiflePosition(abilitySnipe, abilityOwner);
-    const paintX = Math.floor(riflePos.x - cameraPosition.x + centerX);
-    const paintY = Math.floor(riflePos.y - cameraPosition.y + centerY);
-
+    const paintPos = getPointPaintPosition(ctx, riflePos, cameraPosition);
     const direction = abilitySnipe.lastSniperRiflePaintDirection;
     const distance = 20;
-    paintSniperRifle(ctx, abilitySnipe, paintX, paintY, direction, distance, true, game);
+    paintSniperRifle(ctx, abilitySnipe, paintPos.x, paintPos.y, direction, distance, true, game);
     paintVisualizationMoreRifles(ctx, abilityOwner, abilitySnipe, cameraPosition, undefined, game);
     paintVisualizationAfterImage(ctx, abilityOwner, abilitySnipe, cameraPosition, game);
 }

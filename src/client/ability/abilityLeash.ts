@@ -2,6 +2,7 @@ import { findCharacterById, getPlayerCharacters } from "../character/character.j
 import { Character } from "../character/characterModel.js";
 import { calculateDirection, calculateDistance, getNextId } from "../game.js";
 import { Position, Game, IdCounter, FACTION_PLAYER } from "../gameModel.js";
+import { getPointPaintPosition } from "../gamePaint.js";
 import { getFirstBlockingGameMapTilePositionTouchingLine } from "../map/map.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner } from "./ability.js";
 
@@ -47,10 +48,7 @@ function setAbilityToBossLevel(ability: Ability, level: number) {
 function paintAbilityLeash(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
     const abilityLeash = ability as AbilityLeash;
     if (abilityLeash.leashedToOwnerId !== undefined) {
-        const centerX = ctx.canvas.width / 2;
-        const centerY = ctx.canvas.height / 2;
-        let paintX = Math.floor(abilityOwner.x - cameraPosition.x + centerX);
-        let paintY = Math.floor(abilityOwner.y - cameraPosition.y + centerY);
+        let paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
         const connectedOwner: Position | null = findLeashOwner(abilityOwner, abilityLeash, game);;
         if (!connectedOwner) {
             return;
@@ -59,17 +57,13 @@ function paintAbilityLeash(ctx: CanvasRenderingContext2D, abilityOwner: AbilityO
         ctx.strokeStyle = "black";
 
         ctx.beginPath();
-        paintX = Math.floor(abilityOwner.x - cameraPosition.x + centerX);
-        paintY = Math.floor(abilityOwner.y - cameraPosition.y + centerY);
-        ctx.moveTo(paintX, paintY);
+        ctx.moveTo(paintPos.x, paintPos.y);
         for (let pos of abilityLeash.leashBendPoints) {
-            paintX = Math.floor(pos.x - cameraPosition.x + centerX);
-            paintY = Math.floor(pos.y - cameraPosition.y + centerY);
-            ctx.lineTo(paintX, paintY);
+            paintPos = getPointPaintPosition(ctx, pos, cameraPosition);
+            ctx.lineTo(paintPos.x, paintPos.y);
         }
-        paintX = Math.floor(connectedOwner.x - cameraPosition.x + centerX);
-        paintY = Math.floor(connectedOwner.y - cameraPosition.y + centerY);
-        ctx.lineTo(paintX, paintY);
+        paintPos = getPointPaintPosition(ctx, connectedOwner, cameraPosition);
+        ctx.lineTo(paintPos.x, paintPos.y);
         ctx.stroke();
     }
 

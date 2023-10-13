@@ -2,6 +2,7 @@ import { characterTakeDamage, getCharactersTouchingLine } from "../character/cha
 import { Character } from "../character/characterModel.js";
 import { getCameraPosition, getNextId } from "../game.js";
 import { Position, Game, IdCounter, FACTION_PLAYER } from "../gameModel.js";
+import { getPointPaintPosition } from "../gamePaint.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, PaintOrderAbility } from "./ability.js";
 
 export type AbilityFireLine = Ability & {
@@ -80,20 +81,16 @@ function paintAbilityObjectFireLine(ctx: CanvasRenderingContext2D, abilityObject
     if (paintOrder !== "beforeCharacterPaint") return;
     const abilityObjectFireLine = abilityObject as AbilityObjectFireLine;
     const cameraPosition = getCameraPosition(game);
-    const centerX = ctx.canvas.width / 2;
-    const centerY = ctx.canvas.height / 2;
 
     ctx.globalAlpha = 0.50;
     const color = abilityObject.faction === FACTION_PLAYER ? "red" : "black";
     ctx.strokeStyle = color;
     ctx.lineWidth = abilityObjectFireLine.width;
     ctx.beginPath();
-    let paintX = Math.floor(abilityObjectFireLine.x - cameraPosition.x + centerX);
-    let paintY = Math.floor(abilityObjectFireLine.y - cameraPosition.y + centerY);
-    ctx.moveTo(paintX, paintY);
-    paintX = Math.floor(abilityObjectFireLine.endPosition.x - cameraPosition.x + centerX);
-    paintY = Math.floor(abilityObjectFireLine.endPosition.y - cameraPosition.y + centerY);
-    ctx.lineTo(paintX, paintY);
+    let paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition);
+    ctx.moveTo(paintPos.x, paintPos.y);
+    paintPos = getPointPaintPosition(ctx, abilityObjectFireLine.endPosition, cameraPosition);
+    ctx.lineTo(paintPos.x, paintPos.y);
     ctx.stroke();
     ctx.globalAlpha = 1;
 }

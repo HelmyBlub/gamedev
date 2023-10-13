@@ -7,6 +7,7 @@ import { ABILITY_NAME_SWORD } from "../../ability/abilitySword.js";
 import { tickCharacterDebuffs } from "../../debuff/debuff.js";
 import { deepCopy, getNextId, saveCharacterAsPastCharacter } from "../../game.js";
 import { IdCounter, Game, Position, FACTION_ENEMY, LOCALSTORAGE_NEXTENDBOSSES } from "../../gameModel.js";
+import { getPointPaintPosition } from "../../gamePaint.js";
 import { GAME_IMAGES, getImage } from "../../imageLoad.js";
 import { changeTileIdOfMapChunk } from "../../map/map.js";
 import { getBossAreaMiddlePosition, getEntranceChunkAndTileXYForPosition } from "../../map/mapEndBossArea.js";
@@ -128,14 +129,11 @@ function paintEndBoss(ctx: CanvasRenderingContext2D, character: Character, camer
     if(character.isDead) return;
     paintCharatersPets(ctx, [character], cameraPosition, game);
     paintCharacterDefault(ctx, character, cameraPosition, game);
-    let crownImage = getImage(IMAGE_CROWN);
+    const crownImage = getImage(IMAGE_CROWN);
     if (crownImage) {
-        let centerX = ctx.canvas.width / 2;
-        let centerY = ctx.canvas.height / 2;
-        let paintX = character.x - cameraPosition.x + centerX;
-        let paintY = character.y - cameraPosition.y + centerY;
-        let crownX = Math.floor(paintX - Math.floor(crownImage.width / 2));
-        let crownY = Math.floor(paintY - character.height / 2 - crownImage.height);
+        const paintPos = getPointPaintPosition(ctx, character, cameraPosition);
+        const crownX = Math.floor(paintPos.x - Math.floor(crownImage.width / 2));
+        const crownY = Math.floor(paintPos.y - character.height / 2 - crownImage.height);
         ctx.drawImage(crownImage, crownX, crownY);
     }
     if(game.state.bossStuff.endBossStarted) paintBossHpBar(ctx, character);

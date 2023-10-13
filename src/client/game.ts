@@ -1,5 +1,5 @@
 import { changeCharacterId, countAlivePlayerCharacters, findCharacterById, findMyCharacter, getPlayerCharacters, resetCharacter, tickCharacters, tickMapCharacters } from "./character/character.js";
-import { paintAll } from "./gamePaint.js";
+import { getPointPaintPosition, paintAll } from "./gamePaint.js";
 import { findPlayerByCharacterId, gameInitPlayers } from "./player.js";
 import { MOUSE_ACTION, UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.js";
 import { Position, GameState, Game, IdCounter, Debugging, PaintTextData, ClientInfo, LOCALSTORAGE_PASTCHARACTERS, LOCALSTORAGE_NEXTENDBOSSES, NextEndbosses, CelestialDirection } from "./gameModel.js";

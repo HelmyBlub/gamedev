@@ -4,6 +4,7 @@ import { applyDebuff } from "../debuff/debuff.js";
 import { createDebuffSlow } from "../debuff/debuffSlow.js";
 import { getCameraPosition, getNextId } from "../game.js";
 import { Position, Game, IdCounter } from "../gameModel.js";
+import { getPointPaintPosition } from "../gamePaint.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility } from "./ability.js";
 
 export type AbilitySlowTrail = Ability & {
@@ -86,19 +87,15 @@ function paintAbilityObjectSlowTrail(ctx: CanvasRenderingContext2D, abilityObjec
     if (paintOrder !== "beforeCharacterPaint") return;
     const abilityObjectSlowTrail = abilityObject as AbilityObjectSlowTrail;
     const cameraPosition = getCameraPosition(game);
-    const centerX = ctx.canvas.width / 2;
-    const centerY = ctx.canvas.height / 2;
 
     ctx.globalAlpha = 0.50;
     ctx.strokeStyle = "white";
     ctx.lineWidth = abilityObjectSlowTrail.width;
     ctx.beginPath();
-    let paintX = Math.floor(abilityObjectSlowTrail.startPosition.x - cameraPosition.x + centerX);
-    let paintY = Math.floor(abilityObjectSlowTrail.startPosition.y - cameraPosition.y + centerY);
-    ctx.moveTo(paintX, paintY);
-    paintX = Math.floor(abilityObjectSlowTrail.endPosition.x - cameraPosition.x + centerX);
-    paintY = Math.floor(abilityObjectSlowTrail.endPosition.y - cameraPosition.y + centerY);
-    ctx.lineTo(paintX, paintY);
+    let paintPos = getPointPaintPosition(ctx, abilityObjectSlowTrail.startPosition, cameraPosition);
+    ctx.moveTo(paintPos.x, paintPos.y);
+    paintPos = getPointPaintPosition(ctx, abilityObjectSlowTrail.endPosition, cameraPosition);
+    ctx.lineTo(paintPos.x, paintPos.y);
     ctx.stroke();
     ctx.globalAlpha = 1;
 }

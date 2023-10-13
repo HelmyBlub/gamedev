@@ -1,6 +1,7 @@
 import { AbilityUpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { calcNewPositionMovedInDirection, calculateDirection, getClientInfoByCharacterId } from "../../game.js";
 import { ClientInfo, Game, Position } from "../../gameModel.js";
+import { getPointPaintPosition } from "../../gamePaint.js";
 import { Ability, AbilityOwner } from "../ability.js";
 import { AbilityUpgrade } from "../abilityUpgrade.js";
 import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilitySnipe, createAbilityObjectSnipeInitial, getOptionsSnipeUpgrade } from "./abilitySnipe.js";
@@ -40,10 +41,7 @@ export function castSnipeMoreRifles(position: Position, faction: string, ability
 export function paintVisualizationMoreRifles(ctx: CanvasRenderingContext2D, position: Position, abilitySnipe: AbilitySnipe, cameraPosition: Position, castPosition: Position | undefined, game: Game) {
     const upgradeMoreRifles: AbilityUpgradeMoreRifles = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES];
     if (!upgradeMoreRifles) return;
-    const centerX = ctx.canvas.width / 2;
-    const centerY = ctx.canvas.height / 2;
-    const paintX = Math.floor(position.x - cameraPosition.x + centerX);
-    const paintY = Math.floor(position.y - cameraPosition.y + centerY);
+    const paintPos = getPointPaintPosition(ctx, position, cameraPosition);
 
     for (let i = 0; i < upgradeMoreRifles.numberRifles; i++) {
         let pointDirection = upgradeMoreRifles.lastSniperRiflePaintDirection[i];
@@ -51,7 +49,7 @@ export function paintVisualizationMoreRifles(ctx: CanvasRenderingContext2D, posi
             const newPosition = getMoreRiflesPosition(position, upgradeMoreRifles, i);
             pointDirection = calculateDirection(newPosition, castPosition);
         }
-        const paintPosition = getMoreRiflesPosition({ x: paintX, y: paintY }, upgradeMoreRifles, i);
+        const paintPosition = getMoreRiflesPosition({ x: paintPos.x, y: paintPos.y }, upgradeMoreRifles, i);
         paintSniperRifle(ctx, abilitySnipe, paintPosition.x, paintPosition.y, pointDirection, 0, false, game);
     }
 }

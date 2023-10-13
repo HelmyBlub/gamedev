@@ -5,6 +5,7 @@ import { CHARACTER_TYPE_END_BOSS_ENEMY } from "../character/enemy/endBossEnemy.j
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../character/upgrade.js";
 import { calculateDistance, getCameraPosition, getNextId } from "../game.js";
 import { Position, Game, IdCounter, FACTION_ENEMY } from "../gameModel.js";
+import { getPointPaintPosition } from "../gamePaint.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
 import { positionToMapKey } from "../map/map.js";
 import { findPlayerByCharacterId } from "../player.js";
@@ -214,7 +215,7 @@ function getTowerCountOfOwner(abilityObjects: AbilityObject[], ownerId: number):
     return counter;
 }
 
-function getRandomPassiveAbilitiyKeys(): string[] {    
+function getRandomPassiveAbilitiyKeys(): string[] {
     return [
         ABILITY_NAME_SHOOT,
         ABILITY_NAME_FIRE_CIRCLE,
@@ -246,11 +247,8 @@ function updateTowerObjectAbilityLevels(abilityObjects: AbilityObject[]) {
 
 function paintAbilityTower(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
     const abiltiyTower = ability as AbilityTower;
-    const centerX = ctx.canvas.width / 2;
-    const centerY = ctx.canvas.height / 2;
-    const paintX = Math.floor(abilityOwner.x - cameraPosition.x + centerX);
-    const paintY = Math.floor(abilityOwner.y - cameraPosition.y + centerY);
-    paintHammer(ctx, abiltiyTower, paintX - 10, paintY, game);
+    const paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
+    paintHammer(ctx, abiltiyTower, paintPos.x - 10, paintPos.y, game);
 }
 
 function paintHammer(ctx: CanvasRenderingContext2D, abilityTower: AbilityTower, paintX: number, paintY: number, game: Game) {
@@ -287,13 +285,11 @@ function paintAbilityObjectTower(ctx: CanvasRenderingContext2D, abilityObject: A
         paintEffectConnected(ctx, tower, cameraPosition, game.state.abilityObjects);
     } else if (paintOrder === "afterCharacterPaint") {
         const owner = findPlayerByCharacterId(game.state.players, tower.ownerId);
-        const centerX = ctx.canvas.width / 2;
-        const centerY = ctx.canvas.height / 2;
         const towerBaseSize = tower.size;
-
         const towerHeight = towerBaseSize + 5;
-        const paintX = Math.floor(tower.x - cameraPosition.x + centerX - towerBaseSize / 2);
-        const paintY = Math.floor(tower.y - cameraPosition.y + centerY - towerBaseSize / 2);
+        let paintPos = getPointPaintPosition(ctx, tower, cameraPosition);
+        paintPos.x -= - towerBaseSize / 2;
+        paintPos.y -= - towerBaseSize / 2;
         if (owner?.clientId === game.multiplayer.myClientId) {
             const ability = owner.character.abilities.find((e) => e.name === ABILITY_NAME_TOWER) as AbilityTower;
             if (getTowerCountOfOwner(game.state.abilityObjects, tower.ownerId) >= ability.orderOfAbilities.length) {
@@ -313,7 +309,7 @@ function paintAbilityObjectTower(ctx: CanvasRenderingContext2D, abilityObject: A
                 ctx.fillStyle = "white";
             }
         }
-        ctx.fillRect(paintX, paintY, towerBaseSize, towerHeight);
+        ctx.fillRect(paintPos.x, paintPos.y, towerBaseSize, towerHeight);
 
         if (tower.ability) {
             const abilityFunction = ABILITIES_FUNCTIONS[tower.ability.name];
@@ -341,12 +337,7 @@ function getTowerConnectionCount(abilityObjects: AbilityObject[], tower: Ability
 
 function paintEffectConnected(ctx: CanvasRenderingContext2D, abilityObjectTower: AbilityObjectTower, cameraPosition: Position, abilityObjects: AbilityObject[]) {
     if (abilityObjectTower.conntetedToId !== undefined) {
-        const centerX = ctx.canvas.width / 2;
-        const centerY = ctx.canvas.height / 2;
         ctx.strokeStyle = "red";
-        let paintX: number;
-        let paintY: number;
-
         const connectedTower = getTowerById(abilityObjects, abilityObjectTower.conntetedToId);
         if (connectedTower === undefined) {
             console.log("tower connection not cleaned up");
@@ -356,12 +347,10 @@ function paintEffectConnected(ctx: CanvasRenderingContext2D, abilityObjectTower:
         ctx.lineWidth = totalConnection;
 
         ctx.beginPath();
-        paintX = Math.floor(abilityObjectTower.x - cameraPosition.x + centerX);
-        paintY = Math.floor(abilityObjectTower.y - cameraPosition.y + centerY);
-        ctx.moveTo(paintX, paintY);
-        paintX = Math.floor(connectedTower.x - cameraPosition.x + centerX);
-        paintY = Math.floor(connectedTower.y - cameraPosition.y + centerY);
-        ctx.lineTo(paintX, paintY);
+        let paintPos = getPointPaintPosition(ctx, abilityObjectTower, cameraPosition);
+        ctx.moveTo(paintPos.x, paintPos.y);
+        paintPos = getPointPaintPosition(ctx, connectedTower, cameraPosition);
+        ctx.lineTo(paintPos.x, paintPos.y);
         ctx.stroke();
     }
 }

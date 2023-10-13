@@ -1,5 +1,6 @@
 import { calculateDirection, calculateDistance, getCameraPosition, getNextId } from "../game.js";
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../gameModel.js";
+import { getPointPaintPosition } from "../gamePaint.js";
 import { nextRandom } from "../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectAbilityObjectCircleToCharacterHit, PaintOrderAbility, AbilityObjectCircle } from "./ability.js";
 
@@ -108,8 +109,7 @@ function createObjectFireCircle(abilityObject: AbilityObjectFireCircleTraveling,
 function paintAbilityObjectFireCircle(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
     const abilityObjectFireCircle = abilityObject as AbilityObjectFireCircle;
     const cameraPosition = getCameraPosition(game);
-    const centerX = ctx.canvas.width / 2;
-    const centerY = ctx.canvas.height / 2;
+    const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition);
 
     ctx.fillStyle = abilityObject.color;
     if (abilityObject.faction === FACTION_ENEMY) ctx.fillStyle = "black";
@@ -118,8 +118,8 @@ function paintAbilityObjectFireCircle(ctx: CanvasRenderingContext2D, abilityObje
             ctx.globalAlpha = abilityObject.faction === FACTION_ENEMY ? 0.9 : 0.65;
             ctx.beginPath();
             ctx.arc(
-                abilityObject.x - cameraPosition.x + centerX,
-                abilityObject.y - cameraPosition.y + centerY,
+                paintPos.x,
+                paintPos.y,
                 abilityObjectFireCircle.radius, 0, 2 * Math.PI
             );
             ctx.fill();
@@ -129,8 +129,8 @@ function paintAbilityObjectFireCircle(ctx: CanvasRenderingContext2D, abilityObje
         if (paintOrder === "afterCharacterPaint") {
             ctx.beginPath();
             ctx.arc(
-                abilityObject.x - cameraPosition.x + centerX,
-                abilityObject.y - cameraPosition.y + centerY,
+                paintPos.x,
+                paintPos.y,
                 5, 0, 2 * Math.PI
             );
             ctx.fill();

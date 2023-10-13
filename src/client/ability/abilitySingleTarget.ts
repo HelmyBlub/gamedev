@@ -2,6 +2,7 @@ import { characterTakeDamage, determineCharactersInDistance, determineClosestCha
 import { Character } from "../character/characterModel.js";
 import { getNextId } from "../game.js";
 import { Position, Game, IdCounter } from "../gameModel.js";
+import { getPointPaintPosition } from "../gamePaint.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner } from "./ability.js";
 
 type AbilitySingleTarget = Ability & {
@@ -70,16 +71,12 @@ function paintAbilitySingleTarget(ctx: CanvasRenderingContext2D, abilityOwner: A
         ctx.strokeStyle = "black";
         ctx.lineWidth = 1;
         ctx.beginPath();
-        const centerX = ctx.canvas.width / 2;
-        const centerY = ctx.canvas.height / 2;
-        let paintX = Math.floor(abilityOwner.x - cameraPosition.x + centerX);
-        let paintY = Math.floor(abilityOwner.y - cameraPosition.y + centerY);
-        ctx.moveTo(paintX, paintY);
+        let paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
+        ctx.moveTo(paintPos.x, paintPos.y);
         const target: Character | null = findCharacterByIdAroundPosition(abilityOwner, abilitySingleTarget.maxRange, game, abilitySingleTarget.targetId);
         if (target) {
-            paintX = Math.floor(target.x - cameraPosition.x + centerX);
-            paintY = Math.floor(target.y - cameraPosition.y + centerY);
-            ctx.lineTo(paintX, paintY);
+            paintPos = getPointPaintPosition(ctx, target, cameraPosition);
+            ctx.lineTo(paintPos.x, paintPos.y);
             ctx.stroke();
         }
     }

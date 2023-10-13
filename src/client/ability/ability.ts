@@ -27,6 +27,7 @@ import { addAbilityPetBreath } from "./petTamer/abilityPetBreath.js"
 import { addAbilityPetPainter } from "./petTamer/abilityPetPainter.js"
 import { addAbilityPetDash } from "./petTamer/abilityPetDash.js"
 import { UpgradeOption, UpgradeOptionAndProbability } from "../character/upgrade.js"
+import { getPointPaintPosition } from "../gamePaint.js"
 
 export type Ability = {
     id: number,
@@ -389,14 +390,12 @@ function paintDefault(ctx: CanvasRenderingContext2D, abilityObject: AbilityObjec
     if (paintOrder === "afterCharacterPaint") {
         const circle = abilityObject as AbilityObjectCircle;
         if (!circle.radius) return;
-        const centerX = ctx.canvas.width / 2;
-        const centerY = ctx.canvas.height / 2;
-
+        const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition);
         ctx.fillStyle = abilityObject.faction === FACTION_ENEMY ? "black" : abilityObject.color;
         ctx.beginPath();
         ctx.arc(
-            abilityObject.x - cameraPosition.x + centerX,
-            abilityObject.y - cameraPosition.y + centerY,
+            paintPos.x,
+            paintPos.y,
             circle.radius, 0, 2 * Math.PI
         );
         ctx.fill();

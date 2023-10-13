@@ -3,6 +3,7 @@ import { applyDebuff } from "../debuff/debuff.js";
 import { createDebuffSlow } from "../debuff/debuffSlow.js";
 import { getNextId } from "../game.js";
 import { Position, Game, IdCounter } from "../gameModel.js";
+import { getPointPaintPosition } from "../gamePaint.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, detectSomethingToCharacterHit } from "./ability.js";
 
 type AbilityIce = Ability & {
@@ -60,17 +61,13 @@ function setAbilityIceToBossLevel(ability: Ability, level: number) {
 
 function paintAbilityIce(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
     const abilityIce = ability as AbilityIce;
-    const centerX = ctx.canvas.width / 2;
-    const centerY = ctx.canvas.height / 2;
-    const paintX = Math.floor(abilityOwner.x - cameraPosition.x + centerX);
-    const paintY = Math.floor(abilityOwner.y - cameraPosition.y + centerY);
-
+    const paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
     ctx.globalAlpha = 0.30;
     ctx.fillStyle = "white";
     ctx.beginPath();
     ctx.arc(
-        paintX,
-        paintY,
+        paintPos.x,
+        paintPos.y,
         abilityIce.radius, 0, 2 * Math.PI
     );
     ctx.fill();

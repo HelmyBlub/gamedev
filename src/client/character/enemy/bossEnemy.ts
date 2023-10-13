@@ -4,6 +4,7 @@ import { createAbilityMelee } from "../../ability/abilityMelee.js";
 import { tickCharacterDebuffs } from "../../debuff/debuff.js";
 import { calculateDirection, deepCopy, getNextId, getTimeSinceFirstKill } from "../../game.js";
 import { IdCounter, Game, Position, BossStuff, FACTION_ENEMY, CelestialDirection } from "../../gameModel.js";
+import { getPointPaintPosition } from "../../gamePaint.js";
 import { findNearNonBlockingPosition, getMapMidlePosition, moveByDirectionAndDistance } from "../../map/map.js";
 import { getPlayerFurthestAwayFromSpawn } from "../../player.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
@@ -31,7 +32,7 @@ export function createBossWithLevel(idCounter: IdCounter, level: number, game: G
     const nextEndBoss = game.state.bossStuff.nextEndbosses[celestialDirection]!;
     const nextBossClass = nextEndBoss.characterClass;
     if (nextBossClass) {
-        let classFuntions = PLAYER_CHARACTER_CLASSES_FUNCTIONS[nextBossClass];
+        const classFuntions = PLAYER_CHARACTER_CLASSES_FUNCTIONS[nextBossClass];
         if (classFuntions && classFuntions.createBossBasedOnClassAndCharacter) {
             return classFuntions.createBossBasedOnClassAndCharacter(nextEndBoss, level, spawn, game);
         }
@@ -40,8 +41,8 @@ export function createBossWithLevel(idCounter: IdCounter, level: number, game: G
 }
 
 export function tickBossCharacters(bossStuff: BossStuff, game: Game) {
-    let pathingCache = getPathingCache(game);
-    let bosses = bossStuff.bosses;
+    const pathingCache = getPathingCache(game);
+    const bosses = bossStuff.bosses;
     tickCharacters(bosses, game, pathingCache);
 }
 
@@ -59,43 +60,6 @@ export function getCelestialDirection(position: Position): CelestialDirection {
             return "north";
         }
     }
-}
-
-function createDefaultBossWithLevel(idCounter: IdCounter, level: number, spawn: Position, nextEndBoss: Character, game: Game): Character {
-    let bossSize = 60;
-    let color = "black";
-    let moveSpeed = Math.min(6, 1.5 + level * 0.5);
-    let hp = 1000 * Math.pow(level, 4);
-    let experienceWorth = Math.pow(level, 2) * 100;
-
-    let bossCharacter = createCharacter(getNextId(idCounter), spawn.x, spawn.y, bossSize, bossSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_BOSS_ENEMY, experienceWorth);
-    bossCharacter.paint.image = IMAGE_SLIME;
-    let abilities: Ability[] = createBossAbilities(level, nextEndBoss, game);
-    bossCharacter.abilities = abilities;
-    let pets: TamerPetCharacter[] | undefined = createBossPets(level, bossCharacter, nextEndBoss, game);
-    bossCharacter.pets = pets;
-    return bossCharacter;
-}
-
-function tickBossEnemyCharacter(enemy: BossEnemyCharacter, game: Game, pathingCache: PathingCache | null) {
-    if (enemy.isDead) return;
-    let playerCharacters = getPlayerCharacters(game.state.players);
-    let closest = determineClosestCharacter(enemy, playerCharacters);
-    if (closest.minDistance > 1200) {
-        teleportBossToNearestPlayer(enemy, game);
-        closest = determineClosestCharacter(enemy, playerCharacters);
-    }
-    calculateAndSetMoveDirectionToPositionWithPathing(enemy, closest.minDistanceCharacter, game.state.map, pathingCache, game.state.idCounter, game.state.time);
-    moveCharacterTick(enemy, game.state.map, game.state.idCounter);
-
-    for (let ability of enemy.abilities) {
-        let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-        if (abilityFunctions) {
-            if (abilityFunctions.tickAbility) abilityFunctions.tickAbility(enemy, ability, game);
-            if (abilityFunctions.tickBossAI) abilityFunctions.tickBossAI(enemy, ability, game);
-        }
-    }
-    tickCharacterDebuffs(enemy, game);
 }
 
 export function paintBossCharacters(ctx: CanvasRenderingContext2D, cameraPosition: Position, game: Game) {
@@ -116,16 +80,62 @@ export function paintBossCrown(ctx: CanvasRenderingContext2D, cameraPosition: Po
 
 export function checkForBossSpawn(game: Game) {
     if (game.state.bossStuff.endBossStarted) return;
-    let bossStuff = game.state.bossStuff;
-    let nextBossSpawnTime = bossStuff.bossSpawnEachXMilliSecond * bossStuff.bossLevelCounter;
+    const bossStuff = game.state.bossStuff;
+    const nextBossSpawnTime = bossStuff.bossSpawnEachXMilliSecond * bossStuff.bossLevelCounter;
     if (getTimeSinceFirstKill(game.state) >= nextBossSpawnTime) {
         bossStuff.bosses.push(createBossWithLevel(game.state.idCounter, bossStuff.bossLevelCounter, game));
         bossStuff.bossLevelCounter++;
     }
 }
 
+export function setAbilityToBossLevel(ability: Ability, level: number) {
+    const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+    if (abilityFunctions.setAbilityToBossLevel) {
+        abilityFunctions.setAbilityToBossLevel(ability, level);
+    } else {
+        throw new Error("function setAbilityToBossLevel missing for" + ability.name);
+    }
+}
+
+function createDefaultBossWithLevel(idCounter: IdCounter, level: number, spawn: Position, nextEndBoss: Character, game: Game): Character {
+    const bossSize = 60;
+    const color = "black";
+    const moveSpeed = Math.min(6, 1.5 + level * 0.5);
+    const hp = 1000 * Math.pow(level, 4);
+    const experienceWorth = Math.pow(level, 2) * 100;
+
+    const bossCharacter = createCharacter(getNextId(idCounter), spawn.x, spawn.y, bossSize, bossSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_BOSS_ENEMY, experienceWorth);
+    bossCharacter.paint.image = IMAGE_SLIME;
+    const abilities: Ability[] = createBossAbilities(level, nextEndBoss, game);
+    bossCharacter.abilities = abilities;
+    const pets: TamerPetCharacter[] | undefined = createBossPets(level, bossCharacter, nextEndBoss, game);
+    bossCharacter.pets = pets;
+    return bossCharacter;
+}
+
+function tickBossEnemyCharacter(enemy: BossEnemyCharacter, game: Game, pathingCache: PathingCache | null) {
+    if (enemy.isDead) return;
+    const playerCharacters = getPlayerCharacters(game.state.players);
+    let closest = determineClosestCharacter(enemy, playerCharacters);
+    if (closest.minDistance > 1200) {
+        teleportBossToNearestPlayer(enemy, game);
+        closest = determineClosestCharacter(enemy, playerCharacters);
+    }
+    calculateAndSetMoveDirectionToPositionWithPathing(enemy, closest.minDistanceCharacter, game.state.map, pathingCache, game.state.idCounter, game.state.time);
+    moveCharacterTick(enemy, game.state.map, game.state.idCounter);
+
+    for (let ability of enemy.abilities) {
+        const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+        if (abilityFunctions) {
+            if (abilityFunctions.tickAbility) abilityFunctions.tickAbility(enemy, ability, game);
+            if (abilityFunctions.tickBossAI) abilityFunctions.tickBossAI(enemy, ability, game);
+        }
+    }
+    tickCharacterDebuffs(enemy, game);
+}
+
 function teleportBossToNearestPlayer(enemy: BossEnemyCharacter, game: Game) {
-    let newPosition = getBossSpawnPosition(game);
+    const newPosition = getBossSpawnPosition(game);
     enemy.x = newPosition.x;
     enemy.y = newPosition.y;
 }
@@ -157,28 +167,19 @@ function createBossAbilities(level: number, nextEndBoss: Character, game: Game):
         if (possibleAbilities.length > 1) {
             randomAbilityChoice = Math.floor(nextRandom(game.state.randomSeed) * possibleAbilities.length);
         }
-        let randomAbility: Ability = possibleAbilities[randomAbilityChoice];
-        let abilityFunctions = ABILITIES_FUNCTIONS[randomAbility.name];
-        let ability = abilityFunctions.createAbility(game.state.idCounter);
+        const randomAbility: Ability = possibleAbilities[randomAbilityChoice];
+        const abilityFunctions = ABILITIES_FUNCTIONS[randomAbility.name];
+        const ability = abilityFunctions.createAbility(game.state.idCounter);
         setAbilityToBossLevel(ability, level);
         ability.passive = true;
         abilities.push(ability);
     }
 
-    let abilityMelee = createAbilityMelee(game.state.idCounter);
+    const abilityMelee = createAbilityMelee(game.state.idCounter);
     setAbilityToBossLevel(abilityMelee, level);
     abilities.push(abilityMelee);
 
     return abilities;
-}
-
-export function setAbilityToBossLevel(ability: Ability, level: number) {
-    let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-    if (abilityFunctions.setAbilityToBossLevel) {
-        abilityFunctions.setAbilityToBossLevel(ability, level);
-    } else {
-        throw new Error("function setAbilityToBossLevel missing for" + ability.name);
-    }
 }
 
 function getBossSpawnPosition(game: Game): Position {
@@ -201,12 +202,11 @@ function paintBossEnemyCharacter(ctx: CanvasRenderingContext2D, character: BossE
     if (character.isDead) return;
     paintCharatersPets(ctx, [character], cameraPosition, game);
     paintCharacterDefault(ctx, character, cameraPosition, game);
+    const paintPos = getPointPaintPosition(ctx, character, cameraPosition);
+    const hpBarPos = {
+        x: Math.floor(paintPos.x - character.width / 2),
+        y: Math.floor(paintPos.y - character.height / 2)
+    };
 
-    let centerX = ctx.canvas.width / 2;
-    let centerY = ctx.canvas.height / 2;
-    let paintX = character.x - cameraPosition.x + centerX;
-    let paintY = character.y - cameraPosition.y + centerY;
-    let characterX = Math.floor(paintX - character.width / 2);
-    let characterY = Math.floor(paintY - character.height / 2);
-    paintCharacterHpBar(ctx, character, { x: characterX, y: characterY });
+    paintCharacterHpBar(ctx, character, hpBarPos);
 }

@@ -292,20 +292,18 @@ function paintTamerPetCharacter(ctx: CanvasRenderingContext2D, character: Charac
         }
     }
     if (tamerPetCharacter.happines.visualizations.length > 0) {
-        let centerX = ctx.canvas.width / 2;
-        let centerY = ctx.canvas.height / 2;
-        let paintX = character.x - cameraPosition.x + centerX;
-        let paintY = character.y - cameraPosition.y + centerY - Math.floor(character.height / 2);
+        let paintPos = getPointPaintPosition(ctx, character, cameraPosition);
+        paintPos.y -= Math.floor(character.height / 2);
         let happyImage = getImage("HAPPY");
         let unhappyImage = getImage("UNHAPPY");
         for (let visu of tamerPetCharacter.happines.visualizations) {
             if (visu.displayUntil >= game.state.time) {
                 if (visu.happy && happyImage) {
-                    ctx.drawImage(happyImage, paintX - Math.floor(happyImage.width / 2), paintY - happyImage.height);
-                    paintY -= happyImage.height;
+                    ctx.drawImage(happyImage, paintPos.x - Math.floor(happyImage.width / 2), paintPos.y - happyImage.height);
+                    paintPos.y -= happyImage.height;
                 } else if (!visu.happy && unhappyImage) {
-                    ctx.drawImage(unhappyImage, paintX - Math.floor(unhappyImage.width / 2), paintY - unhappyImage.height);
-                    paintY -= unhappyImage.height;
+                    ctx.drawImage(unhappyImage, paintPos.x - Math.floor(unhappyImage.width / 2), paintPos.y - unhappyImage.height);
+                    paintPos.y -= unhappyImage.height;
                 }
             }
         }

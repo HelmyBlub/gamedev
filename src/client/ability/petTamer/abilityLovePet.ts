@@ -3,6 +3,7 @@ import { Character } from "../../character/characterModel.js";
 import { PetHappines, TamerPetCharacter, changeTamerPetHappines, petHappinessToDisplayText } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { calculateDirection, calculateDistance, getCameraPosition, getNextId } from "../../game.js";
 import { IdCounter, Position, Game, FACTION_PLAYER } from "../../gameModel.js";
+import { getPointPaintPosition } from "../../gamePaint.js";
 import { GAME_IMAGES, getImage } from "../../imageLoad.js";
 import { moveByDirectionAndDistance } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
@@ -108,14 +109,11 @@ function tickAbilityObjectLovePet(abilityObject: AbilityObject, game: Game) {
 function paintAbilityObjectLovePet(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
     if (paintOrder !== "afterCharacterPaint") return;
     const cameraPosition = getCameraPosition(game);
-    const centerX = ctx.canvas.width / 2;
-    const centerY = ctx.canvas.height / 2;
-    const paintX = Math.floor(abilityObject.x - cameraPosition.x + centerX);
-    const paintY = Math.floor(abilityObject.y - cameraPosition.y + centerY);
+    const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition);
 
     const meatImage = getImage(ABILITY_NAME_LOVE_PET);
     if (meatImage) {
-        ctx.drawImage(meatImage, paintX - 20, paintY - 20);
+        ctx.drawImage(meatImage, paintPos.x - 20, paintPos.y - 20);
     }
 }
 

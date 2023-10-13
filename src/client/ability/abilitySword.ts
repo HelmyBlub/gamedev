@@ -2,6 +2,7 @@ import { determineCharactersInDistance, characterTakeDamage } from "../character
 import { BossEnemyCharacter } from "../character/enemy/bossEnemy.js";
 import { calculateDirection, calculateDistance, getNextId } from "../game.js";
 import { Position, Game, IdCounter } from "../gameModel.js";
+import { getPointPaintPosition } from "../gamePaint.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
 import { GameMap } from "../map/map.js";
 import { Player } from "../player.js";
@@ -134,19 +135,16 @@ function createBiggerSwordImage(newSwordSize: number) {
 
 function paintAbilitySword(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
     const abilitySword = ability as AbilitySword;
-    const centerX = ctx.canvas.width / 2;
-    const centerY = ctx.canvas.height / 2;
-    const paintX = Math.floor(abilityOwner.x - cameraPosition.x + centerX);
-    const paintY = Math.floor(abilityOwner.y - cameraPosition.y + centerY);
+    const paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
 
     //ctx.fillStyle = character.color;
     const swordImage = GAME_IMAGES[ABILITY_NAME_SWORD];
     loadImage(swordImage);
 
     for (let i = 0; i < abilitySword.swordCount; i++) {
-        ctx.translate(paintX, paintY);
+        ctx.translate(paintPos.x, paintPos.y);
         ctx.rotate(abilitySword.currentSwordAngle + Math.PI / 2 + abilitySword.angleChangePerSword * i);
-        ctx.translate(-paintX, -paintY);
+        ctx.translate(-paintPos.x, -paintPos.y);
         if (swordImage.imageRef?.complete) {
             let swordSizeImage: HTMLImageElement = swordImage.imageRef;
             if (abilitySword.swordLength > swordSizeImage.height + 10) {
@@ -160,8 +158,8 @@ function paintAbilitySword(ctx: CanvasRenderingContext2D, abilityOwner: AbilityO
                 0,
                 swordSizeImage.width,
                 swordSizeImage.height,
-                paintX - Math.floor(swordSizeImage.width / 2),
-                paintY - abilitySword.swordLength - swordDistanceToHolder(abilityOwner),
+                paintPos.x - Math.floor(swordSizeImage.width / 2),
+                paintPos.y - abilitySword.swordLength - swordDistanceToHolder(abilityOwner),
                 swordSizeImage.width,
                 abilitySword.swordLength
             );

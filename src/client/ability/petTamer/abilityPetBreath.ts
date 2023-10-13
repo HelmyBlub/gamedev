@@ -4,6 +4,7 @@ import { TamerPetCharacter, tamerPetFeed } from "../../character/playerCharacter
 import { UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { getNextId, calculateDirection, calculateDistance } from "../../game.js";
 import { IdCounter, Position, Game } from "../../gameModel.js";
+import { getPointPaintPosition } from "../../gamePaint.js";
 import { GameMap, moveByDirectionAndDistance } from "../../map/map.js";
 import { Player } from "../../player.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner } from "../ability.js";
@@ -96,28 +97,24 @@ function setAbilityPetBreathToBossLevel(ability: Ability, level: number) {
 function paintAbilityPetBreath(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
     const abilityPetBreath = ability as AbilityPetBreath;
     if (!abilityPetBreath.active) return;
-    const centerX = ctx.canvas.width / 2;
-    const centerY = ctx.canvas.height / 2;
-    const paintX = Math.floor(abilityOwner.x - cameraPosition.x + centerX);
-    const paintY = Math.floor(abilityOwner.y - cameraPosition.y + centerY);
-
+    const paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
     const startAngle = abilityPetBreath.directionAngle - abilityPetBreath.angleSize / 2;
     ctx.globalAlpha = 0.5;
     ctx.fillStyle = abilityPetBreath.color;
     ctx.beginPath();
-    const pos1 = { x: paintX, y: paintY };
-    const pos2 = { x: paintX, y: paintY };
+    const pos1 = { x: paintPos.x, y: paintPos.y };
+    const pos2 = { x: paintPos.x, y: paintPos.y };
     moveByDirectionAndDistance(pos1, abilityPetBreath.directionAngle - abilityPetBreath.angleSize / 2, abilityPetBreath.range, false);
     moveByDirectionAndDistance(pos2, abilityPetBreath.directionAngle + abilityPetBreath.angleSize / 2, abilityPetBreath.range, false);
-    ctx.moveTo(paintX, paintY);
+    ctx.moveTo(paintPos.x, paintPos.y);
     ctx.lineTo(pos1.x, pos1.y);
     ctx.lineTo(pos2.x, pos2.y);
     ctx.fill();
 
     ctx.beginPath();
     ctx.arc(
-        paintX,
-        paintY,
+        paintPos.x,
+        paintPos.y,
         abilityPetBreath.range,
         startAngle,
         startAngle + abilityPetBreath.angleSize,

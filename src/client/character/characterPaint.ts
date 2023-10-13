@@ -1,5 +1,6 @@
 import { ABILITIES_FUNCTIONS, paintDefaultAbilityStatsUI } from "../ability/ability.js";
 import { FACTION_PLAYER, Game, Position } from "../gameModel.js";
+import { getPointPaintPosition } from "../gamePaint.js";
 import { GAME_IMAGES, getImage, loadImage } from "../imageLoad.js";
 import { randomizedCharacterImageToKey } from "../randomizedCharacterImage.js";
 import { getPlayerCharacters } from "./character.js";
@@ -21,17 +22,14 @@ export function paintCharacters(ctx: CanvasRenderingContext2D, characters: (Char
 }
 
 export function paintCharacterHpBarAboveCharacter(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, offsetY: number = 0) {
-    let centerX = ctx.canvas.width / 2;
-    let centerY = ctx.canvas.height / 2;
-    let paintX = character.x - cameraPosition.x + centerX;
-    let paintY = character.y - cameraPosition.y + centerY;
-    if (paintX < -character.width || paintX > ctx.canvas.width
-        || paintY < -character.height || paintY > ctx.canvas.height) return;
+    const paintPos = getPointPaintPosition(ctx, character, cameraPosition);
+    if (paintPos.x < -character.width || paintPos.x > ctx.canvas.width
+        || paintPos.y < -character.height || paintPos.y > ctx.canvas.height) return;
 
     let heightFactor = 1;
     if (character.isPet) heightFactor = 0.5;
-    let hpBarX = Math.floor(paintX - character.width / 2);
-    let hpBarY = Math.floor(paintY - character.height / 2 * heightFactor);
+    let hpBarX = Math.floor(paintPos.x - character.width / 2);
+    let hpBarY = Math.floor(paintPos.y - character.height / 2 * heightFactor);
     paintCharacterHpBar(ctx, character, { x: hpBarX, y: hpBarY + offsetY });
 }
 
@@ -119,29 +117,22 @@ export function paintPlayerCharacters(ctx: CanvasRenderingContext2D, cameraPosit
 }
 
 function paintCharacterImage(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
-    let centerX = ctx.canvas.width / 2;
-    let centerY = ctx.canvas.height / 2;
-    let paintX = Math.floor(character.x - cameraPosition.x + centerX);
-    let paintY = Math.floor(character.y - cameraPosition.y + centerY);
-
-    let characterImage = getImage(character.paint.image!);
+    const paintPos = getPointPaintPosition(ctx, character, cameraPosition);
+    const characterImage = getImage(character.paint.image!);
     if (characterImage) {
-        ctx.drawImage(characterImage, paintX - characterImage.width / 2, paintY - characterImage.height / 2);
+        ctx.drawImage(characterImage, paintPos.x - characterImage.width / 2, paintPos.y - characterImage.height / 2);
     }
 }
 
 function paintCharacterColoredCircle(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position) {
-    let centerX = ctx.canvas.width / 2;
-    let centerY = ctx.canvas.height / 2;
-    let paintX = character.x - cameraPosition.x + centerX;
-    let paintY = character.y - cameraPosition.y + centerY;
-    if (paintX < -character.width || paintX > ctx.canvas.width
-        || paintY < -character.height || paintY > ctx.canvas.height) return;
+    const paintPos = getPointPaintPosition(ctx, character, cameraPosition);
+    if (paintPos.x < -character.width || paintPos.x > ctx.canvas.width
+        || paintPos.y < -character.height || paintPos.y > ctx.canvas.height) return;
     ctx.fillStyle = character.paint.color ?? "black";
     ctx.beginPath();
     ctx.arc(
-        paintX,
-        paintY,
+        paintPos.x,
+        paintPos.y,
         character.width, 0, 2 * Math.PI);
     ctx.fill();
 }
@@ -151,12 +142,9 @@ function randomizedCharacterImagePaint(ctx: CanvasRenderingContext2D, character:
     loadImage(characterImage, character.paint.color, character.paint.randomizedCharacterImage);
     if (characterImage.properties?.canvases
         && characterImage.properties?.canvases[randomizedCharacterImageToKey(character.paint.randomizedCharacterImage!)]) {
-        let centerX = ctx.canvas.width / 2;
-        let centerY = ctx.canvas.height / 2;
-        let paintX = character.x - cameraPosition.x + centerX;
-        let paintY = character.y - cameraPosition.y + centerY;
-        if (paintX < -character.width || paintX > ctx.canvas.width
-            || paintY < -character.height || paintY > ctx.canvas.height) return;
+        const paintPos = getPointPaintPosition(ctx, character, cameraPosition);
+        if (paintPos.x < -character.width || paintPos.x > ctx.canvas.width
+            || paintPos.y < -character.height || paintPos.y > ctx.canvas.height) return;
 
         let spriteWidth = characterImage.spriteRowWidths[0];
         let spriteHeight = 40;
@@ -169,8 +157,8 @@ function randomizedCharacterImagePaint(ctx: CanvasRenderingContext2D, character:
         }
         let heightFactor = 1;
         if (character.isPet) heightFactor = 0.5;
-        let characterPaintX = Math.floor(paintX - character.width / 2);
-        let characterPaintY = Math.floor(paintY - character.height / 2 * heightFactor);
+        let characterPaintX = Math.floor(paintPos.x - character.width / 2);
+        let characterPaintY = Math.floor(paintPos.y - character.height / 2 * heightFactor);
         ctx.drawImage(
             characterImage.properties.canvases[randomizedCharacterImageToKey(character.paint.randomizedCharacterImage!)],
             widthIndex * spriteWidth,
@@ -189,12 +177,9 @@ function slimePaint(ctx: CanvasRenderingContext2D, character: Character, cameraP
     let characterImage = GAME_IMAGES[IMAGE_SLIME];
     loadImage(characterImage, character.paint.color, undefined);
     if (characterImage.properties?.canvas) {
-        let centerX = ctx.canvas.width / 2;
-        let centerY = ctx.canvas.height / 2;
-        let paintX = character.x - cameraPosition.x + centerX;
-        let paintY = character.y - cameraPosition.y + centerY;
-        if (paintX < -character.width || paintX > ctx.canvas.width
-            || paintY < -character.height || paintY > ctx.canvas.height) return;
+        const paintPos = getPointPaintPosition(ctx, character, cameraPosition);
+        if (paintPos.x < -character.width || paintPos.x > ctx.canvas.width
+            || paintPos.y < -character.height || paintPos.y > ctx.canvas.height) return;
         let spriteAnimation = Math.floor(game.state.time / 250) % 2;
         let spriteColor = characterImage.properties.colorToSprite!.indexOf(character.paint.color);
         let spriteWidth = characterImage.spriteRowWidths[0];
@@ -204,8 +189,8 @@ function slimePaint(ctx: CanvasRenderingContext2D, character: Character, cameraP
             0 + spriteAnimation * (spriteWidth + 1),
             0 + spriteColor * (spriteHeight + 1),
             spriteWidth, spriteHeight,
-            Math.floor(paintX - character.width / 2),
-            Math.floor(paintY - character.height / 2),
+            Math.floor(paintPos.x - character.width / 2),
+            Math.floor(paintPos.y - character.height / 2),
             character.width, character.height
         );
     }
@@ -218,17 +203,14 @@ function paintCharacterPets(ctx: CanvasRenderingContext2D, character: Character,
 }
 
 function paintPlayerNameOverCharacter(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game, offsetY: number = 0) {
-    let centerX = ctx.canvas.width / 2;
-    let centerY = ctx.canvas.height / 2;
-    let paintX = character.x - cameraPosition.x + centerX;
-    let paintY = character.y - cameraPosition.y + centerY;
-    if (paintX < -character.width || paintX > ctx.canvas.width
-        || paintY < -character.height || paintY > ctx.canvas.height) return;
+    const paintPos = getPointPaintPosition(ctx, character, cameraPosition);
+    if (paintPos.x < -character.width || paintPos.x > ctx.canvas.width
+        || paintPos.y < -character.height || paintPos.y > ctx.canvas.height) return;
 
     let heightFactor = 1;
     if (character.isPet) heightFactor = 0.5;
-    let nameX = Math.floor(paintX - character.width / 2);
-    let nameY = Math.floor(paintY - character.height / 2 * heightFactor) - offsetY;
+    let nameX = Math.floor(paintPos.x - character.width / 2);
+    let nameY = Math.floor(paintPos.y - character.height / 2 * heightFactor) - offsetY;
     paintPlayerName(ctx, character, { x: nameX, y: nameY }, game);
 }
 

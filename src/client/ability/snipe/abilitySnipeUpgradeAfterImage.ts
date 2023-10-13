@@ -1,6 +1,7 @@
 import { AbilityUpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { calculateDirection } from "../../game.js";
 import { Game, Position } from "../../gameModel.js";
+import { getPointPaintPosition } from "../../gamePaint.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
 import { Ability, AbilityOwner } from "../ability.js";
 import { AbilityUpgrade } from "../abilityUpgrade.js";
@@ -62,11 +63,8 @@ export function paintVisualizationAfterImage(ctx: CanvasRenderingContext2D, abil
 
     for (let i = 0; i < upgradeAfterImage.afterImages.length; i++) {
         const afterImage = upgradeAfterImage.afterImages[i];
-        const centerX = ctx.canvas.width / 2;
-        const centerY = ctx.canvas.height / 2;
-        const paintX = Math.floor(afterImage.position.x - cameraPosition.x + centerX);
-        const paintY = Math.floor(afterImage.position.y - cameraPosition.y + centerY);
-        paintSniperRifle(ctx, abilitySnipe, paintX, paintY, afterImage.direction, 0, false, game);
+        const paintPos = getPointPaintPosition(ctx, afterImage.position, cameraPosition);
+        paintSniperRifle(ctx, abilitySnipe, paintPos.x, paintPos.y, afterImage.direction, 0, false, game);
         if (afterImage.playerTriggered && upgradeMoreRifles && upgradeMoreRifles.upgradeSynergy) {
             paintVisualizationMoreRifles(ctx, afterImage.position, abilitySnipe, cameraPosition, afterImage.castPosition, game);
         }

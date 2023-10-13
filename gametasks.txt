@@ -1,6 +1,10 @@
 current tasks:
 - refactoring
-    - ability folder done
+    - character folder
+    - debuff
+    - map
+    - test
+    - other
 - new test runs
     - check tamer run -> make him win bossfight
         - tamer run do not replay correctly again

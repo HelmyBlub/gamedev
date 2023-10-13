@@ -1,6 +1,7 @@
 import { getPlayerCharacters, characterTakeDamage } from "../character/character.js";
 import { calculateDistance, getCameraPosition, getNextId } from "../game.js";
 import { FACTION_ENEMY, Game, IdCounter } from "../gameModel.js";
+import { getPointPaintPosition } from "../gamePaint.js";
 import { GameMap } from "../map/map.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, AbilityObjectCircle } from "./ability.js";
 
@@ -83,15 +84,14 @@ function paintAbilityObjectDeathCircle(ctx: CanvasRenderingContext2D, abilityObj
     if (paintOrder === "beforeCharacterPaint") {
         const abilityObjectDeathCircle = abilityObject as AbilityObjectDeathCircle;
         const cameraPosition = getCameraPosition(game);
-        const centerX = ctx.canvas.width / 2;
-        const centerY = ctx.canvas.height / 2;
+        const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition);
 
         ctx.fillStyle = abilityObject.color;
         ctx.globalAlpha = 0.65;
         ctx.beginPath();
         ctx.arc(
-            abilityObject.x - cameraPosition.x + centerX,
-            abilityObject.y - cameraPosition.y + centerY,
+            paintPos.x,
+            paintPos.y,
             abilityObjectDeathCircle.radius, 0, 2 * Math.PI
         );
         ctx.fill();
