@@ -22,23 +22,23 @@ export type MapTileObject = {
 
 export const MAP_OBJECTS_FUNCTIONS: MapObjectsFunctions = {};
 
-export function addMapObjectsFunctions(){
+export function addMapObjectsFunctions() {
     addMapObjectFireAnimation();
     addMapObjectBossSign();
 }
 
-export function findNearesInteractableMapChunkObject(position: Position, game: Game, maxDistance: number = 60): MapTileObject | undefined{
+export function findNearesInteractableMapChunkObject(position: Position, game: Game, maxDistance: number = 60): MapTileObject | undefined {
     let mapTileObject: MapTileObject | undefined = undefined;
     let minDistance = -1;
     const map = game.state.map;
-    let mapKeys = determineMapKeysInDistance(position, map, maxDistance, false, false);
-    for(let key of mapKeys){
+    const mapKeys = determineMapKeysInDistance(position, map, maxDistance, false, false);
+    for (let key of mapKeys) {
         const mapChunk = map.chunks[key];
-        for(let object of mapChunk.objects){
-            if(object.interactable){
+        for (let object of mapChunk.objects) {
+            if (object.interactable) {
                 const objectPosition = mapKeyAndTileXYToPosition(key, object.x, object.y, game.state.map);
                 const distance = calculateDistance(objectPosition, position);
-                if(distance < maxDistance && (!mapTileObject || distance < minDistance)){
+                if (distance < maxDistance && (!mapTileObject || distance < minDistance)) {
                     mapTileObject = object;
                     minDistance = distance;
                 }
@@ -48,19 +48,19 @@ export function findNearesInteractableMapChunkObject(position: Position, game: G
     return mapTileObject;
 }
 
-export function findMapKeyForMapObject(mapTileObject: MapTileObject, map: GameMap): string | undefined{
-    for(let key of map.activeChunkKeys){
+export function findMapKeyForMapObject(mapTileObject: MapTileObject, map: GameMap): string | undefined {
+    for (let key of map.activeChunkKeys) {
         const mapChunk = map.chunks[key];
         const contains = mapChunk.objects.find((o) => o === mapTileObject);
-        if(contains) return key;
+        if (contains) return key;
     }
     return undefined;
 }
 
-export function paintMapChunkObjects(ctx: CanvasRenderingContext2D, mapChunk: MapChunk, paintTopLeft: Position, game: Game){
-    for(let mapObject of mapChunk.objects){
+export function paintMapChunkObjects(ctx: CanvasRenderingContext2D, mapChunk: MapChunk, paintTopLeft: Position, game: Game) {
+    for (let mapObject of mapChunk.objects) {
         const mapObejctFuntions = MAP_OBJECTS_FUNCTIONS[mapObject.name];
-        if(mapObejctFuntions){
+        if (mapObejctFuntions) {
             mapObejctFuntions.paint(ctx, mapObject, paintTopLeft, game);
         }
     }

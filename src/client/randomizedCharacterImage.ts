@@ -11,9 +11,9 @@ export type RandomizedCharacterImage = {
 }
 
 export function createRandomizedCharacterImageData(gameImage: GameImage, seed: RandomSeed): RandomizedCharacterImage {
-    let colorKeys = Object.keys(COLOR_CONVERSION);
-    let properties: CharacterImageLoadProperties = gameImage.properties;
-    let result: RandomizedCharacterImage = {
+    const colorKeys = Object.keys(COLOR_CONVERSION);
+    const properties: CharacterImageLoadProperties = gameImage.properties;
+    const result: RandomizedCharacterImage = {
         headIndex: Math.floor(nextRandom(seed) * properties.headSpriteCounter),
         chestIndex: Math.floor(nextRandom(seed) * properties.chestSpriteCounter),
         legsIndex: Math.floor(nextRandom(seed) * properties.legsSpriteCounter),
@@ -35,20 +35,20 @@ export function randomizedCharacterImageToKey(randomizedCharacterImage: Randomiz
 }
 
 export function createRandomizedCharacter(gameImage: GameImage, randomizedCharacterImage: RandomizedCharacterImage): HTMLCanvasElement {
-    let canvas = document.createElement('canvas');
-    let properties: CharacterImageLoadProperties = gameImage.properties;
-    let walkinAnimationSpriteCount = properties.legsSpriteRows.length;
-    let numberCharacterDirections = properties.directionSpriteCount;
-    let characterSpriteHeight = gameImage.spriteRowHeights[0] + gameImage.spriteRowHeights[1] + gameImage.spriteRowHeights[2];
+    const canvas = document.createElement('canvas');
+    const properties: CharacterImageLoadProperties = gameImage.properties;
+    const walkinAnimationSpriteCount = properties.legsSpriteRows.length;
+    const numberCharacterDirections = properties.directionSpriteCount;
+    const characterSpriteHeight = gameImage.spriteRowHeights[0] + gameImage.spriteRowHeights[1] + gameImage.spriteRowHeights[2];
     canvas.width = gameImage.spriteRowWidths[0] * (numberCharacterDirections + 1);
     canvas.height = characterSpriteHeight * walkinAnimationSpriteCount;
-    let imageCtx: CanvasRenderingContext2D = canvas.getContext("2d", { willReadFrequently: true })!;
-    let spriteBodyPartIndexes = [randomizedCharacterImage.headIndex, randomizedCharacterImage.chestIndex, randomizedCharacterImage.legsIndex];
+    const imageCtx: CanvasRenderingContext2D = canvas.getContext("2d", { willReadFrequently: true })!;
+    const spriteBodyPartIndexes = [randomizedCharacterImage.headIndex, randomizedCharacterImage.chestIndex, randomizedCharacterImage.legsIndex];
     let sy = 0;
-    let borderWidth = 1;
-    let totalCharacterSpritesWidth = numberCharacterDirections * (gameImage.spriteRowWidths[0] + borderWidth);
+    const borderWidth = 1;
+    const totalCharacterSpritesWidth = numberCharacterDirections * (gameImage.spriteRowWidths[0] + borderWidth);
     for (let bodyPartIndex = 0; bodyPartIndex < spriteBodyPartIndexes.length; bodyPartIndex++) {
-        let spriteIndex = spriteBodyPartIndexes[bodyPartIndex];
+        const spriteIndex = spriteBodyPartIndexes[bodyPartIndex];
         for (let directionIndex = 0; directionIndex < numberCharacterDirections + 1; directionIndex++) {
             for (let walkingAnimationIndex = 0; walkingAnimationIndex < walkinAnimationSpriteCount; walkingAnimationIndex++) {
                 let offsetSY = (characterSpriteHeight + borderWidth * 3) * walkingAnimationIndex;
@@ -56,7 +56,7 @@ export function createRandomizedCharacter(gameImage: GameImage, randomizedCharac
                 if (bodyPartIndex === 0) {
                     offsetSY = 0;
                 }
-                let offsetDY = characterSpriteHeight * walkingAnimationIndex;
+                const offsetDY = characterSpriteHeight * walkingAnimationIndex;
 
                 let offsetSX = borderWidth + spriteIndex * totalCharacterSpritesWidth + (gameImage.spriteRowWidths[0] + borderWidth) * directionIndex;
                 let offsetDX = gameImage.spriteRowWidths[0] * directionIndex;

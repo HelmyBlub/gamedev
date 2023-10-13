@@ -7,7 +7,7 @@ export type DebuffSlow = Debuff & {
     slowFactor: number,
 }
 
-export function addDebuffSlow(){
+export function addDebuffSlow() {
     DEBUFFS_FUNCTIONS[DEBUFF_NAME_SLOW] = {
         applyDebuffEffect: applyDebuffEffectSlow,
         removeDebuffEffect: removeDebuffEffectSlow,
@@ -27,24 +27,24 @@ export function createDebuffSlow(
     };
 }
 
-function applyDebuffEffectSlow(debuff: Debuff, targetCharacter: Character, game: Game){
-    let debuffSlow = debuff as DebuffSlow;
+function applyDebuffEffectSlow(debuff: Debuff, targetCharacter: Character, game: Game) {
+    const debuffSlow = debuff as DebuffSlow;
     targetCharacter.moveSpeed /= debuffSlow.slowFactor;
 }
 
-function removeDebuffEffectSlow(debuff: Debuff, targetCharacter: Character, game: Game){
-    let debuffSlow = debuff as DebuffSlow;
+function removeDebuffEffectSlow(debuff: Debuff, targetCharacter: Character, game: Game) {
+    const debuffSlow = debuff as DebuffSlow;
     targetCharacter.moveSpeed *= debuffSlow.slowFactor;
 }
 
-function refreshDebuffEffectSlow(newDebuff: Debuff, currentDebuff: Debuff,targetCharacter: Character, game: Game){
-    let newdebuffSlow = newDebuff as DebuffSlow;
-    let currentDebuffSlow = currentDebuff as DebuffSlow;
-    if(newdebuffSlow.slowFactor > currentDebuffSlow.slowFactor){
+function refreshDebuffEffectSlow(newDebuff: Debuff, currentDebuff: Debuff, targetCharacter: Character, game: Game) {
+    const newdebuffSlow = newDebuff as DebuffSlow;
+    const currentDebuffSlow = currentDebuff as DebuffSlow;
+    if (newdebuffSlow.slowFactor > currentDebuffSlow.slowFactor) {
         removeDebuffEffectSlow(currentDebuffSlow, targetCharacter, game);
         applyDebuffEffectSlow(newdebuffSlow, targetCharacter, game);
         currentDebuffSlow.slowFactor = newdebuffSlow.slowFactor;
-    }else{
+    } else {
         currentDebuff.removeTime = newdebuffSlow.removeTime;
     }
 }

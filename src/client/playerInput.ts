@@ -5,9 +5,8 @@ import { Game, Position } from "./gameModel.js";
 import { testGame } from "./test/gameTest.js";
 import { websocketConnect } from "./multiplayerConenction.js";
 import { ABILITIES_FUNCTIONS } from "./ability/ability.js";
-import { calculateDirection, calculateDistance, getCameraPosition, getClientInfo, loadFromLocalStorage, takeTimeMeasure } from "./game.js";
+import { calculateDirection, getCameraPosition, getClientInfo, loadFromLocalStorage, takeTimeMeasure } from "./game.js";
 import { executeUpgradeOptionChoice } from "./character/upgrade.js";
-import { tradePets } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
 import { canCharacterTradeAbilityOrPets, characterTradeAbilityAndPets } from "./character/character.js";
 
 export const MOVE_ACTIONS = ["left", "down", "right", "up"];
@@ -123,37 +122,6 @@ export function playerInputBindingToDisplayValue(playerInputBinding: string, gam
     return displayValue;
 }
 
-function multiplayerConnectMenu(game: Game) {
-    let multiplayer = game.multiplayer;
-    if (multiplayer.websocket === null) {
-        (document.getElementById('multiplayerConnect') as HTMLButtonElement).disabled = false;
-        document.getElementById('stringInput')?.classList.toggle('hide');
-        multiplayer.connectMenuOpen = true;
-        if (!multiplayer.connectMenuListenerSet) {
-            multiplayer.connectMenuListenerSet = true;
-            const connectButton = document.getElementById('multiplayerConnect');
-            connectButton?.addEventListener("click", (e) => {
-                const nameInput = document.getElementById('nameInput') as HTMLInputElement;
-                const clientName = nameInput.value;
-                const lobbyCodeElement = document.getElementById('lobbyCode') as HTMLInputElement;
-                const lobbyCode = lobbyCodeElement.value;
-                try {
-                    websocketConnect(game, clientName, lobbyCode);
-                } catch (e) {
-                    document.getElementById('stringInput')?.classList.toggle('hide');
-                }
-            });
-            const cancelButton = document.getElementById('multiplayerCancel');
-            cancelButton?.addEventListener("click", (e) => {
-                multiplayer.connectMenuOpen = false;
-            });
-        }
-    } else {
-        game.multiplayer.intentionalDisconnect = true;
-        multiplayer.websocket?.close();
-    }
-}
-
 export function keyUp(event: KeyboardEvent, game: Game) {
     playerInputChangeEvent(game, event.code, false);
 
@@ -189,6 +157,37 @@ export function tickPlayerInputs(playerInputs: PlayerInput[], currentTime: numbe
     takeTimeMeasure(game.debug, "tickPlayerInputs", "");
 }
 
+function multiplayerConnectMenu(game: Game) {
+    const multiplayer = game.multiplayer;
+    if (multiplayer.websocket === null) {
+        (document.getElementById('multiplayerConnect') as HTMLButtonElement).disabled = false;
+        document.getElementById('stringInput')?.classList.toggle('hide');
+        multiplayer.connectMenuOpen = true;
+        if (!multiplayer.connectMenuListenerSet) {
+            multiplayer.connectMenuListenerSet = true;
+            const connectButton = document.getElementById('multiplayerConnect');
+            connectButton?.addEventListener("click", (e) => {
+                const nameInput = document.getElementById('nameInput') as HTMLInputElement;
+                const clientName = nameInput.value;
+                const lobbyCodeElement = document.getElementById('lobbyCode') as HTMLInputElement;
+                const lobbyCode = lobbyCodeElement.value;
+                try {
+                    websocketConnect(game, clientName, lobbyCode);
+                } catch (e) {
+                    document.getElementById('stringInput')?.classList.toggle('hide');
+                }
+            });
+            const cancelButton = document.getElementById('multiplayerCancel');
+            cancelButton?.addEventListener("click", (e) => {
+                multiplayer.connectMenuOpen = false;
+            });
+        }
+    } else {
+        game.multiplayer.intentionalDisconnect = true;
+        multiplayer.websocket?.close();
+    }
+}
+
 function determinePlayerMoveDirection(player: Character, actionsPressed: ActionsPressed) {
     let newDirection = 0;
     let left = 0;
@@ -208,7 +207,7 @@ function determinePlayerMoveDirection(player: Character, actionsPressed: Actions
 
 function playerInputChangeEvent(game: Game, inputCode: string, isInputDown: boolean) {
     for (let i = 0; i < game.clientKeyBindings.length; i++) {
-        let action = game.clientKeyBindings[i].keyCodeToActionPressed.get(inputCode);
+        const action = game.clientKeyBindings[i].keyCodeToActionPressed.get(inputCode);
         if (action !== undefined) {
             if (game.testing.replay) {
                 //end replay and let player play
@@ -221,8 +220,8 @@ function playerInputChangeEvent(game: Game, inputCode: string, isInputDown: bool
             }
             action.isInputAlreadyDown = isInputDown;
             if (action.action.indexOf("ability") > -1) {
-                let cameraPosition = getCameraPosition(game);
-                let castPosition: Position = {
+                const cameraPosition = getCameraPosition(game);
+                const castPosition: Position = {
                     x: game.mouseRelativeCanvasPosition.x - game.canvasElement!.width / 2 + cameraPosition.x,
                     y: game.mouseRelativeCanvasPosition.y - game.canvasElement!.height / 2 + cameraPosition.y
                 }
@@ -233,7 +232,7 @@ function playerInputChangeEvent(game: Game, inputCode: string, isInputDown: bool
                 });
             } else {
                 if (action.action.indexOf("upgrade") > -1) {
-                    let character = findPlayerById(game.state.players, clientId)?.character;
+                    const character = findPlayerById(game.state.players, clientId)?.character;
                     if (!character || character.upgradeChoices.length === 0) {
                         return;
                     }
@@ -256,7 +255,7 @@ function playerAction(clientId: number, data: any, game: Game) {
     const isKeydown: boolean = data.isKeydown;
     const player = findPlayerById(game.state.players, clientId);
     if (player === null) return;
-    let character = player.character;
+    const character = player.character;
 
     if (action !== undefined) {
         if (MOVE_ACTIONS.indexOf(action) !== -1) {
@@ -268,15 +267,15 @@ function playerAction(clientId: number, data: any, game: Game) {
             }
         } else if (UPGRADE_ACTIONS.indexOf(action) !== -1) {
             if (isKeydown) {
-                let option = character.upgradeChoices[UPGRADE_ACTIONS.indexOf(action)];
+                const option = character.upgradeChoices[UPGRADE_ACTIONS.indexOf(action)];
                 if (option) {
                     executeUpgradeOptionChoice(character, option, game);
                 }
             }
         } else if (ABILITY_ACTIONS.indexOf(action) !== -1) {
-            for(let ability of character.abilities){
-                if(ability.playerInputBinding && ability.playerInputBinding === action ){
-                    let functions = ABILITIES_FUNCTIONS[ability.name];
+            for (let ability of character.abilities) {
+                if (ability.playerInputBinding && ability.playerInputBinding === action) {
+                    const functions = ABILITIES_FUNCTIONS[ability.name];
                     if (functions.activeAbilityCast !== undefined) {
                         functions.activeAbilityCast(character, ability, data.castPosition, isKeydown, game);
                     } else {
@@ -286,16 +285,16 @@ function playerAction(clientId: number, data: any, game: Game) {
             }
         } else if (SPECIAL_ACTIONS.indexOf(action) !== -1) {
             if (isKeydown) {
-                let special = SPECIAL_ACTIONS[SPECIAL_ACTIONS.indexOf(action)];
+                const special = SPECIAL_ACTIONS[SPECIAL_ACTIONS.indexOf(action)];
                 if (special === "interact") {
                     const closestPast = findNearesPastPlayerCharacter(character, game);
                     if (closestPast) {
-                        if(canCharacterTradeAbilityOrPets(closestPast)){
+                        if (canCharacterTradeAbilityOrPets(closestPast)) {
                             characterTradeAbilityAndPets(closestPast, character, game);
-                        }else{
+                        } else {
                             const pastCharactes = game.state.pastPlayerCharacters.characters;
-                            for(let i = pastCharactes.length - 1; i>= 0; i--){
-                                if(pastCharactes[i] === closestPast){
+                            for (let i = pastCharactes.length - 1; i >= 0; i--) {
+                                if (pastCharactes[i] === closestPast) {
                                     pastCharactes[i] = undefined;
                                     break;
                                 }

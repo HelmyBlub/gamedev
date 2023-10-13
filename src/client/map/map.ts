@@ -24,7 +24,7 @@ export type MapChunk = {
     isEndBossAreaChunk?: boolean,
 }
 
-export let TILE_VALUES: MapTiles = {
+export const TILE_VALUES: MapTiles = {
     0: { name: "grass", imagePath: "/images/grass.png", blocking: false, layer: "Layer1" },
     1: { name: "tree", imagePath: "/images/tree.png", blocking: true, layer: "Layer2" },
     2: { name: "rock", imagePath: "/images/rock.png", blocking: true, layer: "Layer2" },
@@ -63,19 +63,19 @@ export function createMap(bossAreaDistance: number = 20000): GameMap {
 }
 
 export function addEnemyToMap(map: GameMap, character: Character) {
-    let key = positionToMapKey(character, map);
+    const key = positionToMapKey(character, map);
     map.chunks[key].characters.push(character);
 }
 
 export function isPositionBlocking(pos: Position, map: GameMap, idCounter: IdCounter) {
-    let tile = getMapTile(pos, map, idCounter);
+    const tile = getMapTile(pos, map, idCounter);
     if (!tile) return false;
     return tile.blocking;
 }
 
 export function findNearNonBlockingPosition(pos: Position, map: GameMap, idCounter: IdCounter): Position {
-    let currentPosition: Position = { x: pos.x, y: pos.y };
-    let distance = 1;
+    const currentPosition: Position = { x: pos.x, y: pos.y };
+    const distance = 1;
     let counterX = -distance;
     let counterY = -distance;
     while (isPositionBlocking(currentPosition, map, idCounter)) {
@@ -101,11 +101,11 @@ export function changeTileIdOfMapChunk(chunkX: number, chunkY: number, tileX: nu
     game.state.map.chunks[chunkKey].tiles[tileX][tileY] = newTileId;
     const mapPaintCache = game.performance.mapChunkPaintCache;
     if (mapPaintCache) {
-        let paintCacheKey1 = chunkKey + "_Layer1";
+        const paintCacheKey1 = chunkKey + "_Layer1";
         if (mapPaintCache[paintCacheKey1]) {
             delete mapPaintCache[paintCacheKey1];
         }
-        let paintCacheKey2 = chunkKey + "_Layer2";
+        const paintCacheKey2 = chunkKey + "_Layer2";
         if (mapPaintCache[paintCacheKey2]) {
             delete mapPaintCache[paintCacheKey2];
         }
@@ -118,8 +118,8 @@ export function positionToMapKey(pos: Position, map: GameMap): string {
 }
 
 export function mapKeyAndTileXYToPosition(mapKey: string, tileX: number, tileY: number, map: GameMap): Position {
-    let chunkSize = map.tileSize * map.chunkLength;
-    let chunkXY = mapKeyToChunkXY(mapKey);
+    const chunkSize = map.tileSize * map.chunkLength;
+    const chunkXY = mapKeyToChunkXY(mapKey);
     return {
         x: chunkXY.chunkX * chunkSize + tileX * map.tileSize + map.tileSize / 2,
         y: chunkXY.chunkY * chunkSize + tileY * map.tileSize + map.tileSize / 2,
@@ -127,7 +127,7 @@ export function mapKeyAndTileXYToPosition(mapKey: string, tileX: number, tileY: 
 }
 
 export function positionToChunkXY(pos: Position, map: GameMap): Position {
-    let chunkSize = map.tileSize * map.chunkLength;
+    const chunkSize = map.tileSize * map.chunkLength;
     return { x: Math.floor(pos.x / chunkSize), y: Math.floor(pos.y / chunkSize) };
 }
 
@@ -136,8 +136,8 @@ export function chunkXYToMapKey(chunkX: number, chunkY: number) {
 }
 
 export function mapKeyToChunkXY(mapKey: string) {
-    let chunkX = parseInt(mapKey.split("_")[0]);
-    let chunkY = parseInt(mapKey.split("_")[1]);
+    const chunkX = parseInt(mapKey.split("_")[0]);
+    const chunkY = parseInt(mapKey.split("_")[1]);
     return { chunkX, chunkY };
 }
 
@@ -162,20 +162,20 @@ export function determineMapKeysInDistance(position: Position, map: GameMap, max
 }
 
 export function removeAllMapCharacters(map: GameMap) {
-    let key = Object.keys(map.chunks);
+    const key = Object.keys(map.chunks);
     for (let i = 0; i < key.length; i++) {
         map.chunks[key[i]].characters = [];
     }
 }
 
 export function moveByDirectionAndDistance(position: Position, moveDirection: number, distance: number, checkColision: boolean, map: GameMap | undefined = undefined, idCounter: IdCounter | undefined = undefined) {
-    let newPos = calculateMovePosition(position, moveDirection, distance, checkColision, map, idCounter);
+    const newPos = calculateMovePosition(position, moveDirection, distance, checkColision, map, idCounter);
     position.x = newPos.x;
     position.y = newPos.y;
 }
 
 export function calculateBounceAngle(bouncePosition: Position, startingAngle: number, map: GameMap): number {
-    let tileSize = map.tileSize;
+    const tileSize = map.tileSize;
     let wallX = Math.abs(bouncePosition.x % tileSize);
     if (wallX > tileSize / 2) wallX = Math.abs(wallX - tileSize);
     let wallY = Math.abs(bouncePosition.y % tileSize);
@@ -187,26 +187,26 @@ export function calculateBounceAngle(bouncePosition: Position, startingAngle: nu
 }
 
 export function calculateMovePosition(position: Position, moveDirection: number, distance: number, checkColision: boolean, map: GameMap | undefined = undefined, idCounter: IdCounter | undefined = undefined): Position {
-    let x = position.x + Math.cos(moveDirection) * distance;
-    let y = position.y + Math.sin(moveDirection) * distance;
+    const x = position.x + Math.cos(moveDirection) * distance;
+    const y = position.y + Math.sin(moveDirection) * distance;
     if (checkColision) {
         if (!map || !idCounter) throw new Error("collision check requires map and idCounter");
-        let blocking = isPositionBlocking({ x, y }, map, idCounter);
+        const blocking = isPositionBlocking({ x, y }, map, idCounter);
         if (!blocking) {
-            let blockingBothSides = isPositionBlocking({ x: position.x, y }, map, idCounter) && isPositionBlocking({ x, y: position.y }, map, idCounter);
+            const blockingBothSides = isPositionBlocking({ x: position.x, y }, map, idCounter) && isPositionBlocking({ x, y: position.y }, map, idCounter);
             if (!blockingBothSides) {
                 return { x, y };
             }
         } else {
-            let xTile = Math.floor(position.x / map.tileSize);
-            let newXTile = Math.floor(x / map.tileSize);
+            const xTile = Math.floor(position.x / map.tileSize);
+            const newXTile = Math.floor(x / map.tileSize);
             if (xTile !== newXTile) {
                 if (!isPositionBlocking({ x: position.x, y }, map, idCounter)) {
                     return { x: position.x, y };
                 }
             }
-            let yTile = Math.floor(position.y / map.tileSize);
-            let newYTile = Math.floor(y / map.tileSize);
+            const yTile = Math.floor(position.y / map.tileSize);
+            const newYTile = Math.floor(y / map.tileSize);
             if (yTile !== newYTile) {
                 if (!isPositionBlocking({ x, y: position.y }, map, idCounter)) {
                     return { x, y: position.y };
@@ -227,9 +227,9 @@ export function getChunksTouchingLine(map: GameMap, lineStart: Position, lineEnd
     chunkKeys.add(firstKey);
     const endKey = positionToMapKey(lineEnd, map);
     if (firstKey !== endKey) {
-        let xDiff = lineEnd.x - lineStart.x;
-        let yDiff = lineEnd.y - lineStart.y;
-        let currentPos = { ...lineStart };
+        const xDiff = lineEnd.x - lineStart.x;
+        const yDiff = lineEnd.y - lineStart.y;
+        const currentPos = { ...lineStart };
         let currentKey: string;
         do {
             let nextYBorder: number | undefined;
@@ -294,7 +294,7 @@ export function getChunksTouchingLine(map: GameMap, lineStart: Position, lineEnd
         } while (currentKey !== endKey);
     }
 
-    let chunks: MapChunk[] = [];
+    const chunks: MapChunk[] = [];
     for (let chunkKey of chunkKeys) {
         if (map.chunks[chunkKey] !== undefined && map.activeChunkKeys.includes(chunkKey)) {
             chunks.push(map.chunks[chunkKey]);
@@ -311,13 +311,13 @@ export function positionToGameMapTileXY(map: GameMap, position: Position): Posit
 }
 
 export function getFirstBlockingGameMapTilePositionTouchingLine(map: GameMap, lineStart: Position, lineEnd: Position, game: Game): Position | undefined {
-    let tileSize = map.tileSize;
+    const tileSize = map.tileSize;
     let currentTileXY = positionToGameMapTileXY(map, lineStart);
-    let endTileXY = positionToGameMapTileXY(map, lineEnd);
+    const endTileXY = positionToGameMapTileXY(map, lineEnd);
     if (currentTileXY.x !== endTileXY.x || currentTileXY.y !== endTileXY.y) {
-        let xDiff = lineEnd.x - lineStart.x;
-        let yDiff = lineEnd.y - lineStart.y;
-        let currentPos = { x: lineStart.x, y: lineStart.y };
+        const xDiff = lineEnd.x - lineStart.x;
+        const yDiff = lineEnd.y - lineStart.y;
+        const currentPos = { x: lineStart.x, y: lineStart.y };
         do {
             let nextYBorder: number | undefined;
             let nextXBorder: number | undefined;
@@ -417,7 +417,7 @@ export function getChunksTouchingLine2(map: GameMap, lineStart: Position, lineEn
         }
     }
 
-    let chunks: MapChunk[] = [];
+    const chunks: MapChunk[] = [];
     for (let chunkKey of chunkKeys) {
         if (map.chunks[chunkKey] !== undefined && map.activeChunkKeys.includes(chunkKey)) {
             chunks.push(map.chunks[chunkKey]);
@@ -427,12 +427,12 @@ export function getChunksTouchingLine2(map: GameMap, lineStart: Position, lineEn
 }
 
 export function getMapMidlePosition(map: GameMap) {
-    let offset = map.tileSize * map.chunkLength / 2;
+    const offset = map.tileSize * map.chunkLength / 2;
     return { x: offset, y: offset };
 }
 
 export function getTileIdForTileName(tileName: string): number {
-    let keys: any = Object.keys(TILE_VALUES);
+    const keys: any = Object.keys(TILE_VALUES);
     for (let key of keys) {
         if (TILE_VALUES[key].name === tileName) {
             return key;
@@ -442,7 +442,7 @@ export function getTileIdForTileName(tileName: string): number {
 }
 
 export function calculateDistanceToMapChunk(chunkX: number, chunkY: number, position: Position, map: GameMap): number {
-    let chunkSize = map.tileSize * map.chunkLength;
+    const chunkSize = map.tileSize * map.chunkLength;
     const cellCenterX = chunkX * chunkSize + chunkSize / 2;
     const cellCenterY = chunkY * chunkSize + chunkSize / 2;
     const dx = Math.max(Math.abs(position.x - cellCenterX) - chunkSize / 2, 0);
@@ -451,10 +451,10 @@ export function calculateDistanceToMapChunk(chunkX: number, chunkY: number, posi
 }
 
 export function getMapTile(pos: Position, map: GameMap, idCounter: IdCounter): MapTile {
-    let chunkSize = map.tileSize * map.chunkLength;
-    let chunkX = Math.floor(pos.x / chunkSize);
-    let chunkY = Math.floor(pos.y / chunkSize);
-    let key = positionToMapKey(pos, map);
+    const chunkSize = map.tileSize * map.chunkLength;
+    const chunkX = Math.floor(pos.x / chunkSize);
+    const chunkY = Math.floor(pos.y / chunkSize);
+    const key = positionToMapKey(pos, map);
     let chunk = map.chunks[key];
     if (chunk === undefined) {
         chunk = createNewChunk(map, chunkX, chunkY, idCounter);

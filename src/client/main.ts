@@ -1,5 +1,4 @@
 import { onDomLoadSetAbilitiesFunctions } from "./ability/ability.js";
-import { resetCharacter } from "./character/character.js";
 import { addBossType } from "./character/enemy/bossEnemy.js";
 import { addEndBossCrownType } from "./character/enemy/endBossCrown.js";
 import { addEndBossType } from "./character/enemy/endBossEnemy.js";
@@ -7,7 +6,7 @@ import { onDomLoadSetCharacterClasses } from "./character/playerCharacters/playe
 import { handleCommand } from "./commands.js";
 import { onDomLoadSetDebuffsFunctions } from "./debuff/debuff.js";
 import { loadFromLocalStorage, runner, setRelativeMousePosition } from "./game.js";
-import { createDefaultGameData, Game, LOCALSTORAGE_NEXTENDBOSSES, LOCALSTORAGE_PASTCHARACTERS } from "./gameModel.js";
+import { createDefaultGameData, Game } from "./gameModel.js";
 import { addMapObjectsFunctions } from "./map/mapObjects.js";
 import { keyDown, keyUp, mouseDown, mouseUp } from "./playerInput.js";
 import { addHTMLDebugMenusToSettings } from "./settingsHtmlMenu.js";
@@ -19,9 +18,9 @@ export function start() {
 }
 
 export function startMore() {
-    let nextCssId = "myCanvas_" + gameCount;
+    const nextCssId = "myCanvas_" + gameCount;
     gameCount++;
-    let canvasHTML = `<canvas id="${nextCssId}" width="400" height="300" style="border:1px solid #000000;"></canvas>`;
+    const canvasHTML = `<canvas id="${nextCssId}" width="400" height="300" style="border:1px solid #000000;"></canvas>`;
     document.body.insertAdjacentHTML("beforeend", canvasHTML);
     createGame(nextCssId);
 }
@@ -29,9 +28,9 @@ export function startMore() {
 export function createGame(canvasElementId: string | undefined, forTesting: boolean = false): Game {
     let game: Game;
     if (!forTesting && canvasElementId) {
-        let c: HTMLCanvasElement | null = document.getElementById(canvasElementId) as HTMLCanvasElement;
+        const c: HTMLCanvasElement | null = document.getElementById(canvasElementId) as HTMLCanvasElement;
         if (c == null) throw new DOMException("canvas element not found");
-        let ctx: CanvasRenderingContext2D | null = c.getContext("2d");
+        const ctx: CanvasRenderingContext2D | null = c.getContext("2d");
         if (ctx == null) throw new DOMException("CanvasRenderingContext2D element not found");
         game = createDefaultGameData(c, ctx);
         document.addEventListener('keydown', (e) => keyDown(e, game), false);

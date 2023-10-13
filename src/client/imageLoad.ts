@@ -20,7 +20,7 @@ export type GameImage = {
 
 export type DefaultGameImageProperties = {
     baseColor?: string,
-    canvases?: {[key:string]: HTMLCanvasElement},
+    canvases?: { [key: string]: HTMLCanvasElement },
     canvas?: HTMLCanvasElement,
     colorToSprite?: string[],
 }
@@ -40,23 +40,23 @@ export const COLOR_CONVERSION: ColorConversions = {
 export const GAME_IMAGES: GameImages = {};
 
 export function getImage(imageKey: string, color: string = "", randomizedCharacterImage: RandomizedCharacterImage | undefined = undefined): HTMLImageElement | undefined {
-    let imageRef = GAME_IMAGES[imageKey];
+    const imageRef = GAME_IMAGES[imageKey];
 
     loadImage(imageRef, color, randomizedCharacterImage);
     if (imageRef.imageRef?.complete) {
-        if(color === ""){
+        if (color === "") {
             return imageRef.imageRef;
-        }else if(imageRef.properties && imageRef.properties.canvas){
+        } else if (imageRef.properties && imageRef.properties.canvas) {
             return imageRef.properties.canvas;
         }
-    }    
+    }
     return undefined;
 }
 
 
 export function loadImage(gameImage: GameImage, color: string = "", randomizedCharacterImage: RandomizedCharacterImage | undefined = undefined) {
     if (gameImage.imageRef === undefined) {
-        let image = new Image();
+        const image = new Image();
         image.src = gameImage.imagePath!;
         gameImage.imageRef = image;
     }
@@ -72,36 +72,36 @@ export function loadImage(gameImage: GameImage, color: string = "", randomizedCh
 }
 
 export function replaceColorInImageArea(imageCtx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, newColorRGB: RgbColor, toChangeColor: RgbColor) {
-    let imageData = imageCtx.getImageData(x, y, width, height);
+    const imageData = imageCtx.getImageData(x, y, width, height);
     replaceColor(imageData, newColorRGB, toChangeColor);
     imageCtx.putImageData(imageData, x, y);
 }
 
 function createColorVariants(gameImage: GameImage, color: string) {
     if (gameImage.properties?.canvas === undefined && gameImage.imageRef?.complete) {
-        let canvas = document.createElement('canvas');
+        const canvas = document.createElement('canvas');
         canvas.width = gameImage.imageRef!.width;
         canvas.height = (gameImage.imageRef!.height + 1) * Object.keys(COLOR_CONVERSION).length;
-        let imageCtx: CanvasRenderingContext2D = canvas.getContext("2d")!;
+        const imageCtx: CanvasRenderingContext2D = canvas.getContext("2d")!;
         imageCtx.drawImage(gameImage.imageRef!, 0, 0);
         gameImage.properties!.canvas = canvas;
         gameImage.properties!.colorToSprite = [gameImage.properties!.baseColor!];
     }
     if (gameImage.properties?.canvas && gameImage.properties.colorToSprite?.indexOf(color) === -1) {
         if (color !== gameImage.properties.baseColor) {
-            let paintY = (gameImage.imageRef!.height + 1) * gameImage.properties.colorToSprite.length;
+            const paintY = (gameImage.imageRef!.height + 1) * gameImage.properties.colorToSprite.length;
             gameImage.properties.colorToSprite.push(color);
-            let imageCtx: CanvasRenderingContext2D = gameImage.properties.canvas.getContext("2d", { willReadFrequently: true })!;
+            const imageCtx: CanvasRenderingContext2D = gameImage.properties.canvas.getContext("2d", { willReadFrequently: true })!;
             imageCtx.drawImage(gameImage.imageRef!, 0, paintY);
-            let newColorRGB = COLOR_CONVERSION[color];
-            let toChangeColor = COLOR_CONVERSION[gameImage.properties.baseColor!];
+            const newColorRGB = COLOR_CONVERSION[color];
+            const toChangeColor = COLOR_CONVERSION[gameImage.properties.baseColor!];
             replaceColorInImageArea(imageCtx, 0, paintY, gameImage.properties.canvas.width, gameImage.imageRef!.height, newColorRGB, toChangeColor);
         }
     }
 }
 
 function replaceColor(imageData: ImageData, newColorRGB: RgbColor, toChangeColor: RgbColor) {
-    let data = imageData.data;
+    const data = imageData.data;
     for (let pixelStart = 0; pixelStart < data.length; pixelStart += 4) {
         if (data[pixelStart] === toChangeColor.r
             && data[pixelStart + 1] === toChangeColor.g

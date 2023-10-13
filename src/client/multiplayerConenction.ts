@@ -10,8 +10,8 @@ export function websocketConnect(game: Game, clientName: string = "Unknown", lob
     let url = `${protocol}://${window.location.host}/ws`;
     url += "?clientName=" + clientName;
     url += "&myGameTime=" + game.state.time;
-    if(lobbyCode.length > 0) url += "&lobbyCode=" + lobbyCode;
-    let lastIdentifier = getMyClientIdentifier(game);
+    if (lobbyCode.length > 0) url += "&lobbyCode=" + lobbyCode;
+    const lastIdentifier = getMyClientIdentifier(game);
     if (lastIdentifier) {
         console.log("multiplayer Last Identifier", lastIdentifier);
         url += "&myId=" + lastIdentifier;
@@ -35,9 +35,9 @@ export function websocketConnect(game: Game, clientName: string = "Unknown", lob
 
     socket.onmessage = async function (message: any) {
         let messageObj: any;
-        try{ 
+        try {
             messageObj = JSON.parse(message.data);
-        }catch(e){
+        } catch (e) {
             const jsonString = await decompressString(message.data);
             messageObj = JSON.parse(jsonString);
         }
@@ -47,32 +47,32 @@ export function websocketConnect(game: Game, clientName: string = "Unknown", lob
 
     socket.onclose = function () {
         console.log("onclose");
-        let textPosition1 = getCameraPosition(game);
-        if(game.multiplayer.intentionalDisconnect){
+        const textPosition1 = getCameraPosition(game);
+        if (game.multiplayer.intentionalDisconnect) {
             game.UI.displayTextData.push(createPaintTextData(textPosition1, `Multiplayer Disconnected`, "black", "24", game.state.time, 5000));
-    
+
             game.multiplayer.awaitingGameState.waiting = false;
             game.multiplayer.websocket = null;
-    
-            let myClientId = game.multiplayer.myClientId;
+
+            const myClientId = game.multiplayer.myClientId;
             for (let i = game.state.clientInfos.length - 1; i >= 0; i--) {
                 if (game.state.clientInfos[i].id !== myClientId) {
-                    game.state.clientInfos.splice(i,1);
+                    game.state.clientInfos.splice(i, 1);
                 }
             }
             game.multiplayer.intentionalDisconnect = false;
-        }else{
+        } else {
             //reconenct
             setTimeout(() => {
                 game.UI.displayTextData.push(createPaintTextData(textPosition1, `Disconnected, reconnecting...`, "black", "24", game.state.time, 5000));
-                websocketConnect(game, clientName, lobbyCode);    
+                websocketConnect(game, clientName, lobbyCode);
             }, 500);
         }
     };
 
     socket.onerror = function (error) {
         game.multiplayer.awaitingGameState.waiting = false;
-        (document.getElementById('multiplayerConnect') as HTMLButtonElement).disabled = false;  
+        (document.getElementById('multiplayerConnect') as HTMLButtonElement).disabled = false;
         console.log("weboscket error", error);
     };
 }
@@ -84,10 +84,10 @@ export function sendMultiplayer(data: any, game: Game) {
     game.multiplayer.websocket!.send(JSON.stringify(data));
 }
 
-function getMyClientIdentifier(game: Game): string | null{
-    if(game.multiplayer.multiplayerIdentifier !== undefined){
+function getMyClientIdentifier(game: Game): string | null {
+    if (game.multiplayer.multiplayerIdentifier !== undefined) {
         return game.multiplayer.multiplayerIdentifier;
-    }else{
+    } else {
         return localStorage.getItem('multiplayerIdentifier')
     }
 }

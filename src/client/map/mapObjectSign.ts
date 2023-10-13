@@ -35,9 +35,9 @@ function paintInteractSign(ctx: CanvasRenderingContext2D, mapObject: MapTileObje
     const endBossSign = mapObject as MapTileObjectNextEndbossSign;
     const map = game.state.map;
     const cameraPosition = getCameraPosition(game);
-    let topMiddlePos = mapKeyAndTileXYToPosition(key, mapObject.x, mapObject.y, map);
+    const topMiddlePos = mapKeyAndTileXYToPosition(key, mapObject.x, mapObject.y, map);
     const fontSize = 20;
-    let texts = [
+    const texts = [
         `King of the ${endBossSign.endBossDirection}`,
         `Distance = ${map.endBossArea!.numberChunksUntil * map.chunkLength * map.tileSize}`
     ]

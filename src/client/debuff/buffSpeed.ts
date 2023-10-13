@@ -7,7 +7,7 @@ export type BuffSpeed = Debuff & {
     speedFactor: number,
 }
 
-export function addBuffSpeed(){
+export function addBuffSpeed() {
     DEBUFFS_FUNCTIONS[BUFF_NAME_SPEED] = {
         applyDebuffEffect: applyBuffEffectSpeed,
         removeDebuffEffect: removeBuffEffectSpeed,
@@ -27,24 +27,24 @@ export function createBuffSpeed(
     };
 }
 
-function applyBuffEffectSpeed(debuff: Debuff, targetCharacter: Character, game: Game){
-    let buffSpeed = debuff as BuffSpeed;
+function applyBuffEffectSpeed(debuff: Debuff, targetCharacter: Character, game: Game) {
+    const buffSpeed = debuff as BuffSpeed;
     targetCharacter.moveSpeed *= buffSpeed.speedFactor;
 }
 
-function removeBuffEffectSpeed(debuff: Debuff, targetCharacter: Character, game: Game){
-    let buffSpeed = debuff as BuffSpeed;
+function removeBuffEffectSpeed(debuff: Debuff, targetCharacter: Character, game: Game) {
+    const buffSpeed = debuff as BuffSpeed;
     targetCharacter.moveSpeed /= buffSpeed.speedFactor;
 }
 
-function refreshBuffEffectSpeed(newDebuff: Debuff, currentDebuff: Debuff,targetCharacter: Character, game: Game){
-    let newBuffSpeed = newDebuff as BuffSpeed;
-    let currentBuffSpeed = currentDebuff as BuffSpeed;
-    if(newBuffSpeed.speedFactor > currentBuffSpeed.speedFactor){
+function refreshBuffEffectSpeed(newDebuff: Debuff, currentDebuff: Debuff, targetCharacter: Character, game: Game) {
+    const newBuffSpeed = newDebuff as BuffSpeed;
+    const currentBuffSpeed = currentDebuff as BuffSpeed;
+    if (newBuffSpeed.speedFactor > currentBuffSpeed.speedFactor) {
         removeBuffEffectSpeed(currentBuffSpeed, targetCharacter, game);
         applyBuffEffectSpeed(newBuffSpeed, targetCharacter, game);
         currentBuffSpeed.speedFactor = newBuffSpeed.speedFactor;
-    }else{
+    } else {
         currentDebuff.removeTime = newBuffSpeed.removeTime;
     }
 }

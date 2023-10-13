@@ -1,10 +1,9 @@
 import { Character, createPlayerCharacter } from "./character/characterModel.js";
-import { LevelingCharacter } from "./character/playerCharacters/levelingCharacterModel.js";
 import { calculateDistance } from "./game.js";
 import { Game, IdCounter, KeyCodeToAction, Position } from "./gameModel.js";
 import { findNearNonBlockingPosition } from "./map/map.js";
 import { ActionsPressed, createActionsPressed } from "./playerInput.js";
-import { nextRandom, RandomSeed } from "./randomNumberGenerator.js";
+import { RandomSeed } from "./randomNumberGenerator.js";
 
 export type Player = {
     character: Character,
@@ -21,11 +20,11 @@ export function createPlayer(clientId: number, character: Character): Player {
 }
 
 export function findNearesPastPlayerCharacter(character: Character, game: Game, maxDistance: number = 60): Character | undefined {
-    let pastCharacters = game.state.pastPlayerCharacters.characters;
+    const pastCharacters = game.state.pastPlayerCharacters.characters;
     let minDistance = maxDistance;
     let currentClosest: Character | undefined = undefined;
     for (let pastCharacter of pastCharacters) {
-        if(!pastCharacter) continue;
+        if (!pastCharacter) continue;
         const distance = calculateDistance(pastCharacter, character);
         if (distance <= minDistance) {
             minDistance = distance;
@@ -36,7 +35,7 @@ export function findNearesPastPlayerCharacter(character: Character, game: Game, 
 }
 
 export function createDefaultKeyBindings1() {
-    let keyBindings: KeyCodeToAction = new Map();
+    const keyBindings: KeyCodeToAction = new Map();
     keyBindings.set("KeyA", { action: "left", uiDisplayInputValue: "A", isInputAlreadyDown: false });
     keyBindings.set("KeyS", { action: "down", uiDisplayInputValue: "S", isInputAlreadyDown: false });
     keyBindings.set("KeyD", { action: "right", uiDisplayInputValue: "D", isInputAlreadyDown: false });
@@ -56,12 +55,12 @@ export function createDefaultKeyBindings1() {
 }
 
 function addPlayer(idCounter: IdCounter, clientId: number, players: Player[], pos: Position, seed: RandomSeed, game: Game) {
-    let character = createPlayerCharacter(idCounter, pos, seed, game);
+    const character = createPlayerCharacter(idCounter, pos, seed, game);
     players.push(createPlayer(clientId, character));
 }
 
 export function gameInitPlayers(game: Game) {
-    let numberPlayers = Math.max(game.state.clientInfos.length, 1);
+    const numberPlayers = Math.max(game.state.clientInfos.length, 1);
     for (let i = 0; i < numberPlayers; i++) {
         let playerSpawn: Position = { x: 100, y: 100 + i * 50 };
         playerSpawn = findNearNonBlockingPosition(playerSpawn, game.state.map, game.state.idCounter);
@@ -95,13 +94,13 @@ export function findPlayerByCharacterId(players: Player[], id: number): Player |
     return null;
 }
 
-export function getPlayerFurthestAwayFromSpawn(players: Player[]): Player | undefined{
+export function getPlayerFurthestAwayFromSpawn(players: Player[]): Player | undefined {
     let highestDistance = 0;
     let furthestPlayer: Player | undefined;
     let distance = 0;
-    for(let player of players){
-        distance = calculateDistance(player.character, {x:0, y:0});
-        if(distance > highestDistance){
+    for (let player of players) {
+        distance = calculateDistance(player.character, { x: 0, y: 0 });
+        if (distance > highestDistance) {
             highestDistance = distance;
             furthestPlayer = player;
         }

@@ -1,6 +1,6 @@
 import { AbilityObject } from "./ability/ability.js";
 import { Character } from "./character/characterModel.js";
-import { createDefaultNextEndBoss, EndBossEnemyCharacter } from "./character/enemy/endBossEnemy.js";
+import { createDefaultNextEndBoss } from "./character/enemy/endBossEnemy.js";
 import { PathingCache } from "./character/pathing.js";
 import { CommandRestart } from "./commands.js";
 import { createHighscoreBoards, Highscores } from "./highscores.js";
@@ -118,7 +118,7 @@ export type GameState = {
 }
 
 export type PastPlayerCharacters = {
-    characters: (Character | undefined) []
+    characters: (Character | undefined)[]
     maxNumber: number,
 }
 
@@ -208,7 +208,7 @@ export const LOCALSTORAGE_NEXTENDBOSSES = "nextEndBosses";
 export const ANIMATION_END_BOSS_CROWN_OVERTAKE = "End Boss Crown Overtake";
 
 export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: CanvasRenderingContext2D | undefined): Game {
-    let game: Game = {
+    const game: Game = {
         canvasElement: c,
         ctx: ctx,
         state: {

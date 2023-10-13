@@ -14,7 +14,7 @@ export function compressString(text: string, level: level = 5, mem: mem = 4): an
 
 export async function decompressString(compressed: Blob): Promise<string> {
     const arrayBuffer = await blobToArrayBuffer(compressed);
-    if(arrayBuffer === null || typeof arrayBuffer ===  "string") throw new Error("wrong type");
+    if (arrayBuffer === null || typeof arrayBuffer === "string") throw new Error("wrong type");
     const decompressed = fflate.decompressSync(new Uint8Array(arrayBuffer));
     return fflate.strFromU8(decompressed);
 }

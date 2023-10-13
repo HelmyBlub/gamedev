@@ -14,7 +14,7 @@ type Lobby = {
     connections: Connection[],
     lostConnections: LostConnection[],
     startTime: bigint,
-    nextGameStateTo: Connection[], 
+    nextGameStateTo: Connection[],
 }
 
 const express = require('express');
@@ -29,34 +29,34 @@ let clientIdCounter = 0;
 app.use(express.static('public'));
 
 app.ws('/ws', function (ws: any, req: any) {
-    let lobbyCode: string = req.query.lobbyCode;
-    let currentLobby: Lobby = getLobby(lobbyCode);
+    const lobbyCode: string = req.query.lobbyCode;
+    const currentLobby: Lobby = getLobby(lobbyCode);
 
     let clientName = req.query.clientName;
     if (clientName.length > 20) clientName = clientName.substring(0, 20);
 
-    let connection: Connection = createConnectionObject(req.query.myId, currentLobby, ws);
+    const connection: Connection = createConnectionObject(req.query.myId, currentLobby, ws);
     console.log(clientIdCounter + "#Con" + currentLobby.connections.length + " ClientName:" + clientName);
 
-    ws.send(JSON.stringify({ 
+    ws.send(JSON.stringify({
         command: "connectInfo",
-        clientId: connection.clientId, 
-        clientName: clientName, 
-        updateInterval: updateInterval, 
-        randomIdentifier: connection.randomIdentifier, 
-        numberConnections: currentLobby.connections.length 
+        clientId: connection.clientId,
+        clientName: clientName,
+        updateInterval: updateInterval,
+        randomIdentifier: connection.randomIdentifier,
+        numberConnections: currentLobby.connections.length
     }));
-    if(currentLobby.connections.length > 0){
-        for(let i = 0; i < currentLobby.connections.length; i++){
-            if(i === 0){
+    if (currentLobby.connections.length > 0) {
+        for (let i = 0; i < currentLobby.connections.length; i++) {
+            if (i === 0) {
                 currentLobby.connections[i].con.send(JSON.stringify({ command: "sendGameState", clientId: connection.clientId, clientName: clientName }));
                 currentLobby.nextGameStateTo.push(connection);
-            }else{
+            } else {
                 currentLobby.connections[i].con.send(JSON.stringify({ command: "playerJoined", clientId: connection.clientId, clientName: clientName }));
             }
         }
-    }else{
-        let clientGameTime = req.query.myGameTime;
+    } else {
+        const clientGameTime = req.query.myGameTime;
         setCurrentMsBasedOnClientGameTime(clientGameTime, currentLobby);
     }
 
@@ -71,22 +71,22 @@ app.listen(port, () => {
     console.log(`GameDev started ${port}`);
 });
 
-function createConnectionObject(myIdentifier: string, lobby: Lobby, ws: any): Connection{
+function createConnectionObject(myIdentifier: string, lobby: Lobby, ws: any): Connection {
     let connection: Connection;
-    let lostCon = findLostConnection(myIdentifier, lobby);    
+    const lostCon = findLostConnection(myIdentifier, lobby);
     if (lostCon) {
         connection = { clientId: lostCon.clientId, con: ws, randomIdentifier: lostCon.randomIdentifier };
         console.log("client reconnected " + lostCon.clientId);
-    }else{
-        let randomIdentifier = clientIdCounter + "_" + Math.random().toString();
+    } else {
+        const randomIdentifier = clientIdCounter + "_" + Math.random().toString();
         connection = { clientId: clientIdCounter, con: ws, randomIdentifier: randomIdentifier };
     }
     return connection;
 }
 
-function findLostConnection(myIdentifier: string, currentLobby: Lobby): LostConnection | null{
+function findLostConnection(myIdentifier: string, currentLobby: Lobby): LostConnection | null {
     if (myIdentifier) {
-        let lostConIndex = currentLobby.lostConnections.findIndex((con) => con.randomIdentifier === myIdentifier);
+        const lostConIndex = currentLobby.lostConnections.findIndex((con) => con.randomIdentifier === myIdentifier);
         if (lostConIndex !== -1) {
             let lostCon = currentLobby.lostConnections[lostConIndex];
             currentLobby.lostConnections.splice(lostConIndex, 1);
@@ -96,11 +96,11 @@ function findLostConnection(myIdentifier: string, currentLobby: Lobby): LostConn
     return null;
 }
 
-function getLobby(lobbyCode: string): Lobby{
+function getLobby(lobbyCode: string): Lobby {
     let currentLobby;
-    if(lobbys.has(lobbyCode)){
+    if (lobbys.has(lobbyCode)) {
         currentLobby = lobbys.get(lobbyCode)!;
-    }else{
+    } else {
         currentLobby = {
             connections: [],
             lostConnections: [],
@@ -115,7 +115,7 @@ function getLobby(lobbyCode: string): Lobby{
 
 function onConnectionClose(connection: { clientId: number, con: any, randomIdentifier: string }, lobbyCode: string) {
     console.log(connection.clientId + " disconnected");
-    let currentLobby: Lobby = lobbys.get(lobbyCode)!;
+    const currentLobby: Lobby = lobbys.get(lobbyCode)!;
     currentLobby.lostConnections.push({ clientId: connection.clientId, randomIdentifier: connection.randomIdentifier });
     let clientId = -1;
 
@@ -129,14 +129,14 @@ function onConnectionClose(connection: { clientId: number, con: any, randomIdent
     for (let i = 0; i < currentLobby.connections.length; i++) {
         currentLobby.connections[i].con.send(JSON.stringify({ command: "playerLeft", clientId: clientId }));
     }
-    if(currentLobby.connections.length === 0){
+    if (currentLobby.connections.length === 0) {
         lobbys.delete(lobbyCode);
         console.log("empty lobby removed, lobbyCounter:" + lobbys.size);
     }
 }
 
 function onMessage(message: any, lobbyCode: string) {
-    let currentLobby: Lobby = lobbys.get(lobbyCode)!;
+    const currentLobby: Lobby = lobbys.get(lobbyCode)!;
     try {
         const data = JSON.parse(message);
         if (data.command === "playerInput" || data.command === "restart") {
@@ -146,12 +146,12 @@ function onMessage(message: any, lobbyCode: string) {
             }
             message = JSON.stringify(data);
         }
-        if(data.command === "gameState" && data.toId !== undefined){
+        if (data.command === "gameState" && data.toId !== undefined) {
             currentLobby.connections.find((e) => e.clientId === data.toId)?.con.send(message);
-        }else{
+        } else {
             currentLobby.connections.forEach(function (destination: any) {
                 destination.con.send(message);
-            });            
+            });
         }
         if (data.command === "restart") {
             currentLobby.startTime = process.hrtime.bigint();
@@ -160,7 +160,7 @@ function onMessage(message: any, lobbyCode: string) {
     catch (e) {
         //assume compressed
         let stateForCon = currentLobby.nextGameStateTo.shift();
-        if(stateForCon){
+        if (stateForCon) {
             stateForCon.con.send(message);
         }
     }
@@ -170,7 +170,7 @@ function getCurrentMS(lobby: Lobby) {
     return Number(process.hrtime.bigint() - lobby.startTime) / 1000000;
 }
 
-function setCurrentMsBasedOnClientGameTime(clientGameTime: number, lobby: Lobby){
+function setCurrentMsBasedOnClientGameTime(clientGameTime: number, lobby: Lobby) {
     lobby.startTime = process.hrtime.bigint() - BigInt(clientGameTime) * BigInt(1000000);
 }
 

@@ -26,7 +26,7 @@ const HIGHSCORE_ENDBOSS_TIME = "EndBossTime";
 const SCORE_TYPE_MILLISECONDS = "Score Type Milliseconds"
 
 export function createHighscoreBoards(): Highscores {
-    let highscores: Highscores = {
+    const highscores: Highscores = {
         scoreBoards: {},
         maxLength: 10,
         lastHighscorePosition: 0,
@@ -61,7 +61,7 @@ export function calculateHighscoreOnGameEnd(game: Game, isEndbossKill: boolean):
             if (playerClass.length > 1) playerClass += ", ";
             playerClass += player.character.characterClass;
         }
-        let distance = Math.round(calculateDistance(player.character, getMapMidlePosition(state.map)));
+        const distance = Math.round(calculateDistance(player.character, getMapMidlePosition(state.map)));
         if (distance > newScore) newScore = distance;
     }
 
@@ -92,8 +92,8 @@ export function calculateHighscoreOnGameEnd(game: Game, isEndbossKill: boolean):
 export function paintHighscoreEndScreenStuff(ctx: CanvasRenderingContext2D, highscores: Highscores) {
     if (highscores.lastBoard === "") return;
     const highscoreBoard = highscores.scoreBoards[highscores.lastBoard];
-    let paintMiddle = ctx.canvas.width / 2;
-    let paintY = ctx.canvas.height / 2 - highscoreBoard.scores.length * 10;
+    const paintMiddle = ctx.canvas.width / 2;
+    const paintY = ctx.canvas.height / 2 - highscoreBoard.scores.length * 10;
 
     const fontSize = 18;
     ctx.font = fontSize + "px Arial";
@@ -133,8 +133,8 @@ export function paintHighscores(ctx: CanvasRenderingContext2D, paintX: number, p
     ctx.font = fontSize + "px Arial";
     ctx.fillStyle = "black";
     const headingText = "Highscores:";
-    let width = getHighscoreWidth(ctx, highscoreBoard, fontSize);
-    let height = textSpace * (highscoreBoard.scores.length + 1) + 4;
+    const width = getHighscoreWidth(ctx, highscoreBoard, fontSize);
+    const height = textSpace * (highscoreBoard.scores.length + 1) + 4;
 
     ctx.fillStyle = "white";
     ctx.fillRect(paintX, paintY, width, height);
@@ -156,7 +156,7 @@ function getHighscoreWidth(ctx: CanvasRenderingContext2D, highscoreBoard: Highsc
     ctx.font = fontSize + "px Arial";
     let resultWidth = 0;
     for (let i = 0; i < highscoreBoard.scores.length; i++) {
-        let width = ctx.measureText(getHighscoreTextLine(i, highscoreBoard)).width;
+        const width = ctx.measureText(getHighscoreTextLine(i, highscoreBoard)).width;
         if (width > resultWidth) resultWidth = width;
     }
     return resultWidth;

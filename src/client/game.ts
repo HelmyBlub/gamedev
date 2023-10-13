@@ -1,5 +1,5 @@
 import { changeCharacterId, countAlivePlayerCharacters, findCharacterById, findMyCharacter, getPlayerCharacters, resetCharacter, tickCharacters, tickMapCharacters } from "./character/character.js";
-import { getPointPaintPosition, paintAll } from "./gamePaint.js";
+import { paintAll } from "./gamePaint.js";
 import { findPlayerByCharacterId, gameInitPlayers } from "./player.js";
 import { MOUSE_ACTION, UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.js";
 import { Position, GameState, Game, IdCounter, Debugging, PaintTextData, ClientInfo, LOCALSTORAGE_PASTCHARACTERS, LOCALSTORAGE_NEXTENDBOSSES, NextEndbosses, CelestialDirection } from "./gameModel.js";
@@ -24,8 +24,8 @@ import { COMMAND_RESTART } from "./globalVars.js";
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
 
-    let yDiff = (startPos.y - targetPos.y);
-    let xDiff = (startPos.x - targetPos.x);
+    const yDiff = (startPos.y - targetPos.y);
+    const xDiff = (startPos.x - targetPos.x);
 
     if (xDiff >= 0) {
         direction = - Math.PI + Math.atan(yDiff / xDiff);
@@ -51,7 +51,7 @@ export function gameRestart(game: Game) {
         const record = game.testing.record;
         if (record.restartPlayerInput) record.data.replayPlayerInputs.push(record.restartPlayerInput);
         const restart: CommandRestart = record.data.replayPlayerInputs[0] as any;
-        if(restart.command && restart.command === COMMAND_RESTART){
+        if (restart.command && restart.command === COMMAND_RESTART) {
             restart.testRandomStartSeed = game.state.randomSeed.seed;
         }
         record.data.nextEndBosses = deepCopy(game.state.bossStuff.nextEndbosses);
@@ -79,7 +79,7 @@ export function gameInit(game: Game) {
     game.state.timeFirstKill = undefined;
     game.state.playerInputs = [];
     if (game.state.bossStuff.closedOfEndBossEntrance) {
-        let entrance = game.state.bossStuff.closedOfEndBossEntrance;
+        const entrance = game.state.bossStuff.closedOfEndBossEntrance;
         changeTileIdOfMapChunk(entrance.chunkX, entrance.chunkY, entrance.tileX, entrance.tileY, entrance.tileId, game);
     }
     game.state.bossStuff.bosses = [];
@@ -104,7 +104,7 @@ export function gameInit(game: Game) {
 export function getCameraPosition(game: Game): Position {
     let cameraPosition: Position = { x: 0, y: 0 };
     if (game.camera.characterId !== undefined) {
-        let character = findCharacterById(getPlayerCharacters(game.state.players), game.camera.characterId);
+        const character = findCharacterById(getPlayerCharacters(game.state.players), game.camera.characterId);
         if (character !== null) cameraPosition = { x: character.x, y: character.y };
     }
 
@@ -112,8 +112,8 @@ export function getCameraPosition(game: Game): Position {
 }
 
 export function calculateDistance(objectA: { x: number, y: number }, objectB: { x: number, y: number }) {
-    let xDiff = objectA.x - objectB.x;
-    let yDiff = objectA.y - objectB.y;
+    const xDiff = objectA.x - objectB.x;
+    const yDiff = objectA.y - objectB.y;
     return Math.sqrt(xDiff * xDiff + yDiff * yDiff);
 }
 
@@ -127,9 +127,9 @@ export function calcNewPositionMovedInDirection(position: Position, direction: n
 export function takeTimeMeasure(debug: Debugging | undefined, endName: string, startName: string) {
     if (debug === undefined || debug.takeTimeMeasures !== true) return;
     if (debug.timeMeasuresData === undefined) debug.timeMeasuresData = [];
-    let timeNow = performance.now();
+    const timeNow = performance.now();
     if (endName !== "") {
-        let data = debug.timeMeasuresData?.find((e) => e.name === endName);
+        const data = debug.timeMeasuresData?.find((e) => e.name === endName);
         if (data === undefined) return;
         data.timeMeasures.push(timeNow - data.tempTime);
         if (data.timeMeasures.length > 30) data.timeMeasures.shift();
@@ -163,8 +163,8 @@ export function runner(game: Game) {
     } else {
         const timeNow = performance.now();
         let counter = 0;
-        let maxCounter = 50;
-        let realTimePassed = timeNow - game.multiplayer.worstCaseGameStartTime;
+        const maxCounter = 50;
+        const realTimePassed = timeNow - game.multiplayer.worstCaseGameStartTime;
         while (!game.state.ended
             && (
                 (game.multiplayer.maxServerGameTime >= game.state.time + game.tickInterval
@@ -189,7 +189,7 @@ export function runner(game: Game) {
     }
 
     if (!game.closeGame) {
-        let timeoutSleep = determineRunnerTimeout(game);
+        const timeoutSleep = determineRunnerTimeout(game);
         if (timeoutSleep > 17) {
             console.log("timeoutSleep to big?");
             debugger;
@@ -209,7 +209,7 @@ export function runner(game: Game) {
 }
 
 export function setRelativeMousePosition(event: MouseEvent, game: Game) {
-    let target = event.currentTarget as HTMLElement;
+    const target = event.currentTarget as HTMLElement;
     game.mouseRelativeCanvasPosition = { x: event.x - target.offsetLeft, y: event.y - target.offsetTop };
 }
 
@@ -244,18 +244,18 @@ export function getTimeSinceFirstKill(gameState: GameState): number {
 }
 
 export function calculateDistancePointToLine(point: Position, linestart: Position, lineEnd: Position) {
-    var A = point.x - linestart.x;
-    var B = point.y - linestart.y;
-    var C = lineEnd.x - linestart.x;
-    var D = lineEnd.y - linestart.y;
+    const A = point.x - linestart.x;
+    const B = point.y - linestart.y;
+    const C = lineEnd.x - linestart.x;
+    const D = lineEnd.y - linestart.y;
 
-    var dot = A * C + B * D;
-    var len_sq = C * C + D * D;
-    var param = -1;
+    const dot = A * C + B * D;
+    const len_sq = C * C + D * D;
+    let param = -1;
     if (len_sq != 0) //in case of 0 length line
         param = dot / len_sq;
 
-    var xx, yy;
+    let xx, yy;
 
     if (param < 0) {
         xx = linestart.x;
@@ -270,8 +270,8 @@ export function calculateDistancePointToLine(point: Position, linestart: Positio
         yy = linestart.y + param * D;
     }
 
-    var dx = point.x - xx;
-    var dy = point.y - yy;
+    const dx = point.x - xx;
+    const dy = point.y - yy;
     return Math.sqrt(dx * dx + dy * dy);
 }
 
@@ -280,66 +280,9 @@ export function deepCopy(object: any): any {
     return JSON.parse(json);
 }
 
-function resetPastCharacters(game: Game) {
-    for (let character of game.state.pastPlayerCharacters.characters) {
-        if (character) resetCharacter(character);
-    }
-}
-
-function tickPastCharacters(game: Game) {
-    const pastCharacters = game.state.pastPlayerCharacters.characters;
-    tickCharacters(pastCharacters, game, getPathingCache(game));
-    for (let character of pastCharacters) {
-        if (character && character.pets) {
-            for (let ability of character.abilities) {
-                if (ability.name === ABILITY_NAME_FEED_PET || ability.name === ABILITY_NAME_LOVE_PET) {
-                    let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-                    if (abilityFunctions.tickBossAI) abilityFunctions.tickBossAI(character, ability, game);
-                }
-            }
-        }
-    }
-}
-
-function determineRunnerTimeout(game: Game): number {
-    if (game.testing.replay?.zeroTimeout) {
-        return 0;
-    } else {
-        if (game.multiplayer.websocket === null) {
-            if (game.shouldTickTime === undefined) {
-                game.shouldTickTime = performance.now();
-                return game.tickInterval;
-            } else {
-                let timeoutSleep;
-                game.shouldTickTime += game.tickInterval;
-                let timeEnd = performance.now();
-                timeoutSleep = game.shouldTickTime - timeEnd;
-                if (timeoutSleep < 0) {
-                    game.shouldTickTime = timeEnd;
-                    timeoutSleep = 0;
-                    if (game.state.time > 1000) {
-                        console.log("game slow down, can not keep up");
-                    }
-                }
-                return timeoutSleep;
-            }
-        } else {
-            return 5;
-        }
-    }
-}
-
-function gameEndedCheck(game: Game) {
-    let alivePlayersCount = countAlivePlayerCharacters(game.state.players)
-    if (alivePlayersCount === 0) {
-        return true;
-    }
-    return false;
-}
-
 export function endGame(game: Game, isEndbossKill: boolean = false) {
     game.state.ended = true;
-    let newScore = calculateHighscoreOnGameEnd(game, isEndbossKill);
+    const newScore = calculateHighscoreOnGameEnd(game, isEndbossKill);
     if (isEndbossKill) {
         setPlayerAsEndBoss(game);
     } else {
@@ -370,11 +313,11 @@ export function loadFromLocalStorage(game: Game) {
     }
     const nextEndbossesString = localStorage.getItem(LOCALSTORAGE_NEXTENDBOSSES);
     if (nextEndbossesString) {
-        let nextEndbosses: NextEndbosses = JSON.parse(nextEndbossesString);
+        const nextEndbosses: NextEndbosses = JSON.parse(nextEndbossesString);
         game.state.bossStuff.nextEndbosses = nextEndbosses;
         const keys = Object.keys(nextEndbosses) as CelestialDirection[];
         for (let key of keys) {
-            let endboss = nextEndbosses[key];
+            const endboss = nextEndbosses[key];
             if (endboss) changeCharacterAndAbilityIds(endboss, game.state.idCounter);
         }
     }
@@ -392,9 +335,9 @@ export function saveCharacterAsPastCharacter(character: Character, game: Game) {
     const newPastCharacter: Character = deepCopy(character);
     resetCharacter(newPastCharacter);
     changeCharacterId(newPastCharacter, getNextId(game.state.idCounter));
-    if(newPastCharacter.pets){
-        for(let pet of newPastCharacter.pets){
-            for(let ability of pet.abilities){
+    if (newPastCharacter.pets) {
+        for (let pet of newPastCharacter.pets) {
+            for (let ability of pet.abilities) {
                 ability.disabled = true;
             }
         }
@@ -442,6 +385,63 @@ export function saveCharacterAsPastCharacter(character: Character, game: Game) {
     }
 }
 
+function resetPastCharacters(game: Game) {
+    for (let character of game.state.pastPlayerCharacters.characters) {
+        if (character) resetCharacter(character);
+    }
+}
+
+function tickPastCharacters(game: Game) {
+    const pastCharacters = game.state.pastPlayerCharacters.characters;
+    tickCharacters(pastCharacters, game, getPathingCache(game));
+    for (let character of pastCharacters) {
+        if (character && character.pets) {
+            for (let ability of character.abilities) {
+                if (ability.name === ABILITY_NAME_FEED_PET || ability.name === ABILITY_NAME_LOVE_PET) {
+                    const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+                    if (abilityFunctions.tickBossAI) abilityFunctions.tickBossAI(character, ability, game);
+                }
+            }
+        }
+    }
+}
+
+function determineRunnerTimeout(game: Game): number {
+    if (game.testing.replay?.zeroTimeout) {
+        return 0;
+    } else {
+        if (game.multiplayer.websocket === null) {
+            if (game.shouldTickTime === undefined) {
+                game.shouldTickTime = performance.now();
+                return game.tickInterval;
+            } else {
+                let timeoutSleep;
+                game.shouldTickTime += game.tickInterval;
+                const timeEnd = performance.now();
+                timeoutSleep = game.shouldTickTime - timeEnd;
+                if (timeoutSleep < 0) {
+                    game.shouldTickTime = timeEnd;
+                    timeoutSleep = 0;
+                    if (game.state.time > 1000) {
+                        console.log("game slow down, can not keep up");
+                    }
+                }
+                return timeoutSleep;
+            }
+        } else {
+            return 5;
+        }
+    }
+}
+
+function gameEndedCheck(game: Game) {
+    const alivePlayersCount = countAlivePlayerCharacters(game.state.players)
+    if (alivePlayersCount === 0) {
+        return true;
+    }
+    return false;
+}
+
 function savePlayerCharatersAsPastCharacters(game: Game) {
     const players = game.state.players;
     for (let player of players) {
@@ -450,7 +450,7 @@ function savePlayerCharatersAsPastCharacters(game: Game) {
 }
 
 function endGameReplayStuff(game: Game, newScore: number) {
-    let replay = game.testing.replay;
+    const replay = game.testing.replay;
     if (replay) {
         replayGameEndAssert(game, newScore);
         console.log("time:", performance.now() - replay.startTime);
@@ -465,7 +465,7 @@ function tick(gameTimePassed: number, game: Game) {
     if (!game.state.ended && (!game.state.paused || game.state.tickOnceInPaused)) {
         if (game.state.tickOnceInPaused) game.state.tickOnceInPaused = false;
         doStuff(game);
-        addTestReplayInputs(game);
+        addReplayInputs(game);
         game.state.time += gameTimePassed;
         generateMissingChunks(game.state.map, getPlayerCharacters(game.state.players), game.state.idCounter, game);
         tickPlayerInputs(game.state.playerInputs, game.state.time, game);
@@ -501,8 +501,8 @@ function autoSendMyMousePosition(game: Game) {
     if (game.testing.replay) return;
     if (!game.multiplayer.autosendMousePosition.active) return;
     if (game.multiplayer.autosendMousePosition.nextTime <= game.state.time) {
-        let cameraPosition = getCameraPosition(game);
-        let castPosition = {
+        const cameraPosition = getCameraPosition(game);
+        const castPosition = {
             x: game.mouseRelativeCanvasPosition.x - game.canvasElement!.width / 2 + cameraPosition.x,
             y: game.mouseRelativeCanvasPosition.y - game.canvasElement!.height / 2 + cameraPosition.y
         }
@@ -519,7 +519,7 @@ function autoSendMyMousePosition(game: Game) {
 function checkForAutoSkill(game: Game) {
     if (!game.settings.autoSkillEnabled) return;
 
-    let character: Character | undefined = findMyCharacter(game);
+    const character: Character | undefined = findMyCharacter(game);
     if (character && character.type !== DEFAULT_CHARACTER) {
         if (character.upgradeChoices.length > 0) {
             handleCommand(game, {
@@ -539,7 +539,7 @@ function checkMovementKeyPressedHint(game: Game) {
 
 function checkDeathCircleSpawn(game: Game) {
     if (!game.state.deathCircleCreated) {
-        let spawnAfterTime = getTimeSinceFirstKill(game.state) > 30000;
+        const spawnAfterTime = getTimeSinceFirstKill(game.state) > 30000;
         if (spawnAfterTime) {
             game.state.abilityObjects.push(createObjectDeathCircle(game.state.map));
             game.state.deathCircleCreated = true;
@@ -547,15 +547,15 @@ function checkDeathCircleSpawn(game: Game) {
     }
 }
 
-function addTestReplayInputs(game: Game) {
+function addReplayInputs(game: Game) {
     if (game.testing.replay) {
-        let replay = game.testing.replay;
+        const replay = game.testing.replay;
         if (replay.replayInputCounter === undefined) replay.replayInputCounter = 0;
         while (replay.data!.replayPlayerInputs[replay.replayInputCounter]
             && replay.data!.replayPlayerInputs[replay.replayInputCounter].executeTime < game.state.time + 1000
         ) {
-            let original = replay.data!.replayPlayerInputs[replay.replayInputCounter]
-            let data = { ...original };
+            const original = replay.data!.replayPlayerInputs[replay.replayInputCounter]
+            const data = { ...original };
             if (game.state.players.length === 1
                 || (data.clientId === -1 && game.state.players[0].clientId === game.multiplayer.myClientId)) {
                 data.clientId = game.multiplayer.myClientId;
@@ -568,11 +568,11 @@ function addTestReplayInputs(game: Game) {
 
 function determineActiveChunks(characters: Character[], map: GameMap, game: Game) {
     takeTimeMeasure(game.debug, "", "determineActiveChunks");
-    let keySet: Set<string> = new Set();
+    const keySet: Set<string> = new Set();
     for (let i = 0; i < characters.length; i++) {
         if (characters[i].isDead) continue;
-        let nearMapKeys = determineMapKeysInDistance(characters[i], map, map.activeChunkRange, false);
-        for (const mapKey of nearMapKeys) {
+        const nearMapKeys = determineMapKeysInDistance(characters[i], map, map.activeChunkRange, false);
+        for (let mapKey of nearMapKeys) {
             keySet.add(mapKey);
         }
     }

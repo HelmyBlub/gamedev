@@ -54,7 +54,7 @@ export function executeCommand(game: Game, data: any) {
             break;
         case "sendGameState":
             playerJoined(game, data);
-            let compressedState = compressString(JSON.stringify({ command: "gameState", data: game.state, toId: data.clientId }));
+            const compressedState = compressString(JSON.stringify({ command: "gameState", data: game.state, toId: data.clientId }));
             game.multiplayer.websocket!.send(compressedState);
             break;
         case "gameState":
@@ -69,7 +69,7 @@ export function executeCommand(game: Game, data: any) {
         case "playerLeft":
             for (let i = 0; i < game.state.clientInfos.length; i++) {
                 if (game.state.clientInfos[i].id === data.clientId) {
-                    let textPosition = getCameraPosition(game);
+                    const textPosition = getCameraPosition(game);
                     game.UI.displayTextData.push(createPaintTextData(textPosition, `${game.state.clientInfos[i].name} diconnected`, "black", "24", game.state.time, 5000));
                     console.log("client removed", game.state.clientInfos[i]);
                     game.state.clientInfos.splice(i, 1);
@@ -87,7 +87,7 @@ export function executeCommand(game: Game, data: any) {
 
 function playerJoined(game: Game, data: PlayerJoined) {
     game.state.clientInfos.push({ id: data.clientId, name: data.clientName, lastMousePosition: { x: 0, y: 0 } });
-    let textPosition = getCameraPosition(game);
+    const textPosition = getCameraPosition(game);
     game.UI.displayTextData.push(createPaintTextData(textPosition, `${data.clientName} joined`, "black", "24", game.state.time, 5000));
 }
 
@@ -126,7 +126,7 @@ function gameState(game: Game, data: GameState) {
 
 function handleReceivedInputsWhichCameBeforeGameState(game: Game) {
     for (let i = 0; i < game.multiplayer.awaitingGameState.receivedCommands.length; i++) {
-        let input = game.multiplayer.awaitingGameState.receivedCommands[i];
+        const input = game.multiplayer.awaitingGameState.receivedCommands[i];
         executeCommand(game, input);
     }
     game.multiplayer.awaitingGameState.receivedCommands = [];
@@ -178,13 +178,13 @@ function playerInput(game: Game, data: PlayerInput) {
 }
 
 function timeUpdate(game: Game, data: CommandTimeUpdate) {
-    let multi = game.multiplayer;
-    let timeNow = performance.now();
-    let oldReceivedTime = multi.maxServerGameTimeReceivedTime;
+    const multi = game.multiplayer;
+    const timeNow = performance.now();
+    const oldReceivedTime = multi.maxServerGameTimeReceivedTime;
     multi.timePassedWithoutSeverUpdate = timeNow;
     multi.maxServerGameTime = data.time;
     multi.maxServerGameTimeReceivedTime = timeNow;
-    let validTimeUpdate = oldReceivedTime > 0 && oldReceivedTime < multi.maxServerGameTimeReceivedTime;
+    const validTimeUpdate = oldReceivedTime > 0 && oldReceivedTime < multi.maxServerGameTimeReceivedTime;
     if (validTimeUpdate) {
         let startTime = multi.maxServerGameTimeReceivedTime - multi.maxServerGameTime + multi.updateInterval;
         if (multi.worstCaseGameStartTime < startTime) {

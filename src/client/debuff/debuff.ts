@@ -33,7 +33,7 @@ export function onDomLoadSetDebuffsFunctions() {
 }
 
 export function applyDebuff(debuff: Debuff, character: Character, game: Game) {
-    if(character.isImmune) return;
+    if (character.isImmune) return;
     const currentDebuff = character.debuffs.find((d) => d.name === debuff.name);
     const debuffFunctions = DEBUFFS_FUNCTIONS[debuff.name];
     if (currentDebuff) {
@@ -44,24 +44,24 @@ export function applyDebuff(debuff: Debuff, character: Character, game: Game) {
     }
 }
 
-export function removeCharacterDebuffs(character: Character, game: Game){
-    let debuffs = character.debuffs;
+export function removeCharacterDebuffs(character: Character, game: Game) {
+    const debuffs = character.debuffs;
     for (let i = debuffs.length - 1; i >= 0; i--) {
-        let debuff = debuffs[i];
+        const debuff = debuffs[i];
         DEBUFFS_FUNCTIONS[debuff.name].removeDebuffEffect(debuff, character, game);
         debuffs.splice(i, 1);
     }
 }
 
 export function tickCharacterDebuffs(character: Character, game: Game) {
-    let debuffs = character.debuffs;
+    const debuffs = character.debuffs;
     for (let i = debuffs.length - 1; i >= 0; i--) {
-        let debuff = debuffs[i];
+        const debuff = debuffs[i];
         if (debuff.removeTime && debuff.removeTime <= game.state.time) {
             DEBUFFS_FUNCTIONS[debuff.name].removeDebuffEffect(debuff, character, game);
             debuffs.splice(i, 1);
         } else {
-            let debuffFunctions = DEBUFFS_FUNCTIONS[debuff.name];
+            const debuffFunctions = DEBUFFS_FUNCTIONS[debuff.name];
             if (debuffFunctions.tickDebuffEffect) debuffFunctions.tickDebuffEffect(debuff, character, game);
         }
     }

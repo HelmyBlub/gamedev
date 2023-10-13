@@ -18,9 +18,9 @@ export function addHTMLDebugMenusToSettings(game: Game) {
 }
 
 function addSettingCheckbox(checkboxName: keyof Debugging, game: Game) {
-    let settingsElement = document.getElementById("settings");
+    const settingsElement = document.getElementById("settings");
     if (!settingsElement) return;
-    let debug: any = game.debug;
+    const debug: any = game.debug;
     let checkbox: HTMLInputElement = document.getElementById(checkboxName) as HTMLInputElement;
     if (!checkbox) {
         let canvasHTML = `
@@ -47,9 +47,9 @@ function addCloseBossAreaButton(game: Game) {
     const buttonName = "closeEasyEndBossArea";
     addSettingButton(buttonName);
     const button = document.getElementById(buttonName) as HTMLButtonElement;
-    if(button){
+    if (button) {
         button.addEventListener('click', () => {
-            if(!game.multiplayer.websocket){
+            if (!game.multiplayer.websocket) {
                 const lastSeed = game.state.map.seed;
                 game.state.map = createMap(1000);
                 game.state.map.seed = lastSeed;
@@ -63,7 +63,7 @@ function addClearLocalStorageButton(game: Game) {
     const buttonName = "clear local storage";
     addSettingButton(buttonName);
     const button = document.getElementById(buttonName) as HTMLButtonElement;
-    if(button){
+    if (button) {
         button.addEventListener('click', () => {
             localStorage.clear();
         });
@@ -74,12 +74,12 @@ function addSpawnBossButton(game: Game) {
     const buttonName = "next boss spawn";
     addSettingButton(buttonName);
     const button = document.getElementById(buttonName) as HTMLButtonElement;
-    if(button){
+    if (button) {
         button.addEventListener('click', () => {
-            if(!game.multiplayer.websocket){
+            if (!game.multiplayer.websocket) {
                 game.state.bossStuff.bosses.push(createBossWithLevel(game.state.idCounter, game.state.bossStuff.bossLevelCounter, game));
-                game.state.bossStuff.bossLevelCounter++;        
-            } 
+                game.state.bossStuff.bossLevelCounter++;
+            }
         });
     }
 }
@@ -88,12 +88,12 @@ function addTankyButton(game: Game) {
     const buttonName = "Very Tanky";
     addSettingButton(buttonName);
     const button = document.getElementById(buttonName) as HTMLButtonElement;
-    if(button){
+    if (button) {
         button.addEventListener('click', () => {
-            if(!game.multiplayer.websocket){
+            if (!game.multiplayer.websocket) {
                 game.state.players[0].character.maxHp = 10000000;
                 game.state.players[0].character.hp = game.state.players[0].character.maxHp;
-            } 
+            }
         });
     }
 }
@@ -102,17 +102,17 @@ function addBossSkillPointButton(game: Game) {
     const buttonName = "addBossSkillPoint";
     addSettingButton(buttonName);
     const button = document.getElementById(buttonName) as HTMLButtonElement;
-    if(button){
+    if (button) {
         button.addEventListener('click', () => {
-            if(!game.multiplayer.websocket) playerCharactersAddBossSkillPoints(game);
+            if (!game.multiplayer.websocket) playerCharactersAddBossSkillPoints(game);
         });
     }
 }
 
 function addSettingButton(buttonName: string) {
-    let settingsElement = document.getElementById("settings");
+    const settingsElement = document.getElementById("settings");
     if (!settingsElement) return;
-    let button: HTMLButtonElement = document.getElementById(buttonName) as HTMLButtonElement;
+    const button: HTMLButtonElement = document.getElementById(buttonName) as HTMLButtonElement;
     if (!button) {
         let canvasHTML = `
             <button type="button" id="${buttonName}" name="${buttonName}">${buttonName}</button><br>

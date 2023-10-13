@@ -27,7 +27,7 @@ function testPlayerClasses(game: Game) {
 
     const replay = game.testing.replay;
     replay.testInputFileQueue = [];
-    replay.testInputFileQueue.push("/data/testInputError.json");
+//    replay.testInputFileQueue.push("/data/testInputError.json");
     replay.testInputFileQueue.push("/data/testInputShortBuilder.json");
     replay.testInputFileQueue.push("/data/testInputShortSniper.json");
     replay.testInputFileQueue.push("/data/testInputShortTamer.json");
@@ -62,19 +62,19 @@ export function replayNextInReplayQueue(game: Game): boolean {
     }
     return true;
 }
-// 2772, 239
-export function setPastCharactersAndEndBossesForReplayFromReplayData(game: Game){
+
+export function setPastCharactersAndEndBossesForReplayFromReplayData(game: Game) {
     const replay = game.testing.replay;
-    if(!replay) return;
+    if (!replay) return;
     if (game.state.map.endBossArea) {
         if (replay.data?.nextEndBosses) {
             game.state.bossStuff.nextEndbosses = replay.data?.nextEndBosses;
-            let nextEndbosses: NextEndbosses = game.state.bossStuff.nextEndbosses;
+            const nextEndbosses: NextEndbosses = game.state.bossStuff.nextEndbosses;
             const keys = Object.keys(nextEndbosses) as CelestialDirection[];
             for (let key of keys) {
-                let endboss = nextEndbosses[key];
+                const endboss = nextEndbosses[key];
                 if (endboss) changeCharacterAndAbilityIds(endboss, game.state.idCounter);
-            }    
+            }
         } else {
             setDefaultNextEndbosses(game);
         }
@@ -86,11 +86,11 @@ export function setPastCharactersAndEndBossesForReplayFromReplayData(game: Game)
         }
     } else {
         game.state.pastPlayerCharacters.characters = [];
-    }    
+    }
 }
 
 export function replayGameEndAssert(game: Game, newScore: number) {
-    let replay = game.testing.replay;
+    const replay = game.testing.replay;
     if (replay?.data?.gameEndAsserts) {
         for (let assert of replay.data?.gameEndAsserts) {
             switch (assert.type) {
@@ -161,7 +161,7 @@ async function runGameWithPlayerInputsMultiplayer(game: Game, playerInputs: Play
     await waitForRestart;
 
     for (const input of playerInputs) {
-        let playerIndex = playerIds.findIndex((value) => input.clientId === value);
+        const playerIndex = playerIds.findIndex((value) => input.clientId === value);
         input.clientId = games[playerIndex].multiplayer.myClientId;
         if (input.executeTime > games[playerIndex].state.time + 2000) {
             await getUntilPromise(() => input.executeTime < games[playerIndex].state.time + 2000, 50);
@@ -188,16 +188,16 @@ function createTestProjectiles(x: number, y: number, pierceCount: number = 10, t
 // time 4520 4520, firefox, only 1 iteration
 // time 2.566000000005588 256.6000000005588, firefox, 100 iterations, 
 function testDetectProjectileToCharacterHitPerformance() {
-    let iterations = 100;
-    let numberEnemies = 1000000;
-    let numberProjectiles = 100;
-    let projectiles: Projectile[] = [];
-    let map: GameMap = createMap();
-    let game: Game = createGame(undefined);
-    let randomSeed: RandomSeed = { seed: 0 };
+    const iterations = 100;
+    const numberEnemies = 1000000;
+    const numberProjectiles = 100;
+    const projectiles: Projectile[] = [];
+    const map: GameMap = createMap();
+    const game: Game = createGame(undefined);
+    const randomSeed: RandomSeed = { seed: 0 };
     for (let i = 0; i < numberEnemies; i++) {
-        let posX = nextRandom(randomSeed) * 10000;
-        let posY = nextRandom(randomSeed) * 10000;
+        const posX = nextRandom(randomSeed) * 10000;
+        const posY = nextRandom(randomSeed) * 10000;
         createNewChunk(map, Math.floor(posX / (map.tileSize * map.chunkLength)), Math.floor(posY / (map.tileSize * map.chunkLength)));
         addEnemyToMap(map, createTestCharacter(i, posX, posY));
     }
@@ -205,19 +205,19 @@ function testDetectProjectileToCharacterHitPerformance() {
         projectiles.push(createTestProjectiles(nextRandom(randomSeed) * 200, nextRandom(randomSeed) * 200));
     }
 
-    let startTime = performance.now();
+    const startTime = performance.now();
     for (let i = 0; i < iterations; i++) {
         for (let j = 0; j < projectiles.length; j++) {
             detectAbilityObjectCircleToCharacterHit(map, projectiles[j], game);
         }
     }
-    let time = performance.now() - startTime;
+    const time = performance.now() - startTime;
     console.log("time", time / iterations, time);
 }
 
 function createNewChunk(map: GameMap, chunkX: number, chunkY: number) {
-    let key = chunkXYToMapKey(chunkX, chunkY);
+    const key = chunkXYToMapKey(chunkX, chunkY);
     if (map.chunks[key] !== undefined) return;
-    let newChunk = createNewChunkTiles(map, chunkX, chunkY, map.seed!);
+    const newChunk = createNewChunkTiles(map, chunkX, chunkY, map.seed!);
     map.chunks[key] = newChunk;
 }
