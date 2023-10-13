@@ -7,14 +7,14 @@ export type LevelingCharacter = Character & {
     leveling: {
         level: number,
         experience: number,
-        experienceForLevelUp: number,        
+        experienceForLevelUp: number,
     }
 }
 
 export const LEVELING_CHARACTER = "levelingCharacter";
 
 export function changeToLevelingCharacter(character: Character, game: Game): LevelingCharacter {
-    let levelingCharacter = character as LevelingCharacter;
+    const levelingCharacter = character as LevelingCharacter;
     levelingCharacter.type = LEVELING_CHARACTER;
     levelingCharacter.leveling = {
         experience: 0,
@@ -22,12 +22,10 @@ export function changeToLevelingCharacter(character: Character, game: Game): Lev
         level: 0,
     };
     levelingCharacter.availableSkillPoints = 0;
-    
-    let players = game.state.players;
     return levelingCharacter;
 }
 
-export function addLevelingCharacter(){
+export function addLevelingCharacter() {
     CHARACTER_TYPE_FUNCTIONS[LEVELING_CHARACTER] = {
         tickFunction: tickLevelingCharacter,
         createUpgradeOptions: createCharacterUpgradeOptionsNew,

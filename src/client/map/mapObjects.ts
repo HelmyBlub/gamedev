@@ -1,4 +1,3 @@
-import { calculatePosToTileXY } from "../character/pathing.js";
 import { calculateDistance } from "../game.js";
 import { Position, Game } from "../gameModel.js";
 import { GameMap, MapChunk, determineMapKeysInDistance, mapKeyAndTileXYToPosition } from "./map.js";

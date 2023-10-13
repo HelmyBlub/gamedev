@@ -1,4 +1,4 @@
-import { ABILITIES_FUNCTIONS, paintDefaultAbilityStatsUI, resetAllCharacterAbilities } from "../../../ability/ability.js";
+import { ABILITIES_FUNCTIONS, paintDefaultAbilityStatsUI } from "../../../ability/ability.js";
 import { ABILITY_NAME_LEASH, AbilityLeash } from "../../../ability/abilityLeash.js";
 import { calculateDirection, calculateDistance, getNextId } from "../../../game.js";
 import { FACTION_PLAYER, Game, Position } from "../../../gameModel.js";
@@ -105,7 +105,7 @@ export function tradePets(fromCharacter: Character, toCharacter: Character, game
                 pet.gifted = true;
                 reset(pet);
                 toCharacter.pets.push(pet);
-                for(let ability of pet.abilities){
+                for (let ability of pet.abilities) {
                     ability.disabled = false;
                 }
                 const leash: AbilityLeash = pet.abilities.find((a) => a.name === ABILITY_NAME_LEASH) as AbilityLeash;
@@ -118,7 +118,7 @@ export function tradePets(fromCharacter: Character, toCharacter: Character, game
 export function createTamerPetCharacter(owner: Character, color: string, game: Game): TamerPetCharacter {
     const defaultSize = 30;
     const baseMoveSpeed = 2;
-    let character = createCharacter(getNextId(game.state.idCounter), owner.x, owner.y, defaultSize, defaultSize, color, baseMoveSpeed, 20, owner.faction, TAMER_PET_CHARACTER, 10);
+    const character = createCharacter(getNextId(game.state.idCounter), owner.x, owner.y, defaultSize, defaultSize, color, baseMoveSpeed, 20, owner.faction, TAMER_PET_CHARACTER, 10);
     const tamerPetCharacter: TamerPetCharacter = {
         ...character,
         petTargetBehavior: "protective",
@@ -240,10 +240,10 @@ export function paintTamerPetCharacterStatsUI(ctx: CanvasRenderingContext2D, pet
         textLines.push("Abilities:");
         for (let ability of pet.abilities) {
             textLines.push(ability.name);
-            let upgradeKeys = Object.keys(ability.upgrades);
+            const upgradeKeys = Object.keys(ability.upgrades);
             if (upgradeKeys.length > 0) {
-                let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-                let upgradeFunctions = abilityFunctions.abilityUpgradeFunctions;
+                const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+                const upgradeFunctions = abilityFunctions.abilityUpgradeFunctions;
                 if (!upgradeFunctions) continue;
                 for (let key of upgradeKeys) {
                     textLines.push(" -" + upgradeFunctions[key].getStatsDisplayText(ability));
@@ -261,53 +261,6 @@ export function paintTamerPetCharacterStatsUI(ctx: CanvasRenderingContext2D, pet
     }
 
     return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
-}
-
-function paintTamerPetCharacter(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
-    let tamerPetCharacter = character as TamerPetCharacter;
-    let petImage = getImage(TAMER_PET_CHARACTER, character.paint.color);
-    if (petImage) {
-        const characterImage = GAME_IMAGES[TAMER_PET_CHARACTER];
-        const spriteAnimation = Math.floor(game.state.time / 250) % 2;
-        const happinesToInt = tamerPetCharacter.happines.current < tamerPetCharacter.happines.unhappyAt ? 0 : (tamerPetCharacter.happines.current > tamerPetCharacter.happines.hyperactiveAt) ? 2 : 1;
-        const spriteWidth = characterImage.spriteRowWidths[0];
-        const spriteHappinesOffset = happinesToInt * 2 * (spriteWidth + 1);
-        const spriteHeight = characterImage.spriteRowHeights[0];
-        const spriteColor = characterImage.properties.colorToSprite!.indexOf(character.paint.color);
-        const paintPos = getPointPaintPosition(ctx, character, cameraPosition);
-        ctx.drawImage(
-            petImage,
-            0 + spriteAnimation * (spriteWidth + 1) + spriteHappinesOffset,
-            0 + spriteColor * (spriteHeight + 1),
-            spriteWidth, spriteHeight,
-            Math.floor(paintPos.x - character.width / 2),
-            Math.floor(paintPos.y - character.height / 2),
-            character.width, character.height
-        );
-    }
-    for (let ability of character.abilities) {
-        const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-        if (abilityFunctions.paintAbility !== undefined) {
-            abilityFunctions.paintAbility(ctx, character, ability, cameraPosition, game);
-        }
-    }
-    if (tamerPetCharacter.happines.visualizations.length > 0) {
-        let paintPos = getPointPaintPosition(ctx, character, cameraPosition);
-        paintPos.y -= Math.floor(character.height / 2);
-        let happyImage = getImage("HAPPY");
-        let unhappyImage = getImage("UNHAPPY");
-        for (let visu of tamerPetCharacter.happines.visualizations) {
-            if (visu.displayUntil >= game.state.time) {
-                if (visu.happy && happyImage) {
-                    ctx.drawImage(happyImage, paintPos.x - Math.floor(happyImage.width / 2), paintPos.y - happyImage.height);
-                    paintPos.y -= happyImage.height;
-                } else if (!visu.happy && unhappyImage) {
-                    ctx.drawImage(unhappyImage, paintPos.x - Math.floor(unhappyImage.width / 2), paintPos.y - unhappyImage.height);
-                    paintPos.y -= unhappyImage.height;
-                }
-            }
-        }
-    }
 }
 
 export function changeTamerPetHappines(pet: TamerPetCharacter, value: number, time: number, visualizeChange: boolean) {
@@ -342,7 +295,7 @@ export function findPetOwner(pet: TamerPetCharacter, game: Game): Character | un
         characters = getPlayerCharacters(game.state.players);
         const pastCharacters = game.state.pastPlayerCharacters.characters;
         for (let i = 0; i < pastCharacters.length; i++) {
-            let pastChar = pastCharacters[i];
+            const pastChar = pastCharacters[i];
             if (pastChar) characters.push(pastChar);
         }
     } else {
@@ -354,6 +307,53 @@ export function findPetOwner(pet: TamerPetCharacter, game: Game): Character | un
         }
     }
     return undefined;
+}
+
+function paintTamerPetCharacter(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
+    const tamerPetCharacter = character as TamerPetCharacter;
+    const petImage = getImage(TAMER_PET_CHARACTER, character.paint.color);
+    if (petImage) {
+        const characterImage = GAME_IMAGES[TAMER_PET_CHARACTER];
+        const spriteAnimation = Math.floor(game.state.time / 250) % 2;
+        const happinesToInt = tamerPetCharacter.happines.current < tamerPetCharacter.happines.unhappyAt ? 0 : (tamerPetCharacter.happines.current > tamerPetCharacter.happines.hyperactiveAt) ? 2 : 1;
+        const spriteWidth = characterImage.spriteRowWidths[0];
+        const spriteHappinesOffset = happinesToInt * 2 * (spriteWidth + 1);
+        const spriteHeight = characterImage.spriteRowHeights[0];
+        const spriteColor = characterImage.properties.colorToSprite!.indexOf(character.paint.color);
+        const paintPos = getPointPaintPosition(ctx, character, cameraPosition);
+        ctx.drawImage(
+            petImage,
+            0 + spriteAnimation * (spriteWidth + 1) + spriteHappinesOffset,
+            0 + spriteColor * (spriteHeight + 1),
+            spriteWidth, spriteHeight,
+            Math.floor(paintPos.x - character.width / 2),
+            Math.floor(paintPos.y - character.height / 2),
+            character.width, character.height
+        );
+    }
+    for (let ability of character.abilities) {
+        const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+        if (abilityFunctions.paintAbility !== undefined) {
+            abilityFunctions.paintAbility(ctx, character, ability, cameraPosition, game);
+        }
+    }
+    if (tamerPetCharacter.happines.visualizations.length > 0) {
+        const paintPos = getPointPaintPosition(ctx, character, cameraPosition);
+        paintPos.y -= Math.floor(character.height / 2);
+        const happyImage = getImage("HAPPY");
+        const unhappyImage = getImage("UNHAPPY");
+        for (let visu of tamerPetCharacter.happines.visualizations) {
+            if (visu.displayUntil >= game.state.time) {
+                if (visu.happy && happyImage) {
+                    ctx.drawImage(happyImage, paintPos.x - Math.floor(happyImage.width / 2), paintPos.y - happyImage.height);
+                    paintPos.y -= happyImage.height;
+                } else if (!visu.happy && unhappyImage) {
+                    ctx.drawImage(unhappyImage, paintPos.x - Math.floor(unhappyImage.width / 2), paintPos.y - unhappyImage.height);
+                    paintPos.y -= unhappyImage.height;
+                }
+            }
+        }
+    }
 }
 
 function foodIntakeLevelTick(pet: TamerPetCharacter, game: Game) {
@@ -403,11 +403,11 @@ function moveTick(pet: TamerPetCharacter, petOwner: Character, game: Game, pathi
             pet.isMoving = false;
         } else {
             pet.isMoving = true;
-            let direction = calculateDirection(pet, pet.forcedMovePosition);
+            const direction = calculateDirection(pet, pet.forcedMovePosition);
             pet.moveDirection = direction;
         }
     } else {
-        let target = getTargetByBehavior(pet, petOwner, game);
+        const target = getTargetByBehavior(pet, petOwner, game);
         if (target) {
             calculateAndSetMoveDirectionToPositionWithPathing(pet, target, game.state.map, pathingCache, game.state.idCounter, game.state.time);
         } else {
@@ -418,9 +418,9 @@ function moveTick(pet: TamerPetCharacter, petOwner: Character, game: Game, pathi
 }
 
 function setMovePositonWithPetCollision(pet: TamerPetCharacter, petOwner: Character, game: Game) {
-    let newMovePosition = calculateCharacterMovePosition(pet, game.state.map, game.state.idCounter);
+    const newMovePosition = calculateCharacterMovePosition(pet, game.state.map, game.state.idCounter);
     if (newMovePosition) {
-        let collidedPet = collisionWithOtherPets(pet, petOwner, newMovePosition, game);
+        const collidedPet = collisionWithOtherPets(pet, petOwner, newMovePosition, game);
         if (collidedPet === undefined) {
             pet.x = newMovePosition.x;
             pet.y = newMovePosition.y;
@@ -451,7 +451,7 @@ function setMoveDirectionWithNoTarget(pet: TamerPetCharacter, petOwner: Characte
                     pet.isMoving = false;
                 } else {
                     pet.isMoving = true;
-                    let direction = calculateDirection(pet, petOwner);
+                    const direction = calculateDirection(pet, petOwner);
                     pet.moveDirection = direction + (nextRandom(game.state.randomSeed) * Math.PI / 2 - Math.PI / 4);
                 }
                 pet.nextMovementUpdateTime = game.state.time + 500;
@@ -471,7 +471,7 @@ function getTargetByBehavior(pet: TamerPetCharacter, petOwner: Character, game: 
     let target: Character | null = null;
     if (pet.petTargetBehavior === "aggressive") {
         let characters = determineTargetsInDistance(pet, pet, game);
-        let closest = determineClosestCharacter(pet, characters);
+        const closest = determineClosestCharacter(pet, characters);
         target = closest.minDistanceCharacter;
     } else if (pet.petTargetBehavior === "protective") {
         let characters;
@@ -484,7 +484,7 @@ function getTargetByBehavior(pet: TamerPetCharacter, petOwner: Character, game: 
         if (closest.minDistance < 80) {
             target = closest.minDistanceCharacter;
         } else {
-            let closest = determineClosestCharacter(pet, characters);
+            closest = determineClosestCharacter(pet, characters);
             target = closest.minDistanceCharacter;
         }
     } else if (pet.petTargetBehavior === "passive") {

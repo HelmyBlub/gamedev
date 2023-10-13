@@ -15,12 +15,12 @@ export function addEndBossCrownType() {
 }
 
 export function createEndBossCrownCharacter(idCounter: IdCounter, spawn: Position): EndBossEnemyCharacter {
-    let crownSize = 20;
-    let color = "black";
-    let moveSpeed = 2;
-    let hp = 1;
-    let experienceWorth = 0;
-    let crownCharacter = createCharacter(getNextId(idCounter), spawn.x, spawn.y, crownSize, crownSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_END_BOSS_CROWN_ENEMY, experienceWorth);
+    const crownSize = 20;
+    const color = "black";
+    const moveSpeed = 2;
+    const hp = 1;
+    const experienceWorth = 0;
+    const crownCharacter = createCharacter(getNextId(idCounter), spawn.x, spawn.y, crownSize, crownSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_END_BOSS_CROWN_ENEMY, experienceWorth);
     crownCharacter.paint.image = IMAGE_CROWN;
     crownCharacter.isMoving = true;
     crownCharacter.isImmune = true;
@@ -29,14 +29,14 @@ export function createEndBossCrownCharacter(idCounter: IdCounter, spawn: Positio
 
 function tickCrown(enemy: Character, game: Game, pathingCache: PathingCache | null) {
     if (enemy.isDead) return;
-    let targetCharacter = game.state.players[0].character;
-    let targetPos = {
+    const targetCharacter = game.state.players[0].character;
+    const targetPos = {
         x: targetCharacter.x,
         y: targetCharacter.y - targetCharacter.height / 2
     }
-    if(calculateDistance(enemy, targetPos) <= enemy.moveSpeed){
+    if (calculateDistance(enemy, targetPos) <= enemy.moveSpeed) {
         endGame(game, true);
-    }else{
+    } else {
         enemy.moveDirection = calculateDirection(enemy, targetPos);
         moveCharacterTick(enemy, game.state.map, game.state.idCounter);
     }

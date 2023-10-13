@@ -10,7 +10,7 @@ export function addTamerPetTraitLovesFood() {
     }
 }
 
-function createTrait(): Trait{
+function createTrait(): Trait {
     return {
         name: TAMER_PET_TRAIT_LOVES_FOOD,
         opposite: TAMER_PET_TRAIT_WANTS_TO_STAY_SLIM,

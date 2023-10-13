@@ -14,7 +14,7 @@ export function addCasterClass() {
 function changeCharacterToCasterClass(
     character: Character,
     idCounter: IdCounter,
-    game: Game, 
+    game: Game,
 ) {
     const levelingCharacter = changeToLevelingCharacter(character, game);
     addAbilityToCharacter(character, createAbility(ABILITY_NAME_FIRE_CIRCLE, idCounter, false, false, "ability1"));

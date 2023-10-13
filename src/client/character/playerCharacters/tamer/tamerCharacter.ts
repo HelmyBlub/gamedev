@@ -1,4 +1,4 @@
-import { ABILITIES_FUNCTIONS, Ability, addAbilityToCharacter, createAbility } from "../../../ability/ability.js";
+import { ABILITIES_FUNCTIONS, addAbilityToCharacter, createAbility } from "../../../ability/ability.js";
 import { createAbilityHpRegen } from "../../../ability/abilityHpRegen.js";
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../../gameModel.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, createCharacter } from "../../characterModel.js";
@@ -51,7 +51,7 @@ function changeCharacterToTamerClass(
     addPetToTamer(character, "black", game);
 }
 
-function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: number, spawn: Position, game: Game): Character{
+function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: number, spawn: Position, game: Game): Character {
     const idCounter = game.state.idCounter;
     const bossSize = 60;
     const color = "black";
@@ -59,11 +59,11 @@ function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: 
     const hp = 1000 * Math.pow(level, 4);
     const experienceWorth = Math.pow(level, 2) * 100;
 
-    const bossCharacter = createCharacter(getNextId(idCounter), spawn.x, spawn.y, bossSize, bossSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_BOSS_ENEMY, experienceWorth);    
+    const bossCharacter = createCharacter(getNextId(idCounter), spawn.x, spawn.y, bossSize, bossSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_BOSS_ENEMY, experienceWorth);
     addAbilityToCharacter(bossCharacter, createAbility(ABILITY_NAME_FEED_PET, idCounter, false, false, "ability1"));
     addAbilityToCharacter(bossCharacter, createAbility(ABILITY_NAME_LOVE_PET, idCounter, false, false, "ability2"));
-    
-    let abilityMelee = createAbilityMelee(game.state.idCounter);
+
+    const abilityMelee = createAbilityMelee(game.state.idCounter);
     setAbilityToBossLevel(abilityMelee, level);
     bossCharacter.abilities.push(abilityMelee);
 
@@ -74,27 +74,27 @@ function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: 
     return bossCharacter;
 }
 
-function createPetsBasedOnLevelAndCharacter(basedOnCharacter: Character, level: number, newBoss: Character, game: Game): TamerPetCharacter[]{
+function createPetsBasedOnLevelAndCharacter(basedOnCharacter: Character, level: number, newBoss: Character, game: Game): TamerPetCharacter[] {
     const randomPetIndex = Math.floor(nextRandom(game.state.randomSeed) * basedOnCharacter.pets!.length);
     const pet: TamerPetCharacter = deepCopy(basedOnCharacter.pets![randomPetIndex]);
     pet.x = newBoss.x;
     pet.y = newBoss.y;
-    if(level === 1){
-        for(let i = pet.abilities.length - 1; i >= 0;i--){
+    if (level === 1) {
+        for (let i = pet.abilities.length - 1; i >= 0; i--) {
             const ability = pet.abilities[i];
-            if(ability.name !== ABILITY_NAME_MELEE && ability.name !== ABILITY_NAME_LEASH){
+            if (ability.name !== ABILITY_NAME_MELEE && ability.name !== ABILITY_NAME_LEASH) {
                 pet.abilities.splice(i, 1);
             }
         }
-    }else{
+    } else {
         const petLevel = calculatePetLevel(pet);
-        if(petLevel > level){
+        if (petLevel > level) {
             reducePetLevel(pet, petLevel - level, game.state.randomSeed);
         }
     }
-    for(let ability of pet.abilities){
+    for (let ability of pet.abilities) {
         setAbilityToBossLevel(ability, level);
-        if(ability.name === ABILITY_NAME_LEASH){
+        if (ability.name === ABILITY_NAME_LEASH) {
             const abilityLeash = ability as AbilityLeash;
             abilityLeash.leashedToOwnerId = newBoss.id;
         }
@@ -103,15 +103,15 @@ function createPetsBasedOnLevelAndCharacter(basedOnCharacter: Character, level: 
     return [pet];
 }
 
-function reducePetLevel(pet: TamerPetCharacter, amount: number, randomSeed: RandomSeed){
-    for(let i = 0; i< amount; i++){
-        for(let ability of pet.abilities){
+function reducePetLevel(pet: TamerPetCharacter, amount: number, randomSeed: RandomSeed) {
+    for (let i = 0; i < amount; i++) {
+        for (let ability of pet.abilities) {
             const upgradeKeys = Object.keys(ability.upgrades);
-            for(let upgradeKeyIndex = upgradeKeys.length - 1; upgradeKeyIndex >= 0; upgradeKeyIndex--){
-                let upgrade: AbilityUpgrade = ability.upgrades[upgradeKeys[upgradeKeyIndex]];
+            for (let upgradeKeyIndex = upgradeKeys.length - 1; upgradeKeyIndex >= 0; upgradeKeyIndex--) {
+                const upgrade: AbilityUpgrade = ability.upgrades[upgradeKeys[upgradeKeyIndex]];
                 ability.upgrades[upgradeKeys[upgradeKeyIndex]] = undefined;
                 amount -= upgrade.level;
-                if(amount <= 0){
+                if (amount <= 0) {
                     return;
                 }
             }
@@ -119,13 +119,13 @@ function reducePetLevel(pet: TamerPetCharacter, amount: number, randomSeed: Rand
     }
 }
 
-function calculatePetLevel(pet: TamerPetCharacter): number{
+function calculatePetLevel(pet: TamerPetCharacter): number {
     let level = -1;
-    for(let ability of pet.abilities){
+    for (let ability of pet.abilities) {
         level += 1;
         const upgradeKeys = Object.keys(ability.upgrades);
-        for(let upgradeKey of upgradeKeys){
-            let upgrade: AbilityUpgrade = ability.upgrades[upgradeKey];
+        for (let upgradeKey of upgradeKeys) {
+            const upgrade: AbilityUpgrade = ability.upgrades[upgradeKey];
             level += upgrade.level;
         }
     }
@@ -135,7 +135,7 @@ function calculatePetLevel(pet: TamerPetCharacter): number{
 
 function executeTamerBossUpgradeOption(character: Character, upgradeOption: UpgradeOption, game: Game) {
     if (upgradeOption.type === "Pet") {
-        let upgradeValues = upgradeNameToValues(upgradeOption.identifier);
+        const upgradeValues = upgradeNameToValues(upgradeOption.identifier);
         const ability = createAbility(upgradeValues.abilityName, game.state.idCounter, false);
         const pet: TamerPetCharacter = character.pets!.find((p) => p.paint.color === upgradeValues.petName)!;
         ability.passive = true;
@@ -143,7 +143,7 @@ function executeTamerBossUpgradeOption(character: Character, upgradeOption: Upgr
         addTraitToTamerPet(pet, upgradeValues.traitName, game);
         pet.bossSkillPoints!--;
         if (upgradeValues.abilityName === ABILITY_NAME_PET_PAINTER) {
-            let leash: AbilityLeash | undefined = pet.abilities.find(a => a.name === ABILITY_NAME_LEASH) as AbilityLeash;
+            const leash: AbilityLeash | undefined = pet.abilities.find(a => a.name === ABILITY_NAME_LEASH) as AbilityLeash;
             if (leash) leash.leashMaxLength += 100;
         }
     } else if (upgradeOption.type === "PetAbility") {
@@ -177,7 +177,7 @@ function createTamerBossUpgradeOptions(character: Character, game: Game): Upgrad
                         const trait = availableTraits[randomTraitIndex];
                         availableTraits.splice(randomTraitIndex, 1);
                         const indentifier = valuesToUpgradeName(pet.paint.color!, ability, trait);
-                        let option: UpgradeOptionAndProbability = {
+                        const option: UpgradeOptionAndProbability = {
                             option: {
                                 type: "Pet",
                                 identifier: indentifier,
@@ -187,7 +187,7 @@ function createTamerBossUpgradeOptions(character: Character, game: Game): Upgrad
                             probability: 1,
                         }
                         const abilityFunctions = ABILITIES_FUNCTIONS[ability];
-                        if(abilityFunctions && abilityFunctions.getLongDescription){
+                        if (abilityFunctions && abilityFunctions.getLongDescription) {
                             option.option.displayLongText = abilityFunctions.getLongDescription();
                         }
                         addTraitToUpgradeOption(option.option, trait);
@@ -200,11 +200,11 @@ function createTamerBossUpgradeOptions(character: Character, game: Game): Upgrad
                     const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
                     if (abilityFunctions && abilityFunctions.createAbilityBossUpgradeOptions) {
                         while (options.length < numberChoices) {
-                            let abilityOptionsAndProbability = abilityFunctions.createAbilityBossUpgradeOptions(ability);
+                            const abilityOptionsAndProbability = abilityFunctions.createAbilityBossUpgradeOptions(ability);
                             if (abilityOptionsAndProbability.length === 0) break;
                             for (let opProb of abilityOptionsAndProbability) {
-                                let abilityOption = opProb.option as AbilityUpgradeOption;
-                                let petOption = opProb.option as PetAbilityUpgradeOption;
+                                const abilityOption = opProb.option as AbilityUpgradeOption;
+                                const petOption = opProb.option as PetAbilityUpgradeOption;
                                 petOption.abilityName = abilityOption.name;
                                 petOption.petId = pet.id;
                                 petOption.type = "PetAbility";

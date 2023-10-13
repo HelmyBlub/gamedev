@@ -10,7 +10,7 @@ export function addTamerPetTraitHappyOne() {
     }
 }
 
-function createTrait(): Trait{
+function createTrait(): Trait {
     return {
         name: TAMER_PET_TRAIT_HAPPY_ONE,
         opposite: TAMER_PET_TRAIT_NEEDS_MORE_LOVE,

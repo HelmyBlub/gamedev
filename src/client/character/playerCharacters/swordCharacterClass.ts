@@ -14,7 +14,7 @@ export function addSwordClass() {
 function changeCharacterToSwordClass(
     character: Character,
     idCounter: IdCounter,
-    game: Game, 
+    game: Game,
 ) {
     const levelingCharacter = changeToLevelingCharacter(character, game);
     addAbilityToCharacter(levelingCharacter, createAbilitySword(idCounter));

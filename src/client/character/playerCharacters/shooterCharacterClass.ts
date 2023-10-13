@@ -14,7 +14,7 @@ export function addShooterClass() {
 function changeCharacterToShooterClass(
     character: Character,
     idCounter: IdCounter,
-    game: Game, 
+    game: Game,
 ) {
     const levelingCharacter = changeToLevelingCharacter(character, game);
     addAbilityToCharacter(levelingCharacter, createAbilityShoot(idCounter));

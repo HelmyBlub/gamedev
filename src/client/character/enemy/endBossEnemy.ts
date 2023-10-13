@@ -1,7 +1,7 @@
-import { ABILITIES_FUNCTIONS, Ability, resetAllCharacterAbilities } from "../../ability/ability.js";
+import { ABILITIES_FUNCTIONS, Ability } from "../../ability/ability.js";
 import { ABILITY_NAME_FIRE_CIRCLE } from "../../ability/abilityFireCircle.js";
 import { ABILITY_NAME_ICE_AURA } from "../../ability/abilityIceAura.js";
-import { ABILITY_NAME_MELEE, createAbilityMelee } from "../../ability/abilityMelee.js";
+import { ABILITY_NAME_MELEE } from "../../ability/abilityMelee.js";
 import { ABILITY_NAME_SHOOT } from "../../ability/abilityShoot.js";
 import { ABILITY_NAME_SWORD } from "../../ability/abilitySword.js";
 import { tickCharacterDebuffs } from "../../debuff/debuff.js";
@@ -35,41 +35,40 @@ export function addEndBossType() {
 }
 
 export function createDefaultNextEndBoss(idCounter: IdCounter, game: Game): EndBossEnemyCharacter {
-    let bossSize = 60;
-    let color = "black";
-    let moveSpeed = 1;
-    let hp = 50000000;
-    let experienceWorth = 0;
-    let bossCharacter = createCharacter(getNextId(idCounter), 0, 0, bossSize, bossSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_END_BOSS_ENEMY, experienceWorth);
+    const bossSize = 60;
+    const color = "black";
+    const moveSpeed = 1;
+    const hp = 50000000;
+    const experienceWorth = 0;
+    const bossCharacter = createCharacter(getNextId(idCounter), 0, 0, bossSize, bossSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_END_BOSS_ENEMY, experienceWorth);
     bossCharacter.paint.image = IMAGE_SLIME;
-    let abilities: Ability[] = createEndBossAbilities(1, game);
+    const abilities: Ability[] = createEndBossAbilities(1, game);
     bossCharacter.abilities = abilities;
     return bossCharacter;
 }
 
 export function setPlayerAsEndBoss(game: Game) {
     if (game.testing.replay) return;
-    let boss: Character = deepCopy(game.state.players[0].character);
+    const boss: Character = deepCopy(game.state.players[0].character);
     const celestialDirection = getCelestialDirection(boss);
     const oldBoss = game.state.bossStuff.nextEndbosses[celestialDirection];
     game.state.bossStuff.nextEndbosses[celestialDirection] = boss;
-    if(!game.multiplayer.disableLocalStorage){
+    if (!game.multiplayer.disableLocalStorage) {
         localStorage.setItem(LOCALSTORAGE_NEXTENDBOSSES, JSON.stringify(game.state.bossStuff.nextEndbosses));
     }
 
-    if(oldBoss?.characterClass){
+    if (oldBoss?.characterClass) {
         saveCharacterAsPastCharacter(oldBoss, game);
     }
 }
 
 export function startEndBoss(endBossAreaPosition: Position, game: Game) {
-    let entrance = getEntranceChunkAndTileXYForPosition(game.state.players[0].character, game.state.map);
+    const entrance = getEntranceChunkAndTileXYForPosition(game.state.players[0].character, game.state.map);
     if (entrance) {
         changeTileIdOfMapChunk(entrance.chunkX, entrance.chunkY, entrance.tileX, entrance.tileY, 2, game);
-        let spawn: Position = getBossAreaMiddlePosition(endBossAreaPosition, game.state.map)!;
-        let endBoss: Character;
+        const spawn: Position = getBossAreaMiddlePosition(endBossAreaPosition, game.state.map)!;
         const celestialDirection = getCelestialDirection(spawn);
-        endBoss = deepCopy(game.state.bossStuff.nextEndbosses[celestialDirection]);
+        const endBoss: Character = deepCopy(game.state.bossStuff.nextEndbosses[celestialDirection]);
         modifyCharacterToEndBoss(endBoss);
         endBoss.x = spawn.x;
         endBoss.y = spawn.y;
@@ -93,14 +92,14 @@ export function startEndBoss(endBossAreaPosition: Position, game: Game) {
 
 function tickEndBossEnemyCharacter(enemy: EndBossEnemyCharacter, game: Game, pathingCache: PathingCache | null) {
     if (enemy.isDead) return;
-    let playerCharacters = getPlayerCharacters(game.state.players);
-    let closest = determineClosestCharacter(enemy, playerCharacters);
+    const playerCharacters = getPlayerCharacters(game.state.players);
+    const closest = determineClosestCharacter(enemy, playerCharacters);
 
     calculateAndSetMoveDirectionToPositionWithPathing(enemy, closest.minDistanceCharacter, game.state.map, pathingCache, game.state.idCounter, game.state.time);
     moveCharacterTick(enemy, game.state.map, game.state.idCounter);
 
     for (let ability of enemy.abilities) {
-        let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+        const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
         if (abilityFunctions) {
             if (abilityFunctions.tickAbility) abilityFunctions.tickAbility(enemy, ability, game);
             if (abilityFunctions.tickBossAI) abilityFunctions.tickBossAI(enemy, ability, game);
@@ -110,7 +109,7 @@ function tickEndBossEnemyCharacter(enemy: EndBossEnemyCharacter, game: Game, pat
     tickCharacterDebuffs(enemy, game);
 }
 
-function modifyCharacterToEndBoss(boss: Character){
+function modifyCharacterToEndBoss(boss: Character) {
     boss.type = CHARACTER_TYPE_END_BOSS_ENEMY;
     boss.maxHp = 50000000;
     boss.hp = boss.maxHp;
@@ -126,7 +125,7 @@ function modifyCharacterToEndBoss(boss: Character){
 }
 
 function paintEndBoss(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
-    if(character.isDead) return;
+    if (character.isDead) return;
     paintCharatersPets(ctx, [character], cameraPosition, game);
     paintCharacterDefault(ctx, character, cameraPosition, game);
     const crownImage = getImage(IMAGE_CROWN);
@@ -136,12 +135,12 @@ function paintEndBoss(ctx: CanvasRenderingContext2D, character: Character, camer
         const crownY = Math.floor(paintPos.y - character.height / 2 - crownImage.height);
         ctx.drawImage(crownImage, crownX, crownY);
     }
-    if(game.state.bossStuff.endBossStarted) paintBossHpBar(ctx, character);
+    if (game.state.bossStuff.endBossStarted) paintBossHpBar(ctx, character);
 }
 
 function paintBossHpBar(ctx: CanvasRenderingContext2D, boss: Character) {
     const fillAmount = Math.max(0, boss.hp / boss.maxHp);
-    if(fillAmount <= 0) return
+    if (fillAmount <= 0) return
     const hpBarWidth = Math.floor(ctx.canvas.width / 2);
     const hpBarText = `BossHP: ${(boss.hp / boss.maxHp * 100).toFixed(2)}%`;
     const hpBarLeft = Math.floor(ctx.canvas.width / 4);
@@ -167,7 +166,7 @@ function changeBossAbilityLevelBasedOnHp(enemy: EndBossEnemyCharacter) {
     const abilityLevel = Math.max(Math.floor((1 - hpLeftPerCent) * 10), 1);
 
     for (let ability of enemy.abilities) {
-        let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+        const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
         if (abilityFunctions && abilityFunctions.setAbilityToBossLevel) {
             abilityFunctions.setAbilityToBossLevel(ability, abilityLevel);
         }
@@ -175,7 +174,7 @@ function changeBossAbilityLevelBasedOnHp(enemy: EndBossEnemyCharacter) {
     if (enemy.pets) {
         for (let pet of enemy.pets) {
             for (let ability of pet.abilities) {
-                let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+                const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
                 if (abilityFunctions && abilityFunctions.setAbilityToBossLevel) {
                     abilityFunctions.setAbilityToBossLevel(ability, abilityLevel);
                 }
@@ -185,8 +184,8 @@ function changeBossAbilityLevelBasedOnHp(enemy: EndBossEnemyCharacter) {
 }
 
 function createEndBossAbilities(level: number, game: Game): Ability[] {
-    let abilities: Ability[] = [];
-    let abilityKeys: string[] = [
+    const abilities: Ability[] = [];
+    const abilityKeys: string[] = [
         ABILITY_NAME_MELEE,
         ABILITY_NAME_SHOOT,
         ABILITY_NAME_SWORD,
@@ -195,8 +194,8 @@ function createEndBossAbilities(level: number, game: Game): Ability[] {
     ];
 
     for (let abilityKey of abilityKeys) {
-        let abilityFunctions = ABILITIES_FUNCTIONS[abilityKey];
-        let ability = abilityFunctions.createAbility(game.state.idCounter);
+        const abilityFunctions = ABILITIES_FUNCTIONS[abilityKey];
+        const ability = abilityFunctions.createAbility(game.state.idCounter);
         setAbilityToEndBossLevel(ability, level);
         ability.passive = true;
         abilities.push(ability);
@@ -206,7 +205,7 @@ function createEndBossAbilities(level: number, game: Game): Ability[] {
 }
 
 function setAbilityToEndBossLevel(ability: Ability, level: number) {
-    let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+    const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
     if (abilityFunctions.setAbilityToBossLevel) {
         abilityFunctions.setAbilityToBossLevel(ability, level);
     } else {

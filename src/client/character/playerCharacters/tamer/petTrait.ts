@@ -29,7 +29,7 @@ export type TamerPetTraitsFunctions = {
 
 export const TAMER_PET_TRAITS_FUNCTIONS: TamerPetTraitsFunctions = {};
 
-export function addTamerPetTraits(){
+export function addTamerPetTraits() {
     addTamerPetTraitEatsLess();
     addTamerPetTraitGetsFatEasily();
     addTamerPetTraitHappyOne();
@@ -42,7 +42,7 @@ export function addTamerPetTraits(){
     addTamerPetTraitWantsToStaySlim();
 }
 
-export function tamerPetIncludesTrait(traitName: string, pet: TamerPetCharacter): boolean{
+export function tamerPetIncludesTrait(traitName: string, pet: TamerPetCharacter): boolean {
     return pet.traits.find((t) => t.name === traitName) ? true : false;
 }
 
@@ -63,26 +63,26 @@ export function addTraitToTamerPet(pet: TamerPetCharacter, traitName: string, ga
     if (!tamerPetIncludesTrait(traitName, pet)) {
         const functions = TAMER_PET_TRAITS_FUNCTIONS[traitName];
         const trait = functions.createTrait();
-        if(functions.addTrait){
+        if (functions.addTrait) {
             functions.addTrait(pet, trait, game);
         }
         pet.traits.push(trait);
-        if(trait.opposite){
+        if (trait.opposite) {
             const oppositeIndex = pet.traits.findIndex((t) => t.name === trait.opposite);
-            if(oppositeIndex > -1){
+            if (oppositeIndex > -1) {
                 const oppositefunctions = TAMER_PET_TRAITS_FUNCTIONS[trait.opposite];
-                if(oppositefunctions.removeTrait){
+                if (oppositefunctions.removeTrait) {
                     oppositefunctions.removeTrait(pet, pet.traits[oppositeIndex], game);
                 }
                 pet.traits.splice(oppositeIndex, 1);
             }
         }
-    } 
+    }
 }
 
-export function getLongExplainTextForTamerPetTrait(traitName: string): string[] | undefined{
+export function getLongExplainTextForTamerPetTrait(traitName: string): string[] | undefined {
     const functions = TAMER_PET_TRAITS_FUNCTIONS[traitName];
-    if (functions.getLongExplainText){
+    if (functions.getLongExplainText) {
         return functions.getLongExplainText();
     }
     return undefined;

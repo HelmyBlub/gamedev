@@ -9,7 +9,7 @@ export type AbilityLevelingCharacter = Character & {
 
 export const ABILITY_LEVELING_CHARACTER = "abilityLevelingCharacter";
 
-export function addAbilityLevelingCharacter(){
+export function addAbilityLevelingCharacter() {
     CHARACTER_TYPE_FUNCTIONS[ABILITY_LEVELING_CHARACTER] = {
         tickFunction: tickAbilityLevelingCharacter,
         createBossUpgradeOptions: createBossUpgradeOptionsAbilityLeveling,
@@ -17,17 +17,17 @@ export function addAbilityLevelingCharacter(){
     }
 }
 
-function executeAbilityLevelingCharacterUpgradeOption(character: Character, upgradeOption: UpgradeOption, game: Game){
+function executeAbilityLevelingCharacterUpgradeOption(character: Character, upgradeOption: UpgradeOption, game: Game) {
     const abilityUpgradeOption: AbilityUpgradeOption = upgradeOption as AbilityUpgradeOption;
     const functions = ABILITIES_FUNCTIONS[abilityUpgradeOption.name];
     const ability = character.abilities.find((a) => a.name === abilityUpgradeOption.name && a.bossSkillPoints && a.bossSkillPoints > 0);
-    functions.executeUpgradeOption!(ability! ,character, upgradeOption, game);
+    functions.executeUpgradeOption!(ability!, character, upgradeOption, game);
 }
 
-function createBossUpgradeOptionsAbilityLeveling(character: Character, game: Game): UpgradeOptionAndProbability[]{
-    for(let ability of character.abilities){
+function createBossUpgradeOptionsAbilityLeveling(character: Character, game: Game): UpgradeOptionAndProbability[] {
+    for (let ability of character.abilities) {
         const functions = ABILITIES_FUNCTIONS[ability.name];
-        if(ability.bossSkillPoints && ability.bossSkillPoints > 0 && functions.createAbilityBossUpgradeOptions){
+        if (ability.bossSkillPoints && ability.bossSkillPoints > 0 && functions.createAbilityBossUpgradeOptions) {
             return functions.createAbilityBossUpgradeOptions(ability);
         }
     }
@@ -36,7 +36,7 @@ function createBossUpgradeOptionsAbilityLeveling(character: Character, game: Gam
 
 function tickAbilityLevelingCharacter(character: AbilityLevelingCharacter, game: Game) {
     if (character.isDead) {
-        if(!character.willTurnToPetOnDeath) return;
+        if (!character.willTurnToPetOnDeath) return;
         turnCharacterToPet(character, game);
     }
     moveCharacterTick(character, game.state.map, game.state.idCounter);

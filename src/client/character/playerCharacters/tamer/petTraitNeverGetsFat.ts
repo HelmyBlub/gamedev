@@ -10,7 +10,7 @@ export function addTamerPetTraitNeverGetsFat() {
     }
 }
 
-function createTrait(): Trait{
+function createTrait(): Trait {
     return {
         name: TAMER_PET_TRAIT_NEVER_GETS_FAT,
         opposite: TAMER_PET_TRAIT_GETS_FAT_EASILY,

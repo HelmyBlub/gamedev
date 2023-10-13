@@ -26,11 +26,11 @@ export function tileXyToPathingCacheKey(tileXY: Position) {
     return tileXY.x + "_" + tileXY.y;
 }
 
-export function getPathingCache(game: Game){
+export function getPathingCache(game: Game) {
     let pathingCache = {};
-    if(game.performance.pathingCache !== undefined){
+    if (game.performance.pathingCache !== undefined) {
         pathingCache = game.performance.pathingCache;
-    }else{
+    } else {
         game.performance.pathingCache = pathingCache;
     }
     return pathingCache;
@@ -48,8 +48,8 @@ export function getNextWaypoint(
         console.log("can't find way to a blocking position");
         return null;
     }
-    let targetXY: Position = calculatePosToTileXY(sourcePos, map);
-    let startXY: Position = calculatePosToTileXY(targetPos, map);
+    const targetXY: Position = calculatePosToTotalTileXY(sourcePos, map);
+    const startXY: Position = calculatePosToTotalTileXY(targetPos, map);
     if (startXY.x === targetXY.x && startXY.y === targetXY.y) {
         return targetPos;
     }
@@ -57,10 +57,10 @@ export function getNextWaypoint(
     let openNodes: Position[] = [];
     let cameFrom: Map<string, Position | null> = new Map<string, Position | null>();
 
-    let targetKey = `${targetXY.x}_${targetXY.y}`;
+    const targetKey = `${targetXY.x}_${targetXY.y}`;
     let pathingCacheXY: PathingCacheXY | undefined;
     if (pathingCache !== null) {
-        let pathingKey = tileXyToPathingCacheKey(startXY);
+        const pathingKey = tileXyToPathingCacheKey(startXY);
         pathingCacheXY = pathingCache[pathingKey];
         if (pathingCacheXY === undefined) {
             pathingCacheXY = createPathingCacheXY(time);
@@ -72,10 +72,10 @@ export function getNextWaypoint(
             openNodes = pathingCacheXY.openNodesCache;
             cameFrom = pathingCacheXY.cameFromCache;
             if (cameFrom.has(targetKey)) {
-                let nextWaypoint = cameFrom.get(targetKey)!;
-                if(nextWaypoint !== null){
+                const nextWaypoint = cameFrom.get(targetKey)!;
+                if (nextWaypoint !== null) {
                     return { x: nextWaypoint.x * map.tileSize + map.tileSize / 2, y: nextWaypoint.y * map.tileSize + map.tileSize / 2 };
-                }else{
+                } else {
                     return null;
                 }
             }
@@ -89,7 +89,7 @@ export function getNextWaypoint(
     }
 
     let counter = 0;
-    let maxCounter = calculateDistance(startXY, targetXY) * 300;
+    const maxCounter = calculateDistance(startXY, targetXY) * 300;
     while (openNodes.length > 0) {
         counter++;
         if (counter > maxCounter) {
@@ -98,18 +98,17 @@ export function getNextWaypoint(
             return null
         };
 
-        let currentIndex = 0;
-        let currentNode = openNodes.splice(currentIndex, 1)[0]!;
+        const currentNode = openNodes.splice(0, 1)[0]!;
 
         if (currentNode.x === targetXY.x && currentNode.y === targetXY.y) {
-            let lastPosition = cameFrom.get(`${targetXY.x}_${targetXY.y}`)!;
+            const lastPosition = cameFrom.get(`${targetXY.x}_${targetXY.y}`)!;
             if (pathingCacheXY) openNodes.unshift(currentNode);
             return { x: lastPosition.x * map.tileSize + map.tileSize / 2, y: lastPosition.y * map.tileSize + map.tileSize / 2 };
         }
 
-        let neighborsXY = getPathNeighborsXY(currentNode, map, idCounter);
+        const neighborsXY = getPathNeighborsXY(currentNode, map, idCounter);
         for (let i = 0; i < neighborsXY.length; i++) {
-            let neighborKey = `${neighborsXY[i].x}_${neighborsXY[i].y}`;
+            const neighborKey = `${neighborsXY[i].x}_${neighborsXY[i].y}`;
             if (!cameFrom.has(neighborKey)) {
                 cameFrom.set(neighborKey, currentNode);
                 if (!openNodes.find((curr: Position) => curr.x === neighborsXY[i].x && curr.y === neighborsXY[i].y)) {
@@ -124,18 +123,33 @@ export function getNextWaypoint(
 
 export function garbageCollectPathingCache(pathingCache: PathingCache | undefined, currentTime: number, game: Game) {
     takeTimeMeasure(game.debug, "", "garbageCollectPathingCache");
-    if(pathingCache === undefined) return;
-    let keys = Object.keys(pathingCache);
+    if (pathingCache === undefined) return;
+    const keys = Object.keys(pathingCache);
     for (let i = keys.length - 1; i >= 0; i--) {
-        if(pathingCache[keys[i]].timeLastUsed < currentTime - 5000){
+        if (pathingCache[keys[i]].timeLastUsed < currentTime - 5000) {
             delete pathingCache[keys[i]];
         }
     }
     takeTimeMeasure(game.debug, "garbageCollectPathingCache", "");
 }
 
+export function calculatePosToTotalTileXY(pos: Position, map: GameMap): Position {
+    const chunkSize = map.tileSize * map.chunkLength;
+    const startChunkY = Math.floor(pos.y / chunkSize);
+    const startChunkX = Math.floor(pos.x / chunkSize);
+    let tileY = Math.floor((pos.y / map.tileSize) % map.chunkLength);
+    if (tileY < 0) tileY += map.chunkLength;
+    let tileX = Math.floor((pos.x / map.tileSize) % map.chunkLength);
+    if (tileX < 0) tileX += map.chunkLength;
+
+    return {
+        x: startChunkX * map.chunkLength + tileX,
+        y: startChunkY * map.chunkLength + tileY,
+    };
+}
+
 function getPathNeighborsXY(pos: Position, map: GameMap, idCounter: IdCounter): Position[] {
-    let result: Position[] = [];
+    const result: Position[] = [];
     let top, bottom, left, right: boolean = false;
 
     let tempXY = { x: pos.x, y: pos.y - 1 };
@@ -184,19 +198,4 @@ function getPathNeighborsXY(pos: Position, map: GameMap, idCounter: IdCounter): 
     }
 
     return result;
-}
-
-export function calculatePosToTileXY(pos: Position, map: GameMap): Position {
-    let chunkSize = map.tileSize * map.chunkLength;
-    let startChunkY = Math.floor(pos.y / chunkSize);
-    let startChunkX = Math.floor(pos.x / chunkSize);
-    let tileY = Math.floor((pos.y / map.tileSize) % map.chunkLength);
-    if (tileY < 0) tileY += map.chunkLength;
-    let tileX = Math.floor((pos.x / map.tileSize) % map.chunkLength);
-    if (tileX < 0) tileX += map.chunkLength;
-
-    return {
-        x: startChunkX * map.chunkLength + tileX,
-        y: startChunkY * map.chunkLength + tileY,
-    };
 }

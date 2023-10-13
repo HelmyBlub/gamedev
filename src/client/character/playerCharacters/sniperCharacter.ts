@@ -4,10 +4,8 @@ import { ABILITY_NAME_SPEED_BOOST } from "../../ability/speedBoost/abilitySpeedB
 import { ABILITY_NAME_SNIPE, AbilitySnipe } from "../../ability/snipe/abilitySnipe.js";
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../gameModel.js";
 import { Character, IMAGE_SLIME, createCharacter } from "../characterModel.js";
-import { ABILITY_LEVELING_CHARACTER, AbilityLevelingCharacter } from "./abilityLevelingCharacter.js";
+import { ABILITY_LEVELING_CHARACTER } from "./abilityLevelingCharacter.js";
 import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters.js";
-import { ABILITY_NAME_FEED_PET } from "../../ability/petTamer/abilityFeedPet.js";
-import { ABILITY_NAME_LOVE_PET } from "../../ability/petTamer/abilityLovePet.js";
 import { deepCopy, getNextId } from "../../game.js";
 import { resetCharacter } from "../character.js";
 import { CHARACTER_TYPE_BOSS_ENEMY, setAbilityToBossLevel } from "../enemy/bossEnemy.js";
@@ -33,7 +31,7 @@ function changeCharacterToSniperClass(
     addAbilityToCharacter(character, createAbility(ABILITY_NAME_SPEED_BOOST, idCounter, true, true, "ability2"));
 }
 
-function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: number, spawn: Position, game: Game): Character{
+function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: number, spawn: Position, game: Game): Character {
     const idCounter = game.state.idCounter;
     const bossSize = 60;
     const color = "black";
@@ -47,7 +45,6 @@ function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: 
     const snipe: AbilitySnipe = deepCopy(baseSnipe);
     bossCharacter.abilities.push(snipe);
     setAbilityToBossLevel(snipe, level);
-
     resetCharacter(bossCharacter);
 
     return bossCharacter;

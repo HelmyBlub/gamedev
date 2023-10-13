@@ -16,17 +16,17 @@ export function addTamerPetTraitLongerLeash() {
     }
 }
 
-function addTrait(pet: TamerPetCharacter, trait: Trait, game: Game){
+function addTrait(pet: TamerPetCharacter, trait: Trait, game: Game) {
     const leash = pet.abilities.find((a) => a.name === ABILITY_NAME_LEASH) as AbilityLeash;
     if (leash) leash.leashMaxLength += BONUS_LENGTH;
 }
 
-function removeTrait(pet: TamerPetCharacter, trait: Trait, game: Game){
+function removeTrait(pet: TamerPetCharacter, trait: Trait, game: Game) {
     const leash = pet.abilities.find((a) => a.name === ABILITY_NAME_LEASH) as AbilityLeash;
-    if (leash) leash.leashMaxLength -= BONUS_LENGTH;    
+    if (leash) leash.leashMaxLength -= BONUS_LENGTH;
 }
 
-function createTrait(): Trait{
+function createTrait(): Trait {
     return {
         name: TAMER_PET_TRAIT_LONGER_LEASH,
         opposite: TAMER_PET_TRAIT_SHORTER_LEASH,

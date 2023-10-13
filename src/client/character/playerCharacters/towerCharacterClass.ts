@@ -1,7 +1,7 @@
 import { addAbilityToCharacter } from "../../ability/ability.js";
 import { createAbilityHpRegen } from "../../ability/abilityHpRegen.js";
 import { ABILITY_NAME_TOWER, createAbilityTower } from "../../ability/abilityTower.js";
-import { ABILITY_NAME_SNIPE, AbilitySnipe } from "../../ability/snipe/abilitySnipe.js";
+import { AbilitySnipe } from "../../ability/snipe/abilitySnipe.js";
 import { getNextId, deepCopy } from "../../game.js";
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../gameModel.js";
 import { resetCharacter } from "../character.js";
@@ -22,7 +22,7 @@ export function addTowerClass() {
 function changeCharacterToTowerBuilderClass(
     character: Character,
     idCounter: IdCounter,
-    game: Game, 
+    game: Game,
 ) {
     const levelingCharacter = changeToLevelingCharacter(character, game);
     character.characterClass = TOWER_BUILDER;
@@ -30,7 +30,7 @@ function changeCharacterToTowerBuilderClass(
     addAbilityToCharacter(levelingCharacter, createAbilityHpRegen(idCounter));
 }
 
-function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: number, spawn: Position, game: Game): Character{
+function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: number, spawn: Position, game: Game): Character {
     const idCounter = game.state.idCounter;
     const bossSize = 60;
     const color = "black";
@@ -44,7 +44,6 @@ function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: 
     const tower: AbilitySnipe = deepCopy(baseTower);
     bossCharacter.abilities.push(tower);
     setAbilityToBossLevel(tower, level);
-
     resetCharacter(bossCharacter);
 
     return bossCharacter;

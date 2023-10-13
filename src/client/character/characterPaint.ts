@@ -11,7 +11,7 @@ import { LEVELING_CHARACTER, LevelingCharacter } from "./playerCharacters/leveli
 export function paintCharacters(ctx: CanvasRenderingContext2D, characters: (Character | undefined)[], cameraPosition: Position, game: Game) {
     for (let i = 0; i < characters.length; i++) {
         const character = characters[i];
-        if(!character) continue;
+        if (!character) continue;
         const characterFunctions = CHARACTER_TYPE_FUNCTIONS[character.type];
         if (characterFunctions && characterFunctions.paintCharacterType) {
             characterFunctions.paintCharacterType(ctx, character, cameraPosition, game);
@@ -28,8 +28,8 @@ export function paintCharacterHpBarAboveCharacter(ctx: CanvasRenderingContext2D,
 
     let heightFactor = 1;
     if (character.isPet) heightFactor = 0.5;
-    let hpBarX = Math.floor(paintPos.x - character.width / 2);
-    let hpBarY = Math.floor(paintPos.y - character.height / 2 * heightFactor);
+    const hpBarX = Math.floor(paintPos.x - character.width / 2);
+    const hpBarY = Math.floor(paintPos.y - character.height / 2 * heightFactor);
     paintCharacterHpBar(ctx, character, { x: hpBarX, y: hpBarY + offsetY });
 }
 
@@ -56,7 +56,7 @@ export function paintCharacterStatsUI(ctx: CanvasRenderingContext2D, character: 
         `Type: ${character.type}`,
     ];
     if (character.type === LEVELING_CHARACTER) {
-        let levelingCharacter = character as LevelingCharacter;
+        const levelingCharacter = character as LevelingCharacter;
         textLines.push(
             `XP: ${Math.floor(levelingCharacter.leveling.experienceForLevelUp)}/${Math.floor(levelingCharacter.leveling.experience)}`,
             `Gains XP for every enemy killed by anyone.`,
@@ -65,7 +65,6 @@ export function paintCharacterStatsUI(ctx: CanvasRenderingContext2D, character: 
         );
 
     } else if (character.type === ABILITY_LEVELING_CHARACTER) {
-        let levelingCharacter = character as AbilityLevelingCharacter;
         textLines.push(
             `Abilities gain XP only for its own kills.`,
             `On Level up Abilties become stronger.`,
@@ -75,8 +74,8 @@ export function paintCharacterStatsUI(ctx: CanvasRenderingContext2D, character: 
     return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
 }
 
-export function paintCharatersPets(ctx: CanvasRenderingContext2D, characters: (Character | undefined)[], cameraPosition: Position, game: Game){
-    for(let character of characters){
+export function paintCharatersPets(ctx: CanvasRenderingContext2D, characters: (Character | undefined)[], cameraPosition: Position, game: Game) {
+    for (let character of characters) {
         if (!character || character.isDead) continue;
         paintCharacterPets(ctx, character, cameraPosition, game);
     }
@@ -138,7 +137,7 @@ function paintCharacterColoredCircle(ctx: CanvasRenderingContext2D, character: C
 }
 
 function randomizedCharacterImagePaint(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
-    let characterImage = GAME_IMAGES[IMAGE_PLAYER_PARTS];
+    const characterImage = GAME_IMAGES[IMAGE_PLAYER_PARTS];
     loadImage(characterImage, character.paint.color, character.paint.randomizedCharacterImage);
     if (characterImage.properties?.canvases
         && characterImage.properties?.canvases[randomizedCharacterImageToKey(character.paint.randomizedCharacterImage!)]) {
@@ -146,9 +145,9 @@ function randomizedCharacterImagePaint(ctx: CanvasRenderingContext2D, character:
         if (paintPos.x < -character.width || paintPos.x > ctx.canvas.width
             || paintPos.y < -character.height || paintPos.y > ctx.canvas.height) return;
 
-        let spriteWidth = characterImage.spriteRowWidths[0];
-        let spriteHeight = 40;
-        let widthIndex = moveDirectionToSpriteIndex(character);
+        const spriteWidth = characterImage.spriteRowWidths[0];
+        const spriteHeight = 40;
+        const widthIndex = moveDirectionToSpriteIndex(character);
         let animationY = 0;
         if (character.isMoving) {
             animationY = Math.floor(performance.now() / 150) % 4;
@@ -157,8 +156,8 @@ function randomizedCharacterImagePaint(ctx: CanvasRenderingContext2D, character:
         }
         let heightFactor = 1;
         if (character.isPet) heightFactor = 0.5;
-        let characterPaintX = Math.floor(paintPos.x - character.width / 2);
-        let characterPaintY = Math.floor(paintPos.y - character.height / 2 * heightFactor);
+        const characterPaintX = Math.floor(paintPos.x - character.width / 2);
+        const characterPaintY = Math.floor(paintPos.y - character.height / 2 * heightFactor);
         ctx.drawImage(
             characterImage.properties.canvases[randomizedCharacterImageToKey(character.paint.randomizedCharacterImage!)],
             widthIndex * spriteWidth,
@@ -174,16 +173,16 @@ function randomizedCharacterImagePaint(ctx: CanvasRenderingContext2D, character:
 }
 
 function slimePaint(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
-    let characterImage = GAME_IMAGES[IMAGE_SLIME];
+    const characterImage = GAME_IMAGES[IMAGE_SLIME];
     loadImage(characterImage, character.paint.color, undefined);
     if (characterImage.properties?.canvas) {
         const paintPos = getPointPaintPosition(ctx, character, cameraPosition);
         if (paintPos.x < -character.width || paintPos.x > ctx.canvas.width
             || paintPos.y < -character.height || paintPos.y > ctx.canvas.height) return;
-        let spriteAnimation = Math.floor(game.state.time / 250) % 2;
-        let spriteColor = characterImage.properties.colorToSprite!.indexOf(character.paint.color);
-        let spriteWidth = characterImage.spriteRowWidths[0];
-        let spriteHeight = characterImage.spriteRowHeights[0];
+        const spriteAnimation = Math.floor(game.state.time / 250) % 2;
+        const spriteColor = characterImage.properties.colorToSprite!.indexOf(character.paint.color);
+        const spriteWidth = characterImage.spriteRowWidths[0];
+        const spriteHeight = characterImage.spriteRowHeights[0];
         ctx.drawImage(
             characterImage.properties.canvas!,
             0 + spriteAnimation * (spriteWidth + 1),
@@ -209,8 +208,8 @@ function paintPlayerNameOverCharacter(ctx: CanvasRenderingContext2D, character: 
 
     let heightFactor = 1;
     if (character.isPet) heightFactor = 0.5;
-    let nameX = Math.floor(paintPos.x - character.width / 2);
-    let nameY = Math.floor(paintPos.y - character.height / 2 * heightFactor) - offsetY;
+    const nameX = Math.floor(paintPos.x - character.width / 2);
+    const nameY = Math.floor(paintPos.y - character.height / 2 * heightFactor) - offsetY;
     paintPlayerName(ctx, character, { x: nameX, y: nameY }, game);
 }
 

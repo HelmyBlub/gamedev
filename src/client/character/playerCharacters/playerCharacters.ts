@@ -21,18 +21,15 @@ export const PLAYER_CHARACTER_CLASSES_FUNCTIONS: PlayerCharacterClassesFunctions
 export function onDomLoadSetCharacterClasses() {
     addLevelingCharacter();
     addAbilityLevelingCharacter();
-    //addShooterClass();
-    //addSwordClass();
-    //addCasterClass();
     addSniperClass();
     addTowerClass();
     addTamerClass();
 }
 
-export function initPlayerCharacterChoiceOptions(character: Character, game: Game){
+export function initPlayerCharacterChoiceOptions(character: Character, game: Game) {
     const options: UpgradeOption[] = createCharacterChooseUpgradeOptions(game);
-    for(let i = 0; i < 3; i++){
-        if(options.length > i){
+    for (let i = 0; i < 3; i++) {
+        if (options.length > i) {
             character.upgradeChoices.push(options[i]);
         }
     }
@@ -40,9 +37,9 @@ export function initPlayerCharacterChoiceOptions(character: Character, game: Gam
 
 export function createCharacterChooseUpgradeOptions(game: Game): UpgradeOption[] {
     const upgradeOptions: UpgradeOption[] = [];
-    let keys = Object.keys(PLAYER_CHARACTER_CLASSES_FUNCTIONS);
+    const keys = Object.keys(PLAYER_CHARACTER_CLASSES_FUNCTIONS);
 
-    for(let key of keys){
+    for (let key of keys) {
         upgradeOptions.push({
             displayText: key,
             type: "Character",

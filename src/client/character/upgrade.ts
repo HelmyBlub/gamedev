@@ -25,8 +25,8 @@ export type PetAbilityUpgradeOption = UpgradeOption & {
 export type UpgradeOptionAndProbability = { option: UpgradeOption, probability: number };
 
 export function fillRandomUpgradeOptionChoices(character: Character, game: Game) {
-    if(character.upgradeChoices.length > 0) return;
-    let upgradeOptionsAndProbabilities: UpgradeOptionAndProbability[] = getCharacterUpgradeOptions(character, game);
+    if (character.upgradeChoices.length > 0) return;
+    const upgradeOptionsAndProbabilities: UpgradeOptionAndProbability[] = getCharacterUpgradeOptions(character, game);
     let totalProbability = upgradeOptionsAndProbabilities.reduce((acc, ele) => acc + ele.probability, 0);
 
     const numberChoices = 3;
@@ -34,7 +34,7 @@ export function fillRandomUpgradeOptionChoices(character: Character, game: Game)
         const random = nextRandom(game.state.randomSeed) * totalProbability;
         let currentProb = 0;
         for (let j = 0; j < upgradeOptionsAndProbabilities.length; j++) {
-            let upgradeOptionAndProbability = upgradeOptionsAndProbabilities[j];
+            const upgradeOptionAndProbability = upgradeOptionsAndProbabilities[j];
             currentProb += upgradeOptionAndProbability.probability;
             if (currentProb >= random) {
                 character.upgradeChoices.push(upgradeOptionAndProbability.option);
@@ -47,7 +47,7 @@ export function fillRandomUpgradeOptionChoices(character: Character, game: Game)
 }
 
 export function executeUpgradeOptionChoice(character: Character, upgradeChoice: UpgradeOption, game: Game) {
-    let characterTypeFunction = CHARACTER_TYPE_FUNCTIONS[character.type];
+    const characterTypeFunction = CHARACTER_TYPE_FUNCTIONS[character.type];
     if (characterTypeFunction.executeUpgradeOption) {
         characterTypeFunction.executeUpgradeOption(character, upgradeChoice, game);
         character.upgradeChoices = [];
@@ -59,7 +59,7 @@ export function executeUpgradeOptionChoice(character: Character, upgradeChoice: 
 
 function getCharacterUpgradeOptions(character: Character, game: Game): UpgradeOptionAndProbability[] {
     let upgradeOptionAndProbability: UpgradeOptionAndProbability[] = [];
-    let characterTypeFunction = CHARACTER_TYPE_FUNCTIONS[character.type];
+    const characterTypeFunction = CHARACTER_TYPE_FUNCTIONS[character.type];
     if (characterTypeFunction.createBossUpgradeOptions) {
         upgradeOptionAndProbability = characterTypeFunction.createBossUpgradeOptions(character, game);
     }

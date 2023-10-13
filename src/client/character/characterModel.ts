@@ -20,7 +20,7 @@ export type CHARACTER_TYPE_FUNCTIONS = {
         createBossUpgradeOptions?: (character: Character, game: Game) => UpgradeOptionAndProbability[],
         executeUpgradeOption?: (character: Character, upgradeOptionChoice: UpgradeOption, game: Game) => void,
         paintCharacterType?: (ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) => void,
-        reset?:  (character: Character) => void,
+        reset?: (character: Character) => void,
     }
 }
 
@@ -51,14 +51,14 @@ export const DEFAULT_CHARACTER = "Character";
 export const IMAGE_SLIME = "slime";
 export const IMAGE_PLAYER_PARTS = "playerParts";
 
-GAME_IMAGES[IMAGE_SLIME] = { 
+GAME_IMAGES[IMAGE_SLIME] = {
     properties: { baseColor: "green" },
     imagePath: "/images/slimeEnemy.png",
     spriteRowHeights: [20],
     spriteRowWidths: [20]
 };
 
-let playerImageProperties: CharacterImageLoadProperties = {
+const playerImageProperties: CharacterImageLoadProperties = {
     headSpriteRows: [0],
     headSpriteCounter: 3,
     chestSpriteRows: [1, 3, 5],
@@ -122,7 +122,7 @@ export type Character = Position & {
         level: number,
         experience: number,
         experienceForLevelUp: number,
-    }    
+    }
 }
 
 export function createCharacter(
@@ -144,7 +144,7 @@ export function createCharacter(
         y: y,
         width: width,
         height: height,
-        paint:{
+        paint: {
             color: color,
         },
         moveSpeed: moveSpeed,
@@ -165,7 +165,7 @@ export function createCharacter(
 }
 
 export function createPlayerCharacter(idCounter: IdCounter, pos: Position, seed: RandomSeed, game: Game): Character {
-    let playerCharacter = createCharacter(getNextId(idCounter), pos.x, pos.y, 20, 40, undefined, 2, 200, FACTION_PLAYER, DEFAULT_CHARACTER, 1);
+    const playerCharacter = createCharacter(getNextId(idCounter), pos.x, pos.y, 20, 40, undefined, 2, 200, FACTION_PLAYER, DEFAULT_CHARACTER, 1);
     playerCharacter.paint.randomizedCharacterImage = createRandomizedCharacterImageData(GAME_IMAGES[IMAGE_PLAYER_PARTS], seed);
     playerCharacter.willTurnToPetOnDeath = true;
     playerCharacter.isPet = false;

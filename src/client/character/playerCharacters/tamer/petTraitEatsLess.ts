@@ -10,7 +10,7 @@ export function addTamerPetTraitEatsLess() {
     }
 }
 
-function createTrait(): Trait{
+function createTrait(): Trait {
     return {
         name: TAMER_PET_TRAIT_EATS_LESS,
         opposite: TAMER_PET_TRAIT_VERY_HUNGRY,
