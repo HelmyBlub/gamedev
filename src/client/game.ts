@@ -1,6 +1,6 @@
-import { changeCharacterId, countAlivePlayerCharacters, findCharacterById, findMyCharacter, getPlayerCharacters, resetCharacter, tickCharacters, tickMapCharacters } from "./character/character.js";
+import { changeCharacterId, countAlivePlayerCharacters, findAndSetNewCameraCharacterId, findCharacterById, findMyCharacter, getPlayerCharacters, resetCharacter, tickCharacters, tickMapCharacters } from "./character/character.js";
 import { paintAll } from "./gamePaint.js";
-import { findPlayerByCharacterId, gameInitPlayers } from "./player.js";
+import { createDefaultKeyBindings1, findPlayerByCharacterId, gameInitPlayers } from "./player.js";
 import { MOUSE_ACTION, UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.js";
 import { Position, GameState, Game, IdCounter, Debugging, PaintTextData, ClientInfo, LOCALSTORAGE_PASTCHARACTERS, LOCALSTORAGE_NEXTENDBOSSES, NextEndbosses, CelestialDirection } from "./gameModel.js";
 import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap, removeAllMapCharacters } from "./map/map.js";
@@ -86,10 +86,10 @@ export function gameInit(game: Game) {
     game.state.bossStuff.bossLevelCounter = 1;
     game.state.bossStuff.endBossStarted = false;
     game.state.deathCircleCreated = false;
+    game.state.paused = false;
     game.clientKeyBindings = [];
     game.performance = {};
     game.UI.displayTextData = [];
-    game.state.paused = false;
     removeAllMapCharacters(game.state.map);
     createFixPositionRespawnEnemiesOnInit(game);
     gameInitPlayers(game);
@@ -99,6 +99,21 @@ export function gameInit(game: Game) {
         game.state.playerInputs = game.multiplayer.cachePlayerInputs!;
     }
     resetPastCharacters(game);
+}
+
+export function resetGameNonStateData(game: Game){
+    game.performance = {};
+    game.UI.displayTextData = [];
+    game.multiplayer.autosendMousePosition.nextTime = 0;
+    for (let i = 0; i < game.state.clientInfos.length; i++) {
+        if (game.multiplayer.myClientId === game.state.clientInfos[i].id) {
+            game.clientKeyBindings = [{
+                clientIdRef: game.multiplayer.myClientId,
+                keyCodeToActionPressed: createDefaultKeyBindings1()
+            }];
+        }
+    }
+    findAndSetNewCameraCharacterId(game.camera, game.state.players, game.multiplayer.myClientId);
 }
 
 export function getCameraPosition(game: Game): Position {

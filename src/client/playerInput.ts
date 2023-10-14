@@ -5,7 +5,7 @@ import { Game, Position } from "./gameModel.js";
 import { testGame } from "./test/gameTest.js";
 import { websocketConnect } from "./multiplayerConenction.js";
 import { ABILITIES_FUNCTIONS } from "./ability/ability.js";
-import { calculateDirection, getCameraPosition, getClientInfo, loadFromLocalStorage, takeTimeMeasure } from "./game.js";
+import { calculateDirection, getCameraPosition, getClientInfo, loadFromLocalStorage, resetGameNonStateData, takeTimeMeasure } from "./game.js";
 import { executeUpgradeOptionChoice } from "./character/upgrade.js";
 import { canCharacterTradeAbilityOrPets, characterTradeAbilityAndPets } from "./character/character.js";
 
@@ -110,6 +110,7 @@ export function keyDown(event: { code: string, preventDefault?: Function, stopPr
             if(game.debug.activateSaveStates && !game.multiplayer.websocket){
                 const saveStates = game.testing.saveStates;
                 game.state = JSON.parse(saveStates.states[saveStates.states.length-1]);
+                resetGameNonStateData(game);
                 saveStates.nextSaveStateTime = game.state.time + saveStates.saveInterval;
             }
         case "F2":
@@ -117,6 +118,7 @@ export function keyDown(event: { code: string, preventDefault?: Function, stopPr
                 const saveStates = game.testing.saveStates;
                 if(saveStates.states.length > 1){
                     game.state = JSON.parse(saveStates.states[saveStates.states.length-2]);
+                    resetGameNonStateData(game);
                     saveStates.nextSaveStateTime = game.state.time + saveStates.saveInterval;
                 }
             }

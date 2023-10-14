@@ -2,7 +2,7 @@ import { Character } from "../character/characterModel.js";
 import { applyDebuff } from "../debuff/debuff.js";
 import { createDebuffSlow } from "../debuff/debuffSlow.js";
 import { getNextId } from "../game.js";
-import { Position, Game, IdCounter } from "../gameModel.js";
+import { Position, Game, IdCounter, FACTION_ENEMY } from "../gameModel.js";
 import { getPointPaintPosition } from "../gamePaint.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, detectSomethingToCharacterHit } from "./ability.js";
 
@@ -64,6 +64,10 @@ function paintAbilityIce(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwn
     const paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
     ctx.globalAlpha = 0.30;
     ctx.fillStyle = "white";
+    if(abilityOwner.faction === FACTION_ENEMY){
+        ctx.fillStyle = "darkgray";
+        ctx.globalAlpha = 0.50;
+    }
     ctx.beginPath();
     ctx.arc(
         paintPos.x,

@@ -121,6 +121,11 @@ function resetAbility(ability: Ability) {
 
 function setAbilityTowerToBossLevel(ability: Ability, level: number) {
     const abilityTower = ability as AbilityTower;
+    const maxTowers = level * 3;
+    if(abilityTower.orderOfAbilities.length > maxTowers){
+        abilityTower.orderOfAbilities.splice(maxTowers);
+    }
+    abilityTower.currentAbilityIndex = (level * 2) % abilityTower.orderOfAbilities.length;
     abilityTower.damage = level * 10;
 }
 
@@ -343,6 +348,9 @@ function getTowerConnectionCount(abilityObjects: AbilityObject[], tower: Ability
 function paintEffectConnected(ctx: CanvasRenderingContext2D, abilityObjectTower: AbilityObjectTower, cameraPosition: Position, abilityObjects: AbilityObject[]) {
     if (abilityObjectTower.conntetedToId !== undefined) {
         ctx.strokeStyle = "red";
+        if(abilityObjectTower.faction === FACTION_ENEMY){
+            ctx.strokeStyle = "black";
+        }
         const connectedTower = getTowerById(abilityObjects, abilityObjectTower.conntetedToId);
         if (connectedTower === undefined) {
             console.log("tower connection not cleaned up");

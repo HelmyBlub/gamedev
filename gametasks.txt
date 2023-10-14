@@ -7,13 +7,12 @@ current tasks:
 - balancing
     - defeat each endboss character type once
         - sniper
+            -
         - tamer
-            - boss tower should disapear after time. could be in a bad spot.
-            - ice aura not distinguishable between player one and boss one
-            - on endboss fight start, remove other enemy tower, so it does not connect to an outside one?
-            - normal boss only placed ice towers? should also place different ones
-        - builder
+            - sniper: can outrun slow pet?
+            - tamer: can keep distance?
         - one with all
+        - builder
 
 possible future tasks: (only keep 5)
 - improvement: getChunksTouchingLine2 does not work, still needs to improve

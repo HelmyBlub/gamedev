@@ -79,6 +79,7 @@ function createPetsBasedOnLevelAndCharacter(basedOnCharacter: Character, level: 
     const pet: TamerPetCharacter = deepCopy(basedOnCharacter.pets![randomPetIndex]);
     pet.x = newBoss.x;
     pet.y = newBoss.y;
+    pet.faction = newBoss.faction;
     if (level === 1) {
         for (let i = pet.abilities.length - 1; i >= 0; i--) {
             const ability = pet.abilities[i];
