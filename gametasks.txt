@@ -2,8 +2,18 @@ current tasks:
 - new test runs
     - check tamer run -> make him win bossfight
         - tamer run do not replay correctly again
+            - download last stream(#152), compare runs to maybe find reason
     - get a end boss defeating snipe run
 - balancing
+    - defeat each endboss character type once
+        - sniper
+        - tamer
+            - boss tower should disapear after time. could be in a bad spot.
+            - ice aura not distinguishable between player one and boss one
+            - on endboss fight start, remove other enemy tower, so it does not connect to an outside one?
+            - normal boss only placed ice towers? should also place different ones
+        - builder
+        - one with all
 
 possible future tasks: (only keep 5)
 - improvement: getChunksTouchingLine2 does not work, still needs to improve

@@ -27,6 +27,7 @@ type AbilityObjectTower = AbilityObject & {
     lineDamageTickFrequency: number,
     lineDamageNextDamageTick?: number,
     isBossTower?: boolean,
+    deleteTime?: number,
 }
 
 type AbilityTower = Ability & {
@@ -40,6 +41,7 @@ type AbilityTower = Ability & {
 }
 
 export const ABILITY_NAME_TOWER = "Tower";
+const BOSS_TOWE_DESPAWN_TIME = 30000;
 GAME_IMAGES[ABILITY_NAME_TOWER] = {
     imagePath: "/images/hammer.png",
     spriteRowHeights: [20],
@@ -132,12 +134,14 @@ function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
             y: abilityOwner.y + (nextRandom(game.state.randomSeed) * 50 - 25)
         };
         castTower(abilityOwner, ability, pos, true, game);
-        console.log("Boss ai build tower");
     }
 }
 
 function deleteAbilityObjectTower(abilityObject: AbilityObject, game: Game) {
-    //nothing to do here, delete happens on cast
+    const abilityObjectTower = abilityObject as AbilityObjectTower;
+    if(abilityObjectTower.deleteTime !== undefined && abilityObjectTower.deleteTime <= game.state.time){
+        return true;
+    }
     return false;
 }
 
@@ -160,6 +164,7 @@ function castTower(abilityOwner: AbilityOwner, ability: Ability, castPosition: P
     const newTower: AbilityObjectTower = createAbilityObjectTower(game.state.idCounter, abilityOwner.id, abilityOwner.faction, castPosition, nextAbility, abilityTower.damage);
     if (abilityOwner.type === CHARACTER_TYPE_BOSS_ENEMY || abilityOwner.type === CHARACTER_TYPE_END_BOSS_ENEMY) {
         newTower.isBossTower = true;
+        newTower.deleteTime = game.state.time + BOSS_TOWE_DESPAWN_TIME;
     }
     const nearest = getNearestTower(abilityObjects, newTower, game.state.randomSeed);
     if (nearest) {
@@ -288,8 +293,8 @@ function paintAbilityObjectTower(ctx: CanvasRenderingContext2D, abilityObject: A
         const towerBaseSize = tower.size;
         const towerHeight = towerBaseSize + 5;
         let paintPos = getPointPaintPosition(ctx, tower, cameraPosition);
-        paintPos.x -= - towerBaseSize / 2;
-        paintPos.y -= - towerBaseSize / 2;
+        paintPos.x -= towerBaseSize / 2;
+        paintPos.y -= towerBaseSize / 2;
         if (owner?.clientId === game.multiplayer.myClientId) {
             const ability = owner.character.abilities.find((e) => e.name === ABILITY_NAME_TOWER) as AbilityTower;
             if (getTowerCountOfOwner(game.state.abilityObjects, tower.ownerId) >= ability.orderOfAbilities.length) {

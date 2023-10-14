@@ -59,12 +59,19 @@ export type TestingStuff = {
         autoPlaying: boolean,
         nextAutoButtonPressTime: number
     },
+    saveStates:{
+        maxNumberStates: number,
+        saveInterval: number,
+        nextSaveStateTime?: number,
+        states: string[],
+    }
 }
 
 export type Debugging = {
     paintMarkActiveChunks?: boolean,
     paintTileXYNumbers?: boolean,
     takeTimeMeasures?: boolean,
+    activateSaveStates?: boolean,
     timeMeasuresData?: { name: string, timeMeasures: number[], tempTime: number }[],
 }
 
@@ -280,6 +287,11 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
                 autoPlaying: false,
                 hotkeyEnabled: false,
                 nextAutoButtonPressTime: 0,
+            },
+            saveStates: {
+                maxNumberStates: 10,
+                saveInterval: 10000,
+                states: [],
             }
         },
         debug: {

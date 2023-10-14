@@ -484,6 +484,20 @@ function tick(gameTimePassed: number, game: Game) {
 
         garbageCollectPathingCache(game.performance.pathingCache, game.state.time, game);
         determineActiveChunks(getPlayerCharacters(game.state.players), game.state.map, game);
+        saveStates(game);
+    }
+}
+
+function saveStates(game: Game){
+    if(game.debug.activateSaveStates && !game.multiplayer.websocket){
+        const saveStates = game.testing.saveStates;
+        if(saveStates.nextSaveStateTime === undefined || saveStates.nextSaveStateTime <= game.state.time){
+            saveStates.nextSaveStateTime = game.state.time + saveStates.saveInterval;
+            saveStates.states.push(JSON.stringify(game.state));
+            if(saveStates.states.length > saveStates.maxNumberStates){
+                saveStates.states.shift();
+            }
+        }
     }
 }
 
