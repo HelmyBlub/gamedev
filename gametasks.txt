@@ -1,17 +1,39 @@
 current tasks:
 - new test runs
     - check tamer run -> make him win bossfight
-        - tamer run do not replay correctly again
+        - Bug: tamer run do not replay correctly again
+            - does not happen always
             - download last stream(#152), compare runs to maybe find reason
+                - real run 33:52
+                - replay 46:53
+                    - slow diverges, unsure if it starts with game starts diverged or takes a second
+                        - unsuer after 3 sec. definetly diverged after gametime of 6+ seconds
+                    - random number generator seems correctly (unsure if this makes sense)
+                        - same choice for first boss upgrades
+            - reproduce steps:
+                1. have a state with a lot of past tamers 
+                2. reload browser
+                3. move a bit
+                4. restart
+                5. run right and choose tamer class on the endboss sign
+                6. feed one pet until fat and player character has to pull him
+                7. run right until dead while pulling fat pet
+            - same steps but without steps 3&4
+                - problem did not occure
+            - random seed seem to be correct
+            - thoughts:
+                - do i use some reference instead of a value somewhere?
+                - only affects tamer, so it should hae something todo with class choice?
     - get a end boss defeating snipe run
 - balancing
     - defeat each endboss character type once
         - sniper
-            -
+            - defeat sniper boss
         - tamer
-            - sniper: can outrun slow pet?
-            - tamer: can keep distance?
+            - sniper: can outrun slow of boss pet?
+            - tamer: can keep distance from boss pets?
         - one with all
+            - defeat boss with all
         - builder
 
 possible future tasks: (only keep 5)
