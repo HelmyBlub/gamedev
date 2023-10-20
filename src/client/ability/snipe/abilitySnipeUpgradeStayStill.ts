@@ -115,7 +115,7 @@ function getAbilityUpgradeStayStillUiTextLong(ability: Ability, option: AbilityU
         textLines.push(`All other upgrades will benefit`);
         textLines.push(`from Stay Still bonus damage.`);
     } else {
-        textLines.push(`Not moving or shooting for ${STAY_STILL_TIME / 1000} seconds`);
+        textLines.push(`Not moving and shooting for ${STAY_STILL_TIME / 1000} seconds`);
         textLines.push(`will activate ${DAMAGE_FACTOR * 100}% damage bonus.`);
         textLines.push(`The damage bonus will be active until`);
         textLines.push(`rifle reloading.`);

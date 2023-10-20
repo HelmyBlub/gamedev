@@ -3,7 +3,6 @@ current tasks:
 - console.log "connections not cleaned up"
 - new test runs
     - new long tests runs
-        - builder
         - sniper
         - tamer
 - balancing
