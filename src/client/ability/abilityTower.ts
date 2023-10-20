@@ -124,6 +124,12 @@ function setAbilityTowerToBossLevel(ability: Ability, level: number) {
     const maxTowers = level * 3;
     if(abilityTower.orderOfAbilities.length > maxTowers){
         abilityTower.orderOfAbilities.splice(maxTowers);
+    }else if (abilityTower.orderOfAbilities.length < maxTowers){
+        const missingCount = maxTowers - abilityTower.orderOfAbilities.length;
+        for(let i = 0; i< missingCount;i++){
+            const newKey = abilityTower.orderOfAbilities.length % abilityTower.availableAbilityKeys.length;
+            abilityTower.orderOfAbilities.push(newKey);
+        }
     }
     abilityTower.currentAbilityIndex = (level * 2) % abilityTower.orderOfAbilities.length;
     abilityTower.damage = level * 10;
