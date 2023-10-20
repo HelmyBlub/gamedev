@@ -479,10 +479,11 @@ function endGameReplayStuff(game: Game, newScore: number) {
 function tick(gameTimePassed: number, game: Game) {
     if (!game.state.ended && (!game.state.paused || game.state.tickOnceInPaused)) {
         if (game.state.tickOnceInPaused) game.state.tickOnceInPaused = false;
+        game.state.time += gameTimePassed;
         doStuff(game);
         addReplayInputs(game);
-        game.state.time += gameTimePassed;
         generateMissingChunks(game.state.map, getPlayerCharacters(game.state.players), game.state.idCounter, game);
+        determineActiveChunks(getPlayerCharacters(game.state.players), game.state.map, game);
         tickPlayerInputs(game.state.playerInputs, game.state.time, game);
         tickMapCharacters(game.state.map, game);
         tickBossCharacters(game.state.bossStuff, game);
@@ -494,11 +495,10 @@ function tick(gameTimePassed: number, game: Game) {
 
         tickAbilityObjects(game.state.abilityObjects, game);
 
-        if (gameEndedCheck(game)) endGame(game);
+        if (gameEndedCheck(game)) endGame(game);        
         if (game.state.restartAfterTick) gameRestart(game);
 
         garbageCollectPathingCache(game.performance.pathingCache, game.state.time, game);
-        determineActiveChunks(getPlayerCharacters(game.state.players), game.state.map, game);
         saveStates(game);
     }
 }
