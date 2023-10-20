@@ -145,6 +145,7 @@ function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
 function deleteAbilityObjectTower(abilityObject: AbilityObject, game: Game) {
     const abilityObjectTower = abilityObject as AbilityObjectTower;
     if(abilityObjectTower.deleteTime !== undefined && abilityObjectTower.deleteTime <= game.state.time){
+        updateTowersWhichHaveDeletedId(game.state.abilityObjects, abilityObjectTower.id);
         return true;
     }
     return false;
@@ -159,7 +160,7 @@ function castTower(abilityOwner: AbilityOwner, ability: Ability, castPosition: P
 
     if (getTowerCountOfOwner(abilityObjects, abilityOwner.id) >= abilityTower.orderOfAbilities.length) {
         const deletedId = deleteOldesTowerOfOwnerAndReturnDeletedId(abilityObjects, abilityOwner.id);
-        updateTowersWhichHadDeletedId(abilityObjects, deletedId);
+        updateTowersWhichHaveDeletedId(abilityObjects, deletedId);
     }
 
     const nextAbilityKey = abilityTower.availableAbilityKeys[abilityTower.orderOfAbilities[abilityTower.currentAbilityIndex]];
@@ -180,7 +181,7 @@ function castTower(abilityOwner: AbilityOwner, ability: Ability, castPosition: P
     updateTowerObjectAbilityLevels(abilityObjects);
 }
 
-function updateTowersWhichHadDeletedId(abilityObjects: AbilityObject[], deletedId: number) {
+function updateTowersWhichHaveDeletedId(abilityObjects: AbilityObject[], deletedId: number) {
     for (let abilityObject of abilityObjects) {
         if (abilityObject.type === ABILITY_NAME_TOWER) {
             const abilityTower = abilityObject as AbilityObjectTower;

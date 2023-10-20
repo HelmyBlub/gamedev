@@ -7,18 +7,18 @@ import { mapGenerationEndBossChunkStuff } from "./mapEndBossArea.js";
 import { MAP_OBJECT_FIRE_ANIMATION } from "./mapObjectFireAnimation.js";
 
 export const pastCharactersMapTilePositions = [
-    { x: 3, y: 2, tileId: 5, lookDirection: 0 },
-    { x: 4, y: 2, tileId: 5, lookDirection: 0 },
-    { x: 5, y: 2, tileId: 5, lookDirection: 0 },
-    { x: 3, y: 6, tileId: 5, lookDirection: Math.PI },
-    { x: 4, y: 6, tileId: 5, lookDirection: Math.PI },
-    { x: 5, y: 6, tileId: 5, lookDirection: Math.PI },
-    { x: 2, y: 3, tileId: 6, lookDirection: Math.PI / 2 },
-    { x: 2, y: 4, tileId: 6, lookDirection: Math.PI / 2 },
-    { x: 2, y: 5, tileId: 6, lookDirection: Math.PI / 2 },
-    { x: 6, y: 3, tileId: 6, lookDirection: Math.PI / 2 * 3 },
-    { x: 6, y: 4, tileId: 6, lookDirection: Math.PI / 2 * 3 },
-    { x: 6, y: 5, tileId: 6, lookDirection: Math.PI / 2 * 3 },
+    { x: 3, y: 2, tileId: 5, lookDirection: Math.PI / 2 },
+    { x: 4, y: 2, tileId: 5, lookDirection: Math.PI / 2 },
+    { x: 5, y: 2, tileId: 5, lookDirection: Math.PI / 2 },
+    { x: 6, y: 3, tileId: 6, lookDirection: Math.PI },
+    { x: 6, y: 4, tileId: 6, lookDirection: Math.PI },
+    { x: 6, y: 5, tileId: 6, lookDirection: Math.PI },
+    { x: 5, y: 6, tileId: 5, lookDirection: Math.PI / 2 * 3 },
+    { x: 4, y: 6, tileId: 5, lookDirection: Math.PI / 2 * 3 },
+    { x: 3, y: 6, tileId: 5, lookDirection: Math.PI / 2 * 3 },
+    { x: 2, y: 5, tileId: 6, lookDirection: 0 },
+    { x: 2, y: 4, tileId: 6, lookDirection: 0 },
+    { x: 2, y: 3, tileId: 6, lookDirection: 0 },
 ]
 export function generateMissingChunks(map: GameMap, positions: Position[], idCounter: IdCounter, game: Game) {
     takeTimeMeasure(game.debug, "", "generateMissingChunks");
