@@ -107,17 +107,19 @@ export function keyDown(event: { code: string, preventDefault?: Function, stopPr
             }
             break;
         case "F1":
-            if(game.debug.activateSaveStates && !game.multiplayer.websocket){
+            if (game.debug.activateSaveStates && !game.multiplayer.websocket) {
                 const saveStates = game.testing.saveStates;
-                game.state = JSON.parse(saveStates.states[saveStates.states.length-1]);
+                game.state = JSON.parse(saveStates.states[saveStates.states.length - 1]);
+                game.testing.record!.data = JSON.parse(saveStates.statesRecordData[saveStates.states.length - 1]);
                 resetGameNonStateData(game);
                 saveStates.nextSaveStateTime = game.state.time + saveStates.saveInterval;
             }
         case "F2":
-            if(game.debug.activateSaveStates && !game.multiplayer.websocket){
+            if (game.debug.activateSaveStates && !game.multiplayer.websocket) {
                 const saveStates = game.testing.saveStates;
-                if(saveStates.states.length > 1){
-                    game.state = JSON.parse(saveStates.states[saveStates.states.length-2]);
+                if (saveStates.states.length > 1) {
+                    game.state = JSON.parse(saveStates.states[saveStates.states.length - 2]);
+                    game.testing.record!.data = JSON.parse(saveStates.statesRecordData[saveStates.states.length - 2]);
                     resetGameNonStateData(game);
                     saveStates.nextSaveStateTime = game.state.time + saveStates.saveInterval;
                 }

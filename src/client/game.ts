@@ -509,8 +509,10 @@ function saveStates(game: Game){
         if(saveStates.nextSaveStateTime === undefined || saveStates.nextSaveStateTime <= game.state.time){
             saveStates.nextSaveStateTime = game.state.time + saveStates.saveInterval;
             saveStates.states.push(JSON.stringify(game.state));
+            saveStates.statesRecordData.push(JSON.stringify(game.testing.record?.data));
             if(saveStates.states.length > saveStates.maxNumberStates){
                 saveStates.states.shift();
+                saveStates.statesRecordData.shift();
             }
         }
     }

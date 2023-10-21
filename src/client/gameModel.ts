@@ -20,17 +20,19 @@ export type IdCounter = {
     nextId: number
 }
 
+export type RecordData = {
+    replayPlayerInputs: Omit<PlayerInput, "executeTime">[],
+    pastCharacters?: PastPlayerCharacters,
+    nextEndBosses?: NextEndbosses,
+    gameEndAsserts?: {
+        type: string,
+        data: any,
+    }[],
+}
+
 export type TestingStuff = {
     record?: {
-        data: {
-            replayPlayerInputs: Omit<PlayerInput, "executeTime">[],
-            pastCharacters?: PastPlayerCharacters,
-            nextEndBosses?: NextEndbosses,
-            gameEndAsserts?: {
-                type: string,
-                data: any,
-            }[]
-        }
+        data: RecordData,
         mapSeed?: number,
         randomStartSeed?: number,
         restartPlayerInput?: Omit<CommandRestart, "executeTime">,
@@ -59,11 +61,12 @@ export type TestingStuff = {
         autoPlaying: boolean,
         nextAutoButtonPressTime: number
     },
-    saveStates:{
+    saveStates: {
         maxNumberStates: number,
         saveInterval: number,
         nextSaveStateTime?: number,
         states: string[],
+        statesRecordData: string[],
     }
 }
 
@@ -292,6 +295,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
                 maxNumberStates: 10,
                 saveInterval: 10000,
                 states: [],
+                statesRecordData: [],
             }
         },
         debug: {

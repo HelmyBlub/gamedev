@@ -6,6 +6,7 @@ import { AbilityUpgrade } from "../abilityUpgrade.js";
 import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilitySnipe, createAbilityObjectSnipeInitial, getOptionsSnipeUpgrade } from "./abilitySnipe.js";
 import { ABILITY_SNIPE_UPGRADE_AFTER_IMAGE } from "./abilitySnipeUpgradeAfterImage.js";
 import { ABILITY_SNIPE_UPGRADE_MORE_RIFLES } from "./abilitySnipeUpgradeMoreRifle.js";
+import { ABILITY_SNIPE_UPGRADE_SPLIT_SHOT } from "./abilitySnipeUpgradeSplitShot.js";
 
 export const ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT = "Backwards Shot";
 
@@ -70,6 +71,7 @@ function getAbilityUpgradeBackwardsShotUiTextLong(ability: Ability, option: Abil
         textLines.push(`List of synergies:`);
         textLines.push(`- ${ABILITY_SNIPE_UPGRADE_AFTER_IMAGE}`);
         textLines.push(`- ${ABILITY_SNIPE_UPGRADE_MORE_RIFLES}`);
+        textLines.push(`- ${ABILITY_SNIPE_UPGRADE_SPLIT_SHOT}`);
     } else {
         textLines.push(`Your main shot also shoots an additional`);
         textLines.push(`shot backwards.`);

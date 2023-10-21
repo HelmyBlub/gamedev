@@ -12,7 +12,7 @@ import { GAME_IMAGES, getImage } from "../../imageLoad.js";
 import { changeTileIdOfMapChunk } from "../../map/map.js";
 import { getBossAreaMiddlePosition, getEntranceChunkAndTileXYForPosition } from "../../map/mapEndBossArea.js";
 import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick, resetCharacter } from "../character.js";
-import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, createCharacter } from "../characterModel.js";
+import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, PLAYER_BASE_HP, createCharacter } from "../characterModel.js";
 import { paintCharacterDefault, paintCharatersPets } from "../characterPaint.js";
 import { PathingCache } from "../pathing.js";
 import { getCelestialDirection } from "./bossEnemy.js";
@@ -21,6 +21,7 @@ export type EndBossEnemyCharacter = Character;
 export const CHARACTER_TYPE_END_BOSS_ENEMY = "EndBossEnemyCharacter";
 
 export const IMAGE_CROWN = "Crown";
+export const END_BOSS_BASE_HP = 50000000;
 GAME_IMAGES[IMAGE_CROWN] = {
     imagePath: "/images/crown.png",
     spriteRowHeights: [20],
@@ -38,7 +39,7 @@ export function createDefaultNextEndBoss(idCounter: IdCounter, game: Game): EndB
     const bossSize = 60;
     const color = "black";
     const moveSpeed = 1;
-    const hp = 50000000;
+    const hp = END_BOSS_BASE_HP;
     const experienceWorth = 0;
     const bossCharacter = createCharacter(getNextId(idCounter), 0, 0, bossSize, bossSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_END_BOSS_ENEMY, experienceWorth);
     bossCharacter.paint.image = IMAGE_SLIME;
@@ -111,7 +112,12 @@ function tickEndBossEnemyCharacter(enemy: EndBossEnemyCharacter, game: Game, pat
 
 function modifyCharacterToEndBoss(boss: Character) {
     boss.type = CHARACTER_TYPE_END_BOSS_ENEMY;
-    boss.maxHp = 50000000;
+    let newHp = END_BOSS_BASE_HP
+    if(boss.characterClass){
+        const hpIncreaseFactor = boss.maxHp / PLAYER_BASE_HP;
+        newHp *= hpIncreaseFactor;
+    }
+    boss.maxHp = newHp;
     boss.hp = boss.maxHp;
     boss.faction = FACTION_ENEMY;
     if (boss.pets) {
@@ -163,20 +169,22 @@ function paintBossHpBar(ctx: CanvasRenderingContext2D, boss: Character) {
 
 function changeBossAbilityLevelBasedOnHp(enemy: EndBossEnemyCharacter) {
     const hpLeftPerCent = enemy.hp / enemy.maxHp;
-    const abilityLevel = Math.max(Math.floor((1 - hpLeftPerCent) * 10), 1);
+    const hpBasedlevel = Math.max(Math.floor((1 - hpLeftPerCent) * 10), 1);
 
     for (let ability of enemy.abilities) {
         const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
         if (abilityFunctions && abilityFunctions.setAbilityToBossLevel) {
-            abilityFunctions.setAbilityToBossLevel(ability, abilityLevel);
+            abilityFunctions.setAbilityToBossLevel(ability, hpBasedlevel);
         }
     }
     if (enemy.pets) {
+        const petMoveSpeed = Math.min(0.5 + (hpBasedlevel / 14 * 2), 3);
         for (let pet of enemy.pets) {
+            pet.moveSpeed = petMoveSpeed;
             for (let ability of pet.abilities) {
                 const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
                 if (abilityFunctions && abilityFunctions.setAbilityToBossLevel) {
-                    abilityFunctions.setAbilityToBossLevel(ability, abilityLevel);
+                    abilityFunctions.setAbilityToBossLevel(ability, hpBasedlevel);
                 }
             }
         }

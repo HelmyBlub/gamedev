@@ -1,7 +1,7 @@
 import { characterTakeDamage, getCharactersTouchingLine } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
 import { getCameraPosition, getNextId } from "../game.js";
-import { Position, Game, IdCounter, FACTION_PLAYER } from "../gameModel.js";
+import { Position, Game, IdCounter, FACTION_PLAYER, FACTION_ENEMY } from "../gameModel.js";
 import { getPointPaintPosition } from "../gamePaint.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, PaintOrderAbility } from "./ability.js";
 
@@ -83,7 +83,11 @@ function paintAbilityObjectFireLine(ctx: CanvasRenderingContext2D, abilityObject
     const cameraPosition = getCameraPosition(game);
 
     ctx.globalAlpha = 0.50;
-    const color = abilityObject.faction === FACTION_PLAYER ? "red" : "black";
+    let color = "red";
+    if(abilityObject.faction === FACTION_ENEMY){
+        color = "black";
+        ctx.globalAlpha = 0.80;
+    }
     ctx.strokeStyle = color;
     ctx.lineWidth = abilityObjectFireLine.width;
     ctx.beginPath();

@@ -108,8 +108,10 @@ function paintPastPlayerTakeoverInfo(ctx: CanvasRenderingContext2D, pastCharacte
         const spacing = 5;
         if (pastCharacter.pets) {
             for (let pet of pastCharacter.pets) {
-                const area = paintTamerPetCharacterStatsUI(ctx, pet, 20 + offsetX, tooltipY, game);
-                offsetX += area.width + spacing;
+                if(pet.tradable){
+                    const area = paintTamerPetCharacterStatsUI(ctx, pet, 20 + offsetX, tooltipY, game);
+                    offsetX += area.width + spacing;
+                }
             }
         }
         for (let ability of pastCharacter.abilities) {

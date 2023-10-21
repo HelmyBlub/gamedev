@@ -1,20 +1,6 @@
 current tasks:
-- past characters look into wrong direction
-- console.log "connections not cleaned up"
-- new test runs
-    - new long tests runs
-        - sniper
-        - tamer
-- balancing
-    - defeat each endboss character type once
-        - sniper
-            - defeat sniper boss
-        - tamer
-            - sniper: can outrun slow of boss pet?
-            - tamer: can keep distance from boss pets?
-        - one with all
-            - defeat boss with all
-        - builder
+- south direction has less enemies but with abilitites
+
 
 possible future tasks: (only keep 5)
 - improvement: getChunksTouchingLine2 does not work, still needs to improve
