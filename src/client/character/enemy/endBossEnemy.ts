@@ -96,13 +96,12 @@ function tickEndBossEnemyCharacter(enemy: EndBossEnemyCharacter, game: Game, pat
     const playerCharacters = getPlayerCharacters(game.state.players);
     const closest = determineClosestCharacter(enemy, playerCharacters);
 
-    calculateAndSetMoveDirectionToPositionWithPathing(enemy, closest.minDistanceCharacter, game.state.map, pathingCache, game.state.idCounter, game.state.time);
+    calculateAndSetMoveDirectionToPositionWithPathing(enemy, closest.minDistanceCharacter, game.state.map, pathingCache, game.state.idCounter, game.state.time, game);
     moveCharacterTick(enemy, game.state.map, game.state.idCounter);
 
     for (let ability of enemy.abilities) {
         const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
         if (abilityFunctions) {
-            if (abilityFunctions.tickAbility) abilityFunctions.tickAbility(enemy, ability, game);
             if (abilityFunctions.tickBossAI) abilityFunctions.tickBossAI(enemy, ability, game);
         }
     }

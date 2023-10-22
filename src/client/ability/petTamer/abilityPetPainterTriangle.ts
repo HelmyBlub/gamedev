@@ -218,16 +218,16 @@ function getRandomStartPaintPositionTriangle(pet: TamerPetCharacter, game: Game)
         const randomOffsetX = nextRandom(game.state.randomSeed) * 100 - 60;
         const randomOffsetY = nextRandom(game.state.randomSeed) * 100 - 60;
         position = { x: petOwner.x + randomOffsetX, y: petOwner.y + randomOffsetY };
-        blocking = isPositionBlocking(position, game.state.map, game.state.idCounter);
+        blocking = isPositionBlocking(position, game.state.map, game.state.idCounter, game);
         if (!blocking) {
             const tempPosition = { x: position.x, y: position.y };
             let direction = 0;
             moveByDirectionAndDistance(tempPosition, direction, TRIANGLESIZE, false);
-            blocking = isPositionBlocking(tempPosition, game.state.map, game.state.idCounter);
+            blocking = isPositionBlocking(tempPosition, game.state.map, game.state.idCounter, game);
             if (!blocking) {
                 direction += Math.PI * 2 / 3;
                 moveByDirectionAndDistance(tempPosition, direction, TRIANGLESIZE, false);
-                blocking = isPositionBlocking(tempPosition, game.state.map, game.state.idCounter);
+                blocking = isPositionBlocking(tempPosition, game.state.map, game.state.idCounter, game);
             }
         }
     } while (blocking);

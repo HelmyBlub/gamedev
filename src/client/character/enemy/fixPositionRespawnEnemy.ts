@@ -1,3 +1,4 @@
+import { ABILITIES_FUNCTIONS } from "../../ability/ability.js";
 import { calculateDistance } from "../../game.js";
 import { Game } from "../../gameModel.js";
 import { GameMap, positionToMapKey } from "../../map/map.js";
@@ -30,12 +31,18 @@ export function tickFixPositionRespawnEnemyCharacter(character: Character, game:
                 if (enemy.wasHitRecently) {
                     alertCloseEnemies(enemy, game);
                 }
-                calculateAndSetMoveDirectionToPositionWithPathing(enemy, closest.minDistanceCharacter, game.state.map, pathingCache, game.state.idCounter, game.state.time);
+                calculateAndSetMoveDirectionToPositionWithPathing(enemy, closest.minDistanceCharacter, game.state.map, pathingCache, game.state.idCounter, game.state.time, game);
+                for (let ability of enemy.abilities) {
+                    const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+                    if (abilityFunctions) {
+                        if (abilityFunctions.tickBossAI) abilityFunctions.tickBossAI(enemy, ability, game);
+                    }
+                }            
             } else {
                 const spawnDistance = calculateDistance(enemy, enemy.spawnPosition);
                 enemy.isAggroed = false;
                 if (spawnDistance > game.state.map.tileSize / 2) {
-                    calculateAndSetMoveDirectionToPositionWithPathing(enemy, enemy.spawnPosition, game.state.map, pathingCache, game.state.idCounter, game.state.time);
+                    calculateAndSetMoveDirectionToPositionWithPathing(enemy, enemy.spawnPosition, game.state.map, pathingCache, game.state.idCounter, game.state.time, game);
                 } else {
                     enemy.nextTickTime = game.state.time + closest.minDistance;
                     enemy.isMoving = false;

@@ -38,7 +38,7 @@ export function generateMissingChunks(map: GameMap, positions: Position[], idCou
                 const chunkX = startChunkX + xIndex;
                 let chunk = map.chunks[chunkXYToMapKey(chunkX, chunkY)];
                 if (chunk === undefined) {
-                    chunk = createNewChunk(map, chunkX, chunkY, idCounter);
+                    chunk = createNewChunk(map, chunkX, chunkY, idCounter, game);
                     map.chunks[chunkXYToMapKey(chunkX, chunkY)] = chunk;
                 }
             }
@@ -47,10 +47,10 @@ export function generateMissingChunks(map: GameMap, positions: Position[], idCou
     takeTimeMeasure(game.debug, "generateMissingChunks", "");
 }
 
-export function createNewChunk(map: GameMap, chunkX: number, chunkY: number, idCounter: IdCounter): MapChunk {
+export function createNewChunk(map: GameMap, chunkX: number, chunkY: number, idCounter: IdCounter, game: Game): MapChunk {
     const newChunk = createNewChunkTiles(map, chunkX, chunkY, map.seed!);
     map.chunks[chunkXYToMapKey(chunkX, chunkY)] = newChunk;
-    createFixPositionRespawnEnemies(newChunk, chunkX, chunkY, map, idCounter);
+    createFixPositionRespawnEnemies(newChunk, chunkX, chunkY, map, idCounter, game);
     return newChunk;
 }
 
@@ -124,7 +124,7 @@ function perlin_get(x: number, y: number, seed: number) {
 
 function dot_prod_grid(x: number, y: number, vx: number, vy: number, seed: number) {
     const d_vect = { x: x - vx, y: y - vy };
-    const random = fixedRandom(vx, vy, seed) / 256 * 2 * Math.PI;
+    const random = fixedRandom(vx, vy, seed) * 2 * Math.PI;
     const vector = { x: Math.cos(random), y: Math.sin(random) };
 
     return d_vect.x * vector.x + d_vect.y * vector.y;

@@ -16,10 +16,10 @@ export const ABILITY_NAME_LEASH = "Leash";
 
 export function addAbilityLesh() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_LEASH] = {
-        tickAbility: tickAbilityLeash,
-        paintAbility: paintAbilityLeash,
         createAbility: createAbilityLeash,
+        paintAbility: paintAbilityLeash,
         setAbilityToBossLevel: setAbilityToBossLevel,
+        tickAbility: tickAbilityLeash,
     };
 }
 

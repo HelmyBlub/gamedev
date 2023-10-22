@@ -50,18 +50,19 @@ export const ABILITY_NAME_PET_PAINTER = "Painter";
 
 export function addAbilityPetPainter() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_PET_PAINTER] = {
-        tickAbility: tickAbilityPetPainter,
-        tickAbilityObject: tickAbilityObjectPetPainter,
         createAbilityBossUpgradeOptions: createAbilityPetPainterUpgradeOptions,
-        executeUpgradeOption: executeAbilityPetPainterUpgradeOption,
         createAbility: createAbilityPetPainter,
+        executeUpgradeOption: executeAbilityPetPainterUpgradeOption,
+        deleteAbilityObject: deleteAbilityObjectPetPainter,
+        getLongDescription: getLongDescription,
         paintAbility: paintAbilityPetPainter,
         paintAbilityObject: paintAbilityObjectPetPainter,
-        deleteAbilityObject: deleteAbilityObjectPetPainter,
+        resetAbility: resetAbility,
         setAbilityToLevel: setAbilityPetPainterToLevel,
         setAbilityToBossLevel: setAbilityPetPainterToBossLevel,
-        getLongDescription: getLongDescription,
-        resetAbility: resetAbility,
+        setAbilityToEnemyLevel: setAbilityToEnemyLevel,
+        tickAbility: tickAbilityPetPainter,
+        tickAbilityObject: tickAbilityObjectPetPainter,
         abilityUpgradeFunctions: ABILITY_PET_PAINTER_UPGRADE_FUNCTIONS,
     };
     addAbilityPetPainterCircle();
@@ -119,6 +120,11 @@ function resetAbility(ability: Ability) {
 function setAbilityPetPainterToLevel(ability: Ability, level: number) {
     const abilityPetPainter = ability as AbilityPetPainter;
     abilityPetPainter.baseDamage = level * 200;
+}
+
+function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: number) {
+    const abilityPetPainter = ability as AbilityPetPainter;
+    abilityPetPainter.baseDamage = level * damageFactor;
 }
 
 function setAbilityPetPainterToBossLevel(ability: Ability, level: number) {

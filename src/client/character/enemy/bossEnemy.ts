@@ -97,6 +97,15 @@ export function setAbilityToBossLevel(ability: Ability, level: number) {
     }
 }
 
+export function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: number) {
+    const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+    if (abilityFunctions.setAbilityToEnemyLevel) {
+        abilityFunctions.setAbilityToEnemyLevel(ability, level, damageFactor);
+    } else {
+        throw new Error("function setAbilityToBossLevel missing for" + ability.name);
+    }
+}
+
 function createDefaultBossWithLevel(idCounter: IdCounter, level: number, spawn: Position, nextEndBoss: Character, game: Game): Character {
     const bossSize = 60;
     const color = "black";
@@ -121,13 +130,12 @@ function tickBossEnemyCharacter(enemy: BossEnemyCharacter, game: Game, pathingCa
         teleportBossToNearestPlayer(enemy, game);
         closest = determineClosestCharacter(enemy, playerCharacters);
     }
-    calculateAndSetMoveDirectionToPositionWithPathing(enemy, closest.minDistanceCharacter, game.state.map, pathingCache, game.state.idCounter, game.state.time);
+    calculateAndSetMoveDirectionToPositionWithPathing(enemy, closest.minDistanceCharacter, game.state.map, pathingCache, game.state.idCounter, game.state.time, game);
     moveCharacterTick(enemy, game.state.map, game.state.idCounter);
 
     for (let ability of enemy.abilities) {
         const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
         if (abilityFunctions) {
-            if (abilityFunctions.tickAbility) abilityFunctions.tickAbility(enemy, ability, game);
             if (abilityFunctions.tickBossAI) abilityFunctions.tickBossAI(enemy, ability, game);
         }
     }
@@ -190,7 +198,7 @@ function getBossSpawnPosition(game: Game): Position {
         const direction = calculateDirection(mapMiddle, furthest.character);
         const distanceFromPlayer: number = 800;
         moveByDirectionAndDistance(bossSpawn, direction, distanceFromPlayer, false);
-        bossSpawn = findNearNonBlockingPosition(bossSpawn, game.state.map, game.state.idCounter);
+        bossSpawn = findNearNonBlockingPosition(bossSpawn, game.state.map, game.state.idCounter, game);
 
         return bossSpawn;
     } else {

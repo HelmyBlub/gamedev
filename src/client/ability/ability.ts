@@ -68,26 +68,27 @@ export type AbilityOwner = Position & Partial<Character> & {
 }
 
 export type AbilityFunctions = {
-    tickAbility?: (abilityOwner: AbilityOwner, ability: Ability, game: Game) => void,
-    tickBossAI?: (abilityOwner: AbilityOwner, ability: Ability, game: Game) => void,
-    tickAbilityObject?: (abilityObject: AbilityObject, game: Game) => void,
+    activeAbilityCast?: (abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isKeydown: boolean, game: Game) => void,
+    canObjectHitMore?: (abilityObject: AbilityObject) => boolean,
     createAbility: (idCounter: IdCounter, playerInputBinding?: string) => Ability,
     createAbilityUpgradeOptions?: (ability: Ability) => UpgradeOptionAndProbability[],
     createAbilityBossUpgradeOptions?: (ability: Ability) => UpgradeOptionAndProbability[],
-    executeUpgradeOption?: (ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game) => void,
-    activeAbilityCast?: (abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isKeydown: boolean, game: Game) => void,
     deleteAbilityObject?: (abilityObject: AbilityObject, game: Game) => boolean,
+    executeUpgradeOption?: (ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game) => void,
+    getLongDescription?: () => string[],
     paintAbility?: (ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) => void,
     paintAbilityObject?: (ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) => void,
     paintAbilityUI?: (ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) => void,
     paintAbilityStatsUI?: (ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, game: Game) => { width: number, height: number },
     onHit?: (ability: Ability, targetCharacter: Character, game: Game) => void,
     onObjectHit?: (abilityObject: AbilityObject, targetCharacter: Character, game: Game) => void,
-    canObjectHitMore?: (abilityObject: AbilityObject) => boolean,
-    setAbilityToLevel?: (ability: Ability, level: number) => void,
-    setAbilityToBossLevel?: (ability: Ability, level: number) => void,
-    getLongDescription?: () => string[],
     resetAbility?: (ability: Ability) => void,
+    setAbilityToLevel?: (ability: Ability, level: number) => void,
+    setAbilityToEnemyLevel?: (ability: Ability, level: number, damageFactor: number) => void,
+    setAbilityToBossLevel?: (ability: Ability, level: number) => void,
+    tickAbility?: (abilityOwner: AbilityOwner, ability: Ability, game: Game) => void,
+    tickBossAI?: (abilityOwner: AbilityOwner, ability: Ability, game: Game) => void,
+    tickAbilityObject?: (abilityObject: AbilityObject, game: Game) => void,
     abilityUpgradeFunctions?: AbilityUpgradesFunctions,
     canBeUsedByBosses?: boolean,
 }
@@ -214,15 +215,15 @@ export function findAbilityAndOwnerById(abilityId: number, game: Game): { abilit
     }
     for (let i = 0; i < game.state.bossStuff.bosses.length; i++) {
         const boss = game.state.bossStuff.bosses[i];
-        for (let ability of boss.abilities) {
-            if (ability.id === abilityId) return { ability: ability, owner: boss };
-            if (boss.pets) {
-                for (let pet of boss.pets) {
-                    for (let ability of pet.abilities) {
-                        if (ability.id === abilityId) return { ability: ability, owner: pet };
-                    }
-                }
-            }
+        const result = findAbilityAndOwnerInCharacterById(boss, abilityId);
+        if (result) return result;
+    }
+    const map = game.state.map;
+    for (let i = 0; i < map.activeChunkKeys.length; i++) {
+        const chunkChars = map.chunks[map.activeChunkKeys[i]].characters;
+        for(let character of chunkChars){
+            const result = findAbilityAndOwnerInCharacterById(character, abilityId);
+            if (result) return result;
         }
     }
     return undefined;

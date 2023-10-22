@@ -50,20 +50,21 @@ GAME_IMAGES[ABILITY_NAME_TOWER] = {
 
 export function addAbilityTower() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_TOWER] = {
-        tickAbility: tickAbilityTower,
-        tickAbilityObject: tickAbilityObjectTower,
+        activeAbilityCast: castTower,
+        createAbility: createAbilityTower,
         createAbilityUpgradeOptions: createAbilityTowerUpgradeOptionsNew,
+        deleteAbilityObject: deleteAbilityObjectTower,
         executeUpgradeOption: executeAbilityTowerUpgradeOption,
         paintAbilityObject: paintAbilityObjectTower,
         paintAbilityUI: paintAbilityTowerUI,
         paintAbility: paintAbilityTower,
-        activeAbilityCast: castTower,
-        createAbility: createAbilityTower,
-        deleteAbilityObject: deleteAbilityObjectTower,
         paintAbilityStatsUI: paintAbilityTowerStatsUI,
-        setAbilityToBossLevel: setAbilityTowerToBossLevel,
-        tickBossAI: tickBossAI,
         resetAbility: resetAbility,
+        setAbilityToBossLevel: setAbilityTowerToBossLevel,
+        setAbilityToEnemyLevel: setAbilityToEnemyLevel,
+        tickAbility: tickAbilityTower,
+        tickAbilityObject: tickAbilityObjectTower,
+        tickBossAI: tickBossAI,
         canBeUsedByBosses: true,
     };
 }
@@ -117,6 +118,16 @@ function createAbilityObjectTower(idCounter: IdCounter, ownerId: number, faction
 function resetAbility(ability: Ability) {
     const abilityTower = ability as AbilityTower;
     abilityTower.lastBuildTime = undefined;
+}
+
+function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: number) {
+    const abilityTower = ability as AbilityTower;
+    const maxTowers = 3;
+    if(abilityTower.orderOfAbilities.length > maxTowers){
+        abilityTower.orderOfAbilities.splice(maxTowers);
+    }
+    abilityTower.currentAbilityIndex = (level * 2) % abilityTower.orderOfAbilities.length;
+    abilityTower.damage = level * 2;
 }
 
 function setAbilityTowerToBossLevel(ability: Ability, level: number) {

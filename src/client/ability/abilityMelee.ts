@@ -18,6 +18,7 @@ export function addAbilityMelee() {
         createAbility: createAbilityMelee,
         setAbilityToLevel: setAbilityMeleeToLevel,
         setAbilityToBossLevel: setAbilityMeleeToBossLevel,
+        setAbilityToEnemyLevel: setAbilityToEnemyLevel,
         resetAbility: resetAbility,
     };
 }
@@ -45,6 +46,11 @@ function resetAbility(ability: Ability) {
 function setAbilityMeleeToLevel(ability: Ability, level: number) {
     const abilityMelee = ability as AbilityMelee;
     abilityMelee.damage = level * 100;
+}
+
+function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: number) {
+    const abilityMelee = ability as AbilityMelee;
+    abilityMelee.damage = level * 2 * damageFactor;
 }
 
 function setAbilityMeleeToBossLevel(ability: Ability, level: number) {

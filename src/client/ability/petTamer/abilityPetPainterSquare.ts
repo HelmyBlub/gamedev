@@ -226,13 +226,13 @@ function getRandomStartPaintPositionSquare(pet: TamerPetCharacter, game: Game): 
         const randomOffsetX = nextRandom(game.state.randomSeed) * 100 - 60;
         const randomOffsetY = nextRandom(game.state.randomSeed) * 100 - 60;
         position = { x: petOwner.x + randomOffsetX, y: petOwner.y + randomOffsetY };
-        blocking = isPositionBlocking(position, game.state.map, game.state.idCounter);
+        blocking = isPositionBlocking(position, game.state.map, game.state.idCounter, game);
         if (!blocking) {
-            blocking = isPositionBlocking({ x: position.x + SQUARESIZE, y: position.y }, game.state.map, game.state.idCounter);
+            blocking = isPositionBlocking({ x: position.x + SQUARESIZE, y: position.y }, game.state.map, game.state.idCounter, game);
             if (!blocking) {
-                blocking = isPositionBlocking({ x: position.x + SQUARESIZE, y: position.y + SQUARESIZE }, game.state.map, game.state.idCounter);
+                blocking = isPositionBlocking({ x: position.x + SQUARESIZE, y: position.y + SQUARESIZE }, game.state.map, game.state.idCounter, game);
                 if (!blocking) {
-                    blocking = isPositionBlocking({ x: position.x, y: position.y + SQUARESIZE }, game.state.map, game.state.idCounter);
+                    blocking = isPositionBlocking({ x: position.x, y: position.y + SQUARESIZE }, game.state.map, game.state.idCounter, game);
                 }
             }
         }

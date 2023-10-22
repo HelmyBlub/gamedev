@@ -29,15 +29,16 @@ export const ABILITY_PET_DASH_UPGRADE_FUNCTIONS: AbilityUpgradesFunctions = {};
 
 export function addAbilityPetDash() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_PET_DASH] = {
-        tickAbility: tickAbilityPetDash,
         createAbility: createAbilityPetDash,
         createAbilityBossUpgradeOptions: createAbilityPetDashUpgradeOptions,
+        getLongDescription: getLongDescription,
+        onHit: onHit,
         paintAbility: paintAbilityPetDash,
+        resetAbility: resetAbility,
         setAbilityToLevel: setAbilityPetDashToLevel,
         setAbilityToBossLevel: setAbilityPetDashToBossLevel,
-        resetAbility: resetAbility,
-        onHit: onHit,
-        getLongDescription: getLongDescription,
+        setAbilityToEnemyLevel: setAbilityToEnemyLevel,
+        tickAbility: tickAbilityPetDash,
         abilityUpgradeFunctions: ABILITY_PET_DASH_UPGRADE_FUNCTIONS,
     };
 
@@ -101,6 +102,12 @@ function setAbilityPetDashToLevel(ability: Ability, level: number) {
     abilityPetDash.baseDamage = level * 100;
 }
 
+function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: number) {
+    const abilityPetDash = ability as AbilityPetDash;
+    abilityPetDash.baseDamage = level / 2 * damageFactor;
+    abilityPetDash.cooldown = 3000 - level * 25;
+}
+
 function setAbilityPetDashToBossLevel(ability: Ability, level: number) {
     const abilityPetDash = ability as AbilityPetDash;
     abilityPetDash.baseDamage = level * 4;
@@ -144,7 +151,7 @@ function tickAbilityPetDash(abilityOwner: AbilityOwner, ability: Ability, game: 
     if (abilityPetDash.activeUntilTime && abilityPetDash.activeUntilTime > game.state.time) {
         if (upgradeBounce !== undefined) {
             const newPosition = calculateMovePosition(pet, abilityPetDash.direction!, abilityPetDash.baseSpeed, false);
-            if (isPositionBlocking(newPosition, game.state.map, game.state.idCounter)) {
+            if (isPositionBlocking(newPosition, game.state.map, game.state.idCounter, game)) {
                 abilityPetDash.activeUntilTime += upgradeBounce.durationUpPerBounce;
                 abilityPetDash.direction = calculateBounceAngle(newPosition, abilityPetDash.direction!, game.state.map);
                 upgradeBounce.currentDamageFactor += upgradeBounce.damageFactorPerBounce;

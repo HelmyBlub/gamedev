@@ -1,4 +1,5 @@
-import { IdCounter, Position } from "../../gameModel.js";
+import { Game, IdCounter, Position } from "../../gameModel.js";
+import { createGame } from "../../main.js";
 import { createMap, findNearNonBlockingPosition, GameMap } from "../../map/map.js";
 import { nextRandom, RandomSeed } from "../../randomNumberGenerator.js";
 import { calculatePosToTotalTileXY, getNextWaypoint, PathingCache, PathingCacheXY, tileXyToPathingCacheKey } from "../pathing.js";
@@ -18,6 +19,7 @@ export function testPathing(ctx: CanvasRenderingContext2D | undefined = undefine
 // time 0.0005 1.5 with caching
 // time 0.0023666666665424904 7.099999999627471 after putting cache into a type and as function parameter
 function testPathingPerformance() {
+    const dummyGame: Game = createGame(undefined);
     const map: GameMap = createMap();
     const iterations = 3000;
     const numberEnemies = 100;
@@ -34,13 +36,14 @@ function testPathingPerformance() {
 
     const startTime = performance.now();
     for (let i = 0; i < iterations; i++) {
-        getNextWaypoint(sourcePositions[i % numberEnemies], targetPositions[i % numberPlayers], map, pathingCache, idCounter, 0);
+        getNextWaypoint(sourcePositions[i % numberEnemies], targetPositions[i % numberPlayers], map, pathingCache, idCounter, 0, dummyGame);
     }
     const time = performance.now() - startTime;
     console.log("time", time / iterations, time);
 }
 
 function testPathingPerformanceCacheNotChangingResults(ctx: CanvasRenderingContext2D | undefined = undefined) {
+    const dummyGame: Game = createGame(undefined);
     const map: GameMap = createMap();
     const iterations = 6000;
     const numberEnemies = 500;
@@ -68,10 +71,10 @@ function testPathingPerformanceCacheNotChangingResults(ctx: CanvasRenderingConte
         let key = `${tempSourceTile.x}_${tempSourceTile.y}|${tempTargtTile.x}_${tempTargtTile.y}`;
         if (i % 3 === 0) {
             tempCache = {};
-            result = getNextWaypoint(sourcePositions[i % numberEnemies], targetPositions[i % numberPlayers], map, tempCache, idCounter, 0);
+            result = getNextWaypoint(sourcePositions[i % numberEnemies], targetPositions[i % numberPlayers], map, tempCache, idCounter, 0, dummyGame);
         } else {
             tempCache = pathingCache;
-            result = getNextWaypoint(sourcePositions[i % numberEnemies], targetPositions[i % numberPlayers], map, pathingCache, idCounter, 0);
+            result = getNextWaypoint(sourcePositions[i % numberEnemies], targetPositions[i % numberPlayers], map, pathingCache, idCounter, 0, dummyGame);
         }
         const resultFromMap = resultMap.get(key);
         if (resultFromMap !== undefined) {
@@ -153,6 +156,7 @@ function canvas_arrow(ctx: CanvasRenderingContext2D, fromx: number, fromy: numbe
 }
 
 function testPathingNotEndInInfiniteLoop() {
+    const dummyGame: Game = createGame(undefined);
     const idCounter = { nextId: 0 };
     const map: GameMap = createMap();
     map.chunks["0_0"] = { tiles: [], characters: [], objects: [] };
@@ -176,15 +180,16 @@ function testPathingNotEndInInfiniteLoop() {
     const targetPosition: Position = { x: 5 * map.tileSize, y: 5 * map.tileSize };
 
     for (let i = 0; i < sourcePositions.length; i++) {
-        getNextWaypoint(sourcePositions[i], targetPosition, map, pathingCache, idCounter, 0);
+        getNextWaypoint(sourcePositions[i], targetPosition, map, pathingCache, idCounter, 0, dummyGame);
     }
 }
 
 function createRandomPositions(amount: number, randomSeed: RandomSeed, width: number, height: number, map: GameMap, idCounter: IdCounter): Position[] {
+    const dummyGame: Game = createGame(undefined);
     const positions: Position[] = [];
     for (let i = 0; i < amount; i++) {
         let tempPos = { x: nextRandom(randomSeed) * width, y: nextRandom(randomSeed) * height };
-        tempPos = findNearNonBlockingPosition(tempPos, map, idCounter);
+        tempPos = findNearNonBlockingPosition(tempPos, map, idCounter, dummyGame);
         positions.push(tempPos);
     }
     return positions;

@@ -9,5 +9,5 @@ export function nextRandom(seed: RandomSeed) {
 }
 
 export function fixedRandom(x: number, y: number, seed: number) {
-    return (Math.sin((x * 112.01716 + y * 718.233 + seed * 1234.1234) * 437057.545323) * 1000000) & 255;
+    return ((Math.sin((x * 112.01716 + y * 718.233 + seed * 1234.1234) * 437057.545323) * 1000000) & 255) / 256;
 }

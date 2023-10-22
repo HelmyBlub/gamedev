@@ -34,15 +34,16 @@ export type AbilityObjectFireCircleTraveling = AbilityObjectCircle & {
 
 export function addAbilityFireCircle() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_FIRE_CIRCLE] = {
-        tickAbility: tickAbilityFireCircle,
         activeAbilityCast: castFireCircle,
-        tickAbilityObject: tickAbilityObjectFireCircle,
+        createAbility: createAbilityFireCircle,
         deleteAbilityObject: deleteObjectFireCircle,
         paintAbilityUI: paintAbilityFireCircleUI,
-        createAbility: createAbilityFireCircle,
-        setAbilityToLevel: setAbilityFireCircleToLevel,
         paintAbilityObject: paintAbilityObjectFireCircle,
+        setAbilityToLevel: setAbilityFireCircleToLevel,
         setAbilityToBossLevel: setAbilityFireCircleToBossLevel,
+        setAbilityToEnemyLevel: setAbilityToEnemyLevel,
+        tickAbility: tickAbilityFireCircle,
+        tickAbilityObject: tickAbilityObjectFireCircle,
         canBeUsedByBosses: true,
     };
 }
@@ -144,6 +145,16 @@ function setAbilityFireCircleToLevel(ability: Ability, level: number) {
     abilityFireCircle.radius = 10 + level * 5;
     abilityFireCircle.objectDuration = 2000 + level * 500;
     abilityFireCircle.rechargeTimeDecreaseFaktor = 1 + 0.30 * level;
+}
+
+function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: number) {
+    const abilityFireCircle = ability as AbilityFireCircle;
+    abilityFireCircle.damage = level * 0.5 * damageFactor;
+    abilityFireCircle.radius = 15 + (level / 5) * 5;
+    abilityFireCircle.objectDuration = 5000;
+    abilityFireCircle.baseRechargeTime = 2000;
+    abilityFireCircle.rechargeTimeDecreaseFaktor = 1 + (level / 5) * 0.50;
+    abilityFireCircle.moveSpeed = 2;
 }
 
 function setAbilityFireCircleToBossLevel(ability: Ability, level: number) {

@@ -19,11 +19,12 @@ export const ABILITY_NAME_SINGLETARGET = "SingleTarget";
 
 export function addAbilitySingleTarget() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_SINGLETARGET] = {
-        tickAbility: tickAbilitySingleTarget,
+        createAbility: createAbilitySingleTarget,
         paintAbility: paintAbilitySingleTarget,
         setAbilityToLevel: setAbilitySingleTargetToLevel,
         setAbilityToBossLevel: setAbilitySingleTargetToBossLevel,
-        createAbility: createAbilitySingleTarget,
+        setAbilityToEnemyLevel: setAbilityToEnemyLevel,
+        tickAbility: tickAbilitySingleTarget,
         canBeUsedByBosses: false,
     };
 }
@@ -54,6 +55,14 @@ function setAbilitySingleTargetToLevel(ability: Ability, level: number) {
     abilitySingleTarget.maxRange = 120 + level * 15;
     abilitySingleTarget.attackTimeDecreaseFaktor = 0.70 + 0.30 * level;
     abilitySingleTarget.damageIncreaseFactorPerAttack = 0.01 * level;
+}
+
+function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: number) {
+    const abilitySingleTarget = ability as AbilitySingleTarget;
+    abilitySingleTarget.damage = 1 * (level / 5) * damageFactor;
+    abilitySingleTarget.maxRange = 100 + (level / 5) * 15;
+    abilitySingleTarget.attackTimeDecreaseFaktor = 0.70 + 0.30 * (level / 5);
+    abilitySingleTarget.damageIncreaseFactorPerAttack = 0.05 * (level / 5);
 }
 
 function setAbilitySingleTargetToBossLevel(ability: Ability, level: number) {

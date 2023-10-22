@@ -1,5 +1,8 @@
 current tasks:
 - south direction has less enemies but with abilitites
+    - pets need to be added
+    - tower builder scaling seems of
+    - tower builder maybe unfair? limit connect range for enemys?
 
 
 possible future tasks: (only keep 5)

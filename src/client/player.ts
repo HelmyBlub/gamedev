@@ -63,7 +63,7 @@ export function gameInitPlayers(game: Game) {
     const numberPlayers = Math.max(game.state.clientInfos.length, 1);
     for (let i = 0; i < numberPlayers; i++) {
         let playerSpawn: Position = { x: 100, y: 100 + i * 50 };
-        playerSpawn = findNearNonBlockingPosition(playerSpawn, game.state.map, game.state.idCounter);
+        playerSpawn = findNearNonBlockingPosition(playerSpawn, game.state.map, game.state.idCounter, game);
 
         addPlayer(game.state.idCounter, game.state.clientInfos[i].id, game.state.players, playerSpawn, game.state.randomSeed, game);
         if (game.multiplayer.myClientId === -1 || game.multiplayer.myClientId === game.state.clientInfos[i].id) {

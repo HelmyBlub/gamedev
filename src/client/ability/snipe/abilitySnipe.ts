@@ -66,21 +66,22 @@ GAME_IMAGES[ABILITY_NAME_SNIPE] = {
 
 export function addAbilitySnipe() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_SNIPE] = {
-        tickAbility: tickAbilitySnipe,
-        tickAbilityObject: tickAbilityObjectSnipe,
-        tickBossAI: tickBossAI,
+        activeAbilityCast: castSnipe,
+        createAbility: createAbilitySnipe,
         createAbilityBossUpgradeOptions: createAbilityBossSnipeUpgradeOptions,
+        deleteAbilityObject: deleteAbilityObjectSnipe,
         executeUpgradeOption: executeAbilitySnipeUpgradeOption,
         paintAbilityObject: paintAbilityObjectSnipe,
         paintAbilityUI: paintAbilitySnipeUI,
         paintAbility: paintAbilitySnipe,
-        activeAbilityCast: castSnipe,
-        createAbility: createAbilitySnipe,
-        deleteAbilityObject: deleteAbilityObjectSnipe,
         paintAbilityStatsUI: paintAbilitySnipeStatsUI,
+        resetAbility: resetAbility,
         setAbilityToLevel: setAbilitySnipeToLevel,
         setAbilityToBossLevel: setAbilityToBossLevel,
-        resetAbility: resetAbility,
+        setAbilityToEnemyLevel: setAbilityToEnemyLevel,
+        tickAbility: tickAbilitySnipe,
+        tickAbilityObject: tickAbilityObjectSnipe,
+        tickBossAI: tickBossAI,
         abilityUpgradeFunctions: ABILITY_SNIPE_UPGRADE_FUNCTIONS,
         canBeUsedByBosses: true,
     };
@@ -368,6 +369,14 @@ function setAbilitySnipeToLevel(ability: Ability, level: number) {
     abilitySnipe.shotFrequencyTimeDecreaseFaktor = 1 + level * 0.15;
 }
 
+function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: number) {
+    const abilitySnipe = ability as AbilitySnipe;
+    abilitySnipe.baseDamage = level * 1 * damageFactor;
+    abilitySnipe.maxCharges = Math.min(2 + level, abilitySnipe.maxMagazineSize);
+    abilitySnipe.baseRange = 400 + level * 20;
+    abilitySnipe.shotFrequencyTimeDecreaseFaktor = 1.00 + level * 0.10;
+}
+
 function setAbilityToBossLevel(ability: Ability, level: number) {
     const abilitySnipe = ability as AbilitySnipe;
     abilitySnipe.baseDamage = level * 10;
@@ -447,6 +456,9 @@ function tickAbilitySnipe(abilityOwner: AbilityOwner, ability: Ability, game: Ga
     }
     tickAbilityUpgradeMoreRifles(abilitySnipe, abilityOwner, game);
     tickAbilityUpgradeAfterImage(abilitySnipe, abilityOwner, game);
+    if(abilityOwner.faction === FACTION_ENEMY){
+        abilitySnipe.shotNextAllowedTime = false;
+    }
 }
 
 function tickAbilityObjectSnipe(abilityObject: AbilityObject, game: Game) {

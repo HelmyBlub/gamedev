@@ -28,6 +28,7 @@ export function addAbilityShoot() {
         setAbilityToLevel: setAbilityShootToLevel,
         createAbility: createAbilityShoot,
         setAbilityToBossLevel: setAbilityShootToBossLevel,
+        setAbilityToEnemyLevel: setAbilityToEnemyLevel,
         canBeUsedByBosses: true,
     };
 }
@@ -69,6 +70,19 @@ function setAbilityShootToLevel(ability: Ability, level: number) {
     abilityShoot.pierceCount = level - 1;
     abilityShoot.moveSpeed = 2 + level * 0.2;
     abilityShoot.bulletSize = 5 + level;
+}
+
+function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: number) {
+    const abilityShoot = ability as AbilityShoot;
+    abilityShoot.damage = level * 4 * damageFactor;
+    abilityShoot.frequencyIncrease = 1 + 0.04 * level;
+    abilityShoot.multiShot = Math.min(Math.floor((level - 1) / 5), 7);
+    abilityShoot.pierceCount = 0;
+    abilityShoot.moveSpeed = Math.min(2.5 + level * 0.02, 4);
+    abilityShoot.timeToLive = 2000;
+    abilityShoot.baseFrequency = 1500;
+    abilityShoot.bulletSize = Math.min(7 + 0.4 * level, 10);
+    abilityShoot.shootRandom = true;
 }
 
 function setAbilityShootToBossLevel(ability: Ability, level: number) {

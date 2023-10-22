@@ -144,7 +144,7 @@ function tickShapeObjectPetPainterCircle(abilityObject: AbilityObjectPetPainter,
     } else {
         const circle = abilityObject as AbilityObjectPetPainterCircle;
         const newPosition = calculateMovePosition(circle, circle.direction, circle.moveSpeed, false);
-        if (isPositionBlocking(newPosition, game.state.map, game.state.idCounter)) {
+        if (isPositionBlocking(newPosition, game.state.map, game.state.idCounter, game)) {
             circle.direction = calculateBounceAngle(newPosition, circle.direction, game.state.map);
         } else {
             circle.x = newPosition.x;
@@ -196,7 +196,7 @@ function getRandomStartPaintPositionCircle(pet: TamerPetCharacter, game: Game): 
         const centerTilePosX = Math.floor(position.x / game.state.map.tileSize) * game.state.map.tileSize + Math.floor(game.state.map.tileSize / 2);
         const centerTilePosY = Math.floor(position.y / game.state.map.tileSize) * game.state.map.tileSize + Math.floor(game.state.map.tileSize / 2);
         position = { x: centerTilePosX, y: centerTilePosY };
-        blocking = isPositionBlocking(position, game.state.map, game.state.idCounter);
+        blocking = isPositionBlocking(position, game.state.map, game.state.idCounter, game);
     } while (blocking);
     return position;
 }

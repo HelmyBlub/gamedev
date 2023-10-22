@@ -28,14 +28,15 @@ export const ABILITY_PET_BREATH_UPGRADE_FUNCTIONS: AbilityUpgradesFunctions = {}
 
 export function addAbilityPetBreath() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_PET_BREATH] = {
-        tickAbility: tickAbilityPetBreath,
         createAbility: createAbilityPetBreath,
         createAbilityBossUpgradeOptions: createAbilityPetBreathUpgradeOptions,
+        getLongDescription: getLongDescription,
         paintAbility: paintAbilityPetBreath,
+        resetAbility: resetAbility,
         setAbilityToLevel: setAbilityPetBreathToLevel,
         setAbilityToBossLevel: setAbilityPetBreathToBossLevel,
-        getLongDescription: getLongDescription,
-        resetAbility: resetAbility,
+        setAbilityToEnemyLevel: setAbilityToEnemyLevel,
+        tickAbility: tickAbilityPetBreath,
         abilityUpgradeFunctions: ABILITY_PET_BREATH_UPGRADE_FUNCTIONS,
     };
 
@@ -87,6 +88,11 @@ function createAbilityPetBreathUpgradeOptions(ability: Ability): UpgradeOptionAn
 function setAbilityPetBreathToLevel(ability: Ability, level: number) {
     const abilityPetBreath = ability as AbilityPetBreath;
     abilityPetBreath.damage = level * 100;
+}
+
+function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: number) {
+    const abilityPetBreath = ability as AbilityPetBreath;
+    abilityPetBreath.damage = level / 2 * damageFactor;
 }
 
 function setAbilityPetBreathToBossLevel(ability: Ability, level: number) {

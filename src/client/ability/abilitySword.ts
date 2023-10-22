@@ -28,11 +28,12 @@ GAME_IMAGES[ABILITY_NAME_SWORD] = {
 
 export function addAbilitySword() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_SWORD] = {
-        tickAbility: tickAbilitySword,
+        createAbility: createAbilitySword,
         paintAbility: paintAbilitySword,
         setAbilityToLevel: setAbilitySwordToLevel,
-        createAbility: createAbilitySword,
         setAbilityToBossLevel: setAbilitySwordToBossLevel,
+        setAbilityToEnemyLevel: setAbilityToEnemyLevel,
+        tickAbility: tickAbilitySword,
         canBeUsedByBosses: true,
     };
 }
@@ -67,6 +68,15 @@ function setAbilitySwordToLevel(ability: Ability, level: number){
     abilitySword.swordCount = level;
     abilitySword.swordLength = 30 + level * 10;
     abilitySword.angleChangePerTick = 0.01 * level;
+    abilitySword.angleChangePerSword = Math.PI * 2 / abilitySword.swordCount;
+}
+
+function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: number) {
+    const abilitySword = ability as AbilitySword;
+    abilitySword.damage = level * 3 * damageFactor;
+    abilitySword.swordCount = level > 10 ? 2 : 1;
+    abilitySword.swordLength = 20 + level * 2;
+    abilitySword.angleChangePerTick = Math.min(0.01 + 0.001 * level, 0.02);
     abilitySword.angleChangePerSword = Math.PI * 2 / abilitySword.swordCount;
 }
 

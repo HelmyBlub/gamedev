@@ -409,7 +409,7 @@ function moveTick(pet: TamerPetCharacter, petOwner: Character, game: Game, pathi
     } else {
         const target = getTargetByBehavior(pet, petOwner, game);
         if (target) {
-            calculateAndSetMoveDirectionToPositionWithPathing(pet, target, game.state.map, pathingCache, game.state.idCounter, game.state.time);
+            calculateAndSetMoveDirectionToPositionWithPathing(pet, target, game.state.map, pathingCache, game.state.idCounter, game.state.time, game);
         } else {
             setMoveDirectionWithNoTarget(pet, petOwner, game);
         }

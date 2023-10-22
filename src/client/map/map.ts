@@ -67,18 +67,18 @@ export function addEnemyToMap(map: GameMap, character: Character) {
     map.chunks[key].characters.push(character);
 }
 
-export function isPositionBlocking(pos: Position, map: GameMap, idCounter: IdCounter) {
-    const tile = getMapTile(pos, map, idCounter);
+export function isPositionBlocking(pos: Position, map: GameMap, idCounter: IdCounter, game: Game) {
+    const tile = getMapTile(pos, map, idCounter, game);
     if (!tile) return false;
     return tile.blocking;
 }
 
-export function findNearNonBlockingPosition(pos: Position, map: GameMap, idCounter: IdCounter): Position {
+export function findNearNonBlockingPosition(pos: Position, map: GameMap, idCounter: IdCounter, game: Game): Position {
     const currentPosition: Position = { x: pos.x, y: pos.y };
     const distance = 1;
     let counterX = -distance;
     let counterY = -distance;
-    while (isPositionBlocking(currentPosition, map, idCounter)) {
+    while (isPositionBlocking(currentPosition, map, idCounter, game)) {
         currentPosition.x = pos.x + counterX * map.tileSize;
         currentPosition.y = pos.y + counterY * map.tileSize;
         if (Math.abs(counterY) === distance) {
@@ -186,14 +186,14 @@ export function calculateBounceAngle(bouncePosition: Position, startingAngle: nu
     return wallAngle - angleDiff;
 }
 
-export function calculateMovePosition(position: Position, moveDirection: number, distance: number, checkColision: boolean, map: GameMap | undefined = undefined, idCounter: IdCounter | undefined = undefined): Position {
+export function calculateMovePosition(position: Position, moveDirection: number, distance: number, checkColision: boolean, map: GameMap | undefined = undefined, idCounter: IdCounter | undefined = undefined, game: Game | undefined = undefined): Position {
     const x = position.x + Math.cos(moveDirection) * distance;
     const y = position.y + Math.sin(moveDirection) * distance;
     if (checkColision) {
         if (!map || !idCounter) throw new Error("collision check requires map and idCounter");
-        const blocking = isPositionBlocking({ x, y }, map, idCounter);
+        const blocking = isPositionBlocking({ x, y }, map, idCounter, game!);
         if (!blocking) {
-            const blockingBothSides = isPositionBlocking({ x: position.x, y }, map, idCounter) && isPositionBlocking({ x, y: position.y }, map, idCounter);
+            const blockingBothSides = isPositionBlocking({ x: position.x, y }, map, idCounter, game!) && isPositionBlocking({ x, y: position.y }, map, idCounter, game!);
             if (!blockingBothSides) {
                 return { x, y };
             }
@@ -201,14 +201,14 @@ export function calculateMovePosition(position: Position, moveDirection: number,
             const xTile = Math.floor(position.x / map.tileSize);
             const newXTile = Math.floor(x / map.tileSize);
             if (xTile !== newXTile) {
-                if (!isPositionBlocking({ x: position.x, y }, map, idCounter)) {
+                if (!isPositionBlocking({ x: position.x, y }, map, idCounter, game!)) {
                     return { x: position.x, y };
                 }
             }
             const yTile = Math.floor(position.y / map.tileSize);
             const newYTile = Math.floor(y / map.tileSize);
             if (yTile !== newYTile) {
-                if (!isPositionBlocking({ x, y: position.y }, map, idCounter)) {
+                if (!isPositionBlocking({ x, y: position.y }, map, idCounter, game!)) {
                     return { x, y: position.y };
                 }
             }
@@ -368,7 +368,7 @@ export function getFirstBlockingGameMapTilePositionTouchingLine(map: GameMap, li
             } else {
                 console.log("should not happen?");
             }
-            const currentTile = getMapTile(currentPos, map, game.state.idCounter);
+            const currentTile = getMapTile(currentPos, map, game.state.idCounter, game);
             currentTileXY = positionToGameMapTileXY(map, currentPos);
             if (currentTile.blocking) {
                 return currentPos;
@@ -450,14 +450,14 @@ export function calculateDistanceToMapChunk(chunkX: number, chunkY: number, posi
     return Math.sqrt(dx * dx + dy * dy);
 }
 
-export function getMapTile(pos: Position, map: GameMap, idCounter: IdCounter): MapTile {
+export function getMapTile(pos: Position, map: GameMap, idCounter: IdCounter, game: Game): MapTile {
     const chunkSize = map.tileSize * map.chunkLength;
     const chunkX = Math.floor(pos.x / chunkSize);
     const chunkY = Math.floor(pos.y / chunkSize);
     const key = positionToMapKey(pos, map);
     let chunk = map.chunks[key];
     if (chunk === undefined) {
-        chunk = createNewChunk(map, chunkX, chunkY, idCounter);
+        chunk = createNewChunk(map, chunkX, chunkY, idCounter, game);
     }
 
     if (chunk) {

@@ -17,11 +17,12 @@ export const ABILITY_NAME_ICE_AURA = "Ice Aura";
 
 export function addAbilityIceAura() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_ICE_AURA] = {
-        tickAbility: tickAbilityIce,
+        createAbility: createAbilityIce,
         paintAbility: paintAbilityIce,
         setAbilityToLevel: setAbilityIceToLevel,
-        createAbility: createAbilityIce,
         setAbilityToBossLevel: setAbilityIceToBossLevel,
+        setAbilityToEnemyLevel: setAbilityToEnemyLevel,
+        tickAbility: tickAbilityIce,
         canBeUsedByBosses: true,
     };
 }
@@ -50,6 +51,12 @@ function setAbilityIceToLevel(ability: Ability, level: number) {
     abilityIce.damage = level * 100;
     abilityIce.radius = 30 + level * 10;
     abilityIce.slowFactor = 1 + 0.25 * level;
+}
+function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: number) {
+    const abilityIce = ability as AbilityIce;
+    abilityIce.damage = level / 2 * damageFactor;
+    abilityIce.radius = 30 + level * 3;
+    abilityIce.slowFactor = 2;
 }
 
 function setAbilityIceToBossLevel(ability: Ability, level: number) {

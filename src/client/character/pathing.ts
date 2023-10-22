@@ -43,8 +43,9 @@ export function getNextWaypoint(
     pathingCache: PathingCache | null = null,
     idCounter: IdCounter,
     time: number,
+    game: Game,
 ): Position | null {
-    if (isPositionBlocking(sourcePos, map, idCounter)) {
+    if (isPositionBlocking(sourcePos, map, idCounter, game)) {
         console.log("can't find way to a blocking position");
         return null;
     }
@@ -106,7 +107,7 @@ export function getNextWaypoint(
             return { x: lastPosition.x * map.tileSize + map.tileSize / 2, y: lastPosition.y * map.tileSize + map.tileSize / 2 };
         }
 
-        const neighborsXY = getPathNeighborsXY(currentNode, map, idCounter);
+        const neighborsXY = getPathNeighborsXY(currentNode, map, idCounter, game);
         for (let i = 0; i < neighborsXY.length; i++) {
             const neighborKey = `${neighborsXY[i].x}_${neighborsXY[i].y}`;
             if (!cameFrom.has(neighborKey)) {
@@ -148,51 +149,51 @@ export function calculatePosToTotalTileXY(pos: Position, map: GameMap): Position
     };
 }
 
-function getPathNeighborsXY(pos: Position, map: GameMap, idCounter: IdCounter): Position[] {
+function getPathNeighborsXY(pos: Position, map: GameMap, idCounter: IdCounter, game: Game): Position[] {
     const result: Position[] = [];
     let top, bottom, left, right: boolean = false;
 
     let tempXY = { x: pos.x, y: pos.y - 1 };
-    if (!isPositionBlocking({ x: tempXY.x * map.tileSize, y: tempXY.y * map.tileSize }, map, idCounter)) {
+    if (!isPositionBlocking({ x: tempXY.x * map.tileSize, y: tempXY.y * map.tileSize }, map, idCounter, game)) {
         top = true;
         result.push(tempXY);
     }
     tempXY = { x: pos.x, y: pos.y + 1 };
-    if (!isPositionBlocking({ x: tempXY.x * map.tileSize, y: tempXY.y * map.tileSize }, map, idCounter)) {
+    if (!isPositionBlocking({ x: tempXY.x * map.tileSize, y: tempXY.y * map.tileSize }, map, idCounter, game)) {
         bottom = true;
         result.push(tempXY);
     }
     tempXY = { x: pos.x - 1, y: pos.y };
-    if (!isPositionBlocking({ x: tempXY.x * map.tileSize, y: tempXY.y * map.tileSize }, map, idCounter)) {
+    if (!isPositionBlocking({ x: tempXY.x * map.tileSize, y: tempXY.y * map.tileSize }, map, idCounter, game)) {
         left = true;
         result.push(tempXY);
     }
     tempXY = { x: pos.x + 1, y: pos.y };
-    if (!isPositionBlocking({ x: tempXY.x * map.tileSize, y: tempXY.y * map.tileSize }, map, idCounter)) {
+    if (!isPositionBlocking({ x: tempXY.x * map.tileSize, y: tempXY.y * map.tileSize }, map, idCounter, game)) {
         right = true;
         result.push(tempXY);
     }
     if (top && right) {
         tempXY = { x: pos.x + 1, y: pos.y - 1 };
-        if (!isPositionBlocking({ x: tempXY.x * map.tileSize, y: tempXY.y * map.tileSize }, map, idCounter)) {
+        if (!isPositionBlocking({ x: tempXY.x * map.tileSize, y: tempXY.y * map.tileSize }, map, idCounter, game)) {
             result.push(tempXY);
         }
     }
     if (right && bottom) {
         tempXY = { x: pos.x + 1, y: pos.y + 1 };
-        if (!isPositionBlocking({ x: tempXY.x * map.tileSize, y: tempXY.y * map.tileSize }, map, idCounter)) {
+        if (!isPositionBlocking({ x: tempXY.x * map.tileSize, y: tempXY.y * map.tileSize }, map, idCounter, game)) {
             result.push(tempXY);
         }
     }
     if (bottom && left) {
         tempXY = { x: pos.x - 1, y: pos.y + 1 };
-        if (!isPositionBlocking({ x: tempXY.x * map.tileSize, y: tempXY.y * map.tileSize }, map, idCounter)) {
+        if (!isPositionBlocking({ x: tempXY.x * map.tileSize, y: tempXY.y * map.tileSize }, map, idCounter, game)) {
             result.push(tempXY);
         }
     }
     if (left && top) {
         tempXY = { x: pos.x - 1, y: pos.y - 1 };
-        if (!isPositionBlocking({ x: tempXY.x * map.tileSize, y: tempXY.y * map.tileSize }, map, idCounter)) {
+        if (!isPositionBlocking({ x: tempXY.x * map.tileSize, y: tempXY.y * map.tileSize }, map, idCounter, game)) {
             result.push(tempXY);
         }
     }
