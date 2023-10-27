@@ -4,7 +4,10 @@ import { calculateDistance, getNextId } from "../../game.js"
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../gameModel.js"
 import { MapChunk, GameMap, isPositionBlocking, mapKeyToChunkXY } from "../../map/map.js"
 import { fixedRandom } from "../../randomNumberGenerator.js"
+import { resetCharacter } from "../character.js"
 import { Character, IMAGE_SLIME, createCharacter } from "../characterModel.js"
+import { createPetsBasedOnLevelAndCharacter } from "../playerCharacters/tamer/tamerCharacter.js"
+import { TamerPetCharacter } from "../playerCharacters/tamer/tamerPetCharacter.js"
 import { getCelestialDirection, setAbilityToEnemyLevel } from "./bossEnemy.js"
 
 export type FixPositionRespawnEnemyCharacter = Character & {
@@ -56,15 +59,27 @@ export function createEnemyWithLevel(idCounter: IdCounter, enemyPos: Position, l
 
     const enemy = createEnemy(idCounter, enemyPos.x, enemyPos.y, size, moveSpeed, hp, color, autoAggroRange, alertEnemyRange, respawnTime, experienceWorth, level);
     enemy.abilities.push(createAbilityMelee(idCounter, undefined, meleeDamage));
-    if(enemyType.hasAbility && enemyType.abilityProbabiltiy && level > 1){
+    if (enemyType.hasAbility && enemyType.abilityProbabiltiy && level > 1) {
         const random = fixedRandom(enemyPos.x, enemyPos.y, 0);
-        if(random <= enemyType.abilityProbabiltiy){
+        if (random <= enemyType.abilityProbabiltiy) {
             const celestialDirection = getCelestialDirection(enemyPos);
             const endBoss = game.state.bossStuff.nextEndbosses[celestialDirection]!;
-            const ability = createEnemyAbilityBasedOnEndBoss(level, endBoss, enemyPos, enemyType.damageFactor, game);
-            if(ability){
-                experienceWorth *= 2;
-                enemy.abilities.push(ability);
+            const whatToAdd = randomWhatToAdd(endBoss, enemy, game);
+            if(whatToAdd === "addAbility"){
+                const ability = createEnemyAbilityBasedOnEndBoss(level, endBoss, enemyPos, enemyType.damageFactor, game);
+                if (ability) {
+                    experienceWorth *= 2;
+                    enemy.abilities.push(ability);
+                }
+            }
+            if(whatToAdd === "addPet"){
+                const levelReduced = Math.max(Math.floor(level/4), 1);
+                const pet: TamerPetCharacter = createPetsBasedOnLevelAndCharacter(endBoss, levelReduced, enemy, game)[0];
+                if (pet) {
+                    experienceWorth *= 2;
+                    enemy.pets = [];
+                    enemy.pets!.push(pet);
+                }
             }
         }
     }
@@ -159,6 +174,31 @@ function createEnemy(
     };
 }
 
+function randomWhatToAdd(nextEndBoss: Character, charPosition: Position, game: Game): "addPet" | "addAbility"{
+    const possibleAbilities: Ability[] = [];
+    const possiblePets: TamerPetCharacter[] = [];
+    for (let ability of nextEndBoss!.abilities) {
+        if (ABILITIES_FUNCTIONS[ability.name].canBeUsedByBosses) {
+            possibleAbilities.push(ability);
+        }
+    }
+    if (nextEndBoss.pets) {
+        for (let pet of nextEndBoss.pets) {
+            possiblePets.push(pet);
+        }
+    }
+    let maxRandom = possibleAbilities.length + possiblePets.length;
+    let randomChoice = 0;
+    if (maxRandom > 1) {
+        randomChoice = Math.floor(fixedRandom(charPosition.x, charPosition.y, game.state.map.seed! + 5) * maxRandom);
+    }
+    if (randomChoice < possibleAbilities.length) {
+        return "addAbility";
+    }else{
+        return "addPet";
+    }
+}
+
 function createEnemyAbilityBasedOnEndBoss(level: number, nextEndBoss: Character, enemyPos: Position, damageFactor: number, game: Game): Ability | undefined {
     const possibleAbilities: Ability[] = [];
     for (let ability of nextEndBoss!.abilities) {
@@ -168,16 +208,18 @@ function createEnemyAbilityBasedOnEndBoss(level: number, nextEndBoss: Character,
     }
 
     if (possibleAbilities.length > 0) {
-        let randomAbilityChoice = 0;
+        let randomChoice = 0;
         if (possibleAbilities.length > 1) {
-            randomAbilityChoice = Math.floor(fixedRandom(enemyPos.x, enemyPos.y, game.state.map.seed! + 5) * possibleAbilities.length);
+            randomChoice = Math.floor(fixedRandom(enemyPos.x, enemyPos.y, game.state.map.seed! + 5) * possibleAbilities.length);
         }
-        const randomAbility: Ability = possibleAbilities[randomAbilityChoice];
-        const abilityFunctions = ABILITIES_FUNCTIONS[randomAbility.name];
-        const ability = abilityFunctions.createAbility(game.state.idCounter);
-        setAbilityToEnemyLevel(ability, level, damageFactor);
-        ability.passive = true;
-        return ability;
+        if (randomChoice < possibleAbilities.length) {
+            const randomAbility: Ability = possibleAbilities[randomChoice];
+            const abilityFunctions = ABILITIES_FUNCTIONS[randomAbility.name];
+            const ability = abilityFunctions.createAbility(game.state.idCounter);
+            setAbilityToEnemyLevel(ability, level, damageFactor);
+            ability.passive = true;
+            return ability;
+        }
     }
 
     return undefined;

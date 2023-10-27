@@ -71,7 +71,6 @@ function getAbilityUpgradeBackwardsShotUiTextLong(ability: Ability, option: Abil
         textLines.push(`List of synergies:`);
         textLines.push(`- ${ABILITY_SNIPE_UPGRADE_AFTER_IMAGE}`);
         textLines.push(`- ${ABILITY_SNIPE_UPGRADE_MORE_RIFLES}`);
-        textLines.push(`- ${ABILITY_SNIPE_UPGRADE_SPLIT_SHOT}`);
     } else {
         textLines.push(`Your main shot also shoots an additional`);
         textLines.push(`shot backwards.`);

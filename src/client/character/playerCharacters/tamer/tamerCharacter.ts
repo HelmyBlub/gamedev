@@ -74,12 +74,12 @@ function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: 
     return bossCharacter;
 }
 
-function createPetsBasedOnLevelAndCharacter(basedOnCharacter: Character, level: number, newBoss: Character, game: Game): TamerPetCharacter[] {
+export function createPetsBasedOnLevelAndCharacter(basedOnCharacter: Character, level: number, petOwner: Character, game: Game): TamerPetCharacter[] {
     const randomPetIndex = Math.floor(nextRandom(game.state.randomSeed) * basedOnCharacter.pets!.length);
     const pet: TamerPetCharacter = deepCopy(basedOnCharacter.pets![randomPetIndex]);
-    pet.x = newBoss.x;
-    pet.y = newBoss.y;
-    pet.faction = newBoss.faction;
+    pet.x = petOwner.x;
+    pet.y = petOwner.y;
+    pet.faction = petOwner.faction;
     if (level === 1) {
         for (let i = pet.abilities.length - 1; i >= 0; i--) {
             const ability = pet.abilities[i];
@@ -97,9 +97,10 @@ function createPetsBasedOnLevelAndCharacter(basedOnCharacter: Character, level: 
         setAbilityToBossLevel(ability, level);
         if (ability.name === ABILITY_NAME_LEASH) {
             const abilityLeash = ability as AbilityLeash;
-            abilityLeash.leashedToOwnerId = newBoss.id;
+            abilityLeash.leashedToOwnerId = petOwner.id;
         }
     }
+    resetCharacter(pet);
 
     return [pet];
 }

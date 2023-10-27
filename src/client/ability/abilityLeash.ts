@@ -77,11 +77,18 @@ function findLeashOwner(abilityOwner: AbilityOwner, ability: AbilityLeash, game:
         for (let char of game.state.pastPlayerCharacters.characters) {
             if (char) characters.push(char);
         }
+        return findCharacterById(characters, ability.leashedToOwnerId);
     } else {
         characters = game.state.bossStuff.bosses;
+        let character = findCharacterById(characters, ability.leashedToOwnerId);
+        if(character) return character;
+        for (let i = 0; i < game.state.map.activeChunkKeys.length; i++) {
+            const chunk = game.state.map.chunks[game.state.map.activeChunkKeys[i]];
+            character = findCharacterById(chunk.characters, ability.leashedToOwnerId);
+            if(character) return character;    
+        }
     }
-    return findCharacterById(characters, ability.leashedToOwnerId);
-
+    return null;
 }
 
 function tickAbilityLeash(abilityOwner: AbilityOwner, ability: Ability, game: Game) {

@@ -5,7 +5,7 @@ import { AbilityUpgrade } from "../abilityUpgrade.js";
 import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilitySnipe, getOptionsSnipeUpgrade } from "./abilitySnipe.js";
 
 export const ABILITY_SNIPE_UPGRADE_STAY_STILL = "Stay Still";
-const STAY_STILL_TIME = 2500;
+const STAY_STILL_TIME = 1500;
 const DAMAGE_FACTOR = 1;
 
 export type AbilityUpgradeStayStill = AbilityUpgrade & {

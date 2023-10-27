@@ -87,6 +87,7 @@ export function paintCharacterDefault(ctx: CanvasRenderingContext2D, character: 
     if (character.paint.image) {
         if (character.paint.image === IMAGE_SLIME) {
             slimePaint(ctx, character, cameraPosition, game);
+            paintCharatersPets(ctx, [character], cameraPosition, game);
         } else {
             paintCharacterImage(ctx, character, cameraPosition, game);
         }

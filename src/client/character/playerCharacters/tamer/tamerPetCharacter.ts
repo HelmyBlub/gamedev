@@ -1,7 +1,7 @@
 import { ABILITIES_FUNCTIONS, paintDefaultAbilityStatsUI } from "../../../ability/ability.js";
 import { ABILITY_NAME_LEASH, AbilityLeash } from "../../../ability/abilityLeash.js";
 import { calculateDirection, calculateDistance, getNextId } from "../../../game.js";
-import { FACTION_PLAYER, Game, Position } from "../../../gameModel.js";
+import { FACTION_ENEMY, FACTION_PLAYER, Game, Position } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
 import { GAME_IMAGES, getImage } from "../../../imageLoad.js";
 import { moveByDirectionAndDistance } from "../../../map/map.js";
@@ -268,7 +268,7 @@ export function changeTamerPetHappines(pet: TamerPetCharacter, value: number, ti
     if (tamerPetIncludesTrait(TAMER_PET_TRAIT_HAPPY_ONE, pet)) {
         pet.happines.current = pet.happines.hyperactiveAt - 1;
     }
-    if (visualizeChange) pet.happines.visualizations.push({ happy: value > 0, displayUntil: time + 500 });
+    if (visualizeChange && pet.faction === FACTION_PLAYER) pet.happines.visualizations.push({ happy: value > 0, displayUntil: time + 500 });
     for (let i = pet.happines.visualizations.length - 1; i >= 0; i--) {
         if (pet.happines.visualizations[i].displayUntil < time) {
             pet.happines.visualizations.splice(i, 1);
@@ -298,12 +298,25 @@ export function findPetOwner(pet: TamerPetCharacter, game: Game): Character | un
             const pastChar = pastCharacters[i];
             if (pastChar) characters.push(pastChar);
         }
+        for (let character of characters) {
+            if (character.pets?.includes(pet)) {
+                return character;
+            }
+        }
     } else {
         characters = game.state.bossStuff.bosses;
-    }
-    for (let character of characters) {
-        if (character.pets?.includes(pet)) {
-            return character;
+        for (let character of characters) {
+            if (character.pets?.includes(pet)) {
+                return character;
+            }
+        }
+        for (let i = 0; i < game.state.map.activeChunkKeys.length; i++) {
+            const chunk = game.state.map.chunks[game.state.map.activeChunkKeys[i]];
+            for (let character of chunk.characters) {
+                if (character.pets?.includes(pet)) {
+                    return character;
+                }
+            }
         }
     }
     return undefined;
