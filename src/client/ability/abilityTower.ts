@@ -2,6 +2,7 @@ import { getCharactersTouchingLine, characterTakeDamage } from "../character/cha
 import { Character } from "../character/characterModel.js";
 import { CHARACTER_TYPE_BOSS_ENEMY } from "../character/enemy/bossEnemy.js";
 import { CHARACTER_TYPE_END_BOSS_ENEMY } from "../character/enemy/endBossEnemy.js";
+import { ENEMY_FIX_RESPAWN_PSOITON, FixPositionRespawnEnemyCharacter } from "../character/enemy/fixPositionRespawnEnemyModel.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../character/upgrade.js";
 import { calculateDistance, getCameraPosition, getNextId } from "../game.js";
 import { Position, Game, IdCounter, FACTION_ENEMY } from "../gameModel.js";
@@ -27,6 +28,7 @@ type AbilityObjectTower = AbilityObject & {
     lineDamageTickFrequency: number,
     lineDamageNextDamageTick?: number,
     isBossTower?: boolean,
+    ownerEnemyLevel?: number,
     deleteTime?: number,
 }
 
@@ -38,10 +40,11 @@ type AbilityTower = Ability & {
     orderOfAbilities: number[],
     currentAbilityIndex: number,
     lastBuildTime?: number,
+    maxConnectRange?: number,
 }
 
 export const ABILITY_NAME_TOWER = "Tower";
-const BOSS_TOWE_DESPAWN_TIME = 30000;
+const ENEMY_TOWER_DESPAWN_TIME = 30000;
 GAME_IMAGES[ABILITY_NAME_TOWER] = {
     imagePath: "/images/hammer.png",
     spriteRowHeights: [20],
@@ -123,27 +126,29 @@ function resetAbility(ability: Ability) {
 function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: number) {
     const abilityTower = ability as AbilityTower;
     const maxTowers = 3;
-    if(abilityTower.orderOfAbilities.length > maxTowers){
+    if (abilityTower.orderOfAbilities.length > maxTowers) {
         abilityTower.orderOfAbilities.splice(maxTowers);
     }
     abilityTower.currentAbilityIndex = (level * 2) % abilityTower.orderOfAbilities.length;
     abilityTower.damage = level * 2;
+    abilityTower.maxConnectRange = 300;
 }
 
 function setAbilityTowerToBossLevel(ability: Ability, level: number) {
     const abilityTower = ability as AbilityTower;
     const maxTowers = level * 3;
-    if(abilityTower.orderOfAbilities.length > maxTowers){
+    if (abilityTower.orderOfAbilities.length > maxTowers) {
         abilityTower.orderOfAbilities.splice(maxTowers);
-    }else if (abilityTower.orderOfAbilities.length < maxTowers){
+    } else if (abilityTower.orderOfAbilities.length < maxTowers) {
         const missingCount = maxTowers - abilityTower.orderOfAbilities.length;
-        for(let i = 0; i< missingCount;i++){
+        for (let i = 0; i < missingCount; i++) {
             const newKey = abilityTower.orderOfAbilities.length % abilityTower.availableAbilityKeys.length;
             abilityTower.orderOfAbilities.push(newKey);
         }
     }
     abilityTower.currentAbilityIndex = (level * 2) % abilityTower.orderOfAbilities.length;
     abilityTower.damage = level * 10;
+    abilityTower.maxConnectRange = 800;
 }
 
 
@@ -161,7 +166,7 @@ function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
 
 function deleteAbilityObjectTower(abilityObject: AbilityObject, game: Game) {
     const abilityObjectTower = abilityObject as AbilityObjectTower;
-    if(abilityObjectTower.deleteTime !== undefined && abilityObjectTower.deleteTime <= game.state.time){
+    if (abilityObjectTower.deleteTime !== undefined && abilityObjectTower.deleteTime <= game.state.time) {
         updateTowersWhichHaveDeletedId(game.state.abilityObjects, abilityObjectTower.id);
         return true;
     }
@@ -185,11 +190,16 @@ function castTower(abilityOwner: AbilityOwner, ability: Ability, castPosition: P
     if (!nextAbility.passive) nextAbility.passive = true;
     abilityTower.currentAbilityIndex = (abilityTower.currentAbilityIndex + 1) % abilityTower.orderOfAbilities.length;
     const newTower: AbilityObjectTower = createAbilityObjectTower(game.state.idCounter, abilityOwner.id, abilityOwner.faction, castPosition, nextAbility, abilityTower.damage);
-    if (abilityOwner.type === CHARACTER_TYPE_BOSS_ENEMY || abilityOwner.type === CHARACTER_TYPE_END_BOSS_ENEMY) {
-        newTower.isBossTower = true;
-        newTower.deleteTime = game.state.time + BOSS_TOWE_DESPAWN_TIME;
+    if (abilityOwner.faction === FACTION_ENEMY) {
+        if (abilityOwner.type === CHARACTER_TYPE_BOSS_ENEMY || abilityOwner.type === CHARACTER_TYPE_END_BOSS_ENEMY) {
+            newTower.isBossTower = true;
+        }else if (abilityOwner.type === ENEMY_FIX_RESPAWN_PSOITON){
+            const enemy: FixPositionRespawnEnemyCharacter = abilityOwner as any;
+            newTower.ownerEnemyLevel = enemy.level;
+        }
+        newTower.deleteTime = game.state.time + ENEMY_TOWER_DESPAWN_TIME;
     }
-    const nearest = getNearestTower(abilityObjects, newTower, game.state.randomSeed);
+    const nearest = getNearestTower(abilityObjects, newTower, game.state.randomSeed, abilityTower.maxConnectRange);
     if (nearest) {
         newTower.conntetedToId = nearest.id;
     }
@@ -263,6 +273,12 @@ function updateTowerObjectAbilityLevels(abilityObjects: AbilityObject[]) {
             if (tower.isBossTower) {
                 if (abilityFunctions.setAbilityToBossLevel) {
                     abilityFunctions.setAbilityToBossLevel(tower.ability, level);
+                }
+            } else if (tower.faction === FACTION_ENEMY) {
+                if (abilityFunctions.setAbilityToEnemyLevel) {
+                    const damageFactor = Math.max(tower.ownerEnemyLevel! / 10, 1);
+                    const additionalLevel = Math.floor(tower.ownerEnemyLevel! / 5);
+                    abilityFunctions.setAbilityToEnemyLevel(tower.ability, level + additionalLevel, damageFactor);
                 }
             } else {
                 if (abilityFunctions.setAbilityToLevel) {
@@ -366,7 +382,7 @@ function getTowerConnectionCount(abilityObjects: AbilityObject[], tower: Ability
 function paintEffectConnected(ctx: CanvasRenderingContext2D, abilityObjectTower: AbilityObjectTower, cameraPosition: Position, abilityObjects: AbilityObject[]) {
     if (abilityObjectTower.conntetedToId !== undefined) {
         ctx.strokeStyle = "red";
-        if(abilityObjectTower.faction === FACTION_ENEMY){
+        if (abilityObjectTower.faction === FACTION_ENEMY) {
             ctx.strokeStyle = "black";
         }
         const connectedTower = getTowerById(abilityObjects, abilityObjectTower.conntetedToId);
@@ -396,7 +412,7 @@ function getTowerById(abilityObjects: AbilityObject[], id: number): AbilityObjec
     return undefined;
 }
 
-function getNearestTower(abilityObjects: AbilityObject[], tower: AbilityObjectTower, randomSeed: RandomSeed): AbilityObjectTower | undefined {
+function getNearestTower(abilityObjects: AbilityObject[], tower: AbilityObjectTower, randomSeed: RandomSeed, maxDistance: number | undefined): AbilityObjectTower | undefined {
     let currentDistance: number;
     let lowestDistance: number = 0;
     let nearest: AbilityObjectTower[] | undefined = undefined;
@@ -406,6 +422,7 @@ function getNearestTower(abilityObjects: AbilityObject[], tower: AbilityObjectTo
         if (curObj === tower) continue;
         if (curObj.type !== ABILITY_NAME_TOWER) continue;
         currentDistance = calculateDistance(curObj, tower);
+        if (maxDistance && currentDistance >= maxDistance) continue;
         if (nearest === undefined || currentDistance < lowestDistance) {
             nearest = [curObj as AbilityObjectTower];
             lowestDistance = currentDistance;

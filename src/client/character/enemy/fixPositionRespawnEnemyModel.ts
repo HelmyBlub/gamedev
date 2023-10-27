@@ -1,12 +1,11 @@
-import { ABILITIES_FUNCTIONS, Ability, createAbility } from "../../ability/ability.js"
+import { ABILITIES_FUNCTIONS, Ability } from "../../ability/ability.js"
 import { createAbilityMelee } from "../../ability/abilityMelee.js"
-import { ABILITY_NAME_SHOOT } from "../../ability/abilityShoot.js"
 import { calculateDistance, getNextId } from "../../game.js"
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../gameModel.js"
 import { MapChunk, GameMap, isPositionBlocking, mapKeyToChunkXY } from "../../map/map.js"
-import { fixedRandom, nextRandom } from "../../randomNumberGenerator.js"
+import { fixedRandom } from "../../randomNumberGenerator.js"
 import { Character, IMAGE_SLIME, createCharacter } from "../characterModel.js"
-import { getCelestialDirection, setAbilityToBossLevel, setAbilityToEnemyLevel } from "./bossEnemy.js"
+import { getCelestialDirection, setAbilityToEnemyLevel } from "./bossEnemy.js"
 
 export type FixPositionRespawnEnemyCharacter = Character & {
     alertEnemyRange?: number,
@@ -17,8 +16,8 @@ export type FixPositionRespawnEnemyCharacter = Character & {
     nextTickTime?: number,
     respawnOnTime?: number,
     respawnTime: number,
+    level: number,
 }
-
 type EnemyTypes = {
     [key: string]: EnemyType
 }
@@ -33,6 +32,7 @@ type EnemyType = {
     abilityProbabiltiy?: number,
 }
 
+export const ENEMY_FIX_RESPAWN_PSOITON = "fixPositionRespawnEnemy";
 const ENEMY_TYPES: EnemyTypes = {
     "big": { hpFactor: 16, sizeFactor: 1.5, spawnAmountFactor: 0.01, xpFactor: 32, damageFactor: 2, hasAbility: true, abilityProbabiltiy: 1 },
     "default": { hpFactor: 1, sizeFactor: 1, spawnAmountFactor: 0.5, xpFactor: 1, damageFactor: 1 },
@@ -54,7 +54,7 @@ export function createEnemyWithLevel(idCounter: IdCounter, enemyPos: Position, l
     let experienceWorth = 1 * enemyType.xpFactor * Math.pow(level, 2);
     const meleeDamage = (2 + level * 2) * enemyType.damageFactor;
 
-    const enemy = createEnemy(idCounter, enemyPos.x, enemyPos.y, size, moveSpeed, hp, color, autoAggroRange, alertEnemyRange, respawnTime, experienceWorth);
+    const enemy = createEnemy(idCounter, enemyPos.x, enemyPos.y, size, moveSpeed, hp, color, autoAggroRange, alertEnemyRange, respawnTime, experienceWorth, level);
     enemy.abilities.push(createAbilityMelee(idCounter, undefined, meleeDamage));
     if(enemyType.hasAbility && enemyType.abilityProbabiltiy && level > 1){
         const random = fixedRandom(enemyPos.x, enemyPos.y, 0);
@@ -143,8 +143,9 @@ function createEnemy(
     alertEnemyRange: number,
     respawnTime: number,
     experienceWorth: number,
+    level: number,
 ): FixPositionRespawnEnemyCharacter {
-    const enemy = createCharacter(getNextId(idCounter), x, y, size, size, color, moveSpeed, hp, FACTION_ENEMY, "fixPositionRespawnEnemy", experienceWorth);
+    const enemy = createCharacter(getNextId(idCounter), x, y, size, size, color, moveSpeed, hp, FACTION_ENEMY, ENEMY_FIX_RESPAWN_PSOITON, experienceWorth);
     enemy.paint.image = IMAGE_SLIME;
     return {
         ...enemy,
@@ -154,6 +155,7 @@ function createEnemy(
         isAggroed: false,
         maxAggroRange: Math.max(200, autoAggroRange * 1.5),
         alertEnemyRange: alertEnemyRange,
+        level: level,
     };
 }
 
