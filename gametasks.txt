@@ -1,15 +1,9 @@
 current tasks:
-- rework saveStates. they are to random
-    - shift + <number> : save slot <number>
-    - <number>: load slot <number>
-        - number f1-f4
-    - 2 auto save slots
-        - f5,f6
-
-- "big enemy" test runs
-    - reach end boss against sniper
-    - reach end boss against tamer
-    - reach end boss against builder
+- bug: auto save timer does not reset on restart
+- bug?: enemy having pet with too much speed?, does leash bug speed sometimes?
+- add setting: reduce visibility of all player effects, because enemy abilties hard to see
+- UI-Improve: sniper upgrade say their level x values
+- more respawn time for enemies with abilities?
 
 possible future tasks: (only keep 5)
 - improvement: getChunksTouchingLine2 does not work, still needs to improve

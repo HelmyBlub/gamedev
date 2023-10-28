@@ -366,14 +366,14 @@ function setAbilitySnipeToLevel(ability: Ability, level: number) {
     abilitySnipe.baseDamage = level * 100;
     abilitySnipe.maxCharges = Math.min(2 + level, abilitySnipe.maxMagazineSize);
     abilitySnipe.baseRange = 800 + level * 10;
-    abilitySnipe.shotFrequencyTimeDecreaseFaktor = 1 + level * 0.15;
+    abilitySnipe.shotFrequencyTimeDecreaseFaktor = 0.5 + level * 0.15;
 }
 
 function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: number) {
     const abilitySnipe = ability as AbilitySnipe;
     abilitySnipe.baseDamage = level * 1 * damageFactor;
     abilitySnipe.maxCharges = Math.min(2 + level, abilitySnipe.maxMagazineSize);
-    abilitySnipe.baseRange = 400 + level * 20;
+    abilitySnipe.baseRange = 400 + level * 10;
     abilitySnipe.shotFrequencyTimeDecreaseFaktor = 1.00 + level * 0.10;
 }
 
