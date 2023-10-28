@@ -62,11 +62,17 @@ export type TestingStuff = {
         nextAutoButtonPressTime: number
     },
     saveStates: {
-        maxNumberStates: number,
-        saveInterval: number,
-        nextSaveStateTime?: number,
-        states: string[],
-        statesRecordData: string[],
+        autoSaves: {
+            saveInterval: number,
+            nextSaveStateTime?: number,
+            states: string[],
+            statesRecordData: string[],
+            maxNumberStates: number,
+        },
+        manualSaves: {
+            states: string[],
+            statesRecordData: string[],
+        }
     }
 }
 
@@ -292,10 +298,16 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
                 nextAutoButtonPressTime: 0,
             },
             saveStates: {
-                maxNumberStates: 10,
-                saveInterval: 10000,
-                states: [],
-                statesRecordData: [],
+                autoSaves:{
+                    maxNumberStates: 2,
+                    saveInterval: 10000,
+                    states: [],
+                    statesRecordData: [],
+                },
+                manualSaves:{
+                    states: [],
+                    statesRecordData: [],
+                }
             }
         },
         debug: {

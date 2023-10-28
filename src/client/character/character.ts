@@ -16,6 +16,7 @@ import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters/playerCha
 import { CHARACTER_TYPE_END_BOSS_ENEMY } from "./enemy/endBossEnemy.js";
 import { createEndBossCrownCharacter } from "./enemy/endBossCrown.js";
 import { TamerPetCharacter, tradePets } from "./playerCharacters/tamer/tamerPetCharacter.js";
+import { ENEMY_FIX_RESPAWN_PSOITON } from "./enemy/fixPositionRespawnEnemyModel.js";
 
 export function findCharacterById(characters: Character[], id: number): Character | null {
     for (let i = 0; i < characters.length; i++) {
@@ -178,6 +179,7 @@ export function tickCharacters(characters: (Character | undefined)[], game: Game
             functions.tickPetFunction(char, petOwner, game, pathingCache);
         }
         if (!char.isDead) {
+            if (game.state.bossStuff.endBossStarted && char.type === ENEMY_FIX_RESPAWN_PSOITON) continue;
             for (let ability of char.abilities) {
                 const tickAbility = ABILITIES_FUNCTIONS[ability.name].tickAbility;
                 if (tickAbility) tickAbility(char, ability, game);

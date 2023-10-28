@@ -3,7 +3,7 @@ import { createPaintTextData, getCameraPosition } from "./game.js";
 import { Game, GameState } from "./gameModel.js";
 import { sendMultiplayer } from "./multiplayerConenction.js";
 import { createDefaultKeyBindings1 } from "./player.js";
-import { PlayerInput, keyDown } from "./playerInput.js";
+import { PlayerInput } from "./playerInput.js";
 import { compressString } from "./stringCompress.js";
 
 type Command = { command: string };

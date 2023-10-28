@@ -50,7 +50,7 @@ export function mouseUp(event: MouseEvent, game: Game) {
     playerInputChangeEvent(game, "Mouse" + event.button, false);
 }
 
-export function keyDown(event: { code: string, preventDefault?: Function, stopPropagation?: Function }, game: Game) {
+export function keyDown(event: { code: string, preventDefault?: Function, stopPropagation?: Function, shiftKey?: boolean }, game: Game) {
     if (event.code !== "F12" && !game.multiplayer.connectMenuOpen) {
         if (event.preventDefault) event.preventDefault();
         if (event.stopPropagation) event.stopPropagation();
@@ -107,23 +107,23 @@ export function keyDown(event: { code: string, preventDefault?: Function, stopPr
             }
             break;
         case "F1":
-            if (game.debug.activateSaveStates && !game.multiplayer.websocket) {
-                const saveStates = game.testing.saveStates;
-                game.state = JSON.parse(saveStates.states[saveStates.states.length - 1]);
-                game.testing.record!.data = JSON.parse(saveStates.statesRecordData[saveStates.states.length - 1]);
-                resetGameNonStateData(game);
-                saveStates.nextSaveStateTime = game.state.time + saveStates.saveInterval;
-            }
+            handleSaveStateAction(0, event.shiftKey!, game);
+            break;
         case "F2":
-            if (game.debug.activateSaveStates && !game.multiplayer.websocket) {
-                const saveStates = game.testing.saveStates;
-                if (saveStates.states.length > 1) {
-                    game.state = JSON.parse(saveStates.states[saveStates.states.length - 2]);
-                    game.testing.record!.data = JSON.parse(saveStates.statesRecordData[saveStates.states.length - 2]);
-                    resetGameNonStateData(game);
-                    saveStates.nextSaveStateTime = game.state.time + saveStates.saveInterval;
-                }
-            }
+            handleSaveStateAction(1, event.shiftKey!, game);
+            break;
+        case "F3":
+            handleSaveStateAction(2, event.shiftKey!, game);
+            break;
+        case "F4":
+            handleSaveStateAction(3, event.shiftKey!, game);
+            break;
+        case "F5":
+            saveStateLoad(1, true, game);
+            break;
+        case "F6":
+            saveStateLoad(0, true, game);
+            break;
         default:
             break;
     }
@@ -173,6 +173,41 @@ export function tickPlayerInputs(playerInputs: PlayerInput[], currentTime: numbe
         }
     }
     takeTimeMeasure(game.debug, "tickPlayerInputs", "");
+}
+
+function handleSaveStateAction(saveStateNumber: number, isSaveAction: boolean, game: Game) {
+    if (isSaveAction) {
+        saveStateSave(saveStateNumber, game);
+    } else {
+        saveStateLoad(saveStateNumber, false, game);
+    }
+}
+
+function saveStateSave(saveStateNumber: number, game: Game) {
+    if (game.debug.activateSaveStates && !game.multiplayer.websocket) {
+        const manualSaves = game.testing.saveStates.manualSaves;
+        manualSaves.states[saveStateNumber] = JSON.stringify(game.state);
+        manualSaves.statesRecordData[saveStateNumber] = JSON.stringify(game.testing.record!.data);
+    }
+}
+
+function saveStateLoad(saveStateNumber: number, isAutoSave: boolean, game: Game) {
+    if (game.debug.activateSaveStates && !game.multiplayer.websocket) {
+        const saveStates = game.testing.saveStates;
+        if (isAutoSave) {
+            const autoSaves = saveStates.autoSaves;
+            if (!autoSaves.states[saveStateNumber]) return;
+            game.state = JSON.parse(autoSaves.states[saveStateNumber]);
+            game.testing.record!.data = JSON.parse(autoSaves.statesRecordData[saveStateNumber]);
+        } else {
+            const manualSaves = saveStates.manualSaves;
+            if (!manualSaves.states[saveStateNumber]) return;
+            game.state = JSON.parse(manualSaves.states[saveStateNumber]);
+            game.testing.record!.data = JSON.parse(manualSaves.statesRecordData[saveStateNumber]);
+        }
+        resetGameNonStateData(game);
+        saveStates.autoSaves.nextSaveStateTime = game.state.time + saveStates.autoSaves.saveInterval;
+    }
 }
 
 function multiplayerConnectMenu(game: Game) {

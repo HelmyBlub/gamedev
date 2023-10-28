@@ -1,5 +1,7 @@
-import { ABILITIES_FUNCTIONS, Ability } from "../../ability/ability.js"
+import { ABILITIES_FUNCTIONS, Ability, addAbilityToCharacter, createAbility } from "../../ability/ability.js"
 import { createAbilityMelee } from "../../ability/abilityMelee.js"
+import { ABILITY_NAME_FEED_PET } from "../../ability/petTamer/abilityFeedPet.js"
+import { ABILITY_NAME_LOVE_PET } from "../../ability/petTamer/abilityLovePet.js"
 import { calculateDistance, getNextId } from "../../game.js"
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../gameModel.js"
 import { MapChunk, GameMap, isPositionBlocking, mapKeyToChunkXY } from "../../map/map.js"
@@ -37,7 +39,7 @@ type EnemyType = {
 
 export const ENEMY_FIX_RESPAWN_PSOITON = "fixPositionRespawnEnemy";
 const ENEMY_TYPES: EnemyTypes = {
-    "big": { hpFactor: 16, sizeFactor: 1.5, spawnAmountFactor: 0.01, xpFactor: 32, damageFactor: 2, hasAbility: true, abilityProbabiltiy: 1 },
+    "big": { hpFactor: 16, sizeFactor: 1.5, spawnAmountFactor: 0.008, xpFactor: 38, damageFactor: 2, hasAbility: true, abilityProbabiltiy: 1 },
     "default": { hpFactor: 1, sizeFactor: 1, spawnAmountFactor: 0.5, xpFactor: 1, damageFactor: 1 },
     "small": { hpFactor: 0.5, sizeFactor: 0.75, spawnAmountFactor: 1, xpFactor: 0.5, damageFactor: 0.5 },
 }
@@ -79,6 +81,8 @@ export function createEnemyWithLevel(idCounter: IdCounter, enemyPos: Position, l
                     experienceWorth *= 2;
                     enemy.pets = [];
                     enemy.pets!.push(pet);
+                    addAbilityToCharacter(enemy, createAbility(ABILITY_NAME_FEED_PET, idCounter));
+                    addAbilityToCharacter(enemy, createAbility(ABILITY_NAME_LOVE_PET, idCounter));                
                 }
             }
         }

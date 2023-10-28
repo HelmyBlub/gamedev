@@ -505,14 +505,14 @@ function tick(gameTimePassed: number, game: Game) {
 
 function saveStates(game: Game){
     if(game.debug.activateSaveStates && !game.multiplayer.websocket){
-        const saveStates = game.testing.saveStates;
-        if(saveStates.nextSaveStateTime === undefined || saveStates.nextSaveStateTime <= game.state.time){
-            saveStates.nextSaveStateTime = game.state.time + saveStates.saveInterval;
-            saveStates.states.push(JSON.stringify(game.state));
-            saveStates.statesRecordData.push(JSON.stringify(game.testing.record?.data));
-            if(saveStates.states.length > saveStates.maxNumberStates){
-                saveStates.states.shift();
-                saveStates.statesRecordData.shift();
+        const autoSaveStates = game.testing.saveStates.autoSaves;
+        if(autoSaveStates.nextSaveStateTime === undefined || autoSaveStates.nextSaveStateTime <= game.state.time){
+            autoSaveStates.nextSaveStateTime = game.state.time + autoSaveStates.saveInterval;
+            autoSaveStates.states.push(JSON.stringify(game.state));
+            autoSaveStates.statesRecordData.push(JSON.stringify(game.testing.record?.data));
+            if(autoSaveStates.states.length > autoSaveStates.maxNumberStates){
+                autoSaveStates.states.shift();
+                autoSaveStates.statesRecordData.shift();
             }
         }
     }

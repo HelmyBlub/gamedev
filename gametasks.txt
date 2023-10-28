@@ -1,8 +1,15 @@
 current tasks:
-- south direction has less enemies but with abilitites
-    - check pet balancing
-        - should normal enemies feed their pets?
+- rework saveStates. they are to random
+    - shift + <number> : save slot <number>
+    - <number>: load slot <number>
+        - number f1-f4
+    - 2 auto save slots
+        - f5,f6
 
+- "big enemy" test runs
+    - reach end boss against sniper
+    - reach end boss against tamer
+    - reach end boss against builder
 
 possible future tasks: (only keep 5)
 - improvement: getChunksTouchingLine2 does not work, still needs to improve
