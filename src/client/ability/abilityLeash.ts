@@ -97,8 +97,7 @@ function tickAbilityLeash(abilityOwner: AbilityOwner, ability: Ability, game: Ga
     if (abilityLeash.leashedToOwnerId !== undefined) {
         let connectedOwner: Character | null = findLeashOwner(abilityOwner, abilityLeash, game);
         if (!connectedOwner) {
-            console.log("leash owner not found", ability);
-            delete abilityLeash.leashedToOwnerId;
+            // can happen if in one tick map character connectedOwner of a pet moves back outside of active chunks
             return;
         }
         findAndRemoveUnnecessaryLeashBends(abilityOwner, connectedOwner, abilityLeash, game);

@@ -120,8 +120,9 @@ function createShapeCircle(pet: TamerPetCharacter, abilityPetPainter: AbilityPet
 }
 
 function initShapePaintCircle(pet: TamerPetCharacter, ability: AbilityPetPainter, game: Game) {
-    ability.currentlyPainting = PET_PAINTER_CIRCLE;
     const startPoint = getRandomStartPaintPositionCircle(pet, game);
+    if(!startPoint) return;
+    ability.currentlyPainting = PET_PAINTER_CIRCLE;
     ability.paintCircle = {
         middle: { x: startPoint.x, y: startPoint.y },
         currentAngle: 0,
@@ -185,8 +186,9 @@ function paintShapeCircle(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOw
     ctx.stroke();
 }
 
-function getRandomStartPaintPositionCircle(pet: TamerPetCharacter, game: Game): Position {
+function getRandomStartPaintPositionCircle(pet: TamerPetCharacter, game: Game): Position | undefined{
     const petOwner: Character = findPetOwner(pet, game)!;
+    if(!petOwner) return undefined;
     let blocking = true;
     let position = { x: 0, y: 0 };
     do {

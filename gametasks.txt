@@ -1,9 +1,13 @@
 current tasks:
-- bug: auto save timer does not reset on restart
 - bug?: enemy having pet with too much speed?, does leash bug speed sometimes?
+    - test replay
+        - big enemy in east active
+        - time ~130-140,
 - add setting: reduce visibility of all player effects, because enemy abilties hard to see
 - UI-Improve: sniper upgrade say their level x values
 - more respawn time for enemies with abilities?
+- fix timeMeasurement: uncounted timeout
+- check: on enemy respawn. does it check distance to death position or respawn position?
 
 possible future tasks: (only keep 5)
 - improvement: getChunksTouchingLine2 does not work, still needs to improve

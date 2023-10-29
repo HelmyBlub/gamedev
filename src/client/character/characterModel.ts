@@ -124,6 +124,7 @@ export type Character = Position & {
         experience: number,
         experienceForLevelUp: number,
     }
+    mapChunkKey?: string,
 }
 
 export function createCharacter(

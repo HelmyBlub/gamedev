@@ -140,9 +140,10 @@ function createShapeSquare(pet: TamerPetCharacter, abilityPetPainter: AbilityPet
 }
 
 function initShapePaintSquare(pet: TamerPetCharacter, ability: AbilityPetPainter, game: Game) {
+    pet.forcedMovePosition = getRandomStartPaintPositionSquare(pet, game);
+    if(!pet.forcedMovePosition) return;
     ability.currentlyPainting = PET_PAINTER_SQUARE;
     ability.paintPoints = [];
-    pet.forcedMovePosition = getRandomStartPaintPositionSquare(pet, game);
 }
 
 function tickShapeObjectPetPainterSquare(abilityObject: AbilityObjectPetPainter, game: Game) {
@@ -218,8 +219,9 @@ function paintShapeSquare(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOw
     ctx.stroke();
 }
 
-function getRandomStartPaintPositionSquare(pet: TamerPetCharacter, game: Game): Position {
+function getRandomStartPaintPositionSquare(pet: TamerPetCharacter, game: Game): Position | undefined{
     const petOwner: Character = findPetOwner(pet, game)!;
+    if(!petOwner) return undefined;
     let blocking = true;
     let position = { x: 0, y: 0 };
     do {

@@ -90,6 +90,7 @@ export function gameInit(game: Game) {
     game.clientKeyBindings = [];
     game.performance = {};
     game.UI.displayTextData = [];
+    game.testing.saveStates.autoSaves.nextSaveStateTime = 10000;
     removeAllMapCharacters(game.state.map);
     createFixPositionRespawnEnemiesOnInit(game);
     gameInitPlayers(game);

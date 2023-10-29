@@ -106,5 +106,11 @@ function resetEnemy(enemy: FixPositionRespawnEnemyCharacter, map: GameMap) {
     if (enemy.wasHitRecently) delete enemy.wasHitRecently;
     enemy.x = enemy.spawnPosition.x;
     enemy.y = enemy.spawnPosition.y;
+    if(enemy.pets){
+        for(let pet of enemy.pets){
+            pet.x = enemy.x;
+            pet.y = enemy.y;
+        }
+    }
     delete enemy.respawnOnTime;
 }

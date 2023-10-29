@@ -130,9 +130,10 @@ function createShapeTriangle(pet: TamerPetCharacter, abilityPetPainter: AbilityP
 }
 
 function initShapePaintTriangle(pet: TamerPetCharacter, ability: AbilityPetPainter, game: Game) {
+    pet.forcedMovePosition = getRandomStartPaintPositionTriangle(pet, game);
+    if(!pet.forcedMovePosition) return;
     ability.currentlyPainting = PET_PAINTER_TRIANGLE;
     ability.paintPoints = [];
-    pet.forcedMovePosition = getRandomStartPaintPositionTriangle(pet, game);
 }
 
 function tickShapeObjectPetPainterTriangle(abilityObject: AbilityObjectPetPainter, game: Game) {
@@ -210,8 +211,9 @@ function paintShapeTriangle(ctx: CanvasRenderingContext2D, abilityOwner: Ability
     ctx.stroke();
 }
 
-function getRandomStartPaintPositionTriangle(pet: TamerPetCharacter, game: Game): Position {
+function getRandomStartPaintPositionTriangle(pet: TamerPetCharacter, game: Game): Position | undefined {
     const petOwner: Character = findPetOwner(pet, game)!;
+    if(!petOwner) return undefined;
     let blocking = true;
     let position = { x: 0, y: 0 };
     do {

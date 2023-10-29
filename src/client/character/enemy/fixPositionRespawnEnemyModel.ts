@@ -4,7 +4,7 @@ import { ABILITY_NAME_FEED_PET } from "../../ability/petTamer/abilityFeedPet.js"
 import { ABILITY_NAME_LOVE_PET } from "../../ability/petTamer/abilityLovePet.js"
 import { calculateDistance, getNextId } from "../../game.js"
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../gameModel.js"
-import { MapChunk, GameMap, isPositionBlocking, mapKeyToChunkXY } from "../../map/map.js"
+import { MapChunk, GameMap, isPositionBlocking, mapKeyToChunkXY, chunkXYToMapKey } from "../../map/map.js"
 import { fixedRandom } from "../../randomNumberGenerator.js"
 import { resetCharacter } from "../character.js"
 import { Character, IMAGE_SLIME, createCharacter } from "../characterModel.js"
@@ -141,7 +141,9 @@ export function createFixPositionRespawnEnemies(chunk: MapChunk, chunkX: number,
                     if (minSpawnDistanceFromMapCenter < distance) {
                         if (!isPositionBlocking(enemyPos, map, idCounter, game)) {
                             const level = Math.max(Math.floor((distance - minSpawnDistanceFromMapCenter) / 1000), 0) + 1;
-                            chunk.characters.push(createEnemyWithLevel(idCounter, enemyPos, level, ENEMY_TYPES[enemyType], game));
+                            const enemy = createEnemyWithLevel(idCounter, enemyPos, level, ENEMY_TYPES[enemyType], game);
+                            enemy.mapChunkKey = chunkXYToMapKey(chunkX, chunkY);
+                            chunk.characters.push(enemy);
                         }
                     }
                 }
