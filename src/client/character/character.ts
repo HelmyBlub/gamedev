@@ -451,6 +451,27 @@ export function calculateCharacterMovePosition(character: Character, map: GameMa
     return undefined;
 }
 
+export function mapCharacterCheckForChunkChange(character: Character, map: GameMap, newX: number, newY: number) {
+    const currentChunkKey = character.mapChunkKey;
+    if(!currentChunkKey){
+        console.log("missing chunk key on map character");
+        return;
+    }
+    const currentChunk = mapKeyToChunkXY(currentChunkKey);
+    const newChunkY = Math.floor(newY / (map.tileSize * map.chunkLength));
+    const newChunkX = Math.floor(newX / (map.tileSize * map.chunkLength));
+    if (currentChunk.chunkY !== newChunkY || currentChunk.chunkX !== newChunkX) {
+        const newChunkKey = chunkXYToMapKey(newChunkX, newChunkY);
+        const charIndex = map.chunks[currentChunkKey].characters.findIndex(el => el === character);
+        const deleted = map.chunks[currentChunkKey].characters.splice(charIndex, 1);
+        if(deleted.length === 0){
+            console.log("missing character in chunk", character.id, currentChunkKey);
+        }
+        map.chunks[newChunkKey].characters.push(character);
+        character.mapChunkKey = newChunkKey;
+    }
+}
+
 function killCharacter(character: Character, game: Game, abilityRefId: number | undefined = undefined) {
     character.isDead = true;
     if (game.state.timeFirstKill === undefined) game.state.timeFirstKill = game.state.time;
@@ -489,26 +510,5 @@ function killCharacter(character: Character, game: Game, abilityRefId: number | 
 function tickCharacterPets(character: Character, game: Game, pathingCache: PathingCache | null) {
     if (character.pets !== undefined) {
         tickCharacters(character.pets, game, pathingCache, character);
-    }
-}
-
-function mapCharacterCheckForChunkChange(character: Character, map: GameMap, newX: number, newY: number) {
-    const currentChunkKey = character.mapChunkKey;
-    if(!currentChunkKey){
-        console.log("missing chunk key on map character");
-        return;
-    }
-    const currentChunk = mapKeyToChunkXY(currentChunkKey);
-    const newChunkY = Math.floor(newY / (map.tileSize * map.chunkLength));
-    const newChunkX = Math.floor(newX / (map.tileSize * map.chunkLength));
-    if (currentChunk.chunkY !== newChunkY || currentChunk.chunkX !== newChunkX) {
-        const newChunkKey = chunkXYToMapKey(newChunkX, newChunkY);
-        const charIndex = map.chunks[currentChunkKey].characters.findIndex(el => el === character);
-        const deleted = map.chunks[currentChunkKey].characters.splice(charIndex, 1);
-        if(deleted.length === 0){
-            console.log("missing character in chunk", character.id, currentChunkKey);
-        }
-        map.chunks[newChunkKey].characters.push(character);
-        character.mapChunkKey = newChunkKey;
     }
 }

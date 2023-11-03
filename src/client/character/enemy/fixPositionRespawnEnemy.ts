@@ -2,7 +2,7 @@ import { ABILITIES_FUNCTIONS } from "../../ability/ability.js";
 import { calculateDistance } from "../../game.js";
 import { Game } from "../../gameModel.js";
 import { GameMap, positionToMapKey } from "../../map/map.js";
-import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveMapCharacterTick } from "../character.js";
+import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveMapCharacterTick, mapCharacterCheckForChunkChange } from "../character.js";
 import { Character } from "../characterModel.js";
 import { PathingCache } from "../pathing.js";
 import { FixPositionRespawnEnemyCharacter } from "./fixPositionRespawnEnemyModel.js";
@@ -97,13 +97,8 @@ function resetEnemy(enemy: FixPositionRespawnEnemyCharacter, map: GameMap) {
     enemy.hp = enemy.maxHp;
     enemy.isDead = false;
     enemy.isAggroed = false;
-    const deathMapChunkKey = positionToMapKey(enemy, map);
-    const spawnMapChunkKey = positionToMapKey(enemy.spawnPosition, map);
-    if (deathMapChunkKey !== spawnMapChunkKey) {
-        map.chunks[deathMapChunkKey].characters = map.chunks[deathMapChunkKey].characters.filter(char => char !== enemy);
-        map.chunks[spawnMapChunkKey].characters.push(enemy);
-    }
     if (enemy.wasHitRecently) delete enemy.wasHitRecently;
+    mapCharacterCheckForChunkChange(enemy, map, enemy.spawnPosition.x, enemy.spawnPosition.y);
     enemy.x = enemy.spawnPosition.x;
     enemy.y = enemy.spawnPosition.y;
     if(enemy.pets){
