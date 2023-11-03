@@ -81,8 +81,11 @@ function getAbilityUpgradeSplitShotUiTextLong(ability: Ability, option: AbilityU
         textLines.push(`- ${ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT}`);
         textLines.push(`- ${ABILITY_SNIPE_UPGRADE_MORE_RIFLES}`);
     } else {
-        textLines.push(`For every enemy hit with the main shot,`);
-        textLines.push(`it will split in two.`);
+        const upgrade: AbilityUpgradeSplitShot | undefined = ability.upgrades[ABILITY_SNIPE_UPGRADE_SPLIT_SHOT];
+        textLines.push(`The main shot will split for every enemy hit.`);
+        if (upgrade) {
+            textLines.push(`Split count from ${upgrade.level} to ${upgrade.level + 1}.`);
+        }
     }
 
     return textLines;

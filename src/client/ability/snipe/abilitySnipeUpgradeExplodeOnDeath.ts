@@ -84,8 +84,13 @@ function getAbilityUpgradeExplodeOnDeathUiTextLong(ability: Ability, option: Abi
         textLines.push(`- ${ABILITY_SNIPE_UPGRADE_MORE_RIFLES}`);
         textLines.push(`- ${ABILITY_SNIPE_UPGRADE_SPLIT_SHOT}`);
     } else {
+        const upgrade: AbilityUpgradeExplodeOnDeath | undefined = ability.upgrades[ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH];
         textLines.push(`Enemies hit by the main shot explode on death`);
-        textLines.push(`They explode for ${(DAMAGE_FACTOR * 100).toFixed(2)}% damage.`);
+        if (upgrade) {
+            textLines.push(`Explode damage from ${(DAMAGE_FACTOR * upgrade.level * 100).toFixed(0)}% to ${(DAMAGE_FACTOR * (upgrade.level + 1) * 100).toFixed(0)}%`);
+        } else {
+            textLines.push(`They explode for ${(DAMAGE_FACTOR * 100).toFixed(0)}% damage.`);
+        }
     }
 
     return textLines;

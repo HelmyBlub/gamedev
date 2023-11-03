@@ -86,9 +86,14 @@ function getAbilityUpgradeFireLineUiTextLong(ability: Ability, option: AbilityUp
         textLines.push(`- ${ABILITY_SNIPE_UPGRADE_MORE_RIFLES}`);
         textLines.push(`- ${ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT}`);
     } else {
+        const upgrade: AbilityUpgradeFireLine | undefined = ability.upgrades[ABILITY_SNIPE_UPGRADE_FIRE_LINE];
         textLines.push(`The main shot create a fire line.`);
         textLines.push(`It stays on the ground for ${DURATION / 1000}s.`);
-        textLines.push(`It does a total of ${DAMAGEFACTOR * 100}% damage in its duration.`);
+        if (upgrade) {
+            textLines.push(`Total damage from ${DAMAGEFACTOR * 100 * upgrade.level}% to ${DAMAGEFACTOR * 100 * (upgrade.level + 1)}%.`);
+        } else {
+            textLines.push(`It does a total of ${DAMAGEFACTOR * 100}% damage in its duration.`);
+        }
     }
 
     return textLines;

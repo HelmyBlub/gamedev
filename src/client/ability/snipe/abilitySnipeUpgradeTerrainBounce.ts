@@ -90,7 +90,7 @@ function executeOptionTerrainBounce(ability: Ability, option: AbilityUpgradeOpti
     } else {
         if (as.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE] === undefined) {
             up = {
-                level: 1,
+                level: 0,
                 active: true,
                 damageUpPerBounceFactor: 0,
                 upgradeSynergy: false,
@@ -100,6 +100,7 @@ function executeOptionTerrainBounce(ability: Ability, option: AbilityUpgradeOpti
         } else {
             up = as.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE];
         }
+        up.level++;
         up.damageUpPerBounceFactor += DAMAGE_UP_BOUNCE;
     }
 }
@@ -119,9 +120,15 @@ function getAbilityUpgradeTerrainBounceUiTextLong(ability: Ability, option: Abil
         textLines.push(`- ${ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT}`);
         textLines.push(`- ${ABILITY_SNIPE_UPGRADE_MORE_RIFLES}`);
     } else {
+        const upgrade: AbilityUpgradeTerrainBounce | undefined = ability.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE];
         textLines.push(`Main shots will bounce of blocking tiles.`);
-        textLines.push(`Each bounce will increase damage by ${DAMAGE_UP_BOUNCE * 100}%`);
+        textLines.push(`Each bounce will increase damage`);
         textLines.push(`for the following bounced shot part.`);
+        if (upgrade) {
+            textLines.push(`Damage bonus from ${DAMAGE_UP_BOUNCE * 100 * upgrade.level}% to ${DAMAGE_UP_BOUNCE * 100 * (upgrade.level + 1)}% per bounce`);
+        } else {
+            textLines.push(`Damage bonus: ${DAMAGE_UP_BOUNCE * 100}% per bounce`);
+        }
     }
 
     return textLines;

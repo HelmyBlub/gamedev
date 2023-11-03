@@ -87,10 +87,18 @@ function getAbilityUpgradeNoMissChainUiTextLong(ability: Ability, option: Abilit
         textLines.push(`All other upgrades will benefit`);
         textLines.push(`from no miss chain bonus damage.`);
     } else {
-        textLines.push(`Hiting an Enemy increases damage by ${DAMAGE_UP_PER_HIT * 100}% per shot.`);
-        textLines.push(`Not hitting any enemy with a shot resets it to 0%.`);
-        textLines.push(`Bonus damage is capped at ${DAMAGE_COUNT_CAP * DAMAGE_UP_PER_HIT * 100}%.`);
-        textLines.push(`Only main shot damage is increased without synergy.`);
+        const upgrade: AbilityUpgradeNoMissChain | undefined = ability.upgrades[ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN];
+        if (upgrade) {
+            textLines.push(`Hitting an enemy increases damage. Bonus from ${DAMAGE_UP_PER_HIT * upgrade.level * 100}% to ${DAMAGE_UP_PER_HIT * (upgrade.level + 1) * 100}%`);
+            textLines.push(`Not hitting any enemy with a shot resets it to 0%.`);
+            textLines.push(`Bonus damage cap from ${DAMAGE_COUNT_CAP * DAMAGE_UP_PER_HIT * upgrade.level * 100}% to ${DAMAGE_COUNT_CAP * DAMAGE_UP_PER_HIT * (upgrade.level + 1) * 100}%`);
+            if (!upgrade.upgradeSynergy) textLines.push(`Only main shot damage is increased without synergy.`);
+        } else {
+            textLines.push(`Hitting an enemy increases damage by ${DAMAGE_UP_PER_HIT * 100}% per shot.`);
+            textLines.push(`Not hitting any enemy with a shot resets it to 0%.`);
+            textLines.push(`Bonus damage is capped at ${DAMAGE_COUNT_CAP * DAMAGE_UP_PER_HIT * 100}%.`);
+            textLines.push(`Only main shot damage is increased without synergy.`);
+        }
     }
 
     return textLines;

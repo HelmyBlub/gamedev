@@ -113,8 +113,12 @@ function getAbilityUpgradeMoreRiflesUiTextLong(ability: Ability, option: Ability
         textLines.push(`List of synergies:`);
         textLines.push(`- ${ABILITY_SNIPE_UPGRADE_AFTER_IMAGE}`);
     } else {
+        const upgrade: AbilityUpgradeMoreRifles | undefined = ability.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES];
         textLines.push(`Add one rifle rotating around.`);
         textLines.push(`It copies your shooting actions.`);
+        if (upgrade) {
+            textLines.push(`Number of rifles from ${upgrade.level} to  ${upgrade.level + 1}`);
+        }
     }
 
     return textLines;

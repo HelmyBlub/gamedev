@@ -72,8 +72,12 @@ function getAbilityUpgradeBackwardsShotUiTextLong(ability: Ability, option: Abil
         textLines.push(`- ${ABILITY_SNIPE_UPGRADE_AFTER_IMAGE}`);
         textLines.push(`- ${ABILITY_SNIPE_UPGRADE_MORE_RIFLES}`);
     } else {
+        const upgrade: AbilityUpgradeBackwardsShot | undefined = ability.upgrades[ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT];
         textLines.push(`Your main shot also shoots an additional`);
         textLines.push(`shot backwards.`);
+        if (upgrade) {
+            textLines.push(`Number ob backwards shots from ${upgrade.level} to ${upgrade.level + 1}.`);
+        }
     }
 
     return textLines;

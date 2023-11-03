@@ -140,9 +140,14 @@ function getAbilityUpgradeAfterImageUiTextLong(ability: Ability, option: Ability
         textLines.push(`List of synergies:`);
         textLines.push(`- ${ABILITY_SNIPE_UPGRADE_MORE_RIFLES}`);
     } else {
+        const upgrade: AbilityUpgradeAfterImage | undefined = ability.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE];
         textLines.push(`After shooting an after image is created.`);
         textLines.push(`It stays and repeats the same shot for ${AFTER_IMAGE_DURATION / 1000}s.`);
-        textLines.push(`Number After Images: +${AFTER_IMAGE_COUNTER_PER_LEVEL}.`);
+        if (upgrade) {
+            textLines.push(`Max Number After Images from ${AFTER_IMAGE_COUNTER_PER_LEVEL * upgrade.level} to ${AFTER_IMAGE_COUNTER_PER_LEVEL * (upgrade.level + 1)}`);
+        } else {
+            textLines.push(`Max Number After Images: ${AFTER_IMAGE_COUNTER_PER_LEVEL}.`);
+        }
     }
 
     return textLines;

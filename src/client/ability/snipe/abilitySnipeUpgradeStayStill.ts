@@ -115,10 +115,15 @@ function getAbilityUpgradeStayStillUiTextLong(ability: Ability, option: AbilityU
         textLines.push(`All other upgrades will benefit`);
         textLines.push(`from Stay Still bonus damage.`);
     } else {
+        const upgrade: AbilityUpgradeStayStill | undefined = ability.upgrades[ABILITY_SNIPE_UPGRADE_STAY_STILL];
         textLines.push(`Not moving and shooting for ${STAY_STILL_TIME / 1000} seconds`);
-        textLines.push(`will activate ${DAMAGE_FACTOR * 100}% damage bonus.`);
-        textLines.push(`The damage bonus will be active until`);
-        textLines.push(`rifle reloading.`);
+        textLines.push(`will activate damage bonus.`);
+        if (upgrade) {
+            textLines.push(`Damage bonus from ${DAMAGE_FACTOR * 100 * upgrade.level}% to ${DAMAGE_FACTOR * 100 * (upgrade.level + 1)}%`);
+        } else {
+            textLines.push(`Damage bonus: ${DAMAGE_FACTOR * 100}%`);
+        }
+        textLines.push(`The damage bonus will be active until reloading.`);
         textLines.push(`Only main shot damage is increased without synergy.`);
     }
     return textLines;
