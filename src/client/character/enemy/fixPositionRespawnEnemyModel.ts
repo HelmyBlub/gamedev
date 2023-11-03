@@ -70,7 +70,8 @@ export function createEnemyWithLevel(idCounter: IdCounter, enemyPos: Position, l
             if(whatToAdd === "addAbility"){
                 const ability = createEnemyAbilityBasedOnEndBoss(level, endBoss, enemyPos, enemyType.damageFactor, game);
                 if (ability) {
-                    experienceWorth *= 2;
+                    enemy.experienceWorth *= 2;
+                    enemy.respawnTime *= 2;
                     enemy.abilities.push(ability);
                 }
             }
@@ -78,7 +79,8 @@ export function createEnemyWithLevel(idCounter: IdCounter, enemyPos: Position, l
                 const levelReduced = Math.max(Math.floor(level/4), 1);
                 const pet: TamerPetCharacter = createPetsBasedOnLevelAndCharacter(endBoss, levelReduced, enemy, game)[0];
                 if (pet) {
-                    experienceWorth *= 2;
+                    enemy.experienceWorth *= 2;
+                    enemy.respawnTime *= 2;
                     enemy.pets = [];
                     enemy.pets!.push(pet);
                     addAbilityToCharacter(enemy, createAbility(ABILITY_NAME_FEED_PET, idCounter));

@@ -1,6 +1,4 @@
 current tasks:
-- sniper upgrade synergies only appear if a synergy exist
-- more respawn time for enemies with abilities?
 - fix timeMeasurement: uncounted timeout
 - check: on enemy respawn. does it check distance to death position or respawn position?
 
