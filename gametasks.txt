@@ -1,4 +1,5 @@
 current tasks:
+- check snipe color
 - add setting: reduce visibility of all player effects, because enemy abilties hard to see
 - UI-Improve: sniper upgrade say their level x values
 - more respawn time for enemies with abilities?

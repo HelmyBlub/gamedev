@@ -2,7 +2,7 @@ import { characterTakeDamage, determineCharactersInDistance } from "../../charac
 import { Character } from "../../character/characterModel.js";
 import { TamerPetCharacter, findPetOwner } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { calculateDistance, getCameraPosition } from "../../game.js";
-import { FACTION_ENEMY, Game, Position } from "../../gameModel.js";
+import { FACTION_ENEMY, FACTION_PLAYER, Game, Position } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { isPositionBlocking } from "../../map/map.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
@@ -193,6 +193,7 @@ function paintShapeObjectPetPainterSquare(ctx: CanvasRenderingContext2D, ability
     ctx.fillStyle = abilityObject.color;
     ctx.lineWidth = 1;
     ctx.globalAlpha = (square.deleteTime - game.state.time) / FADETIME;
+    if(abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
     if (square.isFactory) {
         ctx.rect(paintPos.x, paintPos.y, square.size, square.size);
         ctx.stroke();

@@ -2,7 +2,7 @@ import { Character } from "../character/characterModel.js";
 import { applyDebuff } from "../debuff/debuff.js";
 import { createDebuffSlow } from "../debuff/debuffSlow.js";
 import { getNextId } from "../game.js";
-import { Position, Game, IdCounter, FACTION_ENEMY } from "../gameModel.js";
+import { Position, Game, IdCounter, FACTION_ENEMY, FACTION_PLAYER } from "../gameModel.js";
 import { getPointPaintPosition } from "../gamePaint.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, detectSomethingToCharacterHit } from "./ability.js";
 
@@ -75,6 +75,8 @@ function paintAbilityIce(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwn
         ctx.fillStyle = "darkgray";
         ctx.globalAlpha = 0.50;
     }
+    if(abilityOwner.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
+
     ctx.beginPath();
     ctx.arc(
         paintPos.x,

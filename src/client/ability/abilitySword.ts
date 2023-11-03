@@ -1,7 +1,7 @@
 import { determineCharactersInDistance, characterTakeDamage } from "../character/character.js";
 import { BossEnemyCharacter } from "../character/enemy/bossEnemy.js";
 import { calculateDirection, calculateDistance, getNextId } from "../game.js";
-import { Position, Game, IdCounter } from "../gameModel.js";
+import { Position, Game, IdCounter, FACTION_PLAYER } from "../gameModel.js";
 import { getPointPaintPosition } from "../gamePaint.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
 import { GameMap } from "../map/map.js";
@@ -151,6 +151,7 @@ function paintAbilitySword(ctx: CanvasRenderingContext2D, abilityOwner: AbilityO
     const swordImage = GAME_IMAGES[ABILITY_NAME_SWORD];
     loadImage(swordImage);
 
+    if(abilityOwner.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
     for (let i = 0; i < abilitySword.swordCount; i++) {
         ctx.translate(paintPos.x, paintPos.y);
         ctx.rotate(abilitySword.currentSwordAngle + Math.PI / 2 + abilitySword.angleChangePerSword * i);
@@ -176,6 +177,7 @@ function paintAbilitySword(ctx: CanvasRenderingContext2D, abilityOwner: AbilityO
         }
         ctx.resetTransform();
     }
+    ctx.globalAlpha = 1;
 }
 
 function swordDistanceToHolder(abilityOwner: AbilityOwner): number{

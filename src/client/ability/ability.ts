@@ -381,17 +381,18 @@ function paintAbilityObjectsForFaction(ctx: CanvasRenderingContext2D, abilityObj
             if (abilityFunctions?.paintAbilityObject !== undefined) {
                 abilityFunctions.paintAbilityObject(ctx, abilityObject, paintOrder, game);
             } else {
-                paintDefault(ctx, abilityObject, getCameraPosition(game), paintOrder);
+                paintDefault(ctx, abilityObject, getCameraPosition(game), paintOrder, game);
             }
         }
     }
 }
 
-function paintDefault(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, cameraPosition: Position, paintOrder: PaintOrderAbility) {
+function paintDefault(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, cameraPosition: Position, paintOrder: PaintOrderAbility, game: Game) {
     if (paintOrder === "afterCharacterPaint") {
         const circle = abilityObject as AbilityObjectCircle;
         if (!circle.radius) return;
         const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition);
+        if(abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
         ctx.fillStyle = abilityObject.faction === FACTION_ENEMY ? "black" : abilityObject.color;
         ctx.beginPath();
         ctx.arc(
@@ -400,6 +401,7 @@ function paintDefault(ctx: CanvasRenderingContext2D, abilityObject: AbilityObjec
             circle.radius, 0, 2 * Math.PI
         );
         ctx.fill();
+        ctx.globalAlpha = 1;
     }
 }
 

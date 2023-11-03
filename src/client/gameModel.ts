@@ -214,6 +214,7 @@ export type Game = {
         displayDamageNumbers: boolean,
         displayTextData: PaintTextData[],
         displayLongInfos: boolean,
+        playerGlobalAlphaMultiplier: number,
     }
 }
 
@@ -318,6 +319,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             displayDamageNumbers: true,
             displayTextData: [],
             displayLongInfos: false,
+            playerGlobalAlphaMultiplier: 1,
         },
         settings: {
             autoSkillEnabled: false,

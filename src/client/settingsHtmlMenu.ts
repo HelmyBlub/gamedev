@@ -16,6 +16,7 @@ export function addHTMLDebugMenusToSettings(game: Game) {
     addTankyButton(game);
     addSpawnBossButton(game);
     addClearLocalStorageButton(game);
+    addSettingInputBoxPlayerPaintAlpha(game);
 }
 
 function addSettingCheckbox(checkboxName: keyof Debugging, game: Game) {
@@ -40,6 +41,26 @@ function addSettingCheckbox(checkboxName: keyof Debugging, game: Game) {
                 debug[checkboxName] = false;
                 game.performance = {};
             }
+        });
+    }
+}
+
+function addSettingInputBoxPlayerPaintAlpha(game: Game) {
+    const settingsElement = document.getElementById("settings");
+    if (!settingsElement) return;
+    const inputBoxId = "playerGlobalAlphaMultiplier";
+    let input: HTMLInputElement = document.getElementById(inputBoxId) as HTMLInputElement;
+    if (!input) {
+        let canvasHTML = `
+            <input type="number" id="${inputBoxId}" name="${inputBoxId}" value="100" style="width: 50;">
+            <label for="debug">%: ${inputBoxId}</label><br>
+        `;
+        settingsElement.insertAdjacentHTML("beforeend", canvasHTML);
+        input = document.getElementById(inputBoxId) as HTMLInputElement;
+    }
+    if (input) {
+        input.addEventListener('input', () => {
+            game.UI.playerGlobalAlphaMultiplier = parseInt(input.value) / 100;
         });
     }
 }

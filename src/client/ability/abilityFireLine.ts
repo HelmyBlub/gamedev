@@ -88,6 +88,8 @@ function paintAbilityObjectFireLine(ctx: CanvasRenderingContext2D, abilityObject
         color = "black";
         ctx.globalAlpha = 0.80;
     }
+    if(abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
+
     ctx.strokeStyle = color;
     ctx.lineWidth = abilityObjectFireLine.width;
     ctx.beginPath();

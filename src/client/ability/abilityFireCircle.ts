@@ -1,5 +1,5 @@
 import { calculateDirection, calculateDistance, getCameraPosition, getNextId } from "../game.js";
-import { FACTION_ENEMY, Game, IdCounter, Position } from "../gameModel.js";
+import { FACTION_ENEMY, FACTION_PLAYER, Game, IdCounter, Position } from "../gameModel.js";
 import { getPointPaintPosition } from "../gamePaint.js";
 import { nextRandom } from "../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectAbilityObjectCircleToCharacterHit, PaintOrderAbility, AbilityObjectCircle } from "./ability.js";
@@ -117,6 +117,7 @@ function paintAbilityObjectFireCircle(ctx: CanvasRenderingContext2D, abilityObje
     if (abilityObjectFireCircle.subType === "FireCircel") {
         if (paintOrder === "beforeCharacterPaint") {
             ctx.globalAlpha = abilityObject.faction === FACTION_ENEMY ? 0.9 : 0.65;
+            if(abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
             ctx.beginPath();
             ctx.arc(
                 paintPos.x,
@@ -128,6 +129,7 @@ function paintAbilityObjectFireCircle(ctx: CanvasRenderingContext2D, abilityObje
         }
     } else if (abilityObjectFireCircle.subType === "FireCircelTraveling") {
         if (paintOrder === "afterCharacterPaint") {
+            if(abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
             ctx.beginPath();
             ctx.arc(
                 paintPos.x,
@@ -135,6 +137,7 @@ function paintAbilityObjectFireCircle(ctx: CanvasRenderingContext2D, abilityObje
                 5, 0, 2 * Math.PI
             );
             ctx.fill();
+            ctx.globalAlpha = 1;
         }
     }
 }

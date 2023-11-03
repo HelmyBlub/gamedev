@@ -1,7 +1,7 @@
 import { Character } from "../../character/characterModel.js";
 import { TamerPetCharacter, findPetOwner } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { calculateDistance, getCameraPosition } from "../../game.js";
-import { FACTION_ENEMY, Game, Position } from "../../gameModel.js";
+import { FACTION_ENEMY, FACTION_PLAYER, Game, Position } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { calculateMovePosition, isPositionBlocking, calculateBounceAngle } from "../../map/map.js";
 import { RandomSeed, nextRandom } from "../../randomNumberGenerator.js";
@@ -168,12 +168,14 @@ function paintShapeObjectPetPainterCircle(ctx: CanvasRenderingContext2D, ability
     const cameraPosition = getCameraPosition(game);
     const circle = abilityObject as AbilityObjectPetPainterCircle;
     const paintPos = getPointPaintPosition(ctx, circle, cameraPosition);
+    if(abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
     ctx.fillStyle = circle.color;
     ctx.strokeStyle = circle.color;
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.arc(paintPos.x, paintPos.y, circle.radius, 0, Math.PI * 2);
     !abilityObject.isFactory ? ctx.fill() : ctx.stroke();
+    ctx.globalAlpha = 1;
 }
 
 function paintShapeCircle(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: AbilityPetPainter, cameraPosition: Position, game: Game) {

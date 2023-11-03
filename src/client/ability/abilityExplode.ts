@@ -1,5 +1,5 @@
 import { getCameraPosition, getNextId } from "../game.js";
-import { FACTION_ENEMY, Game, IdCounter, Position } from "../gameModel.js";
+import { FACTION_ENEMY, FACTION_PLAYER, Game, IdCounter, Position } from "../gameModel.js";
 import { getPointPaintPosition } from "../gamePaint.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, PaintOrderAbility, detectAbilityObjectCircleToCharacterHit, AbilityObjectCircle } from "./ability.js";
 
@@ -75,6 +75,7 @@ function paintAbilityObjectExplode(ctx: CanvasRenderingContext2D, abilityObject:
     const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition);
     const fadeFactor = (abilityObjectExplode.removeTime - game.state.time) / PAINT_FADE_TIME;
     ctx.globalAlpha = 0.75 * fadeFactor;
+    if(abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
     ctx.fillStyle = abilityObject.faction === FACTION_ENEMY ? "black" : abilityObject.color;
     ctx.beginPath();
     ctx.arc(

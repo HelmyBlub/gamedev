@@ -1,7 +1,7 @@
 import { Character } from "../../character/characterModel.js";
 import { TamerPetCharacter, findPetOwner } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { calculateDistance, getCameraPosition } from "../../game.js";
-import { FACTION_ENEMY, Game, Position } from "../../gameModel.js";
+import { FACTION_ENEMY, FACTION_PLAYER, Game, Position } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { isPositionBlocking, moveByDirectionAndDistance } from "../../map/map.js";
 import { RandomSeed, nextRandom } from "../../randomNumberGenerator.js";
@@ -183,6 +183,7 @@ function paintShapeObjectPetPainterTriangle(ctx: CanvasRenderingContext2D, abili
     const triangle = abilityObject as AbilityObjectPetPainterTriangle;
     const paintPos = getPointPaintPosition(ctx, triangle, cameraPosition);
     const startPos = { x: paintPos.x, y: paintPos.y };
+    if(abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
     ctx.fillStyle = triangle.color;
     ctx.strokeStyle = triangle.color;
     ctx.lineWidth = 1;
@@ -194,6 +195,7 @@ function paintShapeObjectPetPainterTriangle(ctx: CanvasRenderingContext2D, abili
     ctx.lineTo(paintPos.x, paintPos.y);
     ctx.lineTo(startPos.x, startPos.y);
     !abilityObject.isFactory ? ctx.fill() : ctx.stroke();
+    ctx.globalAlpha = 1;
 }
 
 function paintShapeTriangle(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: AbilityPetPainter, cameraPosition: Position, game: Game) {
