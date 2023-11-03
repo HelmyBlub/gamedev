@@ -252,8 +252,10 @@ export function getOptionsSnipeUpgrade(ability: Ability, upgradeName: string): U
     options[0].option.displayLongText = upgradeFunctions.getLongExplainText!(ability, options[0].option as AbilityUpgradeOption);
 
     if (upgrade && !upgrade.upgradeSynergy) {
-        options.push(getAbilityUpgradeOptionSynergy(ability.name, upgradeName, upgrade.level));
-        options[1].option.displayLongText = upgradeFunctions.getLongExplainText!(ability, options[1].option as AbilityUpgradeOption);
+        if(upgradeFunctions.addSynergyUpgradeOption && upgradeFunctions.addSynergyUpgradeOption(ability)){
+            options.push(getAbilityUpgradeOptionSynergy(ability.name, upgradeName, upgrade.level));
+            options[1].option.displayLongText = upgradeFunctions.getLongExplainText!(ability, options[1].option as AbilityUpgradeOption);
+        }
     }
 
     return options;

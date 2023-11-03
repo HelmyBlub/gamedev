@@ -20,6 +20,7 @@ export type AbilityUpgradeMoreRifles = AbilityUpgrade & {
 
 export function addAbilitySnipeUpgradeMoreRifles() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_MORE_RIFLES] = {
+        addSynergyUpgradeOption: addSynergyUpgradeOption,
         getStatsDisplayText: getAbilityUpgradeMoreRiflesUiText,
         getLongExplainText: getAbilityUpgradeMoreRiflesUiTextLong,
         getOptions: getOptionsMoreRifles,
@@ -105,6 +106,13 @@ function getAbilityUpgradeMoreRiflesUiText(ability: Ability): string {
     const abilitySnipe = ability as AbilitySnipe;
     const upgrade: AbilityUpgradeMoreRifles = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES];
     return `${ABILITY_SNIPE_UPGRADE_MORE_RIFLES} +${upgrade.numberRifles}` + (upgrade.upgradeSynergy ? " (Synergy)" : "");
+}
+
+function addSynergyUpgradeOption(ability: Ability): boolean{
+    if(ability.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE]){
+        return true;
+    }
+    return false;
 }
 
 function getAbilityUpgradeMoreRiflesUiTextLong(ability: Ability, option: AbilityUpgradeOption): string[] {

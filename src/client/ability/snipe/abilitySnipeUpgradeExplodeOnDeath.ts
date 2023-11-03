@@ -24,6 +24,7 @@ export type AbilityUpgradeExplodeOnDeath = AbilityUpgrade & {
 
 export function addAbilitySnipeUpgradeExplodeOnDeath() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH] = {
+        addSynergyUpgradeOption: addSynergyUpgradeOption,
         getStatsDisplayText: getAbilityUpgradeExplodeOnDeathUiText,
         getLongExplainText: getAbilityUpgradeExplodeOnDeathUiTextLong,
         getOptions: getOptionsExplodeOnDeath,
@@ -73,6 +74,16 @@ function getAbilityUpgradeExplodeOnDeathUiText(ability: Ability): string {
     const abilitySnipe = ability as AbilitySnipe;
     let upgrade: AbilityUpgradeExplodeOnDeath = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH];
     return `${ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH}: Damage ${(upgrade.damageFactor) * 100}%` + (upgrade.upgradeSynergy ? " (Synergy)" : "");
+}
+
+function addSynergyUpgradeOption(ability: Ability): boolean{
+    if(ability.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE]
+        || ability.upgrades[ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT]
+        || ability.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES]
+        || ability.upgrades[ABILITY_SNIPE_UPGRADE_SPLIT_SHOT]){
+        return true;
+    }
+    return false;
 }
 
 function getAbilityUpgradeExplodeOnDeathUiTextLong(ability: Ability, option: AbilityUpgradeOption): string[] {

@@ -16,6 +16,7 @@ export type AbilityUpgradeNoMissChain = AbilityUpgrade & {
 
 export function addAbilitySnipeUpgradeNoMissChain() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN] = {
+        addSynergyUpgradeOption: addSynergyUpgradeOption,
         getStatsDisplayText: getAbilityUpgradeNoMissChainUiText,
         getLongExplainText: getAbilityUpgradeNoMissChainUiTextLong,
         getDamageFactor: getAbilityUpgradeNoMissChainDamageFactor,
@@ -79,6 +80,13 @@ function getAbilityUpgradeNoMissChainUiText(ability: Ability): string {
     const abilitySnipe = ability as AbilitySnipe;
     const upgrade: AbilityUpgradeNoMissChain = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN];
     return "Chain Bonus: " + (upgrade.noMissChainCounter * upgrade.noMissBonusDamageFactorAdd * 100).toFixed() + "%" + (upgrade.upgradeSynergy ? " (Synergy)" : "");
+}
+
+function addSynergyUpgradeOption(ability: Ability): boolean{
+    if(Object.keys(ability.upgrades).length > 1){
+        return true;
+    }
+    return false;
 }
 
 function getAbilityUpgradeNoMissChainUiTextLong(ability: Ability, option: AbilityUpgradeOption): string[] {

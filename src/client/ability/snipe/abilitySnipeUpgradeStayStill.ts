@@ -18,6 +18,7 @@ export type AbilityUpgradeStayStill = AbilityUpgrade & {
 
 export function addAbilitySnipeUpgradeStayStill() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_STAY_STILL] = {
+        addSynergyUpgradeOption: addSynergyUpgradeOption,
         getStatsDisplayText: getAbilityUpgradeStayStillUiText,
         getLongExplainText: getAbilityUpgradeStayStillUiTextLong,
         getDamageFactor: getAbilityUpgradeStayStillDamageFactor,
@@ -107,6 +108,13 @@ function getAbilityUpgradeStayStillUiText(ability: Ability): string {
     const abilitySnipe = ability as AbilitySnipe;
     const upgrade: AbilityUpgradeStayStill = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_STAY_STILL];
     return `Stay Still for ${(upgrade.stayStillTime / 1000).toFixed(2)}s to get ${upgrade.damageMultiplier * 100}% Bonus Damge for current Magazine` + (upgrade.upgradeSynergy ? " (Synergy)" : "");
+}
+
+function addSynergyUpgradeOption(ability: Ability): boolean{
+    if(Object.keys(ability.upgrades).length > 1){
+        return true;
+    }
+    return false;
 }
 
 function getAbilityUpgradeStayStillUiTextLong(ability: Ability, option: AbilityUpgradeOption): string[] {

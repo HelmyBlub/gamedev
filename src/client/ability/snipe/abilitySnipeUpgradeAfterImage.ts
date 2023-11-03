@@ -31,6 +31,7 @@ export type AbilityUpgradeAfterImage = AbilityUpgrade & {
 
 export function addAbilitySnipeUpgradeAfterImage() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE] = {
+        addSynergyUpgradeOption: addSynergyUpgradeOption,
         getStatsDisplayText: getAbilityUpgradeAfterImageUiText,
         getLongExplainText: getAbilityUpgradeAfterImageUiTextLong,
         getOptions: getOptionsAfterImage,
@@ -132,6 +133,13 @@ function getAbilityUpgradeAfterImageUiText(ability: Ability): string {
     const abilitySnipe = ability as AbilitySnipe;
     const upgrade: AbilityUpgradeAfterImage = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE];
     return `${ABILITY_SNIPE_UPGRADE_AFTER_IMAGE}s: ${upgrade.level * AFTER_IMAGE_COUNTER_PER_LEVEL}` + (upgrade.upgradeSynergy ? " (Synergy)" : "");
+}
+
+function addSynergyUpgradeOption(ability: Ability): boolean{
+    if(ability.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES]){
+        return true;
+    }
+    return false;
 }
 
 function getAbilityUpgradeAfterImageUiTextLong(ability: Ability, option: AbilityUpgradeOption): string[] {

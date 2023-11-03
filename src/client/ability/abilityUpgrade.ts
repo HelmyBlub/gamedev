@@ -8,6 +8,7 @@ export type AbilityUpgrade = {
 
 export type AbilityUpgradeFunctions = {
     getOptions?: (ability: Ability) => UpgradeOptionAndProbability[],
+    addSynergyUpgradeOption?: (ability: Ability) => boolean,
     executeOption: (ability: Ability, option: AbilityUpgradeOption) => void,
     getStatsDisplayText: (ability: Ability) => string,
     getLongExplainText?: (ability: Ability, option: AbilityUpgradeOption) => string[],
