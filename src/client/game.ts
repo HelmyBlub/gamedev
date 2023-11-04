@@ -140,10 +140,10 @@ export function calcNewPositionMovedInDirection(position: Position, direction: n
     }
 }
 
-export function takeTimeMeasure(debug: Debugging | undefined, endName: string, startName: string) {
+export function takeTimeMeasure(debug: Debugging | undefined, endName: string, startName: string, timeOffset: number = 0) {
     if (debug === undefined || debug.takeTimeMeasures !== true) return;
     if (debug.timeMeasuresData === undefined) debug.timeMeasuresData = [];
-    const timeNow = performance.now();
+    const timeNow = performance.now() + timeOffset;
     if (endName !== "") {
         const data = debug.timeMeasuresData?.find((e) => e.name === endName);
         if (data === undefined) return;
@@ -164,7 +164,7 @@ export function takeTimeMeasure(debug: Debugging | undefined, endName: string, s
 export function runner(game: Game) {
     takeTimeMeasure(game.debug, "total", "");
     takeTimeMeasure(game.debug, "", "total");
-    takeTimeMeasure(game.debug, "timeout", "");
+    takeTimeMeasure(game.debug, "?timeout?", "");
     takeTimeMeasure(game.debug, "", "runner");
     takeTimeMeasure(game.debug, "", "tick");
     if (game.multiplayer.websocket === null) {
@@ -204,8 +204,8 @@ export function runner(game: Game) {
         gameRestart(game);
     }
 
+    const timeoutSleep = determineRunnerTimeout(game);
     if (!game.closeGame) {
-        const timeoutSleep = determineRunnerTimeout(game);
         if (timeoutSleep > 17) {
             console.log("timeoutSleep to big?");
             debugger;
@@ -221,7 +221,7 @@ export function runner(game: Game) {
         }, timeoutSleep);
     }
     takeTimeMeasure(game.debug, "runner", "");
-    takeTimeMeasure(game.debug, "", "timeout");
+    takeTimeMeasure(game.debug, "", "?timeout?", timeoutSleep);
 }
 
 export function setRelativeMousePosition(event: MouseEvent, game: Game) {
@@ -431,10 +431,9 @@ function determineRunnerTimeout(game: Game): number {
                 game.shouldTickTime = performance.now();
                 return game.tickInterval;
             } else {
-                let timeoutSleep;
                 game.shouldTickTime += game.tickInterval;
                 const timeEnd = performance.now();
-                timeoutSleep = game.shouldTickTime - timeEnd;
+                let timeoutSleep = game.shouldTickTime - timeEnd;
                 if (timeoutSleep < 0) {
                     game.shouldTickTime = timeEnd;
                     timeoutSleep = 0;

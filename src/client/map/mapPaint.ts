@@ -24,8 +24,8 @@ export function paintMap(layer: MapPaintLayer, ctx: CanvasRenderingContext2D, ca
                 if (game.state.time > 1000) console.log("missing chunk creation", chunkKey);
                 continue;
             }
-            const x = chunkX * chunkSize - startX;
-            const y = chunkY * chunkSize - startY;
+            const x = Math.floor(chunkX * chunkSize - startX);
+            const y = Math.floor(chunkY * chunkSize - startY);
             paintChunk(layer, ctx, { x, y }, chunk, map.tileSize, { x: chunkX, y: chunkY }, mapChunkPaintCache, game, debug);
             if (debug?.paintMarkActiveChunks && layer === "Layer2") {
                 if (map.activeChunkKeys.indexOf(chunkKey) > -1) {

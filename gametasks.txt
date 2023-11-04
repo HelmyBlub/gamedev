@@ -1,5 +1,6 @@
 current tasks:
 - improve timeMeasurement: uncounted timeout
+    - fps counter?
 - new class:
     - bounce ball
 

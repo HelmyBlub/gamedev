@@ -108,7 +108,7 @@ function paintPastPlayerTakeoverInfo(ctx: CanvasRenderingContext2D, pastCharacte
         const spacing = 5;
         if (pastCharacter.pets) {
             for (let pet of pastCharacter.pets) {
-                if(pet.tradable){
+                if (pet.tradable) {
                     const area = paintTamerPetCharacterStatsUI(ctx, pet, 20 + offsetX, tooltipY, game);
                     offsetX += area.width + spacing;
                 }
@@ -242,7 +242,7 @@ function paintTimeMeasures(ctx: CanvasRenderingContext2D, debug: Debugging | und
     const startX = 0;
     const startY = 80;
     ctx.fillStyle = "white";
-    ctx.fillRect(startX, startY - fontSize, 120, debug.timeMeasuresData!.length * fontSize + 1);
+    ctx.fillRect(startX, startY - fontSize, 120, (debug.timeMeasuresData!.length + 1) * fontSize + 1);
 
     ctx.fillStyle = "black";
     ctx.font = fontSize + "px Arial";
@@ -250,7 +250,10 @@ function paintTimeMeasures(ctx: CanvasRenderingContext2D, debug: Debugging | und
         const data = debug.timeMeasuresData![i];
         const sum = data.timeMeasures.reduce((a, b) => a + b, 0);
         const avg = (sum / data.timeMeasures.length) || 0;
-        ctx.fillText(avg.toFixed(2) + " " + data.name, startX, startY + i * fontSize);
+        if (i === 0) {
+            ctx.fillText((1000 / avg).toFixed(1) + " FPS", startX, startY + i * fontSize);
+        }
+        ctx.fillText(avg.toFixed(2) + " " + data.name, startX, startY + (i + 1) * fontSize);
     }
 }
 
