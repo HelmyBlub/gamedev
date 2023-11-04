@@ -1,8 +1,32 @@
 current tasks:
-- improve timeMeasurement: uncounted timeout
-    - fps counter?
 - new class:
-    - bounce ball
+    - Ball
+        - first ideas: 
+            - ability to become a ball moving forward. ball immune to damage.
+                does damage to hit enemies. Ball rolls forward,
+                direction can be slightly influence by mouse.
+                ball loses speed over time. once speed dropts to 0 ball mode ends.
+                ball ganes speed by bouncing of wall
+        - second idea:
+            - lightning ball
+                - ability to become a ball. Jumping from enemy to close enemy as long as enemy
+                in direction of mouse and close to it exists. Each jump does damage.
+        - do both ideas
+    - impl:
+        - create new character
+            - creates ball abilities and puts them on character
+            - check if overwrite movement possible
+                - should also work for normal characters in the end
+                - so overwrite should not be class dependant
+            - should change movement based on buffs
+        - create ability bounce ball
+            - create a new buff:
+                - give player a buff which changes movement behaviour, one buff type for all ball movement changes
+        - create ability lightning ball
+            - create a new buff:
+                - give player a buff which changes movement behaviour, one buff type for all ball movement changes
+        
+
 
 possible future tasks: (only keep 5)
 - improvement: getChunksTouchingLine2 does not work, still needs to improve

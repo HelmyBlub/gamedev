@@ -12,7 +12,6 @@ export type BuffSlowTrail = Debuff & {
 export function addBuffSlowTrail() {
     DEBUFFS_FUNCTIONS[BUFF_NAME_SLOW_TRAIL] = {
         applyDebuffEffect: applyBuffEffectSlowTrail,
-        removeDebuffEffect: removeBuffEffectSlowTrail,
         refreshDebuffEffect: refreshBuffEffectSlowTrail,
         tickDebuffEffect: tickBuffSlowTrail,
     };
@@ -31,10 +30,6 @@ export function createBuffSlowTrail(
 function applyBuffEffectSlowTrail(debuff: Debuff, targetCharacter: Character, game: Game) {
     const buffSlowTrail = debuff as BuffSlowTrail;
     buffSlowTrail.abilitySlowTrail = createAbilitySlowTrail(game.state.idCounter);
-}
-
-function removeBuffEffectSlowTrail(debuff: Debuff, targetCharacter: Character, game: Game) {
-    const buffSlowTrail = debuff as BuffSlowTrail;
 }
 
 function refreshBuffEffectSlowTrail(newDebuff: Debuff, currentDebuff: Debuff, targetCharacter: Character, game: Game) {

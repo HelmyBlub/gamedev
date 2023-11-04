@@ -2,6 +2,7 @@ import { Game, IdCounter, Position } from "../../gameModel.js"
 import { Character } from "../characterModel.js"
 import { UpgradeOption } from "../upgrade.js"
 import { addAbilityLevelingCharacter } from "./abilityLevelingCharacter.js"
+import { addBallClass } from "./characterClassBall.js"
 import { addLevelingCharacter } from "./levelingCharacterModel.js"
 import { addSniperClass } from "./sniperCharacter.js"
 import { addTamerClass } from "./tamer/tamerCharacter.js"
@@ -23,6 +24,7 @@ export function onDomLoadSetCharacterClasses() {
     addAbilityLevelingCharacter();
     addSniperClass();
     addTowerClass();
+    // addBallClass();
     addTamerClass();
 }
 

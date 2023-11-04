@@ -28,6 +28,7 @@ import { addAbilityPetPainter } from "./petTamer/abilityPetPainter.js"
 import { addAbilityPetDash } from "./petTamer/abilityPetDash.js"
 import { UpgradeOption, UpgradeOptionAndProbability } from "../character/upgrade.js"
 import { getPointPaintPosition } from "../gamePaint.js"
+import { addAbilityBounceBall } from "./abilityBounceBall.js"
 
 export type Ability = {
     id: number,
@@ -120,6 +121,7 @@ export function onDomLoadSetAbilitiesFunctions() {
     addAbilityPetBreath();
     addAbilityPetPainter();
     addAbilityPetDash();
+    addAbilityBounceBall();
 }
 
 export function addAbilityToCharacter(character: Character, ability: Ability) {
