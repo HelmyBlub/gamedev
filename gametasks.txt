@@ -1,6 +1,7 @@
 current tasks:
-- fix timeMeasurement: uncounted timeout
-- check: on enemy respawn. does it check distance to death position or respawn position?
+- improve timeMeasurement: uncounted timeout
+- new class:
+    - bounce ball
 
 possible future tasks: (only keep 5)
 - improvement: getChunksTouchingLine2 does not work, still needs to improve

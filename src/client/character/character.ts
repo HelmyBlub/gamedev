@@ -2,7 +2,7 @@ import { levelingCharacterXpGain } from "./playerCharacters/levelingCharacter.js
 import { calculateMovePosition, chunkXYToMapKey, determineMapKeysInDistance, GameMap, getChunksTouchingLine, MapChunk, mapKeyToChunkXY, positionToMapKey } from "../map/map.js";
 import { Character, CHARACTER_TYPE_FUNCTIONS, DEFAULT_CHARACTER } from "./characterModel.js";
 import { getNextWaypoint, getPathingCache, PathingCache } from "./pathing.js";
-import { calculateDirection, calculateDistance, calculateDistancePointToLine, createPaintTextData, takeTimeMeasure } from "../game.js";
+import { calculateDirection, calculateDistance, calculateDistancePointToLine, changeCharacterAndAbilityIds, createPaintTextData, getNextId, takeTimeMeasure } from "../game.js";
 import { Position, Game, IdCounter, Camera, FACTION_ENEMY, FACTION_PLAYER } from "../gameModel.js";
 import { findPlayerById, Player } from "../player.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
@@ -139,12 +139,13 @@ export function characterTradeAbilityAndPets(fromCharacter: Character, toCharact
     resetAllCharacterAbilities(toCharacter);
 }
 
-export function changeCharacterId(character: Character, newId: number) {
-    character.id = newId;
+export function changeCharacterId(character: Character, idCounter: IdCounter) {
+    character.id = getNextId(idCounter);
     if (character.pets) {
         for (let pet of character.pets) {
             const leash: AbilityLeash = pet.abilities.find((a) => a.name === ABILITY_NAME_LEASH) as AbilityLeash;
             if (leash) leash.leashedToOwnerId = character.id;
+            changeCharacterAndAbilityIds(pet, idCounter);
         }
     }
 }

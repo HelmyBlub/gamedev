@@ -15,7 +15,7 @@ import { ABILITY_NAME_PET_PAINTER } from "../../../ability/petTamer/abilityPetPa
 import { ABILITY_NAME_PET_DASH } from "../../../ability/petTamer/abilityPetDash.js";
 import { AbilityUpgradeOption, PetAbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../upgrade.js";
 import { addTraitToTamerPet, getAvailableTamerPetTraits, getLongExplainTextForTamerPetTrait } from "./petTrait.js";
-import { deepCopy, getNextId } from "../../../game.js";
+import { changeCharacterAndAbilityIds, deepCopy, getNextId } from "../../../game.js";
 import { CHARACTER_TYPE_BOSS_ENEMY, setAbilityToBossLevel } from "../../enemy/bossEnemy.js";
 import { AbilityUpgrade } from "../../../ability/abilityUpgrade.js";
 
@@ -101,6 +101,7 @@ export function createPetsBasedOnLevelAndCharacter(basedOnCharacter: Character, 
         }
     }
     resetCharacter(pet);
+    changeCharacterAndAbilityIds(pet, game.state.idCounter);
 
     return [pet];
 }

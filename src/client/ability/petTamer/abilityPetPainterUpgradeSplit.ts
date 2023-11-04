@@ -21,7 +21,8 @@ export function addAbilityPetPainterUpgradeSplit() {
 }
 
 export function abilityPetPainerUpgradeSplitCheckForSplit(abilityObjectPetPainter: AbilityObjectPetPainter, game: Game) {
-    const abilityPetPainter = findAbilityById(abilityObjectPetPainter.abilityRefId!, game)!;
+    const abilityPetPainter = findAbilityById(abilityObjectPetPainter.abilityRefId!, game);
+    if (!abilityPetPainter) return;
     const splitUpgrade = abilityPetPainter.upgrades[ABILITY_PET_PAINTER_UPGARDE_SPLIT] as AbilityPetPainterUpgradeSplit;
     if (splitUpgrade) {
         const shapeFunctions = ABILITY_PET_PAINTER_SHAPES_FUNCTIONS[abilityObjectPetPainter.subType];

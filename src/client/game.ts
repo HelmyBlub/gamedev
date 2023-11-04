@@ -340,7 +340,7 @@ export function loadFromLocalStorage(game: Game) {
 }
 
 export function changeCharacterAndAbilityIds(character: Character, idCounter: IdCounter) {
-    changeCharacterId(character, getNextId(idCounter));
+    changeCharacterId(character, idCounter);
     for (let ability of character.abilities) {
         ability.id = getNextId(idCounter);
     }
@@ -350,7 +350,7 @@ export function saveCharacterAsPastCharacter(character: Character, game: Game) {
     if (game.testing.replay) return;
     const newPastCharacter: Character = deepCopy(character);
     resetCharacter(newPastCharacter);
-    changeCharacterId(newPastCharacter, getNextId(game.state.idCounter));
+    changeCharacterId(newPastCharacter, game.state.idCounter);
     if (newPastCharacter.pets) {
         for (let pet of newPastCharacter.pets) {
             for (let ability of pet.abilities) {
