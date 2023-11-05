@@ -5,7 +5,7 @@ import { CHARACTER_TYPE_END_BOSS_ENEMY } from "../character/enemy/endBossEnemy.j
 import { ENEMY_FIX_RESPAWN_PSOITON, FixPositionRespawnEnemyCharacter } from "../character/enemy/fixPositionRespawnEnemyModel.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../character/upgrade.js";
 import { calculateDistance, getCameraPosition, getNextId } from "../game.js";
-import { Position, Game, IdCounter, FACTION_ENEMY } from "../gameModel.js";
+import { Position, Game, IdCounter, FACTION_ENEMY, FACTION_PLAYER } from "../gameModel.js";
 import { getPointPaintPosition } from "../gamePaint.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
 import { positionToMapKey } from "../map/map.js";
@@ -326,7 +326,7 @@ function paintAbilityObjectTower(ctx: CanvasRenderingContext2D, abilityObject: A
     const tower = abilityObject as AbilityObjectTower;
 
     if (paintOrder === "beforeCharacterPaint") {
-        paintEffectConnected(ctx, tower, cameraPosition, game.state.abilityObjects);
+        paintEffectConnected(ctx, tower, cameraPosition, game.state.abilityObjects, game);
     } else if (paintOrder === "afterCharacterPaint") {
         const owner = findPlayerByCharacterId(game.state.players, tower.ownerId);
         const towerBaseSize = tower.size;
@@ -379,7 +379,7 @@ function getTowerConnectionCount(abilityObjects: AbilityObject[], tower: Ability
     return counter;
 }
 
-function paintEffectConnected(ctx: CanvasRenderingContext2D, abilityObjectTower: AbilityObjectTower, cameraPosition: Position, abilityObjects: AbilityObject[]) {
+function paintEffectConnected(ctx: CanvasRenderingContext2D, abilityObjectTower: AbilityObjectTower, cameraPosition: Position, abilityObjects: AbilityObject[], game: Game) {
     if (abilityObjectTower.conntetedToId !== undefined) {
         ctx.strokeStyle = "red";
         if (abilityObjectTower.faction === FACTION_ENEMY) {
@@ -393,12 +393,15 @@ function paintEffectConnected(ctx: CanvasRenderingContext2D, abilityObjectTower:
         const totalConnection = getTowerConnectionCount(abilityObjects, abilityObjectTower) + getTowerConnectionCount(abilityObjects, connectedTower);
         ctx.lineWidth = totalConnection;
 
+
+        if(abilityObjectTower.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
         ctx.beginPath();
         let paintPos = getPointPaintPosition(ctx, abilityObjectTower, cameraPosition);
         ctx.moveTo(paintPos.x, paintPos.y);
         paintPos = getPointPaintPosition(ctx, connectedTower, cameraPosition);
         ctx.lineTo(paintPos.x, paintPos.y);
         ctx.stroke();
+        ctx.globalAlpha = 1;
     }
 }
 
