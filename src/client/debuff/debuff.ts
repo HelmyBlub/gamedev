@@ -1,5 +1,6 @@
 import { Character } from "../character/characterModel.js";
 import { Game } from "../gameModel.js"
+import { addBuffBallPhysics } from "./buffBallPhysics.js";
 import { addBuffSlowTrail } from "./buffSlowTrail.js";
 import { addBuffSpeed } from "./buffSpeed.js";
 import { addDebuffExplodeOnDeath } from "./debuffExplodeOnDeath.js";
@@ -30,6 +31,7 @@ export function onDomLoadSetDebuffsFunctions() {
     addBuffSpeed();
     addBuffSlowTrail();
     addDebuffExplodeOnDeath();
+    addBuffBallPhysics();
 }
 
 export function applyDebuff(debuff: Debuff, character: Character, game: Game) {

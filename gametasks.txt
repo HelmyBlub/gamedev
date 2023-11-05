@@ -1,18 +1,9 @@
 current tasks:
 - new class:
-    - Ball
-        - first ideas: 
-            - ability to become a ball moving forward. ball immune to damage.
-                does damage to hit enemies. Ball rolls forward,
-                direction can be slightly influence by mouse.
-                ball loses speed over time. once speed dropts to 0 ball mode ends.
-                ball ganes speed by bouncing of wall
-        - second idea:
-            - lightning ball
-                - ability to become a ball. Jumping from enemy to close enemy as long as enemy
-                in direction of mouse and close to it exists. Each jump does damage.
-        - do both ideas
     - impl:
+        - influence move direction
+        - past character now ability?
+        - new ball bounce "physcis" for other bounce abilities
         - create new character
             - creates ball abilities and puts them on character
             - check if overwrite movement possible
@@ -25,6 +16,18 @@ current tasks:
         - create ability lightning ball
             - create a new buff:
                 - give player a buff which changes movement behaviour, one buff type for all ball movement changes
+    - Ball
+        - first ideas: 
+            - ability to become a ball moving forward. ball immune to damage.
+                does damage to hit enemies. Ball rolls forward,
+                direction can be slightly influence by mouse.
+                ball loses speed over time. once speed dropts to 0 ball mode ends.
+                ball ganes speed by bouncing of wall
+        - second idea:
+            - lightning ball
+                - ability to become a ball. Jumping from enemy to close enemy as long as enemy
+                in direction of mouse and close to it exists. Each jump does damage.
+        - do both ideas
         
 
 

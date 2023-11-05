@@ -96,6 +96,7 @@ export type Character = Position & {
     moveDirection: number,
     isMoving: boolean,
     isRooted: boolean,
+    isMoveTickDisabled?:boolean,
     hp: number,
     maxHp: number,
     faction: string,

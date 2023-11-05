@@ -174,6 +174,62 @@ export function moveByDirectionAndDistance(position: Position, moveDirection: nu
     position.y = newPos.y;
 }
 
+export function calculateBounceAngle2(position: Position, moveDirection: number, game: Game): number {
+    const tileSize = game.state.map.tileSize;
+    const xStep = Math.cos(moveDirection);
+    const yStep = Math.sin(moveDirection);
+
+    let wallDistanceX = position.x % tileSize;
+    if(wallDistanceX < 0) wallDistanceX += tileSize;
+    if (xStep > 0) wallDistanceX = Math.abs(wallDistanceX - tileSize);
+    let wallDistanceY = position.y % tileSize;
+    if(wallDistanceY < 0) wallDistanceY += tileSize;
+    if (yStep > 0) wallDistanceY = Math.abs(wallDistanceY - tileSize);
+    let tempPos = {x: position.x, y: position.y};
+    if(Math.abs(wallDistanceX / xStep) > Math.abs(wallDistanceY / yStep)){
+        if(yStep > 0){
+            tempPos.y += tileSize;
+        }else{
+            tempPos.y -= tileSize;
+        }
+        if (isPositionBlocking(tempPos, game.state.map, game.state.idCounter, game)) {
+            const wallAngle = 0;
+            const angleDiff = moveDirection - wallAngle;
+            return wallAngle - angleDiff;
+        }else{
+            console.log("recursion bounce");
+            const numberSteps = Math.abs(wallDistanceY / yStep) + 0.001;
+            tempPos = {
+                x: position.x + xStep * numberSteps,
+                y: position.y + yStep * numberSteps,
+            }
+            return calculateBounceAngle2(tempPos, moveDirection, game);
+        }
+    }else{
+        if(xStep > 0){
+            tempPos.x += tileSize;
+        }else{
+            tempPos.x -= tileSize;
+        }
+        if (isPositionBlocking(tempPos, game.state.map, game.state.idCounter, game)) {
+            const wallAngle = Math.PI / 2;
+            const angleDiff = moveDirection - wallAngle;
+            return wallAngle - angleDiff;
+        }else{
+            console.log("recursion bounce");
+            const numberSteps = Math.abs(wallDistanceX / xStep) + 0.001;
+            tempPos = {
+                x: position.x + xStep * numberSteps,
+                y: position.y + yStep * numberSteps,
+            }
+            return calculateBounceAngle2(tempPos, moveDirection, game);
+        }
+    }
+
+    return 0;
+}
+
+
 export function calculateBounceAngle(bouncePosition: Position, startingAngle: number, map: GameMap): number {
     const tileSize = map.tileSize;
     let wallX = Math.abs(bouncePosition.x % tileSize);

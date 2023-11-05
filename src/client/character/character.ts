@@ -37,13 +37,13 @@ export function findCharacterByIdAroundPosition(position: Position, range: numbe
     return null;
 }
 
-export function findCharacterByIdInCompleteMap(id: number, game: Game){
+export function findCharacterByIdInCompleteMap(id: number, game: Game) {
     const map = game.state.map;
     const keys = Object.keys(map.chunks);
-    for(let chunkKey of keys){
+    for (let chunkKey of keys) {
         const chunk = map.chunks[chunkKey];
-        for(let char of chunk.characters){
-            if(char.id === id){
+        for (let char of chunk.characters) {
+            if (char.id === id) {
                 console.log(chunkKey, char);
                 return char;
             }
@@ -428,6 +428,7 @@ export function turnCharacterToPet(character: Character, game: Game) {
 
 export function moveMapCharacterTick(character: Character, map: GameMap, idCounter: IdCounter) {
     if (character.isRooted) return;
+    if (character.isMoveTickDisabled) return;
     const newPosition = calculateCharacterMovePosition(character, map, idCounter);
     if (newPosition) {
         mapCharacterCheckForChunkChange(character, map, newPosition.x, newPosition.y);
@@ -438,6 +439,7 @@ export function moveMapCharacterTick(character: Character, map: GameMap, idCount
 
 export function moveCharacterTick(character: Character, map: GameMap, idCounter: IdCounter) {
     if (character.isRooted) return;
+    if (character.isMoveTickDisabled) return;
     const newPosition = calculateCharacterMovePosition(character, map, idCounter);
     if (newPosition) {
         character.x = newPosition.x;
@@ -454,7 +456,7 @@ export function calculateCharacterMovePosition(character: Character, map: GameMa
 
 export function mapCharacterCheckForChunkChange(character: Character, map: GameMap, newX: number, newY: number) {
     const currentChunkKey = character.mapChunkKey;
-    if(!currentChunkKey){
+    if (!currentChunkKey) {
         console.log("missing chunk key on map character");
         return;
     }
@@ -465,7 +467,7 @@ export function mapCharacterCheckForChunkChange(character: Character, map: GameM
         const newChunkKey = chunkXYToMapKey(newChunkX, newChunkY);
         const charIndex = map.chunks[currentChunkKey].characters.findIndex(el => el === character);
         const deleted = map.chunks[currentChunkKey].characters.splice(charIndex, 1);
-        if(deleted.length === 0){
+        if (deleted.length === 0) {
             console.log("missing character in chunk", character.id, currentChunkKey);
         }
         map.chunks[newChunkKey].characters.push(character);
