@@ -4,8 +4,6 @@ current tasks:
     - ball bounce method redesign?: remove recursion?
     - bounce ball ability: clean up code
     - impl:
-        - influence move direction
-        - past character no ability?
         - new ball bounce "physcis" for other bounce abilities
         - create new character
             - creates ball abilities and puts them on character

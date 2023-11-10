@@ -6,7 +6,7 @@ import { Position, Game, IdCounter, FACTION_ENEMY, ClientInfo } from "../gameMod
 import { getPointPaintPosition } from "../gamePaint.js";
 import { calculateBounceAngle, calculateBounceAngle2, calculateMovePosition, isPositionBlocking } from "../map/map.js";
 import { playerInputBindingToDisplayValue } from "../playerInput.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, detectSomethingToCharacterHit } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, detectSomethingToCharacterHit, getAbilityNameUiText, paintDefaultAbilityStatsUI } from "./ability.js";
 
 type AbilityBounceBall = Ability & {
     baseRechargeTime: number,
@@ -35,6 +35,7 @@ export function addAbilityBounceBall() {
         createAbility: createAbilityBounceBall,
         paintAbility: paintAbility,
         paintAbilityUI: paintAbilityUI,
+        paintAbilityStatsUI: paintAbilityStatsUI,
         setAbilityToLevel: setAbilityToLevel,
         setAbilityToBossLevel: setAbilityToBossLevel,
         setAbilityToEnemyLevel: setAbilityToEnemyLevel,
@@ -69,6 +70,7 @@ export function createAbilityBounceBall(
         maxAngleChangePetTick: 0.01,
         upgrades: {},
         playerInputBinding: playerInputBinding,
+        tradable: true,
     };
 }
 
@@ -252,3 +254,19 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
         }
     }
 }
+
+function paintAbilityStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
+    const abilityBounceBall = ability as AbilityBounceBall;
+    const textLines: string[] = getAbilityNameUiText(ability);
+    textLines.push(
+        `Key: ${playerInputBindingToDisplayValue(abilityBounceBall.playerInputBinding!, game)}`,
+        `Click to become a ball and roll towards click direction.`,
+        `Bounces of terrain. Each bounce increases speed.`,
+        `Speed decreases over time.`,
+        "Ability stats:",
+        `Damage: ${abilityBounceBall.damage}`,
+    );
+
+    return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
+}
+
