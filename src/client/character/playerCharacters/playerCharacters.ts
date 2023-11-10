@@ -24,13 +24,13 @@ export function onDomLoadSetCharacterClasses() {
     addAbilityLevelingCharacter();
     addSniperClass();
     addTowerClass();
-    // addBallClass();
     addTamerClass();
+    addBallClass();
 }
 
 export function initPlayerCharacterChoiceOptions(character: Character, game: Game) {
     const options: UpgradeOption[] = createCharacterChooseUpgradeOptions(game);
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 4; i++) {
         if (options.length > i) {
             character.upgradeChoices.push(options[i]);
         }

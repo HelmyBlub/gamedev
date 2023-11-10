@@ -10,7 +10,7 @@ import { executeUpgradeOptionChoice } from "./character/upgrade.js";
 import { canCharacterTradeAbilityOrPets, characterTradeAbilityAndPets } from "./character/character.js";
 
 export const MOVE_ACTIONS = ["left", "down", "right", "up"];
-export const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3"];
+export const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3", "upgrade4"];
 export const ABILITY_ACTIONS = ["ability1", "ability2", "ability3"];
 export const SPECIAL_ACTIONS = ["interact"];
 export const MOUSE_ACTION = "mousePositionUpdate";
@@ -35,6 +35,7 @@ export function createActionsPressed(): ActionsPressed {
         upgrade1: false,
         upgrade2: false,
         upgrade3: false,
+        upgrade4: false,
         ability1: false,
         ability2: false,
         ability3: false,

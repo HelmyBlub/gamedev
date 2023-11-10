@@ -11,7 +11,7 @@ import { resetCharacter } from "../character.js";
 import { CHARACTER_TYPE_BOSS_ENEMY, setAbilityToBossLevel } from "../enemy/bossEnemy.js";
 import { ABILITY_NAME_BOUNCE_BALL } from "../../ability/bounceBall/abilityBounceBall.js";
 
-export const CHARACTER_CLASS_BALL = "Ball";
+export const CHARACTER_CLASS_BALL = "Ball (work in progress)";
 
 export function addBallClass() {
     PLAYER_CHARACTER_CLASSES_FUNCTIONS[CHARACTER_CLASS_BALL] = {
