@@ -1,14 +1,19 @@
-import { getRandomAlivePlayerCharacter } from "../character/character.js";
-import { BUFF_NAME_BALL_PHYSICS, BuffBallPhysics, createBuffBallPhysics } from "../debuff/buffBallPhysics.js";
-import { applyDebuff, removeCharacterDebuff } from "../debuff/debuff.js";
-import { calculateDirection, getClientInfoByCharacterId, getNextId, modulo } from "../game.js";
-import { Position, Game, IdCounter, FACTION_ENEMY, ClientInfo } from "../gameModel.js";
-import { getPointPaintPosition } from "../gamePaint.js";
-import { calculateBounceAngle, calculateMovePosition, isPositionBlocking } from "../map/map.js";
-import { playerInputBindingToDisplayValue } from "../playerInput.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, detectSomethingToCharacterHit, getAbilityNameUiText, paintDefaultAbilityStatsUI } from "./ability.js";
+import { getRandomAlivePlayerCharacter } from "../../character/character.js";
+import { Character } from "../../character/characterModel.js";
+import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
+import { BUFF_NAME_BALL_PHYSICS, BuffBallPhysics, createBuffBallPhysics } from "../../debuff/buffBallPhysics.js";
+import { applyDebuff, removeCharacterDebuff } from "../../debuff/debuff.js";
+import { calculateDirection, getClientInfoByCharacterId, getNextId, modulo } from "../../game.js";
+import { Position, Game, IdCounter, FACTION_ENEMY, ClientInfo } from "../../gameModel.js";
+import { getPointPaintPosition } from "../../gamePaint.js";
+import { calculateBounceAngle, calculateMovePosition, isPositionBlocking } from "../../map/map.js";
+import { playerInputBindingToDisplayValue } from "../../playerInput.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, detectSomethingToCharacterHit, getAbilityNameUiText, paintDefaultAbilityStatsUI } from "../ability.js";
+import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
+import { addAbilitySpeedBoostUpgradeAngleChange } from "./abilityBounceBallUpgradeAngle.js";
+import { addAbilitySpeedBoostUpgradeSpeed } from "./abilityBounceBallUpgradeBounceBonusSpeed.js";
 
-type AbilityBounceBall = Ability & {
+export type AbilityBounceBall = Ability & {
     baseRechargeTime: number,
     nextRechargeTime?: number,
     currentCharges: number,
@@ -28,11 +33,14 @@ type AbilityBounceBall = Ability & {
 }
 
 export const ABILITY_NAME_BOUNCE_BALL = "Bounce Ball";
+export const ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS: AbilityUpgradesFunctions = {};
 
 export function addAbilityBounceBall() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_BOUNCE_BALL] = {
         activeAbilityCast: castBounceBall,
         createAbility: createAbilityBounceBall,
+        createAbilityBossUpgradeOptions: createAbilityBossSpeedBoostUpgradeOptions,
+        executeUpgradeOption: executeAbilityUpgradeOption,
         paintAbility: paintAbility,
         paintAbilityUI: paintAbilityUI,
         paintAbilityStatsUI: paintAbilityStatsUI,
@@ -40,8 +48,11 @@ export function addAbilityBounceBall() {
         setAbilityToBossLevel: setAbilityToBossLevel,
         setAbilityToEnemyLevel: setAbilityToEnemyLevel,
         tickAbility: tickAbility,
+        abilityUpgradeFunctions: ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS,
         canBeUsedByBosses: false,
     };
+    addAbilitySpeedBoostUpgradeSpeed();
+    addAbilitySpeedBoostUpgradeAngleChange();
 }
 
 export function createAbilityBounceBall(
@@ -91,6 +102,17 @@ function castBounceBall(abilityOwner: AbilityOwner, ability: Ability, castPositi
         if (clientInfo.id === game.multiplayer.myClientId) game.multiplayer.autosendMousePosition.active = isKeydown;
         clientInfo.lastMousePosition = castPosition;
     }
+}
+
+function createAbilityBossSpeedBoostUpgradeOptions(ability: Ability): UpgradeOptionAndProbability[] {
+    const upgradeOptions: UpgradeOptionAndProbability[] = [];
+    pushAbilityUpgradesOptions(ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS, upgradeOptions, ability);
+    return upgradeOptions;
+}
+
+function executeAbilityUpgradeOption(ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game) {
+    const abilityUpgradeOption: AbilityUpgradeOption = upgradeOption as AbilityUpgradeOption;
+    upgradeAbility(ability, character, abilityUpgradeOption);
 }
 
 function setAbilityToLevel(ability: Ability, level: number) {
@@ -179,17 +201,67 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
 
 function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     const abilityBounceBall = ability as AbilityBounceBall;
+    rechargeTick(abilityBounceBall, game);
+    
+    const ballBuff = findBallBuff(abilityOwner, abilityBounceBall);
+    if (!ballBuff) return;
+    rollDirectionInfluenceTick(abilityBounceBall, abilityOwner, game);
+    speedDrecreaseTick(abilityBounceBall, abilityOwner, ballBuff, game);
+    rollTick(abilityBounceBall, abilityOwner, game);
+    damageTick(abilityBounceBall, abilityOwner, game);
+}
 
-    if (abilityBounceBall.nextRechargeTime != undefined && abilityBounceBall.nextRechargeTime <= game.state.time) {
-        abilityBounceBall.currentCharges++;
-        if(abilityBounceBall.currentCharges < abilityBounceBall.maxCharges){
-            abilityBounceBall.nextRechargeTime =  game.state.time + abilityBounceBall.baseRechargeTime;
-        }else{
-            abilityBounceBall.nextRechargeTime = undefined;
+function damageTick(abilityBounceBall: AbilityBounceBall, abilityOwner: AbilityOwner, game: Game){
+    if (abilityBounceBall.nextTickTime === undefined) abilityBounceBall.nextTickTime = game.state.time + abilityBounceBall.tickInterval;
+    if (abilityBounceBall.nextTickTime <= game.state.time) {
+        detectSomethingToCharacterHit(
+            game.state.map,
+            abilityOwner,
+            abilityBounceBall.radius * 2,
+            abilityOwner.faction,
+            abilityBounceBall.damage,
+            game.state.players,
+            game.state.bossStuff.bosses,
+            abilityBounceBall.id,
+            undefined,
+            game
+        );
+
+        abilityBounceBall.nextTickTime += abilityBounceBall.tickInterval;
+
+        if (abilityBounceBall.nextTickTime <= game.state.time) {
+            abilityBounceBall.nextTickTime = game.state.time + abilityBounceBall.tickInterval;
         }
     }
+}
 
+function rollTick(abilityBounceBall: AbilityBounceBall, abilityOwner: AbilityOwner, game: Game){
+    const newPosition = calculateMovePosition(abilityOwner, abilityBounceBall.moveDirection, abilityBounceBall.currentSpeed, false);
+    if (isPositionBlocking(newPosition, game.state.map, game.state.idCounter, game)) {
+        abilityBounceBall.moveDirection = calculateBounceAngle(abilityOwner, abilityBounceBall.moveDirection, game);
+        abilityBounceBall.currentSpeed += abilityBounceBall.bounceBonusSpeed;
+        if (abilityBounceBall.currentSpeed > abilityBounceBall.maxSpeed) {
+            abilityBounceBall.currentSpeed = abilityBounceBall.maxSpeed;
+        }
+    } else {
+        abilityOwner.x = newPosition.x;
+        abilityOwner.y = newPosition.y;
+    }
+}
+
+function speedDrecreaseTick(abilityBounceBall: AbilityBounceBall, abilityOwner: AbilityOwner, ballBuff: BuffBallPhysics, game: Game){
+    let tickSpeedDecrease = abilityBounceBall.currentSpeed * abilityBounceBall.speedDecrease;
+    if (tickSpeedDecrease > 0.02) tickSpeedDecrease = 0.02;
+    abilityBounceBall.currentSpeed *= (1 - abilityBounceBall.speedDecrease);
+    if (abilityBounceBall.currentSpeed <= abilityBounceBall.stopSpeed) {
+        removeCharacterDebuff(ballBuff, abilityOwner as any, game);
+        return;
+    }
+}
+
+function rollDirectionInfluenceTick(abilityBounceBall: AbilityBounceBall, abilityOwner: AbilityOwner, game: Game){
     const clientInfo: ClientInfo | undefined = getClientInfoByCharacterId(abilityOwner.id, game);
+
     let mapTurnToMousPosition = { x: 0, y: 0 };
     if (clientInfo) {
         mapTurnToMousPosition = clientInfo.lastMousePosition;
@@ -208,49 +280,16 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
         abilityBounceBall.moveDirection = abilityBounceBall.moveDirection - abilityBounceBall.maxAngleChangePetTick;
     }else if(angleDiff > 0 ){
         abilityBounceBall.moveDirection += abilityBounceBall.maxAngleChangePetTick;
-    }
+    }    
+}
 
-    const ballBuff = findBallBuff(abilityOwner, abilityBounceBall);
-    if (!ballBuff) return;
-
-    let tickSpeedDecrease = abilityBounceBall.currentSpeed * abilityBounceBall.speedDecrease;
-    if (tickSpeedDecrease > 0.02) tickSpeedDecrease = 0.02;
-    abilityBounceBall.currentSpeed *= (1 - abilityBounceBall.speedDecrease);
-    if (abilityBounceBall.currentSpeed <= abilityBounceBall.stopSpeed) {
-        removeCharacterDebuff(ballBuff, abilityOwner as any, game);
-        return;
-    }
-    const newPosition = calculateMovePosition(abilityOwner, abilityBounceBall.moveDirection, abilityBounceBall.currentSpeed, false);
-    if (isPositionBlocking(newPosition, game.state.map, game.state.idCounter, game)) {
-        abilityBounceBall.moveDirection = calculateBounceAngle(abilityOwner, abilityBounceBall.moveDirection, game);
-        abilityBounceBall.currentSpeed += abilityBounceBall.bounceBonusSpeed;
-        if (abilityBounceBall.currentSpeed > abilityBounceBall.maxSpeed) {
-            abilityBounceBall.currentSpeed = abilityBounceBall.maxSpeed;
-        }
-    } else {
-        abilityOwner.x = newPosition.x;
-        abilityOwner.y = newPosition.y;
-    }
-
-    if (abilityBounceBall.nextTickTime === undefined) abilityBounceBall.nextTickTime = game.state.time + abilityBounceBall.tickInterval;
-    if (abilityBounceBall.nextTickTime <= game.state.time) {
-        detectSomethingToCharacterHit(
-            game.state.map,
-            abilityOwner,
-            abilityBounceBall.radius * 2,
-            abilityOwner.faction,
-            abilityBounceBall.damage,
-            game.state.players,
-            game.state.bossStuff.bosses,
-            ability.id,
-            undefined,
-            game
-        );
-
-        abilityBounceBall.nextTickTime += abilityBounceBall.tickInterval;
-
-        if (abilityBounceBall.nextTickTime <= game.state.time) {
-            abilityBounceBall.nextTickTime = game.state.time + abilityBounceBall.tickInterval;
+function rechargeTick(abilityBounceBall: AbilityBounceBall, game: Game){
+    if (abilityBounceBall.nextRechargeTime != undefined && abilityBounceBall.nextRechargeTime <= game.state.time) {
+        abilityBounceBall.currentCharges++;
+        if(abilityBounceBall.currentCharges < abilityBounceBall.maxCharges){
+            abilityBounceBall.nextRechargeTime =  game.state.time + abilityBounceBall.baseRechargeTime;
+        }else{
+            abilityBounceBall.nextRechargeTime = undefined;
         }
     }
 }
@@ -265,7 +304,10 @@ function paintAbilityStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, dr
         `Speed decreases over time.`,
         "Ability stats:",
         `Damage: ${abilityBounceBall.damage}`,
+        `Bounce Bonus Speed: ${abilityBounceBall.bounceBonusSpeed}`,
+        `Angle Change per Second: ${(abilityBounceBall.maxAngleChangePetTick * 60 / Math.PI / 2 * 360).toFixed(0)}°`,
     );
+    pushAbilityUpgradesUiTexts(ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS, textLines, ability);
 
     return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
 }

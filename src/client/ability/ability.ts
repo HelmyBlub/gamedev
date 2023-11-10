@@ -28,7 +28,7 @@ import { addAbilityPetPainter } from "./petTamer/abilityPetPainter.js"
 import { addAbilityPetDash } from "./petTamer/abilityPetDash.js"
 import { UpgradeOption, UpgradeOptionAndProbability } from "../character/upgrade.js"
 import { getPointPaintPosition } from "../gamePaint.js"
-import { addAbilityBounceBall } from "./abilityBounceBall.js"
+import { addAbilityBounceBall } from "./bounceBall/abilityBounceBall.js"
 
 export type Ability = {
     id: number,

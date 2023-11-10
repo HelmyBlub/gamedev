@@ -1,17 +1,8 @@
 current tasks:
 - new class:
     - mouseUpdate currenlty happening constantly. Needs to be able to determine when active and not even when snipe and bounce ball are together
-    - ball bounce method redesign?: remove recursion?
     - impl:
-        - create new character
-            - creates ball abilities and puts them on character
-            - check if overwrite movement possible
-                - should also work for normal characters in the end
-                - so overwrite should not be class dependant
-            - should change movement based on buffs
-        - create ability bounce ball
-            - create a new buff:
-                - give player a buff which changes movement behaviour, one buff type for all ball movement changes
+        - bounce ball upgrades
         - create ability lightning ball
             - create a new buff:
                 - give player a buff which changes movement behaviour, one buff type for all ball movement changes

@@ -9,7 +9,7 @@ import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters.js";
 import { deepCopy, getNextId } from "../../game.js";
 import { resetCharacter } from "../character.js";
 import { CHARACTER_TYPE_BOSS_ENEMY, setAbilityToBossLevel } from "../enemy/bossEnemy.js";
-import { ABILITY_NAME_BOUNCE_BALL } from "../../ability/abilityBounceBall.js";
+import { ABILITY_NAME_BOUNCE_BALL } from "../../ability/bounceBall/abilityBounceBall.js";
 
 export const CHARACTER_CLASS_BALL = "Ball";
 

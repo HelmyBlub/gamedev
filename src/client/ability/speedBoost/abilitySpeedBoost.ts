@@ -27,15 +27,15 @@ export const ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS: AbilityUpgradesFunctions = {
 
 export function addAbilitySpeedBoost() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_SPEED_BOOST] = {
-        tickAbility: tickAbilitySpeedBoost,
-        setAbilityToLevel: setAbilitySpeedBoostToLevel,
-        createAbility: createAbilitySpeedBoost,
         activeAbilityCast: castSpeedBoost,
-        paintAbilityUI: paintAbilitySpeedBoostUI,
+        createAbility: createAbilitySpeedBoost,
         createAbilityBossUpgradeOptions: createAbilityBossSpeedBoostUpgradeOptions,
         executeUpgradeOption: executeAbilitySpeedBoostUpgradeOption,
+        paintAbilityUI: paintAbilitySpeedBoostUI,
         paintAbilityStatsUI: paintAbilitySpeedBoostStatsUI,
         resetAbility: resetAbility,
+        setAbilityToLevel: setAbilitySpeedBoostToLevel,
+        tickAbility: tickAbilitySpeedBoost,
         abilityUpgradeFunctions: ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS,
     };
 
