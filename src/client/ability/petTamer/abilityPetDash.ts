@@ -153,7 +153,7 @@ function tickAbilityPetDash(abilityOwner: AbilityOwner, ability: Ability, game: 
             const newPosition = calculateMovePosition(pet, abilityPetDash.direction!, abilityPetDash.baseSpeed, false);
             if (isPositionBlocking(newPosition, game.state.map, game.state.idCounter, game)) {
                 abilityPetDash.activeUntilTime += upgradeBounce.durationUpPerBounce;
-                abilityPetDash.direction = calculateBounceAngle(newPosition, abilityPetDash.direction!, game.state.map);
+                abilityPetDash.direction = calculateBounceAngle(pet, abilityPetDash.direction!, game);
                 upgradeBounce.currentDamageFactor += upgradeBounce.damageFactorPerBounce;
             } else {
                 pet.x = newPosition.x;

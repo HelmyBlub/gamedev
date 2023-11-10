@@ -2,9 +2,7 @@ current tasks:
 - new class:
     - mouseUpdate currenlty happening constantly. Needs to be able to determine when active and not even when snipe and bounce ball are together
     - ball bounce method redesign?: remove recursion?
-    - bounce ball ability: clean up code
     - impl:
-        - new ball bounce "physcis" for other bounce abilities
         - create new character
             - creates ball abilities and puts them on character
             - check if overwrite movement possible

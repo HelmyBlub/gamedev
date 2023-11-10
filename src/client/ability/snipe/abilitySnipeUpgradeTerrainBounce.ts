@@ -52,7 +52,7 @@ export function createAndPushAbilityObjectSnipeTerrainBounceBounce(abilityObject
     if (abilityObjectSnipe.bounceCounter && abilityObjectSnipe.bounceCounter > 100) return;
 
     const newStartPosition = calcNewPositionMovedInDirection(abilityObjectSnipe, abilityObjectSnipe.direction, abilityObjectSnipe.range);
-    const newBounceDirection = calculateBounceAngle(newStartPosition, abilityObjectSnipe.direction, game.state.map);
+    const newBounceDirection = calculateBounceAngle(abilityObjectSnipe, abilityObjectSnipe.direction, game);
     const newEndPosistion = calcNewPositionMovedInDirection(newStartPosition, newBounceDirection, abilityObjectSnipe.remainingRange);
     const nextBlockingPosistion = getFirstBlockingGameMapTilePositionTouchingLine(game.state.map, newStartPosition, newEndPosistion, game);
     createAndPush(

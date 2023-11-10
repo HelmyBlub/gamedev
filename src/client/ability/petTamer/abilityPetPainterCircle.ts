@@ -3,7 +3,7 @@ import { TamerPetCharacter, findPetOwner } from "../../character/playerCharacter
 import { calculateDistance, getCameraPosition } from "../../game.js";
 import { FACTION_ENEMY, FACTION_PLAYER, Game, Position } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
-import { calculateMovePosition, isPositionBlocking, calculateBounceAngle } from "../../map/map.js";
+import { calculateBounceAngle, calculateMovePosition, isPositionBlocking } from "../../map/map.js";
 import { RandomSeed, nextRandom } from "../../randomNumberGenerator.js";
 import { AbilityObject, AbilityObjectCircle, AbilityOwner, PaintOrderAbility, detectAbilityObjectCircleToCharacterHit } from "../ability.js";
 import { ABILITY_NAME_PET_PAINTER, ABILITY_PET_PAINTER_SHAPES_FUNCTIONS, AbilityObjectPetPainter, AbilityPetPainter, createShapeAbilityPetPainter } from "./abilityPetPainter.js";
@@ -146,7 +146,7 @@ function tickShapeObjectPetPainterCircle(abilityObject: AbilityObjectPetPainter,
         const circle = abilityObject as AbilityObjectPetPainterCircle;
         const newPosition = calculateMovePosition(circle, circle.direction, circle.moveSpeed, false);
         if (isPositionBlocking(newPosition, game.state.map, game.state.idCounter, game)) {
-            circle.direction = calculateBounceAngle(newPosition, circle.direction, game.state.map);
+            circle.direction = calculateBounceAngle(circle, circle.direction, game);
         } else {
             circle.x = newPosition.x;
             circle.y = newPosition.y;

@@ -4,7 +4,7 @@ import { applyDebuff, removeCharacterDebuff } from "../debuff/debuff.js";
 import { calculateDirection, getClientInfoByCharacterId, getNextId, modulo } from "../game.js";
 import { Position, Game, IdCounter, FACTION_ENEMY, ClientInfo } from "../gameModel.js";
 import { getPointPaintPosition } from "../gamePaint.js";
-import { calculateBounceAngle, calculateBounceAngle2, calculateMovePosition, isPositionBlocking } from "../map/map.js";
+import { calculateBounceAngle, calculateMovePosition, isPositionBlocking } from "../map/map.js";
 import { playerInputBindingToDisplayValue } from "../playerInput.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, detectSomethingToCharacterHit, getAbilityNameUiText, paintDefaultAbilityStatsUI } from "./ability.js";
 
@@ -222,7 +222,7 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     }
     const newPosition = calculateMovePosition(abilityOwner, abilityBounceBall.moveDirection, abilityBounceBall.currentSpeed, false);
     if (isPositionBlocking(newPosition, game.state.map, game.state.idCounter, game)) {
-        abilityBounceBall.moveDirection = calculateBounceAngle2(abilityOwner, abilityBounceBall.moveDirection, game);
+        abilityBounceBall.moveDirection = calculateBounceAngle(abilityOwner, abilityBounceBall.moveDirection, game);
         abilityBounceBall.currentSpeed += abilityBounceBall.bounceBonusSpeed;
         if (abilityBounceBall.currentSpeed > abilityBounceBall.maxSpeed) {
             abilityBounceBall.currentSpeed = abilityBounceBall.maxSpeed;
