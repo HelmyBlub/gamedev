@@ -5,7 +5,7 @@ import { ABILITY_NAME_LOVE_PET } from "../../ability/petTamer/abilityLovePet.js"
 import { calculateDistance, getNextId } from "../../game.js"
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../gameModel.js"
 import { MapChunk, GameMap, isPositionBlocking, mapKeyToChunkXY, chunkXYToMapKey } from "../../map/map.js"
-import { fixedRandom } from "../../randomNumberGenerator.js"
+import { fixedRandom, nextRandom } from "../../randomNumberGenerator.js"
 import { resetCharacter } from "../character.js"
 import { Character, IMAGE_SLIME, createCharacter } from "../characterModel.js"
 import { createPetsBasedOnLevelAndCharacter } from "../playerCharacters/tamer/tamerCharacter.js"
@@ -67,7 +67,7 @@ export function createEnemyWithLevel(idCounter: IdCounter, enemyPos: Position, l
             const celestialDirection = getCelestialDirection(enemyPos);
             const endBoss = game.state.bossStuff.nextEndbosses[celestialDirection]!;
             const whatToAdd = randomWhatToAdd(endBoss, enemy, game);
-            if(whatToAdd === "addAbility"){
+            if (whatToAdd === "addAbility") {
                 const ability = createEnemyAbilityBasedOnEndBoss(level, endBoss, enemyPos, enemyType.damageFactor, game);
                 if (ability) {
                     enemy.experienceWorth *= 2;
@@ -75,8 +75,8 @@ export function createEnemyWithLevel(idCounter: IdCounter, enemyPos: Position, l
                     enemy.abilities.push(ability);
                 }
             }
-            if(whatToAdd === "addPet"){
-                const levelReduced = Math.max(Math.floor(level/4), 1);
+            if (whatToAdd === "addPet") {
+                const levelReduced = Math.max(Math.floor(level / 4), 1);
                 const pet: TamerPetCharacter = createPetsBasedOnLevelAndCharacter(endBoss, levelReduced, enemy, game)[0];
                 if (pet) {
                     enemy.experienceWorth *= 2;
@@ -84,7 +84,7 @@ export function createEnemyWithLevel(idCounter: IdCounter, enemyPos: Position, l
                     enemy.pets = [];
                     enemy.pets!.push(pet);
                     addAbilityToCharacter(enemy, createAbility(ABILITY_NAME_FEED_PET, idCounter));
-                    addAbilityToCharacter(enemy, createAbility(ABILITY_NAME_LOVE_PET, idCounter));                
+                    addAbilityToCharacter(enemy, createAbility(ABILITY_NAME_LOVE_PET, idCounter));
                 }
             }
         }
@@ -122,14 +122,7 @@ export function createFixPositionRespawnEnemies(chunk: MapChunk, chunkX: number,
         y: topLeftMapKeyPos.y + chunkSize / 2
     }
     const chunkDistance = calculateDistance(mapCenter, centerMapKeyPos);
-    let enemyType: string;
-    if (chunkY > 0 && Math.abs(chunkY) >= Math.abs(chunkX)) {
-        enemyType = "big";
-    } else if (chunkY < 0 && Math.abs(chunkY) >= Math.abs(chunkX)) {
-        enemyType = "small";
-    } else {
-        enemyType = "default";
-    }
+    const enemyType: string = decideEnemyType(chunkX, chunkY, game);
     if (minSpawnDistanceFromMapCenter < chunkDistance + chunkSize) {
         for (let x = 0; x < chunk.tiles.length; x++) {
             for (let y = 0; y < chunk.tiles[x].length; y++) {
@@ -152,6 +145,28 @@ export function createFixPositionRespawnEnemies(chunk: MapChunk, chunkX: number,
             }
         }
     }
+}
+
+function decideEnemyType(chunkX: number, chunkY: number, game: Game): string{
+    let enemyType: string;
+    const enemyTypes = Object.keys(ENEMY_TYPES);
+    let index = 0;
+    if (chunkY > 0 && Math.abs(chunkY) >= Math.abs(chunkX)) {
+        index = game.state.enemyTypeDirectionSeed % (enemyTypes.length + 1);
+    } else if (chunkY < 0 && Math.abs(chunkY) >= Math.abs(chunkX)) {
+        index = (game.state.enemyTypeDirectionSeed + 1) % (enemyTypes.length + 1);
+    } else if (chunkX < 0 && Math.abs(chunkX) >= Math.abs(chunkY)) {
+        index = (game.state.enemyTypeDirectionSeed + 2) % (enemyTypes.length + 1);
+    } else {
+        index = (game.state.enemyTypeDirectionSeed + 3) % (enemyTypes.length + 1);
+    }
+    if(index >= enemyTypes.length){
+        index = Math.floor(fixedRandom(game.state.enemyTypeDirectionSeed, game.state.enemyTypeDirectionSeed, game.state.map.seed!) * enemyTypes.length);
+        enemyType = enemyTypes[index];
+    }else{
+        enemyType = enemyTypes[index];
+    }
+    return enemyType;
 }
 
 function createEnemy(
@@ -182,7 +197,7 @@ function createEnemy(
     };
 }
 
-function randomWhatToAdd(nextEndBoss: Character, charPosition: Position, game: Game): "addPet" | "addAbility"{
+function randomWhatToAdd(nextEndBoss: Character, charPosition: Position, game: Game): "addPet" | "addAbility" {
     const possibleAbilities: Ability[] = [];
     const possiblePets: TamerPetCharacter[] = [];
     for (let ability of nextEndBoss!.abilities) {
@@ -202,7 +217,7 @@ function randomWhatToAdd(nextEndBoss: Character, charPosition: Position, game: G
     }
     if (randomChoice < possibleAbilities.length) {
         return "addAbility";
-    }else{
+    } else {
         return "addPet";
     }
 }

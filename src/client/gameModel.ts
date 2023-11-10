@@ -131,6 +131,7 @@ export type GameState = {
     paused: boolean,
     tickOnceInPaused?: boolean,
     pastPlayerCharacters: PastPlayerCharacters,
+    enemyTypeDirectionSeed: number,
 }
 
 export type PastPlayerCharacters = {
@@ -257,6 +258,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
                 characters: [],
                 maxNumber: 12,
             },
+            enemyTypeDirectionSeed: 0,
         },
         clientKeyBindings: [],
         tickInterval: 16,

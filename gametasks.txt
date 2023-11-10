@@ -2,7 +2,7 @@ current tasks:
 - new class:
     - impl:
         - influence move direction
-        - past character now ability?
+        - past character no ability?
         - new ball bounce "physcis" for other bounce abilities
         - create new character
             - creates ball abilities and puts them on character

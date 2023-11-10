@@ -87,6 +87,7 @@ export function gameInit(game: Game) {
     game.state.bossStuff.endBossStarted = false;
     game.state.deathCircleCreated = false;
     game.state.paused = false;
+    game.state.enemyTypeDirectionSeed += 1;
     game.clientKeyBindings = [];
     game.performance = {};
     game.UI.displayTextData = [];
