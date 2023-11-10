@@ -1,7 +1,8 @@
+import { getRandomAlivePlayerCharacter } from "../character/character.js";
 import { BUFF_NAME_BALL_PHYSICS, BuffBallPhysics, createBuffBallPhysics } from "../debuff/buffBallPhysics.js";
 import { applyDebuff, removeCharacterDebuff } from "../debuff/debuff.js";
-import { calculateDirection, getNextId } from "../game.js";
-import { Position, Game, IdCounter, FACTION_ENEMY } from "../gameModel.js";
+import { calculateDirection, getClientInfoByCharacterId, getNextId, modulo } from "../game.js";
+import { Position, Game, IdCounter, FACTION_ENEMY, ClientInfo } from "../gameModel.js";
 import { getPointPaintPosition } from "../gamePaint.js";
 import { calculateBounceAngle, calculateBounceAngle2, calculateMovePosition, isPositionBlocking } from "../map/map.js";
 import { playerInputBindingToDisplayValue } from "../playerInput.js";
@@ -22,6 +23,7 @@ type AbilityBounceBall = Ability & {
     bounceBonusSpeed: number,
     speedDecrease: number,
     tickInterval: number,
+    maxAngleChangePetTick: number,
     nextTickTime?: number,
 }
 
@@ -64,6 +66,7 @@ export function createAbilityBounceBall(
         baseRechargeTime: 4000,
         currentCharges: 2,
         maxCharges: 2,
+        maxAngleChangePetTick: 0.01,
         upgrades: {},
         playerInputBinding: playerInputBinding,
     };
@@ -80,6 +83,11 @@ function castBounceBall(abilityOwner: AbilityOwner, ability: Ability, castPositi
     abilityBounceBall.currentCharges--;
     if (abilityBounceBall.nextRechargeTime === undefined) {
         abilityBounceBall.nextRechargeTime = game.state.time + abilityBounceBall.baseRechargeTime;
+    }
+    const clientInfo: ClientInfo | undefined = getClientInfoByCharacterId(abilityOwner.id, game);
+    if(clientInfo){
+        if (clientInfo.id === game.multiplayer.myClientId) game.multiplayer.autosendMousePosition.active = isKeydown;
+        clientInfo.lastMousePosition = castPosition;
     }
 }
 
@@ -158,6 +166,13 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
         abilityBall.radius, 0, 2 * Math.PI
     );
     ctx.fill();
+    const clientInfo: ClientInfo | undefined = getClientInfoByCharacterId(abilityOwner.id, game);
+    if(clientInfo){
+        const paintPos = getPointPaintPosition(ctx, clientInfo.lastMousePosition, cameraPosition);
+        ctx.beginPath();
+        ctx.arc(paintPos.x, paintPos.y, 3, 0, 2 * Math.PI);
+        ctx.fill();
+    }
 }
 
 function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
@@ -170,6 +185,27 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
         }else{
             abilityBounceBall.nextRechargeTime = undefined;
         }
+    }
+
+    const clientInfo: ClientInfo | undefined = getClientInfoByCharacterId(abilityOwner.id, game);
+    let mapTurnToMousPosition = { x: 0, y: 0 };
+    if (clientInfo) {
+        mapTurnToMousPosition = clientInfo.lastMousePosition;
+    } else {
+        const target = getRandomAlivePlayerCharacter(game.state.players, game.state.randomSeed);
+        if (target) {
+            mapTurnToMousPosition = { x: target.x, y: target.y };
+        }
+    }
+
+    const mouseDirection = calculateDirection(abilityOwner, mapTurnToMousPosition);
+    const angleDiff = modulo((mouseDirection - abilityBounceBall.moveDirection + Math.PI), (Math.PI * 2)) - Math.PI;
+    if(Math.abs(angleDiff) < abilityBounceBall.maxAngleChangePetTick){
+        abilityBounceBall.moveDirection = mouseDirection;
+    }else if(angleDiff < 0){
+        abilityBounceBall.moveDirection = abilityBounceBall.moveDirection - abilityBounceBall.maxAngleChangePetTick;
+    }else if(angleDiff > 0 ){
+        abilityBounceBall.moveDirection += abilityBounceBall.maxAngleChangePetTick;
     }
 
     const ballBuff = findBallBuff(abilityOwner, abilityBounceBall);

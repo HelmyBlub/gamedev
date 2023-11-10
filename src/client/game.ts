@@ -38,6 +38,10 @@ export function calculateDirection(startPos: Position, targetPos: Position): num
     return direction;
 }
 
+export function modulo(number: number, mod: number): number{
+    return ((number % mod) + mod) % mod;
+}
+
 export function getNextId(idCounter: IdCounter) {
     return idCounter.nextId++;
 }
