@@ -1,3 +1,4 @@
+import { Ability, AbilityOwner } from "../ability/ability.js";
 import { Character } from "../character/characterModel.js";
 import { autoSendMousePositionHandler } from "../game.js";
 import { Game } from "../gameModel.js";
@@ -12,6 +13,7 @@ export function addBuffBallPhysics() {
     DEBUFFS_FUNCTIONS[BUFF_NAME_BALL_PHYSICS] = {
         applyDebuffEffect: applyBuffEffect,
         removeDebuffEffect: removeBuffEffect,
+        refreshDebuffEffect: refreshBuffEffect,
     };
 }
 
@@ -22,6 +24,25 @@ export function createBuffBallPhysics(
         name: BUFF_NAME_BALL_PHYSICS,
         abilityRefId: abilityRefId,
     };
+}
+
+export function findBallBuff(owner: AbilityOwner, ability: Ability): BuffBallPhysics | undefined {
+    if (!owner.debuffs) return undefined;
+    for (let buff of owner.debuffs) {
+        if (buff.name === BUFF_NAME_BALL_PHYSICS) {
+            const ballBuff = buff as BuffBallPhysics;
+            if (ballBuff.abilityRefId === ability.id) {
+                return ballBuff;
+            }
+        }
+    }
+    return undefined;
+}
+
+function refreshBuffEffect(newDebuff: Debuff, currentDebuff: Debuff, targetCharacter: Character, game: Game) {
+    const newBuff = newDebuff as BuffBallPhysics;
+    const currentBuff = currentDebuff as BuffBallPhysics;
+    currentBuff.abilityRefId = newBuff.abilityRefId;
 }
 
 function applyBuffEffect(debuff: Debuff, targetCharacter: Character, game: Game) {

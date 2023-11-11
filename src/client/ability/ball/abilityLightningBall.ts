@@ -1,7 +1,7 @@
-import { getRandomAlivePlayerCharacter } from "../../character/character.js";
+import { getCharactersTouchingLine, getRandomAlivePlayerCharacter } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
-import { BUFF_NAME_BALL_PHYSICS, BuffBallPhysics, createBuffBallPhysics } from "../../debuff/buffBallPhysics.js";
+import { BUFF_NAME_BALL_PHYSICS, BuffBallPhysics, createBuffBallPhysics, findBallBuff } from "../../debuff/buffBallPhysics.js";
 import { applyDebuff, removeCharacterDebuff } from "../../debuff/debuff.js";
 import { calculateDirection, getClientInfoByCharacterId, getNextId, modulo } from "../../game.js";
 import { Position, Game, IdCounter, FACTION_ENEMY, ClientInfo } from "../../gameModel.js";
@@ -10,10 +10,8 @@ import { calculateBounceAngle, calculateMovePosition, isPositionBlocking } from 
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, detectSomethingToCharacterHit, getAbilityNameUiText, paintDefaultAbilityStatsUI } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
-import { addAbilitySpeedBoostUpgradeAngleChange } from "./abilityBounceBallUpgradeAngle.js";
-import { addAbilitySpeedBoostUpgradeSpeed } from "./abilityBounceBallUpgradeBounceBonusSpeed.js";
 
-export type AbilityBounceBall = Ability & {
+export type AbilityLightningBall = Ability & {
     baseRechargeTime: number,
     nextRechargeTime?: number,
     currentCharges: number,
@@ -21,24 +19,20 @@ export type AbilityBounceBall = Ability & {
     damage: number,
     radius: number,
     moveDirection: number,
-    currentSpeed: number,
-    startSpeed: number,
-    maxSpeed: number,
-    stopSpeed: number,
-    bounceBonusSpeed: number,
-    speedDecrease: number,
+    speed: number,
+    maxEmptyJumps: number,
+    currentEmptyJumps: number,
     tickInterval: number,
-    maxAngleChangePetTick: number,
     nextTickTime?: number,
 }
 
-export const ABILITY_NAME_BOUNCE_BALL = "Bounce Ball";
-export const ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS: AbilityUpgradesFunctions = {};
+export const ABILITY_NAME_LIGHTNING_BALL = "Lighning Ball";
+export const ABILITY_LIGHTNING_BALL_UPGRADE_FUNCTIONS: AbilityUpgradesFunctions = {};
 
-export function addAbilityBounceBall() {
-    ABILITIES_FUNCTIONS[ABILITY_NAME_BOUNCE_BALL] = {
+export function addAbilityLightningBall() {
+    ABILITIES_FUNCTIONS[ABILITY_NAME_LIGHTNING_BALL] = {
         activeAbilityCast: castBounceBall,
-        createAbility: createAbilityBounceBall,
+        createAbility: createAbilityLightningBall,
         createAbilityBossUpgradeOptions: createAbilityBossSpeedBoostUpgradeOptions,
         executeUpgradeOption: executeAbilityUpgradeOption,
         paintAbility: paintAbility,
@@ -48,37 +42,31 @@ export function addAbilityBounceBall() {
         setAbilityToBossLevel: setAbilityToBossLevel,
         setAbilityToEnemyLevel: setAbilityToEnemyLevel,
         tickAbility: tickAbility,
-        abilityUpgradeFunctions: ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS,
+        abilityUpgradeFunctions: ABILITY_LIGHTNING_BALL_UPGRADE_FUNCTIONS,
         canBeUsedByBosses: false,
     };
-    addAbilitySpeedBoostUpgradeSpeed();
-    addAbilitySpeedBoostUpgradeAngleChange();
 }
 
-export function createAbilityBounceBall(
+export function createAbilityLightningBall(
     idCounter: IdCounter,
     playerInputBinding?: string,
     damage: number = 50,
     radius: number = 30,
-): AbilityBounceBall {
+): AbilityLightningBall {
     return {
         id: getNextId(idCounter),
-        name: ABILITY_NAME_BOUNCE_BALL,
+        name: ABILITY_NAME_LIGHTNING_BALL,
         damage: damage,
         radius: radius,
         passive: false,
         tickInterval: 250,
         moveDirection: 0,
-        currentSpeed: 0,
-        bounceBonusSpeed: 1,
-        maxSpeed: 20,
-        stopSpeed: 2,
-        speedDecrease: 0.005,
-        startSpeed: 6,
-        baseRechargeTime: 4000,
+        baseRechargeTime: 1000,
         currentCharges: 2,
         maxCharges: 2,
-        maxAngleChangePetTick: 0.01,
+        maxEmptyJumps: 5,
+        currentEmptyJumps: 0,
+        speed: 20,
         upgrades: {},
         playerInputBinding: playerInputBinding,
         tradable: true,
@@ -87,13 +75,14 @@ export function createAbilityBounceBall(
 
 function castBounceBall(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isKeydown: boolean, game: Game) {
     if (!isKeydown) return;
-    const abilityBounceBall = ability as AbilityBounceBall;
+    const abilityBounceBall = ability as AbilityLightningBall;
     if (abilityBounceBall.currentCharges <= 0) return;
     const buffBallPhyscis = createBuffBallPhysics(ability.id);
     applyDebuff(buffBallPhyscis, abilityOwner as any, game);
-    abilityBounceBall.currentSpeed = abilityBounceBall.startSpeed;
     abilityBounceBall.moveDirection = calculateDirection(abilityOwner, castPosition);
     abilityBounceBall.currentCharges--;
+    abilityBounceBall.currentEmptyJumps = 0;
+
     if (abilityBounceBall.nextRechargeTime === undefined) {
         abilityBounceBall.nextRechargeTime = game.state.time + abilityBounceBall.baseRechargeTime;
     }
@@ -103,7 +92,7 @@ function castBounceBall(abilityOwner: AbilityOwner, ability: Ability, castPositi
 
 function createAbilityBossSpeedBoostUpgradeOptions(ability: Ability): UpgradeOptionAndProbability[] {
     const upgradeOptions: UpgradeOptionAndProbability[] = [];
-    pushAbilityUpgradesOptions(ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS, upgradeOptions, ability);
+    pushAbilityUpgradesOptions(ABILITY_LIGHTNING_BALL_UPGRADE_FUNCTIONS, upgradeOptions, ability);
     return upgradeOptions;
 }
 
@@ -113,22 +102,22 @@ function executeAbilityUpgradeOption(ability: Ability, character: Character, upg
 }
 
 function setAbilityToLevel(ability: Ability, level: number) {
-    const abilityIce = ability as AbilityBounceBall;
-    abilityIce.damage = level * 100;
+    const abilityBall = ability as AbilityLightningBall;
+    abilityBall.damage = level * 100;
 }
 
 function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: number) {
-    const abilityIce = ability as AbilityBounceBall;
-    abilityIce.damage = level / 2 * damageFactor;
+    const abilityBall = ability as AbilityLightningBall;
+    abilityBall.damage = level / 2 * damageFactor;
 }
 
 function setAbilityToBossLevel(ability: Ability, level: number) {
-    const abilityIce = ability as AbilityBounceBall;
-    abilityIce.damage = level * 10;
+    const abilityBall = ability as AbilityLightningBall;
+    abilityBall.damage = level * 10;
 }
 
 function paintAbilityUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
-    const bounceBall = ability as AbilityBounceBall;
+    const bounceBall = ability as AbilityLightningBall;
     const rectSize = size;
 
     ctx.lineWidth = 1;
@@ -158,26 +147,13 @@ function paintAbilityUI(ctx: CanvasRenderingContext2D, ability: Ability, drawSta
     }
 }
 
-function findBallBuff(owner: AbilityOwner, abilityBall: AbilityBounceBall): BuffBallPhysics | undefined {
-    if (!owner.debuffs) return undefined;
-    for (let buff of owner.debuffs) {
-        if (buff.name === BUFF_NAME_BALL_PHYSICS) {
-            const ballBuff = buff as BuffBallPhysics;
-            if (ballBuff.abilityRefId === abilityBall.id) {
-                return ballBuff;
-            }
-        }
-    }
-    return undefined;
-}
-
 function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
-    const abilityBall = ability as AbilityBounceBall;
+    const abilityBall = ability as AbilityLightningBall;
     if (!findBallBuff(abilityOwner, abilityBall)) return;
     const paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
-    ctx.fillStyle = "red";
+    ctx.fillStyle = "blue";
     if (abilityOwner.faction === FACTION_ENEMY) {
-        ctx.fillStyle = "darkgray";
+        ctx.fillStyle = "darkblue";
     }
 
     ctx.beginPath();
@@ -187,100 +163,69 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
         abilityBall.radius, 0, 2 * Math.PI
     );
     ctx.fill();
-    const clientInfo: ClientInfo | undefined = getClientInfoByCharacterId(abilityOwner.id, game);
-    if (clientInfo) {
-        const paintPos = getPointPaintPosition(ctx, clientInfo.lastMousePosition, cameraPosition);
-        ctx.beginPath();
-        ctx.arc(paintPos.x, paintPos.y, 3, 0, 2 * Math.PI);
-        ctx.fill();
-    }
 }
 
 function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
-    const abilityBounceBall = ability as AbilityBounceBall;
+    const abilityBounceBall = ability as AbilityLightningBall;
     rechargeTick(abilityBounceBall, game);
 
     const ballBuff = findBallBuff(abilityOwner, abilityBounceBall);
     if (!ballBuff) return;
-    rollDirectionInfluenceTick(abilityBounceBall, abilityOwner, game);
-    speedDrecreaseTick(abilityBounceBall, abilityOwner, ballBuff, game);
-    rollTick(abilityBounceBall, abilityOwner, game);
-    damageTick(abilityBounceBall, abilityOwner, game);
+
+    updateDirectionTick(abilityBounceBall, abilityOwner, game);
+    jumpTick(abilityBounceBall, abilityOwner, ballBuff, game);
 }
 
-function damageTick(abilityBounceBall: AbilityBounceBall, abilityOwner: AbilityOwner, game: Game) {
-    if (abilityBounceBall.nextTickTime === undefined) abilityBounceBall.nextTickTime = game.state.time + abilityBounceBall.tickInterval;
-    if (abilityBounceBall.nextTickTime <= game.state.time) {
-        detectSomethingToCharacterHit(
-            game.state.map,
-            abilityOwner,
-            abilityBounceBall.radius * 2,
-            abilityOwner.faction,
-            abilityBounceBall.damage,
-            game.state.players,
-            game.state.bossStuff.bosses,
-            abilityBounceBall.id,
-            undefined,
-            game
-        );
-
-        abilityBounceBall.nextTickTime += abilityBounceBall.tickInterval;
-
-        if (abilityBounceBall.nextTickTime <= game.state.time) {
-            abilityBounceBall.nextTickTime = game.state.time + abilityBounceBall.tickInterval;
-        }
-    }
-}
-
-function rollTick(abilityBounceBall: AbilityBounceBall, abilityOwner: AbilityOwner, game: Game) {
-    const newPosition = calculateMovePosition(abilityOwner, abilityBounceBall.moveDirection, abilityBounceBall.currentSpeed, false);
-    if (isPositionBlocking(newPosition, game.state.map, game.state.idCounter, game)) {
-        abilityBounceBall.moveDirection = calculateBounceAngle(abilityOwner, abilityBounceBall.moveDirection, game);
-        abilityBounceBall.currentSpeed += abilityBounceBall.bounceBonusSpeed;
-        if (abilityBounceBall.currentSpeed > abilityBounceBall.maxSpeed) {
-            abilityBounceBall.currentSpeed = abilityBounceBall.maxSpeed;
-        }
-    } else {
-        abilityOwner.x = newPosition.x;
-        abilityOwner.y = newPosition.y;
-    }
-}
-
-function speedDrecreaseTick(abilityBounceBall: AbilityBounceBall, abilityOwner: AbilityOwner, ballBuff: BuffBallPhysics, game: Game) {
-    let tickSpeedDecrease = abilityBounceBall.currentSpeed * abilityBounceBall.speedDecrease;
-    if (tickSpeedDecrease > 0.02) tickSpeedDecrease = 0.02;
-    abilityBounceBall.currentSpeed *= (1 - abilityBounceBall.speedDecrease);
-    if (abilityBounceBall.currentSpeed <= abilityBounceBall.stopSpeed) {
-        removeCharacterDebuff(ballBuff, abilityOwner as any, game);
-        return;
-    }
-}
-
-function rollDirectionInfluenceTick(abilityBounceBall: AbilityBounceBall, abilityOwner: AbilityOwner, game: Game) {
+function updateDirectionTick(ability: AbilityLightningBall, abilityOwner: AbilityOwner, game: Game){
     const clientInfo: ClientInfo | undefined = getClientInfoByCharacterId(abilityOwner.id, game);
 
-    let mapTurnToMousPosition = { x: 0, y: 0 };
+    let moveToPosition = { x: 0, y: 0 };
     if (clientInfo) {
-        mapTurnToMousPosition = clientInfo.lastMousePosition;
+        moveToPosition = clientInfo.lastMousePosition;
     } else {
         const target = getRandomAlivePlayerCharacter(game.state.players, game.state.randomSeed);
         if (target) {
-            mapTurnToMousPosition = { x: target.x, y: target.y };
+            moveToPosition = { x: target.x, y: target.y };
         }
     }
+    ability.moveDirection = calculateDirection(abilityOwner, moveToPosition);
+}
 
-    const mouseDirection = calculateDirection(abilityOwner, mapTurnToMousPosition);
-    const angleDiff = modulo((mouseDirection - abilityBounceBall.moveDirection + Math.PI), (Math.PI * 2)) - Math.PI;
-    if (Math.abs(angleDiff) < abilityBounceBall.maxAngleChangePetTick) {
-        abilityBounceBall.moveDirection = mouseDirection;
-    } else if (angleDiff < 0) {
-        abilityBounceBall.moveDirection = abilityBounceBall.moveDirection - abilityBounceBall.maxAngleChangePetTick;
-    } else if (angleDiff > 0) {
-        abilityBounceBall.moveDirection += abilityBounceBall.maxAngleChangePetTick;
+function jumpTick(abilityBounceBall: AbilityLightningBall, abilityOwner: AbilityOwner, ballBuff: BuffBallPhysics, game: Game){
+    const newPosition = calculateMovePosition(abilityOwner, abilityBounceBall.moveDirection, abilityBounceBall.speed, false);
+    if (!isPositionBlocking(newPosition, game.state.map, game.state.idCounter, game)) {
+        abilityOwner.x = newPosition.x;
+        abilityOwner.y = newPosition.y;
+        const hitSomething = damageTick(abilityBounceBall, abilityOwner, game);
+        if(hitSomething){
+            abilityBounceBall.currentEmptyJumps = 0;
+            return;
+        }
+        abilityBounceBall.currentEmptyJumps++;
+        if(abilityBounceBall.currentEmptyJumps >= abilityBounceBall.maxEmptyJumps){
+            removeCharacterDebuff(ballBuff, abilityOwner as any, game);
+        }
+    }else{
+        removeCharacterDebuff(ballBuff, abilityOwner as any, game);
     }
 }
 
-function rechargeTick(abilityBounceBall: AbilityBounceBall, game: Game) {
+function damageTick(abilityBounceBall: AbilityLightningBall, abilityOwner: AbilityOwner, game: Game): boolean {
+    return detectSomethingToCharacterHit(
+        game.state.map,
+        abilityOwner,
+        abilityBounceBall.radius * 2,
+        abilityOwner.faction,
+        abilityBounceBall.damage,
+        game.state.players,
+        game.state.bossStuff.bosses,
+        abilityBounceBall.id,
+        undefined,
+        game
+    );
+}
+
+function rechargeTick(abilityBounceBall: AbilityLightningBall, game: Game) {
     if (abilityBounceBall.nextRechargeTime != undefined && abilityBounceBall.nextRechargeTime <= game.state.time) {
         abilityBounceBall.currentCharges++;
         if (abilityBounceBall.currentCharges < abilityBounceBall.maxCharges) {
@@ -292,19 +237,17 @@ function rechargeTick(abilityBounceBall: AbilityBounceBall, game: Game) {
 }
 
 function paintAbilityStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
-    const abilityBounceBall = ability as AbilityBounceBall;
+    const abilityBounceBall = ability as AbilityLightningBall;
     const textLines: string[] = getAbilityNameUiText(ability);
     textLines.push(
         `Key: ${playerInputBindingToDisplayValue(abilityBounceBall.playerInputBinding!, game)}`,
-        `Click to become a ball and roll towards click direction.`,
-        `Bounces of terrain. Each bounce increases speed.`,
-        `Speed decreases over time.`,
+        `Click to become a lightning ball.`,
+        `Jump in mouse direction from enemy to enemy. `,
+        `Ends if wall hit or no enemy in range.`,
         "Ability stats:",
         `Damage: ${abilityBounceBall.damage}`,
-        `Bounce Bonus Speed: ${abilityBounceBall.bounceBonusSpeed}`,
-        `Angle Change per Second: ${(abilityBounceBall.maxAngleChangePetTick * 60 / Math.PI / 2 * 360).toFixed(0)}°`,
     );
-    pushAbilityUpgradesUiTexts(ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS, textLines, ability);
+    pushAbilityUpgradesUiTexts(ABILITY_LIGHTNING_BALL_UPGRADE_FUNCTIONS, textLines, ability);
 
     return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
 }

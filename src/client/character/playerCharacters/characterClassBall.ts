@@ -9,7 +9,8 @@ import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters.js";
 import { deepCopy, getNextId } from "../../game.js";
 import { resetCharacter } from "../character.js";
 import { CHARACTER_TYPE_BOSS_ENEMY, setAbilityToBossLevel } from "../enemy/bossEnemy.js";
-import { ABILITY_NAME_BOUNCE_BALL } from "../../ability/bounceBall/abilityBounceBall.js";
+import { ABILITY_NAME_BOUNCE_BALL } from "../../ability/ball/abilityBounceBall.js";
+import { ABILITY_NAME_LIGHTNING_BALL } from "../../ability/ball/abilityLightningBall.js";
 
 export const CHARACTER_CLASS_BALL = "Ball (work in progress)";
 
@@ -28,7 +29,10 @@ function changeCharacterToBallClass(
     character.type = ABILITY_LEVELING_CHARACTER;
     character.characterClass = CHARACTER_CLASS_BALL;
     addAbilityToCharacter(character, createAbility(ABILITY_NAME_BOUNCE_BALL, idCounter, true, true, "ability1"));
-    addAbilityToCharacter(character, createAbilityHpRegen(idCounter));
+    addAbilityToCharacter(character, createAbility(ABILITY_NAME_LIGHTNING_BALL, idCounter, true, true, "ability2"));
+    const hpRegen = createAbilityHpRegen(idCounter);
+    hpRegen.amount *= 5;
+    addAbilityToCharacter(character, hpRegen);
 }
 
 function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: number, spawn: Position, game: Game): Character {

@@ -28,7 +28,8 @@ import { addAbilityPetPainter } from "./petTamer/abilityPetPainter.js"
 import { addAbilityPetDash } from "./petTamer/abilityPetDash.js"
 import { UpgradeOption, UpgradeOptionAndProbability } from "../character/upgrade.js"
 import { getPointPaintPosition } from "../gamePaint.js"
-import { addAbilityBounceBall } from "./bounceBall/abilityBounceBall.js"
+import { addAbilityBounceBall } from "./ball/abilityBounceBall.js"
+import { addAbilityLightningBall } from "./ball/abilityLightningBall.js"
 
 export type Ability = {
     id: number,
@@ -122,6 +123,7 @@ export function onDomLoadSetAbilitiesFunctions() {
     addAbilityPetPainter();
     addAbilityPetDash();
     addAbilityBounceBall();
+    addAbilityLightningBall();
 }
 
 export function addAbilityToCharacter(character: Character, ability: Ability) {
@@ -327,8 +329,9 @@ export function detectSomethingToCharacterHit(
     abilityRefId: number | undefined,
     onHitAndReturnIfContinue: ((target: Character) => boolean) | undefined,
     game: Game,
-) {
+): boolean {
     const maxEnemySizeEstimate = 40;
+    let hitSomething = false;
 
     const characters = determineCharactersInDistance(position, map, players, bosses, size + maxEnemySizeEstimate);
     for (let charIt = characters.length - 1; charIt >= 0; charIt--) {
@@ -337,12 +340,14 @@ export function detectSomethingToCharacterHit(
         const distance = calculateDistance(c, position);
         if (distance < size / 2 + c.width / 2) {
             characterTakeDamage(c, damage, game, abilityRefId);
+            hitSomething = true;
             if (onHitAndReturnIfContinue) {
                 const continueHitDetection = onHitAndReturnIfContinue(c);
                 if (!continueHitDetection) break;
             }
         }
     }
+    return hitSomething;
 }
 
 export function paintUiForAbilities(ctx: CanvasRenderingContext2D, game: Game) {

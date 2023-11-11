@@ -1,19 +1,15 @@
 current tasks:
 - new class:
     - impl:
-        - create ability lightning ball
-            - create a new buff:
-                - give player a buff which changes movement behaviour, one buff type for all ball movement changes
+        - ability lightning ball
+            - try out different ideas. Currently it does not feel right
         - bounce ball upgrades
             - think about more "interesting" upgrades
-    - Ball
-        - second idea:
-            - lightning ball
-                - ability to become a ball. Jumping from enemy to close enemy as long as enemy
-                in direction of mouse and close to it exists. Each jump does damage.
-        - do both ideas
-        
+- enemy on death put back to spawn position. So they tick in own chunk        
 
+refactor possibilities:
+- paint UI charges (reduce code duplication)
+- createAbilityBossUpgradeOptions (reduce code duplciation)
 
 possible future tasks: (only keep 5)
 - improvement: getChunksTouchingLine2 does not work, still needs to improve
