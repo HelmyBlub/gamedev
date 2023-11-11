@@ -1,18 +1,12 @@
 current tasks:
 - new class:
-    - mouseUpdate currenlty happening constantly. Needs to be able to determine when active and not even when snipe and bounce ball are together
     - impl:
-        - bounce ball upgrades
         - create ability lightning ball
             - create a new buff:
                 - give player a buff which changes movement behaviour, one buff type for all ball movement changes
+        - bounce ball upgrades
+            - think about more "interesting" upgrades
     - Ball
-        - first ideas: 
-            - ability to become a ball moving forward. ball immune to damage.
-                does damage to hit enemies. Ball rolls forward,
-                direction can be slightly influence by mouse.
-                ball loses speed over time. once speed dropts to 0 ball mode ends.
-                ball ganes speed by bouncing of wall
         - second idea:
             - lightning ball
                 - ability to become a ball. Jumping from enemy to close enemy as long as enemy

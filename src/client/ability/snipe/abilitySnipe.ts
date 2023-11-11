@@ -1,7 +1,7 @@
 import { characterTakeDamage, getCharactersTouchingLine, getRandomAlivePlayerCharacter } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
 import { UpgradeOptionAndProbability, UpgradeOption, AbilityUpgradeOption } from "../../character/upgrade.js";
-import { calcNewPositionMovedInDirection, calculateDirection, getClientInfoByCharacterId, getNextId } from "../../game.js";
+import { autoSendMousePositionHandler, calcNewPositionMovedInDirection, calculateDirection, getClientInfoByCharacterId, getNextId } from "../../game.js";
 import { Position, Game, IdCounter, ClientInfo, FACTION_ENEMY } from "../../gameModel.js";
 import { GAME_IMAGES } from "../../imageLoad.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, findAbilityById } from "../ability.js";
@@ -394,11 +394,8 @@ function deleteAbilityObjectSnipe(abilityObject: AbilityObject, game: Game) {
 
 function castSnipe(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isInputdown: boolean, game: Game) {
     const abilitySnipe = ability as AbilitySnipe;
-    const clientInfo: ClientInfo = getClientInfoByCharacterId(abilityOwner.id, game)!;
     abilitySnipe.shotNextAllowedTime = isInputdown;
-
-    if (clientInfo.id === game.multiplayer.myClientId) game.multiplayer.autosendMousePosition.active = isInputdown;
-    clientInfo.lastMousePosition = castPosition;
+    autoSendMousePositionHandler(abilityOwner.id, ability.id.toString(), isInputdown, castPosition, game);
     if (abilitySnipe.currentCharges > 0 && abilitySnipe.shotNextAllowedTime && game.state.time >= abilitySnipe.nextAllowedShotTime) {
         createAbilityObjectSnipeInitialPlayerTriggered(abilityOwner, abilitySnipe, castPosition, game);
     }

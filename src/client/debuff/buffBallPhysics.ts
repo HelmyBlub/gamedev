@@ -1,4 +1,5 @@
 import { Character } from "../character/characterModel.js";
+import { autoSendMousePositionHandler } from "../game.js";
 import { Game } from "../gameModel.js";
 import { DEBUFFS_FUNCTIONS, Debuff } from "./debuff.js";
 
@@ -25,8 +26,10 @@ export function createBuffBallPhysics(
 
 function applyBuffEffect(debuff: Debuff, targetCharacter: Character, game: Game) {
     targetCharacter.isMoveTickDisabled = true;
+    autoSendMousePositionHandler(targetCharacter.id, debuff.name, true, undefined, game);
 }
 
 function removeBuffEffect(debuff: Debuff, targetCharacter: Character, game: Game) {
     targetCharacter.isMoveTickDisabled = false;
+    autoSendMousePositionHandler(targetCharacter.id, debuff.name, false, undefined, game);
 }

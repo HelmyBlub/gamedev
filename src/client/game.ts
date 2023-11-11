@@ -38,7 +38,7 @@ export function calculateDirection(startPos: Position, targetPos: Position): num
     return direction;
 }
 
-export function modulo(number: number, mod: number): number{
+export function modulo(number: number, mod: number): number {
     return ((number % mod) + mod) % mod;
 }
 
@@ -107,7 +107,7 @@ export function gameInit(game: Game) {
     resetPastCharacters(game);
 }
 
-export function resetGameNonStateData(game: Game){
+export function resetGameNonStateData(game: Game) {
     game.performance = {};
     game.UI.displayTextData = [];
     game.multiplayer.autosendMousePosition.nextTime = 0;
@@ -406,6 +406,25 @@ export function saveCharacterAsPastCharacter(character: Character, game: Game) {
     }
 }
 
+export function autoSendMousePositionHandler(ownerId: number, identifier: string, activateAutoSend: boolean, castPosition: Position | undefined, game: Game) {
+    const clientInfo = getClientInfoByCharacterId(ownerId, game);
+    if (!clientInfo) return;
+    if (clientInfo.id === game.multiplayer.myClientId) {
+        const sendForOwners = game.multiplayer.autosendMousePosition.sendForOwners;
+        const alreadyAddedIndex = sendForOwners.findIndex((e) => e === identifier);
+        if (activateAutoSend) {
+            if (alreadyAddedIndex === -1) {
+                sendForOwners.push(identifier);
+            }
+        } else {
+            if (alreadyAddedIndex !== -1) {
+                sendForOwners.splice(alreadyAddedIndex, 1);
+            }
+        }
+    }
+    if (castPosition) clientInfo.lastMousePosition = castPosition;
+}
+
 function resetPastCharacters(game: Game) {
     for (let character of game.state.pastPlayerCharacters.characters) {
         if (character) resetCharacter(character);
@@ -500,7 +519,7 @@ function tick(gameTimePassed: number, game: Game) {
 
         tickAbilityObjects(game.state.abilityObjects, game);
 
-        if (gameEndedCheck(game)) endGame(game);        
+        if (gameEndedCheck(game)) endGame(game);
         if (game.state.restartAfterTick) gameRestart(game);
 
         garbageCollectPathingCache(game.performance.pathingCache, game.state.time, game);
@@ -508,14 +527,14 @@ function tick(gameTimePassed: number, game: Game) {
     }
 }
 
-function saveStates(game: Game){
-    if(game.debug.activateSaveStates && !game.multiplayer.websocket){
+function saveStates(game: Game) {
+    if (game.debug.activateSaveStates && !game.multiplayer.websocket) {
         const autoSaveStates = game.testing.saveStates.autoSaves;
-        if(autoSaveStates.nextSaveStateTime === undefined || autoSaveStates.nextSaveStateTime <= game.state.time){
+        if (autoSaveStates.nextSaveStateTime === undefined || autoSaveStates.nextSaveStateTime <= game.state.time) {
             autoSaveStates.nextSaveStateTime = game.state.time + autoSaveStates.saveInterval;
             autoSaveStates.states.push(JSON.stringify(game.state));
             autoSaveStates.statesRecordData.push(JSON.stringify(game.testing.record?.data));
-            if(autoSaveStates.states.length > autoSaveStates.maxNumberStates){
+            if (autoSaveStates.states.length > autoSaveStates.maxNumberStates) {
                 autoSaveStates.states.shift();
                 autoSaveStates.statesRecordData.shift();
             }
@@ -535,7 +554,7 @@ function doStuff(game: Game) {
 
 function autoSendMyMousePosition(game: Game) {
     if (game.testing.replay) return;
-    if (!game.multiplayer.autosendMousePosition.active) return;
+    if (game.multiplayer.autosendMousePosition.sendForOwners.length === 0) return;
     if (game.multiplayer.autosendMousePosition.nextTime <= game.state.time) {
         const cameraPosition = getCameraPosition(game);
         const castPosition = {

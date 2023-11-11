@@ -98,10 +98,7 @@ function castBounceBall(abilityOwner: AbilityOwner, ability: Ability, castPositi
         abilityBounceBall.nextRechargeTime = game.state.time + abilityBounceBall.baseRechargeTime;
     }
     const clientInfo: ClientInfo | undefined = getClientInfoByCharacterId(abilityOwner.id, game);
-    if(clientInfo){
-        if (clientInfo.id === game.multiplayer.myClientId) game.multiplayer.autosendMousePosition.active = isKeydown;
-        clientInfo.lastMousePosition = castPosition;
-    }
+    if (clientInfo) clientInfo.lastMousePosition = castPosition;
 }
 
 function createAbilityBossSpeedBoostUpgradeOptions(ability: Ability): UpgradeOptionAndProbability[] {
@@ -191,7 +188,7 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
     );
     ctx.fill();
     const clientInfo: ClientInfo | undefined = getClientInfoByCharacterId(abilityOwner.id, game);
-    if(clientInfo){
+    if (clientInfo) {
         const paintPos = getPointPaintPosition(ctx, clientInfo.lastMousePosition, cameraPosition);
         ctx.beginPath();
         ctx.arc(paintPos.x, paintPos.y, 3, 0, 2 * Math.PI);
@@ -202,7 +199,7 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
 function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     const abilityBounceBall = ability as AbilityBounceBall;
     rechargeTick(abilityBounceBall, game);
-    
+
     const ballBuff = findBallBuff(abilityOwner, abilityBounceBall);
     if (!ballBuff) return;
     rollDirectionInfluenceTick(abilityBounceBall, abilityOwner, game);
@@ -211,7 +208,7 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     damageTick(abilityBounceBall, abilityOwner, game);
 }
 
-function damageTick(abilityBounceBall: AbilityBounceBall, abilityOwner: AbilityOwner, game: Game){
+function damageTick(abilityBounceBall: AbilityBounceBall, abilityOwner: AbilityOwner, game: Game) {
     if (abilityBounceBall.nextTickTime === undefined) abilityBounceBall.nextTickTime = game.state.time + abilityBounceBall.tickInterval;
     if (abilityBounceBall.nextTickTime <= game.state.time) {
         detectSomethingToCharacterHit(
@@ -235,7 +232,7 @@ function damageTick(abilityBounceBall: AbilityBounceBall, abilityOwner: AbilityO
     }
 }
 
-function rollTick(abilityBounceBall: AbilityBounceBall, abilityOwner: AbilityOwner, game: Game){
+function rollTick(abilityBounceBall: AbilityBounceBall, abilityOwner: AbilityOwner, game: Game) {
     const newPosition = calculateMovePosition(abilityOwner, abilityBounceBall.moveDirection, abilityBounceBall.currentSpeed, false);
     if (isPositionBlocking(newPosition, game.state.map, game.state.idCounter, game)) {
         abilityBounceBall.moveDirection = calculateBounceAngle(abilityOwner, abilityBounceBall.moveDirection, game);
@@ -249,7 +246,7 @@ function rollTick(abilityBounceBall: AbilityBounceBall, abilityOwner: AbilityOwn
     }
 }
 
-function speedDrecreaseTick(abilityBounceBall: AbilityBounceBall, abilityOwner: AbilityOwner, ballBuff: BuffBallPhysics, game: Game){
+function speedDrecreaseTick(abilityBounceBall: AbilityBounceBall, abilityOwner: AbilityOwner, ballBuff: BuffBallPhysics, game: Game) {
     let tickSpeedDecrease = abilityBounceBall.currentSpeed * abilityBounceBall.speedDecrease;
     if (tickSpeedDecrease > 0.02) tickSpeedDecrease = 0.02;
     abilityBounceBall.currentSpeed *= (1 - abilityBounceBall.speedDecrease);
@@ -259,7 +256,7 @@ function speedDrecreaseTick(abilityBounceBall: AbilityBounceBall, abilityOwner: 
     }
 }
 
-function rollDirectionInfluenceTick(abilityBounceBall: AbilityBounceBall, abilityOwner: AbilityOwner, game: Game){
+function rollDirectionInfluenceTick(abilityBounceBall: AbilityBounceBall, abilityOwner: AbilityOwner, game: Game) {
     const clientInfo: ClientInfo | undefined = getClientInfoByCharacterId(abilityOwner.id, game);
 
     let mapTurnToMousPosition = { x: 0, y: 0 };
@@ -274,21 +271,21 @@ function rollDirectionInfluenceTick(abilityBounceBall: AbilityBounceBall, abilit
 
     const mouseDirection = calculateDirection(abilityOwner, mapTurnToMousPosition);
     const angleDiff = modulo((mouseDirection - abilityBounceBall.moveDirection + Math.PI), (Math.PI * 2)) - Math.PI;
-    if(Math.abs(angleDiff) < abilityBounceBall.maxAngleChangePetTick){
+    if (Math.abs(angleDiff) < abilityBounceBall.maxAngleChangePetTick) {
         abilityBounceBall.moveDirection = mouseDirection;
-    }else if(angleDiff < 0){
+    } else if (angleDiff < 0) {
         abilityBounceBall.moveDirection = abilityBounceBall.moveDirection - abilityBounceBall.maxAngleChangePetTick;
-    }else if(angleDiff > 0 ){
+    } else if (angleDiff > 0) {
         abilityBounceBall.moveDirection += abilityBounceBall.maxAngleChangePetTick;
-    }    
+    }
 }
 
-function rechargeTick(abilityBounceBall: AbilityBounceBall, game: Game){
+function rechargeTick(abilityBounceBall: AbilityBounceBall, game: Game) {
     if (abilityBounceBall.nextRechargeTime != undefined && abilityBounceBall.nextRechargeTime <= game.state.time) {
         abilityBounceBall.currentCharges++;
-        if(abilityBounceBall.currentCharges < abilityBounceBall.maxCharges){
-            abilityBounceBall.nextRechargeTime =  game.state.time + abilityBounceBall.baseRechargeTime;
-        }else{
+        if (abilityBounceBall.currentCharges < abilityBounceBall.maxCharges) {
+            abilityBounceBall.nextRechargeTime = game.state.time + abilityBounceBall.baseRechargeTime;
+        } else {
             abilityBounceBall.nextRechargeTime = undefined;
         }
     }

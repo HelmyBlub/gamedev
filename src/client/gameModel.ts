@@ -180,7 +180,7 @@ export type Multiplayer = {
     timePassedWithoutSeverUpdate: number,
     disableLocalStorage?: boolean,
     autosendMousePosition: {
-        active: boolean,
+        sendForOwners: string[],
         interval: number,
         nextTime: number,
     }
@@ -284,7 +284,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             intentionalDisconnect: false,
             timePassedWithoutSeverUpdate: 0,
             autosendMousePosition: {
-                active: false,
+                sendForOwners: [],
                 interval: 100,
                 nextTime: 0,
             }
