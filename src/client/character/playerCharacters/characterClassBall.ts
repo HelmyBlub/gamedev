@@ -11,6 +11,7 @@ import { resetCharacter } from "../character.js";
 import { CHARACTER_TYPE_BOSS_ENEMY, setAbilityToBossLevel } from "../enemy/bossEnemy.js";
 import { ABILITY_NAME_BOUNCE_BALL } from "../../ability/ball/abilityBounceBall.js";
 import { ABILITY_NAME_LIGHTNING_BALL } from "../../ability/ball/abilityLightningBall.js";
+import { ABILITY_NAME_LIGHTNING_STRIKES } from "../../ability/abilityLightningStrikes.js";
 
 export const CHARACTER_CLASS_BALL = "Ball (work in progress)";
 

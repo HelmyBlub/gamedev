@@ -1,10 +1,13 @@
 current tasks:
+- ability lightningStirkes 
+    - add as upgrade to lightning ball
 - new class:
     - impl:
         - ability lightning ball
             - upgrades:
                 - random bonus stat upgrade: +bounceSpeed,+angle,+speedLoss,+maxSpeed, -rechargeTime, +charges
                 - lighning buff
+                    - grows stronger with distance?
                     - damages nearby enemies in intervals
                 - lightning debuff
                     - enemy takes more damage, speed up bounce ball, stackable
@@ -16,10 +19,11 @@ current tasks:
                 - debuff
                     - enemy takes more damage, colldown reduce for lightning ball
 
-- enemy on death put back to spawn position. So they tick in own chunk        
+- enemy on death put back to spawn position. So they tick in own chunk
 - having multiple ball abilities? does not work
 
 refactor possibilities:
+- ability creation: checks and scales for bosses, enemy or player by itself
 - paint UI charges (reduce code duplication)
 - createAbilityBossUpgradeOptions (reduce code duplciation)
 

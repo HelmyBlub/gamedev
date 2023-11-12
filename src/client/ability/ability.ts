@@ -30,6 +30,7 @@ import { UpgradeOption, UpgradeOptionAndProbability } from "../character/upgrade
 import { getPointPaintPosition } from "../gamePaint.js"
 import { addAbilityBounceBall } from "./ball/abilityBounceBall.js"
 import { addAbilityLightningBall } from "./ball/abilityLightningBall.js"
+import { addAbilityLightningStrikes } from "./abilityLightningStrikes.js"
 
 export type Ability = {
     id: number,
@@ -124,6 +125,7 @@ export function onDomLoadSetAbilitiesFunctions() {
     addAbilityPetDash();
     addAbilityBounceBall();
     addAbilityLightningBall();
+    addAbilityLightningStrikes();
 }
 
 export function addAbilityToCharacter(character: Character, ability: Ability) {
