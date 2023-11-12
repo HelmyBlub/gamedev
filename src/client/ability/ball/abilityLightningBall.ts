@@ -20,8 +20,6 @@ export type AbilityLightningBall = Ability & {
     radius: number,
     moveDirection: number,
     speed: number,
-    maxEmptyJumps: number,
-    currentEmptyJumps: number,
     tickInterval: number,
     nextTickTime?: number,
 }
@@ -64,9 +62,7 @@ export function createAbilityLightningBall(
         baseRechargeTime: 1000,
         currentCharges: 2,
         maxCharges: 2,
-        maxEmptyJumps: 5,
-        currentEmptyJumps: 0,
-        speed: 20,
+        speed: 60,
         upgrades: {},
         playerInputBinding: playerInputBinding,
         tradable: true,
@@ -81,7 +77,6 @@ function castBounceBall(abilityOwner: AbilityOwner, ability: Ability, castPositi
     applyDebuff(buffBallPhyscis, abilityOwner as any, game);
     abilityBounceBall.moveDirection = calculateDirection(abilityOwner, castPosition);
     abilityBounceBall.currentCharges--;
-    abilityBounceBall.currentEmptyJumps = 0;
 
     if (abilityBounceBall.nextRechargeTime === undefined) {
         abilityBounceBall.nextRechargeTime = game.state.time + abilityBounceBall.baseRechargeTime;
@@ -172,39 +167,20 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     const ballBuff = findBallBuff(abilityOwner, abilityBounceBall);
     if (!ballBuff) return;
 
-    updateDirectionTick(abilityBounceBall, abilityOwner, game);
-    jumpTick(abilityBounceBall, abilityOwner, ballBuff, game);
-}
-
-function updateDirectionTick(ability: AbilityLightningBall, abilityOwner: AbilityOwner, game: Game){
-    const clientInfo: ClientInfo | undefined = getClientInfoByCharacterId(abilityOwner.id, game);
-
-    let moveToPosition = { x: 0, y: 0 };
-    if (clientInfo) {
-        moveToPosition = clientInfo.lastMousePosition;
-    } else {
-        const target = getRandomAlivePlayerCharacter(game.state.players, game.state.randomSeed);
-        if (target) {
-            moveToPosition = { x: target.x, y: target.y };
-        }
+    const maxJumpDistance = game.state.map.tileSize / 3;
+    const jumpTicks = Math.max(1, Math.round(abilityBounceBall.speed / maxJumpDistance));
+    const tickDistnace = abilityBounceBall.speed / jumpTicks;
+    for(let i = 0; i < jumpTicks; i++){
+        jumpTick(abilityBounceBall, abilityOwner, ballBuff, tickDistnace, game);
     }
-    ability.moveDirection = calculateDirection(abilityOwner, moveToPosition);
 }
 
-function jumpTick(abilityBounceBall: AbilityLightningBall, abilityOwner: AbilityOwner, ballBuff: BuffBallPhysics, game: Game){
-    const newPosition = calculateMovePosition(abilityOwner, abilityBounceBall.moveDirection, abilityBounceBall.speed, false);
+function jumpTick(abilityBounceBall: AbilityLightningBall, abilityOwner: AbilityOwner, ballBuff: BuffBallPhysics, moveDistance: number, game: Game){
+    const newPosition = calculateMovePosition(abilityOwner, abilityBounceBall.moveDirection, moveDistance, false);
     if (!isPositionBlocking(newPosition, game.state.map, game.state.idCounter, game)) {
         abilityOwner.x = newPosition.x;
         abilityOwner.y = newPosition.y;
-        const hitSomething = damageTick(abilityBounceBall, abilityOwner, game);
-        if(hitSomething){
-            abilityBounceBall.currentEmptyJumps = 0;
-            return;
-        }
-        abilityBounceBall.currentEmptyJumps++;
-        if(abilityBounceBall.currentEmptyJumps >= abilityBounceBall.maxEmptyJumps){
-            removeCharacterDebuff(ballBuff, abilityOwner as any, game);
-        }
+        damageTick(abilityBounceBall, abilityOwner, game);
     }else{
         removeCharacterDebuff(ballBuff, abilityOwner as any, game);
     }
@@ -242,8 +218,8 @@ function paintAbilityStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, dr
     textLines.push(
         `Key: ${playerInputBindingToDisplayValue(abilityBounceBall.playerInputBinding!, game)}`,
         `Click to become a lightning ball.`,
-        `Jump in mouse direction from enemy to enemy. `,
-        `Ends if wall hit or no enemy in range.`,
+        `Move with lightning speed.`,
+        `Ends if it hits a wall.`,
         "Ability stats:",
         `Damage: ${abilityBounceBall.damage}`,
     );

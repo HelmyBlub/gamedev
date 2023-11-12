@@ -1,7 +1,7 @@
 import { getRandomAlivePlayerCharacter } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
-import { BUFF_NAME_BALL_PHYSICS, BuffBallPhysics, createBuffBallPhysics, findBallBuff } from "../../debuff/buffBallPhysics.js";
+import { BuffBallPhysics, createBuffBallPhysics, findBallBuff } from "../../debuff/buffBallPhysics.js";
 import { applyDebuff, removeCharacterDebuff } from "../../debuff/debuff.js";
 import { calculateDirection, getClientInfoByCharacterId, getNextId, modulo } from "../../game.js";
 import { Position, Game, IdCounter, FACTION_ENEMY, ClientInfo } from "../../gameModel.js";
@@ -9,8 +9,9 @@ import { getPointPaintPosition } from "../../gamePaint.js";
 import { calculateBounceAngle, calculateMovePosition, isPositionBlocking } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, detectSomethingToCharacterHit, getAbilityNameUiText, paintDefaultAbilityStatsUI } from "../ability.js";
-import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
+import { AbilityUpgradesFunctions, getAbilityUpgradesDamageFactor, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
 import { addAbilitySpeedBoostUpgradeAngleChange } from "./abilityBounceBallUpgradeAngle.js";
+import { abilityBounceBallUpgradeBounceBonusDamageAddBounce, abilityBounceBallUpgradeBounceBonusDamageResetBounces, addAbilitySpeedBoostUpgradeBounceBonusDamage } from "./abilityBounceBallUpgradeBounceBonusDamage.js";
 import { addAbilitySpeedBoostUpgradeSpeed } from "./abilityBounceBallUpgradeBounceBonusSpeed.js";
 
 export type AbilityBounceBall = Ability & {
@@ -26,10 +27,13 @@ export type AbilityBounceBall = Ability & {
     maxSpeed: number,
     stopSpeed: number,
     bounceBonusSpeed: number,
-    speedDecrease: number,
+    startSpeedDecrease: number,
+    speedDecreaseIncrease: number,
+    currentSpeedDecrease: number,
     tickInterval: number,
     maxAngleChangePetTick: number,
     nextTickTime?: number,
+    rolledDistanceAfterLastDamageTick: number,
 }
 
 export const ABILITY_NAME_BOUNCE_BALL = "Bounce Ball";
@@ -53,6 +57,7 @@ export function addAbilityBounceBall() {
     };
     addAbilitySpeedBoostUpgradeSpeed();
     addAbilitySpeedBoostUpgradeAngleChange();
+    addAbilitySpeedBoostUpgradeBounceBonusDamage();
 }
 
 export function createAbilityBounceBall(
@@ -71,18 +76,27 @@ export function createAbilityBounceBall(
         moveDirection: 0,
         currentSpeed: 0,
         bounceBonusSpeed: 1,
-        maxSpeed: 20,
+        maxSpeed: 40,
         stopSpeed: 2,
-        speedDecrease: 0.005,
+        startSpeedDecrease: 0.002,
+        currentSpeedDecrease: 0.002,
+        speedDecreaseIncrease: 0.00001,
         startSpeed: 6,
         baseRechargeTime: 4000,
         currentCharges: 2,
         maxCharges: 2,
         maxAngleChangePetTick: 0.01,
+        rolledDistanceAfterLastDamageTick: 0,
         upgrades: {},
         playerInputBinding: playerInputBinding,
         tradable: true,
     };
+}
+
+export function getAbilityBounceBallDamage(abilityBounceBall: AbilityBounceBall) {
+    let damage = abilityBounceBall.damage;
+    damage *= getAbilityUpgradesDamageFactor(ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS, abilityBounceBall, true);
+    return damage;
 }
 
 function castBounceBall(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isKeydown: boolean, game: Game) {
@@ -91,9 +105,13 @@ function castBounceBall(abilityOwner: AbilityOwner, ability: Ability, castPositi
     if (abilityBounceBall.currentCharges <= 0) return;
     const buffBallPhyscis = createBuffBallPhysics(ability.id);
     applyDebuff(buffBallPhyscis, abilityOwner as any, game);
-    abilityBounceBall.currentSpeed = abilityBounceBall.startSpeed;
+    abilityBounceBallUpgradeBounceBonusDamageResetBounces(abilityBounceBall)
+    if (abilityBounceBall.currentSpeed < abilityBounceBall.startSpeed) {
+        abilityBounceBall.currentSpeed = abilityBounceBall.startSpeed;
+    }
     abilityBounceBall.moveDirection = calculateDirection(abilityOwner, castPosition);
     abilityBounceBall.currentCharges--;
+    abilityBounceBall.currentSpeedDecrease = abilityBounceBall.startSpeedDecrease;
     if (abilityBounceBall.nextRechargeTime === undefined) {
         abilityBounceBall.nextRechargeTime = game.state.time + abilityBounceBall.baseRechargeTime;
     }
@@ -184,19 +202,27 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     if (!ballBuff) return;
     rollDirectionInfluenceTick(abilityBounceBall, abilityOwner, game);
     speedDrecreaseTick(abilityBounceBall, abilityOwner, ballBuff, game);
-    rollTick(abilityBounceBall, abilityOwner, game);
-    damageTick(abilityBounceBall, abilityOwner, game);
+    const maxRollTickDistance = game.state.map.tileSize / 2;
+    const rollTicks = Math.max(1, Math.round(abilityBounceBall.currentSpeed / maxRollTickDistance));
+    const rollTickDistance = abilityBounceBall.currentSpeed / rollTicks;
+    for (let i = 0; i < rollTicks; i++) {
+        rollTick(abilityBounceBall, abilityOwner, rollTickDistance, game);
+        damageTick(abilityBounceBall, abilityOwner, game);
+    }
 }
 
 function damageTick(abilityBounceBall: AbilityBounceBall, abilityOwner: AbilityOwner, game: Game) {
     if (abilityBounceBall.nextTickTime === undefined) abilityBounceBall.nextTickTime = game.state.time + abilityBounceBall.tickInterval;
-    if (abilityBounceBall.nextTickTime <= game.state.time) {
+    if (abilityBounceBall.nextTickTime <= game.state.time
+         || abilityBounceBall.rolledDistanceAfterLastDamageTick > abilityBounceBall.radius * 1.5) {
+        abilityBounceBall.rolledDistanceAfterLastDamageTick = 0;
+        const damage = getAbilityBounceBallDamage(abilityBounceBall);
         detectSomethingToCharacterHit(
             game.state.map,
             abilityOwner,
             abilityBounceBall.radius * 2,
             abilityOwner.faction,
-            abilityBounceBall.damage,
+            damage,
             game.state.players,
             game.state.bossStuff.bosses,
             abilityBounceBall.id,
@@ -212,24 +238,26 @@ function damageTick(abilityBounceBall: AbilityBounceBall, abilityOwner: AbilityO
     }
 }
 
-function rollTick(abilityBounceBall: AbilityBounceBall, abilityOwner: AbilityOwner, game: Game) {
-    const newPosition = calculateMovePosition(abilityOwner, abilityBounceBall.moveDirection, abilityBounceBall.currentSpeed, false);
+function rollTick(abilityBounceBall: AbilityBounceBall, abilityOwner: AbilityOwner, moveDistance: number, game: Game) {
+    const newPosition = calculateMovePosition(abilityOwner, abilityBounceBall.moveDirection, moveDistance, false);
     if (isPositionBlocking(newPosition, game.state.map, game.state.idCounter, game)) {
         abilityBounceBall.moveDirection = calculateBounceAngle(abilityOwner, abilityBounceBall.moveDirection, game);
         abilityBounceBall.currentSpeed += abilityBounceBall.bounceBonusSpeed;
+        abilityBounceBallUpgradeBounceBonusDamageAddBounce(abilityBounceBall);
         if (abilityBounceBall.currentSpeed > abilityBounceBall.maxSpeed) {
             abilityBounceBall.currentSpeed = abilityBounceBall.maxSpeed;
         }
     } else {
+        abilityBounceBall.rolledDistanceAfterLastDamageTick += moveDistance;
         abilityOwner.x = newPosition.x;
         abilityOwner.y = newPosition.y;
     }
 }
 
 function speedDrecreaseTick(abilityBounceBall: AbilityBounceBall, abilityOwner: AbilityOwner, ballBuff: BuffBallPhysics, game: Game) {
-    let tickSpeedDecrease = abilityBounceBall.currentSpeed * abilityBounceBall.speedDecrease;
-    if (tickSpeedDecrease > 0.02) tickSpeedDecrease = 0.02;
-    abilityBounceBall.currentSpeed *= (1 - abilityBounceBall.speedDecrease);
+    let tickSpeedDecrease = abilityBounceBall.currentSpeed * abilityBounceBall.currentSpeedDecrease;
+    abilityBounceBall.currentSpeed -= tickSpeedDecrease;
+    abilityBounceBall.currentSpeedDecrease += abilityBounceBall.speedDecreaseIncrease;
     if (abilityBounceBall.currentSpeed <= abilityBounceBall.stopSpeed) {
         removeCharacterDebuff(ballBuff, abilityOwner as any, game);
         return;

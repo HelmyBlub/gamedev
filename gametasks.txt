@@ -2,10 +2,22 @@ current tasks:
 - new class:
     - impl:
         - ability lightning ball
-            - try out different ideas. Currently it does not feel right
-        - bounce ball upgrades
+            - upgrades:
+                - random bonus stat upgrade: +bounceSpeed,+angle,+speedLoss,+maxSpeed, -rechargeTime, +charges
+                - lighning buff
+                    - damages nearby enemies in intervals
+                - lightning debuff
+                    - enemy takes more damage, speed up bounce ball, stackable
+        - bounce ball
             - think about more "interesting" upgrades
+                - each bounce increases damage
+                - temporary buff enemies hit burn, runs for some time after bounce ball finishes
+                - random bonus stat upgrade: +bounceSpeed,+angle,+speedLoss,+maxSpeed, -rechargeTime, +charges
+                - debuff
+                    - enemy takes more damage, colldown reduce for lightning ball
+
 - enemy on death put back to spawn position. So they tick in own chunk        
+- having multiple ball abilities? does not work
 
 refactor possibilities:
 - paint UI charges (reduce code duplication)

@@ -3,7 +3,7 @@ import { Ability } from "../ability.js";
 import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrade.js";
 import { ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS, AbilityBounceBall } from "./abilityBounceBall.js";
 
-type AbilityBounceBallUpgradeBounceBonusSpeed = AbilityUpgrade & {
+type AbilityBounceBallUpgradeBonusAngle = AbilityUpgrade & {
 }
 const BONUS_ANGLE_PER_LEVEL = 0.005;
 
@@ -26,7 +26,7 @@ function getOptionsSpeed(ability: Ability): UpgradeOptionAndProbability[] {
 
 function executeOptionSpeed(ability: Ability, option: AbilityUpgradeOption){
     const ball = ability as AbilityBounceBall;
-    let up: AbilityBounceBallUpgradeBounceBonusSpeed;
+    let up: AbilityBounceBallUpgradeBonusAngle;
     if (ball.upgrades[ABILITY_BOUNCE_BALL_UPGARDE_BOUNCE_BONUS_ANGLE] === undefined) {
         up = {level: 0};
         ball.upgrades[ABILITY_BOUNCE_BALL_UPGARDE_BOUNCE_BONUS_ANGLE] = up;
@@ -38,7 +38,7 @@ function executeOptionSpeed(ability: Ability, option: AbilityUpgradeOption){
 }
 
 function getAbilityUpgradeSpeedUiText(ability: Ability): string {
-    const up: AbilityBounceBallUpgradeBounceBonusSpeed = ability.upgrades[ABILITY_BOUNCE_BALL_UPGARDE_BOUNCE_BONUS_ANGLE];
+    const up: AbilityBounceBallUpgradeBonusAngle = ability.upgrades[ABILITY_BOUNCE_BALL_UPGARDE_BOUNCE_BONUS_ANGLE];
     return `${ABILITY_BOUNCE_BALL_UPGARDE_BOUNCE_BONUS_ANGLE}: ${(up.level * BONUS_ANGLE_PER_LEVEL * 60 / Math.PI / 2 * 360).toFixed(0)}°`;
 }
 
