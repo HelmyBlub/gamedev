@@ -1,19 +1,27 @@
 current tasks:
-- ability lightningStirkes 
-    - add as upgrade to lightning ball
 - new class:
+    - upgrade ideas:    
+        -ball has alot of synergie upgrades?
+            - bounce ball upgrade: ->
+                - next use of lightning ball empowered by max bounces of last bounce ball
+            - lightning strikes upgrade: ->
+                - while lightning strikes buff is active in bounce ball, you take half damage
     - impl:
         - ability lightning ball
             - upgrades:
-                - random bonus stat upgrade: +bounceSpeed,+angle,+speedLoss,+maxSpeed, -rechargeTime, +charges
-                - lighning buff
-                    - grows stronger with distance?
-                    - damages nearby enemies in intervals
+                - random bonus stat upgrade: +maxSpeed, -rechargeTime, +charges
+                - lightning leach
+                    - hiting enemies with lightning ball restores hp
+                    - follow up upgrade
+                        - increases max hp temporarily
+                - lightningStrikes + hp leach -> upgarde lightningStrikes HP leach synergy
+                - lightning buff:
+                    - after using lightning ball, next bounce ball is empowered
+                    - 
                 - lightning debuff
                     - enemy takes more damage, speed up bounce ball, stackable
         - bounce ball
             - think about more "interesting" upgrades
-                - each bounce increases damage
                 - temporary buff enemies hit burn, runs for some time after bounce ball finishes
                 - random bonus stat upgrade: +bounceSpeed,+angle,+speedLoss,+maxSpeed, -rechargeTime, +charges
                 - debuff
@@ -21,6 +29,7 @@ current tasks:
 
 - enemy on death put back to spawn position. So they tick in own chunk
 - having multiple ball abilities? does not work
+- replays not working because enemy types not saved
 
 refactor possibilities:
 - ability creation: checks and scales for bosses, enemy or player by itself

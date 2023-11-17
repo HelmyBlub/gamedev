@@ -7,7 +7,7 @@ import { nextRandom } from "../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, detectSomethingToCharacterHit } from "./ability.js";
 import { createAbilityObjectExplode } from "./abilityExplode.js";
 
-type AbilityLightningStrikes = Ability & {
+export type AbilityLightningStrikes = Ability & {
     damage: number,
     radius: number,
     numberStrikes: number,

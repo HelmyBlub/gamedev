@@ -331,9 +331,9 @@ export function detectSomethingToCharacterHit(
     abilityRefId: number | undefined,
     onHitAndReturnIfContinue: ((target: Character) => boolean) | undefined,
     game: Game,
-): boolean {
+): number {
     const maxEnemySizeEstimate = 40;
-    let hitSomething = false;
+    let hitCount = 0;
 
     const characters = determineCharactersInDistance(position, map, players, bosses, size + maxEnemySizeEstimate);
     for (let charIt = characters.length - 1; charIt >= 0; charIt--) {
@@ -342,14 +342,14 @@ export function detectSomethingToCharacterHit(
         const distance = calculateDistance(c, position);
         if (distance < size / 2 + c.width / 2) {
             characterTakeDamage(c, damage, game, abilityRefId);
-            hitSomething = true;
+            hitCount++;
             if (onHitAndReturnIfContinue) {
                 const continueHitDetection = onHitAndReturnIfContinue(c);
                 if (!continueHitDetection) break;
             }
         }
     }
-    return hitSomething;
+    return hitCount;
 }
 
 export function paintUiForAbilities(ctx: CanvasRenderingContext2D, game: Game) {

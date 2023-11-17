@@ -1,6 +1,7 @@
 import { Character } from "../character/characterModel.js";
 import { Game } from "../gameModel.js"
 import { addBuffBallPhysics } from "./buffBallPhysics.js";
+import { addBuffLightningStrikes } from "./buffLightningStrikes.js";
 import { addBuffSlowTrail } from "./buffSlowTrail.js";
 import { addBuffSpeed } from "./buffSpeed.js";
 import { addDebuffExplodeOnDeath } from "./debuffExplodeOnDeath.js";
@@ -32,6 +33,7 @@ export function onDomLoadSetDebuffsFunctions() {
     addBuffSlowTrail();
     addDebuffExplodeOnDeath();
     addBuffBallPhysics();
+    addBuffLightningStrikes();
 }
 
 export function applyDebuff(debuff: Debuff, character: Character, game: Game) {
@@ -80,4 +82,14 @@ export function tickCharacterDebuffs(character: Character, game: Game) {
             if (debuffFunctions && debuffFunctions.tickDebuffEffect) debuffFunctions.tickDebuffEffect(debuff, character, game);
         }
     }
+}
+
+export function replaceCharacterDebuff(currentDebuff: Debuff, newDebuff: Debuff, character: Character){
+    for (let i = character.debuffs.length - 1; i >= 0; i--) {
+        const debuff = character.debuffs[i];
+        if(currentDebuff === debuff){
+            character.debuffs[i] = newDebuff;
+            return;
+        }
+    }    
 }
