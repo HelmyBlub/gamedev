@@ -51,7 +51,8 @@ export function createGame(canvasElementId: string | undefined, forTesting: bool
             recordInputs: true,
             replay: false,
             testMapSeed: game.state.map.seed,
-            testRandomStartSeed: game.state.randomSeed.seed
+            testRandomStartSeed: game.state.randomSeed.seed,
+            testEnemyTypeDirectionSeed: game.state.enemyTypeDirectionSeed,
         };
         loadFromLocalStorage(game);
         handleCommand(game, commandRestart);

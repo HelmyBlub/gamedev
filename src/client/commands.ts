@@ -13,6 +13,7 @@ export type CommandRestart = PlayerInput & {
     replay?: boolean,
     testMapSeed?: number,
     testRandomStartSeed?: number,
+    testEnemyTypeDirectionSeed?: number
 }
 
 type ConnectInfo = {
@@ -149,6 +150,7 @@ function restart(game: Game, data: CommandRestart) {
         if (!game.testing.replay) game.testing.replay = { startTime: performance.now() };
         game.testing.replay.mapSeed = data.testMapSeed;
         game.testing.replay.randomStartSeed = data.testRandomStartSeed;
+        game.testing.replay.enemyTypeDirectionSeed = data.testEnemyTypeDirectionSeed;
     } else {
         delete game.testing.replay;
     }

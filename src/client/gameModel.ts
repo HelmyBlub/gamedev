@@ -35,6 +35,7 @@ export type TestingStuff = {
         data: RecordData,
         mapSeed?: number,
         randomStartSeed?: number,
+        enemyTypeDirectionSeed?: number,
         restartPlayerInput?: Omit<CommandRestart, "executeTime">,
     }
     replay?: {
@@ -44,6 +45,7 @@ export type TestingStuff = {
         startTime: number,
         mapSeed?: number,
         randomStartSeed?: number,
+        enemyTypeDirectionSeed?: number,
         data?: {
             replayPlayerInputs: PlayerInput[],
             pastCharacters?: PastPlayerCharacters,

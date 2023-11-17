@@ -3,6 +3,7 @@ import { createBossWithLevel } from "./character/enemy/bossEnemy.js";
 import { gameRestart } from "./game.js";
 import { Debugging, Game } from "./gameModel.js";
 import { createMap } from "./map/map.js";
+import { testGame } from "./test/gameTest.js";
 
 export function addHTMLDebugMenusToSettings(game: Game) {
     let settingsElement = document.getElementById("settings");
@@ -17,6 +18,7 @@ export function addHTMLDebugMenusToSettings(game: Game) {
     addSpawnBossButton(game);
     addClearLocalStorageButton(game);
     addSettingInputBoxPlayerPaintAlpha(game);
+    addTestButton(game);
 }
 
 function addSettingCheckbox(checkboxName: keyof Debugging, game: Game) {
@@ -115,6 +117,19 @@ function addTankyButton(game: Game) {
             if (!game.multiplayer.websocket) {
                 game.state.players[0].character.maxHp = 10000000;
                 game.state.players[0].character.hp = game.state.players[0].character.maxHp;
+            }
+        });
+    }
+}
+
+function addTestButton(game: Game) {
+    const buttonName = "Run Test Replays";
+    addSettingButton(buttonName);
+    const button = document.getElementById(buttonName) as HTMLButtonElement;
+    if (button) {
+        button.addEventListener('click', () => {
+            if (!game.multiplayer.websocket) {
+                testGame(game);
             }
         });
     }

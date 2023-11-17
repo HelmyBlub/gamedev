@@ -57,6 +57,7 @@ export function gameRestart(game: Game) {
         const restart: CommandRestart = record.data.replayPlayerInputs[0] as any;
         if (restart.command && restart.command === COMMAND_RESTART) {
             restart.testRandomStartSeed = game.state.randomSeed.seed;
+            restart.testEnemyTypeDirectionSeed = game.state.enemyTypeDirectionSeed;
         }
         record.data.nextEndBosses = deepCopy(game.state.bossStuff.nextEndbosses);
         record.data.pastCharacters = deepCopy(game.state.pastPlayerCharacters);
@@ -645,5 +646,6 @@ function setReplaySeeds(game: Game) {
     if (game.testing.replay) {
         if (game.testing.replay.mapSeed !== undefined) game.state.map.seed = game.testing.replay.mapSeed;
         if (game.testing.replay.randomStartSeed !== undefined) game.state.randomSeed.seed = game.testing.replay.randomStartSeed;
+        if (game.testing.replay.enemyTypeDirectionSeed !== undefined) game.state.enemyTypeDirectionSeed = game.testing.replay.enemyTypeDirectionSeed;
     };
 }

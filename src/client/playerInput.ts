@@ -77,9 +77,6 @@ export function keyDown(event: { code: string, preventDefault?: Function, stopPr
             };
             handleCommand(game, commandRestart);
             break;
-        case "KeyT":
-            testGame(game);
-            break;
         case "KeyO":
             multiplayerConnectMenu(game);
             break;
