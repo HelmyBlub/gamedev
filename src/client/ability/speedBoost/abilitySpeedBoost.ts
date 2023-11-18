@@ -9,9 +9,9 @@ import { Game, IdCounter, Position } from "../../gameModel.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, getAbilityNameUiText, paintDefaultAbilityStatsUI } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
-import { ABILITY_SPEED_BOOST_UPGARDE_ADD_CHARGE, AbilitySpeedBoostUpgradeAddCharge, addAbilitySpeedBoostUpgradeAddCharge, tickAbilitySpeedBoostUpgradeAddCharge } from "./abilitySpeedBoostUpgradeAddCharge.js";
+import { ABILITY_SPEED_BOOST_UPGRADE_ADD_CHARGE, AbilitySpeedBoostUpgradeAddCharge, addAbilitySpeedBoostUpgradeAddCharge, tickAbilitySpeedBoostUpgradeAddCharge } from "./abilitySpeedBoostUpgradeAddCharge.js";
 import { addAbilitySpeedBoostUpgradeDuration } from "./abilitySpeedBoostUpgradeDuration.js";
-import { ABILITY_SPEED_BOOST_UPGARDE_SLOW_TRAIL, addAbilitySpeedBoostUpgradeSlowTrail } from "./abilitySpeedBoostUpgradeSlowTrail.js";
+import { ABILITY_SPEED_BOOST_UPGRADE_SLOW_TRAIL, addAbilitySpeedBoostUpgradeSlowTrail } from "./abilitySpeedBoostUpgradeSlowTrail.js";
 import { addAbilitySpeedBoostUpgradeSpeed } from "./abilitySpeedBoostUpgradeSpeed.js";
 import { addAbilitySpeedBoostUpgradeCooldown } from "./abilitySpeedBoostUpradeCooldown.js";
 
@@ -77,7 +77,7 @@ function tickAbilitySpeedBoost(abilityOwner: AbilityOwner, ability: Ability, gam
 function castSpeedBoost(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isInputdown: boolean, game: Game) {
     if (!isInputdown) return;
     const abilitySpeedBoost = ability as AbilitySpeedBoost;
-    const chargeUpgrade: AbilitySpeedBoostUpgradeAddCharge | undefined = ability.upgrades[ABILITY_SPEED_BOOST_UPGARDE_ADD_CHARGE];
+    const chargeUpgrade: AbilitySpeedBoostUpgradeAddCharge | undefined = ability.upgrades[ABILITY_SPEED_BOOST_UPGRADE_ADD_CHARGE];
     const readyToCast = (chargeUpgrade && chargeUpgrade.currentCharges > 0) || (!chargeUpgrade && abilitySpeedBoost.cooldownFinishTime <= game.state.time);
     if (readyToCast) {
         const speedBuff = createBuffSpeed(abilitySpeedBoost.speedFactor, abilitySpeedBoost.duration, game.state.time);
@@ -92,7 +92,7 @@ function castSpeedBoost(abilityOwner: AbilityOwner, ability: Ability, castPositi
             chargeUpgrade.currentCharges--;
         }
 
-        if (ability.upgrades[ABILITY_SPEED_BOOST_UPGARDE_SLOW_TRAIL]) {
+        if (ability.upgrades[ABILITY_SPEED_BOOST_UPGRADE_SLOW_TRAIL]) {
             const slowTrail = createBuffSlowTrail(abilitySpeedBoost.duration, game.state.time);
             applyDebuff(slowTrail, character, game);
         }
@@ -110,7 +110,7 @@ function paintAbilitySpeedBoostUI(ctx: CanvasRenderingContext2D, ability: Abilit
     ctx.beginPath();
     ctx.rect(drawStartX, drawStartY, rectSize, rectSize);
     ctx.stroke();
-    const upgrade: AbilitySpeedBoostUpgradeAddCharge = ability.upgrades[ABILITY_SPEED_BOOST_UPGARDE_ADD_CHARGE];
+    const upgrade: AbilitySpeedBoostUpgradeAddCharge = ability.upgrades[ABILITY_SPEED_BOOST_UPGRADE_ADD_CHARGE];
     if (upgrade || game.state.time < abilitySpeedBoost.cooldownFinishTime) {
         ctx.fillStyle = "gray";
         const heightFactor = Math.max((abilitySpeedBoost.cooldownFinishTime - game.state.time) / abilitySpeedBoost.cooldown, 0);
@@ -160,9 +160,9 @@ function setAbilitySpeedBoostToLevel(ability: Ability, level: number) {
     abilitySpeedBoost.speedFactor = 1.20 + 0.05 * level;
 }
 
-function createAbilityBossSpeedBoostUpgradeOptions(ability: Ability): UpgradeOptionAndProbability[] {
+function createAbilityBossSpeedBoostUpgradeOptions(ability: Ability, character: Character, game: Game): UpgradeOptionAndProbability[] {
     const upgradeOptions: UpgradeOptionAndProbability[] = [];
-    pushAbilityUpgradesOptions(ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS, upgradeOptions, ability);
+    pushAbilityUpgradesOptions(ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS, upgradeOptions, ability, character, game);
     return upgradeOptions;
 }
 

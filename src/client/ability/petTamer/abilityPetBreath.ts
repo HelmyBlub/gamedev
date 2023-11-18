@@ -1,4 +1,5 @@
 import { determineCharactersInDistance, characterTakeDamage } from "../../character/character.js";
+import { Character } from "../../character/characterModel.js";
 import { BossEnemyCharacter } from "../../character/enemy/bossEnemy.js";
 import { TamerPetCharacter, tamerPetFeed } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { UpgradeOptionAndProbability } from "../../character/upgrade.js";
@@ -10,7 +11,7 @@ import { Player } from "../../player.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions } from "../abilityUpgrade.js";
 import { abilityPetBreathUpgradeExplodeApplyExplode, addAbilityPetBreathUpgradeExplode } from "./abilityPetBreathUpgradeExplode.js";
-import { ABILITY_PET_BREATH_UPGARDE_RANGE_UP, AbilityPetBreathUpgradeRangeUp, abilityPetBreathUpgradeRangeUpGetAdditionFoodIntake, abilityPetBreathUpgradeRangeUpGetAdditionRange, addAbilityPetBreathUpgradeRangeUp } from "./abilityPetBreathUpgradeRangeUp.js";
+import { ABILITY_PET_BREATH_UPGRADE_RANGE_UP, AbilityPetBreathUpgradeRangeUp, abilityPetBreathUpgradeRangeUpGetAdditionFoodIntake, abilityPetBreathUpgradeRangeUpGetAdditionRange, addAbilityPetBreathUpgradeRangeUp } from "./abilityPetBreathUpgradeRangeUp.js";
 import { abilityPetBreathUpgradeSlowApplySlow, addAbilityPetBreathUpgradeSlow } from "./abilityPetBreathUpgradeSlow.js";
 
 export type AbilityPetBreath = Ability & {
@@ -79,9 +80,9 @@ function getLongDescription(): string[] {
     ];
 }
 
-function createAbilityPetBreathUpgradeOptions(ability: Ability): UpgradeOptionAndProbability[] {
+function createAbilityPetBreathUpgradeOptions(ability: Ability, character: Character, game: Game): UpgradeOptionAndProbability[] {
     const upgradeOptions: UpgradeOptionAndProbability[] = [];
-    pushAbilityUpgradesOptions(ABILITY_PET_BREATH_UPGRADE_FUNCTIONS, upgradeOptions, ability);
+    pushAbilityUpgradesOptions(ABILITY_PET_BREATH_UPGRADE_FUNCTIONS, upgradeOptions, ability, character, game);
     return upgradeOptions;
 }
 
@@ -143,7 +144,7 @@ function tickAbilityPetBreath(abilityOwner: AbilityOwner, ability: Ability, game
     if (!abilityPetBreath.active) return;
 
     abilityPetBreath.directionAngle = pet.moveDirection;
-    const rangeUpgrade = abilityPetBreath.upgrades[ABILITY_PET_BREATH_UPGARDE_RANGE_UP] as AbilityPetBreathUpgradeRangeUp;
+    const rangeUpgrade = abilityPetBreath.upgrades[ABILITY_PET_BREATH_UPGRADE_RANGE_UP] as AbilityPetBreathUpgradeRangeUp;
     let rangeBonus = 0;
     if (rangeUpgrade) rangeBonus = abilityPetBreathUpgradeRangeUpGetAdditionRange(pet, rangeUpgrade);
     abilityPetBreath.range = Math.sqrt(pet.width * 3) / 3 * (25 + rangeBonus) + 5;

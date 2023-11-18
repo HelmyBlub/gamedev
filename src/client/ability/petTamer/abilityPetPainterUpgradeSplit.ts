@@ -9,10 +9,10 @@ export type AbilityPetPainterUpgradeSplit = AbilityUpgrade & {
     damageFactor: number,
 }
 
-export const ABILITY_PET_PAINTER_UPGARDE_SPLIT = "Paint Split";
+export const ABILITY_PET_PAINTER_UPGRADE_SPLIT = "Paint Split";
 
 export function addAbilityPetPainterUpgradeSplit() {
-    ABILITY_PET_PAINTER_UPGRADE_FUNCTIONS[ABILITY_PET_PAINTER_UPGARDE_SPLIT] = {
+    ABILITY_PET_PAINTER_UPGRADE_FUNCTIONS[ABILITY_PET_PAINTER_UPGRADE_SPLIT] = {
         getStatsDisplayText: getAbilityUpgradeSplitUiText,
         getLongExplainText: getAbilityUpgradeSplitUiTextLong,
         getOptions: getOptionsSplit,
@@ -23,7 +23,7 @@ export function addAbilityPetPainterUpgradeSplit() {
 export function abilityPetPainerUpgradeSplitCheckForSplit(abilityObjectPetPainter: AbilityObjectPetPainter, game: Game) {
     const abilityPetPainter = findAbilityById(abilityObjectPetPainter.abilityRefId!, game);
     if (!abilityPetPainter) return;
-    const splitUpgrade = abilityPetPainter.upgrades[ABILITY_PET_PAINTER_UPGARDE_SPLIT] as AbilityPetPainterUpgradeSplit;
+    const splitUpgrade = abilityPetPainter.upgrades[ABILITY_PET_PAINTER_UPGRADE_SPLIT] as AbilityPetPainterUpgradeSplit;
     if (splitUpgrade) {
         const shapeFunctions = ABILITY_PET_PAINTER_SHAPES_FUNCTIONS[abilityObjectPetPainter.subType];
         for (let i = 0; i < splitUpgrade.count; i++) {
@@ -35,7 +35,7 @@ export function abilityPetPainerUpgradeSplitCheckForSplit(abilityObjectPetPainte
 }
 
 function getOptionsSplit(ability: Ability): UpgradeOptionAndProbability[] {
-    const options = getAbilityUpgradeOptionDefault(ability, ABILITY_PET_PAINTER_UPGARDE_SPLIT);
+    const options = getAbilityUpgradeOptionDefault(ability, ABILITY_PET_PAINTER_UPGRADE_SPLIT);
     options[0].option.displayLongText = getAbilityUpgradeSplitUiTextLong(ability);
     return options;
 }
@@ -43,24 +43,24 @@ function getOptionsSplit(ability: Ability): UpgradeOptionAndProbability[] {
 function executeOptionPaintSplit(ability: Ability, option: AbilityUpgradeOption) {
     const as = ability as AbilityPetPainter;
     let up: AbilityPetPainterUpgradeSplit;
-    if (as.upgrades[ABILITY_PET_PAINTER_UPGARDE_SPLIT] === undefined) {
+    if (as.upgrades[ABILITY_PET_PAINTER_UPGRADE_SPLIT] === undefined) {
         up = { level: 0, count: 1, damageFactor: 0.5 };
-        as.upgrades[ABILITY_PET_PAINTER_UPGARDE_SPLIT] = up;
+        as.upgrades[ABILITY_PET_PAINTER_UPGRADE_SPLIT] = up;
     } else {
-        up = as.upgrades[ABILITY_PET_PAINTER_UPGARDE_SPLIT];
+        up = as.upgrades[ABILITY_PET_PAINTER_UPGRADE_SPLIT];
     }
     up.count += 1;
     up.level++;
 }
 
 function getAbilityUpgradeSplitUiText(ability: Ability): string {
-    const up: AbilityPetPainterUpgradeSplit = ability.upgrades[ABILITY_PET_PAINTER_UPGARDE_SPLIT];
-    return `${ABILITY_PET_PAINTER_UPGARDE_SPLIT}: Level ${up.level}`;
+    const up: AbilityPetPainterUpgradeSplit = ability.upgrades[ABILITY_PET_PAINTER_UPGRADE_SPLIT];
+    return `${ABILITY_PET_PAINTER_UPGRADE_SPLIT}: Level ${up.level}`;
 }
 
 function getAbilityUpgradeSplitUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
-    const upgrade: AbilityUpgrade | undefined = ability.upgrades[ABILITY_PET_PAINTER_UPGARDE_SPLIT];
+    const upgrade: AbilityUpgrade | undefined = ability.upgrades[ABILITY_PET_PAINTER_UPGRADE_SPLIT];
     if (upgrade) {
         textLines.push(`Inrease number of shapes on split to ${upgrade.level + 2}`);
     } else {

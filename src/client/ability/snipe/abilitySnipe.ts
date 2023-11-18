@@ -222,8 +222,8 @@ export function createAbilityObjectSnipeInitial(startPosition: Position, faction
     if (!preventBackwardsShot) castSnipeBackwardsShot(startPosition, faction, abilitySnipe, castPosition, triggeredByPlayer, game);
 
     const direction = calculateDirection(startPosition, castPosition);
-    const upgardeTerrainBounce: AbilityUpgradeTerrainBounce = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE];
-    if (upgardeTerrainBounce && (triggeredByPlayer || upgardeTerrainBounce.upgradeSynergy)) {
+    const upgradeTerrainBounce: AbilityUpgradeTerrainBounce = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE];
+    if (upgradeTerrainBounce && (triggeredByPlayer || upgradeTerrainBounce.upgradeSynergy)) {
         const range = getAbilitySnipeRange(abilitySnipe);
         createAndPushAbilityObjectSnipeTerrainBounceInit(startPosition, direction, abilitySnipe, faction, true, range, 0, triggeredByPlayer, game);
     } else {
@@ -490,9 +490,9 @@ function tickAbilityObjectSnipe(abilityObject: AbilityObject, game: Game) {
     }
 }
 
-function createAbilityBossSnipeUpgradeOptions(ability: Ability): UpgradeOptionAndProbability[] {
+function createAbilityBossSnipeUpgradeOptions(ability: Ability, character: Character, game: Game): UpgradeOptionAndProbability[] {
     const upgradeOptions: UpgradeOptionAndProbability[] = [];
-    pushAbilityUpgradesOptions(ABILITY_SNIPE_UPGRADE_FUNCTIONS, upgradeOptions, ability);
+    pushAbilityUpgradesOptions(ABILITY_SNIPE_UPGRADE_FUNCTIONS, upgradeOptions, ability, character, game);
     return upgradeOptions;
 }
 

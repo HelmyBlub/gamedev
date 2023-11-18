@@ -1,7 +1,7 @@
 import { getRandomAlivePlayerCharacter } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
-import { BuffBallPhysics, createBuffBallPhysics, findBallBuff } from "../../debuff/buffBallPhysics.js";
+import { BUFF_NAME_BALL_PHYSICS, BuffBallPhysics, createBuffBallPhysics, findBallBuff } from "../../debuff/buffBallPhysics.js";
 import { applyDebuff, removeCharacterDebuff } from "../../debuff/debuff.js";
 import { calculateDirection, getClientInfoByCharacterId, getNextId, modulo } from "../../game.js";
 import { Position, Game, IdCounter, FACTION_ENEMY, ClientInfo } from "../../gameModel.js";
@@ -104,9 +104,16 @@ function castBounceBall(abilityOwner: AbilityOwner, ability: Ability, castPositi
     const abilityBounceBall = ability as AbilityBounceBall;
     if (abilityBounceBall.currentCharges <= 0) return;
     const buffBallPhyscis = createBuffBallPhysics(ability.id, ability.name);
+    let keepCurrentSpeed = false;
+    if (abilityOwner.debuffs) {
+        const ballPhysics: BuffBallPhysics = abilityOwner.debuffs.find((d) => d.name === BUFF_NAME_BALL_PHYSICS) as any;
+        if (ballPhysics && ballPhysics.abilityRefName === ability.name) {
+            keepCurrentSpeed = true;
+        }
+    }
     applyDebuff(buffBallPhyscis, abilityOwner as any, game);
     abilityBounceBallUpgradeBounceBonusDamageResetBounces(abilityBounceBall)
-    if (abilityBounceBall.currentSpeed < abilityBounceBall.startSpeed) {
+    if (abilityBounceBall.currentSpeed < abilityBounceBall.startSpeed || !keepCurrentSpeed) {
         abilityBounceBall.currentSpeed = abilityBounceBall.startSpeed;
     }
     abilityBounceBall.moveDirection = calculateDirection(abilityOwner, castPosition);
@@ -119,9 +126,9 @@ function castBounceBall(abilityOwner: AbilityOwner, ability: Ability, castPositi
     if (clientInfo) clientInfo.lastMousePosition = castPosition;
 }
 
-function createAbilityBossSpeedBoostUpgradeOptions(ability: Ability): UpgradeOptionAndProbability[] {
+function createAbilityBossSpeedBoostUpgradeOptions(ability: Ability, character: Character, game: Game): UpgradeOptionAndProbability[] {
     const upgradeOptions: UpgradeOptionAndProbability[] = [];
-    pushAbilityUpgradesOptions(ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS, upgradeOptions, ability);
+    pushAbilityUpgradesOptions(ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS, upgradeOptions, ability, character, game);
     return upgradeOptions;
 }
 
@@ -214,7 +221,7 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
 function damageTick(abilityBounceBall: AbilityBounceBall, abilityOwner: AbilityOwner, game: Game) {
     if (abilityBounceBall.nextTickTime === undefined) abilityBounceBall.nextTickTime = game.state.time + abilityBounceBall.tickInterval;
     if (abilityBounceBall.nextTickTime <= game.state.time
-         || abilityBounceBall.rolledDistanceAfterLastDamageTick > abilityBounceBall.radius * 1.5) {
+        || abilityBounceBall.rolledDistanceAfterLastDamageTick > abilityBounceBall.radius * 1.5) {
         abilityBounceBall.rolledDistanceAfterLastDamageTick = 0;
         const damage = getAbilityBounceBallDamage(abilityBounceBall);
         detectSomethingToCharacterHit(

@@ -7,7 +7,7 @@ import { isPositionBlocking, moveByDirectionAndDistance } from "../../map/map.js
 import { RandomSeed, nextRandom } from "../../randomNumberGenerator.js";
 import { AbilityOwner, PaintOrderAbility, detectCircleCharacterHit } from "../ability.js";
 import { ABILITY_NAME_PET_PAINTER, ABILITY_PET_PAINTER_SHAPES_FUNCTIONS, AbilityObjectPetPainter, AbilityPetPainter, createShapeAbilityPetPainter } from "./abilityPetPainter.js";
-import { ABILITY_PET_PAINTER_UPGARDE_FACTORY, AbilityPetPainterUpgradeFactory } from "./abilityPetPainterUpgradeFactory.js";
+import { ABILITY_PET_PAINTER_UPGRADE_FACTORY, AbilityPetPainterUpgradeFactory } from "./abilityPetPainterUpgradeFactory.js";
 import { AbilityPetPainterUpgradeSplit } from "./abilityPetPainterUpgradeSplit.js";
 
 export type AbilityObjectPetPainterTriangle = AbilityObjectPetPainter & {
@@ -121,7 +121,7 @@ function createSplitShape(abilityObject: AbilityObjectPetPainter, upgrade: Abili
 
 function createShapeTriangle(pet: TamerPetCharacter, abilityPetPainter: AbilityPetPainter, game: Game): AbilityObjectPetPainter {
     const damage = abilityPetPainter.baseDamage * pet.sizeFactor * TRIANGLE_DAMAGE_FACTOR;
-    const factoryUpgrade = abilityPetPainter.upgrades[ABILITY_PET_PAINTER_UPGARDE_FACTORY] as AbilityPetPainterUpgradeFactory;
+    const factoryUpgrade = abilityPetPainter.upgrades[ABILITY_PET_PAINTER_UPGRADE_FACTORY] as AbilityPetPainterUpgradeFactory;
     if (factoryUpgrade) {
         return createAbilityObjectPetPainterTriangleFactory(abilityPetPainter.paintPoints![0], damage, TRIANGLESIZE, abilityPetPainter.id, pet.faction, factoryUpgrade.duration, factoryUpgrade.spawnInterval, game.state.time);
     } else {

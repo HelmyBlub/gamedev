@@ -9,11 +9,11 @@ export type AbilityPetDashUpgradeTerrainBounce = AbilityUpgrade & {
     durationUpPerBounce: number,
 }
 
-export const ABILITY_PET_DASH_UPGARDE_TERRAIN_BOUNCE = "Dash TerrainBounce";
+export const ABILITY_PET_DASH_UPGRADE_TERRAIN_BOUNCE = "Dash TerrainBounce";
 const DAMAGE_FACTOR_BOUNCE = 1;
 
 export function addAbilityPetDashUpgradeTerrainBounce() {
-    ABILITY_PET_DASH_UPGRADE_FUNCTIONS[ABILITY_PET_DASH_UPGARDE_TERRAIN_BOUNCE] = {
+    ABILITY_PET_DASH_UPGRADE_FUNCTIONS[ABILITY_PET_DASH_UPGRADE_TERRAIN_BOUNCE] = {
         getStatsDisplayText: getAbilityUpgradeTerrainBounceUiText,
         getLongExplainText: getAbilityUpgradeTerrainBounceUiTextLong,
         getOptions: getOptionsBounce,
@@ -22,7 +22,7 @@ export function addAbilityPetDashUpgradeTerrainBounce() {
 }
 
 function getOptionsBounce(ability: Ability): UpgradeOptionAndProbability[] {
-    const options = getAbilityUpgradeOptionDefault(ability, ABILITY_PET_DASH_UPGARDE_TERRAIN_BOUNCE);
+    const options = getAbilityUpgradeOptionDefault(ability, ABILITY_PET_DASH_UPGRADE_TERRAIN_BOUNCE);
     options[0].option.displayLongText = getAbilityUpgradeTerrainBounceUiTextLong(ability);
     return options;
 }
@@ -30,29 +30,29 @@ function getOptionsBounce(ability: Ability): UpgradeOptionAndProbability[] {
 function executeOptionDashTerrainBounce(ability: Ability, option: AbilityUpgradeOption) {
     const as = ability as AbilityPetDash;
     let up: AbilityPetDashUpgradeTerrainBounce;
-    if (as.upgrades[ABILITY_PET_DASH_UPGARDE_TERRAIN_BOUNCE] === undefined) {
+    if (as.upgrades[ABILITY_PET_DASH_UPGRADE_TERRAIN_BOUNCE] === undefined) {
         up = {
             level: 0,
             damageFactorPerBounce: 0,
             currentDamageFactor: 1,
             durationUpPerBounce: 100,
         };
-        as.upgrades[ABILITY_PET_DASH_UPGARDE_TERRAIN_BOUNCE] = up;
+        as.upgrades[ABILITY_PET_DASH_UPGRADE_TERRAIN_BOUNCE] = up;
     } else {
-        up = as.upgrades[ABILITY_PET_DASH_UPGARDE_TERRAIN_BOUNCE];
+        up = as.upgrades[ABILITY_PET_DASH_UPGRADE_TERRAIN_BOUNCE];
     }
     up.level++;
     up.damageFactorPerBounce += DAMAGE_FACTOR_BOUNCE;
 }
 
 function getAbilityUpgradeTerrainBounceUiText(ability: Ability): string {
-    const up: AbilityPetDashUpgradeTerrainBounce = ability.upgrades[ABILITY_PET_DASH_UPGARDE_TERRAIN_BOUNCE];
-    return `${ABILITY_PET_DASH_UPGARDE_TERRAIN_BOUNCE}: Bonus damage per Bounce ${up.damageFactorPerBounce * 100}%, Level ${up.level}`;
+    const up: AbilityPetDashUpgradeTerrainBounce = ability.upgrades[ABILITY_PET_DASH_UPGRADE_TERRAIN_BOUNCE];
+    return `${ABILITY_PET_DASH_UPGRADE_TERRAIN_BOUNCE}: Bonus damage per Bounce ${up.damageFactorPerBounce * 100}%, Level ${up.level}`;
 }
 
 function getAbilityUpgradeTerrainBounceUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
-    const upgrade: AbilityPetDashUpgradeTerrainBounce | undefined = ability.upgrades[ABILITY_PET_DASH_UPGARDE_TERRAIN_BOUNCE];
+    const upgrade: AbilityPetDashUpgradeTerrainBounce | undefined = ability.upgrades[ABILITY_PET_DASH_UPGRADE_TERRAIN_BOUNCE];
     textLines.push(`Dash bounces of blocking terain tiles`);
     if (upgrade) {
         textLines.push(`Increases damage to ${(upgrade.damageFactorPerBounce + DAMAGE_FACTOR_BOUNCE) * 100}% for each bounce`);

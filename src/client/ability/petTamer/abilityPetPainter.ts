@@ -9,7 +9,7 @@ import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, upgradeAbility } 
 import { addAbilityPetPainterCircle } from "./abilityPetPainterCircle.js";
 import { addAbilityPetPainterSquare } from "./abilityPetPainterSquare.js";
 import { addAbilityPetPainterTriangle } from "./abilityPetPainterTriangle.js";
-import { ABILITY_PET_PAINTER_UPGARDE_DUPLICATE, AbilityPetPainterUpgradeDuplicate, addAbilityPetPainterUpgradeDuplicate } from "./abilityPetPainterUpgradeDuplicate.js";
+import { ABILITY_PET_PAINTER_UPGRADE_DUPLICATE, AbilityPetPainterUpgradeDuplicate, addAbilityPetPainterUpgradeDuplicate } from "./abilityPetPainterUpgradeDuplicate.js";
 import { addAbilityPetPainterUpgradeFactory } from "./abilityPetPainterUpgradeFactory.js";
 import { AbilityPetPainterUpgradeSplit, abilityPetPainerUpgradeSplitCheckForSplit, addAbilityPetPainterUpgradeSplit } from "./abilityPetPainterUpgradeSplit.js";
 
@@ -90,7 +90,7 @@ export function createShapeAbilityPetPainter(shape: string, abilityOwner: Abilit
     const shapeFunction = ABILITY_PET_PAINTER_SHAPES_FUNCTIONS[shape];
     if (shapeFunction) {
         let numberShapes = 1;
-        const duplicateUpgrade = abilityPetPainter.upgrades[ABILITY_PET_PAINTER_UPGARDE_DUPLICATE] as AbilityPetPainterUpgradeDuplicate;
+        const duplicateUpgrade = abilityPetPainter.upgrades[ABILITY_PET_PAINTER_UPGRADE_DUPLICATE] as AbilityPetPainterUpgradeDuplicate;
         if (duplicateUpgrade) {
             numberShapes += duplicateUpgrade.level;
         }
@@ -173,9 +173,9 @@ function paintAbilityPetPainter(ctx: CanvasRenderingContext2D, abilityOwner: Abi
     }
 }
 
-function createAbilityPetPainterUpgradeOptions(ability: Ability): UpgradeOptionAndProbability[] {
+function createAbilityPetPainterUpgradeOptions(ability: Ability, character: Character, game: Game): UpgradeOptionAndProbability[] {
     const upgradeOptions: UpgradeOptionAndProbability[] = [];
-    pushAbilityUpgradesOptions(ABILITY_PET_PAINTER_UPGRADE_FUNCTIONS, upgradeOptions, ability);
+    pushAbilityUpgradesOptions(ABILITY_PET_PAINTER_UPGRADE_FUNCTIONS, upgradeOptions, ability, character, game);
     return upgradeOptions;
 }
 

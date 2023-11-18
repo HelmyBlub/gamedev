@@ -11,11 +11,11 @@ export type AbilityPetDashUpgradeTerrainRoot = AbilityUpgrade & {
     duration: number,
 }
 
-export const ABILITY_PET_DASH_UPGARDE_ROOT_ON_HIT = "Dash Root on Hit";
+export const ABILITY_PET_DASH_UPGRADE_ROOT_ON_HIT = "Dash Root on Hit";
 const DURATION_PER_LEVEL = 500;
 
 export function addAbilityPetDashUpgradeTerrainRoot() {
-    ABILITY_PET_DASH_UPGRADE_FUNCTIONS[ABILITY_PET_DASH_UPGARDE_ROOT_ON_HIT] = {
+    ABILITY_PET_DASH_UPGRADE_FUNCTIONS[ABILITY_PET_DASH_UPGRADE_ROOT_ON_HIT] = {
         getStatsDisplayText: getAbilityUpgradeTerrainRootUiText,
         getLongExplainText: getAbilityUpgradeTerrainRootUiTextLong,
         getOptions: getOptionsRoot,
@@ -24,14 +24,14 @@ export function addAbilityPetDashUpgradeTerrainRoot() {
 }
 
 export function abilityPetDashUpgradeRootApplyRoot(ability: AbilityPetDash, target: Character, game: Game) {
-    const root = ability.upgrades[ABILITY_PET_DASH_UPGARDE_ROOT_ON_HIT] as AbilityPetDashUpgradeTerrainRoot;
+    const root = ability.upgrades[ABILITY_PET_DASH_UPGRADE_ROOT_ON_HIT] as AbilityPetDashUpgradeTerrainRoot;
     if (root === undefined) return;
     const debuffRoot = createDebuffRoot(root.duration, game.state.time);
     applyDebuff(debuffRoot, target, game);
 }
 
 function getOptionsRoot(ability: Ability): UpgradeOptionAndProbability[] {
-    const options = getAbilityUpgradeOptionDefault(ability, ABILITY_PET_DASH_UPGARDE_ROOT_ON_HIT);
+    const options = getAbilityUpgradeOptionDefault(ability, ABILITY_PET_DASH_UPGRADE_ROOT_ON_HIT);
     options[0].option.displayLongText = getAbilityUpgradeTerrainRootUiTextLong(ability);
     return options;
 }
@@ -39,27 +39,27 @@ function getOptionsRoot(ability: Ability): UpgradeOptionAndProbability[] {
 function executeOptionDashTerrainRoot(ability: Ability, option: AbilityUpgradeOption) {
     const as = ability as AbilityPetDash;
     let up: AbilityPetDashUpgradeTerrainRoot;
-    if (as.upgrades[ABILITY_PET_DASH_UPGARDE_ROOT_ON_HIT] === undefined) {
+    if (as.upgrades[ABILITY_PET_DASH_UPGRADE_ROOT_ON_HIT] === undefined) {
         up = {
             level: 0,
             duration: 0,
         };
-        as.upgrades[ABILITY_PET_DASH_UPGARDE_ROOT_ON_HIT] = up;
+        as.upgrades[ABILITY_PET_DASH_UPGRADE_ROOT_ON_HIT] = up;
     } else {
-        up = as.upgrades[ABILITY_PET_DASH_UPGARDE_ROOT_ON_HIT];
+        up = as.upgrades[ABILITY_PET_DASH_UPGRADE_ROOT_ON_HIT];
     }
     up.duration += DURATION_PER_LEVEL;
     up.level++;
 }
 
 function getAbilityUpgradeTerrainRootUiText(ability: Ability): string {
-    const up: AbilityPetDashUpgradeTerrainRoot = ability.upgrades[ABILITY_PET_DASH_UPGARDE_ROOT_ON_HIT];
-    return `${ABILITY_PET_DASH_UPGARDE_ROOT_ON_HIT}: Level ${up.level}`;
+    const up: AbilityPetDashUpgradeTerrainRoot = ability.upgrades[ABILITY_PET_DASH_UPGRADE_ROOT_ON_HIT];
+    return `${ABILITY_PET_DASH_UPGRADE_ROOT_ON_HIT}: Level ${up.level}`;
 }
 
 function getAbilityUpgradeTerrainRootUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
-    const upgrade: AbilityUpgrade | undefined = ability.upgrades[ABILITY_PET_DASH_UPGARDE_ROOT_ON_HIT];
+    const upgrade: AbilityUpgrade | undefined = ability.upgrades[ABILITY_PET_DASH_UPGRADE_ROOT_ON_HIT];
     textLines.push(`Enemies hit by Dash are rooted in place`);
     textLines.push(`by ${DURATION_PER_LEVEL / 1000}s per level`);
 

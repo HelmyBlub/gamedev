@@ -203,7 +203,7 @@ function createTamerBossUpgradeOptions(character: Character, game: Game): Upgrad
                     const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
                     if (abilityFunctions && abilityFunctions.createAbilityBossUpgradeOptions) {
                         while (options.length < numberChoices) {
-                            const abilityOptionsAndProbability = abilityFunctions.createAbilityBossUpgradeOptions(ability);
+                            const abilityOptionsAndProbability = abilityFunctions.createAbilityBossUpgradeOptions(ability, pet, game);
                             if (abilityOptionsAndProbability.length === 0) break;
                             for (let opProb of abilityOptionsAndProbability) {
                                 const abilityOption = opProb.option as AbilityUpgradeOption;

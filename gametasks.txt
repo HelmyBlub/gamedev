@@ -1,6 +1,5 @@
 current tasks:
 - new class:
-    - damage immune in lightning ball
     - lightning ball upgrade(only one tier upgrade, dependand on bounce ball upgrade): ->
         - next use of lightning ball empowered by max bounces of last bounce ball
 
@@ -17,7 +16,7 @@ current tasks:
                 - lightning leach
                     - follow up upgrade
                         - increases max hp temporarily
-                - lightningStrikes + hp leach -> upgarde lightningStrikes HP leach synergy
+                - lightningStrikes + hp leach -> upgrade lightningStrikes HP leach synergy
                 - lightning buff:
                     - after using lightning ball, next bounce ball is empowered
                 - lightning debuff

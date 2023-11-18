@@ -9,10 +9,10 @@ export type AbilityPetBreathUpgradeRangeUp = AbilityUpgrade & {
     rangeUp: number,
 }
 
-export const ABILITY_PET_BREATH_UPGARDE_RANGE_UP = "Breath Range+";
+export const ABILITY_PET_BREATH_UPGRADE_RANGE_UP = "Breath Range+";
 
 export function addAbilityPetBreathUpgradeRangeUp() {
-    ABILITY_PET_BREATH_UPGRADE_FUNCTIONS[ABILITY_PET_BREATH_UPGARDE_RANGE_UP] = {
+    ABILITY_PET_BREATH_UPGRADE_FUNCTIONS[ABILITY_PET_BREATH_UPGRADE_RANGE_UP] = {
         getStatsDisplayText: getAbilityUpgradeRangeUpUiText,
         getLongExplainText: getAbilityUpgradeRangeUpUiTextLong,
         getOptions: getOptionsRangeUp,
@@ -29,7 +29,7 @@ export function abilityPetBreathUpgradeRangeUpGetAdditionFoodIntake(pet: TamerPe
 }
 
 function getOptionsRangeUp(ability: Ability): UpgradeOptionAndProbability[] {
-    const options = getAbilityUpgradeOptionDefault(ability, ABILITY_PET_BREATH_UPGARDE_RANGE_UP);
+    const options = getAbilityUpgradeOptionDefault(ability, ABILITY_PET_BREATH_UPGRADE_RANGE_UP);
     options[0].option.displayLongText = getAbilityUpgradeRangeUpUiTextLong(ability);
     return options;
 }
@@ -37,11 +37,11 @@ function getOptionsRangeUp(ability: Ability): UpgradeOptionAndProbability[] {
 function executeOptionPaintRangeUp(ability: Ability, option: AbilityUpgradeOption) {
     const as = ability as AbilityPetBreath;
     let up: AbilityPetBreathUpgradeRangeUp;
-    if (as.upgrades[ABILITY_PET_BREATH_UPGARDE_RANGE_UP] === undefined) {
+    if (as.upgrades[ABILITY_PET_BREATH_UPGRADE_RANGE_UP] === undefined) {
         up = { level: 0, foodIntakeUp: 0, rangeUp: 0 };
-        as.upgrades[ABILITY_PET_BREATH_UPGARDE_RANGE_UP] = up;
+        as.upgrades[ABILITY_PET_BREATH_UPGRADE_RANGE_UP] = up;
     } else {
-        up = as.upgrades[ABILITY_PET_BREATH_UPGARDE_RANGE_UP];
+        up = as.upgrades[ABILITY_PET_BREATH_UPGRADE_RANGE_UP];
     }
     up.foodIntakeUp += 3;
     up.rangeUp += 10;
@@ -49,13 +49,13 @@ function executeOptionPaintRangeUp(ability: Ability, option: AbilityUpgradeOptio
 }
 
 function getAbilityUpgradeRangeUpUiText(ability: Ability): string {
-    const up: AbilityPetBreathUpgradeRangeUp = ability.upgrades[ABILITY_PET_BREATH_UPGARDE_RANGE_UP];
-    return `${ABILITY_PET_BREATH_UPGARDE_RANGE_UP}: Level ${up.level}`;
+    const up: AbilityPetBreathUpgradeRangeUp = ability.upgrades[ABILITY_PET_BREATH_UPGRADE_RANGE_UP];
+    return `${ABILITY_PET_BREATH_UPGRADE_RANGE_UP}: Level ${up.level}`;
 }
 
 function getAbilityUpgradeRangeUpUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
-    const upgrade: AbilityUpgrade | undefined = ability.upgrades[ABILITY_PET_BREATH_UPGARDE_RANGE_UP];
+    const upgrade: AbilityUpgrade | undefined = ability.upgrades[ABILITY_PET_BREATH_UPGRADE_RANGE_UP];
     textLines.push(`Increased Range but requires more food`);
 
     return textLines;

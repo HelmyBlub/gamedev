@@ -8,10 +8,10 @@ export type AbilityPetPainterUpgradeFactory = AbilityUpgrade & {
     duration: number,
 }
 
-export const ABILITY_PET_PAINTER_UPGARDE_FACTORY = "Paint Factory";
+export const ABILITY_PET_PAINTER_UPGRADE_FACTORY = "Paint Factory";
 
 export function addAbilityPetPainterUpgradeFactory() {
-    ABILITY_PET_PAINTER_UPGRADE_FUNCTIONS[ABILITY_PET_PAINTER_UPGARDE_FACTORY] = {
+    ABILITY_PET_PAINTER_UPGRADE_FUNCTIONS[ABILITY_PET_PAINTER_UPGRADE_FACTORY] = {
         getStatsDisplayText: getAbilityUpgradeFactoryUiText,
         getLongExplainText: getAbilityUpgradeFactoryUiTextLong,
         getOptions: getOptionsFactory,
@@ -20,7 +20,7 @@ export function addAbilityPetPainterUpgradeFactory() {
 }
 
 function getOptionsFactory(ability: Ability): UpgradeOptionAndProbability[] {
-    const options = getAbilityUpgradeOptionDefault(ability, ABILITY_PET_PAINTER_UPGARDE_FACTORY);
+    const options = getAbilityUpgradeOptionDefault(ability, ABILITY_PET_PAINTER_UPGRADE_FACTORY);
     options[0].option.displayLongText = getAbilityUpgradeFactoryUiTextLong(ability);
     return options;
 }
@@ -28,24 +28,24 @@ function getOptionsFactory(ability: Ability): UpgradeOptionAndProbability[] {
 function executeOptionPaintFactory(ability: Ability, option: AbilityUpgradeOption) {
     const as = ability as AbilityPetPainter;
     let up: AbilityPetPainterUpgradeFactory;
-    if (as.upgrades[ABILITY_PET_PAINTER_UPGARDE_FACTORY] === undefined) {
+    if (as.upgrades[ABILITY_PET_PAINTER_UPGRADE_FACTORY] === undefined) {
         up = { level: 0, duration: 500, spawnInterval: 500 };
-        as.upgrades[ABILITY_PET_PAINTER_UPGARDE_FACTORY] = up;
+        as.upgrades[ABILITY_PET_PAINTER_UPGRADE_FACTORY] = up;
     } else {
-        up = as.upgrades[ABILITY_PET_PAINTER_UPGARDE_FACTORY];
+        up = as.upgrades[ABILITY_PET_PAINTER_UPGRADE_FACTORY];
     }
     up.duration += up.spawnInterval * 2;
     up.level++;
 }
 
 function getAbilityUpgradeFactoryUiText(ability: Ability): string {
-    const up: AbilityPetPainterUpgradeFactory = ability.upgrades[ABILITY_PET_PAINTER_UPGARDE_FACTORY];
-    return `${ABILITY_PET_PAINTER_UPGARDE_FACTORY}: Level ${up.level}`;
+    const up: AbilityPetPainterUpgradeFactory = ability.upgrades[ABILITY_PET_PAINTER_UPGRADE_FACTORY];
+    return `${ABILITY_PET_PAINTER_UPGRADE_FACTORY}: Level ${up.level}`;
 }
 
 function getAbilityUpgradeFactoryUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
-    const upgrade: AbilityUpgrade | undefined = ability.upgrades[ABILITY_PET_PAINTER_UPGARDE_FACTORY];
+    const upgrade: AbilityUpgrade | undefined = ability.upgrades[ABILITY_PET_PAINTER_UPGRADE_FACTORY];
     if (upgrade) {
         textLines.push(`Inrease number of shapes created by factory to ${upgrade.level + 2}`);
     } else {

@@ -7,10 +7,10 @@ type AbilityBounceBallUpgradeBounceBonusSpeed = AbilityUpgrade & {
 }
 const BONUS_SPEED_PER_LEVEL = 0.5;
 
-export const ABILITY_BOUNCE_BALL_UPGARDE_BOUNCE_BONUS_SPEED = "Bounce Bonus Speed";
+export const ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_SPEED = "Bounce Bonus Speed";
 
 export function addAbilitySpeedBoostUpgradeSpeed() {
-    ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS[ABILITY_BOUNCE_BALL_UPGARDE_BOUNCE_BONUS_SPEED] = {
+    ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS[ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_SPEED] = {
         getStatsDisplayText: getAbilityUpgradeSpeedUiText,
         getLongExplainText: getAbilityUpgradeSpeedUiTextLong,
         getOptions: getOptionsSpeed,
@@ -19,7 +19,7 @@ export function addAbilitySpeedBoostUpgradeSpeed() {
 }
 
 function getOptionsSpeed(ability: Ability): UpgradeOptionAndProbability[] {
-    const options = getAbilityUpgradeOptionDefault(ability, ABILITY_BOUNCE_BALL_UPGARDE_BOUNCE_BONUS_SPEED);
+    const options = getAbilityUpgradeOptionDefault(ability, ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_SPEED);
     options[0].option.displayLongText = getAbilityUpgradeSpeedUiTextLong(ability);
     return options;
 }
@@ -27,19 +27,19 @@ function getOptionsSpeed(ability: Ability): UpgradeOptionAndProbability[] {
 function executeOptionSpeed(ability: Ability, option: AbilityUpgradeOption){
     const ball = ability as AbilityBounceBall;
     let up: AbilityBounceBallUpgradeBounceBonusSpeed;
-    if (ball.upgrades[ABILITY_BOUNCE_BALL_UPGARDE_BOUNCE_BONUS_SPEED] === undefined) {
+    if (ball.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_SPEED] === undefined) {
         up = {level: 0};
-        ball.upgrades[ABILITY_BOUNCE_BALL_UPGARDE_BOUNCE_BONUS_SPEED] = up;
+        ball.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_SPEED] = up;
     } else {
-        up = ball.upgrades[ABILITY_BOUNCE_BALL_UPGARDE_BOUNCE_BONUS_SPEED];
+        up = ball.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_SPEED];
     }
     up.level++;
     ball.bounceBonusSpeed += BONUS_SPEED_PER_LEVEL;
 }
 
 function getAbilityUpgradeSpeedUiText(ability: Ability): string {
-    const up: AbilityBounceBallUpgradeBounceBonusSpeed = ability.upgrades[ABILITY_BOUNCE_BALL_UPGARDE_BOUNCE_BONUS_SPEED];
-    return `${ABILITY_BOUNCE_BALL_UPGARDE_BOUNCE_BONUS_SPEED}: ${(up.level * BONUS_SPEED_PER_LEVEL)}`;
+    const up: AbilityBounceBallUpgradeBounceBonusSpeed = ability.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_SPEED];
+    return `${ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_SPEED}: ${(up.level * BONUS_SPEED_PER_LEVEL)}`;
 }
 
 function getAbilityUpgradeSpeedUiTextLong(ability: Ability): string[] {

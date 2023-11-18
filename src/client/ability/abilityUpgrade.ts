@@ -1,5 +1,6 @@
 import { Character } from "../character/characterModel.js";
 import { AbilityUpgradeOption, UpgradeOptionAndProbability } from "../character/upgrade.js";
+import { Game } from "../gameModel.js";
 import { ABILITIES_FUNCTIONS, Ability } from "./ability.js"
 
 export type AbilityUpgrade = {
@@ -7,7 +8,7 @@ export type AbilityUpgrade = {
 }
 
 export type AbilityUpgradeFunctions = {
-    getOptions?: (ability: Ability) => UpgradeOptionAndProbability[],
+    getOptions?: (ability: Ability, character: Character, game: Game) => UpgradeOptionAndProbability[],
     addSynergyUpgradeOption?: (ability: Ability) => boolean,
     executeOption: (ability: Ability, option: AbilityUpgradeOption) => void,
     getStatsDisplayText: (ability: Ability) => string,
@@ -45,12 +46,12 @@ export function pushAbilityUpgradesUiTexts(upgradeFunctions: AbilityUpgradesFunc
     }
 }
 
-export function pushAbilityUpgradesOptions(upgradeFunctions: AbilityUpgradesFunctions, upgradeOptions: UpgradeOptionAndProbability[], ability: Ability) {
+export function pushAbilityUpgradesOptions(upgradeFunctions: AbilityUpgradesFunctions, upgradeOptions: UpgradeOptionAndProbability[], ability: Ability, character: Character, game: Game) {
     const keys = Object.keys(upgradeFunctions);
     for (let key of keys) {
         const functions = upgradeFunctions[key];
         if (functions.getOptions) {
-            upgradeOptions.push(...functions.getOptions(ability));
+            upgradeOptions.push(...functions.getOptions(ability, character, game));
         } else {
             upgradeOptions.push(...getAbilityUpgradeOptionDefault(ability, key));
         }

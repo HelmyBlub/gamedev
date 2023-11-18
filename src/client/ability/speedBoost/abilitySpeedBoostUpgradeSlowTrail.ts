@@ -6,10 +6,10 @@ import { ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS, AbilitySpeedBoost } from "./abil
 type AbilitySpeedBoostUpgradeSlowTrail = AbilityUpgrade & {
 }
 
-export const ABILITY_SPEED_BOOST_UPGARDE_SLOW_TRAIL = "Slow Trail";
+export const ABILITY_SPEED_BOOST_UPGRADE_SLOW_TRAIL = "Slow Trail";
 
 export function addAbilitySpeedBoostUpgradeSlowTrail() {
-    ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS[ABILITY_SPEED_BOOST_UPGARDE_SLOW_TRAIL] = {
+    ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS[ABILITY_SPEED_BOOST_UPGRADE_SLOW_TRAIL] = {
         getStatsDisplayText: getAbilityUpgradeSlowTrailUiText,
         getLongExplainText: getAbilityUpgradeSlowTrailUiTextLong,
         getOptions:getOptionsSlowTrail,
@@ -18,8 +18,8 @@ export function addAbilitySpeedBoostUpgradeSlowTrail() {
 }
 
 function getOptionsSlowTrail(ability: Ability): UpgradeOptionAndProbability[]{
-    if (ability.upgrades[ABILITY_SPEED_BOOST_UPGARDE_SLOW_TRAIL]) return [];
-    const options =  getAbilityUpgradeOptionDefault(ability, ABILITY_SPEED_BOOST_UPGARDE_SLOW_TRAIL);
+    if (ability.upgrades[ABILITY_SPEED_BOOST_UPGRADE_SLOW_TRAIL]) return [];
+    const options =  getAbilityUpgradeOptionDefault(ability, ABILITY_SPEED_BOOST_UPGRADE_SLOW_TRAIL);
     options[0].option.displayLongText = getAbilityUpgradeSlowTrailUiTextLong(ability);
     return options;
 }
@@ -27,14 +27,14 @@ function getOptionsSlowTrail(ability: Ability): UpgradeOptionAndProbability[]{
 function executeOptionSlowTrail(ability: Ability, option: AbilityUpgradeOption){
     const as = ability as AbilitySpeedBoost;
     let up: AbilitySpeedBoostUpgradeSlowTrail;
-    if (as.upgrades[ABILITY_SPEED_BOOST_UPGARDE_SLOW_TRAIL] === undefined) {
+    if (as.upgrades[ABILITY_SPEED_BOOST_UPGRADE_SLOW_TRAIL] === undefined) {
         up = {level: 1};
-        as.upgrades[ABILITY_SPEED_BOOST_UPGARDE_SLOW_TRAIL] = up;
+        as.upgrades[ABILITY_SPEED_BOOST_UPGRADE_SLOW_TRAIL] = up;
     }
 }
 
 function getAbilityUpgradeSlowTrailUiText(ability: Ability): string {
-    return ABILITY_SPEED_BOOST_UPGARDE_SLOW_TRAIL;
+    return ABILITY_SPEED_BOOST_UPGRADE_SLOW_TRAIL;
 }
 
 function getAbilityUpgradeSlowTrailUiTextLong(ability: Ability): string[] {
