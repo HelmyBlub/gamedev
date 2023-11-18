@@ -111,7 +111,7 @@ export function paintPlayerCharacters(ctx: CanvasRenderingContext2D, cameraPosit
     paintCharacters(ctx, playerCharacters, cameraPosition, game);
     for (let playerChar of playerCharacters) {
         paintCharacterHpBarAboveCharacter(ctx, playerChar, cameraPosition);
-        paintPlayerNameOverCharacter(ctx, playerChar, cameraPosition, game, -6);
+        paintPlayerNameOverCharacter(ctx, playerChar, cameraPosition, game, +9);
     }
     paintCharacters(ctx, game.state.pastPlayerCharacters.characters, cameraPosition, game);
 }

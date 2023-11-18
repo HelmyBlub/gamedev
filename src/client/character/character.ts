@@ -231,7 +231,10 @@ export function findMyCharacter(game: Game): Character | undefined {
 }
 
 export function tickDefaultCharacter(character: Character, game: Game, pathingCache: PathingCache | null) {
-    if (character.isDead) return;
+    if (character.isDead) {
+        if (!character.willTurnToPetOnDeath) return;
+        turnCharacterToPet(character, game);
+    }
     moveCharacterTick(character, game.state.map, game.state.idCounter);
 }
 

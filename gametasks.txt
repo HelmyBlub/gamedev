@@ -1,5 +1,9 @@
 current tasks:
+- test multiplayer still working
+    - tamer death -> not becoming a pet
 - new class:
+    - main problem: tankiness of "melee" type of ball character
+        - hp leach of lightning ball also increases maxHp?
     - upgrade ideas:    
         -ball has alot of synergie upgrades?
             - bounce ball upgrade: ->
@@ -29,7 +33,6 @@ current tasks:
 
 - enemy on death put back to spawn position. So they tick in own chunk
 - having multiple ball abilities? does not work
-- replays not working because enemy types not saved
 
 refactor possibilities:
 - ability creation: checks and scales for bosses, enemy or player by itself
