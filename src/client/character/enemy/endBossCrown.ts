@@ -23,7 +23,8 @@ export function createEndBossCrownCharacter(idCounter: IdCounter, spawn: Positio
     const crownCharacter = createCharacter(getNextId(idCounter), spawn.x, spawn.y, crownSize, crownSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_END_BOSS_CROWN_ENEMY, experienceWorth);
     crownCharacter.paint.image = IMAGE_CROWN;
     crownCharacter.isMoving = true;
-    crownCharacter.isImmune = true;
+    crownCharacter.isDamageImmune = true;
+    crownCharacter.isDebuffImmune = true;
     return crownCharacter;
 }
 

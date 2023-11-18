@@ -1,6 +1,7 @@
 import { Character } from "../character/characterModel.js";
 import { Game } from "../gameModel.js"
 import { addBuffBallPhysics } from "./buffBallPhysics.js";
+import { addBuffImmunity } from "./buffImmunity.js";
 import { addBuffLightningStrikes } from "./buffLightningStrikes.js";
 import { addBuffSlowTrail } from "./buffSlowTrail.js";
 import { addBuffSpeed } from "./buffSpeed.js";
@@ -34,10 +35,11 @@ export function onDomLoadSetDebuffsFunctions() {
     addDebuffExplodeOnDeath();
     addBuffBallPhysics();
     addBuffLightningStrikes();
+    addBuffImmunity();
 }
 
 export function applyDebuff(debuff: Debuff, character: Character, game: Game) {
-    if (character.isImmune) return;
+    if (character.isDebuffImmune) return;
     const currentDebuff = character.debuffs.find((d) => d.name === debuff.name);
     const debuffFunctions: DebuffFunctions | undefined = DEBUFFS_FUNCTIONS[debuff.name];
     if (currentDebuff) {

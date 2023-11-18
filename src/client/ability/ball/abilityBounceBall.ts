@@ -103,7 +103,7 @@ function castBounceBall(abilityOwner: AbilityOwner, ability: Ability, castPositi
     if (!isKeydown) return;
     const abilityBounceBall = ability as AbilityBounceBall;
     if (abilityBounceBall.currentCharges <= 0) return;
-    const buffBallPhyscis = createBuffBallPhysics(ability.id);
+    const buffBallPhyscis = createBuffBallPhysics(ability.id, ability.name);
     applyDebuff(buffBallPhyscis, abilityOwner as any, game);
     abilityBounceBallUpgradeBounceBonusDamageResetBounces(abilityBounceBall)
     if (abilityBounceBall.currentSpeed < abilityBounceBall.startSpeed) {

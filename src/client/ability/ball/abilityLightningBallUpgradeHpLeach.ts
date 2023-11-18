@@ -9,7 +9,7 @@ type AbilityLightningBallUpgradeLightningStrikesBuff = AbilityUpgrade & {
 
 const HEAL_PER_PIXEL_TRAVELED = 0.1;
 
-export const ABILITY_LIGHTNING_BALL_UPGARDE_HP_LEACH = "HP Leach";
+export const ABILITY_LIGHTNING_BALL_UPGARDE_HP_LEACH = "HP Generation";
 
 export function addAbilityLightningStrikesUpgradeHpLeach() {
     ABILITY_LIGHTNING_BALL_UPGRADE_FUNCTIONS[ABILITY_LIGHTNING_BALL_UPGARDE_HP_LEACH] = {
@@ -20,11 +20,11 @@ export function addAbilityLightningStrikesUpgradeHpLeach() {
     }
 }
 
-export function lightningBallUpgradeHpLeachExecute(ability: AbilityLightningBall, distanceTraveled: number, owner: AbilityOwner){
-    const up: AbilityLightningBallUpgradeLightningStrikesBuff= ability.upgrades[ABILITY_LIGHTNING_BALL_UPGARDE_HP_LEACH];
-    if(up && owner.hp){
+export function lightningBallUpgradeHpLeachExecute(ability: AbilityLightningBall, distanceTraveled: number, owner: AbilityOwner) {
+    const up: AbilityLightningBallUpgradeLightningStrikesBuff = ability.upgrades[ABILITY_LIGHTNING_BALL_UPGARDE_HP_LEACH];
+    if (up && owner.hp) {
         owner.hp += up.healPerPixelTraveled * distanceTraveled;
-        if(owner.hp > owner.maxHp!){
+        if (owner.hp > owner.maxHp!) {
             owner.hp = owner.maxHp;
         }
     }
@@ -51,15 +51,14 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption) {
 
 function getAbilityUpgradeUiText(ability: Ability): string {
     const up: AbilityLightningBallUpgradeLightningStrikesBuff = ability.upgrades[ABILITY_LIGHTNING_BALL_UPGARDE_HP_LEACH];
-    return `${ABILITY_LIGHTNING_BALL_UPGARDE_HP_LEACH}: ${up.healPerPixelTraveled}`;
+    return `${ABILITY_LIGHTNING_BALL_UPGARDE_HP_LEACH}: ${up.healPerPixelTraveled.toFixed(2)}`;
 }
 
 function getAbilityUpgradeUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
     textLines.push(`When using Lightning Ball you will`);
     textLines.push(`heal for distance traveled.`);
-    textLines.push(`${HEAL_PER_PIXEL_TRAVELED} heal per pixel traveled.`);
-   
+    textLines.push(`${HEAL_PER_PIXEL_TRAVELED.toFixed(2)} heal per pixel traveled.`);
 
     return textLines;
 }

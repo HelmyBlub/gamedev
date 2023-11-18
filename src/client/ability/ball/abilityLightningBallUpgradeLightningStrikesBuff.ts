@@ -62,7 +62,7 @@ function getAbilityUpgradeUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
     textLines.push(`When using Lightning Ball you will`);
     textLines.push(`lightning strikes close enemies.`);
-    textLines.push(`upgrade level x 3 targets.`);
+    textLines.push(`hits upgrade level x 3 targets.`);
     textLines.push(`100% damage.`);
 
     return textLines;

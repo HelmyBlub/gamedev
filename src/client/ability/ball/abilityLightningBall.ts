@@ -77,7 +77,7 @@ function castBounceBall(abilityOwner: AbilityOwner, ability: Ability, castPositi
     if (!isKeydown) return;
     const abilityBounceBall = ability as AbilityLightningBall;
     if (abilityBounceBall.currentCharges <= 0) return;
-    const buffBallPhyscis = createBuffBallPhysics(ability.id);
+    const buffBallPhyscis = createBuffBallPhysics(ability.id, ability.name);
     applyDebuff(buffBallPhyscis, abilityOwner as any, game);
     abilityBounceBall.moveDirection = calculateDirection(abilityOwner, castPosition);
     abilityBounceBall.currentCharges--;
@@ -226,6 +226,7 @@ function paintAbilityStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, dr
         `Key: ${playerInputBindingToDisplayValue(abilityBounceBall.playerInputBinding!, game)}`,
         `Click to become a lightning ball.`,
         `Move with lightning speed.`,
+        `Immune to damage.`,
         `Ends if it hits a wall.`,
         "Ability stats:",
         `Damage: ${abilityBounceBall.damage}`,

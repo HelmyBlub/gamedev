@@ -1,12 +1,15 @@
 import { Ability, AbilityOwner } from "../ability/ability.js";
+import { ABILITY_NAME_LIGHTNING_BALL } from "../ability/ball/abilityLightningBall.js";
 import { Character } from "../character/characterModel.js";
 import { autoSendMousePositionHandler } from "../game.js";
 import { Game } from "../gameModel.js";
-import { DEBUFFS_FUNCTIONS, Debuff } from "./debuff.js";
+import { BUFF_NAME_IMMUNITY, createBuffImmunity } from "./buffImmunity.js";
+import { DEBUFFS_FUNCTIONS, Debuff, applyDebuff, removeCharacterDebuff } from "./debuff.js";
 
 export const BUFF_NAME_BALL_PHYSICS = "Ball Physics";
 export type BuffBallPhysics = Debuff & {
     abilityRefId: number,
+    abilityRefName: string,
 }
 
 export function addBuffBallPhysics() {
@@ -19,10 +22,12 @@ export function addBuffBallPhysics() {
 
 export function createBuffBallPhysics(
     abilityRefId: number,
+    abilityRefName: string,
 ): BuffBallPhysics {
     return {
         name: BUFF_NAME_BALL_PHYSICS,
         abilityRefId: abilityRefId,
+        abilityRefName: abilityRefName,
     };
 }
 
@@ -42,15 +47,28 @@ export function findBallBuff(owner: AbilityOwner, ability: Ability): BuffBallPhy
 function refreshBuffEffect(newDebuff: Debuff, currentDebuff: Debuff, targetCharacter: Character, game: Game) {
     const newBuff = newDebuff as BuffBallPhysics;
     const currentBuff = currentDebuff as BuffBallPhysics;
-    currentBuff.abilityRefId = newBuff.abilityRefId;
+    removeCharacterDebuff(currentBuff, targetCharacter, game);
+    applyDebuff(newBuff, targetCharacter, game);
 }
 
 function applyBuffEffect(debuff: Debuff, targetCharacter: Character, game: Game) {
+    const buffBall = debuff as BuffBallPhysics;
     targetCharacter.isMoveTickDisabled = true;
     autoSendMousePositionHandler(targetCharacter.id, debuff.name, true, undefined, game);
+    if(buffBall.abilityRefName === ABILITY_NAME_LIGHTNING_BALL){
+        const buffImmunity = createBuffImmunity(undefined, undefined);
+        applyDebuff(buffImmunity, targetCharacter, game);    
+    }
 }
 
 function removeBuffEffect(debuff: Debuff, targetCharacter: Character, game: Game) {
+    const buffBall = debuff as BuffBallPhysics;
     targetCharacter.isMoveTickDisabled = false;
     autoSendMousePositionHandler(targetCharacter.id, debuff.name, false, undefined, game);
+    if(buffBall.abilityRefName === ABILITY_NAME_LIGHTNING_BALL){
+        const immunityBuff = targetCharacter.debuffs.find((d) => d.name === BUFF_NAME_IMMUNITY);
+        if(immunityBuff){
+            removeCharacterDebuff(immunityBuff, targetCharacter, game);
+        }
+    }
 }

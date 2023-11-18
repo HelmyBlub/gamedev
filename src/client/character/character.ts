@@ -52,7 +52,7 @@ export function findCharacterByIdInCompleteMap(id: number, game: Game) {
 }
 
 export function characterTakeDamage(character: Character, damage: number, game: Game, abilityRefId: number | undefined = undefined) {
-    if (character.isDead || character.isPet || character.isImmune) return;
+    if (character.isDead || character.isPet || character.isDamageImmune) return;
 
     character.hp -= damage;
     if (character.hp <= 0) {

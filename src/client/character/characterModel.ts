@@ -113,7 +113,8 @@ export type Character = Position & {
         randomizedCharacterImage?: RandomizedCharacterImage,
     }
     isPet?: boolean,
-    isImmune?: boolean,
+    isDamageImmune?: boolean,
+    isDebuffImmune?: boolean,
     isUnMoveAble?: boolean,
     willTurnToPetOnDeath?: boolean,
     upgradeChoices: UpgradeOption[],
