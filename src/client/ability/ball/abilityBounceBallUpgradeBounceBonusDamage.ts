@@ -5,9 +5,11 @@ import { ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS, AbilityBounceBall } from "./abil
 
 type AbilityBounceBallUpgradeBounceBonusDamage = AbilityUpgrade & {
     bounces: number,
+    maxBounceBonus: number,
 }
 
 const BONUS_DAMAGE_PER_LEVEL = 1;
+const MAX_BONUS_BOUNCE = 100;
 
 export const ABILITY_BOUNCE_BALL_UPGARDE_BOUNCE_BONUS_DAMAGE = "Bounce Bonus Damage";
 
@@ -21,21 +23,22 @@ export function addAbilitySpeedBoostUpgradeBounceBonusDamage() {
     }
 }
 
-export function abilityBounceBallUpgradeBounceBonusDamageAddBounce(ability: Ability){
+export function abilityBounceBallUpgradeBounceBonusDamageAddBounce(ability: Ability) {
     const up: AbilityBounceBallUpgradeBounceBonusDamage = ability.upgrades[ABILITY_BOUNCE_BALL_UPGARDE_BOUNCE_BONUS_DAMAGE];
-    if(!up) return;
+    if (!up) return;
     up.bounces++;
+    if (up.bounces > up.maxBounceBonus) up.bounces = up.maxBounceBonus;
 }
 
-export function abilityBounceBallUpgradeBounceBonusDamageResetBounces(ability: Ability){
+export function abilityBounceBallUpgradeBounceBonusDamageResetBounces(ability: Ability) {
     const up: AbilityBounceBallUpgradeBounceBonusDamage = ability.upgrades[ABILITY_BOUNCE_BALL_UPGARDE_BOUNCE_BONUS_DAMAGE];
-    if(!up) return;
+    if (!up) return;
     up.bounces = 0;
 }
 
-function getDamageFactor(ability: Ability): number{
+function getDamageFactor(ability: Ability): number {
     const up: AbilityBounceBallUpgradeBounceBonusDamage = ability.upgrades[ABILITY_BOUNCE_BALL_UPGARDE_BOUNCE_BONUS_DAMAGE];
-    if(!up) return 1;
+    if (!up) return 1;
     return 1 + up.level * up.bounces * BONUS_DAMAGE_PER_LEVEL;
 }
 
@@ -45,11 +48,11 @@ function getOptions(ability: Ability): UpgradeOptionAndProbability[] {
     return options;
 }
 
-function executeOption(ability: Ability, option: AbilityUpgradeOption){
+function executeOption(ability: Ability, option: AbilityUpgradeOption) {
     const ball = ability as AbilityBounceBall;
     let up: AbilityBounceBallUpgradeBounceBonusDamage;
     if (ball.upgrades[ABILITY_BOUNCE_BALL_UPGARDE_BOUNCE_BONUS_DAMAGE] === undefined) {
-        up = {level: 0, bounces: 0};
+        up = { level: 0, bounces: 0, maxBounceBonus: MAX_BONUS_BOUNCE };
         ball.upgrades[ABILITY_BOUNCE_BALL_UPGARDE_BOUNCE_BONUS_DAMAGE] = up;
     } else {
         up = ball.upgrades[ABILITY_BOUNCE_BALL_UPGARDE_BOUNCE_BONUS_DAMAGE];
@@ -59,7 +62,9 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption){
 
 function getAbilityUpgradeUiText(ability: Ability): string {
     const up: AbilityBounceBallUpgradeBounceBonusDamage = ability.upgrades[ABILITY_BOUNCE_BALL_UPGARDE_BOUNCE_BONUS_DAMAGE];
-    return `${ABILITY_BOUNCE_BALL_UPGARDE_BOUNCE_BONUS_DAMAGE}: ${up.level * BONUS_DAMAGE_PER_LEVEL * 100}%. Bounces: ${up.bounces}` ;
+    const addMaxHint = up.bounces >= up.maxBounceBonus ? "(max)" : "";
+    const bouncesText = `Bounces: ${up.bounces}${addMaxHint}`;
+    return `${ABILITY_BOUNCE_BALL_UPGARDE_BOUNCE_BONUS_DAMAGE}: ${up.level * BONUS_DAMAGE_PER_LEVEL * 100}%. ${bouncesText}`;
 }
 
 function getAbilityUpgradeUiTextLong(ability: Ability): string[] {

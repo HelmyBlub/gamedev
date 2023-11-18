@@ -1,6 +1,4 @@
 current tasks:
-- test multiplayer still working
-    - tamer death -> not becoming a pet
 - new class:
     - main problem: tankiness of "melee" type of ball character
         - hp leach of lightning ball also increases maxHp?
