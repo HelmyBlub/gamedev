@@ -67,7 +67,7 @@ export function characterTakeDamage(character: Character, damage: number, game: 
         killCharacter(character, game, abilityRefId);
     }
     if (game.UI.displayDamageNumbers) {
-        const textPos = { x: character.x, y: character.y - character.height / 2 };
+        const textPos = { x: character.x, y: character.y - character.height / 2 - 15};
         const fontSize = character.faction === FACTION_PLAYER ? "20" : "12";
         const textColor = character.faction === FACTION_PLAYER ? "blue" : "black";
         game.UI.displayTextData.push(createPaintTextData(textPos, damage.toFixed(0), textColor, fontSize, game.state.time));

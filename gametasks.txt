@@ -1,10 +1,7 @@
 current tasks:
 - new class:
     - main problem: tankiness of "melee" type of ball character
-        - bounce ball shield
-            - bonus hp/shield for every bounce as long as in bounce ball
-                - character stat shield
-                - buff "shield"
+        - give a permanent 50% damage reduction buff
     - upgrade ideas:
         -ball has alot of synergie upgrades?
             - lightning strikes gain bounce bonus damage

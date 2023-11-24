@@ -44,14 +44,19 @@ export function paintCharacterHpBar(ctx: CanvasRenderingContext2D, character: Ch
     ctx.fillStyle = "black";
     ctx.fillRect(topLeftPaint.x, topLeftPaint.y - hpBarHeight, Math.ceil(bossWidth * fillAmount), hpBarHeight);
     if(character.shield > 0){
-        const shieldCounter = Math.floor(character.shield / character.maxHp);
-        const fillAmountShield = Math.max(0, (character.shield % character.maxHp) / character.maxHp);
-        ctx.fillStyle = "blue";
-        if(shieldCounter > 0){
-            ctx.fillRect(topLeftPaint.x, topLeftPaint.y - hpBarHeight, Math.ceil(bossWidth), hpBarHeight);    
-            ctx.fillStyle = "darkblue";
+        let shieldStackCounter = Math.floor(character.shield / character.maxHp);
+        const shieldStackColors = ["lightblue", "blue", "darkblue"];
+        let shieldFillAmount = Math.max(0, (character.shield % character.maxHp) / character.maxHp);
+        if(shieldStackCounter >= shieldStackColors.length){
+            shieldFillAmount = 1;
+            shieldStackCounter = shieldStackColors.length - 1;
         }
-        ctx.fillRect(topLeftPaint.x, topLeftPaint.y - hpBarHeight, Math.ceil(bossWidth * fillAmountShield), hpBarHeight);    
+        if(shieldStackCounter > 0){
+            ctx.fillStyle = shieldStackColors[shieldStackCounter - 1];
+            ctx.fillRect(topLeftPaint.x, topLeftPaint.y - hpBarHeight, Math.ceil(bossWidth), hpBarHeight);    
+        }
+        ctx.fillStyle = shieldStackColors[shieldStackCounter];
+        ctx.fillRect(topLeftPaint.x, topLeftPaint.y - hpBarHeight, Math.ceil(bossWidth * shieldFillAmount), hpBarHeight);    
     }
     ctx.beginPath();
     ctx.rect(topLeftPaint.x, topLeftPaint.y - hpBarHeight, bossWidth, hpBarHeight);
@@ -65,6 +70,9 @@ export function paintCharacterStatsUI(ctx: CanvasRenderingContext2D, character: 
         `Movement Speed: ${character.moveSpeed.toFixed(2)}`,
         `Type: ${character.type}`,
     ];
+    if(character.shield > 0){
+        textLines.splice(2,0,`Shield: ${character.shield.toFixed(0)}/${(character.maxHp * character.maxShieldFactor).toFixed(0)}`);
+    }
     if (character.type === LEVELING_CHARACTER) {
         const levelingCharacter = character as LevelingCharacter;
         textLines.push(
