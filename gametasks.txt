@@ -1,12 +1,13 @@
 current tasks:
 - new class:
-    - lightning ball upgrade(only one tier upgrade, dependand on bounce ball upgrade): ->
-        - next use of lightning ball empowered by max bounces of last bounce ball
-
     - main problem: tankiness of "melee" type of ball character
-        - hp leach of lightning ball also increases maxHp?
-    - upgrade ideas:    
+        - bounce ball shield
+            - bonus hp/shield for every bounce as long as in bounce ball
+                - character stat shield
+                - buff "shield"
+    - upgrade ideas:
         -ball has alot of synergie upgrades?
+            - lightning strikes gain bounce bonus damage
             - lightning strikes upgrade: ->
                 - while lightning strikes buff is active in bounce ball, you take half damage
     - impl:

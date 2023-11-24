@@ -9,7 +9,7 @@ const BONUS_ANGLE_PER_LEVEL = 0.005;
 
 export const ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_ANGLE = "Incease Angle Change";
 
-export function addAbilitySpeedBoostUpgradeAngleChange() {
+export function addAbilityBounceBallUpgradeAngleChange() {
     ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS[ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_ANGLE] = {
         getStatsDisplayText: getAbilityUpgradeSpeedUiText,
         getLongExplainText: getAbilityUpgradeSpeedUiTextLong,

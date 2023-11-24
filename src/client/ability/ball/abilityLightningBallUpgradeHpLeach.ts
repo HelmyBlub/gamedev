@@ -1,3 +1,4 @@
+import { Character } from "../../character/characterModel.js";
 import { AbilityUpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { Ability, AbilityOwner } from "../ability.js";
 import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrade.js";
@@ -8,6 +9,7 @@ type AbilityLightningBallUpgradeLightningStrikesBuff = AbilityUpgrade & {
 }
 
 const HEAL_PER_PIXEL_TRAVELED = 0.1;
+const BONUS_HP = 200;
 
 export const ABILITY_LIGHTNING_BALL_UPGRADE_HP_LEACH = "HP Generation";
 
@@ -36,7 +38,7 @@ function getOptions(ability: Ability): UpgradeOptionAndProbability[] {
     return options;
 }
 
-function executeOption(ability: Ability, option: AbilityUpgradeOption) {
+function executeOption(ability: Ability, option: AbilityUpgradeOption, character: Character) {
     const as = ability as AbilityLightningBall;
     let up: AbilityLightningBallUpgradeLightningStrikesBuff;
     if (as.upgrades[ABILITY_LIGHTNING_BALL_UPGRADE_HP_LEACH] === undefined) {
@@ -46,6 +48,8 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption) {
         up = as.upgrades[ABILITY_LIGHTNING_BALL_UPGRADE_HP_LEACH];
     }
     up.level++;
+    character.maxHp += BONUS_HP;
+    character.hp += BONUS_HP;
     up.healPerPixelTraveled += HEAL_PER_PIXEL_TRAVELED;
 }
 
@@ -58,6 +62,7 @@ function getAbilityUpgradeUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
     textLines.push(`When using Lightning Ball you will`);
     textLines.push(`heal for distance traveled.`);
+    textLines.push(`And get ${BONUS_HP} bonus HP.`);
     textLines.push(`${HEAL_PER_PIXEL_TRAVELED.toFixed(2)} heal per pixel traveled.`);
 
     return textLines;

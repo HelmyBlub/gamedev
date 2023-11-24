@@ -9,7 +9,7 @@ const BONUS_SPEED_PER_LEVEL = 0.5;
 
 export const ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_SPEED = "Bounce Bonus Speed";
 
-export function addAbilitySpeedBoostUpgradeSpeed() {
+export function addAbilityBoucneBallUpgradeSpeed() {
     ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS[ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_SPEED] = {
         getStatsDisplayText: getAbilityUpgradeSpeedUiText,
         getLongExplainText: getAbilityUpgradeSpeedUiTextLong,

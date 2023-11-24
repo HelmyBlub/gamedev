@@ -10,9 +10,10 @@ import { calculateBounceAngle, calculateMovePosition, isPositionBlocking } from 
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, detectSomethingToCharacterHit, getAbilityNameUiText, paintDefaultAbilityStatsUI } from "../ability.js";
 import { AbilityUpgradesFunctions, getAbilityUpgradesDamageFactor, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
-import { addAbilitySpeedBoostUpgradeAngleChange } from "./abilityBounceBallUpgradeAngle.js";
-import { abilityBounceBallUpgradeBounceBonusDamageAddBounce, abilityBounceBallUpgradeBounceBonusDamageResetBounces, addAbilitySpeedBoostUpgradeBounceBonusDamage } from "./abilityBounceBallUpgradeBounceBonusDamage.js";
-import { addAbilitySpeedBoostUpgradeSpeed } from "./abilityBounceBallUpgradeBounceBonusSpeed.js";
+import { addAbilityBounceBallUpgradeAngleChange } from "./abilityBounceBallUpgradeAngle.js";
+import { abilityBounceBallUpgradeBounceBonusDamageAddBounce, abilityBounceBallUpgradeBounceBonusDamageResetBounces, addAbilityBounceBallUpgradeBounceBonusDamage } from "./abilityBounceBallUpgradeBounceBonusDamage.js";
+import { addAbilityBoucneBallUpgradeSpeed } from "./abilityBounceBallUpgradeBounceBonusSpeed.js";
+import { addAbilityBounceBallUpgradeBounceShield, bounceBallUpgradeBounceShieldExecute } from "./abilityBounceBallUpgradeBounceShield.js";
 
 export type AbilityBounceBall = Ability & {
     baseRechargeTime: number,
@@ -55,9 +56,10 @@ export function addAbilityBounceBall() {
         abilityUpgradeFunctions: ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS,
         canBeUsedByBosses: false,
     };
-    addAbilitySpeedBoostUpgradeSpeed();
-    addAbilitySpeedBoostUpgradeAngleChange();
-    addAbilitySpeedBoostUpgradeBounceBonusDamage();
+    addAbilityBoucneBallUpgradeSpeed();
+    addAbilityBounceBallUpgradeAngleChange();
+    addAbilityBounceBallUpgradeBounceBonusDamage();
+    addAbilityBounceBallUpgradeBounceShield();
 }
 
 export function createAbilityBounceBall(
@@ -251,6 +253,7 @@ function rollTick(abilityBounceBall: AbilityBounceBall, abilityOwner: AbilityOwn
         abilityBounceBall.moveDirection = calculateBounceAngle(abilityOwner, abilityBounceBall.moveDirection, game);
         abilityBounceBall.currentSpeed += abilityBounceBall.bounceBonusSpeed;
         abilityBounceBallUpgradeBounceBonusDamageAddBounce(abilityBounceBall);
+        bounceBallUpgradeBounceShieldExecute(abilityBounceBall, abilityOwner);
         if (abilityBounceBall.currentSpeed > abilityBounceBall.maxSpeed) {
             abilityBounceBall.currentSpeed = abilityBounceBall.maxSpeed;
         }

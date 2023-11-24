@@ -54,7 +54,15 @@ export function findCharacterByIdInCompleteMap(id: number, game: Game) {
 export function characterTakeDamage(character: Character, damage: number, game: Game, abilityRefId: number | undefined = undefined) {
     if (character.isDead || character.isPet || character.isDamageImmune) return;
 
-    character.hp -= damage;
+    if(character.shield > 0){
+        character.shield -= damage;
+        if(character.shield < 0){
+            character.hp += character.shield;
+            character.shield = 0;
+        }
+    }else{
+        character.hp -= damage;
+    }
     if (character.hp <= 0) {
         killCharacter(character, game, abilityRefId);
     }
@@ -65,6 +73,14 @@ export function characterTakeDamage(character: Character, damage: number, game: 
         game.UI.displayTextData.push(createPaintTextData(textPos, damage.toFixed(0), textColor, fontSize, game.state.time));
     }
     if (character.faction === FACTION_ENEMY) character.wasHitRecently = true;
+}
+
+export function characterGetShield(character: Character, shieldValue: number){
+    if (character.isDead) return;
+    character.shield += shieldValue;
+    if(character.shield > character.maxShieldFactor * character.maxHp){
+        character.shield = character.maxShieldFactor * character.maxHp
+    }
 }
 
 export function playerCharactersAddBossSkillPoints(game: Game) {

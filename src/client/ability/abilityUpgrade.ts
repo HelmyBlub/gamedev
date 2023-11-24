@@ -10,7 +10,7 @@ export type AbilityUpgrade = {
 export type AbilityUpgradeFunctions = {
     getOptions?: (ability: Ability, character: Character, game: Game) => UpgradeOptionAndProbability[],
     addSynergyUpgradeOption?: (ability: Ability) => boolean,
-    executeOption: (ability: Ability, option: AbilityUpgradeOption) => void,
+    executeOption: (ability: Ability, option: AbilityUpgradeOption, character: Character) => void,
     getStatsDisplayText: (ability: Ability) => string,
     getLongExplainText?: (ability: Ability, option: AbilityUpgradeOption) => string[],
     getDamageFactor?: (ability: Ability, playerTriggered: boolean) => number,
@@ -25,7 +25,7 @@ export function upgradeAbility(ability: Ability, character: Character, upgradeOp
     const abilityFunctions = ABILITIES_FUNCTIONS[upgradeOption.name!];
     const upgradeFunctions = abilityFunctions.abilityUpgradeFunctions![upgradeOption.identifier!];
     if (upgradeFunctions) {
-        upgradeFunctions.executeOption(ability, upgradeOption);
+        upgradeFunctions.executeOption(ability, upgradeOption, character);
         if (ability.bossSkillPoints !== undefined) ability.bossSkillPoints--;
     }
     character.upgradeChoices = [];

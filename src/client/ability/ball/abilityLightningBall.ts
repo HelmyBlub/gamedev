@@ -75,6 +75,13 @@ export function createAbilityLightningBall(
     };
 }
 
+export function getDamageAbilityLightningBall(abilityBounceBall: AbilityLightningBall, abilityOwner: AbilityOwner) {
+    let damageFactor = 1;
+    damageFactor += lightningBallUpgradeBounceBonusGetBonusDamageFactor(abilityBounceBall, abilityOwner);
+    return abilityBounceBall.damage * damageFactor;
+}
+
+
 function castBounceBall(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isKeydown: boolean, game: Game) {
     if (!isKeydown) return;
     const abilityLightningBall = ability as AbilityLightningBall;
@@ -87,8 +94,8 @@ function castBounceBall(abilityOwner: AbilityOwner, ability: Ability, castPositi
     if (abilityLightningBall.nextRechargeTime === undefined) {
         abilityLightningBall.nextRechargeTime = game.state.time + abilityLightningBall.baseRechargeTime;
     }
-    lightningBallUpgradeLightningStirkesExecute(abilityLightningBall, abilityOwner, game);
     lightningBallUpgradeBounceBonusSetBonusDamageFactor(abilityLightningBall, abilityOwner);
+    lightningBallUpgradeLightningStirkesExecute(abilityLightningBall, abilityOwner, game);
     const clientInfo: ClientInfo | undefined = getClientInfoByCharacterId(abilityOwner.id, game);
     if (clientInfo) clientInfo.lastMousePosition = castPosition;
 }
@@ -195,19 +202,13 @@ function jumpTick(abilityBounceBall: AbilityLightningBall, abilityOwner: Ability
     }
 }
 
-function getDamage(abilityBounceBall: AbilityLightningBall, abilityOwner: AbilityOwner) {
-    let damageFactor = 1;
-    damageFactor += lightningBallUpgradeBounceBonusGetBonusDamageFactor(abilityBounceBall, abilityOwner);
-    return abilityBounceBall.damage * damageFactor;
-}
-
 function damageTick(abilityBounceBall: AbilityLightningBall, abilityOwner: AbilityOwner, game: Game): number {
     const hitCount = detectSomethingToCharacterHit(
         game.state.map,
         abilityOwner,
         abilityBounceBall.radius * 2,
         abilityOwner.faction,
-        getDamage(abilityBounceBall, abilityOwner),
+        getDamageAbilityLightningBall(abilityBounceBall, abilityOwner),
         game.state.players,
         game.state.bossStuff.bosses,
         abilityBounceBall.id,

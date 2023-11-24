@@ -13,7 +13,7 @@ const MAX_BONUS_BOUNCE = 100;
 
 export const ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_DAMAGE = "Bounce Bonus Damage";
 
-export function addAbilitySpeedBoostUpgradeBounceBonusDamage() {
+export function addAbilityBounceBallUpgradeBounceBonusDamage() {
     ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS[ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_DAMAGE] = {
         getStatsDisplayText: getAbilityUpgradeUiText,
         getDamageFactor: getDamageFactor,
