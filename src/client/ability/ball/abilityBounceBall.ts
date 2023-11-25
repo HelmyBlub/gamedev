@@ -14,6 +14,7 @@ import { addAbilityBounceBallUpgradeAngleChange } from "./abilityBounceBallUpgra
 import { abilityBounceBallUpgradeBounceBonusDamageAddBounce, abilityBounceBallUpgradeBounceBonusDamageResetBounces, addAbilityBounceBallUpgradeBounceBonusDamage } from "./abilityBounceBallUpgradeBounceBonusDamage.js";
 import { addAbilityBoucneBallUpgradeSpeed } from "./abilityBounceBallUpgradeBounceBonusSpeed.js";
 import { addAbilityBounceBallUpgradeBounceShield, bounceBallUpgradeBounceShieldExecute } from "./abilityBounceBallUpgradeBounceShield.js";
+import { abilityBounceBallUpgradeFireLinePlace, abilityBounceBallUpgradeFireLineStart, addAbilityBounceBallUpgradeFireLine } from "./abilityBounceBallUpgradeFireLine.js";
 
 export type AbilityBounceBall = Ability & {
     baseRechargeTime: number,
@@ -56,10 +57,11 @@ export function addAbilityBounceBall() {
         abilityUpgradeFunctions: ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS,
         canBeUsedByBosses: false,
     };
-    addAbilityBoucneBallUpgradeSpeed();
-    addAbilityBounceBallUpgradeAngleChange();
+    // addAbilityBoucneBallUpgradeSpeed();
+    // addAbilityBounceBallUpgradeAngleChange();
     addAbilityBounceBallUpgradeBounceBonusDamage();
     addAbilityBounceBallUpgradeBounceShield();
+    addAbilityBounceBallUpgradeFireLine();
 }
 
 export function createAbilityBounceBall(
@@ -114,7 +116,8 @@ function castBounceBall(abilityOwner: AbilityOwner, ability: Ability, castPositi
         }
     }
     applyDebuff(buffBallPhyscis, abilityOwner as any, game);
-    abilityBounceBallUpgradeBounceBonusDamageResetBounces(abilityBounceBall)
+    abilityBounceBallUpgradeBounceBonusDamageResetBounces(abilityBounceBall);
+    abilityBounceBallUpgradeFireLineStart(abilityBounceBall, abilityOwner, game);
     if (abilityBounceBall.currentSpeed < abilityBounceBall.startSpeed || !keepCurrentSpeed) {
         abilityBounceBall.currentSpeed = abilityBounceBall.startSpeed;
     }
@@ -240,6 +243,7 @@ function damageTick(abilityBounceBall: AbilityBounceBall, abilityOwner: AbilityO
         );
 
         abilityBounceBall.nextTickTime += abilityBounceBall.tickInterval;
+        abilityBounceBallUpgradeFireLinePlace(abilityBounceBall, abilityOwner, game);
 
         if (abilityBounceBall.nextTickTime <= game.state.time) {
             abilityBounceBall.nextTickTime = game.state.time + abilityBounceBall.tickInterval;
@@ -257,6 +261,7 @@ function rollTick(abilityBounceBall: AbilityBounceBall, abilityOwner: AbilityOwn
         if (abilityBounceBall.currentSpeed > abilityBounceBall.maxSpeed) {
             abilityBounceBall.currentSpeed = abilityBounceBall.maxSpeed;
         }
+        abilityBounceBallUpgradeFireLinePlace(abilityBounceBall, abilityOwner, game);
     } else {
         abilityBounceBall.rolledDistanceAfterLastDamageTick += moveDistance;
         abilityOwner.x = newPosition.x;

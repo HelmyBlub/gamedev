@@ -5,7 +5,7 @@ current tasks:
         - performance spikes when rolling fast with many enemies?
             - make enemies teleport back instead of runback?
     - upgrade ideas:
-        -ball has alot of synergie upgrades?
+        - ball has alot of synergie upgrades?
             - lightning strikes gain bounce bonus damage
             - lightning strikes upgrade: ->
                 - while lightning strikes buff is active in bounce ball, you take half damage
