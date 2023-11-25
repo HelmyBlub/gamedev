@@ -35,6 +35,9 @@ export function paintMap(layer: MapPaintLayer, ctx: CanvasRenderingContext2D, ca
                     ctx.rect(x + 1, y + 1, chunkSize - 2, chunkSize - 2);
                     ctx.stroke();
                     ctx.closePath();
+                    ctx.fillStyle = "black";
+                    ctx.font = "12px Arial";
+                    ctx.fillText(chunk.characters.length.toFixed(), x + 2, y + 20);
                 }
             }
         }

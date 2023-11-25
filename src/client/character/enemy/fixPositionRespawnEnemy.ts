@@ -71,6 +71,7 @@ function alertCloseEnemies(enemy: FixPositionRespawnEnemyCharacter, game: Game) 
 function respawnLogic(enemy: FixPositionRespawnEnemyCharacter, game: Game) {
     if (!enemy.respawnOnTime) {
         enemy.respawnOnTime = game.state.time + enemy.respawnTime;
+        resetPosition(enemy, game.state.map);
     } else if (enemy.respawnOnTime <= game.state.time) {
         const closest = determineClosestCharacterToEnemySpawn(enemy, getPlayerCharacters(game.state.players));
         if (closest.minDistance > enemy.autoAggroRange + 100) {
@@ -98,6 +99,11 @@ function resetEnemy(enemy: FixPositionRespawnEnemyCharacter, map: GameMap) {
     enemy.isDead = false;
     enemy.isAggroed = false;
     if (enemy.wasHitRecently) delete enemy.wasHitRecently;
+
+    delete enemy.respawnOnTime;
+}
+
+function resetPosition(enemy: FixPositionRespawnEnemyCharacter, map: GameMap){
     mapCharacterCheckForChunkChange(enemy, map, enemy.spawnPosition.x, enemy.spawnPosition.y);
     enemy.x = enemy.spawnPosition.x;
     enemy.y = enemy.spawnPosition.y;
@@ -107,5 +113,4 @@ function resetEnemy(enemy: FixPositionRespawnEnemyCharacter, map: GameMap) {
             pet.y = enemy.y;
         }
     }
-    delete enemy.respawnOnTime;
 }

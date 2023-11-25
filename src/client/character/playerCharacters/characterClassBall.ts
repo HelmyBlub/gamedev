@@ -31,6 +31,7 @@ function changeCharacterToBallClass(
     character.characterClass = CHARACTER_CLASS_BALL;
     character.maxHp *= 2;
     character.hp *= 2;
+    character.damageTakenModifierFactor *= 0.5;
     addAbilityToCharacter(character, createAbility(ABILITY_NAME_BOUNCE_BALL, idCounter, true, true, "ability1"));
     addAbilityToCharacter(character, createAbility(ABILITY_NAME_LIGHTNING_BALL, idCounter, true, true, "ability2"));
     const hpRegen = createAbilityHpRegen(idCounter);

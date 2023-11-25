@@ -53,15 +53,15 @@ export function findCharacterByIdInCompleteMap(id: number, game: Game) {
 
 export function characterTakeDamage(character: Character, damage: number, game: Game, abilityRefId: number | undefined = undefined) {
     if (character.isDead || character.isPet || character.isDamageImmune) return;
-
+    let modifiedDamage = damage * character.damageTakenModifierFactor;
     if(character.shield > 0){
-        character.shield -= damage;
+        character.shield -= modifiedDamage;
         if(character.shield < 0){
             character.hp += character.shield;
             character.shield = 0;
         }
     }else{
-        character.hp -= damage;
+        character.hp -= modifiedDamage;
     }
     if (character.hp <= 0) {
         killCharacter(character, game, abilityRefId);
@@ -70,7 +70,7 @@ export function characterTakeDamage(character: Character, damage: number, game: 
         const textPos = { x: character.x, y: character.y - character.height / 2 - 15};
         const fontSize = character.faction === FACTION_PLAYER ? "20" : "12";
         const textColor = character.faction === FACTION_PLAYER ? "blue" : "black";
-        game.UI.displayTextData.push(createPaintTextData(textPos, damage.toFixed(0), textColor, fontSize, game.state.time));
+        game.UI.displayTextData.push(createPaintTextData(textPos, modifiedDamage.toFixed(0), textColor, fontSize, game.state.time));
     }
     if (character.faction === FACTION_ENEMY) character.wasHitRecently = true;
 }
