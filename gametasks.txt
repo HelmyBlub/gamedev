@@ -1,9 +1,6 @@
 current tasks:
 - new class:
     - main problem: tankiness of "melee" type of ball character
-        - give a permanent 50% damage reduction buff
-        - performance spikes when rolling fast with many enemies?
-            - make enemies teleport back instead of runback?
     - upgrade ideas:
         - ball has alot of synergie upgrades?
             - lightning strikes gain bounce bonus damage
@@ -28,8 +25,9 @@ current tasks:
                 - debuff
                     - enemy takes more damage, colldown reduce for lightning ball
 
-- enemy on death put back to spawn position. So they tick in own chunk
 - having multiple ball abilities? does not work
+- performance spikes when rolling fast with many enemies?
+    - make enemies teleport back instead of runback?
 - multiplayer bug: leashes on game over
 - multiplayer: do not visulaize other pets happines?
 

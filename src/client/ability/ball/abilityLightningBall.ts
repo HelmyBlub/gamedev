@@ -39,6 +39,7 @@ export function addAbilityLightningBall() {
         paintAbility: paintAbility,
         paintAbilityUI: paintAbilityUI,
         paintAbilityStatsUI: paintAbilityStatsUI,
+        resetAbility: resetAbility,
         setAbilityToLevel: setAbilityToLevel,
         setAbilityToBossLevel: setAbilityToBossLevel,
         setAbilityToEnemyLevel: setAbilityToEnemyLevel,
@@ -81,6 +82,11 @@ export function getDamageAbilityLightningBall(abilityBounceBall: AbilityLightnin
     return abilityBounceBall.damage * damageFactor;
 }
 
+function resetAbility(ability: Ability) {
+    const ball = ability as AbilityLightningBall;
+    ball.nextRechargeTime = undefined;
+    ball.currentCharges = ball.maxCharges;
+}
 
 function castBounceBall(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isKeydown: boolean, game: Game) {
     if (!isKeydown) return;

@@ -50,6 +50,7 @@ export function addAbilityBounceBall() {
         paintAbility: paintAbility,
         paintAbilityUI: paintAbilityUI,
         paintAbilityStatsUI: paintAbilityStatsUI,
+        resetAbility: resetAbility,
         setAbilityToLevel: setAbilityToLevel,
         setAbilityToBossLevel: setAbilityToBossLevel,
         setAbilityToEnemyLevel: setAbilityToEnemyLevel,
@@ -101,6 +102,12 @@ export function getAbilityBounceBallDamage(abilityBounceBall: AbilityBounceBall)
     let damage = abilityBounceBall.damage;
     damage *= getAbilityUpgradesDamageFactor(ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS, abilityBounceBall, true);
     return damage;
+}
+
+function resetAbility(ability: Ability) {
+    const ball = ability as AbilityBounceBall;
+    ball.nextRechargeTime = undefined;
+    ball.currentCharges = ball.maxCharges;
 }
 
 function castBounceBall(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isKeydown: boolean, game: Game) {
