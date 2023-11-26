@@ -11,6 +11,7 @@ import { addTowerClass } from "./towerCharacterClass.js"
 export type PlayerCharacterClassFunctions = {
     changeCharacterToThisClass: (character: Character, idCounter: IdCounter, game: Game) => void,
     createBossBasedOnClassAndCharacter?: (basedOnCharacter: Character, level: number, spawn: Position, game: Game) => Character,
+    getLongUiText?: () => string[],
 }
 
 export type PlayerCharacterClassesFunctions = {
@@ -42,11 +43,16 @@ export function createCharacterChooseUpgradeOptions(game: Game): UpgradeOption[]
     const keys = Object.keys(PLAYER_CHARACTER_CLASSES_FUNCTIONS);
 
     for (let key of keys) {
-        upgradeOptions.push({
+        let option: UpgradeOption = {
             displayText: key,
             type: "Character",
             identifier: key
-        });
+        };
+        let functions = PLAYER_CHARACTER_CLASSES_FUNCTIONS[key];
+        if(functions && functions.getLongUiText){
+            option.displayLongText = functions.getLongUiText();
+        }
+        upgradeOptions.push(option);
     }
 
     return upgradeOptions;

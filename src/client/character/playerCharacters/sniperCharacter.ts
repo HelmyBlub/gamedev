@@ -16,6 +16,7 @@ export function addSniperClass() {
     PLAYER_CHARACTER_CLASSES_FUNCTIONS[CHARACTER_CLASS_SNIPER_NAME] = {
         changeCharacterToThisClass: changeCharacterToSniperClass,
         createBossBasedOnClassAndCharacter: createBossBasedOnClassAndCharacter,
+        getLongUiText: getLongUiText,
     }
 }
 
@@ -29,6 +30,15 @@ function changeCharacterToSniperClass(
     addAbilityToCharacter(character, createAbility(ABILITY_NAME_SNIPE, idCounter, true, true, "ability1"));
     addAbilityToCharacter(character, createAbilityHpRegen(idCounter));
     addAbilityToCharacter(character, createAbility(ABILITY_NAME_SPEED_BOOST, idCounter, true, true, "ability2"));
+}
+
+function getLongUiText(): string[]{
+    let text: string[] = [];
+    text.push("Get a sniper rifle.");
+    text.push("Abilities:");
+    text.push("- Snipe");
+    text.push("- Speed Boost");
+    return text;
 }
 
 function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: number, spawn: Position, game: Game): Character {

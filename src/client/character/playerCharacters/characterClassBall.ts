@@ -19,6 +19,7 @@ export function addBallClass() {
     PLAYER_CHARACTER_CLASSES_FUNCTIONS[CHARACTER_CLASS_BALL] = {
         changeCharacterToThisClass: changeCharacterToBallClass,
         createBossBasedOnClassAndCharacter: createBossBasedOnClassAndCharacter,
+        getLongUiText: getLongUiText,
     }
 }
 
@@ -37,6 +38,15 @@ function changeCharacterToBallClass(
     const hpRegen = createAbilityHpRegen(idCounter);
     hpRegen.amount *= 5;
     addAbilityToCharacter(character, hpRegen);
+}
+
+function getLongUiText(): string[]{
+    let text: string[] = [];
+    text.push("Turn into a ball to quickly roll around.");
+    text.push("Abilities:");
+    text.push("- Boucne Ball");
+    text.push("- Lightning Ball");
+    return text;
 }
 
 function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: number, spawn: Position, game: Game): Character {

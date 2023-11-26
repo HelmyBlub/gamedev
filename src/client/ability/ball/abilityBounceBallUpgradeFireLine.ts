@@ -10,7 +10,7 @@ type AbilityBounceBallUpgradeFireLine = AbilityUpgrade & {
 }
 
 const DURATION = 3000;
-const DAMAGE_PER_SECOND_FACTOR = 2;
+const DAMAGE_PER_SECOND_FACTOR = 1;
 const TICK_INTERVAL = 250;
 
 export const ABILITY_BOUNCE_BALL_UPGRADE_FIRE_LINE = "Fire Line";
@@ -70,6 +70,6 @@ function getAbilityUpgradeUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
     textLines.push(`Create fire lines while rolling around.`);
     textLines.push(`Lasting ${(DURATION / 1000).toFixed(1)}s.`);
-    textLines.push(`Doing ${DAMAGE_PER_SECOND_FACTOR * 100}% base damage.`);
+    textLines.push(`Doing ${DAMAGE_PER_SECOND_FACTOR * 100}% base damage per second.`);
     return textLines;
 }

@@ -1,6 +1,6 @@
 current tasks:
 - new class:
-    - main problem: tankiness of "melee" type of ball character
+    - class longUi text explanations
     - upgrade ideas:
         - ball has alot of synergie upgrades?
             - lightning strikes gain bounce bonus damage

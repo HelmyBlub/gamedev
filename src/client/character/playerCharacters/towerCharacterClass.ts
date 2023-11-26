@@ -16,6 +16,7 @@ export function addTowerClass() {
     PLAYER_CHARACTER_CLASSES_FUNCTIONS[TOWER_BUILDER] = {
         changeCharacterToThisClass: changeCharacterToTowerBuilderClass,
         createBossBasedOnClassAndCharacter: createBossBasedOnClassAndCharacter,
+        getLongUiText: getLongUiText,
     }
 }
 
@@ -28,6 +29,15 @@ function changeCharacterToTowerBuilderClass(
     character.characterClass = TOWER_BUILDER;
     addAbilityToCharacter(levelingCharacter, createAbilityTower(idCounter, "ability1"));
     addAbilityToCharacter(levelingCharacter, createAbilityHpRegen(idCounter));
+}
+
+function getLongUiText(): string[]{
+    let text: string[] = [];
+    text.push("Build Towers. Tower Connect to each other.");
+    text.push("Towers are stronger with more connections.");
+    text.push("Abilities:");
+    text.push("- Build Tower");
+    return text;
 }
 
 function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: number, spawn: Position, game: Game): Character {

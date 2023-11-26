@@ -24,6 +24,7 @@ export function addTamerClass() {
     PLAYER_CHARACTER_CLASSES_FUNCTIONS[TAMER_CHARACTER] = {
         changeCharacterToThisClass: changeCharacterToTamerClass,
         createBossBasedOnClassAndCharacter: createBossBasedOnClassAndCharacter,
+        getLongUiText: getLongUiText,
     }
     CHARACTER_TYPE_FUNCTIONS[TAMER_CHARACTER] = {
         tickFunction: tickDefaultCharacter,
@@ -31,6 +32,38 @@ export function addTamerClass() {
         executeUpgradeOption: executeTamerBossUpgradeOption,
     }
     addTamerPetFunctions();
+}
+
+export function createPetsBasedOnLevelAndCharacter(basedOnCharacter: Character, level: number, petOwner: Character, game: Game): TamerPetCharacter[] {
+    const randomPetIndex = Math.floor(nextRandom(game.state.randomSeed) * basedOnCharacter.pets!.length);
+    const pet: TamerPetCharacter = deepCopy(basedOnCharacter.pets![randomPetIndex]);
+    pet.x = petOwner.x;
+    pet.y = petOwner.y;
+    pet.faction = petOwner.faction;
+    if (level === 1) {
+        for (let i = pet.abilities.length - 1; i >= 0; i--) {
+            const ability = pet.abilities[i];
+            if (ability.name !== ABILITY_NAME_MELEE && ability.name !== ABILITY_NAME_LEASH) {
+                pet.abilities.splice(i, 1);
+            }
+        }
+    } else {
+        const petLevel = calculatePetLevel(pet);
+        if (petLevel > level) {
+            reducePetLevel(pet, petLevel - level, game.state.randomSeed);
+        }
+    }
+    for (let ability of pet.abilities) {
+        setAbilityToBossLevel(ability, level);
+        if (ability.name === ABILITY_NAME_LEASH) {
+            const abilityLeash = ability as AbilityLeash;
+            abilityLeash.leashedToOwnerId = petOwner.id;
+        }
+    }
+    resetCharacter(pet);
+    changeCharacterAndAbilityIds(pet, game.state.idCounter);
+
+    return [pet];
 }
 
 function changeCharacterToTamerClass(
@@ -74,36 +107,14 @@ function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: 
     return bossCharacter;
 }
 
-export function createPetsBasedOnLevelAndCharacter(basedOnCharacter: Character, level: number, petOwner: Character, game: Game): TamerPetCharacter[] {
-    const randomPetIndex = Math.floor(nextRandom(game.state.randomSeed) * basedOnCharacter.pets!.length);
-    const pet: TamerPetCharacter = deepCopy(basedOnCharacter.pets![randomPetIndex]);
-    pet.x = petOwner.x;
-    pet.y = petOwner.y;
-    pet.faction = petOwner.faction;
-    if (level === 1) {
-        for (let i = pet.abilities.length - 1; i >= 0; i--) {
-            const ability = pet.abilities[i];
-            if (ability.name !== ABILITY_NAME_MELEE && ability.name !== ABILITY_NAME_LEASH) {
-                pet.abilities.splice(i, 1);
-            }
-        }
-    } else {
-        const petLevel = calculatePetLevel(pet);
-        if (petLevel > level) {
-            reducePetLevel(pet, petLevel - level, game.state.randomSeed);
-        }
-    }
-    for (let ability of pet.abilities) {
-        setAbilityToBossLevel(ability, level);
-        if (ability.name === ABILITY_NAME_LEASH) {
-            const abilityLeash = ability as AbilityLeash;
-            abilityLeash.leashedToOwnerId = petOwner.id;
-        }
-    }
-    resetCharacter(pet);
-    changeCharacterAndAbilityIds(pet, game.state.idCounter);
-
-    return [pet];
+function getLongUiText(): string[]{
+    let text: string[] = [];
+    text.push("You have 3 pets. Feed them.");
+    text.push("Love them.");
+    text.push("Abilities:");
+    text.push("- Feed Pet");
+    text.push("- Love Pet");
+    return text;
 }
 
 function reducePetLevel(pet: TamerPetCharacter, amount: number, randomSeed: RandomSeed) {
