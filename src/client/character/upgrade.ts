@@ -9,6 +9,7 @@ export type UpgradeOption = {
     identifier: string,
     additionalInfo?: string,
     boss?: boolean,
+    order?: number,
 }
 
 export type AbilityUpgradeOption = UpgradeOption & {
@@ -27,6 +28,7 @@ export type UpgradeOptionAndProbability = { option: UpgradeOption, probability: 
 export function fillRandomUpgradeOptionChoices(character: Character, game: Game) {
     if (character.upgradeChoices.length > 0) return;
     const upgradeOptionsAndProbabilities: UpgradeOptionAndProbability[] = getCharacterUpgradeOptions(character, game);
+    setUpgradeOptionOrderValues(upgradeOptionsAndProbabilities);
     let totalProbability = upgradeOptionsAndProbabilities.reduce((acc, ele) => acc + ele.probability, 0);
 
     const numberChoices = 3;
@@ -44,6 +46,7 @@ export function fillRandomUpgradeOptionChoices(character: Character, game: Game)
             }
         }
     }
+    character.upgradeChoices.sort((a,b) => a.order! - b.order!);
 }
 
 export function executeUpgradeOptionChoice(character: Character, upgradeChoice: UpgradeOption, game: Game) {
@@ -54,6 +57,12 @@ export function executeUpgradeOptionChoice(character: Character, upgradeChoice: 
         fillRandomUpgradeOptionChoices(character, game);
     } else {
         throw new Error("missing upgrade function for " + character.type);
+    }
+}
+
+function setUpgradeOptionOrderValues(options: UpgradeOptionAndProbability[]){
+    for(let i = 0; i < options.length; i++){
+        options[i].option.order = i;
     }
 }
 

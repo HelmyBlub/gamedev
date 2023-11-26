@@ -1,6 +1,7 @@
 current tasks:
 - new class:
-    - class longUi text explanations
+    - same order of upgrades?
+    - always have 3 upgrades for bounce ball.
     - upgrade ideas:
         - ball has alot of synergie upgrades?
             - lightning strikes gain bounce bonus damage
