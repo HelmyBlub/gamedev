@@ -38,6 +38,7 @@ export function lightningBallUpgradeLightningStirkesExecute(ability: AbilityLigh
             damage,
             80 + upgrade.level * 5,
             upgrade.level * TARGETS,
+            500,
         );
         applyDebuff(buff, character as any, game);
         buff.abilityLightningStrikes!.id = ability.id;
@@ -88,7 +89,7 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption) {
 
 function getAbilityUpgradeUiText(ability: Ability): string {
     const up: AbilityLightningBallUpgradeLightningStrikesBuff = ability.upgrades[ABILITY_LIGHTNING_BALL_UPGRADE_LIGHTNING_STRIKES];
-    return `${ABILITY_LIGHTNING_BALL_UPGRADE_LIGHTNING_STRIKES}: ${up.level * 3}`;
+    return `${ABILITY_LIGHTNING_BALL_UPGRADE_LIGHTNING_STRIKES}: Level ${up.level}`;
 }
 
 function getAbilityUpgradeUiTextLong(ability: Ability, option: AbilityUpgradeOption): string[] {

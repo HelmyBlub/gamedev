@@ -54,7 +54,7 @@ export function addAbilityBounceBall() {
         setAbilityToEnemyLevel: setAbilityToEnemyLevel,
         tickAbility: tickAbility,
         abilityUpgradeFunctions: ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS,
-        canBeUsedByBosses: false,
+        canBeUsedByBosses: true,
     };
     // addAbilityBoucneBallUpgradeSpeed();
     // addAbilityBounceBallUpgradeAngleChange();

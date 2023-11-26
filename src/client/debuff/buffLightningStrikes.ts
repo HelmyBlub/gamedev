@@ -10,6 +10,7 @@ export type BuffLightningStrikes = Debuff & {
     damage: number,
     radius: number,
     numberStrikes: number,
+    tickInterval: number,
 }
 
 export function addBuffLightningStrikes() {
@@ -26,6 +27,7 @@ export function createBuffLightningStrikes(
     damage: number,
     radius: number,
     numberStrikes: number,
+    tickInterval: number,
 ): BuffLightningStrikes {
     return {
         name: BUFF_NAME_LIGHTNING_STRIKES,
@@ -33,12 +35,13 @@ export function createBuffLightningStrikes(
         damage: damage,
         radius: radius,
         numberStrikes: numberStrikes,
+        tickInterval: tickInterval,
     };
 }
 
 function applyBuffEffect(debuff: Debuff, targetCharacter: Character, game: Game) {
     const buff = debuff as BuffLightningStrikes;
-    const ability = createAbilityLightningStrikes(game.state.idCounter, undefined, buff.damage, buff.radius, buff.numberStrikes);
+    const ability = createAbilityLightningStrikes(game.state.idCounter, undefined, buff.damage, buff.radius, buff.numberStrikes, buff.tickInterval);
     buff.abilityLightningStrikes = ability;
 }
 

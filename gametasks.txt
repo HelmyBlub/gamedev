@@ -1,30 +1,7 @@
 current tasks:
 - new class:
-    - same order of upgrades?
-    - always have 3 upgrades for bounce ball.
-    - upgrade ideas:
-        - ball has alot of synergie upgrades?
-            - lightning strikes gain bounce bonus damage
-            - lightning strikes upgrade: ->
-                - while lightning strikes buff is active in bounce ball, you take half damage
-    - impl:
-        - ability lightning ball
-            - upgrades:
-                - random bonus stat upgrade: +maxSpeed, -rechargeTime, +charges
-                - lightning leach
-                    - follow up upgrade
-                        - increases max hp temporarily
-                - lightningStrikes + hp leach -> upgrade lightningStrikes HP leach synergy
-                - lightning buff:
-                    - after using lightning ball, next bounce ball is empowered
-                - lightning debuff
-                    - enemy takes more damage, speed up bounce ball, stackable
-        - bounce ball
-            - think about more "interesting" upgrades
-                - temporary buff enemies hit burn, runs for some time after bounce ball finishes
-                - random bonus stat upgrade: +bounceSpeed,+angle,+speedLoss,+maxSpeed, -rechargeTime, +charges
-                - debuff
-                    - enemy takes more damage, colldown reduce for lightning ball
+    - ball abiltities for enemies
+        - currently endboss does nothing
 
 - having multiple ball abilities? does not work
 - performance spikes when rolling fast with many enemies?

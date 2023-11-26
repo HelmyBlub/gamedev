@@ -12,6 +12,7 @@ import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, detectSomethingToCharacterH
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
 import { addAbilityLightningBallUpgradeBounceBonus, lightningBallUpgradeBounceBonusGetBonusDamageFactor, lightningBallUpgradeBounceBonusSetBonusDamageFactor } from "./abilityLightningBallUpgradeBounceBonus.js";
 import { addAbilityLightningBallUpgradeHpLeach, lightningBallUpgradeHpLeachExecute } from "./abilityLightningBallUpgradeHpLeach.js";
+import { addAbilityLightningBallUpgradeIceAura, lightningBallUpgradeIceAuraExecute } from "./abilityLightningBallUpgradeIceAura.js";
 import { addAbilityLightningBallUpgradeLightningStrikes, lightningBallUpgradeLightningStirkesExecute } from "./abilityLightningBallUpgradeLightningStrikesBuff.js";
 
 export type AbilityLightningBall = Ability & {
@@ -50,6 +51,7 @@ export function addAbilityLightningBall() {
     addAbilityLightningBallUpgradeLightningStrikes();
     addAbilityLightningBallUpgradeHpLeach();
     addAbilityLightningBallUpgradeBounceBonus();
+    addAbilityLightningBallUpgradeIceAura();
 }
 
 export function createAbilityLightningBall(
@@ -182,29 +184,33 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
 }
 
 function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
-    const abilityBounceBall = ability as AbilityLightningBall;
-    rechargeTick(abilityBounceBall, game);
+    const abilityLightningBall = ability as AbilityLightningBall;
+    rechargeTick(abilityLightningBall, game);
 
-    const ballBuff = findBallBuff(abilityOwner, abilityBounceBall);
+    const ballBuff = findBallBuff(abilityOwner, abilityLightningBall);
     if (!ballBuff) return;
 
     const maxJumpDistance = game.state.map.tileSize / 3;
-    const jumpTicks = Math.max(1, Math.round(abilityBounceBall.speed / maxJumpDistance));
-    const tickDistnace = abilityBounceBall.speed / jumpTicks;
+    const jumpTicks = Math.max(1, Math.round(abilityLightningBall.speed / maxJumpDistance));
+    const tickDistnace = abilityLightningBall.speed / jumpTicks;
     for (let i = 0; i < jumpTicks; i++) {
-        jumpTick(abilityBounceBall, abilityOwner, ballBuff, tickDistnace, game);
+        let end = jumpTick(abilityLightningBall, abilityOwner, ballBuff, tickDistnace, game);
+        if(end) break;
     }
 }
 
-function jumpTick(abilityBounceBall: AbilityLightningBall, abilityOwner: AbilityOwner, ballBuff: BuffBallPhysics, moveDistance: number, game: Game) {
-    const newPosition = calculateMovePosition(abilityOwner, abilityBounceBall.moveDirection, moveDistance, false);
-    lightningBallUpgradeHpLeachExecute(abilityBounceBall, moveDistance, abilityOwner);
+function jumpTick(abilityLightningBall: AbilityLightningBall, abilityOwner: AbilityOwner, ballBuff: BuffBallPhysics, moveDistance: number, game: Game): boolean {
+    const newPosition = calculateMovePosition(abilityOwner, abilityLightningBall.moveDirection, moveDistance, false);
+    lightningBallUpgradeHpLeachExecute(abilityLightningBall, moveDistance, abilityOwner);
     if (!isPositionBlocking(newPosition, game.state.map, game.state.idCounter, game)) {
         abilityOwner.x = newPosition.x;
         abilityOwner.y = newPosition.y;
-        damageTick(abilityBounceBall, abilityOwner, game);
+        damageTick(abilityLightningBall, abilityOwner, game);
+        return false;
     } else {
+        lightningBallUpgradeIceAuraExecute(abilityLightningBall, abilityOwner, game);
         removeCharacterDebuff(ballBuff, abilityOwner as any, game);
+        return true;
     }
 }
 

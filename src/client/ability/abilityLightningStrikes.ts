@@ -34,6 +34,7 @@ export function createAbilityLightningStrikes(
     damage: number = 50,
     radius: number = 30,
     numberStrikes: number = 3,
+    tickInterval: number = 1000,
 ): AbilityLightningStrikes {
     return {
         id: getNextId(idCounter),
@@ -42,7 +43,7 @@ export function createAbilityLightningStrikes(
         radius: radius,
         numberStrikes: numberStrikes,
         passive: true,
-        tickInterval: 1000,
+        tickInterval: tickInterval,
         upgrades: {},
     };
 }

@@ -1,28 +1,36 @@
 import { Character } from "../character/characterModel.js";
 import { applyDebuff } from "../debuff/debuff.js";
 import { createDebuffSlow } from "../debuff/debuffSlow.js";
-import { getNextId } from "../game.js";
+import { getCameraPosition, getNextId } from "../game.js";
 import { Position, Game, IdCounter, FACTION_ENEMY, FACTION_PLAYER } from "../gameModel.js";
 import { getPointPaintPosition } from "../gamePaint.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, detectSomethingToCharacterHit } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, detectSomethingToCharacterHit, tickAbilityObjects } from "./ability.js";
 
-type AbilityIce = Ability & {
+type IceBaseProperties = {
     damage: number,
     radius: number,
     slowFactor: number,
     tickInterval: number,
     nextTickTime?: number,
 }
+
+type AbilityIce = Ability & IceBaseProperties;
+
+type AbilityObjectIce = AbilityObject & IceBaseProperties & {deleteTime: number};
+
 export const ABILITY_NAME_ICE_AURA = "Ice Aura";
 
 export function addAbilityIceAura() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_ICE_AURA] = {
         createAbility: createAbilityIce,
-        paintAbility: paintAbilityIce,
+        deleteAbilityObject: deleteAbilityObject,
+        paintAbility: paintAbility,
+        paintAbilityObject: paintAbilityObject,
         setAbilityToLevel: setAbilityIceToLevel,
         setAbilityToBossLevel: setAbilityIceToBossLevel,
         setAbilityToEnemyLevel: setAbilityToEnemyLevel,
-        tickAbility: tickAbilityIce,
+        tickAbility: tickAbility,
+        tickAbilityObject: tickAbilityObject,
         canBeUsedByBosses: true,
     };
 }
@@ -46,12 +54,46 @@ export function createAbilityIce(
     };
 }
 
+export function createAbilityObjectIceAura(
+    damage: number,
+    radius: number,
+    slowFactor: number,
+    faction: string,
+    x: number,
+    y: number,
+    deleteTime: number,
+    abilityRefId: number,
+): AbilityObjectIce {
+    return {
+        type: ABILITY_NAME_ICE_AURA,
+        damage: damage,
+        radius: radius,
+        slowFactor: slowFactor,
+        tickInterval: 250,
+        color: "",
+        faction: faction,
+        x: x,
+        y: y,
+        abilityRefId: abilityRefId,
+        deleteTime: deleteTime,
+    };
+}
+
+function deleteAbilityObject(ability: AbilityObject, game: Game){
+    const ice = ability as AbilityObjectIce;
+    if(ice.deleteTime < game.state.time){
+        return true;
+    }
+    return false;
+}
+
 function setAbilityIceToLevel(ability: Ability, level: number) {
     const abilityIce = ability as AbilityIce;
     abilityIce.damage = level * 100;
     abilityIce.radius = 30 + level * 10;
     abilityIce.slowFactor = 1 + 0.25 * level;
 }
+
 function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: number) {
     const abilityIce = ability as AbilityIce;
     abilityIce.damage = level / 2 * damageFactor;
@@ -66,54 +108,74 @@ function setAbilityIceToBossLevel(ability: Ability, level: number) {
     abilityIce.slowFactor = 2;
 }
 
-function paintAbilityIce(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
-    const abilityIce = ability as AbilityIce;
-    const paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
+function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
+    const ice = ability as AbilityIce as IceBaseProperties;
+    paintIceAura(ctx, ice, abilityOwner, abilityOwner.faction, cameraPosition, game);
+}
+
+function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
+    const ice = abilityObject as AbilityObjectIce as IceBaseProperties;
+    if(paintOrder === "beforeCharacterPaint"){
+        const cameraPosition = getCameraPosition(game);
+        paintIceAura(ctx, ice, abilityObject, abilityObject.faction, cameraPosition, game);
+    }
+}
+
+function paintIceAura(ctx: CanvasRenderingContext2D, ice: IceBaseProperties, position: Position, faction: string, cameraPosition: Position, game: Game) {
+    const paintPos = getPointPaintPosition(ctx, position, cameraPosition);
     ctx.globalAlpha = 0.30;
     ctx.fillStyle = "white";
-    if(abilityOwner.faction === FACTION_ENEMY){
+    if(faction === FACTION_ENEMY){
         ctx.fillStyle = "darkgray";
         ctx.globalAlpha = 0.50;
     }
-    if(abilityOwner.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
+    if(faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
 
     ctx.beginPath();
     ctx.arc(
         paintPos.x,
         paintPos.y,
-        abilityIce.radius, 0, 2 * Math.PI
+        ice.radius, 0, 2 * Math.PI
     );
     ctx.fill();
     ctx.globalAlpha = 1;
 }
 
-function onHitEffect(target: Character, abilityIce: AbilityIce, game: Game): boolean {
-    const debuffSlow = createDebuffSlow(abilityIce.slowFactor, 1000, game.state.time);
+function onHitEffect(target: Character, iceProperties: IceBaseProperties, game: Game): boolean {
+    const debuffSlow = createDebuffSlow(iceProperties.slowFactor, 1000, game.state.time);
     applyDebuff(debuffSlow, target, game);
     return true;
 }
 
-function tickAbilityIce(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
-    const abilityIce = ability as AbilityIce;
+function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
+    const ice = ability as AbilityIce as IceBaseProperties;
+    tickIceAura(abilityOwner, abilityOwner.faction, ice, ability.id, game);
+}
 
-    if (abilityIce.nextTickTime === undefined) abilityIce.nextTickTime = game.state.time + abilityIce.tickInterval;
-    if (abilityIce.nextTickTime <= game.state.time) {
+function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
+    const ice = abilityObject as AbilityObjectIce as IceBaseProperties;
+    tickIceAura(abilityObject, abilityObject.faction, ice, abilityObject.abilityRefId!, game);
+}
+
+function tickIceAura(position: Position, faction: string, iceBaseProperties: IceBaseProperties, abilityRefId: number, game: Game) {
+    if (iceBaseProperties.nextTickTime === undefined) iceBaseProperties.nextTickTime = game.state.time + iceBaseProperties.tickInterval;
+    if (iceBaseProperties.nextTickTime <= game.state.time) {
         detectSomethingToCharacterHit(
             game.state.map,
-            abilityOwner,
-            abilityIce.radius * 2,
-            abilityOwner.faction,
-            abilityIce.damage,
+            position,
+            iceBaseProperties.radius * 2,
+            faction,
+            iceBaseProperties.damage,
             game.state.players,
             game.state.bossStuff.bosses,
-            ability.id,
-            (c: Character) => onHitEffect(c, abilityIce, game),
+            abilityRefId,
+            (c: Character) => onHitEffect(c, iceBaseProperties, game),
             game
         );
 
-        abilityIce.nextTickTime += abilityIce.tickInterval;
-        if (abilityIce.nextTickTime <= game.state.time) {
-            abilityIce.nextTickTime = game.state.time + abilityIce.tickInterval;
+        iceBaseProperties.nextTickTime += iceBaseProperties.tickInterval;
+        if (iceBaseProperties.nextTickTime <= game.state.time) {
+            iceBaseProperties.nextTickTime = game.state.time + iceBaseProperties.tickInterval;
         }
     }
 }
