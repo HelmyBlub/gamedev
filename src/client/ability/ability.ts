@@ -162,7 +162,7 @@ export function setAbilityToBossLevel(ability: Ability, level: number) {
             }
         }
     } else {
-        throw new Error("function setAbilityToBossLevel missing for" + ability.name);
+        console.log("function setAbilityToBossLevel missing for" + ability.name);
     }
 }
 
