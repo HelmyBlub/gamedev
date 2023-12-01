@@ -1,4 +1,4 @@
-import { ABILITIES_FUNCTIONS, Ability } from "../../ability/ability.js";
+import { ABILITIES_FUNCTIONS, Ability, setAbilityToBossLevel } from "../../ability/ability.js";
 import { ABILITY_NAME_LEASH, AbilityLeash } from "../../ability/abilityLeash.js";
 import { createAbilityMelee } from "../../ability/abilityMelee.js";
 import { tickCharacterDebuffs } from "../../debuff/debuff.js";
@@ -85,15 +85,6 @@ export function checkForBossSpawn(game: Game) {
     if (getTimeSinceFirstKill(game.state) >= nextBossSpawnTime) {
         bossStuff.bosses.push(createBossWithLevel(game.state.idCounter, bossStuff.bossLevelCounter, game));
         bossStuff.bossLevelCounter++;
-    }
-}
-
-export function setAbilityToBossLevel(ability: Ability, level: number) {
-    const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-    if (abilityFunctions.setAbilityToBossLevel) {
-        abilityFunctions.setAbilityToBossLevel(ability, level);
-    } else {
-        throw new Error("function setAbilityToBossLevel missing for" + ability.name);
     }
 }
 

@@ -1,4 +1,4 @@
-import { addAbilityToCharacter } from "../../ability/ability.js";
+import { addAbilityToCharacter, setAbilityToBossLevel } from "../../ability/ability.js";
 import { createAbilityHpRegen } from "../../ability/abilityHpRegen.js";
 import { ABILITY_NAME_TOWER, createAbilityTower } from "../../ability/abilityTower.js";
 import { AbilitySnipe } from "../../ability/snipe/abilitySnipe.js";
@@ -6,7 +6,7 @@ import { getNextId, deepCopy } from "../../game.js";
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../gameModel.js";
 import { resetCharacter } from "../character.js";
 import { Character, IMAGE_SLIME, createCharacter } from "../characterModel.js";
-import { CHARACTER_TYPE_BOSS_ENEMY, setAbilityToBossLevel } from "../enemy/bossEnemy.js";
+import { CHARACTER_TYPE_BOSS_ENEMY } from "../enemy/bossEnemy.js";
 import { changeToLevelingCharacter } from "./levelingCharacterModel.js";
 import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters.js";
 

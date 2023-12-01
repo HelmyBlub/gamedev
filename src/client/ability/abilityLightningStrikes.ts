@@ -9,10 +9,12 @@ import { createAbilityObjectExplode } from "./abilityExplode.js";
 
 export type AbilityLightningStrikes = Ability & {
     damage: number,
-    radius: number,
+    spawnRadius: number,
+    strikeRadius: number,
     numberStrikes: number,
     tickInterval: number,
     nextTickTime?: number,
+    strikeDelay: number,
 }
 export const ABILITY_NAME_LIGHTNING_STRIKES = "Lightning Strikes";
 
@@ -32,18 +34,22 @@ export function createAbilityLightningStrikes(
     idCounter: IdCounter,
     playerInputBinding?: string,
     damage: number = 50,
-    radius: number = 30,
+    spawnRadius: number = 30,
     numberStrikes: number = 3,
     tickInterval: number = 1000,
+    strikeRadius: number = 10,
+    strikeDelay: number = 0,
 ): AbilityLightningStrikes {
     return {
         id: getNextId(idCounter),
         name: ABILITY_NAME_LIGHTNING_STRIKES,
         damage: damage,
-        radius: radius,
+        spawnRadius: spawnRadius,
         numberStrikes: numberStrikes,
         passive: true,
         tickInterval: tickInterval,
+        strikeDelay: strikeDelay,
+        strikeRadius: strikeRadius,
         upgrades: {},
     };
 }
@@ -51,22 +57,23 @@ export function createAbilityLightningStrikes(
 function setAbilityToLevel(ability: Ability, level: number) {
     const abilityLightningStirkes = ability as AbilityLightningStrikes;
     abilityLightningStirkes.damage = level * 100;
-    abilityLightningStirkes.radius = 30 + level * 10;
+    abilityLightningStirkes.spawnRadius = 30 + level * 10;
     abilityLightningStirkes.numberStrikes = level * 3;
 }
 
 function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: number) {
     const abilityLightningStirkes = ability as AbilityLightningStrikes;
     abilityLightningStirkes.damage = level / 2 * damageFactor;
-    abilityLightningStirkes.radius = 30 + level * 3;
+    abilityLightningStirkes.spawnRadius = 30 + level * 3;
     abilityLightningStirkes.numberStrikes = level;
 }
 
 function setAbilityToBossLevel(ability: Ability, level: number) {
     const abilityLightningStirkes = ability as AbilityLightningStrikes;
     abilityLightningStirkes.damage = level * 10;
-    abilityLightningStirkes.radius = 60 + level * 12;
+    abilityLightningStirkes.spawnRadius = 60 + level * 12;
     abilityLightningStirkes.numberStrikes = 3 * level;
+    abilityLightningStirkes.strikeDelay = 2000;
 }
 
 function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
@@ -95,11 +102,10 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
 
     if (abilityLightning.nextTickTime === undefined) abilityLightning.nextTickTime = game.state.time + abilityLightning.tickInterval;
     if (abilityLightning.nextTickTime <= game.state.time) {
-        const strikeRadius = 10;
         let characters: Character[] = [];
         let characterIndex = 0;
         if (abilityOwner.faction === FACTION_PLAYER) {
-            characters = determineCharactersInDistance(abilityOwner, game.state.map, game.state.players, game.state.bossStuff.bosses, abilityLightning.radius * 2, abilityOwner.faction);
+            characters = determineCharactersInDistance(abilityOwner, game.state.map, game.state.players, game.state.bossStuff.bosses, abilityLightning.spawnRadius * 2, abilityOwner.faction);
         }
         for (let i = 0; i < abilityLightning.numberStrikes; i++) {
             let randomPos: Position | undefined= undefined;
@@ -119,11 +125,11 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
 
             if(!randomPos){
                 randomPos = {
-                    x: abilityOwner.x + nextRandom(game.state.randomSeed) * abilityLightning.radius * 2 - abilityLightning.radius,
-                    y: abilityOwner.y + nextRandom(game.state.randomSeed) * abilityLightning.radius * 2 - abilityLightning.radius,
+                    x: abilityOwner.x + nextRandom(game.state.randomSeed) * abilityLightning.spawnRadius * 2 - abilityLightning.spawnRadius,
+                    y: abilityOwner.y + nextRandom(game.state.randomSeed) * abilityLightning.spawnRadius * 2 - abilityLightning.spawnRadius,
                 }
             }
-            const strikeObject = createAbilityObjectExplode(randomPos, abilityLightning.damage, strikeRadius, abilityOwner.faction, ability.id, game);
+            const strikeObject = createAbilityObjectExplode(randomPos, abilityLightning.damage, abilityLightning.strikeRadius, abilityOwner.faction, ability.id, abilityLightning.strikeDelay, game);
             game.state.abilityObjects.push(strikeObject);
         }
 

@@ -112,5 +112,9 @@ function tickAbilityObjectFireLine(abilityObject: AbilityObject, game: Game) {
         for (let char of characters) {
             characterTakeDamage(char, abilityObjectFireLine.damage, game, abilityObjectFireLine.abilityRefId);
         }
+        abilityObjectFireLine.nextTickTime += abilityObjectFireLine.tickInterval;
+        if (abilityObjectFireLine.nextTickTime <= game.state.time) {
+            abilityObjectFireLine.nextTickTime = game.state.time + abilityObjectFireLine.tickInterval;
+        }
     }
 }

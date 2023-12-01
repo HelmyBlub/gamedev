@@ -1,4 +1,4 @@
-import { ABILITIES_FUNCTIONS, addAbilityToCharacter, createAbility } from "../../../ability/ability.js";
+import { ABILITIES_FUNCTIONS, addAbilityToCharacter, createAbility, setAbilityToBossLevel } from "../../../ability/ability.js";
 import { createAbilityHpRegen } from "../../../ability/abilityHpRegen.js";
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../../gameModel.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, createCharacter } from "../../characterModel.js";
@@ -16,7 +16,7 @@ import { ABILITY_NAME_PET_DASH } from "../../../ability/petTamer/abilityPetDash.
 import { AbilityUpgradeOption, PetAbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../upgrade.js";
 import { addTraitToTamerPet, getAvailableTamerPetTraits, getLongExplainTextForTamerPetTrait } from "./petTrait.js";
 import { changeCharacterAndAbilityIds, deepCopy, getNextId } from "../../../game.js";
-import { CHARACTER_TYPE_BOSS_ENEMY, setAbilityToBossLevel } from "../../enemy/bossEnemy.js";
+import { CHARACTER_TYPE_BOSS_ENEMY } from "../../enemy/bossEnemy.js";
 import { AbilityUpgrade } from "../../../ability/abilityUpgrade.js";
 
 export const TAMER_CHARACTER = "Tamer";

@@ -1,17 +1,15 @@
-import { addAbilityToCharacter, createAbility } from "../../ability/ability.js";
+import { addAbilityToCharacter, createAbility, setAbilityToBossLevel } from "../../ability/ability.js";
 import { createAbilityHpRegen } from "../../ability/abilityHpRegen.js";
-import { ABILITY_NAME_SPEED_BOOST } from "../../ability/speedBoost/abilitySpeedBoost.js";
-import { ABILITY_NAME_SNIPE, AbilitySnipe } from "../../ability/snipe/abilitySnipe.js";
+import { AbilitySnipe as AbilityBounceBall } from "../../ability/snipe/abilitySnipe.js";
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../gameModel.js";
 import { Character, IMAGE_SLIME, createCharacter } from "../characterModel.js";
 import { ABILITY_LEVELING_CHARACTER } from "./abilityLevelingCharacter.js";
 import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters.js";
 import { deepCopy, getNextId } from "../../game.js";
 import { resetCharacter } from "../character.js";
-import { CHARACTER_TYPE_BOSS_ENEMY, setAbilityToBossLevel } from "../enemy/bossEnemy.js";
+import { CHARACTER_TYPE_BOSS_ENEMY } from "../enemy/bossEnemy.js";
 import { ABILITY_NAME_BOUNCE_BALL } from "../../ability/ball/abilityBounceBall.js";
-import { ABILITY_NAME_LIGHTNING_BALL } from "../../ability/ball/abilityLightningBall.js";
-import { ABILITY_NAME_LIGHTNING_STRIKES } from "../../ability/abilityLightningStrikes.js";
+import { ABILITY_NAME_LIGHTNING_BALL, AbilityLightningBall } from "../../ability/ball/abilityLightningBall.js";
 
 export const CHARACTER_CLASS_BALL = "Ball (work in progress)";
 
@@ -59,10 +57,16 @@ function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: 
 
     const bossCharacter = createCharacter(getNextId(idCounter), spawn.x, spawn.y, bossSize, bossSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_BOSS_ENEMY, experienceWorth);
     bossCharacter.paint.image = IMAGE_SLIME;
-    const baseSnipe = basedOnCharacter.abilities.find((a) => a.name === ABILITY_NAME_BOUNCE_BALL);
-    const snipe: AbilitySnipe = deepCopy(baseSnipe);
-    bossCharacter.abilities.push(snipe);
-    setAbilityToBossLevel(snipe, level);
+    const baseBounceBall = basedOnCharacter.abilities.find((a) => a.name === ABILITY_NAME_BOUNCE_BALL);
+    const baseLightningBall = basedOnCharacter.abilities.find((a) => a.name === ABILITY_NAME_LIGHTNING_BALL);
+    const bounceBall: AbilityBounceBall = deepCopy(baseBounceBall);
+    //bossCharacter.abilities.push(bounceBall);
+    setAbilityToBossLevel(bounceBall, level);
+
+    const lightningBall: AbilityLightningBall = deepCopy(baseLightningBall);
+    bossCharacter.abilities.push(lightningBall);
+    setAbilityToBossLevel(lightningBall, level);
+
     resetCharacter(bossCharacter);
 
     return bossCharacter;

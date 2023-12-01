@@ -34,5 +34,5 @@ export function createDebuffExplodeOnDeath(
 
 function removeDebuffEffectExplodeOnDeath(debuff: Debuff, targetCharacter: Character, game: Game) {
     const debuffExplodeOnDeath = debuff as DebuffExplodeOnDeath;
-    game.state.abilityObjects.push(createAbilityObjectExplode(targetCharacter, debuffExplodeOnDeath.damage, debuffExplodeOnDeath.radius, debuffExplodeOnDeath.faction, debuffExplodeOnDeath.abilityRefId, game));
+    game.state.abilityObjects.push(createAbilityObjectExplode(targetCharacter, debuffExplodeOnDeath.damage, debuffExplodeOnDeath.radius, debuffExplodeOnDeath.faction, debuffExplodeOnDeath.abilityRefId, 0,game));
 }

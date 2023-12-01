@@ -147,6 +147,25 @@ export function paintAbilityObjects(ctx: CanvasRenderingContext2D, abilityObject
     paintAbilityObjectsForFaction(ctx, abilityObjects, game, paintOrder, FACTION_ENEMY);
 }
 
+export function setAbilityToBossLevel(ability: Ability, level: number) {
+    const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+    if (abilityFunctions.setAbilityToBossLevel) {
+        abilityFunctions.setAbilityToBossLevel(ability, level);
+        const upgradeFunctions = abilityFunctions.abilityUpgradeFunctions;
+        if(upgradeFunctions){
+            const upgradeKeys = Object.keys(ability.upgrades);
+            for(let upKey of upgradeKeys){
+                let upFunction = upgradeFunctions[upKey];
+                if(upFunction && upFunction.setUpgradeToBossLevel){
+                    upFunction.setUpgradeToBossLevel(ability, level);
+                }
+            }
+        }
+    } else {
+        throw new Error("function setAbilityToBossLevel missing for" + ability.name);
+    }
+}
+
 export function createAbility(abilityName: string, idCounter: IdCounter, isLeveling: boolean = false, getsBossSkillPoints: boolean = false, playerInputBinding: string | undefined = undefined): Ability {
     const abilityFunctions = ABILITIES_FUNCTIONS[abilityName];
     const ability = abilityFunctions.createAbility(idCounter, playerInputBinding);

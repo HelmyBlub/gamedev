@@ -15,6 +15,7 @@ export type AbilityUpgradeFunctions = {
     getLongExplainText?: (ability: Ability, option: AbilityUpgradeOption) => string[],
     getDamageFactor?: (ability: Ability, playerTriggered: boolean) => number,
     reset?:(ability: Ability) => void,
+    setUpgradeToBossLevel?: (ability: Ability, level: number) => void,
 }
 
 export type AbilityUpgradesFunctions = {

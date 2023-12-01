@@ -1,4 +1,5 @@
 import { AbilityUpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
+import { calculateDistance } from "../../game.js";
 import { Game, Position } from "../../gameModel.js";
 import { Ability, AbilityOwner } from "../ability.js";
 import { createAbilityObjectFireLine } from "../abilityFireLine.js";
@@ -36,9 +37,12 @@ export function abilityBounceBallUpgradeFireLinePlace(ability: AbilityBounceBall
     if (up.startPosition) {
         const width = 10;
         const endPos = { x: owner.x, y: owner.y };
-        const damage = ability.damage / (1000 / TICK_INTERVAL) * (1 + DAMAGE_PER_SECOND_FACTOR * up.level);
-        const fireLine = createAbilityObjectFireLine(owner.faction, up.startPosition, endPos, damage, width, DURATION * up.level, TICK_INTERVAL, "red", ability.id, game);
-        game.state.abilityObjects.push(fireLine);
+        const distance = calculateDistance(up.startPosition, endPos);
+        if(distance < 600){
+            const damage = ability.damage / (1000 / TICK_INTERVAL) * (1 + DAMAGE_PER_SECOND_FACTOR * up.level);
+            const fireLine = createAbilityObjectFireLine(owner.faction, up.startPosition, endPos, damage, width, DURATION * up.level, TICK_INTERVAL, "red", ability.id, game);
+            game.state.abilityObjects.push(fireLine);
+        }
         up.startPosition = { x: owner.x, y: owner.y };
     }
 }

@@ -1,12 +1,11 @@
-import { getCharactersTouchingLine, getRandomAlivePlayerCharacter } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { BUFF_NAME_BALL_PHYSICS, BuffBallPhysics, createBuffBallPhysics, findBallBuff } from "../../debuff/buffBallPhysics.js";
 import { applyDebuff, removeCharacterDebuff } from "../../debuff/debuff.js";
-import { calculateDirection, getClientInfoByCharacterId, getNextId, modulo } from "../../game.js";
+import { calculateDirection, getClientInfoByCharacterId, getNextId } from "../../game.js";
 import { Position, Game, IdCounter, FACTION_ENEMY, ClientInfo } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
-import { calculateBounceAngle, calculateMovePosition, isPositionBlocking } from "../../map/map.js";
+import { calculateMovePosition, isPositionBlocking } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, detectSomethingToCharacterHit, getAbilityNameUiText, paintDefaultAbilityStatsUI } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
@@ -45,8 +44,9 @@ export function addAbilityLightningBall() {
         setAbilityToBossLevel: setAbilityToBossLevel,
         setAbilityToEnemyLevel: setAbilityToEnemyLevel,
         tickAbility: tickAbility,
+        tickBossAI: tickBossAI,
         abilityUpgradeFunctions: ABILITY_LIGHTNING_BALL_UPGRADE_FUNCTIONS,
-        canBeUsedByBosses: false,
+        canBeUsedByBosses: true,
     };
     addAbilityLightningBallUpgradeLightningStrikes();
     addAbilityLightningBallUpgradeHpLeach();
@@ -82,6 +82,23 @@ export function getDamageAbilityLightningBall(abilityBounceBall: AbilityLightnin
     let damageFactor = 1;
     damageFactor += lightningBallUpgradeBounceBonusGetBonusDamageFactor(abilityBounceBall, abilityOwner);
     return abilityBounceBall.damage * damageFactor;
+}
+
+function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
+    const abilityBall = ability as AbilityLightningBall;
+    if (abilityOwner.debuffs) {
+        const ballPhysics: BuffBallPhysics | undefined = abilityOwner.debuffs.find((d) => d.name === BUFF_NAME_BALL_PHYSICS) as any;
+        if(ballPhysics) return;
+    }
+    let pos: Position = {
+        x: abilityOwner.x,
+        y: abilityOwner.y
+    };
+    if(abilityOwner.moveDirection){
+        pos = calculateMovePosition(abilityOwner, abilityOwner.moveDirection, 1, false);
+    }
+
+    castBounceBall(abilityOwner, ability, pos, true, game);
 }
 
 function resetAbility(ability: Ability) {

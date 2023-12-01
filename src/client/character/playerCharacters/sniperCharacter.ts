@@ -1,4 +1,4 @@
-import { addAbilityToCharacter, createAbility } from "../../ability/ability.js";
+import { addAbilityToCharacter, createAbility, setAbilityToBossLevel } from "../../ability/ability.js";
 import { createAbilityHpRegen } from "../../ability/abilityHpRegen.js";
 import { ABILITY_NAME_SPEED_BOOST } from "../../ability/speedBoost/abilitySpeedBoost.js";
 import { ABILITY_NAME_SNIPE, AbilitySnipe } from "../../ability/snipe/abilitySnipe.js";
@@ -8,7 +8,7 @@ import { ABILITY_LEVELING_CHARACTER } from "./abilityLevelingCharacter.js";
 import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters.js";
 import { deepCopy, getNextId } from "../../game.js";
 import { resetCharacter } from "../character.js";
-import { CHARACTER_TYPE_BOSS_ENEMY, setAbilityToBossLevel } from "../enemy/bossEnemy.js";
+import { CHARACTER_TYPE_BOSS_ENEMY } from "../enemy/bossEnemy.js";
 
 export const CHARACTER_CLASS_SNIPER_NAME = "Sniper";
 

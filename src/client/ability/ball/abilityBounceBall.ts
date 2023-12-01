@@ -53,6 +53,7 @@ export function addAbilityBounceBall() {
         setAbilityToBossLevel: setAbilityToBossLevel,
         setAbilityToEnemyLevel: setAbilityToEnemyLevel,
         tickAbility: tickAbility,
+        tickBossAI: tickBossAI,
         abilityUpgradeFunctions: ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS,
         canBeUsedByBosses: true,
     };
@@ -100,6 +101,23 @@ export function getAbilityBounceBallDamage(abilityBounceBall: AbilityBounceBall)
     let damage = abilityBounceBall.damage;
     damage *= getAbilityUpgradesDamageFactor(ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS, abilityBounceBall, true);
     return damage;
+}
+
+function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
+    const abilityBounceBall = ability as AbilityBounceBall;
+    if (abilityOwner.debuffs) {
+        const ballPhysics: BuffBallPhysics | undefined = abilityOwner.debuffs.find((d) => d.name === BUFF_NAME_BALL_PHYSICS) as any;
+        if(ballPhysics) return;
+    }
+    let pos: Position = {
+        x: abilityOwner.x,
+        y: abilityOwner.y
+    };
+    if(abilityOwner.moveDirection){
+        pos = calculateMovePosition(abilityOwner, abilityOwner.moveDirection, 1, false);
+    }
+
+    castBounceBall(abilityOwner, ability, pos, true, game);
 }
 
 function resetAbility(ability: Ability) {
@@ -159,6 +177,7 @@ function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: n
 
 function setAbilityToBossLevel(ability: Ability, level: number) {
     const abilityBall = ability as AbilityBounceBall;
+    abilityBall.baseRechargeTime = 10000;
     abilityBall.damage = level * 10;
 }
 

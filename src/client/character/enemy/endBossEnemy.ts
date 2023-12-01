@@ -1,4 +1,4 @@
-import { ABILITIES_FUNCTIONS, Ability } from "../../ability/ability.js";
+import { ABILITIES_FUNCTIONS, Ability, setAbilityToBossLevel } from "../../ability/ability.js";
 import { ABILITY_NAME_FIRE_CIRCLE } from "../../ability/abilityFireCircle.js";
 import { ABILITY_NAME_ICE_AURA } from "../../ability/abilityIceAura.js";
 import { ABILITY_NAME_MELEE } from "../../ability/abilityMelee.js";
@@ -171,20 +171,14 @@ function changeBossAbilityLevelBasedOnHp(enemy: EndBossEnemyCharacter) {
     const hpBasedlevel = Math.max(Math.floor((1 - hpLeftPerCent) * 10), 1);
 
     for (let ability of enemy.abilities) {
-        const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-        if (abilityFunctions && abilityFunctions.setAbilityToBossLevel) {
-            abilityFunctions.setAbilityToBossLevel(ability, hpBasedlevel);
-        }
+        setAbilityToBossLevel(ability, hpBasedlevel);
     }
     if (enemy.pets) {
         const petMoveSpeed = Math.min(0.5 + (hpBasedlevel / 14 * 2), 3);
         for (let pet of enemy.pets) {
             pet.moveSpeed = petMoveSpeed;
             for (let ability of pet.abilities) {
-                const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-                if (abilityFunctions && abilityFunctions.setAbilityToBossLevel) {
-                    abilityFunctions.setAbilityToBossLevel(ability, hpBasedlevel);
-                }
+                setAbilityToBossLevel(ability, hpBasedlevel);
             }
         }
     }

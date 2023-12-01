@@ -12,6 +12,8 @@ type AbilityObjectExplode = AbilityObjectCircle & {
     damage: number,
     hasDamageDone: boolean,
     removeTime?: number,
+    explodeTime: number,
+    explodeDelay: number,
 }
 
 const ABILITY_NAME_EXPLODE = "Explode";
@@ -32,6 +34,7 @@ export function createAbilityObjectExplode(
     radius: number,
     faction: string,
     abilityRefId: number,
+    explodeDelay: number,
     game: Game
 ): AbilityObjectExplode {
     return {
@@ -44,6 +47,8 @@ export function createAbilityObjectExplode(
         hasDamageDone: false,
         radius: radius,
         abilityRefId: abilityRefId,
+        explodeTime: explodeDelay + game.state.time,
+        explodeDelay: explodeDelay,
     };
 }
 
@@ -70,27 +75,51 @@ function deleteAbilityObjectExplode(abilityObject: AbilityObject, game: Game): b
 function paintAbilityObjectExplode(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
     if (paintOrder !== "beforeCharacterPaint") return;
     const abilityObjectExplode = abilityObject as AbilityObjectExplode;
-    if (abilityObjectExplode.removeTime === undefined) return;
     const cameraPosition = getCameraPosition(game);
     const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition);
-    const fadeFactor = (abilityObjectExplode.removeTime - game.state.time) / PAINT_FADE_TIME;
-    ctx.globalAlpha = 0.75 * fadeFactor;
-    if(abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
-    ctx.fillStyle = abilityObject.faction === FACTION_ENEMY ? "black" : abilityObject.color;
-    ctx.beginPath();
-    ctx.arc(
-        paintPos.x,
-        paintPos.y,
-        abilityObjectExplode.radius, 0, 2 * Math.PI
-    );
-    ctx.fill();
-    ctx.globalAlpha = 1;
+    if (abilityObjectExplode.removeTime === undefined) {
+        if (abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
+        ctx.strokeStyle = abilityObject.faction === FACTION_ENEMY ? "black" : abilityObject.color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(
+            paintPos.x,
+            paintPos.y,
+            abilityObjectExplode.radius, 0, 2 * Math.PI
+        );
+        ctx.stroke();
+        const fillFactor = Math.min(1, (1 - (abilityObjectExplode.explodeTime - game.state.time) / abilityObjectExplode.explodeDelay) * 0.9);
+        ctx.globalAlpha = 0.5;
+        ctx.beginPath();
+        ctx.arc(
+            paintPos.x,
+            paintPos.y,
+            abilityObjectExplode.radius, - Math.PI * fillFactor + Math.PI / 2, Math.PI * fillFactor + Math.PI / 2
+        );
+        ctx.fill();
+        ctx.globalAlpha = 1;
+    } else {
+        const fadeFactor = (abilityObjectExplode.removeTime - game.state.time) / PAINT_FADE_TIME;
+        ctx.globalAlpha = 0.75 * fadeFactor;
+        if (abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
+        ctx.fillStyle = abilityObject.faction === FACTION_ENEMY ? "black" : abilityObject.color;
+        ctx.beginPath();
+        ctx.arc(
+            paintPos.x,
+            paintPos.y,
+            abilityObjectExplode.radius, 0, 2 * Math.PI
+        );
+        ctx.fill();
+        ctx.globalAlpha = 1;
+    }
 }
 
 function tickAbilityObjectExplode(abilityObject: AbilityObject, game: Game) {
     const abilityObjectExplode = abilityObject as AbilityObjectExplode;
     if (abilityObjectExplode.hasDamageDone) return;
-    abilityObjectExplode.hasDamageDone = true;
-    abilityObjectExplode.removeTime = game.state.time + PAINT_FADE_TIME;
-    detectAbilityObjectCircleToCharacterHit(game.state.map, abilityObjectExplode, game);
+    if (abilityObjectExplode.explodeTime <= game.state.time) {
+        abilityObjectExplode.hasDamageDone = true;
+        abilityObjectExplode.removeTime = game.state.time + PAINT_FADE_TIME;
+        detectAbilityObjectCircleToCharacterHit(game.state.map, abilityObjectExplode, game);
+    }
 }

@@ -8,9 +8,11 @@ export const BUFF_NAME_LIGHTNING_STRIKES = "Buff Lightning Strikes";
 export type BuffLightningStrikes = Debuff & {
     abilityLightningStrikes?: AbilityLightningStrikes,
     damage: number,
-    radius: number,
+    spawnRadius: number,
+    strikeRadius: number,
     numberStrikes: number,
     tickInterval: number,
+    strikeDelay: number,
 }
 
 export function addBuffLightningStrikes() {
@@ -25,23 +27,27 @@ export function createBuffLightningStrikes(
     duration: number,
     gameTime: number,
     damage: number,
-    radius: number,
+    spawnRadius: number,
+    strikeRadius: number,
     numberStrikes: number,
+    strikeDelay: number,
     tickInterval: number,
 ): BuffLightningStrikes {
     return {
         name: BUFF_NAME_LIGHTNING_STRIKES,
         removeTime: duration + gameTime,
         damage: damage,
-        radius: radius,
+        spawnRadius: spawnRadius,
         numberStrikes: numberStrikes,
         tickInterval: tickInterval,
+        strikeRadius: strikeRadius,
+        strikeDelay: strikeDelay,
     };
 }
 
 function applyBuffEffect(debuff: Debuff, targetCharacter: Character, game: Game) {
     const buff = debuff as BuffLightningStrikes;
-    const ability = createAbilityLightningStrikes(game.state.idCounter, undefined, buff.damage, buff.radius, buff.numberStrikes, buff.tickInterval);
+    const ability = createAbilityLightningStrikes(game.state.idCounter, undefined, buff.damage, buff.spawnRadius, buff.numberStrikes, buff.tickInterval, buff.strikeRadius, buff.strikeDelay);
     buff.abilityLightningStrikes = ability;
 }
 

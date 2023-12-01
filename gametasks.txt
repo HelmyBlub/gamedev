@@ -1,7 +1,10 @@
 current tasks:
+- check fire line damage after code invterval fix
 - new class:
     - ball abiltities for enemies
-        - currently endboss does nothing
+        - currently boss does nothing
+        - bug: teleporting boss creates long fire lines
+    - visualize class somehow
 
 - having multiple ball abilities? does not work
 - performance spikes when rolling fast with many enemies?
