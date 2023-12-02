@@ -1,4 +1,4 @@
-import { getRandomAlivePlayerCharacter } from "../../character/character.js";
+import { getRandomAlivePlayerCharacter, setCharacterPosition } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { BUFF_NAME_BALL_PHYSICS, BuffBallPhysics, createBuffBallPhysics, findBallBuff } from "../../debuff/buffBallPhysics.js";
@@ -288,8 +288,7 @@ function rollTick(abilityBounceBall: AbilityBounceBall, abilityOwner: AbilityOwn
         abilityBounceBallUpgradeFireLinePlace(abilityBounceBall, abilityOwner, game);
     } else {
         abilityBounceBall.rolledDistanceAfterLastDamageTick += moveDistance;
-        abilityOwner.x = newPosition.x;
-        abilityOwner.y = newPosition.y;
+        setCharacterPosition(abilityOwner as Character, newPosition, game.state.map);
     }
 }
 

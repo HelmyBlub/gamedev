@@ -8,7 +8,7 @@ import { getPointPaintPosition } from "../../gamePaint.js";
 import { findNearNonBlockingPosition, getMapMidlePosition, moveByDirectionAndDistance } from "../../map/map.js";
 import { getPlayerFurthestAwayFromSpawn } from "../../player.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
-import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, calculateCharacterMovePosition, moveCharacterTick, tickCharacters } from "../character.js";
+import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, calculateCharacterMovePosition, moveCharacterTick, tickCharacters, setCharacterPosition } from "../character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, createCharacter } from "../characterModel.js";
 import { paintCharacterDefault, paintCharacterHpBar, paintCharacters, paintCharatersPets } from "../characterPaint.js";
 import { getPathingCache, PathingCache } from "../pathing.js";
@@ -135,8 +135,7 @@ function tickBossEnemyCharacter(enemy: BossEnemyCharacter, game: Game, pathingCa
 
 function teleportBossToNearestPlayer(enemy: BossEnemyCharacter, game: Game) {
     const newPosition = getBossSpawnPosition(game);
-    enemy.x = newPosition.x;
-    enemy.y = newPosition.y;
+    setCharacterPosition(enemy, newPosition, game.state.map);
 }
 
 function createBossPets(level: number, boss: Character, nextEndBoss: Character, game: Game): TamerPetCharacter[] | undefined {

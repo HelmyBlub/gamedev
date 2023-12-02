@@ -1,3 +1,4 @@
+import { setCharacterPosition } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { BUFF_NAME_BALL_PHYSICS, BuffBallPhysics, createBuffBallPhysics, findBallBuff } from "../../debuff/buffBallPhysics.js";
@@ -220,8 +221,7 @@ function jumpTick(abilityLightningBall: AbilityLightningBall, abilityOwner: Abil
     const newPosition = calculateMovePosition(abilityOwner, abilityLightningBall.moveDirection, moveDistance, false);
     lightningBallUpgradeHpLeachExecute(abilityLightningBall, moveDistance, abilityOwner);
     if (!isPositionBlocking(newPosition, game.state.map, game.state.idCounter, game)) {
-        abilityOwner.x = newPosition.x;
-        abilityOwner.y = newPosition.y;
+        setCharacterPosition(abilityOwner as Character, newPosition, game.state.map);
         damageTick(abilityLightningBall, abilityOwner, game);
         return false;
     } else {

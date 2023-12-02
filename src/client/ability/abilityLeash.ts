@@ -1,9 +1,9 @@
-import { findCharacterById, getPlayerCharacters } from "../character/character.js";
+import { findCharacterById, getPlayerCharacters, setCharacterPosition } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
 import { calculateDirection, calculateDistance, getNextId } from "../game.js";
 import { Position, Game, IdCounter, FACTION_PLAYER } from "../gameModel.js";
 import { getPointPaintPosition } from "../gamePaint.js";
-import { getFirstBlockingGameMapTilePositionTouchingLine } from "../map/map.js";
+import { GameMap, getFirstBlockingGameMapTilePositionTouchingLine } from "../map/map.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner } from "./ability.js";
 
 export type AbilityLeash = Ability & {
@@ -103,16 +103,14 @@ function tickAbilityLeash(abilityOwner: AbilityOwner, ability: Ability, game: Ga
         findAndRemoveUnnecessaryLeashBends(abilityOwner, connectedOwner, abilityLeash, game);
         const success = findAndAddNewLeashBends(abilityOwner, connectedOwner, abilityLeash, game);
         if (!success) {
-            teleportAndClearLeashBends(connectedOwner, abilityOwner, abilityLeash);
+            teleportAndClearLeashBends(connectedOwner, abilityOwner, abilityLeash, game.state.map);
         }
 
         let leashLength = calculateLeashLength(abilityOwner, connectedOwner, abilityLeash);
         if (leashLength > abilityLeash.leashMaxLength) {
             let pullForce = (leashLength - abilityLeash.leashMaxLength) / 10;
             if (pullForce > 100) {
-                abilityOwner.x = connectedOwner.x;
-                abilityOwner.y = connectedOwner.y;
-                abilityLeash.leashBendPoints = [];
+                teleportAndClearLeashBends(connectedOwner, abilityOwner, abilityLeash, game.state.map);
             } else {
                 let pullPosition: Position;
                 if (abilityLeash.leashBendPoints.length > 0) {
@@ -125,7 +123,7 @@ function tickAbilityLeash(abilityOwner: AbilityOwner, ability: Ability, game: Ga
                     weightFactor = 1;
                 }
                 if (!abilityOwner.isUnMoveAble) {
-                    pullCharacterTowardsPosition(pullForce * weightFactor, abilityOwner, pullPosition);
+                    pullCharacterTowardsPosition(pullForce * weightFactor, abilityOwner as Character, pullPosition, game.state.map);
                 }
 
                 if (abilityLeash.leashBendPoints.length > 0) {
@@ -140,23 +138,25 @@ function tickAbilityLeash(abilityOwner: AbilityOwner, ability: Ability, game: Ga
                     weightFactor = 1;
                 }
                 if (!connectedOwner.isUnMoveAble) {
-                    pullCharacterTowardsPosition(pullForce * weightFactor, connectedOwner, pullPosition);
+                    pullCharacterTowardsPosition(pullForce * weightFactor, connectedOwner as Character, pullPosition, game.state.map);
                 }
             }
         }
     }
 }
 
-function teleportAndClearLeashBends(connectedOwner: Character, abilityOwner: AbilityOwner, ability: AbilityLeash) {
-    abilityOwner.x = connectedOwner.x;
-    abilityOwner.y = connectedOwner.y;
+function teleportAndClearLeashBends(connectedOwner: Character, abilityOwner: AbilityOwner, ability: AbilityLeash, map: GameMap) {
+    setCharacterPosition(abilityOwner as Character, connectedOwner, map);
     ability.leashBendPoints = [];
 }
 
-function pullCharacterTowardsPosition(pullForce: number, character: Position, pullPosition: Position) {
+function pullCharacterTowardsPosition(pullForce: number, character: Character, pullPosition: Position, map: GameMap) {
     const direction = calculateDirection(character, pullPosition);
-    character.x = character.x + Math.cos(direction) * pullForce;
-    character.y = character.y + Math.sin(direction) * pullForce;
+    const newPos = {
+        x: character.x + Math.cos(direction) * pullForce,
+        y: character.y + Math.sin(direction) * pullForce,
+    }
+    setCharacterPosition(character, newPos, map);
 }
 
 function getNewLeashBendPosIfBlocking(startPosition: Position, endPosition: Position, abilityLeash: AbilityLeash, game: Game): Position | undefined {

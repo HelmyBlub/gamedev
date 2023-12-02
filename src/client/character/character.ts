@@ -54,20 +54,20 @@ export function findCharacterByIdInCompleteMap(id: number, game: Game) {
 export function characterTakeDamage(character: Character, damage: number, game: Game, abilityRefId: number | undefined = undefined) {
     if (character.isDead || character.isPet || character.isDamageImmune) return;
     let modifiedDamage = damage * character.damageTakenModifierFactor;
-    if(character.shield > 0){
+    if (character.shield > 0) {
         character.shield -= modifiedDamage;
-        if(character.shield < 0){
+        if (character.shield < 0) {
             character.hp += character.shield;
             character.shield = 0;
         }
-    }else{
+    } else {
         character.hp -= modifiedDamage;
     }
     if (character.hp <= 0) {
         killCharacter(character, game, abilityRefId);
     }
     if (game.UI.displayDamageNumbers) {
-        const textPos = { x: character.x, y: character.y - character.height / 2 - 15};
+        const textPos = { x: character.x, y: character.y - character.height / 2 - 15 };
         const fontSize = character.faction === FACTION_PLAYER ? "20" : "12";
         const textColor = character.faction === FACTION_PLAYER ? "blue" : "black";
         game.UI.displayTextData.push(createPaintTextData(textPos, modifiedDamage.toFixed(0), textColor, fontSize, game.state.time));
@@ -75,10 +75,10 @@ export function characterTakeDamage(character: Character, damage: number, game: 
     if (character.faction === FACTION_ENEMY) character.wasHitRecently = true;
 }
 
-export function characterGetShield(character: Character, shieldValue: number){
+export function characterGetShield(character: Character, shieldValue: number) {
     if (character.isDead) return;
     character.shield += shieldValue;
-    if(character.shield > character.maxShieldFactor * character.maxHp){
+    if (character.shield > character.maxShieldFactor * character.maxHp) {
         character.shield = character.maxShieldFactor * character.maxHp
     }
 }
@@ -445,25 +445,19 @@ export function turnCharacterToPet(character: Character, game: Game) {
     }
 }
 
-export function moveMapCharacterTick(character: Character, map: GameMap, idCounter: IdCounter) {
-    if (character.isRooted) return;
-    if (character.isMoveTickDisabled) return;
-    const newPosition = calculateCharacterMovePosition(character, map, idCounter);
-    if (newPosition) {
-        mapCharacterCheckForChunkChange(character, map, newPosition.x, newPosition.y);
-        character.x = newPosition.x;
-        character.y = newPosition.y;
-    }
-}
-
 export function moveCharacterTick(character: Character, map: GameMap, idCounter: IdCounter) {
     if (character.isRooted) return;
     if (character.isMoveTickDisabled) return;
     const newPosition = calculateCharacterMovePosition(character, map, idCounter);
     if (newPosition) {
-        character.x = newPosition.x;
-        character.y = newPosition.y;
+        setCharacterPosition(character, newPosition, map);
     }
+}
+
+export function setCharacterPosition(character: Character, position: Position, map: GameMap) {
+    if (character.mapChunkKey) mapCharacterCheckAndDoChunkChange(character, map, position.x, position.y);
+    character.x = position.x;
+    character.y = position.y;
 }
 
 export function calculateCharacterMovePosition(character: Character, map: GameMap, idCounter: IdCounter) {
@@ -473,7 +467,7 @@ export function calculateCharacterMovePosition(character: Character, map: GameMa
     return undefined;
 }
 
-export function mapCharacterCheckForChunkChange(character: Character, map: GameMap, newX: number, newY: number) {
+export function mapCharacterCheckAndDoChunkChange(character: Character, map: GameMap, newX: number, newY: number) {
     const currentChunkKey = character.mapChunkKey;
     if (!currentChunkKey) {
         console.log("missing chunk key on map character");

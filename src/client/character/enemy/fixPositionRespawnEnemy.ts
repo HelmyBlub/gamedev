@@ -2,7 +2,7 @@ import { ABILITIES_FUNCTIONS } from "../../ability/ability.js";
 import { calculateDistance } from "../../game.js";
 import { Game } from "../../gameModel.js";
 import { GameMap, positionToMapKey } from "../../map/map.js";
-import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveMapCharacterTick, mapCharacterCheckForChunkChange } from "../character.js";
+import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick, setCharacterPosition } from "../character.js";
 import { Character } from "../characterModel.js";
 import { PathingCache } from "../pathing.js";
 import { FixPositionRespawnEnemyCharacter } from "./fixPositionRespawnEnemyModel.js";
@@ -48,7 +48,7 @@ export function tickFixPositionRespawnEnemyCharacter(character: Character, game:
                     enemy.isMoving = false;
                 }
             }
-            moveMapCharacterTick(enemy, game.state.map, game.state.idCounter);
+            moveCharacterTick(enemy, game.state.map, game.state.idCounter);
             if (enemy.wasHitRecently) delete enemy.wasHitRecently;
         }
     }
@@ -104,9 +104,7 @@ function resetEnemy(enemy: FixPositionRespawnEnemyCharacter, map: GameMap) {
 }
 
 function resetPosition(enemy: FixPositionRespawnEnemyCharacter, map: GameMap){
-    mapCharacterCheckForChunkChange(enemy, map, enemy.spawnPosition.x, enemy.spawnPosition.y);
-    enemy.x = enemy.spawnPosition.x;
-    enemy.y = enemy.spawnPosition.y;
+    setCharacterPosition(enemy, enemy.spawnPosition, map);
     if(enemy.pets){
         for(let pet of enemy.pets){
             pet.x = enemy.x;

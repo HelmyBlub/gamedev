@@ -1,12 +1,10 @@
 current tasks:
-- check fire line damage after code invterval fix
 - new class:
     - ball abiltities for enemies
-        - Bug: map enemy with ball ability does not update chunk
         - delay and visualize lightning ball direction for enemies
-        -
     - visualize class somehow
 
+- check fire line damage after code invterval fix
 - having multiple ball abilities? does not work
 - performance spikes when rolling fast with many enemies?
     - make enemies teleport back instead of runback?

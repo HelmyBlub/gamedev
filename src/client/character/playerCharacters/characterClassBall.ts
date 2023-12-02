@@ -60,7 +60,7 @@ function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: 
     const baseBounceBall = basedOnCharacter.abilities.find((a) => a.name === ABILITY_NAME_BOUNCE_BALL);
     const baseLightningBall = basedOnCharacter.abilities.find((a) => a.name === ABILITY_NAME_LIGHTNING_BALL);
     const bounceBall: AbilityBounceBall = deepCopy(baseBounceBall);
-    //bossCharacter.abilities.push(bounceBall);
+    bossCharacter.abilities.push(bounceBall);
     setAbilityToBossLevel(bounceBall, level);
 
     const lightningBall: AbilityLightningBall = deepCopy(baseLightningBall);

@@ -65,6 +65,7 @@ export function createMap(bossAreaDistance: number = 20000): GameMap {
 export function addEnemyToMap(map: GameMap, character: Character) {
     const key = positionToMapKey(character, map);
     map.chunks[key].characters.push(character);
+    character.mapChunkKey = key;
 }
 
 export function isPositionBlocking(pos: Position, map: GameMap, idCounter: IdCounter, game: Game) {
