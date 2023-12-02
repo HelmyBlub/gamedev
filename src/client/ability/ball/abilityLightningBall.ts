@@ -193,7 +193,10 @@ function paintAbilityUI(ctx: CanvasRenderingContext2D, ability: Ability, drawSta
 
 function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
     const abilityBall = ability as AbilityLightningBall;
-    if (!findBallBuff(abilityOwner, abilityBall)) return;
+    const ballBuff = findBallBuff(abilityOwner, abilityBall);
+    if (typeof ballBuff !== "object"){
+        return;
+    }
     const paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
     ctx.fillStyle = "blue";
     if (abilityOwner.faction === FACTION_ENEMY) {
@@ -231,7 +234,7 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     rechargeTick(abilityLightningBall, game);
 
     const ballBuff = findBallBuff(abilityOwner, abilityLightningBall);
-    if (!ballBuff) return;
+    if (typeof ballBuff !== "object") return;
     if (abilityLightningBall.firstJumpDelayEnd && abilityLightningBall.firstJumpDelayEnd > game.state.time) return;
     const maxJumpDistance = game.state.map.tileSize / 3;
     const jumpTicks = Math.max(1, Math.round(abilityLightningBall.speed / maxJumpDistance));

@@ -16,7 +16,7 @@ export function paintCharacters(ctx: CanvasRenderingContext2D, characters: (Char
         if (characterFunctions && characterFunctions.paintCharacterType) {
             characterFunctions.paintCharacterType(ctx, character, cameraPosition, game);
         } else {
-            paintCharacterDefault(ctx, character, cameraPosition, game);
+            paintCharacterWithAbilitiesDefault(ctx, character, cameraPosition, game);
         }
     }
 }
@@ -99,21 +99,9 @@ export function paintCharatersPets(ctx: CanvasRenderingContext2D, characters: (C
     }
 }
 
-export function paintCharacterDefault(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
+export function paintCharacterWithAbilitiesDefault(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game, preventDefaultCharacterPaint: boolean | undefined = undefined) {
     if (character.isDead) return;
-
-    if (character.paint.image) {
-        if (character.paint.image === IMAGE_SLIME) {
-            slimePaint(ctx, character, cameraPosition, game);
-            paintCharatersPets(ctx, [character], cameraPosition, game);
-        } else {
-            paintCharacterImage(ctx, character, cameraPosition, game);
-        }
-    } else if (character.paint.randomizedCharacterImage) {
-        randomizedCharacterImagePaint(ctx, character, cameraPosition, game);
-    } else {
-        paintCharacterColoredCircle(ctx, character, cameraPosition);
-    }
+    paintCharacterDefault(ctx, character, cameraPosition, game, preventDefaultCharacterPaint);
     for (let ability of character.abilities) {
         const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
         if (abilityFunctions.paintAbility !== undefined) {
@@ -121,6 +109,28 @@ export function paintCharacterDefault(ctx: CanvasRenderingContext2D, character: 
         }
     }
 }
+
+export function paintCharacterDefault(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game, preventDefaultCharacterPaint: boolean | undefined = undefined) {
+    let tempPreventDefaultCharacterPaint = preventDefaultCharacterPaint;
+    if(tempPreventDefaultCharacterPaint === undefined){
+        tempPreventDefaultCharacterPaint = character.paint.preventDefaultCharacterPaint;
+    }
+    if(!tempPreventDefaultCharacterPaint){
+        if (character.paint.image) {
+            if (character.paint.image === IMAGE_SLIME) {
+                slimePaint(ctx, character, cameraPosition, game);
+                paintCharatersPets(ctx, [character], cameraPosition, game);
+            } else {
+                paintCharacterImage(ctx, character, cameraPosition, game);
+            }
+        } else if (character.paint.randomizedCharacterImage) {
+            randomizedCharacterImagePaint(ctx, character, cameraPosition, game);
+        } else {
+            paintCharacterColoredCircle(ctx, character, cameraPosition);
+        }
+    }
+}
+
 
 export function paintPlayerCharacters(ctx: CanvasRenderingContext2D, cameraPosition: Position, game: Game) {
     const playerCharacters = getPlayerCharacters(game.state.players);

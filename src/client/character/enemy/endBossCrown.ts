@@ -2,7 +2,7 @@ import { calculateDirection, calculateDistance, endGame, getNextId } from "../..
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../gameModel.js";
 import { moveCharacterTick } from "../character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, createCharacter } from "../characterModel.js";
-import { paintCharacterDefault } from "../characterPaint.js";
+import { paintCharacterWithAbilitiesDefault } from "../characterPaint.js";
 import { PathingCache } from "../pathing.js";
 import { EndBossEnemyCharacter, IMAGE_CROWN } from "./endBossEnemy.js";
 
@@ -44,6 +44,6 @@ function tickCrown(enemy: Character, game: Game, pathingCache: PathingCache | nu
 }
 
 function paintCrown(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
-    paintCharacterDefault(ctx, character, cameraPosition, game);
+    paintCharacterWithAbilitiesDefault(ctx, character, cameraPosition, game);
 }
 

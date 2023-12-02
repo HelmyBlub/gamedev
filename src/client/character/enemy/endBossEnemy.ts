@@ -13,7 +13,7 @@ import { changeTileIdOfMapChunk } from "../../map/map.js";
 import { getBossAreaMiddlePosition, getEntranceChunkAndTileXYForPosition } from "../../map/mapEndBossArea.js";
 import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick, resetCharacter } from "../character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, PLAYER_BASE_HP, createCharacter } from "../characterModel.js";
-import { paintCharacterDefault, paintCharatersPets } from "../characterPaint.js";
+import { paintCharacterWithAbilitiesDefault, paintCharatersPets } from "../characterPaint.js";
 import { PathingCache } from "../pathing.js";
 import { getCelestialDirection } from "./bossEnemy.js";
 
@@ -132,7 +132,7 @@ function modifyCharacterToEndBoss(boss: Character) {
 function paintEndBoss(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
     if (character.isDead) return;
     paintCharatersPets(ctx, [character], cameraPosition, game);
-    paintCharacterDefault(ctx, character, cameraPosition, game);
+    paintCharacterWithAbilitiesDefault(ctx, character, cameraPosition, game);
     const crownImage = getImage(IMAGE_CROWN);
     if (crownImage) {
         const paintPos = getPointPaintPosition(ctx, character, cameraPosition);

@@ -10,7 +10,7 @@ import { getPlayerFurthestAwayFromSpawn } from "../../player.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
 import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, calculateCharacterMovePosition, moveCharacterTick, tickCharacters, setCharacterPosition } from "../character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, createCharacter } from "../characterModel.js";
-import { paintCharacterDefault, paintCharacterHpBar, paintCharacters, paintCharatersPets } from "../characterPaint.js";
+import { paintCharacterWithAbilitiesDefault, paintCharacterHpBar, paintCharacters, paintCharatersPets } from "../characterPaint.js";
 import { getPathingCache, PathingCache } from "../pathing.js";
 import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "../playerCharacters/playerCharacters.js";
 import { TamerPetCharacter } from "../playerCharacters/tamer/tamerPetCharacter.js";
@@ -199,7 +199,7 @@ function getBossSpawnPosition(game: Game): Position {
 function paintBossEnemyCharacter(ctx: CanvasRenderingContext2D, character: BossEnemyCharacter, cameraPosition: Position, game: Game) {
     if (character.isDead) return;
     paintCharatersPets(ctx, [character], cameraPosition, game);
-    paintCharacterDefault(ctx, character, cameraPosition, game);
+    paintCharacterWithAbilitiesDefault(ctx, character, cameraPosition, game);
     const paintPos = getPointPaintPosition(ctx, character, cameraPosition);
     const hpBarPos = {
         x: Math.floor(paintPos.x - character.width / 2),

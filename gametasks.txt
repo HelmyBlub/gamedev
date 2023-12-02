@@ -1,6 +1,10 @@
 current tasks:
 - new class:
     - visualize class somehow
+        - bounce ball
+            - alway have a circle around character, when rolling character model "rolls"
+            - bug: in lightning ball circle off boune ball should not be painted
+            - bug: boss character paint not rotating
 
 - check fire line damage after code invterval fix
 - having multiple ball abilities? does not work

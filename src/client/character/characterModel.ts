@@ -114,6 +114,7 @@ export type Character = Position & {
         image?: string,
         color?: string,
         randomizedCharacterImage?: RandomizedCharacterImage,
+        preventDefaultCharacterPaint?: boolean,
     }
     isPet?: boolean,
     isDamageImmune?: boolean,

@@ -1,12 +1,13 @@
 import { getRandomAlivePlayerCharacter, setCharacterPosition } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
+import { paintCharacterDefault, paintCharacterWithAbilitiesDefault } from "../../character/characterPaint.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { BUFF_NAME_BALL_PHYSICS, BuffBallPhysics, createBuffBallPhysics, findBallBuff } from "../../debuff/buffBallPhysics.js";
 import { applyDebuff, removeCharacterDebuff } from "../../debuff/debuff.js";
 import { calculateDirection, getClientInfoByCharacterId, getNextId, modulo } from "../../game.js";
 import { Position, Game, IdCounter, FACTION_ENEMY, ClientInfo } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
-import { calculateBounceAngle, calculateMovePosition, isPositionBlocking } from "../../map/map.js";
+import { calculateBounceAngle, calculateMovePosition, isPositionBlocking, moveByDirectionAndDistance } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, detectSomethingToCharacterHit, getAbilityNameUiText, paintDefaultAbilityStatsUI } from "../ability.js";
 import { AbilityUpgradesFunctions, getAbilityUpgradesDamageFactor, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
@@ -34,6 +35,7 @@ export type AbilityBounceBall = Ability & {
     maxAngleChangePetTick: number,
     nextTickTime?: number,
     rolledDistanceAfterLastDamageTick: number,
+    visualizeBallAngle: number,
 }
 
 export const ABILITY_NAME_BOUNCE_BALL = "Bounce Ball";
@@ -94,6 +96,7 @@ export function createAbilityBounceBall(
         upgrades: {},
         playerInputBinding: playerInputBinding,
         tradable: true,
+        visualizeBallAngle: 0,
     };
 }
 
@@ -104,7 +107,6 @@ export function getAbilityBounceBallDamage(abilityBounceBall: AbilityBounceBall)
 }
 
 function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
-    const abilityBounceBall = ability as AbilityBounceBall;
     if (abilityOwner.debuffs) {
         const ballPhysics: BuffBallPhysics | undefined = abilityOwner.debuffs.find((d) => d.name === BUFF_NAME_BALL_PHYSICS) as any;
         if(ballPhysics) return;
@@ -214,20 +216,50 @@ function paintAbilityUI(ctx: CanvasRenderingContext2D, ability: Ability, drawSta
 
 function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
     const abilityBall = ability as AbilityBounceBall;
-    if (!findBallBuff(abilityOwner, abilityBall)) return;
-    const paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
-    ctx.fillStyle = "red";
+    let color = "red";
     if (abilityOwner.faction === FACTION_ENEMY) {
-        ctx.fillStyle = "darkgray";
+        color = "darkgray";
     }
-
+    ctx.lineWidth = 2;
+    const paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
+    const ballBuff = findBallBuff(abilityOwner, abilityBall);
+    if(ballBuff === true) return;
+    if (!findBallBuff(abilityOwner, abilityBall)){
+        paintPos.y -= 10;
+        ctx.strokeStyle = color;
+        ctx.beginPath();
+        ctx.arc(
+            paintPos.x,
+            paintPos.y,
+            abilityBall.radius, 0, 2 * Math.PI
+        );
+        ctx.stroke();
+    }else{
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(
+            paintPos.x,
+            paintPos.y,
+            abilityBall.radius, 0, 2 * Math.PI
+        );
+        ctx.stroke();    
+        ctx.translate(paintPos.x, paintPos.y);
+        ctx.rotate(abilityBall.visualizeBallAngle);
+        ctx.translate(-paintPos.x, -paintPos.y);
+        paintCharacterDefault(ctx, abilityOwner as Character, cameraPosition, game, false);
+        ctx.resetTransform();
+    }
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.arc(
-        paintPos.x,
-        paintPos.y,
-        abilityBall.radius, 0, 2 * Math.PI
-    );
-    ctx.fill();
+    let paintPos2 = {x:paintPos.x, y: paintPos.y};
+    moveByDirectionAndDistance(paintPos2, abilityBall.visualizeBallAngle, abilityBall.radius, false);
+    ctx.moveTo(paintPos2.x, paintPos2.y);
+    paintPos2 = {x:paintPos.x, y: paintPos.y};
+    moveByDirectionAndDistance(paintPos2, abilityBall.visualizeBallAngle, abilityBall.radius - 8, false);
+    ctx.lineTo(paintPos2.x, paintPos2.y);
+    ctx.stroke();
+
 }
 
 function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
@@ -235,9 +267,15 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     rechargeTick(abilityBounceBall, game);
 
     const ballBuff = findBallBuff(abilityOwner, abilityBounceBall);
-    if (!ballBuff) return;
+    if (typeof ballBuff !== "object"){
+        if(!ballBuff && abilityOwner.isMoving && abilityOwner.moveSpeed){
+            turnBall(abilityBounceBall, abilityOwner.moveSpeed, abilityOwner.moveDirection!);
+        }
+        return;
+    };
     rollDirectionInfluenceTick(abilityBounceBall, abilityOwner, game);
     speedDrecreaseTick(abilityBounceBall, abilityOwner, ballBuff, game);
+    turnBall(abilityBounceBall, abilityBounceBall.currentSpeed, abilityBounceBall.moveDirection!)
     const maxRollTickDistance = game.state.map.tileSize / 2;
     const rollTicks = Math.max(1, Math.round(abilityBounceBall.currentSpeed / maxRollTickDistance));
     const rollTickDistance = abilityBounceBall.currentSpeed / rollTicks;
@@ -245,6 +283,13 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
         rollTick(abilityBounceBall, abilityOwner, rollTickDistance, game);
         damageTick(abilityBounceBall, abilityOwner, game);
     }
+}
+
+function turnBall(ball: AbilityBounceBall, speed: number, direction: number){
+    const xStep = Math.cos(direction);
+    let directionMult = xStep > 0 ? 1 : -1;
+    if(ball.visualizeBallAngle === undefined) ball.visualizeBallAngle = 0;
+    ball.visualizeBallAngle = (ball.visualizeBallAngle + speed/30 * directionMult) % (Math.PI * 2);
 }
 
 function damageTick(abilityBounceBall: AbilityBounceBall, abilityOwner: AbilityOwner, game: Game) {

@@ -31,17 +31,18 @@ export function createBuffBallPhysics(
     };
 }
 
-export function findBallBuff(owner: AbilityOwner, ability: Ability): BuffBallPhysics | undefined {
-    if (!owner.debuffs) return undefined;
+export function findBallBuff(owner: AbilityOwner, ability: Ability): BuffBallPhysics | boolean {
+    if (!owner.debuffs) return false;
     for (let buff of owner.debuffs) {
         if (buff.name === BUFF_NAME_BALL_PHYSICS) {
             const ballBuff = buff as BuffBallPhysics;
             if (ballBuff.abilityRefId === ability.id) {
                 return ballBuff;
             }
+            return true;
         }
     }
-    return undefined;
+    return false;
 }
 
 function refreshBuffEffect(newDebuff: Debuff, currentDebuff: Debuff, targetCharacter: Character, game: Game) {
@@ -54,6 +55,7 @@ function refreshBuffEffect(newDebuff: Debuff, currentDebuff: Debuff, targetChara
 function applyBuffEffect(debuff: Debuff, targetCharacter: Character, game: Game) {
     const buffBall = debuff as BuffBallPhysics;
     targetCharacter.isMoveTickDisabled = true;
+    targetCharacter.paint.preventDefaultCharacterPaint = true;
     autoSendMousePositionHandler(targetCharacter.id, debuff.name, true, undefined, game);
     if(buffBall.abilityRefName === ABILITY_NAME_LIGHTNING_BALL && targetCharacter.faction === FACTION_PLAYER){
         const buffImmunity = createBuffImmunity(undefined, undefined);
@@ -65,6 +67,7 @@ function removeBuffEffect(debuff: Debuff, targetCharacter: Character, game: Game
     const buffBall = debuff as BuffBallPhysics;
     targetCharacter.isMoveTickDisabled = false;
     autoSendMousePositionHandler(targetCharacter.id, debuff.name, false, undefined, game);
+    targetCharacter.paint.preventDefaultCharacterPaint = false;
     if(buffBall.abilityRefName === ABILITY_NAME_LIGHTNING_BALL){
         const immunityBuff = targetCharacter.debuffs.find((d) => d.name === BUFF_NAME_IMMUNITY);
         if(immunityBuff){
