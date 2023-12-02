@@ -2,7 +2,7 @@ import { Ability, AbilityOwner } from "../ability/ability.js";
 import { ABILITY_NAME_LIGHTNING_BALL } from "../ability/ball/abilityLightningBall.js";
 import { Character } from "../character/characterModel.js";
 import { autoSendMousePositionHandler } from "../game.js";
-import { Game } from "../gameModel.js";
+import { FACTION_PLAYER, Game } from "../gameModel.js";
 import { BUFF_NAME_IMMUNITY, createBuffImmunity } from "./buffImmunity.js";
 import { DEBUFFS_FUNCTIONS, Debuff, applyDebuff, removeCharacterDebuff } from "./debuff.js";
 
@@ -55,7 +55,7 @@ function applyBuffEffect(debuff: Debuff, targetCharacter: Character, game: Game)
     const buffBall = debuff as BuffBallPhysics;
     targetCharacter.isMoveTickDisabled = true;
     autoSendMousePositionHandler(targetCharacter.id, debuff.name, true, undefined, game);
-    if(buffBall.abilityRefName === ABILITY_NAME_LIGHTNING_BALL){
+    if(buffBall.abilityRefName === ABILITY_NAME_LIGHTNING_BALL && targetCharacter.faction === FACTION_PLAYER){
         const buffImmunity = createBuffImmunity(undefined, undefined);
         applyDebuff(buffImmunity, targetCharacter, game);    
     }

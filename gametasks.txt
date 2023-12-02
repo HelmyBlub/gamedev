@@ -1,7 +1,5 @@
 current tasks:
 - new class:
-    - ball abiltities for enemies
-        - delay and visualize lightning ball direction for enemies
     - visualize class somehow
 
 - check fire line damage after code invterval fix

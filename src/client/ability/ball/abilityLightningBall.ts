@@ -3,10 +3,10 @@ import { Character } from "../../character/characterModel.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { BUFF_NAME_BALL_PHYSICS, BuffBallPhysics, createBuffBallPhysics, findBallBuff } from "../../debuff/buffBallPhysics.js";
 import { applyDebuff, removeCharacterDebuff } from "../../debuff/debuff.js";
-import { calculateDirection, getClientInfoByCharacterId, getNextId } from "../../game.js";
+import { calcNewPositionMovedInDirection, calculateDirection, getClientInfoByCharacterId, getNextId } from "../../game.js";
 import { Position, Game, IdCounter, FACTION_ENEMY, ClientInfo } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
-import { calculateMovePosition, isPositionBlocking } from "../../map/map.js";
+import { calculateMovePosition, getFirstBlockingGameMapTilePositionTouchingLine, isPositionBlocking } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, detectSomethingToCharacterHit, getAbilityNameUiText, paintDefaultAbilityStatsUI } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
@@ -26,14 +26,17 @@ export type AbilityLightningBall = Ability & {
     speed: number,
     tickInterval: number,
     nextTickTime?: number,
+    firstJumpDelay?: number,
+    firstJumpDelayEnd?: number
 }
 
 export const ABILITY_NAME_LIGHTNING_BALL = "Lighning Ball";
 export const ABILITY_LIGHTNING_BALL_UPGRADE_FUNCTIONS: AbilityUpgradesFunctions = {};
+const ENEMY_JUMP_DELAY = 1500;
 
 export function addAbilityLightningBall() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_LIGHTNING_BALL] = {
-        activeAbilityCast: castBounceBall,
+        activeAbilityCast: castLightningBall,
         createAbility: createAbilityLightningBall,
         createAbilityBossUpgradeOptions: createAbilityBossSpeedBoostUpgradeOptions,
         executeUpgradeOption: executeAbilityUpgradeOption,
@@ -79,27 +82,27 @@ export function createAbilityLightningBall(
     };
 }
 
-export function getDamageAbilityLightningBall(abilityBounceBall: AbilityLightningBall, abilityOwner: AbilityOwner) {
+export function getDamageAbilityLightningBall(abilityLightningBall: AbilityLightningBall, abilityOwner: AbilityOwner) {
     let damageFactor = 1;
-    damageFactor += lightningBallUpgradeBounceBonusGetBonusDamageFactor(abilityBounceBall, abilityOwner);
-    return abilityBounceBall.damage * damageFactor;
+    damageFactor += lightningBallUpgradeBounceBonusGetBonusDamageFactor(abilityLightningBall, abilityOwner);
+    return abilityLightningBall.damage * damageFactor;
 }
 
 function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     const abilityBall = ability as AbilityLightningBall;
     if (abilityOwner.debuffs) {
         const ballPhysics: BuffBallPhysics | undefined = abilityOwner.debuffs.find((d) => d.name === BUFF_NAME_BALL_PHYSICS) as any;
-        if(ballPhysics) return;
+        if (ballPhysics) return;
     }
     let pos: Position = {
         x: abilityOwner.x,
         y: abilityOwner.y
     };
-    if(abilityOwner.moveDirection){
+    if (abilityOwner.moveDirection) {
         pos = calculateMovePosition(abilityOwner, abilityOwner.moveDirection, 1, false);
     }
 
-    castBounceBall(abilityOwner, ability, pos, true, game);
+    castLightningBall(abilityOwner, ability, pos, true, game);
 }
 
 function resetAbility(ability: Ability) {
@@ -108,7 +111,7 @@ function resetAbility(ability: Ability) {
     ball.currentCharges = ball.maxCharges;
 }
 
-function castBounceBall(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isKeydown: boolean, game: Game) {
+function castLightningBall(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isKeydown: boolean, game: Game) {
     if (!isKeydown) return;
     const abilityLightningBall = ability as AbilityLightningBall;
     if (abilityLightningBall.currentCharges <= 0) return;
@@ -116,6 +119,9 @@ function castBounceBall(abilityOwner: AbilityOwner, ability: Ability, castPositi
     applyDebuff(buffBallPhyscis, abilityOwner as any, game);
     abilityLightningBall.moveDirection = calculateDirection(abilityOwner, castPosition);
     abilityLightningBall.currentCharges--;
+    if (abilityLightningBall.firstJumpDelay) {
+        abilityLightningBall.firstJumpDelayEnd = game.state.time + abilityLightningBall.firstJumpDelay;
+    }
 
     if (abilityLightningBall.nextRechargeTime === undefined) {
         abilityLightningBall.nextRechargeTime = game.state.time + abilityLightningBall.baseRechargeTime;
@@ -145,15 +151,17 @@ function setAbilityToLevel(ability: Ability, level: number) {
 function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: number) {
     const abilityBall = ability as AbilityLightningBall;
     abilityBall.damage = level / 2 * damageFactor;
+    abilityBall.firstJumpDelay = ENEMY_JUMP_DELAY;
 }
 
 function setAbilityToBossLevel(ability: Ability, level: number) {
     const abilityBall = ability as AbilityLightningBall;
     abilityBall.damage = level * 10;
+    abilityBall.firstJumpDelay = ENEMY_JUMP_DELAY;
 }
 
 function paintAbilityUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
-    const bounceBall = ability as AbilityLightningBall;
+    const lightningBall = ability as AbilityLightningBall;
     const rectSize = size;
 
     ctx.lineWidth = 1;
@@ -164,19 +172,19 @@ function paintAbilityUI(ctx: CanvasRenderingContext2D, ability: Ability, drawSta
     ctx.rect(drawStartX, drawStartY, rectSize, rectSize);
     ctx.stroke();
 
-    if (bounceBall.nextRechargeTime !== undefined && game.state.time < bounceBall.nextRechargeTime) {
+    if (lightningBall.nextRechargeTime !== undefined && game.state.time < lightningBall.nextRechargeTime) {
         ctx.fillStyle = "gray";
-        const heightFactor = Math.max((bounceBall.nextRechargeTime - game.state.time) / bounceBall.baseRechargeTime, 0);
+        const heightFactor = Math.max((lightningBall.nextRechargeTime - game.state.time) / lightningBall.baseRechargeTime, 0);
         ctx.fillRect(drawStartX, drawStartY, rectSize, rectSize * heightFactor);
     }
 
     const fontSize = Math.floor(size * 0.8);
     ctx.fillStyle = "black";
     ctx.font = fontSize + "px Arial";
-    ctx.fillText("" + bounceBall.currentCharges, drawStartX, drawStartY + rectSize - (rectSize - fontSize * 0.9));
+    ctx.fillText("" + lightningBall.currentCharges, drawStartX, drawStartY + rectSize - (rectSize - fontSize * 0.9));
 
-    if (bounceBall.playerInputBinding) {
-        const keyBind = playerInputBindingToDisplayValue(bounceBall.playerInputBinding, game);
+    if (lightningBall.playerInputBinding) {
+        const keyBind = playerInputBindingToDisplayValue(lightningBall.playerInputBinding, game);
         ctx.fillStyle = "black";
         ctx.font = "10px Arial";
         ctx.fillText(keyBind, drawStartX + 1, drawStartY + 8);
@@ -199,6 +207,23 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
         abilityBall.radius, 0, 2 * Math.PI
     );
     ctx.fill();
+    if(abilityBall.firstJumpDelayEnd && abilityBall.firstJumpDelayEnd > game.state.time){
+        const endPos = calcNewPositionMovedInDirection(abilityOwner, abilityBall.moveDirection, 1000);
+        let blockingPosistion = getFirstBlockingGameMapTilePositionTouchingLine(game.state.map, abilityOwner, endPos, game);
+        if(!blockingPosistion) {
+            blockingPosistion = endPos;
+        }
+        ctx.globalAlpha = 0.75;
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        let paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
+        ctx.moveTo(paintPos.x, paintPos.y);
+        paintPos = getPointPaintPosition(ctx, blockingPosistion, cameraPosition);
+        ctx.lineTo(paintPos.x, paintPos.y);
+        ctx.stroke();
+        ctx.globalAlpha = 1;        
+    }
 }
 
 function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
@@ -207,13 +232,13 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
 
     const ballBuff = findBallBuff(abilityOwner, abilityLightningBall);
     if (!ballBuff) return;
-
+    if (abilityLightningBall.firstJumpDelayEnd && abilityLightningBall.firstJumpDelayEnd > game.state.time) return;
     const maxJumpDistance = game.state.map.tileSize / 3;
     const jumpTicks = Math.max(1, Math.round(abilityLightningBall.speed / maxJumpDistance));
     const tickDistnace = abilityLightningBall.speed / jumpTicks;
     for (let i = 0; i < jumpTicks; i++) {
         let end = jumpTick(abilityLightningBall, abilityOwner, ballBuff, tickDistnace, game);
-        if(end) break;
+        if (end) break;
     }
 }
 
@@ -231,44 +256,44 @@ function jumpTick(abilityLightningBall: AbilityLightningBall, abilityOwner: Abil
     }
 }
 
-function damageTick(abilityBounceBall: AbilityLightningBall, abilityOwner: AbilityOwner, game: Game): number {
+function damageTick(abilityLightningBall: AbilityLightningBall, abilityOwner: AbilityOwner, game: Game): number {
     const hitCount = detectSomethingToCharacterHit(
         game.state.map,
         abilityOwner,
-        abilityBounceBall.radius * 2,
+        abilityLightningBall.radius * 2,
         abilityOwner.faction,
-        getDamageAbilityLightningBall(abilityBounceBall, abilityOwner),
+        getDamageAbilityLightningBall(abilityLightningBall, abilityOwner),
         game.state.players,
         game.state.bossStuff.bosses,
-        abilityBounceBall.id,
+        abilityLightningBall.id,
         undefined,
         game
     );
     return hitCount;
 }
 
-function rechargeTick(abilityBounceBall: AbilityLightningBall, game: Game) {
-    if (abilityBounceBall.nextRechargeTime != undefined && abilityBounceBall.nextRechargeTime <= game.state.time) {
-        abilityBounceBall.currentCharges++;
-        if (abilityBounceBall.currentCharges < abilityBounceBall.maxCharges) {
-            abilityBounceBall.nextRechargeTime = game.state.time + abilityBounceBall.baseRechargeTime;
+function rechargeTick(abilityLightningBall: AbilityLightningBall, game: Game) {
+    if (abilityLightningBall.nextRechargeTime != undefined && abilityLightningBall.nextRechargeTime <= game.state.time) {
+        abilityLightningBall.currentCharges++;
+        if (abilityLightningBall.currentCharges < abilityLightningBall.maxCharges) {
+            abilityLightningBall.nextRechargeTime = game.state.time + abilityLightningBall.baseRechargeTime;
         } else {
-            abilityBounceBall.nextRechargeTime = undefined;
+            abilityLightningBall.nextRechargeTime = undefined;
         }
     }
 }
 
 function paintAbilityStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
-    const abilityBounceBall = ability as AbilityLightningBall;
+    const abilityLightningBall = ability as AbilityLightningBall;
     const textLines: string[] = getAbilityNameUiText(ability);
     textLines.push(
-        `Key: ${playerInputBindingToDisplayValue(abilityBounceBall.playerInputBinding!, game)}`,
+        `Key: ${playerInputBindingToDisplayValue(abilityLightningBall.playerInputBinding!, game)}`,
         `Click to become a lightning ball.`,
         `Move with lightning speed.`,
         `Immune to damage.`,
         `Ends if it hits a wall.`,
         "Ability stats:",
-        `Damage: ${abilityBounceBall.damage}`,
+        `Damage: ${abilityLightningBall.damage}`,
     );
     pushAbilityUpgradesUiTexts(ABILITY_LIGHTNING_BALL_UPGRADE_FUNCTIONS, textLines, ability);
 
