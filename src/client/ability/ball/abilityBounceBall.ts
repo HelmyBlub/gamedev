@@ -218,7 +218,7 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
     const abilityBall = ability as AbilityBounceBall;
     let color = "red";
     if (abilityOwner.faction === FACTION_ENEMY) {
-        color = "darkgray";
+        color = "black";
     }
     ctx.lineWidth = 2;
     const paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
@@ -235,7 +235,7 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
         );
         ctx.stroke();
     }else{
-        ctx.fillStyle = color;
+        ctx.strokeStyle = color;
         ctx.beginPath();
         ctx.arc(
             paintPos.x,

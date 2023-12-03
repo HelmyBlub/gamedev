@@ -38,7 +38,7 @@ export function abilityBounceBallUpgradeFireLinePlace(ability: AbilityBounceBall
         const width = 10;
         const endPos = { x: owner.x, y: owner.y };
         const distance = calculateDistance(up.startPosition, endPos);
-        if(distance < 600){
+        if(distance < 120){
             const damage = ability.damage / (1000 / TICK_INTERVAL) * (1 + DAMAGE_PER_SECOND_FACTOR * up.level);
             const fireLine = createAbilityObjectFireLine(owner.faction, up.startPosition, endPos, damage, width, DURATION * up.level, TICK_INTERVAL, "red", ability.id, game);
             game.state.abilityObjects.push(fireLine);

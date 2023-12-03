@@ -8,6 +8,7 @@ import { Position, Game, IdCounter, FACTION_ENEMY, ClientInfo } from "../../game
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { calculateMovePosition, getFirstBlockingGameMapTilePositionTouchingLine, isPositionBlocking } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
+import { fixedRandom } from "../../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, detectSomethingToCharacterHit, getAbilityNameUiText, paintDefaultAbilityStatsUI } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
 import { addAbilityLightningBallUpgradeBounceBonus, lightningBallUpgradeBounceBonusGetBonusDamageFactor, lightningBallUpgradeBounceBonusSetBonusDamageFactor } from "./abilityLightningBallUpgradeBounceBonus.js";
@@ -72,7 +73,7 @@ export function createAbilityLightningBall(
         passive: false,
         tickInterval: 250,
         moveDirection: 0,
-        baseRechargeTime: 4000,
+        baseRechargeTime: 1000,
         currentCharges: 2,
         maxCharges: 2,
         speed: 60,
@@ -194,26 +195,56 @@ function paintAbilityUI(ctx: CanvasRenderingContext2D, ability: Ability, drawSta
 function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
     const abilityBall = ability as AbilityLightningBall;
     const ballBuff = findBallBuff(abilityOwner, abilityBall);
-    if (typeof ballBuff !== "object"){
+    if (typeof ballBuff !== "object") {
+        if(!ballBuff){
+            const paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
+            paintLightningBall(ctx, paintPos, abilityOwner.faction, 10, game);
+        }
         return;
     }
     const paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
-    ctx.fillStyle = "blue";
-    if (abilityOwner.faction === FACTION_ENEMY) {
-        ctx.fillStyle = "darkblue";
-    }
+    paintLightningBall(ctx, paintPos, abilityOwner.faction, abilityBall.radius, game);
+    delayedPaint(ctx, abilityOwner, abilityBall, cameraPosition, game);
+}
 
+function paintLightningBall(ctx: CanvasRenderingContext2D, paintPos: Position, faction: string, radius: number, game: Game) {
+    let color = "blue";
+    if (faction === FACTION_ENEMY) {
+        color = "darkblue";
+    }
+    ctx.fillStyle = color;
     ctx.beginPath();
     ctx.arc(
         paintPos.x,
         paintPos.y,
-        abilityBall.radius, 0, 2 * Math.PI
+        radius / 3, 0, 2 * Math.PI
     );
     ctx.fill();
-    if(abilityBall.firstJumpDelayEnd && abilityBall.firstJumpDelayEnd > game.state.time){
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "blue";
+    ctx.beginPath();
+    const reps = 6;
+    for (let i = 0; i < reps; i++) {
+        ctx.moveTo(paintPos.x, paintPos.y);
+        let direction = ((i/reps*6) + game.state.time)%(Math.PI*2);
+        let paintPos2 = calcNewPositionMovedInDirection(paintPos, direction, radius/2);
+        ctx.lineTo(paintPos2.x, paintPos2.y);
+        let random = 0.1 + fixedRandom(paintPos.x, paintPos.y, game.state.time);
+        let paintPos3 = calcNewPositionMovedInDirection(paintPos2, direction + random, radius/2);
+        let random2 = 0.1 + fixedRandom(paintPos2.x, paintPos2.y, game.state.time);
+        let paintPos4 = calcNewPositionMovedInDirection(paintPos2, direction - random2, radius/2);
+        ctx.lineTo(paintPos3.x, paintPos3.y);
+        ctx.moveTo(paintPos2.x, paintPos2.y);
+        ctx.lineTo(paintPos4.x, paintPos4.y);
+    }
+    ctx.stroke();    
+}
+
+function delayedPaint(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, abilityBall: AbilityLightningBall, cameraPosition: Position, game: Game) {
+    if (abilityBall.firstJumpDelayEnd && abilityBall.firstJumpDelayEnd > game.state.time) {
         const endPos = calcNewPositionMovedInDirection(abilityOwner, abilityBall.moveDirection, 1000);
         let blockingPosistion = getFirstBlockingGameMapTilePositionTouchingLine(game.state.map, abilityOwner, endPos, game);
-        if(!blockingPosistion) {
+        if (!blockingPosistion) {
             blockingPosistion = endPos;
         }
         ctx.globalAlpha = 0.75;
@@ -225,7 +256,7 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
         paintPos = getPointPaintPosition(ctx, blockingPosistion, cameraPosition);
         ctx.lineTo(paintPos.x, paintPos.y);
         ctx.stroke();
-        ctx.globalAlpha = 1;        
+        ctx.globalAlpha = 1;
     }
 }
 
