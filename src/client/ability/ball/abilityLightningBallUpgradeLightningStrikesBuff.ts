@@ -19,6 +19,7 @@ type AbilityLightningBallUpgradeLightningStrikesBuff = AbilityUpgrade & {
 }
 
 const TARGETS = 6;
+const BASE_TICK_INTERVAL = 500;
 
 export const ABILITY_LIGHTNING_BALL_UPGRADE_LIGHTNING_STRIKES = "Lightning Strikes";
 
@@ -32,11 +33,11 @@ export function addAbilityLightningBallUpgradeLightningStrikes() {
     }
 }
 
-export function lightningBallUpgradeLightningStirkesExecute(ability: AbilityLightningBall, character: AbilityOwner, game: Game){
+export function lightningBallUpgradeLightningStirkesExecute(ability: AbilityLightningBall, character: AbilityOwner, game: Game) {
     const upgrade: AbilityLightningBallUpgradeLightningStrikesBuff = ability.upgrades[ABILITY_LIGHTNING_BALL_UPGRADE_LIGHTNING_STRIKES];
     if (upgrade) {
         let damage = ability.damage;
-        if(upgrade.bounceBallDamageBonus){
+        if (upgrade.bounceBallDamageBonus) {
             damage = getDamageAbilityLightningBall(ability, character);
         }
         const buff = createBuffLightningStrikes(
@@ -54,7 +55,7 @@ export function lightningBallUpgradeLightningStirkesExecute(ability: AbilityLigh
     }
 }
 
-function setUpgradeToBossLevel(ability: Ability, level: number){
+function setUpgradeToBossLevel(ability: Ability, level: number) {
     const up: AbilityLightningBallUpgradeLightningStrikesBuff = ability.upgrades[ABILITY_LIGHTNING_BALL_UPGRADE_LIGHTNING_STRIKES];
     if (!up) return;
     up.level = level;
@@ -70,9 +71,9 @@ function getOptions(ability: Ability, character: Character, game: Game): Upgrade
     const options = getAbilityUpgradeOptionDefault(ability, ABILITY_LIGHTNING_BALL_UPGRADE_LIGHTNING_STRIKES);
     options[0].option.displayLongText = getAbilityUpgradeUiTextLong(ability, options[0].option as any);
     const up: AbilityLightningBallUpgradeLightningStrikesBuff = ability.upgrades[ABILITY_LIGHTNING_BALL_UPGRADE_LIGHTNING_STRIKES];
-    if(up && !up.bounceBallDamageBonus){
+    if (up && !up.bounceBallDamageBonus) {
         const lightningBall = character.abilities.find((a) => a.name === ABILITY_NAME_LIGHTNING_BALL);
-        if(!lightningBall || lightningBall.upgrades[ABILITY_LIGHTNING_BALL_UPGRADE_BOUNCE_BONUS]){
+        if (!lightningBall || lightningBall.upgrades[ABILITY_LIGHTNING_BALL_UPGRADE_BOUNCE_BONUS]) {
             const option: AbilityUpgradeOption = {
                 displayText: `${ABILITY_LIGHTNING_BALL_UPGRADE_LIGHTNING_STRIKES} ball bounce bonus`,
                 identifier: ABILITY_LIGHTNING_BALL_UPGRADE_LIGHTNING_STRIKES,
@@ -85,7 +86,7 @@ function getOptions(ability: Ability, character: Character, game: Game): Upgrade
             options.push({
                 option: option,
                 probability: 1,
-            });            
+            });
         }
     }
 
@@ -96,43 +97,48 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption) {
     const as = ability as AbilityLightningBall;
     let up: AbilityLightningBallUpgradeLightningStrikesBuff;
     if (as.upgrades[ABILITY_LIGHTNING_BALL_UPGRADE_LIGHTNING_STRIKES] === undefined) {
-        up = { 
+        up = {
             level: 0,
             bounceBallDamageBonus: false,
             duration: 0,
             numberStrikes: 0,
             spawnRadius: 0,
             strikeRadius: 20,
-            tickInterval: 500,
+            tickInterval: BASE_TICK_INTERVAL,
             strikeDelay: 0,
         };
         as.upgrades[ABILITY_LIGHTNING_BALL_UPGRADE_LIGHTNING_STRIKES] = up;
     } else {
         up = as.upgrades[ABILITY_LIGHTNING_BALL_UPGRADE_LIGHTNING_STRIKES];
     }
-    if(option.additionalInfo === undefined){
+    if (option.additionalInfo === undefined) {
         up.level++;
         up.numberStrikes = up.level * TARGETS;
         up.spawnRadius = 80 + up.level * 5;
         up.duration = 5000 + up.level * 1000;
-    }else{
+    } else {
         up.bounceBallDamageBonus = true;
     }
 }
 
 function getAbilityUpgradeUiText(ability: Ability): string {
     const up: AbilityLightningBallUpgradeLightningStrikesBuff = ability.upgrades[ABILITY_LIGHTNING_BALL_UPGRADE_LIGHTNING_STRIKES];
-    return `${ABILITY_LIGHTNING_BALL_UPGRADE_LIGHTNING_STRIKES}: Level ${up.level}`;
+    return `${ABILITY_LIGHTNING_BALL_UPGRADE_LIGHTNING_STRIKES}: Targets ${TARGETS * up.level}`;
 }
 
 function getAbilityUpgradeUiTextLong(ability: Ability, option: AbilityUpgradeOption): string[] {
     const textLines: string[] = [];
-    if(option.additionalInfo === undefined){
+    const up: AbilityLightningBallUpgradeLightningStrikesBuff | undefined = ability.upgrades[ABILITY_LIGHTNING_BALL_UPGRADE_LIGHTNING_STRIKES];
+    if (option.additionalInfo === undefined) {
         textLines.push(`When using Lightning Ball you will`);
         textLines.push(`lightning strikes close enemies.`);
-        textLines.push(`hits upgrade level x ${TARGETS} targets.`);
-        textLines.push(`100% damage.`);
-    }else{
+        if (up) {
+            textLines.push(`lightning strikes increased from ${TARGETS * up.level} to ${TARGETS * (up.level + 1)}.`);
+        } else {
+            textLines.push(`${TARGETS} lightning strikes every ${BASE_TICK_INTERVAL / 1000}s.`);
+        }
+        textLines.push(`Does 100% damage.`);
+    } else {
         textLines.push(`Lightning Strikes damage`);
         textLines.push(`deal bonus damage based on `);
         textLines.push(`amount of bounces of last bounce ball.`);

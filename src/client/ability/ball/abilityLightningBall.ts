@@ -73,7 +73,7 @@ export function createAbilityLightningBall(
         passive: false,
         tickInterval: 250,
         moveDirection: 0,
-        baseRechargeTime: 1000,
+        baseRechargeTime: 4000,
         currentCharges: 2,
         maxCharges: 2,
         speed: 60,

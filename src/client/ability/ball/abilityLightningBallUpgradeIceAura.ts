@@ -49,7 +49,7 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption) {
     const as = ability as AbilityLightningBall;
     let up: AbilityLightningBallUpgradeIceAura;
     if (as.upgrades[ABILITY_LIGHTNING_BALL_UPGRADE_ICE_AURA] === undefined) {
-        up = { level: 0, damageFactor: 0, duration: DURATION, slowFactor: 1 + SLOW, radius: RADIUS};
+        up = { level: 0, damageFactor: 0, duration: DURATION, slowFactor: 1 + SLOW, radius: RADIUS };
         as.upgrades[ABILITY_LIGHTNING_BALL_UPGRADE_ICE_AURA] = up;
     } else {
         up = as.upgrades[ABILITY_LIGHTNING_BALL_UPGRADE_ICE_AURA];
@@ -63,15 +63,24 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption) {
 
 function getAbilityUpgradeUiText(ability: Ability): string {
     const up: AbilityLightningBallUpgradeIceAura = ability.upgrades[ABILITY_LIGHTNING_BALL_UPGRADE_ICE_AURA];
-    return `${ABILITY_LIGHTNING_BALL_UPGRADE_ICE_AURA}: ${up.level}`;
+    return `${ABILITY_LIGHTNING_BALL_UPGRADE_ICE_AURA}: Damage: ${DAMAGE_PER_LEVEL * 100 * up.level}%, slow: ${(SLOW + SLOW_PER_LEVEL * up.level) * 100}%`;
 }
 
 function getAbilityUpgradeUiTextLong(ability: Ability, option: AbilityUpgradeOption): string[] {
     const textLines: string[] = [];
+    const up: AbilityLightningBallUpgradeIceAura | undefined = ability.upgrades[ABILITY_LIGHTNING_BALL_UPGRADE_ICE_AURA];
     textLines.push(`When Lightning Ball ends`);
-    textLines.push(`place down a ice field.`);
-    textLines.push(`Does ${DAMAGE_PER_LEVEL * 100}% base damage per second.`);
-    textLines.push(`Slows enemies by ${SLOW * 100}%.`);
+    textLines.push(`place down an ice field.`);
+    if (up) {
+        textLines.push(`Damage per second increase from ${DAMAGE_PER_LEVEL * 100 * up.level}% to ${DAMAGE_PER_LEVEL * 100 * (up.level + 1)}%.`);
+        textLines.push(`Radius increase from ${RADIUS + RADIUS_PER_LEVEL * up.level} to ${RADIUS + RADIUS_PER_LEVEL * (up.level + 1)}.`);
+        textLines.push(`Duration increase from ${(DURATION + DURATION_PER_LEVEL * up.level) / 1000}s to ${(DURATION + DURATION_PER_LEVEL * (up.level + 1)) / 1000}s.`);
+        textLines.push(`Slows increase from ${(SLOW + SLOW_PER_LEVEL * up.level) * 100}% to ${(SLOW + SLOW_PER_LEVEL * (up.level + 1)) * 100}%.`);
+    } else {
+        textLines.push(`Does ${DAMAGE_PER_LEVEL * 100}% base damage per second.`);
+        textLines.push(`Lasts ${DURATION / 1000}s.`);
+        textLines.push(`Slows enemies by ${SLOW * 100}%.`);
+    }
 
     return textLines;
 }

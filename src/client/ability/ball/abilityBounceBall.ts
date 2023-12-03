@@ -391,7 +391,7 @@ function paintAbilityStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, dr
         `Bounces of terrain. Each bounce increases speed.`,
         `Speed decreases over time.`,
         "Ability stats:",
-        `Damage: ${abilityBounceBall.damage}`,
+        `Base Damage: ${abilityBounceBall.damage}`,
         `Bounce Bonus Speed: ${abilityBounceBall.bounceBonusSpeed}`,
         `Angle Change per Second: ${(abilityBounceBall.maxAngleChangePetTick * 60 / Math.PI / 2 * 360).toFixed(0)}°`,
     );

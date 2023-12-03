@@ -60,10 +60,15 @@ function getAbilityUpgradeUiText(ability: Ability): string {
 
 function getAbilityUpgradeUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
+    const up: AbilityLightningBallUpgradeLightningStrikesBuff | undefined = ability.upgrades[ABILITY_LIGHTNING_BALL_UPGRADE_HP_LEACH];
+    textLines.push(`Get an additional ${BONUS_HP} bonus HP.`);
     textLines.push(`When using Lightning Ball you will`);
     textLines.push(`heal for distance traveled.`);
-    textLines.push(`And get ${BONUS_HP} bonus HP.`);
-    textLines.push(`${HEAL_PER_PIXEL_TRAVELED.toFixed(2)} heal per pixel traveled.`);
+    if (up) {
+        textLines.push(`Increase heal per pixel from ${(HEAL_PER_PIXEL_TRAVELED * up.level).toFixed(2)} to ${(HEAL_PER_PIXEL_TRAVELED * (up.level + 1)).toFixed(2)}.`);
+    } else {
+        textLines.push(`${HEAL_PER_PIXEL_TRAVELED.toFixed(2)} heal per pixel traveled.`);
+    }
 
     return textLines;
 }

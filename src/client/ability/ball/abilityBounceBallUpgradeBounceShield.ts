@@ -22,7 +22,7 @@ export function addAbilityBounceBallUpgradeBounceShield() {
 
 export function bounceBallUpgradeBounceShieldExecute(ability: AbilityBounceBall, owner: AbilityOwner) {
     const up: AbilityBounceBallUpgradeBounceShield = ability.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_SHIELD];
-    if(!up) return;
+    if (!up) return;
     characterGetShield(owner as Character, up.level * SHIELD_VALUE);
 }
 
@@ -32,11 +32,11 @@ function getOptions(ability: Ability): UpgradeOptionAndProbability[] {
     return options;
 }
 
-function executeOption(ability: Ability, option: AbilityUpgradeOption){
+function executeOption(ability: Ability, option: AbilityUpgradeOption) {
     const ball = ability as AbilityBounceBall;
     let up: AbilityBounceBallUpgradeBounceShield;
     if (ball.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_SHIELD] === undefined) {
-        up = {level: 0};
+        up = { level: 0 };
         ball.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_SHIELD] = up;
     } else {
         up = ball.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_SHIELD];
@@ -51,6 +51,14 @@ function getAbilityUpgradeUiText(ability: Ability): string {
 
 function getAbilityUpgradeUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
-    textLines.push(`Gain ${SHIELD_VALUE} shield for every bounce`);
+    const upgrade: AbilityBounceBallUpgradeBounceShield | undefined = ability.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_SHIELD];
+    if (upgrade) {
+        textLines.push(
+            `Gain shield for every bounce.`,
+            `Shield per bounce increase from ${SHIELD_VALUE * upgrade.level} to ${SHIELD_VALUE * (upgrade.level + 1)}.`
+        );
+    } else {
+        textLines.push(`Gain ${SHIELD_VALUE} shield for every bounce.`);
+    }
     return textLines;
 }

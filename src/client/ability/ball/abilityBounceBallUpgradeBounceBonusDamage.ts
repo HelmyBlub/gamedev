@@ -69,9 +69,17 @@ function getAbilityUpgradeUiText(ability: Ability): string {
 
 function getAbilityUpgradeUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
-    textLines.push(
-        `Each Bounce while rolling increases damage`,
-        `by ${BONUS_DAMAGE_PER_LEVEL * 100}%.`
-    );
+    const upgrade: AbilityBounceBallUpgradeBounceBonusDamage | undefined = ability.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_DAMAGE];
+    if (upgrade) {
+        textLines.push(
+            `Each Bounce while rolling increases damage.`,
+            `Bonus damage increase from ${BONUS_DAMAGE_PER_LEVEL * 100 * upgrade.level}% to ${BONUS_DAMAGE_PER_LEVEL * 100 * (upgrade.level + 1)}%.`
+        );
+    } else {
+        textLines.push(
+            `Each Bounce while rolling increases damage`,
+            `by ${BONUS_DAMAGE_PER_LEVEL * 100}%.`
+        );
+    }
     return textLines;
 }

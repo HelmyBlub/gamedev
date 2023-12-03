@@ -38,7 +38,7 @@ export function abilityBounceBallUpgradeFireLinePlace(ability: AbilityBounceBall
         const width = 10;
         const endPos = { x: owner.x, y: owner.y };
         const distance = calculateDistance(up.startPosition, endPos);
-        if(distance < 120){
+        if (distance < 120) {
             const damage = ability.damage / (1000 / TICK_INTERVAL) * (1 + DAMAGE_PER_SECOND_FACTOR * up.level);
             const fireLine = createAbilityObjectFireLine(owner.faction, up.startPosition, endPos, damage, width, DURATION * up.level, TICK_INTERVAL, "red", ability.id, game);
             game.state.abilityObjects.push(fireLine);
@@ -67,13 +67,22 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption) {
 
 function getAbilityUpgradeUiText(ability: Ability): string {
     const up: AbilityBounceBallUpgradeFireLine = ability.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_FIRE_LINE];
-    return `${ABILITY_BOUNCE_BALL_UPGRADE_FIRE_LINE}: ${(up.level)}`;
+    return `${ABILITY_BOUNCE_BALL_UPGRADE_FIRE_LINE}: ${(DAMAGE_PER_SECOND_FACTOR * 100 * up.level)}%, ${(DURATION / 1000 * up.level).toFixed(1)}s`;
 }
 
 function getAbilityUpgradeUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
-    textLines.push(`Create fire lines while rolling around.`);
-    textLines.push(`Lasting ${(DURATION / 1000).toFixed(1)}s.`);
-    textLines.push(`Doing ${DAMAGE_PER_SECOND_FACTOR * 100}% base damage per second.`);
+    const up: AbilityBounceBallUpgradeFireLine | undefined = ability.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_FIRE_LINE];
+    if (up) {
+        textLines.push(
+            `Create fire lines while rolling around.`,
+            `Duration increase from ${(DURATION / 1000 * up.level).toFixed(1)}s to ${(DURATION / 1000 * (up.level + 1)).toFixed(1)}s.`,
+            `Damage per second increase from ${(DAMAGE_PER_SECOND_FACTOR * 100 * up.level)}% to ${DAMAGE_PER_SECOND_FACTOR * 100 * (up.level + 1)}%.`,
+        );
+    } else {
+        textLines.push(`Create fire lines while rolling around.`);
+        textLines.push(`Lasting ${(DURATION / 1000).toFixed(1)}s.`);
+        textLines.push(`Doing ${DAMAGE_PER_SECOND_FACTOR * 100}% base damage per second.`);
+    }
     return textLines;
 }

@@ -1,10 +1,4 @@
 current tasks:
-- new class:
-    - visualize class somehow
-        - lightning ball
-            - when in lightning form "small" blue ball with lightning effect for the rest of the dmg radius
-            - when having ability: small lightning ball in hand
-
 - check fire line damage after code invterval fix
 - having multiple ball abilities? does not work
 - performance spikes when rolling fast with many enemies?
