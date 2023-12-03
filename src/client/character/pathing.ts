@@ -51,6 +51,12 @@ export function getNextWaypoint(
     }
     const targetXY: Position = calculatePosToTotalTileXY(sourcePos, map);
     const startXY: Position = calculatePosToTotalTileXY(targetPos, map);
+    const maxTileDistance = 50;
+    const tileDistance = calculateDistance(startXY, targetXY);
+    if(tileDistance > maxTileDistance){
+        console.log("pathing to big distance too far aways");
+        return null;
+    }
     if (startXY.x === targetXY.x && startXY.y === targetXY.y) {
         return targetPos;
     }
