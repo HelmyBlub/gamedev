@@ -11,7 +11,7 @@ import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, getAbilityNameUiText, paint
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
 import { ABILITY_SPEED_BOOST_UPGRADE_ADD_CHARGE, AbilitySpeedBoostUpgradeAddCharge, addAbilitySpeedBoostUpgradeAddCharge, tickAbilitySpeedBoostUpgradeAddCharge } from "./abilitySpeedBoostUpgradeAddCharge.js";
 import { addAbilitySpeedBoostUpgradeDuration } from "./abilitySpeedBoostUpgradeDuration.js";
-import { ABILITY_SPEED_BOOST_UPGRADE_SLOW_TRAIL, addAbilitySpeedBoostUpgradeSlowTrail } from "./abilitySpeedBoostUpgradeSlowTrail.js";
+import { ABILITY_SPEED_BOOST_UPGRADE_SLOW_TRAIL, addAbilitySpeedBoostUpgradeSlowTrail, executeAbilitySpeedBoostUpgradeSlowTrail } from "./abilitySpeedBoostUpgradeSlowTrail.js";
 import { addAbilitySpeedBoostUpgradeSpeed } from "./abilitySpeedBoostUpgradeSpeed.js";
 import { addAbilitySpeedBoostUpgradeCooldown } from "./abilitySpeedBoostUpradeCooldown.js";
 
@@ -91,11 +91,7 @@ function castSpeedBoost(abilityOwner: AbilityOwner, ability: Ability, castPositi
             }
             chargeUpgrade.currentCharges--;
         }
-
-        if (ability.upgrades[ABILITY_SPEED_BOOST_UPGRADE_SLOW_TRAIL]) {
-            const slowTrail = createBuffSlowTrail(abilitySpeedBoost.duration, game.state.time);
-            applyDebuff(slowTrail, character, game);
-        }
+        executeAbilitySpeedBoostUpgradeSlowTrail(abilitySpeedBoost, character, game);
     }
 }
 

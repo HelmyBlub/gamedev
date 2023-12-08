@@ -45,22 +45,10 @@ export function paintMap(layer: MapPaintLayer, ctx: CanvasRenderingContext2D, ca
 }
 
 export function paintMapCharacters(ctx: CanvasRenderingContext2D, cameraPosition: Position, map: GameMap, game: Game) {
-    const chunkSize = map.tileSize * map.chunkLength;
-    const width = ctx.canvas.width;
-    const height = ctx.canvas.height;
-    const startX = (cameraPosition.x - width / 2);
-    const startY = (cameraPosition.y - height / 2);
-    const startChunkX = Math.floor(startX / chunkSize);
-    const startChunkY = Math.floor(startY / chunkSize);
-
-    for (let chunkYIndex = 0; chunkYIndex < Math.ceil(height / chunkSize) + 1; chunkYIndex++) {
-        const chunkY = startChunkY + chunkYIndex;
-        for (let chunkXIndex = 0; chunkXIndex < Math.ceil(width / chunkSize) + 1; chunkXIndex++) {
-            const chunkX = startChunkX + chunkXIndex;
-            const chunk = map.chunks[chunkXYToMapKey(chunkX, chunkY)];
-            if (chunk === undefined) continue;
-            paintCharacters(ctx, chunk.characters, cameraPosition, game);
-        }
+    for(let key of game.state.map.activeChunkKeys){
+        const chunk = map.chunks[key];
+        if (chunk === undefined) continue;
+        paintCharacters(ctx, chunk.characters, cameraPosition, game);
     }
 }
 

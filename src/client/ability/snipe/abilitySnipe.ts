@@ -315,16 +315,6 @@ function resetAbility(ability: Ability) {
     abilitySnipe.reloadTime = -1;
     abilitySnipe.abilitySnipeCounter = undefined;
     abilitySnipe.abilitySnipeCharacterTotal = undefined;
-
-    const upgradesFunctions = ABILITIES_FUNCTIONS[ABILITY_NAME_SNIPE].abilityUpgradeFunctions;
-    if (!upgradesFunctions) return;
-    const keys = Object.keys(ability.upgrades);
-    for (let key of keys) {
-        const functions = upgradesFunctions[key];
-        if (functions.reset) {
-            functions.reset(ability);
-        }
-    }
 }
 
 function calculateAbilitySnipeCounter(character: AbilityOwner) {

@@ -220,6 +220,13 @@ export function calculateBounceAngle(position: Position, moveDirection: number, 
     }
 }
 
+export function isMoveFromToBlocking(fromPosition: Position, toPosition: Position, map: GameMap, game: Game): boolean{
+    const blocking = isPositionBlocking(toPosition, map, game.state.idCounter, game);
+    if(blocking) return true;
+    const blockingBothSides = isPositionBlocking({ x: fromPosition.x, y: toPosition.y }, map, game.state.idCounter, game!) && isPositionBlocking({ x: toPosition.x, y: fromPosition.y }, map, game.state.idCounter, game!);
+    return blockingBothSides;
+}
+
 export function calculateMovePosition(position: Position, moveDirection: number, distance: number, checkColision: boolean, map: GameMap | undefined = undefined, idCounter: IdCounter | undefined = undefined, game: Game | undefined = undefined): Position {
     const x = position.x + Math.cos(moveDirection) * distance;
     const y = position.y + Math.sin(moveDirection) * distance;

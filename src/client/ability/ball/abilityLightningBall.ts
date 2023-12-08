@@ -6,7 +6,7 @@ import { applyDebuff, removeCharacterDebuff } from "../../debuff/debuff.js";
 import { calcNewPositionMovedInDirection, calculateDirection, getClientInfoByCharacterId, getNextId } from "../../game.js";
 import { Position, Game, IdCounter, FACTION_ENEMY, ClientInfo } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
-import { calculateMovePosition, getFirstBlockingGameMapTilePositionTouchingLine, isPositionBlocking } from "../../map/map.js";
+import { calculateMovePosition, getFirstBlockingGameMapTilePositionTouchingLine, isMoveFromToBlocking, isPositionBlocking } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { fixedRandom } from "../../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, detectSomethingToCharacterHit, getAbilityNameUiText, paintDefaultAbilityStatsUI } from "../ability.js";
@@ -242,7 +242,7 @@ function paintLightningBall(ctx: CanvasRenderingContext2D, paintPos: Position, f
 
 function delayedPaint(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, abilityBall: AbilityLightningBall, cameraPosition: Position, game: Game) {
     if (abilityBall.firstJumpDelayEnd && abilityBall.firstJumpDelayEnd > game.state.time) {
-        const endPos = calcNewPositionMovedInDirection(abilityOwner, abilityBall.moveDirection, 1000);
+        const endPos = calcNewPositionMovedInDirection(abilityOwner, abilityBall.moveDirection, 2000);
         let blockingPosistion = getFirstBlockingGameMapTilePositionTouchingLine(game.state.map, abilityOwner, endPos, game);
         if (!blockingPosistion) {
             blockingPosistion = endPos;
@@ -279,7 +279,7 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
 function jumpTick(abilityLightningBall: AbilityLightningBall, abilityOwner: AbilityOwner, ballBuff: BuffBallPhysics, moveDistance: number, game: Game): boolean {
     const newPosition = calculateMovePosition(abilityOwner, abilityLightningBall.moveDirection, moveDistance, false);
     lightningBallUpgradeHpLeachExecute(abilityLightningBall, moveDistance, abilityOwner);
-    if (!isPositionBlocking(newPosition, game.state.map, game.state.idCounter, game)) {
+    if (!isMoveFromToBlocking(abilityOwner, newPosition, game.state.map, game)) {
         setCharacterPosition(abilityOwner as Character, newPosition, game.state.map);
         damageTick(abilityLightningBall, abilityOwner, game);
         return false;

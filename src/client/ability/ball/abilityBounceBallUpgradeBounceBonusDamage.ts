@@ -20,6 +20,7 @@ export function addAbilityBounceBallUpgradeBounceBonusDamage() {
         getLongExplainText: getAbilityUpgradeUiTextLong,
         getOptions: getOptions,
         executeOption: executeOption,
+        reset: reset,
     }
 }
 
@@ -34,6 +35,13 @@ export function abilityBounceBallUpgradeBounceBonusDamageResetBounces(ability: A
     const up: AbilityBounceBallUpgradeBounceBonusDamage = ability.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_DAMAGE];
     if (!up) return;
     up.bounces = 0;
+}
+
+function reset(ability: Ability) {
+    const abilityBall = ability as AbilityBounceBall;
+    const upgrade: AbilityBounceBallUpgradeBounceBonusDamage | undefined = abilityBall.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_DAMAGE];
+    if (!upgrade) return;
+    upgrade.bounces = 0;
 }
 
 function getDamageFactor(ability: Ability): number {

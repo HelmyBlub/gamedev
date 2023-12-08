@@ -1,14 +1,9 @@
 current tasks:
-- ball can leap thorugh diagonal blocks, reaching unreachable places
-- check lightning strikes duration text
-- check fire line damage after code invterval fix
-- ball endboss more ability upgrade scalling based on hp?
-- check enemy ball abilty damage
 - having multiple ball abilities? does not work
-- performance spikes when rolling fast with many enemies?
-    - make enemies teleport back instead of runback?
 - multiplayer bug: leashes on game over
 - multiplayer: do not visulaize other pets happines?
+- check fire line damage after code invterval fix
+- new test runs with all classes
 
 refactor possibilities:
 - ability creation: checks and scales for bosses, enemy or player by itself

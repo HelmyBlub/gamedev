@@ -7,7 +7,7 @@ import { applyDebuff, removeCharacterDebuff } from "../../debuff/debuff.js";
 import { calculateDirection, getClientInfoByCharacterId, getNextId, modulo } from "../../game.js";
 import { Position, Game, IdCounter, FACTION_ENEMY, ClientInfo } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
-import { calculateBounceAngle, calculateMovePosition, isPositionBlocking, moveByDirectionAndDistance } from "../../map/map.js";
+import { calculateBounceAngle, calculateMovePosition, isMoveFromToBlocking, isPositionBlocking, moveByDirectionAndDistance } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, detectSomethingToCharacterHit, getAbilityNameUiText, paintDefaultAbilityStatsUI } from "../ability.js";
 import { AbilityUpgradesFunctions, getAbilityUpgradesDamageFactor, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
@@ -322,7 +322,7 @@ function damageTick(abilityBounceBall: AbilityBounceBall, abilityOwner: AbilityO
 
 function rollTick(abilityBounceBall: AbilityBounceBall, abilityOwner: AbilityOwner, moveDistance: number, game: Game) {
     const newPosition = calculateMovePosition(abilityOwner, abilityBounceBall.moveDirection, moveDistance, false);
-    if (isPositionBlocking(newPosition, game.state.map, game.state.idCounter, game)) {
+    if (isMoveFromToBlocking(abilityOwner, newPosition, game.state.map, game)) {
         abilityBounceBall.moveDirection = calculateBounceAngle(abilityOwner, abilityBounceBall.moveDirection, game);
         abilityBounceBall.currentSpeed += abilityBounceBall.bounceBonusSpeed;
         abilityBounceBallUpgradeBounceBonusDamageAddBounce(abilityBounceBall);

@@ -271,6 +271,15 @@ export function resetAllCharacterAbilities(character: Character) {
         const abililtyFunctions = ABILITIES_FUNCTIONS[ability.name];
         if (abililtyFunctions && abililtyFunctions.resetAbility) {
             abililtyFunctions.resetAbility(ability);
+            const upgradesFunctions = abililtyFunctions.abilityUpgradeFunctions;
+            if (!upgradesFunctions) continue;
+            const keys = Object.keys(ability.upgrades);
+            for (let key of keys) {
+                const functions = upgradesFunctions[key];
+                if (functions.reset) {
+                    functions.reset(ability);
+                }
+            }
         }
     }
     if (character.pets) {

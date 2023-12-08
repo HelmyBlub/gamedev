@@ -27,6 +27,10 @@ export function createDebuffSlow(
     };
 }
 
+export function debuffSlowGetSlowAmountAsPerCentText(factor: number){
+    return ((1 - 1 / factor) * 100).toFixed();
+}
+
 function applyDebuffEffectSlow(debuff: Debuff, targetCharacter: Character, game: Game) {
     const debuffSlow = debuff as DebuffSlow;
     targetCharacter.moveSpeed /= debuffSlow.slowFactor;

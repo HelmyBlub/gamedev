@@ -1,7 +1,7 @@
 import { Character } from "../../character/characterModel.js";
 import { AbilityUpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { applyDebuff } from "../../debuff/debuff.js";
-import { createDebuffSlow } from "../../debuff/debuffSlow.js";
+import { createDebuffSlow, debuffSlowGetSlowAmountAsPerCentText } from "../../debuff/debuffSlow.js";
 import { Game } from "../../gameModel.js";
 import { Ability } from "../ability.js";
 import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrade.js";
@@ -62,7 +62,7 @@ function getAbilityUpgradeSlowUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
     const upgrade: AbilityPetBreathUpgradeSlow | undefined = ability.upgrades[ABILITY_PET_BREATH_UPGRADE_SLOW];
     if (upgrade) {
-        const slowAmount = ((1 - 1 / (upgrade.factor + 1)) * 100).toFixed();
+        const slowAmount = debuffSlowGetSlowAmountAsPerCentText(upgrade.factor);
         textLines.push(`Increase Breath slow to ${slowAmount}%`);
         textLines.push(`and duration to ${(upgrade.duration + DURATIONUP) / 1000}s`);
     } else {

@@ -168,7 +168,7 @@ function paintBossHpBar(ctx: CanvasRenderingContext2D, boss: Character) {
 
 function changeBossAbilityLevelBasedOnHp(enemy: EndBossEnemyCharacter) {
     const hpLeftPerCent = enemy.hp / enemy.maxHp;
-    const hpBasedlevel = Math.max(Math.floor((1 - hpLeftPerCent) * 10), 1);
+    const hpBasedlevel = Math.max(Math.floor((1 - hpLeftPerCent) * 10 + 1), 1);
 
     for (let ability of enemy.abilities) {
         setAbilityToBossLevel(ability, hpBasedlevel);

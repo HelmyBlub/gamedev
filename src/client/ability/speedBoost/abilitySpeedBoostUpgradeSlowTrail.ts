@@ -1,4 +1,8 @@
+import { Character } from "../../character/characterModel.js";
 import { AbilityUpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
+import { createBuffSlowTrail } from "../../debuff/buffSlowTrail.js";
+import { applyDebuff } from "../../debuff/debuff.js";
+import { Game } from "../../gameModel.js";
 import { Ability } from "../ability.js";
 import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrade.js";
 import { ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS, AbilitySpeedBoost } from "./abilitySpeedBoost.js";
@@ -14,6 +18,13 @@ export function addAbilitySpeedBoostUpgradeSlowTrail() {
         getLongExplainText: getAbilityUpgradeSlowTrailUiTextLong,
         getOptions:getOptionsSlowTrail,
         executeOption: executeOptionSlowTrail,
+    }
+}
+
+export function executeAbilitySpeedBoostUpgradeSlowTrail(ability: AbilitySpeedBoost, character: Character, game: Game){
+    if (ability.upgrades[ABILITY_SPEED_BOOST_UPGRADE_SLOW_TRAIL]) {
+        const slowTrail = createBuffSlowTrail(ability.duration, game.state.time);
+        applyDebuff(slowTrail, character, game);
     }
 }
 

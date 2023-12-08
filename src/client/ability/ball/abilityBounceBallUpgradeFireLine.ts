@@ -8,9 +8,12 @@ import { ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS, AbilityBounceBall } from "./abil
 
 type AbilityBounceBallUpgradeFireLine = AbilityUpgrade & {
     startPosition?: Position,
+    damageFactor: number,
+    duration: number,
 }
 
 const DURATION = 3000;
+const DURATION_PER_LEVEL = 3000;
 const DAMAGE_PER_SECOND_FACTOR = 1;
 const TICK_INTERVAL = 250;
 
@@ -22,6 +25,7 @@ export function addAbilityBounceBallUpgradeFireLine() {
         getLongExplainText: getAbilityUpgradeUiTextLong,
         getOptions: getOptions,
         executeOption: executeOption,
+        setUpgradeToBossLevel: setUpgradeToBossLevel,
     }
 }
 
@@ -39,12 +43,20 @@ export function abilityBounceBallUpgradeFireLinePlace(ability: AbilityBounceBall
         const endPos = { x: owner.x, y: owner.y };
         const distance = calculateDistance(up.startPosition, endPos);
         if (distance < 120) {
-            const damage = ability.damage / (1000 / TICK_INTERVAL) * (1 + DAMAGE_PER_SECOND_FACTOR * up.level);
-            const fireLine = createAbilityObjectFireLine(owner.faction, up.startPosition, endPos, damage, width, DURATION * up.level, TICK_INTERVAL, "red", ability.id, game);
+            const damage = ability.damage / (1000 / TICK_INTERVAL) * (1 + up.damageFactor);
+            const fireLine = createAbilityObjectFireLine(owner.faction, up.startPosition, endPos, damage, width, up.duration, TICK_INTERVAL, "red", ability.id, game);
             game.state.abilityObjects.push(fireLine);
         }
         up.startPosition = { x: owner.x, y: owner.y };
     }
+}
+
+function setUpgradeToBossLevel(ability: Ability, level: number) {
+    const up: AbilityBounceBallUpgradeFireLine = ability.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_FIRE_LINE];
+    if (!up) return;
+    up.level = level;
+    up.duration = 1000 + level * 2000;
+    up.damageFactor = 1;
 }
 
 function getOptions(ability: Ability): UpgradeOptionAndProbability[] {
@@ -57,10 +69,12 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption) {
     const ball = ability as AbilityBounceBall;
     let up: AbilityBounceBallUpgradeFireLine;
     if (ball.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_FIRE_LINE] === undefined) {
-        up = { level: 0 };
+        up = { level: 0 , damageFactor: DAMAGE_PER_SECOND_FACTOR, duration: DURATION};
         ball.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_FIRE_LINE] = up;
     } else {
         up = ball.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_FIRE_LINE];
+        up.duration += DURATION_PER_LEVEL;
+        up.damageFactor += DAMAGE_PER_SECOND_FACTOR;
     }
     up.level++;
 }

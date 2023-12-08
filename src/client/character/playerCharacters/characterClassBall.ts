@@ -41,6 +41,7 @@ function changeCharacterToBallClass(
 function getLongUiText(): string[]{
     let text: string[] = [];
     text.push("Turn into a ball to quickly roll around.");
+    text.push("All damage taken reduced by 50%.");
     text.push("Abilities:");
     text.push("- Boucne Ball");
     text.push("- Lightning Ball");
