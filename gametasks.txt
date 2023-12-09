@@ -1,9 +1,9 @@
 current tasks:
-- combatlog: ne able to see what damage my character took before death
+- verify breath slow tooltip slow percent?
+- lightning strike fill color not correct
 - having multiple ball abilities? does not work
+    - merge 2 balls to increase strength?
 - multiplayer bug: leashes on game over
-- multiplayer: do not visulaize other pets happines?
-- new test runs with all classes
 
 refactor possibilities:
 - ability creation: checks and scales for bosses, enemy or player by itself

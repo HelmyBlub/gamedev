@@ -14,7 +14,7 @@ export type CombatlogEntry = {
 export function createDefaultCombatLog(): Combatlog{
     return {
         log: [],
-        maxLogEntries: 20,
+        maxLogEntries: 30,
     }
 }
 
@@ -28,5 +28,11 @@ export function addCombatlogDamageTakenEntry(character: Character, damage: numbe
     });
     if(combatlog.log.length > combatlog.maxLogEntries){
         combatlog.log.shift();
+    }
+}
+
+export function consoleLogCombatlog(combatlog: Combatlog){
+    for(let entry of combatlog.log){
+        console.log(`${entry.timestamp}: ${entry.message}`);
     }
 }

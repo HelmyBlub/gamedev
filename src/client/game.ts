@@ -20,6 +20,7 @@ import { setPlayerAsEndBoss } from "./character/enemy/endBossEnemy.js";
 import { ABILITY_NAME_FEED_PET } from "./ability/petTamer/abilityFeedPet.js";
 import { ABILITY_NAME_LOVE_PET } from "./ability/petTamer/abilityLovePet.js";
 import { COMMAND_RESTART } from "./globalVars.js";
+import { consoleLogCombatlog } from "./combatlog.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -309,6 +310,10 @@ export function endGame(game: Game, isEndbossKill: boolean = false) {
         setPlayerAsEndBoss(game);
     } else {
         savePlayerCharatersAsPastCharacters(game);
+        if(!game.testing.replay){
+            const myCharacter = findMyCharacter(game);
+            if(myCharacter && myCharacter.combatlog) consoleLogCombatlog(myCharacter.combatlog);
+        }
     }
     endGameReplayStuff(game, newScore);
     if (game.testing.record) {
