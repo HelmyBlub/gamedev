@@ -454,7 +454,7 @@ function tickEffectConnected(abilityObjectTower: AbilityObjectTower, game: Game)
 
     const characters: Character[] = getCharactersTouchingLine(game, abilityObjectTower, connectedTower, abilityObjectTower.faction);
     for (let char of characters) {
-        characterTakeDamage(char, abilityObjectTower.damage * damageFactor, game);
+        characterTakeDamage(char, abilityObjectTower.damage * damageFactor, game, undefined, abilityObjectTower.type);
     }
 }
 

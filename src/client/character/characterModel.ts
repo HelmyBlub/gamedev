@@ -1,4 +1,5 @@
 import { Ability } from "../ability/ability.js";
+import { Combatlog, createDefaultCombatLog } from "../combatlog.js";
 import { Debuff } from "../debuff/debuff.js";
 import { getNextId } from "../game.js";
 import { Position, IdCounter, Game, FACTION_PLAYER } from "../gameModel.js";
@@ -131,6 +132,7 @@ export type Character = Position & {
         experienceForLevelUp: number,
     }
     mapChunkKey?: string,
+    combatlog?: Combatlog, 
 }
 
 export function createCharacter(
@@ -180,6 +182,7 @@ export function createPlayerCharacter(idCounter: IdCounter, pos: Position, seed:
     playerCharacter.paint.randomizedCharacterImage = createRandomizedCharacterImageData(GAME_IMAGES[IMAGE_PLAYER_PARTS], seed);
     playerCharacter.willTurnToPetOnDeath = true;
     playerCharacter.isPet = false;
+    playerCharacter.combatlog = createDefaultCombatLog();
     initPlayerCharacterChoiceOptions(playerCharacter, game);
     return playerCharacter;
 }

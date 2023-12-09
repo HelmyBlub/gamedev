@@ -180,7 +180,7 @@ function detectSquareToCharacterHit(petPainter: AbilityObjectPetPainterSquare, g
             getHit = true; //vertical
         }
         if (getHit) {
-            characterTakeDamage(c, petPainter.damage, game, petPainter.abilityRefId);
+            characterTakeDamage(c, petPainter.damage, game, petPainter.abilityRefId, PET_PAINTER_SQUARE);
         }
     }
 }

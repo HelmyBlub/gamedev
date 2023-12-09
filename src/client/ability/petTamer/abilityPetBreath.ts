@@ -178,7 +178,7 @@ function detectPetBreathToCharactersHit(abilityOwner: TamerPetCharacter, ability
         if (isHit) {
             abilityPetBreathUpgradeExplodeApplyExplode(ability, abilityOwner, targetCharacter, game);
             abilityPetBreathUpgradeSlowApplySlow(ability, targetCharacter, game);
-            characterTakeDamage(targetCharacter, damage, game, ability.id);
+            characterTakeDamage(targetCharacter, damage, game, ability.id, ability.name);
         }
     }
 }

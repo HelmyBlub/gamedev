@@ -299,6 +299,7 @@ function damageTick(abilityLightningBall: AbilityLightningBall, abilityOwner: Ab
         getDamageAbilityLightningBall(abilityLightningBall, abilityOwner),
         game.state.players,
         game.state.bossStuff.bosses,
+        abilityLightningBall.name,
         abilityLightningBall.id,
         undefined,
         game

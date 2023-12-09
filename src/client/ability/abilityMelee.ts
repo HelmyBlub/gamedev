@@ -78,7 +78,7 @@ function tickAbilityMelee(abilityOwner: AbilityOwner, ability: Ability, game: Ga
                 if (abilityOwner.type === TAMER_PET_CHARACTER) {
                     damage *= (abilityOwner as TamerPetCharacter).sizeFactor;
                 }
-                characterTakeDamage(closest.minDistanceCharacter, damage, game, ability.id);
+                characterTakeDamage(closest.minDistanceCharacter, damage, game, ability.id, ability.name);
             }
         }
 

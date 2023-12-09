@@ -4,7 +4,7 @@ import { getNextId } from "../game.js";
 import { Position, Game, IdCounter, FACTION_ENEMY, FACTION_PLAYER } from "../gameModel.js";
 import { getPointPaintPosition } from "../gamePaint.js";
 import { nextRandom } from "../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, detectSomethingToCharacterHit } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityOwner } from "./ability.js";
 import { createAbilityObjectExplode } from "./abilityExplode.js";
 
 export type AbilityLightningStrikes = Ability & {

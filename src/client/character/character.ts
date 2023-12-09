@@ -17,6 +17,7 @@ import { CHARACTER_TYPE_END_BOSS_ENEMY } from "./enemy/endBossEnemy.js";
 import { createEndBossCrownCharacter } from "./enemy/endBossCrown.js";
 import { TamerPetCharacter, tradePets } from "./playerCharacters/tamer/tamerPetCharacter.js";
 import { ENEMY_FIX_RESPAWN_PSOITON } from "./enemy/fixPositionRespawnEnemyModel.js";
+import { addCombatlogDamageTakenEntry } from "../combatlog.js";
 
 export function findCharacterById(characters: Character[], id: number): Character | null {
     for (let i = 0; i < characters.length; i++) {
@@ -51,7 +52,7 @@ export function findCharacterByIdInCompleteMap(id: number, game: Game) {
     }
 }
 
-export function characterTakeDamage(character: Character, damage: number, game: Game, abilityRefId: number | undefined = undefined) {
+export function characterTakeDamage(character: Character, damage: number, game: Game, abilityRefId: number | undefined = undefined, abilityName: string) {
     if (character.isDead || character.isPet || character.isDamageImmune) return;
     let modifiedDamage = damage * character.damageTakenModifierFactor;
     if (character.shield > 0) {
@@ -62,6 +63,7 @@ export function characterTakeDamage(character: Character, damage: number, game: 
         }
     } else {
         character.hp -= modifiedDamage;
+        addCombatlogDamageTakenEntry(character, modifiedDamage, abilityName, game);
     }
     if (character.hp <= 0) {
         killCharacter(character, game, abilityRefId);

@@ -214,7 +214,7 @@ function detectSwordToCharactersHit(abilityOwner: AbilityOwner, ability: Ability
         for (let swordIndex = 0; swordIndex < ability.swordCount; swordIndex++) {
             const isHit = detectSwordToCharacterHit(abilityOwner, ability, targetCharacter, targetCharacter.width, swordIndex);
             if (isHit) {
-                characterTakeDamage(targetCharacter, ability.damage, game, ability.id);
+                characterTakeDamage(targetCharacter, ability.damage, game, ability.id, ability.name);
             }
         }
     }

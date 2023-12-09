@@ -168,6 +168,7 @@ function tickIceAura(position: Position, faction: string, iceBaseProperties: Ice
             iceBaseProperties.damage,
             game.state.players,
             game.state.bossStuff.bosses,
+            ABILITY_NAME_ICE_AURA,
             abilityRefId,
             (c: Character) => onHitEffect(c, iceBaseProperties, game),
             game

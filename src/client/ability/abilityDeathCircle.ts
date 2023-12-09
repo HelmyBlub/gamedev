@@ -75,7 +75,7 @@ function tickAbilityObjectDeathCircle(abilityObject: AbilityObject, game: Game) 
     for (let playerCharacter of playerCharacters) {
         const distance = calculateDistance(playerCharacter, abilityObject);
         if (distance < abilityObjectDeathCircle.radius) {
-            characterTakeDamage(playerCharacter, abilityObject.damage, game);
+            characterTakeDamage(playerCharacter, abilityObject.damage, game, undefined, abilityObject.type);
         }
     }
 }

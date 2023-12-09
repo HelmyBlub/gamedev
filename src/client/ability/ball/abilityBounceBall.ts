@@ -306,6 +306,7 @@ function damageTick(abilityBounceBall: AbilityBounceBall, abilityOwner: AbilityO
             damage,
             game.state.players,
             game.state.bossStuff.bosses,
+            abilityBounceBall.name,
             abilityBounceBall.id,
             undefined,
             game
