@@ -33,9 +33,7 @@ function changeCharacterToBallClass(
     character.damageTakenModifierFactor *= 0.5;
     addAbilityToCharacter(character, createAbility(ABILITY_NAME_BOUNCE_BALL, idCounter, true, true, "ability1"));
     addAbilityToCharacter(character, createAbility(ABILITY_NAME_LIGHTNING_BALL, idCounter, true, true, "ability2"));
-    const hpRegen = createAbilityHpRegen(idCounter);
-    hpRegen.amount *= 5;
-    addAbilityToCharacter(character, hpRegen);
+    addAbilityToCharacter(character, createAbilityHpRegen(idCounter, undefined, 5));
 }
 
 function getLongUiText(): string[]{

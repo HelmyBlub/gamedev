@@ -22,11 +22,15 @@ export function addAbilityHpRegen() {
     };
 }
 
-export function createAbilityHpRegen(idCounter: IdCounter): AbilityHpRegen {
+export function createAbilityHpRegen(
+    idCounter: IdCounter,
+    playerInputBinding?: string,
+    regAmount: number = 1,
+): AbilityHpRegen {
     return {
         id: getNextId(idCounter),
         name: ABILITY_NAME_HP_REGEN,
-        amount: 1,
+        amount: regAmount,
         tickInterval: 500,
         passive: true,
         upgrades: {},

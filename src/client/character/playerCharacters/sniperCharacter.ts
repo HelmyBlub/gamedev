@@ -28,7 +28,7 @@ function changeCharacterToSniperClass(
     character.type = ABILITY_LEVELING_CHARACTER;
     character.characterClass = CHARACTER_CLASS_SNIPER_NAME;
     addAbilityToCharacter(character, createAbility(ABILITY_NAME_SNIPE, idCounter, true, true, "ability1"));
-    addAbilityToCharacter(character, createAbilityHpRegen(idCounter));
+    addAbilityToCharacter(character, createAbilityHpRegen(idCounter, undefined, 2));
     addAbilityToCharacter(character, createAbility(ABILITY_NAME_SPEED_BOOST, idCounter, true, true, "ability2"));
 }
 
