@@ -203,9 +203,8 @@ export function tickAbilityObjects(abilityObjects: AbilityObject[], game: Game) 
     takeTimeMeasure(game.debug, "tickAbilityObjects", "");
 }
 
-export function levelingAbilityXpGain(ability: Ability, experience: number, game: Game) {
+export function levelingAbilityXpGain(ability: Ability, owner: Character, experience: number, game: Game) {
     if (ability.leveling) {
-        const owner = findAbilityOwnerByAbilityId(ability.id, game);
         if (!owner || owner.isDead || owner.isPet) return;
         ability.leveling.experience += experience;
         while (ability.leveling.experience >= ability.leveling.experienceForLevelUp) {

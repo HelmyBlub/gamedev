@@ -77,6 +77,7 @@ function paintAbilityObjectExplode(ctx: CanvasRenderingContext2D, abilityObject:
     const abilityObjectExplode = abilityObject as AbilityObjectExplode;
     const cameraPosition = getCameraPosition(game);
     const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition);
+    ctx.fillStyle = abilityObject.faction === FACTION_ENEMY ? "black" : abilityObject.color;
     if (abilityObjectExplode.removeTime === undefined) {
         if (abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
         ctx.strokeStyle = abilityObject.faction === FACTION_ENEMY ? "black" : abilityObject.color;
@@ -102,7 +103,6 @@ function paintAbilityObjectExplode(ctx: CanvasRenderingContext2D, abilityObject:
         const fadeFactor = (abilityObjectExplode.removeTime - game.state.time) / PAINT_FADE_TIME;
         ctx.globalAlpha = 0.75 * fadeFactor;
         if (abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
-        ctx.fillStyle = abilityObject.faction === FACTION_ENEMY ? "black" : abilityObject.color;
         ctx.beginPath();
         ctx.arc(
             paintPos.x,

@@ -14,6 +14,7 @@ export type AbilityPetBreathUpgradeSlow = AbilityUpgrade & {
 
 const BASEDURATION = 500;
 const DURATIONUP = 500;
+const SLOW_FACTOR_PER_LEVEL = 1;
 export const ABILITY_PET_BREATH_UPGRADE_SLOW = "Breath Slow";
 
 export function addAbilityPetBreathUpgradeSlow() {
@@ -48,7 +49,7 @@ function executeOptionPaintSlow(ability: Ability, option: AbilityUpgradeOption) 
     } else {
         up = as.upgrades[ABILITY_PET_BREATH_UPGRADE_SLOW];
     }
-    up.factor += 1;
+    up.factor += SLOW_FACTOR_PER_LEVEL;
     up.duration += DURATIONUP;
     up.level++;
 }
@@ -62,11 +63,13 @@ function getAbilityUpgradeSlowUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
     const upgrade: AbilityPetBreathUpgradeSlow | undefined = ability.upgrades[ABILITY_PET_BREATH_UPGRADE_SLOW];
     if (upgrade) {
-        const slowAmount = debuffSlowGetSlowAmountAsPerCentText(upgrade.factor);
-        textLines.push(`Increase Breath slow to ${slowAmount}%`);
-        textLines.push(`and duration to ${(upgrade.duration + DURATIONUP) / 1000}s`);
+        const currentSlowAmount = debuffSlowGetSlowAmountAsPerCentText(upgrade.factor);
+        const newSlowAmount = debuffSlowGetSlowAmountAsPerCentText(upgrade.factor + SLOW_FACTOR_PER_LEVEL);
+        textLines.push(`Increase Breath slow from ${currentSlowAmount}% to ${newSlowAmount}%`);
+        textLines.push(`and duration from ${(upgrade.duration) / 1000}s to ${(upgrade.duration + DURATIONUP) / 1000}s`);
     } else {
-        textLines.push(`Breath slows enemies by 50% for ${(BASEDURATION + DURATIONUP) / 1000}s`);
+        const slowAmount = debuffSlowGetSlowAmountAsPerCentText(1 + SLOW_FACTOR_PER_LEVEL);
+        textLines.push(`Breath slows enemies by ${slowAmount}% for ${(BASEDURATION + DURATIONUP) / 1000}s`);
     }
 
     return textLines;

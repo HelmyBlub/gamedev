@@ -166,6 +166,11 @@ export function changeCharacterId(character: Character, idCounter: IdCounter) {
             changeCharacterAndAbilityIds(pet, idCounter);
         }
     }
+    const leash: AbilityLeash = character.abilities.find((a) => a.name === ABILITY_NAME_LEASH) as AbilityLeash;
+    if(leash){
+        leash.leashedToOwnerId = undefined;
+    }
+
 }
 
 export function executeDefaultCharacterUpgradeOption(character: Character, upgradeOptionChoice: UpgradeOption, game: Game) {
@@ -490,34 +495,61 @@ export function mapCharacterCheckAndDoChunkChange(character: Character, map: Gam
     }
 }
 
+function experienceForEveryPlayersLeveling(experience: number, game: Game){
+    const playerCharacters = getPlayerCharacters(game.state.players);
+    for(let character of playerCharacters){
+        experienceForCharacter(character, experience, game);
+        for(let ability of character.abilities){
+            levelingAbilityXpGain(ability, character, experience, game);
+        }
+        if(character.pets){
+            for(let pet of character.pets){
+                experienceForCharacter(pet, experience, game);
+                for(let ability of pet.abilities){
+                    levelingAbilityXpGain(ability, character, experience, game);
+                }                        
+            }
+        }
+    }
+}
+
+function experienceForCharacter(character: Character, experienceWorth: number, game: Game){
+    const owner = character;
+    if (owner && owner.leveling && owner.type !== LEVELING_CHARACTER
+        && !owner.isDead && !owner.isPet
+        && !(owner as TamerPetCharacter).gifted
+    ) {
+        owner.leveling.experience += experienceWorth;
+        while (owner.leveling.experience >= owner.leveling.experienceForLevelUp) {
+            owner.leveling.level++;
+            owner.leveling.experience -= owner.leveling.experienceForLevelUp;
+            owner.leveling.experienceForLevelUp += Math.floor(owner.leveling.level / 2);
+            for (let abilityIt of owner.abilities) {
+                setCharacterAbilityLevel(abilityIt, owner);
+            }
+        }
+    }
+
+}
+
 function killCharacter(character: Character, game: Game, abilityRefId: number | undefined = undefined) {
     character.isDead = true;
     if (game.state.timeFirstKill === undefined) game.state.timeFirstKill = game.state.time;
     levelingCharacterXpGain(game.state, character, game);
     if (character.type === CHARACTER_TYPE_BOSS_ENEMY) {
         playerCharactersAddBossSkillPoints(game);
+        experienceForEveryPlayersLeveling(character.experienceWorth, game);
     }
     if (character.type === CHARACTER_TYPE_END_BOSS_ENEMY) {
         game.state.bossStuff.bosses.push(createEndBossCrownCharacter(game.state.idCounter, character));
     }
-    if (abilityRefId !== undefined) {
+    if (abilityRefId !== undefined && character.type !== CHARACTER_TYPE_BOSS_ENEMY) {
         const ability = findAbilityById(abilityRefId, game);
         if (ability) {
-            levelingAbilityXpGain(ability, character.experienceWorth, game);
             const owner = findAbilityOwnerByAbilityId(ability.id, game);
-            if (owner && owner.leveling && owner.type !== LEVELING_CHARACTER
-                && !owner.isDead && !owner.isPet
-                && !(owner as TamerPetCharacter).gifted
-            ) {
-                owner.leveling.experience += character.experienceWorth;
-                while (owner.leveling.experience >= owner.leveling.experienceForLevelUp) {
-                    owner.leveling.level++;
-                    owner.leveling.experience -= owner.leveling.experienceForLevelUp;
-                    owner.leveling.experienceForLevelUp += Math.floor(owner.leveling.level / 2);
-                    for (let abilityIt of owner.abilities) {
-                        setCharacterAbilityLevel(abilityIt, owner);
-                    }
-                }
+            if(owner){
+                levelingAbilityXpGain(ability, owner, character.experienceWorth, game);
+                experienceForCharacter(owner, character.experienceWorth, game);
             }
         }
     }
