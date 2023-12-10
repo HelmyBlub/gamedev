@@ -154,6 +154,20 @@ export function characterTradeAbilityAndPets(fromCharacter: Character, toCharact
         }
     }
     tradePets(fromCharacter, toCharacter, game);
+    if(!toCharacter.overtakenCharacterClasses) toCharacter.overtakenCharacterClasses = [];
+    if(fromCharacter.characterClass){
+        const newClass = fromCharacter.characterClass;
+        toCharacter.overtakenCharacterClasses.push(newClass);
+        const classFunctions = PLAYER_CHARACTER_CLASSES_FUNCTIONS[newClass];
+        if(classFunctions && classFunctions.preventMultiple){
+            if(toCharacter.upgradeChoices && toCharacter.upgradeChoices[0].type === "Character"){
+                const index = toCharacter.upgradeChoices.findIndex(c => c.displayText === newClass);
+                if(index > -1){
+                    toCharacter.upgradeChoices.splice(index, 1);
+                }
+            }
+        }
+    } 
     resetAllCharacterAbilities(toCharacter);
 }
 

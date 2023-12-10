@@ -12,6 +12,7 @@ export type PlayerCharacterClassFunctions = {
     changeCharacterToThisClass: (character: Character, idCounter: IdCounter, game: Game) => void,
     createBossBasedOnClassAndCharacter?: (basedOnCharacter: Character, level: number, spawn: Position, game: Game) => Character,
     getLongUiText?: () => string[],
+    preventMultiple?: boolean,
 }
 
 export type PlayerCharacterClassesFunctions = {
@@ -56,4 +57,16 @@ export function createCharacterChooseUpgradeOptions(game: Game): UpgradeOption[]
     }
 
     return upgradeOptions;
+}
+
+export function isPreventedDuplicateClass(fromCharacter: Character, toCharacter: Character): boolean{
+    if(!fromCharacter.characterClass) return false;
+    const takeoverClassFunctions = PLAYER_CHARACTER_CLASSES_FUNCTIONS[fromCharacter.characterClass];
+    if(takeoverClassFunctions && !takeoverClassFunctions.preventMultiple) return false;
+    if(fromCharacter.characterClass === toCharacter.characterClass) return true;
+    if(toCharacter.overtakenCharacterClasses){
+        const overtaken = toCharacter.overtakenCharacterClasses.find(c => c === fromCharacter.characterClass);
+        if(overtaken) return true;
+    }    
+    return false;
 }

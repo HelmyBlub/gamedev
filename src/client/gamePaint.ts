@@ -4,6 +4,7 @@ import { Character, DEFAULT_CHARACTER } from "./character/characterModel.js";
 import { paintCharacterStatsUI, paintPlayerCharacters } from "./character/characterPaint.js";
 import { paintBossCharacters, paintBossCrown } from "./character/enemy/bossEnemy.js";
 import { LEVELING_CHARACTER, LevelingCharacter } from "./character/playerCharacters/levelingCharacterModel.js";
+import { isPreventedDuplicateClass } from "./character/playerCharacters/playerCharacters.js";
 import { paintTamerPetCharacterStatsUI } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
 import { calculateDistance, getCameraPosition, getTimeSinceFirstKill } from "./game.js";
 import { Game, Position, Debugging, PaintTextData } from "./gameModel.js";
@@ -84,7 +85,7 @@ function paintClosestInteractable(ctx: CanvasRenderingContext2D, cameraPosition:
     const pastCharacter = findNearesPastPlayerCharacter(character, game);
     const interactableMapObject = findNearesInteractableMapChunkObject(character, game);
     if (pastCharacter) {
-        paintPastPlayerTakeoverInfo(ctx, pastCharacter, cameraPosition, game);
+        paintPastPlayerTakeoverInfo(ctx, pastCharacter, character, cameraPosition, game);
     } else if (interactableMapObject) {
         const mapObejctFunctions = MAP_OBJECTS_FUNCTIONS[interactableMapObject.name];
         if (mapObejctFunctions && mapObejctFunctions.paintInteract) {
@@ -93,12 +94,13 @@ function paintClosestInteractable(ctx: CanvasRenderingContext2D, cameraPosition:
     }
 }
 
-function paintPastPlayerTakeoverInfo(ctx: CanvasRenderingContext2D, pastCharacter: Character, cameraPosition: Position, game: Game) {
+function paintPastPlayerTakeoverInfo(ctx: CanvasRenderingContext2D, pastCharacter: Character, playerCharacter: Character, cameraPosition: Position, game: Game) {
     const canTrade = canCharacterTradeAbilityOrPets(pastCharacter);
+    const classAlreadyTaken = isPreventedDuplicateClass(pastCharacter, playerCharacter);
     let paintPos: Position = getPointPaintPosition(ctx, pastCharacter, cameraPosition);
     paintPos.y -= 40;
     let text = "";
-    if (canTrade) {
+    if (canTrade && !classAlreadyTaken) {
         text = `Takeover abilities (one time only)`;
         paintPos.y -= 20;
         paintKey(ctx, "F", { x: paintPos.x - 15, y: paintPos.y });
@@ -122,6 +124,9 @@ function paintPastPlayerTakeoverInfo(ctx: CanvasRenderingContext2D, pastCharacte
                 offsetX += area.width + spacing;
             }
         }
+    } else if(classAlreadyTaken){
+        text = `Class can only be owned once!`;
+        paintPos.y -= 20;
     } else {
         text = `Nothing to take. Kick Out?`;
         paintPos.y -= 20;

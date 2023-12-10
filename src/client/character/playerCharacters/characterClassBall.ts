@@ -18,6 +18,7 @@ export function addBallClass() {
         changeCharacterToThisClass: changeCharacterToBallClass,
         createBossBasedOnClassAndCharacter: createBossBasedOnClassAndCharacter,
         getLongUiText: getLongUiText,
+        preventMultiple: true,
     }
 }
 

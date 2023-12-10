@@ -2,12 +2,12 @@ import { CommandRestart, handleCommand } from "./commands.js";
 import { findNearesPastPlayerCharacter, findPlayerById } from "./player.js";
 import { Character } from "./character/characterModel.js";
 import { Game, Position } from "./gameModel.js";
-import { testGame } from "./test/gameTest.js";
 import { websocketConnect } from "./multiplayerConenction.js";
 import { ABILITIES_FUNCTIONS } from "./ability/ability.js";
 import { calculateDirection, getCameraPosition, getClientInfo, loadFromLocalStorage, resetGameNonStateData, takeTimeMeasure } from "./game.js";
 import { executeUpgradeOptionChoice } from "./character/upgrade.js";
 import { canCharacterTradeAbilityOrPets, characterTradeAbilityAndPets } from "./character/character.js";
+import { isPreventedDuplicateClass } from "./character/playerCharacters/playerCharacters.js";
 
 export const MOVE_ACTIONS = ["left", "down", "right", "up"];
 export const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3", "upgrade4"];
@@ -341,7 +341,9 @@ function playerAction(clientId: number, data: any, game: Game) {
                     const closestPast = findNearesPastPlayerCharacter(character, game);
                     if (closestPast) {
                         if (canCharacterTradeAbilityOrPets(closestPast)) {
-                            characterTradeAbilityAndPets(closestPast, character, game);
+                            if(!isPreventedDuplicateClass(closestPast, character)){
+                                characterTradeAbilityAndPets(closestPast, character, game);
+                            }
                         } else {
                             const pastCharactes = game.state.pastPlayerCharacters.characters;
                             for (let i = pastCharactes.length - 1; i >= 0; i--) {

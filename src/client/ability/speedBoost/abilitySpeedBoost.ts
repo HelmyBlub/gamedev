@@ -1,7 +1,6 @@
 import { findCharacterById, getPlayerCharacters } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
-import { createBuffSlowTrail } from "../../debuff/buffSlowTrail.js";
 import { createBuffSpeed } from "../../debuff/buffSpeed.js";
 import { applyDebuff } from "../../debuff/debuff.js";
 import { getNextId } from "../../game.js";
@@ -11,7 +10,7 @@ import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, getAbilityNameUiText, paint
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
 import { ABILITY_SPEED_BOOST_UPGRADE_ADD_CHARGE, AbilitySpeedBoostUpgradeAddCharge, addAbilitySpeedBoostUpgradeAddCharge, tickAbilitySpeedBoostUpgradeAddCharge } from "./abilitySpeedBoostUpgradeAddCharge.js";
 import { addAbilitySpeedBoostUpgradeDuration } from "./abilitySpeedBoostUpgradeDuration.js";
-import { ABILITY_SPEED_BOOST_UPGRADE_SLOW_TRAIL, addAbilitySpeedBoostUpgradeSlowTrail, executeAbilitySpeedBoostUpgradeSlowTrail } from "./abilitySpeedBoostUpgradeSlowTrail.js";
+import { addAbilitySpeedBoostUpgradeSlowTrail, executeAbilitySpeedBoostUpgradeSlowTrail } from "./abilitySpeedBoostUpgradeSlowTrail.js";
 import { addAbilitySpeedBoostUpgradeSpeed } from "./abilitySpeedBoostUpgradeSpeed.js";
 import { addAbilitySpeedBoostUpgradeCooldown } from "./abilitySpeedBoostUpradeCooldown.js";
 

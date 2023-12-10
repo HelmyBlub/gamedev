@@ -17,6 +17,7 @@ export function addTowerClass() {
         changeCharacterToThisClass: changeCharacterToTowerBuilderClass,
         createBossBasedOnClassAndCharacter: createBossBasedOnClassAndCharacter,
         getLongUiText: getLongUiText,
+        preventMultiple: true,
     }
 }
 

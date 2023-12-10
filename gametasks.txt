@@ -1,6 +1,11 @@
 current tasks:
+- background for takeover text. Hard to read when mutliple paint effects
 - having multiple ball abilities? does not work
-    - merge 2 balls to increase strength?
+    - merge 2 past character abilities to increase strength?
+        - but what if i take ball ability?
+            - disable class choice
+    - prevent taking multiple ball classes
+        - same for builder
 
 refactor possibilities:
 - ability creation: checks and scales for bosses, enemy or player by itself

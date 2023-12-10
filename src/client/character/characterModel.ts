@@ -107,6 +107,7 @@ export type Character = Position & {
     experienceWorth: number,
     type: string,
     characterClass?: string,
+    overtakenCharacterClasses?: string[],
     isDead: boolean,
     abilities: Ability[],
     debuffs: Debuff[],
