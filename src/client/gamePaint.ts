@@ -65,15 +65,23 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
     paintUiForAbilities(ctx, game);
 }
 
-export function paintTextWithOutline(ctx: CanvasRenderingContext2D, outlineColor: string, textColor: string, text: string, x: number, y: number, centered: boolean = false, lineWidth: number = 1) {
+export function paintTextWithOutline(ctx: CanvasRenderingContext2D, outlineColor: string, textColor: string, text: string, x: number, y: number, centered: boolean = false, lineWidth: number = 1, withBackgroundColor: string | undefined = undefined) {
     ctx.strokeStyle = outlineColor;
-    ctx.fillStyle = textColor;
     ctx.lineWidth = lineWidth;
+    const width = ctx.measureText(text).width;
     if (centered) {
-        const width = ctx.measureText(text).width;
         x -= width / 2;
     }
-    ctx.strokeText(text, x, y);
+    if(withBackgroundColor){
+        const fontSize = 20;
+        ctx.globalAlpha = 0.6;
+        ctx.fillStyle = withBackgroundColor;
+        ctx.fillRect(x,y - fontSize, width, fontSize + 2);
+        ctx.globalAlpha = 1;
+    }else{
+        ctx.strokeText(text, x, y);
+    }
+    ctx.fillStyle = textColor;
     ctx.fillText(text, x, y);
 }
 
@@ -134,7 +142,7 @@ function paintPastPlayerTakeoverInfo(ctx: CanvasRenderingContext2D, pastCharacte
     }
     ctx.fillStyle = "black";
     ctx.font = "20px Arial";
-    paintTextWithOutline(ctx, "white", "black", text, paintPos.x, paintPos.y - 5, true);
+    paintTextWithOutline(ctx, "white", "black", text, paintPos.x, paintPos.y - 5, true, 1, "white");
 
 }
 
