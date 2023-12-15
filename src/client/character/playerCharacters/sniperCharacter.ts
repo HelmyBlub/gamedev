@@ -9,6 +9,7 @@ import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters.js";
 import { deepCopy, getNextId } from "../../game.js";
 import { resetCharacter } from "../character.js";
 import { CHARACTER_TYPE_BOSS_ENEMY } from "../enemy/bossEnemy.js";
+import { ABILITY_NAME_SNIPE_RELOAD } from "../../ability/snipe/abilitySnipeReload.js";
 
 export const CHARACTER_CLASS_SNIPER_NAME = "Sniper";
 
@@ -30,6 +31,7 @@ function changeCharacterToSniperClass(
     addAbilityToCharacter(character, createAbility(ABILITY_NAME_SNIPE, idCounter, true, true, "ability1"));
     addAbilityToCharacter(character, createAbilityHpRegen(idCounter, undefined, 2));
     addAbilityToCharacter(character, createAbility(ABILITY_NAME_SPEED_BOOST, idCounter, false, true, "ability2"));
+    addAbilityToCharacter(character, createAbility(ABILITY_NAME_SNIPE_RELOAD, idCounter, false, false, "ability3"));
 }
 
 function getLongUiText(): string[]{

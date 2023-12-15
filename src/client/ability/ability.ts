@@ -31,6 +31,7 @@ import { getPointPaintPosition } from "../gamePaint.js"
 import { addAbilityBounceBall } from "./ball/abilityBounceBall.js"
 import { addAbilityLightningBall } from "./ball/abilityLightningBall.js"
 import { addAbilityLightningStrikes } from "./abilityLightningStrikes.js"
+import { addAbilitySnipeReload } from "./snipe/abilitySnipeReload.js"
 
 export type Ability = {
     id: number,
@@ -114,6 +115,7 @@ export function onDomLoadSetAbilitiesFunctions() {
     addAbilityIceAura();
     addAbilitySingleTarget();
     addAbilitySnipe();
+    addAbilitySnipeReload();
     addAbilitySpeedBoost();
     addAbilitySlowTrail();
     addAbilityFireLine();

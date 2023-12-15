@@ -308,6 +308,11 @@ export function getAbilitySnipeShotFrequency(abilitySnipe: AbilitySnipe) {
     return Math.max(abilitySnipe.maxShootFrequency / abilitySnipe.shotFrequencyTimeDecreaseFaktor, abilitySnipe.minimumShotFrequency);
 }
 
+export function abilitySnipeReload(abilitySnipe: AbilitySnipe, time: number){
+    abilitySnipe.currentCharges = 0;
+    abilitySnipe.reloadTime = time + abilitySnipe.baseRechargeTime;
+}
+
 function resetAbility(ability: Ability) {
     const abilitySnipe = ability as AbilitySnipe;
     abilitySnipe.nextAllowedShotTime = 0;
@@ -400,7 +405,7 @@ function createAbilityObjectSnipeInitialPlayerTriggered(abilityOwner: AbilityOwn
     createAbilityObjectSnipeInitial(startPosition, abilityOwner.faction, abilitySnipe, castPosition, true, false, game);
     abilitySnipe.currentCharges--;
     if (abilitySnipe.currentCharges === 0) {
-        abilitySnipe.reloadTime = game.state.time + abilitySnipe.baseRechargeTime;
+        abilitySnipeReload(abilitySnipe, game.state.time);
     }
     abilitySnipe.nextAllowedShotTime = game.state.time + getAbilitySnipeShotFrequency(abilitySnipe);
 
