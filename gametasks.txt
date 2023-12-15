@@ -3,8 +3,6 @@ current tasks:
     - adding ability "reload" for sniper
     - adding ability unleash pet for tamer
 - performance when playing long time: on reload the entire map enemies get regenerated, change to only when player reaches it again
-- end boss sword rotation speed to high
-- nerf ball damage scalings a bit
 - Bug: pet leashes on past characters gone?
 
 

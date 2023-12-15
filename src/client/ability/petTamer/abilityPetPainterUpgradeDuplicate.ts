@@ -44,9 +44,9 @@ function getAbilityUpgradeDuplicateUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
     const upgrade: AbilityUpgrade | undefined = ability.upgrades[ABILITY_PET_PAINTER_UPGRADE_DUPLICATE];
     if (upgrade) {
-        textLines.push(`Inrease number of shapes per paint to ${upgrade.level + 2}`);
+        textLines.push(`Inrease number of duplicates per paint from ${upgrade.level + 1} to ${upgrade.level + 2}.`);
     } else {
-        textLines.push(`Painter creates multiple shapes with one paint`);
+        textLines.push(`Painter creates multiple shapes with one paint.`);
     }
 
     return textLines;

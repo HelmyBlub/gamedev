@@ -53,11 +53,11 @@ function getAbilityUpgradeTerrainBounceUiText(ability: Ability): string {
 function getAbilityUpgradeTerrainBounceUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
     const upgrade: AbilityPetDashUpgradeTerrainBounce | undefined = ability.upgrades[ABILITY_PET_DASH_UPGRADE_TERRAIN_BOUNCE];
-    textLines.push(`Dash bounces of blocking terain tiles`);
+    textLines.push(`Dash bounces of blocking terrain tiles.`);
     if (upgrade) {
-        textLines.push(`Increases damage to ${(upgrade.damageFactorPerBounce + DAMAGE_FACTOR_BOUNCE) * 100}% for each bounce`);
+        textLines.push(`Increases damage from ${upgrade.damageFactorPerBounce * 100}% to ${(upgrade.damageFactorPerBounce + DAMAGE_FACTOR_BOUNCE) * 100}% for each bounce.`);
     } else {
-        textLines.push(`Damage increases for each bounce by ${DAMAGE_FACTOR_BOUNCE * 100}%`);
+        textLines.push(`Damage increases for each bounce by ${DAMAGE_FACTOR_BOUNCE * 100}%.`);
     }
 
     return textLines;

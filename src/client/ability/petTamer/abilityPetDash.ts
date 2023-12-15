@@ -82,7 +82,7 @@ function getLongDescription(): string[] {
     return [
         `Ability: ${ABILITY_NAME_PET_DASH}`,
         `Dashes forward a short distance.`,
-        `Does damage to every enemy it hits`,
+        `Does damage to every enemy it hits.`,
     ];
 }
 

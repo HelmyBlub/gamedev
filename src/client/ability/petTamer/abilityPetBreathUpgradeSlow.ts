@@ -65,11 +65,11 @@ function getAbilityUpgradeSlowUiTextLong(ability: Ability): string[] {
     if (upgrade) {
         const currentSlowAmount = debuffSlowGetSlowAmountAsPerCentText(upgrade.factor);
         const newSlowAmount = debuffSlowGetSlowAmountAsPerCentText(upgrade.factor + SLOW_FACTOR_PER_LEVEL);
-        textLines.push(`Increase Breath slow from ${currentSlowAmount}% to ${newSlowAmount}%`);
-        textLines.push(`and duration from ${(upgrade.duration) / 1000}s to ${(upgrade.duration + DURATIONUP) / 1000}s`);
+        textLines.push(`Increase Breath slow from ${currentSlowAmount}% to ${newSlowAmount}%.`);
+        textLines.push(`and duration from ${(upgrade.duration) / 1000}s to ${(upgrade.duration + DURATIONUP) / 1000}s.`);
     } else {
         const slowAmount = debuffSlowGetSlowAmountAsPerCentText(1 + SLOW_FACTOR_PER_LEVEL);
-        textLines.push(`Breath slows enemies by ${slowAmount}% for ${(BASEDURATION + DURATIONUP) / 1000}s`);
+        textLines.push(`Breath slows enemies by ${slowAmount}% for ${(BASEDURATION + DURATIONUP) / 1000}s.`);
     }
 
     return textLines;

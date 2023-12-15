@@ -60,8 +60,12 @@ function getAbilityUpgradeTerrainRootUiText(ability: Ability): string {
 function getAbilityUpgradeTerrainRootUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
     const upgrade: AbilityUpgrade | undefined = ability.upgrades[ABILITY_PET_DASH_UPGRADE_ROOT_ON_HIT];
-    textLines.push(`Enemies hit by Dash are rooted in place`);
-    textLines.push(`by ${DURATION_PER_LEVEL / 1000}s per level`);
+    textLines.push(`Enemies hit by Dash are rooted in place.`);
+    if (upgrade) {
+        textLines.push(`Duration increase from ${upgrade.level * DURATION_PER_LEVEL / 1000}s to ${(upgrade.level + 1) * DURATION_PER_LEVEL / 1000}s.`);
+    }else{
+        textLines.push(`Duration: ${DURATION_PER_LEVEL / 1000}s.`);
+    }
 
     return textLines;
 }

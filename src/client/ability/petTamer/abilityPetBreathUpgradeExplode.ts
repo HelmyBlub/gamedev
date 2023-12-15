@@ -64,10 +64,10 @@ function getAbilityUpgradeExplodeUiTextLong(ability: Ability): string[] {
     const upgrade: AbilityPetBreathUpgradeExplode | undefined = ability.upgrades[ABILITY_PET_BREATH_UPGRADE_EXPLODE];
     textLines.push(`Breath makes enemies explode on death.`);
     if (upgrade) {
-        textLines.push(`Increased damage to ${(upgrade.damageFactor + DAMAGEFACTOR) * 100}% of Breath damage.`);
+        textLines.push(`Increased damage from ${upgrade.damageFactor * 100}% to ${(upgrade.damageFactor + DAMAGEFACTOR) * 100}%.`);
     } else {
         textLines.push(`Damage: ${DAMAGEFACTOR * 100}% of Breath damage.`);
-        textLines.push(`Radius: ${RADIUS}`);
+        textLines.push(`Radius: ${RADIUS}.`);
     }
 
     return textLines;

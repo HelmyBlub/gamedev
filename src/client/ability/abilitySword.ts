@@ -76,7 +76,7 @@ function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: n
     abilitySword.damage = level * 3 * damageFactor;
     abilitySword.swordCount = level > 10 ? 2 : 1;
     abilitySword.swordLength = 20 + level * 2;
-    abilitySword.angleChangePerTick = Math.min(0.01 + 0.001 * level, 0.02);
+    abilitySword.angleChangePerTick = Math.min(0.005 + 0.001 * level, 0.01);
     abilitySword.angleChangePerSword = Math.PI * 2 / abilitySword.swordCount;
 }
 
@@ -85,7 +85,7 @@ function setAbilitySwordToBossLevel(ability: Ability, level: number){
     abilitySword.damage = level * 25;
     abilitySword.swordCount = level > 5 ? 2 : 1;
     abilitySword.swordLength = 30 + level * 25;
-    abilitySword.angleChangePerTick = Math.min(0.01 + 0.005 * level, 0.03);
+    abilitySword.angleChangePerTick = Math.min(0.005 + 0.0025 * level, 0.01);
     abilitySword.angleChangePerSword = Math.PI * 2 / abilitySword.swordCount;
 }
 

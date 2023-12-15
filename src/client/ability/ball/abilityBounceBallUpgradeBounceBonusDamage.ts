@@ -8,8 +8,8 @@ export type AbilityBounceBallUpgradeBounceBonusDamage = AbilityUpgrade & {
     maxBounceBonus: number,
 }
 
-const BONUS_DAMAGE_PER_LEVEL = 1;
-const MAX_BONUS_BOUNCE = 100;
+const BONUS_DAMAGE_PER_LEVEL = 0.5;
+const MAX_BONUS_BOUNCE = 50;
 
 export const ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_DAMAGE = "Bounce Bonus Damage";
 
