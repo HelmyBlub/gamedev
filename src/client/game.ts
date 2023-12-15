@@ -583,10 +583,11 @@ function checkForAutoSkill(game: Game) {
     const character: Character | undefined = findMyCharacter(game);
     if (character && character.type !== DEFAULT_CHARACTER) {
         if (character.upgradeChoices.length > 0) {
+            let randomChoice = Math.floor(Math.random() * character.upgradeChoices.length);
             handleCommand(game, {
                 command: "playerInput",
                 clientId: game.multiplayer.myClientId,
-                data: { action: UPGRADE_ACTIONS[0], isKeydown: true },
+                data: { action: UPGRADE_ACTIONS[randomChoice], isKeydown: true },
             });
         }
     }
