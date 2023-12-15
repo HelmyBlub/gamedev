@@ -123,12 +123,7 @@ function paintAbilitySpeedBoostUI(ctx: CanvasRenderingContext2D, ability: Abilit
 
 
     if (abilitySpeedBoost.playerInputBinding) {
-        let keyBind = "";
-        game.clientKeyBindings[0].keyCodeToActionPressed.forEach((value, key) => {
-            if (value.action === abilitySpeedBoost.playerInputBinding) {
-                keyBind = value.uiDisplayInputValue;
-            }
-        });
+        let keyBind = playerInputBindingToDisplayValue(abilitySpeedBoost.playerInputBinding, game);
         ctx.fillStyle = "black";
         ctx.font = "10px Arial";
         ctx.fillText(keyBind, drawStartX + 1, drawStartY + 8);

@@ -89,7 +89,7 @@ export function calculateHighscoreOnGameEnd(game: Game, isEndbossKill: boolean):
     return newScore;
 }
 
-export function paintHighscoreEndScreenStuff(ctx: CanvasRenderingContext2D, highscores: Highscores) {
+export function paintHighscoreEndScreenStuff(ctx: CanvasRenderingContext2D, highscores: Highscores, restartKey: string) {
     if (highscores.lastBoard === "") return;
     const highscoreBoard = highscores.scoreBoards[highscores.lastBoard];
     const paintMiddle = ctx.canvas.width / 2;
@@ -121,7 +121,7 @@ export function paintHighscoreEndScreenStuff(ctx: CanvasRenderingContext2D, high
     ctx.fillRect(paintMiddle - restartHintWidth / 2, paintY - 60, restartHintWidth, 20 + 4);
     ctx.fillStyle = "black";
     ctx.fillText(restartText, paintMiddle - restartHintWidth / 2, paintY - 40);
-    paintKey(ctx, "R", { x: paintMiddle + restartHintWidth / 2 - 40 - 2, y: paintY - 63 });
+    paintKey(ctx, restartKey, { x: paintMiddle + restartHintWidth / 2 - 40 - 2, y: paintY - 63 });
 
     const highscoreWidth = getHighscoreWidth(ctx, highscoreBoard, fontSize);
     paintHighscores(ctx, paintMiddle - highscoreWidth / 2, paintY - 20, highscoreBoard, highscores.lastHighscorePosition, fontSize);

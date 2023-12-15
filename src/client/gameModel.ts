@@ -154,7 +154,12 @@ export type PaintTextData = {
     removeTime: number,
 }
 
-export type KeyCodeToAction = Map<string, { action: string, uiDisplayInputValue: string, isInputAlreadyDown: boolean }>;
+export type KeyCodeToAction = Map<string, {
+    action: string,
+    uiDisplayInputValue: string,
+    isInputAlreadyDown: boolean,
+    activated?: boolean,
+}>;
 
 export type Multiplayer = {
     myClientId: number,
@@ -194,10 +199,11 @@ export type Game = {
     state: GameState,
     shouldTickTime?: number,
     tickInterval: number,
-    clientKeyBindings: {
+    clientKeyBindings?: {
         clientIdRef: number,
         keyCodeToActionPressed: KeyCodeToAction,
-    }[],
+        keyCodeToUiAction: KeyCodeToAction,
+    },
     multiplayer: Multiplayer,
     mouseRelativeCanvasPosition: Position,
     camera: Camera,
@@ -262,7 +268,6 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             },
             enemyTypeDirectionSeed: 0,
         },
-        clientKeyBindings: [],
         tickInterval: 16,
         multiplayer: {
             myClientId: -1,
@@ -303,13 +308,13 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
                 nextAutoButtonPressTime: 0,
             },
             saveStates: {
-                autoSaves:{
+                autoSaves: {
                     maxNumberStates: 2,
                     saveInterval: 10000,
                     states: [],
                     statesRecordData: [],
                 },
-                manualSaves:{
+                manualSaves: {
                     states: [],
                     statesRecordData: [],
                 }

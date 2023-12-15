@@ -1,6 +1,7 @@
 import { calculateDirection, calculateDistance, getCameraPosition, getNextId } from "../game.js";
 import { FACTION_ENEMY, FACTION_PLAYER, Game, IdCounter, Position } from "../gameModel.js";
 import { getPointPaintPosition } from "../gamePaint.js";
+import { playerInputBindingToDisplayValue } from "../playerInput.js";
 import { nextRandom } from "../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectAbilityObjectCircleToCharacterHit, PaintOrderAbility, AbilityObjectCircle } from "./ability.js";
 
@@ -224,12 +225,7 @@ function paintAbilityFireCircleUI(ctx: CanvasRenderingContext2D, ability: Abilit
     ctx.fillText("" + fireCircle.currentCharges, drawStartX, drawStartY + rectSize - (rectSize - fontSize * 0.9));
 
     if (fireCircle.playerInputBinding) {
-        let keyBind = "";
-        game.clientKeyBindings[0].keyCodeToActionPressed.forEach((value, key) => {
-            if (value.action === fireCircle.playerInputBinding) {
-                keyBind = value.uiDisplayInputValue;
-            }
-        });
+        let keyBind = playerInputBindingToDisplayValue(fireCircle.playerInputBinding, game);
         ctx.fillStyle = "black";
         ctx.font = "10px Arial";
         ctx.fillText(keyBind, drawStartX + 1, drawStartY + 8);

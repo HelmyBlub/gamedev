@@ -2,7 +2,7 @@ import { findAndSetNewCameraCharacterId } from "./character/character.js";
 import { createPaintTextData, getCameraPosition } from "./game.js";
 import { Game, GameState } from "./gameModel.js";
 import { sendMultiplayer } from "./multiplayerConenction.js";
-import { createDefaultKeyBindings1 } from "./player.js";
+import { createDefaultKeyBindings1, createDefaultUiKeyBindings } from "./player.js";
 import { PlayerInput } from "./playerInput.js";
 import { compressString } from "./stringCompress.js";
 
@@ -99,7 +99,7 @@ function connectInfo(game: Game, data: ConnectInfo) {
     if (data.numberConnections === 0) {
         game.multiplayer.awaitingGameState.waiting = false;
         game.state.players[0].clientId = data.clientId;
-        game.clientKeyBindings[0].clientIdRef = data.clientId;
+        game.clientKeyBindings!.clientIdRef = data.clientId;
     }
     if (data.randomIdentifier) {
         console.log("myIdentifier", data.randomIdentifier);
@@ -115,10 +115,11 @@ function gameState(game: Game, data: GameState) {
     game.performance = {};
     for (let i = 0; i < game.state.clientInfos.length; i++) {
         if (game.multiplayer.myClientId === game.state.clientInfos[i].id) {
-            game.clientKeyBindings = [{
+            game.clientKeyBindings = {
                 clientIdRef: game.multiplayer.myClientId,
-                keyCodeToActionPressed: createDefaultKeyBindings1()
-            }];
+                keyCodeToActionPressed: createDefaultKeyBindings1(),
+                keyCodeToUiAction: createDefaultUiKeyBindings(),
+            };
         }
     }
     findAndSetNewCameraCharacterId(game.camera, game.state.players, game.multiplayer.myClientId);

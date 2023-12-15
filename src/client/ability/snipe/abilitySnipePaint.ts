@@ -101,12 +101,7 @@ export function paintAbilitySnipeUI(ctx: CanvasRenderingContext2D, ability: Abil
     ctx.fillText("" + snipe.currentCharges, drawStartX, drawStartY + rectSize - (rectSize - fontSize * 0.9));
 
     if (snipe.playerInputBinding) {
-        let keyBind = "";
-        game.clientKeyBindings[0].keyCodeToActionPressed.forEach((value, key) => {
-            if (value.action === snipe.playerInputBinding) {
-                keyBind = value.uiDisplayInputValue;
-            }
-        });
+        let keyBind = playerInputBindingToDisplayValue(snipe.playerInputBinding, game);
         ctx.fillStyle = "black";
         ctx.font = "10px Arial";
         ctx.fillText(keyBind, drawStartX + 1, drawStartY + 8);

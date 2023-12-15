@@ -13,6 +13,7 @@ export const MOVE_ACTIONS = ["left", "down", "right", "up"];
 export const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3", "upgrade4"];
 export const ABILITY_ACTIONS = ["ability1", "ability2", "ability3"];
 export const SPECIAL_ACTIONS = ["interact"];
+export const UI_ACTIONS = ["Restart", "Multiplayer", "Pause", "Info", "AutoSkill"];
 export const MOUSE_ACTION = "mousePositionUpdate";
 
 export type ActionsPressed = {
@@ -59,41 +60,8 @@ export function keyDown(event: { code: string, preventDefault?: Function, stopPr
     if (game.multiplayer.connectMenuOpen) return;
 
     playerInputChangeEvent(game, event.code, true);
-    let commandRestart: Omit<CommandRestart, "executeTime">;
-
+    uiAction(game, event.code, true);
     switch (event.code) {
-        case "KeyR":
-        //            commandRestart = { command: "restart", clientId: game.multiplayer.myClientId };
-        //            handleCommand(game, commandRestart);
-        //            break;
-        case "KeyZ":
-            game.state.paused = false;
-            commandRestart = {
-                command: "restart",
-                clientId: game.multiplayer.myClientId,
-                recordInputs: true,
-                replay: false,
-                testMapSeed: game.state.map.seed,
-            };
-            handleCommand(game, commandRestart);
-            break;
-        case "KeyO":
-            multiplayerConnectMenu(game);
-            break;
-        case "KeyP":
-            if (!game.multiplayer.websocket) {
-                game.state.paused = !game.state.paused;
-            }
-            break;
-        case "Tab":
-            game.UI.displayLongInfos = true;
-            if (!game.multiplayer.websocket) {
-                game.state.paused = true;
-            }
-            break;
-        case "KeyG":
-            game.settings.autoSkillEnabled = !game.settings.autoSkillEnabled;
-            break;
         case "KeyH":
             if (game.testing.autoPlay.hotkeyEnabled) {
                 if (game.testing.autoPlay?.autoPlaying) {
@@ -129,27 +97,20 @@ export function keyDown(event: { code: string, preventDefault?: Function, stopPr
 
 export function playerInputBindingToDisplayValue(playerInputBinding: string, game: Game): string {
     let displayValue = "";
-    game.clientKeyBindings[0].keyCodeToActionPressed.forEach((value, key) => {
-        if (value.action === playerInputBinding) {
-            displayValue = value.uiDisplayInputValue;
-        }
-    });
+    if (game.clientKeyBindings) {
+        game.clientKeyBindings.keyCodeToActionPressed.forEach((value, key) => {
+            if (value.action === playerInputBinding) {
+                displayValue = value.uiDisplayInputValue;
+            }
+        });
+    }
 
     return displayValue;
 }
 
 export function keyUp(event: KeyboardEvent, game: Game) {
     playerInputChangeEvent(game, event.code, false);
-
-    switch (event.code) {
-        case "Tab":
-            game.UI.displayLongInfos = false;
-            if (!game.multiplayer.websocket) {
-                game.state.paused = false;
-            }
-            break;
-    }
-
+    uiAction(game, event.code, false);
 }
 
 export function tickPlayerInputs(playerInputs: PlayerInput[], currentTime: number, game: Game) {
@@ -256,48 +217,89 @@ function determinePlayerMoveDirection(player: Character, actionsPressed: Actions
     }
 }
 
-function playerInputChangeEvent(game: Game, inputCode: string, isInputDown: boolean) {
-    for (let i = 0; i < game.clientKeyBindings.length; i++) {
-        const action = game.clientKeyBindings[i].keyCodeToActionPressed.get(inputCode);
-        if (action !== undefined) {
-            if (game.testing.replay) {
-                //end replay and let player play
-                game.testing.replay = undefined;
-                loadFromLocalStorage(game);
+function uiAction(game: Game, inputCode: string, isInputDown: boolean) {
+    if (!game.clientKeyBindings) return;
+    const action = game.clientKeyBindings.keyCodeToUiAction.get(inputCode);
+    if (action === undefined) return;
+    if (isInputDown && action.isInputAlreadyDown) return;
+    action.isInputAlreadyDown = isInputDown;
+    switch (action.action) {
+        case "Restart":
+            if (!isInputDown) return;
+            game.state.paused = false;
+            const commandRestart: Omit<CommandRestart, "executeTime"> = {
+                command: "restart",
+                clientId: game.multiplayer.myClientId,
+                recordInputs: true,
+                replay: false,
+                testMapSeed: game.state.map.seed,
+            };
+            handleCommand(game, commandRestart);
+            break;
+        case "Multiplayer":
+            if (!isInputDown) return;
+            multiplayerConnectMenu(game);
+            break;
+        case "Pause":
+            if (!isInputDown) return;
+            if (!game.multiplayer.websocket) {
+                game.state.paused = !game.state.paused;
             }
-            const clientId = game.clientKeyBindings[i].clientIdRef;
-            if (isInputDown && action.isInputAlreadyDown) {
+            break;
+        case "Info":
+            game.UI.displayLongInfos = isInputDown;
+            if (!game.multiplayer.websocket) {
+                game.state.paused = isInputDown;
+            }
+            break;
+        case "AutoSkill":
+            if (!isInputDown) return;
+            game.settings.autoSkillEnabled = !game.settings.autoSkillEnabled;
+            action.activated = game.settings.autoSkillEnabled;
+            break;
+    }
+}
+
+function playerInputChangeEvent(game: Game, inputCode: string, isInputDown: boolean) {
+    if (!game.clientKeyBindings) return;
+    const action = game.clientKeyBindings.keyCodeToActionPressed.get(inputCode);
+    if (action === undefined) return;
+    if (game.testing.replay) {
+        //end replay and let player play
+        game.testing.replay = undefined;
+        loadFromLocalStorage(game);
+    }
+    const clientId = game.clientKeyBindings.clientIdRef;
+    if (isInputDown && action.isInputAlreadyDown) {
+        return;
+    }
+    action.isInputAlreadyDown = isInputDown;
+    if (action.action.indexOf("ability") > -1) {
+        const cameraPosition = getCameraPosition(game);
+        const castPosition: Position = {
+            x: game.mouseRelativeCanvasPosition.x - game.canvasElement!.width / 2 + cameraPosition.x,
+            y: game.mouseRelativeCanvasPosition.y - game.canvasElement!.height / 2 + cameraPosition.y
+        }
+        handleCommand(game, {
+            command: "playerInput",
+            clientId: clientId,
+            data: { action: action.action, isKeydown: isInputDown, castPosition: castPosition },
+        });
+    } else {
+        if (action.action.indexOf("upgrade") > -1) {
+            const character = findPlayerById(game.state.players, clientId)?.character;
+            if (!character || character.upgradeChoices.length === 0) {
                 return;
             }
-            action.isInputAlreadyDown = isInputDown;
-            if (action.action.indexOf("ability") > -1) {
-                const cameraPosition = getCameraPosition(game);
-                const castPosition: Position = {
-                    x: game.mouseRelativeCanvasPosition.x - game.canvasElement!.width / 2 + cameraPosition.x,
-                    y: game.mouseRelativeCanvasPosition.y - game.canvasElement!.height / 2 + cameraPosition.y
-                }
-                handleCommand(game, {
-                    command: "playerInput",
-                    clientId: clientId,
-                    data: { action: action.action, isKeydown: isInputDown, castPosition: castPosition },
-                });
-            } else {
-                if (action.action.indexOf("upgrade") > -1) {
-                    const character = findPlayerById(game.state.players, clientId)?.character;
-                    if (!character || character.upgradeChoices.length === 0) {
-                        return;
-                    }
-                    if (game.state.paused) {
-                        game.state.tickOnceInPaused = true;
-                    }
-                }
-                handleCommand(game, {
-                    command: "playerInput",
-                    clientId: clientId,
-                    data: { action: action.action, isKeydown: isInputDown },
-                });
+            if (game.state.paused) {
+                game.state.tickOnceInPaused = true;
             }
         }
+        handleCommand(game, {
+            command: "playerInput",
+            clientId: clientId,
+            data: { action: action.action, isKeydown: isInputDown },
+        });
     }
 }
 
@@ -341,7 +343,7 @@ function playerAction(clientId: number, data: any, game: Game) {
                     const closestPast = findNearesPastPlayerCharacter(character, game);
                     if (closestPast) {
                         if (canCharacterTradeAbilityOrPets(closestPast)) {
-                            if(!isPreventedDuplicateClass(closestPast, character)){
+                            if (!isPreventedDuplicateClass(closestPast, character)) {
                                 characterTradeAbilityAndPets(closestPast, character, game);
                             }
                         } else {

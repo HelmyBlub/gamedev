@@ -42,7 +42,7 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
         const player = findPlayerById(game.state.players, game.multiplayer.myClientId);
         if (player === null) return;
         const character = player.character;
-        paintEndScreen(ctx, game.state.highscores);
+        paintEndScreen(ctx, game.state.highscores, game);
         if (character !== null) paintPlayerStats(ctx, character as LevelingCharacter, getTimeSinceFirstKill(game.state), game);
         if (game.multiplayer.websocket !== null) {
             ctx.fillText("Ping: " + Math.round(game.multiplayer.delay), 10, 60);
@@ -155,15 +155,23 @@ export function getPointPaintPosition(ctx: CanvasRenderingContext2D, point: Posi
     }
 }
 
-export function paintKey(ctx: CanvasRenderingContext2D, key: string, paintPosition: Position, offsetX: number = 0, fontSize: number = 16) {
+export function paintKey(ctx: CanvasRenderingContext2D, key: string, paintPosition: Position) {
     const blankKeyImageString = "blankKey";
     const blankKeyImage = GAME_IMAGES[blankKeyImageString];
+    let fontSize = 16;
     loadImage(blankKeyImage);
     if (blankKeyImage.imageRef?.complete) {
         ctx.fillStyle = "black";
         ctx.font = fontSize + "px Arial";
+        let width = ctx.measureText(key).width;
+        const maxWidth = 28;
+        if(width > maxWidth){
+            fontSize = 14;
+            ctx.font = fontSize + "px Arial";
+            width = ctx.measureText(key).width;
+        }
         ctx.drawImage(blankKeyImage.imageRef, paintPosition.x, paintPosition.y);
-        ctx.fillText(key, paintPosition.x + 15 + offsetX, paintPosition.y + 20);
+        ctx.fillText(key, paintPosition.x + 20 - width / 2, paintPosition.y + 20);
     }
 }
 
@@ -177,32 +185,22 @@ function paintPausedText(ctx: CanvasRenderingContext2D, game: Game) {
 
 function paintKeyInfo(ctx: CanvasRenderingContext2D, game: Game) {
     if (game.UI.displayMovementKeyHint) paintMoveKeysHint(ctx);
-
+    if(!game.clientKeyBindings) return;
     const fontSize = 16;
-    const paintX = ctx.canvas.width - 40;
-    const paintY = ctx.canvas.height - 5;
+    const paintX = ctx.canvas.width - 150;
+    let paintY = ctx.canvas.height - 5;
 
     ctx.fillStyle = "black";
-    paintKey(ctx, "R", { x: paintX - 100, y: paintY - 30 });
-    ctx.font = fontSize + "px Arial";
-    ctx.fillText("Restart", paintX - 60, paintY - 10);
-
-    paintKey(ctx, "TAB", { x: paintX - 100, y: paintY - 60 }, -9, 14);
-    ctx.font = fontSize + "px Arial";
-    ctx.fillText("Info", paintX - 60, paintY - 40);
-
-    paintKey(ctx, "G", { x: paintX - 100, y: paintY - 90 });
-    ctx.font = fontSize + "px Arial";
-    let onOff = game.settings.autoSkillEnabled ? "On" : "Off";
-    ctx.fillText(`AutoSkill (${onOff})`, paintX - 60, paintY - 70);
-
-    paintKey(ctx, "O", { x: paintX - 100, y: paintY - 120 });
-    ctx.font = fontSize + "px Arial";
-    ctx.fillText("Multiplayer", paintX - 60, paintY - 100);
-
-    paintKey(ctx, "P", { x: paintX - 100, y: paintY - 150 });
-    ctx.font = fontSize + "px Arial";
-    ctx.fillText("Pause", paintX - 60, paintY - 130);
+    game.clientKeyBindings.keyCodeToUiAction.forEach((e) => {
+        paintKey(ctx, e.uiDisplayInputValue, { x: paintX, y: paintY - 30 });
+        ctx.font = fontSize + "px Arial";
+        let text = e.action;
+        if(e.activated !== undefined){
+            text += e.activated ? "(On)": "(Off)";
+        }
+        ctx.fillText(text, paintX + 40, paintY - 10);
+        paintY -= 30; 
+    });            
 }
 
 function paintMoveKeysHint(ctx: CanvasRenderingContext2D) {
@@ -223,7 +221,7 @@ function paintMoveKeysHint(ctx: CanvasRenderingContext2D) {
 }
 
 function paintWasdKeys(ctx: CanvasRenderingContext2D, paintX: number, paintY: number) {
-    paintKey(ctx, "W", { x: paintX + 40, y: paintY }, -2);
+    paintKey(ctx, "W", { x: paintX + 40, y: paintY });
     paintKey(ctx, "A", { x: paintX, y: paintY + 30 });
     paintKey(ctx, "S", { x: paintX + 40, y: paintY + 30 });
     paintKey(ctx, "D", { x: paintX + 80, y: paintY + 30 });
@@ -270,9 +268,15 @@ function paintTimeMeasures(ctx: CanvasRenderingContext2D, debug: Debugging | und
     }
 }
 
-function paintEndScreen(ctx: CanvasRenderingContext2D, highscores: Highscores) {
+function paintEndScreen(ctx: CanvasRenderingContext2D, highscores: Highscores, game: Game) {
     paintGameTitle(ctx);
-    paintHighscoreEndScreenStuff(ctx, highscores);
+    let restartKey = "";
+    game.clientKeyBindings!.keyCodeToUiAction.forEach((e) =>{
+        if(e.action === "Restart"){
+            restartKey = e.uiDisplayInputValue;
+        }
+    });
+    paintHighscoreEndScreenStuff(ctx, highscores, restartKey);
 }
 
 function paintGameTitle(ctx: CanvasRenderingContext2D) {
@@ -402,7 +406,7 @@ function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Charact
         if (displayKeyHint) {
             const hintX = ctx.canvas.width / 2;
             const hintY = startY;
-            paintKey(ctx, "TAB", { x: hintX - 70, y: hintY - 60 }, -9, 14);
+            paintKey(ctx, "TAB", { x: hintX - 70, y: hintY - 60 });
             ctx.font = firstFontSize + "px Arial";
             ctx.fillText("More Info", hintX - 30, hintY - 40);
         }

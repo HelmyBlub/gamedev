@@ -1,6 +1,6 @@
 import { changeCharacterId, countAlivePlayerCharacters, findAndSetNewCameraCharacterId, findCharacterById, findMyCharacter, getPlayerCharacters, resetCharacter, tickCharacters, tickMapCharacters } from "./character/character.js";
 import { paintAll } from "./gamePaint.js";
-import { createDefaultKeyBindings1, findPlayerByCharacterId, gameInitPlayers } from "./player.js";
+import { createDefaultKeyBindings1, createDefaultUiKeyBindings, findPlayerByCharacterId, gameInitPlayers } from "./player.js";
 import { MOUSE_ACTION, UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.js";
 import { Position, GameState, Game, IdCounter, Debugging, PaintTextData, ClientInfo, LOCALSTORAGE_PASTCHARACTERS, LOCALSTORAGE_NEXTENDBOSSES, NextEndbosses, CelestialDirection } from "./gameModel.js";
 import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap, removeAllMapCharacters } from "./map/map.js";
@@ -94,7 +94,6 @@ export function gameInit(game: Game) {
     game.state.deathCircleCreated = false;
     game.state.paused = false;
     game.state.enemyTypeDirectionSeed += 1;
-    game.clientKeyBindings = [];
     game.performance = {};
     game.UI.displayTextData = [];
     game.testing.saveStates.autoSaves.nextSaveStateTime = 10000;
@@ -115,10 +114,11 @@ export function resetGameNonStateData(game: Game) {
     game.multiplayer.autosendMousePosition.nextTime = 0;
     for (let i = 0; i < game.state.clientInfos.length; i++) {
         if (game.multiplayer.myClientId === game.state.clientInfos[i].id) {
-            game.clientKeyBindings = [{
+            game.clientKeyBindings = {
                 clientIdRef: game.multiplayer.myClientId,
-                keyCodeToActionPressed: createDefaultKeyBindings1()
-            }];
+                keyCodeToActionPressed: createDefaultKeyBindings1(),
+                keyCodeToUiAction: createDefaultUiKeyBindings(),
+            };
         }
     }
     findAndSetNewCameraCharacterId(game.camera, game.state.players, game.multiplayer.myClientId);
@@ -594,7 +594,7 @@ function checkForAutoSkill(game: Game) {
 }
 
 function checkMovementKeyPressedHint(game: Game) {
-    if (getTimeSinceFirstKill(game.state) > 10000 && !game.UI.movementKeyPressed && !game.multiplayer.websocket) {
+    if (game.state.time > 10000 && !game.UI.movementKeyPressed && !game.multiplayer.websocket) {
         game.UI.displayMovementKeyHint = true;
     }
 }

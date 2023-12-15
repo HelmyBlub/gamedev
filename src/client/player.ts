@@ -55,6 +55,16 @@ export function createDefaultKeyBindings1() {
     return keyBindings;
 }
 
+export function createDefaultUiKeyBindings() {
+    const keyBindings: KeyCodeToAction = new Map();
+    keyBindings.set("KeyP", { action: "Pause", uiDisplayInputValue: "P", isInputAlreadyDown: false });
+    keyBindings.set("KeyO", { action: "Multiplayer", uiDisplayInputValue: "O", isInputAlreadyDown: false });
+    keyBindings.set("KeyG", { action: "AutoSkill", uiDisplayInputValue: "G", isInputAlreadyDown: false, activated: false });
+    keyBindings.set("Tab", { action: "Info", uiDisplayInputValue: "TAB", isInputAlreadyDown: false });
+    keyBindings.set("KeyT", { action: "Restart", uiDisplayInputValue: "T", isInputAlreadyDown: false });
+    return keyBindings;
+}
+
 function addPlayer(idCounter: IdCounter, clientId: number, players: Player[], pos: Position, seed: RandomSeed, game: Game) {
     const character = createPlayerCharacter(idCounter, pos, seed, game);
     players.push(createPlayer(clientId, character));
@@ -68,10 +78,11 @@ export function gameInitPlayers(game: Game) {
 
         addPlayer(game.state.idCounter, game.state.clientInfos[i].id, game.state.players, playerSpawn, game.state.randomSeed, game);
         if (game.multiplayer.myClientId === -1 || game.multiplayer.myClientId === game.state.clientInfos[i].id) {
-            game.clientKeyBindings.push({
+            game.clientKeyBindings = {
                 clientIdRef: game.multiplayer.myClientId,
-                keyCodeToActionPressed: createDefaultKeyBindings1()
-            });
+                keyCodeToActionPressed: createDefaultKeyBindings1(),
+                keyCodeToUiAction: createDefaultUiKeyBindings(),
+            };
             game.camera.characterId = game.state.players[i].character.id;
         }
     }
