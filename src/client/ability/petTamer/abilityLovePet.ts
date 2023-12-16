@@ -7,7 +7,7 @@ import { getPointPaintPosition } from "../../gamePaint.js";
 import { GAME_IMAGES, getImage } from "../../imageLoad.js";
 import { moveByDirectionAndDistance } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, findAbilityOwnerById } from "../ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, findAbilityOwnerById, getAbilityNameUiText, paintDefaultAbilityStatsUI } from "../ability.js";
 
 export type AbilityLovePet = Ability & {
     loveValue: number,
@@ -33,8 +33,9 @@ export function addAbilityLovePet() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_LOVE_PET] = {
         activeAbilityCast: castLovePet,
         createAbility: createAbilityLovePet,
-        paintAbilityUI: paintAbilityLovePetUI,
         paintAbilityObject: paintAbilityObjectLovePet,
+        paintAbilityStatsUI: paintAbilityStatsUI,
+        paintAbilityUI: paintAbilityLovePetUI,
         tickAbilityObject: tickAbilityObjectLovePet,
         tickBossAI: tickBossAI,
         resetAbility: resetAbility,
@@ -185,4 +186,15 @@ function castLovePet(abilityOwner: AbilityOwner, ability: Ability, castPosition:
             game.state.abilityObjects.push(objectLovePet);
         }
     }
+}
+
+function paintAbilityStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
+    const feed = ability as AbilityLovePet;
+    const textLines: string[] = getAbilityNameUiText(ability);
+    textLines.push(
+        `Key: ${playerInputBindingToDisplayValue(feed.playerInputBinding!, game)}`,
+        "Love targeted pet.",
+        `Range: ${feed.range}`,
+    );
+    return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
 }

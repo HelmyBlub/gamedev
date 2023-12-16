@@ -1,6 +1,4 @@
 current tasks:
-- some balancing:
-    - adding ability unleash pet for tamer
 - performance when playing long time: on reload the entire map enemies get regenerated, change to only when player reaches it again
 - Bug: pet leashes on past characters gone?
 

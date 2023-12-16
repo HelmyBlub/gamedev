@@ -33,6 +33,7 @@ import { addAbilityLightningBall } from "./ball/abilityLightningBall.js"
 import { addAbilityLightningStrikes } from "./abilityLightningStrikes.js"
 import { addAbilitySnipeReload } from "./snipe/abilitySnipeReload.js"
 import { playerInputBindingToDisplayValue } from "../playerInput.js"
+import { addAbilityUnleashPet } from "./petTamer/abilityUnleashPet.js"
 
 export type Ability = {
     id: number,
@@ -129,6 +130,7 @@ export function onDomLoadSetAbilitiesFunctions() {
     addAbilityBounceBall();
     addAbilityLightningBall();
     addAbilityLightningStrikes();
+    addAbilityUnleashPet();
 }
 
 export function addAbilityToCharacter(character: Character, ability: Ability) {

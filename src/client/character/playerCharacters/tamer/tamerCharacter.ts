@@ -18,6 +18,7 @@ import { addTraitToTamerPet, getAvailableTamerPetTraits, getLongExplainTextForTa
 import { changeCharacterAndAbilityIds, deepCopy, getNextId } from "../../../game.js";
 import { CHARACTER_TYPE_BOSS_ENEMY } from "../../enemy/bossEnemy.js";
 import { AbilityUpgrade } from "../../../ability/abilityUpgrade.js";
+import { ABILITY_NAME_UNLEASH_PET } from "../../../ability/petTamer/abilityUnleashPet.js";
 
 export const TAMER_CHARACTER = "Tamer";
 export function addTamerClass() {
@@ -73,12 +74,13 @@ function changeCharacterToTamerClass(
 ) {
     character.type = TAMER_CHARACTER;
     character.characterClass = TAMER_CHARACTER;
-    character.moveSpeed *= 1.2;
+    character.moveSpeed *= 1.25;
     character.maxHp *= 1.5;
     character.hp *= 1.5;
-    addAbilityToCharacter(character, createAbilityHpRegen(idCounter));
+    addAbilityToCharacter(character, createAbilityHpRegen(idCounter, undefined, 2));
     addAbilityToCharacter(character, createAbility(ABILITY_NAME_FEED_PET, idCounter, false, false, "ability1"));
     addAbilityToCharacter(character, createAbility(ABILITY_NAME_LOVE_PET, idCounter, false, false, "ability2"));
+    addAbilityToCharacter(character, createAbility(ABILITY_NAME_UNLEASH_PET, idCounter, false, false, "ability3"));
     addPetToTamer(character, "blue", game);
     addPetToTamer(character, "green", game);
     addPetToTamer(character, "black", game);
