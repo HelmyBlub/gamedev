@@ -1,6 +1,7 @@
 import { getNextId } from "../../game.js";
 import { IdCounter, Game, Position } from "../../gameModel.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityOwner } from "../ability.js";
+import { playerInputBindingToDisplayValue } from "../../playerInput.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, getAbilityNameUiText, paintDefaultAbilityStatsUI } from "../ability.js";
 import { ABILITY_NAME_SNIPE, AbilitySnipe, abilitySnipeReload } from "./abilitySnipe.js";
 
 export type AbilitySnipeReload = Ability & {
@@ -9,8 +10,9 @@ export type AbilitySnipeReload = Ability & {
 export const ABILITY_NAME_SNIPE_RELOAD = "Reload";
 export function addAbilitySnipeReload() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_SNIPE_RELOAD] = {
-        createAbility: createAbility,
         activeAbilityCast: castReload,
+        createAbility: createAbility,
+        paintAbilityStatsUI: paintAbilityStatsUI,
     };
 }
 export function createAbility(idCounter: IdCounter, playerInputBinding?: string): AbilitySnipeReload {
@@ -20,6 +22,8 @@ export function createAbility(idCounter: IdCounter, playerInputBinding?: string)
         playerInputBinding: playerInputBinding,
         passive: false,
         upgrades: {},
+        unique: true,
+        tradable: true,
     }
 }
 
@@ -30,7 +34,16 @@ function castReload(abilityOwner: AbilityOwner, ability: Ability, castPosition: 
         if(abilityIter.name === ABILITY_NAME_SNIPE){
             const snipe = abilityIter as AbilitySnipe;
             abilitySnipeReload(snipe, game.state.time);
-            return;
         }
     }
+}
+
+function paintAbilityStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
+    const abilitySpeedBoost = ability as AbilitySnipeReload;
+    const textLines: string[] = getAbilityNameUiText(ability);
+    textLines.push(
+        `Key: ${playerInputBindingToDisplayValue(abilitySpeedBoost.playerInputBinding!, game)}`,
+    );
+
+    return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
 }

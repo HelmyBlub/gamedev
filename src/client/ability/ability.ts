@@ -32,6 +32,7 @@ import { addAbilityBounceBall } from "./ball/abilityBounceBall.js"
 import { addAbilityLightningBall } from "./ball/abilityLightningBall.js"
 import { addAbilityLightningStrikes } from "./abilityLightningStrikes.js"
 import { addAbilitySnipeReload } from "./snipe/abilitySnipeReload.js"
+import { playerInputBindingToDisplayValue } from "../playerInput.js"
 
 export type Ability = {
     id: number,
@@ -394,15 +395,59 @@ export function paintUiForAbilities(ctx: CanvasRenderingContext2D, game: Game) {
     if (!player) return;
 
     const size = 40;
-    let startX = ctx.canvas.width / 2 - 20;
+    const spacing = 2;
+    let numberUiElements = 0;
+    for (let ability of player.character.abilities) {
+        let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+        if (abilityFunctions?.paintAbilityUI !== undefined || ability.playerInputBinding) {
+            numberUiElements++;
+        }
+    }
+    const uiElementsWidth = (numberUiElements * (size + spacing) - spacing);
+    let startX = ctx.canvas.width / 2 - uiElementsWidth / 2;
     const startY = ctx.canvas.height - size - 2;
     for (let ability of player.character.abilities) {
         let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
         if (abilityFunctions?.paintAbilityUI !== undefined) {
             abilityFunctions.paintAbilityUI(ctx, ability, startX, startY, size, game);
-            startX += size;
+        }else if(ability.playerInputBinding){
+            paintKeyBindingUI(ctx, ability, startX, startY, size, game);
+        }else{
+            continue;
         }
+        paintAbilityStatsUiIfMouseHovered(ctx, ability, startX, startY, size, game);
+        startX += size + spacing;
     }
+}
+
+function paintAbilityStatsUiIfMouseHovered(ctx: CanvasRenderingContext2D, ability: Ability, startX: number, startY: number, size: number, game: Game){
+    if(game.UI.displayLongInfos) return;
+    const mousePos = game.mouseRelativeCanvasPosition;
+    if(mousePos.y > startY && mousePos.y < startY + size
+        && mousePos.x > startX && mousePos.x < startX + size
+    ){
+        const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+        if (abilityFunctions.paintAbilityStatsUI) {
+            abilityFunctions.paintAbilityStatsUI(ctx, ability, 20, 60, game);
+        }        
+    }
+}
+
+function paintKeyBindingUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game){
+    if (!ability.playerInputBinding) return;
+    const rectSize = size;
+    ctx.strokeStyle = "black";
+    ctx.fillStyle = "white";
+    ctx.lineWidth = 1;
+    ctx.fillRect(drawStartX, drawStartY, rectSize, rectSize);
+    ctx.beginPath();
+    ctx.rect(drawStartX, drawStartY, rectSize, rectSize);
+    ctx.stroke();
+
+    let keyBind = playerInputBindingToDisplayValue(ability.playerInputBinding, game);
+    ctx.fillStyle = "black";
+    ctx.font = "10px Arial";
+    ctx.fillText(keyBind, drawStartX + 1, drawStartY + 8);
 }
 
 function findAbilityAndOwnerInCharacterById(character: Character, abilityId: number): { ability: Ability, owner: AbilityOwner } | undefined {
