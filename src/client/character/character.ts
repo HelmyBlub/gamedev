@@ -175,16 +175,15 @@ export function changeCharacterId(character: Character, idCounter: IdCounter) {
     character.id = getNextId(idCounter);
     if (character.pets) {
         for (let pet of character.pets) {
+            changeCharacterAndAbilityIds(pet, idCounter);
             const leash: AbilityLeash = pet.abilities.find((a) => a.name === ABILITY_NAME_LEASH) as AbilityLeash;
             if (leash) leash.leashedToOwnerId = character.id;
-            changeCharacterAndAbilityIds(pet, idCounter);
         }
     }
     const leash: AbilityLeash = character.abilities.find((a) => a.name === ABILITY_NAME_LEASH) as AbilityLeash;
     if(leash){
         leash.leashedToOwnerId = undefined;
     }
-
 }
 
 export function executeDefaultCharacterUpgradeOption(character: Character, upgradeOptionChoice: UpgradeOption, game: Game) {
