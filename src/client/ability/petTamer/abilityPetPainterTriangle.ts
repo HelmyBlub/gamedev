@@ -202,6 +202,7 @@ function paintShapeTriangle(ctx: CanvasRenderingContext2D, abilityOwner: Ability
     if (!ability.paintPoints || ability.paintPoints.length === 0) return;
     const start = getPointPaintPosition(ctx, ability.paintPoints[0], cameraPosition);
     ctx.fillStyle = "red";
+    ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(start.x, start.y);
     for (let i = 1; i < ability.paintPoints!.length; i++) {

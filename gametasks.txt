@@ -1,5 +1,20 @@
 current tasks:
-
+- first permanent progression idea:
+    - make class building appear once a class endboss has been beaten or when endboss with a class has been beaten?
+        - add building to map
+            - just like sign
+            - have x places like the logs where buildings can be.
+        - has text "defeat class endboss to unlock legendary class"
+    - "legendary class", can level indefinetly(but slower) over multiple runs (but boss skillpoints are limited to boss counter)
+        - unlocking legendary "snipe": 
+            - beat sniper endboss
+                - give sniper weapon the lore "former weapon of king of the <celestialDirection>"
+            - with new character take up "legendary class" from class building. Counts as class choose choice
+                - but can take up multiple legendary classes at once
+        - weapon returns to class building after each run unless character becomes new endboss
+            - character becomes classless pastCharacter
+            - if character with legendary sniper becomes endboss, "legendary snipe" not available in "smith building" until end boss defeated
+                - "legendary sniper" becomes stronger somehow
 
 refactor possibilities:
 - ability creation: checks and scales for bosses, enemy or player by itself

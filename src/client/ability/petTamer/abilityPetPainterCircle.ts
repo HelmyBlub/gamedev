@@ -183,6 +183,7 @@ function paintShapeCircle(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOw
     const middle = getPointPaintPosition(ctx, ability.paintCircle.middle, cameraPosition);
     ctx.fillStyle = "red";
     ctx.strokeStyle = "red";
+    ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.arc(middle.x, middle.y, CIRCLERADIUS, -Math.PI / 2, ability.paintCircle.currentAngle - Math.PI / 2);
     ctx.stroke();
