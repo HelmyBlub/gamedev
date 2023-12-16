@@ -1,5 +1,4 @@
 current tasks:
-- performance when playing long time: on reload the entire map enemies get regenerated, change to only when player reaches it again
 
 
 refactor possibilities:

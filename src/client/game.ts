@@ -87,6 +87,7 @@ export function gameInit(game: Game) {
     if (game.state.bossStuff.closedOfEndBossEntrance) {
         const entrance = game.state.bossStuff.closedOfEndBossEntrance;
         changeTileIdOfMapChunk(entrance.chunkX, entrance.chunkY, entrance.tileX, entrance.tileY, entrance.tileId, game);
+        game.state.bossStuff.closedOfEndBossEntrance = undefined;
     }
     game.state.bossStuff.bosses = [];
     game.state.bossStuff.bossLevelCounter = 1;
@@ -97,7 +98,8 @@ export function gameInit(game: Game) {
     game.performance = {};
     game.UI.displayTextData = [];
     game.testing.saveStates.autoSaves.nextSaveStateTime = 10000;
-    removeAllMapCharacters(game.state.map);
+    game.state.map.activeChunkKeys = [];
+    game.state.map.chunks = {};
     createFixPositionRespawnEnemiesOnInit(game);
     gameInitPlayers(game);
     game.multiplayer.autosendMousePosition.nextTime = 0;
