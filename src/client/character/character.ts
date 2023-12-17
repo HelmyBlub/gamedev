@@ -424,18 +424,19 @@ export function countAlivePlayerCharacters(players: Player[]) {
     return counter;
 }
 
-export function calculateAndSetMoveDirectionToPositionWithPathing(character: Character, targetPosition: Position | null, map: GameMap, pathingCache: PathingCache | null, idCounter: IdCounter, time: number, game: Game) {
+export function calculateAndSetMoveDirectionToPositionWithPathing(character: Character, targetPosition: Position | null, map: GameMap, pathingCache: PathingCache | null, idCounter: IdCounter, time: number, game: Game): boolean {
     if (targetPosition === null) {
         character.isMoving = false;
-        return;
+        return false;
     }
     character.isMoving = true;
     const nextWayPoint: Position | null = getNextWaypoint(character, targetPosition, map, pathingCache, idCounter, time, game);
     if (nextWayPoint === null) {
         character.isMoving = false;
-        return;
+        return false;
     }
     character.moveDirection = calculateDirection(character, nextWayPoint);
+    return true;
 }
 
 export function turnCharacterToPet(character: Character, game: Game) {

@@ -6,9 +6,9 @@ import { getPointPaintPosition } from "../../../gamePaint.js";
 import { GAME_IMAGES, getImage } from "../../../imageLoad.js";
 import { moveByDirectionAndDistance } from "../../../map/map.js";
 import { nextRandom } from "../../../randomNumberGenerator.js";
-import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, calculateCharacterMovePosition, getPlayerCharacters } from "../../character.js";
+import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, calculateCharacterMovePosition, getPlayerCharacters, setCharacterPosition } from "../../character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, createCharacter } from "../../characterModel.js";
-import { PathingCache } from "../../pathing.js";
+import { PathingCache, getNextWaypoint } from "../../pathing.js";
 import { Trait, addTamerPetTraits, tamerPetIncludesTrait } from "./petTrait.js";
 import { TAMER_PET_TRAIT_EATS_LESS } from "./petTraitEatsLess.js";
 import { TAMER_PET_TRAIT_GETS_FAT_EASILY } from "./petTraitGetFatEasily.js";
@@ -421,9 +421,11 @@ function moveTick(pet: TamerPetCharacter, petOwner: Character, game: Game, pathi
         }
     } else {
         const target = getTargetByBehavior(pet, petOwner, game);
+        let changed = false;
         if (target) {
-            calculateAndSetMoveDirectionToPositionWithPathing(pet, target, game.state.map, pathingCache, game.state.idCounter, game.state.time, game);
-        } else {
+            changed = calculateAndSetMoveDirectionToPositionWithPathing(pet, target, game.state.map, pathingCache, game.state.idCounter, game.state.time, game);
+        } 
+        if(!changed) {
             setMoveDirectionWithNoTarget(pet, petOwner, game);
         }
     }
@@ -464,8 +466,15 @@ function setMoveDirectionWithNoTarget(pet: TamerPetCharacter, petOwner: Characte
                     pet.isMoving = false;
                 } else {
                     pet.isMoving = true;
-                    const direction = calculateDirection(pet, petOwner);
-                    pet.moveDirection = direction + (nextRandom(game.state.randomSeed) * Math.PI / 2 - Math.PI / 4);
+                    const nextWayPoint: Position | null = getNextWaypoint(pet, petOwner, game.state.map, game.performance.pathingCache, game.state.idCounter, game.state.time, game);
+                    const canPetReachOwner = nextWayPoint !== null;
+                    if (!canPetReachOwner) {
+                        setCharacterPosition(pet, petOwner, game.state.map);
+                    }else{
+                        const direction = calculateDirection(pet, nextWayPoint);
+                        pet.moveDirection = direction + (nextRandom(game.state.randomSeed) * Math.PI / 2 - Math.PI / 4);
+                    }
+                                    
                 }
                 pet.nextMovementUpdateTime = game.state.time + 500;
             }
