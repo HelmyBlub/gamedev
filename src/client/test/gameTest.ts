@@ -199,7 +199,7 @@ function testDetectProjectileToCharacterHitPerformance() {
     for (let i = 0; i < numberEnemies; i++) {
         const posX = nextRandom(randomSeed) * 10000;
         const posY = nextRandom(randomSeed) * 10000;
-        createNewChunk(map, Math.floor(posX / (map.tileSize * map.chunkLength)), Math.floor(posY / (map.tileSize * map.chunkLength)));
+        createNewChunk(map, Math.floor(posX / (map.tileSize * map.chunkLength)), Math.floor(posY / (map.tileSize * map.chunkLength)), game);
         addEnemyToMap(map, createTestCharacter(i, posX, posY));
     }
     for (let i = 0; i < numberProjectiles; i++) {
@@ -216,9 +216,9 @@ function testDetectProjectileToCharacterHitPerformance() {
     console.log("time", time / iterations, time);
 }
 
-function createNewChunk(map: GameMap, chunkX: number, chunkY: number) {
+function createNewChunk(map: GameMap, chunkX: number, chunkY: number, game: Game) {
     const key = chunkXYToMapKey(chunkX, chunkY);
     if (map.chunks[key] !== undefined) return;
-    const newChunk = createNewChunkTiles(map, chunkX, chunkY, map.seed!);
+    const newChunk = createNewChunkTiles(map, chunkX, chunkY, map.seed!, game);
     map.chunks[key] = newChunk;
 }

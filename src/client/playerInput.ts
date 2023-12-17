@@ -8,6 +8,7 @@ import { calculateDirection, getCameraPosition, getClientInfo, loadFromLocalStor
 import { executeUpgradeOptionChoice } from "./character/upgrade.js";
 import { canCharacterTradeAbilityOrPets, characterTradeAbilityAndPets } from "./character/character.js";
 import { isPreventedDuplicateClass } from "./character/playerCharacters/playerCharacters.js";
+import { findNearesInteractableMapChunkObject, interactWithMapObject } from "./map/mapObjects.js";
 
 export const MOVE_ACTIONS = ["left", "down", "right", "up"];
 export const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3", "upgrade4"];
@@ -354,6 +355,11 @@ function playerAction(clientId: number, data: any, game: Game) {
                                     break;
                                 }
                             }
+                        }
+                    }else{
+                        const interactableMapObject = findNearesInteractableMapChunkObject(character, game);
+                        if(interactableMapObject){
+                            interactWithMapObject(character, interactableMapObject, game);
                         }
                     }
                 }

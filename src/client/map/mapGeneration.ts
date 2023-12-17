@@ -1,9 +1,11 @@
 import { createFixPositionRespawnEnemies } from "../character/enemy/fixPositionRespawnEnemyModel.js";
+import { CHARACTER_CLASS_SNIPER_NAME } from "../character/playerCharacters/sniperCharacter.js";
 import { takeTimeMeasure } from "../game.js";
 import { Game, IdCounter, Position } from "../gameModel.js";
 import { fixedRandom } from "../randomNumberGenerator.js";
 import { GameMap, MapChunk, chunkXYToMapKey } from "./map.js";
 import { mapGenerationEndBossChunkStuff } from "./mapEndBossArea.js";
+import { addExistingBuildingsToSpawnChunk, mapObjectPlaceClassBuilding } from "./mapObjectClassBuilding.js";
 import { MAP_OBJECT_FIRE_ANIMATION } from "./mapObjectFireAnimation.js";
 
 export const pastCharactersMapTilePositions = [
@@ -48,18 +50,18 @@ export function generateMissingChunks(map: GameMap, positions: Position[], idCou
 }
 
 export function createNewChunk(map: GameMap, chunkX: number, chunkY: number, idCounter: IdCounter, game: Game): MapChunk {
-    const newChunk = createNewChunkTiles(map, chunkX, chunkY, map.seed!);
+    const newChunk = createNewChunkTiles(map, chunkX, chunkY, map.seed!, game);
     map.chunks[chunkXYToMapKey(chunkX, chunkY)] = newChunk;
     createFixPositionRespawnEnemies(newChunk, chunkX, chunkY, map, idCounter, game);
     return newChunk;
 }
 
-export function createNewChunkTiles(map: GameMap, chunkX: number, chunkY: number, seed: number): MapChunk {
+export function createNewChunkTiles(map: GameMap, chunkX: number, chunkY: number, seed: number, game: Game): MapChunk {
     const tiles: number[][] = [];
     const mapChunk: MapChunk = { tiles: tiles, characters: [], objects: [] };
     const chunkLength = map.chunkLength;
     if (chunkY === 0 && chunkX === 0) {
-        createSpawnChunk(mapChunk, chunkLength);
+        createSpawnChunk(mapChunk, chunkLength, game);
     } else {
         for (let tileX = 0; tileX < chunkLength; tileX++) {
             tiles.push([]);
@@ -85,7 +87,7 @@ export function createNewChunkTiles(map: GameMap, chunkX: number, chunkY: number
     return mapChunk;
 }
 
-function createSpawnChunk(mapChunk: MapChunk, chunkLength: number) {
+function createSpawnChunk(mapChunk: MapChunk, chunkLength: number, game: Game) {
     const chunk = mapChunk.tiles;
     mapChunk.objects.push({
         x: 4,
@@ -102,6 +104,7 @@ function createSpawnChunk(mapChunk: MapChunk, chunkLength: number) {
         chunk[iter.x][iter.y] = iter.tileId;
     }
     chunk[4][4] = 7;
+    addExistingBuildingsToSpawnChunk(mapChunk, game);
 }
 
 function perlin_get(x: number, y: number, seed: number) {

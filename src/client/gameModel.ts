@@ -7,6 +7,7 @@ import { createHighscoreBoards, Highscores } from "./highscores.js";
 import { createMap, GameMap } from "./map/map.js";
 import { EndBossEntranceData } from "./map/mapEndBossArea.js";
 import { generateMissingChunks } from "./map/mapGeneration.js";
+import { Building } from "./map/mapObjectClassBuilding.js";
 import { Player } from "./player.js";
 import { PlayerInput } from "./playerInput.js";
 import { nextRandom, RandomSeed } from "./randomNumberGenerator.js";
@@ -133,6 +134,7 @@ export type GameState = {
     paused: boolean,
     tickOnceInPaused?: boolean,
     pastPlayerCharacters: PastPlayerCharacters,
+    buildings: Building[],
     enemyTypeDirectionSeed: number,
 }
 
@@ -266,6 +268,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
                 characters: [],
                 maxNumber: 12,
             },
+            buildings: [],
             enemyTypeDirectionSeed: 0,
         },
         tickInterval: 16,

@@ -21,6 +21,7 @@ import { ABILITY_NAME_FEED_PET } from "./ability/petTamer/abilityFeedPet.js";
 import { ABILITY_NAME_LOVE_PET } from "./ability/petTamer/abilityLovePet.js";
 import { COMMAND_RESTART } from "./globalVars.js";
 import { consoleLogCombatlog } from "./combatlog.js";
+import { mapObjectPlaceClassBuilding } from "./map/mapObjectClassBuilding.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -310,6 +311,7 @@ export function endGame(game: Game, isEndbossKill: boolean = false) {
     const newScore = calculateHighscoreOnGameEnd(game, isEndbossKill);
     if (isEndbossKill) {
         setPlayerAsEndBoss(game);
+        mapObjectPlaceClassBuilding(game);
     } else {
         savePlayerCharatersAsPastCharacters(game);
         if(!game.testing.replay){

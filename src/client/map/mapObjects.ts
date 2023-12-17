@@ -1,10 +1,13 @@
+import { Character } from "../character/characterModel.js";
 import { calculateDistance } from "../game.js";
 import { Position, Game } from "../gameModel.js";
 import { GameMap, MapChunk, determineMapKeysInDistance, mapKeyAndTileXYToPosition } from "./map.js";
+import { addMapObjectClassBuilding } from "./mapObjectClassBuilding.js";
 import { addMapObjectFireAnimation } from "./mapObjectFireAnimation.js";
 import { addMapObjectBossSign } from "./mapObjectSign.js";
 
 export type MapObjectFunctions = {
+    interact?: (interacter: Character, mapObject: MapTileObject, game: Game) => void,
     paint: (ctx: CanvasRenderingContext2D, mapObject: MapTileObject, paintTopLeft: Position, game: Game) => void,
     paintInteract?: (ctx: CanvasRenderingContext2D, mapObject: MapTileObject, game: Game) => void
 }
@@ -25,6 +28,7 @@ export const MAP_OBJECTS_FUNCTIONS: MapObjectsFunctions = {};
 export function addMapObjectsFunctions() {
     addMapObjectFireAnimation();
     addMapObjectBossSign();
+    addMapObjectClassBuilding();
 }
 
 export function findNearesInteractableMapChunkObject(position: Position, game: Game, maxDistance: number = 60): MapTileObject | undefined {
@@ -57,11 +61,18 @@ export function findMapKeyForMapObject(mapTileObject: MapTileObject, map: GameMa
     return undefined;
 }
 
+export function interactWithMapObject(interacter: Character, mapTileObject: MapTileObject, game: Game){
+    const mapObjectFuntions = MAP_OBJECTS_FUNCTIONS[mapTileObject.name];
+    if (mapObjectFuntions && mapObjectFuntions.interact) {
+        mapObjectFuntions.interact(interacter, mapTileObject, game);
+    }
+}
+
 export function paintMapChunkObjects(ctx: CanvasRenderingContext2D, mapChunk: MapChunk, paintTopLeft: Position, game: Game) {
     for (let mapObject of mapChunk.objects) {
-        const mapObejctFuntions = MAP_OBJECTS_FUNCTIONS[mapObject.name];
-        if (mapObejctFuntions) {
-            mapObejctFuntions.paint(ctx, mapObject, paintTopLeft, game);
+        const mapObjectFuntions = MAP_OBJECTS_FUNCTIONS[mapObject.name];
+        if (mapObjectFuntions) {
+            mapObjectFuntions.paint(ctx, mapObject, paintTopLeft, game);
         }
     }
 }

@@ -1,11 +1,19 @@
 current tasks:
-- if a pet does not find way to tamer, they teleport
 - first permanent progression idea:
+    - dev steps:
+        - remove todo in file mapObjectClassBuilding method mapObjectPlaceClassBuilding
+        - on end boss(who has a class) defeat abilties need to be put to class building
+            - create new level 1 abilities for these which aretradeable?
+                - add "legendary" status
+                - linking to building
+        - player can burrow abilities
+        - abilities need to be put back on restart, loss. Dont put back on end boss defeat
+            - past character does not have abilities which where burrowed
+        - change scalling of burrowed abilities
+            - ...
+        - save in localStorage
     - make class building appear once a class endboss has been beaten or when endboss with a class has been beaten?
-        - add building to map
-            - just like sign
-            - have x places like the logs where buildings can be.
-        - has text "defeat class endboss to unlock legendary class"
+        - have x places like the logs where buildings can be.
     - "legendary class", can level indefinetly(but slower) over multiple runs (but boss skillpoints are limited to boss counter)
         - unlocking legendary "snipe": 
             - beat sniper endboss
