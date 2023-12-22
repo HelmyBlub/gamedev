@@ -126,7 +126,7 @@ export function createTamerPetCharacter(owner: Character, color: string, game: G
         defaultSize: defaultSize,
         sizeFactor: 1,
         baseMoveSpeed: baseMoveSpeed,
-        bossSkillPoints: 0,
+        bossSkillPoints: {available: 0, used: 0},
         leveling: {
             experience: 0,
             experienceForLevelUp: 10,

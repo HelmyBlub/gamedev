@@ -27,7 +27,10 @@ export function upgradeAbility(ability: Ability, character: Character, upgradeOp
     const upgradeFunctions = abilityFunctions.abilityUpgradeFunctions![upgradeOption.identifier!];
     if (upgradeFunctions) {
         upgradeFunctions.executeOption(ability, upgradeOption, character);
-        if (ability.bossSkillPoints !== undefined) ability.bossSkillPoints--;
+        if (ability.bossSkillPoints !== undefined){
+            ability.bossSkillPoints.available--;
+            ability.bossSkillPoints.used++;
+        }
     }
     character.upgradeChoices = [];
 }

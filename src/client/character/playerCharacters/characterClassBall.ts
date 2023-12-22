@@ -9,6 +9,7 @@ import { resetCharacter } from "../character.js";
 import { CHARACTER_TYPE_BOSS_ENEMY } from "../enemy/bossEnemy.js";
 import { ABILITY_NAME_BOUNCE_BALL } from "../../ability/ball/abilityBounceBall.js";
 import { ABILITY_NAME_LIGHTNING_BALL, AbilityLightningBall } from "../../ability/ball/abilityLightningBall.js";
+import { createBossUpgradeOptionsAbilityLeveling, executeAbilityLevelingCharacterUpgradeOption } from "./abilityLevelingCharacter.js";
 
 export const CHARACTER_CLASS_BALL = "Ball";
 
@@ -16,6 +17,8 @@ export function addBallClass() {
     PLAYER_CHARACTER_CLASSES_FUNCTIONS[CHARACTER_CLASS_BALL] = {
         changeCharacterToThisClass: changeCharacterToBallClass,
         createBossBasedOnClassAndCharacter: createBossBasedOnClassAndCharacter,
+        createBossUpgradeOptions: createBossUpgradeOptionsAbilityLeveling,
+        executeUpgradeOption: executeAbilityLevelingCharacterUpgradeOption,
         getLongUiText: getLongUiText,
         preventMultiple: true,
     }
@@ -55,6 +58,7 @@ function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: 
 
     const bossCharacter = createCharacter(getNextId(idCounter), spawn.x, spawn.y, bossSize, bossSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_BOSS_ENEMY, experienceWorth);
     bossCharacter.paint.image = IMAGE_SLIME;
+    bossCharacter.level = {level: level};
     const baseBounceBall = basedOnCharacter.abilities.find((a) => a.name === ABILITY_NAME_BOUNCE_BALL);
     const baseLightningBall = basedOnCharacter.abilities.find((a) => a.name === ABILITY_NAME_LIGHTNING_BALL);
     const bounceBall: AbilityBounceBall = deepCopy(baseBounceBall);

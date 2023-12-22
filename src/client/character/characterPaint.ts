@@ -72,9 +72,9 @@ export function paintCharacterStatsUI(ctx: CanvasRenderingContext2D, character: 
     if(character.shield > 0){
         textLines.splice(2,0,`Shield: ${character.shield.toFixed(0)}/${(character.maxHp * character.maxShieldFactor).toFixed(0)}`);
     }
-    if (character.leveling) {
+    if (character.level?.leveling) {
         textLines.push(
-            `XP: ${Math.floor(character.leveling.experienceForLevelUp)}/${Math.floor(character.leveling.experience)}`,
+            `XP: ${Math.floor(character.level.leveling.experienceForLevelUp)}/${Math.floor(character.level.leveling.experience)}`,
             `Gains XP for every enemy killed by anyone.`,
             `Gains Skill Points after enough XP`,
             `for LevelUp is reached.`

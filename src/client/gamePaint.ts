@@ -298,8 +298,8 @@ function paintPlayerStats(ctx: CanvasRenderingContext2D, character: Character, g
     ctx.fillStyle = "black";
     ctx.font = "18px Arial";
 
-    if (character.leveling) {
-        ctx.fillText("Level: " + character.leveling.level
+    if (character.level?.leveling) {
+        ctx.fillText("Level: " + character.level.level
             + "  SkillPoints:" + character.availableSkillPoints,
             200, 20
         );

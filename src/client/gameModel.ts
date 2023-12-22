@@ -164,6 +164,11 @@ export type KeyCodeToAction = Map<string, {
     activated?: boolean,
 }>;
 
+export type BossSkillPoints = {
+    available: number,
+    used: number,
+}
+
 export type Multiplayer = {
     myClientId: number,
     websocket: WebSocket | null,

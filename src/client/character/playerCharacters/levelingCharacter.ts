@@ -8,9 +8,9 @@ import { ABILITIES_FUNCTIONS } from "../../ability/ability.js";
 export function levelingCharacterXpGain(state: GameState, killedCharacter: Character, game: Game) {
     let playerCharacters = getPlayerCharacters(state.players);
     for (let character of playerCharacters) {
-        if (character.leveling !== undefined && !character.isDead && !character.isPet) {
-            character.leveling.experience += killedCharacter.experienceWorth;
-            while (character.leveling.experience >= character.leveling.experienceForLevelUp) {
+        if (character.level?.leveling !== undefined && !character.isDead && !character.isPet) {
+            character.level.leveling.experience += killedCharacter.experienceWorth;
+            while (character.level.leveling.experience >= character.level.leveling.experienceForLevelUp) {
                 levelingCharacterLevelUp(character, state.randomSeed, game);
             }
         }
@@ -18,20 +18,22 @@ export function levelingCharacterXpGain(state: GameState, killedCharacter: Chara
 }
 
 export function changeToLevelingCharacter(character: Character, game: Game) {
-    character.leveling = {
-        experience: 0,
-        experienceForLevelUp: 10,
+    character.level = {
         level: 0,
+        leveling: {
+            experience: 0,
+            experienceForLevelUp: 10,
+        }
     };
     character.availableSkillPoints = 0;
 }
 
 function levelingCharacterLevelUp(character: Character, randomSeed: RandomSeed, game: Game) {
-    if (!character.leveling || character.availableSkillPoints === undefined) return;
-    character.leveling.level++;
+    if (!character.level?.leveling || character.availableSkillPoints === undefined) return;
+    character.level.level++;
     character.availableSkillPoints += 1;
-    character.leveling.experience -= character.leveling.experienceForLevelUp;
-    character.leveling.experienceForLevelUp += Math.floor(character.leveling.level / 2);
+    character.level.leveling.experience -= character.level.leveling.experienceForLevelUp;
+    character.level.leveling.experienceForLevelUp += Math.floor(character.level.level / 2);
     fillRandomUpgradeOptionChoices(character, game);
 }
 

@@ -2,7 +2,7 @@ import { Ability } from "../ability/ability.js";
 import { Combatlog, createDefaultCombatLog } from "../combatlog.js";
 import { Debuff } from "../debuff/debuff.js";
 import { getNextId } from "../game.js";
-import { Position, IdCounter, Game, FACTION_PLAYER } from "../gameModel.js";
+import { Position, IdCounter, Game, FACTION_PLAYER, BossSkillPoints } from "../gameModel.js";
 import { GAME_IMAGES } from "../imageLoad.js";
 import { createRandomizedCharacterImageData, RandomizedCharacterImage } from "../randomizedCharacterImage.js";
 import { RandomSeed } from "../randomNumberGenerator.js";
@@ -120,11 +120,13 @@ export type Character = Position & {
     upgradeChoices: UpgradeOption[],
     pets?: TamerPetCharacter[],
     weight: number,
-    bossSkillPoints?: number,
-    leveling?: {
+    bossSkillPoints?: BossSkillPoints,
+    level?: {
         level: number,
-        experience: number,
-        experienceForLevelUp: number,
+        leveling?: {
+            experience: number,
+            experienceForLevelUp: number,
+        }
     }
     availableSkillPoints?: number,
     mapChunkKey?: string,

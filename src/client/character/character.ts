@@ -15,7 +15,7 @@ import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters/playerCha
 import { CHARACTER_TYPE_END_BOSS_ENEMY } from "./enemy/endBossEnemy.js";
 import { createEndBossCrownCharacter } from "./enemy/endBossCrown.js";
 import { TamerPetCharacter, tradePets } from "./playerCharacters/tamer/tamerPetCharacter.js";
-import { ENEMY_FIX_RESPAWN_PSOITON } from "./enemy/fixPositionRespawnEnemyModel.js";
+import { ENEMY_FIX_RESPAWN_POSITION } from "./enemy/fixPositionRespawnEnemyModel.js";
 import { addCombatlogDamageTakenEntry } from "../combatlog.js";
 
 export function findCharacterById(characters: Character[], id: number): Character | null {
@@ -84,33 +84,42 @@ export function characterGetShield(character: Character, shieldValue: number) {
     }
 }
 
-export function playerCharactersAddBossSkillPoints(game: Game) {
+export function playerCharactersAddBossSkillPoints(bossLevel: number | undefined, game: Game) {
+    if(bossLevel === undefined) return;
     const playerCharacters: Character[] = getPlayerCharacters(game.state.players);
     for (let character of playerCharacters) {
         if (!character.isDead && !character.isPet) {
             let gotSkillPoint = false;
             if (character.bossSkillPoints !== undefined) {
-                character.bossSkillPoints++;
-                gotSkillPoint = true;
+                if (character.bossSkillPoints.used < bossLevel) {
+                    character.bossSkillPoints.available++;
+                    gotSkillPoint = true;
+                }
             }
             for (let ability of character.abilities) {
                 if (ability.gifted) continue;
                 if (ability.bossSkillPoints !== undefined) {
-                    ability.bossSkillPoints++;
-                    gotSkillPoint = true;
+                    if (ability.bossSkillPoints.used < bossLevel) {
+                        ability.bossSkillPoints.available++;
+                        gotSkillPoint = true;
+                    }
                 }
             }
             if (character.pets) {
                 for (let pet of character.pets) {
                     if (pet.gifted) continue;
                     if (pet.bossSkillPoints !== undefined) {
-                        pet.bossSkillPoints++;
-                        gotSkillPoint = true;
+                        if (pet.bossSkillPoints.used < bossLevel) {
+                            pet.bossSkillPoints.available++;
+                            gotSkillPoint = true;
+                        }
                     }
                     for (let ability of pet.abilities) {
                         if (ability.bossSkillPoints !== undefined) {
-                            ability.bossSkillPoints++;
-                            gotSkillPoint = true;
+                            if (ability.bossSkillPoints.used < bossLevel) {
+                                ability.bossSkillPoints.available++;
+                                gotSkillPoint = true;
+                            }
                         }
                     }
                 }
@@ -153,20 +162,20 @@ export function characterTradeAbilityAndPets(fromCharacter: Character, toCharact
         }
     }
     tradePets(fromCharacter, toCharacter, game);
-    if(!toCharacter.overtakenCharacterClasses) toCharacter.overtakenCharacterClasses = [];
-    if(fromCharacter.characterClass){
+    if (!toCharacter.overtakenCharacterClasses) toCharacter.overtakenCharacterClasses = [];
+    if (fromCharacter.characterClass) {
         const newClass = fromCharacter.characterClass;
         toCharacter.overtakenCharacterClasses.push(newClass);
         const classFunctions = PLAYER_CHARACTER_CLASSES_FUNCTIONS[newClass];
-        if(classFunctions && classFunctions.preventMultiple){
-            if(toCharacter.upgradeChoices && toCharacter.upgradeChoices[0].type === "Character"){
+        if (classFunctions && classFunctions.preventMultiple) {
+            if (toCharacter.upgradeChoices && toCharacter.upgradeChoices[0].type === "Character") {
                 const index = toCharacter.upgradeChoices.findIndex(c => c.displayText === newClass);
-                if(index > -1){
+                if (index > -1) {
                     toCharacter.upgradeChoices.splice(index, 1);
                 }
             }
         }
-    } 
+    }
     resetAllCharacterAbilities(toCharacter);
 }
 
@@ -180,7 +189,7 @@ export function changeCharacterId(character: Character, idCounter: IdCounter) {
         }
     }
     const leash: AbilityLeash = character.abilities.find((a) => a.name === ABILITY_NAME_LEASH) as AbilityLeash;
-    if(leash){
+    if (leash) {
         leash.leashedToOwnerId = undefined;
     }
 }
@@ -200,8 +209,8 @@ export function executeDefaultCharacterUpgradeOption(character: Character, upgra
 
 export function setCharacterAbilityLevel(ability: Ability, character: Character) {
     const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-    if (character.leveling && abilityFunctions && abilityFunctions.setAbilityToLevel) {
-        const abilityLevel = Math.max(1, Math.ceil(character.leveling.level / 2));
+    if (character.level?.leveling && abilityFunctions && abilityFunctions.setAbilityToLevel) {
+        const abilityLevel = Math.max(1, Math.ceil(character.level.level / 2));
         abilityFunctions.setAbilityToLevel(ability, abilityLevel);
     }
 }
@@ -227,11 +236,11 @@ export function tickCharacters(characters: (Character | undefined)[], game: Game
             functions.tickFunction(char, game, pathingCache);
         } else if (functions?.tickPetFunction && petOwner) {
             functions.tickPetFunction(char, petOwner, game, pathingCache);
-        }else{
+        } else {
             tickDefaultCharacter(char, game, pathingCache);
         }
         if (!char.isDead) {
-            if (game.state.bossStuff.endBossStarted && char.type === ENEMY_FIX_RESPAWN_PSOITON) continue;
+            if (game.state.bossStuff.endBossStarted && char.type === ENEMY_FIX_RESPAWN_POSITION) continue;
             for (let ability of char.abilities) {
                 const tickAbility = ABILITIES_FUNCTIONS[ability.name].tickAbility;
                 if (tickAbility) tickAbility(char, ability, game);
@@ -509,35 +518,35 @@ export function mapCharacterCheckAndDoChunkChange(character: Character, map: Gam
     }
 }
 
-function experienceForEveryPlayersLeveling(experience: number, game: Game){
+function experienceForEveryPlayersLeveling(experience: number, game: Game) {
     const playerCharacters = getPlayerCharacters(game.state.players);
-    for(let character of playerCharacters){
+    for (let character of playerCharacters) {
         experienceForCharacter(character, experience, game);
-        for(let ability of character.abilities){
+        for (let ability of character.abilities) {
             levelingAbilityXpGain(ability, character, experience, game);
         }
-        if(character.pets){
-            for(let pet of character.pets){
+        if (character.pets) {
+            for (let pet of character.pets) {
                 experienceForCharacter(pet, experience, game);
-                for(let ability of pet.abilities){
+                for (let ability of pet.abilities) {
                     levelingAbilityXpGain(ability, character, experience, game);
-                }                        
+                }
             }
         }
     }
 }
 
-function experienceForCharacter(character: Character, experienceWorth: number, game: Game){
+function experienceForCharacter(character: Character, experienceWorth: number, game: Game) {
     const owner = character;
-    if (owner && owner.leveling
+    if (owner && owner.level?.leveling
         && !owner.isDead && !owner.isPet
         && !(owner as TamerPetCharacter).gifted
     ) {
-        owner.leveling.experience += experienceWorth;
-        while (owner.leveling.experience >= owner.leveling.experienceForLevelUp) {
-            owner.leveling.level++;
-            owner.leveling.experience -= owner.leveling.experienceForLevelUp;
-            owner.leveling.experienceForLevelUp += Math.floor(owner.leveling.level / 2);
+        owner.level.leveling.experience += experienceWorth;
+        while (owner.level.leveling.experience >= owner.level.leveling.experienceForLevelUp) {
+            owner.level.level++;
+            owner.level.leveling.experience -= owner.level.leveling.experienceForLevelUp;
+            owner.level.leveling.experienceForLevelUp += Math.floor(owner.level.level / 2);
             for (let abilityIt of owner.abilities) {
                 setCharacterAbilityLevel(abilityIt, owner);
             }
@@ -551,7 +560,7 @@ function killCharacter(character: Character, game: Game, abilityRefId: number | 
     if (game.state.timeFirstKill === undefined) game.state.timeFirstKill = game.state.time;
     levelingCharacterXpGain(game.state, character, game);
     if (character.type === CHARACTER_TYPE_BOSS_ENEMY) {
-        playerCharactersAddBossSkillPoints(game);
+        playerCharactersAddBossSkillPoints(character.level?.level, game);
         experienceForEveryPlayersLeveling(character.experienceWorth, game);
     }
     if (character.type === CHARACTER_TYPE_END_BOSS_ENEMY) {
@@ -561,7 +570,7 @@ function killCharacter(character: Character, game: Game, abilityRefId: number | 
         const ability = findAbilityById(abilityRefId, game);
         if (ability) {
             const owner = findAbilityOwnerByAbilityId(ability.id, game);
-            if(owner){
+            if (owner) {
                 levelingAbilityXpGain(ability, owner, character.experienceWorth, game);
                 experienceForCharacter(owner, character.experienceWorth, game);
             }

@@ -5,8 +5,7 @@ import { ABILITY_NAME_LOVE_PET } from "../../ability/petTamer/abilityLovePet.js"
 import { calculateDistance, getNextId } from "../../game.js"
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../gameModel.js"
 import { MapChunk, GameMap, isPositionBlocking, mapKeyToChunkXY, chunkXYToMapKey, addEnemyToMap } from "../../map/map.js"
-import { fixedRandom, nextRandom } from "../../randomNumberGenerator.js"
-import { resetCharacter } from "../character.js"
+import { fixedRandom } from "../../randomNumberGenerator.js"
 import { Character, IMAGE_SLIME, createCharacter } from "../characterModel.js"
 import { createPetsBasedOnLevelAndCharacter } from "../playerCharacters/tamer/tamerCharacter.js"
 import { TamerPetCharacter } from "../playerCharacters/tamer/tamerPetCharacter.js"
@@ -21,8 +20,8 @@ export type FixPositionRespawnEnemyCharacter = Character & {
     nextTickTime?: number,
     respawnOnTime?: number,
     respawnTime: number,
-    level: number,
 }
+
 type EnemyTypes = {
     [key: string]: EnemyType
 }
@@ -37,7 +36,7 @@ type EnemyType = {
     abilityProbabiltiy?: number,
 }
 
-export const ENEMY_FIX_RESPAWN_PSOITON = "fixPositionRespawnEnemy";
+export const ENEMY_FIX_RESPAWN_POSITION = "fixPositionRespawnEnemy";
 const ENEMY_TYPES: EnemyTypes = {
     "big": { hpFactor: 16, sizeFactor: 1.5, spawnAmountFactor: 0.008, xpFactor: 38, damageFactor: 2, hasAbility: true, abilityProbabiltiy: 1 },
     "default": { hpFactor: 1, sizeFactor: 1, spawnAmountFactor: 0.5, xpFactor: 1, damageFactor: 1 },
@@ -182,7 +181,7 @@ function createEnemy(
     experienceWorth: number,
     level: number,
 ): FixPositionRespawnEnemyCharacter {
-    const enemy = createCharacter(getNextId(idCounter), x, y, size, size, color, moveSpeed, hp, FACTION_ENEMY, ENEMY_FIX_RESPAWN_PSOITON, experienceWorth);
+    const enemy = createCharacter(getNextId(idCounter), x, y, size, size, color, moveSpeed, hp, FACTION_ENEMY, ENEMY_FIX_RESPAWN_POSITION, experienceWorth);
     enemy.paint.image = IMAGE_SLIME;
     return {
         ...enemy,
@@ -192,7 +191,7 @@ function createEnemy(
         isAggroed: false,
         maxAggroRange: Math.max(200, autoAggroRange * 1.5),
         alertEnemyRange: alertEnemyRange,
-        level: level,
+        level: {level: level},
     };
 }
 

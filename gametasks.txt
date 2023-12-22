@@ -2,11 +2,11 @@ current tasks:
 - sniper reload bugged?
 - first permanent progression idea:
     - dev steps:
-        - bug: leveling and boss skill points buggy on legenday abilities
-            - rework code
+        - bug: leveling for leveling character and legendary abilities does not work together
         - change scalling of burrowed abilities
             - ...
         - save in localStorage
+        - visualize
     - make class building appear once a class endboss has been beaten or when endboss with a class has been beaten?
         - have x places like the logs where buildings can be.
     - "legendary class", can level indefinetly(but slower) over multiple runs (but boss skillpoints are limited to boss counter)

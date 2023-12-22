@@ -6,14 +6,17 @@ import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from
 export function executeAbilityLevelingCharacterUpgradeOption(character: Character, upgradeOption: UpgradeOption, game: Game) {
     const abilityUpgradeOption: AbilityUpgradeOption = upgradeOption as AbilityUpgradeOption;
     const functions = ABILITIES_FUNCTIONS[abilityUpgradeOption.name];
-    const ability = character.abilities.find((a) => a.name === abilityUpgradeOption.name && a.bossSkillPoints && a.bossSkillPoints > 0);
+    const ability = character.abilities.find((a) => a.name === abilityUpgradeOption.name && a.bossSkillPoints && a.bossSkillPoints.available > 0);
     functions.executeUpgradeOption!(ability!, character, upgradeOption, game);
 }
 
 export function createBossUpgradeOptionsAbilityLeveling(character: Character, game: Game): UpgradeOptionAndProbability[] {
     for (let ability of character.abilities) {
         const functions = ABILITIES_FUNCTIONS[ability.name];
-        if (ability.bossSkillPoints && ability.bossSkillPoints > 0 && functions.createAbilityBossUpgradeOptions) {
+        if (ability.bossSkillPoints
+            && ability.bossSkillPoints.available > 0 
+            && functions.createAbilityBossUpgradeOptions
+        ) {
             return functions.createAbilityBossUpgradeOptions(ability, character, game);
         }
     }

@@ -104,6 +104,7 @@ function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: 
 
     bossCharacter.pets = createPetsBasedOnLevelAndCharacter(basedOnCharacter, level, bossCharacter, game);
     bossCharacter.paint.image = IMAGE_SLIME;
+    bossCharacter.level = {level: level};
     resetCharacter(bossCharacter);
 
     return bossCharacter;
@@ -157,7 +158,8 @@ function executeTamerBossUpgradeOption(character: Character, upgradeOption: Upgr
         ability.passive = true;
         pet.abilities.push(ability);
         addTraitToTamerPet(pet, upgradeValues.traitName, game);
-        pet.bossSkillPoints!--;
+        pet.bossSkillPoints!.available--;
+        pet.bossSkillPoints!.used++;
         if (upgradeValues.abilityName === ABILITY_NAME_PET_PAINTER) {
             const leash: AbilityLeash | undefined = pet.abilities.find(a => a.name === ABILITY_NAME_LEASH) as AbilityLeash;
             if (leash) leash.leashMaxLength += 100;
@@ -173,7 +175,8 @@ function executeTamerBossUpgradeOption(character: Character, upgradeOption: Upgr
             addTraitToTamerPet(pet, trait, game);
         }
         upgradeFunctions.executeOption(ability, upgradeOption as AbilityUpgradeOption, pet);
-        pet.bossSkillPoints!--;
+        pet.bossSkillPoints!.available--;
+        pet.bossSkillPoints!.used++;
     }
 }
 
@@ -182,7 +185,7 @@ function createTamerBossUpgradeOptions(character: Character, game: Game): Upgrad
     const numberChoices = 3;
     if (!character.pets) return options;
     for (let pet of character.pets) {
-        if (pet.bossSkillPoints !== undefined && pet.bossSkillPoints > 0) {
+        if (pet.bossSkillPoints !== undefined && pet.bossSkillPoints.available > 0) {
             const availableTraits = getAvailableTamerPetTraits(pet);
             const availableAbilties = getAvailablePetAbilities(character, pet);
 

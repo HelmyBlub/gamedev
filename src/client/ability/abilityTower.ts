@@ -2,7 +2,7 @@ import { getCharactersTouchingLine, characterTakeDamage } from "../character/cha
 import { Character } from "../character/characterModel.js";
 import { CHARACTER_TYPE_BOSS_ENEMY } from "../character/enemy/bossEnemy.js";
 import { CHARACTER_TYPE_END_BOSS_ENEMY } from "../character/enemy/endBossEnemy.js";
-import { ENEMY_FIX_RESPAWN_PSOITON, FixPositionRespawnEnemyCharacter } from "../character/enemy/fixPositionRespawnEnemyModel.js";
+import { ENEMY_FIX_RESPAWN_POSITION, FixPositionRespawnEnemyCharacter } from "../character/enemy/fixPositionRespawnEnemyModel.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../character/upgrade.js";
 import { calculateDistance, getCameraPosition, getNextId } from "../game.js";
 import { Position, Game, IdCounter, FACTION_ENEMY, FACTION_PLAYER } from "../gameModel.js";
@@ -193,9 +193,9 @@ function castTower(abilityOwner: AbilityOwner, ability: Ability, castPosition: P
     if (abilityOwner.faction === FACTION_ENEMY) {
         if (abilityOwner.type === CHARACTER_TYPE_BOSS_ENEMY || abilityOwner.type === CHARACTER_TYPE_END_BOSS_ENEMY) {
             newTower.isBossTower = true;
-        }else if (abilityOwner.type === ENEMY_FIX_RESPAWN_PSOITON){
+        }else if (abilityOwner.type === ENEMY_FIX_RESPAWN_POSITION){
             const enemy: FixPositionRespawnEnemyCharacter = abilityOwner as any;
-            newTower.ownerEnemyLevel = enemy.level;
+            newTower.ownerEnemyLevel = enemy.level?.level;
         }
         newTower.deleteTime = game.state.time + ENEMY_TOWER_DESPAWN_TIME;
     }

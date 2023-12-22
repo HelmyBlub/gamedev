@@ -2,7 +2,7 @@ import { determineCharactersInDistance, characterTakeDamage } from "../character
 import { Character } from "../character/characterModel.js"
 import { BossEnemyCharacter } from "../character/enemy/bossEnemy.js"
 import { calculateDistance, getCameraPosition, takeTimeMeasure } from "../game.js"
-import { FACTION_ENEMY, FACTION_PLAYER, Game, IdCounter, Position } from "../gameModel.js"
+import { BossSkillPoints, FACTION_ENEMY, FACTION_PLAYER, Game, IdCounter, Position } from "../gameModel.js"
 import { GameMap } from "../map/map.js"
 import { findPlayerByCharacterId, Player } from "../player.js"
 import { addAbilityDeathCircle } from "./abilityDeathCircle.js"
@@ -45,7 +45,7 @@ export type Ability = {
         experience: number,
         experienceForLevelUp: number,
     }
-    bossSkillPoints?: number,
+    bossSkillPoints?: BossSkillPoints,
     upgrades: {
         [key: string]: any,
     },
@@ -183,7 +183,7 @@ export function createAbility(abilityName: string, idCounter: IdCounter, isLevel
     }
     if (getsBossSkillPoints) {
         if (abilityFunctions.createAbilityBossUpgradeOptions) {
-            ability.bossSkillPoints = 0;
+            ability.bossSkillPoints = {available: 0, used: 0};
         } else {
             console.log(`${abilityName} is missing bossUpgradeOptions`);
         }

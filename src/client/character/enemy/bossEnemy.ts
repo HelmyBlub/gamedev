@@ -106,6 +106,7 @@ function createDefaultBossWithLevel(idCounter: IdCounter, level: number, spawn: 
 
     const bossCharacter = createCharacter(getNextId(idCounter), spawn.x, spawn.y, bossSize, bossSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_BOSS_ENEMY, experienceWorth);
     bossCharacter.paint.image = IMAGE_SLIME;
+    bossCharacter.level = {level: level};
     const abilities: Ability[] = createBossAbilities(level, nextEndBoss, game);
     bossCharacter.abilities = abilities;
     const pets: TamerPetCharacter[] | undefined = createBossPets(level, bossCharacter, nextEndBoss, game);

@@ -53,6 +53,7 @@ function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: 
 
     const bossCharacter = createCharacter(getNextId(idCounter), spawn.x, spawn.y, bossSize, bossSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_BOSS_ENEMY, experienceWorth);
     bossCharacter.paint.image = IMAGE_SLIME;
+    bossCharacter.level = {level: level};
     const baseTower = basedOnCharacter.abilities.find((a) => a.name === ABILITY_NAME_TOWER);
     const tower: AbilitySnipe = deepCopy(baseTower);
     bossCharacter.abilities.push(tower);

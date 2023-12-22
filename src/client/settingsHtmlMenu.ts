@@ -142,7 +142,7 @@ function addBossSkillPointButton(game: Game) {
     const button = document.getElementById(buttonName) as HTMLButtonElement;
     if (button) {
         button.addEventListener('click', () => {
-            if (!game.multiplayer.websocket) playerCharactersAddBossSkillPoints(game);
+            if (!game.multiplayer.websocket) playerCharactersAddBossSkillPoints(50, game);
         });
     }
 }
