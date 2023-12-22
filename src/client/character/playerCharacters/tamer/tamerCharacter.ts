@@ -25,12 +25,12 @@ export function addTamerClass() {
     PLAYER_CHARACTER_CLASSES_FUNCTIONS[TAMER_CHARACTER] = {
         changeCharacterToThisClass: changeCharacterToTamerClass,
         createBossBasedOnClassAndCharacter: createBossBasedOnClassAndCharacter,
+        createBossUpgradeOptions: createTamerBossUpgradeOptions,
+        executeUpgradeOption: executeTamerBossUpgradeOption,
         getLongUiText: getLongUiText,
     }
     CHARACTER_TYPE_FUNCTIONS[TAMER_CHARACTER] = {
         tickFunction: tickDefaultCharacter,
-        createBossUpgradeOptions: createTamerBossUpgradeOptions,
-        executeUpgradeOption: executeTamerBossUpgradeOption,
     }
     addTamerPetFunctions();
 }

@@ -17,9 +17,6 @@ export type CHARACTER_TYPE_FUNCTIONS = {
     [key: string]: {
         tickFunction?: (character: Character, game: Game, pathingCache: PathingCache | null) => void,
         tickPetFunction?: (character: Character, petOwner: Character, game: Game, pathingCache: PathingCache | null) => void,
-        createUpgradeOptions?: (character: Character, game: Game) => UpgradeOptionAndProbability[],
-        createBossUpgradeOptions?: (character: Character, game: Game) => UpgradeOptionAndProbability[],
-        executeUpgradeOption?: (character: Character, upgradeOptionChoice: UpgradeOption, game: Game) => void,
         paintCharacterType?: (ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) => void,
         reset?: (character: Character) => void,
     }
@@ -48,7 +45,7 @@ export type CharacterImageLoadProperties = {
     canvases?: { [key: string]: HTMLCanvasElement },
 }
 
-export const DEFAULT_CHARACTER = "Character";
+export const PLAYER_CHARACTER_TYPE = "PlayerCharacter";
 export const IMAGE_SLIME = "slime";
 export const IMAGE_PLAYER_PARTS = "playerParts";
 export const PLAYER_BASE_HP = 200;
@@ -82,10 +79,6 @@ GAME_IMAGES[IMAGE_PLAYER_PARTS] = {
 export const CHARACTER_TYPE_FUNCTIONS: CHARACTER_TYPE_FUNCTIONS = {
     fixPositionRespawnEnemy: {
         tickFunction: tickFixPositionRespawnEnemyCharacter
-    },
-    Character: {
-        tickFunction: tickDefaultCharacter,
-        executeUpgradeOption: executeDefaultCharacterUpgradeOption,
     },
 }
 
@@ -133,6 +126,7 @@ export type Character = Position & {
         experience: number,
         experienceForLevelUp: number,
     }
+    availableSkillPoints?: number,
     mapChunkKey?: string,
     combatlog?: Combatlog, 
 }
@@ -180,7 +174,7 @@ export function createCharacter(
 }
 
 export function createPlayerCharacter(idCounter: IdCounter, pos: Position, seed: RandomSeed, game: Game): Character {
-    const playerCharacter = createCharacter(getNextId(idCounter), pos.x, pos.y, 20, 40, undefined, 2, PLAYER_BASE_HP, FACTION_PLAYER, DEFAULT_CHARACTER, 1);
+    const playerCharacter = createCharacter(getNextId(idCounter), pos.x, pos.y, 20, 40, undefined, 2, PLAYER_BASE_HP, FACTION_PLAYER, PLAYER_CHARACTER_TYPE, 1);
     playerCharacter.paint.randomizedCharacterImage = createRandomizedCharacterImageData(GAME_IMAGES[IMAGE_PLAYER_PARTS], seed);
     playerCharacter.willTurnToPetOnDeath = true;
     playerCharacter.isPet = false;

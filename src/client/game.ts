@@ -4,7 +4,7 @@ import { createDefaultKeyBindings1, createDefaultUiKeyBindings, findPlayerByChar
 import { MOUSE_ACTION, UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.js";
 import { Position, GameState, Game, IdCounter, Debugging, PaintTextData, ClientInfo, LOCALSTORAGE_PASTCHARACTERS, LOCALSTORAGE_NEXTENDBOSSES, NextEndbosses, CelestialDirection } from "./gameModel.js";
 import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap, removeAllMapCharacters } from "./map/map.js";
-import { Character, DEFAULT_CHARACTER } from "./character/characterModel.js";
+import { Character, PLAYER_CHARACTER_TYPE } from "./character/characterModel.js";
 import { generateMissingChunks, pastCharactersMapTilePositions } from "./map/mapGeneration.js";
 import { createFixPositionRespawnEnemiesOnInit } from "./character/enemy/fixPositionRespawnEnemyModel.js";
 import { CommandRestart, handleCommand } from "./commands.js";
@@ -592,7 +592,7 @@ function checkForAutoSkill(game: Game) {
     if (!game.settings.autoSkillEnabled) return;
 
     const character: Character | undefined = findMyCharacter(game);
-    if (character && character.type !== DEFAULT_CHARACTER) {
+    if (character && character.characterClass !== undefined) {
         if (character.upgradeChoices.length > 0) {
             let randomChoice = Math.floor(Math.random() * character.upgradeChoices.length);
             handleCommand(game, {

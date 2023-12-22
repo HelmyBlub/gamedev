@@ -3,7 +3,6 @@ import { createAbilityHpRegen } from "../../ability/abilityHpRegen.js";
 import { AbilitySnipe as AbilityBounceBall } from "../../ability/snipe/abilitySnipe.js";
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../gameModel.js";
 import { Character, IMAGE_SLIME, createCharacter } from "../characterModel.js";
-import { ABILITY_LEVELING_CHARACTER } from "./abilityLevelingCharacter.js";
 import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters.js";
 import { deepCopy, getNextId } from "../../game.js";
 import { resetCharacter } from "../character.js";
@@ -27,7 +26,6 @@ function changeCharacterToBallClass(
     idCounter: IdCounter,
     game: Game,
 ) {
-    character.type = ABILITY_LEVELING_CHARACTER;
     character.characterClass = CHARACTER_CLASS_BALL;
     character.maxHp *= 2;
     character.hp *= 2;

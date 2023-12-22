@@ -4,7 +4,7 @@ import { ABILITY_NAME_SPEED_BOOST } from "../../ability/speedBoost/abilitySpeedB
 import { ABILITY_NAME_SNIPE, AbilitySnipe } from "../../ability/snipe/abilitySnipe.js";
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../gameModel.js";
 import { Character, IMAGE_SLIME, createCharacter } from "../characterModel.js";
-import { ABILITY_LEVELING_CHARACTER } from "./abilityLevelingCharacter.js";
+import { createBossUpgradeOptionsAbilityLeveling, executeAbilityLevelingCharacterUpgradeOption } from "./abilityLevelingCharacter.js";
 import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters.js";
 import { deepCopy, getNextId } from "../../game.js";
 import { resetCharacter } from "../character.js";
@@ -17,6 +17,8 @@ export function addSniperClass() {
     PLAYER_CHARACTER_CLASSES_FUNCTIONS[CHARACTER_CLASS_SNIPER_NAME] = {
         changeCharacterToThisClass: changeCharacterToSniperClass,
         createBossBasedOnClassAndCharacter: createBossBasedOnClassAndCharacter,
+        createBossUpgradeOptions: createBossUpgradeOptionsAbilityLeveling,
+        executeUpgradeOption: executeAbilityLevelingCharacterUpgradeOption,
         getLongUiText: getLongUiText,
     }
 }
@@ -26,7 +28,6 @@ function changeCharacterToSniperClass(
     idCounter: IdCounter,
     game: Game,
 ) {
-    character.type = ABILITY_LEVELING_CHARACTER;
     character.characterClass = CHARACTER_CLASS_SNIPER_NAME;
     addAbilityToCharacter(character, createAbility(ABILITY_NAME_SNIPE, idCounter, true, true, "ability1"));
     addAbilityToCharacter(character, createAbilityHpRegen(idCounter, undefined, 2));

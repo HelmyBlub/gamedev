@@ -1,9 +1,7 @@
 import { Game, IdCounter, Position } from "../../gameModel.js"
 import { Character } from "../characterModel.js"
-import { UpgradeOption } from "../upgrade.js"
-import { addAbilityLevelingCharacter } from "./abilityLevelingCharacter.js"
+import { UpgradeOption, UpgradeOptionAndProbability } from "../upgrade.js"
 import { addBallClass } from "./characterClassBall.js"
-import { addLevelingCharacter } from "./levelingCharacterModel.js"
 import { addSniperClass } from "./sniperCharacter.js"
 import { addTamerClass } from "./tamer/tamerCharacter.js"
 import { addTowerClass } from "./towerCharacterClass.js"
@@ -11,6 +9,9 @@ import { addTowerClass } from "./towerCharacterClass.js"
 export type PlayerCharacterClassFunctions = {
     changeCharacterToThisClass: (character: Character, idCounter: IdCounter, game: Game) => void,
     createBossBasedOnClassAndCharacter?: (basedOnCharacter: Character, level: number, spawn: Position, game: Game) => Character,
+    createUpgradeOptions?: (character: Character, game: Game) => UpgradeOptionAndProbability[],
+    createBossUpgradeOptions?: (character: Character, game: Game) => UpgradeOptionAndProbability[],
+    executeUpgradeOption?: (character: Character, upgradeOptionChoice: UpgradeOption, game: Game) => void,
     getLongUiText?: () => string[],
     preventMultiple?: boolean,
 }
@@ -22,8 +23,6 @@ export type PlayerCharacterClassesFunctions = {
 export const PLAYER_CHARACTER_CLASSES_FUNCTIONS: PlayerCharacterClassesFunctions = {};
 
 export function onDomLoadSetCharacterClasses() {
-    addLevelingCharacter();
-    addAbilityLevelingCharacter();
     addSniperClass();
     addTowerClass();
     addTamerClass();

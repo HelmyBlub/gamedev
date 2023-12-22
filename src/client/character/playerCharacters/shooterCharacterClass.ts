@@ -2,7 +2,7 @@ import { addAbilityToCharacter } from "../../ability/ability.js";
 import { createAbilityShoot } from "../../ability/abilityShoot.js";
 import { Game, IdCounter } from "../../gameModel.js";
 import { Character } from "../characterModel.js";
-import { changeToLevelingCharacter } from "./levelingCharacterModel.js";
+import { changeToLevelingCharacter } from "./levelingCharacter.js";
 import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters.js";
 
 export function addShooterClass() {
@@ -16,6 +16,6 @@ function changeCharacterToShooterClass(
     idCounter: IdCounter,
     game: Game,
 ) {
-    const levelingCharacter = changeToLevelingCharacter(character, game);
-    addAbilityToCharacter(levelingCharacter, createAbilityShoot(idCounter));
+    changeToLevelingCharacter(character, game);
+    addAbilityToCharacter(character, createAbilityShoot(idCounter));
 }

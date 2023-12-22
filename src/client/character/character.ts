@@ -1,13 +1,12 @@
 import { levelingCharacterXpGain } from "./playerCharacters/levelingCharacter.js";
 import { calculateMovePosition, chunkXYToMapKey, determineMapKeysInDistance, GameMap, getChunksTouchingLine, MapChunk, mapKeyToChunkXY, positionToMapKey } from "../map/map.js";
-import { Character, CHARACTER_TYPE_FUNCTIONS, DEFAULT_CHARACTER } from "./characterModel.js";
+import { Character, CHARACTER_TYPE_FUNCTIONS, PLAYER_CHARACTER_TYPE } from "./characterModel.js";
 import { getNextWaypoint, getPathingCache, PathingCache } from "./pathing.js";
 import { calculateDirection, calculateDistance, calculateDistancePointToLine, changeCharacterAndAbilityIds, createPaintTextData, getNextId, takeTimeMeasure } from "../game.js";
 import { Position, Game, IdCounter, Camera, FACTION_ENEMY, FACTION_PLAYER } from "../gameModel.js";
 import { findPlayerById, Player } from "../player.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS, Ability, findAbilityById, findAbilityOwnerByAbilityId, levelingAbilityXpGain, resetAllCharacterAbilities } from "../ability/ability.js";
-import { LEVELING_CHARACTER, LevelingCharacter } from "./playerCharacters/levelingCharacterModel.js";
 import { BossEnemyCharacter, CHARACTER_TYPE_BOSS_ENEMY } from "./enemy/bossEnemy.js";
 import { removeCharacterDebuffs, tickCharacterDebuffs } from "../debuff/debuff.js";
 import { ABILITY_NAME_LEASH, AbilityLeash, createAbilityLeash } from "../ability/abilityLeash.js";
@@ -187,7 +186,7 @@ export function changeCharacterId(character: Character, idCounter: IdCounter) {
 }
 
 export function executeDefaultCharacterUpgradeOption(character: Character, upgradeOptionChoice: UpgradeOption, game: Game) {
-    if (character.type === DEFAULT_CHARACTER) {
+    if (character.characterClass === undefined) {
         const keys = Object.keys(PLAYER_CHARACTER_CLASSES_FUNCTIONS);
 
         for (let key of keys) {
@@ -228,6 +227,8 @@ export function tickCharacters(characters: (Character | undefined)[], game: Game
             functions.tickFunction(char, game, pathingCache);
         } else if (functions?.tickPetFunction && petOwner) {
             functions.tickPetFunction(char, petOwner, game, pathingCache);
+        }else{
+            tickDefaultCharacter(char, game, pathingCache);
         }
         if (!char.isDead) {
             if (game.state.bossStuff.endBossStarted && char.type === ENEMY_FIX_RESPAWN_PSOITON) continue;
@@ -448,11 +449,10 @@ export function turnCharacterToPet(character: Character, game: Game) {
     } else {
         character.isPet = true;
         let newPlayerOwnerId: number | undefined = undefined;
-        const possibleOwnerCharacters: LevelingCharacter[] = [];
+        const possibleOwnerCharacters: Character[] = [];
         for (let player of game.state.players) {
-            const characterIter: LevelingCharacter = player.character as LevelingCharacter;
-            if (!characterIter.isPet && !characterIter.isDead) {
-                possibleOwnerCharacters.push(characterIter);
+            if (!player.character.isPet && !player.character.isDead) {
+                possibleOwnerCharacters.push(player.character);
             }
         }
         if (possibleOwnerCharacters.length > 0) {
@@ -529,7 +529,7 @@ function experienceForEveryPlayersLeveling(experience: number, game: Game){
 
 function experienceForCharacter(character: Character, experienceWorth: number, game: Game){
     const owner = character;
-    if (owner && owner.leveling && owner.type !== LEVELING_CHARACTER
+    if (owner && owner.leveling
         && !owner.isDead && !owner.isPet
         && !(owner as TamerPetCharacter).gifted
     ) {

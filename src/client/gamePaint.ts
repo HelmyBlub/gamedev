@@ -1,9 +1,8 @@
 import { ABILITIES_FUNCTIONS, paintAbilityObjects, paintDefaultAbilityStatsUI, paintUiForAbilities } from "./ability/ability.js";
 import { canCharacterTradeAbilityOrPets } from "./character/character.js";
-import { Character, DEFAULT_CHARACTER } from "./character/characterModel.js";
+import { Character } from "./character/characterModel.js";
 import { paintCharacterStatsUI, paintPlayerCharacters } from "./character/characterPaint.js";
 import { paintBossCharacters, paintBossCrown } from "./character/enemy/bossEnemy.js";
-import { LEVELING_CHARACTER, LevelingCharacter } from "./character/playerCharacters/levelingCharacterModel.js";
 import { isPreventedDuplicateClass } from "./character/playerCharacters/playerCharacters.js";
 import { paintTamerPetCharacterStatsUI } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
 import { calculateDistance, getCameraPosition, getTimeSinceFirstKill } from "./game.js";
@@ -43,7 +42,7 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
         if (player === null) return;
         const character = player.character;
         paintEndScreen(ctx, game.state.highscores, game);
-        if (character !== null) paintPlayerStats(ctx, character as LevelingCharacter, getTimeSinceFirstKill(game.state), game);
+        if (character !== null) paintPlayerStats(ctx, character, getTimeSinceFirstKill(game.state), game);
         if (game.multiplayer.websocket !== null) {
             ctx.fillText("Ping: " + Math.round(game.multiplayer.delay), 10, 60);
         }
@@ -52,12 +51,12 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
             const player = findPlayerById(game.state.players, game.multiplayer.myClientId);
             if (player === null) return;
             const character = player.character;
-            if (character !== null) paintPlayerStats(ctx, character as LevelingCharacter, getTimeSinceFirstKill(game.state), game);
+            if (character !== null) paintPlayerStats(ctx, character, getTimeSinceFirstKill(game.state), game);
             if (game.multiplayer.websocket !== null) {
                 ctx.fillText("Ping: " + Math.round(game.multiplayer.delay), 10, 60);
             }
         } else {
-            paintPlayerStats(ctx, game.state.players[0].character as LevelingCharacter, getTimeSinceFirstKill(game.state), game);
+            paintPlayerStats(ctx, game.state.players[0].character, getTimeSinceFirstKill(game.state), game);
         }
     }
     paintTimeMeasures(ctx, game.debug);
@@ -299,10 +298,9 @@ function paintPlayerStats(ctx: CanvasRenderingContext2D, character: Character, g
     ctx.fillStyle = "black";
     ctx.font = "18px Arial";
 
-    if (character.type === LEVELING_CHARACTER) {
-        const levelingCharacter = character as LevelingCharacter;
-        ctx.fillText("Level: " + levelingCharacter.leveling.level
-            + "  SkillPoints:" + levelingCharacter.availableSkillPoints,
+    if (character.leveling) {
+        ctx.fillText("Level: " + character.leveling.level
+            + "  SkillPoints:" + character.availableSkillPoints,
             200, 20
         );
     }
@@ -374,7 +372,7 @@ function paintGameRulesUI(ctx: CanvasRenderingContext2D, character: Character, d
 
 function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Character, game: Game) {
     if (game.state.ended) return;
-    if (game.settings.autoSkillEnabled && character.type !== DEFAULT_CHARACTER) return;
+    if (game.settings.autoSkillEnabled && character.characterClass !== undefined) return;
     const firstFontSize = 20;
     const addFontSize = 14;
     const startY = (ctx.canvas.height * 0.75);

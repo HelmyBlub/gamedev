@@ -2,7 +2,7 @@ import { addAbilityToCharacter } from "../../ability/ability.js";
 import { createAbilitySword } from "../../ability/abilitySword.js";
 import { Game, IdCounter } from "../../gameModel.js";
 import { Character } from "../characterModel.js";
-import { changeToLevelingCharacter } from "./levelingCharacterModel.js";
+import { changeToLevelingCharacter } from "./levelingCharacter.js";
 import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters.js";
 
 export function addSwordClass() {
@@ -16,6 +16,6 @@ function changeCharacterToSwordClass(
     idCounter: IdCounter,
     game: Game,
 ) {
-    const levelingCharacter = changeToLevelingCharacter(character, game);
-    addAbilityToCharacter(levelingCharacter, createAbilitySword(idCounter));
+    changeToLevelingCharacter(character, game);
+    addAbilityToCharacter(character, createAbilitySword(idCounter));
 }

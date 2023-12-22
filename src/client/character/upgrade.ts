@@ -1,6 +1,8 @@
 import { Game } from "../gameModel.js";
 import { nextRandom } from "../randomNumberGenerator.js";
+import { executeDefaultCharacterUpgradeOption } from "./character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character } from "./characterModel.js";
+import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters/playerCharacters.js";
 
 export type UpgradeOption = {
     type: "Character" | "Ability" | "Pet" | "PetAbility",
@@ -50,14 +52,16 @@ export function fillRandomUpgradeOptionChoices(character: Character, game: Game)
 }
 
 export function executeUpgradeOptionChoice(character: Character, upgradeChoice: UpgradeOption, game: Game) {
-    const characterTypeFunction = CHARACTER_TYPE_FUNCTIONS[character.type];
-    if (characterTypeFunction.executeUpgradeOption) {
-        characterTypeFunction.executeUpgradeOption(character, upgradeChoice, game);
-        character.upgradeChoices = [];
-        fillRandomUpgradeOptionChoices(character, game);
-    } else {
-        throw new Error("missing upgrade function for " + character.type);
+    if(character.characterClass){
+        const classFunction = PLAYER_CHARACTER_CLASSES_FUNCTIONS[character.characterClass];
+        if (classFunction.executeUpgradeOption) {
+            classFunction.executeUpgradeOption(character, upgradeChoice, game);
+        }    
+    }else{
+        executeDefaultCharacterUpgradeOption(character, upgradeChoice, game);
     }
+    character.upgradeChoices = [];
+    fillRandomUpgradeOptionChoices(character, game);
 }
 
 function setUpgradeOptionOrderValues(options: UpgradeOptionAndProbability[]){
@@ -68,12 +72,13 @@ function setUpgradeOptionOrderValues(options: UpgradeOptionAndProbability[]){
 
 function getCharacterUpgradeOptions(character: Character, game: Game): UpgradeOptionAndProbability[] {
     let upgradeOptionAndProbability: UpgradeOptionAndProbability[] = [];
-    const characterTypeFunction = CHARACTER_TYPE_FUNCTIONS[character.type];
-    if (characterTypeFunction.createBossUpgradeOptions) {
-        upgradeOptionAndProbability = characterTypeFunction.createBossUpgradeOptions(character, game);
+    if(!character.characterClass) return [];
+    const classFunction = PLAYER_CHARACTER_CLASSES_FUNCTIONS[character.characterClass];
+    if (classFunction.createBossUpgradeOptions) {
+        upgradeOptionAndProbability = classFunction.createBossUpgradeOptions(character, game);
     }
-    if (upgradeOptionAndProbability.length === 0 && characterTypeFunction.createUpgradeOptions) {
-        upgradeOptionAndProbability = characterTypeFunction.createUpgradeOptions(character, game);
+    if (upgradeOptionAndProbability.length === 0 && classFunction.createUpgradeOptions) {
+        upgradeOptionAndProbability = classFunction.createUpgradeOptions(character, game);
     }
     return upgradeOptionAndProbability;
 }

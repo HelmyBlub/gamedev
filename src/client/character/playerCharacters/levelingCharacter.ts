@@ -2,14 +2,13 @@ import { getPlayerCharacters, turnCharacterToPet, moveCharacterTick } from "../c
 import { Game, GameState } from "../../gameModel.js";
 import { RandomSeed } from "../../randomNumberGenerator.js";
 import { Character } from "../characterModel.js";
-import { LEVELING_CHARACTER, LevelingCharacter } from "./levelingCharacterModel.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability, fillRandomUpgradeOptionChoices } from "../upgrade.js";
 import { ABILITIES_FUNCTIONS } from "../../ability/ability.js";
 
 export function levelingCharacterXpGain(state: GameState, killedCharacter: Character, game: Game) {
-    let playerCharacters: LevelingCharacter[] = getPlayerCharacters(state.players) as LevelingCharacter[];
+    let playerCharacters = getPlayerCharacters(state.players);
     for (let character of playerCharacters) {
-        if (character.leveling !== undefined && !character.isDead && !character.isPet && character.type === LEVELING_CHARACTER) {
+        if (character.leveling !== undefined && !character.isDead && !character.isPet) {
             character.leveling.experience += killedCharacter.experienceWorth;
             while (character.leveling.experience >= character.leveling.experienceForLevelUp) {
                 levelingCharacterLevelUp(character, state.randomSeed, game);
@@ -18,7 +17,17 @@ export function levelingCharacterXpGain(state: GameState, killedCharacter: Chara
     }
 }
 
-function levelingCharacterLevelUp(character: LevelingCharacter, randomSeed: RandomSeed, game: Game) {
+export function changeToLevelingCharacter(character: Character, game: Game) {
+    character.leveling = {
+        experience: 0,
+        experienceForLevelUp: 10,
+        level: 0,
+    };
+    character.availableSkillPoints = 0;
+}
+
+function levelingCharacterLevelUp(character: Character, randomSeed: RandomSeed, game: Game) {
+    if (!character.leveling || character.availableSkillPoints === undefined) return;
     character.leveling.level++;
     character.availableSkillPoints += 1;
     character.leveling.experience -= character.leveling.experienceForLevelUp;
@@ -27,7 +36,7 @@ function levelingCharacterLevelUp(character: LevelingCharacter, randomSeed: Rand
 }
 
 export function executeLevelingCharacterUpgradeOption(character: Character, upgradeOption: UpgradeOption, game: Game) {
-    const levelingCharacter = character as LevelingCharacter;
+    if (character.availableSkillPoints === undefined) return;
     if (upgradeOption.type === "Character") {
         if (upgradeOption.identifier === "Max Health+50") {
             character.hp += 50;
@@ -46,13 +55,12 @@ export function executeLevelingCharacterUpgradeOption(character: Character, upgr
             }
         }
     }
-    levelingCharacter.availableSkillPoints--;
+    character.availableSkillPoints--;
 }
 
 export function createCharacterUpgradeOptionsNew(character: Character, game: Game): UpgradeOptionAndProbability[] {
-    const leveling = character as LevelingCharacter;
     const upgradeOptions: UpgradeOptionAndProbability[] = [];
-    if (leveling.availableSkillPoints === 0) return upgradeOptions;
+    if (character.availableSkillPoints === 0) return upgradeOptions;
     upgradeOptions.push({
         option: {
             identifier: "Max Health+50",

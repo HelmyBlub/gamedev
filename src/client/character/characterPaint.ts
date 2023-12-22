@@ -5,8 +5,7 @@ import { GAME_IMAGES, getImage, loadImage } from "../imageLoad.js";
 import { randomizedCharacterImageToKey } from "../randomizedCharacterImage.js";
 import { getPlayerCharacters } from "./character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_PLAYER_PARTS, IMAGE_SLIME } from "./characterModel.js";
-import { ABILITY_LEVELING_CHARACTER, AbilityLevelingCharacter } from "./playerCharacters/abilityLevelingCharacter.js";
-import { LEVELING_CHARACTER, LevelingCharacter } from "./playerCharacters/levelingCharacterModel.js";
+import { PLAYER_CLASS_TOWER_BUILDER } from "./playerCharacters/towerCharacterClass.js";
 
 export function paintCharacters(ctx: CanvasRenderingContext2D, characters: (Character | undefined)[], cameraPosition: Position, game: Game) {
     for (let i = 0; i < characters.length; i++) {
@@ -73,16 +72,15 @@ export function paintCharacterStatsUI(ctx: CanvasRenderingContext2D, character: 
     if(character.shield > 0){
         textLines.splice(2,0,`Shield: ${character.shield.toFixed(0)}/${(character.maxHp * character.maxShieldFactor).toFixed(0)}`);
     }
-    if (character.type === LEVELING_CHARACTER) {
-        const levelingCharacter = character as LevelingCharacter;
+    if (character.leveling) {
         textLines.push(
-            `XP: ${Math.floor(levelingCharacter.leveling.experienceForLevelUp)}/${Math.floor(levelingCharacter.leveling.experience)}`,
+            `XP: ${Math.floor(character.leveling.experienceForLevelUp)}/${Math.floor(character.leveling.experience)}`,
             `Gains XP for every enemy killed by anyone.`,
             `Gains Skill Points after enough XP`,
             `for LevelUp is reached.`
         );
 
-    } else if (character.type === ABILITY_LEVELING_CHARACTER) {
+    } else if (character.characterClass !== undefined) {
         textLines.push(
             `Abilities gain XP only for its own kills.`,
             `On Level up Abilties become stronger.`,
