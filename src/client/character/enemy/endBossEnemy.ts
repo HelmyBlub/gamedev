@@ -11,6 +11,7 @@ import { getPointPaintPosition } from "../../gamePaint.js";
 import { GAME_IMAGES, getImage } from "../../imageLoad.js";
 import { changeTileIdOfMapChunk } from "../../map/map.js";
 import { getBossAreaMiddlePosition, getEntranceChunkAndTileXYForPosition } from "../../map/mapEndBossArea.js";
+import { classBuildingPutLegendaryCharacterAbilitiesBackIntoBuilding } from "../../map/mapObjectClassBuilding.js";
 import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick, resetCharacter } from "../character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, PLAYER_BASE_HP, createCharacter } from "../characterModel.js";
 import { paintCharacterWithAbilitiesDefault, paintCharatersPets } from "../characterPaint.js";
@@ -54,11 +55,13 @@ export function setPlayerAsEndBoss(game: Game) {
     const celestialDirection = getCelestialDirection(boss);
     const oldBoss = game.state.bossStuff.nextEndbosses[celestialDirection];
     game.state.bossStuff.nextEndbosses[celestialDirection] = boss;
+    game.state.players[0].character.becameEndBoss = true;
     if (!game.multiplayer.disableLocalStorage) {
         localStorage.setItem(LOCALSTORAGE_NEXTENDBOSSES, JSON.stringify(game.state.bossStuff.nextEndbosses));
     }
 
     if (oldBoss?.characterClass) {
+        classBuildingPutLegendaryCharacterAbilitiesBackIntoBuilding(oldBoss, game);
         saveCharacterAsPastCharacter(oldBoss, game);
     }
 }
@@ -79,7 +82,7 @@ export function startEndBoss(endBossAreaPosition: Position, game: Game) {
                 pet.y = spawn.y;
             }
         }
-        if (Math.abs(spawn.x) < 2000 && Math.abs(spawn.y) < 2000 && !endBoss.characterClass) {
+        if (game.debug.lowBossHp) {
             endBoss.hp = 500;
             endBoss.maxHp = 500;
         }

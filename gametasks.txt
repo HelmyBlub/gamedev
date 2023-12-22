@@ -1,14 +1,9 @@
 current tasks:
+- sniper reload bugged?
 - first permanent progression idea:
     - dev steps:
-        - remove todo in file mapObjectClassBuilding method mapObjectPlaceClassBuilding
-        - on end boss(who has a class) defeat abilties need to be put to class building
-            - create new level 1 abilities for these which aretradeable?
-                - add "legendary" status
-                - linking to building
-        - player can burrow abilities
-        - abilities need to be put back on restart, loss. Dont put back on end boss defeat
-            - past character does not have abilities which where burrowed
+        - bug: leveling and boss skill points buggy on legenday abilities
+            - rework code
         - change scalling of burrowed abilities
             - ...
         - save in localStorage

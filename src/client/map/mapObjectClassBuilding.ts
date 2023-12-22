@@ -1,8 +1,9 @@
-import { Ability, createAbility } from "../ability/ability.js";
+import { Ability, createAbility, resetAllCharacterAbilities } from "../ability/ability.js";
 import { ABILITY_NAME_SNIPE } from "../ability/snipe/abilitySnipe.js";
-import { Character } from "../character/characterModel.js";
+import { Character, createCharacter } from "../character/characterModel.js";
+import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "../character/playerCharacters/playerCharacters.js";
 import { getCameraPosition, getNextId } from "../game.js";
-import { Game, Position } from "../gameModel.js";
+import { FACTION_PLAYER, Game, Position } from "../gameModel.js";
 import { getPointPaintPosition, paintTextWithOutline } from "../gamePaint.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
 import { MapChunk, chunkXYToMapKey, mapKeyAndTileXYToPosition } from "./map.js";
@@ -39,8 +40,8 @@ export function addMapObjectClassBuilding() {
     }
 }
 
-export function addExistingBuildingsToSpawnChunk(mapChunk: MapChunk, game: Game){
-    for(let building of game.state.buildings){
+export function addExistingBuildingsToSpawnChunk(mapChunk: MapChunk, game: Game) {
+    for (let building of game.state.buildings) {
         const mapObject: MapTileObjectClassBuilding = {
             x: building.tileX,
             y: building.tileY,
@@ -53,16 +54,20 @@ export function addExistingBuildingsToSpawnChunk(mapChunk: MapChunk, game: Game)
     }
 }
 
-export function mapObjectPlaceClassBuilding(game: Game){
-    return; //TODO remove
-    let spawnChunk = game.state.map.chunks[chunkXYToMapKey(0,0)];
-    let freeChunkTile: Position = {x: 0, y: 0};
+export function mapObjectPlaceClassBuilding(game: Game) {
+    let spawnChunk = game.state.map.chunks[chunkXYToMapKey(0, 0)];
+    const defeatedBossCharacterClass = game.state.bossStuff.bosses[game.state.bossStuff.bosses.length - 2].characterClass;
+    if (defeatedBossCharacterClass) {
+        placePlayerClassAbiltiesInBuilding(defeatedBossCharacterClass, game);
+        return;
+    }
+    let freeChunkTile: Position = { x: 0, y: 0 };
     let foundFreeTile = false;
-    main: while(!foundFreeTile){
-        for(let object of spawnChunk.objects){
-            if(object.x === freeChunkTile.x && object.y === freeChunkTile.y){
+    main: while (!foundFreeTile) {
+        for (let object of spawnChunk.objects) {
+            if (object.x === freeChunkTile.x && object.y === freeChunkTile.y) {
                 freeChunkTile.x++;
-                if(freeChunkTile.x >= game.state.map.chunkLength){
+                if (freeChunkTile.x >= game.state.map.chunkLength) {
                     return;
                 }
                 continue main;
@@ -88,23 +93,68 @@ export function mapObjectPlaceClassBuilding(game: Game){
     game.state.buildings.push(classBuilding);
 }
 
-function interact(interacter: Character, mapObject: MapTileObject, game: Game) {
-    const mapObjectClassBuilding = mapObject as MapTileObjectClassBuilding;
-    const classBuilding = findBuildingById(mapObjectClassBuilding.buildingId, game);
-    if(!classBuilding) return;
-    if (classBuilding.abilitiesBorrowed === undefined) {
-        return;
-    } else {
-        if (classBuilding.abilitiesBorrowed) return;
-        for (let ability of classBuilding.abilities) {
-            interacter.abilities.push(ability);
+export function classBuildingCheckAllPlayerForLegendaryAbilitiesAndMoveBackToBuilding(game: Game){
+    for(let player of game.state.players){
+        if(!player.character.becameEndBoss){
+            classBuildingPutLegendaryCharacterAbilitiesBackIntoBuilding(player.character, game);
         }
-        classBuilding.abilities = [];
-        classBuilding.abilitiesBorrowed = true;
+    }    
+}
+
+export function classBuildingPutLegendaryCharacterAbilitiesBackIntoBuilding(character: Character, game: Game){
+    for(let i = character.abilities.length - 1; i >= 0; i--){
+        const ability = character.abilities[i];
+        if(ability.legendary){
+            const building = findBuildingById(ability.legendary.buildingRefId, game);
+            if(building){
+                character.abilities.splice(i,1);
+                building.abilities.push(ability);
+                building.abilitiesBorrowed = false;
+            }
+        }
     }
 }
 
-function findBuildingById(id: number, game: Game): Building | undefined{
+function placePlayerClassAbiltiesInBuilding(playerClass: string, game: Game) {
+    let classFunctions = PLAYER_CHARACTER_CLASSES_FUNCTIONS[playerClass];
+    if (classFunctions) {
+        const freeBuilding = findFreeBuilding(game);
+        if (freeBuilding) {
+            const tempCharacter = createCharacter(0, 0, 0, 0, 0, "", 0, 0, FACTION_PLAYER, "", 0);
+            classFunctions.changeCharacterToThisClass(tempCharacter, game.state.idCounter, game);
+            freeBuilding.playerClass = playerClass;
+            freeBuilding.abilitiesBorrowed = false;
+            for (let ability of tempCharacter.abilities) {
+                freeBuilding.abilities.push(ability);
+                ability.legendary = { buildingRefId: freeBuilding.id };
+            }
+        }
+    }
+}
+
+function findFreeBuilding(game: Game): Building | undefined {
+    return game.state.buildings.find((b) => b.playerClass === undefined);
+}
+
+function interact(interacter: Character, mapObject: MapTileObject, game: Game) {
+    const mapObjectClassBuilding = mapObject as MapTileObjectClassBuilding;
+    const classBuilding = findBuildingById(mapObjectClassBuilding.buildingId, game);
+    if (!classBuilding || classBuilding.playerClass === undefined || classBuilding.abilitiesBorrowed) return;
+    for (let ability of classBuilding.abilities) {
+        interacter.abilities.push(ability);
+    }
+    classBuilding.abilities = [];
+    classBuilding.abilitiesBorrowed = true;
+    if(!interacter.characterClass){
+        interacter.characterClass = classBuilding.playerClass;
+        if(interacter.upgradeChoices && interacter.upgradeChoices[0].type === "Character"){
+            interacter.upgradeChoices = [];
+        }
+    }
+    resetAllCharacterAbilities(interacter);
+}
+
+function findBuildingById(id: number, game: Game): Building | undefined {
     return game.state.buildings.find((b) => b.id === id);
 }
 
@@ -113,7 +163,7 @@ function paintInteractSign(ctx: CanvasRenderingContext2D, mapObject: MapTileObje
     if (!key) return;
     const mapObjectClassBuilding = mapObject as MapTileObjectClassBuilding;
     const classBuilding = findBuildingById(mapObjectClassBuilding.buildingId, game);
-    if(!classBuilding) return;
+    if (!classBuilding) return;
     const map = game.state.map;
     const cameraPosition = getCameraPosition(game);
     const topMiddlePos = mapKeyAndTileXYToPosition(key, mapObject.x, mapObject.y, map);

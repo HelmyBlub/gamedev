@@ -122,6 +122,7 @@ export type Character = Position & {
     isDamageImmune?: boolean,
     isDebuffImmune?: boolean,
     isUnMoveAble?: boolean,
+    becameEndBoss?: boolean,
     willTurnToPetOnDeath?: boolean,
     upgradeChoices: UpgradeOption[],
     pets?: TamerPetCharacter[],

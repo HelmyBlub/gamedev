@@ -84,6 +84,7 @@ export type Debugging = {
     paintTileXYNumbers?: boolean,
     takeTimeMeasures?: boolean,
     activateSaveStates?: boolean,
+    lowBossHp?: boolean,
     timeMeasuresData?: { name: string, timeMeasures: number[], tempTime: number }[],
 }
 

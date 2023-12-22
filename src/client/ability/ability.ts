@@ -49,6 +49,9 @@ export type Ability = {
     upgrades: {
         [key: string]: any,
     },
+    legendary?: {
+        buildingRefId: number,
+    }
     tradable?: boolean,
     unique?: boolean,
     gifted?: boolean,

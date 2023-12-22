@@ -18,15 +18,6 @@ export function levelingCharacterXpGain(state: GameState, killedCharacter: Chara
     }
 }
 
-export function tickLevelingCharacter(character: Character, game: Game) {
-    const levelingCharacter = character as LevelingCharacter;
-    if (character.isDead) {
-        if (!character.willTurnToPetOnDeath) return;
-        turnCharacterToPet(character, game);
-    }
-    moveCharacterTick(character, game.state.map, game.state.idCounter);
-}
-
 function levelingCharacterLevelUp(character: LevelingCharacter, randomSeed: RandomSeed, game: Game) {
     character.leveling.level++;
     character.availableSkillPoints += 1;

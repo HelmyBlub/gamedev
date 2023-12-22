@@ -21,7 +21,7 @@ import { ABILITY_NAME_FEED_PET } from "./ability/petTamer/abilityFeedPet.js";
 import { ABILITY_NAME_LOVE_PET } from "./ability/petTamer/abilityLovePet.js";
 import { COMMAND_RESTART } from "./globalVars.js";
 import { consoleLogCombatlog } from "./combatlog.js";
-import { mapObjectPlaceClassBuilding } from "./map/mapObjectClassBuilding.js";
+import { classBuildingCheckAllPlayerForLegendaryAbilitiesAndMoveBackToBuilding, mapObjectPlaceClassBuilding } from "./map/mapObjectClassBuilding.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -49,6 +49,7 @@ export function getNextId(idCounter: IdCounter) {
 }
 
 export function gameRestart(game: Game) {
+    classBuildingCheckAllPlayerForLegendaryAbilitiesAndMoveBackToBuilding(game);
     if (game.testing.replay) {
         setReplaySeeds(game);
         setPastCharactersAndEndBossesForReplayFromReplayData(game);
@@ -364,6 +365,12 @@ export function changeCharacterAndAbilityIds(character: Character, idCounter: Id
 export function saveCharacterAsPastCharacter(character: Character, game: Game) {
     if (game.testing.replay) return;
     const newPastCharacter: Character = deepCopy(character);
+    for(let i = newPastCharacter.abilities.length - 1; i >= 0; i--){
+        const ability = newPastCharacter.abilities[i];
+        if(ability.legendary){
+            newPastCharacter.abilities.splice(i,1);
+        }
+    }
     resetCharacter(newPastCharacter);
     changeCharacterId(newPastCharacter, game.state.idCounter);
     if (newPastCharacter.pets) {

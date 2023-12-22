@@ -1,6 +1,7 @@
 import { Game } from "../../gameModel.js";
-import { Character, CHARACTER_TYPE_FUNCTIONS, createCharacter } from "../characterModel.js";
-import { createCharacterUpgradeOptionsNew, executeLevelingCharacterUpgradeOption, tickLevelingCharacter } from "./levelingCharacter.js";
+import { tickDefaultCharacter } from "../character.js";
+import { Character, CHARACTER_TYPE_FUNCTIONS } from "../characterModel.js";
+import { createCharacterUpgradeOptionsNew, executeLevelingCharacterUpgradeOption } from "./levelingCharacter.js";
 
 export type LevelingCharacter = Character & {
     availableSkillPoints: number,
@@ -27,7 +28,7 @@ export function changeToLevelingCharacter(character: Character, game: Game): Lev
 
 export function addLevelingCharacter() {
     CHARACTER_TYPE_FUNCTIONS[LEVELING_CHARACTER] = {
-        tickFunction: tickLevelingCharacter,
+        tickFunction: tickDefaultCharacter,
         createUpgradeOptions: createCharacterUpgradeOptionsNew,
         executeUpgradeOption: executeLevelingCharacterUpgradeOption,
     }
