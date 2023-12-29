@@ -328,6 +328,7 @@ function paintAbilityStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, dr
         `Immune to damage.`,
         `Ends if it hits a wall.`,
         "Ability stats:",
+        `Level: ${abilityLightningBall.leveling?.level}`,
         `Damage: ${abilityLightningBall.damage}`,
     );
     pushAbilityUpgradesUiTexts(ABILITY_LIGHTNING_BALL_UPGRADE_FUNCTIONS, textLines, ability);

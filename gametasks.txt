@@ -2,6 +2,8 @@ current tasks:
 - first permanent progression idea:
     - dev steps:
         - bug: leveling for leveling character and legendary abilities does not work together
+            - tower builder:
+                - what to do with hp and move speed upgrades? should not be lost. 
         - change scalling of burrowed abilities
             - ...
         - save in localStorage

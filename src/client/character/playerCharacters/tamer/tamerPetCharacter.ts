@@ -47,6 +47,9 @@ export type TamerPetCharacter = Character & {
             experienceForLevelUp: number,
         }
     }
+    legendary?: {
+        buildingRefId: number,
+    }
 }
 
 type Happiness = {

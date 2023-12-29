@@ -321,6 +321,8 @@ export function resetCharacter(character: Character) {
             if (petTypeFunctions && petTypeFunctions.reset) {
                 petTypeFunctions.reset(pet);
             }
+            pet.x = character.x;
+            pet.y = character.y;
         }
     }
     resetAllCharacterAbilities(character);

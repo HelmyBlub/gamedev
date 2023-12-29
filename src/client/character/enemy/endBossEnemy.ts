@@ -11,7 +11,7 @@ import { getPointPaintPosition } from "../../gamePaint.js";
 import { GAME_IMAGES, getImage } from "../../imageLoad.js";
 import { changeTileIdOfMapChunk } from "../../map/map.js";
 import { getBossAreaMiddlePosition, getEntranceChunkAndTileXYForPosition } from "../../map/mapEndBossArea.js";
-import { classBuildingPutLegendaryCharacterAbilitiesBackIntoBuilding } from "../../map/mapObjectClassBuilding.js";
+import { classBuildingPutLegendaryCharacterStuffBackIntoBuilding } from "../../map/mapObjectClassBuilding.js";
 import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick, resetCharacter } from "../character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, PLAYER_BASE_HP, createCharacter } from "../characterModel.js";
 import { paintCharacterWithAbilitiesDefault, paintCharatersPets } from "../characterPaint.js";
@@ -61,7 +61,7 @@ export function setPlayerAsEndBoss(game: Game) {
     }
 
     if (oldBoss?.characterClass) {
-        classBuildingPutLegendaryCharacterAbilitiesBackIntoBuilding(oldBoss, game);
+        classBuildingPutLegendaryCharacterStuffBackIntoBuilding(oldBoss, game);
         saveCharacterAsPastCharacter(oldBoss, game);
     }
 }

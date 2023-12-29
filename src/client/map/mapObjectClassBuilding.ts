@@ -1,7 +1,8 @@
-import { Ability, createAbility, resetAllCharacterAbilities } from "../ability/ability.js";
-import { ABILITY_NAME_SNIPE } from "../ability/snipe/abilitySnipe.js";
+import { Ability, resetAllCharacterAbilities } from "../ability/ability.js";
+import { resetCharacter } from "../character/character.js";
 import { Character, createCharacter } from "../character/characterModel.js";
 import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "../character/playerCharacters/playerCharacters.js";
+import { TamerPetCharacter } from "../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { getCameraPosition, getNextId } from "../game.js";
 import { FACTION_PLAYER, Game, Position } from "../gameModel.js";
 import { getPointPaintPosition, paintTextWithOutline } from "../gamePaint.js";
@@ -17,7 +18,8 @@ export type Building = {
     id: number,
     playerClass?: string,
     abilities: Ability[],
-    abilitiesBorrowed?: boolean,
+    pets: TamerPetCharacter[],
+    stuffBorrowed?: boolean,
     tileX: number,
     tileY: number,
 }
@@ -58,7 +60,7 @@ export function mapObjectPlaceClassBuilding(game: Game) {
     let spawnChunk = game.state.map.chunks[chunkXYToMapKey(0, 0)];
     const defeatedBossCharacterClass = game.state.bossStuff.bosses[game.state.bossStuff.bosses.length - 2].characterClass;
     if (defeatedBossCharacterClass) {
-        placePlayerClassAbiltiesInBuilding(defeatedBossCharacterClass, game);
+        placePlayerClassStuffInBuilding(defeatedBossCharacterClass, game);
         return;
     }
     let freeChunkTile: Position = { x: 0, y: 0 };
@@ -78,6 +80,7 @@ export function mapObjectPlaceClassBuilding(game: Game) {
     const classBuilding: Building = {
         id: getNextId(game.state.idCounter),
         abilities: [],
+        pets: [],
         tileX: freeChunkTile.x,
         tileY: freeChunkTile.y,
     }
@@ -96,12 +99,12 @@ export function mapObjectPlaceClassBuilding(game: Game) {
 export function classBuildingCheckAllPlayerForLegendaryAbilitiesAndMoveBackToBuilding(game: Game){
     for(let player of game.state.players){
         if(!player.character.becameEndBoss){
-            classBuildingPutLegendaryCharacterAbilitiesBackIntoBuilding(player.character, game);
+            classBuildingPutLegendaryCharacterStuffBackIntoBuilding(player.character, game);
         }
     }    
 }
 
-export function classBuildingPutLegendaryCharacterAbilitiesBackIntoBuilding(character: Character, game: Game){
+export function classBuildingPutLegendaryCharacterStuffBackIntoBuilding(character: Character, game: Game){
     for(let i = character.abilities.length - 1; i >= 0; i--){
         const ability = character.abilities[i];
         if(ability.legendary){
@@ -109,13 +112,26 @@ export function classBuildingPutLegendaryCharacterAbilitiesBackIntoBuilding(char
             if(building){
                 character.abilities.splice(i,1);
                 building.abilities.push(ability);
-                building.abilitiesBorrowed = false;
+                building.stuffBorrowed = false;
+            }
+        }
+    }
+    if(character.pets){
+        for(let i = character.pets.length - 1; i >= 0; i--){
+            const pet = character.pets[i];
+            if(pet.legendary){
+                const building = findBuildingById(pet.legendary.buildingRefId, game);
+                if(building){
+                    character.pets.splice(i,1);
+                    building.pets.push(pet);
+                    building.stuffBorrowed = false;
+                }
             }
         }
     }
 }
 
-function placePlayerClassAbiltiesInBuilding(playerClass: string, game: Game) {
+function placePlayerClassStuffInBuilding(playerClass: string, game: Game) {
     let classFunctions = PLAYER_CHARACTER_CLASSES_FUNCTIONS[playerClass];
     if (classFunctions) {
         const freeBuilding = findFreeBuilding(game);
@@ -123,10 +139,16 @@ function placePlayerClassAbiltiesInBuilding(playerClass: string, game: Game) {
             const tempCharacter = createCharacter(0, 0, 0, 0, 0, "", 0, 0, FACTION_PLAYER, "", 0);
             classFunctions.changeCharacterToThisClass(tempCharacter, game.state.idCounter, game);
             freeBuilding.playerClass = playerClass;
-            freeBuilding.abilitiesBorrowed = false;
+            freeBuilding.stuffBorrowed = false;
             for (let ability of tempCharacter.abilities) {
                 freeBuilding.abilities.push(ability);
                 ability.legendary = { buildingRefId: freeBuilding.id };
+            }
+            if(tempCharacter.pets){
+                for (let pet of tempCharacter.pets) {
+                    freeBuilding.pets.push(pet);
+                    pet.legendary = { buildingRefId: freeBuilding.id };
+                }
             }
         }
     }
@@ -139,12 +161,19 @@ function findFreeBuilding(game: Game): Building | undefined {
 function interact(interacter: Character, mapObject: MapTileObject, game: Game) {
     const mapObjectClassBuilding = mapObject as MapTileObjectClassBuilding;
     const classBuilding = findBuildingById(mapObjectClassBuilding.buildingId, game);
-    if (!classBuilding || classBuilding.playerClass === undefined || classBuilding.abilitiesBorrowed) return;
+    if (!classBuilding || classBuilding.playerClass === undefined || classBuilding.stuffBorrowed) return;
     for (let ability of classBuilding.abilities) {
         interacter.abilities.push(ability);
     }
+    if(classBuilding.pets.length > 0){
+        if(!interacter.pets) interacter.pets = [];
+        for (let pet of classBuilding.pets) {
+            interacter.pets.push(pet);
+        }
+    }
     classBuilding.abilities = [];
-    classBuilding.abilitiesBorrowed = true;
+    classBuilding.pets = [];
+    classBuilding.stuffBorrowed = true;
     if(!interacter.characterClass){
         interacter.characterClass = classBuilding.playerClass;
         if(interacter.upgradeChoices && interacter.upgradeChoices[0].type === "Character"){
@@ -154,7 +183,7 @@ function interact(interacter: Character, mapObject: MapTileObject, game: Game) {
         if(!interacter.overtakenCharacterClasses) interacter.overtakenCharacterClasses = [];
         interacter.overtakenCharacterClasses.push(classBuilding.playerClass);
     }
-    resetAllCharacterAbilities(interacter);
+    resetCharacter(interacter);
 }
 
 function findBuildingById(id: number, game: Game): Building | undefined {
@@ -174,13 +203,13 @@ function paintInteractSign(ctx: CanvasRenderingContext2D, mapObject: MapTileObje
     const texts = [];
     if (!classBuilding.playerClass) {
         texts.push(
-            `Defeat end boss with class`,
+            `Defeat king with class`,
             `to unlock legendary.`,
         )
-    } else if (!classBuilding.abilitiesBorrowed) {
+    } else if (!classBuilding.stuffBorrowed) {
         texts.push(`Class ${classBuilding.playerClass}.`);
         texts.push(`Press interact key to burrow`);
-    } else if (classBuilding.abilitiesBorrowed) {
+    } else if (classBuilding.stuffBorrowed) {
         texts.push(`Class ${classBuilding.playerClass}.`);
         texts.push(`Currently burrowed`);
     }
