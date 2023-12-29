@@ -36,15 +36,17 @@ export type TamerPetCharacter = Character & {
     sizeFactor: number,
     nextMovementUpdateTime?: number;
     baseMoveSpeed: number,
-    leveling: {
-        level: number,
-        experience: number,
-        experienceForLevelUp: number,
-    }
     traits: Trait[],
     forcedMovePosition?: Position,
     tradable: boolean,
     gifted?: boolean,
+    level:{
+        level: number,
+        leveling: {
+            experience: number,
+            experienceForLevelUp: number,
+        }
+    }
 }
 
 type Happiness = {
@@ -127,10 +129,12 @@ export function createTamerPetCharacter(owner: Character, color: string, game: G
         sizeFactor: 1,
         baseMoveSpeed: baseMoveSpeed,
         bossSkillPoints: {available: 0, used: 0},
-        leveling: {
-            experience: 0,
-            experienceForLevelUp: 10,
+        level: {
             level: 0,
+            leveling:{
+                experience: 0,
+                experienceForLevelUp: 10,
+            }
         },
         foodIntakeLevel: {
             current: 50,
@@ -232,7 +236,8 @@ export function paintTamerPetCharacterStatsUI(ctx: CanvasRenderingContext2D, pet
         `food: ${petFoodIntakeToDisplayText(pet.foodIntakeLevel)}`,
         `Happiness: ${petHappinessToDisplayText(pet.happines)}`,
         `Movement Speed: ${pet.moveSpeed.toFixed(2)}`,
-        `Level: ${pet.leveling.level.toFixed(0)}`,
+        `Level: ${pet.level.level.toFixed(0)}`,
+        `XP: ${pet.level.leveling.experience.toFixed(0)}/${pet.level.leveling.experienceForLevelUp.toFixed(0)}`,
     );
 
     if (pet.abilities.length > 0) {

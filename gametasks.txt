@@ -1,5 +1,4 @@
 current tasks:
-- tamer pet level bug
 - check bug?: replay -> overtake -> past character from replay -> intended?
 - first permanent progression idea:
     - dev steps:
