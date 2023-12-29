@@ -1,5 +1,4 @@
 current tasks:
-- check bug?: replay -> overtake -> past character from replay -> intended?
 - first permanent progression idea:
     - dev steps:
         - bug: leveling for leveling character and legendary abilities does not work together
@@ -19,6 +18,7 @@ current tasks:
             - character becomes classless pastCharacter
             - if character with legendary sniper becomes endboss, "legendary snipe" not available in "smith building" until end boss defeated
                 - "legendary sniper" becomes stronger somehow
+- check bug?: replay -> overtake -> past character from replay -> intended?
 
 refactor possibilities:
 - ability creation: checks and scales for bosses, enemy or player by itself

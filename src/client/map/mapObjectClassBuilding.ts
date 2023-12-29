@@ -150,6 +150,9 @@ function interact(interacter: Character, mapObject: MapTileObject, game: Game) {
         if(interacter.upgradeChoices && interacter.upgradeChoices[0].type === "Character"){
             interacter.upgradeChoices = [];
         }
+    }else{
+        if(!interacter.overtakenCharacterClasses) interacter.overtakenCharacterClasses = [];
+        interacter.overtakenCharacterClasses.push(classBuilding.playerClass);
     }
     resetAllCharacterAbilities(interacter);
 }

@@ -4,6 +4,7 @@ import { RandomSeed } from "../../randomNumberGenerator.js";
 import { Character } from "../characterModel.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability, fillRandomUpgradeOptionChoices } from "../upgrade.js";
 import { ABILITIES_FUNCTIONS } from "../../ability/ability.js";
+import { PLAYER_CLASS_TOWER_BUILDER } from "./towerCharacterClass.js";
 
 export function levelingCharacterXpGain(state: GameState, killedCharacter: Character, game: Game) {
     let playerCharacters = getPlayerCharacters(state.players);
@@ -86,6 +87,8 @@ export function createCharacterUpgradeOptionsNew(character: Character, game: Gam
             upgradeOptions.push(...abilityFunctions.createAbilityUpgradeOptions(ability));
         }
     }
-
+    for(let option of upgradeOptions){
+        option.option.characterClass = PLAYER_CLASS_TOWER_BUILDER;
+    }
     return upgradeOptions;
 }

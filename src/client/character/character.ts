@@ -17,6 +17,7 @@ import { createEndBossCrownCharacter } from "./enemy/endBossCrown.js";
 import { TamerPetCharacter, tradePets } from "./playerCharacters/tamer/tamerPetCharacter.js";
 import { ENEMY_FIX_RESPAWN_POSITION } from "./enemy/fixPositionRespawnEnemyModel.js";
 import { addCombatlogDamageTakenEntry } from "../combatlog.js";
+import { executeAbilityLevelingCharacterUpgradeOption } from "./playerCharacters/abilityLevelingCharacter.js";
 
 export function findCharacterById(characters: Character[], id: number): Character | null {
     for (let i = 0; i < characters.length; i++) {
@@ -197,13 +198,14 @@ export function changeCharacterId(character: Character, idCounter: IdCounter) {
 export function executeDefaultCharacterUpgradeOption(character: Character, upgradeOptionChoice: UpgradeOption, game: Game) {
     if (character.characterClass === undefined) {
         const keys = Object.keys(PLAYER_CHARACTER_CLASSES_FUNCTIONS);
-
         for (let key of keys) {
             if (key === upgradeOptionChoice.identifier) {
                 PLAYER_CHARACTER_CLASSES_FUNCTIONS[key].changeCharacterToThisClass(character, game.state.idCounter, game);
                 break;
             }
         }
+    }else if(upgradeOptionChoice.type === "Ability"){
+        executeAbilityLevelingCharacterUpgradeOption(character, upgradeOptionChoice, game);
     }
 }
 

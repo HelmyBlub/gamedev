@@ -77,7 +77,6 @@ function executeAbilityHpRegenUpgradeOption(ability: Ability, character: Charact
     }
 }
 
-
 function paintAbilityHpRegenStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
     const abilityHpRegen = ability as AbilityHpRegen;
     const textLines: string[] = [
