@@ -1,5 +1,6 @@
 current tasks:
-- sniper reload bugged?
+- tamer pet level bug
+- check bug?: replay -> overtake -> past character from replay -> intended?
 - first permanent progression idea:
     - dev steps:
         - bug: leveling for leveling character and legendary abilities does not work together

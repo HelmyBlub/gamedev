@@ -309,7 +309,7 @@ export function getAbilitySnipeShotFrequency(abilitySnipe: AbilitySnipe) {
 }
 
 export function abilitySnipeReload(abilitySnipe: AbilitySnipe, time: number){
-    if(abilitySnipe.currentCharges === 0) return;
+    if(abilitySnipe.currentCharges === 0 && abilitySnipe.reloadTime > time) return;
     if(abilitySnipe.currentCharges === abilitySnipe.maxCharges) return;
     abilitySnipe.currentCharges = 0;
     abilitySnipe.reloadTime = time + abilitySnipe.baseRechargeTime;
