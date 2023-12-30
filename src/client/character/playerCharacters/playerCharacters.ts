@@ -55,7 +55,7 @@ export function createCharacterChooseUpgradeOptions(game: Game): UpgradeOption[]
     for (let key of keys) {
         let option: UpgradeOption = {
             displayText: key,
-            type: "Character",
+            type: "ChooseClass",
             identifier: key
         };
         let functions = PLAYER_CHARACTER_CLASSES_FUNCTIONS[key];
@@ -90,7 +90,7 @@ export function findMainCharacterClass(character: Character): string{
 }
 
 export function hasPlayerChoosenStartClassUpgrade(character: Character): boolean{
-    if(character.upgradeChoices && character.upgradeChoices[0].type === "Character"){
+    if(character.upgradeChoices.length > 0 && character.upgradeChoices[0].type === "ChooseClass"){
         return false;
     }
     return true;

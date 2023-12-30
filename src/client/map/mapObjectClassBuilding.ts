@@ -186,7 +186,7 @@ function interact(interacter: Character, mapObject: MapTileObject, game: Game) {
     classBuilding.stuffBorrowed = true;
     if(!interacter.characterClasses) interacter.characterClasses = [];
     interacter.characterClasses.push(classBuilding.playerClass);
-    if(interacter.upgradeChoices && interacter.upgradeChoices[0].type === "Character"){
+    if(interacter.upgradeChoices && interacter.upgradeChoices[0].type === "ChooseClass"){
         interacter.upgradeChoices = [];
     }
     resetCharacter(interacter);

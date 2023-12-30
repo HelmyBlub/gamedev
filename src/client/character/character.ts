@@ -172,7 +172,7 @@ export function characterTradeAbilityAndPets(fromCharacter: Character, toCharact
             toCharacter.characterClasses.push(charClass);
             const classFunctions = PLAYER_CHARACTER_CLASSES_FUNCTIONS[newClass];
             if (classFunctions && classFunctions.preventMultiple) {
-                if (toCharacter.upgradeChoices && toCharacter.upgradeChoices[0].type === "Character") {
+                if (toCharacter.upgradeChoices && toCharacter.upgradeChoices[0].type === "ChooseClass") {
                     const index = toCharacter.upgradeChoices.findIndex(c => c.displayText === newClass);
                     if (index > -1) {
                         toCharacter.upgradeChoices.splice(index, 1);

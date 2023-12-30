@@ -5,7 +5,7 @@ import { CHARACTER_TYPE_FUNCTIONS, Character } from "./characterModel.js";
 import { CharacterClass, PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters/playerCharacters.js";
 
 export type UpgradeOption = {
-    type: "Character" | "Ability" | "Pet" | "PetAbility",
+    type: "Character" | "Ability" | "Pet" | "PetAbility" | "ChooseClass",
     characterClass?: string,
     displayText: string,
     displayLongText?: string[],
