@@ -158,7 +158,7 @@ export function characterTradeAbilityAndPets(fromCharacter: Character, toCharact
             ability.tradable = false;
             ability.gifted = true;
             if (ability.bossSkillPoints != undefined) ability.bossSkillPoints = undefined;
-            if (ability.leveling) ability.leveling = undefined;
+            if (ability.level) ability.level.leveling = undefined;
             toCharacter.abilities.push(ability);
         }
     }

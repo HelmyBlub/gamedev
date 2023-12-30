@@ -34,17 +34,14 @@ import { addAbilityLightningStrikes } from "./abilityLightningStrikes.js"
 import { addAbilitySnipeReload } from "./snipe/abilitySnipeReload.js"
 import { playerInputBindingToDisplayValue } from "../playerInput.js"
 import { addAbilityUnleashPet } from "./petTamer/abilityUnleashPet.js"
+import { Leveling } from "../character/playerCharacters/levelingCharacter.js"
 
 export type Ability = {
     id: number,
     name: string,
     passive: boolean,
     playerInputBinding?: string,
-    leveling?: {
-        level: number,
-        experience: number,
-        experienceForLevelUp: number,
-    }
+    level?: Leveling,
     bossSkillPoints?: BossSkillPoints,
     upgrades: {
         [key: string]: any,
@@ -64,7 +61,6 @@ export type AbilityObject = Position & {
     damage: number,
     faction: string,
     abilityRefId?: number,
-    isLeveling?: boolean,
 }
 
 export type AbilityObjectCircle = AbilityObject & {
@@ -160,11 +156,11 @@ export function setAbilityToBossLevel(ability: Ability, level: number) {
     if (abilityFunctions.setAbilityToBossLevel) {
         abilityFunctions.setAbilityToBossLevel(ability, level);
         const upgradeFunctions = abilityFunctions.abilityUpgradeFunctions;
-        if(upgradeFunctions){
+        if (upgradeFunctions) {
             const upgradeKeys = Object.keys(ability.upgrades);
-            for(let upKey of upgradeKeys){
+            for (let upKey of upgradeKeys) {
                 let upFunction = upgradeFunctions[upKey];
-                if(upFunction && upFunction.setUpgradeToBossLevel){
+                if (upFunction && upFunction.setUpgradeToBossLevel) {
                     upFunction.setUpgradeToBossLevel(ability, level);
                 }
             }
@@ -179,11 +175,16 @@ export function createAbility(abilityName: string, idCounter: IdCounter, isLevel
     const ability = abilityFunctions.createAbility(idCounter, playerInputBinding);
 
     if (isLeveling) {
-        ability.leveling = { experience: 0, experienceForLevelUp: 10, level: 1 };
+        ability.level = {
+            level: 1,
+            leveling: {
+                experience: 0, experienceForLevelUp: 10
+            }
+        };
     }
     if (getsBossSkillPoints) {
         if (abilityFunctions.createAbilityBossUpgradeOptions) {
-            ability.bossSkillPoints = {available: 0, used: 0};
+            ability.bossSkillPoints = { available: 0, used: 0 };
         } else {
             console.log(`${abilityName} is missing bossUpgradeOptions`);
         }
@@ -212,10 +213,10 @@ export function tickAbilityObjects(abilityObjects: AbilityObject[], game: Game) 
 }
 
 export function levelingAbilityXpGain(ability: Ability, owner: Character, experience: number, game: Game) {
-    if (ability.leveling) {
+    if (ability.level?.leveling) {
         if (!owner || owner.isDead || owner.isPet) return;
-        ability.leveling.experience += experience;
-        while (ability.leveling.experience >= ability.leveling.experienceForLevelUp) {
+        ability.level.leveling.experience += experience;
+        while (ability.level.leveling.experience >= ability.level.leveling.experienceForLevelUp) {
             levelUp(ability);
         }
     }
@@ -253,7 +254,7 @@ export function findAbilityAndOwnerById(abilityId: number, game: Game): { abilit
     const map = game.state.map;
     for (let i = 0; i < map.activeChunkKeys.length; i++) {
         const chunkChars = map.chunks[map.activeChunkKeys[i]].characters;
-        for(let character of chunkChars){
+        for (let character of chunkChars) {
             const result = findAbilityAndOwnerInCharacterById(character, abilityId);
             if (result) return result;
         }
@@ -415,9 +416,9 @@ export function paintUiForAbilities(ctx: CanvasRenderingContext2D, game: Game) {
         let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
         if (abilityFunctions?.paintAbilityUI !== undefined) {
             abilityFunctions.paintAbilityUI(ctx, ability, startX, startY, size, game);
-        }else if(ability.playerInputBinding){
+        } else if (ability.playerInputBinding) {
             paintKeyBindingUI(ctx, ability, startX, startY, size, game);
-        }else{
+        } else {
             continue;
         }
         paintAbilityStatsUiIfMouseHovered(ctx, ability, startX, startY, size, game);
@@ -425,20 +426,20 @@ export function paintUiForAbilities(ctx: CanvasRenderingContext2D, game: Game) {
     }
 }
 
-function paintAbilityStatsUiIfMouseHovered(ctx: CanvasRenderingContext2D, ability: Ability, startX: number, startY: number, size: number, game: Game){
-    if(game.UI.displayLongInfos) return;
+function paintAbilityStatsUiIfMouseHovered(ctx: CanvasRenderingContext2D, ability: Ability, startX: number, startY: number, size: number, game: Game) {
+    if (game.UI.displayLongInfos) return;
     const mousePos = game.mouseRelativeCanvasPosition;
-    if(mousePos.y > startY && mousePos.y < startY + size
+    if (mousePos.y > startY && mousePos.y < startY + size
         && mousePos.x > startX && mousePos.x < startX + size
-    ){
+    ) {
         const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
         if (abilityFunctions.paintAbilityStatsUI) {
             abilityFunctions.paintAbilityStatsUI(ctx, ability, 20, 60, game);
-        }        
+        }
     }
 }
 
-function paintKeyBindingUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game){
+function paintKeyBindingUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
     if (!ability.playerInputBinding) return;
     const rectSize = size;
     ctx.strokeStyle = "black";
@@ -487,7 +488,7 @@ function paintDefault(ctx: CanvasRenderingContext2D, abilityObject: AbilityObjec
         const circle = abilityObject as AbilityObjectCircle;
         if (!circle.radius) return;
         const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition);
-        if(abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
+        if (abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
         ctx.fillStyle = abilityObject.faction === FACTION_ENEMY ? "black" : abilityObject.color;
         ctx.beginPath();
         ctx.arc(
@@ -501,16 +502,16 @@ function paintDefault(ctx: CanvasRenderingContext2D, abilityObject: AbilityObjec
 }
 
 function levelUp(ability: Ability) {
-    if (ability.leveling) {
-        ability.leveling.level++;
-        ability.leveling.experience -= ability.leveling.experienceForLevelUp;
-        ability.leveling.experienceForLevelUp += ability.leveling.level * 5;
-        if (ability.leveling.level > 100) {
-            ability.leveling.experienceForLevelUp = Math.floor(ability.leveling.experienceForLevelUp * 1.01);
+    if (ability.level?.leveling) {
+        ability.level.level++;
+        ability.level.leveling.experience -= ability.level.leveling.experienceForLevelUp;
+        ability.level.leveling.experienceForLevelUp += ability.level.level * 5;
+        if (ability.level.level > 100) {
+            ability.level.leveling.experienceForLevelUp = Math.floor(ability.level.leveling.experienceForLevelUp * 1.01);
         }
         const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
         if (abilityFunctions.setAbilityToLevel) {
-            abilityFunctions.setAbilityToLevel(ability, ability.leveling.level);
+            abilityFunctions.setAbilityToLevel(ability, ability.level.level);
         } else {
             throw new Error("Ability missing function 'setAbilityToLevel' " + ability.name);
         }

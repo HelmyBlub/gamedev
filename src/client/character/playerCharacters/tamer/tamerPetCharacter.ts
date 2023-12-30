@@ -9,6 +9,7 @@ import { nextRandom } from "../../../randomNumberGenerator.js";
 import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, calculateCharacterMovePosition, getPlayerCharacters, setCharacterPosition } from "../../character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, createCharacter } from "../../characterModel.js";
 import { PathingCache, getNextWaypoint } from "../../pathing.js";
+import { Leveling } from "../levelingCharacter.js";
 import { Trait, addTamerPetTraits, tamerPetIncludesTrait } from "./petTrait.js";
 import { TAMER_PET_TRAIT_EATS_LESS } from "./petTraitEatsLess.js";
 import { TAMER_PET_TRAIT_GETS_FAT_EASILY } from "./petTraitGetFatEasily.js";
@@ -40,13 +41,6 @@ export type TamerPetCharacter = Character & {
     forcedMovePosition?: Position,
     tradable: boolean,
     gifted?: boolean,
-    level:{
-        level: number,
-        leveling: {
-            experience: number,
-            experienceForLevelUp: number,
-        }
-    }
     legendary?: {
         buildingRefId: number,
     }
@@ -239,8 +233,8 @@ export function paintTamerPetCharacterStatsUI(ctx: CanvasRenderingContext2D, pet
         `food: ${petFoodIntakeToDisplayText(pet.foodIntakeLevel)}`,
         `Happiness: ${petHappinessToDisplayText(pet.happines)}`,
         `Movement Speed: ${pet.moveSpeed.toFixed(2)}`,
-        `Level: ${pet.level.level.toFixed(0)}`,
-        `XP: ${pet.level.leveling.experience.toFixed(0)}/${pet.level.leveling.experienceForLevelUp.toFixed(0)}`,
+        `Level: ${pet.level!.level.toFixed(0)}`,
+        `XP: ${pet.level!.leveling!.experience.toFixed(0)}/${pet.level!.leveling!.experienceForLevelUp.toFixed(0)}`,
     );
 
     if (pet.abilities.length > 0) {

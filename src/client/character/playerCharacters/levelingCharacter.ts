@@ -6,6 +6,14 @@ import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability, fillR
 import { ABILITIES_FUNCTIONS } from "../../ability/ability.js";
 import { PLAYER_CLASS_TOWER_BUILDER } from "./towerCharacterClass.js";
 
+export type Leveling = {
+    level: number,
+    leveling?: {
+        experience: number,
+        experienceForLevelUp: number,
+    }
+}
+
 export function levelingCharacterXpGain(state: GameState, killedCharacter: Character, game: Game) {
     let playerCharacters = getPlayerCharacters(state.players);
     for (let character of playerCharacters) {

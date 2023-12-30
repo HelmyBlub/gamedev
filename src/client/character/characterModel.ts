@@ -6,9 +6,9 @@ import { Position, IdCounter, Game, FACTION_PLAYER, BossSkillPoints } from "../g
 import { GAME_IMAGES } from "../imageLoad.js";
 import { createRandomizedCharacterImageData, RandomizedCharacterImage } from "../randomizedCharacterImage.js";
 import { RandomSeed } from "../randomNumberGenerator.js";
-import { executeDefaultCharacterUpgradeOption, tickDefaultCharacter } from "./character.js";
 import { tickFixPositionRespawnEnemyCharacter } from "./enemy/fixPositionRespawnEnemy.js";
 import { PathingCache } from "./pathing.js";
+import { Leveling } from "./playerCharacters/levelingCharacter.js";
 import { initPlayerCharacterChoiceOptions } from "./playerCharacters/playerCharacters.js";
 import { TamerPetCharacter } from "./playerCharacters/tamer/tamerPetCharacter.js";
 import { UpgradeOption, UpgradeOptionAndProbability } from "./upgrade.js";
@@ -121,13 +121,7 @@ export type Character = Position & {
     pets?: TamerPetCharacter[],
     weight: number,
     bossSkillPoints?: BossSkillPoints,
-    level?: {
-        level: number,
-        leveling?: {
-            experience: number,
-            experienceForLevelUp: number,
-        }
-    }
+    level?: Leveling,
     availableSkillPoints?: number,
     mapChunkKey?: string,
     combatlog?: Combatlog, 

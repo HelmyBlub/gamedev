@@ -4,6 +4,18 @@ current tasks:
         - bug: leveling for leveling character and legendary abilities does not work together
             - tower builder:
                 - what to do with hp and move speed upgrades? should not be lost. 
+                - maybe bigger code redesign for later class ideas?
+                    - character passives?
+                        - dev:
+                            - apply passive
+                            - abilityRefId
+                            - characterClass
+                            - some info like hp amount
+
+
+                        - 50% dmg reduction (ball)
+                        - +hp (ball upgrade), Tower builder
+                        - +move speed Tower Builder
         - change scalling of burrowed abilities
             - ...
         - save in localStorage

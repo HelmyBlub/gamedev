@@ -27,7 +27,7 @@ export function paintAbilityObjectSnipe(ctx: CanvasRenderingContext2D, abilityOb
         ctx.lineWidth = abilityObjectSnipe.size;
         ctx.globalAlpha = Math.min((snipe.deleteTime - game.state.time) / ABILITY_SNIPE_PAINT_FADE_DURATION, 1);
     }
-    if(abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
+    if (abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
     ctx.beginPath();
     let paintPos = getPointPaintPosition(ctx, snipe, cameraPosition);
     ctx.moveTo(paintPos.x, paintPos.y);
@@ -120,12 +120,14 @@ export function paintAbilitySnipeStatsUI(ctx: CanvasRenderingContext2D, ability:
         `Range: ${getAbilitySnipeRange(abilitySnipe)}`,
     );
 
-    if (abilitySnipe.leveling) {
-        textLines.push(
-            `Level: ${abilitySnipe.leveling.level}`,
-            `Current XP: ${abilitySnipe.leveling.experience.toFixed(0)}`,
-            `XP required for Level Up: ${abilitySnipe.leveling.experienceForLevelUp}`,
-        );
+    if (abilitySnipe.level) {
+        textLines.push(`Level: ${abilitySnipe.level.level}`);
+        if (abilitySnipe.level.leveling) {
+            textLines.push(
+                `Current XP: ${abilitySnipe.level.leveling.experience.toFixed(0)}`,
+                `XP required for Level Up: ${abilitySnipe.level.leveling.experienceForLevelUp}`,
+            );
+        }
     }
 
     textLines.push(

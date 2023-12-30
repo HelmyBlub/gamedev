@@ -19,6 +19,7 @@ export type Building = {
     playerClass?: string,
     abilities: Ability[],
     pets: TamerPetCharacter[],
+    isCharacterLeveling: boolean,
     stuffBorrowed?: boolean,
     tileX: number,
     tileY: number,
@@ -81,6 +82,7 @@ export function mapObjectPlaceClassBuilding(game: Game) {
         id: getNextId(game.state.idCounter),
         abilities: [],
         pets: [],
+        isCharacterLeveling: false,
         tileX: freeChunkTile.x,
         tileY: freeChunkTile.y,
     }
