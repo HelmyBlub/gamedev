@@ -80,7 +80,7 @@ export function paintCharacterStatsUI(ctx: CanvasRenderingContext2D, character: 
             `for LevelUp is reached.`
         );
 
-    } else if (character.characterClass !== undefined) {
+    } else if (character.characterClasses !== undefined) {
         textLines.push(
             `Abilities gain XP only for its own kills.`,
             `On Level up Abilties become stronger.`,

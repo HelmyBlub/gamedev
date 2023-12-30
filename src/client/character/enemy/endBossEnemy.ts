@@ -60,7 +60,7 @@ export function setPlayerAsEndBoss(game: Game) {
         localStorage.setItem(LOCALSTORAGE_NEXTENDBOSSES, JSON.stringify(game.state.bossStuff.nextEndbosses));
     }
 
-    if (oldBoss?.characterClass) {
+    if (oldBoss?.characterClasses) {
         classBuildingPutLegendaryCharacterStuffBackIntoBuilding(oldBoss, game);
         saveCharacterAsPastCharacter(oldBoss, game);
     }
@@ -115,7 +115,7 @@ function tickEndBossEnemyCharacter(enemy: EndBossEnemyCharacter, game: Game, pat
 function modifyCharacterToEndBoss(boss: Character) {
     boss.type = CHARACTER_TYPE_END_BOSS_ENEMY;
     let newHp = END_BOSS_BASE_HP
-    if(boss.characterClass){
+    if(boss.characterClasses){
         const hpIncreaseFactor = boss.maxHp / PLAYER_BASE_HP;
         newHp *= hpIncreaseFactor;
     }

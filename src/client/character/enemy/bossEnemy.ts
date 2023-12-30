@@ -30,7 +30,7 @@ export function createBossWithLevel(idCounter: IdCounter, level: number, game: G
     const spawn: Position = getBossSpawnPosition(game);
     const celestialDirection = getCelestialDirection(spawn);
     const nextEndBoss = game.state.bossStuff.nextEndbosses[celestialDirection]!;
-    const nextBossClass = nextEndBoss.characterClass;
+    const nextBossClass = findBossClassBasedOnEndBoss(nextEndBoss);
     if (nextBossClass) {
         const classFuntions = PLAYER_CHARACTER_CLASSES_FUNCTIONS[nextBossClass];
         if (classFuntions && classFuntions.createBossBasedOnClassAndCharacter) {
@@ -95,6 +95,15 @@ export function setAbilityToEnemyLevel(ability: Ability, level: number, damageFa
     } else {
         throw new Error("function setAbilityToBossLevel missing for" + ability.name);
     }
+}
+
+function findBossClassBasedOnEndBoss(boss: Character): string | undefined{
+    if(boss.characterClasses){
+        for(let bossClass of boss.characterClasses){
+            if(!bossClass.gifted) return bossClass.className;
+        }
+    }
+    return undefined;
 }
 
 function createDefaultBossWithLevel(idCounter: IdCounter, level: number, spawn: Position, nextEndBoss: Character, game: Game): Character {

@@ -1,4 +1,4 @@
-import { levelingCharacterXpGain } from "./playerCharacters/levelingCharacter.js";
+import { levelingCharacterAndClassXpGain } from "./playerCharacters/levelingCharacter.js";
 import { calculateMovePosition, chunkXYToMapKey, determineMapKeysInDistance, GameMap, getChunksTouchingLine, MapChunk, mapKeyToChunkXY, positionToMapKey } from "../map/map.js";
 import { Character, CHARACTER_TYPE_FUNCTIONS, PLAYER_CHARACTER_TYPE } from "./characterModel.js";
 import { getNextWaypoint, getPathingCache, PathingCache } from "./pathing.js";
@@ -163,16 +163,20 @@ export function characterTradeAbilityAndPets(fromCharacter: Character, toCharact
         }
     }
     tradePets(fromCharacter, toCharacter, game);
-    if (!toCharacter.overtakenCharacterClasses) toCharacter.overtakenCharacterClasses = [];
-    if (fromCharacter.characterClass) {
-        const newClass = fromCharacter.characterClass;
-        toCharacter.overtakenCharacterClasses.push(newClass);
-        const classFunctions = PLAYER_CHARACTER_CLASSES_FUNCTIONS[newClass];
-        if (classFunctions && classFunctions.preventMultiple) {
-            if (toCharacter.upgradeChoices && toCharacter.upgradeChoices[0].type === "Character") {
-                const index = toCharacter.upgradeChoices.findIndex(c => c.displayText === newClass);
-                if (index > -1) {
-                    toCharacter.upgradeChoices.splice(index, 1);
+    if (!toCharacter.characterClasses) toCharacter.characterClasses = [];
+    if (fromCharacter.characterClasses) {
+        for(let charClass of fromCharacter.characterClasses){
+            if(charClass.gifted) continue;
+            charClass.gifted = true;
+            const newClass = charClass.className;
+            toCharacter.characterClasses.push(charClass);
+            const classFunctions = PLAYER_CHARACTER_CLASSES_FUNCTIONS[newClass];
+            if (classFunctions && classFunctions.preventMultiple) {
+                if (toCharacter.upgradeChoices && toCharacter.upgradeChoices[0].type === "Character") {
+                    const index = toCharacter.upgradeChoices.findIndex(c => c.displayText === newClass);
+                    if (index > -1) {
+                        toCharacter.upgradeChoices.splice(index, 1);
+                    }
                 }
             }
         }
@@ -196,7 +200,7 @@ export function changeCharacterId(character: Character, idCounter: IdCounter) {
 }
 
 export function executeDefaultCharacterUpgradeOption(character: Character, upgradeOptionChoice: UpgradeOption, game: Game) {
-    if (character.characterClass === undefined) {
+    if (character.characterClasses === undefined) {
         const keys = Object.keys(PLAYER_CHARACTER_CLASSES_FUNCTIONS);
         for (let key of keys) {
             if (key === upgradeOptionChoice.identifier) {
@@ -562,7 +566,7 @@ function experienceForCharacter(character: Character, experienceWorth: number, g
 function killCharacter(character: Character, game: Game, abilityRefId: number | undefined = undefined) {
     character.isDead = true;
     if (game.state.timeFirstKill === undefined) game.state.timeFirstKill = game.state.time;
-    levelingCharacterXpGain(game.state, character, game);
+    levelingCharacterAndClassXpGain(game.state, character, game);
     if (character.type === CHARACTER_TYPE_BOSS_ENEMY) {
         playerCharactersAddBossSkillPoints(character.level?.level, game);
         experienceForEveryPlayersLeveling(character.experienceWorth, game);

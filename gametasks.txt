@@ -1,4 +1,7 @@
 current tasks:
+- fix: tower build level now in character class. Expand new level stuff in code
+- rename endboss to king in code ?
+- "paintCharacterStatsUI" fix UI text based on class and legendary
 - first permanent progression idea:
     - dev steps:
         - bug: leveling for leveling character and legendary abilities does not work together

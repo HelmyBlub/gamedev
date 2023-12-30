@@ -2,7 +2,7 @@ import { Game } from "../gameModel.js";
 import { nextRandom } from "../randomNumberGenerator.js";
 import { executeDefaultCharacterUpgradeOption } from "./character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character } from "./characterModel.js";
-import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters/playerCharacters.js";
+import { CharacterClass, PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters/playerCharacters.js";
 
 export type UpgradeOption = {
     type: "Character" | "Ability" | "Pet" | "PetAbility",
@@ -13,6 +13,7 @@ export type UpgradeOption = {
     additionalInfo?: string,
     boss?: boolean,
     order?: number,
+    classIdRef?: number,
 }
 
 export type AbilityUpgradeOption = UpgradeOption & {
@@ -74,28 +75,23 @@ function setUpgradeOptionOrderValues(options: UpgradeOptionAndProbability[]){
 
 function getCharacterUpgradeOptions(character: Character, game: Game): UpgradeOptionAndProbability[] {
     let upgradeOptionAndProbability: UpgradeOptionAndProbability[] = [];
-    let characterClasses = [];
-    if(character.characterClass) characterClasses.push(character.characterClass);
-    if(character.overtakenCharacterClasses){
-        for(let characterClass of character.overtakenCharacterClasses){
-            characterClasses.push(characterClass);
+    if(character.characterClasses){
+        for(let tempClass of character.characterClasses){
+            upgradeOptionAndProbability = getCharacterUpgradeOptionsForClass(character, tempClass, game);
+            if(upgradeOptionAndProbability.length > 0) break;
         }
-    }
-    for(let tempClass of characterClasses){
-        upgradeOptionAndProbability = getCharacterUpgradeOptionsForClass(character, tempClass, game);
-        if(upgradeOptionAndProbability.length > 0) break;
     }
     return upgradeOptionAndProbability;
 }
 
-function getCharacterUpgradeOptionsForClass(character: Character, characterClass: string, game: Game): UpgradeOptionAndProbability[]{
+function getCharacterUpgradeOptionsForClass(character: Character, characterClass: CharacterClass, game: Game): UpgradeOptionAndProbability[]{
     let upgradeOptionAndProbability: UpgradeOptionAndProbability[] = [];
-    const classFunction = PLAYER_CHARACTER_CLASSES_FUNCTIONS[characterClass];
+    const classFunction = PLAYER_CHARACTER_CLASSES_FUNCTIONS[characterClass.className];
     if (classFunction.createBossUpgradeOptions) {
         upgradeOptionAndProbability = classFunction.createBossUpgradeOptions(character, game);
     }
     if (upgradeOptionAndProbability.length === 0 && classFunction.createUpgradeOptions) {
-        upgradeOptionAndProbability = classFunction.createUpgradeOptions(character, game);
+        upgradeOptionAndProbability = classFunction.createUpgradeOptions(character, characterClass, game);
     }
     return upgradeOptionAndProbability;
 }

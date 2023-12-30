@@ -7,7 +7,7 @@ import { FACTION_ENEMY, Game, IdCounter, Position } from "../../gameModel.js";
 import { resetCharacter } from "../character.js";
 import { Character, IMAGE_SLIME, createCharacter } from "../characterModel.js";
 import { CHARACTER_TYPE_BOSS_ENEMY } from "../enemy/bossEnemy.js";
-import { changeToLevelingCharacter, createCharacterUpgradeOptionsNew, executeLevelingCharacterUpgradeOption } from "./levelingCharacter.js";
+import { createCharacterUpgradeOptionsNew, executeLevelingCharacterUpgradeOption } from "./levelingCharacter.js";
 import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters.js";
 
 export const PLAYER_CLASS_TOWER_BUILDER = "Tower Builder";
@@ -28,8 +28,19 @@ function changeCharacterToTowerBuilderClass(
     idCounter: IdCounter,
     game: Game,
 ) {
-    changeToLevelingCharacter(character, game);
-    character.characterClass = PLAYER_CLASS_TOWER_BUILDER;
+    if(!character.characterClasses) character.characterClasses = [];
+    character.characterClasses.push({
+        id: getNextId(game.state.idCounter),
+        className: PLAYER_CLASS_TOWER_BUILDER,
+        level: {
+            level: 0,
+            leveling: {
+                experience: 0,
+                experienceForLevelUp: 10,
+            }
+        },
+        availableSkillPoints: 0,
+    });
     addAbilityToCharacter(character, createAbilityTower(idCounter, "ability1"));
     addAbilityToCharacter(character, createAbilityHpRegen(idCounter));
 }

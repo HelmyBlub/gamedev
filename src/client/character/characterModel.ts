@@ -9,7 +9,7 @@ import { RandomSeed } from "../randomNumberGenerator.js";
 import { tickFixPositionRespawnEnemyCharacter } from "./enemy/fixPositionRespawnEnemy.js";
 import { PathingCache } from "./pathing.js";
 import { Leveling } from "./playerCharacters/levelingCharacter.js";
-import { initPlayerCharacterChoiceOptions } from "./playerCharacters/playerCharacters.js";
+import { CharacterClass, initPlayerCharacterChoiceOptions } from "./playerCharacters/playerCharacters.js";
 import { TamerPetCharacter } from "./playerCharacters/tamer/tamerPetCharacter.js";
 import { UpgradeOption, UpgradeOptionAndProbability } from "./upgrade.js";
 
@@ -99,8 +99,7 @@ export type Character = Position & {
     faction: string,
     experienceWorth: number,
     type: string,
-    characterClass?: string,
-    overtakenCharacterClasses?: string[],
+    characterClasses?: CharacterClass[],
     isDead: boolean,
     abilities: Ability[],
     debuffs: Debuff[],

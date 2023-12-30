@@ -29,7 +29,11 @@ function changeCharacterToBallClass(
     idCounter: IdCounter,
     game: Game,
 ) {
-    character.characterClass = CHARACTER_CLASS_BALL;
+    if(!character.characterClasses) character.characterClasses = [];
+    character.characterClasses.push({
+        id: getNextId(game.state.idCounter),
+        className: CHARACTER_CLASS_BALL
+    });
     character.maxHp *= 2;
     character.hp *= 2;
     character.damageTakenModifierFactor *= 0.5;

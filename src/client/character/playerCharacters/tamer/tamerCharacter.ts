@@ -72,8 +72,12 @@ function changeCharacterToTamerClass(
     idCounter: IdCounter,
     game: Game,
 ) {
+    if(!character.characterClasses) character.characterClasses = [];
+    character.characterClasses.push({
+        className: TAMER_CHARACTER,
+        id: getNextId(game.state.idCounter),
+    });
     character.type = TAMER_CHARACTER;
-    character.characterClass = TAMER_CHARACTER;
     character.moveSpeed *= 1.25;
     character.maxHp *= 1.5;
     character.hp *= 1.5;

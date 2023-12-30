@@ -3,7 +3,7 @@ import { canCharacterTradeAbilityOrPets } from "./character/character.js";
 import { Character } from "./character/characterModel.js";
 import { paintCharacterStatsUI, paintPlayerCharacters } from "./character/characterPaint.js";
 import { paintBossCharacters, paintBossCrown } from "./character/enemy/bossEnemy.js";
-import { isPreventedDuplicateClass } from "./character/playerCharacters/playerCharacters.js";
+import { findMainCharacterClass, hasPlayerChoosenStartClassUpgrade, isPreventedDuplicateClass } from "./character/playerCharacters/playerCharacters.js";
 import { paintTamerPetCharacterStatsUI } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
 import { calculateDistance, getCameraPosition, getTimeSinceFirstKill } from "./game.js";
 import { Game, Position, Debugging, PaintTextData } from "./gameModel.js";
@@ -372,7 +372,7 @@ function paintGameRulesUI(ctx: CanvasRenderingContext2D, character: Character, d
 
 function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Character, game: Game) {
     if (game.state.ended) return;
-    if (game.settings.autoSkillEnabled && character.characterClass !== undefined) return;
+    if (game.settings.autoSkillEnabled && hasPlayerChoosenStartClassUpgrade(character)) return;
     const firstFontSize = 20;
     const addFontSize = 14;
     const startY = (ctx.canvas.height * 0.75);

@@ -1,3 +1,4 @@
+import { findMainCharacterClass } from "./character/playerCharacters/playerCharacters.js";
 import { calculateDistance, getTimeSinceFirstKill } from "./game.js";
 import { Game } from "./gameModel.js";
 import { paintKey } from "./gamePaint.js";
@@ -57,9 +58,9 @@ export function calculateHighscoreOnGameEnd(game: Game, isEndbossKill: boolean):
     const state = game.state;
     for (let i = 0; i < game.state.players.length; i++) {
         const player = game.state.players[i];
-        if (player.character.characterClass) {
+        if (player.character.characterClasses) {
             if (playerClass.length > 1) playerClass += ", ";
-            playerClass += player.character.characterClass;
+            playerClass += findMainCharacterClass(player.character);
         }
         const distance = Math.round(calculateDistance(player.character, getMapMidlePosition(state.map)));
         if (distance > newScore) newScore = distance;

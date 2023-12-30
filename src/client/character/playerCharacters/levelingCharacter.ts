@@ -1,10 +1,10 @@
-import { getPlayerCharacters, turnCharacterToPet, moveCharacterTick } from "../character.js";
+import { getPlayerCharacters } from "../character.js";
 import { Game, GameState } from "../../gameModel.js";
-import { RandomSeed } from "../../randomNumberGenerator.js";
 import { Character } from "../characterModel.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability, fillRandomUpgradeOptionChoices } from "../upgrade.js";
 import { ABILITIES_FUNCTIONS } from "../../ability/ability.js";
 import { PLAYER_CLASS_TOWER_BUILDER } from "./towerCharacterClass.js";
+import { CharacterClass } from "./playerCharacters.js";
 
 export type Leveling = {
     level: number,
@@ -14,13 +14,25 @@ export type Leveling = {
     }
 }
 
-export function levelingCharacterXpGain(state: GameState, killedCharacter: Character, game: Game) {
+export function levelingCharacterAndClassXpGain(state: GameState, killedCharacter: Character, game: Game) {
     let playerCharacters = getPlayerCharacters(state.players);
     for (let character of playerCharacters) {
-        if (character.level?.leveling !== undefined && !character.isDead && !character.isPet) {
+        if (character.isDead || character.isPet) continue;
+        if (character.level?.leveling !== undefined) {
             character.level.leveling.experience += killedCharacter.experienceWorth;
             while (character.level.leveling.experience >= character.level.leveling.experienceForLevelUp) {
-                levelingCharacterLevelUp(character, state.randomSeed, game);
+                levelingCharacterLevelUp(character, game);
+            }
+        }
+        if (character.characterClasses) {
+            for (let charClass of character.characterClasses) {
+                if (charClass.gifted) continue;
+                if (charClass.level?.leveling !== undefined) {
+                    charClass.level.leveling.experience += killedCharacter.experienceWorth;
+                    while (charClass.level.leveling.experience >= charClass.level.leveling.experienceForLevelUp) {
+                        levelingClassLevelUp(character, charClass, game);
+                    }
+                }
             }
         }
     }
@@ -37,7 +49,7 @@ export function changeToLevelingCharacter(character: Character, game: Game) {
     character.availableSkillPoints = 0;
 }
 
-function levelingCharacterLevelUp(character: Character, randomSeed: RandomSeed, game: Game) {
+function levelingCharacterLevelUp(character: Character, game: Game) {
     if (!character.level?.leveling || character.availableSkillPoints === undefined) return;
     character.level.level++;
     character.availableSkillPoints += 1;
@@ -46,8 +58,18 @@ function levelingCharacterLevelUp(character: Character, randomSeed: RandomSeed, 
     fillRandomUpgradeOptionChoices(character, game);
 }
 
+function levelingClassLevelUp(character: Character, charClass: CharacterClass, game: Game) {
+    if (!charClass.level?.leveling || charClass.availableSkillPoints === undefined) return;
+    charClass.level.level++;
+    charClass.availableSkillPoints += 1;
+    charClass.level.leveling.experience -= charClass.level.leveling.experienceForLevelUp;
+    charClass.level.leveling.experienceForLevelUp += Math.floor(charClass.level.level / 2);
+    fillRandomUpgradeOptionChoices(character, game);
+}
+
 export function executeLevelingCharacterUpgradeOption(character: Character, upgradeOption: UpgradeOption, game: Game) {
-    if (character.availableSkillPoints === undefined) return;
+    const charClass = findCharacterClassById(character, upgradeOption.classIdRef!);
+    if(!charClass || !charClass.availableSkillPoints || charClass.availableSkillPoints <= 0) return;
     if (upgradeOption.type === "Character") {
         if (upgradeOption.identifier === "Max Health+50") {
             character.hp += 50;
@@ -66,12 +88,12 @@ export function executeLevelingCharacterUpgradeOption(character: Character, upgr
             }
         }
     }
-    character.availableSkillPoints--;
+    charClass.availableSkillPoints--;
 }
 
-export function createCharacterUpgradeOptionsNew(character: Character, game: Game): UpgradeOptionAndProbability[] {
+export function createCharacterUpgradeOptionsNew(character: Character, characterClass: CharacterClass, game: Game): UpgradeOptionAndProbability[] {
     const upgradeOptions: UpgradeOptionAndProbability[] = [];
-    if (character.availableSkillPoints === 0) return upgradeOptions;
+    if (characterClass.availableSkillPoints === undefined || characterClass.availableSkillPoints <= 0) return upgradeOptions;
     upgradeOptions.push({
         option: {
             identifier: "Max Health+50",
@@ -95,8 +117,18 @@ export function createCharacterUpgradeOptionsNew(character: Character, game: Gam
             upgradeOptions.push(...abilityFunctions.createAbilityUpgradeOptions(ability));
         }
     }
-    for(let option of upgradeOptions){
+    for (let option of upgradeOptions) {
         option.option.characterClass = PLAYER_CLASS_TOWER_BUILDER;
+        option.option.classIdRef = characterClass.id;
     }
     return upgradeOptions;
+}
+
+export function findCharacterClassById(character: Character, classId: number): CharacterClass | undefined {
+    if (character.characterClasses) {
+        for (let charClass of character.characterClasses) {
+            if (charClass.id === classId) return charClass;
+        }
+    }
+    return undefined;
 }

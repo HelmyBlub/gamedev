@@ -22,6 +22,7 @@ import { ABILITY_NAME_LOVE_PET } from "./ability/petTamer/abilityLovePet.js";
 import { COMMAND_RESTART } from "./globalVars.js";
 import { consoleLogCombatlog } from "./combatlog.js";
 import { classBuildingCheckAllPlayerForLegendaryAbilitiesAndMoveBackToBuilding, mapObjectPlaceClassBuilding } from "./map/mapObjectClassBuilding.js";
+import { hasPlayerChoosenStartClassUpgrade } from "./character/playerCharacters/playerCharacters.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -592,7 +593,7 @@ function checkForAutoSkill(game: Game) {
     if (!game.settings.autoSkillEnabled) return;
 
     const character: Character | undefined = findMyCharacter(game);
-    if (character && character.characterClass !== undefined) {
+    if (character && hasPlayerChoosenStartClassUpgrade(character)) {
         if (character.upgradeChoices.length > 0) {
             let randomChoice = Math.floor(Math.random() * character.upgradeChoices.length);
             handleCommand(game, {

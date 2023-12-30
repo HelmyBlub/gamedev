@@ -1,7 +1,8 @@
 import { Ability, resetAllCharacterAbilities } from "../ability/ability.js";
 import { resetCharacter } from "../character/character.js";
 import { Character, createCharacter } from "../character/characterModel.js";
-import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "../character/playerCharacters/playerCharacters.js";
+import { Leveling } from "../character/playerCharacters/levelingCharacter.js";
+import { CharacterClass, PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "../character/playerCharacters/playerCharacters.js";
 import { TamerPetCharacter } from "../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { getCameraPosition, getNextId } from "../game.js";
 import { FACTION_PLAYER, Game, Position } from "../gameModel.js";
@@ -16,10 +17,9 @@ export type MapTileObjectClassBuilding = MapTileObject & {
 
 export type Building = {
     id: number,
-    playerClass?: string,
+    playerClass?: CharacterClass,
     abilities: Ability[],
     pets: TamerPetCharacter[],
-    isCharacterLeveling: boolean,
     stuffBorrowed?: boolean,
     tileX: number,
     tileY: number,
@@ -59,9 +59,9 @@ export function addExistingBuildingsToSpawnChunk(mapChunk: MapChunk, game: Game)
 
 export function mapObjectPlaceClassBuilding(game: Game) {
     let spawnChunk = game.state.map.chunks[chunkXYToMapKey(0, 0)];
-    const defeatedBossCharacterClass = game.state.bossStuff.bosses[game.state.bossStuff.bosses.length - 2].characterClass;
-    if (defeatedBossCharacterClass) {
-        placePlayerClassStuffInBuilding(defeatedBossCharacterClass, game);
+    const classToMakeLegendary = findCharacterClassToMakeLegendary(game.state.bossStuff.bosses[game.state.bossStuff.bosses.length - 2]);
+    if (classToMakeLegendary) {
+        placePlayerClassStuffInBuilding(classToMakeLegendary, game);
         return;
     }
     let freeChunkTile: Position = { x: 0, y: 0 };
@@ -82,7 +82,6 @@ export function mapObjectPlaceClassBuilding(game: Game) {
         id: getNextId(game.state.idCounter),
         abilities: [],
         pets: [],
-        isCharacterLeveling: false,
         tileX: freeChunkTile.x,
         tileY: freeChunkTile.y,
     }
@@ -133,6 +132,15 @@ export function classBuildingPutLegendaryCharacterStuffBackIntoBuilding(characte
     }
 }
 
+function findCharacterClassToMakeLegendary(character: Character): string | undefined{
+    if(character.characterClasses){
+        for(let charClass of character.characterClasses){
+            if(!charClass.gifted && !charClass.legendary) return charClass.className;
+        }
+    }
+    return undefined;
+}
+
 function placePlayerClassStuffInBuilding(playerClass: string, game: Game) {
     let classFunctions = PLAYER_CHARACTER_CLASSES_FUNCTIONS[playerClass];
     if (classFunctions) {
@@ -140,7 +148,7 @@ function placePlayerClassStuffInBuilding(playerClass: string, game: Game) {
         if (freeBuilding) {
             const tempCharacter = createCharacter(0, 0, 0, 0, 0, "", 0, 0, FACTION_PLAYER, "", 0);
             classFunctions.changeCharacterToThisClass(tempCharacter, game.state.idCounter, game);
-            freeBuilding.playerClass = playerClass;
+            freeBuilding.playerClass = tempCharacter.characterClasses![0];
             freeBuilding.stuffBorrowed = false;
             for (let ability of tempCharacter.abilities) {
                 freeBuilding.abilities.push(ability);
@@ -167,23 +175,19 @@ function interact(interacter: Character, mapObject: MapTileObject, game: Game) {
     for (let ability of classBuilding.abilities) {
         interacter.abilities.push(ability);
     }
+    classBuilding.abilities = [];
     if(classBuilding.pets.length > 0){
         if(!interacter.pets) interacter.pets = [];
         for (let pet of classBuilding.pets) {
             interacter.pets.push(pet);
         }
     }
-    classBuilding.abilities = [];
     classBuilding.pets = [];
     classBuilding.stuffBorrowed = true;
-    if(!interacter.characterClass){
-        interacter.characterClass = classBuilding.playerClass;
-        if(interacter.upgradeChoices && interacter.upgradeChoices[0].type === "Character"){
-            interacter.upgradeChoices = [];
-        }
-    }else{
-        if(!interacter.overtakenCharacterClasses) interacter.overtakenCharacterClasses = [];
-        interacter.overtakenCharacterClasses.push(classBuilding.playerClass);
+    if(!interacter.characterClasses) interacter.characterClasses = [];
+    interacter.characterClasses.push(classBuilding.playerClass);
+    if(interacter.upgradeChoices && interacter.upgradeChoices[0].type === "Character"){
+        interacter.upgradeChoices = [];
     }
     resetCharacter(interacter);
 }
