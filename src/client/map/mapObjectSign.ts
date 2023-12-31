@@ -29,7 +29,7 @@ export function addMapObjectBossSign() {
     }
 }
 
-function paintInteractSign(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, game: Game) {
+function paintInteractSign(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, interacter: Character, game: Game) {
     const key = findMapKeyForMapObject(mapObject, game.state.map);
     if (!key) return;
     const endBossSign = mapObject as MapTileObjectNextEndbossSign;

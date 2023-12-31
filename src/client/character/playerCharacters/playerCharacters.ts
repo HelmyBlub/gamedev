@@ -68,13 +68,17 @@ export function createCharacterChooseUpgradeOptions(game: Game): UpgradeOption[]
     return upgradeOptions;
 }
 
-export function isPreventedDuplicateClass(fromCharacter: Character, toCharacter: Character): boolean{
+export function shareCharactersTradeablePreventedMultipleClass(fromCharacter: Character, toCharacter: Character): boolean{
     if(!fromCharacter.characterClasses) return false;
     const takeoverClass = findMainCharacterClass(fromCharacter);
-    const takeoverClassFunctions = PLAYER_CHARACTER_CLASSES_FUNCTIONS[takeoverClass];
-    if(takeoverClassFunctions && !takeoverClassFunctions.preventMultiple) return false;
+    return hasCharacterPreventedMultipleClass(takeoverClass, toCharacter);
+}
+
+export function hasCharacterPreventedMultipleClass(newCharacterClassName: string, toCharacter: Character): boolean{
+    const newCharacterClassFunctions = PLAYER_CHARACTER_CLASSES_FUNCTIONS[newCharacterClassName];
+    if(newCharacterClassFunctions && !newCharacterClassFunctions.preventMultiple) return false;
     if(toCharacter.characterClasses){
-        const overtaken = toCharacter.characterClasses.find(c => c.className === takeoverClass);
+        const overtaken = toCharacter.characterClasses.find(c => c.className === newCharacterClassName);
         if(overtaken) return true;
     }    
     return false;

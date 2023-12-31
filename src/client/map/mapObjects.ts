@@ -9,7 +9,7 @@ import { addMapObjectBossSign } from "./mapObjectSign.js";
 export type MapObjectFunctions = {
     interact?: (interacter: Character, mapObject: MapTileObject, game: Game) => void,
     paint: (ctx: CanvasRenderingContext2D, mapObject: MapTileObject, paintTopLeft: Position, game: Game) => void,
-    paintInteract?: (ctx: CanvasRenderingContext2D, mapObject: MapTileObject, game: Game) => void
+    paintInteract?: (ctx: CanvasRenderingContext2D, mapObject: MapTileObject, interacter: Character, game: Game) => void
 }
 
 export type MapObjectsFunctions = {

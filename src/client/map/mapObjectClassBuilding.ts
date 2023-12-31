@@ -1,8 +1,7 @@
-import { Ability, resetAllCharacterAbilities } from "../ability/ability.js";
+import { Ability } from "../ability/ability.js";
 import { resetCharacter } from "../character/character.js";
 import { Character, createCharacter } from "../character/characterModel.js";
-import { Leveling } from "../character/playerCharacters/levelingCharacter.js";
-import { CharacterClass, PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "../character/playerCharacters/playerCharacters.js";
+import { CharacterClass, PLAYER_CHARACTER_CLASSES_FUNCTIONS, hasCharacterPreventedMultipleClass } from "../character/playerCharacters/playerCharacters.js";
 import { TamerPetCharacter } from "../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { getCameraPosition, getNextId } from "../game.js";
 import { FACTION_PLAYER, Game, Position } from "../gameModel.js";
@@ -39,7 +38,7 @@ export function addMapObjectClassBuilding() {
     MAP_OBJECTS_FUNCTIONS[MAP_OBJECT_CLASS_BUILDING] = {
         interact: interact,
         paint: paintClassBuilding,
-        paintInteract: paintInteractSign,
+        paintInteract: paintInteract,
     }
 }
 
@@ -172,6 +171,9 @@ function interact(interacter: Character, mapObject: MapTileObject, game: Game) {
     const mapObjectClassBuilding = mapObject as MapTileObjectClassBuilding;
     const classBuilding = findBuildingById(mapObjectClassBuilding.buildingId, game);
     if (!classBuilding || classBuilding.playerClass === undefined || classBuilding.stuffBorrowed) return;
+    if(hasCharacterPreventedMultipleClass(classBuilding.playerClass.className, interacter)){
+        return;
+    }
     for (let ability of classBuilding.abilities) {
         interacter.abilities.push(ability);
     }
@@ -186,7 +188,7 @@ function interact(interacter: Character, mapObject: MapTileObject, game: Game) {
     classBuilding.stuffBorrowed = true;
     if(!interacter.characterClasses) interacter.characterClasses = [];
     interacter.characterClasses.push(classBuilding.playerClass);
-    if(interacter.upgradeChoices && interacter.upgradeChoices[0].type === "ChooseClass"){
+    if(interacter.upgradeChoices.length > 0 && interacter.upgradeChoices[0].type === "ChooseClass"){
         interacter.upgradeChoices = [];
     }
     resetCharacter(interacter);
@@ -196,7 +198,7 @@ function findBuildingById(id: number, game: Game): Building | undefined {
     return game.state.buildings.find((b) => b.id === id);
 }
 
-function paintInteractSign(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, game: Game) {
+function paintInteract(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, interacter: Character, game: Game) {
     const key = findMapKeyForMapObject(mapObject, game.state.map);
     if (!key) return;
     const mapObjectClassBuilding = mapObject as MapTileObjectClassBuilding;
@@ -213,10 +215,14 @@ function paintInteractSign(ctx: CanvasRenderingContext2D, mapObject: MapTileObje
             `to unlock legendary.`,
         )
     } else if (!classBuilding.stuffBorrowed) {
-        texts.push(`Class ${classBuilding.playerClass}.`);
-        texts.push(`Press interact key to burrow`);
+        texts.push(`Class ${classBuilding.playerClass.className}.`);
+        if(hasCharacterPreventedMultipleClass(classBuilding.playerClass.className, interacter)){
+            texts.push(`Can't burrow. Class can only be owned once.`);
+        }else{
+            texts.push(`Press interact key to burrow`);
+        }
     } else if (classBuilding.stuffBorrowed) {
-        texts.push(`Class ${classBuilding.playerClass}.`);
+        texts.push(`Class ${classBuilding.playerClass.className}.`);
         texts.push(`Currently burrowed`);
     }
     let textMaxWidth = 0;

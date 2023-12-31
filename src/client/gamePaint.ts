@@ -3,7 +3,7 @@ import { canCharacterTradeAbilityOrPets } from "./character/character.js";
 import { Character } from "./character/characterModel.js";
 import { paintCharacterStatsUI, paintPlayerCharacters } from "./character/characterPaint.js";
 import { paintBossCharacters, paintBossCrown } from "./character/enemy/bossEnemy.js";
-import { findMainCharacterClass, hasPlayerChoosenStartClassUpgrade, isPreventedDuplicateClass } from "./character/playerCharacters/playerCharacters.js";
+import { findMainCharacterClass, hasPlayerChoosenStartClassUpgrade, shareCharactersTradeablePreventedMultipleClass } from "./character/playerCharacters/playerCharacters.js";
 import { paintTamerPetCharacterStatsUI } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
 import { calculateDistance, getCameraPosition, getTimeSinceFirstKill } from "./game.js";
 import { Game, Position, Debugging, PaintTextData } from "./gameModel.js";
@@ -71,13 +71,13 @@ export function paintTextWithOutline(ctx: CanvasRenderingContext2D, outlineColor
     if (centered) {
         x -= width / 2;
     }
-    if(withBackgroundColor){
+    if (withBackgroundColor) {
         const fontSize = 20;
         ctx.globalAlpha = 0.6;
         ctx.fillStyle = withBackgroundColor;
-        ctx.fillRect(x,y - fontSize, width, fontSize + 2);
+        ctx.fillRect(x, y - fontSize, width, fontSize + 2);
         ctx.globalAlpha = 1;
-    }else{
+    } else {
         ctx.strokeText(text, x, y);
     }
     ctx.fillStyle = textColor;
@@ -96,14 +96,14 @@ function paintClosestInteractable(ctx: CanvasRenderingContext2D, cameraPosition:
     } else if (interactableMapObject) {
         const mapObejctFunctions = MAP_OBJECTS_FUNCTIONS[interactableMapObject.name];
         if (mapObejctFunctions && mapObejctFunctions.paintInteract) {
-            mapObejctFunctions.paintInteract(ctx, interactableMapObject, game);
+            mapObejctFunctions.paintInteract(ctx, interactableMapObject, character, game);
         }
     }
 }
 
 function paintPastPlayerTakeoverInfo(ctx: CanvasRenderingContext2D, pastCharacter: Character, playerCharacter: Character, cameraPosition: Position, game: Game) {
     const canTrade = canCharacterTradeAbilityOrPets(pastCharacter);
-    const classAlreadyTaken = isPreventedDuplicateClass(pastCharacter, playerCharacter);
+    const classAlreadyTaken = shareCharactersTradeablePreventedMultipleClass(pastCharacter, playerCharacter);
     let paintPos: Position = getPointPaintPosition(ctx, pastCharacter, cameraPosition);
     paintPos.y -= 40;
     let text = "";
@@ -131,7 +131,7 @@ function paintPastPlayerTakeoverInfo(ctx: CanvasRenderingContext2D, pastCharacte
                 offsetX += area.width + spacing;
             }
         }
-    } else if(classAlreadyTaken){
+    } else if (classAlreadyTaken) {
         text = `Class can only be owned once!`;
         paintPos.y -= 20;
     } else {
@@ -164,7 +164,7 @@ export function paintKey(ctx: CanvasRenderingContext2D, key: string, paintPositi
         ctx.font = fontSize + "px Arial";
         let width = ctx.measureText(key).width;
         const maxWidth = 28;
-        if(width > maxWidth){
+        if (width > maxWidth) {
             fontSize = 14;
             ctx.font = fontSize + "px Arial";
             width = ctx.measureText(key).width;
@@ -184,7 +184,7 @@ function paintPausedText(ctx: CanvasRenderingContext2D, game: Game) {
 
 function paintKeyInfo(ctx: CanvasRenderingContext2D, game: Game) {
     if (game.UI.displayMovementKeyHint) paintMoveKeysHint(ctx);
-    if(!game.clientKeyBindings) return;
+    if (!game.clientKeyBindings) return;
     const fontSize = 16;
     const paintX = ctx.canvas.width - 150;
     let paintY = ctx.canvas.height - 5;
@@ -194,12 +194,12 @@ function paintKeyInfo(ctx: CanvasRenderingContext2D, game: Game) {
         paintKey(ctx, e.uiDisplayInputValue, { x: paintX, y: paintY - 30 });
         ctx.font = fontSize + "px Arial";
         let text = e.action;
-        if(e.activated !== undefined){
-            text += e.activated ? "(On)": "(Off)";
+        if (e.activated !== undefined) {
+            text += e.activated ? "(On)" : "(Off)";
         }
         ctx.fillText(text, paintX + 40, paintY - 10);
-        paintY -= 30; 
-    });            
+        paintY -= 30;
+    });
 }
 
 function paintMoveKeysHint(ctx: CanvasRenderingContext2D) {
@@ -270,8 +270,8 @@ function paintTimeMeasures(ctx: CanvasRenderingContext2D, debug: Debugging | und
 function paintEndScreen(ctx: CanvasRenderingContext2D, highscores: Highscores, game: Game) {
     paintGameTitle(ctx);
     let restartKey = "";
-    game.clientKeyBindings!.keyCodeToUiAction.forEach((e) =>{
-        if(e.action === "Restart"){
+    game.clientKeyBindings!.keyCodeToUiAction.forEach((e) => {
+        if (e.action === "Restart") {
             restartKey = e.uiDisplayInputValue;
         }
     });

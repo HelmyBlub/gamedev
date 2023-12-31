@@ -7,7 +7,7 @@ import { ABILITIES_FUNCTIONS } from "./ability/ability.js";
 import { calculateDirection, getCameraPosition, getClientInfo, loadFromLocalStorage, resetGameNonStateData, takeTimeMeasure } from "./game.js";
 import { executeUpgradeOptionChoice } from "./character/upgrade.js";
 import { canCharacterTradeAbilityOrPets, characterTradeAbilityAndPets } from "./character/character.js";
-import { isPreventedDuplicateClass } from "./character/playerCharacters/playerCharacters.js";
+import { shareCharactersTradeablePreventedMultipleClass } from "./character/playerCharacters/playerCharacters.js";
 import { findNearesInteractableMapChunkObject, interactWithMapObject } from "./map/mapObjects.js";
 
 export const MOVE_ACTIONS = ["left", "down", "right", "up"];
@@ -344,7 +344,7 @@ function playerAction(clientId: number, data: any, game: Game) {
                     const closestPast = findNearesPastPlayerCharacter(character, game);
                     if (closestPast) {
                         if (canCharacterTradeAbilityOrPets(closestPast)) {
-                            if (!isPreventedDuplicateClass(closestPast, character)) {
+                            if (!shareCharactersTradeablePreventedMultipleClass(closestPast, character)) {
                                 characterTradeAbilityAndPets(closestPast, character, game);
                             }
                         } else {
