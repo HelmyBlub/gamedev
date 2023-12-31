@@ -11,13 +11,14 @@ import { BossEnemyCharacter, CHARACTER_TYPE_BOSS_ENEMY } from "./enemy/bossEnemy
 import { removeCharacterDebuffs, tickCharacterDebuffs } from "../debuff/debuff.js";
 import { ABILITY_NAME_LEASH, AbilityLeash, createAbilityLeash } from "../ability/abilityLeash.js";
 import { fillRandomUpgradeOptionChoices, UpgradeOption } from "./upgrade.js";
-import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters/playerCharacters.js";
+import { CharacterClass, PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters/playerCharacters.js";
 import { CHARACTER_TYPE_END_BOSS_ENEMY } from "./enemy/endBossEnemy.js";
 import { createEndBossCrownCharacter } from "./enemy/endBossCrown.js";
 import { TamerPetCharacter, tradePets } from "./playerCharacters/tamer/tamerPetCharacter.js";
 import { ENEMY_FIX_RESPAWN_POSITION } from "./enemy/fixPositionRespawnEnemyModel.js";
 import { addCombatlogDamageTakenEntry } from "../combatlog.js";
 import { executeAbilityLevelingCharacterUpgradeOption } from "./playerCharacters/abilityLevelingCharacter.js";
+import { CHARACTER_UPGRADE_FUNCTIONS } from "./characterUpgrades.js";
 
 export function findCharacterById(characters: Character[], id: number): Character | null {
     for (let i = 0; i < characters.length; i++) {
@@ -196,6 +197,25 @@ export function changeCharacterId(character: Character, idCounter: IdCounter) {
     const leash: AbilityLeash = character.abilities.find((a) => a.name === ABILITY_NAME_LEASH) as AbilityLeash;
     if (leash) {
         leash.leashedToOwnerId = undefined;
+    }
+}
+
+export function characterAddExistingCharacterClass(character: Character, characterClass: CharacterClass){
+    if(!character.characterClasses) character.characterClasses = [];
+    character.characterClasses.push(characterClass);
+    if(characterClass.characterClassUpgrades){
+        const keys = Object.keys(characterClass.characterClassUpgrades);
+        if(keys.length > 0){
+            const tempClassUpgrades = characterClass.characterClassUpgrades;
+            characterClass.characterClassUpgrades = {};
+            for(let key of keys){
+                const classUpgrade = tempClassUpgrades[key];
+                const charUpFunctions = CHARACTER_UPGRADE_FUNCTIONS[key];
+                if(charUpFunctions){
+                    charUpFunctions.addUpgrade(classUpgrade, character);
+                }
+            }
+        }
     }
 }
 

@@ -1,9 +1,10 @@
 current tasks:
 - first permanent progression idea:
     - dev steps:
+        - working on characterClass upgrades for move speed and bonus hp for class building and legendary
         - what to do with hp and move speed upgrades? should not be lost. 
         - maybe bigger code redesign for later class ideas?
-            - character passives?
+            - character upgrades?
                 - dev:
                     - apply passive
                     - abilityRefId

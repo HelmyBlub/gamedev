@@ -1,7 +1,7 @@
 import { Game } from "../gameModel.js";
 import { nextRandom } from "../randomNumberGenerator.js";
 import { executeDefaultCharacterUpgradeOption } from "./character.js";
-import { CHARACTER_TYPE_FUNCTIONS, Character } from "./characterModel.js";
+import { Character } from "./characterModel.js";
 import { CharacterClass, PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters/playerCharacters.js";
 
 export type UpgradeOption = {

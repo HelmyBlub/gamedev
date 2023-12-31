@@ -1,5 +1,6 @@
 import { Game, IdCounter, Position } from "../../gameModel.js"
 import { Character } from "../characterModel.js"
+import { CharacterUpgrade } from "../characterUpgrades.js"
 import { UpgradeOption, UpgradeOptionAndProbability } from "../upgrade.js"
 import { addBallClass } from "./characterClassBall.js"
 import { Leveling } from "./levelingCharacter.js"
@@ -24,6 +25,9 @@ export type CharacterClass = {
     gifted?: boolean,
     legendary?: boolean,
     availableSkillPoints?: number,
+    characterClassUpgrades?: {
+        [key: string]: CharacterUpgrade,
+    }    
 }
 
 export type PlayerCharacterClassesFunctions = {

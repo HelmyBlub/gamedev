@@ -1,4 +1,5 @@
 import { onDomLoadSetAbilitiesFunctions } from "./ability/ability.js";
+import { onDomLoadSetCharacterUpgradeFunctions } from "./character/characterUpgrades.js";
 import { addBossType } from "./character/enemy/bossEnemy.js";
 import { addEndBossCrownType } from "./character/enemy/endBossCrown.js";
 import { addEndBossType } from "./character/enemy/endBossEnemy.js";
@@ -71,6 +72,7 @@ document.addEventListener("DOMContentLoaded", function () {
     addMapObjectsFunctions();
     onDomLoadSetAbilitiesFunctions();
     onDomLoadSetDebuffsFunctions();
+    onDomLoadSetCharacterUpgradeFunctions();
 
     start();
 });
