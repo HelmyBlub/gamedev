@@ -87,7 +87,7 @@ export function characterGetShield(character: Character, shieldValue: number) {
 }
 
 export function playerCharactersAddBossSkillPoints(bossLevel: number | undefined, game: Game) {
-    if(bossLevel === undefined) return;
+    if (bossLevel === undefined) return;
     const playerCharacters: Character[] = getPlayerCharacters(game.state.players);
     for (let character of playerCharacters) {
         if (!character.isDead && !character.isPet) {
@@ -166,11 +166,13 @@ export function characterTradeAbilityAndPets(fromCharacter: Character, toCharact
     tradePets(fromCharacter, toCharacter, game);
     if (!toCharacter.characterClasses) toCharacter.characterClasses = [];
     if (fromCharacter.characterClasses) {
-        for(let charClass of fromCharacter.characterClasses){
-            if(charClass.gifted) continue;
+        for (let i = fromCharacter.characterClasses.length - 1; i >= 0; i--) {
+            const charClass = fromCharacter.characterClasses[i];
+            if (charClass.gifted) continue;
             charClass.gifted = true;
             const newClass = charClass.className;
-            toCharacter.characterClasses.push(charClass);
+            characterAddExistingCharacterClass(toCharacter, charClass);
+            fromCharacter.characterClasses.splice(i, 1);
             const classFunctions = PLAYER_CHARACTER_CLASSES_FUNCTIONS[newClass];
             if (classFunctions && classFunctions.preventMultiple) {
                 if (toCharacter.upgradeChoices && toCharacter.upgradeChoices[0].type === "ChooseClass") {
@@ -200,18 +202,18 @@ export function changeCharacterId(character: Character, idCounter: IdCounter) {
     }
 }
 
-export function characterAddExistingCharacterClass(character: Character, characterClass: CharacterClass){
-    if(!character.characterClasses) character.characterClasses = [];
+export function characterAddExistingCharacterClass(character: Character, characterClass: CharacterClass) {
+    if (!character.characterClasses) character.characterClasses = [];
     character.characterClasses.push(characterClass);
-    if(characterClass.characterClassUpgrades){
+    if (characterClass.characterClassUpgrades) {
         const keys = Object.keys(characterClass.characterClassUpgrades);
-        if(keys.length > 0){
+        if (keys.length > 0) {
             const tempClassUpgrades = characterClass.characterClassUpgrades;
             characterClass.characterClassUpgrades = {};
-            for(let key of keys){
+            for (let key of keys) {
                 const classUpgrade = tempClassUpgrades[key];
                 const charUpFunctions = CHARACTER_UPGRADE_FUNCTIONS[key];
-                if(charUpFunctions){
+                if (charUpFunctions) {
                     charUpFunctions.addUpgrade(classUpgrade, character);
                 }
             }
@@ -228,7 +230,7 @@ export function executeDefaultCharacterUpgradeOption(character: Character, upgra
                 break;
             }
         }
-    }else if(upgradeOptionChoice.type === "Ability"){
+    } else if (upgradeOptionChoice.type === "Ability") {
         executeAbilityLevelingCharacterUpgradeOption(character, upgradeOptionChoice, game);
     }
 }

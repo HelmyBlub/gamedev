@@ -167,6 +167,7 @@ function placePlayerClassStuffInBuilding(playerClass: string, game: Game) {
             const tempCharacter = createCharacter(0, 0, 0, 0, 0, "", 0, 0, FACTION_PLAYER, "", 0);
             classFunctions.changeCharacterToThisClass(tempCharacter, game.state.idCounter, game);
             freeBuilding.characterClass = tempCharacter.characterClasses![0];
+            freeBuilding.characterClass.legendary = true;
             freeBuilding.stuffBorrowed = false;
             for (let ability of tempCharacter.abilities) {
                 freeBuilding.abilities.push(ability);
