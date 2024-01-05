@@ -6,9 +6,10 @@ import { ABILITY_NAME_SHOOT } from "../../ability/abilityShoot.js";
 import { ABILITY_NAME_SWORD } from "../../ability/abilitySword.js";
 import { tickCharacterDebuffs } from "../../debuff/debuff.js";
 import { deepCopy, getNextId, saveCharacterAsPastCharacter } from "../../game.js";
-import { IdCounter, Game, Position, FACTION_ENEMY, LOCALSTORAGE_NEXTENDBOSSES } from "../../gameModel.js";
+import { IdCounter, Game, Position, FACTION_ENEMY } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { GAME_IMAGES, getImage } from "../../imageLoad.js";
+import { localStorageSaveNextEndbosses } from "../../permanentData.js";
 import { changeTileIdOfMapChunk } from "../../map/map.js";
 import { getBossAreaMiddlePosition, getEntranceChunkAndTileXYForPosition } from "../../map/mapEndBossArea.js";
 import { classBuildingPutLegendaryCharacterStuffBackIntoBuilding } from "../../map/mapObjectClassBuilding.js";
@@ -56,10 +57,7 @@ export function setPlayerAsEndBoss(game: Game) {
     const oldBoss = game.state.bossStuff.nextEndbosses[celestialDirection];
     game.state.bossStuff.nextEndbosses[celestialDirection] = boss;
     game.state.players[0].character.becameEndBoss = true;
-    if (!game.multiplayer.disableLocalStorage) {
-        localStorage.setItem(LOCALSTORAGE_NEXTENDBOSSES, JSON.stringify(game.state.bossStuff.nextEndbosses));
-    }
-
+    localStorageSaveNextEndbosses(game);
     if (oldBoss?.characterClasses) {
         classBuildingPutLegendaryCharacterStuffBackIntoBuilding(oldBoss, game);
         saveCharacterAsPastCharacter(oldBoss, game);

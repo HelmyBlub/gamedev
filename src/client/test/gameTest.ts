@@ -10,6 +10,7 @@ import { PlayerInput } from "../playerInput.js";
 import { createProjectile, Projectile } from "../ability/projectile.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
 import { detectAbilityObjectCircleToCharacterHit } from "../ability/ability.js";
+import { loadNextEnbosses, loadPastCharacters } from "../permanentData.js";
 
 let testData: (PlayerInput | Omit<CommandRestart, "executeTime">)[] = [];
 
@@ -69,22 +70,13 @@ export function setPastCharactersAndEndBossesForReplayFromReplayData(game: Game)
     if (!replay) return;
     if (game.state.map.endBossArea) {
         if (replay.data?.nextEndBosses) {
-            game.state.bossStuff.nextEndbosses = replay.data?.nextEndBosses;
-            const nextEndbosses: NextEndbosses = game.state.bossStuff.nextEndbosses;
-            const keys = Object.keys(nextEndbosses) as CelestialDirection[];
-            for (let key of keys) {
-                const endboss = nextEndbosses[key];
-                if (endboss) changeCharacterAndAbilityIds(endboss, game.state.idCounter);
-            }
+            loadNextEnbosses(replay.data?.nextEndBosses, game);
         } else {
             setDefaultNextEndbosses(game);
         }
     }
     if (replay.data?.pastCharacters) {
-        game.state.pastPlayerCharacters = replay.data.pastCharacters;
-        for (let pastChar of game.state.pastPlayerCharacters.characters) {
-            if (pastChar) changeCharacterAndAbilityIds(pastChar, game.state.idCounter);
-        }
+        loadPastCharacters(replay.data.pastCharacters, game);
     } else {
         game.state.pastPlayerCharacters.characters = [];
     }

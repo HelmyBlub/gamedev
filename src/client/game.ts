@@ -2,9 +2,9 @@ import { changeCharacterId, countAlivePlayerCharacters, findAndSetNewCameraChara
 import { paintAll } from "./gamePaint.js";
 import { createDefaultKeyBindings1, createDefaultUiKeyBindings, findPlayerByCharacterId, gameInitPlayers } from "./player.js";
 import { MOUSE_ACTION, UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.js";
-import { Position, GameState, Game, IdCounter, Debugging, PaintTextData, ClientInfo, LOCALSTORAGE_PASTCHARACTERS, LOCALSTORAGE_NEXTENDBOSSES, NextEndbosses, CelestialDirection } from "./gameModel.js";
-import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap, removeAllMapCharacters } from "./map/map.js";
-import { Character, PLAYER_CHARACTER_TYPE } from "./character/characterModel.js";
+import { Position, GameState, Game, IdCounter, Debugging, PaintTextData, ClientInfo } from "./gameModel.js";
+import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap } from "./map/map.js";
+import { Character } from "./character/characterModel.js";
 import { generateMissingChunks, pastCharactersMapTilePositions } from "./map/mapGeneration.js";
 import { createFixPositionRespawnEnemiesOnInit } from "./character/enemy/fixPositionRespawnEnemyModel.js";
 import { CommandRestart, handleCommand } from "./commands.js";
@@ -23,6 +23,7 @@ import { COMMAND_RESTART } from "./globalVars.js";
 import { consoleLogCombatlog } from "./combatlog.js";
 import { classBuildingCheckAllPlayerForLegendaryAbilitiesAndMoveBackToBuilding, mapObjectPlaceClassBuilding } from "./map/mapObjectClassBuilding.js";
 import { hasPlayerChoosenStartClassUpgrade } from "./character/playerCharacters/playerCharacters.js";
+import { localStorageLoad, localStorageSavePastCharacters } from "./permanentData.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -316,9 +317,9 @@ export function endGame(game: Game, isEndbossKill: boolean = false) {
         mapObjectPlaceClassBuilding(game);
     } else {
         savePlayerCharatersAsPastCharacters(game);
-        if(!game.testing.replay){
+        if (!game.testing.replay) {
             const myCharacter = findMyCharacter(game);
-            if(myCharacter && myCharacter.combatlog) consoleLogCombatlog(myCharacter.combatlog);
+            if (myCharacter && myCharacter.combatlog) consoleLogCombatlog(myCharacter.combatlog);
         }
     }
     endGameReplayStuff(game, newScore);
@@ -334,28 +335,6 @@ export function endGame(game: Game, isEndbossKill: boolean = false) {
     }
 }
 
-export function loadFromLocalStorage(game: Game) {
-    const pastCharactersString = localStorage.getItem(LOCALSTORAGE_PASTCHARACTERS);
-    if (pastCharactersString) {
-        game.state.pastPlayerCharacters = JSON.parse(pastCharactersString);
-        for (let pastChar of game.state.pastPlayerCharacters.characters) {
-            if (!pastChar) continue;
-            resetCharacter(pastChar);
-            changeCharacterAndAbilityIds(pastChar, game.state.idCounter);
-        }
-    }
-    const nextEndbossesString = localStorage.getItem(LOCALSTORAGE_NEXTENDBOSSES);
-    if (nextEndbossesString) {
-        const nextEndbosses: NextEndbosses = JSON.parse(nextEndbossesString);
-        game.state.bossStuff.nextEndbosses = nextEndbosses;
-        const keys = Object.keys(nextEndbosses) as CelestialDirection[];
-        for (let key of keys) {
-            const endboss = nextEndbosses[key];
-            if (endboss) changeCharacterAndAbilityIds(endboss, game.state.idCounter);
-        }
-    }
-}
-
 export function changeCharacterAndAbilityIds(character: Character, idCounter: IdCounter) {
     changeCharacterId(character, idCounter);
     for (let ability of character.abilities) {
@@ -366,10 +345,10 @@ export function changeCharacterAndAbilityIds(character: Character, idCounter: Id
 export function saveCharacterAsPastCharacter(character: Character, game: Game) {
     if (game.testing.replay) return;
     const newPastCharacter: Character = deepCopy(character);
-    for(let i = newPastCharacter.abilities.length - 1; i >= 0; i--){
+    for (let i = newPastCharacter.abilities.length - 1; i >= 0; i--) {
         const ability = newPastCharacter.abilities[i];
-        if(ability.legendary){
-            newPastCharacter.abilities.splice(i,1);
+        if (ability.legendary) {
+            newPastCharacter.abilities.splice(i, 1);
         }
     }
     resetCharacter(newPastCharacter);
@@ -419,9 +398,7 @@ export function saveCharacterAsPastCharacter(character: Character, game: Game) {
             }
         }
     }
-    if (!game.multiplayer.disableLocalStorage) {
-        localStorage.setItem(LOCALSTORAGE_PASTCHARACTERS, JSON.stringify(game.state.pastPlayerCharacters));
-    }
+    localStorageSavePastCharacters(game);
 }
 
 export function autoSendMousePositionHandler(ownerId: number, identifier: string, activateAutoSend: boolean, castPosition: Position | undefined, game: Game) {
@@ -513,7 +490,7 @@ function endGameReplayStuff(game: Game, newScore: number) {
         console.log("time:", performance.now() - replay.startTime);
         const moreReplays = replayNextInReplayQueue(game);
         if (!moreReplays) {
-            loadFromLocalStorage(game);
+            localStorageLoad(game);
         }
     }
 }

@@ -6,11 +6,12 @@ import { addEndBossType } from "./character/enemy/endBossEnemy.js";
 import { onDomLoadSetCharacterClasses } from "./character/playerCharacters/playerCharacters.js";
 import { handleCommand } from "./commands.js";
 import { onDomLoadSetDebuffsFunctions } from "./debuff/debuff.js";
-import { loadFromLocalStorage, runner, setRelativeMousePosition } from "./game.js";
+import { runner, setRelativeMousePosition } from "./game.js";
 import { createDefaultGameData, Game } from "./gameModel.js";
 import { addMapObjectsFunctions } from "./map/mapObjects.js";
 import { keyDown, keyUp, mouseDown, mouseUp } from "./playerInput.js";
 import { addHTMLDebugMenusToSettings } from "./settingsHtmlMenu.js";
+import { localStorageLoad } from "./permanentData.js";
 
 var gameCount: number = 0;
 
@@ -55,7 +56,7 @@ export function createGame(canvasElementId: string | undefined, forTesting: bool
             testRandomStartSeed: game.state.randomSeed.seed,
             testEnemyTypeDirectionSeed: game.state.enemyTypeDirectionSeed,
         };
-        loadFromLocalStorage(game);
+        localStorageLoad(game);
         handleCommand(game, commandRestart);
     } else {
         game = createDefaultGameData(undefined, undefined);
@@ -76,3 +77,4 @@ document.addEventListener("DOMContentLoaded", function () {
 
     start();
 });
+

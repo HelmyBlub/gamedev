@@ -4,11 +4,12 @@ import { Character } from "./character/characterModel.js";
 import { Game, Position } from "./gameModel.js";
 import { websocketConnect } from "./multiplayerConenction.js";
 import { ABILITIES_FUNCTIONS } from "./ability/ability.js";
-import { calculateDirection, getCameraPosition, getClientInfo, loadFromLocalStorage, resetGameNonStateData, takeTimeMeasure } from "./game.js";
+import { calculateDirection, getCameraPosition, getClientInfo, resetGameNonStateData, takeTimeMeasure } from "./game.js";
 import { executeUpgradeOptionChoice } from "./character/upgrade.js";
 import { canCharacterTradeAbilityOrPets, characterTradeAbilityAndPets } from "./character/character.js";
 import { shareCharactersTradeablePreventedMultipleClass } from "./character/playerCharacters/playerCharacters.js";
 import { findNearesInteractableMapChunkObject, interactWithMapObject } from "./map/mapObjects.js";
+import { localStorageLoad } from "./permanentData.js";
 
 export const MOVE_ACTIONS = ["left", "down", "right", "up"];
 export const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3", "upgrade4"];
@@ -268,7 +269,7 @@ function playerInputChangeEvent(game: Game, inputCode: string, isInputDown: bool
     if (game.testing.replay) {
         //end replay and let player play
         game.testing.replay = undefined;
-        loadFromLocalStorage(game);
+        localStorageLoad(game);
     }
     const clientId = game.clientKeyBindings.clientIdRef;
     if (isInputDown && action.isInputAlreadyDown) {
@@ -372,3 +373,4 @@ function playerAction(clientId: number, data: any, game: Game) {
         }
     }
 }
+

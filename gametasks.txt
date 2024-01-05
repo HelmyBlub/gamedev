@@ -1,10 +1,14 @@
 current tasks:
-- first permanent progression idea:
-    - bug: legendary class not displayed in highscore
+- new test runs required: tamer, sniper,
+- class Buildings and legendary:
+    - redesign localStorage code for easier future extensions
+        - working on "premanentData" file
+        - record & replay still need to somehow depend on it
     - dev steps:
+        - save in localStorage
+        - bug: legendary class not displayed in highscore
         - change scalling of burrowed abilities
             - ...
-        - save in localStorage
         - visualize
             - display stats in info view
             - visualize abilities in classBuilding
