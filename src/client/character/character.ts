@@ -18,7 +18,7 @@ import { TamerPetCharacter, tradePets } from "./playerCharacters/tamer/tamerPetC
 import { ENEMY_FIX_RESPAWN_POSITION } from "./enemy/fixPositionRespawnEnemyModel.js";
 import { addCombatlogDamageTakenEntry } from "../combatlog.js";
 import { executeAbilityLevelingCharacterUpgradeOption } from "./playerCharacters/abilityLevelingCharacter.js";
-import { CHARACTER_UPGRADE_FUNCTIONS } from "./characterUpgrades.js";
+import { CHARACTER_UPGRADE_FUNCTIONS } from "./upgrades/characterUpgrades.js";
 
 export function findCharacterById(characters: Character[], id: number): Character | null {
     for (let i = 0; i < characters.length; i++) {
@@ -53,7 +53,7 @@ export function findCharacterByIdInCompleteMap(id: number, game: Game) {
     }
 }
 
-export function characterTakeDamage(character: Character, damage: number, game: Game, abilityRefId: number | undefined = undefined, abilityName: string) {
+export function characterTakeDamage(character: Character, damage: number, game: Game, abilityIdRef: number | undefined = undefined, abilityName: string) {
     if (character.isDead || character.isPet || character.isDamageImmune) return;
     let modifiedDamage = damage * character.damageTakenModifierFactor;
     if (character.shield > 0) {
@@ -67,7 +67,7 @@ export function characterTakeDamage(character: Character, damage: number, game: 
         addCombatlogDamageTakenEntry(character, modifiedDamage, abilityName, game);
     }
     if (character.hp <= 0) {
-        killCharacter(character, game, abilityRefId);
+        killCharacter(character, game, abilityIdRef);
     }
     if (game.UI.displayDamageNumbers) {
         const textPos = { x: character.x, y: character.y - character.height / 2 - 15 };
@@ -222,14 +222,8 @@ export function characterAddExistingCharacterClass(character: Character, charact
 }
 
 export function executeDefaultCharacterUpgradeOption(character: Character, upgradeOptionChoice: UpgradeOption, game: Game) {
-    if (character.characterClasses === undefined) {
-        const keys = Object.keys(PLAYER_CHARACTER_CLASSES_FUNCTIONS);
-        for (let key of keys) {
-            if (key === upgradeOptionChoice.identifier) {
-                PLAYER_CHARACTER_CLASSES_FUNCTIONS[key].changeCharacterToThisClass(character, game.state.idCounter, game);
-                break;
-            }
-        }
+    if (upgradeOptionChoice.type === "ChooseClass") {
+        PLAYER_CHARACTER_CLASSES_FUNCTIONS[upgradeOptionChoice.identifier].changeCharacterToThisClass(character, game.state.idCounter, game);
     } else if (upgradeOptionChoice.type === "Ability") {
         executeAbilityLevelingCharacterUpgradeOption(character, upgradeOptionChoice, game);
     }
@@ -585,7 +579,7 @@ function experienceForCharacter(character: Character, experienceWorth: number, g
 
 }
 
-function killCharacter(character: Character, game: Game, abilityRefId: number | undefined = undefined) {
+function killCharacter(character: Character, game: Game, abilityIdRef: number | undefined = undefined) {
     character.isDead = true;
     if (game.state.timeFirstKill === undefined) game.state.timeFirstKill = game.state.time;
     levelingCharacterAndClassXpGain(game.state, character, game);
@@ -596,8 +590,8 @@ function killCharacter(character: Character, game: Game, abilityRefId: number | 
     if (character.type === CHARACTER_TYPE_END_BOSS_ENEMY) {
         game.state.bossStuff.bosses.push(createEndBossCrownCharacter(game.state.idCounter, character));
     }
-    if (abilityRefId !== undefined && character.type !== CHARACTER_TYPE_BOSS_ENEMY) {
-        const ability = findAbilityById(abilityRefId, game);
+    if (abilityIdRef !== undefined && character.type !== CHARACTER_TYPE_BOSS_ENEMY) {
+        const ability = findAbilityById(abilityIdRef, game);
         if (ability) {
             const owner = findAbilityOwnerByAbilityId(ability.id, game);
             if (owner) {

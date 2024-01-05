@@ -35,6 +35,7 @@ import { addAbilitySnipeReload } from "./snipe/abilitySnipeReload.js"
 import { playerInputBindingToDisplayValue } from "../playerInput.js"
 import { addAbilityUnleashPet } from "./petTamer/abilityUnleashPet.js"
 import { Leveling } from "../character/playerCharacters/levelingCharacter.js"
+import { CharacterClass } from "../character/playerCharacters/playerCharacters.js"
 
 export type Ability = {
     id: number,
@@ -47,12 +48,13 @@ export type Ability = {
         [key: string]: any,
     },
     legendary?: {
-        buildingRefId: number,
+        buildingIdRef: number,
     }
     tradable?: boolean,
     unique?: boolean,
     gifted?: boolean,
     disabled?: boolean,
+    classIdRef?: number,
 }
 export type PaintOrderAbility = "beforeCharacterPaint" | "afterCharacterPaint";
 export type AbilityObject = Position & {
@@ -60,7 +62,7 @@ export type AbilityObject = Position & {
     color: string,
     damage: number,
     faction: string,
-    abilityRefId?: number,
+    abilityIdRef?: number,
 }
 
 export type AbilityObjectCircle = AbilityObject & {
@@ -132,7 +134,7 @@ export function onDomLoadSetAbilitiesFunctions() {
     addAbilityUnleashPet();
 }
 
-export function addAbilityToCharacter(character: Character, ability: Ability) {
+export function addAbilityToCharacter(character: Character, ability: Ability, charClass: CharacterClass | undefined = undefined) {
     if (ability.unique) {
         const dupIndex = character.abilities.findIndex((a) => a.name === ability.name);
         if (dupIndex !== -1) {
@@ -144,6 +146,7 @@ export function addAbilityToCharacter(character: Character, ability: Ability) {
         }
     }
     character.abilities.push(ability);
+    if(charClass) ability.classIdRef = charClass.id;
 }
 
 export function paintAbilityObjects(ctx: CanvasRenderingContext2D, abilityObjects: AbilityObject[], game: Game, paintOrder: PaintOrderAbility) {
@@ -325,7 +328,7 @@ export function getAbilityNameUiText(ability: Ability): string[] {
 }
 
 export function detectAbilityObjectCircleToCharacterHit(map: GameMap, abilityObject: AbilityObjectCircle, game: Game) {
-    detectCircleCharacterHit(map, abilityObject, abilityObject.radius, abilityObject.faction, abilityObject.abilityRefId!, abilityObject.damage, game, abilityObject);
+    detectCircleCharacterHit(map, abilityObject, abilityObject.radius, abilityObject.faction, abilityObject.abilityIdRef!, abilityObject.damage, game, abilityObject);
 }
 
 export function detectCircleCharacterHit(map: GameMap, circleCenter: Position, circleRadius: number, faction: string, abilityId: number, damage: number, game: Game, abilityObject: AbilityObject | undefined = undefined, ability: Ability | undefined = undefined) {
@@ -371,7 +374,7 @@ export function detectSomethingToCharacterHit(
     players: Player[],
     bosses: BossEnemyCharacter[],
     abilityName: string,
-    abilityRefId: number | undefined,
+    abilityIdRef: number | undefined,
     onHitAndReturnIfContinue: ((target: Character) => boolean) | undefined,
     game: Game,
 ): number {
@@ -384,7 +387,7 @@ export function detectSomethingToCharacterHit(
         if (c.isDead || c.faction === faction) continue;
         const distance = calculateDistance(c, position);
         if (distance < size / 2 + c.width / 2) {
-            characterTakeDamage(c, damage, game, abilityRefId, abilityName);
+            characterTakeDamage(c, damage, game, abilityIdRef, abilityName);
             hitCount++;
             if (onHitAndReturnIfContinue) {
                 const continueHitDetection = onHitAndReturnIfContinue(c);

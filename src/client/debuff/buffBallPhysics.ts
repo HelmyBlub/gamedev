@@ -8,7 +8,7 @@ import { DEBUFFS_FUNCTIONS, Debuff, applyDebuff, removeCharacterDebuff } from ".
 
 export const BUFF_NAME_BALL_PHYSICS = "Ball Physics";
 export type BuffBallPhysics = Debuff & {
-    abilityRefId: number,
+    abilityIdRef: number,
     abilityRefName: string,
 }
 
@@ -21,12 +21,12 @@ export function addBuffBallPhysics() {
 }
 
 export function createBuffBallPhysics(
-    abilityRefId: number,
+    abilityIdRef: number,
     abilityRefName: string,
 ): BuffBallPhysics {
     return {
         name: BUFF_NAME_BALL_PHYSICS,
-        abilityRefId: abilityRefId,
+        abilityIdRef: abilityIdRef,
         abilityRefName: abilityRefName,
     };
 }
@@ -36,7 +36,7 @@ export function findBallBuff(owner: AbilityOwner, ability: Ability): BuffBallPhy
     for (let buff of owner.debuffs) {
         if (buff.name === BUFF_NAME_BALL_PHYSICS) {
             const ballBuff = buff as BuffBallPhysics;
-            if (ballBuff.abilityRefId === ability.id) {
+            if (ballBuff.abilityIdRef === ability.id) {
                 return ballBuff;
             }
             return true;

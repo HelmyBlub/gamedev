@@ -6,7 +6,7 @@ import { Position, IdCounter, Game, FACTION_PLAYER, BossSkillPoints } from "../g
 import { GAME_IMAGES } from "../imageLoad.js";
 import { createRandomizedCharacterImageData, RandomizedCharacterImage } from "../randomizedCharacterImage.js";
 import { RandomSeed } from "../randomNumberGenerator.js";
-import { CharacterUpgrade } from "./characterUpgrades.js";
+import { CharacterUpgrade } from "./upgrades/characterUpgrades.js";
 import { tickFixPositionRespawnEnemyCharacter } from "./enemy/fixPositionRespawnEnemy.js";
 import { PathingCache } from "./pathing.js";
 import { Leveling } from "./playerCharacters/levelingCharacter.js";

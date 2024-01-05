@@ -1,5 +1,7 @@
 import { Character } from "../../character/characterModel.js";
+import { findCharacterClassById } from "../../character/playerCharacters/levelingCharacter.js";
 import { AbilityUpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
+import { characterCreateAndAddUpgradeBonusHp } from "../../character/upgrades/characterUpgradeBonusHealth.js";
 import { Ability, AbilityOwner } from "../ability.js";
 import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrade.js";
 import { ABILITY_LIGHTNING_BALL_UPGRADE_FUNCTIONS, AbilityLightningBall } from "./abilityLightningBall.js";
@@ -48,8 +50,8 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption, character
         up = as.upgrades[ABILITY_LIGHTNING_BALL_UPGRADE_HP_LEACH];
     }
     up.level++;
-    character.maxHp += BONUS_HP;
-    character.hp += BONUS_HP;
+    const charClass = findCharacterClassById(character, ability.classIdRef!);
+    characterCreateAndAddUpgradeBonusHp(charClass!, character, BONUS_HP);
     up.healPerPixelTraveled += HEAL_PER_PIXEL_TRAVELED;
 }
 

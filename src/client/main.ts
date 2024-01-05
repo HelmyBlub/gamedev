@@ -1,5 +1,5 @@
 import { onDomLoadSetAbilitiesFunctions } from "./ability/ability.js";
-import { onDomLoadSetCharacterUpgradeFunctions } from "./character/characterUpgrades.js";
+import { onDomLoadSetCharacterUpgradeFunctions } from "./character/upgrades/characterUpgrades.js";
 import { addBossType } from "./character/enemy/bossEnemy.js";
 import { addEndBossCrownType } from "./character/enemy/endBossCrown.js";
 import { addEndBossType } from "./character/enemy/endBossEnemy.js";

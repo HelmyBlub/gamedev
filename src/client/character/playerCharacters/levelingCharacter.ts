@@ -5,9 +5,9 @@ import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability, fillR
 import { ABILITIES_FUNCTIONS } from "../../ability/ability.js";
 import { PLAYER_CLASS_TOWER_BUILDER } from "./towerCharacterClass.js";
 import { CharacterClass } from "./playerCharacters.js";
-import { CHARACTER_UPGRADE_FUNCTIONS } from "../characterUpgrades.js";
-import { CHARACTER_UPGRADE_BONUS_HP } from "./characterUpgradeBonusHealth.js";
-import { CHARACTER_UPGRADE_BONUS_MOVE_SPEED } from "./characterUpgradeMoveSpeed.js";
+import { CHARACTER_UPGRADE_FUNCTIONS } from "../upgrades/characterUpgrades.js";
+import { CHARACTER_UPGRADE_BONUS_HP } from "../upgrades/characterUpgradeBonusHealth.js";
+import { CHARACTER_UPGRADE_BONUS_MOVE_SPEED } from "../upgrades/characterUpgradeMoveSpeed.js";
 
 export type Leveling = {
     level: number,
@@ -76,7 +76,7 @@ export function executeLevelingCharacterUpgradeOption(character: Character, upgr
     if (upgradeOption.type === "Character") {
         const charUpFunctions = CHARACTER_UPGRADE_FUNCTIONS[upgradeOption.identifier];
         if (charUpFunctions) {
-            charUpFunctions.executeOption(upgradeOption, character);
+            charUpFunctions.executeOption!(upgradeOption, character);
         }
     } else if (upgradeOption.type === "Ability") {
         const abilityUpgradeOption = upgradeOption as AbilityUpgradeOption;
@@ -94,8 +94,8 @@ export function executeLevelingCharacterUpgradeOption(character: Character, upgr
 export function createCharacterUpgradeOptionsNew(character: Character, characterClass: CharacterClass, game: Game): UpgradeOptionAndProbability[] {
     const upgradeOptions: UpgradeOptionAndProbability[] = [];
     if (characterClass.availableSkillPoints === undefined || characterClass.availableSkillPoints <= 0) return upgradeOptions;
-    upgradeOptions.push(...CHARACTER_UPGRADE_FUNCTIONS[CHARACTER_UPGRADE_BONUS_HP].getOptions(character, game));
-    upgradeOptions.push(...CHARACTER_UPGRADE_FUNCTIONS[CHARACTER_UPGRADE_BONUS_MOVE_SPEED].getOptions(character, game));
+    upgradeOptions.push(...CHARACTER_UPGRADE_FUNCTIONS[CHARACTER_UPGRADE_BONUS_HP].getOptions!(character, game));
+    upgradeOptions.push(...CHARACTER_UPGRADE_FUNCTIONS[CHARACTER_UPGRADE_BONUS_MOVE_SPEED].getOptions!(character, game));
 
     for (let ability of character.abilities) {
         const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];

@@ -1,22 +1,13 @@
 current tasks:
 - first permanent progression idea:
+    - bug: legendary class not displayed in highscore
     - dev steps:
-        - what to do with hp and move speed upgrades? should not be lost. 
-        - maybe bigger code redesign for later class ideas?
-            - character upgrades?
-                - dev:
-                    - apply passive
-                    - abilityRefId
-                    - characterClass
-                    - some info like hp amount
-
-                - 50% dmg reduction (ball)
-                - +hp (ball upgrade), Tower builder
-                - +move speed Tower Builder
         - change scalling of burrowed abilities
             - ...
         - save in localStorage
         - visualize
+            - display stats in info view
+            - visualize abilities in classBuilding
         - if character with legendary sniper becomes endboss, "legendary snipe" not available in "smith building" until end boss defeated
             - "legendary sniper" becomes stronger somehow
 - "paintCharacterStatsUI" fix UI text based on class and legendary

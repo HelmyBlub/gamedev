@@ -37,7 +37,7 @@ export function addAbilityPetPainterCircle() {
 function createAbilityObjectPetPainterCircle(
     position: Position,
     damage: number,
-    abilityRefId: number,
+    abilityIdRef: number,
     faction: string,
     radius: number,
     randomSeed: RandomSeed,
@@ -52,7 +52,7 @@ function createAbilityObjectPetPainterCircle(
         faction: faction,
         deleteTime: gameTime + DURATION,
         subType: PET_PAINTER_CIRCLE,
-        abilityRefId: abilityRefId,
+        abilityIdRef: abilityIdRef,
         radius: radius,
         direction: nextRandom(randomSeed) * Math.PI * 2,
         moveSpeed: 4,
@@ -69,7 +69,7 @@ function createAbilityObjectPetPainterCircle(
 function createAbilityObjectPetPainterCircleFactory(
     position: Position,
     damage: number,
-    abilityRefId: number,
+    abilityIdRef: number,
     faction: string,
     radius: number,
     duration: number,
@@ -85,7 +85,7 @@ function createAbilityObjectPetPainterCircleFactory(
         faction: faction,
         deleteTime: gameTime + duration,
         subType: PET_PAINTER_CIRCLE,
-        abilityRefId: abilityRefId,
+        abilityIdRef: abilityIdRef,
         radius: radius,
         direction: 0,
         moveSpeed: 4,
@@ -101,7 +101,7 @@ function createSplitShape(abilityObject: AbilityObjectPetPainter, upgrade: Abili
     return createAbilityObjectPetPainterCircle(
         circle,
         circle.damage * upgrade.damageFactor,
-        circle.abilityRefId!,
+        circle.abilityIdRef!,
         circle.faction,
         circle.radius / 2,
         game.state.randomSeed,
@@ -135,7 +135,7 @@ function tickShapeObjectPetPainterCircle(abilityObject: AbilityObjectPetPainter,
         const circleFactory = abilityObject as AbilityObjectPetPainterCircle;
         if (circleFactory.nextTickTime === undefined) circleFactory.nextTickTime = game.state.time + circleFactory.tickInterval;
         if (circleFactory.nextTickTime <= game.state.time) {
-            const shape = createAbilityObjectPetPainterCircle(circleFactory, circleFactory.damage, circleFactory.abilityRefId!, circleFactory.faction, circleFactory.radius, game.state.randomSeed, game.state.time);
+            const shape = createAbilityObjectPetPainterCircle(circleFactory, circleFactory.damage, circleFactory.abilityIdRef!, circleFactory.faction, circleFactory.radius, game.state.randomSeed, game.state.time);
             game.state.abilityObjects.push(shape);
             circleFactory.nextTickTime += circleFactory.tickInterval;
             if (circleFactory.nextTickTime <= game.state.time) {

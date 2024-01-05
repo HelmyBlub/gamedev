@@ -42,7 +42,7 @@ function createAbilityObjectPetPainterTriangle(
     position: Position,
     damage: number,
     size: number,
-    abilityRefId: number,
+    abilityIdRef: number,
     faction: string,
     randomSeed: RandomSeed,
     gameTime: number
@@ -57,7 +57,7 @@ function createAbilityObjectPetPainterTriangle(
         faction: faction,
         deleteTime: gameTime + DURATION,
         subType: PET_PAINTER_TRIANGLE,
-        abilityRefId: abilityRefId,
+        abilityIdRef: abilityIdRef,
         tickInterval: 100,
         range: 50,
         rotation: 0,
@@ -75,7 +75,7 @@ function createAbilityObjectPetPainterTriangleFactory(
     position: Position,
     damage: number,
     size: number,
-    abilityRefId: number,
+    abilityIdRef: number,
     faction: string,
     duration: number,
     spawnInterval: number,
@@ -91,7 +91,7 @@ function createAbilityObjectPetPainterTriangleFactory(
         faction: faction,
         deleteTime: gameTime + duration,
         subType: PET_PAINTER_TRIANGLE,
-        abilityRefId: abilityRefId,
+        abilityIdRef: abilityIdRef,
         tickInterval: spawnInterval,
         range: 50,
         rotation: 0,
@@ -112,7 +112,7 @@ function createSplitShape(abilityObject: AbilityObjectPetPainter, upgrade: Abili
         triangle,
         triangle.damage * upgrade.damageFactor,
         triangle.sideLength / 2,
-        triangle.abilityRefId!,
+        triangle.abilityIdRef!,
         triangle.faction,
         game.state.randomSeed,
         game.state.time
@@ -142,7 +142,7 @@ function tickShapeObjectPetPainterTriangle(abilityObject: AbilityObjectPetPainte
         const factory = abilityObject as AbilityObjectPetPainterTriangle;
         if (factory.nextTickTime === undefined) factory.nextTickTime = game.state.time + factory.tickInterval!;
         if (factory.nextTickTime <= game.state.time) {
-            const shape = createAbilityObjectPetPainterTriangle(factory, factory.damage, TRIANGLESIZE, factory.abilityRefId!, factory.faction, game.state.randomSeed, game.state.time);
+            const shape = createAbilityObjectPetPainterTriangle(factory, factory.damage, TRIANGLESIZE, factory.abilityIdRef!, factory.faction, game.state.randomSeed, game.state.time);
             game.state.abilityObjects.push(shape);
             factory.nextTickTime += factory.tickInterval!;
             if (factory.nextTickTime <= game.state.time) {
@@ -158,7 +158,7 @@ function tickShapeObjectPetPainterTriangle(abilityObject: AbilityObjectPetPainte
         if (triangle.nextTickTime === undefined) triangle.nextTickTime = game.state.time + triangle.tickInterval;
         if (triangle.nextTickTime <= game.state.time) {
             const center: Position = triangleCenter(triangle);
-            detectCircleCharacterHit(game.state.map, center, triangle.sideLength / 2, triangle.faction, triangle.abilityRefId!, triangle.damage, game);
+            detectCircleCharacterHit(game.state.map, center, triangle.sideLength / 2, triangle.faction, triangle.abilityIdRef!, triangle.damage, game);
             triangle.nextTickTime += triangle.tickInterval;
             if (triangle.nextTickTime <= game.state.time) {
                 triangle.nextTickTime = game.state.time + triangle.tickInterval;

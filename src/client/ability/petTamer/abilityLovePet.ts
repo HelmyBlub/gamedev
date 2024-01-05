@@ -90,7 +90,7 @@ function tickAbilityObjectLovePet(abilityObject: AbilityObject, game: Game) {
     const abilityObjectLovePet = abilityObject as AbilityObjectLovePet;
     if (abilityObjectLovePet.reachedTarget) return;
     let target: Character | null = null;
-    const owner = findAbilityOwnerById(abilityObject.abilityRefId!, game);
+    const owner = findAbilityOwnerById(abilityObject.abilityIdRef!, game);
     if (owner && owner.pets) {
         target = findCharacterById(owner.pets, abilityObjectLovePet.targetCharacterId);
     }
@@ -181,7 +181,7 @@ function castLovePet(abilityOwner: AbilityOwner, ability: Ability, castPosition:
                 type: ABILITY_NAME_LOVE_PET,
                 x: abilityOwner.x,
                 y: abilityOwner.y,
-                abilityRefId: ability.id,
+                abilityIdRef: ability.id,
             }
             game.state.abilityObjects.push(objectLovePet);
         }

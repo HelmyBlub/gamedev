@@ -10,6 +10,8 @@ import { CHARACTER_TYPE_BOSS_ENEMY } from "../enemy/bossEnemy.js";
 import { ABILITY_NAME_BOUNCE_BALL } from "../../ability/ball/abilityBounceBall.js";
 import { ABILITY_NAME_LIGHTNING_BALL, AbilityLightningBall } from "../../ability/ball/abilityLightningBall.js";
 import { createBossUpgradeOptionsAbilityLeveling, executeAbilityLevelingCharacterUpgradeOption } from "./abilityLevelingCharacter.js";
+import { characterCreateAndApplyUpgradeDamageReduction } from "../upgrades/characterUpgradeDamageReduction.js";
+import { characterCreateAndAddUpgradeBonusHp } from "../upgrades/characterUpgradeBonusHealth.js";
 
 export const CHARACTER_CLASS_BALL = "Ball";
 
@@ -30,15 +32,15 @@ function changeCharacterToBallClass(
     game: Game,
 ) {
     if(!character.characterClasses) character.characterClasses = [];
-    character.characterClasses.push({
+    const charClass = {
         id: getNextId(game.state.idCounter),
         className: CHARACTER_CLASS_BALL
-    });
-    character.maxHp *= 2;
-    character.hp *= 2;
-    character.damageTakenModifierFactor *= 0.5;
+    };
+    character.characterClasses.push(charClass);
+    characterCreateAndAddUpgradeBonusHp(charClass, character, 200);
+    characterCreateAndApplyUpgradeDamageReduction(charClass, character, 0.5);
     addAbilityToCharacter(character, createAbility(ABILITY_NAME_BOUNCE_BALL, idCounter, true, true, "ability1"));
-    addAbilityToCharacter(character, createAbility(ABILITY_NAME_LIGHTNING_BALL, idCounter, true, true, "ability2"));
+    addAbilityToCharacter(character, createAbility(ABILITY_NAME_LIGHTNING_BALL, idCounter, true, true, "ability2"), charClass);
     addAbilityToCharacter(character, createAbilityHpRegen(idCounter, undefined, 5));
 }
 

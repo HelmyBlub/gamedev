@@ -59,7 +59,7 @@ export function createAndPushAbilityObjectSnipeTerrainBounceBounce(abilityObject
         newStartPosition,
         nextBlockingPosistion,
         abilityObjectSnipe.remainingRange,
-        abilityObjectSnipe.abilityRefId!,
+        abilityObjectSnipe.abilityIdRef!,
         abilitySnipe,
         abilityObjectSnipe.faction,
         newBounceDirection,
@@ -148,7 +148,7 @@ function createAndPush(
     startPosition: Position,
     nextBlockingPosistion: Position | undefined,
     availableRange: number,
-    refId: number,
+    idRef: number,
     abilitySnipe: AbilitySnipe,
     faction: string,
     direction: number,
@@ -166,7 +166,7 @@ function createAndPush(
     }
     const abilityObjectSnipe = createAbilityObjectSnipe(
         startPosition,
-        refId,
+        idRef,
         abilitySnipe,
         faction,
         direction,

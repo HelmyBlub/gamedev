@@ -41,7 +41,7 @@ function createAbilityObjectPetPainterSquare(
     position: Position,
     size: number,
     damage: number,
-    abilityRefId: number,
+    abilityIdRef: number,
     faction: string,
     range: number,
     gameTime: number
@@ -58,7 +58,7 @@ function createAbilityObjectPetPainterSquare(
         deleteTime: gameTime + FADETIME,
         damageDone: false,
         subType: PET_PAINTER_SQUARE,
-        abilityRefId: abilityRefId,
+        abilityIdRef: abilityIdRef,
     }
     if (faction === FACTION_ENEMY) {
         abilityObjectPetPainter.color = "black";
@@ -70,7 +70,7 @@ function createAbilityObjectPetPainterSquareFactory(
     position: Position,
     size: number,
     damage: number,
-    abilityRefId: number,
+    abilityIdRef: number,
     faction: string,
     range: number,
     duration: number,
@@ -89,7 +89,7 @@ function createAbilityObjectPetPainterSquareFactory(
         deleteTime: gameTime + duration * 2,
         damageDone: false,
         subType: PET_PAINTER_SQUARE,
-        abilityRefId: abilityRefId,
+        abilityIdRef: abilityIdRef,
         tickInterval: spawnInterval * 2,
         isFactory: true,
     }
@@ -121,7 +121,7 @@ function createSplitShape(abilityObject: AbilityObjectPetPainter, upgrade: Abili
         position,
         square.size / 2,
         square.damage * upgrade.damageFactor,
-        square.abilityRefId!,
+        square.abilityIdRef!,
         square.faction,
         square.range / 2,
         game.state.time
@@ -151,7 +151,7 @@ function tickShapeObjectPetPainterSquare(abilityObject: AbilityObjectPetPainter,
         const factory = abilityObject as AbilityObjectPetPainterSquare;
         if (factory.nextTickTime === undefined) factory.nextTickTime = game.state.time + factory.tickInterval!;
         if (factory.nextTickTime <= game.state.time) {
-            const shape = createAbilityObjectPetPainterSquare(factory, factory.size, factory.damage, factory.abilityRefId!, factory.faction, factory.range, game.state.time);
+            const shape = createAbilityObjectPetPainterSquare(factory, factory.size, factory.damage, factory.abilityIdRef!, factory.faction, factory.range, game.state.time);
             game.state.abilityObjects.push(shape);
             factory.nextTickTime += factory.tickInterval!;
             if (factory.nextTickTime <= game.state.time) {
@@ -180,7 +180,7 @@ function detectSquareToCharacterHit(petPainter: AbilityObjectPetPainterSquare, g
             getHit = true; //vertical
         }
         if (getHit) {
-            characterTakeDamage(c, petPainter.damage, game, petPainter.abilityRefId, PET_PAINTER_SQUARE);
+            characterTakeDamage(c, petPainter.damage, game, petPainter.abilityIdRef, PET_PAINTER_SQUARE);
         }
     }
 }

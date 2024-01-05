@@ -152,7 +152,7 @@ export function createAbilityObjectSnipeByAbility(abilitySnipe: AbilitySnipe, ab
         damageCalcDone: false,
         deleteTime: deleteTime,
         enemyFactionDamageTime: enemyDamageTime,
-        abilityRefId: abilitySnipe.id,
+        abilityIdRef: abilitySnipe.id,
         triggeredByPlayer: triggeredByPlayer,
         bounceCounter: 0,
     }
@@ -161,7 +161,7 @@ export function createAbilityObjectSnipeByAbility(abilitySnipe: AbilitySnipe, ab
 
 export function createAbilityObjectSnipe(
     startPos: Position,
-    abilityRefId: number,
+    abilityIdRef: number,
     abilitySnipe: AbilitySnipe,
     faction: string,
     direction: number,
@@ -192,7 +192,7 @@ export function createAbilityObjectSnipe(
         damageCalcDone: false,
         deleteTime: deleteTime,
         enemyFactionDamageTime: enemyDamageTime,
-        abilityRefId: abilityRefId,
+        abilityIdRef: abilityIdRef,
         canSplitOnHit: canSplitOnHit,
         hitSomething: hitSomething,
         triggeredByPlayer: triggeredByPlayer,
@@ -465,7 +465,7 @@ function tickAbilityObjectSnipe(abilityObject: AbilityObject, game: Game) {
     if (!abilityObjectSnipe.damageCalcDone) {
         const endPos = calcNewPositionMovedInDirection(abilityObjectSnipe, abilityObjectSnipe.direction, abilityObjectSnipe.range);
         const characters: Character[] = getCharactersTouchingLine(game, abilityObjectSnipe, endPos, abilityObject.faction, abilityObjectSnipe.size);
-        const abilitySnipe = findAbilityById(abilityObject.abilityRefId!, game) as AbilitySnipe;
+        const abilitySnipe = findAbilityById(abilityObject.abilityIdRef!, game) as AbilitySnipe;
         for (let char of characters) {
             if (char.isDead) continue;
             abilityObjectSnipe.hitSomething = true;
@@ -473,7 +473,7 @@ function tickAbilityObjectSnipe(abilityObject: AbilityObject, game: Game) {
                 executeUpgradeExplodeOnDeath(abilitySnipe, abilityObject.faction, char, abilityObjectSnipe.triggeredByPlayer, game);
             }
             const damage = getAbilitySnipeDamage(abilitySnipe, abilityObjectSnipe.damage, abilityObjectSnipe.triggeredByPlayer, abilityObjectSnipe.bounceCounter);
-            characterTakeDamage(char, damage, game, abilityObject.abilityRefId, abilityObject.type);
+            characterTakeDamage(char, damage, game, abilityObject.abilityIdRef, abilityObject.type);
             if (abilityObjectSnipe.canSplitOnHit) abilityUpgradeSplitShotOnSnipeHit(char, abilitySnipe, abilityObjectSnipe, game);
         }
         if (abilitySnipe) abilityUpgradeNoMissChainOnObjectSnipeDamageDone(abilitySnipe, abilityObjectSnipe);

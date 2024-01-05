@@ -33,7 +33,7 @@ export function createAbilityObjectExplode(
     damage: number,
     radius: number,
     faction: string,
-    abilityRefId: number,
+    abilityIdRef: number,
     explodeDelay: number,
     game: Game
 ): AbilityObjectExplode {
@@ -46,7 +46,7 @@ export function createAbilityObjectExplode(
         y: position.y,
         hasDamageDone: false,
         radius: radius,
-        abilityRefId: abilityRefId,
+        abilityIdRef: abilityIdRef,
         explodeTime: explodeDelay + game.state.time,
         explodeDelay: explodeDelay,
     };

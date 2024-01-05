@@ -1,6 +1,6 @@
 import { Game, IdCounter, Position } from "../../gameModel.js"
 import { Character } from "../characterModel.js"
-import { CharacterUpgrade } from "../characterUpgrades.js"
+import { CharacterUpgrade } from "../upgrades/characterUpgrades.js"
 import { UpgradeOption, UpgradeOptionAndProbability } from "../upgrade.js"
 import { addBallClass } from "./characterClassBall.js"
 import { Leveling } from "./levelingCharacter.js"

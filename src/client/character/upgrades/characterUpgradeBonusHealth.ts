@@ -1,9 +1,9 @@
 import { UpgradeOption, UpgradeOptionAndProbability } from "../upgrade.js";
 import { Game } from "../../gameModel.js";
 import { Character } from "../characterModel.js";
-import { CHARACTER_UPGRADE_FUNCTIONS, CharacterUpgrade } from "../characterUpgrades.js";
-import { findCharacterClassById } from "./levelingCharacter.js";
-import { CharacterClass } from "./playerCharacters.js";
+import { CHARACTER_UPGRADE_FUNCTIONS, CharacterUpgrade } from "./characterUpgrades.js";
+import { findCharacterClassById } from "../playerCharacters/levelingCharacter.js";
+import { CharacterClass } from "../playerCharacters/playerCharacters.js";
 
 type CharacterUpgradeBonusHP = CharacterUpgrade & {
     bonusHp: number,
@@ -22,10 +22,26 @@ export function addCharacterUpgradeBonusHp() {
     }
 }
 
-function addUpgrade(characterUpgrade: CharacterUpgrade, character: Character){
+export function characterCreateAndAddUpgradeBonusHp(charClass: CharacterClass, character: Character, bonusHp: number) {
+    if (!charClass.characterClassUpgrades) charClass.characterClassUpgrades = {};
+    let upgrade: CharacterUpgradeBonusHP = charClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_HP] as CharacterUpgradeBonusHP;
+    if (!upgrade) {
+        upgrade = {
+            bonusHp: 0,
+            classIdRef: charClass.id,
+            level: 1,
+        }
+        charClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_HP] = upgrade;
+    }
+    upgrade.bonusHp += bonusHp;
+    character.hp += bonusHp;
+    character.maxHp += bonusHp;
+}
+
+function addUpgrade(characterUpgrade: CharacterUpgrade, character: Character) {
     const charClass = findCharacterClassById(character, characterUpgrade.classIdRef);
-    if(!charClass) return;
-    if(!charClass.characterClassUpgrades) charClass.characterClassUpgrades = {};
+    if (!charClass) return;
+    if (!charClass.characterClassUpgrades) charClass.characterClassUpgrades = {};
     const bonusHp = characterUpgrade as CharacterUpgradeBonusHP;
     charClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_HP] = characterUpgrade;
     character.hp += bonusHp.bonusHp;
@@ -47,14 +63,14 @@ function getOptions(character: Character, game: Game): UpgradeOptionAndProbabili
     return upgradeOptions;
 }
 
-function executeOption(option: UpgradeOption, character: Character){
-    if(option.classIdRef === undefined) return;
+function executeOption(option: UpgradeOption, character: Character) {
+    if (option.classIdRef === undefined) return;
     let up: CharacterUpgradeBonusHP;
     const charClass = findCharacterClassById(character, option.classIdRef);
-    if(!charClass) return;
-    if(charClass.characterClassUpgrades === undefined) charClass.characterClassUpgrades = {};
+    if (!charClass) return;
+    if (charClass.characterClassUpgrades === undefined) charClass.characterClassUpgrades = {};
     if (charClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_HP] === undefined) {
-        up = {level: 0, bonusHp: 0, classIdRef: option.classIdRef};
+        up = { level: 0, bonusHp: 0, classIdRef: option.classIdRef };
         charClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_HP] = up;
     } else {
         up = charClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_HP] as CharacterUpgradeBonusHP;
@@ -66,7 +82,7 @@ function executeOption(option: UpgradeOption, character: Character){
 }
 
 function getStatsDisplayText(characterClass: CharacterClass): string {
-    if(characterClass.characterClassUpgrades === undefined) return "";
+    if (characterClass.characterClassUpgrades === undefined) return "";
     const up: CharacterUpgradeBonusHP = characterClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_HP] as CharacterUpgradeBonusHP;
     return `${CHARACTER_UPGRADE_BONUS_HP}: ${up.bonusHp}`;
 }

@@ -2,7 +2,7 @@ import { ABILITIES_FUNCTIONS, addAbilityToCharacter, createAbility, setAbilityTo
 import { createAbilityHpRegen } from "../../../ability/abilityHpRegen.js";
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../../gameModel.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, createCharacter } from "../../characterModel.js";
-import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./../playerCharacters.js";
+import { CharacterClass, PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./../playerCharacters.js";
 import { ABILITY_NAME_LEASH, AbilityLeash, createAbilityLeash } from "../../../ability/abilityLeash.js";
 import { ABILITY_NAME_MELEE, createAbilityMelee } from "../../../ability/abilityMelee.js";
 import { TamerPetCharacter, addTamerPetFunctions, createTamerPetCharacter } from "./tamerPetCharacter.js";
@@ -19,6 +19,8 @@ import { changeCharacterAndAbilityIds, deepCopy, getNextId } from "../../../game
 import { CHARACTER_TYPE_BOSS_ENEMY } from "../../enemy/bossEnemy.js";
 import { AbilityUpgrade } from "../../../ability/abilityUpgrade.js";
 import { ABILITY_NAME_UNLEASH_PET } from "../../../ability/petTamer/abilityUnleashPet.js";
+import { characterCreateAndAddUpgradeBonusHp } from "../../upgrades/characterUpgradeBonusHealth.js";
+import { characterCreateAndAddUpgradeBonusSpeed } from "../../upgrades/characterUpgradeMoveSpeed.js";
 
 export const TAMER_CHARACTER = "Tamer";
 export function addTamerClass() {
@@ -73,14 +75,13 @@ function changeCharacterToTamerClass(
     game: Game,
 ) {
     if(!character.characterClasses) character.characterClasses = [];
-    character.characterClasses.push({
+    const charClass: CharacterClass = {
         className: TAMER_CHARACTER,
         id: getNextId(game.state.idCounter),
-    });
-    character.type = TAMER_CHARACTER;
-    character.moveSpeed *= 1.25;
-    character.maxHp *= 1.5;
-    character.hp *= 1.5;
+    };
+    character.characterClasses.push(charClass);
+    characterCreateAndAddUpgradeBonusSpeed(charClass, character, 0.5);
+    characterCreateAndAddUpgradeBonusHp(charClass, character, 100);
     addAbilityToCharacter(character, createAbilityHpRegen(idCounter, undefined, 2));
     addAbilityToCharacter(character, createAbility(ABILITY_NAME_FEED_PET, idCounter, false, false, "ability1"));
     addAbilityToCharacter(character, createAbility(ABILITY_NAME_LOVE_PET, idCounter, false, false, "ability2"));

@@ -42,7 +42,7 @@ export type TamerPetCharacter = Character & {
     tradable: boolean,
     gifted?: boolean,
     legendary?: {
-        buildingRefId: number,
+        buildingIdRef: number,
     }
 }
 

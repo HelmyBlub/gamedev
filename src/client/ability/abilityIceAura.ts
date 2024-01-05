@@ -62,7 +62,7 @@ export function createAbilityObjectIceAura(
     x: number,
     y: number,
     deleteTime: number,
-    abilityRefId: number,
+    abilityIdRef: number,
 ): AbilityObjectIce {
     return {
         type: ABILITY_NAME_ICE_AURA,
@@ -74,7 +74,7 @@ export function createAbilityObjectIceAura(
         faction: faction,
         x: x,
         y: y,
-        abilityRefId: abilityRefId,
+        abilityIdRef: abilityIdRef,
         deleteTime: deleteTime,
     };
 }
@@ -154,10 +154,10 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
 
 function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
     const ice = abilityObject as AbilityObjectIce as IceBaseProperties;
-    tickIceAura(abilityObject, abilityObject.faction, ice, abilityObject.abilityRefId!, game);
+    tickIceAura(abilityObject, abilityObject.faction, ice, abilityObject.abilityIdRef!, game);
 }
 
-function tickIceAura(position: Position, faction: string, iceBaseProperties: IceBaseProperties, abilityRefId: number, game: Game) {
+function tickIceAura(position: Position, faction: string, iceBaseProperties: IceBaseProperties, abilityIdRef: number, game: Game) {
     if (iceBaseProperties.nextTickTime === undefined) iceBaseProperties.nextTickTime = game.state.time + iceBaseProperties.tickInterval;
     if (iceBaseProperties.nextTickTime <= game.state.time) {
         detectSomethingToCharacterHit(
@@ -169,7 +169,7 @@ function tickIceAura(position: Position, faction: string, iceBaseProperties: Ice
             game.state.players,
             game.state.bossStuff.bosses,
             ABILITY_NAME_ICE_AURA,
-            abilityRefId,
+            abilityIdRef,
             (c: Character) => onHitEffect(c, iceBaseProperties, game),
             game
         );

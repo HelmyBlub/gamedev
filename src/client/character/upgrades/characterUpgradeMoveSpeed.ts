@@ -1,9 +1,9 @@
 import { UpgradeOption, UpgradeOptionAndProbability } from "../upgrade.js";
 import { Game } from "../../gameModel.js";
 import { Character } from "../characterModel.js";
-import { CHARACTER_UPGRADE_FUNCTIONS, CharacterUpgrade } from "../characterUpgrades.js";
-import { CharacterClass } from "./playerCharacters.js";
-import { findCharacterClassById } from "./levelingCharacter.js";
+import { CHARACTER_UPGRADE_FUNCTIONS, CharacterUpgrade } from "./characterUpgrades.js";
+import { CharacterClass } from "../playerCharacters/playerCharacters.js";
+import { findCharacterClassById } from "../playerCharacters/levelingCharacter.js";
 
 type CharacterUpgradeBonusMoveSpeed = CharacterUpgrade & {
     bonusMoveSpeed: number,
@@ -20,6 +20,21 @@ export function addCharacterUpgradeBonusMoveSpeed() {
         getOptions: getOptions,
         getStatsDisplayText: getStatsDisplayText,
     }
+}
+
+export function characterCreateAndAddUpgradeBonusSpeed(charClass: CharacterClass, character: Character, bonusSpeed: number) {
+    if (!charClass.characterClassUpgrades) charClass.characterClassUpgrades = {};
+    let upgrade: CharacterUpgradeBonusMoveSpeed = charClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_MOVE_SPEED] as CharacterUpgradeBonusMoveSpeed;
+    if (!upgrade) {
+        upgrade = {
+            bonusMoveSpeed: 0,
+            classIdRef: charClass.id,
+            level: 1,
+        }
+        charClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_MOVE_SPEED] = upgrade;
+    }
+    upgrade.bonusMoveSpeed += bonusSpeed;
+    character.moveSpeed += bonusSpeed;
 }
 
 function applyUpgrade(characterUpgrade: CharacterUpgrade, character: Character){

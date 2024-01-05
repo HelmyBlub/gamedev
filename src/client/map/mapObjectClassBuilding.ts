@@ -1,7 +1,7 @@
 import { Ability } from "../ability/ability.js";
 import { characterAddExistingCharacterClass, resetCharacter } from "../character/character.js";
 import { Character, createCharacter } from "../character/characterModel.js";
-import { CharacterUpgrade } from "../character/characterUpgrades.js";
+import { CharacterUpgrade } from "../character/upgrades/characterUpgrades.js";
 import { CharacterClass, PLAYER_CHARACTER_CLASSES_FUNCTIONS, hasCharacterPreventedMultipleClass } from "../character/playerCharacters/playerCharacters.js";
 import { TamerPetCharacter } from "../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { deepCopy, getCameraPosition, getNextId } from "../game.js";
@@ -109,7 +109,7 @@ export function classBuildingPutLegendaryCharacterStuffBackIntoBuilding(characte
     for(let i = character.abilities.length - 1; i >= 0; i--){
         const ability = character.abilities[i];
         if(ability.legendary){
-            const building = findBuildingById(ability.legendary.buildingRefId, game);
+            const building = findBuildingById(ability.legendary.buildingIdRef, game);
             if(building){
                 character.abilities.splice(i,1);
                 building.abilities.push(ability);
@@ -121,7 +121,7 @@ export function classBuildingPutLegendaryCharacterStuffBackIntoBuilding(characte
         for(let i = character.pets.length - 1; i >= 0; i--){
             const pet = character.pets[i];
             if(pet.legendary){
-                const building = findBuildingById(pet.legendary.buildingRefId, game);
+                const building = findBuildingById(pet.legendary.buildingIdRef, game);
                 if(building){
                     character.pets.splice(i,1);
                     building.pets.push(pet);
@@ -171,12 +171,12 @@ function placePlayerClassStuffInBuilding(playerClass: string, game: Game) {
             freeBuilding.stuffBorrowed = false;
             for (let ability of tempCharacter.abilities) {
                 freeBuilding.abilities.push(ability);
-                ability.legendary = { buildingRefId: freeBuilding.id };
+                ability.legendary = { buildingIdRef: freeBuilding.id };
             }
             if(tempCharacter.pets){
                 for (let pet of tempCharacter.pets) {
                     freeBuilding.pets.push(pet);
-                    pet.legendary = { buildingRefId: freeBuilding.id };
+                    pet.legendary = { buildingIdRef: freeBuilding.id };
                 }
             }
         }
