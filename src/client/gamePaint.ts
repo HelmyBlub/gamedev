@@ -12,7 +12,7 @@ import { GAME_IMAGES, loadImage } from "./imageLoad.js";
 import { getMapMidlePosition } from "./map/map.js";
 import { MAP_OBJECTS_FUNCTIONS, findNearesInteractableMapChunkObject } from "./map/mapObjects.js";
 import { paintMap, paintMapCharacters } from "./map/mapPaint.js";
-import { findNearesPastPlayerCharacter, findPlayerById } from "./player.js";
+import { findNearesPastPlayerCharacter, findPlayerById, isAutoSkillActive } from "./player.js";
 
 GAME_IMAGES["blankKey"] = {
     imagePath: "/images/singleBlankKey.png",
@@ -372,7 +372,7 @@ function paintGameRulesUI(ctx: CanvasRenderingContext2D, character: Character, d
 
 function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Character, game: Game) {
     if (game.state.ended) return;
-    if (game.settings.autoSkillEnabled && hasPlayerChoosenStartClassUpgrade(character)) return;
+    if (isAutoSkillActive(game) && hasPlayerChoosenStartClassUpgrade(character)) return;
     const firstFontSize = 20;
     const addFontSize = 14;
     const startY = (ctx.canvas.height * 0.75);

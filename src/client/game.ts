@@ -1,6 +1,6 @@
 import { changeCharacterId, countAlivePlayerCharacters, findAndSetNewCameraCharacterId, findCharacterById, findMyCharacter, getPlayerCharacters, resetCharacter, tickCharacters, tickMapCharacters } from "./character/character.js";
 import { paintAll } from "./gamePaint.js";
-import { createDefaultKeyBindings1, createDefaultUiKeyBindings, findPlayerByCharacterId, gameInitPlayers } from "./player.js";
+import { createDefaultKeyBindings1, createDefaultUiKeyBindings, findPlayerByCharacterId, gameInitPlayers, isAutoSkillActive } from "./player.js";
 import { MOUSE_ACTION, UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.js";
 import { Position, GameState, Game, IdCounter, Debugging, PaintTextData, ClientInfo } from "./gameModel.js";
 import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap } from "./map/map.js";
@@ -567,7 +567,7 @@ function autoSendMyMousePosition(game: Game) {
 }
 
 function checkForAutoSkill(game: Game) {
-    if (!game.settings.autoSkillEnabled) return;
+    if (!isAutoSkillActive(game)) return;
 
     const character: Character | undefined = findMyCharacter(game);
     if (character && hasPlayerChoosenStartClassUpgrade(character)) {

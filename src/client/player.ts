@@ -65,6 +65,19 @@ export function createDefaultUiKeyBindings() {
     return keyBindings;
 }
 
+export function isAutoSkillActive(game: Game): boolean{
+    if(!game.clientKeyBindings) return false;
+    const keybindMap = game.clientKeyBindings.keyCodeToUiAction;
+    const keys = keybindMap.keys();
+    for (let key of keys){
+        const keybind = keybindMap.get(key);
+        if(keybind?.action === "AutoSkill"){
+            return keybind.activated ? keybind.activated : false;
+        }
+    }
+    return false;
+}
+
 function addPlayer(idCounter: IdCounter, clientId: number, players: Player[], pos: Position, seed: RandomSeed, game: Game) {
     const character = createPlayerCharacter(idCounter, pos, seed, game);
     players.push(createPlayer(clientId, character));

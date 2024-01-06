@@ -256,8 +256,7 @@ function uiAction(game: Game, inputCode: string, isInputDown: boolean) {
             break;
         case "AutoSkill":
             if (!isInputDown) return;
-            game.settings.autoSkillEnabled = !game.settings.autoSkillEnabled;
-            action.activated = game.settings.autoSkillEnabled;
+            action.activated = !action.activated;
             break;
     }
 }
