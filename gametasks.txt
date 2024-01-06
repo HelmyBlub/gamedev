@@ -1,7 +1,6 @@
 new test runs required: tamer, sniper,
 
 current tasks:
-- bug: game crash on trade with past character
 - class Buildings and legendary:
     - redesign localStorage code for easier future extensions
         - working on "premanentData" file
