@@ -214,7 +214,7 @@ export function characterAddExistingCharacterClass(character: Character, charact
                 const classUpgrade = tempClassUpgrades[key];
                 const charUpFunctions = CHARACTER_UPGRADE_FUNCTIONS[key];
                 if (charUpFunctions) {
-                    charUpFunctions.addUpgrade(classUpgrade, character);
+                    charUpFunctions.addUpgrade(classUpgrade, character, characterClass);
                 }
             }
         }

@@ -141,7 +141,7 @@ function restart(game: Game, data: CommandRestart) {
     game.multiplayer.lastRestartReceiveTime = performance.now();
     game.multiplayer.cachePlayerInputs = [];
     if (data.recordInputs) {
-        game.testing.record = { data: { replayPlayerInputs: [] } };
+        game.testing.record = { data: { replayPlayerInputs: [], permanentData: {} } };
         game.testing.record.restartPlayerInput = { ...data };
         if (data.testMapSeed !== undefined) game.testing.record.mapSeed = data.testMapSeed;
     } else if (game.testing.record) {

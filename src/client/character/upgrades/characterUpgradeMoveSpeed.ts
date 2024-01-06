@@ -14,7 +14,7 @@ const BONUS_MOVE_SPEED_PER_LEVEL = 0.2;
 
 export function addCharacterUpgradeBonusMoveSpeed() {
     CHARACTER_UPGRADE_FUNCTIONS[CHARACTER_UPGRADE_BONUS_MOVE_SPEED] = {
-        addUpgrade: applyUpgrade,
+        addUpgrade: addUpgrade,
         executeOption: executeOption,
         getLongExplainText: getLongExplainText,
         getOptions: getOptions,
@@ -28,7 +28,6 @@ export function characterCreateAndAddUpgradeBonusSpeed(charClass: CharacterClass
     if (!upgrade) {
         upgrade = {
             bonusMoveSpeed: 0,
-            classIdRef: charClass.id,
             level: 1,
         }
         charClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_MOVE_SPEED] = upgrade;
@@ -37,9 +36,7 @@ export function characterCreateAndAddUpgradeBonusSpeed(charClass: CharacterClass
     character.moveSpeed += bonusSpeed;
 }
 
-function applyUpgrade(characterUpgrade: CharacterUpgrade, character: Character){
-    const charClass = findCharacterClassById(character, characterUpgrade.classIdRef);
-    if(!charClass) return;
+function addUpgrade(characterUpgrade: CharacterUpgrade, character: Character, charClass: CharacterClass){
     if(!charClass.characterClassUpgrades) charClass.characterClassUpgrades = {};
     const bonusHp = characterUpgrade as CharacterUpgradeBonusMoveSpeed;
     charClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_MOVE_SPEED] = characterUpgrade;
@@ -68,7 +65,7 @@ function executeOption(option: UpgradeOption, character: Character){
     if(!charClass) return;
     if(charClass.characterClassUpgrades === undefined) charClass.characterClassUpgrades = {};
     if (charClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_MOVE_SPEED] === undefined) {
-        up = {level: 0, bonusMoveSpeed: 0, classIdRef: option.classIdRef};
+        up = {level: 0, bonusMoveSpeed: 0 };
         charClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_MOVE_SPEED] = up;
     } else {
         up = charClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_MOVE_SPEED] as CharacterUpgradeBonusMoveSpeed;

@@ -8,6 +8,7 @@ import { createMap, GameMap } from "./map/map.js";
 import { EndBossEntranceData } from "./map/mapEndBossArea.js";
 import { generateMissingChunks } from "./map/mapGeneration.js";
 import { Building } from "./map/mapObjectClassBuilding.js";
+import { PermanentDataParts } from "./permanentData.js";
 import { Player } from "./player.js";
 import { PlayerInput } from "./playerInput.js";
 import { nextRandom, RandomSeed } from "./randomNumberGenerator.js";
@@ -23,8 +24,7 @@ export type IdCounter = {
 
 export type RecordData = {
     replayPlayerInputs: Omit<PlayerInput, "executeTime">[],
-    pastCharacters?: PastPlayerCharacters,
-    nextEndBosses?: NextEndbosses,
+    permanentData: PermanentDataParts,
     gameEndAsserts?: {
         type: string,
         data: any,
@@ -49,8 +49,7 @@ export type TestingStuff = {
         enemyTypeDirectionSeed?: number,
         data?: {
             replayPlayerInputs: PlayerInput[],
-            pastCharacters?: PastPlayerCharacters,
-            nextEndBosses?: NextEndbosses,
+            permanentData: PermanentDataParts,
             gameEndAsserts?: {
                 type: string,
                 data: any,

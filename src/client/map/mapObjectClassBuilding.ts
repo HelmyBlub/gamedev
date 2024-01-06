@@ -10,6 +10,7 @@ import { getPointPaintPosition, paintTextWithOutline } from "../gamePaint.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
 import { MapChunk, chunkXYToMapKey, mapKeyAndTileXYToPosition } from "./map.js";
 import { MAP_OBJECTS_FUNCTIONS, MapTileObject, findMapKeyForMapObject } from "./mapObjects.js";
+import { localStorageSaveBuildings } from "../permanentData.js";
 
 export type MapTileObjectClassBuilding = MapTileObject & {
     buildingId: number,
@@ -95,6 +96,7 @@ export function mapObjectPlaceClassBuilding(game: Game) {
     spawnChunk.tiles[mapObject.x][mapObject.y] = 0;
     spawnChunk.objects.push(mapObject);
     game.state.buildings.push(classBuilding);
+    localStorageSaveBuildings(game);
 }
 
 export function classBuildingCheckAllPlayerForLegendaryAbilitiesAndMoveBackToBuilding(game: Game){
@@ -114,6 +116,8 @@ export function classBuildingPutLegendaryCharacterStuffBackIntoBuilding(characte
                 character.abilities.splice(i,1);
                 building.abilities.push(ability);
                 building.stuffBorrowed = false;
+            }else{
+                console.log("failed to find class Building for ability", ability, game);
             }
         }
     }
@@ -126,6 +130,8 @@ export function classBuildingPutLegendaryCharacterStuffBackIntoBuilding(characte
                     character.pets.splice(i,1);
                     building.pets.push(pet);
                     building.stuffBorrowed = false;
+                }else{
+                    console.log("failed to find class Building for pet", pet, game);
                 }
             }
         }
@@ -144,10 +150,13 @@ export function classBuildingPutLegendaryCharacterStuffBackIntoBuilding(characte
                 if(classBuilding){
                     classBuilding.characterClass = charClass;
                     character.characterClasses.splice(i,1);
+                }else{
+                    console.log("failed to find class Building for character class", charClass, game);
                 }
             }
         }
     }
+    localStorageSaveBuildings(game);
 }
 
 function findCharacterClassToMakeLegendary(character: Character): string | undefined{
@@ -179,6 +188,7 @@ function placePlayerClassStuffInBuilding(playerClass: string, game: Game) {
                     pet.legendary = { buildingIdRef: freeBuilding.id };
                 }
             }
+            localStorageSaveBuildings(game);
         }
     }
 }

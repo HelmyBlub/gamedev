@@ -28,7 +28,6 @@ export function characterCreateAndAddUpgradeBonusHp(charClass: CharacterClass, c
     if (!upgrade) {
         upgrade = {
             bonusHp: 0,
-            classIdRef: charClass.id,
             level: 1,
         }
         charClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_HP] = upgrade;
@@ -38,9 +37,7 @@ export function characterCreateAndAddUpgradeBonusHp(charClass: CharacterClass, c
     character.maxHp += bonusHp;
 }
 
-function addUpgrade(characterUpgrade: CharacterUpgrade, character: Character) {
-    const charClass = findCharacterClassById(character, characterUpgrade.classIdRef);
-    if (!charClass) return;
+function addUpgrade(characterUpgrade: CharacterUpgrade, character: Character, charClass: CharacterClass) {
     if (!charClass.characterClassUpgrades) charClass.characterClassUpgrades = {};
     const bonusHp = characterUpgrade as CharacterUpgradeBonusHP;
     charClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_HP] = characterUpgrade;
@@ -70,7 +67,7 @@ function executeOption(option: UpgradeOption, character: Character) {
     if (!charClass) return;
     if (charClass.characterClassUpgrades === undefined) charClass.characterClassUpgrades = {};
     if (charClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_HP] === undefined) {
-        up = { level: 0, bonusHp: 0, classIdRef: option.classIdRef };
+        up = { level: 0, bonusHp: 0 };
         charClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_HP] = up;
     } else {
         up = charClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_HP] as CharacterUpgradeBonusHP;

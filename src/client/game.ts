@@ -64,8 +64,9 @@ export function gameRestart(game: Game) {
             restart.testRandomStartSeed = game.state.randomSeed.seed;
             restart.testEnemyTypeDirectionSeed = game.state.enemyTypeDirectionSeed;
         }
-        record.data.nextEndBosses = deepCopy(game.state.bossStuff.nextEndbosses);
-        record.data.pastCharacters = deepCopy(game.state.pastPlayerCharacters);
+        record.data.permanentData.nextEndBosses = deepCopy(game.state.bossStuff.nextEndbosses);
+        record.data.permanentData.pastCharacters = deepCopy(game.state.pastPlayerCharacters);
+        record.data.permanentData.buildings = deepCopy(game.state.buildings);
     }
     gameInit(game);
 }

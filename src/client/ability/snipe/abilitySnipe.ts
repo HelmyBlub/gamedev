@@ -202,10 +202,12 @@ export function createAbilityObjectSnipe(
     return abilityObjectSnipe;
 }
 
-export function getAbilitySnipeDamage(abilitySnipe: AbilitySnipe, baseDamage: number, playerTriggered: boolean, bounceCounter: number = 0) {
+export function getAbilitySnipeDamage(abilitySnipe: AbilitySnipe | undefined, baseDamage: number, playerTriggered: boolean, bounceCounter: number = 0) {
     let damage = baseDamage;
-    damage *= getAbilityUpgradesDamageFactor(ABILITY_SNIPE_UPGRADE_FUNCTIONS, abilitySnipe, playerTriggered);
-    damage *= getAbilityUpgradeTerrainBounceDamageFactor(abilitySnipe, bounceCounter);
+    if(abilitySnipe){
+        damage *= getAbilityUpgradesDamageFactor(ABILITY_SNIPE_UPGRADE_FUNCTIONS, abilitySnipe, playerTriggered);
+        damage *= getAbilityUpgradeTerrainBounceDamageFactor(abilitySnipe, bounceCounter);
+    }
     return damage;
 }
 
@@ -465,7 +467,7 @@ function tickAbilityObjectSnipe(abilityObject: AbilityObject, game: Game) {
     if (!abilityObjectSnipe.damageCalcDone) {
         const endPos = calcNewPositionMovedInDirection(abilityObjectSnipe, abilityObjectSnipe.direction, abilityObjectSnipe.range);
         const characters: Character[] = getCharactersTouchingLine(game, abilityObjectSnipe, endPos, abilityObject.faction, abilityObjectSnipe.size);
-        const abilitySnipe = findAbilityById(abilityObject.abilityIdRef!, game) as AbilitySnipe;
+        const abilitySnipe = findAbilityById(abilityObject.abilityIdRef!, game) as AbilitySnipe | undefined;
         for (let char of characters) {
             if (char.isDead) continue;
             abilityObjectSnipe.hitSomething = true;

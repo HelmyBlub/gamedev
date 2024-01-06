@@ -66,7 +66,7 @@ export function getAbilityUpgradesDamageFactor(upgradeFunctions: AbilityUpgrades
     const keys = Object.keys(upgradeFunctions);
     let damageFactor = 1;
     for (let key of keys) {
-        if (ability.upgrades[key]) {
+        if (ability.upgrades && ability.upgrades[key]) {
             let functions = upgradeFunctions[key];
             if (functions.getDamageFactor) {
                 damageFactor *= functions.getDamageFactor(ability, playerTriggered);

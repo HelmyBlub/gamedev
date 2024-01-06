@@ -28,14 +28,14 @@ function testPlayerClasses(game: Game) {
 
     const replay = game.testing.replay;
     replay.testInputFileQueue = [];
-    // replay.testInputFileQueue.push("/data/testInputError.json");
-    replay.testInputFileQueue.push("/data/testInputShortBuilder.json");
+    replay.testInputFileQueue.push("/data/testInputError.json");
+    // replay.testInputFileQueue.push("/data/testInputShortBuilder.json");
     // replay.testInputFileQueue.push("/data/testInputShortSniper.json");
     // replay.testInputFileQueue.push("/data/testInputShortTamer.json");
-    replay.testInputFileQueue.push("/data/testInputLongTamer.json");
-    replay.testInputFileQueue.push("/data/testInputLongBall.json");
-    replay.testInputFileQueue.push("/data/testInputLongSniper.json");
-    replay.testInputFileQueue.push("/data/testInputLongBuilder.json");
+    // replay.testInputFileQueue.push("/data/testInputLongTamer.json");
+    // replay.testInputFileQueue.push("/data/testInputLongBall.json");
+    // replay.testInputFileQueue.push("/data/testInputLongSniper.json");
+    // replay.testInputFileQueue.push("/data/testInputLongBuilder.json");
     replay.frameSkipAmount = 60;
     replay.zeroTimeout = true;
 
@@ -69,14 +69,14 @@ export function setPastCharactersAndEndBossesForReplayFromReplayData(game: Game)
     const replay = game.testing.replay;
     if (!replay) return;
     if (game.state.map.endBossArea) {
-        if (replay.data?.nextEndBosses) {
-            loadNextEnbosses(replay.data?.nextEndBosses, game);
+        if (replay.data?.permanentData.nextEndBosses) {
+            loadNextEnbosses(replay.data?.permanentData.nextEndBosses, game);
         } else {
             setDefaultNextEndbosses(game);
         }
     }
-    if (replay.data?.pastCharacters) {
-        loadPastCharacters(replay.data.pastCharacters, game);
+    if (replay.data?.permanentData.pastCharacters) {
+        loadPastCharacters(replay.data.permanentData.pastCharacters, game);
     } else {
         game.state.pastPlayerCharacters.characters = [];
     }

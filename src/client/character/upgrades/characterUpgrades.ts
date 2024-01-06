@@ -9,11 +9,10 @@ import { addCharacterUpgradeBonusDamageReduction } from "./characterUpgradeDamag
 
 export type CharacterUpgrade = {
     level: number,
-    classIdRef: number,
 }
 
 export type CharacterUpgradeFunctions = {
-    addUpgrade: (characterUpgrade: CharacterUpgrade, character: Character) => void,
+    addUpgrade: (characterUpgrade: CharacterUpgrade, character: Character, characterClass: CharacterClass) => void,
     executeOption?: (option: UpgradeOption, character: Character) => void,
     getLongExplainText?: (character: Character, option: UpgradeOption) => string[],
     getOptions?: (character: Character, game: Game) => UpgradeOptionAndProbability[],

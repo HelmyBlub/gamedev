@@ -13,7 +13,7 @@ export const CHARACTER_UPGRADE_BONUS_DAMAGE_REDUCTION = "Bonus Damage Reduction"
 
 export function addCharacterUpgradeBonusDamageReduction() {
     CHARACTER_UPGRADE_FUNCTIONS[CHARACTER_UPGRADE_BONUS_DAMAGE_REDUCTION] = {
-        addUpgrade: applyUpgrade,
+        addUpgrade: addUpgrade,
     }
 }
 
@@ -26,9 +26,7 @@ export function characterCreateAndApplyUpgradeDamageReduction(charClass: Charact
     applyUpgradeToCharacterClass(charClass, upgrade, character);
 }
 
-function applyUpgrade(characterUpgrade: CharacterUpgrade, character: Character){
-    const charClass = findCharacterClassById(character, characterUpgrade.classIdRef);
-    if(!charClass) return;
+function addUpgrade(characterUpgrade: CharacterUpgrade, character: Character, charClass: CharacterClass){
     const damageReduction = characterUpgrade as CharacterUpgradeBonusDamageReduction;
     applyUpgradeToCharacterClass(charClass, damageReduction, character);
 }
