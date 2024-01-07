@@ -1,4 +1,4 @@
-import { Ability } from "../ability/ability.js";
+import { ABILITIES_FUNCTIONS, Ability } from "../ability/ability.js";
 import { characterAddExistingCharacterClass, resetCharacter } from "../character/character.js";
 import { Character, createCharacter } from "../character/characterModel.js";
 import { CharacterUpgrade } from "../character/upgrades/characterUpgrades.js";
@@ -295,6 +295,17 @@ function paintClassBuilding(ctx: CanvasRenderingContext2D, mapObject: MapTileObj
         );
         ctx.resetTransform();
         ctx.restore();
+        const building = findBuildingById(classBuilding.buildingId, game);
+        if(building?.abilities && building?.abilities.length > 0){
+            for(let ability of building.abilities){
+                const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+                if(abilityFunctions.paintAbilityAccessoire){
+                    const paintPos = {x: paintX + 20, y: paintY + 25};
+                    abilityFunctions.paintAbilityAccessoire(ctx, ability, paintPos, game);
+                    break;
+                }
+            }
+        }
     }
 }
 

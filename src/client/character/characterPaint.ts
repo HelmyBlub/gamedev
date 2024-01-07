@@ -5,7 +5,7 @@ import { GAME_IMAGES, getImage, loadImage } from "../imageLoad.js";
 import { randomizedCharacterImageToKey } from "../randomizedCharacterImage.js";
 import { getPlayerCharacters } from "./character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_PLAYER_PARTS, IMAGE_SLIME } from "./characterModel.js";
-import { PLAYER_CLASS_TOWER_BUILDER } from "./playerCharacters/towerCharacterClass.js";
+import { pushCharacterClassUpgradesUiTexts } from "./upgrades/characterUpgrades.js";
 
 export function paintCharacters(ctx: CanvasRenderingContext2D, characters: (Character | undefined)[], cameraPosition: Position, game: Game) {
     for (let i = 0; i < characters.length; i++) {
@@ -72,20 +72,22 @@ export function paintCharacterStatsUI(ctx: CanvasRenderingContext2D, character: 
     if(character.shield > 0){
         textLines.splice(2,0,`Shield: ${character.shield.toFixed(0)}/${(character.maxHp * character.maxShieldFactor).toFixed(0)}`);
     }
-    if (character.level?.leveling) {
-        textLines.push(
-            `XP: ${Math.floor(character.level.leveling.experienceForLevelUp)}/${Math.floor(character.level.leveling.experience)}`,
-            `Gains XP for every enemy killed by anyone.`,
-            `Gains Skill Points after enough XP`,
-            `for LevelUp is reached.`
-        );
-
-    } else if (character.characterClasses !== undefined) {
-        textLines.push(
-            `Abilities gain XP only for its own kills.`,
-            `On Level up Abilties become stronger.`,
-            `Abilities gain Skill Points for boss kills`,
-        );
+    if(character.characterClasses){
+        for(let charClass of character.characterClasses){
+            textLines.push(``);
+            textLines.push(`Class: ${charClass.className}`);
+            if(charClass.gifted)textLines.push(`Gifted: Abilities can now longer get stronger`);
+            if(charClass.legendary)textLines.push(`Legendary: Class levels and upgrades are permanent`);
+            if(charClass.level){
+                textLines.push(`Level: ${charClass.level.level}`)
+                if(charClass.level.leveling && !charClass.gifted){
+                    textLines.push(`XP: ${Math.floor(charClass.level.leveling.experience)}/${Math.floor(charClass.level.leveling.experienceForLevelUp)}`);
+                    textLines.push(`Gains XP for every enemy killed by anyone.`);
+                }
+            }
+            if(charClass.availableSkillPoints)textLines.push(`SkillPoints: ${charClass.availableSkillPoints}`);
+            pushCharacterClassUpgradesUiTexts(textLines, charClass);
+        }
     }
     return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
 }

@@ -87,6 +87,7 @@ export type AbilityFunctions = {
     paintAbilityObject?: (ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) => void,
     paintAbilityUI?: (ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) => void,
     paintAbilityStatsUI?: (ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, game: Game) => { width: number, height: number },
+    paintAbilityAccessoire?: (ctx: CanvasRenderingContext2D, ability: Ability, paintPosition: Position, game: Game) => void,
     onHit?: (ability: Ability, targetCharacter: Character, game: Game) => void,
     onObjectHit?: (abilityObject: AbilityObject, targetCharacter: Character, game: Game) => void,
     resetAbility?: (ability: Ability) => void,
@@ -322,8 +323,10 @@ export function getAbilityNameUiText(ability: Ability): string[] {
     const text: string[] = [`Ability: ${ability.name}`];
     if (ability.gifted) {
         text[0] += " (gifted)";
-        text.push("gifted abilities can not get stronger");
+        text.push("Gifted abilities can not get stronger.");
     }
+    if(ability.legendary)text.push(`Legendary: Ability levels and upgrades are permanent.`);
+
     return text;
 }
 

@@ -6,7 +6,7 @@ import { Position, Game, IdCounter, ClientInfo, FACTION_ENEMY } from "../../game
 import { GAME_IMAGES } from "../../imageLoad.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, findAbilityById } from "../ability.js";
 import { AbilityUpgrade, AbilityUpgradesFunctions, getAbilityUpgradeOptionDefault, getAbilityUpgradesDamageFactor, pushAbilityUpgradesOptions, upgradeAbility } from "../abilityUpgrade.js";
-import { paintAbilityObjectSnipe, paintAbilitySnipe, paintAbilitySnipeStatsUI, paintAbilitySnipeUI } from "./abilitySnipePaint.js";
+import { paintAbilityObjectSnipe, paintAbilitySnipe, paintAbilitySnipeAccessoire, paintAbilitySnipeStatsUI, paintAbilitySnipeUI } from "./abilitySnipePaint.js";
 import { addAbilitySnipeUpgradeAfterImage, castSnipeAfterImage, tickAbilityUpgradeAfterImage } from "./abilitySnipeUpgradeAfterImage.js";
 import { addAbilitySnipeUpgradeBackwardsShot, castSnipeBackwardsShot } from "./abilitySnipeUpgradeBackwardsShot.js";
 import { abilityUpgradeNoMissChainOnObjectSnipeDamageDone, addAbilitySnipeUpgradeNoMissChain } from "./abilitySnipeUpgradeChainHit.js";
@@ -75,6 +75,7 @@ export function addAbilitySnipe() {
         paintAbilityUI: paintAbilitySnipeUI,
         paintAbility: paintAbilitySnipe,
         paintAbilityStatsUI: paintAbilitySnipeStatsUI,
+        paintAbilityAccessoire: paintAbilitySnipeAccessoire,
         resetAbility: resetAbility,
         setAbilityToLevel: setAbilitySnipeToLevel,
         setAbilityToBossLevel: setAbilityToBossLevel,

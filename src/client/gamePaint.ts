@@ -3,7 +3,7 @@ import { canCharacterTradeAbilityOrPets } from "./character/character.js";
 import { Character } from "./character/characterModel.js";
 import { paintCharacterStatsUI, paintPlayerCharacters } from "./character/characterPaint.js";
 import { paintBossCharacters, paintBossCrown } from "./character/enemy/bossEnemy.js";
-import { findMainCharacterClass, hasPlayerChoosenStartClassUpgrade, shareCharactersTradeablePreventedMultipleClass } from "./character/playerCharacters/playerCharacters.js";
+import { hasPlayerChoosenStartClassUpgrade, shareCharactersTradeablePreventedMultipleClass } from "./character/playerCharacters/playerCharacters.js";
 import { paintTamerPetCharacterStatsUI } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
 import { calculateDistance, getCameraPosition, getTimeSinceFirstKill } from "./game.js";
 import { Game, Position, Debugging, PaintTextData } from "./gameModel.js";
@@ -36,29 +36,9 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
     paintKillCounter(ctx, game.state.killCounter, game);
     paintClosestInteractable(ctx, cameraPosition, game);
     paintKeyInfo(ctx, game);
-
-    if (game.state.ended) {
-        const player = findPlayerById(game.state.players, game.multiplayer.myClientId);
-        if (player === null) return;
-        const character = player.character;
-        paintEndScreen(ctx, game.state.highscores, game);
-        if (character !== null) paintPlayerStats(ctx, character, getTimeSinceFirstKill(game.state), game);
-        if (game.multiplayer.websocket !== null) {
-            ctx.fillText("Ping: " + Math.round(game.multiplayer.delay), 10, 60);
-        }
-    } else {
-        if (game.multiplayer.myClientId !== -1) {
-            const player = findPlayerById(game.state.players, game.multiplayer.myClientId);
-            if (player === null) return;
-            const character = player.character;
-            if (character !== null) paintPlayerStats(ctx, character, getTimeSinceFirstKill(game.state), game);
-            if (game.multiplayer.websocket !== null) {
-                ctx.fillText("Ping: " + Math.round(game.multiplayer.delay), 10, 60);
-            }
-        } else {
-            paintPlayerStats(ctx, game.state.players[0].character, getTimeSinceFirstKill(game.state), game);
-        }
-    }
+    paintEndScreen(ctx, game.state.highscores, game);
+    paintMyCharacterStats(ctx, game);
+    paintMultiplayerPing(ctx, game);
     paintTimeMeasures(ctx, game.debug);
     paintPausedText(ctx, game);
     paintUiForAbilities(ctx, game);
@@ -82,6 +62,12 @@ export function paintTextWithOutline(ctx: CanvasRenderingContext2D, outlineColor
     }
     ctx.fillStyle = textColor;
     ctx.fillText(text, x, y);
+}
+
+function paintMultiplayerPing(ctx: CanvasRenderingContext2D, game: Game){
+    if (game.multiplayer.websocket !== null) {
+        ctx.fillText("Ping: " + Math.round(game.multiplayer.delay), 10, 60);
+    }
 }
 
 function paintClosestInteractable(ctx: CanvasRenderingContext2D, cameraPosition: Position, game: Game) {
@@ -268,9 +254,11 @@ function paintTimeMeasures(ctx: CanvasRenderingContext2D, debug: Debugging | und
 }
 
 function paintEndScreen(ctx: CanvasRenderingContext2D, highscores: Highscores, game: Game) {
+    if (!game.state.ended) return;
+
     paintGameTitle(ctx);
     let restartKey = "";
-    game.clientKeyBindings!.keyCodeToUiAction.forEach((e) => {
+    game.clientKeyBindings?.keyCodeToUiAction.forEach((e) => {
         if (e.action === "Restart") {
             restartKey = e.uiDisplayInputValue;
         }
@@ -291,6 +279,12 @@ function paintKillCounter(ctx: CanvasRenderingContext2D, killCounter: number, ga
     if (game.state.ended && killCounter === 0) return;
     ctx.font = "18px Arial";
     paintTextWithOutline(ctx, "white", "black", "Kills: " + killCounter, 10, 20);
+}
+
+function paintMyCharacterStats(ctx: CanvasRenderingContext2D, game: Game){
+    const player = findPlayerById(game.state.players, game.multiplayer.myClientId);
+    if (player === null) return;
+    paintPlayerStats(ctx, player.character, game.state.time, game);
 }
 
 function paintPlayerStats(ctx: CanvasRenderingContext2D, character: Character, gameTime: number, game: Game) {
@@ -362,7 +356,7 @@ function paintPlayerStatsUI(ctx: CanvasRenderingContext2D, character: Character,
 function paintGameRulesUI(ctx: CanvasRenderingContext2D, character: Character, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
     const textLines: string[] = [
         `Game Rules:`,
-        `Game timer starts when enemy is killed.`,
+        `Game timer starts when first enemy is killed.`,
         `On 30seconds a expanding death zone`,
         `beginns to grow.`,
         `Every minute one boss enemy spawns.`,

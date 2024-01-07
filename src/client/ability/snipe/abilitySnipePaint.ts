@@ -48,6 +48,11 @@ export function paintAbilitySnipe(ctx: CanvasRenderingContext2D, abilityOwner: A
     paintVisualizationAfterImage(ctx, abilityOwner, abilitySnipe, cameraPosition, game);
 }
 
+export function paintAbilitySnipeAccessoire(ctx: CanvasRenderingContext2D, ability: Ability, paintPosition: Position, game: Game){
+    const abilitySnipe = ability as AbilitySnipe;
+    paintSniperRifle(ctx, abilitySnipe, paintPosition.x, paintPosition.y, Math.PI, 0, true, game);
+}
+
 export function paintSniperRifle(ctx: CanvasRenderingContext2D, abilitySnipe: AbilitySnipe, paintX: number, paintY: number, pointDirection: number, distance: number, playerMainRifle: boolean, game: Game) {
     const sniperRifleImageRef = GAME_IMAGES[ABILITY_NAME_SNIPE];
     loadImage(sniperRifleImageRef);

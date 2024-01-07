@@ -62,6 +62,7 @@ export function addAbilityTower() {
         paintAbilityUI: paintAbilityTowerUI,
         paintAbility: paintAbilityTower,
         paintAbilityStatsUI: paintAbilityTowerStatsUI,
+        paintAbilityAccessoire: paintAbilityAccessoire,
         resetAbility: resetAbility,
         setAbilityToBossLevel: setAbilityTowerToBossLevel,
         setAbilityToEnemyLevel: setAbilityToEnemyLevel,
@@ -293,6 +294,11 @@ function paintAbilityTower(ctx: CanvasRenderingContext2D, abilityOwner: AbilityO
     const abiltiyTower = ability as AbilityTower;
     const paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
     paintHammer(ctx, abiltiyTower, paintPos.x - 10, paintPos.y, game);
+}
+
+function paintAbilityAccessoire(ctx: CanvasRenderingContext2D, ability: Ability, paintPosition: Position, game: Game){
+    const abilitySnipe = ability as AbilityTower;
+    paintHammer(ctx, abilitySnipe, paintPosition.x, paintPosition.y, game);
 }
 
 function paintHammer(ctx: CanvasRenderingContext2D, abilityTower: AbilityTower, paintX: number, paintY: number, game: Game) {

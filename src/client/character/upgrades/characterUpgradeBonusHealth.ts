@@ -78,9 +78,8 @@ function executeOption(option: UpgradeOption, character: Character) {
     character.maxHp += BONUS_HP_PER_LEVEL;
 }
 
-function getStatsDisplayText(characterClass: CharacterClass): string {
-    if (characterClass.characterClassUpgrades === undefined) return "";
-    const up: CharacterUpgradeBonusHP = characterClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_HP] as CharacterUpgradeBonusHP;
+function getStatsDisplayText(characterUpgrade: CharacterUpgrade): string {
+    const up: CharacterUpgradeBonusHP = characterUpgrade as CharacterUpgradeBonusHP;
     return `${CHARACTER_UPGRADE_BONUS_HP}: ${up.bonusHp}`;
 }
 

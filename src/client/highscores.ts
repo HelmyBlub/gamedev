@@ -1,3 +1,4 @@
+import { Character } from "./character/characterModel.js";
 import { findMainCharacterClass } from "./character/playerCharacters/playerCharacters.js";
 import { calculateDistance, getTimeSinceFirstKill } from "./game.js";
 import { Game } from "./gameModel.js";
@@ -60,7 +61,7 @@ export function calculateHighscoreOnGameEnd(game: Game, isEndbossKill: boolean):
         const player = game.state.players[i];
         if (player.character.characterClasses) {
             if (playerClass.length > 1) playerClass += ", ";
-            playerClass += findMainCharacterClass(player.character);
+            playerClass += getPlayerClassesString(player.character);
         }
         const distance = Math.round(calculateDistance(player.character, getMapMidlePosition(state.map)));
         if (distance > newScore) newScore = distance;
@@ -151,6 +152,19 @@ export function paintHighscores(ctx: CanvasRenderingContext2D, paintX: number, p
     }
 
     return { width, height };
+}
+
+function getPlayerClassesString(character: Character): string{
+    if(!character.characterClasses) return "";
+    let result = "";
+    for(let i = 0; i< character.characterClasses.length; i++){
+        const charClass = character.characterClasses[i];
+        if(i > 0) result += "+";
+        result += charClass.className;
+        if(charClass.gifted) result += "[g]";
+        if(charClass.legendary) result += "[L]";
+    }
+    return result;
 }
 
 function getHighscoreWidth(ctx: CanvasRenderingContext2D, highscoreBoard: HighscoreBoard, fontSize: number): number {

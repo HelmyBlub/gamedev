@@ -16,7 +16,7 @@ export type CharacterUpgradeFunctions = {
     executeOption?: (option: UpgradeOption, character: Character) => void,
     getLongExplainText?: (character: Character, option: UpgradeOption) => string[],
     getOptions?: (character: Character, game: Game) => UpgradeOptionAndProbability[],
-    getStatsDisplayText?: (characterClass: CharacterClass) => string,
+    getStatsDisplayText: (characterUpgrade: CharacterUpgrade) => string,
 }
 
 export type CharacterUpgradesFunctions = {
@@ -31,6 +31,14 @@ export function onDomLoadSetCharacterUpgradeFunctions(){
     addCharacterUpgradeBonusDamageReduction();
 }
 
+export function characterUpgradeGetStatsDisplayText(upgradeName: string, characterUpgrade: CharacterUpgrade): string{
+    const upgradeFunctions = CHARACTER_UPGRADE_FUNCTIONS[upgradeName];
+    if(upgradeFunctions){
+        return upgradeFunctions.getStatsDisplayText(characterUpgrade);
+    }
+    return "";
+}
+
 export function upgradeCharacter(character: Character, upgradeOption: UpgradeOption) {
     const upgradeFunctions = CHARACTER_UPGRADE_FUNCTIONS[upgradeOption.identifier];
     if (upgradeFunctions && upgradeOption.classIdRef !== undefined && upgradeFunctions.executeOption) {
@@ -43,20 +51,16 @@ export function upgradeCharacter(character: Character, upgradeOption: UpgradeOpt
     character.upgradeChoices = [];
 }
 
-export function pushCharacterUpgradesUiTexts(texts: string[], character: Character) {
-    if(!character.characterClasses) return;
+export function pushCharacterClassUpgradesUiTexts(texts: string[], charClass: CharacterClass) {
+    if(!charClass.characterClassUpgrades) return;
     let first = true;
-    for(let charClass of character.characterClasses){
-        if(!charClass.characterClassUpgrades) continue;
-        const keys = Object.keys(charClass.characterClassUpgrades);
-        for (let key of keys) {
-            if (first) {
-                texts.push("");
-                texts.push("Upgrades:");
-                first = false;
-            }
-            texts.push(CHARACTER_UPGRADE_FUNCTIONS[key].getStatsDisplayText!(charClass));
+    const keys = Object.keys(charClass.characterClassUpgrades);
+    for (let key of keys) {
+        if (first) {
+            texts.push("Upgrades:");
+            first = false;
         }
+        texts.push(CHARACTER_UPGRADE_FUNCTIONS[key].getStatsDisplayText(charClass.characterClassUpgrades[key]));
     }
 }
 

@@ -75,9 +75,8 @@ function executeOption(option: UpgradeOption, character: Character){
     character.moveSpeed += BONUS_MOVE_SPEED_PER_LEVEL;
 }
 
-function getStatsDisplayText(characterClass: CharacterClass): string {
-    if(characterClass.characterClassUpgrades === undefined) return "";
-    const up: CharacterUpgradeBonusMoveSpeed = characterClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_MOVE_SPEED] as CharacterUpgradeBonusMoveSpeed;
+function getStatsDisplayText(characterUpgrade: CharacterUpgrade): string {
+    const up: CharacterUpgradeBonusMoveSpeed = characterUpgrade as CharacterUpgradeBonusMoveSpeed;
     return `${CHARACTER_UPGRADE_BONUS_MOVE_SPEED}: ${up.bonusMoveSpeed}`;
 }
 

@@ -1,9 +1,6 @@
-import { UpgradeOption, UpgradeOptionAndProbability } from "../upgrade.js";
-import { Game } from "../../gameModel.js";
 import { Character } from "../characterModel.js";
 import { CHARACTER_UPGRADE_FUNCTIONS, CharacterUpgrade } from "./characterUpgrades.js";
 import { CharacterClass } from "../playerCharacters/playerCharacters.js";
-import { findCharacterClassById } from "../playerCharacters/levelingCharacter.js";
 
 type CharacterUpgradeBonusDamageReduction = CharacterUpgrade & {
     bonusDamageReduction: number,
@@ -14,6 +11,7 @@ export const CHARACTER_UPGRADE_BONUS_DAMAGE_REDUCTION = "Bonus Damage Reduction"
 export function addCharacterUpgradeBonusDamageReduction() {
     CHARACTER_UPGRADE_FUNCTIONS[CHARACTER_UPGRADE_BONUS_DAMAGE_REDUCTION] = {
         addUpgrade: addUpgrade,
+        getStatsDisplayText: getStatsDisplayText,
     }
 }
 
@@ -24,6 +22,11 @@ export function characterCreateAndApplyUpgradeDamageReduction(charClass: Charact
         level: 1,
     }
     applyUpgradeToCharacterClass(charClass, upgrade, character);
+}
+
+function getStatsDisplayText(characterUpgrade: CharacterUpgrade): string {
+    const up: CharacterUpgradeBonusDamageReduction = characterUpgrade as CharacterUpgradeBonusDamageReduction;
+    return `${CHARACTER_UPGRADE_BONUS_DAMAGE_REDUCTION}: ${(1 - up.bonusDamageReduction) * 100}%`;
 }
 
 function addUpgrade(characterUpgrade: CharacterUpgrade, character: Character, charClass: CharacterClass){

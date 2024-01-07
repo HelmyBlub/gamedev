@@ -1,12 +1,12 @@
-new test runs required: tamer, sniper,
+new test runs required: sniper, ball, builder
 
 current tasks:
 - class Buildings and legendary:
     - dev steps:
-        - bug: legendary class not displayed in highscore
         - visualize
-            - display stats in info view
-            - visualize abilities in classBuilding
+            - paint ability on building
+                - tamer, ball
+            - paint class UiStats when closestInteractable
         - change scalling of burrowed abilities
             - ...
         - if character with legendary sniper becomes endboss, "legendary snipe" not available in "smith building" until end boss defeated
