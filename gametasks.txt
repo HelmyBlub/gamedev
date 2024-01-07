@@ -1,7 +1,6 @@
 new test runs required: tamer, sniper,
 
 current tasks:
-- bug: missing leashes for tamer bosses? only in multiplayer?
 - class Buildings and legendary:
     - dev steps:
         - bug: legendary class not displayed in highscore

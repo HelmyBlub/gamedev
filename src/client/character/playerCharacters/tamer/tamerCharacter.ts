@@ -56,6 +56,7 @@ export function createPetsBasedOnLevelAndCharacter(basedOnCharacter: Character, 
             reducePetLevel(pet, petLevel - level, game.state.randomSeed);
         }
     }
+    changeCharacterAndAbilityIds(pet, game.state.idCounter);
     for (let ability of pet.abilities) {
         setAbilityToBossLevel(ability, level);
         if (ability.name === ABILITY_NAME_LEASH) {
@@ -64,7 +65,6 @@ export function createPetsBasedOnLevelAndCharacter(basedOnCharacter: Character, 
         }
     }
     resetCharacter(pet, game);
-    changeCharacterAndAbilityIds(pet, game.state.idCounter);
 
     return [pet];
 }
