@@ -71,7 +71,7 @@ export function startEndBoss(endBossAreaPosition: Position, game: Game) {
         const spawn: Position = getBossAreaMiddlePosition(endBossAreaPosition, game.state.map)!;
         const celestialDirection = getCelestialDirection(spawn);
         const endBoss: Character = deepCopy(game.state.bossStuff.nextEndbosses[celestialDirection]);
-        modifyCharacterToEndBoss(endBoss);
+        modifyCharacterToEndBoss(endBoss, game);
         endBoss.x = spawn.x;
         endBoss.y = spawn.y;
         if (endBoss.pets) {
@@ -110,7 +110,7 @@ function tickEndBossEnemyCharacter(enemy: EndBossEnemyCharacter, game: Game, pat
     tickCharacterDebuffs(enemy, game);
 }
 
-function modifyCharacterToEndBoss(boss: Character) {
+function modifyCharacterToEndBoss(boss: Character, game: Game) {
     boss.type = CHARACTER_TYPE_END_BOSS_ENEMY;
     let newHp = END_BOSS_BASE_HP
     if(boss.characterClasses){
@@ -126,7 +126,7 @@ function modifyCharacterToEndBoss(boss: Character) {
         }
     }
     boss.moveSpeed = 1;
-    resetCharacter(boss);
+    resetCharacter(boss, game);
     changeBossAbilityLevelBasedOnHp(boss);
 }
 

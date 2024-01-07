@@ -46,7 +46,7 @@ export function loadPastCharacters(pastPlayerCharacters: PastPlayerCharacters, g
     game.state.pastPlayerCharacters = pastPlayerCharacters;
     for (let pastChar of pastPlayerCharacters.characters) {
         if (!pastChar) continue;
-        resetCharacter(pastChar);
+        resetCharacter(pastChar, game);
         changeCharacterAndAbilityIds(pastChar, game.state.idCounter);
     }
 }

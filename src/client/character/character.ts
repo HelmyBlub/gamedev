@@ -327,7 +327,7 @@ export function determineClosestCharacter(position: Position, characters: Charac
     return { minDistanceCharacter, minDistance };
 }
 
-export function resetCharacter(character: Character) {
+export function resetCharacter(character: Character, game: Game) {
     const typeFunctions = CHARACTER_TYPE_FUNCTIONS[character.type];
     if (typeFunctions && typeFunctions.reset) {
         typeFunctions.reset(character);
@@ -345,6 +345,7 @@ export function resetCharacter(character: Character) {
             pet.y = character.y;
         }
     }
+    removeCharacterDebuffs(character, game);
     resetAllCharacterAbilities(character);
 }
 

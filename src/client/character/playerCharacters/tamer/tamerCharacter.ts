@@ -63,7 +63,7 @@ export function createPetsBasedOnLevelAndCharacter(basedOnCharacter: Character, 
             abilityLeash.leashedToOwnerId = petOwner.id;
         }
     }
-    resetCharacter(pet);
+    resetCharacter(pet, game);
     changeCharacterAndAbilityIds(pet, game.state.idCounter);
 
     return [pet];
@@ -110,7 +110,7 @@ function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: 
     bossCharacter.pets = createPetsBasedOnLevelAndCharacter(basedOnCharacter, level, bossCharacter, game);
     bossCharacter.paint.image = IMAGE_SLIME;
     bossCharacter.level = {level: level};
-    resetCharacter(bossCharacter);
+    resetCharacter(bossCharacter, game);
 
     return bossCharacter;
 }

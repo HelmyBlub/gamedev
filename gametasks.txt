@@ -1,7 +1,7 @@
 new test runs required: tamer, sniper,
 
 current tasks:
-- pastCharacters reset does not remove buffs/debuff? ball character continues rolling
+- bug: missing leashes for tamer bosses? only in multiplayer?
 - class Buildings and legendary:
     - dev steps:
         - bug: legendary class not displayed in highscore

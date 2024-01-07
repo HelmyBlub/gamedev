@@ -75,7 +75,7 @@ function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: 
     bossCharacter.abilities.push(lightningBall);
     setAbilityToBossLevel(lightningBall, level);
 
-    resetCharacter(bossCharacter);
+    resetCharacter(bossCharacter, game);
 
     return bossCharacter;
 }

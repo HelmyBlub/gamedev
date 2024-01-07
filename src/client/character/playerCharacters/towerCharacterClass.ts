@@ -69,7 +69,7 @@ function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: 
     const tower: AbilitySnipe = deepCopy(baseTower);
     bossCharacter.abilities.push(tower);
     setAbilityToBossLevel(tower, level);
-    resetCharacter(bossCharacter);
+    resetCharacter(bossCharacter, game);
 
     return bossCharacter;
 }

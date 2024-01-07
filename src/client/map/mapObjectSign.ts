@@ -71,7 +71,7 @@ function paintInteractSign(ctx: CanvasRenderingContext2D, mapObject: MapTileObje
         endBossCopy.y = topMiddlePos.y;
         endBossCopy.moveDirection = Math.PI / 2;
         endBossCopy.type = CHARACTER_TYPE_END_BOSS_ENEMY;
-        resetCharacter(endBossCopy);
+        resetCharacter(endBossCopy, game);
         topMiddlePos.y += 20;
         if (endBossCopy.pets) {
             let offsetX = -endBossCopy.pets.length * 10;

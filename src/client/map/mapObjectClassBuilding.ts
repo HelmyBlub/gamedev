@@ -220,7 +220,7 @@ function interact(interacter: Character, mapObject: MapTileObject, game: Game) {
     if(interacter.upgradeChoices.length > 0 && interacter.upgradeChoices[0].type === "ChooseClass"){
         interacter.upgradeChoices = [];
     }
-    resetCharacter(interacter);
+    resetCharacter(interacter, game);
 }
 
 function findBuildingById(id: number, game: Game): Building | undefined {

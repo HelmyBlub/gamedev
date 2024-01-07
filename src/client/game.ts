@@ -352,7 +352,7 @@ export function saveCharacterAsPastCharacter(character: Character, game: Game) {
             newPastCharacter.abilities.splice(i, 1);
         }
     }
-    resetCharacter(newPastCharacter);
+    resetCharacter(newPastCharacter, game);
     changeCharacterId(newPastCharacter, game.state.idCounter);
     if (newPastCharacter.pets) {
         for (let pet of newPastCharacter.pets) {
@@ -423,7 +423,7 @@ export function autoSendMousePositionHandler(ownerId: number, identifier: string
 
 function resetPastCharacters(game: Game) {
     for (let character of game.state.pastPlayerCharacters.characters) {
-        if (character) resetCharacter(character);
+        if (character) resetCharacter(character, game);
     }
 }
 
