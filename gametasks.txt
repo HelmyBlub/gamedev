@@ -3,8 +3,6 @@ new test runs required: sniper, builder
 current tasks:
 - class Buildings and legendary:
     - dev steps:
-        - visualize
-            - paint class UiStats when closestInteractable
         - change scalling of burrowed abilities
             - ...
         - if character with legendary sniper becomes endboss, "legendary snipe" not available in "smith building" until end boss defeated

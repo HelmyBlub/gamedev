@@ -1,18 +1,16 @@
 import { ABILITIES_FUNCTIONS, Ability } from "../ability/ability.js";
 import { characterAddExistingCharacterClass, resetCharacter } from "../character/character.js";
 import { Character, createCharacter } from "../character/characterModel.js";
-import { CharacterUpgrade } from "../character/upgrades/characterUpgrades.js";
 import { CharacterClass, PLAYER_CHARACTER_CLASSES_FUNCTIONS, hasCharacterPreventedMultipleClass } from "../character/playerCharacters/playerCharacters.js";
 import { TamerPetCharacter } from "../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { deepCopy, getCameraPosition, getNextId } from "../game.js";
 import { FACTION_PLAYER, Game, Position } from "../gameModel.js";
-import { getPointPaintPosition, paintTextWithOutline } from "../gamePaint.js";
+import { getPointPaintPosition, paintStatsFromAbilityAndPetsAndCharacterClass, paintTextWithOutline } from "../gamePaint.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
 import { GameMap, MapChunk, chunkXYToMapKey, mapKeyAndTileXYToPosition } from "./map.js";
 import { MAP_OBJECTS_FUNCTIONS, MapTileObject, findMapKeyForMapObject } from "./mapObjects.js";
 import { localStorageSaveBuildings } from "../permanentData.js";
 import { paintCharacters } from "../character/characterPaint.js";
-import { nextRandom } from "../randomNumberGenerator.js";
 import { ABILITY_NAME_LEASH, AbilityLeash } from "../ability/abilityLeash.js";
 
 export type MapTileObjectClassBuilding = MapTileObject & {
@@ -309,6 +307,10 @@ function paintInteract(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, 
         paintPos.y += fontSize;
         topMiddlePos.y += fontSize;
         paintTextWithOutline(ctx, "white", "black", text, paintPos.x, paintPos.y, true);
+    }
+
+    if(classBuilding.characterClass){
+        paintStatsFromAbilityAndPetsAndCharacterClass(ctx, classBuilding.pets, classBuilding.abilities, [classBuilding.characterClass], game);
     }
 }
 

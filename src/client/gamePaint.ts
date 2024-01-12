@@ -1,10 +1,10 @@
-import { ABILITIES_FUNCTIONS, paintAbilityObjects, paintDefaultAbilityStatsUI, paintUiForAbilities } from "./ability/ability.js";
+import { ABILITIES_FUNCTIONS, Ability, paintAbilityObjects, paintDefaultAbilityStatsUI, paintUiForAbilities } from "./ability/ability.js";
 import { canCharacterTradeAbilityOrPets } from "./character/character.js";
 import { Character } from "./character/characterModel.js";
-import { paintCharacterStatsUI, paintPlayerCharacters } from "./character/characterPaint.js";
+import { paintCharacterClassStatsUI, paintCharacterStatsUI, paintPlayerCharacters } from "./character/characterPaint.js";
 import { paintBossCharacters, paintBossCrown } from "./character/enemy/bossEnemy.js";
-import { hasPlayerChoosenStartClassUpgrade, shareCharactersTradeablePreventedMultipleClass } from "./character/playerCharacters/playerCharacters.js";
-import { paintTamerPetCharacterStatsUI } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
+import { CharacterClass, hasPlayerChoosenStartClassUpgrade, shareCharactersTradeablePreventedMultipleClass } from "./character/playerCharacters/playerCharacters.js";
+import { TamerPetCharacter, paintTamerPetCharacterStatsUI } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
 import { calculateDistance, getCameraPosition, getTimeSinceFirstKill } from "./game.js";
 import { Game, Position, Debugging, PaintTextData } from "./gameModel.js";
 import { Highscores, paintHighscoreEndScreenStuff, paintHighscores } from "./highscores.js";
@@ -64,6 +64,35 @@ export function paintTextWithOutline(ctx: CanvasRenderingContext2D, outlineColor
     ctx.fillText(text, x, y);
 }
 
+export function getPointPaintPosition(ctx: CanvasRenderingContext2D, point: Position, cameraPosition: Position): Position {
+    const centerX = ctx.canvas.width / 2;
+    const centerY = ctx.canvas.height / 2;
+    return {
+        x: Math.floor(point.x - cameraPosition.x + centerX),
+        y: Math.floor(point.y - cameraPosition.y + centerY),
+    }
+}
+
+export function paintKey(ctx: CanvasRenderingContext2D, key: string, paintPosition: Position) {
+    const blankKeyImageString = "blankKey";
+    const blankKeyImage = GAME_IMAGES[blankKeyImageString];
+    let fontSize = 16;
+    loadImage(blankKeyImage);
+    if (blankKeyImage.imageRef?.complete) {
+        ctx.fillStyle = "black";
+        ctx.font = fontSize + "px Arial";
+        let width = ctx.measureText(key).width;
+        const maxWidth = 28;
+        if (width > maxWidth) {
+            fontSize = 14;
+            ctx.font = fontSize + "px Arial";
+            width = ctx.measureText(key).width;
+        }
+        ctx.drawImage(blankKeyImage.imageRef, paintPosition.x, paintPosition.y);
+        ctx.fillText(key, paintPosition.x + 20 - width / 2, paintPosition.y + 20);
+    }
+}
+
 function paintMultiplayerPing(ctx: CanvasRenderingContext2D, game: Game){
     if (game.multiplayer.websocket !== null) {
         ctx.fillText("Ping: " + Math.round(game.multiplayer.delay), 10, 60);
@@ -98,25 +127,23 @@ function paintPastPlayerTakeoverInfo(ctx: CanvasRenderingContext2D, pastCharacte
         paintPos.y -= 20;
         paintKey(ctx, "F", { x: paintPos.x - 15, y: paintPos.y });
 
-        let offsetX = 0;
-        const tooltipY = 60;
-        const spacing = 5;
+        let pets: TamerPetCharacter[] = [];
+        let abilities: Ability[] = [];
+        let charClasses: CharacterClass[] = [];
         if (pastCharacter.pets) {
             for (let pet of pastCharacter.pets) {
-                if (pet.tradable) {
-                    const area = paintTamerPetCharacterStatsUI(ctx, pet, 20 + offsetX, tooltipY, game);
-                    offsetX += area.width + spacing;
-                }
+                if (pet.tradable) pets.push(pet);
             }
         }
         for (let ability of pastCharacter.abilities) {
-            if (!ability.tradable) continue;
-            const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-            if (abilityFunctions.paintAbilityStatsUI) {
-                const area = abilityFunctions.paintAbilityStatsUI(ctx, ability, 20 + offsetX, tooltipY, game);
-                offsetX += area.width + spacing;
+            if (ability.tradable) abilities.push(ability);
+        }
+        if(pastCharacter.characterClasses){
+            for (let charClass of pastCharacter.characterClasses) {
+                if (!charClass.gifted) charClasses.push(charClass);
             }
         }
+        paintStatsFromAbilityAndPetsAndCharacterClass(ctx, pets, abilities, charClasses, game);
     } else if (classAlreadyTaken) {
         text = `Class can only be owned once!`;
         paintPos.y -= 20;
@@ -128,35 +155,28 @@ function paintPastPlayerTakeoverInfo(ctx: CanvasRenderingContext2D, pastCharacte
     ctx.fillStyle = "black";
     ctx.font = "20px Arial";
     paintTextWithOutline(ctx, "white", "black", text, paintPos.x, paintPos.y - 5, true, 1, "white");
-
 }
 
-export function getPointPaintPosition(ctx: CanvasRenderingContext2D, point: Position, cameraPosition: Position): Position {
-    const centerX = ctx.canvas.width / 2;
-    const centerY = ctx.canvas.height / 2;
-    return {
-        x: Math.floor(point.x - cameraPosition.x + centerX),
-        y: Math.floor(point.y - cameraPosition.y + centerY),
-    }
-}
+export function paintStatsFromAbilityAndPetsAndCharacterClass(ctx: CanvasRenderingContext2D, pets: TamerPetCharacter[], abilities: Ability[], characterClasses: CharacterClass[], game: Game){
+    let offsetX = 0;
+    const tooltipY = 60;
+    const spacing = 5;
+    
+    const area = paintCharacterClassStatsUI(ctx, characterClasses, 20 + offsetX, tooltipY, game);
+    offsetX += area.width + spacing;
 
-export function paintKey(ctx: CanvasRenderingContext2D, key: string, paintPosition: Position) {
-    const blankKeyImageString = "blankKey";
-    const blankKeyImage = GAME_IMAGES[blankKeyImageString];
-    let fontSize = 16;
-    loadImage(blankKeyImage);
-    if (blankKeyImage.imageRef?.complete) {
-        ctx.fillStyle = "black";
-        ctx.font = fontSize + "px Arial";
-        let width = ctx.measureText(key).width;
-        const maxWidth = 28;
-        if (width > maxWidth) {
-            fontSize = 14;
-            ctx.font = fontSize + "px Arial";
-            width = ctx.measureText(key).width;
+    for (let pet of pets) {
+        if (pet.tradable) {
+            const area = paintTamerPetCharacterStatsUI(ctx, pet, 20 + offsetX, tooltipY, game);
+            offsetX += area.width + spacing;
         }
-        ctx.drawImage(blankKeyImage.imageRef, paintPosition.x, paintPosition.y);
-        ctx.fillText(key, paintPosition.x + 20 - width / 2, paintPosition.y + 20);
+    }
+    for (let ability of abilities) {
+        const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+        if (abilityFunctions.paintAbilityStatsUI) {
+            const area = abilityFunctions.paintAbilityStatsUI(ctx, ability, 20 + offsetX, tooltipY, game);
+            offsetX += area.width + spacing;
+        }
     }
 }
 

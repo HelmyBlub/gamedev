@@ -5,6 +5,7 @@ import { GAME_IMAGES, getImage, loadImage } from "../imageLoad.js";
 import { randomizedCharacterImageToKey } from "../randomizedCharacterImage.js";
 import { getPlayerCharacters } from "./character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_PLAYER_PARTS, IMAGE_SLIME } from "./characterModel.js";
+import { CharacterClass } from "./playerCharacters/playerCharacters.js";
 import { pushCharacterClassUpgradesUiTexts } from "./upgrades/characterUpgrades.js";
 
 export function paintCharacters(ctx: CanvasRenderingContext2D, characters: (Character | undefined)[], cameraPosition: Position, game: Game) {
@@ -73,22 +74,15 @@ export function paintCharacterStatsUI(ctx: CanvasRenderingContext2D, character: 
         textLines.splice(2,0,`Shield: ${character.shield.toFixed(0)}/${(character.maxHp * character.maxShieldFactor).toFixed(0)}`);
     }
     if(character.characterClasses){
-        for(let charClass of character.characterClasses){
-            textLines.push(``);
-            textLines.push(`Class: ${charClass.className}`);
-            if(charClass.gifted)textLines.push(`Gifted: Abilities can now longer get stronger`);
-            if(charClass.legendary)textLines.push(`Legendary: Class levels and upgrades are permanent`);
-            if(charClass.level){
-                textLines.push(`Level: ${charClass.level.level}`)
-                if(charClass.level.leveling && !charClass.gifted){
-                    textLines.push(`XP: ${Math.floor(charClass.level.leveling.experience)}/${Math.floor(charClass.level.leveling.experienceForLevelUp)}`);
-                    textLines.push(`Gains XP for every enemy killed by anyone.`);
-                }
-            }
-            if(charClass.availableSkillPoints)textLines.push(`SkillPoints: ${charClass.availableSkillPoints}`);
-            pushCharacterClassUpgradesUiTexts(textLines, charClass);
-        }
+        textLines.push(``);
+        addCharacterClassStatsUITextLines(character.characterClasses, textLines);
     }
+    return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
+}
+
+export function paintCharacterClassStatsUI(ctx: CanvasRenderingContext2D, characterClasses: CharacterClass[], drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
+    const textLines: string[] = [];
+    addCharacterClassStatsUITextLines(characterClasses, textLines);
     return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
 }
 
@@ -142,6 +136,29 @@ export function paintPlayerCharacters(ctx: CanvasRenderingContext2D, cameraPosit
         paintPlayerNameOverCharacter(ctx, playerChar, cameraPosition, game, +9);
     }
     paintCharacters(ctx, game.state.pastPlayerCharacters.characters, cameraPosition, game);
+}
+
+function addCharacterClassStatsUITextLines(characterClasses: CharacterClass[], textLines: string[]) {
+    let first: boolean = true;
+    for(let charClass of characterClasses){
+        if(first){
+            first = false;
+        }else{
+            textLines.push(``);    
+        }
+        textLines.push(`Class: ${charClass.className}`);
+        if(charClass.gifted)textLines.push(`Gifted: Abilities can now longer get stronger`);
+        if(charClass.legendary)textLines.push(`Legendary: Class levels and upgrades are permanent`);
+        if(charClass.level){
+            textLines.push(`Level: ${charClass.level.level}`)
+            if(charClass.level.leveling && !charClass.gifted){
+                textLines.push(`XP: ${Math.floor(charClass.level.leveling.experience)}/${Math.floor(charClass.level.leveling.experienceForLevelUp)}`);
+                textLines.push(`Gains XP for every enemy killed by anyone.`);
+            }
+        }
+        if(charClass.availableSkillPoints)textLines.push(`SkillPoints: ${charClass.availableSkillPoints}`);
+        pushCharacterClassUpgradesUiTexts(textLines, charClass);
+    }
 }
 
 function paintCharacterImage(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
