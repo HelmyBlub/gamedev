@@ -71,17 +71,18 @@ function changeBuildingIds(building: Building, idCounter: IdCounter, game: Game)
     const oldBuildingId = building.id;
     let oldCharacterClassId: number | undefined = undefined;
     building.id = getNextId(idCounter);
+    if (building.characterClass) {
+        oldCharacterClassId = building.characterClass.id;
+        building.characterClass.id = getNextId(idCounter);
+    }
     for (let ability of building.abilities) {
         ability.id = getNextId(idCounter);
         if (ability.legendary) ability.legendary.buildingIdRef = building.id;
+        if (ability.classIdRef !== undefined && building.characterClass) ability.classIdRef = building.characterClass.id;
     }
     for (let pet of building.pets) {
         changeCharacterId(pet, idCounter);
         if (pet.legendary) pet.legendary.buildingIdRef = building.id;
-    }
-    if (building.characterClass) {
-        oldCharacterClassId = building.characterClass.id;
-        building.characterClass.id = getNextId(idCounter);
     }
     if(game.state.bossStuff.nextEndbosses){
         const keys = Object.keys(game.state.bossStuff.nextEndbosses);

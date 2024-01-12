@@ -4,7 +4,7 @@ import { Character, createCharacter } from "../character/characterModel.js";
 import { CharacterClass, PLAYER_CHARACTER_CLASSES_FUNCTIONS, hasCharacterPreventedMultipleClass } from "../character/playerCharacters/playerCharacters.js";
 import { TamerPetCharacter } from "../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { deepCopy, getCameraPosition, getNextId } from "../game.js";
-import { FACTION_PLAYER, Game, Position } from "../gameModel.js";
+import { CelestialDirection, FACTION_PLAYER, Game, Position } from "../gameModel.js";
 import { getPointPaintPosition, paintStatsFromAbilityAndPetsAndCharacterClass, paintTextWithOutline } from "../gamePaint.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
 import { GameMap, MapChunk, chunkXYToMapKey, mapKeyAndTileXYToPosition } from "./map.js";
@@ -108,6 +108,25 @@ export function classBuildingCheckAllPlayerForLegendaryAbilitiesAndMoveBackToBui
     }
 }
 
+export function legendaryAbilityGiveBlessing(celestialDirection: CelestialDirection, character: Character){
+    for(let ability of character.abilities){
+        if(ability.legendary && !ability.legendary.blessing.find(blessing => blessing === celestialDirection)){
+            ability.legendary.blessing.push(celestialDirection);
+            ability.legendary.skillPointCap += 5;
+        }
+    }
+    if(character.pets){
+        for(let pet of character.pets){
+            for(let ability of pet.abilities){
+                if(ability.legendary && !ability.legendary.blessing.find(blessing => blessing === celestialDirection)){
+                    ability.legendary.blessing.push(celestialDirection);
+                    ability.legendary.skillPointCap += 5;
+                }       
+            }
+        }
+    }
+}
+
 export function classBuildingPutLegendaryCharacterStuffBackIntoBuilding(character: Character, game: Game) {
     for (let i = character.abilities.length - 1; i >= 0; i--) {
         const ability = character.abilities[i];
@@ -188,7 +207,11 @@ function placePlayerClassStuffInBuilding(playerClass: string, game: Game) {
             freeBuilding.stuffBorrowed = false;
             for (let ability of tempCharacter.abilities) {
                 freeBuilding.abilities.push(ability);
-                ability.legendary = { buildingIdRef: freeBuilding.id };
+                ability.legendary = { 
+                    buildingIdRef: freeBuilding.id,
+                    blessing: [],
+                    skillPointCap: 5,
+                };
             }
             if (tempCharacter.pets) {
                 let counter = 0;

@@ -4,9 +4,11 @@ current tasks:
 - class Buildings and legendary:
     - dev steps:
         - change scalling of burrowed abilities
-            - ...
-        - if character with legendary sniper becomes endboss, "legendary snipe" not available in "smith building" until end boss defeated
-            - "legendary sniper" becomes stronger somehow
+            - limit scalling, like only certain amount of skillPoints and level
+            - defeating "kings" unlocks higher ceilings
+            - ceiling increase per "direction" king kill?
+            - somehow visualize it. Visualize which kings has burrowed legendary
+
 - "paintCharacterStatsUI" fix UI text based on class and legendary
 - check bug?: replay -> overtake -> past character from replay -> intended?
 - rename endboss to king in code ?

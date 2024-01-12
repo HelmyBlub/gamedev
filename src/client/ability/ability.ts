@@ -49,6 +49,8 @@ export type Ability = {
     },
     legendary?: {
         buildingIdRef: number,
+        skillPointCap: number,
+        blessing: string[],
     }
     tradable?: boolean,
     unique?: boolean,
@@ -325,7 +327,12 @@ export function getAbilityNameUiText(ability: Ability): string[] {
         text[0] += " (gifted)";
         text.push("Gifted abilities can not get stronger.");
     }
-    if(ability.legendary)text.push(`Legendary: Ability levels and upgrades are permanent.`);
+    if(ability.legendary){
+        text.push(`Legendary: Ability levels and upgrades are permanent.`);
+        if(ability.bossSkillPoints){
+            text.push(`Legendary Skill Point Cap: ${ability.bossSkillPoints.used}/${ability.legendary.skillPointCap}`);
+        }
+    };
 
     return text;
 }

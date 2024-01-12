@@ -102,6 +102,10 @@ export function playerCharactersAddBossSkillPoints(bossLevel: number | undefined
                 if (ability.gifted) continue;
                 if (ability.bossSkillPoints !== undefined) {
                     if (ability.bossSkillPoints.used < bossLevel) {
+                        const legendaryAbilitySkillPointCapReached = ability.legendary && ability.legendary.skillPointCap <= ability.bossSkillPoints.used + ability.bossSkillPoints.available;
+                        if(legendaryAbilitySkillPointCapReached){
+                            continue;
+                        }
                         ability.bossSkillPoints.available++;
                         gotSkillPoint = true;
                     }
@@ -119,6 +123,10 @@ export function playerCharactersAddBossSkillPoints(bossLevel: number | undefined
                     for (let ability of pet.abilities) {
                         if (ability.bossSkillPoints !== undefined) {
                             if (ability.bossSkillPoints.used < bossLevel) {
+                                const legendaryAbilitySkillPointCapReached = ability.legendary && ability.legendary.skillPointCap <= ability.bossSkillPoints.used + ability.bossSkillPoints.available;
+                                if(legendaryAbilitySkillPointCapReached){
+                                    continue;
+                                }
                                 ability.bossSkillPoints.available++;
                                 gotSkillPoint = true;
                             }

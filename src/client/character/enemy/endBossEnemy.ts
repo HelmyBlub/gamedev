@@ -12,7 +12,7 @@ import { GAME_IMAGES, getImage } from "../../imageLoad.js";
 import { localStorageSaveNextEndbosses } from "../../permanentData.js";
 import { changeTileIdOfMapChunk } from "../../map/map.js";
 import { getBossAreaMiddlePosition, getEntranceChunkAndTileXYForPosition } from "../../map/mapEndBossArea.js";
-import { classBuildingPutLegendaryCharacterStuffBackIntoBuilding } from "../../map/mapObjectClassBuilding.js";
+import { classBuildingPutLegendaryCharacterStuffBackIntoBuilding, legendaryAbilityGiveBlessing } from "../../map/mapObjectClassBuilding.js";
 import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick, resetCharacter } from "../character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, PLAYER_BASE_HP, createCharacter } from "../characterModel.js";
 import { paintCharacterWithAbilitiesDefault, paintCharatersPets } from "../characterPaint.js";
@@ -50,7 +50,7 @@ export function createDefaultNextEndBoss(idCounter: IdCounter, game: Game): EndB
     return bossCharacter;
 }
 
-export function setPlayerAsEndBoss(game: Game) {
+export function setPlayerAsKing(game: Game) {
     if (game.testing.replay) return;
     const boss: Character = deepCopy(game.state.players[0].character);
     const celestialDirection = getCelestialDirection(boss);
@@ -59,6 +59,7 @@ export function setPlayerAsEndBoss(game: Game) {
     game.state.players[0].character.becameEndBoss = true;
     localStorageSaveNextEndbosses(game);
     if (oldBoss?.characterClasses) {
+        legendaryAbilityGiveBlessing(celestialDirection, oldBoss);
         classBuildingPutLegendaryCharacterStuffBackIntoBuilding(oldBoss, game);
         saveCharacterAsPastCharacter(oldBoss, game);
     }

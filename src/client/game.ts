@@ -16,7 +16,7 @@ import { autoPlay } from "./test/autoPlay.js";
 import { replayGameEndAssert, replayNextInReplayQueue, setPastCharactersAndEndBossesForReplayFromReplayData } from "./test/gameTest.js";
 import { checkForEndBossAreaTrigger } from "./map/mapEndBossArea.js";
 import { calculateHighscoreOnGameEnd } from "./highscores.js";
-import { setPlayerAsEndBoss } from "./character/enemy/endBossEnemy.js";
+import { setPlayerAsKing } from "./character/enemy/endBossEnemy.js";
 import { ABILITY_NAME_FEED_PET } from "./ability/petTamer/abilityFeedPet.js";
 import { ABILITY_NAME_LOVE_PET } from "./ability/petTamer/abilityLovePet.js";
 import { COMMAND_RESTART } from "./globalVars.js";
@@ -314,7 +314,7 @@ export function endGame(game: Game, isEndbossKill: boolean = false) {
     game.state.ended = true;
     const newScore = calculateHighscoreOnGameEnd(game, isEndbossKill);
     if (isEndbossKill) {
-        setPlayerAsEndBoss(game);
+        setPlayerAsKing(game);
         mapObjectPlaceClassBuilding(game);
     } else {
         savePlayerCharatersAsPastCharacters(game);
