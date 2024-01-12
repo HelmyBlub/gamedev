@@ -355,10 +355,21 @@ export function saveCharacterAsPastCharacter(character: Character, game: Game) {
     resetCharacter(newPastCharacter, game);
     changeCharacterId(newPastCharacter, game.state.idCounter);
     if (newPastCharacter.pets) {
-        for (let pet of newPastCharacter.pets) {
+        for (let i = newPastCharacter.pets.length - 1; i >= 0; i--) {
+            const pet = newPastCharacter.pets[i];
+            if (pet.legendary) {
+                newPastCharacter.pets.splice(i, 1);
+                continue;
+            }
             for (let ability of pet.abilities) {
                 ability.disabled = true;
             }
+        }
+    }
+    if (newPastCharacter.characterClasses) {
+        for (let i = newPastCharacter.characterClasses.length - 1; i >= 0; i--) {
+            const charClass = newPastCharacter.characterClasses[i];
+            if (charClass.legendary) newPastCharacter.characterClasses.splice(i, 1);
         }
     }
     newPastCharacter.isUnMoveAble = true;

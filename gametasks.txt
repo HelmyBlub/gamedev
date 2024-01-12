@@ -1,11 +1,9 @@
-new test runs required: sniper, ball, builder
+new test runs required: sniper, builder
 
 current tasks:
 - class Buildings and legendary:
     - dev steps:
         - visualize
-            - paint ability on building
-                - tamer, ball
             - paint class UiStats when closestInteractable
         - change scalling of burrowed abilities
             - ...

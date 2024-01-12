@@ -8,9 +8,12 @@ import { deepCopy, getCameraPosition, getNextId } from "../game.js";
 import { FACTION_PLAYER, Game, Position } from "../gameModel.js";
 import { getPointPaintPosition, paintTextWithOutline } from "../gamePaint.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
-import { MapChunk, chunkXYToMapKey, mapKeyAndTileXYToPosition } from "./map.js";
+import { GameMap, MapChunk, chunkXYToMapKey, mapKeyAndTileXYToPosition } from "./map.js";
 import { MAP_OBJECTS_FUNCTIONS, MapTileObject, findMapKeyForMapObject } from "./mapObjects.js";
 import { localStorageSaveBuildings } from "../permanentData.js";
+import { paintCharacters } from "../character/characterPaint.js";
+import { nextRandom } from "../randomNumberGenerator.js";
+import { ABILITY_NAME_LEASH, AbilityLeash } from "../ability/abilityLeash.js";
 
 export type MapTileObjectClassBuilding = MapTileObject & {
     buildingId: number,
@@ -99,58 +102,65 @@ export function mapObjectPlaceClassBuilding(game: Game) {
     localStorageSaveBuildings(game);
 }
 
-export function classBuildingCheckAllPlayerForLegendaryAbilitiesAndMoveBackToBuilding(game: Game){
-    for(let player of game.state.players){
-        if(!player.character.becameEndBoss){
+export function classBuildingCheckAllPlayerForLegendaryAbilitiesAndMoveBackToBuilding(game: Game) {
+    for (let player of game.state.players) {
+        if (!player.character.becameEndBoss) {
             classBuildingPutLegendaryCharacterStuffBackIntoBuilding(player.character, game);
         }
-    }    
+    }
 }
 
-export function classBuildingPutLegendaryCharacterStuffBackIntoBuilding(character: Character, game: Game){
-    for(let i = character.abilities.length - 1; i >= 0; i--){
+export function classBuildingPutLegendaryCharacterStuffBackIntoBuilding(character: Character, game: Game) {
+    for (let i = character.abilities.length - 1; i >= 0; i--) {
         const ability = character.abilities[i];
-        if(ability.legendary){
+        if (ability.legendary) {
             const building = findBuildingById(ability.legendary.buildingIdRef, game);
-            if(building){
-                character.abilities.splice(i,1);
+            if (building) {
+                character.abilities.splice(i, 1);
                 building.abilities.push(ability);
                 building.stuffBorrowed = false;
-            }else{
+            } else {
                 console.log("failed to find class Building for ability", ability, game);
             }
         }
     }
-    if(character.pets){
-        for(let i = character.pets.length - 1; i >= 0; i--){
+    if (character.pets) {
+        let petCounterPerBuilding: Map<number, number> = new Map();
+        for (let i = character.pets.length - 1; i >= 0; i--) {
             const pet = character.pets[i];
-            if(pet.legendary){
+            if (pet.legendary) {
                 const building = findBuildingById(pet.legendary.buildingIdRef, game);
-                if(building){
-                    character.pets.splice(i,1);
+                if (building) {
+                    if (petCounterPerBuilding.get(building.id) === undefined) petCounterPerBuilding.set(building.id, 0);
+                    let counter: number = petCounterPerBuilding.get(building.id) as number;
+                    character.pets.splice(i, 1);
                     building.pets.push(pet);
                     building.stuffBorrowed = false;
-                }else{
+                    const buildingPos = getBuildingPosition(building, game.state.map);
+                    pet.x = buildingPos.x + counter * 20;
+                    pet.y = buildingPos.y + 20;
+                    petCounterPerBuilding.set(building.id, counter + 1);
+                } else {
                     console.log("failed to find class Building for pet", pet, game);
                 }
             }
         }
     }
-    if(character.characterClasses){
-        for(let i = character.characterClasses.length - 1; i >= 0; i--){
+    if (character.characterClasses) {
+        for (let i = character.characterClasses.length - 1; i >= 0; i--) {
             const charClass = character.characterClasses[i];
-            if(charClass.legendary){
+            if (charClass.legendary) {
                 let classBuilding = undefined;
-                for(let building of game.state.buildings){
-                    if(building.characterClass && building.characterClass.id === charClass.id){
+                for (let building of game.state.buildings) {
+                    if (building.characterClass && building.characterClass.id === charClass.id) {
                         classBuilding = building;
                         break;
                     }
                 }
-                if(classBuilding){
+                if (classBuilding) {
                     classBuilding.characterClass = charClass;
-                    character.characterClasses.splice(i,1);
-                }else{
+                    character.characterClasses.splice(i, 1);
+                } else {
                     console.log("failed to find class Building for character class", charClass, game);
                 }
             }
@@ -159,10 +169,10 @@ export function classBuildingPutLegendaryCharacterStuffBackIntoBuilding(characte
     localStorageSaveBuildings(game);
 }
 
-function findCharacterClassToMakeLegendary(character: Character): string | undefined{
-    if(character.characterClasses){
-        for(let charClass of character.characterClasses){
-            if(!charClass.gifted && !charClass.legendary) return charClass.className;
+function findCharacterClassToMakeLegendary(character: Character): string | undefined {
+    if (character.characterClasses) {
+        for (let charClass of character.characterClasses) {
+            if (!charClass.gifted && !charClass.legendary) return charClass.className;
         }
     }
     return undefined;
@@ -182,14 +192,26 @@ function placePlayerClassStuffInBuilding(playerClass: string, game: Game) {
                 freeBuilding.abilities.push(ability);
                 ability.legendary = { buildingIdRef: freeBuilding.id };
             }
-            if(tempCharacter.pets){
+            if (tempCharacter.pets) {
+                let counter = 0;
                 for (let pet of tempCharacter.pets) {
                     freeBuilding.pets.push(pet);
                     pet.legendary = { buildingIdRef: freeBuilding.id };
+                    const buildingPos = getBuildingPosition(freeBuilding, game.state.map);
+                    pet.x = buildingPos.x + counter * 20;
+                    pet.y = buildingPos.y + 20;
+                    counter++;
                 }
             }
             localStorageSaveBuildings(game);
         }
+    }
+}
+
+function getBuildingPosition(building: Building, map: GameMap): Position {
+    return {
+        x: building.tileX * map.tileSize,
+        y: building.tileY * map.tileSize,
     }
 }
 
@@ -201,23 +223,36 @@ function interact(interacter: Character, mapObject: MapTileObject, game: Game) {
     const mapObjectClassBuilding = mapObject as MapTileObjectClassBuilding;
     const classBuilding = findBuildingById(mapObjectClassBuilding.buildingId, game);
     if (!classBuilding || classBuilding.characterClass === undefined || classBuilding.stuffBorrowed) return;
-    if(hasCharacterPreventedMultipleClass(classBuilding.characterClass.className, interacter)){
+    if (hasCharacterPreventedMultipleClass(classBuilding.characterClass.className, interacter)) {
         return;
     }
-    for (let ability of classBuilding.abilities) {
+    for (let i = classBuilding.abilities.length - 1; i >= 0; i--) {
+        const ability = classBuilding.abilities[i];
+        if (ability.unique) {
+            const dupAbilityIndex = interacter.abilities.findIndex(a => a.name === ability.name);
+            if (dupAbilityIndex > -1) {
+                const dupAbility = interacter.abilities[dupAbilityIndex];
+                if (dupAbility.legendary) {
+                    continue;
+                }
+                interacter.abilities.splice(dupAbilityIndex, 1);
+            }
+        }
         interacter.abilities.push(ability);
+        classBuilding.abilities.splice(i, 1);
     }
-    classBuilding.abilities = [];
-    if(classBuilding.pets.length > 0){
-        if(!interacter.pets) interacter.pets = [];
+    if (classBuilding.pets.length > 0) {
+        if (!interacter.pets) interacter.pets = [];
         for (let pet of classBuilding.pets) {
             interacter.pets.push(pet);
+            const leash: AbilityLeash = pet.abilities.find(a => a.name === ABILITY_NAME_LEASH) as AbilityLeash;
+            if (leash) leash.leashedToOwnerId = interacter.id;
         }
     }
     classBuilding.pets = [];
     classBuilding.stuffBorrowed = true;
     characterAddExistingCharacterClass(interacter, deepCopy(classBuilding.characterClass));
-    if(interacter.upgradeChoices.length > 0 && interacter.upgradeChoices[0].type === "ChooseClass"){
+    if (interacter.upgradeChoices.length > 0 && interacter.upgradeChoices[0].type === "ChooseClass") {
         interacter.upgradeChoices = [];
     }
     resetCharacter(interacter, game);
@@ -245,9 +280,9 @@ function paintInteract(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, 
         )
     } else if (!classBuilding.stuffBorrowed) {
         texts.push(`Class ${classBuilding.characterClass.className}.`);
-        if(hasCharacterPreventedMultipleClass(classBuilding.characterClass.className, interacter)){
+        if (hasCharacterPreventedMultipleClass(classBuilding.characterClass.className, interacter)) {
             texts.push(`Can't burrow. Class can only be owned once.`);
-        }else{
+        } else {
             texts.push(`Press interact key to burrow`);
         }
     } else if (classBuilding.stuffBorrowed) {
@@ -296,15 +331,18 @@ function paintClassBuilding(ctx: CanvasRenderingContext2D, mapObject: MapTileObj
         ctx.resetTransform();
         ctx.restore();
         const building = findBuildingById(classBuilding.buildingId, game);
-        if(building?.abilities && building?.abilities.length > 0){
-            for(let ability of building.abilities){
+        if (building?.abilities && building?.abilities.length > 0) {
+            for (let ability of building.abilities) {
                 const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-                if(abilityFunctions.paintAbilityAccessoire){
-                    const paintPos = {x: paintX + 20, y: paintY + 25};
+                if (abilityFunctions.paintAbilityAccessoire) {
+                    const paintPos = { x: paintX + 20, y: paintY + 25 };
                     abilityFunctions.paintAbilityAccessoire(ctx, ability, paintPos, game);
-                    break;
                 }
             }
+        }
+        if (building?.pets && building?.pets.length > 0) {
+            const cameraPosition = getCameraPosition(game);
+            paintCharacters(ctx, building.pets, cameraPosition, game);
         }
     }
 }

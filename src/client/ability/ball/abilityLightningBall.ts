@@ -4,7 +4,7 @@ import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from
 import { BUFF_NAME_BALL_PHYSICS, BuffBallPhysics, createBuffBallPhysics, findBallBuff } from "../../debuff/buffBallPhysics.js";
 import { applyDebuff, removeCharacterDebuff } from "../../debuff/debuff.js";
 import { calcNewPositionMovedInDirection, calculateDirection, getClientInfoByCharacterId, getNextId } from "../../game.js";
-import { Position, Game, IdCounter, FACTION_ENEMY, ClientInfo } from "../../gameModel.js";
+import { Position, Game, IdCounter, FACTION_ENEMY, ClientInfo, FACTION_PLAYER } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { calculateMovePosition, getFirstBlockingGameMapTilePositionTouchingLine, isMoveFromToBlocking, isPositionBlocking } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
@@ -44,6 +44,7 @@ export function addAbilityLightningBall() {
         paintAbility: paintAbility,
         paintAbilityUI: paintAbilityUI,
         paintAbilityStatsUI: paintAbilityStatsUI,
+        paintAbilityAccessoire: paintAbilityAccessoire,
         resetAbility: resetAbility,
         setAbilityToLevel: setAbilityToLevel,
         setAbilityToBossLevel: setAbilityToBossLevel,
@@ -87,6 +88,11 @@ export function getDamageAbilityLightningBall(abilityLightningBall: AbilityLight
     let damageFactor = 1;
     damageFactor += lightningBallUpgradeBounceBonusGetBonusDamageFactor(abilityLightningBall, abilityOwner);
     return abilityLightningBall.damage * damageFactor;
+}
+
+function paintAbilityAccessoire(ctx: CanvasRenderingContext2D, ability: Ability, paintPosition: Position, game: Game){
+    const abilityBall = ability as AbilityLightningBall;
+    paintLightningBall(ctx, paintPosition, FACTION_PLAYER, 10, game);
 }
 
 function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
