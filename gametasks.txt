@@ -1,12 +1,10 @@
-new test runs required: sniper, builder
+new test runs required: builder
 
 current tasks:
 - class Buildings and legendary:
     - dev steps:
         - change scalling of burrowed abilities
-            - limit scalling, like only certain amount of skillPoints and level
-            - defeating "kings" unlocks higher ceilings
-            - ceiling increase per "direction" king kill?
+            - add limit for pets
             - somehow visualize it. Visualize which kings has burrowed legendary
 
 - "paintCharacterStatsUI" fix UI text based on class and legendary

@@ -304,7 +304,7 @@ function paintKillCounter(ctx: CanvasRenderingContext2D, killCounter: number, ga
 function paintMyCharacterStats(ctx: CanvasRenderingContext2D, game: Game){
     const player = findPlayerById(game.state.players, game.multiplayer.myClientId);
     if (player === null) return;
-    paintPlayerStats(ctx, player.character, game.state.time, game);
+    paintPlayerStats(ctx, player.character, getTimeSinceFirstKill(game.state), game);
 }
 
 function paintPlayerStats(ctx: CanvasRenderingContext2D, character: Character, gameTime: number, game: Game) {
