@@ -140,6 +140,7 @@ export function paintPlayerCharacters(ctx: CanvasRenderingContext2D, cameraPosit
 
 function addCharacterClassStatsUITextLines(characterClasses: CharacterClass[], textLines: string[]) {
     let first: boolean = true;
+    let hasLegendary = false;
     for(let charClass of characterClasses){
         if(first){
             first = false;
@@ -148,9 +149,29 @@ function addCharacterClassStatsUITextLines(characterClasses: CharacterClass[], t
         }
         textLines.push(`Class: ${charClass.className}`);
         if(charClass.gifted)textLines.push(`Gifted: Abilities can now longer get stronger`);
-        if(charClass.legendary)textLines.push(`Legendary: Class levels and upgrades are permanent`);
+        if(charClass.legendary){
+            hasLegendary = true;
+            textLines.push(`Legendary: Class levels and upgrades are permanent`);
+            if(charClass.level){
+                textLines.push(`  Level Cap: ${charClass.legendary.levelCap}`);
+                let blessings = "  Blessings: ";
+                if (charClass.legendary.blessings.length === 0) {
+                    blessings += "none";
+                } else {
+                    for (let i = 0; i < charClass.legendary.blessings.length; i++) {
+                        if (i > 0) blessings += ", ";
+                        blessings += charClass.legendary.blessings[i];
+                    }
+                }
+                textLines.push(blessings);
+            }
+        };
         if(charClass.level){
-            textLines.push(`Level: ${charClass.level.level}`)
+            let levelCap = "";
+            if(charClass.legendary && charClass.legendary.levelCap){
+                levelCap = `/${charClass.legendary.levelCap}`;
+            }
+            textLines.push(`Level: ${charClass.level.level}${levelCap}`);
             if(charClass.level.leveling && !charClass.gifted){
                 textLines.push(`XP: ${Math.floor(charClass.level.leveling.experience)}/${Math.floor(charClass.level.leveling.experienceForLevelUp)}`);
                 textLines.push(`Gains XP for every enemy killed by anyone.`);
@@ -158,6 +179,13 @@ function addCharacterClassStatsUITextLines(characterClasses: CharacterClass[], t
         }
         if(charClass.availableSkillPoints)textLines.push(`SkillPoints: ${charClass.availableSkillPoints}`);
         pushCharacterClassUpgradesUiTexts(textLines, charClass);
+    }
+    if(hasLegendary){
+        textLines.push(``);    
+        textLines.push(`Legendary levels and upgrades are permanent,`);
+        textLines.push(`but they are cappped. Cap can be increased`);
+        textLines.push(`by gaining blessing from defeating a king`);
+        textLines.push(`of each celestial direction.`);
     }
 }
 

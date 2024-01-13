@@ -71,6 +71,7 @@ function createAbilityPetBreath(
 function resetAbility(ability: Ability) {
     const abilityPetBreath = ability as AbilityPetBreath;
     abilityPetBreath.nextTickTime = undefined;
+    abilityPetBreath.active = false;
 }
 
 function getLongDescription(): string[] {

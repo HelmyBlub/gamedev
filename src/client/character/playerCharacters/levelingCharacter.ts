@@ -31,6 +31,11 @@ export function levelingCharacterAndClassXpGain(state: GameState, killedCharacte
             for (let charClass of character.characterClasses) {
                 if (charClass.gifted) continue;
                 if (charClass.level?.leveling !== undefined) {
+                    if(charClass.legendary){
+                        if(charClass.level.level >= charClass.legendary.levelCap){
+                            continue;
+                        }
+                    }
                     charClass.level.leveling.experience += killedCharacter.experienceWorth;
                     while (charClass.level.leveling.experience >= charClass.level.leveling.experienceForLevelUp) {
                         levelingClassLevelUp(character, charClass, game);

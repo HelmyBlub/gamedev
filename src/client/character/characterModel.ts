@@ -2,7 +2,7 @@ import { Ability } from "../ability/ability.js";
 import { Combatlog, createDefaultCombatLog } from "../combatlog.js";
 import { Debuff } from "../debuff/debuff.js";
 import { getNextId } from "../game.js";
-import { Position, IdCounter, Game, FACTION_PLAYER, BossSkillPoints } from "../gameModel.js";
+import { Position, IdCounter, Game, FACTION_PLAYER, BossSkillPoints, Legendary } from "../gameModel.js";
 import { GAME_IMAGES } from "../imageLoad.js";
 import { createRandomizedCharacterImageData, RandomizedCharacterImage } from "../randomizedCharacterImage.js";
 import { RandomSeed } from "../randomNumberGenerator.js";
@@ -125,6 +125,7 @@ export type Character = Position & {
     availableSkillPoints?: number,
     mapChunkKey?: string,
     combatlog?: Combatlog, 
+    legendary?: Legendary,
 }
 
 export function createCharacter(

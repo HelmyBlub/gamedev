@@ -1,7 +1,7 @@
 import { ABILITIES_FUNCTIONS, paintDefaultAbilityStatsUI } from "../../../ability/ability.js";
 import { ABILITY_NAME_LEASH, AbilityLeash } from "../../../ability/abilityLeash.js";
 import { calculateDirection, calculateDistance, getNextId } from "../../../game.js";
-import { FACTION_ENEMY, FACTION_PLAYER, Game, Position } from "../../../gameModel.js";
+import { FACTION_PLAYER, Game, Position } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
 import { GAME_IMAGES, getImage } from "../../../imageLoad.js";
 import { moveByDirectionAndDistance } from "../../../map/map.js";
@@ -9,7 +9,6 @@ import { nextRandom } from "../../../randomNumberGenerator.js";
 import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, calculateCharacterMovePosition, getPlayerCharacters, setCharacterPosition } from "../../character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, createCharacter } from "../../characterModel.js";
 import { PathingCache, getNextWaypoint } from "../../pathing.js";
-import { Leveling } from "../levelingCharacter.js";
 import { Trait, addTamerPetTraits, tamerPetIncludesTrait } from "./petTrait.js";
 import { TAMER_PET_TRAIT_EATS_LESS } from "./petTraitEatsLess.js";
 import { TAMER_PET_TRAIT_GETS_FAT_EASILY } from "./petTraitGetFatEasily.js";
@@ -41,9 +40,6 @@ export type TamerPetCharacter = Character & {
     forcedMovePosition?: Position,
     tradable: boolean,
     gifted?: boolean,
-    legendary?: {
-        buildingIdRef: number,
-    }
 }
 
 type Happiness = {
@@ -226,6 +222,10 @@ export function paintTamerPetCharacterStatsUI(ctx: CanvasRenderingContext2D, pet
     if (pet.gifted) {
         textLines[0] += " (gifted)"
         textLines.push("gifted pets don't get stronger");
+    }
+    if(pet.legendary){
+        textLines.push(`Legendary: Pet levels and upgrades are permanent`);
+        if(pet.bossSkillPoints) textLines.push(`SkillPointCap: ${pet.bossSkillPoints.used}/${pet.legendary.skillPointCap}`);
     }
 
     textLines.push(

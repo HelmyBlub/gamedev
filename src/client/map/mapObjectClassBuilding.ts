@@ -1,4 +1,4 @@
-import { ABILITIES_FUNCTIONS, Ability } from "../ability/ability.js";
+import { ABILITIES_FUNCTIONS, Ability, paintDefaultAbilityStatsUI } from "../ability/ability.js";
 import { characterAddExistingCharacterClass, resetCharacter } from "../character/character.js";
 import { Character, createCharacter } from "../character/characterModel.js";
 import { CharacterClass, PLAYER_CHARACTER_CLASSES_FUNCTIONS, hasCharacterPreventedMultipleClass } from "../character/playerCharacters/playerCharacters.js";
@@ -12,6 +12,8 @@ import { MAP_OBJECTS_FUNCTIONS, MapTileObject, findMapKeyForMapObject } from "./
 import { localStorageSaveBuildings } from "../permanentData.js";
 import { paintCharacters } from "../character/characterPaint.js";
 import { ABILITY_NAME_LEASH, AbilityLeash } from "../ability/abilityLeash.js";
+import { getCelestialDirection } from "../character/enemy/bossEnemy.js";
+import { Player } from "../player.js";
 
 export type MapTileObjectClassBuilding = MapTileObject & {
     buildingId: number,
@@ -22,7 +24,10 @@ export type Building = {
     characterClass?: CharacterClass,
     abilities: Ability[],
     pets: TamerPetCharacter[],
-    stuffBorrowed?: boolean,
+    stuffBorrowed?: {
+        burrowed: boolean,
+        by: string | undefined,
+    },
     tileX: number,
     tileY: number,
 }
@@ -104,23 +109,40 @@ export function classBuildingCheckAllPlayerForLegendaryAbilitiesAndMoveBackToBui
     for (let player of game.state.players) {
         if (!player.character.becameEndBoss) {
             classBuildingPutLegendaryCharacterStuffBackIntoBuilding(player.character, game);
+        }else{
+            setBurrowedByKingIfHasLegendary(player, game);
         }
     }
 }
 
 export function legendaryAbilityGiveBlessing(celestialDirection: CelestialDirection, character: Character){
+    if (character.characterClasses){
+        for(let charClass of character.characterClasses){
+            if(charClass.legendary && !charClass.legendary.blessings.find(blessing => blessing === celestialDirection)){
+                charClass.legendary.blessings.push(celestialDirection);
+                charClass.legendary.levelCap += 100;
+            }
+        }
+    }
     for(let ability of character.abilities){
-        if(ability.legendary && !ability.legendary.blessing.find(blessing => blessing === celestialDirection)){
-            ability.legendary.blessing.push(celestialDirection);
+        if(ability.legendary && !ability.legendary.blessings.find(blessing => blessing === celestialDirection)){
+            ability.legendary.blessings.push(celestialDirection);
             ability.legendary.skillPointCap += 5;
+            ability.legendary.levelCap += 100;
         }
     }
     if(character.pets){
         for(let pet of character.pets){
+            if(pet.legendary && !pet.legendary.blessings.find(blessing => blessing === celestialDirection)){
+                pet.legendary.blessings.push(celestialDirection);
+                pet.legendary.skillPointCap += 5;
+                pet.legendary.levelCap += 100;
+            }
             for(let ability of pet.abilities){
-                if(ability.legendary && !ability.legendary.blessing.find(blessing => blessing === celestialDirection)){
-                    ability.legendary.blessing.push(celestialDirection);
+                if(ability.legendary && !ability.legendary.blessings.find(blessing => blessing === celestialDirection)){
+                    ability.legendary.blessings.push(celestialDirection);
                     ability.legendary.skillPointCap += 5;
+                    ability.legendary.levelCap += 100;
                 }       
             }
         }
@@ -128,14 +150,16 @@ export function legendaryAbilityGiveBlessing(celestialDirection: CelestialDirect
 }
 
 export function classBuildingPutLegendaryCharacterStuffBackIntoBuilding(character: Character, game: Game) {
+    resetCharacter(character, game);
     for (let i = character.abilities.length - 1; i >= 0; i--) {
         const ability = character.abilities[i];
         if (ability.legendary) {
             const building = findBuildingById(ability.legendary.buildingIdRef, game);
             if (building) {
                 character.abilities.splice(i, 1);
-                building.abilities.push(ability);
-                building.stuffBorrowed = false;
+                building.abilities.unshift(ability);
+                building.stuffBorrowed!.burrowed = false;
+                building.stuffBorrowed!.by = undefined;
             } else {
                 console.log("failed to find class Building for ability", ability, game);
             }
@@ -152,11 +176,15 @@ export function classBuildingPutLegendaryCharacterStuffBackIntoBuilding(characte
                     let counter: number = petCounterPerBuilding.get(building.id) as number;
                     character.pets.splice(i, 1);
                     building.pets.push(pet);
-                    building.stuffBorrowed = false;
+                    building.stuffBorrowed!.burrowed = false;
+                    building.stuffBorrowed!.by = undefined;
                     const buildingPos = getBuildingPosition(building, game.state.map);
                     pet.x = buildingPos.x + counter * 20;
                     pet.y = buildingPos.y + 20;
                     petCounterPerBuilding.set(building.id, counter + 1);
+                    for (let ability of pet.abilities) {
+                        ability.disabled = true;
+                    }
                 } else {
                     console.log("failed to find class Building for pet", pet, game);
                 }
@@ -186,6 +214,32 @@ export function classBuildingPutLegendaryCharacterStuffBackIntoBuilding(characte
     localStorageSaveBuildings(game);
 }
 
+function setBurrowedByKingIfHasLegendary(player: Player, game: Game){
+    let legendaryClass: CharacterClass | undefined = undefined;
+    if (player.character.characterClasses) {
+        for (let charClass of player.character.characterClasses) {
+            if (charClass.legendary) {
+                legendaryClass = charClass;
+                break;
+            }
+        }
+    }
+    if(legendaryClass){
+        let classBuilding = undefined;
+        for (let building of game.state.buildings) {
+            if (building.characterClass && building.characterClass.id === legendaryClass.id) {
+                classBuilding = building;
+                break;
+            }
+        }
+        if (classBuilding && classBuilding.stuffBorrowed) {
+            const celelstialDirection = getCelestialDirection(player.character);
+            classBuilding.stuffBorrowed.by = `King of the ${celelstialDirection}`;
+            localStorageSaveBuildings(game);
+        }
+    }
+}
+
 function findCharacterClassToMakeLegendary(character: Character): string | undefined {
     if (character.characterClasses) {
         for (let charClass of character.characterClasses) {
@@ -203,21 +257,30 @@ function placePlayerClassStuffInBuilding(playerClass: string, game: Game) {
             const tempCharacter = createCharacter(0, 0, 0, 0, 0, "", 0, 0, FACTION_PLAYER, "", 0);
             classFunctions.changeCharacterToThisClass(tempCharacter, game.state.idCounter, game);
             freeBuilding.characterClass = tempCharacter.characterClasses![0];
-            freeBuilding.characterClass.legendary = true;
-            freeBuilding.stuffBorrowed = false;
+            freeBuilding.characterClass.legendary = {                
+                levelCap: 100,
+                blessings: [],
+            };
+            freeBuilding.stuffBorrowed = {burrowed: false, by: undefined};
             for (let ability of tempCharacter.abilities) {
                 freeBuilding.abilities.push(ability);
                 ability.legendary = { 
                     buildingIdRef: freeBuilding.id,
-                    blessing: [],
+                    blessings: [],
                     skillPointCap: 5,
+                    levelCap: 100,
                 };
             }
             if (tempCharacter.pets) {
                 let counter = 0;
                 for (let pet of tempCharacter.pets) {
                     freeBuilding.pets.push(pet);
-                    pet.legendary = { buildingIdRef: freeBuilding.id };
+                    pet.legendary = { 
+                        buildingIdRef: freeBuilding.id,
+                        blessings: [],
+                        skillPointCap: 5,
+                        levelCap: 100,
+                    };
                     const buildingPos = getBuildingPosition(freeBuilding, game.state.map);
                     pet.x = buildingPos.x + counter * 20;
                     pet.y = buildingPos.y + 20;
@@ -243,7 +306,7 @@ function findFreeBuilding(game: Game): Building | undefined {
 function interact(interacter: Character, mapObject: MapTileObject, game: Game) {
     const mapObjectClassBuilding = mapObject as MapTileObjectClassBuilding;
     const classBuilding = findBuildingById(mapObjectClassBuilding.buildingId, game);
-    if (!classBuilding || classBuilding.characterClass === undefined || classBuilding.stuffBorrowed) return;
+    if (!classBuilding || classBuilding.characterClass === undefined || !classBuilding.stuffBorrowed || classBuilding.stuffBorrowed.burrowed) return;
     if (hasCharacterPreventedMultipleClass(classBuilding.characterClass.className, interacter)) {
         return;
     }
@@ -259,7 +322,7 @@ function interact(interacter: Character, mapObject: MapTileObject, game: Game) {
                 interacter.abilities.splice(dupAbilityIndex, 1);
             }
         }
-        interacter.abilities.push(ability);
+        interacter.abilities.unshift(ability);
         classBuilding.abilities.splice(i, 1);
     }
     if (classBuilding.pets.length > 0) {
@@ -268,10 +331,14 @@ function interact(interacter: Character, mapObject: MapTileObject, game: Game) {
             interacter.pets.push(pet);
             const leash: AbilityLeash = pet.abilities.find(a => a.name === ABILITY_NAME_LEASH) as AbilityLeash;
             if (leash) leash.leashedToOwnerId = interacter.id;
+            for (let ability of pet.abilities) {
+                ability.disabled = false;
+            }
         }
     }
     classBuilding.pets = [];
-    classBuilding.stuffBorrowed = true;
+    classBuilding.stuffBorrowed!.burrowed = true;
+    classBuilding.stuffBorrowed!.by = interacter.faction;
     characterAddExistingCharacterClass(interacter, deepCopy(classBuilding.characterClass));
     if (interacter.upgradeChoices.length > 0 && interacter.upgradeChoices[0].type === "ChooseClass") {
         interacter.upgradeChoices = [];
@@ -294,21 +361,21 @@ function paintInteract(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, 
     const topMiddlePos = mapKeyAndTileXYToPosition(key, mapObject.x, mapObject.y, map);
     const fontSize = 20;
     const texts = [];
-    if (!classBuilding.characterClass) {
+    if (classBuilding.characterClass === undefined) {
         texts.push(
             `Defeat king with class`,
             `to unlock legendary.`,
         )
-    } else if (!classBuilding.stuffBorrowed) {
+    } else if (!classBuilding.stuffBorrowed!.burrowed) {
         texts.push(`Class ${classBuilding.characterClass.className}.`);
         if (hasCharacterPreventedMultipleClass(classBuilding.characterClass.className, interacter)) {
             texts.push(`Can't burrow. Class can only be owned once.`);
         } else {
             texts.push(`Press interact key to burrow`);
         }
-    } else if (classBuilding.stuffBorrowed) {
+    } else if (classBuilding.stuffBorrowed!.burrowed) {
         texts.push(`Class ${classBuilding.characterClass.className}.`);
-        texts.push(`Currently burrowed`);
+        texts.push(`Currently burrowed by ${classBuilding.stuffBorrowed!.by}`);
     }
     let textMaxWidth = 0;
     const rectHeight = fontSize * texts.length + 2;
@@ -333,7 +400,9 @@ function paintInteract(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, 
     }
 
     if(classBuilding.characterClass){
-        paintStatsFromAbilityAndPetsAndCharacterClass(ctx, classBuilding.pets, classBuilding.abilities, [classBuilding.characterClass], game);
+        if(!classBuilding.stuffBorrowed?.burrowed){
+            paintStatsFromAbilityAndPetsAndCharacterClass(ctx, classBuilding.pets, classBuilding.abilities, [classBuilding.characterClass], game);
+        }
     }
 }
 

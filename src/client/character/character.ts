@@ -94,8 +94,11 @@ export function playerCharactersAddBossSkillPoints(bossLevel: number | undefined
             let gotSkillPoint = false;
             if (character.bossSkillPoints !== undefined) {
                 if (character.bossSkillPoints.used < bossLevel) {
-                    character.bossSkillPoints.available++;
-                    gotSkillPoint = true;
+                    const legendaryAbilitySkillPointCapReached = character.legendary && character.legendary.skillPointCap <= character.bossSkillPoints.used + character.bossSkillPoints.available;
+                    if(!legendaryAbilitySkillPointCapReached){
+                        character.bossSkillPoints.available++;
+                        gotSkillPoint = true;
+                    }
                 }
             }
             for (let ability of character.abilities) {
@@ -116,8 +119,11 @@ export function playerCharactersAddBossSkillPoints(bossLevel: number | undefined
                     if (pet.gifted) continue;
                     if (pet.bossSkillPoints !== undefined) {
                         if (pet.bossSkillPoints.used < bossLevel) {
-                            pet.bossSkillPoints.available++;
-                            gotSkillPoint = true;
+                            const legendaryAbilitySkillPointCapReached = pet.legendary && pet.legendary.skillPointCap <= pet.bossSkillPoints.used + pet.bossSkillPoints.available;
+                            if(!legendaryAbilitySkillPointCapReached){
+                                pet.bossSkillPoints.available++;
+                                gotSkillPoint = true;
+                            }
                         }
                     }
                     for (let ability of pet.abilities) {
@@ -554,13 +560,13 @@ export function mapCharacterCheckAndDoChunkChange(character: Character, map: Gam
 function experienceForEveryPlayersLeveling(experience: number, game: Game) {
     const playerCharacters = getPlayerCharacters(game.state.players);
     for (let character of playerCharacters) {
-        experienceForCharacter(character, experience, game);
+        experienceForCharacter(character, experience);
         for (let ability of character.abilities) {
             levelingAbilityXpGain(ability, character, experience, game);
         }
         if (character.pets) {
             for (let pet of character.pets) {
-                experienceForCharacter(pet, experience, game);
+                experienceForCharacter(pet, experience);
                 for (let ability of pet.abilities) {
                     levelingAbilityXpGain(ability, character, experience, game);
                 }
@@ -569,19 +575,19 @@ function experienceForEveryPlayersLeveling(experience: number, game: Game) {
     }
 }
 
-function experienceForCharacter(character: Character, experienceWorth: number, game: Game) {
-    const owner = character;
-    if (owner && owner.level?.leveling
-        && !owner.isDead && !owner.isPet
-        && !(owner as TamerPetCharacter).gifted
+function experienceForCharacter(character: Character, experienceWorth: number) {
+    if (character && character.level?.leveling
+        && !character.isDead && !character.isPet
+        && !(character as TamerPetCharacter).gifted
     ) {
-        owner.level.leveling.experience += experienceWorth;
-        while (owner.level.leveling.experience >= owner.level.leveling.experienceForLevelUp) {
-            owner.level.level++;
-            owner.level.leveling.experience -= owner.level.leveling.experienceForLevelUp;
-            owner.level.leveling.experienceForLevelUp += Math.floor(owner.level.level / 2);
-            for (let abilityIt of owner.abilities) {
-                setCharacterAbilityLevel(abilityIt, owner);
+        if (character.legendary && character.legendary.levelCap <= character.level.level) return;
+        character.level.leveling.experience += experienceWorth;
+        while (character.level.leveling.experience >= character.level.leveling.experienceForLevelUp) {
+            character.level.level++;
+            character.level.leveling.experience -= character.level.leveling.experienceForLevelUp;
+            character.level.leveling.experienceForLevelUp += Math.floor(character.level.level / 2);
+            for (let abilityIt of character.abilities) {
+                setCharacterAbilityLevel(abilityIt, character);
             }
         }
     }
@@ -605,7 +611,7 @@ function killCharacter(character: Character, game: Game, abilityIdRef: number | 
             const owner = findAbilityOwnerByAbilityId(ability.id, game);
             if (owner) {
                 levelingAbilityXpGain(ability, owner, character.experienceWorth, game);
-                experienceForCharacter(owner, character.experienceWorth, game);
+                experienceForCharacter(owner, character.experienceWorth);
             }
         }
     }

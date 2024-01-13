@@ -31,6 +31,13 @@ export type RecordData = {
     }[],
 }
 
+export type Legendary = {
+    buildingIdRef: number,
+    skillPointCap: number,
+    levelCap: number,
+    blessings: string[],
+}
+
 export type TestingStuff = {
     record?: {
         data: RecordData,

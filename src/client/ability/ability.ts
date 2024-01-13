@@ -2,7 +2,7 @@ import { determineCharactersInDistance, characterTakeDamage } from "../character
 import { Character } from "../character/characterModel.js"
 import { BossEnemyCharacter } from "../character/enemy/bossEnemy.js"
 import { calculateDistance, getCameraPosition, takeTimeMeasure } from "../game.js"
-import { BossSkillPoints, FACTION_ENEMY, FACTION_PLAYER, Game, IdCounter, Position } from "../gameModel.js"
+import { BossSkillPoints, FACTION_ENEMY, FACTION_PLAYER, Game, IdCounter, Legendary, Position } from "../gameModel.js"
 import { GameMap } from "../map/map.js"
 import { findPlayerByCharacterId, Player } from "../player.js"
 import { addAbilityDeathCircle } from "./abilityDeathCircle.js"
@@ -47,11 +47,7 @@ export type Ability = {
     upgrades: {
         [key: string]: any,
     },
-    legendary?: {
-        buildingIdRef: number,
-        skillPointCap: number,
-        blessing: string[],
-    }
+    legendary?: Legendary,
     tradable?: boolean,
     unique?: boolean,
     gifted?: boolean,
@@ -149,7 +145,7 @@ export function addAbilityToCharacter(character: Character, ability: Ability, ch
         }
     }
     character.abilities.push(ability);
-    if(charClass) ability.classIdRef = charClass.id;
+    if (charClass) ability.classIdRef = charClass.id;
 }
 
 export function paintAbilityObjects(ctx: CanvasRenderingContext2D, abilityObjects: AbilityObject[], game: Game, paintOrder: PaintOrderAbility) {
@@ -172,7 +168,7 @@ export function setAbilityToBossLevel(ability: Ability, level: number) {
             }
         }
     } else {
-        console.log("function setAbilityToBossLevel missing for" + ability.name);
+        //console.log("function setAbilityToBossLevel missing for " + ability.name);
     }
 }
 
@@ -221,6 +217,7 @@ export function tickAbilityObjects(abilityObjects: AbilityObject[], game: Game) 
 export function levelingAbilityXpGain(ability: Ability, owner: Character, experience: number, game: Game) {
     if (ability.level?.leveling) {
         if (!owner || owner.isDead || owner.isPet) return;
+        if (ability.legendary && ability.legendary.levelCap <= ability.level.level) return;
         ability.level.leveling.experience += experience;
         while (ability.level.leveling.experience >= ability.level.leveling.experienceForLevelUp) {
             levelUp(ability);
@@ -327,10 +324,21 @@ export function getAbilityNameUiText(ability: Ability): string[] {
         text[0] += " (gifted)";
         text.push("Gifted abilities can not get stronger.");
     }
-    if(ability.legendary){
+    if (ability.legendary && ability.bossSkillPoints) {
         text.push(`Legendary: Ability levels and upgrades are permanent.`);
-        if(ability.bossSkillPoints){
-            text.push(`Legendary Skill Point Cap: ${ability.bossSkillPoints.used}/${ability.legendary.skillPointCap}`);
+        if (ability.bossSkillPoints) {
+            text.push(`  Skill Point Cap: ${ability.bossSkillPoints.used}/${ability.legendary.skillPointCap}`);
+            if (ability.level) text.push(`  Level Cap: ${ability.level.level}/${ability.legendary.levelCap}`);
+            let blessings = "  Blessings: ";
+            if (ability.legendary.blessings.length === 0) {
+                blessings += "none";
+            } else {
+                for (let i = 0; i < ability.legendary.blessings.length; i++) {
+                    if (i > 0) blessings += ", ";
+                    blessings += ability.legendary.blessings[i];
+                }
+            }
+            text.push(blessings);
         }
     };
 

@@ -3,11 +3,11 @@ new test runs required: builder
 current tasks:
 - class Buildings and legendary:
     - dev steps:
-        - change scalling of burrowed abilities
-            - add limit for pets
-            - somehow visualize it. Visualize which kings has burrowed legendary
+        - Visualize which kings has burrowed legendary
+        - "Press interact key", what is the interact key?
+            - make drawTextWithKey function?
 
-- "paintCharacterStatsUI" fix UI text based on class and legendary
+- use tab key to visualise statsUi for every thing and don't make it overlapp
 - check bug?: replay -> overtake -> past character from replay -> intended?
 - rename endboss to king in code ?
 

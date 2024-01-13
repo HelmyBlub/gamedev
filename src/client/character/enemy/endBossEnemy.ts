@@ -53,6 +53,7 @@ export function createDefaultNextEndBoss(idCounter: IdCounter, game: Game): EndB
 export function setPlayerAsKing(game: Game) {
     if (game.testing.replay) return;
     const boss: Character = deepCopy(game.state.players[0].character);
+    resetCharacter(boss, game);
     const celestialDirection = getCelestialDirection(boss);
     const oldBoss = game.state.bossStuff.nextEndbosses[celestialDirection];
     game.state.bossStuff.nextEndbosses[celestialDirection] = boss;
