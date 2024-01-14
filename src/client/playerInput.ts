@@ -105,6 +105,14 @@ export function playerInputBindingToDisplayValue(playerInputBinding: string, gam
                 displayValue = value.uiDisplayInputValue;
             }
         });
+
+        if(displayValue === ""){
+            game.clientKeyBindings.keyCodeToUiAction.forEach((value, key) => {
+                if (value.action === playerInputBinding) {
+                    displayValue = value.uiDisplayInputValue;
+                }
+            });
+        }
     }
 
     return displayValue;

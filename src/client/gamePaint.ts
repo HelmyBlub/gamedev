@@ -13,6 +13,7 @@ import { getMapMidlePosition } from "./map/map.js";
 import { MAP_OBJECTS_FUNCTIONS, findNearesInteractableMapChunkObject } from "./map/mapObjects.js";
 import { paintMap, paintMapCharacters } from "./map/mapPaint.js";
 import { findNearesPastPlayerCharacter, findPlayerById, isAutoSkillActive } from "./player.js";
+import { playerInputBindingToDisplayValue } from "./playerInput.js";
 
 GAME_IMAGES["blankKey"] = {
     imagePath: "/images/singleBlankKey.png",
@@ -72,6 +73,36 @@ export function getPointPaintPosition(ctx: CanvasRenderingContext2D, point: Posi
         y: Math.floor(point.y - cameraPosition.y + centerY),
     }
 }
+
+/**
+ * @param textWithKeys add character "<" + key + ">" like "Press buton <A>" to print a key visualization
+ */
+export function paintTextLinesWithKeys(ctx: CanvasRenderingContext2D, textWithKeys: string[], paintPosition: Position, fontSize: number = 20, centered: boolean = false, bottomUp: boolean = false) {
+    let textMaxWidth = 0;
+    const tempPaintPos = {x: paintPosition.x, y: paintPosition.y};
+    const verticalSpacing = 10;
+    const rectHeight = (fontSize + verticalSpacing) * textWithKeys.length + 2;
+    if(bottomUp) tempPaintPos.y -= rectHeight;
+    ctx.font = `${fontSize}px Arial`;
+
+    for (let text of textWithKeys) {
+        const textWidth = ctx.measureText(text).width;
+        if (textWidth > textMaxWidth) textMaxWidth = textWidth;
+    }
+    ctx.globalAlpha = 0.6;
+    ctx.fillStyle = "white";
+    ctx.fillRect(tempPaintPos.x - Math.floor(textMaxWidth / 2) - 1, tempPaintPos.y - 1, textMaxWidth + 2, rectHeight)
+    ctx.globalAlpha = 1;
+    ctx.font = `${fontSize}px Arial`;
+    ctx.fillStyle = "black";
+    let offsetY = 0;
+    for (let text of textWithKeys) {
+        offsetY += fontSize;
+        paintTextWithKeys(ctx, text, { x: tempPaintPos.x, y: tempPaintPos.y + offsetY }, fontSize, true);
+        offsetY += verticalSpacing;
+    }
+}
+
 
 /**
  * @param textWithKeys add character "<" + key + ">" like "Press buton <A>" to print a key visualization
@@ -137,6 +168,7 @@ function paintMultiplayerPing(ctx: CanvasRenderingContext2D, game: Game) {
 }
 
 function paintClosestInteractable(ctx: CanvasRenderingContext2D, cameraPosition: Position, game: Game) {
+    game.UI.paintClosesInteractableStatsUi = false;
     if (game.state.ended) return;
     const player = findPlayerById(game.state.players, game.multiplayer.myClientId);
     if (player === null) return;
@@ -158,11 +190,24 @@ function paintPastPlayerTakeoverInfo(ctx: CanvasRenderingContext2D, pastCharacte
     const classAlreadyTaken = shareCharactersTradeablePreventedMultipleClass(pastCharacter, playerCharacter);
     let paintPos: Position = getPointPaintPosition(ctx, pastCharacter, cameraPosition);
     paintPos.y -= 40;
-    let text = "";
-    if (canTrade && !classAlreadyTaken) {
-        text = `Takeover abilities (one time only)`;
-        paintPos.y -= 20;
-        paintKey(ctx, "F", { x: paintPos.x - 15, y: paintPos.y });
+    let textsWithKeys: string[] = [];
+    textsWithKeys.push(`Past Character:`);
+    if (canTrade) {
+        if(!classAlreadyTaken){
+            const interactKey = playerInputBindingToDisplayValue("interact", game);
+            const infoKey = playerInputBindingToDisplayValue("Info", game);
+            textsWithKeys.push(`Takeover abilities with <${interactKey}>,`);
+            textsWithKeys.push(`One time only.`);
+            textsWithKeys.push(`<${infoKey}> for more details.`);
+            game.UI.paintClosesInteractableStatsUi = true;    
+        }else{
+            const infoKey = playerInputBindingToDisplayValue("Info", game);
+            textsWithKeys.push(`<${infoKey}> for more details.`);
+            textsWithKeys.push(`Can not trade because this`);
+            textsWithKeys.push(`Class can only be owned once!`);
+            paintPos.y -= 20;
+            game.UI.paintClosesInteractableStatsUi = true;    
+        }
 
         let pets: TamerPetCharacter[] = [];
         let abilities: Ability[] = [];
@@ -180,18 +225,18 @@ function paintPastPlayerTakeoverInfo(ctx: CanvasRenderingContext2D, pastCharacte
                 if (!charClass.gifted) charClasses.push(charClass);
             }
         }
-        paintStatsFromAbilityAndPetsAndCharacterClass(ctx, pets, abilities, charClasses, game);
-    } else if (classAlreadyTaken) {
-        text = `Class can only be owned once!`;
-        paintPos.y -= 20;
+        if (game.UI.displayLongInfos){
+            paintStatsFromAbilityAndPetsAndCharacterClass(ctx, pets, abilities, charClasses, game);
+        }
     } else {
-        text = `Nothing to take. Kick Out?`;
+        const interactKey = playerInputBindingToDisplayValue("interact", game);
+        textsWithKeys.push(`Nothing to take.`);
+        textsWithKeys.push(`Kick Out with <${interactKey}>.`);
         paintPos.y -= 20;
-        paintKey(ctx, "F", { x: paintPos.x - 15, y: paintPos.y });
     }
     ctx.fillStyle = "black";
     ctx.font = "20px Arial";
-    paintTextWithOutline(ctx, "white", "black", text, paintPos.x, paintPos.y - 5, true, 1, "white");
+    paintTextLinesWithKeys(ctx, textsWithKeys, paintPos, 20, true, true);
 }
 
 export function paintStatsFromAbilityAndPetsAndCharacterClass(ctx: CanvasRenderingContext2D, pets: TamerPetCharacter[], abilities: Ability[], characterClasses: CharacterClass[], game: Game) {
@@ -374,10 +419,10 @@ function paintPlayerStats(ctx: CanvasRenderingContext2D, character: Character, g
 
 function paintPlayerStatsUI(ctx: CanvasRenderingContext2D, character: Character, game: Game) {
     if (!game.UI.displayLongInfos) return;
+    if (game.UI.paintClosesInteractableStatsUi) return;
     const spacing = 5;
     let paintX = 20;
     const paintY = 60;
-
 
     let area = paintGameRulesUI(ctx, character, paintX, paintY, game);
     paintX += area.width + spacing;
@@ -435,7 +480,7 @@ function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Charact
         const keyDisplayWidth = 40;
         for (let choice of character.upgradeChoices) {
             ctx.font = firstFontSize + "px Arial";
-            let maxWidth = ctx.measureText(choice.displayText).width + keyDisplayWidth;;
+            let maxWidth = ctx.measureText(choice.displayText).width + keyDisplayWidth;
 
             if (!game.UI.displayLongInfos && choice.displayLongText) displayKeyHint = true;
             if (game.UI.displayLongInfos && choice.displayLongText) {

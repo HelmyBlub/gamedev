@@ -235,6 +235,7 @@ export type Game = {
         displayTextData: PaintTextData[],
         displayLongInfos: boolean,
         playerGlobalAlphaMultiplier: number,
+        paintClosesInteractableStatsUi: boolean,
     }
 }
 
@@ -339,6 +340,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             displayTextData: [],
             displayLongInfos: false,
             playerGlobalAlphaMultiplier: 1,
+            paintClosesInteractableStatsUi: false,
         },
     }
 

@@ -5,7 +5,7 @@ import { CharacterClass, PLAYER_CHARACTER_CLASSES_FUNCTIONS, hasCharacterPrevent
 import { TamerPetCharacter } from "../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { deepCopy, getCameraPosition, getNextId } from "../game.js";
 import { CelestialDirection, FACTION_PLAYER, Game, Position } from "../gameModel.js";
-import { getPointPaintPosition, paintStatsFromAbilityAndPetsAndCharacterClass, paintTextWithKeys, paintTextWithOutline } from "../gamePaint.js";
+import { getPointPaintPosition, paintStatsFromAbilityAndPetsAndCharacterClass, paintTextLinesWithKeys, paintTextWithKeys, paintTextWithOutline } from "../gamePaint.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
 import { GameMap, MapChunk, chunkXYToMapKey, mapKeyAndTileXYToPosition } from "./map.js";
 import { MAP_OBJECTS_FUNCTIONS, MapTileObject, findMapKeyForMapObject } from "./mapObjects.js";
@@ -110,41 +110,41 @@ export function classBuildingCheckAllPlayerForLegendaryAbilitiesAndMoveBackToBui
     for (let player of game.state.players) {
         if (!player.character.becameEndBoss) {
             classBuildingPutLegendaryCharacterStuffBackIntoBuilding(player.character, game);
-        }else{
+        } else {
             setBurrowedByKingIfHasLegendary(player, game);
         }
     }
 }
 
-export function legendaryAbilityGiveBlessing(celestialDirection: CelestialDirection, character: Character){
-    if (character.characterClasses){
-        for(let charClass of character.characterClasses){
-            if(charClass.legendary && !charClass.legendary.blessings.find(blessing => blessing === celestialDirection)){
+export function legendaryAbilityGiveBlessing(celestialDirection: CelestialDirection, character: Character) {
+    if (character.characterClasses) {
+        for (let charClass of character.characterClasses) {
+            if (charClass.legendary && !charClass.legendary.blessings.find(blessing => blessing === celestialDirection)) {
                 charClass.legendary.blessings.push(celestialDirection);
                 charClass.legendary.levelCap += 100;
             }
         }
     }
-    for(let ability of character.abilities){
-        if(ability.legendary && !ability.legendary.blessings.find(blessing => blessing === celestialDirection)){
+    for (let ability of character.abilities) {
+        if (ability.legendary && !ability.legendary.blessings.find(blessing => blessing === celestialDirection)) {
             ability.legendary.blessings.push(celestialDirection);
             ability.legendary.skillPointCap += 5;
             ability.legendary.levelCap += 100;
         }
     }
-    if(character.pets){
-        for(let pet of character.pets){
-            if(pet.legendary && !pet.legendary.blessings.find(blessing => blessing === celestialDirection)){
+    if (character.pets) {
+        for (let pet of character.pets) {
+            if (pet.legendary && !pet.legendary.blessings.find(blessing => blessing === celestialDirection)) {
                 pet.legendary.blessings.push(celestialDirection);
                 pet.legendary.skillPointCap += 5;
                 pet.legendary.levelCap += 100;
             }
-            for(let ability of pet.abilities){
-                if(ability.legendary && !ability.legendary.blessings.find(blessing => blessing === celestialDirection)){
+            for (let ability of pet.abilities) {
+                if (ability.legendary && !ability.legendary.blessings.find(blessing => blessing === celestialDirection)) {
                     ability.legendary.blessings.push(celestialDirection);
                     ability.legendary.skillPointCap += 5;
                     ability.legendary.levelCap += 100;
-                }       
+                }
             }
         }
     }
@@ -215,7 +215,7 @@ export function classBuildingPutLegendaryCharacterStuffBackIntoBuilding(characte
     localStorageSaveBuildings(game);
 }
 
-function setBurrowedByKingIfHasLegendary(player: Player, game: Game){
+function setBurrowedByKingIfHasLegendary(player: Player, game: Game) {
     let legendaryClass: CharacterClass | undefined = undefined;
     if (player.character.characterClasses) {
         for (let charClass of player.character.characterClasses) {
@@ -225,7 +225,7 @@ function setBurrowedByKingIfHasLegendary(player: Player, game: Game){
             }
         }
     }
-    if(legendaryClass){
+    if (legendaryClass) {
         let classBuilding = undefined;
         for (let building of game.state.buildings) {
             if (building.characterClass && building.characterClass.id === legendaryClass.id) {
@@ -258,14 +258,14 @@ function placePlayerClassStuffInBuilding(playerClass: string, game: Game) {
             const tempCharacter = createCharacter(0, 0, 0, 0, 0, "", 0, 0, FACTION_PLAYER, "", 0);
             classFunctions.changeCharacterToThisClass(tempCharacter, game.state.idCounter, game);
             freeBuilding.characterClass = tempCharacter.characterClasses![0];
-            freeBuilding.characterClass.legendary = {                
+            freeBuilding.characterClass.legendary = {
                 levelCap: 100,
                 blessings: [],
             };
-            freeBuilding.stuffBorrowed = {burrowed: false, by: undefined};
+            freeBuilding.stuffBorrowed = { burrowed: false, by: undefined };
             for (let ability of tempCharacter.abilities) {
                 freeBuilding.abilities.push(ability);
-                ability.legendary = { 
+                ability.legendary = {
                     buildingIdRef: freeBuilding.id,
                     blessings: [],
                     skillPointCap: 5,
@@ -276,7 +276,7 @@ function placePlayerClassStuffInBuilding(playerClass: string, game: Game) {
                 let counter = 0;
                 for (let pet of tempCharacter.pets) {
                     freeBuilding.pets.push(pet);
-                    pet.legendary = { 
+                    pet.legendary = {
                         buildingIdRef: freeBuilding.id,
                         blessings: [],
                         skillPointCap: 5,
@@ -360,51 +360,39 @@ function paintInteract(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, 
     const map = game.state.map;
     const cameraPosition = getCameraPosition(game);
     const topMiddlePos = mapKeyAndTileXYToPosition(key, mapObject.x, mapObject.y, map);
-    const fontSize = 20;
+    topMiddlePos.y -= map.tileSize / 2;
     const texts = [];
     if (classBuilding.characterClass === undefined) {
+        texts.push(`Empty Class building:`);
         texts.push(
             `Defeat king with class`,
-            `to unlock legendary.`,
+            `to unlock legendary class.`,
         )
-    } else if (!classBuilding.stuffBorrowed!.burrowed) {
-        texts.push(`Class ${classBuilding.characterClass.className}.`);
-        if (hasCharacterPreventedMultipleClass(classBuilding.characterClass.className, interacter)) {
-            texts.push(`Can't burrow. Class can only be owned once.`);
-        } else {
-            const interactKey = playerInputBindingToDisplayValue("interact", game);            
-            texts.push(`Press <${interactKey}> to burrow`);
+    } else {
+        texts.push(`Class building ${classBuilding.characterClass.className}:`);
+        if (!classBuilding.stuffBorrowed!.burrowed) {
+            if (hasCharacterPreventedMultipleClass(classBuilding.characterClass.className, interacter)) {
+                const infoKey = playerInputBindingToDisplayValue("Info", game);
+                texts.push(`Press <${infoKey}> for details.`);
+                texts.push(`Can't burrow. Class can only be owned once.`);
+            } else {
+                const interactKey = playerInputBindingToDisplayValue("interact", game);
+                const infoKey = playerInputBindingToDisplayValue("Info", game);
+                texts.push(`Press <${interactKey}> to burrow.`);
+                texts.push(`Press <${infoKey}> for details.`);
+            }
+            game.UI.paintClosesInteractableStatsUi = true;
+        } else if (classBuilding.stuffBorrowed!.burrowed) {
+            texts.push(`Currently burrowed by ${classBuilding.stuffBorrowed!.by}`);
         }
-    } else if (classBuilding.stuffBorrowed!.burrowed) {
-        texts.push(`Class ${classBuilding.characterClass.className}.`);
-        texts.push(`Currently burrowed by ${classBuilding.stuffBorrowed!.by}`);
     }
-    let textMaxWidth = 0;
-    const rectHeight = fontSize * texts.length + 2;
-    topMiddlePos.y -= rectHeight + map.tileSize / 2;
     const paintPos = getPointPaintPosition(ctx, topMiddlePos, cameraPosition);
+    paintTextLinesWithKeys(ctx, texts, paintPos, 20, true, true);
 
-    ctx.font = `${fontSize}px Arial`;
-    for (let text of texts) {
-        const textWidth = ctx.measureText(text).width;
-        if (textWidth > textMaxWidth) textMaxWidth = textWidth;
-    }
-    ctx.globalAlpha = 0.6;
-    ctx.fillStyle = "white";
-    ctx.fillRect(paintPos.x - Math.floor(textMaxWidth / 2) - 1, paintPos.y - 1, textMaxWidth + 2, rectHeight)
-    ctx.globalAlpha = 1;
-    ctx.font = `${fontSize}px Arial`;
-    ctx.fillStyle = "black";
-    for (let text of texts) {
-        paintPos.y += fontSize;
-        topMiddlePos.y += fontSize;
-        paintTextWithKeys(ctx, text, {x: paintPos.x, y:paintPos.y}, fontSize, true);
-    }
-
-    if(classBuilding.characterClass){
-        if(!classBuilding.stuffBorrowed?.burrowed){
-            paintStatsFromAbilityAndPetsAndCharacterClass(ctx, classBuilding.pets, classBuilding.abilities, [classBuilding.characterClass], game);
-        }
+    if (classBuilding.characterClass && !classBuilding.stuffBorrowed?.burrowed
+        && game.UI.displayLongInfos
+    ) {
+        paintStatsFromAbilityAndPetsAndCharacterClass(ctx, classBuilding.pets, classBuilding.abilities, [classBuilding.characterClass], game);
     }
 }
 

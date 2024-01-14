@@ -1,13 +1,9 @@
 new test runs required: 
 
 current tasks:
-- class Buildings and legendary:
-    - dev steps:
-        - "Press interact key", what is the interact key?
-            - make drawTextWithKey function?
-
 - use tab key to visualise statsUi for every thing and don't make it overlapp
 - check bug?: replay -> overtake -> past character from replay -> intended?
+- feature: visualize king stats when neart king sign and "tab" for more info pressed
 - rename endboss to king in code ?
 
 refactor possibilities:

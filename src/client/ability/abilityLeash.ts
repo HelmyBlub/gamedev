@@ -49,7 +49,7 @@ function paintAbilityLeash(ctx: CanvasRenderingContext2D, abilityOwner: AbilityO
     const abilityLeash = ability as AbilityLeash;
     if (abilityLeash.leashedToOwnerId !== undefined) {
         let paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
-        const connectedOwner: Position | null = findLeashOwner(abilityOwner, abilityLeash, game);;
+        const connectedOwner: Position | null = findLeashOwner(abilityOwner, abilityLeash, game);
         if (!connectedOwner) {
             return;
         }
