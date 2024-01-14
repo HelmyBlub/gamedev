@@ -5,7 +5,7 @@ import { CharacterClass, PLAYER_CHARACTER_CLASSES_FUNCTIONS, hasCharacterPrevent
 import { TamerPetCharacter } from "../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { deepCopy, getCameraPosition, getNextId } from "../game.js";
 import { CelestialDirection, FACTION_PLAYER, Game, Position } from "../gameModel.js";
-import { getPointPaintPosition, paintStatsFromAbilityAndPetsAndCharacterClass, paintTextWithOutline } from "../gamePaint.js";
+import { getPointPaintPosition, paintStatsFromAbilityAndPetsAndCharacterClass, paintTextWithKeys, paintTextWithOutline } from "../gamePaint.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
 import { GameMap, MapChunk, chunkXYToMapKey, mapKeyAndTileXYToPosition } from "./map.js";
 import { MAP_OBJECTS_FUNCTIONS, MapTileObject, findMapKeyForMapObject } from "./mapObjects.js";
@@ -14,6 +14,7 @@ import { paintCharacters } from "../character/characterPaint.js";
 import { ABILITY_NAME_LEASH, AbilityLeash } from "../ability/abilityLeash.js";
 import { getCelestialDirection } from "../character/enemy/bossEnemy.js";
 import { Player } from "../player.js";
+import { playerInputBindingToDisplayValue } from "../playerInput.js";
 
 export type MapTileObjectClassBuilding = MapTileObject & {
     buildingId: number,
@@ -371,7 +372,8 @@ function paintInteract(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, 
         if (hasCharacterPreventedMultipleClass(classBuilding.characterClass.className, interacter)) {
             texts.push(`Can't burrow. Class can only be owned once.`);
         } else {
-            texts.push(`Press interact key to burrow`);
+            const interactKey = playerInputBindingToDisplayValue("interact", game);            
+            texts.push(`Press <${interactKey}> to burrow`);
         }
     } else if (classBuilding.stuffBorrowed!.burrowed) {
         texts.push(`Class ${classBuilding.characterClass.className}.`);
@@ -396,7 +398,7 @@ function paintInteract(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, 
     for (let text of texts) {
         paintPos.y += fontSize;
         topMiddlePos.y += fontSize;
-        paintTextWithOutline(ctx, "white", "black", text, paintPos.x, paintPos.y, true);
+        paintTextWithKeys(ctx, text, {x: paintPos.x, y:paintPos.y}, fontSize, true);
     }
 
     if(classBuilding.characterClass){

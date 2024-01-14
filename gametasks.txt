@@ -1,9 +1,8 @@
-new test runs required: builder
+new test runs required: 
 
 current tasks:
 - class Buildings and legendary:
     - dev steps:
-        - Visualize which kings has burrowed legendary
         - "Press interact key", what is the interact key?
             - make drawTextWithKey function?
 

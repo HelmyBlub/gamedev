@@ -73,6 +73,43 @@ export function getPointPaintPosition(ctx: CanvasRenderingContext2D, point: Posi
     }
 }
 
+/**
+ * @param textWithKeys add character "<" + key + ">" like "Press buton <A>" to print a key visualization
+ */
+export function paintTextWithKeys(ctx: CanvasRenderingContext2D, textWithKeys: string, paintPosition: Position, fontSize: number = 20, centered: boolean = false) {
+    const splittedText = textWithKeys.split(/[<>]/);
+    let totalWidth = 0;
+    let width: number[] = [];
+    let even = true;
+    ctx.font = fontSize + "px Arial";
+    for (let i = 0; i < splittedText.length; i++) {
+        if (even) {
+            width[i] = ctx.measureText(splittedText[i]).width;
+        } else {
+            width[i] = 38;
+        }
+        totalWidth += width[i];
+        even = !even;
+    }
+    even = true;
+    let x = paintPosition.x;
+    let y = paintPosition.y;
+    if (centered) {
+        x -= totalWidth / 2;
+    }
+    for (let i = 0; i < splittedText.length; i++) {
+        const textPart = splittedText[i];
+        if (even) {
+            ctx.font = fontSize + "px Arial";
+            paintTextWithOutline(ctx, "white", "black", textPart, x, y);
+        } else {
+            paintKey(ctx, textPart, { x: x - 1, y: y - 20 });
+        }
+        x += width[i];
+        even = !even;
+    }
+}
+
 export function paintKey(ctx: CanvasRenderingContext2D, key: string, paintPosition: Position) {
     const blankKeyImageString = "blankKey";
     const blankKeyImage = GAME_IMAGES[blankKeyImageString];
@@ -93,7 +130,7 @@ export function paintKey(ctx: CanvasRenderingContext2D, key: string, paintPositi
     }
 }
 
-function paintMultiplayerPing(ctx: CanvasRenderingContext2D, game: Game){
+function paintMultiplayerPing(ctx: CanvasRenderingContext2D, game: Game) {
     if (game.multiplayer.websocket !== null) {
         ctx.fillText("Ping: " + Math.round(game.multiplayer.delay), 10, 60);
     }
@@ -138,7 +175,7 @@ function paintPastPlayerTakeoverInfo(ctx: CanvasRenderingContext2D, pastCharacte
         for (let ability of pastCharacter.abilities) {
             if (ability.tradable) abilities.push(ability);
         }
-        if(pastCharacter.characterClasses){
+        if (pastCharacter.characterClasses) {
             for (let charClass of pastCharacter.characterClasses) {
                 if (!charClass.gifted) charClasses.push(charClass);
             }
@@ -157,11 +194,11 @@ function paintPastPlayerTakeoverInfo(ctx: CanvasRenderingContext2D, pastCharacte
     paintTextWithOutline(ctx, "white", "black", text, paintPos.x, paintPos.y - 5, true, 1, "white");
 }
 
-export function paintStatsFromAbilityAndPetsAndCharacterClass(ctx: CanvasRenderingContext2D, pets: TamerPetCharacter[], abilities: Ability[], characterClasses: CharacterClass[], game: Game){
+export function paintStatsFromAbilityAndPetsAndCharacterClass(ctx: CanvasRenderingContext2D, pets: TamerPetCharacter[], abilities: Ability[], characterClasses: CharacterClass[], game: Game) {
     let offsetX = 0;
     const tooltipY = 60;
     const spacing = 5;
-    
+
     const area = paintCharacterClassStatsUI(ctx, characterClasses, 20 + offsetX, tooltipY, game);
     offsetX += area.width + spacing;
 
@@ -301,7 +338,7 @@ function paintKillCounter(ctx: CanvasRenderingContext2D, killCounter: number, ga
     paintTextWithOutline(ctx, "white", "black", "Kills: " + killCounter, 10, 20);
 }
 
-function paintMyCharacterStats(ctx: CanvasRenderingContext2D, game: Game){
+function paintMyCharacterStats(ctx: CanvasRenderingContext2D, game: Game) {
     const player = findPlayerById(game.state.players, game.multiplayer.myClientId);
     if (player === null) return;
     paintPlayerStats(ctx, player.character, getTimeSinceFirstKill(game.state), game);
