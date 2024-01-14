@@ -21,7 +21,7 @@ export type MapChunk = {
     tiles: number[][],
     objects: MapTileObject[],
     characters: Character[],
-    isEndBossAreaChunk?: boolean,
+    isKingAreaChunk?: boolean,
 }
 
 export const TILE_VALUES: MapTiles = {
@@ -42,10 +42,10 @@ export type GameMap = {
     activeChunkKeys: string[],
     activeChunkRange: number,
     chunks: { [key: string]: MapChunk },
-    endBossArea?: GameMapEndBossArea,
+    kingArea?: GameMapKingArea,
 }
 
-export type GameMapEndBossArea = {
+export type GameMapKingArea = {
     size: number,
     numberChunksUntil: number,
 }
@@ -517,7 +517,7 @@ export function getMapTile(pos: Position, map: GameMap, idCounter: IdCounter, ga
 }
 
 function initBossArea(map: GameMap, bossAreaDistance: number) {
-    map.endBossArea = {
+    map.kingArea = {
         size: 3,
         numberChunksUntil: Math.floor(bossAreaDistance / (map.tileSize * map.chunkLength)),
     }

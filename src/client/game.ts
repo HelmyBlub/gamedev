@@ -13,10 +13,10 @@ import { garbageCollectPathingCache, getPathingCache } from "./character/pathing
 import { createObjectDeathCircle } from "./ability/abilityDeathCircle.js";
 import { checkForBossSpawn, tickBossCharacters } from "./character/enemy/bossEnemy.js";
 import { autoPlay } from "./test/autoPlay.js";
-import { replayGameEndAssert, replayNextInReplayQueue, setPastCharactersAndEndBossesForReplayFromReplayData } from "./test/gameTest.js";
-import { checkForEndBossAreaTrigger } from "./map/mapEndBossArea.js";
+import { replayGameEndAssert, replayNextInReplayQueue, setPastCharactersAndKingsForReplayFromReplayData } from "./test/gameTest.js";
+import { checkForKingAreaTrigger } from "./map/mapKingArea.js";
 import { calculateHighscoreOnGameEnd } from "./highscores.js";
-import { setPlayerAsKing } from "./character/enemy/endBossEnemy.js";
+import { setPlayerAsKing } from "./character/enemy/kingEnemy.js";
 import { ABILITY_NAME_FEED_PET } from "./ability/petTamer/abilityFeedPet.js";
 import { ABILITY_NAME_LOVE_PET } from "./ability/petTamer/abilityLovePet.js";
 import { COMMAND_RESTART } from "./globalVars.js";
@@ -54,7 +54,7 @@ export function gameRestart(game: Game) {
     classBuildingCheckAllPlayerForLegendaryAbilitiesAndMoveBackToBuilding(game);
     if (game.testing.replay) {
         setReplaySeeds(game);
-        setPastCharactersAndEndBossesForReplayFromReplayData(game);
+        setPastCharactersAndKingsForReplayFromReplayData(game);
     }
     if (game.testing.record) {
         const record = game.testing.record;
@@ -64,7 +64,7 @@ export function gameRestart(game: Game) {
             restart.testRandomStartSeed = game.state.randomSeed.seed;
             restart.testEnemyTypeDirectionSeed = game.state.enemyTypeDirectionSeed;
         }
-        record.data.permanentData.nextEndBosses = deepCopy(game.state.bossStuff.nextEndbosses);
+        record.data.permanentData.nextKings = deepCopy(game.state.bossStuff.nextKings);
         record.data.permanentData.pastCharacters = deepCopy(game.state.pastPlayerCharacters);
         record.data.permanentData.buildings = deepCopy(game.state.buildings);
     }
@@ -89,14 +89,14 @@ export function gameInit(game: Game) {
     game.state.time = 0;
     game.state.timeFirstKill = undefined;
     game.state.playerInputs = [];
-    if (game.state.bossStuff.closedOfEndBossEntrance) {
-        const entrance = game.state.bossStuff.closedOfEndBossEntrance;
+    if (game.state.bossStuff.closedOfKingAreaEntrance) {
+        const entrance = game.state.bossStuff.closedOfKingAreaEntrance;
         changeTileIdOfMapChunk(entrance.chunkX, entrance.chunkY, entrance.tileX, entrance.tileY, entrance.tileId, game);
-        game.state.bossStuff.closedOfEndBossEntrance = undefined;
+        game.state.bossStuff.closedOfKingAreaEntrance = undefined;
     }
     game.state.bossStuff.bosses = [];
     game.state.bossStuff.bossLevelCounter = 1;
-    game.state.bossStuff.endBossStarted = false;
+    game.state.bossStuff.kingFightStarted = false;
     game.state.deathCircleCreated = false;
     game.state.paused = false;
     game.state.enemyTypeDirectionSeed += 1;
@@ -310,10 +310,10 @@ export function deepCopy(object: any): any {
     return JSON.parse(json);
 }
 
-export function endGame(game: Game, isEndbossKill: boolean = false) {
+export function endGame(game: Game, isKingKill: boolean = false) {
     game.state.ended = true;
-    const newScore = calculateHighscoreOnGameEnd(game, isEndbossKill);
-    if (isEndbossKill) {
+    const newScore = calculateHighscoreOnGameEnd(game, isKingKill);
+    if (isKingKill) {
         setPlayerAsKing(game);
         mapObjectPlaceClassBuilding(game);
     } else {
@@ -550,7 +550,7 @@ function saveStates(game: Game) {
 }
 
 function doStuff(game: Game) {
-    checkForEndBossAreaTrigger(game);
+    checkForKingAreaTrigger(game);
     checkDeathCircleSpawn(game);
     checkForBossSpawn(game);
     checkMovementKeyPressedHint(game);
@@ -647,8 +647,8 @@ function setReplaySeeds(game: Game) {
     game.state.randomSeed.seed = 0;
     game.state.map = createMap();
     game.state.map.seed = 0;
-    if (game.state.bossStuff.closedOfEndBossEntrance) {
-        game.state.bossStuff.closedOfEndBossEntrance = undefined;
+    if (game.state.bossStuff.closedOfKingAreaEntrance) {
+        game.state.bossStuff.closedOfKingAreaEntrance = undefined;
     }
     if (game.testing.replay) {
         if (game.testing.replay.mapSeed !== undefined) game.state.map.seed = game.testing.replay.mapSeed;

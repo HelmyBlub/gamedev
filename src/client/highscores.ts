@@ -24,7 +24,7 @@ export type HighscoreBoard = {
 }
 
 const HIGHSCORE_DISTANCE = "Distance";
-const HIGHSCORE_ENDBOSS_TIME = "EndBossTime";
+const HIGHSCORE_KING_TIME = "KingTime";
 const SCORE_TYPE_MILLISECONDS = "Score Type Milliseconds"
 
 export function createHighscoreBoards(): Highscores {
@@ -41,7 +41,7 @@ export function createHighscoreBoards(): Highscores {
             "from starting point the player died."
         ],
     }
-    highscores.scoreBoards[HIGHSCORE_ENDBOSS_TIME] = {
+    highscores.scoreBoards[HIGHSCORE_KING_TIME] = {
         scores: [],
         description: [
             "Highscore number based on time",
@@ -53,7 +53,7 @@ export function createHighscoreBoards(): Highscores {
     return highscores;
 }
 
-export function calculateHighscoreOnGameEnd(game: Game, isEndbossKill: boolean): number {
+export function calculateHighscoreOnGameEnd(game: Game, isKingKill: boolean): number {
     let newScore: number = 0;
     let playerClass = "";
     const state = game.state;
@@ -67,13 +67,13 @@ export function calculateHighscoreOnGameEnd(game: Game, isEndbossKill: boolean):
         if (distance > newScore) newScore = distance;
     }
 
-    if (isEndbossKill) {
+    if (isKingKill) {
         newScore = getTimeSinceFirstKill(game.state);
-        const board = state.highscores.scoreBoards[HIGHSCORE_ENDBOSS_TIME];
+        const board = state.highscores.scoreBoards[HIGHSCORE_KING_TIME];
         board.scores.push({ score: newScore, playerClass: playerClass });
         board.scores.sort((a, b) => a.score - b.score);
         state.highscores.lastHighscorePosition = board.scores.findIndex((e) => e.score === newScore);
-        state.highscores.lastBoard = HIGHSCORE_ENDBOSS_TIME;
+        state.highscores.lastBoard = HIGHSCORE_KING_TIME;
         if (board.scores.length > state.highscores.maxLength) {
             board.scores.pop();
         }

@@ -1,31 +1,31 @@
 import { changeCharacterId, resetCharacter } from "./character/character.js";
 import { Character } from "./character/characterModel.js";
 import { changeCharacterAndAbilityIds, getNextId } from "./game.js";
-import { CelestialDirection, Game, IdCounter, NextEndbosses, PastPlayerCharacters } from "./gameModel.js";
+import { CelestialDirection, Game, IdCounter, NextKings, PastPlayerCharacters } from "./gameModel.js";
 import { Building } from "./map/mapObjectClassBuilding.js";
 
 export type PermanentDataParts = {
     pastCharacters?: PastPlayerCharacters,
-    nextEndBosses?: NextEndbosses,
+    nextKings?: NextKings,
     buildings?: Building[],
 }
 
 const LOCALSTORAGE_PASTCHARACTERS = "pastCharacters";
-const LOCALSTORAGE_NEXTENDBOSSES = "nextEndBosses";
+const LOCALSTORAGE_NEXTKINGS = "nextKings";
 const LOCALSTORAGE_BUILDINGS = "buildings";
 
 export function localStorageLoad(game: Game) {
     const localStoragePastCharacters = localStorage.getItem(LOCALSTORAGE_PASTCHARACTERS);
     if (localStoragePastCharacters) loadPastCharacters(JSON.parse(localStoragePastCharacters), game);
-    const localStorageNextEndbosses = localStorage.getItem(LOCALSTORAGE_NEXTENDBOSSES);
-    if (localStorageNextEndbosses) loadNextEnbosses(JSON.parse(localStorageNextEndbosses), game);
+    const localStorageNextKings = localStorage.getItem(LOCALSTORAGE_NEXTKINGS);
+    if (localStorageNextKings) loadNextKings(JSON.parse(localStorageNextKings), game);
     const localStorageBuildings = localStorage.getItem(LOCALSTORAGE_BUILDINGS);
     if (localStorageBuildings) loadBuildings(JSON.parse(localStorageBuildings), game);
 }
 
-export function localStorageSaveNextEndbosses(game: Game) {
+export function localStorageSaveNextKings(game: Game) {
     if (!game.multiplayer.disableLocalStorage) {
-        localStorage.setItem(LOCALSTORAGE_NEXTENDBOSSES, JSON.stringify(game.state.bossStuff.nextEndbosses));
+        localStorage.setItem(LOCALSTORAGE_NEXTKINGS, JSON.stringify(game.state.bossStuff.nextKings));
         localStorageSaveBuildings(game);
     }
 }
@@ -51,12 +51,12 @@ export function loadPastCharacters(pastPlayerCharacters: PastPlayerCharacters, g
     }
 }
 
-export function loadNextEnbosses(nextEndbosses: NextEndbosses, game: Game) {
-    game.state.bossStuff.nextEndbosses = nextEndbosses;
-    const keys = Object.keys(nextEndbosses) as CelestialDirection[];
+export function loadNextKings(nextKings: NextKings, game: Game) {
+    game.state.bossStuff.nextKings = nextKings;
+    const keys = Object.keys(nextKings) as CelestialDirection[];
     for (let key of keys) {
-        const endboss = nextEndbosses[key];
-        if (endboss) changeCharacterAndAbilityIds(endboss, game.state.idCounter);
+        const king = nextKings[key];
+        if (king) changeCharacterAndAbilityIds(king, game.state.idCounter);
     }
 }
 
@@ -84,25 +84,25 @@ function changeBuildingIds(building: Building, idCounter: IdCounter, game: Game)
         changeCharacterId(pet, idCounter);
         if (pet.legendary) pet.legendary.buildingIdRef = building.id;
     }
-    if(game.state.bossStuff.nextEndbosses){
-        const keys = Object.keys(game.state.bossStuff.nextEndbosses);
+    if(game.state.bossStuff.nextKings){
+        const keys = Object.keys(game.state.bossStuff.nextKings);
         for(let key of keys){
-            const endboss: Character | undefined = (game.state.bossStuff.nextEndbosses as any)[key];
-            if(!endboss) continue;
-            for (let ability of endboss.abilities) {
+            const king: Character | undefined = (game.state.bossStuff.nextKings as any)[key];
+            if(!king) continue;
+            for (let ability of king.abilities) {
                 if (ability.legendary && ability.legendary.buildingIdRef === oldBuildingId){
                     ability.legendary.buildingIdRef = building.id;
                 } 
             }
-            if(endboss.pets){
-                for (let pet of endboss.pets) {
+            if(king.pets){
+                for (let pet of king.pets) {
                     if (pet.legendary && pet.legendary.buildingIdRef === oldBuildingId){
                         pet.legendary.buildingIdRef = building.id;
                     }
                 }
             }
-            if(building.characterClass && oldCharacterClassId !== undefined && endboss.characterClasses){
-                for(let charClass of endboss.characterClasses){
+            if(building.characterClass && oldCharacterClassId !== undefined && king.characterClasses){
+                for(let charClass of king.characterClasses){
                     if(charClass.id === oldCharacterClassId){
                         charClass.id = building.characterClass.id;
                     }

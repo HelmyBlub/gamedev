@@ -4,7 +4,7 @@ import { takeTimeMeasure } from "../game.js";
 import { Game, IdCounter, Position } from "../gameModel.js";
 import { fixedRandom } from "../randomNumberGenerator.js";
 import { GameMap, MapChunk, chunkXYToMapKey } from "./map.js";
-import { mapGenerationEndBossChunkStuff } from "./mapEndBossArea.js";
+import { mapGenerationKingChunkStuff } from "./mapKingArea.js";
 import { addExistingBuildingsToSpawnChunk, mapObjectPlaceClassBuilding } from "./mapObjectClassBuilding.js";
 import { MAP_OBJECT_FIRE_ANIMATION } from "./mapObjectFireAnimation.js";
 
@@ -82,7 +82,7 @@ export function createNewChunkTiles(map: GameMap, chunkX: number, chunkY: number
                 tiles[tileX].push(randomTileId);
             }
         }
-        mapGenerationEndBossChunkStuff(mapChunk, map, chunkX, chunkY);
+        mapGenerationKingChunkStuff(mapChunk, map, chunkX, chunkY);
     }
     return mapChunk;
 }

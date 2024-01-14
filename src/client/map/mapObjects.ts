@@ -4,7 +4,7 @@ import { Position, Game } from "../gameModel.js";
 import { GameMap, MapChunk, determineMapKeysInDistance, mapKeyAndTileXYToPosition } from "./map.js";
 import { addMapObjectClassBuilding } from "./mapObjectClassBuilding.js";
 import { addMapObjectFireAnimation } from "./mapObjectFireAnimation.js";
-import { addMapObjectBossSign } from "./mapObjectSign.js";
+import { addMapObjectKingSign } from "./mapObjectSign.js";
 
 export type MapObjectFunctions = {
     interact?: (interacter: Character, mapObject: MapTileObject, game: Game) => void,
@@ -27,7 +27,7 @@ export const MAP_OBJECTS_FUNCTIONS: MapObjectsFunctions = {};
 
 export function addMapObjectsFunctions() {
     addMapObjectFireAnimation();
-    addMapObjectBossSign();
+    addMapObjectKingSign();
     addMapObjectClassBuilding();
 }
 

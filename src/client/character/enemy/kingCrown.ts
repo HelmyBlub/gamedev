@@ -4,17 +4,17 @@ import { moveCharacterTick } from "../character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, createCharacter } from "../characterModel.js";
 import { paintCharacterWithAbilitiesDefault } from "../characterPaint.js";
 import { PathingCache } from "../pathing.js";
-import { EndBossEnemyCharacter, IMAGE_CROWN } from "./endBossEnemy.js";
+import { KingEnemyCharacter, IMAGE_CROWN } from "./kingEnemy.js";
 
-export const CHARACTER_TYPE_END_BOSS_CROWN_ENEMY = "EndBossCrownEnemyCharacter";
-export function addEndBossCrownType() {
+export const CHARACTER_TYPE_END_BOSS_CROWN_ENEMY = "KingCrownEnemyCharacter";
+export function addKingCrownType() {
     CHARACTER_TYPE_FUNCTIONS[CHARACTER_TYPE_END_BOSS_CROWN_ENEMY] = {
         tickFunction: tickCrown,
         paintCharacterType: paintCrown,
     }
 }
 
-export function createEndBossCrownCharacter(idCounter: IdCounter, spawn: Position): EndBossEnemyCharacter {
+export function createKingCrownCharacter(idCounter: IdCounter, spawn: Position): KingEnemyCharacter {
     const crownSize = 20;
     const color = "black";
     const moveSpeed = 2;

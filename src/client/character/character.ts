@@ -12,8 +12,8 @@ import { removeCharacterDebuffs, tickCharacterDebuffs } from "../debuff/debuff.j
 import { ABILITY_NAME_LEASH, AbilityLeash, createAbilityLeash } from "../ability/abilityLeash.js";
 import { fillRandomUpgradeOptionChoices, UpgradeOption } from "./upgrade.js";
 import { CharacterClass, PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters/playerCharacters.js";
-import { CHARACTER_TYPE_END_BOSS_ENEMY } from "./enemy/endBossEnemy.js";
-import { createEndBossCrownCharacter } from "./enemy/endBossCrown.js";
+import { CHARACTER_TYPE_KING_ENEMY } from "./enemy/kingEnemy.js";
+import { createKingCrownCharacter } from "./enemy/kingCrown.js";
 import { TamerPetCharacter, tradePets } from "./playerCharacters/tamer/tamerPetCharacter.js";
 import { ENEMY_FIX_RESPAWN_POSITION } from "./enemy/fixPositionRespawnEnemyModel.js";
 import { addCombatlogDamageTakenEntry } from "../combatlog.js";
@@ -276,7 +276,7 @@ export function tickCharacters(characters: (Character | undefined)[], game: Game
             tickDefaultCharacter(char, game, pathingCache);
         }
         if (!char.isDead) {
-            if (game.state.bossStuff.endBossStarted && char.type === ENEMY_FIX_RESPAWN_POSITION) continue;
+            if (game.state.bossStuff.kingFightStarted && char.type === ENEMY_FIX_RESPAWN_POSITION) continue;
             for (let ability of char.abilities) {
                 const tickAbility = ABILITIES_FUNCTIONS[ability.name].tickAbility;
                 if (tickAbility) tickAbility(char, ability, game);
@@ -320,17 +320,17 @@ export function tickDefaultCharacter(character: Character, game: Game, pathingCa
     moveCharacterTick(character, game.state.map, game.state.idCounter);
 }
 
-export function determineClosestCharacter(position: Position, characters: Character[], excludeEndbossArea: boolean = false, map: GameMap | undefined = undefined) {
+export function determineClosestCharacter(position: Position, characters: Character[], excludeKingArea: boolean = false, map: GameMap | undefined = undefined) {
     let minDistance: number = 0;
     let minDistanceCharacter: Character | null = null;
 
     for (let i = 0; i < characters.length; i++) {
         if (characters[i].isDead) continue;
         if (characters[i].isPet) continue;
-        if (excludeEndbossArea && map) {
+        if (excludeKingArea && map) {
             const mapKey = positionToMapKey(characters[i], map);
             const mapChunk = map.chunks[mapKey];
-            if (mapChunk.isEndBossAreaChunk) continue;
+            if (mapChunk.isKingAreaChunk) continue;
         }
         const distance = calculateDistance(position, characters[i]);
         if (minDistanceCharacter === null || minDistance > distance) {
@@ -602,8 +602,8 @@ function killCharacter(character: Character, game: Game, abilityIdRef: number | 
         playerCharactersAddBossSkillPoints(character.level?.level, game);
         experienceForEveryPlayersLeveling(character.experienceWorth, game);
     }
-    if (character.type === CHARACTER_TYPE_END_BOSS_ENEMY) {
-        game.state.bossStuff.bosses.push(createEndBossCrownCharacter(game.state.idCounter, character));
+    if (character.type === CHARACTER_TYPE_KING_ENEMY) {
+        game.state.bossStuff.bosses.push(createKingCrownCharacter(game.state.idCounter, character));
     }
     if (abilityIdRef !== undefined && character.type !== CHARACTER_TYPE_BOSS_ENEMY) {
         const ability = findAbilityById(abilityIdRef, game);

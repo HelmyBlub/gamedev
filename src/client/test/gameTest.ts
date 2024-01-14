@@ -1,7 +1,7 @@
 import { createCharacter } from "../character/characterModel.js";
 import { CommandRestart, handleCommand } from "../commands.js";
 import { changeCharacterAndAbilityIds, closeGame } from "../game.js";
-import { CelestialDirection, FACTION_ENEMY, FACTION_PLAYER, Game, NextEndbosses, Position, setDefaultNextEndbosses } from "../gameModel.js";
+import { CelestialDirection, FACTION_ENEMY, FACTION_PLAYER, Game, NextKings, Position, setDefaultNextKings } from "../gameModel.js";
 import { createGame } from "../main.js";
 import { addEnemyToMap, chunkXYToMapKey, createMap, GameMap } from "../map/map.js";
 import { createNewChunkTiles } from "../map/mapGeneration.js";
@@ -10,7 +10,7 @@ import { PlayerInput } from "../playerInput.js";
 import { createProjectile, Projectile } from "../ability/projectile.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
 import { detectAbilityObjectCircleToCharacterHit } from "../ability/ability.js";
-import { loadNextEnbosses, loadPastCharacters } from "../permanentData.js";
+import { loadNextKings, loadPastCharacters } from "../permanentData.js";
 
 let testData: (PlayerInput | Omit<CommandRestart, "executeTime">)[] = [];
 
@@ -65,14 +65,14 @@ export function replayNextInReplayQueue(game: Game): boolean {
     return true;
 }
 
-export function setPastCharactersAndEndBossesForReplayFromReplayData(game: Game) {
+export function setPastCharactersAndKingsForReplayFromReplayData(game: Game) {
     const replay = game.testing.replay;
     if (!replay) return;
-    if (game.state.map.endBossArea) {
-        if (replay.data?.permanentData.nextEndBosses) {
-            loadNextEnbosses(replay.data?.permanentData.nextEndBosses, game);
+    if (game.state.map.kingArea) {
+        if (replay.data?.permanentData.nextKings) {
+            loadNextKings(replay.data?.permanentData.nextKings, game);
         } else {
-            setDefaultNextEndbosses(game);
+            setDefaultNextKings(game);
         }
     }
     if (replay.data?.permanentData.pastCharacters) {

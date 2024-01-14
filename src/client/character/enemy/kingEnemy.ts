@@ -9,9 +9,9 @@ import { deepCopy, getNextId, saveCharacterAsPastCharacter } from "../../game.js
 import { IdCounter, Game, Position, FACTION_ENEMY } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { GAME_IMAGES, getImage } from "../../imageLoad.js";
-import { localStorageSaveNextEndbosses } from "../../permanentData.js";
+import { localStorageSaveNextKings } from "../../permanentData.js";
 import { changeTileIdOfMapChunk } from "../../map/map.js";
-import { getBossAreaMiddlePosition, getEntranceChunkAndTileXYForPosition } from "../../map/mapEndBossArea.js";
+import { getKingAreaMiddlePosition, getEntranceChunkAndTileXYForPosition } from "../../map/mapKingArea.js";
 import { classBuildingPutLegendaryCharacterStuffBackIntoBuilding, legendaryAbilityGiveBlessing } from "../../map/mapObjectClassBuilding.js";
 import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick, resetCharacter } from "../character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, PLAYER_BASE_HP, createCharacter } from "../characterModel.js";
@@ -19,33 +19,33 @@ import { paintCharacterWithAbilitiesDefault, paintCharatersPets } from "../chara
 import { PathingCache } from "../pathing.js";
 import { getCelestialDirection } from "./bossEnemy.js";
 
-export type EndBossEnemyCharacter = Character;
-export const CHARACTER_TYPE_END_BOSS_ENEMY = "EndBossEnemyCharacter";
+export type KingEnemyCharacter = Character;
+export const CHARACTER_TYPE_KING_ENEMY = "KingEnemyCharacter";
 
 export const IMAGE_CROWN = "Crown";
-export const END_BOSS_BASE_HP = 50000000;
+export const KING_BASE_HP = 50000000;
 GAME_IMAGES[IMAGE_CROWN] = {
     imagePath: "/images/crown.png",
     spriteRowHeights: [20],
     spriteRowWidths: [20],
 };
 
-export function addEndBossType() {
-    CHARACTER_TYPE_FUNCTIONS[CHARACTER_TYPE_END_BOSS_ENEMY] = {
-        tickFunction: tickEndBossEnemyCharacter,
-        paintCharacterType: paintEndBoss,
+export function addKingType() {
+    CHARACTER_TYPE_FUNCTIONS[CHARACTER_TYPE_KING_ENEMY] = {
+        tickFunction: tickKingEnemyCharacter,
+        paintCharacterType: paintKing,
     }
 }
 
-export function createDefaultNextEndBoss(idCounter: IdCounter, game: Game): EndBossEnemyCharacter {
+export function createDefaultNextKing(idCounter: IdCounter, game: Game): KingEnemyCharacter {
     const bossSize = 60;
     const color = "black";
     const moveSpeed = 1;
-    const hp = END_BOSS_BASE_HP;
+    const hp = KING_BASE_HP;
     const experienceWorth = 0;
-    const bossCharacter = createCharacter(getNextId(idCounter), 0, 0, bossSize, bossSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_END_BOSS_ENEMY, experienceWorth);
+    const bossCharacter = createCharacter(getNextId(idCounter), 0, 0, bossSize, bossSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_KING_ENEMY, experienceWorth);
     bossCharacter.paint.image = IMAGE_SLIME;
-    const abilities: Ability[] = createEndBossAbilities(1, game);
+    const abilities: Ability[] = createKingAbilities(1, game);
     bossCharacter.abilities = abilities;
     return bossCharacter;
 }
@@ -55,10 +55,10 @@ export function setPlayerAsKing(game: Game) {
     const boss: Character = deepCopy(game.state.players[0].character);
     resetCharacter(boss, game);
     const celestialDirection = getCelestialDirection(boss);
-    const oldBoss = game.state.bossStuff.nextEndbosses[celestialDirection];
-    game.state.bossStuff.nextEndbosses[celestialDirection] = boss;
-    game.state.players[0].character.becameEndBoss = true;
-    localStorageSaveNextEndbosses(game);
+    const oldBoss = game.state.bossStuff.nextKings[celestialDirection];
+    game.state.bossStuff.nextKings[celestialDirection] = boss;
+    game.state.players[0].character.becameKing = true;
+    localStorageSaveNextKings(game);
     if (oldBoss?.characterClasses) {
         legendaryAbilityGiveBlessing(celestialDirection, oldBoss);
         classBuildingPutLegendaryCharacterStuffBackIntoBuilding(oldBoss, game);
@@ -66,35 +66,35 @@ export function setPlayerAsKing(game: Game) {
     }
 }
 
-export function startEndBoss(endBossAreaPosition: Position, game: Game) {
+export function startKingFight(kingAreaPosition: Position, game: Game) {
     const entrance = getEntranceChunkAndTileXYForPosition(game.state.players[0].character, game.state.map);
     if (entrance) {
         changeTileIdOfMapChunk(entrance.chunkX, entrance.chunkY, entrance.tileX, entrance.tileY, 2, game);
-        const spawn: Position = getBossAreaMiddlePosition(endBossAreaPosition, game.state.map)!;
+        const spawn: Position = getKingAreaMiddlePosition(kingAreaPosition, game.state.map)!;
         const celestialDirection = getCelestialDirection(spawn);
-        const endBoss: Character = deepCopy(game.state.bossStuff.nextEndbosses[celestialDirection]);
-        modifyCharacterToEndBoss(endBoss, game);
-        endBoss.x = spawn.x;
-        endBoss.y = spawn.y;
-        if (endBoss.pets) {
-            for (let pet of endBoss.pets) {
+        const king: Character = deepCopy(game.state.bossStuff.nextKings[celestialDirection]);
+        modifyCharacterToKing(king, game);
+        king.x = spawn.x;
+        king.y = spawn.y;
+        if (king.pets) {
+            for (let pet of king.pets) {
                 pet.x = spawn.x;
                 pet.y = spawn.y;
             }
         }
         if (game.debug.lowBossHp) {
-            endBoss.hp = 500;
-            endBoss.maxHp = 500;
+            king.hp = 500;
+            king.maxHp = 500;
         }
-        game.state.bossStuff.bosses.push(endBoss);
-        game.state.bossStuff.closedOfEndBossEntrance = entrance;
-        game.state.bossStuff.endBossStarted = true;
+        game.state.bossStuff.bosses.push(king);
+        game.state.bossStuff.closedOfKingAreaEntrance = entrance;
+        game.state.bossStuff.kingFightStarted = true;
     } else {
         throw new Error("bossArea entrance not found, should not be able to happen");
     }
 }
 
-function tickEndBossEnemyCharacter(enemy: EndBossEnemyCharacter, game: Game, pathingCache: PathingCache | null) {
+function tickKingEnemyCharacter(enemy: KingEnemyCharacter, game: Game, pathingCache: PathingCache | null) {
     if (enemy.isDead) return;
     const playerCharacters = getPlayerCharacters(game.state.players);
     const closest = determineClosestCharacter(enemy, playerCharacters);
@@ -112,9 +112,9 @@ function tickEndBossEnemyCharacter(enemy: EndBossEnemyCharacter, game: Game, pat
     tickCharacterDebuffs(enemy, game);
 }
 
-function modifyCharacterToEndBoss(boss: Character, game: Game) {
-    boss.type = CHARACTER_TYPE_END_BOSS_ENEMY;
-    let newHp = END_BOSS_BASE_HP
+function modifyCharacterToKing(boss: Character, game: Game) {
+    boss.type = CHARACTER_TYPE_KING_ENEMY;
+    let newHp = KING_BASE_HP
     if(boss.characterClasses){
         const hpIncreaseFactor = boss.maxHp / PLAYER_BASE_HP;
         newHp *= hpIncreaseFactor;
@@ -132,7 +132,7 @@ function modifyCharacterToEndBoss(boss: Character, game: Game) {
     changeBossAbilityLevelBasedOnHp(boss);
 }
 
-function paintEndBoss(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
+function paintKing(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
     if (character.isDead) return;
     paintCharatersPets(ctx, [character], cameraPosition, game);
     paintCharacterWithAbilitiesDefault(ctx, character, cameraPosition, game);
@@ -143,7 +143,7 @@ function paintEndBoss(ctx: CanvasRenderingContext2D, character: Character, camer
         const crownY = Math.floor(paintPos.y - character.height / 2 - crownImage.height);
         ctx.drawImage(crownImage, crownX, crownY);
     }
-    if (game.state.bossStuff.endBossStarted) paintBossHpBar(ctx, character);
+    if (game.state.bossStuff.kingFightStarted) paintBossHpBar(ctx, character);
 }
 
 function paintBossHpBar(ctx: CanvasRenderingContext2D, boss: Character) {
@@ -169,7 +169,7 @@ function paintBossHpBar(ctx: CanvasRenderingContext2D, boss: Character) {
     ctx.fillText(hpBarText, Math.floor(ctx.canvas.width / 2 - textWidth / 2), top + fontSize + 1);
 }
 
-function changeBossAbilityLevelBasedOnHp(enemy: EndBossEnemyCharacter) {
+function changeBossAbilityLevelBasedOnHp(enemy: KingEnemyCharacter) {
     const hpLeftPerCent = enemy.hp / enemy.maxHp;
     const hpBasedlevel = Math.max(Math.floor((1 - hpLeftPerCent) * 10 + 1), 1);
 
@@ -187,7 +187,7 @@ function changeBossAbilityLevelBasedOnHp(enemy: EndBossEnemyCharacter) {
     }
 }
 
-function createEndBossAbilities(level: number, game: Game): Ability[] {
+function createKingAbilities(level: number, game: Game): Ability[] {
     const abilities: Ability[] = [];
     const abilityKeys: string[] = [
         ABILITY_NAME_MELEE,
@@ -200,7 +200,7 @@ function createEndBossAbilities(level: number, game: Game): Ability[] {
     for (let abilityKey of abilityKeys) {
         const abilityFunctions = ABILITIES_FUNCTIONS[abilityKey];
         const ability = abilityFunctions.createAbility(game.state.idCounter);
-        setAbilityToEndBossLevel(ability, level);
+        setAbilityToKingLevel(ability, level);
         ability.passive = true;
         abilities.push(ability);
     }
@@ -208,7 +208,7 @@ function createEndBossAbilities(level: number, game: Game): Ability[] {
     return abilities;
 }
 
-function setAbilityToEndBossLevel(ability: Ability, level: number) {
+function setAbilityToKingLevel(ability: Ability, level: number) {
     const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
     if (abilityFunctions.setAbilityToBossLevel) {
         abilityFunctions.setAbilityToBossLevel(ability, level);

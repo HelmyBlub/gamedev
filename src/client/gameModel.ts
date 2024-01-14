@@ -1,11 +1,11 @@
 import { AbilityObject } from "./ability/ability.js";
 import { Character } from "./character/characterModel.js";
-import { createDefaultNextEndBoss } from "./character/enemy/endBossEnemy.js";
+import { createDefaultNextKing } from "./character/enemy/kingEnemy.js";
 import { PathingCache } from "./character/pathing.js";
 import { CommandRestart } from "./commands.js";
 import { createHighscoreBoards, Highscores } from "./highscores.js";
 import { createMap, GameMap } from "./map/map.js";
-import { EndBossEntranceData } from "./map/mapEndBossArea.js";
+import { KingAreaEntranceData } from "./map/mapKingArea.js";
 import { generateMissingChunks } from "./map/mapGeneration.js";
 import { Building } from "./map/mapObjectClassBuilding.js";
 import { PermanentDataParts } from "./permanentData.js";
@@ -99,7 +99,7 @@ export type MapChunkPaintCache = {
 }
 
 export type CelestialDirection = "north" | "west" | "south" | "east";
-export type NextEndbosses = {
+export type NextKings = {
     north?: Character,
     west?: Character,
     south?: Character,
@@ -109,9 +109,9 @@ export type NextEndbosses = {
 export type BossStuff = {
     bossLevelCounter: number,
     bossSpawnEachXMilliSecond: number,
-    endBossStarted: boolean,
-    nextEndbosses: NextEndbosses,
-    closedOfEndBossEntrance?: EndBossEntranceData,
+    kingFightStarted: boolean,
+    nextKings: NextKings,
+    closedOfKingAreaEntrance?: KingAreaEntranceData,
     bosses: Character[],
 }
 
@@ -267,9 +267,9 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             bossStuff: {
                 bossSpawnEachXMilliSecond: 60000,
                 bossLevelCounter: 1,
-                endBossStarted: false,
+                kingFightStarted: false,
                 bosses: [],
-                nextEndbosses: {},
+                nextKings: {},
             },
             paused: false,
             pastPlayerCharacters: {
@@ -344,8 +344,8 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
         },
     }
 
-    if (game.state.map.endBossArea) {
-        setDefaultNextEndbosses(game);
+    if (game.state.map.kingArea) {
+        setDefaultNextKings(game);
     }
     game.state.map.seed = nextRandom(game.state.randomSeed);
     generateMissingChunks(game.state.map, [{ x: 0, y: 0 }], game.state.idCounter, game);
@@ -353,9 +353,9 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
     return game;
 }
 
-export function setDefaultNextEndbosses(game: Game) {
-    game.state.bossStuff.nextEndbosses.north = createDefaultNextEndBoss(game.state.idCounter, game);
-    game.state.bossStuff.nextEndbosses.west = createDefaultNextEndBoss(game.state.idCounter, game);
-    game.state.bossStuff.nextEndbosses.south = createDefaultNextEndBoss(game.state.idCounter, game);
-    game.state.bossStuff.nextEndbosses.east = createDefaultNextEndBoss(game.state.idCounter, game);
+export function setDefaultNextKings(game: Game) {
+    game.state.bossStuff.nextKings.north = createDefaultNextKing(game.state.idCounter, game);
+    game.state.bossStuff.nextKings.west = createDefaultNextKing(game.state.idCounter, game);
+    game.state.bossStuff.nextKings.south = createDefaultNextKing(game.state.idCounter, game);
+    game.state.bossStuff.nextKings.east = createDefaultNextKing(game.state.idCounter, game);
 }

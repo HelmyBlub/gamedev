@@ -1,10 +1,6 @@
-new test runs required: 
-
 current tasks:
-- use tab key to visualise statsUi for every thing and don't make it overlapp
-- check bug?: replay -> overtake -> past character from replay -> intended?
 - feature: visualize king stats when neart king sign and "tab" for more info pressed
-- rename endboss to king in code ?
+- check bug?: replay -> overtake -> past character from replay -> intended?
 
 refactor possibilities:
 - ability creation: checks and scales for bosses, enemy or player by itself

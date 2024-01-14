@@ -69,7 +69,7 @@ function addSettingInputBoxPlayerPaintAlpha(game: Game) {
 }
 
 function addCloseBossAreaButton(game: Game) {
-    const buttonName = "closeEasyEndBossArea";
+    const buttonName = "closeEasyKingArea";
     addSettingButton(buttonName);
     const button = document.getElementById(buttonName) as HTMLButtonElement;
     if (button) {

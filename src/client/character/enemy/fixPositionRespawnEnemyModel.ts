@@ -64,10 +64,10 @@ export function createEnemyWithLevel(idCounter: IdCounter, enemyPos: Position, l
         const random = fixedRandom(enemyPos.x, enemyPos.y, 0);
         if (random <= enemyType.abilityProbabiltiy) {
             const celestialDirection = getCelestialDirection(enemyPos);
-            const endBoss = game.state.bossStuff.nextEndbosses[celestialDirection]!;
-            const whatToAdd = randomWhatToAdd(endBoss, enemy, game);
+            const king = game.state.bossStuff.nextKings[celestialDirection]!;
+            const whatToAdd = randomWhatToAdd(king, enemy, game);
             if (whatToAdd === "addAbility") {
-                const ability = createEnemyAbilityBasedOnEndBoss(level, endBoss, enemyPos, enemyType.damageFactor, game);
+                const ability = createEnemyAbilityBasedOnKing(level, king, enemyPos, enemyType.damageFactor, game);
                 if (ability) {
                     enemy.experienceWorth *= 2;
                     enemy.respawnTime *= 2;
@@ -76,7 +76,7 @@ export function createEnemyWithLevel(idCounter: IdCounter, enemyPos: Position, l
             }
             if (whatToAdd === "addPet") {
                 const levelReduced = Math.max(Math.floor(level / 4), 1);
-                const pet: TamerPetCharacter = createPetsBasedOnLevelAndCharacter(endBoss, levelReduced, enemy, game)[0];
+                const pet: TamerPetCharacter = createPetsBasedOnLevelAndCharacter(king, levelReduced, enemy, game)[0];
                 if (pet) {
                     enemy.experienceWorth *= 2;
                     enemy.respawnTime *= 2;
@@ -107,7 +107,7 @@ export function createFixPositionRespawnEnemies(chunk: MapChunk, chunkX: number,
     if (chunk.characters.length > 0) {
         console.log("unexpected existence of characers in mapChunk", chunk, chunkX, chunkY);
     }
-    if (chunk.isEndBossAreaChunk) return;
+    if (chunk.isKingAreaChunk) return;
     const chunkSize = map.tileSize * map.chunkLength;
     const mapCenter = { x: chunkSize / 2, y: chunkSize / 2 };
     const minSpawnDistanceFromMapCenter = 500;
@@ -195,16 +195,16 @@ function createEnemy(
     };
 }
 
-function randomWhatToAdd(nextEndBoss: Character, charPosition: Position, game: Game): "addPet" | "addAbility" {
+function randomWhatToAdd(nextKing: Character, charPosition: Position, game: Game): "addPet" | "addAbility" {
     const possibleAbilities: Ability[] = [];
     const possiblePets: TamerPetCharacter[] = [];
-    for (let ability of nextEndBoss!.abilities) {
+    for (let ability of nextKing!.abilities) {
         if (ABILITIES_FUNCTIONS[ability.name].canBeUsedByBosses) {
             possibleAbilities.push(ability);
         }
     }
-    if (nextEndBoss.pets) {
-        for (let pet of nextEndBoss.pets) {
+    if (nextKing.pets) {
+        for (let pet of nextKing.pets) {
             possiblePets.push(pet);
         }
     }
@@ -220,9 +220,9 @@ function randomWhatToAdd(nextEndBoss: Character, charPosition: Position, game: G
     }
 }
 
-function createEnemyAbilityBasedOnEndBoss(level: number, nextEndBoss: Character, enemyPos: Position, damageFactor: number, game: Game): Ability | undefined {
+function createEnemyAbilityBasedOnKing(level: number, nextKing: Character, enemyPos: Position, damageFactor: number, game: Game): Ability | undefined {
     const possibleAbilities: Ability[] = [];
-    for (let ability of nextEndBoss!.abilities) {
+    for (let ability of nextKing!.abilities) {
         if (ABILITIES_FUNCTIONS[ability.name].canBeUsedByBosses) {
             possibleAbilities.push(ability);
         }

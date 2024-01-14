@@ -108,7 +108,7 @@ export function mapObjectPlaceClassBuilding(game: Game) {
 
 export function classBuildingCheckAllPlayerForLegendaryAbilitiesAndMoveBackToBuilding(game: Game) {
     for (let player of game.state.players) {
-        if (!player.character.becameEndBoss) {
+        if (!player.character.becameKing) {
             classBuildingPutLegendaryCharacterStuffBackIntoBuilding(player.character, game);
         } else {
             setBurrowedByKingIfHasLegendary(player, game);

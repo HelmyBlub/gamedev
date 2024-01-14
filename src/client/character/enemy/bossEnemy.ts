@@ -14,7 +14,7 @@ import { paintCharacterWithAbilitiesDefault, paintCharacterHpBar, paintCharacter
 import { getPathingCache, PathingCache } from "../pathing.js";
 import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "../playerCharacters/playerCharacters.js";
 import { TamerPetCharacter } from "../playerCharacters/tamer/tamerPetCharacter.js";
-import { CHARACTER_TYPE_END_BOSS_CROWN_ENEMY } from "./endBossCrown.js";
+import { CHARACTER_TYPE_END_BOSS_CROWN_ENEMY } from "./kingCrown.js";
 
 export type BossEnemyCharacter = Character;
 export const CHARACTER_TYPE_BOSS_ENEMY = "BossEnemyCharacter";
@@ -29,15 +29,15 @@ export function addBossType() {
 export function createBossWithLevel(idCounter: IdCounter, level: number, game: Game): BossEnemyCharacter {
     const spawn: Position = getBossSpawnPosition(game);
     const celestialDirection = getCelestialDirection(spawn);
-    const nextEndBoss = game.state.bossStuff.nextEndbosses[celestialDirection]!;
-    const nextBossClass = findBossClassBasedOnEndBoss(nextEndBoss);
+    const nextKing = game.state.bossStuff.nextKings[celestialDirection]!;
+    const nextBossClass = findBossClassBasedOnKing(nextKing);
     if (nextBossClass) {
         const classFuntions = PLAYER_CHARACTER_CLASSES_FUNCTIONS[nextBossClass];
         if (classFuntions && classFuntions.createBossBasedOnClassAndCharacter) {
-            return classFuntions.createBossBasedOnClassAndCharacter(nextEndBoss, level, spawn, game);
+            return classFuntions.createBossBasedOnClassAndCharacter(nextKing, level, spawn, game);
         }
     }
-    return createDefaultBossWithLevel(idCounter, level, spawn, nextEndBoss, game);
+    return createDefaultBossWithLevel(idCounter, level, spawn, nextKing, game);
 }
 
 export function tickBossCharacters(bossStuff: BossStuff, game: Game) {
@@ -79,7 +79,7 @@ export function paintBossCrown(ctx: CanvasRenderingContext2D, cameraPosition: Po
 }
 
 export function checkForBossSpawn(game: Game) {
-    if (game.state.bossStuff.endBossStarted) return;
+    if (game.state.bossStuff.kingFightStarted) return;
     const bossStuff = game.state.bossStuff;
     const nextBossSpawnTime = bossStuff.bossSpawnEachXMilliSecond * bossStuff.bossLevelCounter;
     if (getTimeSinceFirstKill(game.state) >= nextBossSpawnTime) {
@@ -97,7 +97,7 @@ export function setAbilityToEnemyLevel(ability: Ability, level: number, damageFa
     }
 }
 
-function findBossClassBasedOnEndBoss(boss: Character): string | undefined{
+function findBossClassBasedOnKing(boss: Character): string | undefined{
     if(boss.characterClasses){
         for(let bossClass of boss.characterClasses){
             if(!bossClass.gifted) return bossClass.className;
@@ -106,7 +106,7 @@ function findBossClassBasedOnEndBoss(boss: Character): string | undefined{
     return undefined;
 }
 
-function createDefaultBossWithLevel(idCounter: IdCounter, level: number, spawn: Position, nextEndBoss: Character, game: Game): Character {
+function createDefaultBossWithLevel(idCounter: IdCounter, level: number, spawn: Position, nextKing: Character, game: Game): Character {
     const bossSize = 60;
     const color = "black";
     const moveSpeed = Math.min(6, 1.5 + level * 0.5);
@@ -116,9 +116,9 @@ function createDefaultBossWithLevel(idCounter: IdCounter, level: number, spawn: 
     const bossCharacter = createCharacter(getNextId(idCounter), spawn.x, spawn.y, bossSize, bossSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_BOSS_ENEMY, experienceWorth);
     bossCharacter.paint.image = IMAGE_SLIME;
     bossCharacter.level = {level: level};
-    const abilities: Ability[] = createBossAbilities(level, nextEndBoss, game);
+    const abilities: Ability[] = createBossAbilities(level, nextKing, game);
     bossCharacter.abilities = abilities;
-    const pets: TamerPetCharacter[] | undefined = createBossPets(level, bossCharacter, nextEndBoss, game);
+    const pets: TamerPetCharacter[] | undefined = createBossPets(level, bossCharacter, nextKing, game);
     bossCharacter.pets = pets;
     return bossCharacter;
 }
@@ -148,10 +148,10 @@ function teleportBossToNearestPlayer(enemy: BossEnemyCharacter, game: Game) {
     setCharacterPosition(enemy, newPosition, game.state.map);
 }
 
-function createBossPets(level: number, boss: Character, nextEndBoss: Character, game: Game): TamerPetCharacter[] | undefined {
-    if (nextEndBoss?.pets) {
-        const random = Math.floor(nextRandom(game.state.randomSeed) * nextEndBoss.pets.length);
-        const pet: TamerPetCharacter = deepCopy(nextEndBoss.pets[random]);
+function createBossPets(level: number, boss: Character, nextKing: Character, game: Game): TamerPetCharacter[] | undefined {
+    if (nextKing?.pets) {
+        const random = Math.floor(nextRandom(game.state.randomSeed) * nextKing.pets.length);
+        const pet: TamerPetCharacter = deepCopy(nextKing.pets[random]);
         const leash: AbilityLeash | undefined = pet.abilities.find((a) => a.name === ABILITY_NAME_LEASH) as AbilityLeash;
         if (leash) {
             leash.leashedToOwnerId = boss.id;
@@ -161,10 +161,10 @@ function createBossPets(level: number, boss: Character, nextEndBoss: Character, 
     return undefined;
 }
 
-function createBossAbilities(level: number, nextEndBoss: Character, game: Game): Ability[] {
+function createBossAbilities(level: number, nextKing: Character, game: Game): Ability[] {
     const abilities: Ability[] = [];
     const possibleAbilities: Ability[] = [];
-    for (let ability of nextEndBoss!.abilities) {
+    for (let ability of nextKing!.abilities) {
         if (ABILITIES_FUNCTIONS[ability.name].canBeUsedByBosses) {
             possibleAbilities.push(ability);
         }
