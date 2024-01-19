@@ -43,7 +43,7 @@ function executeOptionPaintRangeUp(ability: Ability, option: AbilityUpgradeOptio
     } else {
         up = as.upgrades[ABILITY_PET_BREATH_UPGRADE_RANGE_UP];
     }
-    up.foodIntakeUp += 3;
+    up.foodIntakeUp += 1;
     up.rangeUp += 10;
     up.level++;
 }

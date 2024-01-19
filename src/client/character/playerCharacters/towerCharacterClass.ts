@@ -42,7 +42,7 @@ function changeCharacterToTowerBuilderClass(
         availableSkillPoints: 0,
     };
     character.characterClasses.push(charClass);
-    addAbilityToCharacter(character, createAbilityTower(idCounter, "ability1"));
+    addAbilityToCharacter(character, createAbilityTower(idCounter, "ability1"), charClass);
     addAbilityToCharacter(character, createAbilityHpRegen(idCounter), charClass);
 }
 

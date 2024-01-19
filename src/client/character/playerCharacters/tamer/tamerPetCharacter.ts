@@ -22,8 +22,8 @@ export type PetNoTargetBehavior = "stay" | "hyperactive" | "following";
 export type PetHappines = "unhappy" | "happy" | "hyperactive";
 export type PetHunger = "not hungry" | "hungry" | "ate too much";
 
-const MAX_HAPPINES = 150;
-const MAX_FOOD_INTAKE = 500;
+const MAX_HAPPINES = 140;
+const MAX_FOOD_INTAKE = 400;
 const MAX_OVERFED_SIZE = 5;
 const MIN_MOVEMENTSPEED_FACTOR = 0.1;
 
