@@ -216,27 +216,22 @@ export function classBuildingPutLegendaryCharacterStuffBackIntoBuilding(characte
 }
 
 function setBurrowedByKingIfHasLegendary(player: Player, game: Game) {
-    let legendaryClass: CharacterClass | undefined = undefined;
     if (player.character.characterClasses) {
         for (let charClass of player.character.characterClasses) {
             if (charClass.legendary) {
-                legendaryClass = charClass;
-                break;
+                let classBuilding = undefined;
+                for (let building of game.state.buildings) {
+                    if (building.characterClass && building.characterClass.id === charClass.id) {
+                        classBuilding = building;
+                        break;
+                    }
+                }
+                if (classBuilding && classBuilding.stuffBorrowed) {
+                    const celelstialDirection = getCelestialDirection(player.character);
+                    classBuilding.stuffBorrowed.by = `King of the ${celelstialDirection}`;
+                    localStorageSaveBuildings(game);
+                }
             }
-        }
-    }
-    if (legendaryClass) {
-        let classBuilding = undefined;
-        for (let building of game.state.buildings) {
-            if (building.characterClass && building.characterClass.id === legendaryClass.id) {
-                classBuilding = building;
-                break;
-            }
-        }
-        if (classBuilding && classBuilding.stuffBorrowed) {
-            const celelstialDirection = getCelestialDirection(player.character);
-            classBuilding.stuffBorrowed.by = `King of the ${celelstialDirection}`;
-            localStorageSaveBuildings(game);
         }
     }
 }
