@@ -45,7 +45,8 @@ GAME_IMAGES[IMAGE_BUILDING1] = {
 
 export function addMapObjectClassBuilding() {
     MAP_OBJECTS_FUNCTIONS[MAP_OBJECT_CLASS_BUILDING] = {
-        interact: interact,
+        interact1: interactBurrow,
+        interact2: interactDestroy,
         paint: paintClassBuilding,
         paintInteract: paintInteract,
     }
@@ -299,7 +300,17 @@ function findFreeBuilding(game: Game): Building | undefined {
     return game.state.buildings.find((b) => b.characterClass === undefined);
 }
 
-function interact(interacter: Character, mapObject: MapTileObject, game: Game) {
+function interactDestroy(interacter: Character, mapObject: MapTileObject, game: Game) {
+    const mapObjectClassBuilding = mapObject as MapTileObjectClassBuilding;
+    const classBuilding = findBuildingById(mapObjectClassBuilding.buildingId, game);
+    if (!classBuilding || classBuilding.characterClass === undefined || (classBuilding.stuffBorrowed && classBuilding.stuffBorrowed.burrowed)) return;
+    classBuilding.characterClass = undefined;
+    classBuilding.pets = [];
+    classBuilding.abilities = [];
+    classBuilding.stuffBorrowed = undefined;
+}
+
+function interactBurrow(interacter: Character, mapObject: MapTileObject, game: Game) {
     const mapObjectClassBuilding = mapObject as MapTileObjectClassBuilding;
     const classBuilding = findBuildingById(mapObjectClassBuilding.buildingId, game);
     if (!classBuilding || classBuilding.characterClass === undefined || !classBuilding.stuffBorrowed || classBuilding.stuffBorrowed.burrowed) return;
@@ -366,14 +377,16 @@ function paintInteract(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, 
     } else {
         texts.push(`Class building ${classBuilding.characterClass.className}:`);
         if (!classBuilding.stuffBorrowed!.burrowed) {
+            const interactDestroyKey = playerInputBindingToDisplayValue("interact2", game);
+            texts.push(`Press <${interactDestroyKey}> to destroy legendary.`);
             if (hasCharacterPreventedMultipleClass(classBuilding.characterClass.className, interacter)) {
                 const infoKey = playerInputBindingToDisplayValue("Info", game);
                 texts.push(`Press <${infoKey}> for details.`);
                 texts.push(`Can't burrow. Class can only be owned once.`);
             } else {
-                const interactKey = playerInputBindingToDisplayValue("interact", game);
+                const interactBurrowKey = playerInputBindingToDisplayValue("interact1", game);
                 const infoKey = playerInputBindingToDisplayValue("Info", game);
-                texts.push(`Press <${interactKey}> to burrow.`);
+                texts.push(`Press <${interactBurrowKey}> to burrow.`);
                 texts.push(`Press <${infoKey}> for details.`);
             }
             game.UI.paintClosesInteractableStatsUi = true;

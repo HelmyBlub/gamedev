@@ -7,7 +7,8 @@ import { addMapObjectFireAnimation } from "./mapObjectFireAnimation.js";
 import { addMapObjectKingSign } from "./mapObjectSign.js";
 
 export type MapObjectFunctions = {
-    interact?: (interacter: Character, mapObject: MapTileObject, game: Game) => void,
+    interact1?: (interacter: Character, mapObject: MapTileObject, game: Game) => void,
+    interact2?: (interacter: Character, mapObject: MapTileObject, game: Game) => void,
     paint: (ctx: CanvasRenderingContext2D, mapObject: MapTileObject, paintTopLeft: Position, game: Game) => void,
     paintInteract?: (ctx: CanvasRenderingContext2D, mapObject: MapTileObject, interacter: Character, game: Game) => void
 }
@@ -61,10 +62,16 @@ export function findMapKeyForMapObject(mapTileObject: MapTileObject, map: GameMa
     return undefined;
 }
 
-export function interactWithMapObject(interacter: Character, mapTileObject: MapTileObject, game: Game){
+export function interactWithMapObject(interacter: Character, mapTileObject: MapTileObject, specialAction: String, game: Game){
     const mapObjectFuntions = MAP_OBJECTS_FUNCTIONS[mapTileObject.name];
-    if (mapObjectFuntions && mapObjectFuntions.interact) {
-        mapObjectFuntions.interact(interacter, mapTileObject, game);
+    if(specialAction === "interact1"){
+        if (mapObjectFuntions && mapObjectFuntions.interact1) {
+            mapObjectFuntions.interact1(interacter, mapTileObject, game);
+        }
+    }else if(specialAction === "interact2"){
+        if (mapObjectFuntions && mapObjectFuntions.interact2) {
+            mapObjectFuntions.interact2(interacter, mapTileObject, game);
+        }
     }
 }
 

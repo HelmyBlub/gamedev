@@ -194,7 +194,7 @@ function paintPastPlayerTakeoverInfo(ctx: CanvasRenderingContext2D, pastCharacte
     textsWithKeys.push(`Past Character:`);
     if (canTrade) {
         if(!classAlreadyTaken){
-            const interactKey = playerInputBindingToDisplayValue("interact", game);
+            const interactKey = playerInputBindingToDisplayValue("interact1", game);
             const infoKey = playerInputBindingToDisplayValue("Info", game);
             textsWithKeys.push(`Takeover abilities with <${interactKey}>,`);
             textsWithKeys.push(`One time only.`);
@@ -229,7 +229,7 @@ function paintPastPlayerTakeoverInfo(ctx: CanvasRenderingContext2D, pastCharacte
             paintStatsFromAbilityAndPetsAndCharacterClass(ctx, pets, abilities, charClasses, game);
         }
     } else {
-        const interactKey = playerInputBindingToDisplayValue("interact", game);
+        const interactKey = playerInputBindingToDisplayValue("interact1", game);
         textsWithKeys.push(`Nothing to take.`);
         textsWithKeys.push(`Kick Out with <${interactKey}>.`);
         paintPos.y -= 20;

@@ -1,5 +1,6 @@
 current tasks:
-- check bug?: replay -> overtake -> past character from replay -> intended?
+- reset class building option?
+- play the game to check for bugs / problems
 - think about next bigger feature 
     - ideas
         - some easier permanent progression. like more baseHP, more baseSpeed gain for each run
