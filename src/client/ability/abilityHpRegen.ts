@@ -19,6 +19,7 @@ export function addAbilityHpRegen() {
         executeUpgradeOption: executeAbilityHpRegenUpgradeOption,
         createAbility: createAbilityHpRegen,
         paintAbilityStatsUI: paintAbilityHpRegenStatsUI,
+        resetAbility: reset,
     };
 }
 
@@ -35,6 +36,11 @@ export function createAbilityHpRegen(
         passive: true,
         upgrades: {},
     };
+}
+
+function reset(ability: Ability){
+    const abilityHpRegen = ability as AbilityHpRegen;
+    abilityHpRegen.nextIntervalTick = undefined;
 }
 
 function tickAbilityHpRegen(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
@@ -60,7 +66,7 @@ function createAbilityHpRegenUpgradeOptions(ability: Ability): UpgradeOptionAndP
         displayText: "Hp Regen +1",
         type: "Ability",
         identifier: "Hp Regen+1",
-        name: ability.name,
+        name: ability.name,        
     }
     upgradeOptions.push({
         option: option,

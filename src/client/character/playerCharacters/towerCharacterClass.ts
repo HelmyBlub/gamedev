@@ -7,7 +7,7 @@ import { FACTION_ENEMY, Game, IdCounter, Position } from "../../gameModel.js";
 import { resetCharacter } from "../character.js";
 import { Character, IMAGE_SLIME, createCharacter } from "../characterModel.js";
 import { CHARACTER_TYPE_BOSS_ENEMY } from "../enemy/bossEnemy.js";
-import { createCharacterUpgradeOptionsNew, executeLevelingCharacterUpgradeOption } from "./levelingCharacter.js";
+import { createCharacterUpgradeOptions, executeLevelingCharacterUpgradeOption } from "./levelingCharacter.js";
 import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters.js";
 
 export const PLAYER_CLASS_TOWER_BUILDER = "Tower Builder";
@@ -16,7 +16,7 @@ export function addTowerClass() {
     PLAYER_CHARACTER_CLASSES_FUNCTIONS[PLAYER_CLASS_TOWER_BUILDER] = {
         changeCharacterToThisClass: changeCharacterToTowerBuilderClass,
         createBossBasedOnClassAndCharacter: createBossBasedOnClassAndCharacter,
-        createUpgradeOptions: createCharacterUpgradeOptionsNew,
+        createUpgradeOptions: createCharacterUpgradeOptions,
         executeUpgradeOption: executeLevelingCharacterUpgradeOption,
         getLongUiText: getLongUiText,
         preventMultiple: true,
@@ -29,7 +29,7 @@ function changeCharacterToTowerBuilderClass(
     game: Game,
 ) {
     if(!character.characterClasses) character.characterClasses = [];
-    character.characterClasses.push({
+    const charClass = {
         id: getNextId(game.state.idCounter),
         className: PLAYER_CLASS_TOWER_BUILDER,
         level: {
@@ -40,9 +40,10 @@ function changeCharacterToTowerBuilderClass(
             }
         },
         availableSkillPoints: 0,
-    });
+    };
+    character.characterClasses.push(charClass);
     addAbilityToCharacter(character, createAbilityTower(idCounter, "ability1"));
-    addAbilityToCharacter(character, createAbilityHpRegen(idCounter));
+    addAbilityToCharacter(character, createAbilityHpRegen(idCounter), charClass);
 }
 
 function getLongUiText(): string[]{

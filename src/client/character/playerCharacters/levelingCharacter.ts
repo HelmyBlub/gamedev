@@ -85,7 +85,9 @@ export function executeLevelingCharacterUpgradeOption(character: Character, upgr
         }
     } else if (upgradeOption.type === "Ability") {
         const abilityUpgradeOption = upgradeOption as AbilityUpgradeOption;
-        const ability = character.abilities.find((a) => a.name === abilityUpgradeOption.name);
+        const ability = character.abilities.find((a) => a.name === abilityUpgradeOption.name
+            && (abilityUpgradeOption.classIdRef === undefined || abilityUpgradeOption.classIdRef === a.classIdRef)
+        );
         if (ability) {
             const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
             if (abilityFunctions && abilityFunctions.executeUpgradeOption) {
@@ -96,7 +98,7 @@ export function executeLevelingCharacterUpgradeOption(character: Character, upgr
     charClass.availableSkillPoints--;
 }
 
-export function createCharacterUpgradeOptionsNew(character: Character, characterClass: CharacterClass, game: Game): UpgradeOptionAndProbability[] {
+export function createCharacterUpgradeOptions(character: Character, characterClass: CharacterClass, game: Game): UpgradeOptionAndProbability[] {
     const upgradeOptions: UpgradeOptionAndProbability[] = [];
     if (characterClass.availableSkillPoints === undefined || characterClass.availableSkillPoints <= 0) return upgradeOptions;
     upgradeOptions.push(...CHARACTER_UPGRADE_FUNCTIONS[CHARACTER_UPGRADE_BONUS_HP].getOptions!(character, game));
