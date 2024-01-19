@@ -1,5 +1,4 @@
 current tasks:
-- reset class building option?
 - play the game to check for bugs / problems
 - think about next bigger feature 
     - ideas
