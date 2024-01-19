@@ -239,18 +239,21 @@ function paintPastPlayerTakeoverInfo(ctx: CanvasRenderingContext2D, pastCharacte
     paintTextLinesWithKeys(ctx, textsWithKeys, paintPos, 20, true, true);
 }
 
-export function paintStatsFromAbilityAndPetsAndCharacterClass(ctx: CanvasRenderingContext2D, pets: TamerPetCharacter[], abilities: Ability[], characterClasses: CharacterClass[], game: Game) {
-    let offsetX = 0;
+export function paintStatsFromAbilityAndPetsAndCharacterClass(ctx: CanvasRenderingContext2D, pets: TamerPetCharacter[] | undefined, abilities: Ability[], characterClasses: CharacterClass[] | undefined, game: Game, offsetX: number = 0) {
     const tooltipY = 60;
     const spacing = 5;
 
-    const area = paintCharacterClassStatsUI(ctx, characterClasses, 20 + offsetX, tooltipY, game);
-    offsetX += area.width + spacing;
+    if(characterClasses){
+        const area = paintCharacterClassStatsUI(ctx, characterClasses, 20 + offsetX, tooltipY, game);
+        offsetX += area.width + spacing;
+    }
 
-    for (let pet of pets) {
-        if (pet.tradable) {
-            const area = paintTamerPetCharacterStatsUI(ctx, pet, 20 + offsetX, tooltipY, game);
-            offsetX += area.width + spacing;
+    if(pets){
+        for (let pet of pets) {
+            if (pet.tradable) {
+                const area = paintTamerPetCharacterStatsUI(ctx, pet, 20 + offsetX, tooltipY, game);
+                offsetX += area.width + spacing;
+            }
         }
     }
     for (let ability of abilities) {

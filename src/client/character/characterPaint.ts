@@ -66,7 +66,7 @@ export function paintCharacterHpBar(ctx: CanvasRenderingContext2D, character: Ch
 export function paintCharacterStatsUI(ctx: CanvasRenderingContext2D, character: Character, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
     const textLines: string[] = [
         `Character Stats:`,
-        `HP: ${character.hp.toFixed(0)}/${character.maxHp.toFixed(0)}`,
+        `HP: ${Math.ceil(character.hp).toLocaleString()}/${Math.ceil(character.maxHp).toLocaleString()}`,
         `Movement Speed: ${character.moveSpeed.toFixed(2)}`,
         `Type: ${character.type}`,
     ];

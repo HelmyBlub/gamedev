@@ -112,7 +112,7 @@ function tickKingEnemyCharacter(enemy: KingEnemyCharacter, game: Game, pathingCa
     tickCharacterDebuffs(enemy, game);
 }
 
-function modifyCharacterToKing(boss: Character, game: Game) {
+export function modifyCharacterToKing(boss: Character, game: Game) {
     boss.type = CHARACTER_TYPE_KING_ENEMY;
     let newHp = KING_BASE_HP
     if(boss.characterClasses){

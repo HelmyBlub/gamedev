@@ -1,11 +1,12 @@
 import { resetCharacter } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
-import { paintCharacters } from "../character/characterPaint.js";
-import { CHARACTER_TYPE_KING_ENEMY } from "../character/enemy/kingEnemy.js";
+import { paintCharacterStatsUI, paintCharacters } from "../character/characterPaint.js";
+import { CHARACTER_TYPE_KING_ENEMY, modifyCharacterToKing } from "../character/enemy/kingEnemy.js";
 import { deepCopy, getCameraPosition } from "../game.js";
 import { CelestialDirection, Game, Position } from "../gameModel.js";
-import { getPointPaintPosition, paintTextWithOutline } from "../gamePaint.js";
+import { getPointPaintPosition, paintStatsFromAbilityAndPetsAndCharacterClass, paintTextLinesWithKeys, paintTextWithOutline } from "../gamePaint.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
+import { playerInputBindingToDisplayValue } from "../playerInput.js";
 import { mapKeyAndTileXYToPosition } from "./map.js";
 import { MAP_OBJECTS_FUNCTIONS, MapTileObject, findMapKeyForMapObject } from "./mapObjects.js";
 
@@ -37,10 +38,12 @@ function paintInteractSign(ctx: CanvasRenderingContext2D, mapObject: MapTileObje
     const cameraPosition = getCameraPosition(game);
     const topMiddlePos = mapKeyAndTileXYToPosition(key, mapObject.x, mapObject.y, map);
     const fontSize = 20;
+    const infoKey = playerInputBindingToDisplayValue("Info", game);
     const texts = [
         `King of the ${kingSign.kingDirection}`,
-        `Distance = ${map.kingArea!.numberChunksUntil * map.chunkLength * map.tileSize}`
-    ]
+        `Distance = ${map.kingArea!.numberChunksUntil * map.chunkLength * map.tileSize}`,
+        `Press <${infoKey}> for details.`,
+]
     const king = game.state.bossStuff.nextKings[kingSign.kingDirection];
     let textMaxWidth = king!.width;
     const rectHeight = fontSize * texts.length + 2 + king!.height + 60;
@@ -58,15 +61,13 @@ function paintInteractSign(ctx: CanvasRenderingContext2D, mapObject: MapTileObje
     ctx.globalAlpha = 1;
     ctx.font = `${fontSize}px Arial`;
     ctx.fillStyle = "black";
-    for (let text of texts) {
-        paintPos.y += fontSize;
-        topMiddlePos.y += fontSize;
-        paintTextWithOutline(ctx, "white", "black", text, paintPos.x, paintPos.y, true);
-    }
+    paintTextLinesWithKeys(ctx, texts, paintPos);
+    topMiddlePos.y += (fontSize + 10) * texts.length;
 
     if (king) {
         const kingCopy: Character = deepCopy(king);
-        topMiddlePos.y += king!.height / 2 + 20;
+        modifyCharacterToKing(kingCopy, game);
+        topMiddlePos.y += kingCopy!.height / 2 + 20;
         kingCopy.x = topMiddlePos.x;
         kingCopy.y = topMiddlePos.y;
         kingCopy.moveDirection = Math.PI / 2;
@@ -82,6 +83,11 @@ function paintInteractSign(ctx: CanvasRenderingContext2D, mapObject: MapTileObje
             }
         }
         paintCharacters(ctx, [kingCopy], cameraPosition, game);
+        if (game.UI.displayLongInfos){
+            game.UI.paintClosesInteractableStatsUi = true;
+            const area = paintCharacterStatsUI(ctx, kingCopy, 20, 60, game);
+            paintStatsFromAbilityAndPetsAndCharacterClass(ctx, kingCopy.pets, kingCopy.abilities, undefined, game, area.width + 5);
+        }
     }
 }
 

@@ -1,5 +1,4 @@
 current tasks:
-- feature: visualize king stats when neart king sign and "tab" for more info pressed
 - check bug?: replay -> overtake -> past character from replay -> intended?
 - think about next bigger feature 
     - ideas
