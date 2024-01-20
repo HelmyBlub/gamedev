@@ -10,7 +10,7 @@ import { PlayerInput } from "../playerInput.js";
 import { createProjectile, Projectile } from "../ability/projectile.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
 import { detectAbilityObjectCircleToCharacterHit } from "../ability/ability.js";
-import { loadNextKings, loadPastCharacters } from "../permanentData.js";
+import { loadBuildings, loadNextKings, loadPastCharacters } from "../permanentData.js";
 
 let testData: (PlayerInput | Omit<CommandRestart, "executeTime">)[] = [];
 
@@ -36,6 +36,8 @@ function testPlayerClasses(game: Game) {
     replay.testInputFileQueue.push("/data/testInputLongBall.json");
     replay.testInputFileQueue.push("/data/testInputLongSniper.json");
     replay.testInputFileQueue.push("/data/testInputLongBuilder.json");
+    replay.testInputFileQueue.push("/data/testReplayLongAll.json");
+    
     replay.frameSkipAmount = 60;
     replay.zeroTimeout = true;
 
@@ -79,6 +81,11 @@ export function setPastCharactersAndKingsForReplayFromReplayData(game: Game) {
         loadPastCharacters(replay.data.permanentData.pastCharacters, game);
     } else {
         game.state.pastPlayerCharacters.characters = [];
+    }
+    if (replay.data?.permanentData.buildings) {
+        loadBuildings(replay.data.permanentData.buildings, game);
+    } else {
+        game.state.buildings = [];
     }
 }
 

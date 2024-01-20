@@ -60,7 +60,7 @@ export function loadNextKings(nextKings: NextKings, game: Game) {
     }
 }
 
-function loadBuildings(buildings: Building[], game: Game) {
+export function loadBuildings(buildings: Building[], game: Game) {
     game.state.buildings = buildings;
     for (let building of buildings) {
         changeBuildingIds(building, game.state.idCounter, game);
