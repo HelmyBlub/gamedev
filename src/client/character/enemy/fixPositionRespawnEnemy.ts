@@ -41,7 +41,9 @@ export function tickFixPositionRespawnEnemyCharacter(character: Character, game:
             } else {
                 const spawnDistance = calculateDistance(enemy, enemy.spawnPosition);
                 enemy.isAggroed = false;
-                if (spawnDistance > game.state.map.tileSize / 2) {
+                const notCloseEnough = spawnDistance > game.state.map.tileSize / 2;
+                const preventToFarAwayPathfinding = spawnDistance > 800;
+                if (notCloseEnough && !preventToFarAwayPathfinding) {
                     calculateAndSetMoveDirectionToPositionWithPathing(enemy, enemy.spawnPosition, game.state.map, pathingCache, game.state.idCounter, game.state.time, game);
                 } else {
                     enemy.nextTickTime = game.state.time + closest.minDistance;

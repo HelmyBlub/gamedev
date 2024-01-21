@@ -1,5 +1,4 @@
 current tasks:
-- improve perforamnce: run back of enemies only on short distances
 - problem: to many abilties no longer visible with "tab"/info key. Improve it
 - test counter for maximum damage number on screen
 - king tower builder with too many slow towers hard to see
