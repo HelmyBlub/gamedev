@@ -228,12 +228,16 @@ export function paintTamerPetCharacterStatsUI(ctx: CanvasRenderingContext2D, pet
         if(pet.bossSkillPoints) textLines.push(`SkillPointCap: ${pet.bossSkillPoints.used}/${pet.legendary.skillPointCap}`);
     }
 
+    let levelLimitText = "";
+    if(pet.legendary){
+        levelLimitText = `/${pet.legendary.levelCap}`;
+    }
     textLines.push(
         `Color: ${pet.paint.color}`,
         `food: ${petFoodIntakeToDisplayText(pet.foodIntakeLevel)}`,
         `Happiness: ${petHappinessToDisplayText(pet.happines)}`,
         `Movement Speed: ${pet.moveSpeed.toFixed(2)}`,
-        `Level: ${pet.level!.level.toFixed(0)}`,
+        `Level: ${pet.level!.level.toFixed(0)}${levelLimitText}`,
         `XP: ${pet.level!.leveling!.experience.toFixed(0)}/${pet.level!.leveling!.experienceForLevelUp.toFixed(0)}`,
     );
 
