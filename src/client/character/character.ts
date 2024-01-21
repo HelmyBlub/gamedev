@@ -93,9 +93,9 @@ export function playerCharactersAddBossSkillPoints(bossLevel: number | undefined
         if (!character.isDead && !character.isPet) {
             let gotSkillPoint = false;
             if (character.bossSkillPoints !== undefined) {
-                if (character.bossSkillPoints.used < bossLevel) {
+                if (character.bossSkillPoints.used + character.bossSkillPoints.available < bossLevel) {
                     const legendaryAbilitySkillPointCapReached = character.legendary && character.legendary.skillPointCap <= character.bossSkillPoints.used + character.bossSkillPoints.available;
-                    if(!legendaryAbilitySkillPointCapReached){
+                    if (!legendaryAbilitySkillPointCapReached) {
                         character.bossSkillPoints.available++;
                         gotSkillPoint = true;
                     }
@@ -104,9 +104,9 @@ export function playerCharactersAddBossSkillPoints(bossLevel: number | undefined
             for (let ability of character.abilities) {
                 if (ability.gifted) continue;
                 if (ability.bossSkillPoints !== undefined) {
-                    if (ability.bossSkillPoints.used < bossLevel) {
+                    if (ability.bossSkillPoints.used + ability.bossSkillPoints.available < bossLevel) {
                         const legendaryAbilitySkillPointCapReached = ability.legendary && ability.legendary.skillPointCap <= ability.bossSkillPoints.used + ability.bossSkillPoints.available;
-                        if(legendaryAbilitySkillPointCapReached){
+                        if (legendaryAbilitySkillPointCapReached) {
                             continue;
                         }
                         ability.bossSkillPoints.available++;
@@ -118,9 +118,9 @@ export function playerCharactersAddBossSkillPoints(bossLevel: number | undefined
                 for (let pet of character.pets) {
                     if (pet.gifted) continue;
                     if (pet.bossSkillPoints !== undefined) {
-                        if (pet.bossSkillPoints.used < bossLevel) {
+                        if (pet.bossSkillPoints.used + pet.bossSkillPoints.available < bossLevel) {
                             const legendaryAbilitySkillPointCapReached = pet.legendary && pet.legendary.skillPointCap <= pet.bossSkillPoints.used + pet.bossSkillPoints.available;
-                            if(!legendaryAbilitySkillPointCapReached){
+                            if (!legendaryAbilitySkillPointCapReached) {
                                 pet.bossSkillPoints.available++;
                                 gotSkillPoint = true;
                             }
@@ -128,9 +128,9 @@ export function playerCharactersAddBossSkillPoints(bossLevel: number | undefined
                     }
                     for (let ability of pet.abilities) {
                         if (ability.bossSkillPoints !== undefined) {
-                            if (ability.bossSkillPoints.used < bossLevel) {
+                            if (ability.bossSkillPoints.used + ability.bossSkillPoints.available< bossLevel) {
                                 const legendaryAbilitySkillPointCapReached = ability.legendary && ability.legendary.skillPointCap <= ability.bossSkillPoints.used + ability.bossSkillPoints.available;
-                                if(legendaryAbilitySkillPointCapReached){
+                                if (legendaryAbilitySkillPointCapReached) {
                                     continue;
                                 }
                                 ability.bossSkillPoints.available++;
@@ -140,9 +140,7 @@ export function playerCharactersAddBossSkillPoints(bossLevel: number | undefined
                     }
                 }
             }
-            if (gotSkillPoint && character.upgradeChoices.length === 0) {
-                fillRandomUpgradeOptionChoices(character, game);
-            }
+            fillRandomUpgradeOptionChoices(character, game);
         }
     }
 }
