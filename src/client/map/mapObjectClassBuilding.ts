@@ -1,4 +1,4 @@
-import { ABILITIES_FUNCTIONS, Ability, paintDefaultAbilityStatsUI } from "../ability/ability.js";
+import { ABILITIES_FUNCTIONS, Ability } from "../ability/ability.js";
 import { characterAddExistingCharacterClass, resetCharacter } from "../character/character.js";
 import { Character, createCharacter } from "../character/characterModel.js";
 import { CharacterClass, PLAYER_CHARACTER_CLASSES_FUNCTIONS, hasCharacterPreventedMultipleClass } from "../character/playerCharacters/playerCharacters.js";

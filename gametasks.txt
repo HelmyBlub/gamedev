@@ -1,7 +1,7 @@
 current tasks:
-- bug: class building burrowed text destoryed by replay
 - bug: pet not teleporting into king area
 - bug: not spending boss skill point on legendary and defeating 2 level 1 bosses gives second skill point
+- improve perforamnce: run back of enemies only on short distances
 - problem: to many abilties no longer visible with "tab"/info key. Improve it
 - change tamer: pets should teleport back instead of getting lost.
     - if pets sad, should run towards player

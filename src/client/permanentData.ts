@@ -24,20 +24,20 @@ export function localStorageLoad(game: Game) {
 }
 
 export function localStorageSaveNextKings(game: Game) {
-    if (!game.multiplayer.disableLocalStorage) {
+    if (!game.multiplayer.disableLocalStorage && !game.testing.replay) {
         localStorage.setItem(LOCALSTORAGE_NEXTKINGS, JSON.stringify(game.state.bossStuff.nextKings));
         localStorageSaveBuildings(game);
     }
 }
 
 export function localStorageSavePastCharacters(game: Game) {
-    if (!game.multiplayer.disableLocalStorage) {
+    if (!game.multiplayer.disableLocalStorage && !game.testing.replay) {
         localStorage.setItem(LOCALSTORAGE_PASTCHARACTERS, JSON.stringify(game.state.pastPlayerCharacters));
     }
 }
 
 export function localStorageSaveBuildings(game: Game) {
-    if (!game.multiplayer.disableLocalStorage) {
+    if (!game.multiplayer.disableLocalStorage && !game.testing.replay) {
         localStorage.setItem(LOCALSTORAGE_BUILDINGS, JSON.stringify(game.state.buildings));
     }
 }

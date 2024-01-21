@@ -5,7 +5,7 @@ import { Game, IdCounter, Position } from "../gameModel.js";
 import { fixedRandom } from "../randomNumberGenerator.js";
 import { GameMap, MapChunk, chunkXYToMapKey } from "./map.js";
 import { mapGenerationKingChunkStuff } from "./mapKingArea.js";
-import { addExistingBuildingsToSpawnChunk, mapObjectPlaceClassBuilding } from "./mapObjectClassBuilding.js";
+import { addExistingBuildingsToSpawnChunk } from "./mapObjectClassBuilding.js";
 import { MAP_OBJECT_FIRE_ANIMATION } from "./mapObjectFireAnimation.js";
 
 export const pastCharactersMapTilePositions = [
