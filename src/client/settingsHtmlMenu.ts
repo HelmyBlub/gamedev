@@ -12,6 +12,7 @@ export function addHTMLDebugMenusToSettings(game: Game) {
     addSettingCheckbox("paintTileXYNumbers", game);
     addSettingCheckbox("paintMarkActiveChunks", game);
     addSettingCheckbox("activateSaveStates", game);
+    addSettingCheckbox("disableDamageNumbers", game);
     addSettingCheckbox("lowBossHp", game);
     addBossSkillPointButton(game);
     addCloseBossAreaButton(game);

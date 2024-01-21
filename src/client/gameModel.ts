@@ -91,6 +91,7 @@ export type Debugging = {
     takeTimeMeasures?: boolean,
     activateSaveStates?: boolean,
     lowBossHp?: boolean,
+    disableDamageNumbers?: boolean,
     timeMeasuresData?: { name: string, timeMeasures: number[], tempTime: number }[],
 }
 
@@ -231,7 +232,6 @@ export type Game = {
     UI: {
         displayMovementKeyHint: boolean,
         movementKeyPressed: boolean,
-        displayDamageNumbers: boolean,
         displayTextData: PaintTextData[],
         displayLongInfos: boolean,
         playerGlobalAlphaMultiplier: number,
@@ -336,7 +336,6 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
         UI: {
             displayMovementKeyHint: false,
             movementKeyPressed: false,
-            displayDamageNumbers: true,
             displayTextData: [],
             displayLongInfos: false,
             playerGlobalAlphaMultiplier: 1,
