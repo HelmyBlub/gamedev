@@ -240,7 +240,11 @@ function getRandomStartPaintPositionTriangle(pet: TamerPetCharacter, game: Game)
 }
 
 function tickTriangle(pet: TamerPetCharacter, abilityPetPainter: AbilityPetPainter, game: Game) {
-    const targetPos = pet.forcedMovePosition!;
+    if(!pet.forcedMovePosition){
+        abilityPetPainter.currentlyPainting = undefined;
+        return;
+    }
+    const targetPos = pet.forcedMovePosition;
     const distance = calculateDistance(pet, targetPos);
     let nextPosition: Position;
     if (distance < pet.moveSpeed) {

@@ -6,7 +6,7 @@ import { getPointPaintPosition } from "../../gamePaint.js";
 import { calculateBounceAngle, calculateMovePosition, isPositionBlocking } from "../../map/map.js";
 import { RandomSeed, nextRandom } from "../../randomNumberGenerator.js";
 import { AbilityObject, AbilityObjectCircle, AbilityOwner, PaintOrderAbility, detectAbilityObjectCircleToCharacterHit } from "../ability.js";
-import { ABILITY_NAME_PET_PAINTER, ABILITY_PET_PAINTER_SHAPES_FUNCTIONS, AbilityObjectPetPainter, AbilityPetPainter, createShapeAbilityPetPainter } from "./abilityPetPainter.js";
+import { ABILITY_NAME_PET_PAINTER, ABILITY_PET_PAINTER_SHAPES_FUNCTIONS, AbilityObjectPetPainter, AbilityPetPainter, abilityPetPainterTeleportIfOwnerUnreachableOrToFarAway, createShapeAbilityPetPainter } from "./abilityPetPainter.js";
 import { ABILITY_PET_PAINTER_UPGRADE_FACTORY, AbilityPetPainterUpgradeFactory } from "./abilityPetPainterUpgradeFactory.js";
 import { AbilityPetPainterUpgradeSplit } from "./abilityPetPainterUpgradeSplit.js";
 
@@ -190,7 +190,7 @@ function paintShapeCircle(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOw
 }
 
 function getRandomStartPaintPositionCircle(pet: TamerPetCharacter, game: Game): Position | undefined{
-    const petOwner: Character = findPetOwner(pet, game)!;
+    const petOwner: Character | undefined = findPetOwner(pet, game);
     if(!petOwner) return undefined;
     let blocking = true;
     let position = { x: 0, y: 0 };
@@ -207,7 +207,11 @@ function getRandomStartPaintPositionCircle(pet: TamerPetCharacter, game: Game): 
 }
 
 function tickCircle(pet: TamerPetCharacter, abilityPetPainter: AbilityPetPainter, game: Game) {
-    const targetPos = pet.forcedMovePosition!;
+    if(!pet.forcedMovePosition){
+        abilityPetPainter.currentlyPainting = undefined;
+        return;
+    }
+    const targetPos = pet.forcedMovePosition;
     const distance = calculateDistance(pet, targetPos);
     if (distance < pet.moveSpeed) {
         abilityPetPainter.paintCircle!.currentAngle += Math.PI / 10;

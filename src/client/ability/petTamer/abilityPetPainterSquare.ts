@@ -244,7 +244,11 @@ function getRandomStartPaintPositionSquare(pet: TamerPetCharacter, game: Game): 
 }
 
 function tickSquare(pet: TamerPetCharacter, abilityPetPainter: AbilityPetPainter, game: Game) {
-    const targetPos = pet.forcedMovePosition!;
+    if(!pet.forcedMovePosition){
+        abilityPetPainter.currentlyPainting = undefined;
+        return;
+    }
+    const targetPos = pet.forcedMovePosition;
     const distance = calculateDistance(pet, targetPos);
     if (distance < pet.moveSpeed) {
         switch (abilityPetPainter.paintPoints!.length) {

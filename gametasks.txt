@@ -1,11 +1,7 @@
 current tasks:
-- bug: pet not teleporting into king area
 - bug: not spending boss skill point on legendary and defeating 2 level 1 bosses gives second skill point
 - improve perforamnce: run back of enemies only on short distances
 - problem: to many abilties no longer visible with "tab"/info key. Improve it
-- change tamer: pets should teleport back instead of getting lost.
-    - if pets sad, should run towards player
-    - reduce care amount required
 - test counter for maximum damage number on screen
 - king tower builder with too many slow towers hard to see
 - play the game to check for bugs / problems

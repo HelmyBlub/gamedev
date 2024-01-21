@@ -18,7 +18,7 @@ import { TAMER_PET_TRAIT_NEVER_GETS_FAT } from "./petTraitNeverGetsFat.js";
 import { TAMER_PET_TRAIT_VERY_HUNGRY } from "./petTraitVeryHungry.js";
 
 export type PetTargetBehavior = "passive" | "aggressive" | "protective";
-export type PetNoTargetBehavior = "stay" | "hyperactive" | "following";
+export type PetNoTargetBehavior = "stayClose" | "hyperactive" | "following";
 export type PetHappines = "unhappy" | "happy" | "hyperactive";
 export type PetHunger = "not hungry" | "hungry" | "ate too much";
 
@@ -285,7 +285,7 @@ export function changeTamerPetHappines(pet: TamerPetCharacter, value: number, ti
     if (pet.happines.current > MAX_HAPPINES) pet.happines.current = MAX_HAPPINES;
     if (pet.happines.current < pet.happines.unhappyAt) {
         pet.petTargetBehavior = "passive";
-        pet.petNoTargetBehavior = "stay";
+        pet.petNoTargetBehavior = "stayClose";
     } else if (pet.happines.current > pet.happines.hyperactiveAt) {
         pet.petTargetBehavior = "aggressive";
         pet.petNoTargetBehavior = "hyperactive";
@@ -380,7 +380,11 @@ function foodIntakeLevelTick(pet: TamerPetCharacter, game: Game) {
     if (intakeLevel.nextTick === undefined || intakeLevel.nextTick <= game.state.time) {
         intakeLevel.nextTick = game.state.time + intakeLevel.tickInterval;
         let tickChange = -1;
-        if (tamerPetIncludesTrait(TAMER_PET_TRAIT_VERY_HUNGRY, pet)) tickChange = -5;
+        if (tamerPetIncludesTrait(TAMER_PET_TRAIT_VERY_HUNGRY, pet)){
+            if(petFoodIntakeToDisplayText(pet.foodIntakeLevel) === "ate too much"){
+                tickChange = -3;
+            }
+        } 
 
         if (intakeLevel.current > 0) tamerPetFeed(pet, tickChange, game.state.time);
     }
@@ -419,11 +423,16 @@ function reset(character: Character) {
 function moveTick(pet: TamerPetCharacter, petOwner: Character, game: Game, pathingCache: PathingCache) {
     if (pet.forcedMovePosition) {
         if (pet.happines.current < pet.happines.unhappyAt) {
-            pet.isMoving = false;
+            pet.forcedMovePosition = undefined;
         } else {
             pet.isMoving = true;
-            const direction = calculateDirection(pet, pet.forcedMovePosition);
-            pet.moveDirection = direction;
+            let waypoint = getNextWaypoint(pet, pet.forcedMovePosition, game.state.map, game.performance.pathingCache, game.state.idCounter, game.state.time, game);
+            if(waypoint){
+                const direction = calculateDirection(pet, waypoint);
+                pet.moveDirection = direction;
+            }else{
+                pet.forcedMovePosition = undefined;
+            }
         }
     } else {
         const target = getTargetByBehavior(pet, petOwner, game);
@@ -461,8 +470,28 @@ function setMovePositonWithPetCollision(pet: TamerPetCharacter, petOwner: Charac
 
 function setMoveDirectionWithNoTarget(pet: TamerPetCharacter, petOwner: Character, game: Game) {
     switch (pet.petNoTargetBehavior) {
-        case "stay":
-            pet.isMoving = false;
+        case "stayClose":
+            if (pet.nextMovementUpdateTime === undefined || pet.nextMovementUpdateTime <= game.state.time) {
+                const distance = calculateDistance(pet, petOwner);
+                if (30 > distance) {
+                    pet.isMoving = false;
+                } else {
+                    pet.isMoving = true;
+                    if(distance > 800){
+                        setCharacterPosition(pet, petOwner, game.state.map);
+                    }else{
+                        const nextWayPoint: Position | null = getNextWaypoint(pet, petOwner, game.state.map, game.performance.pathingCache, game.state.idCounter, game.state.time, game);
+                        const canPetReachOwner = nextWayPoint !== null;
+                        if (!canPetReachOwner) {
+                            setCharacterPosition(pet, petOwner, game.state.map);
+                        }else{
+                            const direction = calculateDirection(pet, nextWayPoint);
+                            pet.moveDirection = direction;
+                        }
+                    }           
+                }
+                pet.nextMovementUpdateTime = game.state.time + 500;
+            }
             break;
         case "following":
             if (pet.nextMovementUpdateTime === undefined || pet.nextMovementUpdateTime <= game.state.time) {
