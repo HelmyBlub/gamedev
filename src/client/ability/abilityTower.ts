@@ -546,9 +546,9 @@ function createAbilityTowerUpgradeOptionsNew(ability: Ability): UpgradeOptionAnd
     const abilityTower = ability as AbilityTower;
     const upgradeOptions: UpgradeOptionAndProbability[] = [];
     const option: AbilityUpgradeOption = {
-        displayText: "Line Damage+50",
+        displayText: "Line Damage+250",
         type: "Ability",
-        identifier: "Line Damage+50",
+        identifier: "Line Damage+250",
         name: ability.name,
     }
     upgradeOptions.push({
@@ -556,34 +556,30 @@ function createAbilityTowerUpgradeOptionsNew(ability: Ability): UpgradeOptionAnd
         probability: 1,
     });
 
-    for (let i = 0; i < abilityTower.availableAbilityKeys.length; i++) {
-        const abilityOption: AbilityUpgradeOption = {
-            displayText: `Tower ${abilityTower.availableAbilityKeys[i]}+`,
-            identifier: abilityTower.availableAbilityKeys[i],
-            type: "Ability",
-            name: ability.name,
-        }
-        upgradeOptions.push({
-            option: abilityOption,
-            probability: 1,
-        });
+    const abilityOption: AbilityUpgradeOption = {
+        displayText: `+5 Max Towers`,
+        identifier: `+5 Max Towers`,
+        type: "Ability",
+        name: ability.name,
     }
+    upgradeOptions.push({
+        option: abilityOption,
+        probability: 5,
+    });
 
     return upgradeOptions;
 }
 
 function executeAbilityTowerUpgradeOption(ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game) {
     const abilityTower = ability as AbilityTower;
-    if (upgradeOption.identifier === "Line Damage+50") {
-        abilityTower.damage += 50;
+    if (upgradeOption.identifier === "Line Damage+250") {
+        abilityTower.damage += 250;
         return;
     }
-    for (let i = 0; i < abilityTower.availableAbilityKeys.length; i++) {
-        const key = abilityTower.availableAbilityKeys[i];
-        if (key === upgradeOption.identifier) {
-            const addIndex = (abilityTower.currentAbilityIndex + 1) % abilityTower.orderOfAbilities.length;
-            abilityTower.orderOfAbilities.splice(addIndex, 0, i);
-            return;
+    if(upgradeOption.identifier === "+5 Max Towers"){
+        for (let i = 0; i < abilityTower.availableAbilityKeys.length; i++) {
+            abilityTower.orderOfAbilities.push(i);
         }
+        return;
     }
 }

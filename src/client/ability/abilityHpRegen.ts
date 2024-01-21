@@ -63,9 +63,9 @@ function tickAbilityHpRegen(abilityOwner: AbilityOwner, ability: Ability, game: 
 function createAbilityHpRegenUpgradeOptions(ability: Ability): UpgradeOptionAndProbability[] {
     const upgradeOptions: UpgradeOptionAndProbability[] = [];
     const option: AbilityUpgradeOption = {
-        displayText: "Hp Regen +1",
+        displayText: "Hp Regen +5",
         type: "Ability",
-        identifier: "Hp Regen+1",
+        identifier: "Hp Regen +5",
         name: ability.name,        
     }
     upgradeOptions.push({
@@ -77,8 +77,8 @@ function createAbilityHpRegenUpgradeOptions(ability: Ability): UpgradeOptionAndP
 
 function executeAbilityHpRegenUpgradeOption(ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game) {
     const abilityHpRegen = ability as AbilityHpRegen;
-    if (upgradeOption.identifier === "Hp Regen+1") {
-        abilityHpRegen.amount += 1;
+    if (upgradeOption.identifier === "Hp Regen +5") {
+        abilityHpRegen.amount += 5;
         return;
     }
 }

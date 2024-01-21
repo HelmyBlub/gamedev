@@ -1,6 +1,5 @@
 current tasks:
 - problem: to many abilties no longer visible with "tab"/info key. Improve it
-- king tower builder with too many slow towers hard to see
 - play the game to check for bugs / problems
 - think about next bigger feature 
     - ideas

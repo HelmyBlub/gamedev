@@ -69,7 +69,9 @@ function levelingCharacterLevelUp(character: Character, game: Game) {
 function levelingClassLevelUp(character: Character, charClass: CharacterClass, game: Game) {
     if (!charClass.level?.leveling || charClass.availableSkillPoints === undefined) return;
     charClass.level.level++;
-    charClass.availableSkillPoints += 1;
+    if(charClass.level.level % 5 === 0){
+        charClass.availableSkillPoints += 1;
+    }
     charClass.level.leveling.experience -= charClass.level.leveling.experienceForLevelUp;
     charClass.level.leveling.experienceForLevelUp += Math.floor(charClass.level.level / 2);
     fillRandomUpgradeOptionChoices(character, game);

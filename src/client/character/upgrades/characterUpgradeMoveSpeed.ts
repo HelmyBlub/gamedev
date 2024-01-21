@@ -10,7 +10,7 @@ type CharacterUpgradeBonusMoveSpeed = CharacterUpgrade & {
 }
 
 export const CHARACTER_UPGRADE_BONUS_MOVE_SPEED = "Bonus Move Speed";
-const BONUS_MOVE_SPEED_PER_LEVEL = 0.2;
+const BONUS_MOVE_SPEED_PER_LEVEL = 1.0;
 
 export function addCharacterUpgradeBonusMoveSpeed() {
     CHARACTER_UPGRADE_FUNCTIONS[CHARACTER_UPGRADE_BONUS_MOVE_SPEED] = {

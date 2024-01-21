@@ -10,7 +10,7 @@ type CharacterUpgradeBonusHP = CharacterUpgrade & {
 }
 
 export const CHARACTER_UPGRADE_BONUS_HP = "Bonus HP";
-const BONUS_HP_PER_LEVEL = 50;
+const BONUS_HP_PER_LEVEL = 200;
 
 export function addCharacterUpgradeBonusHp() {
     CHARACTER_UPGRADE_FUNCTIONS[CHARACTER_UPGRADE_BONUS_HP] = {
