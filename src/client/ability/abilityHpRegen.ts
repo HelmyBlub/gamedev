@@ -2,7 +2,8 @@ import { Character } from "../character/characterModel.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../character/upgrade.js";
 import { getNextId } from "../game.js";
 import { Game, IdCounter } from "../gameModel.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, paintDefaultAbilityStatsUI } from "./ability.js";
+import { StatsUI, createStatsUI } from "../statsUIPaint.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityOwner } from "./ability.js";
 
 type AbilityHpRegen = Ability & {
     amount: number,
@@ -18,7 +19,7 @@ export function addAbilityHpRegen() {
         createAbilityUpgradeOptions: createAbilityHpRegenUpgradeOptions,
         executeUpgradeOption: executeAbilityHpRegenUpgradeOption,
         createAbility: createAbilityHpRegen,
-        paintAbilityStatsUI: paintAbilityHpRegenStatsUI,
+        createAbilityStatsUI: createAbilityHpRegenStatsUI,
         resetAbility: reset,
     };
 }
@@ -38,7 +39,7 @@ export function createAbilityHpRegen(
     };
 }
 
-function reset(ability: Ability){
+function reset(ability: Ability) {
     const abilityHpRegen = ability as AbilityHpRegen;
     abilityHpRegen.nextIntervalTick = undefined;
 }
@@ -66,7 +67,7 @@ function createAbilityHpRegenUpgradeOptions(ability: Ability): UpgradeOptionAndP
         displayText: "Hp Regen +5",
         type: "Ability",
         identifier: "Hp Regen +5",
-        name: ability.name,        
+        name: ability.name,
     }
     upgradeOptions.push({
         option: option,
@@ -83,7 +84,7 @@ function executeAbilityHpRegenUpgradeOption(ability: Ability, character: Charact
     }
 }
 
-function paintAbilityHpRegenStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
+function createAbilityHpRegenStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, game: Game): StatsUI {
     const abilityHpRegen = ability as AbilityHpRegen;
     const textLines: string[] = [
         `Ability: ${abilityHpRegen.name}`,
@@ -91,5 +92,5 @@ function paintAbilityHpRegenStatsUI(ctx: CanvasRenderingContext2D, ability: Abil
         `Hp Tick Interval: ${(abilityHpRegen.tickInterval / 1000).toFixed(2)}s`,
         `Hp Tick Amount: ${abilityHpRegen.amount}`,
     ];
-    return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
+    return createStatsUI(ctx, textLines);
 }

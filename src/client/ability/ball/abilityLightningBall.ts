@@ -9,7 +9,8 @@ import { getPointPaintPosition } from "../../gamePaint.js";
 import { calculateMovePosition, getFirstBlockingGameMapTilePositionTouchingLine, isMoveFromToBlocking, isPositionBlocking } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { fixedRandom } from "../../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, detectSomethingToCharacterHit, getAbilityNameUiText, paintDefaultAbilityStatsUI } from "../ability.js";
+import { StatsUI, createStatsUI } from "../../statsUIPaint.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, detectSomethingToCharacterHit, getAbilityNameUiText } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
 import { addAbilityLightningBallUpgradeBounceBonus, lightningBallUpgradeBounceBonusGetBonusDamageFactor, lightningBallUpgradeBounceBonusSetBonusDamageFactor } from "./abilityLightningBallUpgradeBounceBonus.js";
 import { addAbilityLightningBallUpgradeHpLeach, lightningBallUpgradeHpLeachExecute } from "./abilityLightningBallUpgradeHpLeach.js";
@@ -43,7 +44,7 @@ export function addAbilityLightningBall() {
         executeUpgradeOption: executeAbilityUpgradeOption,
         paintAbility: paintAbility,
         paintAbilityUI: paintAbilityUI,
-        paintAbilityStatsUI: paintAbilityStatsUI,
+        createAbilityStatsUI: createAbilityStatsUI,
         paintAbilityAccessoire: paintAbilityAccessoire,
         resetAbility: resetAbility,
         setAbilityToLevel: setAbilityToLevel,
@@ -90,7 +91,7 @@ export function getDamageAbilityLightningBall(abilityLightningBall: AbilityLight
     return abilityLightningBall.damage * damageFactor;
 }
 
-function paintAbilityAccessoire(ctx: CanvasRenderingContext2D, ability: Ability, paintPosition: Position, game: Game){
+function paintAbilityAccessoire(ctx: CanvasRenderingContext2D, ability: Ability, paintPosition: Position, game: Game) {
     const abilityBall = ability as AbilityLightningBall;
     paintLightningBall(ctx, paintPosition, FACTION_PLAYER, 10, game);
 }
@@ -202,7 +203,7 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
     const abilityBall = ability as AbilityLightningBall;
     const ballBuff = findBallBuff(abilityOwner, abilityBall);
     if (typeof ballBuff !== "object") {
-        if(!ballBuff){
+        if (!ballBuff) {
             const paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
             paintLightningBall(ctx, paintPos, abilityOwner.faction, 10, game);
         }
@@ -232,18 +233,18 @@ function paintLightningBall(ctx: CanvasRenderingContext2D, paintPos: Position, f
     const reps = 6;
     for (let i = 0; i < reps; i++) {
         ctx.moveTo(paintPos.x, paintPos.y);
-        let direction = ((i/reps*6) + game.state.time)%(Math.PI*2);
-        let paintPos2 = calcNewPositionMovedInDirection(paintPos, direction, radius/2);
+        let direction = ((i / reps * 6) + game.state.time) % (Math.PI * 2);
+        let paintPos2 = calcNewPositionMovedInDirection(paintPos, direction, radius / 2);
         ctx.lineTo(paintPos2.x, paintPos2.y);
         let random = 0.1 + fixedRandom(paintPos.x, paintPos.y, game.state.time);
-        let paintPos3 = calcNewPositionMovedInDirection(paintPos2, direction + random, radius/2);
+        let paintPos3 = calcNewPositionMovedInDirection(paintPos2, direction + random, radius / 2);
         let random2 = 0.1 + fixedRandom(paintPos2.x, paintPos2.y, game.state.time);
-        let paintPos4 = calcNewPositionMovedInDirection(paintPos2, direction - random2, radius/2);
+        let paintPos4 = calcNewPositionMovedInDirection(paintPos2, direction - random2, radius / 2);
         ctx.lineTo(paintPos3.x, paintPos3.y);
         ctx.moveTo(paintPos2.x, paintPos2.y);
         ctx.lineTo(paintPos4.x, paintPos4.y);
     }
-    ctx.stroke();    
+    ctx.stroke();
 }
 
 function delayedPaint(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, abilityBall: AbilityLightningBall, cameraPosition: Position, game: Game) {
@@ -324,7 +325,7 @@ function rechargeTick(abilityLightningBall: AbilityLightningBall, game: Game) {
     }
 }
 
-function paintAbilityStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
+function createAbilityStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, game: Game): StatsUI {
     const abilityLightningBall = ability as AbilityLightningBall;
     const textLines: string[] = getAbilityNameUiText(ability);
     textLines.push(
@@ -339,6 +340,6 @@ function paintAbilityStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, dr
     );
     pushAbilityUpgradesUiTexts(ABILITY_LIGHTNING_BALL_UPGRADE_FUNCTIONS, textLines, ability);
 
-    return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
+    return createStatsUI(ctx, textLines);
 }
 

@@ -2,7 +2,8 @@ import { TamerPetCharacter } from "../../character/playerCharacters/tamer/tamerP
 import { calculateDistance, getNextId } from "../../game.js";
 import { IdCounter, Position, Game } from "../../gameModel.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, getAbilityNameUiText, paintDefaultAbilityStatsUI } from "../ability.js";
+import { StatsUI, createStatsUI } from "../../statsUIPaint.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, getAbilityNameUiText } from "../ability.js";
 import { ABILITY_NAME_LEASH, AbilityLeash } from "../abilityLeash.js";
 
 export type AbilityUnleashPet = Ability & {
@@ -18,7 +19,7 @@ export function addAbilityUnleashPet() {
         activeAbilityCast: castFeedPet,
         createAbility: createAbilityUnleashPet,
         paintAbilityUI: paintAbilityUI,
-        paintAbilityStatsUI: paintAbilityStatsUI,
+        createAbilityStatsUI: createAbilityStatsUI,
         resetAbility: resetAbility,
     };
 }
@@ -95,13 +96,13 @@ function castFeedPet(abilityOwner: AbilityOwner, ability: Ability, castPosition:
         if (closestPet) {
             abilityFeedPet.nextRechargeTime = game.state.time + abilityFeedPet.baseRechargeTime;
             const petLeash: AbilityLeash = closestPet.abilities.find((a) => a.name === ABILITY_NAME_LEASH) as AbilityLeash;
-            if(!petLeash) return;
+            if (!petLeash) return;
             petLeash.leashedToOwnerId = petLeash.leashedToOwnerId ? undefined : abilityOwner.id;
         }
     }
 }
 
-function paintAbilityStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
+function createAbilityStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, game: Game): StatsUI {
     const leash = ability as AbilityUnleashPet;
     const textLines: string[] = getAbilityNameUiText(ability);
     textLines.push(
@@ -109,5 +110,5 @@ function paintAbilityStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, dr
         "Leash or unleash targeted pet.",
         `Range: ${leash.range}`,
     );
-    return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
+    return createStatsUI(ctx, textLines);
 }

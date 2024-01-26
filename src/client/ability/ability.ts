@@ -36,6 +36,7 @@ import { playerInputBindingToDisplayValue } from "../playerInput.js"
 import { addAbilityUnleashPet } from "./petTamer/abilityUnleashPet.js"
 import { Leveling } from "../character/playerCharacters/levelingCharacter.js"
 import { CharacterClass } from "../character/playerCharacters/playerCharacters.js"
+import { StatsUI, paintStatsUis } from "../statsUIPaint.js"
 
 export type Ability = {
     id: number,
@@ -78,13 +79,13 @@ export type AbilityFunctions = {
     createAbility: (idCounter: IdCounter, playerInputBinding?: string) => Ability,
     createAbilityUpgradeOptions?: (ability: Ability) => UpgradeOptionAndProbability[],
     createAbilityBossUpgradeOptions?: (ability: Ability, character: Character, game: Game) => UpgradeOptionAndProbability[],
+    createAbilityStatsUI?: (ctx: CanvasRenderingContext2D, ability: Ability, game: Game) => StatsUI,
     deleteAbilityObject?: (abilityObject: AbilityObject, game: Game) => boolean,
     executeUpgradeOption?: (ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game) => void,
     getLongDescription?: () => string[],
     paintAbility?: (ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) => void,
     paintAbilityObject?: (ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) => void,
     paintAbilityUI?: (ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) => void,
-    paintAbilityStatsUI?: (ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, game: Game) => { width: number, height: number },
     paintAbilityAccessoire?: (ctx: CanvasRenderingContext2D, ability: Ability, paintPosition: Position, game: Game) => void,
     onHit?: (ability: Ability, targetCharacter: Character, game: Game) => void,
     onObjectHit?: (abilityObject: AbilityObject, targetCharacter: Character, game: Game) => void,
@@ -300,24 +301,6 @@ export function resetAllCharacterAbilities(character: Character) {
     }
 }
 
-export function paintDefaultAbilityStatsUI(ctx: CanvasRenderingContext2D, textLines: string[], drawStartX: number, drawStartY: number): { width: number, height: number } {
-    const fontSize = 14;
-    ctx.font = fontSize + "px Arial";
-    let width = 0;
-    for (let text of textLines) {
-        let currentWidth = ctx.measureText(text).width + 4;
-        if (currentWidth > width) width = currentWidth;
-    }
-    const height = textLines.length * fontSize + 6;
-    ctx.fillStyle = "white";
-    ctx.fillRect(drawStartX, drawStartY, width, height);
-    ctx.fillStyle = "black";
-    for (let i = 0; i < textLines.length; i++) {
-        ctx.fillText(textLines[i], drawStartX + 2, drawStartY + fontSize * (i + 1) + 2);
-    }
-    return { width, height };
-}
-
 export function getAbilityNameUiText(ability: Ability): string[] {
     const text: string[] = [`Ability: ${ability.name}`];
     if (ability.gifted) {
@@ -416,6 +399,17 @@ export function detectSomethingToCharacterHit(
     return hitCount;
 }
 
+export function createStatsUisAbilities(ctx: CanvasRenderingContext2D, abilities: Ability[], game: Game): StatsUI[] {
+    const result: StatsUI[] = [];
+    for (let ability of abilities) {
+        const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+        if (abilityFunctions.createAbilityStatsUI) {
+            result.push(abilityFunctions.createAbilityStatsUI(ctx, ability, game));
+        }
+    }
+    return result;
+}
+
 export function paintUiForAbilities(ctx: CanvasRenderingContext2D, game: Game) {
     if (game.camera.characterId === undefined) return;
     const player = findPlayerByCharacterId(game.state.players, game.camera.characterId);
@@ -454,8 +448,9 @@ function paintAbilityStatsUiIfMouseHovered(ctx: CanvasRenderingContext2D, abilit
         && mousePos.x > startX && mousePos.x < startX + size
     ) {
         const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-        if (abilityFunctions.paintAbilityStatsUI) {
-            abilityFunctions.paintAbilityStatsUI(ctx, ability, 20, 60, game);
+        if (abilityFunctions.createAbilityStatsUI) {
+            const statUI = abilityFunctions.createAbilityStatsUI(ctx, ability, game);
+            paintStatsUis(ctx, [statUI]);
         }
     }
 }

@@ -1,4 +1,4 @@
-import { ABILITIES_FUNCTIONS, paintDefaultAbilityStatsUI } from "../../../ability/ability.js";
+import { ABILITIES_FUNCTIONS } from "../../../ability/ability.js";
 import { ABILITY_NAME_LEASH, AbilityLeash } from "../../../ability/abilityLeash.js";
 import { calculateDirection, calculateDistance, getNextId } from "../../../game.js";
 import { FACTION_PLAYER, Game, Position } from "../../../gameModel.js";
@@ -6,6 +6,7 @@ import { getPointPaintPosition } from "../../../gamePaint.js";
 import { GAME_IMAGES, getImage } from "../../../imageLoad.js";
 import { moveByDirectionAndDistance } from "../../../map/map.js";
 import { nextRandom } from "../../../randomNumberGenerator.js";
+import { StatsUI, createStatsUI } from "../../../statsUIPaint.js";
 import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, calculateCharacterMovePosition, getPlayerCharacters, setCharacterPosition } from "../../character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, createCharacter } from "../../characterModel.js";
 import { PathingCache, getNextWaypoint } from "../../pathing.js";
@@ -121,10 +122,10 @@ export function createTamerPetCharacter(owner: Character, color: string, game: G
         defaultSize: defaultSize,
         sizeFactor: 1,
         baseMoveSpeed: baseMoveSpeed,
-        bossSkillPoints: {available: 0, used: 0},
+        bossSkillPoints: { available: 0, used: 0 },
         level: {
             level: 0,
-            leveling:{
+            leveling: {
                 experience: 0,
                 experienceForLevelUp: 10,
             }
@@ -217,19 +218,30 @@ export function petFoodIntakeToDisplayText(foodIntakeLevel: FoodIntakeLevel): Pe
         return "not hungry";
     }
 }
-export function paintTamerPetCharacterStatsUI(ctx: CanvasRenderingContext2D, pet: TamerPetCharacter, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
+
+export function createTamerPetsCharacterStatsUI(ctx: CanvasRenderingContext2D, pets: TamerPetCharacter[] | undefined): StatsUI[] {
+    const result: StatsUI[] = [];
+    if (pets) {
+        for (let pet of pets) {
+            result.push(createTamerPetCharacterStatsUI(ctx, pet));
+        }
+    }
+    return result;
+}
+
+export function createTamerPetCharacterStatsUI(ctx: CanvasRenderingContext2D, pet: TamerPetCharacter): StatsUI {
     const textLines: string[] = [`Pet Stats:`];
     if (pet.gifted) {
         textLines[0] += " (gifted)"
         textLines.push("gifted pets don't get stronger");
     }
-    if(pet.legendary){
+    if (pet.legendary) {
         textLines.push(`Legendary: Pet levels and upgrades are permanent`);
-        if(pet.bossSkillPoints) textLines.push(`SkillPointCap: ${pet.bossSkillPoints.used}/${pet.legendary.skillPointCap}`);
+        if (pet.bossSkillPoints) textLines.push(`SkillPointCap: ${pet.bossSkillPoints.used}/${pet.legendary.skillPointCap}`);
     }
 
     let levelLimitText = "";
-    if(pet.legendary){
+    if (pet.legendary) {
         levelLimitText = `/${pet.legendary.levelCap}`;
     }
     textLines.push(
@@ -266,7 +278,7 @@ export function paintTamerPetCharacterStatsUI(ctx: CanvasRenderingContext2D, pet
         }
     }
 
-    return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
+    return createStatsUI(ctx, textLines);
 }
 
 export function changeTamerPetHappines(pet: TamerPetCharacter, value: number, time: number, visualizeChange: boolean) {
@@ -380,11 +392,11 @@ function foodIntakeLevelTick(pet: TamerPetCharacter, game: Game) {
     if (intakeLevel.nextTick === undefined || intakeLevel.nextTick <= game.state.time) {
         intakeLevel.nextTick = game.state.time + intakeLevel.tickInterval;
         let tickChange = -1;
-        if (tamerPetIncludesTrait(TAMER_PET_TRAIT_VERY_HUNGRY, pet)){
-            if(petFoodIntakeToDisplayText(pet.foodIntakeLevel) === "ate too much"){
+        if (tamerPetIncludesTrait(TAMER_PET_TRAIT_VERY_HUNGRY, pet)) {
+            if (petFoodIntakeToDisplayText(pet.foodIntakeLevel) === "ate too much") {
                 tickChange = -3;
             }
-        } 
+        }
 
         if (intakeLevel.current > 0) tamerPetFeed(pet, tickChange, game.state.time);
     }
@@ -427,10 +439,10 @@ function moveTick(pet: TamerPetCharacter, petOwner: Character, game: Game, pathi
         } else {
             pet.isMoving = true;
             let waypoint = getNextWaypoint(pet, pet.forcedMovePosition, game.state.map, game.performance.pathingCache, game.state.idCounter, game.state.time, game);
-            if(waypoint){
+            if (waypoint) {
                 const direction = calculateDirection(pet, waypoint);
                 pet.moveDirection = direction;
-            }else{
+            } else {
                 pet.forcedMovePosition = undefined;
             }
         }
@@ -439,8 +451,8 @@ function moveTick(pet: TamerPetCharacter, petOwner: Character, game: Game, pathi
         let changed = false;
         if (target) {
             changed = calculateAndSetMoveDirectionToPositionWithPathing(pet, target, game.state.map, pathingCache, game.state.idCounter, game.state.time, game);
-        } 
-        if(!changed) {
+        }
+        if (!changed) {
             setMoveDirectionWithNoTarget(pet, petOwner, game);
         }
     }
@@ -477,18 +489,18 @@ function setMoveDirectionWithNoTarget(pet: TamerPetCharacter, petOwner: Characte
                     pet.isMoving = false;
                 } else {
                     pet.isMoving = true;
-                    if(distance > 800){
+                    if (distance > 800) {
                         setCharacterPosition(pet, petOwner, game.state.map);
-                    }else{
+                    } else {
                         const nextWayPoint: Position | null = getNextWaypoint(pet, petOwner, game.state.map, game.performance.pathingCache, game.state.idCounter, game.state.time, game);
                         const canPetReachOwner = nextWayPoint !== null;
                         if (!canPetReachOwner) {
                             setCharacterPosition(pet, petOwner, game.state.map);
-                        }else{
+                        } else {
                             const direction = calculateDirection(pet, nextWayPoint);
                             pet.moveDirection = direction;
                         }
-                    }           
+                    }
                 }
                 pet.nextMovementUpdateTime = game.state.time + 500;
             }
@@ -505,11 +517,11 @@ function setMoveDirectionWithNoTarget(pet: TamerPetCharacter, petOwner: Characte
                     const canPetReachOwner = nextWayPoint !== null;
                     if (!canPetReachOwner) {
                         setCharacterPosition(pet, petOwner, game.state.map);
-                    }else{
+                    } else {
                         const direction = calculateDirection(pet, nextWayPoint);
                         pet.moveDirection = direction + (nextRandom(game.state.randomSeed) * Math.PI / 2 - Math.PI / 4);
                     }
-                                    
+
                 }
                 pet.nextMovementUpdateTime = game.state.time + 500;
             }

@@ -6,7 +6,8 @@ import { applyDebuff } from "../../debuff/debuff.js";
 import { getNextId } from "../../game.js";
 import { Game, IdCounter, Position } from "../../gameModel.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, getAbilityNameUiText, paintDefaultAbilityStatsUI } from "../ability.js";
+import { StatsUI, createStatsUI } from "../../statsUIPaint.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, getAbilityNameUiText } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
 import { ABILITY_SPEED_BOOST_UPGRADE_ADD_CHARGE, AbilitySpeedBoostUpgradeAddCharge, addAbilitySpeedBoostUpgradeAddCharge, tickAbilitySpeedBoostUpgradeAddCharge } from "./abilitySpeedBoostUpgradeAddCharge.js";
 import { addAbilitySpeedBoostUpgradeDuration } from "./abilitySpeedBoostUpgradeDuration.js";
@@ -29,9 +30,9 @@ export function addAbilitySpeedBoost() {
         activeAbilityCast: castSpeedBoost,
         createAbility: createAbilitySpeedBoost,
         createAbilityBossUpgradeOptions: createAbilityBossSpeedBoostUpgradeOptions,
+        createAbilityStatsUI: createAbilitySpeedBoostStatsUI,
         executeUpgradeOption: executeAbilitySpeedBoostUpgradeOption,
         paintAbilityUI: paintAbilitySpeedBoostUI,
-        paintAbilityStatsUI: paintAbilitySpeedBoostStatsUI,
         resetAbility: resetAbility,
         setAbilityToLevel: setAbilitySpeedBoostToLevel,
         tickAbility: tickAbilitySpeedBoost,
@@ -130,7 +131,7 @@ function paintAbilitySpeedBoostUI(ctx: CanvasRenderingContext2D, ability: Abilit
     }
 }
 
-function paintAbilitySpeedBoostStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
+function createAbilitySpeedBoostStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, game: Game): StatsUI {
     const abilitySpeedBoost = ability as AbilitySpeedBoost;
     const textLines: string[] = getAbilityNameUiText(ability);
     textLines.push(
@@ -142,7 +143,7 @@ function paintAbilitySpeedBoostStatsUI(ctx: CanvasRenderingContext2D, ability: A
     );
     pushAbilityUpgradesUiTexts(ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS, textLines, ability);
 
-    return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
+    return createStatsUI(ctx, textLines);
 }
 
 function setAbilitySpeedBoostToLevel(ability: Ability, level: number) {

@@ -6,7 +6,7 @@ import { Position, Game, IdCounter, ClientInfo, FACTION_ENEMY } from "../../game
 import { GAME_IMAGES } from "../../imageLoad.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, findAbilityById } from "../ability.js";
 import { AbilityUpgrade, AbilityUpgradesFunctions, getAbilityUpgradeOptionDefault, getAbilityUpgradesDamageFactor, pushAbilityUpgradesOptions, upgradeAbility } from "../abilityUpgrade.js";
-import { paintAbilityObjectSnipe, paintAbilitySnipe, paintAbilitySnipeAccessoire, paintAbilitySnipeStatsUI, paintAbilitySnipeUI } from "./abilitySnipePaint.js";
+import { paintAbilityObjectSnipe, paintAbilitySnipe, paintAbilitySnipeAccessoire, createAbilitySnipeStatsUI, paintAbilitySnipeUI } from "./abilitySnipePaint.js";
 import { addAbilitySnipeUpgradeAfterImage, castSnipeAfterImage, tickAbilityUpgradeAfterImage } from "./abilitySnipeUpgradeAfterImage.js";
 import { addAbilitySnipeUpgradeBackwardsShot, castSnipeBackwardsShot } from "./abilitySnipeUpgradeBackwardsShot.js";
 import { abilityUpgradeNoMissChainOnObjectSnipeDamageDone, addAbilitySnipeUpgradeNoMissChain } from "./abilitySnipeUpgradeChainHit.js";
@@ -69,12 +69,12 @@ export function addAbilitySnipe() {
         activeAbilityCast: castSnipe,
         createAbility: createAbilitySnipe,
         createAbilityBossUpgradeOptions: createAbilityBossSnipeUpgradeOptions,
+        createAbilityStatsUI: createAbilitySnipeStatsUI,
         deleteAbilityObject: deleteAbilityObjectSnipe,
         executeUpgradeOption: executeAbilitySnipeUpgradeOption,
         paintAbilityObject: paintAbilityObjectSnipe,
         paintAbilityUI: paintAbilitySnipeUI,
         paintAbility: paintAbilitySnipe,
-        paintAbilityStatsUI: paintAbilitySnipeStatsUI,
         paintAbilityAccessoire: paintAbilitySnipeAccessoire,
         resetAbility: resetAbility,
         setAbilityToLevel: setAbilitySnipeToLevel,
@@ -205,7 +205,7 @@ export function createAbilityObjectSnipe(
 
 export function getAbilitySnipeDamage(abilitySnipe: AbilitySnipe | undefined, baseDamage: number, playerTriggered: boolean, bounceCounter: number = 0) {
     let damage = baseDamage;
-    if(abilitySnipe){
+    if (abilitySnipe) {
         damage *= getAbilityUpgradesDamageFactor(ABILITY_SNIPE_UPGRADE_FUNCTIONS, abilitySnipe, playerTriggered);
         damage *= getAbilityUpgradeTerrainBounceDamageFactor(abilitySnipe, bounceCounter);
     }
@@ -253,7 +253,7 @@ export function getOptionsSnipeUpgrade(ability: Ability, upgradeName: string): U
     options[0].option.displayLongText = upgradeFunctions.getLongExplainText!(ability, options[0].option as AbilityUpgradeOption);
 
     if (upgrade && !upgrade.upgradeSynergy) {
-        if(upgradeFunctions.addSynergyUpgradeOption && upgradeFunctions.addSynergyUpgradeOption(ability)){
+        if (upgradeFunctions.addSynergyUpgradeOption && upgradeFunctions.addSynergyUpgradeOption(ability)) {
             options.push(getAbilityUpgradeOptionSynergy(ability.name, upgradeName, upgrade.level));
             options[1].option.displayLongText = upgradeFunctions.getLongExplainText!(ability, options[1].option as AbilityUpgradeOption);
         }
@@ -309,9 +309,9 @@ export function getAbilitySnipeShotFrequency(abilitySnipe: AbilitySnipe) {
     return Math.max(abilitySnipe.maxShootFrequency / abilitySnipe.shotFrequencyTimeDecreaseFaktor, abilitySnipe.minimumShotFrequency);
 }
 
-export function abilitySnipeReload(abilitySnipe: AbilitySnipe, time: number){
-    if(abilitySnipe.currentCharges === 0 && abilitySnipe.reloadTime > time) return;
-    if(abilitySnipe.currentCharges === abilitySnipe.maxCharges) return;
+export function abilitySnipeReload(abilitySnipe: AbilitySnipe, time: number) {
+    if (abilitySnipe.currentCharges === 0 && abilitySnipe.reloadTime > time) return;
+    if (abilitySnipe.currentCharges === abilitySnipe.maxCharges) return;
     abilitySnipe.currentCharges = 0;
     abilitySnipe.reloadTime = time + abilitySnipe.baseRechargeTime;
 }
@@ -453,7 +453,7 @@ function tickAbilitySnipe(abilityOwner: AbilityOwner, ability: Ability, game: Ga
     }
     tickAbilityUpgradeMoreRifles(abilitySnipe, abilityOwner, game);
     tickAbilityUpgradeAfterImage(abilitySnipe, abilityOwner, game);
-    if(abilityOwner.faction === FACTION_ENEMY){
+    if (abilityOwner.faction === FACTION_ENEMY) {
         abilitySnipe.shotNextAllowedTime = false;
     }
 }

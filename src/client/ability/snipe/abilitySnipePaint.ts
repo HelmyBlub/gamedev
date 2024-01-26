@@ -3,7 +3,8 @@ import { FACTION_ENEMY, FACTION_PLAYER, Game, Position } from "../../gameModel.j
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { GAME_IMAGES, loadImage } from "../../imageLoad.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
-import { Ability, AbilityObject, AbilityOwner, PaintOrderAbility, getAbilityNameUiText, paintDefaultAbilityStatsUI } from "../ability.js";
+import { StatsUI, createStatsUI } from "../../statsUIPaint.js";
+import { Ability, AbilityObject, AbilityOwner, PaintOrderAbility, getAbilityNameUiText } from "../ability.js";
 import { pushAbilityUpgradesUiTexts } from "../abilityUpgrade.js";
 import { ABILITY_NAME_SNIPE, ABILITY_SNIPE_PAINT_FADE_DURATION, ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe, getAbilitySnipeRange, getAbilitySnipeShotFrequency, getSniperRiflePosition } from "./abilitySnipe.js";
 import { paintVisualizationAfterImage } from "./abilitySnipeUpgradeAfterImage.js";
@@ -48,7 +49,7 @@ export function paintAbilitySnipe(ctx: CanvasRenderingContext2D, abilityOwner: A
     paintVisualizationAfterImage(ctx, abilityOwner, abilitySnipe, cameraPosition, game);
 }
 
-export function paintAbilitySnipeAccessoire(ctx: CanvasRenderingContext2D, ability: Ability, paintPosition: Position, game: Game){
+export function paintAbilitySnipeAccessoire(ctx: CanvasRenderingContext2D, ability: Ability, paintPosition: Position, game: Game) {
     const abilitySnipe = ability as AbilitySnipe;
     paintSniperRifle(ctx, abilitySnipe, paintPosition.x, paintPosition.y, Math.PI, 0, true, game);
 }
@@ -113,7 +114,7 @@ export function paintAbilitySnipeUI(ctx: CanvasRenderingContext2D, ability: Abil
     }
 }
 
-export function paintAbilitySnipeStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
+export function createAbilitySnipeStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, game: Game): StatsUI {
     const abilitySnipe = ability as AbilitySnipe;
     const textLines: string[] = getAbilityNameUiText(ability);
     textLines.push(
@@ -143,5 +144,5 @@ export function paintAbilitySnipeStatsUI(ctx: CanvasRenderingContext2D, ability:
 
     pushAbilityUpgradesUiTexts(ABILITY_SNIPE_UPGRADE_FUNCTIONS, textLines, ability);
 
-    return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
+    return createStatsUI(ctx, textLines);
 }

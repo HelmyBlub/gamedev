@@ -37,7 +37,7 @@ function testPlayerClasses(game: Game) {
     replay.testInputFileQueue.push("/data/testInputLongSniper.json");
     replay.testInputFileQueue.push("/data/testInputLongBuilder.json");
     replay.testInputFileQueue.push("/data/testReplayLongAll.json");
-    
+
     replay.frameSkipAmount = 60;
     replay.zeroTimeout = true;
 
@@ -64,6 +64,7 @@ export function replayNextInReplayQueue(game: Game): boolean {
     } else {
         handleCommand(game, { command: "restart", clientId: game.multiplayer.myClientId, testing: true });
     }
+    console.log(`started replay: ${nextInputFile}`);
     return true;
 }
 

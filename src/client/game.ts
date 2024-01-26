@@ -1,6 +1,6 @@
 import { changeCharacterId, countAlivePlayerCharacters, findAndSetNewCameraCharacterId, findCharacterById, findMyCharacter, getPlayerCharacters, resetCharacter, tickCharacters, tickMapCharacters } from "./character/character.js";
 import { paintAll } from "./gamePaint.js";
-import { createDefaultKeyBindings1, createDefaultUiKeyBindings, findPlayerByCharacterId, gameInitPlayers, isAutoSkillActive } from "./player.js";
+import { createDefaultKeyBindings1, createDefaultUiKeyBindings, findNearesPastPlayerCharacter, findPlayerByCharacterId, gameInitPlayers, isAutoSkillActive } from "./player.js";
 import { MOUSE_ACTION, UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.js";
 import { Position, GameState, Game, IdCounter, Debugging, PaintTextData, ClientInfo } from "./gameModel.js";
 import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap } from "./map/map.js";
@@ -24,6 +24,7 @@ import { consoleLogCombatlog } from "./combatlog.js";
 import { classBuildingCheckAllPlayerForLegendaryAbilitiesAndMoveBackToBuilding, mapObjectPlaceClassBuilding } from "./map/mapObjectClassBuilding.js";
 import { hasPlayerChoosenStartClassUpgrade } from "./character/playerCharacters/playerCharacters.js";
 import { localStorageLoad, localStorageSavePastCharacters } from "./permanentData.js";
+import { MapTileObject, findNearesInteractableMapChunkObject } from "./map/mapObjects.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -431,6 +432,27 @@ export function autoSendMousePositionHandler(ownerId: number, identifier: string
     }
     if (castPosition) clientInfo.lastMousePosition = castPosition;
 }
+
+export function findClosestInteractable(game: Game): { pastCharacter?: Character, mapObject?: MapTileObject } | undefined {
+    const character = findMyCharacter(game);
+    if (!character) return;
+    const pastCharacter = findNearesPastPlayerCharacter(character, game);
+    const interactableMapObject = findNearesInteractableMapChunkObject(character, game);
+    if (pastCharacter && interactableMapObject) {
+        const distancePastChar = calculateDistance(pastCharacter, character);
+        const distanceMapObject = calculateDistance(interactableMapObject, character);
+        if (distanceMapObject > distancePastChar) {
+            return { pastCharacter: pastCharacter };
+        } else {
+            return { mapObject: interactableMapObject };
+        }
+    } else if (pastCharacter) {
+        return { pastCharacter: pastCharacter };
+    } else if (interactableMapObject) {
+        return { mapObject: interactableMapObject };
+    }
+}
+
 
 function resetPastCharacters(game: Game) {
     for (let character of game.state.pastPlayerCharacters.characters) {

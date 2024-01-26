@@ -1,12 +1,15 @@
+import { createStatsUisAbilities } from "../ability/ability.js";
 import { resetCharacter } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
-import { paintCharacterStatsUI, paintCharacters } from "../character/characterPaint.js";
+import { createCharacterStatsUI, paintCharacters } from "../character/characterPaint.js";
 import { CHARACTER_TYPE_KING_ENEMY, modifyCharacterToKing } from "../character/enemy/kingEnemy.js";
+import { createTamerPetsCharacterStatsUI } from "../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { deepCopy, getCameraPosition } from "../game.js";
 import { CelestialDirection, Game, Position } from "../gameModel.js";
-import { getPointPaintPosition, paintStatsFromAbilityAndPetsAndCharacterClass, paintTextLinesWithKeys, paintTextWithOutline } from "../gamePaint.js";
+import { getPointPaintPosition, paintTextLinesWithKeys } from "../gamePaint.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
 import { playerInputBindingToDisplayValue } from "../playerInput.js";
+import { StatsUI } from "../statsUIPaint.js";
 import { mapKeyAndTileXYToPosition } from "./map.js";
 import { MAP_OBJECTS_FUNCTIONS, MapTileObject, findMapKeyForMapObject } from "./mapObjects.js";
 
@@ -25,6 +28,7 @@ GAME_IMAGES[IMAGE_SIGN] = {
 
 export function addMapObjectKingSign() {
     MAP_OBJECTS_FUNCTIONS[MAP_OBJECT_KING_SIGN] = {
+        createStatsUi: createStatsUiKingSign,
         paint: paintKingSign,
         paintInteract: paintInteractSign,
     }
@@ -43,7 +47,7 @@ function paintInteractSign(ctx: CanvasRenderingContext2D, mapObject: MapTileObje
         `King of the ${kingSign.kingDirection}`,
         `Distance = ${map.kingArea!.numberChunksUntil * map.chunkLength * map.tileSize}`,
         `Press <${infoKey}> for details.`,
-]
+    ]
     const king = game.state.bossStuff.nextKings[kingSign.kingDirection];
     let textMaxWidth = king!.width;
     const rectHeight = fontSize * texts.length + 2 + king!.height + 60;
@@ -83,12 +87,23 @@ function paintInteractSign(ctx: CanvasRenderingContext2D, mapObject: MapTileObje
             }
         }
         paintCharacters(ctx, [kingCopy], cameraPosition, game);
-        if (game.UI.displayLongInfos){
-            game.UI.paintClosesInteractableStatsUi = true;
-            const area = paintCharacterStatsUI(ctx, kingCopy, 20, 60, game);
-            paintStatsFromAbilityAndPetsAndCharacterClass(ctx, kingCopy.pets, kingCopy.abilities, undefined, game, area.width + 5);
-        }
     }
+}
+
+function createStatsUiKingSign(mapObject: MapTileObject, game: Game): StatsUI[] {
+    const kingSign = mapObject as MapTileObjectNextKingSign;
+    const king = game.state.bossStuff.nextKings[kingSign.kingDirection];
+    if (!king || !game.ctx) return [];
+    const kingCopy: Character = deepCopy(king);
+    modifyCharacterToKing(kingCopy, game);
+    kingCopy.type = CHARACTER_TYPE_KING_ENEMY;
+    resetCharacter(kingCopy, game);
+
+    const result: StatsUI[] = [];
+    result.push(createCharacterStatsUI(game.ctx, kingCopy));
+    result.push(...createTamerPetsCharacterStatsUI(game.ctx, kingCopy.pets));
+    result.push(...createStatsUisAbilities(game.ctx, kingCopy.abilities, game));
+    return result;
 }
 
 function paintKingSign(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, paintTopLeft: Position, game: Game) {

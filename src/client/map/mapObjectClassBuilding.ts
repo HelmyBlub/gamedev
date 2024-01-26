@@ -1,20 +1,21 @@
-import { ABILITIES_FUNCTIONS, Ability } from "../ability/ability.js";
+import { ABILITIES_FUNCTIONS, Ability, createStatsUisAbilities } from "../ability/ability.js";
 import { characterAddExistingCharacterClass, resetCharacter } from "../character/character.js";
 import { Character, createCharacter } from "../character/characterModel.js";
 import { CharacterClass, PLAYER_CHARACTER_CLASSES_FUNCTIONS, hasCharacterPreventedMultipleClass } from "../character/playerCharacters/playerCharacters.js";
-import { TamerPetCharacter } from "../character/playerCharacters/tamer/tamerPetCharacter.js";
+import { TamerPetCharacter, createTamerPetsCharacterStatsUI } from "../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { deepCopy, getCameraPosition, getNextId } from "../game.js";
 import { CelestialDirection, FACTION_PLAYER, Game, Position } from "../gameModel.js";
-import { getPointPaintPosition, paintStatsFromAbilityAndPetsAndCharacterClass, paintTextLinesWithKeys, paintTextWithKeys, paintTextWithOutline } from "../gamePaint.js";
+import { getPointPaintPosition, paintTextLinesWithKeys } from "../gamePaint.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
 import { GameMap, MapChunk, chunkXYToMapKey, mapKeyAndTileXYToPosition } from "./map.js";
 import { MAP_OBJECTS_FUNCTIONS, MapTileObject, findMapKeyForMapObject } from "./mapObjects.js";
 import { localStorageSaveBuildings } from "../permanentData.js";
-import { paintCharacters } from "../character/characterPaint.js";
+import { createCharacterClassStatsUI, paintCharacters } from "../character/characterPaint.js";
 import { ABILITY_NAME_LEASH, AbilityLeash } from "../ability/abilityLeash.js";
 import { getCelestialDirection } from "../character/enemy/bossEnemy.js";
 import { Player } from "../player.js";
 import { playerInputBindingToDisplayValue } from "../playerInput.js";
+import { StatsUI } from "../statsUIPaint.js";
 
 export type MapTileObjectClassBuilding = MapTileObject & {
     buildingId: number,
@@ -45,6 +46,7 @@ GAME_IMAGES[IMAGE_BUILDING1] = {
 
 export function addMapObjectClassBuilding() {
     MAP_OBJECTS_FUNCTIONS[MAP_OBJECT_CLASS_BUILDING] = {
+        createStatsUi: createStatsUiClassBuilding,
         interact1: interactBurrow,
         interact2: interactDestroy,
         paint: paintClassBuilding,
@@ -396,12 +398,24 @@ function paintInteract(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, 
     }
     const paintPos = getPointPaintPosition(ctx, topMiddlePos, cameraPosition);
     paintTextLinesWithKeys(ctx, texts, paintPos, 20, true, true);
+}
 
-    if (classBuilding.characterClass && !classBuilding.stuffBorrowed?.burrowed
-        && game.UI.displayLongInfos
-    ) {
-        paintStatsFromAbilityAndPetsAndCharacterClass(ctx, classBuilding.pets, classBuilding.abilities, [classBuilding.characterClass], game);
+function createStatsUiClassBuilding(mapObject: MapTileObject, game: Game): StatsUI[] {
+    const mapObjectClassBuilding = mapObject as MapTileObjectClassBuilding;
+    const classBuilding = findBuildingById(mapObjectClassBuilding.buildingId, game);
+    if (!classBuilding) return [];
+
+    const statsUIs: StatsUI[] = [];
+    if (classBuilding.characterClass && !classBuilding.stuffBorrowed?.burrowed && game.ctx) {
+        if (classBuilding.characterClass) {
+            statsUIs.push(createCharacterClassStatsUI(game.ctx, [classBuilding.characterClass]));
+        }
+
+        statsUIs.push(...createTamerPetsCharacterStatsUI(game.ctx, classBuilding.pets));
+        statsUIs.push(...createStatsUisAbilities(game.ctx, classBuilding.abilities, game));
     }
+
+    return statsUIs;
 }
 
 function paintClassBuilding(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, paintTopLeft: Position, game: Game) {

@@ -1,8 +1,9 @@
-import { ABILITIES_FUNCTIONS, paintDefaultAbilityStatsUI } from "../ability/ability.js";
+import { ABILITIES_FUNCTIONS } from "../ability/ability.js";
 import { FACTION_PLAYER, Game, Position } from "../gameModel.js";
 import { getPointPaintPosition } from "../gamePaint.js";
 import { GAME_IMAGES, getImage, loadImage } from "../imageLoad.js";
 import { randomizedCharacterImageToKey } from "../randomizedCharacterImage.js";
+import { StatsUI, createStatsUI } from "../statsUIPaint.js";
 import { getPlayerCharacters } from "./character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_PLAYER_PARTS, IMAGE_SLIME } from "./characterModel.js";
 import { CharacterClass } from "./playerCharacters/playerCharacters.js";
@@ -43,47 +44,47 @@ export function paintCharacterHpBar(ctx: CanvasRenderingContext2D, character: Ch
     ctx.strokeStyle = "black";
     ctx.fillStyle = "black";
     ctx.fillRect(topLeftPaint.x, topLeftPaint.y - hpBarHeight, Math.ceil(bossWidth * fillAmount), hpBarHeight);
-    if(character.shield > 0){
+    if (character.shield > 0) {
         let shieldStackCounter = Math.floor(character.shield / character.maxHp);
         const shieldStackColors = ["lightblue", "blue", "darkblue"];
         let shieldFillAmount = Math.max(0, (character.shield % character.maxHp) / character.maxHp);
-        if(shieldStackCounter >= shieldStackColors.length){
+        if (shieldStackCounter >= shieldStackColors.length) {
             shieldFillAmount = 1;
             shieldStackCounter = shieldStackColors.length - 1;
         }
-        if(shieldStackCounter > 0){
+        if (shieldStackCounter > 0) {
             ctx.fillStyle = shieldStackColors[shieldStackCounter - 1];
-            ctx.fillRect(topLeftPaint.x, topLeftPaint.y - hpBarHeight, Math.ceil(bossWidth), hpBarHeight);    
+            ctx.fillRect(topLeftPaint.x, topLeftPaint.y - hpBarHeight, Math.ceil(bossWidth), hpBarHeight);
         }
         ctx.fillStyle = shieldStackColors[shieldStackCounter];
-        ctx.fillRect(topLeftPaint.x, topLeftPaint.y - hpBarHeight, Math.ceil(bossWidth * shieldFillAmount), hpBarHeight);    
+        ctx.fillRect(topLeftPaint.x, topLeftPaint.y - hpBarHeight, Math.ceil(bossWidth * shieldFillAmount), hpBarHeight);
     }
     ctx.beginPath();
     ctx.rect(topLeftPaint.x, topLeftPaint.y - hpBarHeight, bossWidth, hpBarHeight);
     ctx.stroke();
 }
 
-export function paintCharacterStatsUI(ctx: CanvasRenderingContext2D, character: Character, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
+export function createCharacterStatsUI(ctx: CanvasRenderingContext2D, character: Character): StatsUI {
     const textLines: string[] = [
         `Character Stats:`,
         `HP: ${Math.ceil(character.hp).toLocaleString()}/${Math.ceil(character.maxHp).toLocaleString()}`,
         `Movement Speed: ${character.moveSpeed.toFixed(2)}`,
         `Type: ${character.type}`,
     ];
-    if(character.shield > 0){
-        textLines.splice(2,0,`Shield: ${character.shield.toFixed(0)}/${(character.maxHp * character.maxShieldFactor).toFixed(0)}`);
+    if (character.shield > 0) {
+        textLines.splice(2, 0, `Shield: ${character.shield.toFixed(0)}/${(character.maxHp * character.maxShieldFactor).toFixed(0)}`);
     }
-    if(character.characterClasses){
+    if (character.characterClasses) {
         textLines.push(``);
         addCharacterClassStatsUITextLines(character.characterClasses, textLines);
     }
-    return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
+    return createStatsUI(ctx, textLines);
 }
 
-export function paintCharacterClassStatsUI(ctx: CanvasRenderingContext2D, characterClasses: CharacterClass[], drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
+export function createCharacterClassStatsUI(ctx: CanvasRenderingContext2D, characterClasses: CharacterClass[]): StatsUI {
     const textLines: string[] = [];
     addCharacterClassStatsUITextLines(characterClasses, textLines);
-    return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
+    return createStatsUI(ctx, textLines);
 }
 
 export function paintCharatersPets(ctx: CanvasRenderingContext2D, characters: (Character | undefined)[], cameraPosition: Position, game: Game) {
@@ -106,10 +107,10 @@ export function paintCharacterWithAbilitiesDefault(ctx: CanvasRenderingContext2D
 
 export function paintCharacterDefault(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game, preventDefaultCharacterPaint: boolean | undefined = undefined) {
     let tempPreventDefaultCharacterPaint = preventDefaultCharacterPaint;
-    if(tempPreventDefaultCharacterPaint === undefined){
+    if (tempPreventDefaultCharacterPaint === undefined) {
         tempPreventDefaultCharacterPaint = character.paint.preventDefaultCharacterPaint;
     }
-    if(!tempPreventDefaultCharacterPaint){
+    if (!tempPreventDefaultCharacterPaint) {
         if (character.paint.image) {
             if (character.paint.image === IMAGE_SLIME) {
                 slimePaint(ctx, character, cameraPosition, game);
@@ -141,18 +142,18 @@ export function paintPlayerCharacters(ctx: CanvasRenderingContext2D, cameraPosit
 function addCharacterClassStatsUITextLines(characterClasses: CharacterClass[], textLines: string[]) {
     let first: boolean = true;
     let hasLegendary = false;
-    for(let charClass of characterClasses){
-        if(first){
+    for (let charClass of characterClasses) {
+        if (first) {
             first = false;
-        }else{
-            textLines.push(``);    
+        } else {
+            textLines.push(``);
         }
         textLines.push(`Class: ${charClass.className}`);
-        if(charClass.gifted)textLines.push(`Gifted: Abilities can now longer get stronger`);
-        if(charClass.legendary){
+        if (charClass.gifted) textLines.push(`Gifted: Abilities can now longer get stronger`);
+        if (charClass.legendary) {
             hasLegendary = true;
             textLines.push(`Legendary: Class levels and upgrades are permanent`);
-            if(charClass.level){
+            if (charClass.level) {
                 textLines.push(`  Level Cap: ${charClass.legendary.levelCap}`);
                 let blessings = "  Blessings: ";
                 if (charClass.legendary.blessings.length === 0) {
@@ -166,22 +167,22 @@ function addCharacterClassStatsUITextLines(characterClasses: CharacterClass[], t
                 textLines.push(blessings);
             }
         };
-        if(charClass.level){
+        if (charClass.level) {
             let levelCap = "";
-            if(charClass.legendary && charClass.legendary.levelCap){
+            if (charClass.legendary && charClass.legendary.levelCap) {
                 levelCap = `/${charClass.legendary.levelCap}`;
             }
             textLines.push(`Level: ${charClass.level.level}${levelCap}`);
-            if(charClass.level.leveling && !charClass.gifted){
+            if (charClass.level.leveling && !charClass.gifted) {
                 textLines.push(`XP: ${Math.floor(charClass.level.leveling.experience)}/${Math.floor(charClass.level.leveling.experienceForLevelUp)}`);
                 textLines.push(`Gains XP for every enemy killed by anyone.`);
             }
         }
-        if(charClass.availableSkillPoints)textLines.push(`SkillPoints: ${charClass.availableSkillPoints}`);
+        if (charClass.availableSkillPoints) textLines.push(`SkillPoints: ${charClass.availableSkillPoints}`);
         pushCharacterClassUpgradesUiTexts(textLines, charClass);
     }
-    if(hasLegendary){
-        textLines.push(``);    
+    if (hasLegendary) {
+        textLines.push(``);
         textLines.push(`Legendary levels and upgrades are permanent,`);
         textLines.push(`but they are cappped. Cap can be increased`);
         textLines.push(`by gaining blessing from defeating a king`);

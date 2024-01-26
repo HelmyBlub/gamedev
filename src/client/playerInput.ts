@@ -10,6 +10,7 @@ import { canCharacterTradeAbilityOrPets, characterTradeAbilityAndPets } from "./
 import { shareCharactersTradeablePreventedMultipleClass } from "./character/playerCharacters/playerCharacters.js";
 import { findNearesInteractableMapChunkObject, interactWithMapObject } from "./map/mapObjects.js";
 import { localStorageLoad } from "./permanentData.js";
+import { createRequiredStatsUis } from "./statsUIPaint.js";
 
 export const MOVE_ACTIONS = ["left", "down", "right", "up"];
 export const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3", "upgrade4"];
@@ -107,7 +108,7 @@ export function playerInputBindingToDisplayValue(playerInputBinding: string, gam
             }
         });
 
-        if(displayValue === ""){
+        if (displayValue === "") {
             game.clientKeyBindings.keyCodeToUiAction.forEach((value, key) => {
                 if (value.action === playerInputBinding) {
                     displayValue = value.uiDisplayInputValue;
@@ -259,6 +260,9 @@ function uiAction(game: Game, inputCode: string, isInputDown: boolean) {
             break;
         case "Info":
             game.UI.displayLongInfos = isInputDown;
+            if (isInputDown && game.ctx) {
+                game.UI.statsUi = createRequiredStatsUis(game.ctx, game);
+            }
             if (!game.multiplayer.websocket) {
                 game.state.paused = isInputDown;
             }
@@ -360,7 +364,7 @@ function playerAction(clientId: number, data: any, game: Game) {
     }
 }
 
-function interactKeys(character: Character, specialAction: string, game: Game){
+function interactKeys(character: Character, specialAction: string, game: Game) {
     if (specialAction === "interact1") {
         const closestPast = findNearesPastPlayerCharacter(character, game);
         if (closestPast) {
@@ -377,15 +381,15 @@ function interactKeys(character: Character, specialAction: string, game: Game){
                     }
                 }
             }
-        }else{
+        } else {
             const interactableMapObject = findNearesInteractableMapChunkObject(character, game);
-            if(interactableMapObject){
+            if (interactableMapObject) {
                 interactWithMapObject(character, interactableMapObject, specialAction, game);
             }
         }
-    }else{
+    } else {
         const interactableMapObject = findNearesInteractableMapChunkObject(character, game);
-        if(interactableMapObject){
+        if (interactableMapObject) {
             interactWithMapObject(character, interactableMapObject, specialAction, game);
         }
     }

@@ -12,12 +12,13 @@ import { positionToMapKey } from "../map/map.js";
 import { findPlayerByCharacterId } from "../player.js";
 import { playerInputBindingToDisplayValue } from "../playerInput.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, getAbilityNameUiText, paintDefaultAbilityStatsUI } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, getAbilityNameUiText } from "./ability.js";
 import { ABILITY_NAME_FIRE_CIRCLE } from "./abilityFireCircle.js";
 import { ABILITY_NAME_ICE_AURA } from "./abilityIceAura.js";
 import { ABILITY_NAME_SHOOT } from "./abilityShoot.js";
 import { ABILITY_NAME_SINGLETARGET } from "./abilitySingleTarget.js";
 import { ABILITY_NAME_SWORD } from "./abilitySword.js";
+import { StatsUI, createStatsUI } from "../statsUIPaint.js";
 
 type AbilityObjectTower = AbilityObject & {
     ownerId: number,
@@ -56,12 +57,12 @@ export function addAbilityTower() {
         activeAbilityCast: castTower,
         createAbility: createAbilityTower,
         createAbilityUpgradeOptions: createAbilityTowerUpgradeOptionsNew,
+        createAbilityStatsUI: createAbilityTowerStatsUI,
         deleteAbilityObject: deleteAbilityObjectTower,
         executeUpgradeOption: executeAbilityTowerUpgradeOption,
         paintAbilityObject: paintAbilityObjectTower,
         paintAbilityUI: paintAbilityTowerUI,
         paintAbility: paintAbilityTower,
-        paintAbilityStatsUI: paintAbilityTowerStatsUI,
         paintAbilityAccessoire: paintAbilityAccessoire,
         resetAbility: resetAbility,
         setAbilityToBossLevel: setAbilityTowerToBossLevel,
@@ -194,7 +195,7 @@ function castTower(abilityOwner: AbilityOwner, ability: Ability, castPosition: P
     if (abilityOwner.faction === FACTION_ENEMY) {
         if (abilityOwner.type === CHARACTER_TYPE_BOSS_ENEMY || abilityOwner.type === CHARACTER_TYPE_KING_ENEMY) {
             newTower.isBossTower = true;
-        }else if (abilityOwner.type === ENEMY_FIX_RESPAWN_POSITION){
+        } else if (abilityOwner.type === ENEMY_FIX_RESPAWN_POSITION) {
             const enemy: FixPositionRespawnEnemyCharacter = abilityOwner as any;
             newTower.ownerEnemyLevel = enemy.level?.level;
         }
@@ -296,7 +297,7 @@ function paintAbilityTower(ctx: CanvasRenderingContext2D, abilityOwner: AbilityO
     paintHammer(ctx, abiltiyTower, paintPos.x - 10, paintPos.y, game);
 }
 
-function paintAbilityAccessoire(ctx: CanvasRenderingContext2D, ability: Ability, paintPosition: Position, game: Game){
+function paintAbilityAccessoire(ctx: CanvasRenderingContext2D, ability: Ability, paintPosition: Position, game: Game) {
     const abilitySnipe = ability as AbilityTower;
     paintHammer(ctx, abilitySnipe, paintPosition.x, paintPosition.y, game);
 }
@@ -400,7 +401,7 @@ function paintEffectConnected(ctx: CanvasRenderingContext2D, abilityObjectTower:
         ctx.lineWidth = totalConnection;
 
 
-        if(abilityObjectTower.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
+        if (abilityObjectTower.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
         ctx.beginPath();
         let paintPos = getPointPaintPosition(ctx, abilityObjectTower, cameraPosition);
         ctx.moveTo(paintPos.x, paintPos.y);
@@ -490,7 +491,7 @@ function paintAbilityTowerUI(ctx: CanvasRenderingContext2D, ability: Ability, dr
     }
 }
 
-function paintAbilityTowerStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
+function createAbilityTowerStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, game: Game): StatsUI {
     const abilityTower = ability as AbilityTower;
     const nextTower = abilityTower.availableAbilityKeys[abilityTower.orderOfAbilities[abilityTower.currentAbilityIndex]];
     const textLines: string[] = getAbilityNameUiText(ability);
@@ -515,7 +516,7 @@ function paintAbilityTowerStatsUI(ctx: CanvasRenderingContext2D, ability: Abilit
         textLines.push(`Max ${key} Tower: ${counter}`);
     }
 
-    return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
+    return createStatsUI(ctx, textLines);
 }
 
 function tickAbilityTower(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
@@ -576,7 +577,7 @@ function executeAbilityTowerUpgradeOption(ability: Ability, character: Character
         abilityTower.damage += 250;
         return;
     }
-    if(upgradeOption.identifier === "+5 Max Towers"){
+    if (upgradeOption.identifier === "+5 Max Towers") {
         for (let i = 0; i < abilityTower.availableAbilityKeys.length; i++) {
             abilityTower.orderOfAbilities.push(i);
         }

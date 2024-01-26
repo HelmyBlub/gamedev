@@ -1,6 +1,25 @@
+text test run: Tamer, Builder, Sniper, All
+
 current tasks:
-- problem: to many abilties no longer visible with "tab"/info key. Improve it
-- play the game to check for bugs / problems
+- problem: to many abilties. no longer visible with "tab"/info key. Improve it
+    - redesign code for it
+    - it is not visualized what statsUI is painted. Put in an heading
+    - limit number of displayed abilities
+        - only display for one character class
+        - put in button to change which class is displayed
+        - put in button to switch if e.g. class building or player is displayed
+    - dev steps:
+        - new type: StatsUI
+            - text in a rect
+        - new type: StatsUisContainer
+            - headingText, e.g. Character/PastCharacter/ClassBuilding...
+            - StatsUIs
+
+        - new game.UI.currentStatsUI
+            - "StatsUisContainer[i]"
+                -i => select one of: character/classBuilding/pastCharacter/gameRules/highscores
+            - need select button for which to display
+
 - think about next bigger feature 
     - ideas
         - some easier permanent progression. like more baseHP, more baseSpeed gain for each run

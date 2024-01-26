@@ -1,19 +1,20 @@
-import { ABILITIES_FUNCTIONS, Ability, paintAbilityObjects, paintDefaultAbilityStatsUI, paintUiForAbilities } from "./ability/ability.js";
+import { Ability, paintAbilityObjects, paintUiForAbilities } from "./ability/ability.js";
 import { canCharacterTradeAbilityOrPets } from "./character/character.js";
 import { Character } from "./character/characterModel.js";
-import { paintCharacterClassStatsUI, paintCharacterStatsUI, paintPlayerCharacters } from "./character/characterPaint.js";
+import { paintPlayerCharacters } from "./character/characterPaint.js";
 import { paintBossCharacters, paintBossCrown } from "./character/enemy/bossEnemy.js";
 import { CharacterClass, hasPlayerChoosenStartClassUpgrade, shareCharactersTradeablePreventedMultipleClass } from "./character/playerCharacters/playerCharacters.js";
-import { TamerPetCharacter, paintTamerPetCharacterStatsUI } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
+import { TamerPetCharacter } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
 import { calculateDistance, getCameraPosition, getTimeSinceFirstKill } from "./game.js";
 import { Game, Position, Debugging, PaintTextData } from "./gameModel.js";
-import { Highscores, paintHighscoreEndScreenStuff, paintHighscores } from "./highscores.js";
+import { Highscores, paintHighscoreEndScreenStuff } from "./highscores.js";
 import { GAME_IMAGES, loadImage } from "./imageLoad.js";
 import { getMapMidlePosition } from "./map/map.js";
 import { MAP_OBJECTS_FUNCTIONS, findNearesInteractableMapChunkObject } from "./map/mapObjects.js";
 import { paintMap, paintMapCharacters } from "./map/mapPaint.js";
 import { findNearesPastPlayerCharacter, findPlayerById, isAutoSkillActive } from "./player.js";
 import { playerInputBindingToDisplayValue } from "./playerInput.js";
+import { paintStatsUis } from "./statsUIPaint.js";
 
 GAME_IMAGES["blankKey"] = {
     imagePath: "/images/singleBlankKey.png",
@@ -79,10 +80,10 @@ export function getPointPaintPosition(ctx: CanvasRenderingContext2D, point: Posi
  */
 export function paintTextLinesWithKeys(ctx: CanvasRenderingContext2D, textWithKeys: string[], paintPosition: Position, fontSize: number = 20, centered: boolean = false, bottomUp: boolean = false) {
     let textMaxWidth = 0;
-    const tempPaintPos = {x: paintPosition.x, y: paintPosition.y};
+    const tempPaintPos = { x: paintPosition.x, y: paintPosition.y };
     const verticalSpacing = 10;
     const rectHeight = (fontSize + verticalSpacing) * textWithKeys.length + 2;
-    if(bottomUp) tempPaintPos.y -= rectHeight;
+    if (bottomUp) tempPaintPos.y -= rectHeight;
     ctx.font = `${fontSize}px Arial`;
 
     for (let text of textWithKeys) {
@@ -193,20 +194,20 @@ function paintPastPlayerTakeoverInfo(ctx: CanvasRenderingContext2D, pastCharacte
     let textsWithKeys: string[] = [];
     textsWithKeys.push(`Past Character:`);
     if (canTrade) {
-        if(!classAlreadyTaken){
+        if (!classAlreadyTaken) {
             const interactKey = playerInputBindingToDisplayValue("interact1", game);
             const infoKey = playerInputBindingToDisplayValue("Info", game);
             textsWithKeys.push(`Takeover abilities with <${interactKey}>,`);
             textsWithKeys.push(`One time only.`);
             textsWithKeys.push(`<${infoKey}> for more details.`);
-            game.UI.paintClosesInteractableStatsUi = true;    
-        }else{
+            game.UI.paintClosesInteractableStatsUi = true;
+        } else {
             const infoKey = playerInputBindingToDisplayValue("Info", game);
             textsWithKeys.push(`<${infoKey}> for more details.`);
             textsWithKeys.push(`Can not trade because this`);
             textsWithKeys.push(`Class can only be owned once!`);
             paintPos.y -= 20;
-            game.UI.paintClosesInteractableStatsUi = true;    
+            game.UI.paintClosesInteractableStatsUi = true;
         }
 
         let pets: TamerPetCharacter[] = [];
@@ -225,9 +226,6 @@ function paintPastPlayerTakeoverInfo(ctx: CanvasRenderingContext2D, pastCharacte
                 if (!charClass.gifted) charClasses.push(charClass);
             }
         }
-        if (game.UI.displayLongInfos){
-            paintStatsFromAbilityAndPetsAndCharacterClass(ctx, pets, abilities, charClasses, game);
-        }
     } else {
         const interactKey = playerInputBindingToDisplayValue("interact1", game);
         textsWithKeys.push(`Nothing to take.`);
@@ -237,32 +235,6 @@ function paintPastPlayerTakeoverInfo(ctx: CanvasRenderingContext2D, pastCharacte
     ctx.fillStyle = "black";
     ctx.font = "20px Arial";
     paintTextLinesWithKeys(ctx, textsWithKeys, paintPos, 20, true, true);
-}
-
-export function paintStatsFromAbilityAndPetsAndCharacterClass(ctx: CanvasRenderingContext2D, pets: TamerPetCharacter[] | undefined, abilities: Ability[], characterClasses: CharacterClass[] | undefined, game: Game, offsetX: number = 0) {
-    const tooltipY = 60;
-    const spacing = 5;
-
-    if(characterClasses){
-        const area = paintCharacterClassStatsUI(ctx, characterClasses, 20 + offsetX, tooltipY, game);
-        offsetX += area.width + spacing;
-    }
-
-    if(pets){
-        for (let pet of pets) {
-            if (pet.tradable) {
-                const area = paintTamerPetCharacterStatsUI(ctx, pet, 20 + offsetX, tooltipY, game);
-                offsetX += area.width + spacing;
-            }
-        }
-    }
-    for (let ability of abilities) {
-        const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-        if (abilityFunctions.paintAbilityStatsUI) {
-            const area = abilityFunctions.paintAbilityStatsUI(ctx, ability, 20 + offsetX, tooltipY, game);
-            offsetX += area.width + spacing;
-        }
-    }
 }
 
 function paintPausedText(ctx: CanvasRenderingContext2D, game: Game) {
@@ -417,56 +389,7 @@ function paintPlayerStats(ctx: CanvasRenderingContext2D, character: Character, g
     }
 
     paintUpgradeOptionsUI(ctx, character, game);
-    paintPlayerStatsUI(ctx, character, game);
-}
-
-function paintPlayerStatsUI(ctx: CanvasRenderingContext2D, character: Character, game: Game) {
-    if (!game.UI.displayLongInfos) return;
-    if (game.UI.paintClosesInteractableStatsUi) return;
-    const spacing = 5;
-    let paintX = 20;
-    const paintY = 60;
-
-    let area = paintGameRulesUI(ctx, character, paintX, paintY, game);
-    paintX += area.width + spacing;
-    area = paintCharacterStatsUI(ctx, character, paintX, paintY, game);
-    paintX += area.width + spacing;
-    if (character.pets) {
-        for (let pet of character.pets) {
-            area = paintTamerPetCharacterStatsUI(ctx, pet, paintX, paintY, game);
-            paintX += area.width + spacing;
-        }
-    }
-
-    for (let ability of character.abilities) {
-        const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-        if (abilityFunctions.paintAbilityStatsUI) {
-            area = abilityFunctions.paintAbilityStatsUI(ctx, ability, paintX, paintY, game);
-            paintX += area.width + spacing;
-        }
-    }
-    if (!game.state.ended && game.state.highscores.lastBoard !== "") {
-        const keys = Object.keys(game.state.highscores.scoreBoards);
-        for (let key of keys) {
-            const board = game.state.highscores.scoreBoards[key];
-            if (board && board.scores.length > 0) {
-                const lastHighscorePosition = game.state.highscores.lastBoard === key ? game.state.highscores.lastHighscorePosition : undefined;
-                area = paintHighscores(ctx, paintX, paintY, board, lastHighscorePosition, 14);
-                paintX += area.width + spacing;
-            }
-        }
-    }
-}
-
-function paintGameRulesUI(ctx: CanvasRenderingContext2D, character: Character, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
-    const textLines: string[] = [
-        `Game Rules:`,
-        `Game timer starts when first enemy is killed.`,
-        `On 30seconds a expanding death zone`,
-        `beginns to grow.`,
-        `Every minute one boss enemy spawns.`,
-    ];
-    return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
+    if (game.UI.displayLongInfos) paintStatsUis(ctx, game.UI.statsUi);
 }
 
 function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Character, game: Game) {

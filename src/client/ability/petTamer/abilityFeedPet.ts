@@ -7,7 +7,8 @@ import { getPointPaintPosition } from "../../gamePaint.js";
 import { GAME_IMAGES, getImage } from "../../imageLoad.js";
 import { moveByDirectionAndDistance } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, findAbilityOwnerById, getAbilityNameUiText, paintDefaultAbilityStatsUI } from "../ability.js";
+import { StatsUI, createStatsUI } from "../../statsUIPaint.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, findAbilityOwnerById, getAbilityNameUiText } from "../ability.js";
 
 export type AbilityFeedPet = Ability & {
     feedValue: number,
@@ -33,9 +34,9 @@ export function addAbilityFeedPet() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_FEED_PET] = {
         activeAbilityCast: castFeedPet,
         createAbility: createAbilityFeedPet,
+        createAbilityStatsUI: createAbilityStatsUI,
         deleteAbilityObject: deleteAbilityObjectFeedPet,
         paintAbilityObject: paintAbilityObjectFeedPet,
-        paintAbilityStatsUI: paintAbilityStatsUI,
         paintAbilityUI: paintAbilityFeedPetUI,
         tickAbilityObject: tickAbilityObjectFeedPet,
         tickBossAI: tickBossAI,
@@ -187,7 +188,7 @@ function castFeedPet(abilityOwner: AbilityOwner, ability: Ability, castPosition:
     }
 }
 
-function paintAbilityStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, game: Game): { width: number, height: number } {
+function createAbilityStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, game: Game): StatsUI {
     const feed = ability as AbilityFeedPet;
     const textLines: string[] = getAbilityNameUiText(ability);
     textLines.push(
@@ -195,5 +196,5 @@ function paintAbilityStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, dr
         "Feed targeted pet.",
         `Range: ${feed.range}`,
     );
-    return paintDefaultAbilityStatsUI(ctx, textLines, drawStartX, drawStartY);
+    return createStatsUI(ctx, textLines);
 }

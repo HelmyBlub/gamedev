@@ -1,12 +1,14 @@
 import { Character } from "../character/characterModel.js";
 import { calculateDistance } from "../game.js";
 import { Position, Game } from "../gameModel.js";
+import { StatsUI } from "../statsUIPaint.js";
 import { GameMap, MapChunk, determineMapKeysInDistance, mapKeyAndTileXYToPosition } from "./map.js";
 import { addMapObjectClassBuilding } from "./mapObjectClassBuilding.js";
 import { addMapObjectFireAnimation } from "./mapObjectFireAnimation.js";
 import { addMapObjectKingSign } from "./mapObjectSign.js";
 
 export type MapObjectFunctions = {
+    createStatsUi?: (mapObject: MapTileObject, game: Game) => StatsUI[],
     interact1?: (interacter: Character, mapObject: MapTileObject, game: Game) => void,
     interact2?: (interacter: Character, mapObject: MapTileObject, game: Game) => void,
     paint: (ctx: CanvasRenderingContext2D, mapObject: MapTileObject, paintTopLeft: Position, game: Game) => void,
@@ -30,6 +32,15 @@ export function addMapObjectsFunctions() {
     addMapObjectFireAnimation();
     addMapObjectKingSign();
     addMapObjectClassBuilding();
+}
+
+export function createStatsUIForMabObject(mapTileObject: MapTileObject, game: Game): StatsUI[] {
+    const result: StatsUI[] = [];
+    const mapObjectFuntions = MAP_OBJECTS_FUNCTIONS[mapTileObject.name];
+    if (mapObjectFuntions && mapObjectFuntions.createStatsUi) {
+        result.push(...mapObjectFuntions.createStatsUi(mapTileObject, game));
+    }
+    return result;
 }
 
 export function findNearesInteractableMapChunkObject(position: Position, game: Game, maxDistance: number = 60): MapTileObject | undefined {
@@ -62,13 +73,13 @@ export function findMapKeyForMapObject(mapTileObject: MapTileObject, map: GameMa
     return undefined;
 }
 
-export function interactWithMapObject(interacter: Character, mapTileObject: MapTileObject, specialAction: String, game: Game){
+export function interactWithMapObject(interacter: Character, mapTileObject: MapTileObject, specialAction: String, game: Game) {
     const mapObjectFuntions = MAP_OBJECTS_FUNCTIONS[mapTileObject.name];
-    if(specialAction === "interact1"){
+    if (specialAction === "interact1") {
         if (mapObjectFuntions && mapObjectFuntions.interact1) {
             mapObjectFuntions.interact1(interacter, mapTileObject, game);
         }
-    }else if(specialAction === "interact2"){
+    } else if (specialAction === "interact2") {
         if (mapObjectFuntions && mapObjectFuntions.interact2) {
             mapObjectFuntions.interact2(interacter, mapTileObject, game);
         }
