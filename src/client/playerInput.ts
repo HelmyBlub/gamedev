@@ -10,7 +10,7 @@ import { canCharacterTradeAbilityOrPets, characterTradeAbilityAndPets } from "./
 import { shareCharactersTradeablePreventedMultipleClass } from "./character/playerCharacters/playerCharacters.js";
 import { findNearesInteractableMapChunkObject, interactWithMapObject } from "./map/mapObjects.js";
 import { localStorageLoad } from "./permanentData.js";
-import { createRequiredStatsUis } from "./statsUIPaint.js";
+import { createRequiredStatsUis, statsUIsHandleMouseClick } from "./statsUIPaint.js";
 
 export const MOVE_ACTIONS = ["left", "down", "right", "up"];
 export const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3", "upgrade4"];
@@ -54,6 +54,7 @@ export function mouseDown(event: MouseEvent, game: Game) {
 
 export function mouseUp(event: MouseEvent, game: Game) {
     playerInputChangeEvent(game, "Mouse" + event.button, false);
+    statsUIsHandleMouseClick(event, game);
 }
 
 export function keyDown(event: { code: string, preventDefault?: Function, stopPropagation?: Function, shiftKey?: boolean }, game: Game) {

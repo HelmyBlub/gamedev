@@ -239,9 +239,13 @@ export function runner(game: Game) {
     takeTimeMeasure(game.debug, "", "?timeout?", timeoutSleep);
 }
 
-export function setRelativeMousePosition(event: MouseEvent, game: Game) {
+export function getRelativeMousePoistion(event: MouseEvent): Position {
     const target = event.currentTarget as HTMLElement;
-    game.mouseRelativeCanvasPosition = { x: event.x - target.offsetLeft, y: event.y - target.offsetTop };
+    return { x: event.x - target.offsetLeft, y: event.y - target.offsetTop };
+}
+
+export function setRelativeMousePosition(event: MouseEvent, game: Game) {
+    game.mouseRelativeCanvasPosition = getRelativeMousePoistion(event);
 }
 
 export function createPaintTextData(position: Position, text: string, color: string, fontSize: string, currentTime: number, duration: number = 1000): PaintTextData {

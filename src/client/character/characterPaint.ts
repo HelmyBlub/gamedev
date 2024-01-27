@@ -3,7 +3,7 @@ import { FACTION_PLAYER, Game, Position } from "../gameModel.js";
 import { getPointPaintPosition } from "../gamePaint.js";
 import { GAME_IMAGES, getImage, loadImage } from "../imageLoad.js";
 import { randomizedCharacterImageToKey } from "../randomizedCharacterImage.js";
-import { StatsUI, createStatsUI } from "../statsUIPaint.js";
+import { StatsUIPart, createStatsUI } from "../statsUIPaint.js";
 import { getPlayerCharacters } from "./character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_PLAYER_PARTS, IMAGE_SLIME } from "./characterModel.js";
 import { CharacterClass } from "./playerCharacters/playerCharacters.js";
@@ -64,7 +64,7 @@ export function paintCharacterHpBar(ctx: CanvasRenderingContext2D, character: Ch
     ctx.stroke();
 }
 
-export function createCharacterStatsUI(ctx: CanvasRenderingContext2D, character: Character): StatsUI {
+export function createCharacterStatsUI(ctx: CanvasRenderingContext2D, character: Character): StatsUIPart {
     const textLines: string[] = [
         `Character Stats:`,
         `HP: ${Math.ceil(character.hp).toLocaleString()}/${Math.ceil(character.maxHp).toLocaleString()}`,
@@ -81,7 +81,7 @@ export function createCharacterStatsUI(ctx: CanvasRenderingContext2D, character:
     return createStatsUI(ctx, textLines);
 }
 
-export function createCharacterClassStatsUI(ctx: CanvasRenderingContext2D, characterClasses: CharacterClass[]): StatsUI {
+export function createCharacterClassStatsUI(ctx: CanvasRenderingContext2D, characterClasses: CharacterClass[]): StatsUIPart {
     const textLines: string[] = [];
     addCharacterClassStatsUITextLines(characterClasses, textLines);
     return createStatsUI(ctx, textLines);

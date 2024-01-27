@@ -6,7 +6,7 @@ import { getPointPaintPosition } from "../../../gamePaint.js";
 import { GAME_IMAGES, getImage } from "../../../imageLoad.js";
 import { moveByDirectionAndDistance } from "../../../map/map.js";
 import { nextRandom } from "../../../randomNumberGenerator.js";
-import { StatsUI, createStatsUI } from "../../../statsUIPaint.js";
+import { StatsUIPart, createStatsUI } from "../../../statsUIPaint.js";
 import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, calculateCharacterMovePosition, getPlayerCharacters, setCharacterPosition } from "../../character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, createCharacter } from "../../characterModel.js";
 import { PathingCache, getNextWaypoint } from "../../pathing.js";
@@ -219,8 +219,8 @@ export function petFoodIntakeToDisplayText(foodIntakeLevel: FoodIntakeLevel): Pe
     }
 }
 
-export function createTamerPetsCharacterStatsUI(ctx: CanvasRenderingContext2D, pets: TamerPetCharacter[] | undefined): StatsUI[] {
-    const result: StatsUI[] = [];
+export function createTamerPetsCharacterStatsUI(ctx: CanvasRenderingContext2D, pets: TamerPetCharacter[] | undefined): StatsUIPart[] {
+    const result: StatsUIPart[] = [];
     if (pets) {
         for (let pet of pets) {
             result.push(createTamerPetCharacterStatsUI(ctx, pet));
@@ -229,7 +229,7 @@ export function createTamerPetsCharacterStatsUI(ctx: CanvasRenderingContext2D, p
     return result;
 }
 
-export function createTamerPetCharacterStatsUI(ctx: CanvasRenderingContext2D, pet: TamerPetCharacter): StatsUI {
+export function createTamerPetCharacterStatsUI(ctx: CanvasRenderingContext2D, pet: TamerPetCharacter): StatsUIPart {
     const textLines: string[] = [`Pet Stats:`];
     if (pet.gifted) {
         textLines[0] += " (gifted)"

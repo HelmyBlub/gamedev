@@ -36,7 +36,7 @@ import { playerInputBindingToDisplayValue } from "../playerInput.js"
 import { addAbilityUnleashPet } from "./petTamer/abilityUnleashPet.js"
 import { Leveling } from "../character/playerCharacters/levelingCharacter.js"
 import { CharacterClass } from "../character/playerCharacters/playerCharacters.js"
-import { StatsUI, paintStatsUis } from "../statsUIPaint.js"
+import { StatsUIPart, paintStatsUIiParts, paintStatsUis } from "../statsUIPaint.js"
 
 export type Ability = {
     id: number,
@@ -79,7 +79,7 @@ export type AbilityFunctions = {
     createAbility: (idCounter: IdCounter, playerInputBinding?: string) => Ability,
     createAbilityUpgradeOptions?: (ability: Ability) => UpgradeOptionAndProbability[],
     createAbilityBossUpgradeOptions?: (ability: Ability, character: Character, game: Game) => UpgradeOptionAndProbability[],
-    createAbilityStatsUI?: (ctx: CanvasRenderingContext2D, ability: Ability, game: Game) => StatsUI,
+    createAbilityStatsUI?: (ctx: CanvasRenderingContext2D, ability: Ability, game: Game) => StatsUIPart,
     deleteAbilityObject?: (abilityObject: AbilityObject, game: Game) => boolean,
     executeUpgradeOption?: (ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game) => void,
     getLongDescription?: () => string[],
@@ -399,8 +399,8 @@ export function detectSomethingToCharacterHit(
     return hitCount;
 }
 
-export function createStatsUisAbilities(ctx: CanvasRenderingContext2D, abilities: Ability[], game: Game): StatsUI[] {
-    const result: StatsUI[] = [];
+export function createStatsUisAbilities(ctx: CanvasRenderingContext2D, abilities: Ability[], game: Game): StatsUIPart[] {
+    const result: StatsUIPart[] = [];
     for (let ability of abilities) {
         const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
         if (abilityFunctions.createAbilityStatsUI) {
@@ -450,7 +450,7 @@ function paintAbilityStatsUiIfMouseHovered(ctx: CanvasRenderingContext2D, abilit
         const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
         if (abilityFunctions.createAbilityStatsUI) {
             const statUI = abilityFunctions.createAbilityStatsUI(ctx, ability, game);
-            paintStatsUis(ctx, [statUI]);
+            paintStatsUIiParts(ctx, [statUI]);
         }
     }
 }

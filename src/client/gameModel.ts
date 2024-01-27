@@ -12,7 +12,7 @@ import { PermanentDataParts } from "./permanentData.js";
 import { Player } from "./player.js";
 import { PlayerInput } from "./playerInput.js";
 import { nextRandom, RandomSeed } from "./randomNumberGenerator.js";
-import { StatsUI } from "./statsUIPaint.js";
+import { StatsUIs, StatsUIPart, createDefaultEmptyStatsUis } from "./statsUIPaint.js";
 
 export type Position = {
     x: number,
@@ -234,7 +234,7 @@ export type Game = {
         displayMovementKeyHint: boolean,
         movementKeyPressed: boolean,
         displayTextData: PaintTextData[],
-        statsUi: StatsUI[],
+        statsUi: StatsUIs,
         displayLongInfos: boolean,
         playerGlobalAlphaMultiplier: number,
         paintClosesInteractableStatsUi: boolean,
@@ -339,7 +339,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             displayMovementKeyHint: false,
             movementKeyPressed: false,
             displayTextData: [],
-            statsUi: [],
+            statsUi: createDefaultEmptyStatsUis(),
             displayLongInfos: false,
             playerGlobalAlphaMultiplier: 1,
             paintClosesInteractableStatsUi: false,

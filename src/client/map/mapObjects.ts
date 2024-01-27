@@ -1,14 +1,14 @@
 import { Character } from "../character/characterModel.js";
 import { calculateDistance } from "../game.js";
 import { Position, Game } from "../gameModel.js";
-import { StatsUI } from "../statsUIPaint.js";
+import { StatsUIPart } from "../statsUIPaint.js";
 import { GameMap, MapChunk, determineMapKeysInDistance, mapKeyAndTileXYToPosition } from "./map.js";
 import { addMapObjectClassBuilding } from "./mapObjectClassBuilding.js";
 import { addMapObjectFireAnimation } from "./mapObjectFireAnimation.js";
 import { addMapObjectKingSign } from "./mapObjectSign.js";
 
 export type MapObjectFunctions = {
-    createStatsUi?: (mapObject: MapTileObject, game: Game) => StatsUI[],
+    createStatsUi?: (mapObject: MapTileObject, game: Game) => StatsUIPart[],
     interact1?: (interacter: Character, mapObject: MapTileObject, game: Game) => void,
     interact2?: (interacter: Character, mapObject: MapTileObject, game: Game) => void,
     paint: (ctx: CanvasRenderingContext2D, mapObject: MapTileObject, paintTopLeft: Position, game: Game) => void,
@@ -34,8 +34,8 @@ export function addMapObjectsFunctions() {
     addMapObjectClassBuilding();
 }
 
-export function createStatsUIForMabObject(mapTileObject: MapTileObject, game: Game): StatsUI[] {
-    const result: StatsUI[] = [];
+export function createStatsUIForMabObject(mapTileObject: MapTileObject, game: Game): StatsUIPart[] {
+    const result: StatsUIPart[] = [];
     const mapObjectFuntions = MAP_OBJECTS_FUNCTIONS[mapTileObject.name];
     if (mapObjectFuntions && mapObjectFuntions.createStatsUi) {
         result.push(...mapObjectFuntions.createStatsUi(mapTileObject, game));

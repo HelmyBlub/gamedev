@@ -4,6 +4,7 @@ import { calculateDistance, getTimeSinceFirstKill } from "./game.js";
 import { Game } from "./gameModel.js";
 import { paintKey } from "./gamePaint.js";
 import { getMapMidlePosition } from "./map/map.js";
+import { StatsUIPart, createStatsUI } from "./statsUIPaint.js";
 
 export type Highscores = {
     scoreBoards: {
@@ -129,6 +130,23 @@ export function paintHighscoreEndScreenStuff(ctx: CanvasRenderingContext2D, high
     paintHighscores(ctx, paintMiddle - highscoreWidth / 2, paintY - 20, highscoreBoard, highscores.lastHighscorePosition, fontSize);
 }
 
+export function createHighscoresStatsUIs(ctx: CanvasRenderingContext2D, highscores: Highscores): StatsUIPart[] {
+    const statsUiParts: StatsUIPart[] = [];
+    const keys = Object.keys(highscores.scoreBoards);
+    for (let key of keys) {
+        const scoreBoard = highscores.scoreBoards[key];
+        if (scoreBoard.scores.length === 0) continue;
+        const textLines: string[] = [];
+        textLines.push(...scoreBoard.description);
+        textLines.push("");
+        for (let i = 0; i < scoreBoard.scores.length; i++) {
+            textLines.push(getHighscoreTextLine(i, scoreBoard));
+        }
+        statsUiParts.push(createStatsUI(ctx, textLines));
+    }
+    return statsUiParts;
+}
+
 export function paintHighscores(ctx: CanvasRenderingContext2D, paintX: number, paintY: number, highscoreBoard: HighscoreBoard, lastHighscorePosition: number | undefined, fontSize: number): { width: number, height: number } {
     const textGap = 2;
     const textSpace = fontSize + textGap;
@@ -154,15 +172,15 @@ export function paintHighscores(ctx: CanvasRenderingContext2D, paintX: number, p
     return { width, height };
 }
 
-function getPlayerClassesString(character: Character): string{
-    if(!character.characterClasses) return "";
+function getPlayerClassesString(character: Character): string {
+    if (!character.characterClasses) return "";
     let result = "";
-    for(let i = 0; i< character.characterClasses.length; i++){
+    for (let i = 0; i < character.characterClasses.length; i++) {
         const charClass = character.characterClasses[i];
-        if(i > 0) result += "+";
+        if (i > 0) result += "+";
         result += charClass.className;
-        if(charClass.gifted) result += "[g]";
-        if(charClass.legendary) result += "[L]";
+        if (charClass.gifted) result += "[g]";
+        if (charClass.legendary) result += "[L]";
     }
     return result;
 }

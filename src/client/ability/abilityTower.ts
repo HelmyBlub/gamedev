@@ -18,7 +18,7 @@ import { ABILITY_NAME_ICE_AURA } from "./abilityIceAura.js";
 import { ABILITY_NAME_SHOOT } from "./abilityShoot.js";
 import { ABILITY_NAME_SINGLETARGET } from "./abilitySingleTarget.js";
 import { ABILITY_NAME_SWORD } from "./abilitySword.js";
-import { StatsUI, createStatsUI } from "../statsUIPaint.js";
+import { StatsUIPart, createStatsUI } from "../statsUIPaint.js";
 
 type AbilityObjectTower = AbilityObject & {
     ownerId: number,
@@ -491,7 +491,7 @@ function paintAbilityTowerUI(ctx: CanvasRenderingContext2D, ability: Ability, dr
     }
 }
 
-function createAbilityTowerStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, game: Game): StatsUI {
+function createAbilityTowerStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, game: Game): StatsUIPart {
     const abilityTower = ability as AbilityTower;
     const nextTower = abilityTower.availableAbilityKeys[abilityTower.orderOfAbilities[abilityTower.currentAbilityIndex]];
     const textLines: string[] = getAbilityNameUiText(ability);

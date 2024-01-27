@@ -2,7 +2,7 @@ import { Character } from "../character/characterModel.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../character/upgrade.js";
 import { getNextId } from "../game.js";
 import { Game, IdCounter } from "../gameModel.js";
-import { StatsUI, createStatsUI } from "../statsUIPaint.js";
+import { StatsUIPart, createStatsUI } from "../statsUIPaint.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner } from "./ability.js";
 
 type AbilityHpRegen = Ability & {
@@ -84,7 +84,7 @@ function executeAbilityHpRegenUpgradeOption(ability: Ability, character: Charact
     }
 }
 
-function createAbilityHpRegenStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, game: Game): StatsUI {
+function createAbilityHpRegenStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, game: Game): StatsUIPart {
     const abilityHpRegen = ability as AbilityHpRegen;
     const textLines: string[] = [
         `Ability: ${abilityHpRegen.name}`,

@@ -15,7 +15,7 @@ import { ABILITY_NAME_LEASH, AbilityLeash } from "../ability/abilityLeash.js";
 import { getCelestialDirection } from "../character/enemy/bossEnemy.js";
 import { Player } from "../player.js";
 import { playerInputBindingToDisplayValue } from "../playerInput.js";
-import { StatsUI } from "../statsUIPaint.js";
+import { StatsUIPart } from "../statsUIPaint.js";
 
 export type MapTileObjectClassBuilding = MapTileObject & {
     buildingId: number,
@@ -400,12 +400,12 @@ function paintInteract(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, 
     paintTextLinesWithKeys(ctx, texts, paintPos, 20, true, true);
 }
 
-function createStatsUiClassBuilding(mapObject: MapTileObject, game: Game): StatsUI[] {
+function createStatsUiClassBuilding(mapObject: MapTileObject, game: Game): StatsUIPart[] {
     const mapObjectClassBuilding = mapObject as MapTileObjectClassBuilding;
     const classBuilding = findBuildingById(mapObjectClassBuilding.buildingId, game);
     if (!classBuilding) return [];
 
-    const statsUIs: StatsUI[] = [];
+    const statsUIs: StatsUIPart[] = [];
     if (classBuilding.characterClass && !classBuilding.stuffBorrowed?.burrowed && game.ctx) {
         if (classBuilding.characterClass) {
             statsUIs.push(createCharacterClassStatsUI(game.ctx, [classBuilding.characterClass]));
