@@ -36,7 +36,7 @@ import { playerInputBindingToDisplayValue } from "../playerInput.js"
 import { addAbilityUnleashPet } from "./petTamer/abilityUnleashPet.js"
 import { Leveling } from "../character/playerCharacters/levelingCharacter.js"
 import { CharacterClass } from "../character/playerCharacters/playerCharacters.js"
-import { StatsUIPart, paintStatsUIiParts, paintStatsUis } from "../statsUIPaint.js"
+import { StatsUIPart, paintStatsUIPart, paintStatsUIiPartsContainer, paintStatsUis } from "../statsUIPaint.js"
 
 export type Ability = {
     id: number,
@@ -450,7 +450,7 @@ function paintAbilityStatsUiIfMouseHovered(ctx: CanvasRenderingContext2D, abilit
         const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
         if (abilityFunctions.createAbilityStatsUI) {
             const statUI = abilityFunctions.createAbilityStatsUI(ctx, ability, game);
-            paintStatsUIiParts(ctx, [statUI]);
+            paintStatsUIPart(ctx, statUI);
         }
     }
 }
