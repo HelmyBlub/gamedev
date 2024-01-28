@@ -40,6 +40,7 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
     paintKeyInfo(ctx, game);
     paintEndScreen(ctx, game.state.highscores, game);
     paintMyCharacterStats(ctx, game);
+    paintStatsUis(ctx, game.UI.statsUIs, game);
     paintMultiplayerPing(ctx, game);
     paintTimeMeasures(ctx, game.debug);
     paintPausedText(ctx, game);
@@ -164,6 +165,7 @@ export function paintKey(ctx: CanvasRenderingContext2D, key: string, paintPositi
 
 function paintMultiplayerPing(ctx: CanvasRenderingContext2D, game: Game) {
     if (game.multiplayer.websocket !== null) {
+        ctx.font = "16px Arial";
         ctx.fillText("Ping: " + Math.round(game.multiplayer.delay), 10, 60);
     }
 }
@@ -389,7 +391,6 @@ function paintPlayerStats(ctx: CanvasRenderingContext2D, character: Character, g
     }
 
     paintUpgradeOptionsUI(ctx, character, game);
-    if (game.UI.displayLongInfos) paintStatsUis(ctx, game.UI.statsUi);
 }
 
 function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Character, game: Game) {

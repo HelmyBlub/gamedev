@@ -1,14 +1,14 @@
 import { Character } from "../character/characterModel.js";
 import { calculateDistance } from "../game.js";
 import { Position, Game } from "../gameModel.js";
-import { StatsUIPart } from "../statsUI.js";
+import { StatsUIPart, StatsUIsPartContainer } from "../statsUI.js";
 import { GameMap, MapChunk, determineMapKeysInDistance, mapKeyAndTileXYToPosition } from "./map.js";
 import { addMapObjectClassBuilding } from "./mapObjectClassBuilding.js";
 import { addMapObjectFireAnimation } from "./mapObjectFireAnimation.js";
 import { addMapObjectKingSign } from "./mapObjectSign.js";
 
 export type MapObjectFunctions = {
-    createStatsUi?: (mapObject: MapTileObject, game: Game) => StatsUIPart[],
+    createStatsUi?: (mapObject: MapTileObject, game: Game) => StatsUIsPartContainer | undefined,
     interact1?: (interacter: Character, mapObject: MapTileObject, game: Game) => void,
     interact2?: (interacter: Character, mapObject: MapTileObject, game: Game) => void,
     paint: (ctx: CanvasRenderingContext2D, mapObject: MapTileObject, paintTopLeft: Position, game: Game) => void,
@@ -34,13 +34,12 @@ export function addMapObjectsFunctions() {
     addMapObjectClassBuilding();
 }
 
-export function createStatsUIForMabObject(mapTileObject: MapTileObject, game: Game): StatsUIPart[] {
-    const result: StatsUIPart[] = [];
+export function createStatsUIForMabObject(mapTileObject: MapTileObject, game: Game): StatsUIsPartContainer | undefined {
     const mapObjectFuntions = MAP_OBJECTS_FUNCTIONS[mapTileObject.name];
     if (mapObjectFuntions && mapObjectFuntions.createStatsUi) {
-        result.push(...mapObjectFuntions.createStatsUi(mapTileObject, game));
+        return mapObjectFuntions.createStatsUi(mapTileObject, game);
     }
-    return result;
+    return undefined;
 }
 
 export function findNearesInteractableMapChunkObject(position: Position, game: Game, maxDistance: number = 60): MapTileObject | undefined {

@@ -7,6 +7,7 @@ import { findClosestInteractable, getRelativeMousePoistion } from "./game.js";
 import { Game } from "./gameModel.js";
 import { createHighscoresStatsUIs } from "./highscores.js";
 import { createStatsUIForMabObject } from "./map/mapObjects.js";
+import { findPlayerById } from "./player.js";
 
 export type StatsUIPart = {
     texts: string[],
@@ -23,7 +24,6 @@ export type StatsUIsPartContainers = {
 export type StatsUIsPartContainer = {
     heading: string,
     headingWidth: number,
-    headingPaintX: number,
     statsUIs: StatsUIPart[],
     subContainer: StatsUIsPartContainers,
 }
@@ -33,6 +33,7 @@ export type StatsUIs = {
     paintStartY: number,
     headingFontSize: number,
     headingBottomPadding: number,
+    headingHorizontalSpacing: number,
     containers: StatsUIsPartContainers,
 }
 
@@ -59,85 +60,97 @@ export function createDefaultEmptyStatsUis(): StatsUIs {
         paintStartY: 60,
         headingFontSize: 26,
         headingBottomPadding: 8,
+        headingHorizontalSpacing: 5,
     };
 }
 
 export function statsUIsHandleMouseClick(event: MouseEvent, game: Game) {
     if (!game.UI.displayLongInfos) return;
-    const statsUi = game.UI.statsUi;
+    const statsUIs = game.UI.statsUIs;
     let mouseClickPos = getRelativeMousePoistion(event);
-    if (statsUi.paintStartY <= mouseClickPos.y
-        && statsUi.paintStartY + statsUi.headingFontSize + statsUi.headingBottomPadding >= mouseClickPos.y
+    if (statsUIs.paintStartY <= mouseClickPos.y
+        && statsUIs.paintStartY + statsUIs.headingFontSize + statsUIs.headingBottomPadding >= mouseClickPos.y
     ) {
-        for (let i = 0; i < statsUi.containers.containers.length; i++) {
-            const container = statsUi.containers.containers[i];
-            if (container.headingPaintX <= mouseClickPos.x
-                && container.headingPaintX + container.headingWidth >= mouseClickPos.x
+        let paintX = statsUIs.paintStartX;
+        for (let i = 0; i < statsUIs.containers.containers.length; i++) {
+            const container = statsUIs.containers.containers[i];
+            if (paintX <= mouseClickPos.x
+                && paintX + container.headingWidth >= mouseClickPos.x
             ) {
-                statsUi.containers.selected = i;
+                statsUIs.containers.selected = i;
                 return;
             }
+            paintX += container.headingWidth + statsUIs.headingHorizontalSpacing;
         }
     } else {
-        let containerY = statsUi.paintStartY + statsUi.headingFontSize + statsUi.headingBottomPadding + 4;
+        let containerY = statsUIs.paintStartY + statsUIs.headingFontSize + statsUIs.headingBottomPadding + 4;
         if (containerY <= mouseClickPos.y
-            && containerY + statsUi.headingFontSize + statsUi.headingBottomPadding >= mouseClickPos.y
+            && containerY + statsUIs.headingFontSize + statsUIs.headingBottomPadding >= mouseClickPos.y
         ) {
-            const selectedContainer = statsUi.containers.containers[statsUi.containers.selected];
-            for (let i = 0; i < statsUi.containers.containers.length; i++) {
+            const selectedContainer = statsUIs.containers.containers[statsUIs.containers.selected];
+            let paintX = statsUIs.paintStartX;
+            for (let i = 0; i < statsUIs.containers.containers.length; i++) {
                 const container = selectedContainer.subContainer.containers[i];
-                if (container.headingPaintX <= mouseClickPos.x
-                    && container.headingPaintX + container.headingWidth >= mouseClickPos.x
+                if (paintX <= mouseClickPos.x
+                    && paintX + container.headingWidth >= mouseClickPos.x
                 ) {
                     selectedContainer.subContainer.selected = i;
                     return;
                 }
+                paintX += container.headingWidth + statsUIs.headingHorizontalSpacing;
             }
         }
     }
 }
 
 export function createRequiredStatsUis(ctx: CanvasRenderingContext2D, game: Game): StatsUIs {
-    const character = findMyCharacter(game);
     const statsUIs: StatsUIs = createDefaultEmptyStatsUis();
-    const horizontalHeadingSpacing = 5;
     let paintX = statsUIs.paintStartX;
-    let containerHeading: string = "";
-    if (!character) return statsUIs;
 
-    const gameRuleContainer = createDefaultStatsUiContainer(ctx, "Game Rules", statsUIs.headingFontSize, paintX);
+    const gameRuleContainer = createDefaultStatsUiContainer(ctx, "Game Rules", statsUIs.headingFontSize);
     statsUIs.containers.containers.push(gameRuleContainer);
-    paintX += gameRuleContainer.headingWidth + horizontalHeadingSpacing;
+    paintX += gameRuleContainer.headingWidth + statsUIs.headingHorizontalSpacing;
     gameRuleContainer.statsUIs.push(createGameRulesStatsUI(ctx));
 
-    paintX = createAndAddCharacterStatsUIPartContainer(ctx, character, statsUIs, paintX, horizontalHeadingSpacing, game);
+
+    for (let client of game.state.clientInfos) {
+        const player = findPlayerById(game.state.players, client.id);
+        if (!player) continue;
+        let heading = client.name ? client.name : "Character";
+        const characterContainer = createCharacterStatsUIPartContainer(ctx, player.character, statsUIs, game, heading);
+        statsUIs.containers.containers.push(characterContainer);
+        if (game.multiplayer.myClientId === client.id) statsUIs.containers.selected = statsUIs.containers.containers.length - 1;
+        paintX += characterContainer.headingWidth + statsUIs.headingHorizontalSpacing;
+    }
 
     const closest = findClosestInteractable(game);
     if (closest) {
         if (closest.pastCharacter) {
-            const statsUIContainer = createPastCharacterStatsUI(ctx, closest.pastCharacter, statsUIs, paintX, game);
+            const statsUIContainer = createPastCharacterStatsUI(ctx, closest.pastCharacter, statsUIs, game);
             statsUIs.containers.containers.push(statsUIContainer);
             statsUIs.containers.selected = statsUIs.containers.containers.length - 1;
-            paintX += statsUIContainer.headingWidth + horizontalHeadingSpacing;
+            paintX += statsUIContainer.headingWidth + statsUIs.headingHorizontalSpacing;
 
         } else if (closest.mapObject) {
-            const statsUIContainer = createDefaultStatsUiContainer(ctx, closest.mapObject.name, statsUIs.headingFontSize, paintX);
-            statsUIs.containers.containers.push(statsUIContainer);
-            statsUIs.containers.selected = statsUIs.containers.containers.length - 1;
-            paintX += statsUIContainer.headingWidth + horizontalHeadingSpacing;
-            statsUIContainer.statsUIs.push(...createStatsUIForMabObject(closest.mapObject, game));
+            const statsUIContainer = createStatsUIForMabObject(closest.mapObject, game);
+            if (statsUIContainer) {
+                statsUIs.containers.containers.push(statsUIContainer);
+                statsUIs.containers.selected = statsUIs.containers.containers.length - 1;
+                paintX += statsUIContainer.headingWidth + statsUIs.headingHorizontalSpacing;
+            }
         }
     }
 
-    const highscoreContainer = createDefaultStatsUiContainer(ctx, "Highscores", statsUIs.headingFontSize, paintX);
+    const highscoreContainer = createDefaultStatsUiContainer(ctx, "Highscores", statsUIs.headingFontSize);
     statsUIs.containers.containers.push(highscoreContainer);
-    paintX += highscoreContainer.headingWidth + horizontalHeadingSpacing;
+    paintX += highscoreContainer.headingWidth + statsUIs.headingHorizontalSpacing;
     highscoreContainer.statsUIs.push(...createHighscoresStatsUIs(ctx, game.state.highscores));
 
     return statsUIs;
 }
 
-export function paintStatsUis(ctx: CanvasRenderingContext2D, statsUIs: StatsUIs) {
+export function paintStatsUis(ctx: CanvasRenderingContext2D, statsUIs: StatsUIs, game: Game) {
+    if (!game.UI.displayLongInfos) return;
     let paintX = statsUIs.paintStartX;
     let paintY = statsUIs.paintStartY;
     paintY = paintStatsUisContainers(ctx, statsUIs.containers, statsUIs, paintY);
@@ -146,11 +159,8 @@ export function paintStatsUis(ctx: CanvasRenderingContext2D, statsUIs: StatsUIs)
     }
 }
 
-function createAndAddCharacterStatsUIPartContainer(ctx: CanvasRenderingContext2D, character: Character, statsUIs: StatsUIs, paintX: number, horizontalHeadingSpacing: number, game: Game): number {
-    const characterContainer = createDefaultStatsUiContainer(ctx, "Character", statsUIs.headingFontSize, paintX);
-    statsUIs.containers.containers.push(characterContainer);
-    statsUIs.containers.selected = statsUIs.containers.containers.length - 1;
-    let tempPaintX = paintX + characterContainer.headingWidth + horizontalHeadingSpacing;
+export function createCharacterStatsUIPartContainer(ctx: CanvasRenderingContext2D, character: Character, statsUIs: StatsUIs, game: Game, heading: string = "Character"): StatsUIsPartContainer {
+    const characterContainer = createDefaultStatsUiContainer(ctx, heading, statsUIs.headingFontSize);
     characterContainer.statsUIs.push(createCharacterStatsUI(ctx, character));
 
     let subHeadingPaintX = statsUIs.paintStartX;
@@ -158,8 +168,8 @@ function createAndAddCharacterStatsUIPartContainer(ctx: CanvasRenderingContext2D
     if (character.characterClasses && character.characterClasses.length > 1) {
         hasMoreThanOneCharacterClass = true;
         for (let charClass of character.characterClasses) {
-            const subContainer = createDefaultStatsUiContainer(ctx, charClass.className, statsUIs.headingFontSize, subHeadingPaintX);
-            subHeadingPaintX += subContainer.headingWidth + horizontalHeadingSpacing;
+            const subContainer = createDefaultStatsUiContainer(ctx, charClass.className, statsUIs.headingFontSize);
+            subHeadingPaintX += subContainer.headingWidth + statsUIs.headingHorizontalSpacing;
             characterContainer.subContainer.containers.push(subContainer);
             if (character.pets) {
                 const charClassPets: TamerPetCharacter[] = [];
@@ -187,7 +197,7 @@ function createAndAddCharacterStatsUIPartContainer(ctx: CanvasRenderingContext2D
         if (ability.classIdRef === undefined || !hasMoreThanOneCharacterClass) classlessAbilities.push(ability);
     }
     characterContainer.statsUIs.push(...createStatsUisAbilities(ctx, classlessAbilities, game));
-    return tempPaintX;
+    return characterContainer;
 }
 
 function paintStatsUisContainers(ctx: CanvasRenderingContext2D, containers: StatsUIsPartContainers, statsUIs: StatsUIs, paintY: number): number {
@@ -195,16 +205,18 @@ function paintStatsUisContainers(ctx: CanvasRenderingContext2D, containers: Stat
     const fontSize = statsUIs.headingFontSize;
     ctx.font = fontSize + "px Arial";
 
+    let paintX = statsUIs.paintStartX;
     for (let i = 0; i < containers.containers.length; i++) {
         const container = containers.containers[i];
         ctx.fillStyle = "white";
-        ctx.fillRect(container.headingPaintX, paintY, container.headingWidth, fontSize + statsUIs.headingBottomPadding);
+        ctx.fillRect(paintX, paintY, container.headingWidth, fontSize + statsUIs.headingBottomPadding);
         ctx.fillStyle = i === containers.selected ? "black" : "gray";
         ctx.fillText(
             container.heading,
-            container.headingPaintX,
+            paintX,
             paintY + fontSize + 2
         );
+        paintX += container.headingWidth + statsUIs.headingHorizontalSpacing;
     }
     subPaintY += fontSize + statsUIs.headingBottomPadding + 4;
     if (containers.containers[containers.selected].subContainer.containers.length > 0) {
@@ -226,9 +238,9 @@ export function paintStatsUIiPartsContainer(ctx: CanvasRenderingContext2D, stats
     }
 }
 
-function createPastCharacterStatsUI(ctx: CanvasRenderingContext2D, pastCharacter: Character, statsUIs: StatsUIs, paintX: number, game: Game): StatsUIsPartContainer {
+function createPastCharacterStatsUI(ctx: CanvasRenderingContext2D, pastCharacter: Character, statsUIs: StatsUIs, game: Game): StatsUIsPartContainer {
     const containerHeading = "Past Character";
-    const statsUIsPartContainer = createDefaultStatsUiContainer(ctx, containerHeading, statsUIs.headingFontSize, paintX);
+    const statsUIsPartContainer = createDefaultStatsUiContainer(ctx, containerHeading, statsUIs.headingFontSize);
     if (pastCharacter.characterClasses) {
         for (let charClass of pastCharacter.characterClasses)
             if (!charClass.gifted) {
@@ -251,12 +263,11 @@ function createPastCharacterStatsUI(ctx: CanvasRenderingContext2D, pastCharacter
     return statsUIsPartContainer;
 }
 
-function createDefaultStatsUiContainer(ctx: CanvasRenderingContext2D, heading: string, fontSize: number, paintX: number): StatsUIsPartContainer {
+export function createDefaultStatsUiContainer(ctx: CanvasRenderingContext2D, heading: string, fontSize: number): StatsUIsPartContainer {
     ctx.font = `${fontSize}px Arial`;
     const width = ctx.measureText(heading).width;
     return {
         heading: heading,
-        headingPaintX: paintX,
         headingWidth: width + 4,
         statsUIs: [],
         subContainer: { selected: 0, containers: [] },

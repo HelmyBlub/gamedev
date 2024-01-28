@@ -9,7 +9,7 @@ import { CelestialDirection, Game, Position } from "../gameModel.js";
 import { getPointPaintPosition, paintTextLinesWithKeys } from "../gamePaint.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
 import { playerInputBindingToDisplayValue } from "../playerInput.js";
-import { StatsUIPart } from "../statsUI.js";
+import { StatsUIPart, StatsUIsPartContainer, createCharacterStatsUIPartContainer } from "../statsUI.js";
 import { mapKeyAndTileXYToPosition } from "./map.js";
 import { MAP_OBJECTS_FUNCTIONS, MapTileObject, findMapKeyForMapObject } from "./mapObjects.js";
 
@@ -90,20 +90,16 @@ function paintInteractSign(ctx: CanvasRenderingContext2D, mapObject: MapTileObje
     }
 }
 
-function createStatsUiKingSign(mapObject: MapTileObject, game: Game): StatsUIPart[] {
+function createStatsUiKingSign(mapObject: MapTileObject, game: Game): StatsUIsPartContainer | undefined {
     const kingSign = mapObject as MapTileObjectNextKingSign;
     const king = game.state.bossStuff.nextKings[kingSign.kingDirection];
-    if (!king || !game.ctx) return [];
+    if (!king || !game.ctx) return;
     const kingCopy: Character = deepCopy(king);
     modifyCharacterToKing(kingCopy, game);
     kingCopy.type = CHARACTER_TYPE_KING_ENEMY;
     resetCharacter(kingCopy, game);
 
-    const result: StatsUIPart[] = [];
-    result.push(createCharacterStatsUI(game.ctx, kingCopy));
-    result.push(...createTamerPetsCharacterStatsUI(game.ctx, kingCopy.pets));
-    result.push(...createStatsUisAbilities(game.ctx, kingCopy.abilities, game));
-    return result;
+    return createCharacterStatsUIPartContainer(game.ctx, kingCopy, game.UI.statsUIs, game, mapObject.name);
 }
 
 function paintKingSign(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, paintTopLeft: Position, game: Game) {

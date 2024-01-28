@@ -4,7 +4,7 @@ import { Game } from "./gameModel.js";
 import { PlayerInput } from "./playerInput.js";
 import { decompressString } from "./stringCompress.js";
 
-export function websocketConnect(game: Game, clientName: string = "Unknown", lobbyCode: string = "") {
+export function websocketConnect(game: Game, clientName: string, lobbyCode: string = "") {
     const protocol = window.location.protocol === "http:" ? "ws" : "wss";
 
     let url = `${protocol}://${window.location.host}/ws`;

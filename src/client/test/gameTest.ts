@@ -129,14 +129,14 @@ async function runGameWithPlayerInputsMultiplayer(game: Game, playerInputs: Play
     const playerCount = playerIds.length;
     const games: Game[] = [game];
     if (!game.multiplayer.websocket) {
-        websocketConnect(game);
+        websocketConnect(game, "1");
         game.testing.replay = {
             startTime: performance.now(),
         };
     }
     for (let i = 1; i < playerCount; i++) {
         games.push(createGame(undefined, true));
-        websocketConnect(games[i]);
+        websocketConnect(games[i], i.toString());
         games[i].testing.replay = {
             startTime: performance.now(),
             doNotPaint: true,

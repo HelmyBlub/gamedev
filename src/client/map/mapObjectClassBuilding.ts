@@ -15,7 +15,7 @@ import { ABILITY_NAME_LEASH, AbilityLeash } from "../ability/abilityLeash.js";
 import { getCelestialDirection } from "../character/enemy/bossEnemy.js";
 import { Player } from "../player.js";
 import { playerInputBindingToDisplayValue } from "../playerInput.js";
-import { StatsUIPart } from "../statsUI.js";
+import { StatsUIPart, StatsUIsPartContainer, createDefaultStatsUiContainer } from "../statsUI.js";
 
 export type MapTileObjectClassBuilding = MapTileObject & {
     buildingId: number,
@@ -400,22 +400,21 @@ function paintInteract(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, 
     paintTextLinesWithKeys(ctx, texts, paintPos, 20, true, true);
 }
 
-function createStatsUiClassBuilding(mapObject: MapTileObject, game: Game): StatsUIPart[] {
+function createStatsUiClassBuilding(mapObject: MapTileObject, game: Game): StatsUIsPartContainer | undefined {
     const mapObjectClassBuilding = mapObject as MapTileObjectClassBuilding;
     const classBuilding = findBuildingById(mapObjectClassBuilding.buildingId, game);
-    if (!classBuilding) return [];
-
-    const statsUIs: StatsUIPart[] = [];
+    if (!classBuilding || !game.ctx) return;
+    const statsUIContainer = createDefaultStatsUiContainer(game.ctx, mapObject.name, game.UI.statsUIs.headingFontSize);
     if (classBuilding.characterClass && !classBuilding.stuffBorrowed?.burrowed && game.ctx) {
         if (classBuilding.characterClass) {
-            statsUIs.push(createCharacterClassStatsUI(game.ctx, [classBuilding.characterClass]));
+            statsUIContainer.statsUIs.push(createCharacterClassStatsUI(game.ctx, [classBuilding.characterClass]));
         }
 
-        statsUIs.push(...createTamerPetsCharacterStatsUI(game.ctx, classBuilding.pets));
-        statsUIs.push(...createStatsUisAbilities(game.ctx, classBuilding.abilities, game));
+        statsUIContainer.statsUIs.push(...createTamerPetsCharacterStatsUI(game.ctx, classBuilding.pets));
+        statsUIContainer.statsUIs.push(...createStatsUisAbilities(game.ctx, classBuilding.abilities, game));
     }
 
-    return statsUIs;
+    return statsUIContainer;
 }
 
 function paintClassBuilding(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, paintTopLeft: Position, game: Game) {

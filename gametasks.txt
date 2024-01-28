@@ -1,7 +1,8 @@
 text test run: Sniper, All
 
 current tasks:
-- statsUIs: in multiplayer add other players statsUI
+- statsUIs: update on changes
+- change: tower builder single target reset damage if not attacking
 - bug: deafeat king, than reload browser, missing building?
 - bug: unhappy pet should not use ability
 

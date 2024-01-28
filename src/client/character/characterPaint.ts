@@ -6,6 +6,7 @@ import { randomizedCharacterImageToKey } from "../randomizedCharacterImage.js";
 import { StatsUIPart, createStatsUI } from "../statsUI.js";
 import { getPlayerCharacters } from "./character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_PLAYER_PARTS, IMAGE_SLIME } from "./characterModel.js";
+import { CHARACTER_TYPE_KING_ENEMY } from "./enemy/kingEnemy.js";
 import { CharacterClass } from "./playerCharacters/playerCharacters.js";
 import { pushCharacterClassUpgradesUiTexts } from "./upgrades/characterUpgrades.js";
 
@@ -71,6 +72,9 @@ export function createCharacterStatsUI(ctx: CanvasRenderingContext2D, character:
         `Movement Speed: ${character.moveSpeed.toFixed(2)}`,
         `Type: ${character.type}`,
     ];
+    if (character.type === CHARACTER_TYPE_KING_ENEMY) {
+        textLines.push(`  Kings abilities get stronger the lower his HP`);
+    }
     if (character.shield > 0) {
         textLines.splice(2, 0, `Shield: ${character.shield.toFixed(0)}/${(character.maxHp * character.maxShieldFactor).toFixed(0)}`);
     }

@@ -193,7 +193,7 @@ function multiplayerConnectMenu(game: Game) {
             const connectButton = document.getElementById('multiplayerConnect');
             connectButton?.addEventListener("click", (e) => {
                 const nameInput = document.getElementById('nameInput') as HTMLInputElement;
-                const clientName = nameInput.value;
+                const clientName = nameInput.value ? nameInput.value : "Unknown";
                 const lobbyCodeElement = document.getElementById('lobbyCode') as HTMLInputElement;
                 const lobbyCode = lobbyCodeElement.value;
                 try {
@@ -262,7 +262,7 @@ function uiAction(game: Game, inputCode: string, isInputDown: boolean) {
         case "Info":
             game.UI.displayLongInfos = isInputDown;
             if (isInputDown && game.ctx) {
-                game.UI.statsUi = createRequiredStatsUis(game.ctx, game);
+                game.UI.statsUIs = createRequiredStatsUis(game.ctx, game);
             }
             if (!game.multiplayer.websocket) {
                 game.state.paused = isInputDown;
