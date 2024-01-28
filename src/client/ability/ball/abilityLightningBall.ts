@@ -9,7 +9,7 @@ import { getPointPaintPosition } from "../../gamePaint.js";
 import { calculateMovePosition, getFirstBlockingGameMapTilePositionTouchingLine, isMoveFromToBlocking, isPositionBlocking } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { fixedRandom } from "../../randomNumberGenerator.js";
-import { StatsUIPart, createStatsUI } from "../../statsUIPaint.js";
+import { StatsUIPart, createStatsUI } from "../../statsUI.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, detectSomethingToCharacterHit, getAbilityNameUiText } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
 import { addAbilityLightningBallUpgradeBounceBonus, lightningBallUpgradeBounceBonusGetBonusDamageFactor, lightningBallUpgradeBounceBonusSetBonusDamageFactor } from "./abilityLightningBallUpgradeBounceBonus.js";

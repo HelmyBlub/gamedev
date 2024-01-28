@@ -1,18 +1,9 @@
-text test run: Tamer, Builder, Sniper, All
+text test run: Sniper, All
 
 current tasks:
+- statsUIs: in multiplayer add other players statsUI
+- bug: deafeat king, than reload browser, missing building?
 - bug: unhappy pet should not use ability
-- problem: to many abilties. no longer visible with "tab"/info key. Improve it
-    - limit number of displayed abilities
-        - only display for one character class
-        - put in button to change which class is displayed
-        - put in button to switch if e.g. class building or player is displayed
-    - dev steps:
-        - StatsUIsPartContainer can have StatsUIsPartContainers[]
-            - each character class has its own container
-            - first paint heading and make them selectable
-            - paint main container StatsUIsPart 
-            - then paint child containers StatsUIsPart 
 
 - think about next bigger feature 
     - ideas

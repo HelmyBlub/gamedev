@@ -36,7 +36,7 @@ import { playerInputBindingToDisplayValue } from "../playerInput.js"
 import { addAbilityUnleashPet } from "./petTamer/abilityUnleashPet.js"
 import { Leveling } from "../character/playerCharacters/levelingCharacter.js"
 import { CharacterClass } from "../character/playerCharacters/playerCharacters.js"
-import { StatsUIPart, paintStatsUIPart, paintStatsUIiPartsContainer, paintStatsUis } from "../statsUIPaint.js"
+import { StatsUIPart, paintStatsUIPart, paintStatsUIiPartsContainer, paintStatsUis } from "../statsUI.js"
 
 export type Ability = {
     id: number,

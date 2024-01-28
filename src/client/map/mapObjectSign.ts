@@ -9,7 +9,7 @@ import { CelestialDirection, Game, Position } from "../gameModel.js";
 import { getPointPaintPosition, paintTextLinesWithKeys } from "../gamePaint.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
 import { playerInputBindingToDisplayValue } from "../playerInput.js";
-import { StatsUIPart } from "../statsUIPaint.js";
+import { StatsUIPart } from "../statsUI.js";
 import { mapKeyAndTileXYToPosition } from "./map.js";
 import { MAP_OBJECTS_FUNCTIONS, MapTileObject, findMapKeyForMapObject } from "./mapObjects.js";
 

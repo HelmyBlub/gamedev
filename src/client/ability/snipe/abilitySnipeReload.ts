@@ -1,7 +1,7 @@
 import { getNextId } from "../../game.js";
 import { IdCounter, Game, Position } from "../../gameModel.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
-import { StatsUIPart, createStatsUI } from "../../statsUIPaint.js";
+import { StatsUIPart, createStatsUI } from "../../statsUI.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, getAbilityNameUiText } from "../ability.js";
 import { ABILITY_NAME_SNIPE, AbilitySnipe, abilitySnipeReload } from "./abilitySnipe.js";
 

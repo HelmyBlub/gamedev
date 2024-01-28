@@ -18,7 +18,7 @@ import { ABILITY_NAME_ICE_AURA } from "./abilityIceAura.js";
 import { ABILITY_NAME_SHOOT } from "./abilityShoot.js";
 import { ABILITY_NAME_SINGLETARGET } from "./abilitySingleTarget.js";
 import { ABILITY_NAME_SWORD } from "./abilitySword.js";
-import { StatsUIPart, createStatsUI } from "../statsUIPaint.js";
+import { StatsUIPart, createStatsUI } from "../statsUI.js";
 
 type AbilityObjectTower = AbilityObject & {
     ownerId: number,

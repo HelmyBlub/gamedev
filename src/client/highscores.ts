@@ -4,7 +4,7 @@ import { calculateDistance, getTimeSinceFirstKill } from "./game.js";
 import { Game } from "./gameModel.js";
 import { paintKey } from "./gamePaint.js";
 import { getMapMidlePosition } from "./map/map.js";
-import { StatsUIPart, createStatsUI } from "./statsUIPaint.js";
+import { StatsUIPart, createStatsUI } from "./statsUI.js";
 
 export type Highscores = {
     scoreBoards: {

@@ -1,7 +1,7 @@
 import { Character } from "../character/characterModel.js";
 import { calculateDistance } from "../game.js";
 import { Position, Game } from "../gameModel.js";
-import { StatsUIPart } from "../statsUIPaint.js";
+import { StatsUIPart } from "../statsUI.js";
 import { GameMap, MapChunk, determineMapKeysInDistance, mapKeyAndTileXYToPosition } from "./map.js";
 import { addMapObjectClassBuilding } from "./mapObjectClassBuilding.js";
 import { addMapObjectFireAnimation } from "./mapObjectFireAnimation.js";

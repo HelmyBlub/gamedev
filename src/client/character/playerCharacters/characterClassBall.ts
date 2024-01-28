@@ -31,7 +31,7 @@ function changeCharacterToBallClass(
     idCounter: IdCounter,
     game: Game,
 ) {
-    if(!character.characterClasses) character.characterClasses = [];
+    if (!character.characterClasses) character.characterClasses = [];
     const charClass = {
         id: getNextId(game.state.idCounter),
         className: CHARACTER_CLASS_BALL
@@ -39,12 +39,12 @@ function changeCharacterToBallClass(
     character.characterClasses.push(charClass);
     characterCreateAndAddUpgradeBonusHp(charClass, character, 200);
     characterCreateAndApplyUpgradeDamageReduction(charClass, character, 0.5);
-    addAbilityToCharacter(character, createAbility(ABILITY_NAME_BOUNCE_BALL, idCounter, true, true, "ability1"));
+    addAbilityToCharacter(character, createAbility(ABILITY_NAME_BOUNCE_BALL, idCounter, true, true, "ability1"), charClass);
     addAbilityToCharacter(character, createAbility(ABILITY_NAME_LIGHTNING_BALL, idCounter, true, true, "ability2"), charClass);
-    addAbilityToCharacter(character, createAbilityHpRegen(idCounter, undefined, 5));
+    addAbilityToCharacter(character, createAbilityHpRegen(idCounter, undefined, 5), charClass);
 }
 
-function getLongUiText(): string[]{
+function getLongUiText(): string[] {
     let text: string[] = [];
     text.push("Turn into a ball to quickly roll around.");
     text.push("All damage taken reduced by 50%.");
@@ -64,7 +64,7 @@ function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: 
 
     const bossCharacter = createCharacter(getNextId(idCounter), spawn.x, spawn.y, bossSize, bossSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_BOSS_ENEMY, experienceWorth);
     bossCharacter.paint.image = IMAGE_SLIME;
-    bossCharacter.level = {level: level};
+    bossCharacter.level = { level: level };
     const baseBounceBall = basedOnCharacter.abilities.find((a) => a.name === ABILITY_NAME_BOUNCE_BALL);
     const baseLightningBall = basedOnCharacter.abilities.find((a) => a.name === ABILITY_NAME_LIGHTNING_BALL);
     const bounceBall: AbilityBounceBall = deepCopy(baseBounceBall);

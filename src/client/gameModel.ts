@@ -12,7 +12,7 @@ import { PermanentDataParts } from "./permanentData.js";
 import { Player } from "./player.js";
 import { PlayerInput } from "./playerInput.js";
 import { nextRandom, RandomSeed } from "./randomNumberGenerator.js";
-import { StatsUIs, StatsUIPart, createDefaultEmptyStatsUis } from "./statsUIPaint.js";
+import { StatsUIs, StatsUIPart, createDefaultEmptyStatsUis } from "./statsUI.js";
 
 export type Position = {
     x: number,

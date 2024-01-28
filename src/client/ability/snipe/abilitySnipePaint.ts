@@ -3,7 +3,7 @@ import { FACTION_ENEMY, FACTION_PLAYER, Game, Position } from "../../gameModel.j
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { GAME_IMAGES, loadImage } from "../../imageLoad.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
-import { StatsUIPart, createStatsUI } from "../../statsUIPaint.js";
+import { StatsUIPart, createStatsUI } from "../../statsUI.js";
 import { Ability, AbilityObject, AbilityOwner, PaintOrderAbility, getAbilityNameUiText } from "../ability.js";
 import { pushAbilityUpgradesUiTexts } from "../abilityUpgrade.js";
 import { ABILITY_NAME_SNIPE, ABILITY_SNIPE_PAINT_FADE_DURATION, ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe, getAbilitySnipeRange, getAbilitySnipeShotFrequency, getSniperRiflePosition } from "./abilitySnipe.js";

@@ -6,10 +6,11 @@ import { getPointPaintPosition } from "../../../gamePaint.js";
 import { GAME_IMAGES, getImage } from "../../../imageLoad.js";
 import { moveByDirectionAndDistance } from "../../../map/map.js";
 import { nextRandom } from "../../../randomNumberGenerator.js";
-import { StatsUIPart, createStatsUI } from "../../../statsUIPaint.js";
+import { StatsUIPart, createStatsUI } from "../../../statsUI.js";
 import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, calculateCharacterMovePosition, getPlayerCharacters, setCharacterPosition } from "../../character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, createCharacter } from "../../characterModel.js";
 import { PathingCache, getNextWaypoint } from "../../pathing.js";
+import { CharacterClass } from "../playerCharacters.js";
 import { Trait, addTamerPetTraits, tamerPetIncludesTrait } from "./petTrait.js";
 import { TAMER_PET_TRAIT_EATS_LESS } from "./petTraitEatsLess.js";
 import { TAMER_PET_TRAIT_GETS_FAT_EASILY } from "./petTraitGetFatEasily.js";
@@ -41,6 +42,7 @@ export type TamerPetCharacter = Character & {
     forcedMovePosition?: Position,
     tradable: boolean,
     gifted?: boolean,
+    classIdRef: number,
 }
 
 type Happiness = {
@@ -111,7 +113,7 @@ export function tradePets(fromCharacter: Character, toCharacter: Character, game
     }
 }
 
-export function createTamerPetCharacter(owner: Character, color: string, game: Game): TamerPetCharacter {
+export function createTamerPetCharacter(owner: Character, color: string, characterClass: CharacterClass, game: Game): TamerPetCharacter {
     const defaultSize = 30;
     const baseMoveSpeed = 2;
     const character = createCharacter(getNextId(game.state.idCounter), owner.x, owner.y, defaultSize, defaultSize, color, baseMoveSpeed, 20, owner.faction, TAMER_PET_CHARACTER, 10);
@@ -145,6 +147,7 @@ export function createTamerPetCharacter(owner: Character, color: string, game: G
         },
         traits: [],
         tradable: true,
+        classIdRef: characterClass.id,
     };
     return tamerPetCharacter;
 }

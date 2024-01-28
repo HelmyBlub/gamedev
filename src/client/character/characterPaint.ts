@@ -3,7 +3,7 @@ import { FACTION_PLAYER, Game, Position } from "../gameModel.js";
 import { getPointPaintPosition } from "../gamePaint.js";
 import { GAME_IMAGES, getImage, loadImage } from "../imageLoad.js";
 import { randomizedCharacterImageToKey } from "../randomizedCharacterImage.js";
-import { StatsUIPart, createStatsUI } from "../statsUIPaint.js";
+import { StatsUIPart, createStatsUI } from "../statsUI.js";
 import { getPlayerCharacters } from "./character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_PLAYER_PARTS, IMAGE_SLIME } from "./characterModel.js";
 import { CharacterClass } from "./playerCharacters/playerCharacters.js";

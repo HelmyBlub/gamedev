@@ -28,18 +28,19 @@ function changeCharacterToSniperClass(
     idCounter: IdCounter,
     game: Game,
 ) {
-    if(!character.characterClasses) character.characterClasses = [];
-    character.characterClasses.push({
+    if (!character.characterClasses) character.characterClasses = [];
+    const charClass = {
         className: CHARACTER_CLASS_SNIPER_NAME,
         id: getNextId(game.state.idCounter),
-    });
-    addAbilityToCharacter(character, createAbility(ABILITY_NAME_SNIPE, idCounter, true, true, "ability1"));
-    addAbilityToCharacter(character, createAbilityHpRegen(idCounter, undefined, 2));
-    addAbilityToCharacter(character, createAbility(ABILITY_NAME_SPEED_BOOST, idCounter, false, true, "ability2"));
-    addAbilityToCharacter(character, createAbility(ABILITY_NAME_SNIPE_RELOAD, idCounter, false, false, "ability3"));
+    }
+    character.characterClasses.push(charClass);
+    addAbilityToCharacter(character, createAbility(ABILITY_NAME_SNIPE, idCounter, true, true, "ability1"), charClass);
+    addAbilityToCharacter(character, createAbilityHpRegen(idCounter, undefined, 2), charClass);
+    addAbilityToCharacter(character, createAbility(ABILITY_NAME_SPEED_BOOST, idCounter, false, true, "ability2"), charClass);
+    addAbilityToCharacter(character, createAbility(ABILITY_NAME_SNIPE_RELOAD, idCounter, false, false, "ability3"), charClass);
 }
 
-function getLongUiText(): string[]{
+function getLongUiText(): string[] {
     let text: string[] = [];
     text.push("Get a sniper rifle.");
     text.push("Abilities:");
@@ -58,7 +59,7 @@ function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: 
 
     const bossCharacter = createCharacter(getNextId(idCounter), spawn.x, spawn.y, bossSize, bossSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_BOSS_ENEMY, experienceWorth);
     bossCharacter.paint.image = IMAGE_SLIME;
-    bossCharacter.level = {level: level};
+    bossCharacter.level = { level: level };
     const baseSnipe = basedOnCharacter.abilities.find((a) => a.name === ABILITY_NAME_SNIPE);
     const snipe: AbilitySnipe = deepCopy(baseSnipe);
     bossCharacter.abilities.push(snipe);

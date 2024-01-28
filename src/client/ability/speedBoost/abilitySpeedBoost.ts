@@ -6,7 +6,7 @@ import { applyDebuff } from "../../debuff/debuff.js";
 import { getNextId } from "../../game.js";
 import { Game, IdCounter, Position } from "../../gameModel.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
-import { StatsUIPart, createStatsUI } from "../../statsUIPaint.js";
+import { StatsUIPart, createStatsUI } from "../../statsUI.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, getAbilityNameUiText } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
 import { ABILITY_SPEED_BOOST_UPGRADE_ADD_CHARGE, AbilitySpeedBoostUpgradeAddCharge, addAbilitySpeedBoostUpgradeAddCharge, tickAbilitySpeedBoostUpgradeAddCharge } from "./abilitySpeedBoostUpgradeAddCharge.js";

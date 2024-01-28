@@ -14,7 +14,7 @@ import { MAP_OBJECTS_FUNCTIONS, findNearesInteractableMapChunkObject } from "./m
 import { paintMap, paintMapCharacters } from "./map/mapPaint.js";
 import { findNearesPastPlayerCharacter, findPlayerById, isAutoSkillActive } from "./player.js";
 import { playerInputBindingToDisplayValue } from "./playerInput.js";
-import { paintStatsUis } from "./statsUIPaint.js";
+import { paintStatsUis } from "./statsUI.js";
 
 GAME_IMAGES["blankKey"] = {
     imagePath: "/images/singleBlankKey.png",

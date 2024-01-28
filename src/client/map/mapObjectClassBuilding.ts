@@ -15,7 +15,7 @@ import { ABILITY_NAME_LEASH, AbilityLeash } from "../ability/abilityLeash.js";
 import { getCelestialDirection } from "../character/enemy/bossEnemy.js";
 import { Player } from "../player.js";
 import { playerInputBindingToDisplayValue } from "../playerInput.js";
-import { StatsUIPart } from "../statsUIPaint.js";
+import { StatsUIPart } from "../statsUI.js";
 
 export type MapTileObjectClassBuilding = MapTileObject & {
     buildingId: number,

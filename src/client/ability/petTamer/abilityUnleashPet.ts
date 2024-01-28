@@ -2,7 +2,7 @@ import { TamerPetCharacter } from "../../character/playerCharacters/tamer/tamerP
 import { calculateDistance, getNextId } from "../../game.js";
 import { IdCounter, Position, Game } from "../../gameModel.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
-import { StatsUIPart, createStatsUI } from "../../statsUIPaint.js";
+import { StatsUIPart, createStatsUI } from "../../statsUI.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, getAbilityNameUiText } from "../ability.js";
 import { ABILITY_NAME_LEASH, AbilityLeash } from "../abilityLeash.js";
 

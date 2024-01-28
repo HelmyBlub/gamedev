@@ -10,7 +10,7 @@ import { canCharacterTradeAbilityOrPets, characterTradeAbilityAndPets } from "./
 import { shareCharactersTradeablePreventedMultipleClass } from "./character/playerCharacters/playerCharacters.js";
 import { findNearesInteractableMapChunkObject, interactWithMapObject } from "./map/mapObjects.js";
 import { localStorageLoad } from "./permanentData.js";
-import { createRequiredStatsUis, statsUIsHandleMouseClick } from "./statsUIPaint.js";
+import { createRequiredStatsUis, statsUIsHandleMouseClick } from "./statsUI.js";
 
 export const MOVE_ACTIONS = ["left", "down", "right", "up"];
 export const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3", "upgrade4"];

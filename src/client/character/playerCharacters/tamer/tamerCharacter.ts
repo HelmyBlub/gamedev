@@ -74,7 +74,7 @@ function changeCharacterToTamerClass(
     idCounter: IdCounter,
     game: Game,
 ) {
-    if(!character.characterClasses) character.characterClasses = [];
+    if (!character.characterClasses) character.characterClasses = [];
     const charClass: CharacterClass = {
         className: TAMER_CHARACTER,
         id: getNextId(game.state.idCounter),
@@ -82,13 +82,13 @@ function changeCharacterToTamerClass(
     character.characterClasses.push(charClass);
     characterCreateAndAddUpgradeBonusSpeed(charClass, character, 0.5);
     characterCreateAndAddUpgradeBonusHp(charClass, character, 100);
-    addAbilityToCharacter(character, createAbilityHpRegen(idCounter, undefined, 2));
-    addAbilityToCharacter(character, createAbility(ABILITY_NAME_FEED_PET, idCounter, false, false, "ability1"));
-    addAbilityToCharacter(character, createAbility(ABILITY_NAME_LOVE_PET, idCounter, false, false, "ability2"));
-    addAbilityToCharacter(character, createAbility(ABILITY_NAME_UNLEASH_PET, idCounter, false, false, "ability3"));
-    addPetToTamer(character, "blue", game);
-    addPetToTamer(character, "green", game);
-    addPetToTamer(character, "black", game);
+    addAbilityToCharacter(character, createAbilityHpRegen(idCounter, undefined, 2), charClass);
+    addAbilityToCharacter(character, createAbility(ABILITY_NAME_FEED_PET, idCounter, false, false, "ability1"), charClass);
+    addAbilityToCharacter(character, createAbility(ABILITY_NAME_LOVE_PET, idCounter, false, false, "ability2"), charClass);
+    addAbilityToCharacter(character, createAbility(ABILITY_NAME_UNLEASH_PET, idCounter, false, false, "ability3"), charClass);
+    addPetToTamer(character, "blue", charClass, game);
+    addPetToTamer(character, "green", charClass, game);
+    addPetToTamer(character, "black", charClass, game);
 }
 
 function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: number, spawn: Position, game: Game): Character {
@@ -109,13 +109,13 @@ function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: 
 
     bossCharacter.pets = createPetsBasedOnLevelAndCharacter(basedOnCharacter, level, bossCharacter, game);
     bossCharacter.paint.image = IMAGE_SLIME;
-    bossCharacter.level = {level: level};
+    bossCharacter.level = { level: level };
     resetCharacter(bossCharacter, game);
 
     return bossCharacter;
 }
 
-function getLongUiText(): string[]{
+function getLongUiText(): string[] {
     let text: string[] = [];
     text.push("You have 3 pets. Feed them.");
     text.push("Love them.");
@@ -305,9 +305,9 @@ function valuesToUpgradeName(petName: string, abilityName: string, traitName: st
     return `${abilityName} & ${traitName} for ${petName}`;
 }
 
-function addPetToTamer(character: Character, color: string, game: Game) {
+function addPetToTamer(character: Character, color: string, characterClass: CharacterClass, game: Game) {
     if (character.pets === undefined) character.pets = [];
-    const pet: TamerPetCharacter = createTamerPetCharacter(character, color, game);
+    const pet: TamerPetCharacter = createTamerPetCharacter(character, color, characterClass, game);
     pet.abilities.push(createAbilityLeash(game.state.idCounter, undefined, 175, character.id));
     pet.abilities.push(createAbility(ABILITY_NAME_MELEE, game.state.idCounter, false));
 
