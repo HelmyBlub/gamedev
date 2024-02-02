@@ -105,11 +105,11 @@ export function createShapeAbilityPetPainter(shape: string, abilityOwner: Abilit
     }
 }
 
-export function abilityPetPainterTeleportIfOwnerUnreachableOrToFarAway(pet: TamerPetCharacter, petOwner: Character, game: Game){
+export function abilityPetPainterTeleportIfOwnerUnreachableOrToFarAway(pet: TamerPetCharacter, petOwner: Character, game: Game) {
     const distance = calculateDistance(pet, petOwner);
-    if(distance > 800){
+    if (distance > 800) {
         setCharacterPosition(pet, petOwner, game.state.map);
-    }else{
+    } else {
         const nextWayPoint: Position | null = getNextWaypoint(pet, petOwner, game.state.map, game.performance.pathingCache, game.state.idCounter, game.state.time, game);
         const canPetReachPosition = nextWayPoint !== null;
         if (!canPetReachPosition) {
@@ -205,7 +205,7 @@ function tickAbilityPetPainter(abilityOwner: AbilityOwner, ability: Ability, gam
     const abilityPetPainter = ability as AbilityPetPainter;
     const pet = abilityOwner as TamerPetCharacter;
     if (!abilityPetPainter.currentlyPainting) {
-        if(petHappinessToDisplayText(pet.happines) === "unhappy"){
+        if (petHappinessToDisplayText(pet.happines) === "very unhappy") {
             return;
         }
         const shapes = Object.keys(ABILITY_PET_PAINTER_SHAPES_FUNCTIONS);
@@ -213,7 +213,7 @@ function tickAbilityPetPainter(abilityOwner: AbilityOwner, ability: Ability, gam
         const shapeFunction = ABILITY_PET_PAINTER_SHAPES_FUNCTIONS[randomShape];
         if (shapeFunction) {
             const petOwner: Character | undefined = findPetOwner(pet, game);
-            if(!petOwner) return undefined;
+            if (!petOwner) return undefined;
             abilityPetPainterTeleportIfOwnerUnreachableOrToFarAway(pet, petOwner, game);
             shapeFunction.initShapePaint(pet, abilityPetPainter, game);
         }

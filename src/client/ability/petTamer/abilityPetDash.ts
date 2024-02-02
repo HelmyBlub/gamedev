@@ -1,5 +1,5 @@
 import { Character } from "../../character/characterModel.js";
-import { TamerPetCharacter } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
+import { TamerPetCharacter, petHappinessToDisplayText } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { getNextId } from "../../game.js";
 import { IdCounter, Position, Game } from "../../gameModel.js";
@@ -167,6 +167,9 @@ function tickAbilityPetDash(abilityOwner: AbilityOwner, ability: Ability, game: 
             detectCircleCharacterHit(game.state.map, pet, pet.width / 2 + abilityPetDash.sizeExtension, pet.faction, ability.id, getPetAbilityDashDamage(pet, abilityPetDash), game, undefined, ability);
         }
     } else if (abilityPetDash.readyTime <= game.state.time) {
+        if (petHappinessToDisplayText(pet.happines) === "very unhappy") {
+            return;
+        }
         if (abilityOwner.isMoving) {
             if (upgradeBounce) upgradeBounce.currentDamageFactor = 1;
             if (upgradeFireLine) upgradeFireLine.startPosition = { x: pet.x, y: pet.y };

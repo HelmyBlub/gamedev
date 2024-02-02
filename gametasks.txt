@@ -1,8 +1,6 @@
 next test run: Sniper, All
 
 current tasks:
-- bug: deafeat king, than reload browser, missing building?
-- bug: unhappy pet should not use ability
 - check: statsUIs after gameEnd and with legendaries
 
 - think about next bigger feature 

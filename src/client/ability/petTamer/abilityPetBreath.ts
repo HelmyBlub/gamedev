@@ -1,7 +1,7 @@
 import { determineCharactersInDistance, characterTakeDamage } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
 import { BossEnemyCharacter } from "../../character/enemy/bossEnemy.js";
-import { TamerPetCharacter, tamerPetFeed } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
+import { TamerPetCharacter, petHappinessToDisplayText, tamerPetFeed } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { getNextId, calculateDirection, calculateDistance } from "../../game.js";
 import { IdCounter, Position, Game } from "../../gameModel.js";
@@ -134,7 +134,8 @@ function paintAbilityPetBreath(ctx: CanvasRenderingContext2D, abilityOwner: Abil
 function tickAbilityPetBreath(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     const abilityPetBreath = ability as AbilityPetBreath;
     const pet = abilityOwner as TamerPetCharacter;
-    if (ability.disabled) {
+
+    if (ability.disabled || petHappinessToDisplayText(pet.happines) === "very unhappy") {
         abilityPetBreath.active = false;
         return;
     }

@@ -74,7 +74,7 @@ function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     if (abilityOwner.pets) {
         for (let pet of abilityOwner.pets) {
             const happines: PetHappines = petHappinessToDisplayText(pet.happines);
-            if (happines === "unhappy" && (!abilityLovePet.nextRechargeTime || abilityLovePet.nextRechargeTime + 500 <= game.state.time)) {
+            if ((happines === "unhappy" || happines === "very unhappy") && (!abilityLovePet.nextRechargeTime || abilityLovePet.nextRechargeTime + 500 <= game.state.time)) {
                 castLovePet(abilityOwner, ability, pet, true, game);
                 break;
             }

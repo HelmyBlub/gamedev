@@ -21,7 +21,7 @@ import { TAMER_PET_TRAIT_VERY_HUNGRY } from "./petTraitVeryHungry.js";
 
 export type PetTargetBehavior = "passive" | "aggressive" | "protective";
 export type PetNoTargetBehavior = "stayClose" | "hyperactive" | "following";
-export type PetHappines = "unhappy" | "happy" | "hyperactive";
+export type PetHappines = "very unhappy" | "unhappy" | "happy" | "hyperactive";
 export type PetHunger = "not hungry" | "hungry" | "ate too much";
 
 const MAX_HAPPINES = 140;
@@ -204,7 +204,11 @@ export function tamerPetFeed(pet: TamerPetCharacter, feedValue: number, time: nu
 
 export function petHappinessToDisplayText(happines: Happiness): PetHappines {
     if (happines.current < happines.unhappyAt) {
-        return "unhappy";
+        if (happines.current < happines.unhappyAt / 2) {
+            return "very unhappy";
+        } else {
+            return "unhappy";
+        }
     } else if (happines.current > happines.hyperactiveAt) {
         return "hyperactive";
     } else {
@@ -437,7 +441,7 @@ function reset(character: Character) {
 
 function moveTick(pet: TamerPetCharacter, petOwner: Character, game: Game, pathingCache: PathingCache) {
     if (pet.forcedMovePosition) {
-        if (pet.happines.current < pet.happines.unhappyAt) {
+        if (petHappinessToDisplayText(pet.happines) === "very unhappy") {
             pet.forcedMovePosition = undefined;
         } else {
             pet.isMoving = true;
