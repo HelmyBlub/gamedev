@@ -1,9 +1,6 @@
 next test run: Sniper, All
 
 current tasks:
-- change: buff miss chain upgrade
-    - missing loses stacks
-- statsUIs: update on changes
 - change: tower builder single target reset damage if not attacking
 - bug: deafeat king, than reload browser, missing building?
 - bug: unhappy pet should not use ability

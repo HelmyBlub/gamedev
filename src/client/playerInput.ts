@@ -261,8 +261,8 @@ function uiAction(game: Game, inputCode: string, isInputDown: boolean) {
             break;
         case "Info":
             game.UI.displayLongInfos = isInputDown;
-            if (isInputDown && game.ctx) {
-                game.UI.statsUIs = createRequiredStatsUis(game.ctx, game);
+            if (isInputDown) {
+                game.UI.statsUIs = createRequiredStatsUis(game);
             }
             if (!game.multiplayer.websocket) {
                 game.state.paused = isInputDown;
@@ -339,6 +339,7 @@ function playerAction(clientId: number, data: any, game: Game) {
                 if (option) {
                     executeUpgradeOptionChoice(character, option, game);
                 }
+                game.UI.statsUIs = createRequiredStatsUis(game);
             }
         } else if (ABILITY_ACTIONS.indexOf(action) !== -1) {
             for (let ability of character.abilities) {

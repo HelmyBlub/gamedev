@@ -103,8 +103,10 @@ export function statsUIsHandleMouseClick(event: MouseEvent, game: Game) {
     }
 }
 
-export function createRequiredStatsUis(ctx: CanvasRenderingContext2D, game: Game): StatsUIs {
+export function createRequiredStatsUis(game: Game): StatsUIs {
+    const ctx = game.ctx;
     const statsUIs: StatsUIs = createDefaultEmptyStatsUis();
+    if (!ctx) return statsUIs;
     let paintX = statsUIs.paintStartX;
 
     const gameRuleContainer = createDefaultStatsUiContainer(ctx, "Game Rules", statsUIs.headingFontSize);
