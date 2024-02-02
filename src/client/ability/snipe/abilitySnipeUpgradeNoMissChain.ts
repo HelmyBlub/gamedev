@@ -6,6 +6,7 @@ import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe, getO
 export const ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN = "No Miss Chain";
 const DAMAGE_COUNT_CAP = 50;
 const DAMAGE_UP_PER_HIT = 0.04;
+const COUNT_LOSS_ON_MISS = 3;
 
 export type AbilityUpgradeNoMissChain = AbilityUpgrade & {
     noMissChainCounter: number,
@@ -35,7 +36,8 @@ export function abilityUpgradeNoMissChainOnObjectSnipeDamageDone(abilitySnipe: A
                 upgrades.noMissChainCounter++;
             }
         } else {
-            upgrades.noMissChainCounter = 0;
+            upgrades.noMissChainCounter -= COUNT_LOSS_ON_MISS;
+            if (upgrades.noMissChainCounter < 0) upgrades.noMissChainCounter = 0;
         }
     }
 }
@@ -82,8 +84,8 @@ function getAbilityUpgradeNoMissChainUiText(ability: Ability): string {
     return "Chain Bonus: " + (upgrade.noMissChainCounter * upgrade.noMissBonusDamageFactorAdd * 100).toFixed() + "%" + (upgrade.upgradeSynergy ? " (Synergy)" : "");
 }
 
-function addSynergyUpgradeOption(ability: Ability): boolean{
-    if(Object.keys(ability.upgrades).length > 1){
+function addSynergyUpgradeOption(ability: Ability): boolean {
+    if (Object.keys(ability.upgrades).length > 1) {
         return true;
     }
     return false;
@@ -98,12 +100,14 @@ function getAbilityUpgradeNoMissChainUiTextLong(ability: Ability, option: Abilit
         const upgrade: AbilityUpgradeNoMissChain | undefined = ability.upgrades[ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN];
         if (upgrade) {
             textLines.push(`Hitting an enemy increases damage. Bonus from ${DAMAGE_UP_PER_HIT * upgrade.level * 100}% to ${DAMAGE_UP_PER_HIT * (upgrade.level + 1) * 100}%`);
-            textLines.push(`Not hitting any enemy with a shot resets it to 0%.`);
+            textLines.push(`Missing with a shot reduces damage. Reduction from ${DAMAGE_UP_PER_HIT * upgrade.level * COUNT_LOSS_ON_MISS * 100}% to ${DAMAGE_UP_PER_HIT * 100 * (upgrade.level + 1) * COUNT_LOSS_ON_MISS}%.`);
+            textLines.push(`Bonus can not become negative.`);
             textLines.push(`Bonus damage cap from ${DAMAGE_COUNT_CAP * DAMAGE_UP_PER_HIT * upgrade.level * 100}% to ${DAMAGE_COUNT_CAP * DAMAGE_UP_PER_HIT * (upgrade.level + 1) * 100}%`);
             if (!upgrade.upgradeSynergy) textLines.push(`Only main shot damage is increased without synergy.`);
         } else {
             textLines.push(`Hitting an enemy increases damage by ${DAMAGE_UP_PER_HIT * 100}% per shot.`);
-            textLines.push(`Not hitting any enemy with a shot resets it to 0%.`);
+            textLines.push(`Missing with a shot reduces the damage bonus by ${DAMAGE_UP_PER_HIT * 100 * COUNT_LOSS_ON_MISS}%.`);
+            textLines.push(`Bonus can not become negative.`);
             textLines.push(`Bonus damage is capped at ${DAMAGE_COUNT_CAP * DAMAGE_UP_PER_HIT * 100}%.`);
             textLines.push(`Only main shot damage is increased without synergy.`);
         }

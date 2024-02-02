@@ -9,7 +9,7 @@ import { AbilityUpgrade, AbilityUpgradesFunctions, getAbilityUpgradeOptionDefaul
 import { paintAbilityObjectSnipe, paintAbilitySnipe, paintAbilitySnipeAccessoire, createAbilitySnipeStatsUI, paintAbilitySnipeUI } from "./abilitySnipePaint.js";
 import { addAbilitySnipeUpgradeAfterImage, castSnipeAfterImage, tickAbilityUpgradeAfterImage } from "./abilitySnipeUpgradeAfterImage.js";
 import { addAbilitySnipeUpgradeBackwardsShot, castSnipeBackwardsShot } from "./abilitySnipeUpgradeBackwardsShot.js";
-import { abilityUpgradeNoMissChainOnObjectSnipeDamageDone, addAbilitySnipeUpgradeNoMissChain } from "./abilitySnipeUpgradeChainHit.js";
+import { abilityUpgradeNoMissChainOnObjectSnipeDamageDone, addAbilitySnipeUpgradeNoMissChain } from "./abilitySnipeUpgradeNoMissChain.js";
 import { abilityUpgradeDamageAndRangeRangeFactor, addAbilitySnipeUpgradeDamageAndRange } from "./abilitySnipeUpgradeDamageAndRange.js";
 import { addAbilitySnipeUpgradeExplodeOnDeath, executeUpgradeExplodeOnDeath } from "./abilitySnipeUpgradeExplodeOnDeath.js";
 import { addAbilitySnipeUpgradeFireLine, castSnipeFireLine as castSnipeUpgradeFireLine } from "./abilitySnipeUpgradeFireLine.js";
