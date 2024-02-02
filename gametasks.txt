@@ -1,7 +1,6 @@
 next test run: Sniper, All
 
 current tasks:
-- change: tower builder single target reset damage if not attacking
 - bug: deafeat king, than reload browser, missing building?
 - bug: unhappy pet should not use ability
 - check: statsUIs after gameEnd and with legendaries

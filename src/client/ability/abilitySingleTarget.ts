@@ -106,6 +106,10 @@ function tickAbilitySingleTarget(abilityOwner: AbilityOwner, ability: Ability, g
             }
         } else {
             target = findCharacterByIdAroundPosition(abilityOwner, abilitySingleTarget.maxRange, game, abilitySingleTarget.targetId);
+            if (!target) {
+                abilitySingleTarget.sameTargetAttackCounter -= 2;
+                if (abilitySingleTarget.sameTargetAttackCounter < 0) abilitySingleTarget.sameTargetAttackCounter = 0;
+            }
         }
         if (target) {
             if (!target.isDead) {
