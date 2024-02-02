@@ -7,12 +7,12 @@ import { createHighscoreBoards, Highscores } from "./highscores.js";
 import { createMap, GameMap } from "./map/map.js";
 import { KingAreaEntranceData } from "./map/mapKingArea.js";
 import { generateMissingChunks } from "./map/mapGeneration.js";
-import { Building } from "./map/mapObjectClassBuilding.js";
 import { PermanentDataParts } from "./permanentData.js";
 import { Player } from "./player.js";
 import { PlayerInput } from "./playerInput.js";
 import { nextRandom, RandomSeed } from "./randomNumberGenerator.js";
 import { StatsUIs, StatsUIPart, createDefaultEmptyStatsUis } from "./statsUI.js";
+import { Building } from "./building.js";
 
 export type Position = {
     x: number,

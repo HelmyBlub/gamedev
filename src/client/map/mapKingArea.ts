@@ -2,7 +2,7 @@ import { getPlayerCharacters } from "../character/character.js";
 import { startKingFight } from "../character/enemy/kingEnemy.js";
 import { Game, Position } from "../gameModel.js";
 import { positionToMapKey, GameMapKingArea, GameMap, MapChunk, positionToChunkXY } from "./map.js";
-import { MAP_OBJECT_KING_SIGN, MapTileObjectNextKingSign } from "./mapObjectSign.js";
+import { IMAGE_SIGN, MAP_OBJECT_KING_SIGN, MapTileObjectNextKingSign } from "./mapObjectSign.js";
 
 type TileData = { x: number, y: number, tileId: number };
 export type KingAreaEntranceData = {
@@ -182,6 +182,7 @@ function placeKingSignObjects(mapChunk: MapChunk, chunkLength: number, chunkX: n
                 name: MAP_OBJECT_KING_SIGN,
                 kingDirection: "south",
                 interactable: true,
+                image: IMAGE_SIGN,
             }
             mapChunk.tiles[sign.x][sign.y] = 0;
             mapChunk.objects.push(sign);
@@ -193,6 +194,7 @@ function placeKingSignObjects(mapChunk: MapChunk, chunkLength: number, chunkX: n
                 name: MAP_OBJECT_KING_SIGN,
                 kingDirection: "north",
                 interactable: true,
+                image: IMAGE_SIGN,
             }
             mapChunk.tiles[sign.x][sign.y] = 0;
             mapChunk.objects.push(sign);
@@ -206,6 +208,7 @@ function placeKingSignObjects(mapChunk: MapChunk, chunkLength: number, chunkX: n
                 name: MAP_OBJECT_KING_SIGN,
                 kingDirection: "east",
                 interactable: true,
+                image: IMAGE_SIGN,
             }
             mapChunk.tiles[sign.x][sign.y] = 0;
             mapChunk.objects.push(sign);
@@ -217,6 +220,7 @@ function placeKingSignObjects(mapChunk: MapChunk, chunkLength: number, chunkX: n
                 name: MAP_OBJECT_KING_SIGN,
                 kingDirection: "west",
                 interactable: true,
+                image: IMAGE_SIGN,
             }
             mapChunk.tiles[sign.x][sign.y] = 0;
             mapChunk.objects.push(sign);

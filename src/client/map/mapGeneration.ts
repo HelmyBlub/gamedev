@@ -1,12 +1,11 @@
+import { addExistingBuildingsToSpawnChunk } from "../building.js";
 import { createFixPositionRespawnEnemies } from "../character/enemy/fixPositionRespawnEnemyModel.js";
-import { CHARACTER_CLASS_SNIPER_NAME } from "../character/playerCharacters/sniperCharacter.js";
 import { takeTimeMeasure } from "../game.js";
 import { Game, IdCounter, Position } from "../gameModel.js";
 import { fixedRandom } from "../randomNumberGenerator.js";
 import { GameMap, MapChunk, chunkXYToMapKey } from "./map.js";
 import { mapGenerationKingChunkStuff } from "./mapKingArea.js";
-import { addExistingBuildingsToSpawnChunk } from "./mapObjectClassBuilding.js";
-import { MAP_OBJECT_FIRE_ANIMATION } from "./mapObjectFireAnimation.js";
+import { IMAGE_FIRE_ANIMATION, MAP_OBJECT_FIRE_ANIMATION } from "./mapObjectFireAnimation.js";
 
 export const pastCharactersMapTilePositions = [
     { x: 3, y: 2, tileId: 5, lookDirection: Math.PI / 2 },
@@ -93,6 +92,7 @@ function createSpawnChunk(mapChunk: MapChunk, chunkLength: number, game: Game) {
         x: 4,
         y: 4,
         name: MAP_OBJECT_FIRE_ANIMATION,
+        image: IMAGE_FIRE_ANIMATION,
     });
     for (let i = 0; i < chunkLength; i++) {
         chunk.push([]);

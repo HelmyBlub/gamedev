@@ -1,9 +1,10 @@
 import { Character } from "../character/characterModel.js";
 import { calculateDistance } from "../game.js";
 import { Position, Game } from "../gameModel.js";
-import { StatsUIPart, StatsUIsPartContainer } from "../statsUI.js";
+import { GAME_IMAGES, loadImage } from "../imageLoad.js";
+import { StatsUIsPartContainer } from "../statsUI.js";
 import { GameMap, MapChunk, determineMapKeysInDistance, mapKeyAndTileXYToPosition } from "./map.js";
-import { addMapObjectClassBuilding } from "./mapObjectClassBuilding.js";
+import { MapTileObjectClassBuilding, addMapObjectClassBuilding, paintClassBuilding } from "./mapObjectClassBuilding.js";
 import { addMapObjectFireAnimation } from "./mapObjectFireAnimation.js";
 import { addMapObjectKingSign } from "./mapObjectSign.js";
 
@@ -11,8 +12,8 @@ export type MapObjectFunctions = {
     createStatsUi?: (mapObject: MapTileObject, game: Game) => StatsUIsPartContainer | undefined,
     interact1?: (interacter: Character, mapObject: MapTileObject, game: Game) => void,
     interact2?: (interacter: Character, mapObject: MapTileObject, game: Game) => void,
-    paint: (ctx: CanvasRenderingContext2D, mapObject: MapTileObject, paintTopLeft: Position, game: Game) => void,
-    paintInteract?: (ctx: CanvasRenderingContext2D, mapObject: MapTileObject, interacter: Character, game: Game) => void
+    paint?: (ctx: CanvasRenderingContext2D, mapObject: MapTileObject, paintTopLeft: Position, game: Game) => void,
+    paintInteract?: (ctx: CanvasRenderingContext2D, mapObject: MapTileObject, interacter: Character, game: Game) => void,
 }
 
 export type MapObjectsFunctions = {
@@ -24,6 +25,7 @@ export type MapTileObject = {
     y: number,
     name: string,
     interactable?: boolean,
+    image: string,
 }
 
 export const MAP_OBJECTS_FUNCTIONS: MapObjectsFunctions = {};
@@ -89,7 +91,32 @@ export function paintMapChunkObjects(ctx: CanvasRenderingContext2D, mapChunk: Ma
     for (let mapObject of mapChunk.objects) {
         const mapObjectFuntions = MAP_OBJECTS_FUNCTIONS[mapObject.name];
         if (mapObjectFuntions) {
-            mapObjectFuntions.paint(ctx, mapObject, paintTopLeft, game);
+            if (mapObjectFuntions.paint) {
+                mapObjectFuntions.paint(ctx, mapObject, paintTopLeft, game);
+            } else {
+                paintMabObjectDefault(ctx, mapObject, paintTopLeft, game);
+            }
         }
+    }
+}
+
+
+export function paintMabObjectDefault(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, paintTopLeft: Position, game: Game) {
+    const tileSize = game.state.map.tileSize;
+    const image = GAME_IMAGES[mapObject.image];
+    loadImage(image);
+    if (image.imageRef?.complete) {
+        const paintX = paintTopLeft.x + mapObject.x * tileSize;
+        const paintY = paintTopLeft.y + mapObject.y * tileSize;
+        const spriteWidth = image.spriteRowWidths[0];
+        const spriteHeight = image.spriteRowHeights[0];
+        ctx.drawImage(
+            image.imageRef,
+            Math.floor(paintX),
+            Math.floor(paintY),
+            spriteWidth, spriteHeight
+        );
+        ctx.resetTransform();
+        ctx.restore();
     }
 }

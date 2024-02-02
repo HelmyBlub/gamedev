@@ -1,8 +1,9 @@
+import { Building } from "./building.js";
 import { changeCharacterId, resetCharacter } from "./character/character.js";
 import { Character } from "./character/characterModel.js";
 import { changeCharacterAndAbilityIds, getNextId } from "./game.js";
 import { CelestialDirection, Game, IdCounter, NextKings, PastPlayerCharacters } from "./gameModel.js";
-import { Building } from "./map/mapObjectClassBuilding.js";
+import { ClassBuilding } from "./map/mapObjectClassBuilding.js";
 
 export type PermanentDataParts = {
     pastCharacters?: PastPlayerCharacters,
@@ -71,40 +72,43 @@ function changeBuildingIds(building: Building, idCounter: IdCounter, game: Game)
     const oldBuildingId = building.id;
     let oldCharacterClassId: number | undefined = undefined;
     building.id = getNextId(idCounter);
-    if (building.characterClass) {
-        oldCharacterClassId = building.characterClass.id;
-        building.characterClass.id = getNextId(idCounter);
-    }
-    for (let ability of building.abilities) {
-        ability.id = getNextId(idCounter);
-        if (ability.legendary) ability.legendary.buildingIdRef = building.id;
-        if (ability.classIdRef !== undefined && building.characterClass) ability.classIdRef = building.characterClass.id;
-    }
-    for (let pet of building.pets) {
-        changeCharacterId(pet, idCounter);
-        if (pet.legendary) pet.legendary.buildingIdRef = building.id;
-    }
-    if(game.state.bossStuff.nextKings){
-        const keys = Object.keys(game.state.bossStuff.nextKings);
-        for(let key of keys){
-            const king: Character | undefined = (game.state.bossStuff.nextKings as any)[key];
-            if(!king) continue;
-            for (let ability of king.abilities) {
-                if (ability.legendary && ability.legendary.buildingIdRef === oldBuildingId){
-                    ability.legendary.buildingIdRef = building.id;
-                } 
-            }
-            if(king.pets){
-                for (let pet of king.pets) {
-                    if (pet.legendary && pet.legendary.buildingIdRef === oldBuildingId){
-                        pet.legendary.buildingIdRef = building.id;
+    if (building.type === "ClassBuilding") {
+        const classBuilding = building as ClassBuilding;
+        if (classBuilding.characterClass) {
+            oldCharacterClassId = classBuilding.characterClass.id;
+            classBuilding.characterClass.id = getNextId(idCounter);
+        }
+        for (let ability of classBuilding.abilities) {
+            ability.id = getNextId(idCounter);
+            if (ability.legendary) ability.legendary.buildingIdRef = building.id;
+            if (ability.classIdRef !== undefined && classBuilding.characterClass) ability.classIdRef = classBuilding.characterClass.id;
+        }
+        for (let pet of classBuilding.pets) {
+            changeCharacterId(pet, idCounter);
+            if (pet.legendary) pet.legendary.buildingIdRef = building.id;
+        }
+        if (game.state.bossStuff.nextKings) {
+            const keys = Object.keys(game.state.bossStuff.nextKings);
+            for (let key of keys) {
+                const king: Character | undefined = (game.state.bossStuff.nextKings as any)[key];
+                if (!king) continue;
+                for (let ability of king.abilities) {
+                    if (ability.legendary && ability.legendary.buildingIdRef === oldBuildingId) {
+                        ability.legendary.buildingIdRef = building.id;
                     }
                 }
-            }
-            if(building.characterClass && oldCharacterClassId !== undefined && king.characterClasses){
-                for(let charClass of king.characterClasses){
-                    if(charClass.id === oldCharacterClassId){
-                        charClass.id = building.characterClass.id;
+                if (king.pets) {
+                    for (let pet of king.pets) {
+                        if (pet.legendary && pet.legendary.buildingIdRef === oldBuildingId) {
+                            pet.legendary.buildingIdRef = building.id;
+                        }
+                    }
+                }
+                if (classBuilding.characterClass && oldCharacterClassId !== undefined && king.characterClasses) {
+                    for (let charClass of king.characterClasses) {
+                        if (charClass.id === oldCharacterClassId) {
+                            charClass.id = classBuilding.characterClass.id;
+                        }
                     }
                 }
             }

@@ -1,16 +1,33 @@
-next test run: Sniper, All
+next test run: Builder, Tamer, Sniper, All
 
 current tasks:
-- check: statsUIs after gameEnd and with legendaries
+- permanet HP increase
+    - dev tasks:
+        - redesign code for multiple building types
+        - add upgrade building
+    "upgrade buildings"
+        - first appears when currency earned
+        - add in spawn chunk bottom line
+    - some currency 
+        - each player has its own
+        - all players get same amount based on best player
+        - gained on gameEnd
+            - Amount = (distance of best player) / 1000) + (KingHP / 500000)
+- fix: laod all images on domLoad, because images loaded later might not be visible as server goes away
+- two times same upgrade with hp reg with two classes and tower build?
+- fix: outdated permanentState crashes game. Build some auto clear localStorage
+        
 
 - think about next bigger feature 
     - ideas
-        - some easier permanent progression. like more baseHP, more baseSpeed gain for each run
+        - some soner permanent progression.
+            - more baseHP, 
+            - more base move speed
+            - increase xp gain
+            - multiple king tries
+
 
 refactor possibilities:
-- ability creation: checks and scales for bosses, enemy or player by itself
-- paint UI charges (reduce code duplication)
-- createAbilityBossUpgradeOptions (reduce code duplciation)
 
 possible future tasks: (only keep 5)
 - improvement: getChunksTouchingLine2 does not work, still needs to improve
