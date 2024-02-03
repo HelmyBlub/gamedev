@@ -11,8 +11,12 @@ export type CharacterUpgrade = {
     level: number,
 }
 
+export type CharacterUpgrades = {
+    [key: string]: CharacterUpgrade
+}
+
 export type CharacterUpgradeFunctions = {
-    addUpgrade: (characterUpgrade: CharacterUpgrade, character: Character, characterClass: CharacterClass) => void,
+    addUpgrade: (characterUpgrade: CharacterUpgrade, character: Character, characterClass: CharacterClass | undefined) => void,
     executeOption?: (option: UpgradeOption, character: Character) => void,
     getLongExplainText?: (character: Character, option: UpgradeOption) => string[],
     getOptions?: (character: Character, game: Game) => UpgradeOptionAndProbability[],
@@ -25,15 +29,28 @@ export type CharacterUpgradesFunctions = {
 
 export const CHARACTER_UPGRADE_FUNCTIONS: CharacterUpgradesFunctions = {}
 
-export function onDomLoadSetCharacterUpgradeFunctions(){
+export function onDomLoadSetCharacterUpgradeFunctions() {
     addCharacterUpgradeBonusHp();
     addCharacterUpgradeBonusMoveSpeed();
     addCharacterUpgradeBonusDamageReduction();
 }
 
-export function characterUpgradeGetStatsDisplayText(upgradeName: string, characterUpgrade: CharacterUpgrade): string{
+export function addCharacterUpgrades(characterUpgrades: CharacterUpgrades, character: Character, characterClass: CharacterClass | undefined) {
+    const keys = Object.keys(characterUpgrades);
+    if (keys.length > 0) {
+        for (let key of keys) {
+            const classUpgrade = characterUpgrades[key];
+            const charUpFunctions = CHARACTER_UPGRADE_FUNCTIONS[key];
+            if (charUpFunctions) {
+                charUpFunctions.addUpgrade(classUpgrade, character, characterClass);
+            }
+        }
+    }
+}
+
+export function characterUpgradeGetStatsDisplayText(upgradeName: string, characterUpgrade: CharacterUpgrade): string {
     const upgradeFunctions = CHARACTER_UPGRADE_FUNCTIONS[upgradeName];
-    if(upgradeFunctions){
+    if (upgradeFunctions) {
         return upgradeFunctions.getStatsDisplayText(characterUpgrade);
     }
     return "";
@@ -44,7 +61,7 @@ export function upgradeCharacter(character: Character, upgradeOption: UpgradeOpt
     if (upgradeFunctions && upgradeOption.classIdRef !== undefined && upgradeFunctions.executeOption) {
         const charClass = findCharacterClassById(character, upgradeOption.classIdRef);
         upgradeFunctions.executeOption(upgradeOption, character);
-        if (charClass?.availableSkillPoints !== undefined){
+        if (charClass?.availableSkillPoints !== undefined) {
             charClass.availableSkillPoints--;
         }
     }
@@ -52,7 +69,7 @@ export function upgradeCharacter(character: Character, upgradeOption: UpgradeOpt
 }
 
 export function pushCharacterClassUpgradesUiTexts(texts: string[], charClass: CharacterClass) {
-    if(!charClass.characterClassUpgrades) return;
+    if (!charClass.characterClassUpgrades) return;
     let first = true;
     const keys = Object.keys(charClass.characterClassUpgrades);
     for (let key of keys) {

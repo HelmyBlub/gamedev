@@ -1,18 +1,11 @@
-next test run: Builder, Tamer, Sniper, All
+next test run: Tamer, Sniper, All, Builder
 
 current tasks:
 - permanet HP increase
     - dev tasks:
-        - redesign code for multiple building types
-        - add upgrade building
-    "upgrade buildings"
-        - first appears when currency earned
-        - add in spawn chunk bottom line
-    - some currency 
-        - each player has its own
-        - all players get same amount based on best player
-        - gained on gameEnd
-            - Amount = (distance of best player) / 1000) + (KingHP / 500000)
+        - localstorage for permanent upgrades
+        - next upgrade building: movement speed
+                
 - fix: laod all images on domLoad, because images loaded later might not be visible as server goes away
 - two times same upgrade with hp reg with two classes and tower build?
 - fix: outdated permanentState crashes game. Build some auto clear localStorage

@@ -1,4 +1,5 @@
 import { Character, createPlayerCharacter } from "./character/characterModel.js";
+import { CharacterUpgrades, addCharacterUpgrades } from "./character/upgrades/characterUpgrades.js";
 import { calculateDistance } from "./game.js";
 import { Game, IdCounter, KeyCodeToAction, Position } from "./gameModel.js";
 import { findNearNonBlockingPosition } from "./map/map.js";
@@ -9,6 +10,8 @@ export type Player = {
     character: Character,
     clientId: number,
     actionsPressed: ActionsPressed,
+    currency: number,
+    upgrades: CharacterUpgrades,
 }
 
 export function createPlayer(clientId: number, character: Character): Player {
@@ -16,6 +19,8 @@ export function createPlayer(clientId: number, character: Character): Player {
         clientId: clientId,
         character: character,
         actionsPressed: createActionsPressed(),
+        currency: 10,
+        upgrades: {},
     }
 }
 
@@ -66,38 +71,49 @@ export function createDefaultUiKeyBindings() {
     return keyBindings;
 }
 
-export function isAutoSkillActive(game: Game): boolean{
-    if(!game.clientKeyBindings) return false;
+export function isAutoSkillActive(game: Game): boolean {
+    if (!game.clientKeyBindings) return false;
     const keybindMap = game.clientKeyBindings.keyCodeToUiAction;
     const keys = keybindMap.keys();
-    for (let key of keys){
+    for (let key of keys) {
         const keybind = keybindMap.get(key);
-        if(keybind?.action === "AutoSkill"){
+        if (keybind?.action === "AutoSkill") {
             return keybind.activated ? keybind.activated : false;
         }
     }
     return false;
 }
 
-function addPlayer(idCounter: IdCounter, clientId: number, players: Player[], pos: Position, seed: RandomSeed, game: Game) {
+function createPlayerWithPlayerCharacter(idCounter: IdCounter, clientId: number, players: Player[], pos: Position, seed: RandomSeed, game: Game): Player {
     const character = createPlayerCharacter(idCounter, pos, seed, game);
-    players.push(createPlayer(clientId, character));
+    return createPlayer(clientId, character);
+}
+
+export function findPlayerByCliendId(clientId: number, players: Player[]): Player | undefined {
+    return players.find(p => p.clientId === clientId);
 }
 
 export function gameInitPlayers(game: Game) {
-    const numberPlayers = Math.max(game.state.clientInfos.length, 1);
-    for (let i = 0; i < numberPlayers; i++) {
+    for (let i = 0; i < game.state.clientInfos.length; i++) {
+        const client = game.state.clientInfos[i];
+        let player = findPlayerByCliendId(client.id, game.state.players);
         let playerSpawn: Position = { x: 100, y: 100 + i * 50 };
         playerSpawn = findNearNonBlockingPosition(playerSpawn, game.state.map, game.state.idCounter, game);
-
-        addPlayer(game.state.idCounter, game.state.clientInfos[i].id, game.state.players, playerSpawn, game.state.randomSeed, game);
-        if (game.multiplayer.myClientId === -1 || game.multiplayer.myClientId === game.state.clientInfos[i].id) {
+        if (!player) {
+            player = createPlayerWithPlayerCharacter(game.state.idCounter, game.state.clientInfos[i].id, game.state.players, playerSpawn, game.state.randomSeed, game);
+            game.state.players.push(player);
+        } else {
+            player.character = createPlayerCharacter(game.state.idCounter, playerSpawn, game.state.randomSeed, game);
+            addCharacterUpgrades(player.upgrades, player.character, undefined);
+            player.actionsPressed = createActionsPressed();
+        }
+        if (game.multiplayer.myClientId === -1 || game.multiplayer.myClientId === client.id) {
             game.clientKeyBindings = {
                 clientIdRef: game.multiplayer.myClientId,
                 keyCodeToActionPressed: createDefaultKeyBindings1(),
                 keyCodeToUiAction: createDefaultUiKeyBindings(),
             };
-            game.camera.characterId = game.state.players[i].character.id;
+            game.camera.characterId = player.character.id;
         }
     }
 }

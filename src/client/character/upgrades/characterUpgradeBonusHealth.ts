@@ -5,7 +5,7 @@ import { CHARACTER_UPGRADE_FUNCTIONS, CharacterUpgrade } from "./characterUpgrad
 import { findCharacterClassById } from "../playerCharacters/levelingCharacter.js";
 import { CharacterClass } from "../playerCharacters/playerCharacters.js";
 
-type CharacterUpgradeBonusHP = CharacterUpgrade & {
+export type CharacterUpgradeBonusHP = CharacterUpgrade & {
     bonusHp: number,
 }
 
@@ -37,10 +37,12 @@ export function characterCreateAndAddUpgradeBonusHp(charClass: CharacterClass, c
     character.maxHp += bonusHp;
 }
 
-function addUpgrade(characterUpgrade: CharacterUpgrade, character: Character, charClass: CharacterClass) {
-    if (!charClass.characterClassUpgrades) charClass.characterClassUpgrades = {};
+function addUpgrade(characterUpgrade: CharacterUpgrade, character: Character, charClass: CharacterClass | undefined) {
     const bonusHp = characterUpgrade as CharacterUpgradeBonusHP;
-    charClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_HP] = characterUpgrade;
+    if (charClass) {
+        if (!charClass.characterClassUpgrades) charClass.characterClassUpgrades = {};
+        charClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_HP] = characterUpgrade;
+    }
     character.hp += bonusHp.bonusHp;
     character.maxHp += bonusHp.bonusHp;
 }

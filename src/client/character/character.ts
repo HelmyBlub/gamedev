@@ -18,7 +18,7 @@ import { TamerPetCharacter, tradePets } from "./playerCharacters/tamer/tamerPetC
 import { ENEMY_FIX_RESPAWN_POSITION } from "./enemy/fixPositionRespawnEnemyModel.js";
 import { addCombatlogDamageTakenEntry } from "../combatlog.js";
 import { executeAbilityLevelingCharacterUpgradeOption } from "./playerCharacters/abilityLevelingCharacter.js";
-import { CHARACTER_UPGRADE_FUNCTIONS } from "./upgrades/characterUpgrades.js";
+import { addCharacterUpgrades, CHARACTER_UPGRADE_FUNCTIONS } from "./upgrades/characterUpgrades.js";
 
 export function findCharacterById(characters: Character[], id: number): Character | null {
     for (let i = 0; i < characters.length; i++) {
@@ -128,7 +128,7 @@ export function playerCharactersAddBossSkillPoints(bossLevel: number | undefined
                     }
                     for (let ability of pet.abilities) {
                         if (ability.bossSkillPoints !== undefined) {
-                            if (ability.bossSkillPoints.used + ability.bossSkillPoints.available< bossLevel) {
+                            if (ability.bossSkillPoints.used + ability.bossSkillPoints.available < bossLevel) {
                                 const legendaryAbilitySkillPointCapReached = ability.legendary && ability.legendary.skillPointCap <= ability.bossSkillPoints.used + ability.bossSkillPoints.available;
                                 if (legendaryAbilitySkillPointCapReached) {
                                     continue;
@@ -218,18 +218,7 @@ export function characterAddExistingCharacterClass(character: Character, charact
     if (!character.characterClasses) character.characterClasses = [];
     character.characterClasses.push(characterClass);
     if (characterClass.characterClassUpgrades) {
-        const keys = Object.keys(characterClass.characterClassUpgrades);
-        if (keys.length > 0) {
-            const tempClassUpgrades = characterClass.characterClassUpgrades;
-            characterClass.characterClassUpgrades = {};
-            for (let key of keys) {
-                const classUpgrade = tempClassUpgrades[key];
-                const charUpFunctions = CHARACTER_UPGRADE_FUNCTIONS[key];
-                if (charUpFunctions) {
-                    charUpFunctions.addUpgrade(classUpgrade, character, characterClass);
-                }
-            }
-        }
+        addCharacterUpgrades(characterClass.characterClassUpgrades, character, characterClass);
     }
 }
 

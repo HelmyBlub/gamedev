@@ -1,9 +1,9 @@
-import { Building } from "./building.js";
+import { Building } from "./map/buildings/building.js";
 import { changeCharacterId, resetCharacter } from "./character/character.js";
 import { Character } from "./character/characterModel.js";
 import { changeCharacterAndAbilityIds, getNextId } from "./game.js";
 import { CelestialDirection, Game, IdCounter, NextKings, PastPlayerCharacters } from "./gameModel.js";
-import { ClassBuilding } from "./map/mapObjectClassBuilding.js";
+import { ClassBuilding } from "./map/buildings/classBuilding.js";
 
 export type PermanentDataParts = {
     pastCharacters?: PastPlayerCharacters,

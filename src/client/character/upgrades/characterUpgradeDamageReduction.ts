@@ -15,13 +15,13 @@ export function addCharacterUpgradeBonusDamageReduction() {
     }
 }
 
-export function characterCreateAndApplyUpgradeDamageReduction(charClass: CharacterClass, character: Character, reductionFactor: number = 0.5){
+export function characterCreateAndApplyUpgradeDamageReduction(charClass: CharacterClass, character: Character, reductionFactor: number = 0.5) {
     const upgrade = {
         bonusDamageReduction: reductionFactor,
         classIdRef: charClass.id,
         level: 1,
     }
-    applyUpgradeToCharacterClass(charClass, upgrade, character);
+    addUpgrade(upgrade, character, charClass);
 }
 
 function getStatsDisplayText(characterUpgrade: CharacterUpgrade): string {
@@ -29,14 +29,12 @@ function getStatsDisplayText(characterUpgrade: CharacterUpgrade): string {
     return `${CHARACTER_UPGRADE_BONUS_DAMAGE_REDUCTION}: ${(1 - up.bonusDamageReduction) * 100}%`;
 }
 
-function addUpgrade(characterUpgrade: CharacterUpgrade, character: Character, charClass: CharacterClass){
+function addUpgrade(characterUpgrade: CharacterUpgrade, character: Character, charClass: CharacterClass | undefined) {
     const damageReduction = characterUpgrade as CharacterUpgradeBonusDamageReduction;
-    applyUpgradeToCharacterClass(charClass, damageReduction, character);
-}
-
-function applyUpgradeToCharacterClass(charClass: CharacterClass, characterUpgradeDamageReduction: CharacterUpgradeBonusDamageReduction,  character: Character){
-    if(!charClass.characterClassUpgrades) charClass.characterClassUpgrades = {};
-    charClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_DAMAGE_REDUCTION] = characterUpgradeDamageReduction;
-    character.damageTakenModifierFactor *= characterUpgradeDamageReduction.bonusDamageReduction;
+    if (charClass) {
+        if (!charClass.characterClassUpgrades) charClass.characterClassUpgrades = {};
+        charClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_DAMAGE_REDUCTION] = damageReduction;
+    }
+    character.damageTakenModifierFactor *= damageReduction.bonusDamageReduction;
 }
 

@@ -7,6 +7,7 @@ import { GameMap, MapChunk, determineMapKeysInDistance, mapKeyAndTileXYToPositio
 import { MapTileObjectClassBuilding, addMapObjectClassBuilding, paintClassBuilding } from "./mapObjectClassBuilding.js";
 import { addMapObjectFireAnimation } from "./mapObjectFireAnimation.js";
 import { addMapObjectKingSign } from "./mapObjectSign.js";
+import { addMapObjectUpgradeBuilding } from "./mapObjectUpgradeBuilding.js";
 
 export type MapObjectFunctions = {
     createStatsUi?: (mapObject: MapTileObject, game: Game) => StatsUIsPartContainer | undefined,
@@ -23,7 +24,7 @@ export type MapObjectsFunctions = {
 export type MapTileObject = {
     x: number,
     y: number,
-    name: string,
+    type: string,
     interactable?: boolean,
     image: string,
 }
@@ -34,10 +35,11 @@ export function addMapObjectsFunctions() {
     addMapObjectFireAnimation();
     addMapObjectKingSign();
     addMapObjectClassBuilding();
+    addMapObjectUpgradeBuilding();
 }
 
 export function createStatsUIForMabObject(mapTileObject: MapTileObject, game: Game): StatsUIsPartContainer | undefined {
-    const mapObjectFuntions = MAP_OBJECTS_FUNCTIONS[mapTileObject.name];
+    const mapObjectFuntions = MAP_OBJECTS_FUNCTIONS[mapTileObject.type];
     if (mapObjectFuntions && mapObjectFuntions.createStatsUi) {
         return mapObjectFuntions.createStatsUi(mapTileObject, game);
     }
@@ -75,7 +77,7 @@ export function findMapKeyForMapObject(mapTileObject: MapTileObject, map: GameMa
 }
 
 export function interactWithMapObject(interacter: Character, mapTileObject: MapTileObject, specialAction: String, game: Game) {
-    const mapObjectFuntions = MAP_OBJECTS_FUNCTIONS[mapTileObject.name];
+    const mapObjectFuntions = MAP_OBJECTS_FUNCTIONS[mapTileObject.type];
     if (specialAction === "interact1") {
         if (mapObjectFuntions && mapObjectFuntions.interact1) {
             mapObjectFuntions.interact1(interacter, mapTileObject, game);
@@ -89,7 +91,7 @@ export function interactWithMapObject(interacter: Character, mapTileObject: MapT
 
 export function paintMapChunkObjects(ctx: CanvasRenderingContext2D, mapChunk: MapChunk, paintTopLeft: Position, game: Game) {
     for (let mapObject of mapChunk.objects) {
-        const mapObjectFuntions = MAP_OBJECTS_FUNCTIONS[mapObject.name];
+        const mapObjectFuntions = MAP_OBJECTS_FUNCTIONS[mapObject.type];
         if (mapObjectFuntions) {
             if (mapObjectFuntions.paint) {
                 mapObjectFuntions.paint(ctx, mapObject, paintTopLeft, game);

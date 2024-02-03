@@ -99,7 +99,7 @@ function createStatsUiKingSign(mapObject: MapTileObject, game: Game): StatsUIsPa
     kingCopy.type = CHARACTER_TYPE_KING_ENEMY;
     resetCharacter(kingCopy, game);
 
-    return createCharacterStatsUIPartContainer(game.ctx, kingCopy, game.UI.statsUIs, game, mapObject.name);
+    return createCharacterStatsUIPartContainer(game.ctx, kingCopy, game.UI.statsUIs, game, mapObject.type);
 }
 
 function paintKingSign(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, paintTopLeft: Position, game: Game) {

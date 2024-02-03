@@ -1,8 +1,6 @@
-import { Game, Position } from "./gameModel.js";
-import { GAME_IMAGES, loadImage } from "./imageLoad.js";
-import { GameMap, MapChunk } from "./map/map.js";
-import { MapTileObjectClassBuilding, MAP_OBJECT_CLASS_BUILDING, paintClassBuilding } from "./map/mapObjectClassBuilding.js";
-import { MapTileObject } from "./map/mapObjects.js";
+import { Game, Position } from "../../gameModel.js";
+import { GameMap, MapChunk } from "../map.js";
+import { MapTileObjectClassBuilding } from "../mapObjectClassBuilding.js";
 
 export type Building = {
     type: string,
@@ -32,7 +30,7 @@ export function addExistingBuildingsToSpawnChunk(mapChunk: MapChunk, game: Game)
         const mapObject: MapTileObjectClassBuilding = {
             x: building.tileX,
             y: building.tileY,
-            name: MAP_OBJECT_CLASS_BUILDING,
+            type: building.type,
             interactable: true,
             buildingId: building.id,
             image: building.image,

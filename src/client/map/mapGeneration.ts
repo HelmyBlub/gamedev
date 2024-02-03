@@ -1,4 +1,4 @@
-import { addExistingBuildingsToSpawnChunk } from "../building.js";
+import { addExistingBuildingsToSpawnChunk } from "./buildings/building.js";
 import { createFixPositionRespawnEnemies } from "../character/enemy/fixPositionRespawnEnemyModel.js";
 import { takeTimeMeasure } from "../game.js";
 import { Game, IdCounter, Position } from "../gameModel.js";
@@ -91,7 +91,7 @@ function createSpawnChunk(mapChunk: MapChunk, chunkLength: number, game: Game) {
     mapChunk.objects.push({
         x: 4,
         y: 4,
-        name: MAP_OBJECT_FIRE_ANIMATION,
+        type: MAP_OBJECT_FIRE_ANIMATION,
         image: IMAGE_FIRE_ANIMATION,
     });
     for (let i = 0; i < chunkLength; i++) {

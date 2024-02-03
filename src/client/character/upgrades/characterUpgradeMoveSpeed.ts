@@ -36,10 +36,12 @@ export function characterCreateAndAddUpgradeBonusSpeed(charClass: CharacterClass
     character.moveSpeed += bonusSpeed;
 }
 
-function addUpgrade(characterUpgrade: CharacterUpgrade, character: Character, charClass: CharacterClass){
-    if(!charClass.characterClassUpgrades) charClass.characterClassUpgrades = {};
+function addUpgrade(characterUpgrade: CharacterUpgrade, character: Character, charClass: CharacterClass | undefined) {
     const bonusHp = characterUpgrade as CharacterUpgradeBonusMoveSpeed;
-    charClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_MOVE_SPEED] = characterUpgrade;
+    if (charClass) {
+        if (!charClass.characterClassUpgrades) charClass.characterClassUpgrades = {};
+        charClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_MOVE_SPEED] = characterUpgrade;
+    }
     character.moveSpeed += bonusHp.bonusMoveSpeed;
 }
 
@@ -58,14 +60,14 @@ function getOptions(character: Character, game: Game): UpgradeOptionAndProbabili
     return upgradeOptions;
 }
 
-function executeOption(option: UpgradeOption, character: Character){
-    if(option.classIdRef === undefined) return;
+function executeOption(option: UpgradeOption, character: Character) {
+    if (option.classIdRef === undefined) return;
     let up: CharacterUpgradeBonusMoveSpeed;
     const charClass = findCharacterClassById(character, option.classIdRef);
-    if(!charClass) return;
-    if(charClass.characterClassUpgrades === undefined) charClass.characterClassUpgrades = {};
+    if (!charClass) return;
+    if (charClass.characterClassUpgrades === undefined) charClass.characterClassUpgrades = {};
     if (charClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_MOVE_SPEED] === undefined) {
-        up = {level: 0, bonusMoveSpeed: 0 };
+        up = { level: 0, bonusMoveSpeed: 0 };
         charClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_MOVE_SPEED] = up;
     } else {
         up = charClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_MOVE_SPEED] as CharacterUpgradeBonusMoveSpeed;

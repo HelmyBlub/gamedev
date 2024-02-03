@@ -179,7 +179,7 @@ function placeKingSignObjects(mapChunk: MapChunk, chunkLength: number, chunkX: n
             const sign: MapTileObjectNextKingSign = {
                 x: Math.floor(chunkLength / 2) - 1,
                 y: 0,
-                name: MAP_OBJECT_KING_SIGN,
+                type: MAP_OBJECT_KING_SIGN,
                 kingDirection: "south",
                 interactable: true,
                 image: IMAGE_SIGN,
@@ -191,7 +191,7 @@ function placeKingSignObjects(mapChunk: MapChunk, chunkLength: number, chunkX: n
             const sign: MapTileObjectNextKingSign = {
                 x: Math.floor(chunkLength / 2) - 1,
                 y: chunkLength - 1,
-                name: MAP_OBJECT_KING_SIGN,
+                type: MAP_OBJECT_KING_SIGN,
                 kingDirection: "north",
                 interactable: true,
                 image: IMAGE_SIGN,
@@ -205,7 +205,7 @@ function placeKingSignObjects(mapChunk: MapChunk, chunkLength: number, chunkX: n
             const sign: MapTileObjectNextKingSign = {
                 x: 0,
                 y: Math.floor(chunkLength / 2) - 1,
-                name: MAP_OBJECT_KING_SIGN,
+                type: MAP_OBJECT_KING_SIGN,
                 kingDirection: "east",
                 interactable: true,
                 image: IMAGE_SIGN,
@@ -217,7 +217,7 @@ function placeKingSignObjects(mapChunk: MapChunk, chunkLength: number, chunkX: n
             const sign: MapTileObjectNextKingSign = {
                 x: chunkLength - 1,
                 y: Math.floor(chunkLength / 2) - 1,
-                name: MAP_OBJECT_KING_SIGN,
+                type: MAP_OBJECT_KING_SIGN,
                 kingDirection: "west",
                 interactable: true,
                 image: IMAGE_SIGN,

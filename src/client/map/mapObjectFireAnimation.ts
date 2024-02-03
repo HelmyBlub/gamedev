@@ -19,7 +19,7 @@ export function addMapObjectFireAnimation() {
 
 function paintFireAnimation(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, paintTopLeft: Position, game: Game) {
     const tileSize = game.state.map.tileSize;
-    const animationImage = GAME_IMAGES[mapObject.name];
+    const animationImage = GAME_IMAGES[mapObject.type];
     loadImage(animationImage);
     if (animationImage.imageRef?.complete) {
         const paintX = paintTopLeft.x + mapObject.y * tileSize;

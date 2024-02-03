@@ -3,7 +3,7 @@ import { paintAll } from "./gamePaint.js";
 import { createDefaultKeyBindings1, createDefaultUiKeyBindings, findNearesPastPlayerCharacter, findPlayerByCharacterId, gameInitPlayers, isAutoSkillActive } from "./player.js";
 import { MOUSE_ACTION, UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.js";
 import { Position, GameState, Game, IdCounter, Debugging, PaintTextData, ClientInfo } from "./gameModel.js";
-import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap } from "./map/map.js";
+import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap, getMapMidlePosition } from "./map/map.js";
 import { Character } from "./character/characterModel.js";
 import { generateMissingChunks, pastCharactersMapTilePositions } from "./map/mapGeneration.js";
 import { createFixPositionRespawnEnemiesOnInit } from "./character/enemy/fixPositionRespawnEnemyModel.js";
@@ -21,10 +21,12 @@ import { ABILITY_NAME_FEED_PET } from "./ability/petTamer/abilityFeedPet.js";
 import { ABILITY_NAME_LOVE_PET } from "./ability/petTamer/abilityLovePet.js";
 import { COMMAND_RESTART } from "./globalVars.js";
 import { consoleLogCombatlog } from "./combatlog.js";
-import { classBuildingCheckAllPlayerForLegendaryAbilitiesAndMoveBackToBuilding, mapObjectPlaceClassBuilding } from "./map/mapObjectClassBuilding.js";
+import { mapObjectPlaceClassBuilding } from "./map/mapObjectClassBuilding.js";
 import { hasPlayerChoosenStartClassUpgrade } from "./character/playerCharacters/playerCharacters.js";
 import { localStorageLoad, localStorageSavePastCharacters } from "./permanentData.js";
 import { MapTileObject, findNearesInteractableMapChunkObject } from "./map/mapObjects.js";
+import { classBuildingCheckAllPlayerForLegendaryAbilitiesAndMoveBackToBuilding } from "./map/buildings/classBuilding.js";
+import { mapObjectPlaceUpgradeBuilding } from "./map/mapObjectUpgradeBuilding.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -82,7 +84,6 @@ export function closeGame(game: Game) {
 
 export function gameInit(game: Game) {
     game.state.abilityObjects = [];
-    game.state.players = [];
     game.state.killCounter = 0;
     game.state.ended = false;
     game.state.triggerRestart = false;
@@ -317,6 +318,7 @@ export function deepCopy(object: any): any {
 
 export function endGame(game: Game, isKingKill: boolean = false) {
     game.state.ended = true;
+    giveCurrentyToPlayer(game, isKingKill);
     const newScore = calculateHighscoreOnGameEnd(game, isKingKill);
     if (isKingKill) {
         setPlayerAsKing(game);
@@ -328,6 +330,7 @@ export function endGame(game: Game, isKingKill: boolean = false) {
             if (myCharacter && myCharacter.combatlog) consoleLogCombatlog(myCharacter.combatlog);
         }
     }
+    mapObjectPlaceUpgradeBuilding(game);
     endGameReplayStuff(game, newScore);
     if (game.testing.record) {
         if (game.testing.record.data.replayPlayerInputs) {
@@ -530,6 +533,23 @@ function endGameReplayStuff(game: Game, newScore: number) {
         if (!moreReplays) {
             localStorageLoad(game);
         }
+    }
+}
+
+function giveCurrentyToPlayer(game: Game, isKingKill: boolean = false) {
+    let highestPlayerDistane = 0;
+    for (let i = 0; i < game.state.players.length; i++) {
+        const player = game.state.players[i];
+        const distance = Math.round(calculateDistance(player.character, getMapMidlePosition(game.state.map)));
+        if (distance > highestPlayerDistane) highestPlayerDistane = distance;
+    }
+    let currencyGain = Math.max(0, (highestPlayerDistane / 1000) - 2);
+    if (isKingKill && game.state.bossStuff.bosses.length >= 2) {
+        const boss = game.state.bossStuff.bosses[game.state.bossStuff.bosses.length - 2];
+        if (boss) currencyGain += boss.maxHp / 5000000;
+    }
+    for (let player of game.state.players) {
+        player.currency += currencyGain;
     }
 }
 

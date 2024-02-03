@@ -12,12 +12,12 @@ import { GAME_IMAGES, getImage } from "../../imageLoad.js";
 import { localStorageSaveNextKings } from "../../permanentData.js";
 import { changeTileIdOfMapChunk } from "../../map/map.js";
 import { getKingAreaMiddlePosition, getEntranceChunkAndTileXYForPosition } from "../../map/mapKingArea.js";
-import { classBuildingPutLegendaryCharacterStuffBackIntoBuilding, legendaryAbilityGiveBlessing } from "../../map/mapObjectClassBuilding.js";
 import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick, resetCharacter } from "../character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, PLAYER_BASE_HP, createCharacter } from "../characterModel.js";
 import { paintCharacterWithAbilitiesDefault, paintCharatersPets } from "../characterPaint.js";
 import { PathingCache } from "../pathing.js";
 import { getCelestialDirection } from "./bossEnemy.js";
+import { legendaryAbilityGiveBlessing, classBuildingPutLegendaryCharacterStuffBackIntoBuilding } from "../../map/buildings/classBuilding.js";
 
 export type KingEnemyCharacter = Character;
 export const CHARACTER_TYPE_KING_ENEMY = "KingEnemyCharacter";
@@ -115,7 +115,7 @@ function tickKingEnemyCharacter(enemy: KingEnemyCharacter, game: Game, pathingCa
 export function modifyCharacterToKing(boss: Character, game: Game) {
     boss.type = CHARACTER_TYPE_KING_ENEMY;
     let newHp = KING_BASE_HP
-    if(boss.characterClasses){
+    if (boss.characterClasses) {
         const hpIncreaseFactor = boss.maxHp / PLAYER_BASE_HP;
         newHp *= hpIncreaseFactor;
     }

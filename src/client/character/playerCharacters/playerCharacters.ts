@@ -1,6 +1,6 @@
 import { Game, IdCounter, Legendary, Position } from "../../gameModel.js"
 import { Character } from "../characterModel.js"
-import { CharacterUpgrade } from "../upgrades/characterUpgrades.js"
+import { CharacterUpgrade, CharacterUpgrades } from "../upgrades/characterUpgrades.js"
 import { UpgradeOption, UpgradeOptionAndProbability } from "../upgrade.js"
 import { addBallClass } from "./characterClassBall.js"
 import { Leveling } from "./levelingCharacter.js"
@@ -28,9 +28,7 @@ export type CharacterClass = {
         blessings: string[],
     },
     availableSkillPoints?: number,
-    characterClassUpgrades?: {
-        [key: string]: CharacterUpgrade,
-    }    
+    characterClassUpgrades?: CharacterUpgrades,
 }
 
 export type PlayerCharacterClassesFunctions = {
@@ -66,7 +64,7 @@ export function createCharacterChooseUpgradeOptions(game: Game): UpgradeOption[]
             identifier: key
         };
         let functions = PLAYER_CHARACTER_CLASSES_FUNCTIONS[key];
-        if(functions && functions.getLongUiText){
+        if (functions && functions.getLongUiText) {
             option.displayLongText = functions.getLongUiText();
         }
         upgradeOptions.push(option);
@@ -75,33 +73,33 @@ export function createCharacterChooseUpgradeOptions(game: Game): UpgradeOption[]
     return upgradeOptions;
 }
 
-export function shareCharactersTradeablePreventedMultipleClass(fromCharacter: Character, toCharacter: Character): boolean{
-    if(!fromCharacter.characterClasses) return false;
+export function shareCharactersTradeablePreventedMultipleClass(fromCharacter: Character, toCharacter: Character): boolean {
+    if (!fromCharacter.characterClasses) return false;
     const takeoverClass = findMainCharacterClass(fromCharacter);
     return hasCharacterPreventedMultipleClass(takeoverClass, toCharacter);
 }
 
-export function hasCharacterPreventedMultipleClass(newCharacterClassName: string, toCharacter: Character): boolean{
+export function hasCharacterPreventedMultipleClass(newCharacterClassName: string, toCharacter: Character): boolean {
     const newCharacterClassFunctions = PLAYER_CHARACTER_CLASSES_FUNCTIONS[newCharacterClassName];
-    if(newCharacterClassFunctions && !newCharacterClassFunctions.preventMultiple) return false;
-    if(toCharacter.characterClasses){
+    if (newCharacterClassFunctions && !newCharacterClassFunctions.preventMultiple) return false;
+    if (toCharacter.characterClasses) {
         const overtaken = toCharacter.characterClasses.find(c => c.className === newCharacterClassName);
-        if(overtaken) return true;
-    }    
+        if (overtaken) return true;
+    }
     return false;
 }
 
-export function findMainCharacterClass(character: Character): string{
-    if(character.characterClasses){
-        for(let charClass of character.characterClasses){
-            if(!charClass.gifted && !charClass.legendary) return charClass.className;
+export function findMainCharacterClass(character: Character): string {
+    if (character.characterClasses) {
+        for (let charClass of character.characterClasses) {
+            if (!charClass.gifted && !charClass.legendary) return charClass.className;
         }
     }
     return "";
 }
 
-export function hasPlayerChoosenStartClassUpgrade(character: Character): boolean{
-    if(character.upgradeChoices.length > 0 && character.upgradeChoices[0].type === "ChooseClass"){
+export function hasPlayerChoosenStartClassUpgrade(character: Character): boolean {
+    if (character.upgradeChoices.length > 0 && character.upgradeChoices[0].type === "ChooseClass") {
         return false;
     }
     return true;

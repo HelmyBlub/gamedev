@@ -12,7 +12,7 @@ import { GAME_IMAGES, loadImage } from "./imageLoad.js";
 import { getMapMidlePosition } from "./map/map.js";
 import { MAP_OBJECTS_FUNCTIONS, findNearesInteractableMapChunkObject } from "./map/mapObjects.js";
 import { paintMap, paintMapCharacters } from "./map/mapPaint.js";
-import { findNearesPastPlayerCharacter, findPlayerById, isAutoSkillActive } from "./player.js";
+import { Player, findNearesPastPlayerCharacter, findPlayerById, isAutoSkillActive } from "./player.js";
 import { playerInputBindingToDisplayValue } from "./playerInput.js";
 import { paintStatsUis } from "./statsUI.js";
 
@@ -181,7 +181,7 @@ function paintClosestInteractable(ctx: CanvasRenderingContext2D, cameraPosition:
     if (pastCharacter) {
         paintPastPlayerTakeoverInfo(ctx, pastCharacter, character, cameraPosition, game);
     } else if (interactableMapObject) {
-        const mapObejctFunctions = MAP_OBJECTS_FUNCTIONS[interactableMapObject.name];
+        const mapObejctFunctions = MAP_OBJECTS_FUNCTIONS[interactableMapObject.type];
         if (mapObejctFunctions && mapObejctFunctions.paintInteract) {
             mapObejctFunctions.paintInteract(ctx, interactableMapObject, character, game);
         }
@@ -363,10 +363,11 @@ function paintKillCounter(ctx: CanvasRenderingContext2D, killCounter: number, ga
 function paintMyCharacterStats(ctx: CanvasRenderingContext2D, game: Game) {
     const player = findPlayerById(game.state.players, game.multiplayer.myClientId);
     if (player === null) return;
-    paintPlayerStats(ctx, player.character, getTimeSinceFirstKill(game.state), game);
+    paintPlayerStats(ctx, player, getTimeSinceFirstKill(game.state), game);
 }
 
-function paintPlayerStats(ctx: CanvasRenderingContext2D, character: Character, gameTime: number, game: Game) {
+function paintPlayerStats(ctx: CanvasRenderingContext2D, player: Player, gameTime: number, game: Game) {
+    const character = player.character;
     const distance = Math.round(calculateDistance(character, getMapMidlePosition(game.state.map)));
     ctx.fillStyle = "black";
     ctx.font = "18px Arial";
@@ -378,6 +379,7 @@ function paintPlayerStats(ctx: CanvasRenderingContext2D, character: Character, g
         );
     }
     paintTextWithOutline(ctx, "white", "black", "HP: " + Math.ceil(character.hp), 100, 20);
+    if (player.currency > 0) paintTextWithOutline(ctx, "white", "black", "$ " + Math.ceil(player.currency), 300, 20);
     paintTextWithOutline(ctx, "white", "black", "Time: " + Math.round(gameTime / 1000), 400, 20);
     paintTextWithOutline(ctx, "white", "black", "Distance: " + distance, 10, 40);
 

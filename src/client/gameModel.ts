@@ -12,7 +12,7 @@ import { Player } from "./player.js";
 import { PlayerInput } from "./playerInput.js";
 import { nextRandom, RandomSeed } from "./randomNumberGenerator.js";
 import { StatsUIs, StatsUIPart, createDefaultEmptyStatsUis } from "./statsUI.js";
-import { Building } from "./building.js";
+import { Building } from "./map/buildings/building.js";
 
 export type Position = {
     x: number,
