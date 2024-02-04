@@ -6,7 +6,7 @@ import { chunkXYToMapKey, mapKeyAndTileXYToPosition } from "./map.js";
 import { MAP_OBJECTS_FUNCTIONS, MapTileObject, findMapKeyForMapObject } from "./mapObjects.js";
 import { localStorageSaveBuildings } from "../permanentData.js";
 import { StatsUIsPartContainer, createDefaultStatsUiContainer } from "../statsUI.js";
-import { UPGRADE_BUILDING, UPGRADE_BUILDINGS_FUNCTIONS, createBuildingUpgradeBuilding, upgradeBuildingBuyUpgrade, upgradeBuildingFindById, upgradeBuildingNextUpgradeBonusAmount, upgradeBuildingNextUpgradeCosts } from "./buildings/upgradeBuilding.js";
+import { UPGRADE_BUILDING, UPGRADE_BUILDINGS_FUNCTIONS, createBuildingUpgradeBuilding, upgradeBuildingBuyUpgrade, upgradeBuildingFindById, upgradeBuildingGetInvestedText, upgradeBuildingNextUpgradeBonusAmount, upgradeBuildingNextUpgradeCosts, upgradeBuildingRefund } from "./buildings/upgradeBuilding.js";
 import { playerInputBindingToDisplayValue } from "../playerInput.js";
 import { findPlayerByCharacterId } from "../player.js";
 import { UPGRADE_BUILDING_HP } from "./buildings/upgradeBuildingHp.js";
@@ -19,6 +19,7 @@ export function addMapObjectUpgradeBuilding() {
     MAP_OBJECTS_FUNCTIONS[UPGRADE_BUILDING] = {
         createStatsUi: createStatsUiClassBuilding,
         interact1: interactBuy,
+        interact2: interactRefund,
         paintInteract: paintInteract,
     }
 }
@@ -74,6 +75,15 @@ function interactBuy(interacter: Character, mapObject: MapTileObject, game: Game
     upgradeBuildingBuyUpgrade(player, upgradeBuilding.upgradeType, game);
 }
 
+function interactRefund(interacter: Character, mapObject: MapTileObject, game: Game) {
+    const player = findPlayerByCharacterId(game.state.players, interacter.id);
+    if (!player) return;
+    const mapObjectUpgradeBuilding = mapObject as MapTileObjectUpgradeBuilding;
+    const upgradeBuilding = upgradeBuildingFindById(mapObjectUpgradeBuilding.buildingId, game);
+    if (!upgradeBuilding) return;
+    upgradeBuildingRefund(player, upgradeBuilding.upgradeType, game);
+}
+
 function paintInteract(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, interacter: Character, game: Game) {
     const key = findMapKeyForMapObject(mapObject, game.state.map);
     if (!key) return;
@@ -87,17 +97,24 @@ function paintInteract(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, 
     const topMiddlePos = mapKeyAndTileXYToPosition(key, mapObject.x, mapObject.y, map);
     topMiddlePos.y -= map.tileSize / 2;
 
-    const bonusHP = upgradeBuildingNextUpgradeBonusAmount(player.permanentData.upgrades, upgradeBuilding.upgradeType, game);
+    const bonusAmount = upgradeBuildingNextUpgradeBonusAmount(player.permanentData.upgrades, upgradeBuilding.upgradeType, game);
     const upgradeCosts = upgradeBuildingNextUpgradeCosts(player.permanentData.upgrades, upgradeBuilding.upgradeType, game);
+    const investedText = upgradeBuildingGetInvestedText(player.permanentData.upgrades, upgradeBuilding.upgradeType, game);
 
     const texts = [];
+    texts.push(`Work in progress`);
     texts.push(`Upgrade Building:`);
     texts.push(`Type: ${upgradeBuilding.upgradeType}`);
-    texts.push(`Costs $${upgradeCosts} for ${bonusHP} HP.`);
-    const interactBurrowKey = playerInputBindingToDisplayValue("interact1", game);
-    texts.push(`Press <${interactBurrowKey}> to buy.`);
+    texts.push(`Costs $${upgradeCosts} for ${bonusAmount}.`);
+    const interactBuyKey = playerInputBindingToDisplayValue("interact1", game);
+    texts.push(`Press <${interactBuyKey}> to buy.`);
 
-    texts.push(`Work in progress`);
+    if (investedText) {
+        const interactRefundKey = playerInputBindingToDisplayValue("interact2", game);
+        texts.push(investedText);
+        texts.push(`Press <${interactRefundKey}> to refund.`);
+    }
+
     const paintPos = getPointPaintPosition(ctx, topMiddlePos, cameraPosition);
     paintTextLinesWithKeys(ctx, texts, paintPos, 20, true, true);
 }

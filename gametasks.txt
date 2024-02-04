@@ -9,12 +9,12 @@ current tasks:
             - % damage up
             - % damage reduction
             - money gain increase
-        - upgrade building refund button. Lose all bonus stats and get money back
         - balancing
                 
 - fix: laod all images on domLoad, because images loaded later might not be visible as server goes away
 - two times same upgrade with hp reg with two classes and tower build?
 - fix: outdated permanentState crashes game. Build some auto clear localStorage
+- check: setTimeout creating bigger call stack?
         
 
 - think about next bigger feature 

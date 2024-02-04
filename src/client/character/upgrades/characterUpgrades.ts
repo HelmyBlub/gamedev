@@ -9,6 +9,7 @@ import { addCharacterUpgradeBonusDamageReduction } from "./characterUpgradeDamag
 
 export type CharacterUpgrade = {
     level: number,
+    investedMoney?: number,
 }
 
 export type CharacterUpgrades = {

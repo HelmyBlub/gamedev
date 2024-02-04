@@ -8,10 +8,28 @@ export const UPGRADE_BUILDING_HP = "Upgrade HP";
 
 export function addUpgradeBuildingHp() {
     UPGRADE_BUILDINGS_FUNCTIONS[UPGRADE_BUILDING_HP] = {
-        getCosts: getCosts,
-        getAmount: getAmount,
         buyUpgrade: buyUpgrade,
+        getAmount: getAmount,
+        getCosts: getCosts,
+        getInvestedText: getInvestedText,
+        refund: refund,
     }
+}
+
+function refund(player: Player, game: Game) {
+    let hpUpgrade: CharacterUpgradeBonusHP | undefined = player.permanentData.upgrades[CHARACTER_UPGRADE_BONUS_HP] as CharacterUpgradeBonusHP;
+    if (!hpUpgrade) return;
+    player.character.maxHp -= hpUpgrade.bonusHp;
+    player.character.hp -= hpUpgrade.bonusHp;
+    player.permanentData.money += hpUpgrade.investedMoney!;
+    hpUpgrade.bonusHp = 0;
+    hpUpgrade.investedMoney = 0;
+}
+
+function getInvestedText(characterUpgrades: CharacterUpgrades, game: Game): string | undefined {
+    let hpUpgrade: CharacterUpgradeBonusHP | undefined = characterUpgrades[CHARACTER_UPGRADE_BONUS_HP] as CharacterUpgradeBonusHP;
+    if (!hpUpgrade) return undefined;
+    return `Invested $${hpUpgrade.investedMoney} for ${hpUpgrade.bonusHp} HP`;
 }
 
 function getCosts(characterUpgrades: CharacterUpgrades, game: Game): number {
@@ -32,6 +50,7 @@ function buyUpgrade(player: Player, game: Game) {
         hpUpgrade = {
             level: 0,
             bonusHp: 0,
+            investedMoney: 0,
         }
         player.permanentData.upgrades[CHARACTER_UPGRADE_BONUS_HP] = hpUpgrade;
     }
@@ -43,6 +62,7 @@ function buyUpgrade(player: Player, game: Game) {
         player.character.maxHp += bonusHP;
         player.character.hp += bonusHP;
         player.permanentData.money -= upgradeCosts;
+        hpUpgrade.investedMoney! += upgradeCosts;
     }
 }
 

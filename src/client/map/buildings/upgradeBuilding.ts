@@ -14,9 +14,11 @@ export type UpgradeBuilding = Building & {
     upgradeType: string,
 }
 export type UpgradeBuildingFunctions = {
-    getCosts: (characterUpgrades: CharacterUpgrades, game: Game) => number,
-    getAmount: (characterUpgrades: CharacterUpgrades, game: Game) => number,
     buyUpgrade: (player: Player, game: Game) => void,
+    getAmount: (characterUpgrades: CharacterUpgrades, game: Game) => number,
+    getCosts: (characterUpgrades: CharacterUpgrades, game: Game) => number,
+    getInvestedText: (characterUpgrades: CharacterUpgrades, game: Game) => string | undefined,
+    refund: (player: Player, game: Game) => void,
 }
 
 export type UpgradeBuildingsFunctions = {
@@ -68,4 +70,19 @@ export function upgradeBuildingBuyUpgrade(player: Player, upgradeBuildingKey: st
     if (upgradeBuildingFunctions) {
         upgradeBuildingFunctions.buyUpgrade(player, game);
     }
+}
+
+export function upgradeBuildingRefund(player: Player, upgradeBuildingKey: string, game: Game) {
+    const upgradeBuildingFunctions = UPGRADE_BUILDINGS_FUNCTIONS[upgradeBuildingKey];
+    if (upgradeBuildingFunctions) {
+        upgradeBuildingFunctions.refund(player, game);
+    }
+}
+
+export function upgradeBuildingGetInvestedText(characterUpgrades: CharacterUpgrades, upgradeBuildingKey: string, game: Game): string | undefined {
+    const upgradeBuildingFunctions = UPGRADE_BUILDINGS_FUNCTIONS[upgradeBuildingKey];
+    if (upgradeBuildingFunctions) {
+        return upgradeBuildingFunctions.getInvestedText(characterUpgrades, game);
+    }
+    return undefined;
 }

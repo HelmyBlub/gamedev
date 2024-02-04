@@ -11,9 +11,27 @@ export function addUpgradeBuildingMovementSpeed() {
     UPGRADE_BUILDINGS_FUNCTIONS[UPGRADE_BUILDING_MOVEMENT_SPEED] = {
         getCosts: getCosts,
         getAmount: getAmount,
+        getInvestedText: getInvestedText,
         buyUpgrade: buyUpgrade,
+        refund: refund,
     }
 }
+
+function refund(player: Player, game: Game) {
+    let hpUpgrade: CharacterUpgradeBonusMoveSpeed | undefined = player.permanentData.upgrades[CHARACTER_UPGRADE] as CharacterUpgradeBonusMoveSpeed;
+    if (!hpUpgrade) return;
+    player.character.moveSpeed -= hpUpgrade.bonusMoveSpeed;
+    player.permanentData.money += hpUpgrade.investedMoney!;
+    hpUpgrade.bonusMoveSpeed = 0;
+    hpUpgrade.investedMoney = 0;
+}
+
+function getInvestedText(characterUpgrades: CharacterUpgrades, game: Game): string | undefined {
+    let hpUpgrade: CharacterUpgradeBonusMoveSpeed | undefined = characterUpgrades[CHARACTER_UPGRADE] as CharacterUpgradeBonusMoveSpeed;
+    if (!hpUpgrade) return undefined;
+    return `Invested $${hpUpgrade.investedMoney} for ${hpUpgrade.bonusMoveSpeed.toFixed(2)} bonus move speed.`;
+}
+
 
 function getCosts(characterUpgrades: CharacterUpgrades, game: Game): number {
     const upgrade: CharacterUpgrade | undefined = characterUpgrades[CHARACTER_UPGRADE];
@@ -32,6 +50,7 @@ function buyUpgrade(player: Player, game: Game) {
         moveSpeedUpgrade = {
             level: 0,
             bonusMoveSpeed: 0,
+            investedMoney: 0,
         }
         player.permanentData.upgrades[CHARACTER_UPGRADE] = moveSpeedUpgrade;
     }
@@ -40,6 +59,7 @@ function buyUpgrade(player: Player, game: Game) {
     const upgradeCosts = getCosts(player.permanentData.upgrades, game);
     if (player.permanentData.money >= upgradeCosts) {
         moveSpeedUpgrade.bonusMoveSpeed += bonusMoveSpeed;
+        moveSpeedUpgrade.investedMoney! += upgradeCosts;
         player.character.moveSpeed += bonusMoveSpeed;
         player.permanentData.money -= upgradeCosts;
     }
