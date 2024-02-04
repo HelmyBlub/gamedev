@@ -23,7 +23,7 @@ import { COMMAND_RESTART } from "./globalVars.js";
 import { consoleLogCombatlog } from "./combatlog.js";
 import { mapObjectPlaceClassBuilding } from "./map/mapObjectClassBuilding.js";
 import { hasPlayerChoosenStartClassUpgrade } from "./character/playerCharacters/playerCharacters.js";
-import { localStorageLoad, localStorageSavePastCharacters } from "./permanentData.js";
+import { localStorageLoad, localStorageSavePastCharacters, localStorageSavePermanentPlayerData } from "./permanentData.js";
 import { MapTileObject, findNearesInteractableMapChunkObject } from "./map/mapObjects.js";
 import { classBuildingCheckAllPlayerForLegendaryAbilitiesAndMoveBackToBuilding } from "./map/buildings/classBuilding.js";
 import { mapObjectPlaceUpgradeBuilding } from "./map/mapObjectUpgradeBuilding.js";
@@ -259,7 +259,7 @@ export function createPaintTextData(position: Position, text: string, color: str
     }
 }
 
-export function getClientInfo(clientId: number, game: Game): ClientInfo | undefined {
+export function findClientInfo(clientId: number, game: Game): ClientInfo | undefined {
     for (let clientInfo of game.state.clientInfos) {
         if (clientInfo.id === clientId) {
             return clientInfo;
@@ -268,9 +268,9 @@ export function getClientInfo(clientId: number, game: Game): ClientInfo | undefi
     return undefined;
 }
 
-export function getClientInfoByCharacterId(characterId: number, game: Game): ClientInfo | undefined {
+export function findClientInfoByCharacterId(characterId: number, game: Game): ClientInfo | undefined {
     const player = findPlayerByCharacterId(game.state.players, characterId);
-    if (player) return getClientInfo(player.clientId, game);
+    if (player) return findClientInfo(player.clientId, game);
     return undefined;
 }
 
@@ -422,7 +422,7 @@ export function saveCharacterAsPastCharacter(character: Character, game: Game) {
 }
 
 export function autoSendMousePositionHandler(ownerId: number, identifier: string, activateAutoSend: boolean, castPosition: Position | undefined, game: Game) {
-    const clientInfo = getClientInfoByCharacterId(ownerId, game);
+    const clientInfo = findClientInfoByCharacterId(ownerId, game);
     if (!clientInfo) return;
     if (clientInfo.id === game.multiplayer.myClientId) {
         const sendForOwners = game.multiplayer.autosendMousePosition.sendForOwners;
@@ -549,8 +549,9 @@ function giveCurrentyToPlayer(game: Game, isKingKill: boolean = false) {
         if (boss) currencyGain += boss.maxHp / 5000000;
     }
     for (let player of game.state.players) {
-        player.currency += currencyGain;
+        player.permanentData.money += currencyGain;
     }
+    localStorageSavePermanentPlayerData(game);
 }
 
 function tick(gameTimePassed: number, game: Game) {

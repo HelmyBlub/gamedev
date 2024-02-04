@@ -1,7 +1,7 @@
 import { characterTakeDamage, getCharactersTouchingLine, getRandomAlivePlayerCharacter } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
 import { UpgradeOptionAndProbability, UpgradeOption, AbilityUpgradeOption } from "../../character/upgrade.js";
-import { autoSendMousePositionHandler, calcNewPositionMovedInDirection, calculateDirection, getClientInfoByCharacterId, getNextId } from "../../game.js";
+import { autoSendMousePositionHandler, calcNewPositionMovedInDirection, calculateDirection, findClientInfoByCharacterId, getNextId } from "../../game.js";
 import { Position, Game, IdCounter, ClientInfo, FACTION_ENEMY } from "../../gameModel.js";
 import { GAME_IMAGES } from "../../imageLoad.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, findAbilityById } from "../ability.js";
@@ -430,7 +430,7 @@ function tickAbilitySnipe(abilityOwner: AbilityOwner, ability: Ability, game: Ga
         }
     }
     if (abilitySnipe.currentCharges > 0 && abilitySnipe.shotNextAllowedTime && game.state.time >= abilitySnipe.nextAllowedShotTime) {
-        const clientInfo: ClientInfo | undefined = getClientInfoByCharacterId(abilityOwner.id, game);
+        const clientInfo: ClientInfo | undefined = findClientInfoByCharacterId(abilityOwner.id, game);
         let castPosition = { x: 0, y: 0 };
         if (clientInfo) {
             castPosition = clientInfo.lastMousePosition;
@@ -446,7 +446,7 @@ function tickAbilitySnipe(abilityOwner: AbilityOwner, ability: Ability, game: Ga
         tickAbilityUpgradeStayStill(abilitySnipe, abilityOwner, game);
     }
     if (abilitySnipe.shotNextAllowedTime) {
-        const clientInfo: ClientInfo | undefined = getClientInfoByCharacterId(abilityOwner.id, game);
+        const clientInfo: ClientInfo | undefined = findClientInfoByCharacterId(abilityOwner.id, game);
         if (clientInfo) {
             abilitySnipe.lastSniperRiflePaintDirection = calculateDirection(abilityOwner, clientInfo.lastMousePosition);
         }

@@ -1,5 +1,5 @@
 import { AbilityUpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
-import { calcNewPositionMovedInDirection, calculateDirection, getClientInfoByCharacterId } from "../../game.js";
+import { calcNewPositionMovedInDirection, calculateDirection, findClientInfoByCharacterId } from "../../game.js";
 import { ClientInfo, Game, Position } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { Ability, AbilityOwner } from "../ability.js";
@@ -61,7 +61,7 @@ export function tickAbilityUpgradeMoreRifles(abilitySnipe: AbilitySnipe, ability
     upgrade.rotationDirection += 0.02;
 
     if (abilitySnipe.shotNextAllowedTime) {
-        const clientInfo: ClientInfo | undefined = getClientInfoByCharacterId(abilityOwner.id, game);
+        const clientInfo: ClientInfo | undefined = findClientInfoByCharacterId(abilityOwner.id, game);
         if (clientInfo) {
             for (let i = 0; i < upgrade.numberRifles; i++) {
                 const position = getMoreRiflesPosition(abilityOwner, upgrade, i);
@@ -108,8 +108,8 @@ function getAbilityUpgradeMoreRiflesUiText(ability: Ability): string {
     return `${ABILITY_SNIPE_UPGRADE_MORE_RIFLES} +${upgrade.numberRifles}` + (upgrade.upgradeSynergy ? " (Synergy)" : "");
 }
 
-function addSynergyUpgradeOption(ability: Ability): boolean{
-    if(ability.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE]){
+function addSynergyUpgradeOption(ability: Ability): boolean {
+    if (ability.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE]) {
         return true;
     }
     return false;

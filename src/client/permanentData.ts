@@ -4,16 +4,19 @@ import { Character } from "./character/characterModel.js";
 import { changeCharacterAndAbilityIds, getNextId } from "./game.js";
 import { CelestialDirection, Game, IdCounter, NextKings, PastPlayerCharacters } from "./gameModel.js";
 import { ClassBuilding } from "./map/buildings/classBuilding.js";
+import { PermanentPlayerData } from "./player.js";
 
 export type PermanentDataParts = {
     pastCharacters?: PastPlayerCharacters,
     nextKings?: NextKings,
     buildings?: Building[],
+    permanentPlayerData?: PermanentPlayerData,
 }
 
 const LOCALSTORAGE_PASTCHARACTERS = "pastCharacters";
 const LOCALSTORAGE_NEXTKINGS = "nextKings";
 const LOCALSTORAGE_BUILDINGS = "buildings";
+const LOCALSTORAGE_PLAYER_DATA = "playerData";
 
 export function localStorageLoad(game: Game) {
     const localStoragePastCharacters = localStorage.getItem(LOCALSTORAGE_PASTCHARACTERS);
@@ -22,6 +25,8 @@ export function localStorageLoad(game: Game) {
     if (localStorageNextKings) loadNextKings(JSON.parse(localStorageNextKings), game);
     const localStorageBuildings = localStorage.getItem(LOCALSTORAGE_BUILDINGS);
     if (localStorageBuildings) loadBuildings(JSON.parse(localStorageBuildings), game);
+    const localStoragePlayerData = localStorage.getItem(LOCALSTORAGE_PLAYER_DATA);
+    if (localStoragePlayerData) loadPlayerData(JSON.parse(localStoragePlayerData), game);
 }
 
 export function localStorageSaveNextKings(game: Game) {
@@ -40,6 +45,12 @@ export function localStorageSavePastCharacters(game: Game) {
 export function localStorageSaveBuildings(game: Game) {
     if (!game.multiplayer.disableLocalStorage && !game.testing.replay) {
         localStorage.setItem(LOCALSTORAGE_BUILDINGS, JSON.stringify(game.state.buildings));
+    }
+}
+
+export function localStorageSavePermanentPlayerData(game: Game) {
+    if (!game.multiplayer.disableLocalStorage && !game.testing.replay) {
+        localStorage.setItem(LOCALSTORAGE_PLAYER_DATA, JSON.stringify(game.state.players[0].permanentData));
     }
 }
 
@@ -65,6 +76,12 @@ export function loadBuildings(buildings: Building[], game: Game) {
     game.state.buildings = buildings;
     for (let building of buildings) {
         changeBuildingIds(building, game.state.idCounter, game);
+    }
+}
+
+export function loadPlayerData(playerData: PermanentPlayerData, game: Game) {
+    if (game.state.players.length > 0) {
+        game.state.players[0].permanentData = playerData;
     }
 }
 

@@ -4,7 +4,7 @@ import { Character } from "./character/characterModel.js";
 import { Game, Position } from "./gameModel.js";
 import { websocketConnect } from "./multiplayerConenction.js";
 import { ABILITIES_FUNCTIONS } from "./ability/ability.js";
-import { calculateDirection, getCameraPosition, getClientInfo, resetGameNonStateData, takeTimeMeasure } from "./game.js";
+import { calculateDirection, getCameraPosition, findClientInfo, resetGameNonStateData, takeTimeMeasure } from "./game.js";
 import { executeUpgradeOptionChoice } from "./character/upgrade.js";
 import { canCharacterTradeAbilityOrPets, characterTradeAbilityAndPets } from "./character/character.js";
 import { shareCharactersTradeablePreventedMultipleClass } from "./character/playerCharacters/playerCharacters.js";
@@ -358,7 +358,7 @@ function playerAction(clientId: number, data: any, game: Game) {
                 interactKeys(character, special, game);
             }
         } else if (MOUSE_ACTION === action) {
-            const client = getClientInfo(clientId, game);
+            const client = findClientInfo(clientId, game);
             if (client) {
                 client.lastMousePosition = data.mousePosition;
             }

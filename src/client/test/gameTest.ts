@@ -32,7 +32,7 @@ function testPlayerClasses(game: Game) {
     replay.testInputFileQueue.push("/data/testInputShortBuilder.json");
     replay.testInputFileQueue.push("/data/testInputShortSniper.json");
     replay.testInputFileQueue.push("/data/testInputShortTamer.json");
-    //    replay.testInputFileQueue.push("/data/testInputLongTamer.json");
+    replay.testInputFileQueue.push("/data/testInputLongTamer.json");
     replay.testInputFileQueue.push("/data/testInputLongBall.json");
     replay.testInputFileQueue.push("/data/testInputLongSniper.json");
     replay.testInputFileQueue.push("/data/testInputLongBuilder.json");

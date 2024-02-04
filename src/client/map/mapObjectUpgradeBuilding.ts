@@ -67,22 +67,22 @@ function createStatsUiClassBuilding(mapObject: MapTileObject, game: Game): Stats
 function interactLevelUp(interacter: Character, mapObject: MapTileObject, game: Game) {
     const player = findPlayerByCharacterId(game.state.players, interacter.id);
     if (!player) return;
-    let hpUpgrade: CharacterUpgradeBonusHP | undefined = player.upgrades[CHARACTER_UPGRADE_BONUS_HP] as CharacterUpgradeBonusHP;
+    let hpUpgrade: CharacterUpgradeBonusHP | undefined = player.permanentData.upgrades[CHARACTER_UPGRADE_BONUS_HP] as CharacterUpgradeBonusHP;
     if (!hpUpgrade) {
         hpUpgrade = {
             level: 0,
             bonusHp: 0,
         }
-        player.upgrades[CHARACTER_UPGRADE_BONUS_HP] = hpUpgrade;
+        player.permanentData.upgrades[CHARACTER_UPGRADE_BONUS_HP] = hpUpgrade;
     }
 
-    const bonusHP = upgradeBuildingNextUpgradeBonusAmount(player.upgrades, CHARACTER_UPGRADE_BONUS_HP);
-    const upgradeCosts = upgradeBuildingNextUpgradeCosts(player.upgrades, CHARACTER_UPGRADE_BONUS_HP);
-    if (player.currency >= upgradeCosts) {
+    const bonusHP = upgradeBuildingNextUpgradeBonusAmount(player.permanentData.upgrades, CHARACTER_UPGRADE_BONUS_HP);
+    const upgradeCosts = upgradeBuildingNextUpgradeCosts(player.permanentData.upgrades, CHARACTER_UPGRADE_BONUS_HP);
+    if (player.permanentData.money >= upgradeCosts) {
         hpUpgrade.bonusHp += bonusHP;
         interacter.maxHp += bonusHP;
         interacter.hp += bonusHP;
-        player.currency -= upgradeCosts;
+        player.permanentData.money -= upgradeCosts;
     }
 }
 
@@ -99,8 +99,8 @@ function paintInteract(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, 
     const topMiddlePos = mapKeyAndTileXYToPosition(key, mapObject.x, mapObject.y, map);
     topMiddlePos.y -= map.tileSize / 2;
 
-    const bonusHP = upgradeBuildingNextUpgradeBonusAmount(player.upgrades, CHARACTER_UPGRADE_BONUS_HP);
-    const upgradeCosts = upgradeBuildingNextUpgradeCosts(player.upgrades, CHARACTER_UPGRADE_BONUS_HP);
+    const bonusHP = upgradeBuildingNextUpgradeBonusAmount(player.permanentData.upgrades, CHARACTER_UPGRADE_BONUS_HP);
+    const upgradeCosts = upgradeBuildingNextUpgradeCosts(player.permanentData.upgrades, CHARACTER_UPGRADE_BONUS_HP);
 
     const texts = [];
     texts.push(`Upgrade Building:`);

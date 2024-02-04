@@ -379,7 +379,7 @@ function paintPlayerStats(ctx: CanvasRenderingContext2D, player: Player, gameTim
         );
     }
     paintTextWithOutline(ctx, "white", "black", "HP: " + Math.ceil(character.hp), 100, 20);
-    if (player.currency > 0) paintTextWithOutline(ctx, "white", "black", "$ " + Math.ceil(player.currency), 300, 20);
+    if (player.permanentData.money > 0) paintTextWithOutline(ctx, "white", "black", "$ " + Math.ceil(player.permanentData.money), 300, 20);
     paintTextWithOutline(ctx, "white", "black", "Time: " + Math.round(gameTime / 1000), 400, 20);
     paintTextWithOutline(ctx, "white", "black", "Distance: " + distance, 10, 40);
 

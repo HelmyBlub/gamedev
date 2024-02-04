@@ -3,7 +3,7 @@ import { Character } from "../../character/characterModel.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { BUFF_NAME_BALL_PHYSICS, BuffBallPhysics, createBuffBallPhysics, findBallBuff } from "../../debuff/buffBallPhysics.js";
 import { applyDebuff, removeCharacterDebuff } from "../../debuff/debuff.js";
-import { calcNewPositionMovedInDirection, calculateDirection, getClientInfoByCharacterId, getNextId } from "../../game.js";
+import { calcNewPositionMovedInDirection, calculateDirection, findClientInfoByCharacterId, getNextId } from "../../game.js";
 import { Position, Game, IdCounter, FACTION_ENEMY, ClientInfo, FACTION_PLAYER } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { calculateMovePosition, getFirstBlockingGameMapTilePositionTouchingLine, isMoveFromToBlocking, isPositionBlocking } from "../../map/map.js";
@@ -136,7 +136,7 @@ function castLightningBall(abilityOwner: AbilityOwner, ability: Ability, castPos
     }
     lightningBallUpgradeBounceBonusSetBonusDamageFactor(abilityLightningBall, abilityOwner);
     lightningBallUpgradeLightningStirkesExecute(abilityLightningBall, abilityOwner, game);
-    const clientInfo: ClientInfo | undefined = getClientInfoByCharacterId(abilityOwner.id, game);
+    const clientInfo: ClientInfo | undefined = findClientInfoByCharacterId(abilityOwner.id, game);
     if (clientInfo) clientInfo.lastMousePosition = castPosition;
 }
 

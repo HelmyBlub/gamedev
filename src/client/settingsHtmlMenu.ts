@@ -20,6 +20,7 @@ export function addHTMLDebugMenusToSettings(game: Game) {
     addSpawnBossButton(game);
     addClearLocalStorageButton(game);
     addSettingInputBoxPlayerPaintAlpha(game);
+    addGiveMoneyButton(game);
     addTestButton(game);
 }
 
@@ -144,6 +145,21 @@ function addBossSkillPointButton(game: Game) {
     if (button) {
         button.addEventListener('click', () => {
             if (!game.multiplayer.websocket) playerCharactersAddBossSkillPoints(50, game);
+        });
+    }
+}
+
+function addGiveMoneyButton(game: Game) {
+    const buttonName = "give Money";
+    addSettingButton(buttonName);
+    const button = document.getElementById(buttonName) as HTMLButtonElement;
+    if (button) {
+        button.addEventListener('click', () => {
+            if (!game.multiplayer.websocket) {
+                if (game.state.players[0]) {
+                    game.state.players[0].permanentData.money += 100;
+                }
+            }
         });
     }
 }

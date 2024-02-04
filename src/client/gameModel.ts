@@ -8,7 +8,7 @@ import { createMap, GameMap } from "./map/map.js";
 import { KingAreaEntranceData } from "./map/mapKingArea.js";
 import { generateMissingChunks } from "./map/mapGeneration.js";
 import { PermanentDataParts } from "./permanentData.js";
-import { Player } from "./player.js";
+import { createPlayerWithPlayerCharacter, Player } from "./player.js";
 import { PlayerInput } from "./playerInput.js";
 import { nextRandom, RandomSeed } from "./randomNumberGenerator.js";
 import { StatsUIs, StatsUIPart, createDefaultEmptyStatsUis } from "./statsUI.js";
@@ -351,6 +351,8 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
     }
     game.state.map.seed = nextRandom(game.state.randomSeed);
     generateMissingChunks(game.state.map, [{ x: 0, y: 0 }], game.state.idCounter, game);
+    const player = createPlayerWithPlayerCharacter(game.state.idCounter, game.state.clientInfos[0].id, game.state.players, { x: 0, y: 0 }, game.state.randomSeed, game);
+    game.state.players.push(player);
 
     return game;
 }

@@ -1,17 +1,21 @@
 import { Character, createPlayerCharacter } from "./character/characterModel.js";
 import { CharacterUpgrades, addCharacterUpgrades } from "./character/upgrades/characterUpgrades.js";
-import { calculateDistance } from "./game.js";
+import { calculateDistance, deepCopy, findClientInfo, findClientInfoByCharacterId } from "./game.js";
 import { Game, IdCounter, KeyCodeToAction, Position } from "./gameModel.js";
 import { findNearNonBlockingPosition } from "./map/map.js";
 import { ActionsPressed, createActionsPressed } from "./playerInput.js";
 import { RandomSeed } from "./randomNumberGenerator.js";
 
+export type PermanentPlayerData = {
+    money: number,
+    upgrades: CharacterUpgrades,
+}
+
 export type Player = {
     character: Character,
     clientId: number,
     actionsPressed: ActionsPressed,
-    currency: number,
-    upgrades: CharacterUpgrades,
+    permanentData: PermanentPlayerData,
 }
 
 export function createPlayer(clientId: number, character: Character): Player {
@@ -19,8 +23,10 @@ export function createPlayer(clientId: number, character: Character): Player {
         clientId: clientId,
         character: character,
         actionsPressed: createActionsPressed(),
-        currency: 10,
-        upgrades: {},
+        permanentData: {
+            money: 0,
+            upgrades: {},
+        }
     }
 }
 
@@ -84,7 +90,7 @@ export function isAutoSkillActive(game: Game): boolean {
     return false;
 }
 
-function createPlayerWithPlayerCharacter(idCounter: IdCounter, clientId: number, players: Player[], pos: Position, seed: RandomSeed, game: Game): Player {
+export function createPlayerWithPlayerCharacter(idCounter: IdCounter, clientId: number, players: Player[], pos: Position, seed: RandomSeed, game: Game): Player {
     const character = createPlayerCharacter(idCounter, pos, seed, game);
     return createPlayer(clientId, character);
 }
@@ -101,10 +107,14 @@ export function gameInitPlayers(game: Game) {
         playerSpawn = findNearNonBlockingPosition(playerSpawn, game.state.map, game.state.idCounter, game);
         if (!player) {
             player = createPlayerWithPlayerCharacter(game.state.idCounter, game.state.clientInfos[i].id, game.state.players, playerSpawn, game.state.randomSeed, game);
+            if (game.state.players.length > 0) {
+                player.permanentData = deepCopy(game.state.players[0].permanentData);
+                addCharacterUpgrades(player.permanentData.upgrades, player.character, undefined);
+            }
             game.state.players.push(player);
         } else {
             player.character = createPlayerCharacter(game.state.idCounter, playerSpawn, game.state.randomSeed, game);
-            addCharacterUpgrades(player.upgrades, player.character, undefined);
+            addCharacterUpgrades(player.permanentData.upgrades, player.character, undefined);
             player.actionsPressed = createActionsPressed();
         }
         if (game.multiplayer.myClientId === -1 || game.multiplayer.myClientId === client.id) {
@@ -116,6 +126,7 @@ export function gameInitPlayers(game: Game) {
             game.camera.characterId = player.character.id;
         }
     }
+    deletePlayersWhichLeft(game);
 }
 
 export function findPlayerById(players: Player[], clientId: number): Player | null {
@@ -148,4 +159,14 @@ export function getPlayerFurthestAwayFromSpawn(players: Player[]): Player | unde
         }
     }
     return furthestPlayer;
+}
+
+function deletePlayersWhichLeft(game: Game) {
+    for (let i = game.state.players.length - 1; i >= 0; i--) {
+        const playerClientId = game.state.players[i].clientId;
+        let clientExists = findClientInfo(playerClientId, game);
+        if (!clientExists) {
+            game.state.players.splice(i, 1);
+        }
+    }
 }

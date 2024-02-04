@@ -1,9 +1,9 @@
 next test run: Tamer, Sniper, All, Builder
 
 current tasks:
+
 - permanet HP increase
     - dev tasks:
-        - localstorage for permanent upgrades
         - next upgrade building: movement speed
                 
 - fix: laod all images on domLoad, because images loaded later might not be visible as server goes away

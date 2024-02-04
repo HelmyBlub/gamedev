@@ -4,7 +4,7 @@ import { paintCharacterDefault, paintCharacterWithAbilitiesDefault } from "../..
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { BUFF_NAME_BALL_PHYSICS, BuffBallPhysics, createBuffBallPhysics, findBallBuff } from "../../debuff/buffBallPhysics.js";
 import { applyDebuff, removeCharacterDebuff } from "../../debuff/debuff.js";
-import { calculateDirection, getClientInfoByCharacterId, getNextId, modulo } from "../../game.js";
+import { calculateDirection, findClientInfoByCharacterId, getNextId, modulo } from "../../game.js";
 import { Position, Game, IdCounter, FACTION_ENEMY, ClientInfo, FACTION_PLAYER } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { calculateBounceAngle, calculateMovePosition, isMoveFromToBlocking, isPositionBlocking, moveByDirectionAndDistance } from "../../map/map.js";
@@ -157,7 +157,7 @@ function castBounceBall(abilityOwner: AbilityOwner, ability: Ability, castPositi
     if (abilityBounceBall.nextRechargeTime === undefined) {
         abilityBounceBall.nextRechargeTime = game.state.time + abilityBounceBall.baseRechargeTime;
     }
-    const clientInfo: ClientInfo | undefined = getClientInfoByCharacterId(abilityOwner.id, game);
+    const clientInfo: ClientInfo | undefined = findClientInfoByCharacterId(abilityOwner.id, game);
     if (clientInfo) clientInfo.lastMousePosition = castPosition;
 }
 
@@ -354,7 +354,7 @@ function speedDrecreaseTick(abilityBounceBall: AbilityBounceBall, abilityOwner: 
 }
 
 function rollDirectionInfluenceTick(abilityBounceBall: AbilityBounceBall, abilityOwner: AbilityOwner, game: Game) {
-    const clientInfo: ClientInfo | undefined = getClientInfoByCharacterId(abilityOwner.id, game);
+    const clientInfo: ClientInfo | undefined = findClientInfoByCharacterId(abilityOwner.id, game);
 
     let mapTurnToMousPosition = { x: 0, y: 0 };
     if (clientInfo) {
