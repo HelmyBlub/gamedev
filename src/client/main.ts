@@ -12,6 +12,7 @@ import { addMapObjectsFunctions } from "./map/mapObjects.js";
 import { keyDown, keyUp, mouseDown, mouseUp } from "./playerInput.js";
 import { addHTMLDebugMenusToSettings } from "./settingsHtmlMenu.js";
 import { localStorageLoad } from "./permanentData.js";
+import { addUpgradeBuildingsFunctions } from "./map/buildings/upgradeBuilding.js";
 
 var gameCount: number = 0;
 
@@ -71,6 +72,7 @@ document.addEventListener("DOMContentLoaded", function () {
     addKingType();
     addKingCrownType();
     addMapObjectsFunctions();
+    addUpgradeBuildingsFunctions();
     onDomLoadSetAbilitiesFunctions();
     onDomLoadSetDebuffsFunctions();
     onDomLoadSetCharacterUpgradeFunctions();

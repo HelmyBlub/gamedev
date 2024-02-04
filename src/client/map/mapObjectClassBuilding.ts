@@ -15,8 +15,11 @@ import { playerInputBindingToDisplayValue } from "../playerInput.js";
 import { StatsUIsPartContainer, createDefaultStatsUiContainer } from "../statsUI.js";
 import { IMAGE_BUILDING1, createBuildingClassBuilding, classBuildingFindCharacterClassToMakeLegendary, classBuildingPlacePlayerClassStuffInBuilding, classBuildingFindById, BUILDING_CLASS_BUILDING } from "./buildings/classBuilding.js";
 
-export type MapTileObjectClassBuilding = MapTileObject & {
+export type MapTileObjectBuilding = MapTileObject & {
     buildingId: number,
+}
+
+export type MapTileObjectClassBuilding = MapTileObjectBuilding & {
 }
 
 export function addMapObjectClassBuilding() {

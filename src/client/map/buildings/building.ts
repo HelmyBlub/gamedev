@@ -1,6 +1,6 @@
 import { Game, Position } from "../../gameModel.js";
 import { GameMap, MapChunk } from "../map.js";
-import { MapTileObjectClassBuilding } from "../mapObjectClassBuilding.js";
+import { MapTileObjectBuilding } from "../mapObjectClassBuilding.js";
 
 export type Building = {
     type: string,
@@ -27,7 +27,7 @@ export function findBuildingByIdAndType(id: number, type: string, game: Game): B
 
 export function addExistingBuildingsToSpawnChunk(mapChunk: MapChunk, game: Game) {
     for (let building of game.state.buildings) {
-        const mapObject: MapTileObjectClassBuilding = {
+        const mapObject: MapTileObjectBuilding = {
             x: building.tileX,
             y: building.tileY,
             type: building.type,

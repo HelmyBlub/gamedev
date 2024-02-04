@@ -4,7 +4,7 @@ import { Position, Game } from "../gameModel.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
 import { StatsUIsPartContainer } from "../statsUI.js";
 import { GameMap, MapChunk, determineMapKeysInDistance, mapKeyAndTileXYToPosition } from "./map.js";
-import { MapTileObjectClassBuilding, addMapObjectClassBuilding, paintClassBuilding } from "./mapObjectClassBuilding.js";
+import { addMapObjectClassBuilding } from "./mapObjectClassBuilding.js";
 import { addMapObjectFireAnimation } from "./mapObjectFireAnimation.js";
 import { addMapObjectKingSign } from "./mapObjectSign.js";
 import { addMapObjectUpgradeBuilding } from "./mapObjectUpgradeBuilding.js";

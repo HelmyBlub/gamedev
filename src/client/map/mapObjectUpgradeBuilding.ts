@@ -6,24 +6,25 @@ import { chunkXYToMapKey, mapKeyAndTileXYToPosition } from "./map.js";
 import { MAP_OBJECTS_FUNCTIONS, MapTileObject, findMapKeyForMapObject } from "./mapObjects.js";
 import { localStorageSaveBuildings } from "../permanentData.js";
 import { StatsUIsPartContainer, createDefaultStatsUiContainer } from "../statsUI.js";
-import { UPGRADE_BUILDING, createBuildingUpgradeBuilding, upgradeBuildingFindById, upgradeBuildingNextUpgradeBonusAmount, upgradeBuildingNextUpgradeCosts } from "./buildings/upgradeBuilding.js";
+import { UPGRADE_BUILDING, UPGRADE_BUILDINGS_FUNCTIONS, createBuildingUpgradeBuilding, upgradeBuildingBuyUpgrade, upgradeBuildingFindById, upgradeBuildingNextUpgradeBonusAmount, upgradeBuildingNextUpgradeCosts } from "./buildings/upgradeBuilding.js";
 import { playerInputBindingToDisplayValue } from "../playerInput.js";
 import { findPlayerByCharacterId } from "../player.js";
-import { CHARACTER_UPGRADE_BONUS_HP, CharacterUpgradeBonusHP } from "../character/upgrades/characterUpgradeBonusHealth.js";
+import { UPGRADE_BUILDING_HP } from "./buildings/upgradeBuildingHp.js";
+import { MapTileObjectBuilding } from "./mapObjectClassBuilding.js";
 
-export type MapTileObjectUpgradeBuilding = MapTileObject & {
-    buildingId: number,
+export type MapTileObjectUpgradeBuilding = MapTileObjectBuilding & {
 }
 
 export function addMapObjectUpgradeBuilding() {
     MAP_OBJECTS_FUNCTIONS[UPGRADE_BUILDING] = {
         createStatsUi: createStatsUiClassBuilding,
-        interact1: interactLevelUp,
+        interact1: interactBuy,
         paintInteract: paintInteract,
     }
 }
 
 export function mapObjectPlaceUpgradeBuilding(game: Game) {
+    const upgradeBuildingKeys = Object.keys(UPGRADE_BUILDINGS_FUNCTIONS);
     let spawnChunk = game.state.map.chunks[chunkXYToMapKey(0, 0)];
     let freeChunkTile: Position = { x: 0, y: 7 };
     let foundFreeTile = false;
@@ -31,7 +32,7 @@ export function mapObjectPlaceUpgradeBuilding(game: Game) {
         for (let object of spawnChunk.objects) {
             if (object.x === freeChunkTile.x && object.y === freeChunkTile.y) {
                 freeChunkTile.x++;
-                if (freeChunkTile.x >= 1) {
+                if (freeChunkTile.x >= upgradeBuildingKeys.length) {
                     return;
                 }
                 continue main;
@@ -39,7 +40,7 @@ export function mapObjectPlaceUpgradeBuilding(game: Game) {
         }
         foundFreeTile = true;
     }
-    const upgradeBuilding = createBuildingUpgradeBuilding("HP", freeChunkTile.x, freeChunkTile.y, game.state.idCounter);
+    const upgradeBuilding = createBuildingUpgradeBuilding(upgradeBuildingKeys[freeChunkTile.x], freeChunkTile.x, freeChunkTile.y, game.state.idCounter);
     const mapObject: MapTileObjectUpgradeBuilding = {
         x: upgradeBuilding.tileX,
         y: upgradeBuilding.tileY,
@@ -64,26 +65,13 @@ function createStatsUiClassBuilding(mapObject: MapTileObject, game: Game): Stats
 }
 
 
-function interactLevelUp(interacter: Character, mapObject: MapTileObject, game: Game) {
+function interactBuy(interacter: Character, mapObject: MapTileObject, game: Game) {
     const player = findPlayerByCharacterId(game.state.players, interacter.id);
     if (!player) return;
-    let hpUpgrade: CharacterUpgradeBonusHP | undefined = player.permanentData.upgrades[CHARACTER_UPGRADE_BONUS_HP] as CharacterUpgradeBonusHP;
-    if (!hpUpgrade) {
-        hpUpgrade = {
-            level: 0,
-            bonusHp: 0,
-        }
-        player.permanentData.upgrades[CHARACTER_UPGRADE_BONUS_HP] = hpUpgrade;
-    }
-
-    const bonusHP = upgradeBuildingNextUpgradeBonusAmount(player.permanentData.upgrades, CHARACTER_UPGRADE_BONUS_HP);
-    const upgradeCosts = upgradeBuildingNextUpgradeCosts(player.permanentData.upgrades, CHARACTER_UPGRADE_BONUS_HP);
-    if (player.permanentData.money >= upgradeCosts) {
-        hpUpgrade.bonusHp += bonusHP;
-        interacter.maxHp += bonusHP;
-        interacter.hp += bonusHP;
-        player.permanentData.money -= upgradeCosts;
-    }
+    const mapObjectUpgradeBuilding = mapObject as MapTileObjectUpgradeBuilding;
+    const upgradeBuilding = upgradeBuildingFindById(mapObjectUpgradeBuilding.buildingId, game);
+    if (!upgradeBuilding) return;
+    upgradeBuildingBuyUpgrade(player, upgradeBuilding.upgradeType, game);
 }
 
 function paintInteract(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, interacter: Character, game: Game) {
@@ -99,12 +87,12 @@ function paintInteract(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, 
     const topMiddlePos = mapKeyAndTileXYToPosition(key, mapObject.x, mapObject.y, map);
     topMiddlePos.y -= map.tileSize / 2;
 
-    const bonusHP = upgradeBuildingNextUpgradeBonusAmount(player.permanentData.upgrades, CHARACTER_UPGRADE_BONUS_HP);
-    const upgradeCosts = upgradeBuildingNextUpgradeCosts(player.permanentData.upgrades, CHARACTER_UPGRADE_BONUS_HP);
+    const bonusHP = upgradeBuildingNextUpgradeBonusAmount(player.permanentData.upgrades, upgradeBuilding.upgradeType, game);
+    const upgradeCosts = upgradeBuildingNextUpgradeCosts(player.permanentData.upgrades, upgradeBuilding.upgradeType, game);
 
     const texts = [];
     texts.push(`Upgrade Building:`);
-    texts.push(`Permanently increase HP.`);
+    texts.push(`Type: ${upgradeBuilding.upgradeType}`);
     texts.push(`Costs $${upgradeCosts} for ${bonusHP} HP.`);
     const interactBurrowKey = playerInputBindingToDisplayValue("interact1", game);
     texts.push(`Press <${interactBurrowKey}> to buy.`);

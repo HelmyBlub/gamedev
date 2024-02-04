@@ -2,17 +2,35 @@ import { CHARACTER_UPGRADE_BONUS_HP, CharacterUpgradeBonusHP } from "../../chara
 import { CharacterUpgrade, CharacterUpgrades } from "../../character/upgrades/characterUpgrades.js";
 import { getNextId } from "../../game.js";
 import { Game, IdCounter } from "../../gameModel.js";
+import { Player } from "../../player.js";
 import { Building, findBuildingByIdAndType } from "./building.js";
 import { IMAGE_BUILDING1 } from "./classBuilding.js";
+import { addUpgradeBuildingHp } from "./upgradeBuildingHp.js";
+import { addUpgradeBuildingMovementSpeed } from "./upgradeBuildingMovementSpeed.js";
 
 export const UPGRADE_BUILDING = "Upgrade Building";
-type UpgradeType = "HP" | "EXP";
 export type UpgradeBuilding = Building & {
     type: typeof UPGRADE_BUILDING,
-    upgradeType: UpgradeType,
+    upgradeType: string,
+}
+export type UpgradeBuildingFunctions = {
+    getCosts: (characterUpgrades: CharacterUpgrades, game: Game) => number,
+    getAmount: (characterUpgrades: CharacterUpgrades, game: Game) => number,
+    buyUpgrade: (player: Player, game: Game) => void,
 }
 
-export function createBuildingUpgradeBuilding(upgradeType: UpgradeType, tileX: number, tileY: number, idCounter: IdCounter): UpgradeBuilding {
+export type UpgradeBuildingsFunctions = {
+    [key: string]: UpgradeBuildingFunctions,
+}
+
+export const UPGRADE_BUILDINGS_FUNCTIONS: UpgradeBuildingsFunctions = {};
+
+export function addUpgradeBuildingsFunctions() {
+    addUpgradeBuildingHp();
+    addUpgradeBuildingMovementSpeed();
+}
+
+export function createBuildingUpgradeBuilding(upgradeType: string, tileX: number, tileY: number, idCounter: IdCounter): UpgradeBuilding {
     return {
         type: UPGRADE_BUILDING,
         id: getNextId(idCounter),
@@ -29,20 +47,25 @@ export function upgradeBuildingFindById(id: number, game: Game): UpgradeBuilding
     return undefined;
 }
 
-export function upgradeBuildingNextUpgradeCosts(characterUpgrades: CharacterUpgrades, upgradeKey: string): number {
-    if (upgradeKey === CHARACTER_UPGRADE_BONUS_HP) {
-        const bonusHP = upgradeBuildingNextUpgradeBonusAmount(characterUpgrades, upgradeKey);
-        return Math.ceil(bonusHP / 10);
+export function upgradeBuildingNextUpgradeCosts(characterUpgrades: CharacterUpgrades, upgradeBuildingKey: string, game: Game): number {
+    const upgradeBuildingFunctions = UPGRADE_BUILDINGS_FUNCTIONS[upgradeBuildingKey];
+    if (upgradeBuildingFunctions) {
+        return upgradeBuildingFunctions.getCosts(characterUpgrades, game);
     }
     return 0;
 }
 
-export function upgradeBuildingNextUpgradeBonusAmount(characterUpgrades: CharacterUpgrades, upgradeKey: string): number {
-    if (upgradeKey === CHARACTER_UPGRADE_BONUS_HP) {
-        const upgrade: CharacterUpgrade | undefined = characterUpgrades[upgradeKey];
-        if (!upgrade) return 10;
-        const hpUpgrade = upgrade as CharacterUpgradeBonusHP;
-        return Math.max(10, hpUpgrade.bonusHp);
+export function upgradeBuildingNextUpgradeBonusAmount(characterUpgrades: CharacterUpgrades, upgradeBuildingKey: string, game: Game): number {
+    const upgradeBuildingFunctions = UPGRADE_BUILDINGS_FUNCTIONS[upgradeBuildingKey];
+    if (upgradeBuildingFunctions) {
+        return upgradeBuildingFunctions.getAmount(characterUpgrades, game);
     }
     return 0;
+}
+
+export function upgradeBuildingBuyUpgrade(player: Player, upgradeBuildingKey: string, game: Game) {
+    const upgradeBuildingFunctions = UPGRADE_BUILDINGS_FUNCTIONS[upgradeBuildingKey];
+    if (upgradeBuildingFunctions) {
+        upgradeBuildingFunctions.buyUpgrade(player, game);
+    }
 }

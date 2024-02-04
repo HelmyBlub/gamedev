@@ -5,7 +5,7 @@ import { CHARACTER_UPGRADE_FUNCTIONS, CharacterUpgrade } from "./characterUpgrad
 import { CharacterClass } from "../playerCharacters/playerCharacters.js";
 import { findCharacterClassById } from "../playerCharacters/levelingCharacter.js";
 
-type CharacterUpgradeBonusMoveSpeed = CharacterUpgrade & {
+export type CharacterUpgradeBonusMoveSpeed = CharacterUpgrade & {
     bonusMoveSpeed: number,
 }
 
