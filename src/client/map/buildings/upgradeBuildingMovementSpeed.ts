@@ -2,6 +2,7 @@ import { CHARACTER_UPGRADE_BONUS_MOVE_SPEED, CharacterUpgradeBonusMoveSpeed } fr
 import { CharacterUpgrade, CharacterUpgrades } from "../../character/upgrades/characterUpgrades.js";
 import { Game } from "../../gameModel.js";
 import { Player } from "../../player.js";
+import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { UPGRADE_BUILDINGS_FUNCTIONS } from "./upgradeBuilding.js";
 
 export const UPGRADE_BUILDING_MOVEMENT_SPEED = "Upgrade Movement Speed";
@@ -11,7 +12,7 @@ export function addUpgradeBuildingMovementSpeed() {
     UPGRADE_BUILDINGS_FUNCTIONS[UPGRADE_BUILDING_MOVEMENT_SPEED] = {
         getCosts: getCosts,
         getAmount: getAmount,
-        getInvestedText: getInvestedText,
+        getUpgradeText: getUpgradeText,
         buyUpgrade: buyUpgrade,
         refund: refund,
     }
@@ -31,18 +32,34 @@ function refund(player: Player, game: Game) {
     moveSpeedUpgrade.investedMoney = 0;
 }
 
-function getInvestedText(characterUpgrades: CharacterUpgrades, game: Game): string | undefined {
-    let hpUpgrade: CharacterUpgradeBonusMoveSpeed | undefined = characterUpgrades[CHARACTER_UPGRADE] as CharacterUpgradeBonusMoveSpeed;
-    if (!hpUpgrade) return undefined;
-    return `Invested $${hpUpgrade.investedMoney} for ${hpUpgrade.bonusMoveSpeed.toFixed(2)} bonus move speed.`;
+function getUpgradeText(characterUpgrades: CharacterUpgrades, game: Game): string[] {
+    let moveSpeedUpgrade: CharacterUpgradeBonusMoveSpeed | undefined = characterUpgrades[CHARACTER_UPGRADE] as CharacterUpgradeBonusMoveSpeed;
+    const bonusAmount = getAmount(characterUpgrades, game);
+    const upgradeCosts = getCosts(characterUpgrades, game);
+
+    const texts = [];
+    texts.push(`Move Speed Upgrade Building:`);
+    texts.push(`Pay $${upgradeCosts} for ${bonusAmount} bonus move speed.`);
+    const interactBuyKey = playerInputBindingToDisplayValue("interact1", game);
+    texts.push(`Press <${interactBuyKey}> to buy.`);
+
+    if (moveSpeedUpgrade && moveSpeedUpgrade.investedMoney! > 0) {
+        texts.push(`Invested $${moveSpeedUpgrade.investedMoney} for ${moveSpeedUpgrade.bonusMoveSpeed.toFixed(2)} bonus move speed.`);
+        const interactRefundKey = playerInputBindingToDisplayValue("interact2", game);
+        texts.push(`Press <${interactRefundKey}> to refund.`);
+    }
+    return texts;
 }
 
 
 function getCosts(characterUpgrades: CharacterUpgrades, game: Game): number {
     const upgrade: CharacterUpgrade | undefined = characterUpgrades[CHARACTER_UPGRADE];
-    if (!upgrade) return 10;
-    const moveSpeedUpgrade = upgrade as CharacterUpgradeBonusMoveSpeed;
-    return Math.max(10, Math.ceil(Math.pow(moveSpeedUpgrade.bonusMoveSpeed * 200, 2)));
+    let upgradeMoveSpeed = 0;
+    if (upgrade) {
+        const moveSpeedUpgrade = upgrade as CharacterUpgradeBonusMoveSpeed;
+        upgradeMoveSpeed = moveSpeedUpgrade.bonusMoveSpeed;
+    }
+    return Math.max(2, Math.ceil(Math.pow(upgradeMoveSpeed * 40, 2)));
 }
 
 function getAmount(characterUpgrades: CharacterUpgrades, game: Game): number {

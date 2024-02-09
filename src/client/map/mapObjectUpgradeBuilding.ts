@@ -6,10 +6,9 @@ import { chunkXYToMapKey, mapKeyAndTileXYToPosition } from "./map.js";
 import { MAP_OBJECTS_FUNCTIONS, MapTileObject, findMapKeyForMapObject } from "./mapObjects.js";
 import { localStorageSaveBuildings } from "../permanentData.js";
 import { StatsUIsPartContainer, createDefaultStatsUiContainer } from "../statsUI.js";
-import { UPGRADE_BUILDING, UPGRADE_BUILDINGS_FUNCTIONS, createBuildingUpgradeBuilding, upgradeBuildingBuyUpgrade, upgradeBuildingFindById, upgradeBuildingGetInvestedText, upgradeBuildingNextUpgradeBonusAmount, upgradeBuildingNextUpgradeCosts, upgradeBuildingRefund } from "./buildings/upgradeBuilding.js";
+import { UPGRADE_BUILDING, UPGRADE_BUILDINGS_FUNCTIONS, createBuildingUpgradeBuilding, upgradeBuildingBuyUpgrade, upgradeBuildingFindById, upgradeBuildingGetUpgradeText, upgradeBuildingNextUpgradeBonusAmount, upgradeBuildingNextUpgradeCosts, upgradeBuildingRefund } from "./buildings/upgradeBuilding.js";
 import { playerInputBindingToDisplayValue } from "../playerInput.js";
 import { findPlayerByCharacterId } from "../player.js";
-import { UPGRADE_BUILDING_HP } from "./buildings/upgradeBuildingHp.js";
 import { MapTileObjectBuilding } from "./mapObjectClassBuilding.js";
 
 export type MapTileObjectUpgradeBuilding = MapTileObjectBuilding & {
@@ -97,24 +96,7 @@ function paintInteract(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, 
     const topMiddlePos = mapKeyAndTileXYToPosition(key, mapObject.x, mapObject.y, map);
     topMiddlePos.y -= map.tileSize / 2;
 
-    const bonusAmount = upgradeBuildingNextUpgradeBonusAmount(player.permanentData.upgrades, upgradeBuilding.upgradeType, game);
-    const upgradeCosts = upgradeBuildingNextUpgradeCosts(player.permanentData.upgrades, upgradeBuilding.upgradeType, game);
-    const investedText = upgradeBuildingGetInvestedText(player.permanentData.upgrades, upgradeBuilding.upgradeType, game);
-
-    const texts = [];
-    texts.push(`Work in progress`);
-    texts.push(`Upgrade Building:`);
-    texts.push(`Type: ${upgradeBuilding.upgradeType}`);
-    texts.push(`Costs $${upgradeCosts} for ${bonusAmount}.`);
-    const interactBuyKey = playerInputBindingToDisplayValue("interact1", game);
-    texts.push(`Press <${interactBuyKey}> to buy.`);
-
-    if (investedText) {
-        const interactRefundKey = playerInputBindingToDisplayValue("interact2", game);
-        texts.push(investedText);
-        texts.push(`Press <${interactRefundKey}> to refund.`);
-    }
-
+    const texts = upgradeBuildingGetUpgradeText(player.permanentData.upgrades, upgradeBuilding.upgradeType, game);
     const paintPos = getPointPaintPosition(ctx, topMiddlePos, cameraPosition);
     paintTextLinesWithKeys(ctx, texts, paintPos, 20, true, true);
 }

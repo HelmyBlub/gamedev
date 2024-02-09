@@ -2,6 +2,7 @@ import { CHARACTER_UPGRADE_BONUS_EXPERIENCE, CharacterUpgradeBonusExperience } f
 import { CharacterUpgrade, CharacterUpgrades } from "../../character/upgrades/characterUpgrades.js";
 import { Game } from "../../gameModel.js";
 import { Player } from "../../player.js";
+import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { UPGRADE_BUILDINGS_FUNCTIONS } from "./upgradeBuilding.js";
 
 export const UPGRADE_BUILDING_EXPERIENCE = "Upgrade Experience Gain";
@@ -11,7 +12,7 @@ export function addUpgradeBuildingExperience() {
     UPGRADE_BUILDINGS_FUNCTIONS[UPGRADE_BUILDING_EXPERIENCE] = {
         getCosts: getCosts,
         getAmount: getAmount,
-        getInvestedText: getInvestedText,
+        getUpgradeText: getUpgradeText,
         buyUpgrade: buyUpgrade,
         refund: refund,
     }
@@ -31,10 +32,23 @@ function refund(player: Player, game: Game) {
     expUpgrade.investedMoney = 0;
 }
 
-function getInvestedText(characterUpgrades: CharacterUpgrades, game: Game): string | undefined {
-    let hpUpgrade: CharacterUpgradeBonusExperience | undefined = characterUpgrades[CHARACTER_UPGRADE] as CharacterUpgradeBonusExperience;
-    if (!hpUpgrade) return undefined;
-    return `Invested $${hpUpgrade.investedMoney} for ${(hpUpgrade.bonusExperienceFactor * 100).toFixed()}% bonus experinece gain.`;
+function getUpgradeText(characterUpgrades: CharacterUpgrades, game: Game): string[] {
+    let experienceUpgrade: CharacterUpgradeBonusExperience | undefined = characterUpgrades[CHARACTER_UPGRADE] as CharacterUpgradeBonusExperience;
+    const bonusAmount = getAmount(characterUpgrades, game);
+    const upgradeCosts = getCosts(characterUpgrades, game);
+
+    const texts = [];
+    texts.push(`Experience Upgrade Building:`);
+    texts.push(`Pay $${upgradeCosts} for ${bonusAmount * 100}% bonus Experience.`);
+    const interactBuyKey = playerInputBindingToDisplayValue("interact1", game);
+    texts.push(`Press <${interactBuyKey}> to buy.`);
+
+    if (experienceUpgrade && experienceUpgrade.investedMoney! > 0) {
+        texts.push(`Invested $${experienceUpgrade.investedMoney} for ${(experienceUpgrade.bonusExperienceFactor * 100).toFixed()}% bonus experinece gain.`);
+        const interactRefundKey = playerInputBindingToDisplayValue("interact2", game);
+        texts.push(`Press <${interactRefundKey}> to refund.`);
+    }
+    return texts;
 }
 
 function getCosts(characterUpgrades: CharacterUpgrades, game: Game): number {

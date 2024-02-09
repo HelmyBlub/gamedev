@@ -3,6 +3,7 @@ import { CHARACTER_UPGRADE_BONUS_HP, CharacterUpgradeBonusHP } from "../../chara
 import { CharacterUpgrade, CharacterUpgrades } from "../../character/upgrades/characterUpgrades.js";
 import { Game } from "../../gameModel.js";
 import { Player } from "../../player.js";
+import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { UPGRADE_BUILDINGS_FUNCTIONS } from "./upgradeBuilding.js";
 
 export const UPGRADE_BUILDING_HP = "Upgrade HP";
@@ -12,7 +13,7 @@ export function addUpgradeBuildingHp() {
         buyUpgrade: buyUpgrade,
         getAmount: getAmount,
         getCosts: getCosts,
-        getInvestedText: getInvestedText,
+        getUpgradeText: getUpgradeText,
         refund: refund,
     }
 }
@@ -27,10 +28,23 @@ function refund(player: Player, game: Game) {
     hpUpgrade.investedMoney = 0;
 }
 
-function getInvestedText(characterUpgrades: CharacterUpgrades, game: Game): string | undefined {
+function getUpgradeText(characterUpgrades: CharacterUpgrades, game: Game): string[] {
     let hpUpgrade: CharacterUpgradeBonusHP | undefined = characterUpgrades[CHARACTER_UPGRADE_BONUS_HP] as CharacterUpgradeBonusHP;
-    if (!hpUpgrade) return undefined;
-    return `Invested $${hpUpgrade.investedMoney} for ${hpUpgrade.bonusHp} HP`;
+    const bonusAmount = getAmount(characterUpgrades, game);
+    const upgradeCosts = getCosts(characterUpgrades, game);
+
+    const texts = [];
+    texts.push(`HP Upgrade Building:`);
+    texts.push(`Pay $${upgradeCosts} for ${bonusAmount} bonus HP.`);
+    const interactBuyKey = playerInputBindingToDisplayValue("interact1", game);
+    texts.push(`Press <${interactBuyKey}> to buy.`);
+
+    if (hpUpgrade && hpUpgrade.investedMoney! > 0) {
+        texts.push(`Invested $${hpUpgrade.investedMoney} for ${hpUpgrade.bonusHp.toFixed()} bonus HP gain.`);
+        const interactRefundKey = playerInputBindingToDisplayValue("interact2", game);
+        texts.push(`Press <${interactRefundKey}> to refund.`);
+    }
+    return texts;
 }
 
 function getCosts(characterUpgrades: CharacterUpgrades, game: Game): number {
