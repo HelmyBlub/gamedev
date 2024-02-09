@@ -169,8 +169,8 @@ export function removeAllMapCharacters(map: GameMap) {
     }
 }
 
-export function moveByDirectionAndDistance(position: Position, moveDirection: number, distance: number, checkColision: boolean, map: GameMap | undefined = undefined, idCounter: IdCounter | undefined = undefined) {
-    const newPos = calculateMovePosition(position, moveDirection, distance, checkColision, map, idCounter);
+export function moveByDirectionAndDistance(position: Position, moveDirection: number, distance: number, checkColision: boolean, map: GameMap | undefined = undefined, idCounter: IdCounter | undefined = undefined, game: Game | undefined = undefined) {
+    const newPos = calculateMovePosition(position, moveDirection, distance, checkColision, map, idCounter, game);
     position.x = newPos.x;
     position.y = newPos.y;
 }
@@ -183,25 +183,25 @@ export function calculateBounceAngle(position: Position, moveDirection: number, 
     let wallAngle = 0;
 
     let wallDistanceX = position.x % tileSize;
-    if(wallDistanceX < 0) wallDistanceX += tileSize;
+    if (wallDistanceX < 0) wallDistanceX += tileSize;
     if (xStep > 0) wallDistanceX = Math.abs(wallDistanceX - tileSize);
     let wallDistanceY = position.y % tileSize;
-    if(wallDistanceY < 0) wallDistanceY += tileSize;
+    if (wallDistanceY < 0) wallDistanceY += tileSize;
     if (yStep > 0) wallDistanceY = Math.abs(wallDistanceY - tileSize);
-    let tempPos = {x: position.x, y: position.y};
+    let tempPos = { x: position.x, y: position.y };
 
-    if(Math.abs(wallDistanceX / xStep) > Math.abs(wallDistanceY / yStep)){
-        if(yStep > 0){
+    if (Math.abs(wallDistanceX / xStep) > Math.abs(wallDistanceY / yStep)) {
+        if (yStep > 0) {
             tempPos.y += tileSize;
-        }else{
+        } else {
             tempPos.y -= tileSize;
         }
         numberSteps = Math.abs(wallDistanceY / yStep) + 0.001;
         wallAngle = 0;
-    }else{
-        if(xStep > 0){
+    } else {
+        if (xStep > 0) {
             tempPos.x += tileSize;
-        }else{
+        } else {
             tempPos.x -= tileSize;
         }
         numberSteps = Math.abs(wallDistanceX / xStep) + 0.001;
@@ -211,7 +211,7 @@ export function calculateBounceAngle(position: Position, moveDirection: number, 
     if (isPositionBlocking(tempPos, game.state.map, game.state.idCounter, game)) {
         const angleDiff = moveDirection - wallAngle;
         return wallAngle - angleDiff;
-    }else{
+    } else {
         tempPos = {
             x: position.x + xStep * numberSteps,
             y: position.y + yStep * numberSteps,
@@ -220,9 +220,9 @@ export function calculateBounceAngle(position: Position, moveDirection: number, 
     }
 }
 
-export function isMoveFromToBlocking(fromPosition: Position, toPosition: Position, map: GameMap, game: Game): boolean{
+export function isMoveFromToBlocking(fromPosition: Position, toPosition: Position, map: GameMap, game: Game): boolean {
     const blocking = isPositionBlocking(toPosition, map, game.state.idCounter, game);
-    if(blocking) return true;
+    if (blocking) return true;
     const blockingBothSides = isPositionBlocking({ x: fromPosition.x, y: toPosition.y }, map, game.state.idCounter, game!) && isPositionBlocking({ x: toPosition.x, y: fromPosition.y }, map, game.state.idCounter, game!);
     return blockingBothSides;
 }
@@ -231,7 +231,7 @@ export function calculateMovePosition(position: Position, moveDirection: number,
     const x = position.x + Math.cos(moveDirection) * distance;
     const y = position.y + Math.sin(moveDirection) * distance;
     if (checkColision) {
-        if (!map || !idCounter) throw new Error("collision check requires map and idCounter");
+        if (!map || !idCounter || !game) throw new Error("collision check requires map, idCounter and game");
         const blocking = isPositionBlocking({ x, y }, map, idCounter, game!);
         if (!blocking) {
             const blockingBothSides = isPositionBlocking({ x: position.x, y }, map, idCounter, game!) && isPositionBlocking({ x, y: position.y }, map, idCounter, game!);
@@ -353,13 +353,21 @@ export function positionToGameMapTileXY(map: GameMap, position: Position): Posit
 
 export function getFirstBlockingGameMapTilePositionTouchingLine(map: GameMap, lineStart: Position, lineEnd: Position, game: Game): Position | undefined {
     const tileSize = map.tileSize;
+    if (isNaN(lineEnd.x) || isNaN(lineEnd.y)) return;
     let currentTileXY = positionToGameMapTileXY(map, lineStart);
     const endTileXY = positionToGameMapTileXY(map, lineEnd);
     if (currentTileXY.x !== endTileXY.x || currentTileXY.y !== endTileXY.y) {
         const xDiff = lineEnd.x - lineStart.x;
         const yDiff = lineEnd.y - lineStart.y;
         const currentPos = { x: lineStart.x, y: lineStart.y };
+        let counter = 1;
+        let maxCounter = 200;
         do {
+            counter++;
+            if (counter > maxCounter) {
+                console.log("endless loop in here?");
+                return;
+            }
             let nextYBorder: number | undefined;
             let nextXBorder: number | undefined;
             let nextYBorderX: number | undefined;

@@ -37,7 +37,7 @@ export function tickFixPositionRespawnEnemyCharacter(character: Character, game:
                     if (abilityFunctions) {
                         if (abilityFunctions.tickBossAI) abilityFunctions.tickBossAI(enemy, ability, game);
                     }
-                }            
+                }
             } else {
                 const spawnDistance = calculateDistance(enemy, enemy.spawnPosition);
                 enemy.isAggroed = false;
@@ -50,7 +50,7 @@ export function tickFixPositionRespawnEnemyCharacter(character: Character, game:
                     enemy.isMoving = false;
                 }
             }
-            moveCharacterTick(enemy, game.state.map, game.state.idCounter);
+            moveCharacterTick(enemy, game.state.map, game.state.idCounter, game);
             if (enemy.wasHitRecently) delete enemy.wasHitRecently;
         }
     }
@@ -105,10 +105,10 @@ function resetEnemy(enemy: FixPositionRespawnEnemyCharacter, map: GameMap) {
     delete enemy.respawnOnTime;
 }
 
-function resetPosition(enemy: FixPositionRespawnEnemyCharacter, map: GameMap){
+function resetPosition(enemy: FixPositionRespawnEnemyCharacter, map: GameMap) {
     setCharacterPosition(enemy, enemy.spawnPosition, map);
-    if(enemy.pets){
-        for(let pet of enemy.pets){
+    if (enemy.pets) {
+        for (let pet of enemy.pets) {
             pet.x = enemy.x;
             pet.y = enemy.y;
         }

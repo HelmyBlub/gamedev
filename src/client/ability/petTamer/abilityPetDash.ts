@@ -161,7 +161,7 @@ function tickAbilityPetDash(abilityOwner: AbilityOwner, ability: Ability, game: 
                 pet.y = newPosition.y;
             }
         } else {
-            moveByDirectionAndDistance(pet, abilityPetDash.direction!, abilityPetDash.baseSpeed, true, game.state.map, game.state.idCounter);
+            moveByDirectionAndDistance(pet, abilityPetDash.direction!, abilityPetDash.baseSpeed, true, game.state.map, game.state.idCounter, game);
         }
         if (abilityPetDash.nextTickTime && abilityPetDash.nextTickTime <= game.state.time) {
             abilityPetDash.nextTickTime += abilityPetDash.tickInterval;

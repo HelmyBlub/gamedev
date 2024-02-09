@@ -39,7 +39,7 @@ function tickCrown(enemy: Character, game: Game, pathingCache: PathingCache | nu
         endGame(game, true);
     } else {
         enemy.moveDirection = calculateDirection(enemy, targetPos);
-        moveCharacterTick(enemy, game.state.map, game.state.idCounter);
+        moveCharacterTick(enemy, game.state.map, game.state.idCounter, game);
     }
 }
 

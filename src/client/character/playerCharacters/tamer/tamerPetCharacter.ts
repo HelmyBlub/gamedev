@@ -466,7 +466,7 @@ function moveTick(pet: TamerPetCharacter, petOwner: Character, game: Game, pathi
 }
 
 function setMovePositonWithPetCollision(pet: TamerPetCharacter, petOwner: Character, game: Game) {
-    const newMovePosition = calculateCharacterMovePosition(pet, game.state.map, game.state.idCounter);
+    const newMovePosition = calculateCharacterMovePosition(pet, game.state.map, game.state.idCounter, game);
     if (newMovePosition) {
         const collidedPet = collisionWithOtherPets(pet, petOwner, newMovePosition, game);
         if (collidedPet === undefined) {
@@ -478,8 +478,8 @@ function setMovePositonWithPetCollision(pet: TamerPetCharacter, petOwner: Charac
             const totalWeight = pet.weight + collidedPet.weight;
             const factorPet = 1 / totalWeight * pet.weight;
             const factorCollidedPet = 1 / totalWeight * collidedPet.weight;
-            moveByDirectionAndDistance(newMovePosition, direction, (distance) * factorCollidedPet, true, game.state.map, game.state.idCounter);
-            moveByDirectionAndDistance(collidedPet, direction + Math.PI, (distance) * factorPet, true, game.state.map, game.state.idCounter);
+            moveByDirectionAndDistance(newMovePosition, direction, (distance) * factorCollidedPet, true, game.state.map, game.state.idCounter, game);
+            moveByDirectionAndDistance(collidedPet, direction + Math.PI, (distance) * factorPet, true, game.state.map, game.state.idCounter, game);
             pet.x = newMovePosition.x;
             pet.y = newMovePosition.y;
         }

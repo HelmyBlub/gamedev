@@ -304,7 +304,7 @@ export function tickDefaultCharacter(character: Character, game: Game, pathingCa
         if (!character.willTurnToPetOnDeath) return;
         turnCharacterToPet(character, game);
     }
-    moveCharacterTick(character, game.state.map, game.state.idCounter);
+    moveCharacterTick(character, game.state.map, game.state.idCounter, game);
 }
 
 export function determineClosestCharacter(position: Position, characters: Character[], excludeKingArea: boolean = false, map: GameMap | undefined = undefined) {
@@ -501,10 +501,10 @@ export function turnCharacterToPet(character: Character, game: Game) {
     }
 }
 
-export function moveCharacterTick(character: Character, map: GameMap, idCounter: IdCounter) {
+export function moveCharacterTick(character: Character, map: GameMap, idCounter: IdCounter, game: Game) {
     if (character.isRooted) return;
     if (character.isMoveTickDisabled) return;
-    const newPosition = calculateCharacterMovePosition(character, map, idCounter);
+    const newPosition = calculateCharacterMovePosition(character, map, idCounter, game);
     if (newPosition) {
         setCharacterPosition(character, newPosition, map);
     }
@@ -516,9 +516,9 @@ export function setCharacterPosition(character: Character, position: Position, m
     character.y = position.y;
 }
 
-export function calculateCharacterMovePosition(character: Character, map: GameMap, idCounter: IdCounter) {
+export function calculateCharacterMovePosition(character: Character, map: GameMap, idCounter: IdCounter, game: Game) {
     if (character.isMoving) {
-        return calculateMovePosition(character, character.moveDirection, getCharacterMoveSpeed(character), true, map, idCounter);
+        return calculateMovePosition(character, character.moveDirection, getCharacterMoveSpeed(character), true, map, idCounter, game);
     }
     return undefined;
 }

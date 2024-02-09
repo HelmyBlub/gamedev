@@ -100,7 +100,7 @@ function tickKingEnemyCharacter(enemy: KingEnemyCharacter, game: Game, pathingCa
     const closest = determineClosestCharacter(enemy, playerCharacters);
 
     calculateAndSetMoveDirectionToPositionWithPathing(enemy, closest.minDistanceCharacter, game.state.map, pathingCache, game.state.idCounter, game.state.time, game);
-    moveCharacterTick(enemy, game.state.map, game.state.idCounter);
+    moveCharacterTick(enemy, game.state.map, game.state.idCounter, game);
 
     for (let ability of enemy.abilities) {
         const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];

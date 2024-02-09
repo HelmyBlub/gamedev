@@ -1,7 +1,7 @@
 next test run: Tamer, Sniper, All, Builder
 
 current tasks:
-
+- bug: old ball long run dead locks the game, endless loop? how?
 - permanet HP increase
     - dev tasks:
         - next upgrade building: 
