@@ -125,8 +125,8 @@ function shoot(abilityOwner: AbilityOwner, ability: AbilityShoot, abilityObjects
         const shotSpread: number = (nextRandom(randomSeed) - 0.5) / 10 * ability.multiShot;
 
         let moveSpeed = ability.moveSpeed;
-        if (abilityOwner.moveSpeed !== undefined && abilityOwner.faction === FACTION_PLAYER) {
-            moveSpeed = abilityOwner.moveSpeed + 2;
+        if (abilityOwner.baseMoveSpeed !== undefined && abilityOwner.faction === FACTION_PLAYER) {
+            moveSpeed = abilityOwner.baseMoveSpeed + 2;
         }
         let direction = 0;
         if (!ability.shootRandom && abilityOwner.moveDirection !== undefined) {

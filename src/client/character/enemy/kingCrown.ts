@@ -1,6 +1,6 @@
 import { calculateDirection, calculateDistance, endGame, getNextId } from "../../game.js";
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../gameModel.js";
-import { moveCharacterTick } from "../character.js";
+import { getCharacterMoveSpeed, moveCharacterTick } from "../character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, createCharacter } from "../characterModel.js";
 import { paintCharacterWithAbilitiesDefault } from "../characterPaint.js";
 import { PathingCache } from "../pathing.js";
@@ -35,7 +35,7 @@ function tickCrown(enemy: Character, game: Game, pathingCache: PathingCache | nu
         x: targetCharacter.x,
         y: targetCharacter.y - targetCharacter.height / 2
     }
-    if (calculateDistance(enemy, targetPos) <= enemy.moveSpeed) {
+    if (calculateDistance(enemy, targetPos) <= getCharacterMoveSpeed(enemy)) {
         endGame(game, true);
     } else {
         enemy.moveDirection = calculateDirection(enemy, targetPos);

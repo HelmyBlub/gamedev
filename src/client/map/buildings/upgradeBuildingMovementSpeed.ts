@@ -18,12 +18,17 @@ export function addUpgradeBuildingMovementSpeed() {
 }
 
 function refund(player: Player, game: Game) {
-    let hpUpgrade: CharacterUpgradeBonusMoveSpeed | undefined = player.permanentData.upgrades[CHARACTER_UPGRADE] as CharacterUpgradeBonusMoveSpeed;
-    if (!hpUpgrade) return;
-    player.character.moveSpeed -= hpUpgrade.bonusMoveSpeed;
-    player.permanentData.money += hpUpgrade.investedMoney!;
-    hpUpgrade.bonusMoveSpeed = 0;
-    hpUpgrade.investedMoney = 0;
+    let moveSpeedUpgrade: CharacterUpgradeBonusMoveSpeed | undefined = player.permanentData.upgrades[CHARACTER_UPGRADE] as CharacterUpgradeBonusMoveSpeed;
+    if (!moveSpeedUpgrade) return;
+    player.character.baseMoveSpeed -= moveSpeedUpgrade.bonusMoveSpeed;
+    player.permanentData.money += moveSpeedUpgrade.investedMoney!;
+    if (player.character.pets) {
+        for (let pet of player.character.pets) {
+            pet.baseMoveSpeed -= moveSpeedUpgrade.bonusMoveSpeed;
+        }
+    }
+    moveSpeedUpgrade.bonusMoveSpeed = 0;
+    moveSpeedUpgrade.investedMoney = 0;
 }
 
 function getInvestedText(characterUpgrades: CharacterUpgrades, game: Game): string | undefined {
@@ -60,8 +65,13 @@ function buyUpgrade(player: Player, game: Game) {
     if (player.permanentData.money >= upgradeCosts) {
         moveSpeedUpgrade.bonusMoveSpeed += bonusMoveSpeed;
         moveSpeedUpgrade.investedMoney! += upgradeCosts;
-        player.character.moveSpeed += bonusMoveSpeed;
+        player.character.baseMoveSpeed += bonusMoveSpeed;
         player.permanentData.money -= upgradeCosts;
+        if (player.character.pets) {
+            for (let pet of player.character.pets) {
+                pet.baseMoveSpeed += bonusMoveSpeed;
+            }
+        }
     }
 }
 

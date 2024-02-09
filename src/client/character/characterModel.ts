@@ -86,7 +86,8 @@ export type Character = Position & {
     id: number,
     width: number,
     height: number,
-    moveSpeed: number,
+    baseMoveSpeed: number,
+    moveSpeedFactor: number,
     moveDirection: number,
     isMoving: boolean,
     isRooted: boolean,
@@ -125,6 +126,7 @@ export type Character = Position & {
     mapChunkKey?: string,
     combatlog?: Combatlog,
     legendary?: Legendary,
+    experienceGainFactor?: number,
 }
 
 export function createCharacter(
@@ -149,7 +151,8 @@ export function createCharacter(
         paint: {
             color: color,
         },
-        moveSpeed: moveSpeed,
+        baseMoveSpeed: moveSpeed,
+        moveSpeedFactor: 1,
         moveDirection: 0,
         isMoving: false,
         hp: hp,

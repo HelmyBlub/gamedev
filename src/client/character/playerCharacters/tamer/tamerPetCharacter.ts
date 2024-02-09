@@ -7,7 +7,7 @@ import { GAME_IMAGES, getImage } from "../../../imageLoad.js";
 import { moveByDirectionAndDistance } from "../../../map/map.js";
 import { nextRandom } from "../../../randomNumberGenerator.js";
 import { StatsUIPart, createStatsUI } from "../../../statsUI.js";
-import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, calculateCharacterMovePosition, getPlayerCharacters, setCharacterPosition } from "../../character.js";
+import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, calculateCharacterMovePosition, getPlayerCharacters, setCharacterPosition, getCharacterMoveSpeed } from "../../character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, createCharacter } from "../../characterModel.js";
 import { PathingCache, getNextWaypoint } from "../../pathing.js";
 import { CharacterClass } from "../playerCharacters.js";
@@ -37,7 +37,6 @@ export type TamerPetCharacter = Character & {
     defaultSize: number,
     sizeFactor: number,
     nextMovementUpdateTime?: number;
-    baseMoveSpeed: number,
     traits: Trait[],
     forcedMovePosition?: Position,
     tradable: boolean,
@@ -255,7 +254,7 @@ export function createTamerPetCharacterStatsUI(ctx: CanvasRenderingContext2D, pe
         `Color: ${pet.paint.color}`,
         `food: ${petFoodIntakeToDisplayText(pet.foodIntakeLevel)}`,
         `Happiness: ${petHappinessToDisplayText(pet.happines)}`,
-        `Movement Speed: ${pet.moveSpeed.toFixed(2)}`,
+        `Movement Speed: ${getCharacterMoveSpeed(pet).toFixed(2)}`,
         `Level: ${pet.level!.level.toFixed(0)}${levelLimitText}`,
         `XP: ${pet.level!.leveling!.experience.toFixed(0)}/${pet.level!.leveling!.experienceForLevelUp.toFixed(0)}`,
     );
@@ -410,19 +409,19 @@ function foodIntakeLevelTick(pet: TamerPetCharacter, game: Game) {
 
     if (intakeLevel.current < intakeLevel.underfedAt) {
         pet.sizeFactor = 1 - (intakeLevel.underfedAt - intakeLevel.current) / intakeLevel.underfedAt / 2;
-        pet.moveSpeed = pet.baseMoveSpeed;
+        pet.moveSpeedFactor = 1;
     } else if (intakeLevel.current > intakeLevel.overfedAt) {
         if (tamerPetIncludesTrait(TAMER_PET_TRAIT_NEVER_GETS_FAT, pet)) {
             pet.sizeFactor = 1;
-            pet.moveSpeed = pet.baseMoveSpeed;
+            pet.moveSpeedFactor = 1;
         } else {
             pet.sizeFactor = 1 + (intakeLevel.current - intakeLevel.overfedAt) / intakeLevel.overfedAt;
             pet.sizeFactor = Math.min(MAX_OVERFED_SIZE, pet.sizeFactor);
-            pet.moveSpeed = pet.baseMoveSpeed * Math.max(MIN_MOVEMENTSPEED_FACTOR, 1 / pet.sizeFactor);
+            pet.moveSpeedFactor = Math.max(MIN_MOVEMENTSPEED_FACTOR, 1 / pet.sizeFactor);
         }
     } else {
         pet.sizeFactor = 1;
-        pet.moveSpeed = pet.baseMoveSpeed;
+        pet.moveSpeedFactor = 1;
     }
 
     pet.width = pet.defaultSize * pet.sizeFactor;

@@ -5,7 +5,6 @@ current tasks:
 - permanet HP increase
     - dev tasks:
         - next upgrade building: 
-            - exp increase,
             - % damage up
             - % damage reduction
             - money gain increase
@@ -15,6 +14,7 @@ current tasks:
 - two times same upgrade with hp reg with two classes and tower build?
 - fix: outdated permanentState crashes game. Build some auto clear localStorage
 - check: setTimeout creating bigger call stack?
+- bug: replay -> overtake relpay -> upgrade buildings gone
         
 
 - think about next bigger feature 

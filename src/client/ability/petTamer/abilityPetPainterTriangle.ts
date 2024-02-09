@@ -131,7 +131,7 @@ function createShapeTriangle(pet: TamerPetCharacter, abilityPetPainter: AbilityP
 
 function initShapePaintTriangle(pet: TamerPetCharacter, ability: AbilityPetPainter, game: Game) {
     pet.forcedMovePosition = getRandomStartPaintPositionTriangle(pet, game);
-    if(!pet.forcedMovePosition) return;
+    if (!pet.forcedMovePosition) return;
     ability.currentlyPainting = PET_PAINTER_TRIANGLE;
     ability.paintPoints = [];
 }
@@ -183,7 +183,7 @@ function paintShapeObjectPetPainterTriangle(ctx: CanvasRenderingContext2D, abili
     const triangle = abilityObject as AbilityObjectPetPainterTriangle;
     const paintPos = getPointPaintPosition(ctx, triangle, cameraPosition);
     const startPos = { x: paintPos.x, y: paintPos.y };
-    if(abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
+    if (abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
     ctx.fillStyle = triangle.color;
     ctx.strokeStyle = triangle.color;
     ctx.lineWidth = 1;
@@ -216,7 +216,7 @@ function paintShapeTriangle(ctx: CanvasRenderingContext2D, abilityOwner: Ability
 
 function getRandomStartPaintPositionTriangle(pet: TamerPetCharacter, game: Game): Position | undefined {
     const petOwner: Character = findPetOwner(pet, game)!;
-    if(!petOwner) return undefined;
+    if (!petOwner) return undefined;
     let blocking = true;
     let position = { x: 0, y: 0 };
     do {
@@ -240,14 +240,14 @@ function getRandomStartPaintPositionTriangle(pet: TamerPetCharacter, game: Game)
 }
 
 function tickTriangle(pet: TamerPetCharacter, abilityPetPainter: AbilityPetPainter, game: Game) {
-    if(!pet.forcedMovePosition){
+    if (!pet.forcedMovePosition) {
         abilityPetPainter.currentlyPainting = undefined;
         return;
     }
     const targetPos = pet.forcedMovePosition;
     const distance = calculateDistance(pet, targetPos);
     let nextPosition: Position;
-    if (distance < pet.moveSpeed) {
+    if (distance < pet.baseMoveSpeed) {
         switch (abilityPetPainter.paintPoints!.length) {
             case 0:
                 abilityPetPainter.paintPoints!.push(targetPos);

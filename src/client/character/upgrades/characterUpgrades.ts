@@ -6,6 +6,7 @@ import { findCharacterClassById } from "../playerCharacters/levelingCharacter.js
 import { CharacterClass } from "../playerCharacters/playerCharacters.js";
 import { UpgradeOption, UpgradeOptionAndProbability } from "../upgrade.js";
 import { addCharacterUpgradeBonusDamageReduction } from "./characterUpgradeDamageReduction.js";
+import { addCharacterUpgradeBonusExperience } from "./characterUpgradeExperienceGain.js";
 
 export type CharacterUpgrade = {
     level: number,
@@ -34,6 +35,7 @@ export function onDomLoadSetCharacterUpgradeFunctions() {
     addCharacterUpgradeBonusHp();
     addCharacterUpgradeBonusMoveSpeed();
     addCharacterUpgradeBonusDamageReduction();
+    addCharacterUpgradeBonusExperience();
 }
 
 export function addCharacterUpgrades(characterUpgrades: CharacterUpgrades, character: Character, characterClass: CharacterClass | undefined) {

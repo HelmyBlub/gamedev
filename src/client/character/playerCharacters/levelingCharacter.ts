@@ -22,7 +22,7 @@ export function levelingCharacterAndClassXpGain(state: GameState, killedCharacte
     for (let character of playerCharacters) {
         if (character.isDead || character.isPet) continue;
         if (character.level?.leveling !== undefined) {
-            character.level.leveling.experience += killedCharacter.experienceWorth;
+            character.level.leveling.experience += killedCharacter.experienceWorth * (character.experienceGainFactor ?? 1);
             while (character.level.leveling.experience >= character.level.leveling.experienceForLevelUp) {
                 levelingCharacterLevelUp(character, game);
             }
@@ -31,12 +31,12 @@ export function levelingCharacterAndClassXpGain(state: GameState, killedCharacte
             for (let charClass of character.characterClasses) {
                 if (charClass.gifted) continue;
                 if (charClass.level?.leveling !== undefined) {
-                    if(charClass.legendary){
-                        if(charClass.level.level >= charClass.legendary.levelCap){
+                    if (charClass.legendary) {
+                        if (charClass.level.level >= charClass.legendary.levelCap) {
                             continue;
                         }
                     }
-                    charClass.level.leveling.experience += killedCharacter.experienceWorth;
+                    charClass.level.leveling.experience += killedCharacter.experienceWorth * (character.experienceGainFactor ?? 1);
                     while (charClass.level.leveling.experience >= charClass.level.leveling.experienceForLevelUp) {
                         levelingClassLevelUp(character, charClass, game);
                     }
@@ -69,7 +69,7 @@ function levelingCharacterLevelUp(character: Character, game: Game) {
 function levelingClassLevelUp(character: Character, charClass: CharacterClass, game: Game) {
     if (!charClass.level?.leveling || charClass.availableSkillPoints === undefined) return;
     charClass.level.level++;
-    if(charClass.level.level % 5 === 0){
+    if (charClass.level.level % 5 === 0) {
         charClass.availableSkillPoints += 1;
     }
     charClass.level.leveling.experience -= charClass.level.leveling.experienceForLevelUp;
@@ -79,7 +79,7 @@ function levelingClassLevelUp(character: Character, charClass: CharacterClass, g
 
 export function executeLevelingCharacterUpgradeOption(character: Character, upgradeOption: UpgradeOption, game: Game) {
     const charClass = findCharacterClassById(character, upgradeOption.classIdRef!);
-    if(!charClass || !charClass.availableSkillPoints || charClass.availableSkillPoints <= 0) return;
+    if (!charClass || !charClass.availableSkillPoints || charClass.availableSkillPoints <= 0) return;
     if (upgradeOption.type === "Character") {
         const charUpFunctions = CHARACTER_UPGRADE_FUNCTIONS[upgradeOption.identifier];
         if (charUpFunctions) {

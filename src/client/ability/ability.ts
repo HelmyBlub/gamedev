@@ -219,7 +219,7 @@ export function levelingAbilityXpGain(ability: Ability, owner: Character, experi
     if (ability.level?.leveling) {
         if (!owner || owner.isDead || owner.isPet) return;
         if (ability.legendary && ability.legendary.levelCap <= ability.level.level) return;
-        ability.level.leveling.experience += experience;
+        ability.level.leveling.experience += experience * (owner.experienceGainFactor ?? 1);
         while (ability.level.leveling.experience >= ability.level.leveling.experienceForLevelUp) {
             levelUp(ability);
         }

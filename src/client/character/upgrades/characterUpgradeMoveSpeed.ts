@@ -33,7 +33,7 @@ export function characterCreateAndAddUpgradeBonusSpeed(charClass: CharacterClass
         charClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_MOVE_SPEED] = upgrade;
     }
     upgrade.bonusMoveSpeed += bonusSpeed;
-    character.moveSpeed += bonusSpeed;
+    character.baseMoveSpeed += bonusSpeed;
 }
 
 function addUpgrade(characterUpgrade: CharacterUpgrade, character: Character, charClass: CharacterClass | undefined) {
@@ -42,7 +42,7 @@ function addUpgrade(characterUpgrade: CharacterUpgrade, character: Character, ch
         if (!charClass.characterClassUpgrades) charClass.characterClassUpgrades = {};
         charClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_MOVE_SPEED] = characterUpgrade;
     }
-    character.moveSpeed += bonusHp.bonusMoveSpeed;
+    character.baseMoveSpeed += bonusHp.bonusMoveSpeed;
 }
 
 function getOptions(character: Character, game: Game): UpgradeOptionAndProbability[] {
@@ -74,7 +74,7 @@ function executeOption(option: UpgradeOption, character: Character) {
     }
     up.level++;
     up.bonusMoveSpeed += BONUS_MOVE_SPEED_PER_LEVEL;
-    character.moveSpeed += BONUS_MOVE_SPEED_PER_LEVEL;
+    character.baseMoveSpeed += BONUS_MOVE_SPEED_PER_LEVEL;
 }
 
 function getStatsDisplayText(characterUpgrade: CharacterUpgrade): string {

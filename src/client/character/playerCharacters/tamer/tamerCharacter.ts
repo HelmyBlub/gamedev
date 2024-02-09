@@ -21,6 +21,8 @@ import { AbilityUpgrade } from "../../../ability/abilityUpgrade.js";
 import { ABILITY_NAME_UNLEASH_PET } from "../../../ability/petTamer/abilityUnleashPet.js";
 import { characterCreateAndAddUpgradeBonusHp } from "../../upgrades/characterUpgradeBonusHealth.js";
 import { characterCreateAndAddUpgradeBonusSpeed } from "../../upgrades/characterUpgradeMoveSpeed.js";
+import { findPlayerByCharacterId } from "../../../player.js";
+import { addCharacterUpgrades } from "../../upgrades/characterUpgrades.js";
 
 export const TAMER_CHARACTER = "Tamer";
 export function addTamerClass() {
@@ -310,6 +312,9 @@ function addPetToTamer(character: Character, color: string, characterClass: Char
     const pet: TamerPetCharacter = createTamerPetCharacter(character, color, characterClass, game);
     pet.abilities.push(createAbilityLeash(game.state.idCounter, undefined, 175, character.id));
     pet.abilities.push(createAbility(ABILITY_NAME_MELEE, game.state.idCounter, false));
-
+    const player = findPlayerByCharacterId(game.state.players, character.id);
+    if (player) {
+        addCharacterUpgrades(player.permanentData.upgrades, pet, undefined);
+    }
     character.pets.push(pet);
 }

@@ -518,7 +518,7 @@ export function setCharacterPosition(character: Character, position: Position, m
 
 export function calculateCharacterMovePosition(character: Character, map: GameMap, idCounter: IdCounter) {
     if (character.isMoving) {
-        return calculateMovePosition(character, character.moveDirection, character.moveSpeed, true, map, idCounter);
+        return calculateMovePosition(character, character.moveDirection, getCharacterMoveSpeed(character), true, map, idCounter);
     }
     return undefined;
 }
@@ -542,6 +542,10 @@ export function mapCharacterCheckAndDoChunkChange(character: Character, map: Gam
         map.chunks[newChunkKey].characters.push(character);
         character.mapChunkKey = newChunkKey;
     }
+}
+
+export function getCharacterMoveSpeed(character: Character): number {
+    return character.baseMoveSpeed * character.moveSpeedFactor;
 }
 
 function experienceForEveryPlayersLeveling(experience: number, game: Game) {
@@ -568,7 +572,7 @@ function experienceForCharacter(character: Character, experienceWorth: number) {
         && !(character as TamerPetCharacter).gifted
     ) {
         if (character.legendary && character.legendary.levelCap <= character.level.level) return;
-        character.level.leveling.experience += experienceWorth;
+        character.level.leveling.experience += experienceWorth * (character.experienceGainFactor ?? 1);
         while (character.level.leveling.experience >= character.level.leveling.experienceForLevelUp) {
             character.level.level++;
             character.level.leveling.experience -= character.level.leveling.experienceForLevelUp;

@@ -4,7 +4,7 @@ import { getPointPaintPosition } from "../gamePaint.js";
 import { GAME_IMAGES, getImage, loadImage } from "../imageLoad.js";
 import { randomizedCharacterImageToKey } from "../randomizedCharacterImage.js";
 import { StatsUIPart, createStatsUI } from "../statsUI.js";
-import { getPlayerCharacters } from "./character.js";
+import { getCharacterMoveSpeed, getPlayerCharacters } from "./character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_PLAYER_PARTS, IMAGE_SLIME } from "./characterModel.js";
 import { CHARACTER_TYPE_KING_ENEMY } from "./enemy/kingEnemy.js";
 import { CharacterClass } from "./playerCharacters/playerCharacters.js";
@@ -69,7 +69,7 @@ export function createCharacterStatsUI(ctx: CanvasRenderingContext2D, character:
     const textLines: string[] = [
         `Character Stats:`,
         `HP: ${Math.ceil(character.hp).toLocaleString()}/${Math.ceil(character.maxHp).toLocaleString()}`,
-        `Movement Speed: ${character.moveSpeed.toFixed(2)}`,
+        `Movement Speed: ${getCharacterMoveSpeed(character).toFixed(2)}`,
         `Type: ${character.type}`,
     ];
     if (character.type === CHARACTER_TYPE_KING_ENEMY) {

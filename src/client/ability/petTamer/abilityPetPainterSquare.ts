@@ -141,7 +141,7 @@ function createShapeSquare(pet: TamerPetCharacter, abilityPetPainter: AbilityPet
 
 function initShapePaintSquare(pet: TamerPetCharacter, ability: AbilityPetPainter, game: Game) {
     pet.forcedMovePosition = getRandomStartPaintPositionSquare(pet, game);
-    if(!pet.forcedMovePosition) return;
+    if (!pet.forcedMovePosition) return;
     ability.currentlyPainting = PET_PAINTER_SQUARE;
     ability.paintPoints = [];
 }
@@ -193,7 +193,7 @@ function paintShapeObjectPetPainterSquare(ctx: CanvasRenderingContext2D, ability
     ctx.fillStyle = abilityObject.color;
     ctx.lineWidth = 1;
     ctx.globalAlpha = (square.deleteTime - game.state.time) / FADETIME;
-    if(abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
+    if (abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
     if (square.isFactory) {
         ctx.rect(paintPos.x, paintPos.y, square.size, square.size);
         ctx.stroke();
@@ -220,9 +220,9 @@ function paintShapeSquare(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOw
     ctx.stroke();
 }
 
-function getRandomStartPaintPositionSquare(pet: TamerPetCharacter, game: Game): Position | undefined{
+function getRandomStartPaintPositionSquare(pet: TamerPetCharacter, game: Game): Position | undefined {
     const petOwner: Character = findPetOwner(pet, game)!;
-    if(!petOwner) return undefined;
+    if (!petOwner) return undefined;
     let blocking = true;
     let position = { x: 0, y: 0 };
     do {
@@ -244,13 +244,13 @@ function getRandomStartPaintPositionSquare(pet: TamerPetCharacter, game: Game): 
 }
 
 function tickSquare(pet: TamerPetCharacter, abilityPetPainter: AbilityPetPainter, game: Game) {
-    if(!pet.forcedMovePosition){
+    if (!pet.forcedMovePosition) {
         abilityPetPainter.currentlyPainting = undefined;
         return;
     }
     const targetPos = pet.forcedMovePosition;
     const distance = calculateDistance(pet, targetPos);
-    if (distance < pet.moveSpeed) {
+    if (distance < pet.baseMoveSpeed) {
         switch (abilityPetPainter.paintPoints!.length) {
             case 0:
                 abilityPetPainter.paintPoints!.push(targetPos);

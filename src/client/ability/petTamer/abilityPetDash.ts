@@ -1,3 +1,4 @@
+import { getCharacterMoveSpeed } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
 import { TamerPetCharacter, petHappinessToDisplayText } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { UpgradeOptionAndProbability } from "../../character/upgrade.js";
@@ -48,7 +49,7 @@ export function addAbilityPetDash() {
 }
 
 export function getPetAbilityDashDamage(pet: TamerPetCharacter, ability: AbilityPetDash): number {
-    const damage = ability.baseDamage * pet.sizeFactor * pet.moveSpeed;
+    const damage = ability.baseDamage * pet.sizeFactor * getCharacterMoveSpeed(pet);
     const upgradeBounce: AbilityPetDashUpgradeTerrainBounce = ability.upgrades[ABILITY_PET_DASH_UPGRADE_TERRAIN_BOUNCE];
     if (upgradeBounce !== undefined) damage * upgradeBounce.currentDamageFactor;
     return damage;

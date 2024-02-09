@@ -127,7 +127,7 @@ export function modifyCharacterToKing(boss: Character, game: Game) {
             pet.faction = boss.faction;
         }
     }
-    boss.moveSpeed = 1;
+    boss.baseMoveSpeed = 1;
     resetCharacter(boss, game);
     changeBossAbilityLevelBasedOnHp(boss);
 }
@@ -179,7 +179,7 @@ function changeBossAbilityLevelBasedOnHp(enemy: KingEnemyCharacter) {
     if (enemy.pets) {
         const petMoveSpeed = Math.min(0.5 + (hpBasedlevel / 14 * 2), 3);
         for (let pet of enemy.pets) {
-            pet.moveSpeed = petMoveSpeed;
+            pet.baseMoveSpeed = petMoveSpeed;
             for (let ability of pet.abilities) {
                 setAbilityToBossLevel(ability, hpBasedlevel);
             }

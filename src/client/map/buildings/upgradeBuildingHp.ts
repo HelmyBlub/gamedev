@@ -1,3 +1,4 @@
+import { PLAYER_BASE_HP } from "../../character/characterModel.js";
 import { CHARACTER_UPGRADE_BONUS_HP, CharacterUpgradeBonusHP } from "../../character/upgrades/characterUpgradeBonusHealth.js";
 import { CharacterUpgrade, CharacterUpgrades } from "../../character/upgrades/characterUpgrades.js";
 import { Game } from "../../gameModel.js";
@@ -33,15 +34,23 @@ function getInvestedText(characterUpgrades: CharacterUpgrades, game: Game): stri
 }
 
 function getCosts(characterUpgrades: CharacterUpgrades, game: Game): number {
-    const bonusHP = getAmount(characterUpgrades, game);
-    return Math.ceil(bonusHP / 10);
+    const upgrade: CharacterUpgrade | undefined = characterUpgrades[CHARACTER_UPGRADE_BONUS_HP];
+    let upgradeBonusHp = 0;
+    if (upgrade) {
+        const hpUpgrade = upgrade as CharacterUpgradeBonusHP;
+        upgradeBonusHp = hpUpgrade.bonusHp;
+    }
+    return Math.max(2, Math.ceil(Math.pow(upgradeBonusHp / 10, 2)));
 }
 
 function getAmount(characterUpgrades: CharacterUpgrades, game: Game): number {
     const upgrade: CharacterUpgrade | undefined = characterUpgrades[CHARACTER_UPGRADE_BONUS_HP];
-    if (!upgrade) return 10;
-    const hpUpgrade = upgrade as CharacterUpgradeBonusHP;
-    return Math.max(10, hpUpgrade.bonusHp);
+    let upgradeBonusHp = 0;
+    if (upgrade) {
+        const hpUpgrade = upgrade as CharacterUpgradeBonusHP;
+        upgradeBonusHp = hpUpgrade.bonusHp;
+    }
+    return Math.ceil((PLAYER_BASE_HP + upgradeBonusHp) * 0.1);
 }
 
 function buyUpgrade(player: Player, game: Game) {

@@ -121,7 +121,7 @@ function createShapeCircle(pet: TamerPetCharacter, abilityPetPainter: AbilityPet
 
 function initShapePaintCircle(pet: TamerPetCharacter, ability: AbilityPetPainter, game: Game) {
     const startPoint = getRandomStartPaintPositionCircle(pet, game);
-    if(!startPoint) return;
+    if (!startPoint) return;
     ability.currentlyPainting = PET_PAINTER_CIRCLE;
     ability.paintCircle = {
         middle: { x: startPoint.x, y: startPoint.y },
@@ -168,7 +168,7 @@ function paintShapeObjectPetPainterCircle(ctx: CanvasRenderingContext2D, ability
     const cameraPosition = getCameraPosition(game);
     const circle = abilityObject as AbilityObjectPetPainterCircle;
     const paintPos = getPointPaintPosition(ctx, circle, cameraPosition);
-    if(abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
+    if (abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
     ctx.fillStyle = circle.color;
     ctx.strokeStyle = circle.color;
     ctx.lineWidth = 1;
@@ -189,9 +189,9 @@ function paintShapeCircle(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOw
     ctx.stroke();
 }
 
-function getRandomStartPaintPositionCircle(pet: TamerPetCharacter, game: Game): Position | undefined{
+function getRandomStartPaintPositionCircle(pet: TamerPetCharacter, game: Game): Position | undefined {
     const petOwner: Character | undefined = findPetOwner(pet, game);
-    if(!petOwner) return undefined;
+    if (!petOwner) return undefined;
     let blocking = true;
     let position = { x: 0, y: 0 };
     do {
@@ -207,13 +207,13 @@ function getRandomStartPaintPositionCircle(pet: TamerPetCharacter, game: Game): 
 }
 
 function tickCircle(pet: TamerPetCharacter, abilityPetPainter: AbilityPetPainter, game: Game) {
-    if(!pet.forcedMovePosition){
+    if (!pet.forcedMovePosition) {
         abilityPetPainter.currentlyPainting = undefined;
         return;
     }
     const targetPos = pet.forcedMovePosition;
     const distance = calculateDistance(pet, targetPos);
-    if (distance < pet.moveSpeed) {
+    if (distance < pet.baseMoveSpeed) {
         abilityPetPainter.paintCircle!.currentAngle += Math.PI / 10;
         const angle = abilityPetPainter.paintCircle!.currentAngle;
         if (angle > Math.PI * 2) {

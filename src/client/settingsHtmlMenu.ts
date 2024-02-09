@@ -157,7 +157,7 @@ function addGiveMoneyButton(game: Game) {
         button.addEventListener('click', () => {
             if (!game.multiplayer.websocket) {
                 if (game.state.players[0]) {
-                    game.state.players[0].permanentData.money += 100;
+                    game.state.players[0].permanentData.money += 1000;
                 }
             }
         });

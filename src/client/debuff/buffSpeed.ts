@@ -29,12 +29,12 @@ export function createBuffSpeed(
 
 function applyBuffEffectSpeed(debuff: Debuff, targetCharacter: Character, game: Game) {
     const buffSpeed = debuff as BuffSpeed;
-    targetCharacter.moveSpeed *= buffSpeed.speedFactor;
+    targetCharacter.moveSpeedFactor *= buffSpeed.speedFactor;
 }
 
 function removeBuffEffectSpeed(debuff: Debuff, targetCharacter: Character, game: Game) {
     const buffSpeed = debuff as BuffSpeed;
-    targetCharacter.moveSpeed /= buffSpeed.speedFactor;
+    targetCharacter.moveSpeedFactor /= buffSpeed.speedFactor;
 }
 
 function refreshBuffEffectSpeed(newDebuff: Debuff, currentDebuff: Debuff, targetCharacter: Character, game: Game) {

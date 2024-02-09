@@ -1,4 +1,4 @@
-import { getRandomAlivePlayerCharacter, setCharacterPosition } from "../../character/character.js";
+import { getCharacterMoveSpeed, getRandomAlivePlayerCharacter, setCharacterPosition } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
 import { paintCharacterDefault, paintCharacterWithAbilitiesDefault } from "../../character/characterPaint.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
@@ -273,8 +273,8 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
 
     const ballBuff = findBallBuff(abilityOwner, abilityBounceBall);
     if (typeof ballBuff !== "object") {
-        if (!ballBuff && abilityOwner.isMoving && abilityOwner.moveSpeed) {
-            turnBall(abilityBounceBall, abilityOwner.moveSpeed, abilityOwner.moveDirection!);
+        if (!ballBuff && abilityOwner.isMoving && abilityOwner.baseMoveSpeed !== undefined) {
+            turnBall(abilityBounceBall, getCharacterMoveSpeed(abilityOwner as Character), abilityOwner.moveDirection!);
         }
         return;
     };
