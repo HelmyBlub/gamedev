@@ -53,7 +53,7 @@ export function getNextWaypoint(
     const startXY: Position = calculatePosToTotalTileXY(targetPos, map);
     const maxTileDistance = 50;
     const tileDistance = calculateDistance(startXY, targetXY);
-    if(tileDistance > maxTileDistance){
+    if (tileDistance > maxTileDistance) {
         console.log("pathing to big distance too far aways");
         return null;
     }
@@ -99,7 +99,7 @@ export function getNextWaypoint(
     const maxCounter = calculateDistance(startXY, targetXY) * 300;
     while (openNodes.length > 0) {
         counter++;
-        if (counter > maxCounter) {
+        if (counter > maxCounter || isNaN(maxCounter)) {
             console.log("stoped pathfinding, can cause multiplayer sync loss");
             cameFrom.set(targetKey, null);
             return null

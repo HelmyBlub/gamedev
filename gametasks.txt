@@ -1,4 +1,4 @@
-next test run: Tamer, Sniper, All, Builder
+next test run: Tamer, Sniper, ball, builder, All
 
 current tasks:
 - bug: old ball long run dead locks the game, endless loop? how?
