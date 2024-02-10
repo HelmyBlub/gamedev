@@ -1,12 +1,11 @@
-next test run: builder, Tamer, Sniper, ball,All
+next test run: ball, Tamer, Sniper, All
 
 current tasks:
-- permanet HP increase
-    - dev tasks:
-        - next upgrade building: 
-            - % damage up
-            - % damage reduction
-        - balancing
+- upgrade buildings
+    - MoreInfo UIs
+    - closest interactable. Don't interact with further away past character
+    - building images
+
                 
 - fix: laod all images on domLoad, because images loaded later might not be visible as server goes away
 - two times same upgrade with hp reg with two classes and tower build?
