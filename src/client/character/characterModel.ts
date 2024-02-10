@@ -96,6 +96,7 @@ export type Character = Position & {
     maxHp: number,
     shield: number,
     damageTakenModifierFactor: number,
+    damageDoneFactor: number,
     maxShieldFactor: number,
     faction: string,
     experienceWorth: number,
@@ -170,6 +171,7 @@ export function createCharacter(
         weight: width * height,
         isRooted: false,
         damageTakenModifierFactor: 1,
+        damageDoneFactor: 1,
     };
 }
 

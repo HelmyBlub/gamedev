@@ -5,6 +5,7 @@ import { Game, IdCounter } from "../../gameModel.js";
 import { Player } from "../../player.js";
 import { Building, findBuildingByIdAndType } from "./building.js";
 import { IMAGE_BUILDING1 } from "./classBuilding.js";
+import { addUpgradeBuildingDamage } from "./upgradeBuildingDamage.js";
 import { addUpgradeBuildingExperience } from "./upgradeBuildingExperience.js";
 import { addUpgradeBuildingHp } from "./upgradeBuildingHp.js";
 import { addUpgradeBuildingMoney } from "./upgradeBuildingMoney.js";
@@ -34,6 +35,7 @@ export function addUpgradeBuildingsFunctions() {
     addUpgradeBuildingMovementSpeed();
     addUpgradeBuildingExperience();
     addUpgradeBuildingMoney();
+    addUpgradeBuildingDamage();
 }
 
 export function createBuildingUpgradeBuilding(upgradeType: string, tileX: number, tileY: number, idCounter: IdCounter): UpgradeBuilding {

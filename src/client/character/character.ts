@@ -6,7 +6,7 @@ import { calculateDirection, calculateDistance, calculateDistancePointToLine, ch
 import { Position, Game, IdCounter, Camera, FACTION_ENEMY, FACTION_PLAYER } from "../gameModel.js";
 import { findPlayerById, Player } from "../player.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, Ability, findAbilityById, findAbilityOwnerByAbilityId, levelingAbilityXpGain, resetAllCharacterAbilities } from "../ability/ability.js";
+import { ABILITIES_FUNCTIONS, Ability, findAbilityById, findAbilityOwnerByAbilityIdInPlayers, findAbilityOwnerById, levelingAbilityXpGain, resetAllCharacterAbilities } from "../ability/ability.js";
 import { BossEnemyCharacter, CHARACTER_TYPE_BOSS_ENEMY } from "./enemy/bossEnemy.js";
 import { removeCharacterDebuffs, tickCharacterDebuffs } from "../debuff/debuff.js";
 import { ABILITY_NAME_LEASH, AbilityLeash, createAbilityLeash } from "../ability/abilityLeash.js";
@@ -55,7 +55,8 @@ export function findCharacterByIdInCompleteMap(id: number, game: Game) {
 
 export function characterTakeDamage(character: Character, damage: number, game: Game, abilityIdRef: number | undefined = undefined, abilityName: string) {
     if (character.isDead || character.isPet || character.isDamageImmune) return;
-    let modifiedDamage = damage * character.damageTakenModifierFactor;
+    let sourceDamageFactor = findSourceDamageFactor(abilityIdRef, game);
+    let modifiedDamage = damage * character.damageTakenModifierFactor * sourceDamageFactor;
     if (character.shield > 0) {
         character.shield -= modifiedDamage;
         if (character.shield < 0) {
@@ -76,6 +77,15 @@ export function characterTakeDamage(character: Character, damage: number, game: 
         game.UI.displayTextData.push(createPaintTextData(textPos, modifiedDamage.toFixed(0), textColor, fontSize, game.state.time));
     }
     if (character.faction === FACTION_ENEMY) character.wasHitRecently = true;
+}
+
+function findSourceDamageFactor(abilityIdRef: number | undefined, game: Game): number {
+    let sourceDamageFactor = 1;
+    if (abilityIdRef !== undefined) {
+        const owner = findAbilityOwnerById(abilityIdRef, game);
+        if (owner?.damageDoneFactor) sourceDamageFactor = owner.damageDoneFactor;
+    }
+    return sourceDamageFactor;
 }
 
 export function characterGetShield(character: Character, shieldValue: number) {
@@ -599,7 +609,7 @@ function killCharacter(character: Character, game: Game, abilityIdRef: number | 
     if (abilityIdRef !== undefined && character.type !== CHARACTER_TYPE_BOSS_ENEMY) {
         const ability = findAbilityById(abilityIdRef, game);
         if (ability) {
-            const owner = findAbilityOwnerByAbilityId(ability.id, game);
+            const owner = findAbilityOwnerByAbilityIdInPlayers(ability.id, game);
             if (owner) {
                 levelingAbilityXpGain(ability, owner, character.experienceWorth, game);
                 experienceForCharacter(owner, character.experienceWorth);

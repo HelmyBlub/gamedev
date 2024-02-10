@@ -226,7 +226,7 @@ export function levelingAbilityXpGain(ability: Ability, owner: Character, experi
     }
 }
 
-export function findAbilityOwnerByAbilityId(abilityId: number, game: Game): Character | undefined {
+export function findAbilityOwnerByAbilityIdInPlayers(abilityId: number, game: Game): Character | undefined {
     for (let player of game.state.players) {
         const ability = player.character.abilities.find(a => a.id === abilityId);
         if (ability) return player.character;

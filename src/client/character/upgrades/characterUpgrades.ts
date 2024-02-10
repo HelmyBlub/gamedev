@@ -8,6 +8,7 @@ import { UpgradeOption, UpgradeOptionAndProbability } from "../upgrade.js";
 import { addCharacterUpgradeBonusDamageReduction } from "./characterUpgradeDamageReduction.js";
 import { addCharacterUpgradeBonusExperience } from "./characterUpgradeExperienceGain.js";
 import { addCharacterUpgradeBonusMoney } from "./characterUpgradeMoney.js";
+import { addCharacterUpgradeBonusDamage } from "./characterUpgradeBonusDamage.js";
 
 export type CharacterUpgrade = {
     level: number,
@@ -38,6 +39,7 @@ export function onDomLoadSetCharacterUpgradeFunctions() {
     addCharacterUpgradeBonusDamageReduction();
     addCharacterUpgradeBonusExperience();
     addCharacterUpgradeBonusMoney();
+    addCharacterUpgradeBonusDamage();
 }
 
 export function addCharacterUpgrades(characterUpgrades: CharacterUpgrades, character: Character, game: Game, characterClass: CharacterClass | undefined) {

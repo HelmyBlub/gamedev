@@ -190,8 +190,10 @@ function castTower(abilityOwner: AbilityOwner, ability: Ability, castPosition: P
     const nextAbilityKey = abilityTower.availableAbilityKeys[abilityTower.orderOfAbilities[abilityTower.currentAbilityIndex]];
     const nextAbility: Ability = ABILITIES_FUNCTIONS[nextAbilityKey].createAbility(game.state.idCounter);
     if (!nextAbility.passive) nextAbility.passive = true;
+    nextAbility.id = abilityTower.id;
     abilityTower.currentAbilityIndex = (abilityTower.currentAbilityIndex + 1) % abilityTower.orderOfAbilities.length;
     const newTower: AbilityObjectTower = createAbilityObjectTower(game.state.idCounter, abilityOwner.id, abilityOwner.faction, castPosition, nextAbility, abilityTower.damage);
+    newTower.abilityIdRef = ability.id;
     if (abilityOwner.faction === FACTION_ENEMY) {
         if (abilityOwner.type === CHARACTER_TYPE_BOSS_ENEMY || abilityOwner.type === CHARACTER_TYPE_KING_ENEMY) {
             newTower.isBossTower = true;
@@ -461,7 +463,7 @@ function tickEffectConnected(abilityObjectTower: AbilityObjectTower, game: Game)
 
     const characters: Character[] = getCharactersTouchingLine(game, abilityObjectTower, connectedTower, abilityObjectTower.faction);
     for (let char of characters) {
-        characterTakeDamage(char, abilityObjectTower.damage * damageFactor, game, undefined, abilityObjectTower.type);
+        characterTakeDamage(char, abilityObjectTower.damage * damageFactor, game, abilityObjectTower.abilityIdRef, abilityObjectTower.type);
     }
 }
 
