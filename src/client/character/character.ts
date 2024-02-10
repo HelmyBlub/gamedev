@@ -183,7 +183,7 @@ export function characterTradeAbilityAndPets(fromCharacter: Character, toCharact
             if (charClass.gifted) continue;
             charClass.gifted = true;
             const newClass = charClass.className;
-            characterAddExistingCharacterClass(toCharacter, charClass);
+            characterAddExistingCharacterClass(toCharacter, charClass, game);
             fromCharacter.characterClasses.splice(i, 1);
             const classFunctions = PLAYER_CHARACTER_CLASSES_FUNCTIONS[newClass];
             if (classFunctions && classFunctions.preventMultiple) {
@@ -214,11 +214,11 @@ export function changeCharacterId(character: Character, idCounter: IdCounter) {
     }
 }
 
-export function characterAddExistingCharacterClass(character: Character, characterClass: CharacterClass) {
+export function characterAddExistingCharacterClass(character: Character, characterClass: CharacterClass, game: Game) {
     if (!character.characterClasses) character.characterClasses = [];
     character.characterClasses.push(characterClass);
     if (characterClass.characterClassUpgrades) {
-        addCharacterUpgrades(characterClass.characterClassUpgrades, character, characterClass);
+        addCharacterUpgrades(characterClass.characterClassUpgrades, character, game, characterClass);
     }
 }
 

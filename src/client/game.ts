@@ -318,7 +318,7 @@ export function deepCopy(object: any): any {
 
 export function endGame(game: Game, isKingKill: boolean = false) {
     game.state.ended = true;
-    giveCurrentyToPlayer(game, isKingKill);
+    addPlayerMoney(game, isKingKill);
     const newScore = calculateHighscoreOnGameEnd(game, isKingKill);
     if (isKingKill) {
         setPlayerAsKing(game);
@@ -536,7 +536,7 @@ function endGameReplayStuff(game: Game, newScore: number) {
     }
 }
 
-function giveCurrentyToPlayer(game: Game, isKingKill: boolean = false) {
+function addPlayerMoney(game: Game, isKingKill: boolean = false) {
     let highestPlayerDistane = 0;
     for (let i = 0; i < game.state.players.length; i++) {
         const player = game.state.players[i];
@@ -549,7 +549,8 @@ function giveCurrentyToPlayer(game: Game, isKingKill: boolean = false) {
         if (boss) currencyGain += boss.maxHp / 5000000;
     }
     for (let player of game.state.players) {
-        player.permanentData.money += currencyGain;
+        const moneyFactor = player.character.bonusMoneyFactor !== undefined ? player.character.bonusMoneyFactor : 1;
+        player.permanentData.money += currencyGain * moneyFactor;
     }
     localStorageSavePermanentPlayerData(game);
 }

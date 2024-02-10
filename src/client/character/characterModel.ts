@@ -127,6 +127,7 @@ export type Character = Position & {
     combatlog?: Combatlog,
     legendary?: Legendary,
     experienceGainFactor?: number,
+    bonusMoneyFactor?: number,
 }
 
 export function createCharacter(

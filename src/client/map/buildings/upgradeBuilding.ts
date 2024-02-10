@@ -7,6 +7,7 @@ import { Building, findBuildingByIdAndType } from "./building.js";
 import { IMAGE_BUILDING1 } from "./classBuilding.js";
 import { addUpgradeBuildingExperience } from "./upgradeBuildingExperience.js";
 import { addUpgradeBuildingHp } from "./upgradeBuildingHp.js";
+import { addUpgradeBuildingMoney } from "./upgradeBuildingMoney.js";
 import { addUpgradeBuildingMovementSpeed } from "./upgradeBuildingMovementSpeed.js";
 
 export const UPGRADE_BUILDING = "Upgrade Building";
@@ -32,6 +33,7 @@ export function addUpgradeBuildingsFunctions() {
     addUpgradeBuildingHp();
     addUpgradeBuildingMovementSpeed();
     addUpgradeBuildingExperience();
+    addUpgradeBuildingMoney();
 }
 
 export function createBuildingUpgradeBuilding(upgradeType: string, tileX: number, tileY: number, idCounter: IdCounter): UpgradeBuilding {

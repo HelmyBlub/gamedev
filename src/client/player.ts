@@ -109,12 +109,12 @@ export function gameInitPlayers(game: Game) {
             player = createPlayerWithPlayerCharacter(game.state.idCounter, game.state.clientInfos[i].id, game.state.players, playerSpawn, game.state.randomSeed, game);
             if (game.state.players.length > 0) {
                 player.permanentData = deepCopy(game.state.players[0].permanentData);
-                addCharacterUpgrades(player.permanentData.upgrades, player.character, undefined);
+                addCharacterUpgrades(player.permanentData.upgrades, player.character, game, undefined);
             }
             game.state.players.push(player);
         } else {
             player.character = createPlayerCharacter(game.state.idCounter, playerSpawn, game.state.randomSeed, game);
-            addCharacterUpgrades(player.permanentData.upgrades, player.character, undefined);
+            addCharacterUpgrades(player.permanentData.upgrades, player.character, game, undefined);
             player.actionsPressed = createActionsPressed();
         }
         if (game.multiplayer.myClientId === -1 || game.multiplayer.myClientId === client.id) {

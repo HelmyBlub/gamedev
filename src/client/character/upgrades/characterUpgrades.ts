@@ -7,6 +7,7 @@ import { CharacterClass } from "../playerCharacters/playerCharacters.js";
 import { UpgradeOption, UpgradeOptionAndProbability } from "../upgrade.js";
 import { addCharacterUpgradeBonusDamageReduction } from "./characterUpgradeDamageReduction.js";
 import { addCharacterUpgradeBonusExperience } from "./characterUpgradeExperienceGain.js";
+import { addCharacterUpgradeBonusMoney } from "./characterUpgradeMoney.js";
 
 export type CharacterUpgrade = {
     level: number,
@@ -18,7 +19,7 @@ export type CharacterUpgrades = {
 }
 
 export type CharacterUpgradeFunctions = {
-    addUpgrade: (characterUpgrade: CharacterUpgrade, character: Character, characterClass: CharacterClass | undefined) => void,
+    addUpgrade: (characterUpgrade: CharacterUpgrade, character: Character, game: Game, characterClass: CharacterClass | undefined) => void,
     executeOption?: (option: UpgradeOption, character: Character) => void,
     getLongExplainText?: (character: Character, option: UpgradeOption) => string[],
     getOptions?: (character: Character, game: Game) => UpgradeOptionAndProbability[],
@@ -36,16 +37,17 @@ export function onDomLoadSetCharacterUpgradeFunctions() {
     addCharacterUpgradeBonusMoveSpeed();
     addCharacterUpgradeBonusDamageReduction();
     addCharacterUpgradeBonusExperience();
+    addCharacterUpgradeBonusMoney();
 }
 
-export function addCharacterUpgrades(characterUpgrades: CharacterUpgrades, character: Character, characterClass: CharacterClass | undefined) {
+export function addCharacterUpgrades(characterUpgrades: CharacterUpgrades, character: Character, game: Game, characterClass: CharacterClass | undefined) {
     const keys = Object.keys(characterUpgrades);
     if (keys.length > 0) {
         for (let key of keys) {
             const classUpgrade = characterUpgrades[key];
             const charUpFunctions = CHARACTER_UPGRADE_FUNCTIONS[key];
             if (charUpFunctions) {
-                charUpFunctions.addUpgrade(classUpgrade, character, characterClass);
+                charUpFunctions.addUpgrade(classUpgrade, character, game, characterClass);
             }
         }
     }

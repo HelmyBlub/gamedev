@@ -1,13 +1,11 @@
-next test run: Tamer, Sniper, ball, builder, All
+next test run: builder, Tamer, Sniper, ball,All
 
 current tasks:
-- bug: old ball long run dead locks the game, endless loop? how?
 - permanet HP increase
     - dev tasks:
         - next upgrade building: 
             - % damage up
             - % damage reduction
-            - money gain increase
         - balancing
                 
 - fix: laod all images on domLoad, because images loaded later might not be visible as server goes away

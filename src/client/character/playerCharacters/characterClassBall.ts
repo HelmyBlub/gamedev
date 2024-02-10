@@ -38,7 +38,7 @@ function changeCharacterToBallClass(
     };
     character.characterClasses.push(charClass);
     characterCreateAndAddUpgradeBonusHp(charClass, character, 200);
-    characterCreateAndApplyUpgradeDamageReduction(charClass, character, 0.5);
+    characterCreateAndApplyUpgradeDamageReduction(charClass, character, game, 0.5);
     addAbilityToCharacter(character, createAbility(ABILITY_NAME_BOUNCE_BALL, idCounter, true, true, "ability1"), charClass);
     addAbilityToCharacter(character, createAbility(ABILITY_NAME_LIGHTNING_BALL, idCounter, true, true, "ability2"), charClass);
     addAbilityToCharacter(character, createAbilityHpRegen(idCounter, undefined, 5), charClass);

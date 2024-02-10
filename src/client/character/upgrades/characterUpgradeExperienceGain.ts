@@ -1,6 +1,7 @@
 import { Character } from "../characterModel.js";
 import { CHARACTER_UPGRADE_FUNCTIONS, CharacterUpgrade } from "./characterUpgrades.js";
 import { CharacterClass } from "../playerCharacters/playerCharacters.js";
+import { Game } from "../../gameModel.js";
 
 export type CharacterUpgradeBonusExperience = CharacterUpgrade & {
     bonusExperienceFactor: number,
@@ -20,7 +21,7 @@ function getStatsDisplayText(characterUpgrade: CharacterUpgrade): string {
     return `${CHARACTER_UPGRADE_BONUS_EXPERIENCE}: ${(up.bonusExperienceFactor) * 100}%`;
 }
 
-function addUpgrade(characterUpgrade: CharacterUpgrade, character: Character, charClass: CharacterClass | undefined) {
+function addUpgrade(characterUpgrade: CharacterUpgrade, character: Character, game: Game, charClass: CharacterClass | undefined) {
     const experienceUp = characterUpgrade as CharacterUpgradeBonusExperience;
     if (charClass) {
         if (!charClass.characterClassUpgrades) charClass.characterClassUpgrades = {};

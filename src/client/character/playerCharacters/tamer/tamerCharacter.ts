@@ -314,7 +314,7 @@ function addPetToTamer(character: Character, color: string, characterClass: Char
     pet.abilities.push(createAbility(ABILITY_NAME_MELEE, game.state.idCounter, false));
     const player = findPlayerByCharacterId(game.state.players, character.id);
     if (player) {
-        addCharacterUpgrades(player.permanentData.upgrades, pet, undefined);
+        addCharacterUpgrades(player.permanentData.upgrades, pet, game, undefined);
     }
     character.pets.push(pet);
 }

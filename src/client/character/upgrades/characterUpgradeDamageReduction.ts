@@ -1,6 +1,7 @@
 import { Character } from "../characterModel.js";
 import { CHARACTER_UPGRADE_FUNCTIONS, CharacterUpgrade } from "./characterUpgrades.js";
 import { CharacterClass } from "../playerCharacters/playerCharacters.js";
+import { Game } from "../../gameModel.js";
 
 type CharacterUpgradeBonusDamageReduction = CharacterUpgrade & {
     bonusDamageReduction: number,
@@ -15,13 +16,13 @@ export function addCharacterUpgradeBonusDamageReduction() {
     }
 }
 
-export function characterCreateAndApplyUpgradeDamageReduction(charClass: CharacterClass, character: Character, reductionFactor: number = 0.5) {
+export function characterCreateAndApplyUpgradeDamageReduction(charClass: CharacterClass, character: Character, game: Game, reductionFactor: number = 0.5) {
     const upgrade = {
         bonusDamageReduction: reductionFactor,
         classIdRef: charClass.id,
         level: 1,
     }
-    addUpgrade(upgrade, character, charClass);
+    addUpgrade(upgrade, character, game, charClass);
 }
 
 function getStatsDisplayText(characterUpgrade: CharacterUpgrade): string {
@@ -29,7 +30,7 @@ function getStatsDisplayText(characterUpgrade: CharacterUpgrade): string {
     return `${CHARACTER_UPGRADE_BONUS_DAMAGE_REDUCTION}: ${(1 - up.bonusDamageReduction) * 100}%`;
 }
 
-function addUpgrade(characterUpgrade: CharacterUpgrade, character: Character, charClass: CharacterClass | undefined) {
+function addUpgrade(characterUpgrade: CharacterUpgrade, character: Character, game: Game, charClass: CharacterClass | undefined) {
     const damageReduction = characterUpgrade as CharacterUpgradeBonusDamageReduction;
     if (charClass) {
         if (!charClass.characterClassUpgrades) charClass.characterClassUpgrades = {};

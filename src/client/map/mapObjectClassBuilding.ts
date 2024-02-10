@@ -134,7 +134,7 @@ function interactBurrow(interacter: Character, mapObject: MapTileObject, game: G
     classBuilding.pets = [];
     classBuilding.stuffBorrowed!.burrowed = true;
     classBuilding.stuffBorrowed!.by = interacter.faction;
-    characterAddExistingCharacterClass(interacter, deepCopy(classBuilding.characterClass));
+    characterAddExistingCharacterClass(interacter, deepCopy(classBuilding.characterClass), game);
     if (interacter.upgradeChoices.length > 0 && interacter.upgradeChoices[0].type === "ChooseClass") {
         interacter.upgradeChoices = [];
     }
