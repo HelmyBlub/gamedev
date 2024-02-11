@@ -68,10 +68,13 @@ function createBaseUpgradeBuildingStatsUiPart(ctx: CanvasRenderingContext2D): St
         `Pay money to gain a permanent upgrade.`,
         `Upgrades apply to your character and your pets.`,
         ``,
-        `You gain money when your character`,
-        `dies or when you defeat a King.`,
-        `Money amount gained depends on`,
-        `distance or King max HP.`,
+        `You gain money when:`,
+        `- your character dies`,
+        `    - money based on distance`,
+        `- you defeat a King`,
+        `    - money based on King max HP`,
+        `- you defeat a Boss`,
+        `    - money based on Boss level`,
     ];
     return createStatsUI(ctx, texts);
 

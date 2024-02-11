@@ -1,6 +1,6 @@
 import { changeCharacterId, countAlivePlayerCharacters, findAndSetNewCameraCharacterId, findCharacterById, findMyCharacter, getPlayerCharacters, resetCharacter, tickCharacters, tickMapCharacters } from "./character/character.js";
 import { paintAll } from "./gamePaint.js";
-import { createDefaultKeyBindings1, createDefaultUiKeyBindings, findNearesPastPlayerCharacter, findPlayerByCharacterId, gameInitPlayers, isAutoSkillActive } from "./player.js";
+import { Player, createDefaultKeyBindings1, createDefaultUiKeyBindings, findNearesPastPlayerCharacter, findPlayerByCharacterId, gameInitPlayers, isAutoSkillActive } from "./player.js";
 import { MOUSE_ACTION, UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.js";
 import { Position, GameState, Game, IdCounter, Debugging, PaintTextData, ClientInfo } from "./gameModel.js";
 import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap, getMapMidlePosition } from "./map/map.js";
@@ -462,6 +462,18 @@ export function findClosestInteractable(game: Game): { pastCharacter?: Character
     }
 }
 
+export function addMoneyAmountToPlayer(moneyAmount: number, players: Player[], game: Game) {
+    for (let player of players) {
+        const moneyFactor = player.character.bonusMoneyFactor !== undefined ? player.character.bonusMoneyFactor : 1;
+        const finalMoneyAmount = moneyAmount * moneyFactor;
+        player.permanentData.money += finalMoneyAmount;
+        if (player.clientId === game.multiplayer.myClientId) {
+            const textPosition = getCameraPosition(game);
+            game.UI.displayTextData.push(createPaintTextData(textPosition, `$${finalMoneyAmount.toFixed(1)}`, "black", "24", game.state.time, 5000));
+        }
+    }
+    localStorageSavePermanentPlayerData(game);
+}
 
 function resetPastCharacters(game: Game) {
     for (let character of game.state.pastPlayerCharacters.characters) {
@@ -545,16 +557,12 @@ function addPlayerMoney(game: Game, isKingKill: boolean = false) {
         const distance = Math.round(calculateDistance(player.character, getMapMidlePosition(game.state.map)));
         if (distance > highestPlayerDistane) highestPlayerDistane = distance;
     }
-    let currencyGain = Math.max(0, (highestPlayerDistane / 1000) - 2);
+    let moneyGain = Math.max(0, (highestPlayerDistane / 1000) - 2);
     if (isKingKill && game.state.bossStuff.bosses.length >= 2) {
         const boss = game.state.bossStuff.bosses[game.state.bossStuff.bosses.length - 2];
-        if (boss) currencyGain += boss.maxHp / 5000000;
+        if (boss) moneyGain += boss.maxHp / 5000000;
     }
-    for (let player of game.state.players) {
-        const moneyFactor = player.character.bonusMoneyFactor !== undefined ? player.character.bonusMoneyFactor : 1;
-        player.permanentData.money += currencyGain * moneyFactor;
-    }
-    localStorageSavePermanentPlayerData(game);
+    addMoneyAmountToPlayer(moneyGain, game.state.players, game);
 }
 
 function tick(gameTimePassed: number, game: Game) {

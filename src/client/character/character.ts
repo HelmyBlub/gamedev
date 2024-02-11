@@ -2,7 +2,7 @@ import { levelingCharacterAndClassXpGain } from "./playerCharacters/levelingChar
 import { calculateMovePosition, chunkXYToMapKey, determineMapKeysInDistance, GameMap, getChunksTouchingLine, MapChunk, mapKeyToChunkXY, positionToMapKey } from "../map/map.js";
 import { Character, CHARACTER_TYPE_FUNCTIONS, PLAYER_CHARACTER_TYPE } from "./characterModel.js";
 import { getNextWaypoint, getPathingCache, PathingCache } from "./pathing.js";
-import { calculateDirection, calculateDistance, calculateDistancePointToLine, changeCharacterAndAbilityIds, createPaintTextData, getNextId, takeTimeMeasure } from "../game.js";
+import { addMoneyAmountToPlayer, calculateDirection, calculateDistance, calculateDistancePointToLine, changeCharacterAndAbilityIds, createPaintTextData, getNextId, takeTimeMeasure } from "../game.js";
 import { Position, Game, IdCounter, Camera, FACTION_ENEMY, FACTION_PLAYER } from "../gameModel.js";
 import { findPlayerById, Player } from "../player.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
@@ -602,6 +602,7 @@ function killCharacter(character: Character, game: Game, abilityIdRef: number | 
     if (character.type === CHARACTER_TYPE_BOSS_ENEMY) {
         playerCharactersAddBossSkillPoints(character.level?.level, game);
         experienceForEveryPlayersLeveling(character.experienceWorth, game);
+        if (character.level?.level) addMoneyAmountToPlayer(character.level.level, game.state.players, game);
     }
     if (character.type === CHARACTER_TYPE_KING_ENEMY) {
         game.state.bossStuff.bosses.push(createKingCrownCharacter(game.state.idCounter, character));

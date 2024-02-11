@@ -2,9 +2,6 @@ next test run: ball, Tamer, Sniper, All
 
 current tasks:
 - upgrade buildings
-    - alter money gain
-        - each boss give money based on level
-    - better visualize money gain
 
                 
 - bug: replay -> overtake relpay -> upgrade buildings gone
