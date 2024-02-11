@@ -1,10 +1,12 @@
 import { PLAYER_BASE_HP } from "../../character/characterModel.js";
 import { CHARACTER_UPGRADE_BONUS_HP, CharacterUpgradeBonusHP } from "../../character/upgrades/characterUpgradeBonusHealth.js";
 import { CharacterUpgrade, CharacterUpgrades } from "../../character/upgrades/characterUpgrades.js";
-import { Game } from "../../gameModel.js";
+import { Game, Position } from "../../gameModel.js";
+import { paintTextWithOutline } from "../../gamePaint.js";
 import { Player } from "../../player.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { StatsUIPart, createStatsUI } from "../../statsUI.js";
+import { MapTileObject } from "../mapObjects.js";
 import { UPGRADE_BUILDINGS_FUNCTIONS } from "./upgradeBuilding.js";
 
 export const UPGRADE_BUILDING_HP = "Upgrade HP";
@@ -17,8 +19,19 @@ export function addUpgradeBuildingHp() {
         getAmount: getAmount,
         getCosts: getCosts,
         getUpgradeText: getUpgradeText,
+        paint: paint,
         refund: refund,
     }
+}
+
+function paint(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, paintTopLeft: Position, game: Game) {
+    const tileSize = game.state.map.tileSize;
+    const paintPos = {
+        x: paintTopLeft.x + mapObject.x * tileSize + 20,
+        y: paintTopLeft.y + mapObject.y * tileSize + 30
+    };
+    ctx.font = "bold 16px Arial";
+    paintTextWithOutline(ctx, "white", "black", "HP", paintPos.x, paintPos.y, true, 3);
 }
 
 function createUBStatsUis(ctx: CanvasRenderingContext2D, characterUpgrades: CharacterUpgrades, game: Game): StatsUIPart[] {

@@ -2,7 +2,8 @@ next test run: ball, Tamer, Sniper, All
 
 current tasks:
 - upgrade buildings
-    - building images
+    - alter money gain
+        - each boss give money based on level
     - better visualize money gain
 
                 

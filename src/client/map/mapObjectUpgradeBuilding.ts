@@ -3,14 +3,13 @@ import { getCameraPosition } from "../game.js";
 import { Game, Position } from "../gameModel.js";
 import { getPointPaintPosition, paintTextLinesWithKeys } from "../gamePaint.js";
 import { chunkXYToMapKey, mapKeyAndTileXYToPosition } from "./map.js";
-import { MAP_OBJECTS_FUNCTIONS, MapTileObject, findMapKeyForMapObject } from "./mapObjects.js";
+import { MAP_OBJECTS_FUNCTIONS, MapTileObject, findMapKeyForMapObject, paintMabObjectDefault } from "./mapObjects.js";
 import { localStorageSaveBuildings } from "../permanentData.js";
-import { StatsUIPart, StatsUIsPartContainer, createDefaultStatsUiContainer } from "../statsUI.js";
-import { UPGRADE_BUILDING, UPGRADE_BUILDINGS_FUNCTIONS, createBuildingUpgradeBuilding, createUpgradeBuildingStatsUis, upgradeBuildingBuyUpgrade, upgradeBuildingFindById, upgradeBuildingGetUpgradeText, upgradeBuildingNextUpgradeBonusAmount, upgradeBuildingNextUpgradeCosts, upgradeBuildingRefund } from "./buildings/upgradeBuilding.js";
-import { playerInputBindingToDisplayValue } from "../playerInput.js";
+import { StatsUIsPartContainer, createDefaultStatsUiContainer } from "../statsUI.js";
+import { UPGRADE_BUILDING, UPGRADE_BUILDINGS_FUNCTIONS, UpgradeBuilding, createBuildingUpgradeBuilding, createUpgradeBuildingStatsUis, paintUpgradeBuilding, upgradeBuildingBuyUpgrade, upgradeBuildingFindById, upgradeBuildingGetUpgradeText, upgradeBuildingRefund } from "./buildings/upgradeBuilding.js";
 import { findPlayerByCharacterId, findPlayerByCliendId } from "../player.js";
 import { MapTileObjectBuilding } from "./mapObjectClassBuilding.js";
-import { findMyCharacter } from "../character/character.js";
+import { findBuildingByIdAndType } from "./buildings/building.js";
 
 export type MapTileObjectUpgradeBuilding = MapTileObjectBuilding & {
 }
@@ -20,6 +19,7 @@ export function addMapObjectUpgradeBuilding() {
         createStatsUi: createStatsUiClassBuilding,
         interact1: interactBuy,
         interact2: interactRefund,
+        paint: paint,
         paintInteract: paintInteract,
     }
 }
@@ -54,6 +54,16 @@ export function mapObjectPlaceUpgradeBuilding(game: Game) {
     spawnChunk.objects.push(mapObject);
     game.state.buildings.push(upgradeBuilding);
     localStorageSaveBuildings(game);
+}
+
+function paint(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, paintTopLeft: Position, game: Game) {
+    paintMabObjectDefault(ctx, mapObject, paintTopLeft, game);
+    const mapObjectBuilding = mapObject as MapTileObjectBuilding;
+    const building = findBuildingByIdAndType(mapObjectBuilding.buildingId, mapObjectBuilding.type, game);
+    if (building) {
+        const upgradeBuilding = building as UpgradeBuilding;
+        paintUpgradeBuilding(ctx, mapObject, paintTopLeft, upgradeBuilding.upgradeType, game);
+    }
 }
 
 function createStatsUiClassBuilding(mapObject: MapTileObject, game: Game): StatsUIsPartContainer | undefined {

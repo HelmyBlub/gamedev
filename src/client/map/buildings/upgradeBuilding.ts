@@ -1,8 +1,9 @@
 import { CharacterUpgrades } from "../../character/upgrades/characterUpgrades.js";
 import { getNextId } from "../../game.js";
-import { Game, IdCounter } from "../../gameModel.js";
+import { Game, IdCounter, Position } from "../../gameModel.js";
 import { Player } from "../../player.js";
 import { StatsUIPart, createStatsUI } from "../../statsUI.js";
+import { MapTileObject } from "../mapObjects.js";
 import { Building, findBuildingByIdAndType } from "./building.js";
 import { IMAGE_BUILDING1 } from "./classBuilding.js";
 import { addUpgradeBuildingDamage } from "./upgradeBuildingDamage.js";
@@ -22,6 +23,7 @@ export type UpgradeBuildingFunctions = {
     getAmount: (characterUpgrades: CharacterUpgrades, game: Game) => number,
     getCosts: (characterUpgrades: CharacterUpgrades, game: Game) => number,
     getUpgradeText: (characterUpgrades: CharacterUpgrades, game: Game) => string[],
+    paint?: (ctx: CanvasRenderingContext2D, mapObject: MapTileObject, paintTopLeft: Position, game: Game) => void,
     refund: (player: Player, game: Game) => void,
 }
 
@@ -79,6 +81,13 @@ export function upgradeBuildingFindById(id: number, game: Game): UpgradeBuilding
     const building = findBuildingByIdAndType(id, UPGRADE_BUILDING, game);
     if (building) return building as UpgradeBuilding;
     return undefined;
+}
+
+export function paintUpgradeBuilding(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, paintTopLeft: Position, upgradeBuildingKey: string, game: Game) {
+    const upgradeBuildingFunctions = UPGRADE_BUILDINGS_FUNCTIONS[upgradeBuildingKey];
+    if (upgradeBuildingFunctions && upgradeBuildingFunctions.paint) {
+        upgradeBuildingFunctions.paint(ctx, mapObject, paintTopLeft, game);
+    }
 }
 
 export function upgradeBuildingNextUpgradeCosts(characterUpgrades: CharacterUpgrades, upgradeBuildingKey: string, game: Game): number {
