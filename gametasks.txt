@@ -1,16 +1,19 @@
 next test run: ball, Tamer, Sniper, All
 
 current tasks:
-- upgrade buildings
-
                 
 - bug: replay -> overtake relpay -> upgrade buildings gone
     - replay with upgrades building has failing asserts?
+    - upgrade & money and replays
 - fix: laod all images on domLoad, because images loaded later might not be visible as server goes away
 - two times same upgrade with hp reg with two classes and tower build?
 - fix: outdated permanentState crashes game. Build some auto clear localStorage
 - check: setTimeout creating bigger call stack?
 - copy last replay button to menu
+- on character reset -> reset shield value to 0
+- check: tamer AI, does it feed when pet unhappy?
+- legendary tower builder ablity does not display legendary
+- tower builder king not rotating tower types.
         
 
 - think about next bigger feature 

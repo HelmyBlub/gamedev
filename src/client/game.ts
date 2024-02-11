@@ -13,7 +13,7 @@ import { garbageCollectPathingCache, getPathingCache } from "./character/pathing
 import { createObjectDeathCircle } from "./ability/abilityDeathCircle.js";
 import { checkForBossSpawn, tickBossCharacters } from "./character/enemy/bossEnemy.js";
 import { autoPlay } from "./test/autoPlay.js";
-import { replayGameEndAssert, replayNextInReplayQueue, setPastCharactersAndKingsForReplayFromReplayData } from "./test/gameTest.js";
+import { replayGameEndAssert, replayNextInReplayQueue } from "./test/gameTest.js";
 import { checkForKingAreaTrigger } from "./map/mapKingArea.js";
 import { calculateHighscoreOnGameEnd } from "./highscores.js";
 import { setPlayerAsKing } from "./character/enemy/kingEnemy.js";
@@ -23,7 +23,7 @@ import { COMMAND_RESTART } from "./globalVars.js";
 import { consoleLogCombatlog } from "./combatlog.js";
 import { mapObjectPlaceClassBuilding } from "./map/mapObjectClassBuilding.js";
 import { hasPlayerChoosenStartClassUpgrade } from "./character/playerCharacters/playerCharacters.js";
-import { localStorageLoad, localStorageSavePastCharacters, localStorageSavePermanentPlayerData } from "./permanentData.js";
+import { copyAndSetPermanentDataForReplay, localStorageLoad, localStorageSavePastCharacters, localStorageSavePermanentPlayerData, setPermanentDataFromReplayData } from "./permanentData.js";
 import { MapTileObject, findNearesInteractableMapChunkObject } from "./map/mapObjects.js";
 import { classBuildingCheckAllPlayerForLegendaryAbilitiesAndMoveBackToBuilding } from "./map/buildings/classBuilding.js";
 import { mapObjectPlaceUpgradeBuilding } from "./map/mapObjectUpgradeBuilding.js";
@@ -57,7 +57,7 @@ export function gameRestart(game: Game) {
     classBuildingCheckAllPlayerForLegendaryAbilitiesAndMoveBackToBuilding(game);
     if (game.testing.replay) {
         setReplaySeeds(game);
-        setPastCharactersAndKingsForReplayFromReplayData(game);
+        setPermanentDataFromReplayData(game);
     }
     if (game.testing.record) {
         const record = game.testing.record;
@@ -67,9 +67,7 @@ export function gameRestart(game: Game) {
             restart.testRandomStartSeed = game.state.randomSeed.seed;
             restart.testEnemyTypeDirectionSeed = game.state.enemyTypeDirectionSeed;
         }
-        record.data.permanentData.nextKings = deepCopy(game.state.bossStuff.nextKings);
-        record.data.permanentData.pastCharacters = deepCopy(game.state.pastPlayerCharacters);
-        record.data.permanentData.buildings = deepCopy(game.state.buildings);
+        copyAndSetPermanentDataForReplay(record.data.permanentData, game);
     }
     gameInit(game);
 }
@@ -467,7 +465,7 @@ export function addMoneyAmountToPlayer(moneyAmount: number, players: Player[], g
         const moneyFactor = player.character.bonusMoneyFactor !== undefined ? player.character.bonusMoneyFactor : 1;
         const finalMoneyAmount = moneyAmount * moneyFactor;
         player.permanentData.money += finalMoneyAmount;
-        if (player.clientId === game.multiplayer.myClientId) {
+        if (finalMoneyAmount > 0 && player.clientId === game.multiplayer.myClientId) {
             const textPosition = getCameraPosition(game);
             game.UI.displayTextData.push(createPaintTextData(textPosition, `$${finalMoneyAmount.toFixed(1)}`, "black", "24", game.state.time, 5000));
         }

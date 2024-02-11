@@ -1,8 +1,8 @@
 import { Building } from "./map/buildings/building.js";
 import { changeCharacterId, resetCharacter } from "./character/character.js";
 import { Character } from "./character/characterModel.js";
-import { changeCharacterAndAbilityIds, getNextId } from "./game.js";
-import { CelestialDirection, Game, IdCounter, NextKings, PastPlayerCharacters } from "./gameModel.js";
+import { changeCharacterAndAbilityIds, deepCopy, getNextId } from "./game.js";
+import { CelestialDirection, Game, IdCounter, NextKings, PastPlayerCharacters, setDefaultNextKings } from "./gameModel.js";
 import { ClassBuilding } from "./map/buildings/classBuilding.js";
 import { PermanentPlayerData } from "./player.js";
 
@@ -27,6 +27,13 @@ export function localStorageLoad(game: Game) {
     if (localStorageBuildings) loadBuildings(JSON.parse(localStorageBuildings), game);
     const localStoragePlayerData = localStorage.getItem(LOCALSTORAGE_PLAYER_DATA);
     if (localStoragePlayerData) loadPlayerData(JSON.parse(localStoragePlayerData), game);
+}
+
+export function copyAndSetPermanentDataForReplay(permanentData: PermanentDataParts, game: Game) {
+    permanentData.nextKings = deepCopy(game.state.bossStuff.nextKings);
+    permanentData.pastCharacters = deepCopy(game.state.pastPlayerCharacters);
+    permanentData.buildings = deepCopy(game.state.buildings);
+    if (game.state.players.length > 0) permanentData.permanentPlayerData = deepCopy(game.state.players[0].permanentData);
 }
 
 export function localStorageSaveNextKings(game: Game) {
@@ -130,5 +137,35 @@ function changeBuildingIds(building: Building, idCounter: IdCounter, game: Game)
                 }
             }
         }
+    }
+}
+
+export function setPermanentDataFromReplayData(game: Game) {
+    const replay = game.testing.replay;
+    if (!replay) return;
+    if (game.state.map.kingArea) {
+        if (replay.data?.permanentData.nextKings) {
+            loadNextKings(replay.data?.permanentData.nextKings, game);
+        } else {
+            setDefaultNextKings(game);
+        }
+    }
+    if (replay.data?.permanentData.pastCharacters) {
+        loadPastCharacters(replay.data.permanentData.pastCharacters, game);
+    } else {
+        game.state.pastPlayerCharacters.characters = [];
+    }
+    if (replay.data?.permanentData.buildings) {
+        loadBuildings(replay.data.permanentData.buildings, game);
+    } else {
+        game.state.buildings = [];
+    }
+    if (replay.data?.permanentData.permanentPlayerData) {
+        loadPlayerData(replay.data.permanentData.permanentPlayerData, game);
+    } else if (game.state.players.length > 0) {
+        game.state.players[0].permanentData = {
+            money: 0,
+            upgrades: {},
+        };
     }
 }

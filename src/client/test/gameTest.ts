@@ -1,7 +1,7 @@
 import { createCharacter } from "../character/characterModel.js";
 import { CommandRestart, handleCommand } from "../commands.js";
-import { changeCharacterAndAbilityIds, closeGame } from "../game.js";
-import { CelestialDirection, FACTION_ENEMY, FACTION_PLAYER, Game, NextKings, Position, setDefaultNextKings } from "../gameModel.js";
+import { closeGame } from "../game.js";
+import { FACTION_ENEMY, FACTION_PLAYER, Game } from "../gameModel.js";
 import { createGame } from "../main.js";
 import { addEnemyToMap, chunkXYToMapKey, createMap, GameMap } from "../map/map.js";
 import { createNewChunkTiles } from "../map/mapGeneration.js";
@@ -10,7 +10,6 @@ import { PlayerInput } from "../playerInput.js";
 import { createProjectile, Projectile } from "../ability/projectile.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
 import { detectAbilityObjectCircleToCharacterHit } from "../ability/ability.js";
-import { loadBuildings, loadNextKings, loadPastCharacters } from "../permanentData.js";
 
 let testData: (PlayerInput | Omit<CommandRestart, "executeTime">)[] = [];
 
@@ -28,15 +27,15 @@ function testPlayerClasses(game: Game) {
 
     const replay = game.testing.replay;
     replay.testInputFileQueue = [];
-    // replay.testInputFileQueue.push("/data/testInputError.json");
-    replay.testInputFileQueue.push("/data/testInputShortBuilder.json");
-    replay.testInputFileQueue.push("/data/testInputShortSniper.json");
-    replay.testInputFileQueue.push("/data/testInputShortTamer.json");
-    replay.testInputFileQueue.push("/data/testReplayShortKing.json");
-    replay.testInputFileQueue.push("/data/testInputLongTamer.json");
-    replay.testInputFileQueue.push("/data/testInputLongBall.json");
-    replay.testInputFileQueue.push("/data/testInputLongSniper.json");
-    replay.testInputFileQueue.push("/data/testInputLongBuilder.json");
+    replay.testInputFileQueue.push("/data/testInputError.json");
+    // replay.testInputFileQueue.push("/data/testInputShortBuilder.json");
+    // replay.testInputFileQueue.push("/data/testInputShortSniper.json");
+    // replay.testInputFileQueue.push("/data/testInputShortTamer.json");
+    // replay.testInputFileQueue.push("/data/testReplayShortKing.json");
+    // replay.testInputFileQueue.push("/data/testInputLongTamer.json");
+    // replay.testInputFileQueue.push("/data/testInputLongBall.json");
+    // replay.testInputFileQueue.push("/data/testInputLongSniper.json");
+    // replay.testInputFileQueue.push("/data/testInputLongBuilder.json");
     // replay.testInputFileQueue.push("/data/testReplayLongAll.json");
 
     replay.frameSkipAmount = 60;
@@ -67,28 +66,6 @@ export function replayNextInReplayQueue(game: Game): boolean {
     }
     console.log(`started replay: ${nextInputFile}`);
     return true;
-}
-
-export function setPastCharactersAndKingsForReplayFromReplayData(game: Game) {
-    const replay = game.testing.replay;
-    if (!replay) return;
-    if (game.state.map.kingArea) {
-        if (replay.data?.permanentData.nextKings) {
-            loadNextKings(replay.data?.permanentData.nextKings, game);
-        } else {
-            setDefaultNextKings(game);
-        }
-    }
-    if (replay.data?.permanentData.pastCharacters) {
-        loadPastCharacters(replay.data.permanentData.pastCharacters, game);
-    } else {
-        game.state.pastPlayerCharacters.characters = [];
-    }
-    if (replay.data?.permanentData.buildings) {
-        loadBuildings(replay.data.permanentData.buildings, game);
-    } else {
-        game.state.buildings = [];
-    }
 }
 
 export function replayGameEndAssert(game: Game, newScore: number) {
