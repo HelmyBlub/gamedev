@@ -4,12 +4,15 @@ import { CharacterUpgrade, CharacterUpgrades } from "../../character/upgrades/ch
 import { Game } from "../../gameModel.js";
 import { Player } from "../../player.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
+import { StatsUIPart, createStatsUI } from "../../statsUI.js";
 import { UPGRADE_BUILDINGS_FUNCTIONS } from "./upgradeBuilding.js";
 
 export const UPGRADE_BUILDING_HP = "Upgrade HP";
+const CHARACTER_UPGRADE = CHARACTER_UPGRADE_BONUS_HP;
 
 export function addUpgradeBuildingHp() {
     UPGRADE_BUILDINGS_FUNCTIONS[UPGRADE_BUILDING_HP] = {
+        createUBStatsUis: createUBStatsUis,
         buyUpgrade: buyUpgrade,
         getAmount: getAmount,
         getCosts: getCosts,
@@ -18,8 +21,21 @@ export function addUpgradeBuildingHp() {
     }
 }
 
+function createUBStatsUis(ctx: CanvasRenderingContext2D, characterUpgrades: CharacterUpgrades, game: Game): StatsUIPart[] {
+    let hpUpgrade: CharacterUpgradeBonusHP | undefined = characterUpgrades[CHARACTER_UPGRADE] as CharacterUpgradeBonusHP;
+    const texts: string[] = [];
+    texts.push(`HP Upgrade Building:`);
+    texts.push(`Increases your Characters HP.`);
+    if (hpUpgrade && hpUpgrade.investedMoney! > 0) {
+        texts.push(`Invested $${hpUpgrade.investedMoney} for ${(hpUpgrade.bonusHp).toFixed()} bonus HP.`);
+    } else {
+        texts.push(`Not yet purchased.`);
+    }
+    return [createStatsUI(ctx, texts)];
+}
+
 function refund(player: Player, game: Game) {
-    let hpUpgrade: CharacterUpgradeBonusHP | undefined = player.permanentData.upgrades[CHARACTER_UPGRADE_BONUS_HP] as CharacterUpgradeBonusHP;
+    let hpUpgrade: CharacterUpgradeBonusHP | undefined = player.permanentData.upgrades[CHARACTER_UPGRADE] as CharacterUpgradeBonusHP;
     if (!hpUpgrade) return;
     player.character.maxHp -= hpUpgrade.bonusHp;
     player.character.hp -= hpUpgrade.bonusHp;
@@ -29,7 +45,7 @@ function refund(player: Player, game: Game) {
 }
 
 function getUpgradeText(characterUpgrades: CharacterUpgrades, game: Game): string[] {
-    let hpUpgrade: CharacterUpgradeBonusHP | undefined = characterUpgrades[CHARACTER_UPGRADE_BONUS_HP] as CharacterUpgradeBonusHP;
+    let hpUpgrade: CharacterUpgradeBonusHP | undefined = characterUpgrades[CHARACTER_UPGRADE] as CharacterUpgradeBonusHP;
     const bonusAmount = getAmount(characterUpgrades, game);
     const upgradeCosts = getCosts(characterUpgrades, game);
 
@@ -48,7 +64,7 @@ function getUpgradeText(characterUpgrades: CharacterUpgrades, game: Game): strin
 }
 
 function getCosts(characterUpgrades: CharacterUpgrades, game: Game): number {
-    const upgrade: CharacterUpgrade | undefined = characterUpgrades[CHARACTER_UPGRADE_BONUS_HP];
+    const upgrade: CharacterUpgrade | undefined = characterUpgrades[CHARACTER_UPGRADE];
     let upgradeBonusHp = 0;
     if (upgrade) {
         const hpUpgrade = upgrade as CharacterUpgradeBonusHP;
@@ -58,7 +74,7 @@ function getCosts(characterUpgrades: CharacterUpgrades, game: Game): number {
 }
 
 function getAmount(characterUpgrades: CharacterUpgrades, game: Game): number {
-    const upgrade: CharacterUpgrade | undefined = characterUpgrades[CHARACTER_UPGRADE_BONUS_HP];
+    const upgrade: CharacterUpgrade | undefined = characterUpgrades[CHARACTER_UPGRADE];
     let upgradeBonusHp = 0;
     if (upgrade) {
         const hpUpgrade = upgrade as CharacterUpgradeBonusHP;
@@ -68,14 +84,14 @@ function getAmount(characterUpgrades: CharacterUpgrades, game: Game): number {
 }
 
 function buyUpgrade(player: Player, game: Game) {
-    let hpUpgrade: CharacterUpgradeBonusHP | undefined = player.permanentData.upgrades[CHARACTER_UPGRADE_BONUS_HP] as CharacterUpgradeBonusHP;
+    let hpUpgrade: CharacterUpgradeBonusHP | undefined = player.permanentData.upgrades[CHARACTER_UPGRADE] as CharacterUpgradeBonusHP;
     if (!hpUpgrade) {
         hpUpgrade = {
             level: 0,
             bonusHp: 0,
             investedMoney: 0,
         }
-        player.permanentData.upgrades[CHARACTER_UPGRADE_BONUS_HP] = hpUpgrade;
+        player.permanentData.upgrades[CHARACTER_UPGRADE] = hpUpgrade;
     }
 
     const bonusHP = getAmount(player.permanentData.upgrades, game);

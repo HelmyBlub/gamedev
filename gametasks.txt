@@ -2,16 +2,18 @@ next test run: ball, Tamer, Sniper, All
 
 current tasks:
 - upgrade buildings
-    - MoreInfo UIs
     - closest interactable. Don't interact with further away past character
     - building images
+    - better visualize money gain
 
                 
+- bug: replay -> overtake relpay -> upgrade buildings gone
+    - replay with upgrades building has failing asserts?
 - fix: laod all images on domLoad, because images loaded later might not be visible as server goes away
 - two times same upgrade with hp reg with two classes and tower build?
 - fix: outdated permanentState crashes game. Build some auto clear localStorage
 - check: setTimeout creating bigger call stack?
-- bug: replay -> overtake relpay -> upgrade buildings gone
+- copy last replay button to menu
         
 
 - think about next bigger feature 

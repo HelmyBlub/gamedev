@@ -5,11 +5,12 @@ import { getPointPaintPosition, paintTextLinesWithKeys } from "../gamePaint.js";
 import { chunkXYToMapKey, mapKeyAndTileXYToPosition } from "./map.js";
 import { MAP_OBJECTS_FUNCTIONS, MapTileObject, findMapKeyForMapObject } from "./mapObjects.js";
 import { localStorageSaveBuildings } from "../permanentData.js";
-import { StatsUIsPartContainer, createDefaultStatsUiContainer } from "../statsUI.js";
-import { UPGRADE_BUILDING, UPGRADE_BUILDINGS_FUNCTIONS, createBuildingUpgradeBuilding, upgradeBuildingBuyUpgrade, upgradeBuildingFindById, upgradeBuildingGetUpgradeText, upgradeBuildingNextUpgradeBonusAmount, upgradeBuildingNextUpgradeCosts, upgradeBuildingRefund } from "./buildings/upgradeBuilding.js";
+import { StatsUIPart, StatsUIsPartContainer, createDefaultStatsUiContainer } from "../statsUI.js";
+import { UPGRADE_BUILDING, UPGRADE_BUILDINGS_FUNCTIONS, createBuildingUpgradeBuilding, createUpgradeBuildingStatsUis, upgradeBuildingBuyUpgrade, upgradeBuildingFindById, upgradeBuildingGetUpgradeText, upgradeBuildingNextUpgradeBonusAmount, upgradeBuildingNextUpgradeCosts, upgradeBuildingRefund } from "./buildings/upgradeBuilding.js";
 import { playerInputBindingToDisplayValue } from "../playerInput.js";
-import { findPlayerByCharacterId } from "../player.js";
+import { findPlayerByCharacterId, findPlayerByCliendId } from "../player.js";
 import { MapTileObjectBuilding } from "./mapObjectClassBuilding.js";
+import { findMyCharacter } from "../character/character.js";
 
 export type MapTileObjectUpgradeBuilding = MapTileObjectBuilding & {
 }
@@ -60,10 +61,12 @@ function createStatsUiClassBuilding(mapObject: MapTileObject, game: Game): Stats
     const building = upgradeBuildingFindById(mapObjectBuilding.buildingId, game);
     if (!building || !game.ctx) return;
     const statsUIContainer = createDefaultStatsUiContainer(game.ctx, mapObject.type, game.UI.statsUIs.headingFontSize);
-
+    const characterUpgrades = findPlayerByCliendId(game.multiplayer.myClientId, game.state.players)?.permanentData.upgrades;
+    if (characterUpgrades) {
+        statsUIContainer.statsUIs.push(...createUpgradeBuildingStatsUis(game.ctx, characterUpgrades, building.upgradeType, game));
+    }
     return statsUIContainer;
 }
-
 
 function interactBuy(interacter: Character, mapObject: MapTileObject, game: Game) {
     const player = findPlayerByCharacterId(game.state.players, interacter.id);

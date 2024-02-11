@@ -3,6 +3,7 @@ import { CharacterUpgrade, CharacterUpgrades } from "../../character/upgrades/ch
 import { Game } from "../../gameModel.js";
 import { Player } from "../../player.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
+import { StatsUIPart, createStatsUI } from "../../statsUI.js";
 import { UPGRADE_BUILDINGS_FUNCTIONS } from "./upgradeBuilding.js";
 
 export const UPGRADE_BUILDING_MONEY = "Upgrade Money Gain";
@@ -10,12 +11,27 @@ const CHARACTER_UPGRADE = CHARACTER_UPGRADE_BONUS_MONEY;
 
 export function addUpgradeBuildingMoney() {
     UPGRADE_BUILDINGS_FUNCTIONS[UPGRADE_BUILDING_MONEY] = {
+        createUBStatsUis: createUBStatsUis,
         getCosts: getCosts,
         getAmount: getAmount,
         getUpgradeText: getUpgradeText,
         buyUpgrade: buyUpgrade,
         refund: refund,
     }
+}
+
+function createUBStatsUis(ctx: CanvasRenderingContext2D, characterUpgrades: CharacterUpgrades, game: Game): StatsUIPart[] {
+    let moneyUpgrade: CharacterUpgradeBonusMoney | undefined = characterUpgrades[CHARACTER_UPGRADE] as CharacterUpgradeBonusMoney;
+    const texts: string[] = [];
+    texts.push(`Money Upgrade Building:`);
+    texts.push(`Increases your money gained`);
+    texts.push(`by a percentage.`);
+    if (moneyUpgrade && moneyUpgrade.investedMoney! > 0) {
+        texts.push(`Invested $${moneyUpgrade.investedMoney} for ${(moneyUpgrade.bonusMoneyFactor * 100).toFixed()}% bonus money factor.`);
+    } else {
+        texts.push(`Not yet purchased.`);
+    }
+    return [createStatsUI(ctx, texts)];
 }
 
 function refund(player: Player, game: Game) {

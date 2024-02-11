@@ -3,6 +3,7 @@ import { CharacterUpgrade, CharacterUpgrades } from "../../character/upgrades/ch
 import { Game } from "../../gameModel.js";
 import { Player } from "../../player.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
+import { StatsUIPart, createStatsUI } from "../../statsUI.js";
 import { UPGRADE_BUILDINGS_FUNCTIONS } from "./upgradeBuilding.js";
 
 export const UPGRADE_BUILDING_DAMAGE = "Upgrade Damage Factor";
@@ -10,12 +11,27 @@ const CHARACTER_UPGRADE = CHARACTER_UPGRADE_BONUS_DAMAGE;
 
 export function addUpgradeBuildingDamage() {
     UPGRADE_BUILDINGS_FUNCTIONS[UPGRADE_BUILDING_DAMAGE] = {
+        createUBStatsUis: createUBStatsUis,
         getCosts: getCosts,
         getAmount: getAmount,
         getUpgradeText: getUpgradeText,
         buyUpgrade: buyUpgrade,
         refund: refund,
     }
+}
+
+function createUBStatsUis(ctx: CanvasRenderingContext2D, characterUpgrades: CharacterUpgrades, game: Game): StatsUIPart[] {
+    let damageUpgrade: CharacterUpgradeBonusDamage | undefined = characterUpgrades[CHARACTER_UPGRADE] as CharacterUpgradeBonusDamage;
+    const texts: string[] = [];
+    texts.push(`Damage Upgrade Building:`);
+    texts.push(`Increases your damage and your pets damage`);
+    texts.push(`multiplicative by a percentage.`);
+    if (damageUpgrade && damageUpgrade.investedMoney! > 0) {
+        texts.push(`Invested $${damageUpgrade.investedMoney} for ${(damageUpgrade.bonusDamageFactor * 100).toFixed()}% bonus damage factor.`);
+    } else {
+        texts.push(`Not yet purchased.`);
+    }
+    return [createStatsUI(ctx, texts)];
 }
 
 function refund(player: Player, game: Game) {

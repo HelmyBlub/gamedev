@@ -1,8 +1,8 @@
-import { CHARACTER_UPGRADE_BONUS_HP, CharacterUpgradeBonusHP } from "../../character/upgrades/characterUpgradeBonusHealth.js";
-import { CharacterUpgrade, CharacterUpgrades } from "../../character/upgrades/characterUpgrades.js";
+import { CharacterUpgrades } from "../../character/upgrades/characterUpgrades.js";
 import { getNextId } from "../../game.js";
 import { Game, IdCounter } from "../../gameModel.js";
 import { Player } from "../../player.js";
+import { StatsUIPart, createStatsUI } from "../../statsUI.js";
 import { Building, findBuildingByIdAndType } from "./building.js";
 import { IMAGE_BUILDING1 } from "./classBuilding.js";
 import { addUpgradeBuildingDamage } from "./upgradeBuildingDamage.js";
@@ -18,6 +18,7 @@ export type UpgradeBuilding = Building & {
 }
 export type UpgradeBuildingFunctions = {
     buyUpgrade: (player: Player, game: Game) => void,
+    createUBStatsUis: (ctx: CanvasRenderingContext2D, characterUpgrades: CharacterUpgrades, game: Game) => StatsUIPart[],
     getAmount: (characterUpgrades: CharacterUpgrades, game: Game) => number,
     getCosts: (characterUpgrades: CharacterUpgrades, game: Game) => number,
     getUpgradeText: (characterUpgrades: CharacterUpgrades, game: Game) => string[],
@@ -47,6 +48,31 @@ export function createBuildingUpgradeBuilding(upgradeType: string, tileX: number
         image: IMAGE_BUILDING1,
         upgradeType: upgradeType,
     }
+}
+
+export function createUpgradeBuildingStatsUis(ctx: CanvasRenderingContext2D, characterUpgrades: CharacterUpgrades, upgradeBuildingKey: string, game: Game): StatsUIPart[] {
+    const result: StatsUIPart[] = [createBaseUpgradeBuildingStatsUiPart(ctx)];
+
+    const upgradeBuildingFunctions = UPGRADE_BUILDINGS_FUNCTIONS[upgradeBuildingKey];
+    if (upgradeBuildingFunctions) {
+        result.push(...upgradeBuildingFunctions.createUBStatsUis(ctx, characterUpgrades, game));
+    }
+
+    return result;
+}
+
+function createBaseUpgradeBuildingStatsUiPart(ctx: CanvasRenderingContext2D): StatsUIPart {
+    const texts: string[] = [
+        `Pay money to gain a permanent upgrade.`,
+        `Upgrades apply to your character and your pets.`,
+        ``,
+        `You gain money when your character`,
+        `dies or when you defeat a King.`,
+        `Money amount gained depends on`,
+        `distance or King max HP.`,
+    ];
+    return createStatsUI(ctx, texts);
+
 }
 
 export function upgradeBuildingFindById(id: number, game: Game): UpgradeBuilding | undefined {

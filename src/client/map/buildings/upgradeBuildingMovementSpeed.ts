@@ -3,6 +3,7 @@ import { CharacterUpgrade, CharacterUpgrades } from "../../character/upgrades/ch
 import { Game } from "../../gameModel.js";
 import { Player } from "../../player.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
+import { StatsUIPart, createStatsUI } from "../../statsUI.js";
 import { UPGRADE_BUILDINGS_FUNCTIONS } from "./upgradeBuilding.js";
 
 export const UPGRADE_BUILDING_MOVEMENT_SPEED = "Upgrade Movement Speed";
@@ -10,12 +11,26 @@ const CHARACTER_UPGRADE = CHARACTER_UPGRADE_BONUS_MOVE_SPEED;
 
 export function addUpgradeBuildingMovementSpeed() {
     UPGRADE_BUILDINGS_FUNCTIONS[UPGRADE_BUILDING_MOVEMENT_SPEED] = {
+        createUBStatsUis: createUBStatsUis,
         getCosts: getCosts,
         getAmount: getAmount,
         getUpgradeText: getUpgradeText,
         buyUpgrade: buyUpgrade,
         refund: refund,
     }
+}
+
+function createUBStatsUis(ctx: CanvasRenderingContext2D, characterUpgrades: CharacterUpgrades, game: Game): StatsUIPart[] {
+    let moveSpeedUpgrade: CharacterUpgradeBonusMoveSpeed | undefined = characterUpgrades[CHARACTER_UPGRADE] as CharacterUpgradeBonusMoveSpeed;
+    const texts: string[] = [];
+    texts.push(`Movement Speed Upgrade Building:`);
+    texts.push(`Increases your movement speed.`);
+    if (moveSpeedUpgrade && moveSpeedUpgrade.investedMoney! > 0) {
+        texts.push(`Invested $${moveSpeedUpgrade.investedMoney} for ${(moveSpeedUpgrade.bonusMoveSpeed).toFixed(2)}% bonus movement speed.`);
+    } else {
+        texts.push(`Not yet purchased.`);
+    }
+    return [createStatsUI(ctx, texts)];
 }
 
 function refund(player: Player, game: Game) {
@@ -50,7 +65,6 @@ function getUpgradeText(characterUpgrades: CharacterUpgrades, game: Game): strin
     }
     return texts;
 }
-
 
 function getCosts(characterUpgrades: CharacterUpgrades, game: Game): number {
     const upgrade: CharacterUpgrade | undefined = characterUpgrades[CHARACTER_UPGRADE];
