@@ -2,7 +2,6 @@ next test run: ball, Tamer, Sniper, All
 
 current tasks:
 - upgrade buildings
-    - closest interactable. Don't interact with further away past character
     - building images
     - better visualize money gain
 

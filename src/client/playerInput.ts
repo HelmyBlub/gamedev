@@ -4,7 +4,7 @@ import { Character } from "./character/characterModel.js";
 import { Game, Position } from "./gameModel.js";
 import { websocketConnect } from "./multiplayerConenction.js";
 import { ABILITIES_FUNCTIONS } from "./ability/ability.js";
-import { calculateDirection, getCameraPosition, findClientInfo, resetGameNonStateData, takeTimeMeasure } from "./game.js";
+import { calculateDirection, getCameraPosition, findClientInfo, resetGameNonStateData, takeTimeMeasure, findClosestInteractable } from "./game.js";
 import { executeUpgradeOptionChoice } from "./character/upgrade.js";
 import { canCharacterTradeAbilityOrPets, characterTradeAbilityAndPets } from "./character/character.js";
 import { shareCharactersTradeablePreventedMultipleClass } from "./character/playerCharacters/playerCharacters.js";
@@ -368,25 +368,24 @@ function playerAction(clientId: number, data: any, game: Game) {
 
 function interactKeys(character: Character, specialAction: string, game: Game) {
     if (specialAction === "interact1") {
-        const closestPast = findNearesPastPlayerCharacter(character, game);
-        if (closestPast) {
-            if (canCharacterTradeAbilityOrPets(closestPast)) {
-                if (!shareCharactersTradeablePreventedMultipleClass(closestPast, character)) {
-                    characterTradeAbilityAndPets(closestPast, character, game);
-                }
-            } else {
-                const pastCharactes = game.state.pastPlayerCharacters.characters;
-                for (let i = pastCharactes.length - 1; i >= 0; i--) {
-                    if (pastCharactes[i] === closestPast) {
-                        pastCharactes[i] = undefined;
-                        break;
+        const closestInteractable = findClosestInteractable(game);
+        if (closestInteractable) {
+            if (closestInteractable.mapObject) {
+                interactWithMapObject(character, closestInteractable.mapObject, specialAction, game);
+            } else if (closestInteractable.pastCharacter) {
+                if (canCharacterTradeAbilityOrPets(closestInteractable.pastCharacter)) {
+                    if (!shareCharactersTradeablePreventedMultipleClass(closestInteractable.pastCharacter, character)) {
+                        characterTradeAbilityAndPets(closestInteractable.pastCharacter, character, game);
+                    }
+                } else {
+                    const pastCharactes = game.state.pastPlayerCharacters.characters;
+                    for (let i = pastCharactes.length - 1; i >= 0; i--) {
+                        if (pastCharactes[i] === closestInteractable.pastCharacter) {
+                            pastCharactes[i] = undefined;
+                            break;
+                        }
                     }
                 }
-            }
-        } else {
-            const interactableMapObject = findNearesInteractableMapChunkObject(character, game);
-            if (interactableMapObject) {
-                interactWithMapObject(character, interactableMapObject, specialAction, game);
             }
         }
     } else {

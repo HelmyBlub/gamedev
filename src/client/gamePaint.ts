@@ -5,7 +5,7 @@ import { paintPlayerCharacters } from "./character/characterPaint.js";
 import { paintBossCharacters, paintBossCrown } from "./character/enemy/bossEnemy.js";
 import { CharacterClass, hasPlayerChoosenStartClassUpgrade, shareCharactersTradeablePreventedMultipleClass } from "./character/playerCharacters/playerCharacters.js";
 import { TamerPetCharacter } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
-import { calculateDistance, getCameraPosition, getTimeSinceFirstKill } from "./game.js";
+import { calculateDistance, findClosestInteractable, getCameraPosition, getTimeSinceFirstKill } from "./game.js";
 import { Game, Position, Debugging, PaintTextData } from "./gameModel.js";
 import { Highscores, paintHighscoreEndScreenStuff } from "./highscores.js";
 import { GAME_IMAGES, loadImage } from "./imageLoad.js";
@@ -176,14 +176,15 @@ function paintClosestInteractable(ctx: CanvasRenderingContext2D, cameraPosition:
     const player = findPlayerById(game.state.players, game.multiplayer.myClientId);
     if (player === null) return;
     const character = player.character;
-    const pastCharacter = findNearesPastPlayerCharacter(character, game);
-    const interactableMapObject = findNearesInteractableMapChunkObject(character, game);
-    if (pastCharacter) {
-        paintPastPlayerTakeoverInfo(ctx, pastCharacter, character, cameraPosition, game);
-    } else if (interactableMapObject) {
-        const mapObejctFunctions = MAP_OBJECTS_FUNCTIONS[interactableMapObject.type];
-        if (mapObejctFunctions && mapObejctFunctions.paintInteract) {
-            mapObejctFunctions.paintInteract(ctx, interactableMapObject, character, game);
+    const closestInteractable = findClosestInteractable(game);
+    if (closestInteractable) {
+        if (closestInteractable.mapObject) {
+            const mapObejctFunctions = MAP_OBJECTS_FUNCTIONS[closestInteractable.mapObject.type];
+            if (mapObejctFunctions && mapObejctFunctions.paintInteract) {
+                mapObejctFunctions.paintInteract(ctx, closestInteractable.mapObject, character, game);
+            }
+        } else if (closestInteractable.pastCharacter) {
+            paintPastPlayerTakeoverInfo(ctx, closestInteractable.pastCharacter, character, cameraPosition, game);
         }
     }
 }

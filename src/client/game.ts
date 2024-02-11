@@ -447,7 +447,9 @@ export function findClosestInteractable(game: Game): { pastCharacter?: Character
     const interactableMapObject = findNearesInteractableMapChunkObject(character, game);
     if (pastCharacter && interactableMapObject) {
         const distancePastChar = calculateDistance(pastCharacter, character);
-        const distanceMapObject = calculateDistance(interactableMapObject, character);
+        const tileSize = game.state.map.tileSize;
+        const mapObjectPosition: Position = { x: interactableMapObject.x * tileSize, y: interactableMapObject.y * tileSize };
+        const distanceMapObject = calculateDistance(mapObjectPosition, character);
         if (distanceMapObject > distancePastChar) {
             return { pastCharacter: pastCharacter };
         } else {
