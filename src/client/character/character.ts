@@ -345,6 +345,7 @@ export function resetCharacter(character: Character, game: Game) {
     }
     if (character.isDead) character.isDead = false;
     if (character.isPet) character.isPet = false;
+    character.shield = 0;
     character.isMoving = false;
     if (character.pets) {
         for (let pet of character.pets) {
