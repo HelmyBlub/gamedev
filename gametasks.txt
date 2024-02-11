@@ -1,4 +1,4 @@
-next test run: ball, Tamer, Sniper, All
+next test run: Tamer, Sniper, All
 
 current tasks:
                 
@@ -11,13 +11,9 @@ current tasks:
 - legendary tower builder ablity does not display legendary
 - tower builder king not rotating tower types.
         
-
 - think about next bigger feature 
     - ideas
         - some soner permanent progression.
-            - more baseHP, 
-            - more base move speed
-            - increase xp gain
             - multiple king tries
 
 
