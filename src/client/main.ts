@@ -13,6 +13,7 @@ import { keyDown, keyUp, mouseDown, mouseUp } from "./playerInput.js";
 import { addHTMLDebugMenusToSettings } from "./settingsHtmlMenu.js";
 import { localStorageLoad } from "./permanentData.js";
 import { addUpgradeBuildingsFunctions } from "./map/buildings/upgradeBuilding.js";
+import { onDomLoadImagesLoad } from "./imageLoad.js";
 
 var gameCount: number = 0;
 
@@ -77,6 +78,7 @@ document.addEventListener("DOMContentLoaded", function () {
     onDomLoadSetDebuffsFunctions();
     onDomLoadSetCharacterUpgradeFunctions();
 
+    onDomLoadImagesLoad(); // should be the last load
     start();
 });
 

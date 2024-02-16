@@ -39,6 +39,14 @@ export const COLOR_CONVERSION: ColorConversions = {
 
 export const GAME_IMAGES: GameImages = {};
 
+export function onDomLoadImagesLoad() {
+    const imageKeys = Object.keys(GAME_IMAGES);
+    for (let key of imageKeys) {
+        const gameImage = GAME_IMAGES[key];
+        loadImage(gameImage);
+    }
+}
+
 export function getImage(imageKey: string, color: string = "", randomizedCharacterImage: RandomizedCharacterImage | undefined = undefined): HTMLImageElement | undefined {
     const imageRef = GAME_IMAGES[imageKey];
 
