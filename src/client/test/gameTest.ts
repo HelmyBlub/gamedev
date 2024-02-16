@@ -18,7 +18,6 @@ export function testGame(game: Game) {
     //testPathing(game.ctx);
     //runGameWithPlayerInputs(game, testMultiplayerInputs);
     testPlayerClasses(game);
-    console.log("end test");
 }
 
 function testPlayerClasses(game: Game) {
