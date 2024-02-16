@@ -175,67 +175,17 @@ export function takeTimeMeasure(debug: Debugging | undefined, endName: string, s
     }
 }
 
-export function runner(game: Game) {
-    takeTimeMeasure(game.debug, "total", "");
-    takeTimeMeasure(game.debug, "", "total");
-    takeTimeMeasure(game.debug, "?timeout?", "");
-    takeTimeMeasure(game.debug, "", "runner");
-    takeTimeMeasure(game.debug, "", "tick");
-    if (game.multiplayer.websocket === null) {
-        if (game.testing.replay && game.testing.replay.frameSkipAmount && game.testing.replay.frameSkipAmount > 0) {
-            for (let i = 0; i < game.testing.replay.frameSkipAmount; i++) {
-                tick(game.tickInterval, game);
-                if (i < game.testing.replay.frameSkipAmount - 1) takeTimeMeasure(game.debug, "tick", "tick");
-            }
-        } else {
-            tick(game.tickInterval, game);
-        }
-    } else {
-        const timeNow = performance.now();
-        let counter = 0;
-        const maxCounter = 50;
-        const realTimePassed = timeNow - game.multiplayer.worstCaseGameStartTime;
-        while (!game.state.ended
-            && (
-                (game.multiplayer.maxServerGameTime >= game.state.time + game.tickInterval
-                    && realTimePassed > game.state.time + game.tickInterval)
-                || game.state.triggerRestart
-            )
-            && counter < maxCounter
-        ) {
-            counter++;
-            tick(game.tickInterval, game);
-        }
-        if (counter >= 50) {
-            console.log("game can not keep up");
-        }
+export async function runner(game: Game) {
+    while (!game.closeGame) {
+        const sleepTime = tickAndPaint(game);
+        await sleep(sleepTime);
     }
-    takeTimeMeasure(game.debug, "tick", "paint");
+}
 
-    paintAll(game.ctx, game);
-    takeTimeMeasure(game.debug, "paint", "");
-    if (game.state.ended && game.state.triggerRestart) {
-        gameRestart(game);
-    }
-
-    const timeoutSleep = determineRunnerTimeout(game);
-    if (!game.closeGame) {
-        if (timeoutSleep > 17) {
-            console.log("timeoutSleep to big?");
-            debugger;
-        }
-        setTimeout(() => {
-            try {
-                runner(game);
-            } catch (e) {
-                console.log(game);
-                console.log(game.testing.record?.data);
-                throw e;
-            }
-        }, timeoutSleep);
-    }
-    takeTimeMeasure(game.debug, "runner", "");
-    takeTimeMeasure(game.debug, "", "?timeout?", timeoutSleep);
+async function sleep(milliseconds: number) {
+    return new Promise(resolve => {
+        setTimeout(resolve, milliseconds);
+    });
 }
 
 export function getRelativeMousePoistion(event: MouseEvent): Position {
@@ -471,6 +421,55 @@ export function addMoneyAmountToPlayer(moneyAmount: number, players: Player[], g
         }
     }
     localStorageSavePermanentPlayerData(game);
+}
+
+function tickAndPaint(game: Game) {
+    takeTimeMeasure(game.debug, "total", "");
+    takeTimeMeasure(game.debug, "", "total");
+    takeTimeMeasure(game.debug, "?timeout?", "");
+    takeTimeMeasure(game.debug, "", "runner");
+    takeTimeMeasure(game.debug, "", "tick");
+    if (game.multiplayer.websocket === null) {
+        if (game.testing.replay && game.testing.replay.frameSkipAmount && game.testing.replay.frameSkipAmount > 0) {
+            for (let i = 0; i < game.testing.replay.frameSkipAmount; i++) {
+                tick(game.tickInterval, game);
+                if (i < game.testing.replay.frameSkipAmount - 1) takeTimeMeasure(game.debug, "tick", "tick");
+            }
+        } else {
+            tick(game.tickInterval, game);
+        }
+    } else {
+        const timeNow = performance.now();
+        let counter = 0;
+        const maxCounter = 50;
+        const realTimePassed = timeNow - game.multiplayer.worstCaseGameStartTime;
+        while (!game.state.ended
+            && (
+                (game.multiplayer.maxServerGameTime >= game.state.time + game.tickInterval
+                    && realTimePassed > game.state.time + game.tickInterval)
+                || game.state.triggerRestart
+            )
+            && counter < maxCounter
+        ) {
+            counter++;
+            tick(game.tickInterval, game);
+        }
+        if (counter >= 50) {
+            console.log("game can not keep up");
+        }
+    }
+    takeTimeMeasure(game.debug, "tick", "paint");
+
+    paintAll(game.ctx, game);
+    takeTimeMeasure(game.debug, "paint", "");
+    if (game.state.ended && game.state.triggerRestart) {
+        gameRestart(game);
+    }
+
+    const timeoutSleep = determineRunnerTimeout(game);
+    takeTimeMeasure(game.debug, "runner", "");
+    takeTimeMeasure(game.debug, "", "?timeout?", timeoutSleep);
+    return timeoutSleep;
 }
 
 function resetPastCharacters(game: Game) {
