@@ -82,7 +82,7 @@ export function startKingFight(kingAreaPosition: Position, game: Game) {
                 pet.y = spawn.y;
             }
         }
-        if (game.debug.lowBossHp) {
+        if (game.debug.lowKingHp) {
             king.hp = 500;
             king.maxHp = 500;
         }

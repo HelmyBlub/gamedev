@@ -13,7 +13,7 @@ export function addHTMLDebugMenusToSettings(game: Game) {
     addSettingCheckbox("paintMarkActiveChunks", game);
     addSettingCheckbox("activateSaveStates", game);
     addSettingCheckbox("disableDamageNumbers", game);
-    addSettingCheckbox("lowBossHp", game);
+    addSettingCheckbox("lowKingHp", game);
     addBossSkillPointButton(game);
     addCloseBossAreaButton(game);
     addTankyButton(game);

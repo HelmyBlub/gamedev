@@ -107,6 +107,7 @@ export function createCharacterUpgradeOptions(character: Character, characterCla
     upgradeOptions.push(...CHARACTER_UPGRADE_FUNCTIONS[CHARACTER_UPGRADE_BONUS_MOVE_SPEED].getOptions!(character, game));
 
     for (let ability of character.abilities) {
+        if (ability.classIdRef !== characterClass.id) continue;
         const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
         if (abilityFunctions && abilityFunctions.createAbilityUpgradeOptions) {
             upgradeOptions.push(...abilityFunctions.createAbilityUpgradeOptions(ability));
