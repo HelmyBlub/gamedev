@@ -11,8 +11,9 @@ import { PermanentDataParts } from "./permanentData.js";
 import { createPlayerWithPlayerCharacter, Player } from "./player.js";
 import { PlayerInput } from "./playerInput.js";
 import { nextRandom, RandomSeed } from "./randomNumberGenerator.js";
-import { StatsUIs, StatsUIPart, createDefaultEmptyStatsUis } from "./statsUI.js";
+import { StatsUIs, createDefaultEmptyStatsUis } from "./statsUI.js";
 import { Building } from "./map/buildings/building.js";
+import { GAME_VERSION } from "./main.js";
 
 export type Position = {
     x: number,
@@ -86,6 +87,12 @@ export type TestingStuff = {
     }
 }
 
+export type GameVersion = {
+    major: number,
+    minor: number,
+    patch: number,
+}
+
 export type Debugging = {
     paintMarkActiveChunks?: boolean,
     paintTileXYNumbers?: boolean,
@@ -145,6 +152,7 @@ export type GameState = {
     pastPlayerCharacters: PastPlayerCharacters,
     buildings: Building[],
     enemyTypeDirectionSeed: number,
+    gameVersion: GameVersion,
 }
 
 export type PastPlayerCharacters = {
@@ -280,6 +288,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             },
             buildings: [],
             enemyTypeDirectionSeed: 0,
+            gameVersion: GAME_VERSION,
         },
         tickInterval: 16,
         multiplayer: {

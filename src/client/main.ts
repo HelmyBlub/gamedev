@@ -7,7 +7,7 @@ import { onDomLoadSetCharacterClasses } from "./character/playerCharacters/playe
 import { handleCommand } from "./commands.js";
 import { onDomLoadSetDebuffsFunctions } from "./debuff/debuff.js";
 import { runner, setRelativeMousePosition } from "./game.js";
-import { createDefaultGameData, Game } from "./gameModel.js";
+import { createDefaultGameData, Game, GameVersion } from "./gameModel.js";
 import { addMapObjectsFunctions } from "./map/mapObjects.js";
 import { keyDown, keyUp, mouseDown, mouseUp } from "./playerInput.js";
 import { addHTMLDebugMenusToSettings } from "./settingsHtmlMenu.js";
@@ -16,6 +16,11 @@ import { addUpgradeBuildingsFunctions } from "./map/buildings/upgradeBuilding.js
 import { onDomLoadImagesLoad } from "./imageLoad.js";
 
 var gameCount: number = 0;
+export const GAME_VERSION: GameVersion = {
+    major: 0,
+    minor: 0,
+    patch: 202,
+}
 
 export function start() {
     const game = createGame("myCanvas");

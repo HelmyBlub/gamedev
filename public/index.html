@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Helmys Game</title>
     <script type="module" src="js/client/main.js" defer></script>
@@ -11,7 +12,8 @@
 
 <body>
     <canvas id="myCanvas" class="mainCanvas" width="400" height="300"></canvas>
-    <button type="button" class="settingButton" onclick="document.getElementById('settings').classList.toggle('hide')">Settings</button>
+    <button type="button" id="settingButton" class="settingButton"
+        onclick="document.getElementById('settings').classList.toggle('hide')">Settings</button>
     <div id="settings" class="settingAreaDiv hide">
         <p>Debug Menu:</p>
     </div>
@@ -21,17 +23,19 @@
         <label for="lobbyCode">Lobby Code:</label>
         <input type="text" id="lobbyCode" name="lobbyCode" maxlength="20">
         <i class="bi bi-eye-slash bi-eye iconInTextInput" id="toggleLobbyCode"></i>
-        <button type="button" class="" id="multiplayerCancel" onclick="document.getElementById('stringInput').classList.toggle('hide')">Cancel</button>
-        <button type="button" class="" id="multiplayerConnect" onclick="document.getElementById('multiplayerConnect').disabled = true">Connect To Multiplayer</button>
+        <button type="button" class="" id="multiplayerCancel"
+            onclick="document.getElementById('stringInput').classList.toggle('hide')">Cancel</button>
+        <button type="button" class="" id="multiplayerConnect"
+            onclick="document.getElementById('multiplayerConnect').disabled = true">Connect To Multiplayer</button>
         <script>
             const toggleLobbyCode = document.querySelector("#toggleLobbyCode");
             const lobbyCode = document.querySelector("#lobbyCode");
-    
+
             toggleLobbyCode.addEventListener("click", function () {
                 // toggle the type attribute
                 const type = lobbyCode.getAttribute("type") === "password" ? "text" : "password";
                 lobbyCode.setAttribute("type", type);
-                
+
                 // toggle the icon
                 this.classList.toggle("bi-eye");
             });

@@ -2,7 +2,6 @@ next test run: Tamer, Sniper, All
 
 current tasks:
                 
-- fix: outdated permanentState crashes game. Build some auto clear localStorage
 - check: setTimeout creating bigger call stack?
 - copy last replay button to menu
 - check: tamer AI, does it feed when pet unhappy?

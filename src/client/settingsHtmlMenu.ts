@@ -2,12 +2,14 @@ import { playerCharactersAddBossSkillPoints } from "./character/character.js";
 import { createBossWithLevel } from "./character/enemy/bossEnemy.js";
 import { gameRestart } from "./game.js";
 import { Debugging, Game } from "./gameModel.js";
+import { GAME_VERSION } from "./main.js";
 import { createMap } from "./map/map.js";
 import { testGame } from "./test/gameTest.js";
 
 export function addHTMLDebugMenusToSettings(game: Game) {
     let settingsElement = document.getElementById("settings");
     if (!settingsElement) return;
+    setVersionNumberToSettingButton();
     addSettingCheckbox("takeTimeMeasures", game);
     addSettingCheckbox("paintTileXYNumbers", game);
     addSettingCheckbox("paintMarkActiveChunks", game);
@@ -22,6 +24,12 @@ export function addHTMLDebugMenusToSettings(game: Game) {
     addSettingInputBoxPlayerPaintAlpha(game);
     addGiveMoneyButton(game);
     addTestButton(game);
+}
+
+function setVersionNumberToSettingButton() {
+    const settingsButtonElement = document.getElementById("settingButton");
+    if (!settingsButtonElement) return;
+    settingsButtonElement.innerHTML = `Version: ${GAME_VERSION.major}.${GAME_VERSION.minor}.${GAME_VERSION.patch}`;
 }
 
 function addSettingCheckbox(checkboxName: keyof Debugging, game: Game) {

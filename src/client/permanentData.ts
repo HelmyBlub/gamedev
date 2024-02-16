@@ -2,31 +2,39 @@ import { Building } from "./map/buildings/building.js";
 import { changeCharacterId, resetCharacter } from "./character/character.js";
 import { Character } from "./character/characterModel.js";
 import { changeCharacterAndAbilityIds, deepCopy, getNextId } from "./game.js";
-import { CelestialDirection, Game, IdCounter, NextKings, PastPlayerCharacters, setDefaultNextKings } from "./gameModel.js";
+import { CelestialDirection, Game, GameVersion, IdCounter, NextKings, PastPlayerCharacters, setDefaultNextKings } from "./gameModel.js";
 import { ClassBuilding } from "./map/buildings/classBuilding.js";
 import { PermanentPlayerData } from "./player.js";
+import { GAME_VERSION } from "./main.js";
 
 export type PermanentDataParts = {
     pastCharacters?: PastPlayerCharacters,
     nextKings?: NextKings,
     buildings?: Building[],
     permanentPlayerData?: PermanentPlayerData,
+    gameVersion: GameVersion,
 }
 
 const LOCALSTORAGE_PASTCHARACTERS = "pastCharacters";
 const LOCALSTORAGE_NEXTKINGS = "nextKings";
 const LOCALSTORAGE_BUILDINGS = "buildings";
 const LOCALSTORAGE_PLAYER_DATA = "playerData";
+const LOCALSTORAGE_GAME_VERSION = "gameVersion";
 
 export function localStorageLoad(game: Game) {
-    const localStoragePastCharacters = localStorage.getItem(LOCALSTORAGE_PASTCHARACTERS);
-    if (localStoragePastCharacters) loadPastCharacters(JSON.parse(localStoragePastCharacters), game);
-    const localStorageNextKings = localStorage.getItem(LOCALSTORAGE_NEXTKINGS);
-    if (localStorageNextKings) loadNextKings(JSON.parse(localStorageNextKings), game);
-    const localStorageBuildings = localStorage.getItem(LOCALSTORAGE_BUILDINGS);
-    if (localStorageBuildings) loadBuildings(JSON.parse(localStorageBuildings), game);
-    const localStoragePlayerData = localStorage.getItem(LOCALSTORAGE_PLAYER_DATA);
-    if (localStoragePlayerData) loadPlayerData(JSON.parse(localStoragePlayerData), game);
+    if (isDataGameVersionOutdated()) {
+        localStorage.clear();
+        localStorageSaveGameVersion(game);
+    } else {
+        const localStoragePastCharacters = localStorage.getItem(LOCALSTORAGE_PASTCHARACTERS);
+        if (localStoragePastCharacters) loadPastCharacters(JSON.parse(localStoragePastCharacters), game);
+        const localStorageNextKings = localStorage.getItem(LOCALSTORAGE_NEXTKINGS);
+        if (localStorageNextKings) loadNextKings(JSON.parse(localStorageNextKings), game);
+        const localStorageBuildings = localStorage.getItem(LOCALSTORAGE_BUILDINGS);
+        if (localStorageBuildings) loadBuildings(JSON.parse(localStorageBuildings), game);
+        const localStoragePlayerData = localStorage.getItem(LOCALSTORAGE_PLAYER_DATA);
+        if (localStoragePlayerData) loadPlayerData(JSON.parse(localStoragePlayerData), game);
+    }
 }
 
 export function copyAndSetPermanentDataForReplay(permanentData: PermanentDataParts, game: Game) {
@@ -89,6 +97,24 @@ export function loadBuildings(buildings: Building[], game: Game) {
 export function loadPlayerData(playerData: PermanentPlayerData, game: Game) {
     if (game.state.players.length > 0) {
         game.state.players[0].permanentData = playerData;
+    }
+}
+
+function isDataGameVersionOutdated(): boolean {
+    const stringGameVersion = localStorage.getItem(LOCALSTORAGE_GAME_VERSION);
+    if (stringGameVersion === null) return true;
+    const localStorageGameVersion: GameVersion = JSON.parse(stringGameVersion);
+    if (GAME_VERSION.major !== localStorageGameVersion.major
+        || GAME_VERSION.minor !== localStorageGameVersion.minor
+    ) {
+        return true
+    }
+    return false;
+}
+
+function localStorageSaveGameVersion(game: Game) {
+    if (!game.multiplayer.disableLocalStorage && !game.testing.replay) {
+        localStorage.setItem(LOCALSTORAGE_GAME_VERSION, JSON.stringify(game.state.gameVersion));
     }
 }
 
