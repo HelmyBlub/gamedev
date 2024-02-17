@@ -40,7 +40,30 @@ export type Legendary = {
     blessings: string[],
 }
 
+export type ReplayData = {
+    replayPlayerInputs: PlayerInput[],
+    permanentData: PermanentDataParts,
+    gameEndAsserts?: {
+        type: string,
+        data: any,
+    }[]
+}
+
+export type Replay = {
+    zeroTimeout?: boolean,
+    doNotPaint?: boolean,
+    frameSkipAmount?: number,
+    startTime: number,
+    mapSeed?: number,
+    randomStartSeed?: number,
+    enemyTypeDirectionSeed?: number,
+    data?: ReplayData,
+    replayInputCounter?: number,
+    testInputFileQueue?: string[],
+}
+
 export type TestingStuff = {
+    lastReplay?: ReplayData,
     record?: {
         data: RecordData,
         mapSeed?: number,
@@ -48,25 +71,7 @@ export type TestingStuff = {
         enemyTypeDirectionSeed?: number,
         restartPlayerInput?: Omit<CommandRestart, "executeTime">,
     }
-    replay?: {
-        zeroTimeout?: boolean,
-        doNotPaint?: boolean,
-        frameSkipAmount?: number,
-        startTime: number,
-        mapSeed?: number,
-        randomStartSeed?: number,
-        enemyTypeDirectionSeed?: number,
-        data?: {
-            replayPlayerInputs: PlayerInput[],
-            permanentData: PermanentDataParts,
-            gameEndAsserts?: {
-                type: string,
-                data: any,
-            }[]
-        }
-        replayInputCounter?: number,
-        testInputFileQueue?: string[],
-    }
+    replay?: Replay,
     autoPlay: {
         hotkeyEnabled: boolean,
         autoPlaying: boolean,

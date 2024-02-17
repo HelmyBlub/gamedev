@@ -286,7 +286,7 @@ export function endGame(game: Game, isKingKill: boolean = false) {
             game.testing.record.data.gameEndAsserts.push({ type: "score", data: newScore });
             game.testing.record.data.gameEndAsserts.push({ type: "killCounter", data: game.state.killCounter });
             if (!game.testing.replay) {
-                console.log("testData", deepCopy(game.testing.record.data));
+                game.testing.lastReplay = deepCopy(game.testing.record.data);
             }
         }
     }

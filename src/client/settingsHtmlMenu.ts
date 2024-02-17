@@ -1,10 +1,10 @@
 import { playerCharactersAddBossSkillPoints } from "./character/character.js";
 import { createBossWithLevel } from "./character/enemy/bossEnemy.js";
-import { gameRestart } from "./game.js";
+import { deepCopy, gameRestart } from "./game.js";
 import { Debugging, Game } from "./gameModel.js";
 import { GAME_VERSION } from "./main.js";
 import { createMap } from "./map/map.js";
-import { testGame } from "./test/gameTest.js";
+import { initReplay, replayReplayData, testGame } from "./test/gameTest.js";
 
 export function addHTMLDebugMenusToSettings(game: Game) {
     let settingsElement = document.getElementById("settings");
@@ -24,6 +24,8 @@ export function addHTMLDebugMenusToSettings(game: Game) {
     addSettingInputBoxPlayerPaintAlpha(game);
     addGiveMoneyButton(game);
     addTestButton(game);
+    addCopyLastReplayButton(game);
+    addReplayLastRunButton(game);
 }
 
 function setVersionNumberToSettingButton() {
@@ -141,6 +143,33 @@ function addTestButton(game: Game) {
         button.addEventListener('click', () => {
             if (!game.multiplayer.websocket) {
                 testGame(game);
+            }
+        });
+    }
+}
+
+function addReplayLastRunButton(game: Game) {
+    const buttonName = "Replay last run";
+    addSettingButton(buttonName);
+    const button = document.getElementById(buttonName) as HTMLButtonElement;
+    if (button) {
+        button.addEventListener('click', () => {
+            if (!game.multiplayer.websocket && game.testing.lastReplay) {
+                game.testing.replay = initReplay();
+                replayReplayData(game, deepCopy(game.testing.lastReplay));
+            }
+        });
+    }
+}
+
+function addCopyLastReplayButton(game: Game) {
+    const buttonName = "copy last replay";
+    addSettingButton(buttonName);
+    const button = document.getElementById(buttonName) as HTMLButtonElement;
+    if (button) {
+        button.addEventListener('click', () => {
+            if (!game.multiplayer.websocket && game.testing.lastReplay) {
+                navigator.clipboard.writeText(JSON.stringify(game.testing, undefined, 2));
             }
         });
     }

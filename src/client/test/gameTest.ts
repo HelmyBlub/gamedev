@@ -1,7 +1,7 @@
 import { createCharacter } from "../character/characterModel.js";
 import { CommandRestart, handleCommand } from "../commands.js";
 import { closeGame } from "../game.js";
-import { FACTION_ENEMY, FACTION_PLAYER, Game } from "../gameModel.js";
+import { FACTION_ENEMY, FACTION_PLAYER, Game, Replay, ReplayData } from "../gameModel.js";
 import { createGame } from "../main.js";
 import { addEnemyToMap, chunkXYToMapKey, createMap, GameMap } from "../map/map.js";
 import { createNewChunkTiles } from "../map/mapGeneration.js";
@@ -11,8 +11,6 @@ import { createProjectile, Projectile } from "../ability/projectile.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
 import { detectAbilityObjectCircleToCharacterHit } from "../ability/ability.js";
 
-let testData: (PlayerInput | Omit<CommandRestart, "executeTime">)[] = [];
-
 export function testGame(game: Game) {
     console.log("start test");
     //testPathing(game.ctx);
@@ -20,9 +18,17 @@ export function testGame(game: Game) {
     testPlayerClasses(game);
 }
 
+export function initReplay(): Replay {
+    return {
+        startTime: performance.now(),
+        frameSkipAmount: 60,
+        zeroTimeout: true,
+    }
+}
+
 function testPlayerClasses(game: Game) {
     if (game.state.players.length > 1) return;
-    game.testing.replay = { startTime: performance.now() };
+    game.testing.replay = initReplay();
 
     const replay = game.testing.replay;
     replay.testInputFileQueue = [];
@@ -37,9 +43,6 @@ function testPlayerClasses(game: Game) {
     replay.testInputFileQueue.push("/data/testInputLongBuilder.json");
     // replay.testInputFileQueue.push("/data/testReplayLongAll.json");
 
-    replay.frameSkipAmount = 60;
-    replay.zeroTimeout = true;
-
     replayNextInReplayQueue(game);
 
 }
@@ -47,13 +50,20 @@ function testPlayerClasses(game: Game) {
 export function replayNextInReplayQueue(game: Game): boolean {
     const replay = game.testing.replay;
     if (!replay || !replay.testInputFileQueue || replay.testInputFileQueue.length === 0) return false;
-    replay.replayInputCounter = 0;
     var request = new XMLHttpRequest();
     const nextInputFile = replay.testInputFileQueue.shift()!;
     request.open("GET", nextInputFile, false);
     request.send(null)
-    testData = JSON.parse(request.responseText);
-    replay.data = testData as any;
+    const testData = JSON.parse(request.responseText);
+    console.log(`started replay: ${nextInputFile}`);
+    return replayReplayData(game, testData);
+}
+
+export function replayReplayData(game: Game, replayData: ReplayData): boolean {
+    const replay = game.testing.replay;
+    if (!replay) return false;
+    replay.replayInputCounter = 0;
+    replay.data = replayData;
 
     game.state.ended = true;
     if (replay.data!.replayPlayerInputs[0].command === "restart") {
@@ -63,7 +73,6 @@ export function replayNextInReplayQueue(game: Game): boolean {
     } else {
         handleCommand(game, { command: "restart", clientId: game.multiplayer.myClientId, testing: true });
     }
-    console.log(`started replay: ${nextInputFile}`);
     return true;
 }
 
