@@ -38,8 +38,8 @@ type AbilityTower = Ability & {
     damage: number,
     maxClickRange: number,
     availableAbilityKeys: string[],
-    orderOfAbilities: number[],
     currentAbilityIndex: number,
+    maxTowers: number,
     lastBuildTime?: number,
     maxConnectRange?: number,
 }
@@ -98,7 +98,7 @@ export function createAbilityTower(
         maxClickRange: 1500,
         currentAbilityIndex: 0,
         availableAbilityKeys: availableAbilities,
-        orderOfAbilities: orderOfAbilities,
+        maxTowers: 5,
         upgrades: {},
         tradable: true,
     };
@@ -127,32 +127,19 @@ function resetAbility(ability: Ability) {
 
 function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: number) {
     const abilityTower = ability as AbilityTower;
-    const maxTowers = 3;
-    if (abilityTower.orderOfAbilities.length > maxTowers) {
-        abilityTower.orderOfAbilities.splice(maxTowers);
-    }
-    abilityTower.currentAbilityIndex = (level * 2) % abilityTower.orderOfAbilities.length;
+
+    abilityTower.maxTowers = 3;
+    abilityTower.currentAbilityIndex = level % abilityTower.availableAbilityKeys.length;
     abilityTower.damage = level * 2;
     abilityTower.maxConnectRange = 300;
 }
 
 function setAbilityTowerToBossLevel(ability: Ability, level: number) {
     const abilityTower = ability as AbilityTower;
-    const maxTowers = level * 3;
-    if (abilityTower.orderOfAbilities.length > maxTowers) {
-        abilityTower.orderOfAbilities.splice(maxTowers);
-    } else if (abilityTower.orderOfAbilities.length < maxTowers) {
-        const missingCount = maxTowers - abilityTower.orderOfAbilities.length;
-        for (let i = 0; i < missingCount; i++) {
-            const newKey = abilityTower.orderOfAbilities.length % abilityTower.availableAbilityKeys.length;
-            abilityTower.orderOfAbilities.push(newKey);
-        }
-    }
-    abilityTower.currentAbilityIndex = (level * 2) % abilityTower.orderOfAbilities.length;
+    abilityTower.maxTowers = level * 3;
     abilityTower.damage = level * 10;
     abilityTower.maxConnectRange = 800;
 }
-
 
 function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     const abilityTower = ability as AbilityTower;
@@ -182,16 +169,16 @@ function castTower(abilityOwner: AbilityOwner, ability: Ability, castPosition: P
     if (distance > abilityTower.maxClickRange) return;
     const abilityObjects = game.state.abilityObjects;
 
-    if (getTowerCountOfOwner(abilityObjects, abilityOwner.id) >= abilityTower.orderOfAbilities.length) {
+    if (getTowerCountOfOwner(abilityObjects, abilityOwner.id) >= abilityTower.maxTowers) {
         const deletedId = deleteOldesTowerOfOwnerAndReturnDeletedId(abilityObjects, abilityOwner.id);
         updateTowersWhichHaveDeletedId(abilityObjects, deletedId);
     }
 
-    const nextAbilityKey = abilityTower.availableAbilityKeys[abilityTower.orderOfAbilities[abilityTower.currentAbilityIndex]];
+    const nextAbilityKey = abilityTower.availableAbilityKeys[abilityTower.currentAbilityIndex];
     const nextAbility: Ability = ABILITIES_FUNCTIONS[nextAbilityKey].createAbility(game.state.idCounter);
     if (!nextAbility.passive) nextAbility.passive = true;
     nextAbility.id = abilityTower.id;
-    abilityTower.currentAbilityIndex = (abilityTower.currentAbilityIndex + 1) % abilityTower.orderOfAbilities.length;
+    abilityTower.currentAbilityIndex = (abilityTower.currentAbilityIndex + 1) % abilityTower.availableAbilityKeys.length;
     const newTower: AbilityObjectTower = createAbilityObjectTower(game.state.idCounter, abilityOwner.id, abilityOwner.faction, castPosition, nextAbility, abilityTower.damage);
     newTower.abilityIdRef = ability.id;
     if (abilityOwner.faction === FACTION_ENEMY) {
@@ -345,7 +332,7 @@ function paintAbilityObjectTower(ctx: CanvasRenderingContext2D, abilityObject: A
         paintPos.y -= towerBaseSize / 2;
         if (owner?.clientId === game.multiplayer.myClientId) {
             const ability = owner.character.abilities.find((e) => e.name === ABILITY_NAME_TOWER) as AbilityTower;
-            if (getTowerCountOfOwner(game.state.abilityObjects, tower.ownerId) >= ability.orderOfAbilities.length) {
+            if (getTowerCountOfOwner(game.state.abilityObjects, tower.ownerId) >= ability.maxTowers) {
                 const oldestTower = findOldesTowerOfOwner(game.state.abilityObjects, tower.ownerId)?.tower;
                 if (oldestTower && oldestTower === tower) {
                     ctx.fillStyle = "darkblue";
@@ -482,7 +469,7 @@ function paintAbilityTowerUI(ctx: CanvasRenderingContext2D, ability: Ability, dr
 
     ctx.fillStyle = "black";
     ctx.font = fontSize + "px Arial";
-    const nextTower = tower.availableAbilityKeys[tower.orderOfAbilities[tower.currentAbilityIndex]];
+    const nextTower = tower.availableAbilityKeys[tower.currentAbilityIndex];
     ctx.fillText(nextTower, drawStartX + 1, drawStartY + rectSize - (rectSize - fontSize) / 2);
 
     if (tower.playerInputBinding) {
@@ -495,7 +482,7 @@ function paintAbilityTowerUI(ctx: CanvasRenderingContext2D, ability: Ability, dr
 
 function createAbilityTowerStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, game: Game): StatsUIPart {
     const abilityTower = ability as AbilityTower;
-    const nextTower = abilityTower.availableAbilityKeys[abilityTower.orderOfAbilities[abilityTower.currentAbilityIndex]];
+    const nextTower = abilityTower.availableAbilityKeys[abilityTower.currentAbilityIndex];
     const textLines: string[] = getAbilityNameUiText(ability);
     textLines.push(
         `Key: ${playerInputBindingToDisplayValue(abilityTower.playerInputBinding!, game)}`,
@@ -503,19 +490,16 @@ function createAbilityTowerStatsUI(ctx: CanvasRenderingContext2D, ability: Abili
         "More connections equals stronger Tower. Connection Lines do damage.",
         `Ability of next placed Tower: ${nextTower}.`,
         "Ability stats:",
-        `Max Towers: ${abilityTower.orderOfAbilities.length}`,
+        `Max Towers: ${abilityTower.maxTowers}`,
         `Max Click Range: ${abilityTower.maxClickRange}`,
         `Line Damage: ${abilityTower.damage}`,
         `Line Damage Increase per Connection: 15%`,
     );
 
+    textLines.push(`Towers Types:`);
     for (let i = 0; i < abilityTower.availableAbilityKeys.length; i++) {
         const key = abilityTower.availableAbilityKeys[i];
-        let counter = 0;
-        for (let j = 0; j < abilityTower.orderOfAbilities.length; j++) {
-            if (abilityTower.orderOfAbilities[j] === i) counter++;
-        }
-        textLines.push(`Max ${key} Tower: ${counter}`);
+        textLines.push(`  - ${key}`);
     }
 
     return createStatsUI(ctx, textLines);
@@ -580,9 +564,7 @@ function executeAbilityTowerUpgradeOption(ability: Ability, character: Character
         return;
     }
     if (upgradeOption.identifier === "+5 Max Towers") {
-        for (let i = 0; i < abilityTower.availableAbilityKeys.length; i++) {
-            abilityTower.orderOfAbilities.push(i);
-        }
+        abilityTower.maxTowers += 5;
         return;
     }
 }

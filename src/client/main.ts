@@ -18,8 +18,8 @@ import { onDomLoadImagesLoad } from "./imageLoad.js";
 var gameCount: number = 0;
 export const GAME_VERSION: GameVersion = {
     major: 0,
-    minor: 0,
-    patch: 202,
+    minor: 1,
+    patch: 203,
 }
 
 export function start() {

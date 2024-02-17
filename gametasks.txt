@@ -2,7 +2,6 @@ next test run: , Sniper, Tamer, All
 
 current tasks:
                 
-- tower builder king not rotating tower types.
 - replay breakes legendary building?
     steps: make replay which burrows legendary. die after some time. Play replay. Restart before replay ends. Legendary is missing.        
     other bug: when empty replay permanent data -> replay does not wipe game data?
