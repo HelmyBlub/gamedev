@@ -75,8 +75,8 @@ export function createCharacterChooseUpgradeOptions(game: Game): UpgradeOption[]
 
 export function shareCharactersTradeablePreventedMultipleClass(fromCharacter: Character, toCharacter: Character): boolean {
     if (!fromCharacter.characterClasses) return false;
-    const takeoverClass = findMainCharacterClass(fromCharacter);
-    return hasCharacterPreventedMultipleClass(takeoverClass, toCharacter);
+    const giftingClass = findMainCharacterClass(fromCharacter);
+    return hasCharacterPreventedMultipleClass(giftingClass, toCharacter);
 }
 
 export function hasCharacterPreventedMultipleClass(newCharacterClassName: string, toCharacter: Character): boolean {

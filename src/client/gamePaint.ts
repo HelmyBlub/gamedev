@@ -184,12 +184,12 @@ function paintClosestInteractable(ctx: CanvasRenderingContext2D, cameraPosition:
                 mapObejctFunctions.paintInteract(ctx, closestInteractable.mapObject, character, game);
             }
         } else if (closestInteractable.pastCharacter) {
-            paintPastPlayerTakeoverInfo(ctx, closestInteractable.pastCharacter, character, cameraPosition, game);
+            paintPastPlayerGiftInfo(ctx, closestInteractable.pastCharacter, character, cameraPosition, game);
         }
     }
 }
 
-function paintPastPlayerTakeoverInfo(ctx: CanvasRenderingContext2D, pastCharacter: Character, playerCharacter: Character, cameraPosition: Position, game: Game) {
+function paintPastPlayerGiftInfo(ctx: CanvasRenderingContext2D, pastCharacter: Character, playerCharacter: Character, cameraPosition: Position, game: Game) {
     const canTrade = canCharacterTradeAbilityOrPets(pastCharacter);
     const classAlreadyTaken = shareCharactersTradeablePreventedMultipleClass(pastCharacter, playerCharacter);
     let paintPos: Position = getPointPaintPosition(ctx, pastCharacter, cameraPosition);
@@ -200,14 +200,14 @@ function paintPastPlayerTakeoverInfo(ctx: CanvasRenderingContext2D, pastCharacte
         if (!classAlreadyTaken) {
             const interactKey = playerInputBindingToDisplayValue("interact1", game);
             const infoKey = playerInputBindingToDisplayValue("Info", game);
-            textsWithKeys.push(`Takeover abilities with <${interactKey}>,`);
-            textsWithKeys.push(`One time only.`);
+            textsWithKeys.push(`Press <${interactKey}> to get Abiltites gifted,`);
+            textsWithKeys.push(`one time only.`);
             textsWithKeys.push(`<${infoKey}> for more details.`);
             game.UI.paintClosesInteractableStatsUi = true;
         } else {
             const infoKey = playerInputBindingToDisplayValue("Info", game);
             textsWithKeys.push(`<${infoKey}> for more details.`);
-            textsWithKeys.push(`Can not trade because this`);
+            textsWithKeys.push(`Can not gift Abilities as this`);
             textsWithKeys.push(`Class can only be owned once!`);
             paintPos.y -= 20;
             game.UI.paintClosesInteractableStatsUi = true;
@@ -231,7 +231,7 @@ function paintPastPlayerTakeoverInfo(ctx: CanvasRenderingContext2D, pastCharacte
         }
     } else {
         const interactKey = playerInputBindingToDisplayValue("interact1", game);
-        textsWithKeys.push(`Nothing to take.`);
+        textsWithKeys.push(`No Abilities left to gift.`);
         textsWithKeys.push(`Kick Out with <${interactKey}>.`);
         paintPos.y -= 20;
     }

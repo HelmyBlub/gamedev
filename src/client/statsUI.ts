@@ -260,6 +260,14 @@ export function paintStatsUIiPartsContainer(ctx: CanvasRenderingContext2D, stats
 function createPastCharacterStatsUI(ctx: CanvasRenderingContext2D, pastCharacter: Character, statsUIs: StatsUIs, game: Game): StatsUIsPartContainer {
     const containerHeading = "Past Character";
     const statsUIsPartContainer = createDefaultStatsUiContainer(ctx, containerHeading, statsUIs.headingFontSize);
+    const pastCharacterDefaultTexts: string[] = [
+        `Past Characters are the characters which you`,
+        `played before.`,
+        ``,
+        `They can gift their original Abilities.`,
+        `Abilities can only be gifted once.`,
+    ]
+    statsUIsPartContainer.statsUIs.push(createStatsUI(ctx, pastCharacterDefaultTexts))
     if (pastCharacter.characterClasses) {
         for (let charClass of pastCharacter.characterClasses)
             if (!charClass.gifted) {
@@ -279,6 +287,9 @@ function createPastCharacterStatsUI(ctx: CanvasRenderingContext2D, pastCharacter
         if (ability.tradable) abilities.push(ability);
     }
     statsUIsPartContainer.statsUIs.push(...createStatsUisAbilities(ctx, abilities, game));
+    if (statsUIsPartContainer.statsUIs.length <= 1) {
+        statsUIsPartContainer.statsUIs.push(createStatsUI(ctx, [`This Character has nothing to gift.`]))
+    }
     return statsUIsPartContainer;
 }
 
