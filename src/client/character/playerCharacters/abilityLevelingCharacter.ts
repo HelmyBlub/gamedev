@@ -14,10 +14,16 @@ export function createBossUpgradeOptionsAbilityLeveling(character: Character, ga
     for (let ability of character.abilities) {
         const functions = ABILITIES_FUNCTIONS[ability.name];
         if (ability.bossSkillPoints
-            && ability.bossSkillPoints.available > 0 
+            && ability.bossSkillPoints.available > 0
             && functions.createAbilityBossUpgradeOptions
         ) {
-            return functions.createAbilityBossUpgradeOptions(ability, character, game);
+            const upgradeOptions = functions.createAbilityBossUpgradeOptions(ability, character, game);
+            if (ability.classIdRef !== undefined) {
+                for (let option of upgradeOptions) {
+                    option.option.classIdRef = ability.classIdRef;
+                }
+            }
+            return upgradeOptions;
         }
     }
     return [];

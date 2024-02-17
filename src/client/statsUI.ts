@@ -121,7 +121,24 @@ export function createRequiredStatsUis(game: Game): StatsUIs {
         let heading = client.name ? client.name : "Character";
         const characterContainer = createCharacterStatsUIPartContainer(ctx, player.character, statsUIs, game, heading);
         statsUIs.containers.containers.push(characterContainer);
-        if (game.multiplayer.myClientId === client.id) statsUIs.containers.selected = statsUIs.containers.containers.length - 1;
+        if (game.multiplayer.myClientId === client.id) {
+            statsUIs.containers.selected = statsUIs.containers.containers.length - 1;
+            const selectedSub = statsUIs.containers.containers[statsUIs.containers.selected];
+            if (selectedSub.subContainer.containers.length > 0
+                && player.character.upgradeChoices.length > 0
+                && player.character.characterClasses
+            ) {
+                const charClassId = player.character.upgradeChoices[0].classIdRef;
+                for (let i = 0; i < player.character.characterClasses.length; i++) {
+                    if (charClassId === player.character.characterClasses[i].id) {
+                        if (i < selectedSub.subContainer.containers.length) {
+                            selectedSub.subContainer.selected = i;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
         paintX += characterContainer.headingWidth + statsUIs.headingHorizontalSpacing;
     }
 

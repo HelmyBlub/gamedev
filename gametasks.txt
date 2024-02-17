@@ -2,11 +2,18 @@ next test run: , Sniper, Tamer, All
 
 current tasks:
                 
+- past character expain "gifted" in moreInfo
 - replay breakes legendary building?
     steps: make replay which burrows legendary. die after some time. Play replay. Restart before replay ends. Legendary is missing.        
     other bug: when empty replay permanent data -> replay does not wipe game data?
-- when upgrade choices -> perssing tab shows correct character class for upgrades
-- past character expain "gifted" in moreInfo
+- broken legendary building:
+    - building says player has legendary after game restart, but not possible
+    - steps? (happened in stream 203, ~ 1:20:00):
+        - take legendary, then go afk
+        - come back being dead
+        - press restart
+        - legendary gone
+
 
 
 - think about next bigger feature 

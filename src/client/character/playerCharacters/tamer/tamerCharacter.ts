@@ -209,6 +209,7 @@ function createTamerBossUpgradeOptions(character: Character, game: Game): Upgrad
                                 characterClass: TAMER_CHARACTER,
                                 identifier: indentifier,
                                 displayText: indentifier,
+                                classIdRef: pet.classIdRef,
                                 boss: true,
                             },
                             probability: 1,
@@ -236,6 +237,7 @@ function createTamerBossUpgradeOptions(character: Character, game: Game): Upgrad
                                 petOption.petId = pet.id;
                                 petOption.type = "PetAbility";
                                 petOption.characterClass = TAMER_CHARACTER;
+                                petOption.classIdRef = pet.classIdRef;
 
                                 if (availableTraits.length > 0) {
                                     const randomTraitIndex = Math.floor(nextRandom(game.state.randomSeed) * availableTraits.length);
