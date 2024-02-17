@@ -307,7 +307,7 @@ export function getAbilityNameUiText(ability: Ability): string[] {
         text[0] += " (gifted)";
         text.push("Gifted abilities can not get stronger.");
     }
-    if (ability.legendary && ability.bossSkillPoints) {
+    if (ability.legendary) {
         text.push(`Legendary: Ability levels and upgrades are permanent.`);
         if (ability.bossSkillPoints) {
             text.push(`  Skill Point Cap: ${ability.bossSkillPoints.used}/${ability.legendary.skillPointCap}`);
