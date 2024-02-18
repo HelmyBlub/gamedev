@@ -3,7 +3,7 @@ import { changeCharacterId, resetCharacter } from "./character/character.js";
 import { Character } from "./character/characterModel.js";
 import { changeCharacterAndAbilityIds, deepCopy, getNextId } from "./game.js";
 import { CelestialDirection, Game, GameVersion, IdCounter, NextKings, PastPlayerCharacters, setDefaultNextKings } from "./gameModel.js";
-import { ClassBuilding } from "./map/buildings/classBuilding.js";
+import { BUILDING_CLASS_BUILDING, ClassBuilding } from "./map/buildings/classBuilding.js";
 import { PermanentPlayerData } from "./player.js";
 import { GAME_VERSION } from "./main.js";
 
@@ -123,7 +123,7 @@ function changeBuildingIds(building: Building, idCounter: IdCounter, game: Game)
     const oldBuildingId = building.id;
     let oldCharacterClassId: number | undefined = undefined;
     building.id = getNextId(idCounter);
-    if (building.type === "ClassBuilding") {
+    if (building.type === BUILDING_CLASS_BUILDING) {
         const classBuilding = building as ClassBuilding;
         if (classBuilding.characterClass) {
             oldCharacterClassId = classBuilding.characterClass.id;

@@ -290,6 +290,7 @@ export function endGame(game: Game, isKingKill: boolean = false) {
             }
         }
     }
+    classBuildingCheckAllPlayerForLegendaryAbilitiesAndMoveBackToBuilding(game);
 }
 
 export function changeCharacterAndAbilityIds(character: Character, idCounter: IdCounter) {

@@ -1,14 +1,8 @@
-next test run: , Sniper, Tamer, All
+next test run: tower builder , Sniper, Tamer, All
 
 current tasks:
                 
-- broken legendary building:
-    - building says player has legendary after game restart, but not possible
-    - steps? (happened in stream 203, ~ 1:20:00):
-        - take legendary, then go afk
-        - come back being dead
-        - press restart
-        - legendary gone
+- close endbossarea to checkbox        
 - replay breakes legendary building?
     steps: make replay which burrows legendary. die after some time. Play replay. Restart before replay ends. Legendary is missing.        
     other bug: when empty replay permanent data -> replay does not wipe game data?
