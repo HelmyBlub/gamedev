@@ -12,7 +12,7 @@ import { localStorageSaveBuildings } from "../permanentData.js";
 import { createCharacterClassStatsUI, paintCharacters } from "../character/characterPaint.js";
 import { ABILITY_NAME_LEASH, AbilityLeash } from "../ability/abilityLeash.js";
 import { playerInputBindingToDisplayValue } from "../playerInput.js";
-import { StatsUIsPartContainer, createDefaultStatsUiContainer } from "../statsUI.js";
+import { StatsUIsPartContainer, createDefaultStatsUiContainer, createStatsUI } from "../statsUI.js";
 import { IMAGE_BUILDING1, createBuildingClassBuilding, classBuildingFindCharacterClassToMakeLegendary, classBuildingPlacePlayerClassStuffInBuilding, classBuildingFindById, BUILDING_CLASS_BUILDING } from "./buildings/classBuilding.js";
 
 export type MapTileObjectBuilding = MapTileObject & {
@@ -73,13 +73,29 @@ function createStatsUiClassBuilding(mapObject: MapTileObject, game: Game): Stats
     const classBuilding = classBuildingFindById(mapObjectClassBuilding.buildingId, game);
     if (!classBuilding || !game.ctx) return;
     const statsUIContainer = createDefaultStatsUiContainer(game.ctx, mapObject.type, game.UI.statsUIs.headingFontSize);
-    if (classBuilding.characterClass && !classBuilding.stuffBorrowed?.burrowed && game.ctx) {
-        if (classBuilding.characterClass) {
-            statsUIContainer.statsUIs.push(createCharacterClassStatsUI(game.ctx, [classBuilding.characterClass]));
+    if (classBuilding.characterClass) {
+        statsUIContainer.statsUIs.push(createCharacterClassStatsUI(game.ctx, [classBuilding.characterClass]));
+        if (!classBuilding.stuffBorrowed?.burrowed) {
+            statsUIContainer.statsUIs.push(...createTamerPetsCharacterStatsUI(game.ctx, classBuilding.pets));
+            statsUIContainer.statsUIs.push(...createStatsUisAbilities(game.ctx, classBuilding.abilities, game));
+        } else if (classBuilding.stuffBorrowed.by) {
+            statsUIContainer.statsUIs.push(createStatsUI(game.ctx, [
+                `Currently burrowed by ${classBuilding.stuffBorrowed.by}`,
+            ]));
         }
-
-        statsUIContainer.statsUIs.push(...createTamerPetsCharacterStatsUI(game.ctx, classBuilding.pets));
-        statsUIContainer.statsUIs.push(...createStatsUisAbilities(game.ctx, classBuilding.abilities, game));
+    } else {
+        statsUIContainer.statsUIs.push(createStatsUI(game.ctx, [
+            `Empty Class Building.`,
+            `This building type appears if a boss without`,
+            `a class is defeated. It first spawns without`,
+            `anything inside.`,
+            ``,
+            `To fill it you need to defeat a King with a`,
+            `class to unlock legendary class version for`,
+            `this building.`,
+            ``,
+            `Gifted or legendary class version do not count.`,
+        ]));
     }
 
     return statsUIContainer;

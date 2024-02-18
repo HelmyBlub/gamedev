@@ -2,10 +2,6 @@ next test run: tower builder , Sniper, Tamer, All
 
 current tasks:
                 
-- close endbossarea to checkbox        
-- empty moreInfo boxes
-    - classBuilding?
-    - pastCharacter?
 - more info boxes in special cases
     - moreInfo box for king depending on direction
     - moreInfo box for enemies
