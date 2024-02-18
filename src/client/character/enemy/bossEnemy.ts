@@ -5,7 +5,7 @@ import { tickCharacterDebuffs } from "../../debuff/debuff.js";
 import { calculateDirection, deepCopy, getNextId, getTimeSinceFirstKill } from "../../game.js";
 import { IdCounter, Game, Position, BossStuff, FACTION_ENEMY, CelestialDirection } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
-import { findNearNonBlockingPosition, getMapMidlePosition, moveByDirectionAndDistance } from "../../map/map.js";
+import { GameMap, findNearNonBlockingPosition, getMapMidlePosition, moveByDirectionAndDistance } from "../../map/map.js";
 import { getPlayerFurthestAwayFromSpawn } from "../../player.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
 import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick, tickCharacters, setCharacterPosition } from "../character.js";
@@ -28,7 +28,7 @@ export function addBossType() {
 
 export function createBossWithLevel(idCounter: IdCounter, level: number, game: Game): BossEnemyCharacter {
     const spawn: Position = getBossSpawnPosition(game);
-    const celestialDirection = getCelestialDirection(spawn);
+    const celestialDirection = getCelestialDirection(spawn, game.state.map);
     const nextKing = game.state.bossStuff.nextKings[celestialDirection]!;
     const nextBossClass = findBossClassBasedOnKing(nextKing);
     if (nextBossClass) {
@@ -46,15 +46,16 @@ export function tickBossCharacters(bossStuff: BossStuff, game: Game) {
     tickCharacters(bosses, game, pathingCache);
 }
 
-export function getCelestialDirection(position: Position): CelestialDirection {
-    if (Math.abs(position.x) > Math.abs(position.y)) {
-        if (position.x > 0) {
+export function getCelestialDirection(position: Position, map: GameMap): CelestialDirection {
+    const middle = getMapMidlePosition(map);
+    if (Math.abs(position.x - middle.x) > Math.abs(position.y - middle.y)) {
+        if (position.x - middle.x > 0) {
             return "east";
         } else {
             return "west";
         }
     } else {
-        if (position.y > 0) {
+        if (position.y - middle.y > 0) {
             return "south";
         } else {
             return "north";

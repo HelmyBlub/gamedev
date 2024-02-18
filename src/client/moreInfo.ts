@@ -1,6 +1,10 @@
 import { Ability, createMoreInfosAbilities } from "./ability/ability.js";
+import { findMyCharacter } from "./character/character.js";
 import { Character } from "./character/characterModel.js";
 import { createCharacterClassMoreInfos, createCharacterMoreInfos } from "./character/characterPaint.js";
+import { getCelestialDirection } from "./character/enemy/bossEnemy.js";
+import { fixPositionRespawnEnemyCreateMoreInfos } from "./character/enemy/fixPositionRespawnEnemy.js";
+import { kingCreateMoreInfos } from "./character/enemy/kingEnemy.js";
 import { TamerPetCharacter, createTamerPetsCharacterMoreInfos } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
 import { findClosestInteractable, getRelativeMousePoistion } from "./game.js";
 import { Game } from "./gameModel.js";
@@ -157,7 +161,18 @@ export function createRequiredMoreInfos(game: Game): MoreInfos {
                 paintX += moreInfosContainer.headingWidth + moreInfos.headingHorizontalSpacing;
             }
         }
+    } else {
+        const playerChar = findMyCharacter(game);
+        if (playerChar) {
+            const celestialDirection = getCelestialDirection(playerChar, game.state.map);
+            const moreInfosContainer = kingCreateMoreInfos(game, celestialDirection, `King of the ${celestialDirection}`);
+            if (moreInfosContainer) {
+                moreInfos.containers.containers.push(moreInfosContainer);
+            }
+        }
     }
+    const enemyMoreInfoContainer = fixPositionRespawnEnemyCreateMoreInfos(game, "Enemy");
+    if (enemyMoreInfoContainer) moreInfos.containers.containers.push(enemyMoreInfoContainer);
 
     const highscoreContainer = createDefaultMoreInfosContainer(ctx, "Highscores", moreInfos.headingFontSize);
     moreInfos.containers.containers.push(highscoreContainer);

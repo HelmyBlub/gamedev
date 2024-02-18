@@ -2,7 +2,7 @@ import { createMoreInfosAbilities } from "../ability/ability.js";
 import { resetCharacter } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
 import { createCharacterMoreInfos, paintCharacters } from "../character/characterPaint.js";
-import { CHARACTER_TYPE_KING_ENEMY, modifyCharacterToKing } from "../character/enemy/kingEnemy.js";
+import { CHARACTER_TYPE_KING_ENEMY, kingCreateMoreInfos, modifyCharacterToKing } from "../character/enemy/kingEnemy.js";
 import { createTamerPetsCharacterMoreInfos } from "../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { deepCopy, getCameraPosition } from "../game.js";
 import { CelestialDirection, Game, Position } from "../gameModel.js";
@@ -92,14 +92,7 @@ function paintInteractSign(ctx: CanvasRenderingContext2D, mapObject: MapTileObje
 
 function createMoreInfosKingSign(mapObject: MapTileObject, game: Game): MoreInfosPartContainer | undefined {
     const kingSign = mapObject as MapTileObjectNextKingSign;
-    const king = game.state.bossStuff.nextKings[kingSign.kingDirection];
-    if (!king || !game.ctx) return;
-    const kingCopy: Character = deepCopy(king);
-    modifyCharacterToKing(kingCopy, game);
-    kingCopy.type = CHARACTER_TYPE_KING_ENEMY;
-    resetCharacter(kingCopy, game);
-
-    return createCharacterMoreInfosPartContainer(game.ctx, kingCopy, game.UI.moreInfos, game, mapObject.type);
+    return kingCreateMoreInfos(game, kingSign.kingDirection, mapObject.type);
 }
 
 function paintKingSign(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, paintTopLeft: Position, game: Game) {

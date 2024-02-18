@@ -2,10 +2,6 @@ next test run: tower builder , Sniper, Tamer, All
 
 current tasks:
                 
-- more info boxes in special cases
-    - moreInfo box for king depending on direction
-    - moreInfo box for enemies
-- movement speed building wrong % char in text
 - hide hp bar when hp full
 - balancing
     - pets and tower level differently than sniper/ball. Bad for legendary balancing
@@ -15,8 +11,8 @@ current tasks:
 
 - think about next bigger feature 
     - ideas
-        - some soner permanent progression.
-            - multiple king tries
+        - Upgrade Building: multiple king tries
+        - Upgrade Building: rerolls for random upgrades
 
 
 refactor possibilities:

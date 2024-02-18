@@ -1,11 +1,12 @@
 import { ABILITIES_FUNCTIONS } from "../../ability/ability.js";
 import { calculateDistance } from "../../game.js";
-import { Game } from "../../gameModel.js";
+import { CelestialDirection, Game } from "../../gameModel.js";
 import { GameMap, positionToMapKey } from "../../map/map.js";
-import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick, setCharacterPosition } from "../character.js";
+import { MoreInfosPartContainer, createCharacterMoreInfosPartContainer } from "../../moreInfo.js";
+import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick, setCharacterPosition, findMyCharacter } from "../character.js";
 import { Character } from "../characterModel.js";
 import { PathingCache } from "../pathing.js";
-import { FixPositionRespawnEnemyCharacter } from "./fixPositionRespawnEnemyModel.js";
+import { FixPositionRespawnEnemyCharacter, createEnemyFixPositionRespawnEnemyWithPosition } from "./fixPositionRespawnEnemyModel.js";
 
 export function tickFixPositionRespawnEnemyCharacter(character: Character, game: Game, pathingCache: PathingCache | null) {
     if (pathingCache === null) {
@@ -54,6 +55,16 @@ export function tickFixPositionRespawnEnemyCharacter(character: Character, game:
             if (enemy.wasHitRecently) delete enemy.wasHitRecently;
         }
     }
+}
+
+export function fixPositionRespawnEnemyCreateMoreInfos(game: Game, heading: string): MoreInfosPartContainer | undefined {
+    if (!game.ctx) return;
+    const myCharacter = findMyCharacter(game);
+    if (!myCharacter) return;
+    const position = { x: myCharacter.x, y: myCharacter.y };
+    let enemy: Character | undefined = createEnemyFixPositionRespawnEnemyWithPosition(position, game);
+    if (!enemy) return;
+    return createCharacterMoreInfosPartContainer(game.ctx, enemy, game.UI.moreInfos, game, heading);
 }
 
 function alertCloseEnemies(enemy: FixPositionRespawnEnemyCharacter, game: Game) {

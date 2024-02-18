@@ -6,7 +6,7 @@ import { ABILITY_NAME_SHOOT } from "../../ability/abilityShoot.js";
 import { ABILITY_NAME_SWORD } from "../../ability/abilitySword.js";
 import { tickCharacterDebuffs } from "../../debuff/debuff.js";
 import { deepCopy, getNextId, saveCharacterAsPastCharacter } from "../../game.js";
-import { IdCounter, Game, Position, FACTION_ENEMY } from "../../gameModel.js";
+import { IdCounter, Game, Position, FACTION_ENEMY, CelestialDirection } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { GAME_IMAGES, getImage } from "../../imageLoad.js";
 import { localStorageSaveNextKings } from "../../permanentData.js";
@@ -18,6 +18,7 @@ import { paintCharacterWithAbilitiesDefault, paintCharatersPets } from "../chara
 import { PathingCache } from "../pathing.js";
 import { getCelestialDirection } from "./bossEnemy.js";
 import { legendaryAbilityGiveBlessing, classBuildingPutLegendaryCharacterStuffBackIntoBuilding } from "../../map/buildings/classBuilding.js";
+import { MoreInfosPartContainer, createCharacterMoreInfosPartContainer } from "../../moreInfo.js";
 
 export type KingEnemyCharacter = Character;
 export const CHARACTER_TYPE_KING_ENEMY = "KingEnemyCharacter";
@@ -50,11 +51,28 @@ export function createDefaultNextKing(idCounter: IdCounter, game: Game): KingEne
     return bossCharacter;
 }
 
+export function kingCreateMoreInfos(game: Game, celestialDirection: CelestialDirection, heading: string): MoreInfosPartContainer | undefined {
+    if (!game.ctx) return;
+    let kingChar: Character | undefined = undefined;
+    if (!game.state.bossStuff.kingFightStarted) {
+        const king = game.state.bossStuff.nextKings[celestialDirection];
+        if (!king) return;
+        kingChar = deepCopy(king) as Character;
+        modifyCharacterToKing(kingChar, game);
+        kingChar.type = CHARACTER_TYPE_KING_ENEMY;
+        resetCharacter(kingChar, game);
+    } else {
+        kingChar = game.state.bossStuff.bosses[game.state.bossStuff.bosses.length - 1];
+    }
+
+    return createCharacterMoreInfosPartContainer(game.ctx, kingChar, game.UI.moreInfos, game, heading);
+}
+
 export function setPlayerAsKing(game: Game) {
     if (game.testing.replay) return;
     const boss: Character = deepCopy(game.state.players[0].character);
     resetCharacter(boss, game);
-    const celestialDirection = getCelestialDirection(boss);
+    const celestialDirection = getCelestialDirection(boss, game.state.map);
     const oldBoss = game.state.bossStuff.nextKings[celestialDirection];
     game.state.bossStuff.nextKings[celestialDirection] = boss;
     game.state.players[0].character.becameKing = true;
@@ -71,7 +89,7 @@ export function startKingFight(kingAreaPosition: Position, game: Game) {
     if (entrance) {
         changeTileIdOfMapChunk(entrance.chunkX, entrance.chunkY, entrance.tileX, entrance.tileY, 2, game);
         const spawn: Position = getKingAreaMiddlePosition(kingAreaPosition, game.state.map)!;
-        const celestialDirection = getCelestialDirection(spawn);
+        const celestialDirection = getCelestialDirection(spawn, game.state.map);
         const king: Character = deepCopy(game.state.bossStuff.nextKings[celestialDirection]);
         modifyCharacterToKing(king, game);
         king.x = spawn.x;

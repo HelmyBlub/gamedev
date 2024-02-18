@@ -168,7 +168,7 @@ function setBurrowedByKingIfHasLegendary(player: Player, game: Game) {
                     }
                 }
                 if (classBuilding && classBuilding.stuffBorrowed) {
-                    const celelstialDirection = getCelestialDirection(player.character);
+                    const celelstialDirection = getCelestialDirection(player.character, game.state.map);
                     classBuilding.stuffBorrowed.by = `King of the ${celelstialDirection}`;
                     localStorageSaveBuildings(game);
                 }

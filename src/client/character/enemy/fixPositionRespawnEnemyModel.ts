@@ -4,7 +4,7 @@ import { ABILITY_NAME_FEED_PET } from "../../ability/petTamer/abilityFeedPet.js"
 import { ABILITY_NAME_LOVE_PET } from "../../ability/petTamer/abilityLovePet.js"
 import { calculateDistance, getNextId } from "../../game.js"
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../gameModel.js"
-import { MapChunk, GameMap, isPositionBlocking, mapKeyToChunkXY, chunkXYToMapKey, addEnemyToMap } from "../../map/map.js"
+import { MapChunk, GameMap, isPositionBlocking, mapKeyToChunkXY, chunkXYToMapKey, addEnemyToMap, getMapMidlePosition, positionToChunkXY } from "../../map/map.js"
 import { fixedRandom } from "../../randomNumberGenerator.js"
 import { Character, IMAGE_SLIME, createCharacter } from "../characterModel.js"
 import { createPetsBasedOnLevelAndCharacter } from "../playerCharacters/tamer/tamerCharacter.js"
@@ -37,6 +37,7 @@ type EnemyType = {
 }
 
 export const ENEMY_FIX_RESPAWN_POSITION = "fixPositionRespawnEnemy";
+const ENEMY_MIN_SPAWN_DISTANCE_MAP_MIDDLE = 500;
 const ENEMY_TYPES: EnemyTypes = {
     "big": { hpFactor: 16, sizeFactor: 1.5, spawnAmountFactor: 0.008, xpFactor: 38, damageFactor: 2, hasAbility: true, abilityProbabiltiy: 1 },
     "default": { hpFactor: 1, sizeFactor: 1, spawnAmountFactor: 0.5, xpFactor: 1, damageFactor: 1 },
@@ -63,7 +64,7 @@ export function createEnemyWithLevel(idCounter: IdCounter, enemyPos: Position, l
     if (enemyType.hasAbility && enemyType.abilityProbabiltiy && level > 1) {
         const random = fixedRandom(enemyPos.x, enemyPos.y, 0);
         if (random <= enemyType.abilityProbabiltiy) {
-            const celestialDirection = getCelestialDirection(enemyPos);
+            const celestialDirection = getCelestialDirection(enemyPos, game.state.map);
             const king = game.state.bossStuff.nextKings[celestialDirection]!;
             const whatToAdd = randomWhatToAdd(king, enemy, game);
             if (whatToAdd === "addAbility") {
@@ -103,14 +104,28 @@ export function createFixPositionRespawnEnemiesOnInit(game: Game) {
     }
 }
 
+export function createEnemyFixPositionRespawnEnemyWithPosition(position: Position, game: Game): Character | undefined {
+    const mapCenter = getMapMidlePosition(game.state.map);
+    const distance = calculateDistance(mapCenter, position);
+    if (ENEMY_MIN_SPAWN_DISTANCE_MAP_MIDDLE < distance) {
+        if (!isPositionBlocking(position, game.state.map, game.state.idCounter, game)) {
+            const chunk = positionToChunkXY(position, game.state.map);
+            const enemyType: string = decideEnemyType(chunk.x, chunk.y, game);
+            const level = Math.max(Math.floor((distance - ENEMY_MIN_SPAWN_DISTANCE_MAP_MIDDLE) / 1000), 0) + 1;
+            const enemy = createEnemyWithLevel(game.state.idCounter, position, level, ENEMY_TYPES[enemyType], game);
+            return enemy;
+        }
+    }
+    return undefined;
+}
+
 export function createFixPositionRespawnEnemies(chunk: MapChunk, chunkX: number, chunkY: number, map: GameMap, idCounter: IdCounter, game: Game) {
     if (chunk.characters.length > 0) {
         console.log("unexpected existence of characers in mapChunk", chunk, chunkX, chunkY);
     }
     if (chunk.isKingAreaChunk) return;
     const chunkSize = map.tileSize * map.chunkLength;
-    const mapCenter = { x: chunkSize / 2, y: chunkSize / 2 };
-    const minSpawnDistanceFromMapCenter = 500;
+    const mapCenter = getMapMidlePosition(game.state.map);
 
     const topLeftMapKeyPos: Position = {
         x: chunkX * chunkSize,
@@ -122,7 +137,7 @@ export function createFixPositionRespawnEnemies(chunk: MapChunk, chunkX: number,
     }
     const chunkDistance = calculateDistance(mapCenter, centerMapKeyPos);
     const enemyType: string = decideEnemyType(chunkX, chunkY, game);
-    if (minSpawnDistanceFromMapCenter < chunkDistance + chunkSize) {
+    if (ENEMY_MIN_SPAWN_DISTANCE_MAP_MIDDLE < chunkDistance + chunkSize) {
         for (let x = 0; x < chunk.tiles.length; x++) {
             for (let y = 0; y < chunk.tiles[x].length; y++) {
                 const spawnEnemy = fixedRandom(x + chunkX * chunk.tiles.length, y + chunkY * chunk.tiles[x].length, map.seed!);
@@ -132,9 +147,9 @@ export function createFixPositionRespawnEnemies(chunk: MapChunk, chunkX: number,
                         y: topLeftMapKeyPos.y + y * map.tileSize + map.tileSize / 2
                     }
                     const distance = calculateDistance(mapCenter, enemyPos);
-                    if (minSpawnDistanceFromMapCenter < distance) {
+                    if (ENEMY_MIN_SPAWN_DISTANCE_MAP_MIDDLE < distance) {
                         if (!isPositionBlocking(enemyPos, map, idCounter, game)) {
-                            const level = Math.max(Math.floor((distance - minSpawnDistanceFromMapCenter) / 1000), 0) + 1;
+                            const level = Math.max(Math.floor((distance - ENEMY_MIN_SPAWN_DISTANCE_MAP_MIDDLE) / 1000), 0) + 1;
                             const enemy = createEnemyWithLevel(idCounter, enemyPos, level, ENEMY_TYPES[enemyType], game);
                             addEnemyToMap(map, enemy);
                         }
@@ -145,7 +160,7 @@ export function createFixPositionRespawnEnemies(chunk: MapChunk, chunkX: number,
     }
 }
 
-function decideEnemyType(chunkX: number, chunkY: number, game: Game): string{
+function decideEnemyType(chunkX: number, chunkY: number, game: Game): string {
     let enemyType: string;
     const enemyTypes = Object.keys(ENEMY_TYPES);
     let index = 0;
@@ -158,10 +173,10 @@ function decideEnemyType(chunkX: number, chunkY: number, game: Game): string{
     } else {
         index = (game.state.enemyTypeDirectionSeed + 3) % (enemyTypes.length + 1);
     }
-    if(index >= enemyTypes.length){
+    if (index >= enemyTypes.length) {
         index = Math.floor(fixedRandom(game.state.enemyTypeDirectionSeed, game.state.enemyTypeDirectionSeed, game.state.map.seed!) * enemyTypes.length);
         enemyType = enemyTypes[index];
-    }else{
+    } else {
         enemyType = enemyTypes[index];
     }
     return enemyType;
@@ -191,7 +206,7 @@ function createEnemy(
         isAggroed: false,
         maxAggroRange: Math.max(200, autoAggroRange * 1.5),
         alertEnemyRange: alertEnemyRange,
-        level: {level: level},
+        level: { level: level },
     };
 }
 

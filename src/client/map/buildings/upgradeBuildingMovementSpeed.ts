@@ -39,7 +39,7 @@ function createUBMoreInfos(ctx: CanvasRenderingContext2D, characterUpgrades: Cha
     texts.push(`Movement Speed Upgrade Building:`);
     texts.push(`Increases your movement speed.`);
     if (moveSpeedUpgrade && moveSpeedUpgrade.investedMoney! > 0) {
-        texts.push(`Invested $${moveSpeedUpgrade.investedMoney} for ${(moveSpeedUpgrade.bonusMoveSpeed).toFixed(2)}% bonus movement speed.`);
+        texts.push(`Invested $${moveSpeedUpgrade.investedMoney} for ${(moveSpeedUpgrade.bonusMoveSpeed).toFixed(2)} bonus movement speed.`);
     } else {
         texts.push(`Not yet purchased.`);
     }
