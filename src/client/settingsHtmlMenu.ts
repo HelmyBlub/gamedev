@@ -169,7 +169,7 @@ function addCopyLastReplayButton(game: Game) {
     if (button) {
         button.addEventListener('click', () => {
             if (!game.multiplayer.websocket && game.testing.lastReplay) {
-                navigator.clipboard.writeText(JSON.stringify(game.testing, undefined, 2));
+                navigator.clipboard.writeText(JSON.stringify(game.testing.lastReplay, undefined, 2));
             }
         });
     }
