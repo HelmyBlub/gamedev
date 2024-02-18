@@ -3,7 +3,7 @@ import { paintAll } from "./gamePaint.js";
 import { Player, createDefaultKeyBindings1, createDefaultUiKeyBindings, findNearesPastPlayerCharacter, findPlayerByCharacterId, gameInitPlayers, isAutoSkillActive } from "./player.js";
 import { MOUSE_ACTION, UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.js";
 import { Position, GameState, Game, IdCounter, Debugging, PaintTextData, ClientInfo } from "./gameModel.js";
-import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap, getMapMidlePosition } from "./map/map.js";
+import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap, getMapMidlePosition, initBossArea } from "./map/map.js";
 import { Character } from "./character/characterModel.js";
 import { generateMissingChunks, pastCharactersMapTilePositions } from "./map/mapGeneration.js";
 import { createFixPositionRespawnEnemiesOnInit } from "./character/enemy/fixPositionRespawnEnemyModel.js";
@@ -81,6 +81,11 @@ export function closeGame(game: Game) {
 }
 
 export function gameInit(game: Game) {
+    if (!game.multiplayer.websocket && game.debug.closeKingArea) {
+        initBossArea(game.state.map, 1000);
+    } else {
+        initBossArea(game.state.map, 20000);
+    }
     game.state.abilityObjects = [];
     game.state.killCounter = 0;
     game.state.ended = false;

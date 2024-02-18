@@ -105,6 +105,7 @@ export type Debugging = {
     activateSaveStates?: boolean,
     lowKingHp?: boolean,
     disableDamageNumbers?: boolean,
+    closeKingArea?: boolean,
     timeMeasuresData?: { name: string, timeMeasures: number[], tempTime: number }[],
 }
 

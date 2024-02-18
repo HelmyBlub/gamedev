@@ -50,7 +50,7 @@ export type GameMapKingArea = {
     numberChunksUntil: number,
 }
 
-export function createMap(bossAreaDistance: number = 20000): GameMap {
+export function createMap(): GameMap {
     const map: GameMap = {
         tileSize: 40,
         chunkLength: 8,
@@ -58,7 +58,7 @@ export function createMap(bossAreaDistance: number = 20000): GameMap {
         activeChunkRange: 1000,
         chunks: {},
     }
-    initBossArea(map, bossAreaDistance);
+    initBossArea(map, 20000);
     return map;
 }
 
@@ -524,7 +524,7 @@ export function getMapTile(pos: Position, map: GameMap, idCounter: IdCounter, ga
     return TILE_VALUES[0];
 }
 
-function initBossArea(map: GameMap, bossAreaDistance: number) {
+export function initBossArea(map: GameMap, bossAreaDistance: number) {
     map.kingArea = {
         size: 3,
         numberChunksUntil: Math.floor(bossAreaDistance / (map.tileSize * map.chunkLength)),

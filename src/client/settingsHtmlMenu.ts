@@ -1,9 +1,8 @@
 import { playerCharactersAddBossSkillPoints } from "./character/character.js";
 import { createBossWithLevel } from "./character/enemy/bossEnemy.js";
-import { deepCopy, gameRestart } from "./game.js";
+import { deepCopy } from "./game.js";
 import { Debugging, Game } from "./gameModel.js";
 import { GAME_VERSION } from "./main.js";
-import { createMap } from "./map/map.js";
 import { initReplay, replayReplayData, testGame } from "./test/gameTest.js";
 
 export function addHTMLDebugMenusToSettings(game: Game) {
@@ -16,8 +15,8 @@ export function addHTMLDebugMenusToSettings(game: Game) {
     addSettingCheckbox("activateSaveStates", game);
     addSettingCheckbox("disableDamageNumbers", game);
     addSettingCheckbox("lowKingHp", game);
+    addSettingCheckbox("closeKingArea", game);
     addBossSkillPointButton(game);
-    addCloseBossAreaButton(game);
     addTankyButton(game);
     addSpawnBossButton(game);
     addClearLocalStorageButton(game);
@@ -76,22 +75,6 @@ function addSettingInputBoxPlayerPaintAlpha(game: Game) {
     if (input) {
         input.addEventListener('input', () => {
             game.UI.playerGlobalAlphaMultiplier = parseInt(input.value) / 100;
-        });
-    }
-}
-
-function addCloseBossAreaButton(game: Game) {
-    const buttonName = "closeEasyKingArea";
-    addSettingButton(buttonName);
-    const button = document.getElementById(buttonName) as HTMLButtonElement;
-    if (button) {
-        button.addEventListener('click', () => {
-            if (!game.multiplayer.websocket) {
-                const lastSeed = game.state.map.seed;
-                game.state.map = createMap(1000);
-                game.state.map.seed = lastSeed;
-                gameRestart(game);
-            }
         });
     }
 }
