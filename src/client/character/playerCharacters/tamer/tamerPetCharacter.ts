@@ -6,7 +6,7 @@ import { getPointPaintPosition } from "../../../gamePaint.js";
 import { GAME_IMAGES, getImage } from "../../../imageLoad.js";
 import { moveByDirectionAndDistance } from "../../../map/map.js";
 import { nextRandom } from "../../../randomNumberGenerator.js";
-import { StatsUIPart, createStatsUI } from "../../../statsUI.js";
+import { MoreInfoPart, createMoreInfosUI } from "../../../moreInfo.js";
 import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, calculateCharacterMovePosition, getPlayerCharacters, setCharacterPosition, getCharacterMoveSpeed } from "../../character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, createCharacter } from "../../characterModel.js";
 import { PathingCache, getNextWaypoint } from "../../pathing.js";
@@ -225,17 +225,17 @@ export function petFoodIntakeToDisplayText(foodIntakeLevel: FoodIntakeLevel): Pe
     }
 }
 
-export function createTamerPetsCharacterStatsUI(ctx: CanvasRenderingContext2D, pets: TamerPetCharacter[] | undefined): StatsUIPart[] {
-    const result: StatsUIPart[] = [];
+export function createTamerPetsCharacterMoreInfos(ctx: CanvasRenderingContext2D, pets: TamerPetCharacter[] | undefined): MoreInfoPart[] {
+    const result: MoreInfoPart[] = [];
     if (pets) {
         for (let pet of pets) {
-            result.push(createTamerPetCharacterStatsUI(ctx, pet));
+            result.push(createTamerPetCharacterMoreInfos(ctx, pet));
         }
     }
     return result;
 }
 
-export function createTamerPetCharacterStatsUI(ctx: CanvasRenderingContext2D, pet: TamerPetCharacter): StatsUIPart {
+export function createTamerPetCharacterMoreInfos(ctx: CanvasRenderingContext2D, pet: TamerPetCharacter): MoreInfoPart {
     const textLines: string[] = [`Pet Stats:`];
     if (pet.gifted) {
         textLines[0] += " (gifted)"
@@ -284,7 +284,7 @@ export function createTamerPetCharacterStatsUI(ctx: CanvasRenderingContext2D, pe
         }
     }
 
-    return createStatsUI(ctx, textLines);
+    return createMoreInfosUI(ctx, textLines);
 }
 
 export function changeTamerPetHappines(pet: TamerPetCharacter, value: number, time: number, visualizeChange: boolean) {

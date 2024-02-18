@@ -10,7 +10,7 @@ import { canCharacterTradeAbilityOrPets, characterTradeAbilityAndPets } from "./
 import { shareCharactersTradeablePreventedMultipleClass } from "./character/playerCharacters/playerCharacters.js";
 import { findNearesInteractableMapChunkObject, interactWithMapObject } from "./map/mapObjects.js";
 import { localStorageLoad } from "./permanentData.js";
-import { createRequiredStatsUis, statsUIsHandleMouseClick } from "./statsUI.js";
+import { createRequiredMoreInfos, moreInfosHandleMouseClick } from "./moreInfo.js";
 
 export const MOVE_ACTIONS = ["left", "down", "right", "up"];
 export const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3", "upgrade4"];
@@ -54,7 +54,7 @@ export function mouseDown(event: MouseEvent, game: Game) {
 
 export function mouseUp(event: MouseEvent, game: Game) {
     playerInputChangeEvent(game, "Mouse" + event.button, false);
-    statsUIsHandleMouseClick(event, game);
+    moreInfosHandleMouseClick(event, game);
 }
 
 export function keyDown(event: { code: string, preventDefault?: Function, stopPropagation?: Function, shiftKey?: boolean }, game: Game) {
@@ -262,7 +262,7 @@ function uiAction(game: Game, inputCode: string, isInputDown: boolean) {
         case "Info":
             game.UI.displayLongInfos = isInputDown;
             if (isInputDown) {
-                game.UI.statsUIs = createRequiredStatsUis(game);
+                game.UI.moreInfos = createRequiredMoreInfos(game);
             }
             if (!game.multiplayer.websocket) {
                 game.state.paused = isInputDown;
@@ -339,7 +339,7 @@ function playerAction(clientId: number, data: any, game: Game) {
                 if (option) {
                     executeUpgradeOptionChoice(character, option, game);
                 }
-                game.UI.statsUIs = createRequiredStatsUis(game);
+                game.UI.moreInfos = createRequiredMoreInfos(game);
             }
         } else if (ABILITY_ACTIONS.indexOf(action) !== -1) {
             for (let ability of character.abilities) {

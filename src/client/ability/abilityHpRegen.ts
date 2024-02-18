@@ -2,7 +2,7 @@ import { Character } from "../character/characterModel.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../character/upgrade.js";
 import { getNextId } from "../game.js";
 import { Game, IdCounter } from "../gameModel.js";
-import { StatsUIPart, createStatsUI } from "../statsUI.js";
+import { MoreInfoPart, createMoreInfosUI } from "../moreInfo.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, getAbilityNameUiText } from "./ability.js";
 
 type AbilityHpRegen = Ability & {
@@ -19,7 +19,7 @@ export function addAbilityHpRegen() {
         createAbilityUpgradeOptions: createAbilityHpRegenUpgradeOptions,
         executeUpgradeOption: executeAbilityHpRegenUpgradeOption,
         createAbility: createAbilityHpRegen,
-        createAbilityStatsUI: createAbilityHpRegenStatsUI,
+        createAbilityMoreInfos: createAbilityHpRegenMoreInfos,
         resetAbility: reset,
     };
 }
@@ -85,7 +85,7 @@ function executeAbilityHpRegenUpgradeOption(ability: Ability, character: Charact
     }
 }
 
-function createAbilityHpRegenStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, game: Game): StatsUIPart {
+function createAbilityHpRegenMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability, game: Game): MoreInfoPart {
     const abilityHpRegen = ability as AbilityHpRegen;
     const textLines: string[] = getAbilityNameUiText(ability);
     textLines.push(
@@ -93,5 +93,5 @@ function createAbilityHpRegenStatsUI(ctx: CanvasRenderingContext2D, ability: Abi
         `Hp Tick Interval: ${(abilityHpRegen.tickInterval / 1000).toFixed(2)}s`,
         `Hp Tick Amount: ${abilityHpRegen.amount}`,
     );
-    return createStatsUI(ctx, textLines);
+    return createMoreInfosUI(ctx, textLines);
 }

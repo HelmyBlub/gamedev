@@ -9,7 +9,7 @@ import { getPointPaintPosition } from "../../gamePaint.js";
 import { calculateMovePosition, getFirstBlockingGameMapTilePositionTouchingLine, isMoveFromToBlocking, isPositionBlocking } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { fixedRandom } from "../../randomNumberGenerator.js";
-import { StatsUIPart, createStatsUI } from "../../statsUI.js";
+import { MoreInfoPart, createMoreInfosUI } from "../../moreInfo.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, detectSomethingToCharacterHit, getAbilityNameUiText } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
 import { addAbilityLightningBallUpgradeBounceBonus, lightningBallUpgradeBounceBonusGetBonusDamageFactor, lightningBallUpgradeBounceBonusSetBonusDamageFactor } from "./abilityLightningBallUpgradeBounceBonus.js";
@@ -44,7 +44,7 @@ export function addAbilityLightningBall() {
         executeUpgradeOption: executeAbilityUpgradeOption,
         paintAbility: paintAbility,
         paintAbilityUI: paintAbilityUI,
-        createAbilityStatsUI: createAbilityStatsUI,
+        createAbilityMoreInfos: createAbilityMoreInfos,
         paintAbilityAccessoire: paintAbilityAccessoire,
         resetAbility: resetAbility,
         setAbilityToLevel: setAbilityToLevel,
@@ -325,7 +325,7 @@ function rechargeTick(abilityLightningBall: AbilityLightningBall, game: Game) {
     }
 }
 
-function createAbilityStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, game: Game): StatsUIPart {
+function createAbilityMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability, game: Game): MoreInfoPart {
     const abilityLightningBall = ability as AbilityLightningBall;
     const textLines: string[] = getAbilityNameUiText(ability);
     textLines.push(
@@ -340,6 +340,6 @@ function createAbilityStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, g
     );
     pushAbilityUpgradesUiTexts(ABILITY_LIGHTNING_BALL_UPGRADE_FUNCTIONS, textLines, ability);
 
-    return createStatsUI(ctx, textLines);
+    return createMoreInfosUI(ctx, textLines);
 }
 

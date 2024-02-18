@@ -1,15 +1,15 @@
-import { createStatsUisAbilities } from "../ability/ability.js";
+import { createMoreInfosAbilities } from "../ability/ability.js";
 import { resetCharacter } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
-import { createCharacterStatsUI, paintCharacters } from "../character/characterPaint.js";
+import { createCharacterMoreInfos, paintCharacters } from "../character/characterPaint.js";
 import { CHARACTER_TYPE_KING_ENEMY, modifyCharacterToKing } from "../character/enemy/kingEnemy.js";
-import { createTamerPetsCharacterStatsUI } from "../character/playerCharacters/tamer/tamerPetCharacter.js";
+import { createTamerPetsCharacterMoreInfos } from "../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { deepCopy, getCameraPosition } from "../game.js";
 import { CelestialDirection, Game, Position } from "../gameModel.js";
 import { getPointPaintPosition, paintTextLinesWithKeys } from "../gamePaint.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
 import { playerInputBindingToDisplayValue } from "../playerInput.js";
-import { StatsUIPart, StatsUIsPartContainer, createCharacterStatsUIPartContainer } from "../statsUI.js";
+import { MoreInfoPart, MoreInfosPartContainer, createCharacterMoreInfosPartContainer } from "../moreInfo.js";
 import { mapKeyAndTileXYToPosition } from "./map.js";
 import { MAP_OBJECTS_FUNCTIONS, MapTileObject, findMapKeyForMapObject } from "./mapObjects.js";
 
@@ -28,7 +28,7 @@ GAME_IMAGES[IMAGE_SIGN] = {
 
 export function addMapObjectKingSign() {
     MAP_OBJECTS_FUNCTIONS[MAP_OBJECT_KING_SIGN] = {
-        createStatsUi: createStatsUiKingSign,
+        createMoreInfos: createMoreInfosKingSign,
         paint: paintKingSign,
         paintInteract: paintInteractSign,
     }
@@ -90,7 +90,7 @@ function paintInteractSign(ctx: CanvasRenderingContext2D, mapObject: MapTileObje
     }
 }
 
-function createStatsUiKingSign(mapObject: MapTileObject, game: Game): StatsUIsPartContainer | undefined {
+function createMoreInfosKingSign(mapObject: MapTileObject, game: Game): MoreInfosPartContainer | undefined {
     const kingSign = mapObject as MapTileObjectNextKingSign;
     const king = game.state.bossStuff.nextKings[kingSign.kingDirection];
     if (!king || !game.ctx) return;
@@ -99,7 +99,7 @@ function createStatsUiKingSign(mapObject: MapTileObject, game: Game): StatsUIsPa
     kingCopy.type = CHARACTER_TYPE_KING_ENEMY;
     resetCharacter(kingCopy, game);
 
-    return createCharacterStatsUIPartContainer(game.ctx, kingCopy, game.UI.statsUIs, game, mapObject.type);
+    return createCharacterMoreInfosPartContainer(game.ctx, kingCopy, game.UI.moreInfos, game, mapObject.type);
 }
 
 function paintKingSign(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, paintTopLeft: Position, game: Game) {

@@ -3,7 +3,7 @@ import { FACTION_PLAYER, Game, Position } from "../gameModel.js";
 import { getPointPaintPosition } from "../gamePaint.js";
 import { GAME_IMAGES, getImage, loadImage } from "../imageLoad.js";
 import { randomizedCharacterImageToKey } from "../randomizedCharacterImage.js";
-import { StatsUIPart, createStatsUI } from "../statsUI.js";
+import { MoreInfoPart, createMoreInfosUI } from "../moreInfo.js";
 import { getCharacterMoveSpeed, getPlayerCharacters } from "./character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_PLAYER_PARTS, IMAGE_SLIME } from "./characterModel.js";
 import { CHARACTER_TYPE_KING_ENEMY } from "./enemy/kingEnemy.js";
@@ -65,7 +65,7 @@ export function paintCharacterHpBar(ctx: CanvasRenderingContext2D, character: Ch
     ctx.stroke();
 }
 
-export function createCharacterStatsUI(ctx: CanvasRenderingContext2D, character: Character): StatsUIPart {
+export function createCharacterMoreInfos(ctx: CanvasRenderingContext2D, character: Character): MoreInfoPart {
     const textLines: string[] = [
         `Character Stats:`,
         `HP: ${Math.ceil(character.hp).toLocaleString()}/${Math.ceil(character.maxHp).toLocaleString()}`,
@@ -80,15 +80,15 @@ export function createCharacterStatsUI(ctx: CanvasRenderingContext2D, character:
     }
     if (character.characterClasses) {
         textLines.push(``);
-        addCharacterClassStatsUITextLines(character.characterClasses, textLines);
+        addCharacterClassMoreInfosTextLines(character.characterClasses, textLines);
     }
-    return createStatsUI(ctx, textLines);
+    return createMoreInfosUI(ctx, textLines);
 }
 
-export function createCharacterClassStatsUI(ctx: CanvasRenderingContext2D, characterClasses: CharacterClass[]): StatsUIPart {
+export function createCharacterClassMoreInfos(ctx: CanvasRenderingContext2D, characterClasses: CharacterClass[]): MoreInfoPart {
     const textLines: string[] = [];
-    addCharacterClassStatsUITextLines(characterClasses, textLines);
-    return createStatsUI(ctx, textLines);
+    addCharacterClassMoreInfosTextLines(characterClasses, textLines);
+    return createMoreInfosUI(ctx, textLines);
 }
 
 export function paintCharatersPets(ctx: CanvasRenderingContext2D, characters: (Character | undefined)[], cameraPosition: Position, game: Game) {
@@ -143,7 +143,7 @@ export function paintPlayerCharacters(ctx: CanvasRenderingContext2D, cameraPosit
     paintCharacters(ctx, game.state.pastPlayerCharacters.characters, cameraPosition, game);
 }
 
-function addCharacterClassStatsUITextLines(characterClasses: CharacterClass[], textLines: string[]) {
+function addCharacterClassMoreInfosTextLines(characterClasses: CharacterClass[], textLines: string[]) {
     let first: boolean = true;
     let hasLegendary = false;
     for (let charClass of characterClasses) {

@@ -18,7 +18,7 @@ import { ABILITY_NAME_ICE_AURA } from "./abilityIceAura.js";
 import { ABILITY_NAME_SHOOT } from "./abilityShoot.js";
 import { ABILITY_NAME_SINGLETARGET } from "./abilitySingleTarget.js";
 import { ABILITY_NAME_SWORD } from "./abilitySword.js";
-import { StatsUIPart, createStatsUI } from "../statsUI.js";
+import { MoreInfoPart, createMoreInfosUI } from "../moreInfo.js";
 
 type AbilityObjectTower = AbilityObject & {
     ownerId: number,
@@ -57,7 +57,7 @@ export function addAbilityTower() {
         activeAbilityCast: castTower,
         createAbility: createAbilityTower,
         createAbilityUpgradeOptions: createAbilityTowerUpgradeOptionsNew,
-        createAbilityStatsUI: createAbilityTowerStatsUI,
+        createAbilityMoreInfos: createAbilityTowerMoreInfos,
         deleteAbilityObject: deleteAbilityObjectTower,
         executeUpgradeOption: executeAbilityTowerUpgradeOption,
         paintAbilityObject: paintAbilityObjectTower,
@@ -480,7 +480,7 @@ function paintAbilityTowerUI(ctx: CanvasRenderingContext2D, ability: Ability, dr
     }
 }
 
-function createAbilityTowerStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, game: Game): StatsUIPart {
+function createAbilityTowerMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability, game: Game): MoreInfoPart {
     const abilityTower = ability as AbilityTower;
     const nextTower = abilityTower.availableAbilityKeys[abilityTower.currentAbilityIndex];
     const textLines: string[] = getAbilityNameUiText(ability);
@@ -502,7 +502,7 @@ function createAbilityTowerStatsUI(ctx: CanvasRenderingContext2D, ability: Abili
         textLines.push(`  - ${key}`);
     }
 
-    return createStatsUI(ctx, textLines);
+    return createMoreInfosUI(ctx, textLines);
 }
 
 function tickAbilityTower(abilityOwner: AbilityOwner, ability: Ability, game: Game) {

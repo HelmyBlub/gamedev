@@ -5,7 +5,7 @@ import { Game, Position } from "../../gameModel.js";
 import { paintTextWithOutline } from "../../gamePaint.js";
 import { Player } from "../../player.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
-import { StatsUIPart, createStatsUI } from "../../statsUI.js";
+import { MoreInfoPart, createMoreInfosUI } from "../../moreInfo.js";
 import { MapTileObject } from "../mapObjects.js";
 import { UPGRADE_BUILDINGS_FUNCTIONS } from "./upgradeBuilding.js";
 
@@ -14,7 +14,7 @@ const CHARACTER_UPGRADE = CHARACTER_UPGRADE_BONUS_HP;
 
 export function addUpgradeBuildingHp() {
     UPGRADE_BUILDINGS_FUNCTIONS[UPGRADE_BUILDING_HP] = {
-        createUBStatsUis: createUBStatsUis,
+        createUBMoreInfos: createUBMoreInfos,
         buyUpgrade: buyUpgrade,
         getAmount: getAmount,
         getCosts: getCosts,
@@ -34,7 +34,7 @@ function paint(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, paintTop
     paintTextWithOutline(ctx, "white", "black", "HP", paintPos.x, paintPos.y, true, 3);
 }
 
-function createUBStatsUis(ctx: CanvasRenderingContext2D, characterUpgrades: CharacterUpgrades, game: Game): StatsUIPart[] {
+function createUBMoreInfos(ctx: CanvasRenderingContext2D, characterUpgrades: CharacterUpgrades, game: Game): MoreInfoPart[] {
     let hpUpgrade: CharacterUpgradeBonusHP | undefined = characterUpgrades[CHARACTER_UPGRADE] as CharacterUpgradeBonusHP;
     const texts: string[] = [];
     texts.push(`HP Upgrade Building:`);
@@ -44,7 +44,7 @@ function createUBStatsUis(ctx: CanvasRenderingContext2D, characterUpgrades: Char
     } else {
         texts.push(`Not yet purchased.`);
     }
-    return [createStatsUI(ctx, texts)];
+    return [createMoreInfosUI(ctx, texts)];
 }
 
 function refund(player: Player, game: Game) {

@@ -6,7 +6,7 @@ import { applyDebuff } from "../../debuff/debuff.js";
 import { getNextId } from "../../game.js";
 import { Game, IdCounter, Position } from "../../gameModel.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
-import { StatsUIPart, createStatsUI } from "../../statsUI.js";
+import { MoreInfoPart, createMoreInfosUI } from "../../moreInfo.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, getAbilityNameUiText } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
 import { ABILITY_SPEED_BOOST_UPGRADE_ADD_CHARGE, AbilitySpeedBoostUpgradeAddCharge, addAbilitySpeedBoostUpgradeAddCharge, tickAbilitySpeedBoostUpgradeAddCharge } from "./abilitySpeedBoostUpgradeAddCharge.js";
@@ -30,7 +30,7 @@ export function addAbilitySpeedBoost() {
         activeAbilityCast: castSpeedBoost,
         createAbility: createAbilitySpeedBoost,
         createAbilityBossUpgradeOptions: createAbilityBossSpeedBoostUpgradeOptions,
-        createAbilityStatsUI: createAbilitySpeedBoostStatsUI,
+        createAbilityMoreInfos: createAbilitySpeedBoostMoreInfos,
         executeUpgradeOption: executeAbilitySpeedBoostUpgradeOption,
         paintAbilityUI: paintAbilitySpeedBoostUI,
         resetAbility: resetAbility,
@@ -131,7 +131,7 @@ function paintAbilitySpeedBoostUI(ctx: CanvasRenderingContext2D, ability: Abilit
     }
 }
 
-function createAbilitySpeedBoostStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, game: Game): StatsUIPart {
+function createAbilitySpeedBoostMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability, game: Game): MoreInfoPart {
     const abilitySpeedBoost = ability as AbilitySpeedBoost;
     const textLines: string[] = getAbilityNameUiText(ability);
     textLines.push(
@@ -143,7 +143,7 @@ function createAbilitySpeedBoostStatsUI(ctx: CanvasRenderingContext2D, ability: 
     );
     pushAbilityUpgradesUiTexts(ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS, textLines, ability);
 
-    return createStatsUI(ctx, textLines);
+    return createMoreInfosUI(ctx, textLines);
 }
 
 function setAbilitySpeedBoostToLevel(ability: Ability, level: number) {

@@ -9,7 +9,7 @@ import { Position, Game, IdCounter, FACTION_ENEMY, ClientInfo, FACTION_PLAYER } 
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { calculateBounceAngle, calculateMovePosition, isMoveFromToBlocking, isPositionBlocking, moveByDirectionAndDistance } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
-import { StatsUIPart, createStatsUI } from "../../statsUI.js";
+import { MoreInfoPart, createMoreInfosUI } from "../../moreInfo.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, detectSomethingToCharacterHit, getAbilityNameUiText } from "../ability.js";
 import { AbilityUpgradesFunctions, getAbilityUpgradesDamageFactor, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
 import { abilityBounceBallUpgradeBounceBonusDamageAddBounce, abilityBounceBallUpgradeBounceBonusDamageResetBounces, addAbilityBounceBallUpgradeBounceBonusDamage } from "./abilityBounceBallUpgradeBounceBonusDamage.js";
@@ -47,7 +47,7 @@ export function addAbilityBounceBall() {
         activeAbilityCast: castBounceBall,
         createAbility: createAbilityBounceBall,
         createAbilityBossUpgradeOptions: createAbilityBossSpeedBoostUpgradeOptions,
-        createAbilityStatsUI: createAbilityStatsUI,
+        createAbilityMoreInfos: createAbilityMoreInfos,
         executeUpgradeOption: executeAbilityUpgradeOption,
         paintAbility: paintAbility,
         paintAbilityUI: paintAbilityUI,
@@ -388,7 +388,7 @@ function rechargeTick(abilityBounceBall: AbilityBounceBall, game: Game) {
     }
 }
 
-function createAbilityStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, game: Game): StatsUIPart {
+function createAbilityMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability, game: Game): MoreInfoPart {
     const abilityBounceBall = ability as AbilityBounceBall;
     const textLines: string[] = getAbilityNameUiText(ability);
     textLines.push(
@@ -404,6 +404,6 @@ function createAbilityStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, g
     );
     pushAbilityUpgradesUiTexts(ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS, textLines, ability);
 
-    return createStatsUI(ctx, textLines);
+    return createMoreInfosUI(ctx, textLines);
 }
 

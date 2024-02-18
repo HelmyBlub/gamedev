@@ -5,8 +5,8 @@ import { getPointPaintPosition, paintTextLinesWithKeys } from "../gamePaint.js";
 import { chunkXYToMapKey, mapKeyAndTileXYToPosition } from "./map.js";
 import { MAP_OBJECTS_FUNCTIONS, MapTileObject, findMapKeyForMapObject, paintMabObjectDefault } from "./mapObjects.js";
 import { localStorageSaveBuildings } from "../permanentData.js";
-import { StatsUIsPartContainer, createDefaultStatsUiContainer } from "../statsUI.js";
-import { UPGRADE_BUILDING, UPGRADE_BUILDINGS_FUNCTIONS, UpgradeBuilding, createBuildingUpgradeBuilding, createUpgradeBuildingStatsUis, paintUpgradeBuilding, upgradeBuildingBuyUpgrade, upgradeBuildingFindById, upgradeBuildingGetUpgradeText, upgradeBuildingRefund } from "./buildings/upgradeBuilding.js";
+import { MoreInfosPartContainer, createDefaultMoreInfosContainer } from "../moreInfo.js";
+import { UPGRADE_BUILDING, UPGRADE_BUILDINGS_FUNCTIONS, UpgradeBuilding, createBuildingUpgradeBuilding, createUpgradeBuildingMoreInfos, paintUpgradeBuilding, upgradeBuildingBuyUpgrade, upgradeBuildingFindById, upgradeBuildingGetUpgradeText, upgradeBuildingRefund } from "./buildings/upgradeBuilding.js";
 import { findPlayerByCharacterId, findPlayerByCliendId } from "../player.js";
 import { MapTileObjectBuilding } from "./mapObjectClassBuilding.js";
 import { findBuildingByIdAndType } from "./buildings/building.js";
@@ -16,7 +16,7 @@ export type MapTileObjectUpgradeBuilding = MapTileObjectBuilding & {
 
 export function addMapObjectUpgradeBuilding() {
     MAP_OBJECTS_FUNCTIONS[UPGRADE_BUILDING] = {
-        createStatsUi: createStatsUiClassBuilding,
+        createMoreInfos: createMoreInfosClassBuilding,
         interact1: interactBuy,
         interact2: interactRefund,
         paint: paint,
@@ -66,16 +66,16 @@ function paint(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, paintTop
     }
 }
 
-function createStatsUiClassBuilding(mapObject: MapTileObject, game: Game): StatsUIsPartContainer | undefined {
+function createMoreInfosClassBuilding(mapObject: MapTileObject, game: Game): MoreInfosPartContainer | undefined {
     const mapObjectBuilding = mapObject as MapTileObjectUpgradeBuilding;
     const building = upgradeBuildingFindById(mapObjectBuilding.buildingId, game);
     if (!building || !game.ctx) return;
-    const statsUIContainer = createDefaultStatsUiContainer(game.ctx, mapObject.type, game.UI.statsUIs.headingFontSize);
+    const moreInfosContainer = createDefaultMoreInfosContainer(game.ctx, mapObject.type, game.UI.moreInfos.headingFontSize);
     const characterUpgrades = findPlayerByCliendId(game.multiplayer.myClientId, game.state.players)?.permanentData.upgrades;
     if (characterUpgrades) {
-        statsUIContainer.statsUIs.push(...createUpgradeBuildingStatsUis(game.ctx, characterUpgrades, building.upgradeType, game));
+        moreInfosContainer.moreInfoParts.push(...createUpgradeBuildingMoreInfos(game.ctx, characterUpgrades, building.upgradeType, game));
     }
-    return statsUIContainer;
+    return moreInfosContainer;
 }
 
 function interactBuy(interacter: Character, mapObject: MapTileObject, game: Game) {

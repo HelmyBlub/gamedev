@@ -11,7 +11,7 @@ import { PermanentDataParts } from "./permanentData.js";
 import { createPlayerWithPlayerCharacter, Player } from "./player.js";
 import { PlayerInput } from "./playerInput.js";
 import { nextRandom, RandomSeed } from "./randomNumberGenerator.js";
-import { StatsUIs, createDefaultEmptyStatsUis } from "./statsUI.js";
+import { MoreInfos, createDefaultEmptyMoreInfos } from "./moreInfo.js";
 import { Building } from "./map/buildings/building.js";
 import { GAME_VERSION } from "./main.js";
 
@@ -248,10 +248,10 @@ export type Game = {
         displayMovementKeyHint: boolean,
         movementKeyPressed: boolean,
         displayTextData: PaintTextData[],
-        statsUIs: StatsUIs,
+        moreInfos: MoreInfos,
         displayLongInfos: boolean,
         playerGlobalAlphaMultiplier: number,
-        paintClosesInteractableStatsUi: boolean,
+        paintClosesInteractableMoreInfo: boolean,
     }
 }
 
@@ -354,10 +354,10 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             displayMovementKeyHint: false,
             movementKeyPressed: false,
             displayTextData: [],
-            statsUIs: createDefaultEmptyStatsUis(),
+            moreInfos: createDefaultEmptyMoreInfos(),
             displayLongInfos: false,
             playerGlobalAlphaMultiplier: 1,
-            paintClosesInteractableStatsUi: false,
+            paintClosesInteractableMoreInfo: false,
         },
     }
 

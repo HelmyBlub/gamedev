@@ -7,7 +7,6 @@ current tasks:
     - moreInfo box for enemies
 - movement speed building wrong % char in text
 - hide hp bar when hp full
-- rename statsUI to moreInfo
 - balancing
     - pets and tower level differently than sniper/ball. Bad for legendary balancing
         - male pets/tower level slower but each level is stronger

@@ -4,7 +4,7 @@ import { Game, Position } from "../../gameModel.js";
 import { paintTextWithOutline } from "../../gamePaint.js";
 import { Player } from "../../player.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
-import { StatsUIPart, createStatsUI } from "../../statsUI.js";
+import { MoreInfoPart, createMoreInfosUI } from "../../moreInfo.js";
 import { MapTileObject } from "../mapObjects.js";
 import { UPGRADE_BUILDINGS_FUNCTIONS } from "./upgradeBuilding.js";
 
@@ -13,7 +13,7 @@ const CHARACTER_UPGRADE = CHARACTER_UPGRADE_BONUS_EXPERIENCE;
 
 export function addUpgradeBuildingExperience() {
     UPGRADE_BUILDINGS_FUNCTIONS[UPGRADE_BUILDING_EXPERIENCE] = {
-        createUBStatsUis: createUBStatsUis,
+        createUBMoreInfos: createUBMoreInfos,
         getCosts: getCosts,
         getAmount: getAmount,
         getUpgradeText: getUpgradeText,
@@ -33,7 +33,7 @@ function paint(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, paintTop
     paintTextWithOutline(ctx, "white", "black", "EXP", paintPos.x, paintPos.y, true, 3);
 }
 
-function createUBStatsUis(ctx: CanvasRenderingContext2D, characterUpgrades: CharacterUpgrades, game: Game): StatsUIPart[] {
+function createUBMoreInfos(ctx: CanvasRenderingContext2D, characterUpgrades: CharacterUpgrades, game: Game): MoreInfoPart[] {
     let expUpgrade: CharacterUpgradeBonusExperience | undefined = characterUpgrades[CHARACTER_UPGRADE] as CharacterUpgradeBonusExperience;
     const texts: string[] = [];
     texts.push(`Experience Upgrade Building:`);
@@ -44,7 +44,7 @@ function createUBStatsUis(ctx: CanvasRenderingContext2D, characterUpgrades: Char
     } else {
         texts.push(`Not yet purchased.`);
     }
-    return [createStatsUI(ctx, texts)];
+    return [createMoreInfosUI(ctx, texts)];
 }
 
 function refund(player: Player, game: Game) {

@@ -2,7 +2,7 @@ import { CharacterUpgrades } from "../../character/upgrades/characterUpgrades.js
 import { getNextId } from "../../game.js";
 import { Game, IdCounter, Position } from "../../gameModel.js";
 import { Player } from "../../player.js";
-import { StatsUIPart, createStatsUI } from "../../statsUI.js";
+import { MoreInfoPart, createMoreInfosUI } from "../../moreInfo.js";
 import { MapTileObject } from "../mapObjects.js";
 import { Building, findBuildingByIdAndType } from "./building.js";
 import { IMAGE_BUILDING1 } from "./classBuilding.js";
@@ -19,7 +19,7 @@ export type UpgradeBuilding = Building & {
 }
 export type UpgradeBuildingFunctions = {
     buyUpgrade: (player: Player, game: Game) => void,
-    createUBStatsUis: (ctx: CanvasRenderingContext2D, characterUpgrades: CharacterUpgrades, game: Game) => StatsUIPart[],
+    createUBMoreInfos: (ctx: CanvasRenderingContext2D, characterUpgrades: CharacterUpgrades, game: Game) => MoreInfoPart[],
     getAmount: (characterUpgrades: CharacterUpgrades, game: Game) => number,
     getCosts: (characterUpgrades: CharacterUpgrades, game: Game) => number,
     getUpgradeText: (characterUpgrades: CharacterUpgrades, game: Game) => string[],
@@ -52,18 +52,18 @@ export function createBuildingUpgradeBuilding(upgradeType: string, tileX: number
     }
 }
 
-export function createUpgradeBuildingStatsUis(ctx: CanvasRenderingContext2D, characterUpgrades: CharacterUpgrades, upgradeBuildingKey: string, game: Game): StatsUIPart[] {
-    const result: StatsUIPart[] = [createBaseUpgradeBuildingStatsUiPart(ctx)];
+export function createUpgradeBuildingMoreInfos(ctx: CanvasRenderingContext2D, characterUpgrades: CharacterUpgrades, upgradeBuildingKey: string, game: Game): MoreInfoPart[] {
+    const result: MoreInfoPart[] = [createBaseUpgradeBuildingMoreInfosPart(ctx)];
 
     const upgradeBuildingFunctions = UPGRADE_BUILDINGS_FUNCTIONS[upgradeBuildingKey];
     if (upgradeBuildingFunctions) {
-        result.push(...upgradeBuildingFunctions.createUBStatsUis(ctx, characterUpgrades, game));
+        result.push(...upgradeBuildingFunctions.createUBMoreInfos(ctx, characterUpgrades, game));
     }
 
     return result;
 }
 
-function createBaseUpgradeBuildingStatsUiPart(ctx: CanvasRenderingContext2D): StatsUIPart {
+function createBaseUpgradeBuildingMoreInfosPart(ctx: CanvasRenderingContext2D): MoreInfoPart {
     const texts: string[] = [
         `Pay money to gain a permanent upgrade.`,
         `Upgrades apply to your character and your pets.`,
@@ -76,7 +76,7 @@ function createBaseUpgradeBuildingStatsUiPart(ctx: CanvasRenderingContext2D): St
         `- you defeat a Boss`,
         `    - money based on Boss level`,
     ];
-    return createStatsUI(ctx, texts);
+    return createMoreInfosUI(ctx, texts);
 
 }
 

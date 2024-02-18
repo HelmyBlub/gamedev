@@ -1,18 +1,18 @@
-import { ABILITIES_FUNCTIONS, createStatsUisAbilities } from "../ability/ability.js";
+import { ABILITIES_FUNCTIONS, createMoreInfosAbilities } from "../ability/ability.js";
 import { characterAddExistingCharacterClass, resetCharacter } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
 import { hasCharacterPreventedMultipleClass } from "../character/playerCharacters/playerCharacters.js";
-import { createTamerPetsCharacterStatsUI } from "../character/playerCharacters/tamer/tamerPetCharacter.js";
+import { createTamerPetsCharacterMoreInfos } from "../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { deepCopy, getCameraPosition } from "../game.js";
 import { Game, Position } from "../gameModel.js";
 import { getPointPaintPosition, paintTextLinesWithKeys } from "../gamePaint.js";
 import { chunkXYToMapKey, mapKeyAndTileXYToPosition } from "./map.js";
 import { MAP_OBJECTS_FUNCTIONS, MapTileObject, findMapKeyForMapObject, paintMabObjectDefault } from "./mapObjects.js";
 import { localStorageSaveBuildings } from "../permanentData.js";
-import { createCharacterClassStatsUI, paintCharacters } from "../character/characterPaint.js";
+import { createCharacterClassMoreInfos, paintCharacters } from "../character/characterPaint.js";
 import { ABILITY_NAME_LEASH, AbilityLeash } from "../ability/abilityLeash.js";
 import { playerInputBindingToDisplayValue } from "../playerInput.js";
-import { StatsUIsPartContainer, createDefaultStatsUiContainer, createStatsUI } from "../statsUI.js";
+import { MoreInfosPartContainer, createDefaultMoreInfosContainer, createMoreInfosUI } from "../moreInfo.js";
 import { IMAGE_BUILDING1, createBuildingClassBuilding, classBuildingFindCharacterClassToMakeLegendary, classBuildingPlacePlayerClassStuffInBuilding, classBuildingFindById, BUILDING_CLASS_BUILDING } from "./buildings/classBuilding.js";
 
 export type MapTileObjectBuilding = MapTileObject & {
@@ -24,7 +24,7 @@ export type MapTileObjectClassBuilding = MapTileObjectBuilding & {
 
 export function addMapObjectClassBuilding() {
     MAP_OBJECTS_FUNCTIONS[BUILDING_CLASS_BUILDING] = {
-        createStatsUi: createStatsUiClassBuilding,
+        createMoreInfos: createMoreInfosClassBuilding,
         interact1: interactBurrow,
         interact2: interactDestroy,
         paint: paintClassBuilding,
@@ -68,23 +68,23 @@ export function mapObjectPlaceClassBuilding(game: Game) {
     localStorageSaveBuildings(game);
 }
 
-function createStatsUiClassBuilding(mapObject: MapTileObject, game: Game): StatsUIsPartContainer | undefined {
+function createMoreInfosClassBuilding(mapObject: MapTileObject, game: Game): MoreInfosPartContainer | undefined {
     const mapObjectClassBuilding = mapObject as MapTileObjectClassBuilding;
     const classBuilding = classBuildingFindById(mapObjectClassBuilding.buildingId, game);
     if (!classBuilding || !game.ctx) return;
-    const statsUIContainer = createDefaultStatsUiContainer(game.ctx, mapObject.type, game.UI.statsUIs.headingFontSize);
+    const moreInfosContainer = createDefaultMoreInfosContainer(game.ctx, mapObject.type, game.UI.moreInfos.headingFontSize);
     if (classBuilding.characterClass) {
-        statsUIContainer.statsUIs.push(createCharacterClassStatsUI(game.ctx, [classBuilding.characterClass]));
+        moreInfosContainer.moreInfoParts.push(createCharacterClassMoreInfos(game.ctx, [classBuilding.characterClass]));
         if (!classBuilding.stuffBorrowed?.burrowed) {
-            statsUIContainer.statsUIs.push(...createTamerPetsCharacterStatsUI(game.ctx, classBuilding.pets));
-            statsUIContainer.statsUIs.push(...createStatsUisAbilities(game.ctx, classBuilding.abilities, game));
+            moreInfosContainer.moreInfoParts.push(...createTamerPetsCharacterMoreInfos(game.ctx, classBuilding.pets));
+            moreInfosContainer.moreInfoParts.push(...createMoreInfosAbilities(game.ctx, classBuilding.abilities, game));
         } else if (classBuilding.stuffBorrowed.by) {
-            statsUIContainer.statsUIs.push(createStatsUI(game.ctx, [
+            moreInfosContainer.moreInfoParts.push(createMoreInfosUI(game.ctx, [
                 `Currently burrowed by ${classBuilding.stuffBorrowed.by}`,
             ]));
         }
     } else {
-        statsUIContainer.statsUIs.push(createStatsUI(game.ctx, [
+        moreInfosContainer.moreInfoParts.push(createMoreInfosUI(game.ctx, [
             `Empty Class Building.`,
             `This building type appears if a boss without`,
             `a class is defeated. It first spawns without`,
@@ -98,7 +98,7 @@ function createStatsUiClassBuilding(mapObject: MapTileObject, game: Game): Stats
         ]));
     }
 
-    return statsUIContainer;
+    return moreInfosContainer;
 }
 
 
@@ -189,7 +189,7 @@ function paintInteract(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, 
                 texts.push(`Press <${interactBurrowKey}> to burrow.`);
                 texts.push(`Press <${infoKey}> for details.`);
             }
-            game.UI.paintClosesInteractableStatsUi = true;
+            game.UI.paintClosesInteractableMoreInfo = true;
         } else if (classBuilding.stuffBorrowed!.burrowed) {
             texts.push(`Currently burrowed by ${classBuilding.stuffBorrowed!.by}`);
         }

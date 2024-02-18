@@ -36,7 +36,7 @@ import { playerInputBindingToDisplayValue } from "../playerInput.js"
 import { addAbilityUnleashPet } from "./petTamer/abilityUnleashPet.js"
 import { Leveling } from "../character/playerCharacters/levelingCharacter.js"
 import { CharacterClass } from "../character/playerCharacters/playerCharacters.js"
-import { StatsUIPart, paintStatsUIPart, paintStatsUIiPartsContainer, paintStatsUis } from "../statsUI.js"
+import { MoreInfoPart, paintMoreInfosPart, paintMoreInfosPartsContainer, paintMoreInfos } from "../moreInfo.js"
 
 export type Ability = {
     id: number,
@@ -79,7 +79,7 @@ export type AbilityFunctions = {
     createAbility: (idCounter: IdCounter, playerInputBinding?: string) => Ability,
     createAbilityUpgradeOptions?: (ability: Ability) => UpgradeOptionAndProbability[],
     createAbilityBossUpgradeOptions?: (ability: Ability, character: Character, game: Game) => UpgradeOptionAndProbability[],
-    createAbilityStatsUI?: (ctx: CanvasRenderingContext2D, ability: Ability, game: Game) => StatsUIPart,
+    createAbilityMoreInfos?: (ctx: CanvasRenderingContext2D, ability: Ability, game: Game) => MoreInfoPart,
     deleteAbilityObject?: (abilityObject: AbilityObject, game: Game) => boolean,
     executeUpgradeOption?: (ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game) => void,
     getLongDescription?: () => string[],
@@ -399,12 +399,12 @@ export function detectSomethingToCharacterHit(
     return hitCount;
 }
 
-export function createStatsUisAbilities(ctx: CanvasRenderingContext2D, abilities: Ability[], game: Game): StatsUIPart[] {
-    const result: StatsUIPart[] = [];
+export function createMoreInfosAbilities(ctx: CanvasRenderingContext2D, abilities: Ability[], game: Game): MoreInfoPart[] {
+    const result: MoreInfoPart[] = [];
     for (let ability of abilities) {
         const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-        if (abilityFunctions.createAbilityStatsUI) {
-            result.push(abilityFunctions.createAbilityStatsUI(ctx, ability, game));
+        if (abilityFunctions.createAbilityMoreInfos) {
+            result.push(abilityFunctions.createAbilityMoreInfos(ctx, ability, game));
         }
     }
     return result;
@@ -436,21 +436,21 @@ export function paintUiForAbilities(ctx: CanvasRenderingContext2D, game: Game) {
         } else {
             continue;
         }
-        paintAbilityStatsUiIfMouseHovered(ctx, ability, startX, startY, size, game);
+        paintAbilityMoreInfosIfMouseHovered(ctx, ability, startX, startY, size, game);
         startX += size + spacing;
     }
 }
 
-function paintAbilityStatsUiIfMouseHovered(ctx: CanvasRenderingContext2D, ability: Ability, startX: number, startY: number, size: number, game: Game) {
+function paintAbilityMoreInfosIfMouseHovered(ctx: CanvasRenderingContext2D, ability: Ability, startX: number, startY: number, size: number, game: Game) {
     if (game.UI.displayLongInfos) return;
     const mousePos = game.mouseRelativeCanvasPosition;
     if (mousePos.y > startY && mousePos.y < startY + size
         && mousePos.x > startX && mousePos.x < startX + size
     ) {
         const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-        if (abilityFunctions.createAbilityStatsUI) {
-            const statUI = abilityFunctions.createAbilityStatsUI(ctx, ability, game);
-            paintStatsUIPart(ctx, statUI);
+        if (abilityFunctions.createAbilityMoreInfos) {
+            const statUI = abilityFunctions.createAbilityMoreInfos(ctx, ability, game);
+            paintMoreInfosPart(ctx, statUI);
         }
     }
 }

@@ -7,7 +7,7 @@ import { getPointPaintPosition } from "../../gamePaint.js";
 import { GAME_IMAGES, getImage } from "../../imageLoad.js";
 import { moveByDirectionAndDistance } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
-import { StatsUIPart, createStatsUI } from "../../statsUI.js";
+import { MoreInfoPart, createMoreInfosUI } from "../../moreInfo.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, findAbilityOwnerById, getAbilityNameUiText } from "../ability.js";
 
 export type AbilityLovePet = Ability & {
@@ -35,7 +35,7 @@ export function addAbilityLovePet() {
         activeAbilityCast: castLovePet,
         createAbility: createAbilityLovePet,
         paintAbilityObject: paintAbilityObjectLovePet,
-        createAbilityStatsUI: createAbilityStatsUI,
+        createAbilityMoreInfos: createAbilityMoreInfos,
         paintAbilityUI: paintAbilityLovePetUI,
         tickAbilityObject: tickAbilityObjectLovePet,
         tickBossAI: tickBossAI,
@@ -189,7 +189,7 @@ function castLovePet(abilityOwner: AbilityOwner, ability: Ability, castPosition:
     }
 }
 
-function createAbilityStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, game: Game): StatsUIPart {
+function createAbilityMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability, game: Game): MoreInfoPart {
     const feed = ability as AbilityLovePet;
     const textLines: string[] = getAbilityNameUiText(ability);
     textLines.push(
@@ -197,5 +197,5 @@ function createAbilityStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, g
         "Love targeted pet.",
         `Range: ${feed.range}`,
     );
-    return createStatsUI(ctx, textLines);
+    return createMoreInfosUI(ctx, textLines);
 }

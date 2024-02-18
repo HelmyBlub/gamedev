@@ -4,7 +4,7 @@ import { calculateDistance, getTimeSinceFirstKill } from "./game.js";
 import { Game } from "./gameModel.js";
 import { paintKey } from "./gamePaint.js";
 import { getMapMidlePosition } from "./map/map.js";
-import { StatsUIPart, createStatsUI } from "./statsUI.js";
+import { MoreInfoPart, createMoreInfosUI } from "./moreInfo.js";
 
 export type Highscores = {
     scoreBoards: {
@@ -130,8 +130,8 @@ export function paintHighscoreEndScreenStuff(ctx: CanvasRenderingContext2D, high
     paintHighscores(ctx, paintMiddle - highscoreWidth / 2, paintY - 20, highscoreBoard, highscores.lastHighscorePosition, fontSize);
 }
 
-export function createHighscoresStatsUIs(ctx: CanvasRenderingContext2D, highscores: Highscores): StatsUIPart[] {
-    const statsUiParts: StatsUIPart[] = [];
+export function createHighscoresMoreInfos(ctx: CanvasRenderingContext2D, highscores: Highscores): MoreInfoPart[] {
+    const moreInfosParts: MoreInfoPart[] = [];
     const keys = Object.keys(highscores.scoreBoards);
     for (let key of keys) {
         const scoreBoard = highscores.scoreBoards[key];
@@ -142,9 +142,9 @@ export function createHighscoresStatsUIs(ctx: CanvasRenderingContext2D, highscor
         for (let i = 0; i < scoreBoard.scores.length; i++) {
             textLines.push(getHighscoreTextLine(i, scoreBoard));
         }
-        statsUiParts.push(createStatsUI(ctx, textLines));
+        moreInfosParts.push(createMoreInfosUI(ctx, textLines));
     }
-    return statsUiParts;
+    return moreInfosParts;
 }
 
 export function paintHighscores(ctx: CanvasRenderingContext2D, paintX: number, paintY: number, highscoreBoard: HighscoreBoard, lastHighscorePosition: number | undefined, fontSize: number): { width: number, height: number } {

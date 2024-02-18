@@ -6,7 +6,7 @@ import { Position, Game, IdCounter, ClientInfo, FACTION_ENEMY } from "../../game
 import { GAME_IMAGES } from "../../imageLoad.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, findAbilityById } from "../ability.js";
 import { AbilityUpgrade, AbilityUpgradesFunctions, getAbilityUpgradeOptionDefault, getAbilityUpgradesDamageFactor, pushAbilityUpgradesOptions, upgradeAbility } from "../abilityUpgrade.js";
-import { paintAbilityObjectSnipe, paintAbilitySnipe, paintAbilitySnipeAccessoire, createAbilitySnipeStatsUI, paintAbilitySnipeUI } from "./abilitySnipePaint.js";
+import { paintAbilityObjectSnipe, paintAbilitySnipe, paintAbilitySnipeAccessoire, createAbilitySnipeMoreInfos, paintAbilitySnipeUI } from "./abilitySnipePaint.js";
 import { addAbilitySnipeUpgradeAfterImage, castSnipeAfterImage, tickAbilityUpgradeAfterImage } from "./abilitySnipeUpgradeAfterImage.js";
 import { addAbilitySnipeUpgradeBackwardsShot, castSnipeBackwardsShot } from "./abilitySnipeUpgradeBackwardsShot.js";
 import { abilityUpgradeNoMissChainOnObjectSnipeDamageDone, addAbilitySnipeUpgradeNoMissChain } from "./abilitySnipeUpgradeNoMissChain.js";
@@ -69,7 +69,7 @@ export function addAbilitySnipe() {
         activeAbilityCast: castSnipe,
         createAbility: createAbilitySnipe,
         createAbilityBossUpgradeOptions: createAbilityBossSnipeUpgradeOptions,
-        createAbilityStatsUI: createAbilitySnipeStatsUI,
+        createAbilityMoreInfos: createAbilitySnipeMoreInfos,
         deleteAbilityObject: deleteAbilityObjectSnipe,
         executeUpgradeOption: executeAbilitySnipeUpgradeOption,
         paintAbilityObject: paintAbilityObjectSnipe,

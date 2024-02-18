@@ -14,7 +14,7 @@ import { MAP_OBJECTS_FUNCTIONS, findNearesInteractableMapChunkObject } from "./m
 import { paintMap, paintMapCharacters } from "./map/mapPaint.js";
 import { Player, findNearesPastPlayerCharacter, findPlayerById, isAutoSkillActive } from "./player.js";
 import { playerInputBindingToDisplayValue } from "./playerInput.js";
-import { paintStatsUis } from "./statsUI.js";
+import { paintMoreInfos } from "./moreInfo.js";
 
 GAME_IMAGES["blankKey"] = {
     imagePath: "/images/singleBlankKey.png",
@@ -40,7 +40,7 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
     paintKeyInfo(ctx, game);
     paintEndScreen(ctx, game.state.highscores, game);
     paintMyCharacterStats(ctx, game);
-    paintStatsUis(ctx, game.UI.statsUIs, game);
+    paintMoreInfos(ctx, game.UI.moreInfos, game);
     paintMultiplayerPing(ctx, game);
     paintTimeMeasures(ctx, game.debug);
     paintPausedText(ctx, game);
@@ -171,7 +171,7 @@ function paintMultiplayerPing(ctx: CanvasRenderingContext2D, game: Game) {
 }
 
 function paintClosestInteractable(ctx: CanvasRenderingContext2D, cameraPosition: Position, game: Game) {
-    game.UI.paintClosesInteractableStatsUi = false;
+    game.UI.paintClosesInteractableMoreInfo = false;
     if (game.state.ended) return;
     const player = findPlayerById(game.state.players, game.multiplayer.myClientId);
     if (player === null) return;
@@ -203,14 +203,14 @@ function paintPastPlayerGiftInfo(ctx: CanvasRenderingContext2D, pastCharacter: C
             textsWithKeys.push(`Press <${interactKey}> to get Abiltites gifted,`);
             textsWithKeys.push(`one time only.`);
             textsWithKeys.push(`<${infoKey}> for more details.`);
-            game.UI.paintClosesInteractableStatsUi = true;
+            game.UI.paintClosesInteractableMoreInfo = true;
         } else {
             const infoKey = playerInputBindingToDisplayValue("Info", game);
             textsWithKeys.push(`<${infoKey}> for more details.`);
             textsWithKeys.push(`Can not gift Abilities as this`);
             textsWithKeys.push(`Class can only be owned once!`);
             paintPos.y -= 20;
-            game.UI.paintClosesInteractableStatsUi = true;
+            game.UI.paintClosesInteractableMoreInfo = true;
         }
 
         let pets: TamerPetCharacter[] = [];

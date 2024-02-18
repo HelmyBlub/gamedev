@@ -1,7 +1,7 @@
 import { getNextId } from "../../game.js";
 import { IdCounter, Game, Position } from "../../gameModel.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
-import { StatsUIPart, createStatsUI } from "../../statsUI.js";
+import { MoreInfoPart, createMoreInfosUI } from "../../moreInfo.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, getAbilityNameUiText } from "../ability.js";
 import { ABILITY_NAME_SNIPE, AbilitySnipe, abilitySnipeReload } from "./abilitySnipe.js";
 
@@ -13,7 +13,7 @@ export function addAbilitySnipeReload() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_SNIPE_RELOAD] = {
         activeAbilityCast: castReload,
         createAbility: createAbility,
-        createAbilityStatsUI: createAbilityStatsUI,
+        createAbilityMoreInfos: createAbilityMoreInfos,
     };
 }
 export function createAbility(idCounter: IdCounter, playerInputBinding?: string): AbilitySnipeReload {
@@ -39,12 +39,12 @@ function castReload(abilityOwner: AbilityOwner, ability: Ability, castPosition: 
     }
 }
 
-function createAbilityStatsUI(ctx: CanvasRenderingContext2D, ability: Ability, game: Game): StatsUIPart {
+function createAbilityMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability, game: Game): MoreInfoPart {
     const abilitySpeedBoost = ability as AbilitySnipeReload;
     const textLines: string[] = getAbilityNameUiText(ability);
     textLines.push(
         `Key: ${playerInputBindingToDisplayValue(abilitySpeedBoost.playerInputBinding!, game)}`,
     );
 
-    return createStatsUI(ctx, textLines);
+    return createMoreInfosUI(ctx, textLines);
 }

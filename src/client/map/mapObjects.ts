@@ -2,7 +2,7 @@ import { Character } from "../character/characterModel.js";
 import { calculateDistance } from "../game.js";
 import { Position, Game } from "../gameModel.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
-import { StatsUIsPartContainer } from "../statsUI.js";
+import { MoreInfosPartContainer } from "../moreInfo.js";
 import { GameMap, MapChunk, determineMapKeysInDistance, mapKeyAndTileXYToPosition } from "./map.js";
 import { addMapObjectClassBuilding } from "./mapObjectClassBuilding.js";
 import { addMapObjectFireAnimation } from "./mapObjectFireAnimation.js";
@@ -10,7 +10,7 @@ import { addMapObjectKingSign } from "./mapObjectSign.js";
 import { addMapObjectUpgradeBuilding } from "./mapObjectUpgradeBuilding.js";
 
 export type MapObjectFunctions = {
-    createStatsUi?: (mapObject: MapTileObject, game: Game) => StatsUIsPartContainer | undefined,
+    createMoreInfos?: (mapObject: MapTileObject, game: Game) => MoreInfosPartContainer | undefined,
     interact1?: (interacter: Character, mapObject: MapTileObject, game: Game) => void,
     interact2?: (interacter: Character, mapObject: MapTileObject, game: Game) => void,
     paint?: (ctx: CanvasRenderingContext2D, mapObject: MapTileObject, paintTopLeft: Position, game: Game) => void,
@@ -38,10 +38,10 @@ export function addMapObjectsFunctions() {
     addMapObjectUpgradeBuilding();
 }
 
-export function createStatsUIForMabObject(mapTileObject: MapTileObject, game: Game): StatsUIsPartContainer | undefined {
+export function createMoreInfosForMabObject(mapTileObject: MapTileObject, game: Game): MoreInfosPartContainer | undefined {
     const mapObjectFuntions = MAP_OBJECTS_FUNCTIONS[mapTileObject.type];
-    if (mapObjectFuntions && mapObjectFuntions.createStatsUi) {
-        return mapObjectFuntions.createStatsUi(mapTileObject, game);
+    if (mapObjectFuntions && mapObjectFuntions.createMoreInfos) {
+        return mapObjectFuntions.createMoreInfos(mapTileObject, game);
     }
     return undefined;
 }
