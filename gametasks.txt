@@ -2,7 +2,6 @@ next test run: tower builder , Sniper, Tamer, All
 
 current tasks:
                 
-- hide hp bar when hp full
 - balancing
     - pets and tower level differently than sniper/ball. Bad for legendary balancing
         - male pets/tower level slower but each level is stronger

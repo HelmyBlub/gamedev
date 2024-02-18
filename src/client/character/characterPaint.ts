@@ -137,8 +137,10 @@ export function paintPlayerCharacters(ctx: CanvasRenderingContext2D, cameraPosit
     paintCharatersPets(ctx, game.state.pastPlayerCharacters.characters, cameraPosition, game);
     paintCharacters(ctx, playerCharacters, cameraPosition, game);
     for (let playerChar of playerCharacters) {
-        paintCharacterHpBarAboveCharacter(ctx, playerChar, cameraPosition);
-        paintPlayerNameOverCharacter(ctx, playerChar, cameraPosition, game, +9);
+        if (playerChar.hp !== playerChar.maxHp || playerChar.shield > 0) {
+            paintCharacterHpBarAboveCharacter(ctx, playerChar, cameraPosition);
+            paintPlayerNameOverCharacter(ctx, playerChar, cameraPosition, game, +9);
+        }
     }
     paintCharacters(ctx, game.state.pastPlayerCharacters.characters, cameraPosition, game);
 }
