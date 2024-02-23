@@ -5,7 +5,7 @@ import { Character } from "./characterModel.js";
 import { CharacterClass, PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters/playerCharacters.js";
 
 export type UpgradeOption = {
-    type: "Character" | "Ability" | "Pet" | "PetAbility" | "ChooseClass",
+    type: "Character" | "Ability" | "Pet" | "PetAbility" | "ChooseClass" | "Reroll",
     characterClass?: string,
     displayText: string,
     displayLongText?: string[],
@@ -32,7 +32,7 @@ export type UpgradeOptionAndProbability = { option: UpgradeOption, probability: 
 export function fillRandomUpgradeOptionChoices(character: Character, game: Game) {
     if (character.upgradeChoices.length > 0) return;
     const upgradeOptionsAndProbabilities: UpgradeOptionAndProbability[] = getCharacterUpgradeOptions(character, game);
-    if(upgradeOptionsAndProbabilities.length === 0) return;
+    if (upgradeOptionsAndProbabilities.length === 0) return;
     setUpgradeOptionOrderValues(upgradeOptionsAndProbabilities);
     let totalProbability = upgradeOptionsAndProbabilities.reduce((acc, ele) => acc + ele.probability, 0);
 
@@ -51,40 +51,62 @@ export function fillRandomUpgradeOptionChoices(character: Character, game: Game)
             }
         }
     }
-    character.upgradeChoices.sort((a,b) => a.order! - b.order!);
+    if (character.upgradeChoiceRerools && character.upgradeChoiceRerools > 0) {
+        character.upgradeChoices.push(createRerollUpgradeOption(character.upgradeChoiceRerools));
+    }
+    character.upgradeChoices.sort((a, b) => a.order! - b.order!);
 }
 
 export function executeUpgradeOptionChoice(character: Character, upgradeChoice: UpgradeOption, game: Game) {
-    if(upgradeChoice.characterClass){
+    if (upgradeChoice.characterClass) {
         const classFunction = PLAYER_CHARACTER_CLASSES_FUNCTIONS[upgradeChoice.characterClass];
         if (classFunction.executeUpgradeOption) {
             classFunction.executeUpgradeOption(character, upgradeChoice, game);
-        }    
-    }else{
+        }
+    } else {
         executeDefaultCharacterUpgradeOption(character, upgradeChoice, game);
     }
     character.upgradeChoices = [];
     fillRandomUpgradeOptionChoices(character, game);
 }
 
-function setUpgradeOptionOrderValues(options: UpgradeOptionAndProbability[]){
-    for(let i = 0; i < options.length; i++){
+export function executeRerollUpgradeOption(character: Character, game: Game) {
+    if (character.upgradeChoiceRerools === undefined) return;
+    if (character.upgradeChoices.length > 0) character.upgradeChoices = [];
+    character.upgradeChoiceRerools--;
+    fillRandomUpgradeOptionChoices(character, game);
+}
+
+function setUpgradeOptionOrderValues(options: UpgradeOptionAndProbability[]) {
+    for (let i = 0; i < options.length; i++) {
         options[i].option.order = i;
+    }
+}
+
+function createRerollUpgradeOption(availableRerolls: number): UpgradeOption {
+    return {
+        displayText: `Reroll (${availableRerolls})`,
+        displayLongText: [
+            "Reroll to get new choices.",
+            `${availableRerolls} rerolls left this run.`,
+        ],
+        type: "Reroll",
+        identifier: "Reroll",
     }
 }
 
 function getCharacterUpgradeOptions(character: Character, game: Game): UpgradeOptionAndProbability[] {
     let upgradeOptionAndProbability: UpgradeOptionAndProbability[] = [];
-    if(character.characterClasses){
-        for(let tempClass of character.characterClasses){
+    if (character.characterClasses) {
+        for (let tempClass of character.characterClasses) {
             upgradeOptionAndProbability = getCharacterUpgradeOptionsForClass(character, tempClass, game);
-            if(upgradeOptionAndProbability.length > 0) break;
+            if (upgradeOptionAndProbability.length > 0) break;
         }
     }
     return upgradeOptionAndProbability;
 }
 
-function getCharacterUpgradeOptionsForClass(character: Character, characterClass: CharacterClass, game: Game): UpgradeOptionAndProbability[]{
+function getCharacterUpgradeOptionsForClass(character: Character, characterClass: CharacterClass, game: Game): UpgradeOptionAndProbability[] {
     let upgradeOptionAndProbability: UpgradeOptionAndProbability[] = [];
     const classFunction = PLAYER_CHARACTER_CLASSES_FUNCTIONS[characterClass.className];
     if (classFunction.createBossUpgradeOptions) {

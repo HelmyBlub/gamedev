@@ -1,15 +1,17 @@
-next test run: Sniper, Tamer,  tower builder, All
+next test run: Tamer, tower builder, Sniper, All
 
 current tasks:
                 
-- balancing
-    - tamer pet dash ability. Upgrade bounce is uselesss
-        - replace with something new: idea: damage taken increase debuff
-
 - think about next bigger feature 
     - ideas
         - Upgrade Building: rerolls for random upgrades
         - Upgrade Building: multiple king tries
+    - bigger idea:
+        - another class?
+        - extends existings classes for more upgrade choice?
+        - next boss type: "God"
+            - more difficult than "Kings"
+            - always the same, can not be replaced by player character
 
 
 refactor possibilities:

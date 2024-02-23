@@ -26,7 +26,7 @@ export function createPlayer(clientId: number, character: Character): Player {
         permanentData: {
             money: 0,
             upgrades: {},
-        }
+        },
     }
 }
 

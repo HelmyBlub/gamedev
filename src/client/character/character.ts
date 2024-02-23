@@ -10,7 +10,7 @@ import { ABILITIES_FUNCTIONS, Ability, findAbilityById, findAbilityOwnerByAbilit
 import { BossEnemyCharacter, CHARACTER_TYPE_BOSS_ENEMY } from "./enemy/bossEnemy.js";
 import { removeCharacterDebuffs, tickCharacterDebuffs } from "../debuff/debuff.js";
 import { ABILITY_NAME_LEASH, AbilityLeash, createAbilityLeash } from "../ability/abilityLeash.js";
-import { fillRandomUpgradeOptionChoices, UpgradeOption } from "./upgrade.js";
+import { executeRerollUpgradeOption, fillRandomUpgradeOptionChoices, UpgradeOption } from "./upgrade.js";
 import { CharacterClass, PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters/playerCharacters.js";
 import { CHARACTER_TYPE_KING_ENEMY } from "./enemy/kingEnemy.js";
 import { createKingCrownCharacter } from "./enemy/kingCrown.js";
@@ -237,6 +237,8 @@ export function executeDefaultCharacterUpgradeOption(character: Character, upgra
         PLAYER_CHARACTER_CLASSES_FUNCTIONS[upgradeOptionChoice.identifier].changeCharacterToThisClass(character, game.state.idCounter, game);
     } else if (upgradeOptionChoice.type === "Ability") {
         executeAbilityLevelingCharacterUpgradeOption(character, upgradeOptionChoice, game);
+    } else if (upgradeOptionChoice.type === "Reroll") {
+        executeRerollUpgradeOption(character, game);
     }
 }
 
