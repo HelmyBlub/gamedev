@@ -231,7 +231,7 @@ function randomizedCharacterImagePaint(ctx: CanvasRenderingContext2D, character:
         const widthIndex = moveDirectionToSpriteIndex(character);
         let animationY = 0;
         if (character.isMoving) {
-            animationY = Math.floor(performance.now() / 150) % 4;
+            animationY = Math.floor(game.state.time / 150) % 4;
             if (animationY === 2) animationY = 0;
             if (animationY === 3) animationY = 2;
         }
