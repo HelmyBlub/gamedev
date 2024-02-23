@@ -569,7 +569,12 @@ function addPlayerMoney(game: Game, isKingKill: boolean = false) {
         const distance = Math.round(calculateDistance(player.character, getMapMidlePosition(game.state.map)));
         if (distance > highestPlayerDistane) highestPlayerDistane = distance;
     }
-    let moneyGain = Math.max(0, (highestPlayerDistane / 1000) - 2);
+    let moneyGain = 0;
+    if (highestPlayerDistane < 20000) {
+        moneyGain = Math.floor(highestPlayerDistane / 1000);
+    } else {
+        moneyGain = 20 * Math.pow(10, Math.log2(highestPlayerDistane / 20000));
+    }
     if (isKingKill && game.state.bossStuff.bosses.length >= 2) {
         const boss = game.state.bossStuff.bosses[game.state.bossStuff.bosses.length - 2];
         if (boss) moneyGain += boss.maxHp / 5000000;

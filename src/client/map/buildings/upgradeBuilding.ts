@@ -73,6 +73,8 @@ function createBaseUpgradeBuildingMoreInfosPart(ctx: CanvasRenderingContext2D): 
         `You gain money when:`,
         `- your character dies`,
         `    - money based on distance`,
+        `    - money gained linear until 20k distance.`,
+        `    - money gained exponential after 20k distance.`,
         `- you defeat a King`,
         `    - money based on King max HP`,
         `- you defeat a Boss`,

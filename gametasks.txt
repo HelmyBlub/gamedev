@@ -1,6 +1,7 @@
 next test run: Tamer, tower builder, Sniper, All
 
 current tasks:
+- change money gain scalling based on distance
                 
 - think about next bigger feature 
     - ideas
