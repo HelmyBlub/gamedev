@@ -17,7 +17,7 @@ export function addAbilitySnipeUpgradeBackwardsShot() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT] = {
         addSynergyUpgradeOption: addSynergyUpgradeOption,
         getStatsDisplayText: getAbilityUpgradeBackwardsShotUiText,
-        getLongExplainText: getAbilityUpgradeBackwardsShotUiTextLong,
+        getMoreInfoText: getAbilityUpgradeBackwardsShotUiTextLong,
         getOptions: getOptionsBackwardsShot,
         executeOption: executeOptionBackwardsShot,
     }
@@ -65,9 +65,9 @@ function getAbilityUpgradeBackwardsShotUiText(ability: Ability): string {
     return `${ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT} +${upgrade.level}` + (upgrade.upgradeSynergy ? " (Synergy)" : "");
 }
 
-function addSynergyUpgradeOption(ability: Ability): boolean{
-    if(ability.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE]
-        || ability.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES]){
+function addSynergyUpgradeOption(ability: Ability): boolean {
+    if (ability.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE]
+        || ability.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES]) {
         return true;
     }
     return false;

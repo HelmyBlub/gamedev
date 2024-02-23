@@ -15,31 +15,31 @@ export const ABILITY_SPEED_BOOST_UPGRADE_SLOW_TRAIL = "Slow Trail";
 export function addAbilitySpeedBoostUpgradeSlowTrail() {
     ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS[ABILITY_SPEED_BOOST_UPGRADE_SLOW_TRAIL] = {
         getStatsDisplayText: getAbilityUpgradeSlowTrailUiText,
-        getLongExplainText: getAbilityUpgradeSlowTrailUiTextLong,
-        getOptions:getOptionsSlowTrail,
+        getMoreInfoText: getAbilityUpgradeSlowTrailUiTextLong,
+        getOptions: getOptionsSlowTrail,
         executeOption: executeOptionSlowTrail,
     }
 }
 
-export function executeAbilitySpeedBoostUpgradeSlowTrail(ability: AbilitySpeedBoost, character: Character, game: Game){
+export function executeAbilitySpeedBoostUpgradeSlowTrail(ability: AbilitySpeedBoost, character: Character, game: Game) {
     if (ability.upgrades[ABILITY_SPEED_BOOST_UPGRADE_SLOW_TRAIL]) {
         const slowTrail = createBuffSlowTrail(ability.duration, game.state.time);
         applyDebuff(slowTrail, character, game);
     }
 }
 
-function getOptionsSlowTrail(ability: Ability): UpgradeOptionAndProbability[]{
+function getOptionsSlowTrail(ability: Ability): UpgradeOptionAndProbability[] {
     if (ability.upgrades[ABILITY_SPEED_BOOST_UPGRADE_SLOW_TRAIL]) return [];
-    const options =  getAbilityUpgradeOptionDefault(ability, ABILITY_SPEED_BOOST_UPGRADE_SLOW_TRAIL);
+    const options = getAbilityUpgradeOptionDefault(ability, ABILITY_SPEED_BOOST_UPGRADE_SLOW_TRAIL);
     options[0].option.displayLongText = getAbilityUpgradeSlowTrailUiTextLong(ability);
     return options;
 }
 
-function executeOptionSlowTrail(ability: Ability, option: AbilityUpgradeOption){
+function executeOptionSlowTrail(ability: Ability, option: AbilityUpgradeOption) {
     const as = ability as AbilitySpeedBoost;
     let up: AbilitySpeedBoostUpgradeSlowTrail;
     if (as.upgrades[ABILITY_SPEED_BOOST_UPGRADE_SLOW_TRAIL] === undefined) {
-        up = {level: 1};
+        up = { level: 1 };
         as.upgrades[ABILITY_SPEED_BOOST_UPGRADE_SLOW_TRAIL] = up;
     }
 }

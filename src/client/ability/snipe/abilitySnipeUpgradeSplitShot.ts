@@ -20,7 +20,7 @@ export function addAbilitySnipeUpgradeSplitShot() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_SPLIT_SHOT] = {
         addSynergyUpgradeOption: addSynergyUpgradeOption,
         getStatsDisplayText: getAbilityUpgradeSplitShotUiText,
-        getLongExplainText: getAbilityUpgradeSplitShotUiTextLong,
+        getMoreInfoText: getAbilityUpgradeSplitShotUiTextLong,
         getOptions: getOptionsSplitShot,
         executeOption: executeOptionSplitShot,
     }
@@ -74,10 +74,10 @@ function getAbilityUpgradeSplitShotUiText(ability: Ability): string {
     return "Split On Hit +" + upgrade.shotSplitsPerHit + (upgrade.upgradeSynergy ? " (Synergy)" : "");
 }
 
-function addSynergyUpgradeOption(ability: Ability): boolean{
-    if(ability.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE]
+function addSynergyUpgradeOption(ability: Ability): boolean {
+    if (ability.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE]
         || ability.upgrades[ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT]
-        || ability.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES]){
+        || ability.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES]) {
         return true;
     }
     return false;

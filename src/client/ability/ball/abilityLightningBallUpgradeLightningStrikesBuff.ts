@@ -29,7 +29,7 @@ export const ABILITY_LIGHTNING_BALL_UPGRADE_LIGHTNING_STRIKES = "Lightning Strik
 export function addAbilityLightningBallUpgradeLightningStrikes() {
     ABILITY_LIGHTNING_BALL_UPGRADE_FUNCTIONS[ABILITY_LIGHTNING_BALL_UPGRADE_LIGHTNING_STRIKES] = {
         getStatsDisplayText: getAbilityUpgradeUiText,
-        getLongExplainText: getAbilityUpgradeUiTextLong,
+        getMoreInfoText: getAbilityUpgradeUiTextLong,
         getOptions: getOptions,
         executeOption: executeOption,
         setUpgradeToBossLevel: setUpgradeToBossLevel,

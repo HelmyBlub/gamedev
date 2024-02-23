@@ -12,9 +12,9 @@ export type AbilityUpgradeFunctions = {
     addSynergyUpgradeOption?: (ability: Ability) => boolean,
     executeOption: (ability: Ability, option: AbilityUpgradeOption, character: Character) => void,
     getStatsDisplayText: (ability: Ability) => string,
-    getLongExplainText?: (ability: Ability, option: AbilityUpgradeOption) => string[],
+    getMoreInfoText?: (ability: Ability, option: AbilityUpgradeOption) => string[],
     getDamageFactor?: (ability: Ability, playerTriggered: boolean) => number,
-    reset?:(ability: Ability) => void,
+    reset?: (ability: Ability) => void,
     setUpgradeToBossLevel?: (ability: Ability, level: number) => void,
 }
 
@@ -27,7 +27,7 @@ export function upgradeAbility(ability: Ability, character: Character, upgradeOp
     const upgradeFunctions = abilityFunctions.abilityUpgradeFunctions![upgradeOption.identifier!];
     if (upgradeFunctions) {
         upgradeFunctions.executeOption(ability, upgradeOption, character);
-        if (ability.bossSkillPoints !== undefined){
+        if (ability.bossSkillPoints !== undefined) {
             ability.bossSkillPoints.available--;
             ability.bossSkillPoints.used++;
         }

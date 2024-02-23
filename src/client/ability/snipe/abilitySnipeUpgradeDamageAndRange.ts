@@ -15,7 +15,7 @@ export type AbilityUpgradeDamageAndRange = AbilityUpgrade & {
 export function addAbilitySnipeUpgradeDamageAndRange() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_DAMAGE_AND_RANGE] = {
         getStatsDisplayText: getAbilityUpgradeDamageAndRangeUiText,
-        getLongExplainText: getAbilityUpgradeDamageAndRangeUiTextLong,
+        getMoreInfoText: getAbilityUpgradeDamageAndRangeUiTextLong,
         getDamageFactor: getAbilityUpgradeDamageAndRangeDamageFactor,
         getOptions: getOptionsDamageAndRange,
         executeOption: executeOptionDamageAndRange,
@@ -48,10 +48,10 @@ function getAbilityUpgradeDamageAndRangeUiText(ability: Ability): string {
 function getAbilityUpgradeDamageAndRangeUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
     const upgrade: AbilityUpgradeDamageAndRange | undefined = ability.upgrades[ABILITY_SNIPE_UPGRADE_DAMAGE_AND_RANGE];
-    if(upgrade){
+    if (upgrade) {
         textLines.push(`All damage bonus from ${DAMAGE_UP * 100 * upgrade.level}% to ${DAMAGE_UP * 100 * (upgrade.level + 1)}%`);
         textLines.push(`Range reduction from ${(1 / Math.pow(RANGE_DOWN, upgrade.level) * 100).toFixed(2)}% to ${(1 / Math.pow(RANGE_DOWN, upgrade.level + 1) * 100).toFixed(2)}%.`);
-    }else{
+    } else {
         textLines.push(`All damage +${DAMAGE_UP * 100}%.`);
         textLines.push(`Range is reduced by ${(1 / RANGE_DOWN * 100).toFixed(2)}%.`);
     }

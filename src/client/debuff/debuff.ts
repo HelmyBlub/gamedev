@@ -5,6 +5,7 @@ import { addBuffImmunity } from "./buffImmunity.js";
 import { addBuffLightningStrikes } from "./buffLightningStrikes.js";
 import { addBuffSlowTrail } from "./buffSlowTrail.js";
 import { addBuffSpeed } from "./buffSpeed.js";
+import { addDebuffDamageTaken } from "./debuffDamageTaken.js";
 import { addDebuffExplodeOnDeath } from "./debuffExplodeOnDeath.js";
 import { addDebuffRoot } from "./debuffRoot.js";
 import { addDebuffSlow } from "./debuffSlow.js";
@@ -36,6 +37,7 @@ export function onDomLoadSetDebuffsFunctions() {
     addBuffBallPhysics();
     addBuffLightningStrikes();
     addBuffImmunity();
+    addDebuffDamageTaken();
 }
 
 export function applyDebuff(debuff: Debuff, character: Character, game: Game) {
@@ -64,7 +66,7 @@ export function removeCharacterDebuff(debuff: Debuff, character: Character, game
     for (let i = character.debuffs.length - 1; i >= 0; i--) {
         const debuffIt = character.debuffs[i];
         const debuffFunctions = DEBUFFS_FUNCTIONS[debuff.name];
-        if(debuff === debuffIt){
+        if (debuff === debuffIt) {
             if (debuffFunctions && debuffFunctions.removeDebuffEffect) debuffFunctions.removeDebuffEffect(debuff, character, game);
             character.debuffs.splice(i, 1);
             return;
@@ -86,12 +88,12 @@ export function tickCharacterDebuffs(character: Character, game: Game) {
     }
 }
 
-export function replaceCharacterDebuff(currentDebuff: Debuff, newDebuff: Debuff, character: Character){
+export function replaceCharacterDebuff(currentDebuff: Debuff, newDebuff: Debuff, character: Character) {
     for (let i = character.debuffs.length - 1; i >= 0; i--) {
         const debuff = character.debuffs[i];
-        if(currentDebuff === debuff){
+        if (currentDebuff === debuff) {
             character.debuffs[i] = newDebuff;
             return;
         }
-    }    
+    }
 }

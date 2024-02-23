@@ -26,7 +26,7 @@ export function addAbilitySnipeUpgradeExplodeOnDeath() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH] = {
         addSynergyUpgradeOption: addSynergyUpgradeOption,
         getStatsDisplayText: getAbilityUpgradeExplodeOnDeathUiText,
-        getLongExplainText: getAbilityUpgradeExplodeOnDeathUiTextLong,
+        getMoreInfoText: getAbilityUpgradeExplodeOnDeathUiTextLong,
         getOptions: getOptionsExplodeOnDeath,
         executeOption: executeOptionExplodeOnDeath,
     }
@@ -76,11 +76,11 @@ function getAbilityUpgradeExplodeOnDeathUiText(ability: Ability): string {
     return `${ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH}: Damage ${(upgrade.damageFactor) * 100}%` + (upgrade.upgradeSynergy ? " (Synergy)" : "");
 }
 
-function addSynergyUpgradeOption(ability: Ability): boolean{
-    if(ability.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE]
+function addSynergyUpgradeOption(ability: Ability): boolean {
+    if (ability.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE]
         || ability.upgrades[ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT]
         || ability.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES]
-        || ability.upgrades[ABILITY_SNIPE_UPGRADE_SPLIT_SHOT]){
+        || ability.upgrades[ABILITY_SNIPE_UPGRADE_SPLIT_SHOT]) {
         return true;
     }
     return false;

@@ -22,7 +22,7 @@ export function addAbilitySnipeUpgradeMoreRifles() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_MORE_RIFLES] = {
         addSynergyUpgradeOption: addSynergyUpgradeOption,
         getStatsDisplayText: getAbilityUpgradeMoreRiflesUiText,
-        getLongExplainText: getAbilityUpgradeMoreRiflesUiTextLong,
+        getMoreInfoText: getAbilityUpgradeMoreRiflesUiTextLong,
         getOptions: getOptionsMoreRifles,
         executeOption: executeOptionMoreRifles,
     }

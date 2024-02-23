@@ -16,7 +16,7 @@ export const ABILITY_LIGHTNING_BALL_UPGRADE_BOUNCE_BONUS = "Bounce Ball Bonus";
 export function addAbilityLightningBallUpgradeBounceBonus() {
     ABILITY_LIGHTNING_BALL_UPGRADE_FUNCTIONS[ABILITY_LIGHTNING_BALL_UPGRADE_BOUNCE_BONUS] = {
         getStatsDisplayText: getAbilityUpgradeUiText,
-        getLongExplainText: getAbilityUpgradeUiTextLong,
+        getMoreInfoText: getAbilityUpgradeUiTextLong,
         getOptions: getOptions,
         executeOption: executeOption,
     }
@@ -27,9 +27,9 @@ export function lightningBallUpgradeBounceBonusSetBonusDamageFactor(ability: Abi
     if (up) {
         const character: Character = owner as any;
         const bounceBall = character.abilities.find((a) => a.name === ABILITY_NAME_BOUNCE_BALL);
-        if(bounceBall){
+        if (bounceBall) {
             const bounceBallBounceUpgrade: AbilityBounceBallUpgradeBounceBonusDamage = bounceBall.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_DAMAGE];
-            if(bounceBallBounceUpgrade){
+            if (bounceBallBounceUpgrade) {
                 up.bonusFactor = bounceBallBounceUpgrade.bounces * bounceBallBounceUpgrade.level;
                 bounceBallBounceUpgrade.bounces = 0;
             }
@@ -47,9 +47,9 @@ export function lightningBallUpgradeBounceBonusGetBonusDamageFactor(ability: Abi
 
 function getOptions(ability: Ability, character: Character, game: Game): UpgradeOptionAndProbability[] {
     const up: AbilityLightningBallUpgradeBounceBonus = ability.upgrades[ABILITY_LIGHTNING_BALL_UPGRADE_BOUNCE_BONUS];
-    if(up) return [];
+    if (up) return [];
     const bounceBall = character.abilities.find((a) => a.name === ABILITY_NAME_BOUNCE_BALL);
-    if(!bounceBall || !bounceBall.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_DAMAGE]){
+    if (!bounceBall || !bounceBall.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_DAMAGE]) {
         return [];
     }
     const options = getAbilityUpgradeOptionDefault(ability, ABILITY_LIGHTNING_BALL_UPGRADE_BOUNCE_BONUS);
@@ -61,7 +61,7 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption) {
     const as = ability as AbilityLightningBall;
     let up: AbilityLightningBallUpgradeBounceBonus;
     if (as.upgrades[ABILITY_LIGHTNING_BALL_UPGRADE_BOUNCE_BONUS] === undefined) {
-        up = { level: 1, bonusFactor: 0};
+        up = { level: 1, bonusFactor: 0 };
         as.upgrades[ABILITY_LIGHTNING_BALL_UPGRADE_BOUNCE_BONUS] = up;
     }
 }

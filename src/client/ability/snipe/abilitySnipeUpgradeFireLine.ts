@@ -25,7 +25,7 @@ export function addAbilitySnipeUpgradeFireLine() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_FIRE_LINE] = {
         addSynergyUpgradeOption: addSynergyUpgradeOption,
         getStatsDisplayText: getAbilityUpgradeFireLineUiText,
-        getLongExplainText: getAbilityUpgradeFireLineUiTextLong,
+        getMoreInfoText: getAbilityUpgradeFireLineUiTextLong,
         getOptions: getOptionsFireLine,
         executeOption: executeOptionFireLine,
     }
@@ -79,10 +79,10 @@ function getAbilityUpgradeFireLineUiText(ability: Ability): string {
     return `${ABILITY_SNIPE_UPGRADE_FIRE_LINE}: ${upgrade.damagePerSecondFactor * 100}% damage per second. Duration: ${(upgrade.duration / 1000).toFixed()}s` + (upgrade.upgradeSynergy ? " (Synergy)" : "");
 }
 
-function addSynergyUpgradeOption(ability: Ability): boolean{
-    if(ability.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE]
+function addSynergyUpgradeOption(ability: Ability): boolean {
+    if (ability.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE]
         || ability.upgrades[ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT]
-        || ability.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES]){
+        || ability.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES]) {
         return true;
     }
     return false;

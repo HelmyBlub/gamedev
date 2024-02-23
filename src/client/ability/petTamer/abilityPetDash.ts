@@ -8,9 +8,10 @@ import { getPointPaintPosition } from "../../gamePaint.js";
 import { calculateBounceAngle, calculateMovePosition, isPositionBlocking, moveByDirectionAndDistance } from "../../map/map.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, detectCircleCharacterHit } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions } from "../abilityUpgrade.js";
+import { abilityPetDashUpgradeDamageTakenApplyDebuff, addAbilityPetDashUpgradeIncreaseDamageTaken } from "./abilityPetDashIncreaseDamageTaken.js";
 import { ABILITY_PET_DASH_UPGRADE_TERRAIN_BOUNCE, AbilityPetDashUpgradeTerrainBounce, addAbilityPetDashUpgradeTerrainBounce } from "./abilityPetDashUpgradeBounce.js";
 import { ABILITY_PET_DASH_UPGRADE_FIRE_LINE, AbilityPetDashUpgradeFireLine, addAbilityPetDashUpgradeFireLine, createPetDashUpgradeFireLine } from "./abilityPetDashUpgradeFireLine.js";
-import { abilityPetDashUpgradeRootApplyRoot, addAbilityPetDashUpgradeTerrainRoot } from "./abilityPetDashUpgradeRoot.js";
+import { abilityPetDashUpgradeRootApplyRoot, addAbilityPetDashUpgradeRoot } from "./abilityPetDashUpgradeRoot.js";
 
 export type AbilityPetDash = Ability & {
     baseDamage: number,
@@ -43,9 +44,10 @@ export function addAbilityPetDash() {
         abilityUpgradeFunctions: ABILITY_PET_DASH_UPGRADE_FUNCTIONS,
     };
 
-    addAbilityPetDashUpgradeTerrainBounce();
+    //addAbilityPetDashUpgradeTerrainBounce();
     addAbilityPetDashUpgradeFireLine();
-    addAbilityPetDashUpgradeTerrainRoot();
+    addAbilityPetDashUpgradeRoot();
+    addAbilityPetDashUpgradeIncreaseDamageTaken();
 }
 
 export function getPetAbilityDashDamage(pet: TamerPetCharacter, ability: AbilityPetDash): number {
@@ -90,6 +92,7 @@ function getLongDescription(): string[] {
 function onHit(ability: Ability, targetCharacter: Character, game: Game) {
     const dash = ability as AbilityPetDash;
     abilityPetDashUpgradeRootApplyRoot(dash, targetCharacter, game);
+    abilityPetDashUpgradeDamageTakenApplyDebuff(dash, targetCharacter, game);
 }
 
 function createAbilityPetDashUpgradeOptions(ability: Ability, character: Character, game: Game): UpgradeOptionAndProbability[] {

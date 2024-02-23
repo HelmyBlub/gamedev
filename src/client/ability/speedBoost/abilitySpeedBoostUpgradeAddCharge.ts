@@ -14,7 +14,7 @@ export const ABILITY_SPEED_BOOST_UPGRADE_ADD_CHARGE = "Additional Charge";
 export function addAbilitySpeedBoostUpgradeAddCharge() {
     ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS[ABILITY_SPEED_BOOST_UPGRADE_ADD_CHARGE] = {
         getStatsDisplayText: getAbilityUpgradeAddChargeUiText,
-        getLongExplainText: getAbilityUpgradeAddChargeUiTextLong,
+        getMoreInfoText: getAbilityUpgradeAddChargeUiTextLong,
         getOptions: getOptionsAddCharge,
         executeOption: executeAddCharge,
     }

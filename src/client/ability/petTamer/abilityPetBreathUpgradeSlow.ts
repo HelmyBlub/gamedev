@@ -20,7 +20,7 @@ export const ABILITY_PET_BREATH_UPGRADE_SLOW = "Breath Slow";
 export function addAbilityPetBreathUpgradeSlow() {
     ABILITY_PET_BREATH_UPGRADE_FUNCTIONS[ABILITY_PET_BREATH_UPGRADE_SLOW] = {
         getStatsDisplayText: getAbilityUpgradeSlowUiText,
-        getLongExplainText: getAbilityUpgradeSlowUiTextLong,
+        getMoreInfoText: getAbilityUpgradeSlowUiTextLong,
         getOptions: getOptionsSlow,
         executeOption: executeOptionPaintSlow,
     }

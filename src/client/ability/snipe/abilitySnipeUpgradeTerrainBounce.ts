@@ -22,7 +22,7 @@ export function addAbilitySnipeUpgradeTerrainBounce() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE] = {
         addSynergyUpgradeOption: addSynergyUpgradeOption,
         getStatsDisplayText: getAbilityUpgradeTerrainBounceUiText,
-        getLongExplainText: getAbilityUpgradeTerrainBounceUiTextLong,
+        getMoreInfoText: getAbilityUpgradeTerrainBounceUiTextLong,
         getOptions: getOptionsTerrainBounce,
         executeOption: executeOptionTerrainBounce,
     }
@@ -113,10 +113,10 @@ function getAbilityUpgradeTerrainBounceUiText(ability: Ability): string {
     return `Terrain Bounce and +${upgrade.damageUpPerBounceFactor * 100}% damage for each bounce` + (upgrade.upgradeSynergy ? " (Synergy)" : "");
 }
 
-function addSynergyUpgradeOption(ability: Ability): boolean{
-    if(ability.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE]
+function addSynergyUpgradeOption(ability: Ability): boolean {
+    if (ability.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE]
         || ability.upgrades[ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT]
-        || ability.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES]){
+        || ability.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES]) {
         return true;
     }
     return false;

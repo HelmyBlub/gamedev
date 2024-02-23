@@ -33,7 +33,7 @@ export function addAbilitySnipeUpgradeAfterImage() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE] = {
         addSynergyUpgradeOption: addSynergyUpgradeOption,
         getStatsDisplayText: getAbilityUpgradeAfterImageUiText,
-        getLongExplainText: getAbilityUpgradeAfterImageUiTextLong,
+        getMoreInfoText: getAbilityUpgradeAfterImageUiTextLong,
         getOptions: getOptionsAfterImage,
         executeOption: executeOptionAfterImage,
         reset: reset,
@@ -135,8 +135,8 @@ function getAbilityUpgradeAfterImageUiText(ability: Ability): string {
     return `${ABILITY_SNIPE_UPGRADE_AFTER_IMAGE}s: ${upgrade.level * AFTER_IMAGE_COUNTER_PER_LEVEL}` + (upgrade.upgradeSynergy ? " (Synergy)" : "");
 }
 
-function addSynergyUpgradeOption(ability: Ability): boolean{
-    if(ability.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES]){
+function addSynergyUpgradeOption(ability: Ability): boolean {
+    if (ability.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES]) {
         return true;
     }
     return false;

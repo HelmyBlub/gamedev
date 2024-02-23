@@ -26,7 +26,7 @@ export const ABILITY_LIGHTNING_BALL_UPGRADE_ICE_AURA = "Ice Field on End";
 export function addAbilityLightningBallUpgradeIceAura() {
     ABILITY_LIGHTNING_BALL_UPGRADE_FUNCTIONS[ABILITY_LIGHTNING_BALL_UPGRADE_ICE_AURA] = {
         getStatsDisplayText: getAbilityUpgradeUiText,
-        getLongExplainText: getAbilityUpgradeUiTextLong,
+        getMoreInfoText: getAbilityUpgradeUiTextLong,
         getOptions: getOptions,
         executeOption: executeOption,
         setUpgradeToBossLevel: setUpgradeToBossLevel,

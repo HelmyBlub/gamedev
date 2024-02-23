@@ -19,7 +19,7 @@ export function addAbilitySnipeUpgradeNoMissChain() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN] = {
         addSynergyUpgradeOption: addSynergyUpgradeOption,
         getStatsDisplayText: getAbilityUpgradeNoMissChainUiText,
-        getLongExplainText: getAbilityUpgradeNoMissChainUiTextLong,
+        getMoreInfoText: getAbilityUpgradeNoMissChainUiTextLong,
         getDamageFactor: getAbilityUpgradeNoMissChainDamageFactor,
         getOptions: getOptionsNoMissChain,
         executeOption: executeOptionNoMissChain,

@@ -18,7 +18,7 @@ export const ABILITY_LIGHTNING_BALL_UPGRADE_HP_LEACH = "HP Generation";
 export function addAbilityLightningBallUpgradeHpLeach() {
     ABILITY_LIGHTNING_BALL_UPGRADE_FUNCTIONS[ABILITY_LIGHTNING_BALL_UPGRADE_HP_LEACH] = {
         getStatsDisplayText: getAbilityUpgradeUiText,
-        getLongExplainText: getAbilityUpgradeUiTextLong,
+        getMoreInfoText: getAbilityUpgradeUiTextLong,
         getOptions: getOptions,
         executeOption: executeOption,
     }

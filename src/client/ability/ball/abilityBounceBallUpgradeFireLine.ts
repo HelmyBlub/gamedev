@@ -22,7 +22,7 @@ export const ABILITY_BOUNCE_BALL_UPGRADE_FIRE_LINE = "Fire Line";
 export function addAbilityBounceBallUpgradeFireLine() {
     ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS[ABILITY_BOUNCE_BALL_UPGRADE_FIRE_LINE] = {
         getStatsDisplayText: getAbilityUpgradeUiText,
-        getLongExplainText: getAbilityUpgradeUiTextLong,
+        getMoreInfoText: getAbilityUpgradeUiTextLong,
         getOptions: getOptions,
         executeOption: executeOption,
         setUpgradeToBossLevel: setUpgradeToBossLevel,
@@ -69,7 +69,7 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption) {
     const ball = ability as AbilityBounceBall;
     let up: AbilityBounceBallUpgradeFireLine;
     if (ball.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_FIRE_LINE] === undefined) {
-        up = { level: 0 , damageFactor: DAMAGE_PER_SECOND_FACTOR, duration: DURATION};
+        up = { level: 0, damageFactor: DAMAGE_PER_SECOND_FACTOR, duration: DURATION };
         ball.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_FIRE_LINE] = up;
     } else {
         up = ball.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_FIRE_LINE];

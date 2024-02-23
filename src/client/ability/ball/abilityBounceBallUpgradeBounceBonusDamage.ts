@@ -17,7 +17,7 @@ export function addAbilityBounceBallUpgradeBounceBonusDamage() {
     ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS[ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_DAMAGE] = {
         getStatsDisplayText: getAbilityUpgradeUiText,
         getDamageFactor: getDamageFactor,
-        getLongExplainText: getAbilityUpgradeUiTextLong,
+        getMoreInfoText: getAbilityUpgradeUiTextLong,
         getOptions: getOptions,
         executeOption: executeOption,
         reset: reset,
