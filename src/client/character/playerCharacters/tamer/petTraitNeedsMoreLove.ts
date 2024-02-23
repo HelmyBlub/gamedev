@@ -5,7 +5,7 @@ export const TAMER_PET_TRAIT_NEEDS_MORE_LOVE = "needs more love";
 
 export function addTamerPetTraitNeedsMoreLove() {
     TAMER_PET_TRAITS_FUNCTIONS[TAMER_PET_TRAIT_NEEDS_MORE_LOVE] = {
-        getLongExplainText: getLongExplainText,
+        getMoreInfoText: getMoreInfoText,
         createTrait: createTrait,
     }
 }
@@ -17,7 +17,7 @@ function createTrait(): Trait {
     }
 }
 
-function getLongExplainText(): string[] {
+function getMoreInfoText(): string[] {
     const texts = [];
     texts.push("gets unhappy faster");
     texts.push(`Opposite: '${TAMER_PET_TRAIT_HAPPY_ONE}'`);

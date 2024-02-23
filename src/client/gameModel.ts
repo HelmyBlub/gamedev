@@ -249,7 +249,7 @@ export type Game = {
         movementKeyPressed: boolean,
         displayTextData: PaintTextData[],
         moreInfos: MoreInfos,
-        displayLongInfos: boolean,
+        displayMoreInfos: boolean,
         playerGlobalAlphaMultiplier: number,
         paintClosesInteractableMoreInfo: boolean,
     }
@@ -355,7 +355,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             movementKeyPressed: false,
             displayTextData: [],
             moreInfos: createDefaultEmptyMoreInfos(),
-            displayLongInfos: false,
+            displayMoreInfos: false,
             playerGlobalAlphaMultiplier: 1,
             paintClosesInteractableMoreInfo: false,
         },

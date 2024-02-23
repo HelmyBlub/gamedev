@@ -9,7 +9,7 @@ const BONUS_LENGTH = 100;
 
 export function addTamerPetTraitLongerLeash() {
     TAMER_PET_TRAITS_FUNCTIONS[TAMER_PET_TRAIT_LONGER_LEASH] = {
-        getLongExplainText: getLongExplainText,
+        getMoreInfoText: getMoreInfoText,
         addTrait: addTrait,
         removeTrait: removeTrait,
         createTrait: createTrait,
@@ -33,7 +33,7 @@ function createTrait(): Trait {
     }
 }
 
-function getLongExplainText(): string[] {
+function getMoreInfoText(): string[] {
     const texts = [];
     texts.push("increases leash max length");
     texts.push(`Opposite: '${TAMER_PET_TRAIT_SHORTER_LEASH}'`);

@@ -14,7 +14,7 @@ export type PlayerCharacterClassFunctions = {
     createUpgradeOptions?: (character: Character, characterClass: CharacterClass, game: Game) => UpgradeOptionAndProbability[],
     createBossUpgradeOptions?: (character: Character, game: Game) => UpgradeOptionAndProbability[],
     executeUpgradeOption?: (character: Character, upgradeOptionChoice: UpgradeOption, game: Game) => void,
-    getLongUiText?: () => string[],
+    getMoreInfosText?: () => string[],
     preventMultiple?: boolean,
 }
 
@@ -64,8 +64,8 @@ export function createCharacterChooseUpgradeOptions(game: Game): UpgradeOption[]
             identifier: key
         };
         let functions = PLAYER_CHARACTER_CLASSES_FUNCTIONS[key];
-        if (functions && functions.getLongUiText) {
-            option.displayLongText = functions.getLongUiText();
+        if (functions && functions.getMoreInfosText) {
+            option.displayMoreInfoText = functions.getMoreInfosText();
         }
         upgradeOptions.push(option);
     }

@@ -61,7 +61,7 @@ function setUpgradeToBossLevel(ability: Ability, level: number) {
 
 function getOptions(ability: Ability): UpgradeOptionAndProbability[] {
     const options = getAbilityUpgradeOptionDefault(ability, ABILITY_BOUNCE_BALL_UPGRADE_FIRE_LINE);
-    options[0].option.displayLongText = getAbilityUpgradeUiTextLong(ability);
+    options[0].option.displayMoreInfoText = getAbilityUpgradeUiTextLong(ability);
     return options;
 }
 

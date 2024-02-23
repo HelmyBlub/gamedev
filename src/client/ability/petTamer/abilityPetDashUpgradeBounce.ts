@@ -23,7 +23,7 @@ export function addAbilityPetDashUpgradeTerrainBounce() {
 
 function getOptionsBounce(ability: Ability): UpgradeOptionAndProbability[] {
     const options = getAbilityUpgradeOptionDefault(ability, ABILITY_PET_DASH_UPGRADE_TERRAIN_BOUNCE);
-    options[0].option.displayLongText = getAbilityUpgradeTerrainBounceUiTextLong(ability);
+    options[0].option.displayMoreInfoText = getAbilityUpgradeTerrainBounceUiTextLong(ability);
     return options;
 }
 

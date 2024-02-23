@@ -34,7 +34,7 @@ export function abilityUpgradeDamageAndRangeRangeFactor(ability: Ability) {
 
 function getOptionsDamageAndRange(ability: Ability): UpgradeOptionAndProbability[] {
     const options = getAbilityUpgradeOptionDefault(ability, ABILITY_SNIPE_UPGRADE_DAMAGE_AND_RANGE);
-    options[0].option.displayLongText = getAbilityUpgradeDamageAndRangeUiTextLong(ability);
+    options[0].option.displayMoreInfoText = getAbilityUpgradeDamageAndRangeUiTextLong(ability);
     options[0].probability = 0.5;
     return options;
 }

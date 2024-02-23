@@ -32,7 +32,7 @@ export function abilityPetDashUpgradeRootApplyRoot(ability: AbilityPetDash, targ
 
 function getOptionsRoot(ability: Ability): UpgradeOptionAndProbability[] {
     const options = getAbilityUpgradeOptionDefault(ability, ABILITY_PET_DASH_UPGRADE_ROOT_ON_HIT);
-    options[0].option.displayLongText = getAbilityUpgradeRootUiTextLong(ability);
+    options[0].option.displayMoreInfoText = getAbilityUpgradeRootUiTextLong(ability);
     return options;
 }
 

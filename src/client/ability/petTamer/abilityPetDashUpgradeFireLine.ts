@@ -49,7 +49,7 @@ export function createPetDashUpgradeFireLine(pet: TamerPetCharacter, ability: Ab
 
 function getOptionsFireLine(ability: Ability): UpgradeOptionAndProbability[] {
     const options = getAbilityUpgradeOptionDefault(ability, ABILITY_PET_DASH_UPGRADE_FIRE_LINE);
-    options[0].option.displayLongText = getAbilityUpgradeFireLineUiTextLong(ability);
+    options[0].option.displayMoreInfoText = getAbilityUpgradeFireLineUiTextLong(ability);
     return options;
 }
 

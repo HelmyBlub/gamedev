@@ -14,7 +14,7 @@ import { ABILITY_NAME_PET_BREATH } from "../../../ability/petTamer/abilityPetBre
 import { ABILITY_NAME_PET_PAINTER } from "../../../ability/petTamer/abilityPetPainter.js";
 import { ABILITY_NAME_PET_DASH } from "../../../ability/petTamer/abilityPetDash.js";
 import { AbilityUpgradeOption, PetAbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../upgrade.js";
-import { addTraitToTamerPet, getAvailableTamerPetTraits, getLongExplainTextForTamerPetTrait } from "./petTrait.js";
+import { addTraitToTamerPet, getAvailableTamerPetTraits, getMoreInfoTextForTamerPetTrait } from "./petTrait.js";
 import { changeCharacterAndAbilityIds, deepCopy, getNextId } from "../../../game.js";
 import { CHARACTER_TYPE_BOSS_ENEMY } from "../../enemy/bossEnemy.js";
 import { AbilityUpgrade } from "../../../ability/abilityUpgrade.js";
@@ -31,7 +31,7 @@ export function addTamerClass() {
         createBossBasedOnClassAndCharacter: createBossBasedOnClassAndCharacter,
         createBossUpgradeOptions: createTamerBossUpgradeOptions,
         executeUpgradeOption: executeTamerBossUpgradeOption,
-        getLongUiText: getLongUiText,
+        getMoreInfosText: getLongUiText,
     }
     CHARACTER_TYPE_FUNCTIONS[TAMER_CHARACTER] = {
         tickFunction: tickDefaultCharacter,
@@ -215,8 +215,8 @@ function createTamerBossUpgradeOptions(character: Character, game: Game): Upgrad
                             probability: 1,
                         }
                         const abilityFunctions = ABILITIES_FUNCTIONS[ability];
-                        if (abilityFunctions && abilityFunctions.getLongDescription) {
-                            option.option.displayLongText = abilityFunctions.getLongDescription();
+                        if (abilityFunctions && abilityFunctions.getMoreInfosText) {
+                            option.option.displayMoreInfoText = abilityFunctions.getMoreInfosText();
                         }
                         addTraitToUpgradeOption(option.option, trait);
                         options.push(option);
@@ -261,15 +261,15 @@ function createTamerBossUpgradeOptions(character: Character, game: Game): Upgrad
 
 function addTraitToUpgradeOption(petOption: UpgradeOption, trait: string) {
     petOption.additionalInfo = trait;
-    const longText = getLongExplainTextForTamerPetTrait(trait);
-    if (longText) {
-        if (!petOption.displayLongText) {
-            petOption.displayLongText = [];
+    const moreInfosText = getMoreInfoTextForTamerPetTrait(trait);
+    if (moreInfosText) {
+        if (!petOption.displayMoreInfoText) {
+            petOption.displayMoreInfoText = [];
         } else {
-            petOption.displayLongText.push("");
+            petOption.displayMoreInfoText.push("");
         }
-        petOption.displayLongText.push(`Trait: '${trait}'`);
-        petOption.displayLongText.push(...longText);
+        petOption.displayMoreInfoText.push(`Trait: '${trait}'`);
+        petOption.displayMoreInfoText.push(...moreInfosText);
     }
 }
 

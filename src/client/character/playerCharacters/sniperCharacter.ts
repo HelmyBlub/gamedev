@@ -19,7 +19,7 @@ export function addSniperClass() {
         createBossBasedOnClassAndCharacter: createBossBasedOnClassAndCharacter,
         createBossUpgradeOptions: createBossUpgradeOptionsAbilityLeveling,
         executeUpgradeOption: executeAbilityLevelingCharacterUpgradeOption,
-        getLongUiText: getLongUiText,
+        getMoreInfosText: getLongUiText,
     }
 }
 

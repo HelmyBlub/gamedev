@@ -260,7 +260,7 @@ function uiAction(game: Game, inputCode: string, isInputDown: boolean) {
             }
             break;
         case "Info":
-            game.UI.displayLongInfos = isInputDown;
+            game.UI.displayMoreInfos = isInputDown;
             if (isInputDown) {
                 game.UI.moreInfos = createRequiredMoreInfos(game);
             }

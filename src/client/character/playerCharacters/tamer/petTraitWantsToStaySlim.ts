@@ -5,7 +5,7 @@ export const TAMER_PET_TRAIT_WANTS_TO_STAY_SLIM = "wants to stay slim";
 
 export function addTamerPetTraitWantsToStaySlim() {
     TAMER_PET_TRAITS_FUNCTIONS[TAMER_PET_TRAIT_WANTS_TO_STAY_SLIM] = {
-        getLongExplainText: getLongExplainText,
+        getMoreInfoText: getMoreInfoText,
         createTrait: createTrait,
     }
 }
@@ -17,7 +17,7 @@ function createTrait(): Trait {
     }
 }
 
-function getLongExplainText(): string[] {
+function getMoreInfoText(): string[] {
     const texts = [];
     texts.push(`unhappy if fed food`);
     texts.push(`Opposite: '${TAMER_PET_TRAIT_LOVES_FOOD}'`);

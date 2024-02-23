@@ -5,7 +5,7 @@ export const TAMER_PET_TRAIT_EATS_LESS = "eats less";
 
 export function addTamerPetTraitEatsLess() {
     TAMER_PET_TRAITS_FUNCTIONS[TAMER_PET_TRAIT_EATS_LESS] = {
-        getLongExplainText: getLongExplainText,
+        getMoreInfoText: getMoreInfoText,
         createTrait: createTrait,
     }
 }
@@ -17,7 +17,7 @@ function createTrait(): Trait {
     }
 }
 
-function getLongExplainText(): string[] {
+function getMoreInfoText(): string[] {
     const texts = [];
     texts.push("needs less food");
     texts.push(`Opposite: '${TAMER_PET_TRAIT_VERY_HUNGRY}'`);

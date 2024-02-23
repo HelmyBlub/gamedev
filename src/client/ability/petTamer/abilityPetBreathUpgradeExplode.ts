@@ -37,7 +37,7 @@ export function abilityPetBreathUpgradeExplodeApplyExplode(ability: AbilityPetBr
 
 function getOptionsExplode(ability: Ability): UpgradeOptionAndProbability[] {
     const options = getAbilityUpgradeOptionDefault(ability, ABILITY_PET_BREATH_UPGRADE_EXPLODE);
-    options[0].option.displayLongText = getAbilityUpgradeExplodeUiTextLong(ability);
+    options[0].option.displayMoreInfoText = getAbilityUpgradeExplodeUiTextLong(ability);
     return options;
 }
 

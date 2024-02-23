@@ -68,7 +68,7 @@ export function createDefaultEmptyMoreInfos(): MoreInfos {
 }
 
 export function moreInfosHandleMouseClick(event: MouseEvent, game: Game) {
-    if (!game.UI.displayLongInfos) return;
+    if (!game.UI.displayMoreInfos) return;
     const moreInfos = game.UI.moreInfos;
     let mouseClickPos = getRelativeMousePoistion(event);
     if (moreInfos.paintStartY <= mouseClickPos.y
@@ -183,7 +183,7 @@ export function createRequiredMoreInfos(game: Game): MoreInfos {
 }
 
 export function paintMoreInfos(ctx: CanvasRenderingContext2D, moreInfos: MoreInfos, game: Game) {
-    if (!game.UI.displayLongInfos) return;
+    if (!game.UI.displayMoreInfos) return;
     let paintX = moreInfos.paintStartX;
     let paintY = moreInfos.paintStartY;
     paintY = paintMoreInfosContainers(ctx, moreInfos.containers, moreInfos, paintY);

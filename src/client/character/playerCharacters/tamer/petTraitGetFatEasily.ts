@@ -5,7 +5,7 @@ export const TAMER_PET_TRAIT_GETS_FAT_EASILY = "gets fat easily";
 
 export function addTamerPetTraitGetsFatEasily() {
     TAMER_PET_TRAITS_FUNCTIONS[TAMER_PET_TRAIT_GETS_FAT_EASILY] = {
-        getLongExplainText: getLongExplainText,
+        getMoreInfoText: getMoreInfoText,
         createTrait: createTrait,
     }
 }
@@ -17,7 +17,7 @@ function createTrait(): Trait {
     }
 }
 
-function getLongExplainText(): string[] {
+function getMoreInfoText(): string[] {
     const texts = [];
     texts.push("gets faster fat with food");
     texts.push(`Opposite: '${TAMER_PET_TRAIT_NEVER_GETS_FAT}'`);

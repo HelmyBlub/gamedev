@@ -71,7 +71,7 @@ function setUpgradeToBossLevel(ability: Ability, level: number) {
 
 function getOptions(ability: Ability, character: Character, game: Game): UpgradeOptionAndProbability[] {
     const options = getAbilityUpgradeOptionDefault(ability, ABILITY_LIGHTNING_BALL_UPGRADE_LIGHTNING_STRIKES);
-    options[0].option.displayLongText = getAbilityUpgradeUiTextLong(ability, options[0].option as any);
+    options[0].option.displayMoreInfoText = getAbilityUpgradeUiTextLong(ability, options[0].option as any);
     const up: AbilityLightningBallUpgradeLightningStrikesBuff = ability.upgrades[ABILITY_LIGHTNING_BALL_UPGRADE_LIGHTNING_STRIKES];
     if (up && !up.bounceBallDamageBonus) {
         const lightningBall = character.abilities.find((a) => a.name === ABILITY_NAME_LIGHTNING_BALL);
@@ -84,7 +84,7 @@ function getOptions(ability: Ability, character: Character, game: Game): Upgrade
                 type: "Ability",
                 boss: true,
             }
-            option.displayLongText = getAbilityUpgradeUiTextLong(ability, option);
+            option.displayMoreInfoText = getAbilityUpgradeUiTextLong(ability, option);
             options.push({
                 option: option,
                 probability: 1,

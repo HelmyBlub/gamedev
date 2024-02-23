@@ -52,7 +52,7 @@ function setUpgradeToBossLevel(ability: Ability, level: number) {
 
 function getOptions(ability: Ability, character: Character, game: Game): UpgradeOptionAndProbability[] {
     const options = getAbilityUpgradeOptionDefault(ability, ABILITY_LIGHTNING_BALL_UPGRADE_ICE_AURA);
-    options[0].option.displayLongText = getAbilityUpgradeUiTextLong(ability, options[0].option as any);
+    options[0].option.displayMoreInfoText = getAbilityUpgradeUiTextLong(ability, options[0].option as any);
     return options;
 }
 

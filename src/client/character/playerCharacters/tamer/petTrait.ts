@@ -20,7 +20,7 @@ export type TamerPetTraitFunctions = {
     addTrait?: (pet: TamerPetCharacter, trait: Trait, game: Game) => void,
     createTrait: () => Trait,
     removeTrait?: (pet: TamerPetCharacter, trait: Trait, game: Game) => void,
-    getLongExplainText?: () => string[],
+    getMoreInfoText?: () => string[],
 }
 
 export type TamerPetTraitsFunctions = {
@@ -80,10 +80,10 @@ export function addTraitToTamerPet(pet: TamerPetCharacter, traitName: string, ga
     }
 }
 
-export function getLongExplainTextForTamerPetTrait(traitName: string): string[] | undefined {
+export function getMoreInfoTextForTamerPetTrait(traitName: string): string[] | undefined {
     const functions = TAMER_PET_TRAITS_FUNCTIONS[traitName];
-    if (functions.getLongExplainText) {
-        return functions.getLongExplainText();
+    if (functions.getMoreInfoText) {
+        return functions.getMoreInfoText();
     }
     return undefined;
 }

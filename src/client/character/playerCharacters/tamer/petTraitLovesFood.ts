@@ -5,7 +5,7 @@ export const TAMER_PET_TRAIT_LOVES_FOOD = "loves food";
 
 export function addTamerPetTraitLovesFood() {
     TAMER_PET_TRAITS_FUNCTIONS[TAMER_PET_TRAIT_LOVES_FOOD] = {
-        getLongExplainText: getLongExplainText,
+        getMoreInfoText: getMoreInfoText,
         createTrait: createTrait,
     }
 }
@@ -17,7 +17,7 @@ function createTrait(): Trait {
     }
 }
 
-function getLongExplainText(): string[] {
+function getMoreInfoText(): string[] {
     const texts = [];
     texts.push("always happy if it gets food.");
     texts.push(`Opposite: '${TAMER_PET_TRAIT_WANTS_TO_STAY_SLIM}'`);

@@ -53,7 +53,7 @@ function getOptions(ability: Ability, character: Character, game: Game): Upgrade
         return [];
     }
     const options = getAbilityUpgradeOptionDefault(ability, ABILITY_LIGHTNING_BALL_UPGRADE_BOUNCE_BONUS);
-    options[0].option.displayLongText = getAbilityUpgradeUiTextLong(ability);
+    options[0].option.displayMoreInfoText = getAbilityUpgradeUiTextLong(ability);
     return options;
 }
 

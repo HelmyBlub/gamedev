@@ -52,7 +52,7 @@ function getDamageFactor(ability: Ability): number {
 
 function getOptions(ability: Ability): UpgradeOptionAndProbability[] {
     const options = getAbilityUpgradeOptionDefault(ability, ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_DAMAGE);
-    options[0].option.displayLongText = getAbilityUpgradeUiTextLong(ability);
+    options[0].option.displayMoreInfoText = getAbilityUpgradeUiTextLong(ability);
     return options;
 }
 

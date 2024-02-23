@@ -18,7 +18,7 @@ export function addTowerClass() {
         createBossBasedOnClassAndCharacter: createBossBasedOnClassAndCharacter,
         createUpgradeOptions: createCharacterUpgradeOptions,
         executeUpgradeOption: executeLevelingCharacterUpgradeOption,
-        getLongUiText: getLongUiText,
+        getMoreInfosText: getLongUiText,
         preventMultiple: true,
     }
 }
@@ -28,7 +28,7 @@ function changeCharacterToTowerBuilderClass(
     idCounter: IdCounter,
     game: Game,
 ) {
-    if(!character.characterClasses) character.characterClasses = [];
+    if (!character.characterClasses) character.characterClasses = [];
     const charClass = {
         id: getNextId(game.state.idCounter),
         className: PLAYER_CLASS_TOWER_BUILDER,
@@ -46,7 +46,7 @@ function changeCharacterToTowerBuilderClass(
     addAbilityToCharacter(character, createAbilityHpRegen(idCounter), charClass);
 }
 
-function getLongUiText(): string[]{
+function getLongUiText(): string[] {
     let text: string[] = [];
     text.push("Build Towers. Tower Connect to each other.");
     text.push("Towers are stronger with more connections.");
@@ -65,7 +65,7 @@ function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: 
 
     const bossCharacter = createCharacter(getNextId(idCounter), spawn.x, spawn.y, bossSize, bossSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_BOSS_ENEMY, experienceWorth);
     bossCharacter.paint.image = IMAGE_SLIME;
-    bossCharacter.level = {level: level};
+    bossCharacter.level = { level: level };
     const baseTower = basedOnCharacter.abilities.find((a) => a.name === ABILITY_NAME_TOWER);
     const tower: AbilitySnipe = deepCopy(baseTower);
     bossCharacter.abilities.push(tower);

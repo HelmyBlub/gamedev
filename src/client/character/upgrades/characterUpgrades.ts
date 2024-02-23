@@ -23,7 +23,7 @@ export type CharacterUpgrades = {
 export type CharacterUpgradeFunctions = {
     addUpgrade: (characterUpgrade: CharacterUpgrade, character: Character, game: Game, characterClass: CharacterClass | undefined) => void,
     executeOption?: (option: UpgradeOption, character: Character) => void,
-    getLongExplainText?: (character: Character, option: UpgradeOption) => string[],
+    getMoreInfoText?: (character: Character, option: UpgradeOption) => string[],
     getOptions?: (character: Character, game: Game) => UpgradeOptionAndProbability[],
     getStatsDisplayText: (characterUpgrade: CharacterUpgrade) => string,
 }

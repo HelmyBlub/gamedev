@@ -21,7 +21,7 @@ export function addBallClass() {
         createBossBasedOnClassAndCharacter: createBossBasedOnClassAndCharacter,
         createBossUpgradeOptions: createBossUpgradeOptionsAbilityLeveling,
         executeUpgradeOption: executeAbilityLevelingCharacterUpgradeOption,
-        getLongUiText: getLongUiText,
+        getMoreInfosText: getLongUiText,
         preventMultiple: true,
     }
 }

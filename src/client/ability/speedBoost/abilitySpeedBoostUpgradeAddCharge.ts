@@ -36,7 +36,7 @@ export function tickAbilitySpeedBoostUpgradeAddCharge(abilitySpeedBoost: Ability
 
 function getOptionsAddCharge(ability: Ability): UpgradeOptionAndProbability[] {
     const options = getAbilityUpgradeOptionDefault(ability, ABILITY_SPEED_BOOST_UPGRADE_ADD_CHARGE);
-    options[0].option.displayLongText = getAbilityUpgradeAddChargeUiTextLong(ability);
+    options[0].option.displayMoreInfoText = getAbilityUpgradeAddChargeUiTextLong(ability);
     return options;
 }
 

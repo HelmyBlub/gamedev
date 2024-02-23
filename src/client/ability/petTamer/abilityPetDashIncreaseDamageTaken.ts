@@ -34,7 +34,7 @@ export function abilityPetDashUpgradeDamageTakenApplyDebuff(ability: AbilityPetD
 
 function getOptions(ability: Ability): UpgradeOptionAndProbability[] {
     const options = getAbilityUpgradeOptionDefault(ability, ABILITY_PET_DASH_UPGRADE_INCREASE_DAMAGE_TAKEN);
-    options[0].option.displayLongText = getAbilityUpgradeUiTextLong(ability);
+    options[0].option.displayMoreInfoText = getAbilityUpgradeUiTextLong(ability);
     return options;
 }
 

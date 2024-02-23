@@ -33,7 +33,7 @@ export function addAbilityPetDash() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_PET_DASH] = {
         createAbility: createAbilityPetDash,
         createAbilityBossUpgradeOptions: createAbilityPetDashUpgradeOptions,
-        getLongDescription: getLongDescription,
+        getMoreInfosText: getLongDescription,
         onHit: onHit,
         paintAbility: paintAbilityPetDash,
         resetAbility: resetAbility,

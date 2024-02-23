@@ -82,7 +82,7 @@ export type AbilityFunctions = {
     createAbilityMoreInfos?: (ctx: CanvasRenderingContext2D, ability: Ability, game: Game) => MoreInfoPart,
     deleteAbilityObject?: (abilityObject: AbilityObject, game: Game) => boolean,
     executeUpgradeOption?: (ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game) => void,
-    getLongDescription?: () => string[],
+    getMoreInfosText?: () => string[],
     paintAbility?: (ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) => void,
     paintAbilityObject?: (ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) => void,
     paintAbilityUI?: (ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) => void,
@@ -442,7 +442,7 @@ export function paintUiForAbilities(ctx: CanvasRenderingContext2D, game: Game) {
 }
 
 function paintAbilityMoreInfosIfMouseHovered(ctx: CanvasRenderingContext2D, ability: Ability, startX: number, startY: number, size: number, game: Game) {
-    if (game.UI.displayLongInfos) return;
+    if (game.UI.displayMoreInfos) return;
     const mousePos = game.mouseRelativeCanvasPosition;
     if (mousePos.y > startY && mousePos.y < startY + size
         && mousePos.x > startX && mousePos.x < startX + size

@@ -21,7 +21,7 @@ export function addAbilityPetPainterUpgradeFactory() {
 
 function getOptionsFactory(ability: Ability): UpgradeOptionAndProbability[] {
     const options = getAbilityUpgradeOptionDefault(ability, ABILITY_PET_PAINTER_UPGRADE_FACTORY);
-    options[0].option.displayLongText = getAbilityUpgradeFactoryUiTextLong(ability);
+    options[0].option.displayMoreInfoText = getAbilityUpgradeFactoryUiTextLong(ability);
     return options;
 }
 

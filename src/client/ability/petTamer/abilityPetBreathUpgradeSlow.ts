@@ -35,7 +35,7 @@ export function abilityPetBreathUpgradeSlowApplySlow(ability: AbilityPetBreath, 
 
 function getOptionsSlow(ability: Ability): UpgradeOptionAndProbability[] {
     const options = getAbilityUpgradeOptionDefault(ability, ABILITY_PET_BREATH_UPGRADE_SLOW);
-    options[0].option.displayLongText = getAbilityUpgradeSlowUiTextLong(ability);
+    options[0].option.displayMoreInfoText = getAbilityUpgradeSlowUiTextLong(ability);
     return options;
 }
 

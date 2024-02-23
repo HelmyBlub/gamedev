@@ -56,7 +56,7 @@ export function addAbilityPetPainter() {
         createAbility: createAbilityPetPainter,
         executeUpgradeOption: executeAbilityPetPainterUpgradeOption,
         deleteAbilityObject: deleteAbilityObjectPetPainter,
-        getLongDescription: getLongDescription,
+        getMoreInfosText: getLongDescription,
         paintAbility: paintAbilityPetPainter,
         paintAbilityObject: paintAbilityObjectPetPainter,
         resetAbility: resetAbility,

@@ -4,7 +4,6 @@ current tasks:
                 
 - think about next bigger feature 
     - ideas
-        - Upgrade Building: rerolls for random upgrades
         - Upgrade Building: multiple king tries
     - bigger idea:
         - another class?

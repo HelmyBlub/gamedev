@@ -36,7 +36,7 @@ export function abilityPetPainerUpgradeSplitCheckForSplit(abilityObjectPetPainte
 
 function getOptionsSplit(ability: Ability): UpgradeOptionAndProbability[] {
     const options = getAbilityUpgradeOptionDefault(ability, ABILITY_PET_PAINTER_UPGRADE_SPLIT);
-    options[0].option.displayLongText = getAbilityUpgradeSplitUiTextLong(ability);
+    options[0].option.displayMoreInfoText = getAbilityUpgradeSplitUiTextLong(ability);
     return options;
 }
 

@@ -8,7 +8,7 @@ export type UpgradeOption = {
     type: "Character" | "Ability" | "Pet" | "PetAbility" | "ChooseClass" | "Reroll",
     characterClass?: string,
     displayText: string,
-    displayLongText?: string[],
+    displayMoreInfoText?: string[],
     identifier: string,
     additionalInfo?: string,
     boss?: boolean,
@@ -86,7 +86,7 @@ function setUpgradeOptionOrderValues(options: UpgradeOptionAndProbability[]) {
 function createRerollUpgradeOption(availableRerolls: number): UpgradeOption {
     return {
         displayText: `Reroll (${availableRerolls})`,
-        displayLongText: [
+        displayMoreInfoText: [
             "Reroll to get new choices.",
             `${availableRerolls} rerolls left this run.`,
         ],

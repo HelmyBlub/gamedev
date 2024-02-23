@@ -36,7 +36,7 @@ export function lightningBallUpgradeHpLeachExecute(ability: AbilityLightningBall
 
 function getOptions(ability: Ability): UpgradeOptionAndProbability[] {
     const options = getAbilityUpgradeOptionDefault(ability, ABILITY_LIGHTNING_BALL_UPGRADE_HP_LEACH);
-    options[0].option.displayLongText = getAbilityUpgradeUiTextLong(ability);
+    options[0].option.displayMoreInfoText = getAbilityUpgradeUiTextLong(ability);
     return options;
 }
 

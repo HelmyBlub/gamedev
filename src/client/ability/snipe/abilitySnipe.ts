@@ -250,12 +250,12 @@ export function getOptionsSnipeUpgrade(ability: Ability, upgradeName: string): U
     const options = getAbilityUpgradeOptionDefault(ability, upgradeName);
     const upgrade: AbilityUpgrade & { upgradeSynergy: boolean } | undefined = ability.upgrades[upgradeName];
     const upgradeFunctions = ABILITY_SNIPE_UPGRADE_FUNCTIONS[upgradeName];
-    options[0].option.displayLongText = upgradeFunctions.getMoreInfoText!(ability, options[0].option as AbilityUpgradeOption);
+    options[0].option.displayMoreInfoText = upgradeFunctions.getMoreInfoText!(ability, options[0].option as AbilityUpgradeOption);
 
     if (upgrade && !upgrade.upgradeSynergy) {
         if (upgradeFunctions.addSynergyUpgradeOption && upgradeFunctions.addSynergyUpgradeOption(ability)) {
             options.push(getAbilityUpgradeOptionSynergy(ability.name, upgradeName, upgrade.level));
-            options[1].option.displayLongText = upgradeFunctions.getMoreInfoText!(ability, options[1].option as AbilityUpgradeOption);
+            options[1].option.displayMoreInfoText = upgradeFunctions.getMoreInfoText!(ability, options[1].option as AbilityUpgradeOption);
         }
     }
 

@@ -31,7 +31,7 @@ export function addAbilityPetBreath() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_PET_BREATH] = {
         createAbility: createAbilityPetBreath,
         createAbilityBossUpgradeOptions: createAbilityPetBreathUpgradeOptions,
-        getLongDescription: getLongDescription,
+        getMoreInfosText: getLongDescription,
         paintAbility: paintAbilityPetBreath,
         resetAbility: resetAbility,
         setAbilityToLevel: setAbilityPetBreathToLevel,

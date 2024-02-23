@@ -20,7 +20,7 @@ export function addAbilitySpeedBoostUpgradeCooldown() {
 
 function getOptionsCooldown(ability: Ability): UpgradeOptionAndProbability[] {
     const options = getAbilityUpgradeOptionDefault(ability, ABILITY_SPEED_BOOST_UPGRADE_COOLDOWN);
-    options[0].option.displayLongText = getAbilityUpgradeCooldownUiTextLong(ability);
+    options[0].option.displayMoreInfoText = getAbilityUpgradeCooldownUiTextLong(ability);
     return options;
 }
 

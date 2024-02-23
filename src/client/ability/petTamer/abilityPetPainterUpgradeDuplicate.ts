@@ -19,7 +19,7 @@ export function addAbilityPetPainterUpgradeDuplicate() {
 
 function getOptionsDuplicate(ability: Ability): UpgradeOptionAndProbability[] {
     const options = getAbilityUpgradeOptionDefault(ability, ABILITY_PET_PAINTER_UPGRADE_DUPLICATE);
-    options[0].option.displayLongText = getAbilityUpgradeDuplicateUiTextLong(ability);
+    options[0].option.displayMoreInfoText = getAbilityUpgradeDuplicateUiTextLong(ability);
     return options;
 }
 

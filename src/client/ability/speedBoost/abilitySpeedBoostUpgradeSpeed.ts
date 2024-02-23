@@ -20,7 +20,7 @@ export function addAbilitySpeedBoostUpgradeSpeed() {
 
 function getOptionsSpeed(ability: Ability): UpgradeOptionAndProbability[] {
     const options = getAbilityUpgradeOptionDefault(ability, ABILITY_SPEED_BOOST_UPGRADE_SPEED);
-    options[0].option.displayLongText = getAbilityUpgradeSpeedUiTextLong(ability);
+    options[0].option.displayMoreInfoText = getAbilityUpgradeSpeedUiTextLong(ability);
     return options;
 }
 

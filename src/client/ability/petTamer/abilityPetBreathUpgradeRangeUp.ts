@@ -30,7 +30,7 @@ export function abilityPetBreathUpgradeRangeUpGetAdditionFoodIntake(pet: TamerPe
 
 function getOptionsRangeUp(ability: Ability): UpgradeOptionAndProbability[] {
     const options = getAbilityUpgradeOptionDefault(ability, ABILITY_PET_BREATH_UPGRADE_RANGE_UP);
-    options[0].option.displayLongText = getAbilityUpgradeRangeUpUiTextLong(ability);
+    options[0].option.displayMoreInfoText = getAbilityUpgradeRangeUpUiTextLong(ability);
     return options;
 }
 

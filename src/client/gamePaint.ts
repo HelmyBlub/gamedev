@@ -412,10 +412,10 @@ function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Charact
             ctx.font = firstFontSize + "px Arial";
             let maxWidth = ctx.measureText(choice.displayText).width + keyDisplayWidth;
 
-            if (!game.UI.displayLongInfos && choice.displayLongText) displayKeyHint = true;
-            if (game.UI.displayLongInfos && choice.displayLongText) {
-                for (let textIt = 0; textIt < choice.displayLongText.length; textIt++) {
-                    let text = choice.displayLongText[textIt];
+            if (!game.UI.displayMoreInfos && choice.displayMoreInfoText) displayKeyHint = true;
+            if (game.UI.displayMoreInfos && choice.displayMoreInfoText) {
+                for (let textIt = 0; textIt < choice.displayMoreInfoText.length; textIt++) {
+                    let text = choice.displayMoreInfoText[textIt];
                     ctx.font = addFontSize + "px Arial";
 
                     let width = ctx.measureText(text).width;
@@ -437,8 +437,8 @@ function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Charact
         for (let i = 0; i < character.upgradeChoices.length; i++) {
             const choice = character.upgradeChoices[i];
             const upgradeText: string[] = [choice.displayText];
-            if (game.UI.displayLongInfos && choice.displayLongText) upgradeText.push(...choice.displayLongText);
-            ctx.globalAlpha = game.UI.displayLongInfos ? 0.75 : 0.4;
+            if (game.UI.displayMoreInfos && choice.displayMoreInfoText) upgradeText.push(...choice.displayMoreInfoText);
+            ctx.globalAlpha = game.UI.displayMoreInfos ? 0.75 : 0.4;
             ctx.fillStyle = "white";
             const textWidthEstimate = maxWidthes[i];
             const rectHeight = firstFontSize + addFontSize * (upgradeText.length - 1) + 6;
