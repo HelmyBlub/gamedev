@@ -199,14 +199,14 @@ function paintPastPlayerGiftInfo(ctx: CanvasRenderingContext2D, pastCharacter: C
     if (canTrade) {
         if (!classAlreadyTaken) {
             const interactKey = playerInputBindingToDisplayValue("interact1", game);
-            const infoKey = playerInputBindingToDisplayValue("Info", game);
+            const infoKey = playerInputBindingToDisplayValue("More Info", game);
             textsWithKeys.push(`Press <${interactKey}> to get Abiltites gifted,`);
             textsWithKeys.push(`one time only.`);
-            textsWithKeys.push(`<${infoKey}> for more details.`);
+            textsWithKeys.push(`<${infoKey}> for more info.`);
             game.UI.paintClosesInteractableMoreInfo = true;
         } else {
-            const infoKey = playerInputBindingToDisplayValue("Info", game);
-            textsWithKeys.push(`<${infoKey}> for more details.`);
+            const infoKey = playerInputBindingToDisplayValue("More Info", game);
+            textsWithKeys.push(`<${infoKey}> for more info.`);
             textsWithKeys.push(`Can not gift Abilities as this`);
             textsWithKeys.push(`Class can only be owned once!`);
             paintPos.y -= 20;

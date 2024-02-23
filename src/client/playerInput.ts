@@ -1,5 +1,5 @@
 import { CommandRestart, handleCommand } from "./commands.js";
-import { findNearesPastPlayerCharacter, findPlayerById } from "./player.js";
+import { findPlayerById } from "./player.js";
 import { Character } from "./character/characterModel.js";
 import { Game, Position } from "./gameModel.js";
 import { websocketConnect } from "./multiplayerConenction.js";
@@ -16,7 +16,6 @@ export const MOVE_ACTIONS = ["left", "down", "right", "up"];
 export const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3", "upgrade4"];
 export const ABILITY_ACTIONS = ["ability1", "ability2", "ability3"];
 export const SPECIAL_ACTIONS = ["interact1", "interact2"];
-export const UI_ACTIONS = ["Restart", "Multiplayer", "Pause", "Info", "AutoSkill"];
 export const MOUSE_ACTION = "mousePositionUpdate";
 
 export type ActionsPressed = {
@@ -259,7 +258,7 @@ function uiAction(game: Game, inputCode: string, isInputDown: boolean) {
                 game.state.paused = !game.state.paused;
             }
             break;
-        case "Info":
+        case "More Info":
             game.UI.displayMoreInfos = isInputDown;
             if (isInputDown) {
                 game.UI.moreInfos = createRequiredMoreInfos(game);

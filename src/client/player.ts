@@ -72,7 +72,7 @@ export function createDefaultUiKeyBindings() {
     keyBindings.set("KeyP", { action: "Pause", uiDisplayInputValue: "P", isInputAlreadyDown: false });
     keyBindings.set("KeyO", { action: "Multiplayer", uiDisplayInputValue: "O", isInputAlreadyDown: false });
     keyBindings.set("KeyG", { action: "AutoSkill", uiDisplayInputValue: "G", isInputAlreadyDown: false, activated: false });
-    keyBindings.set("Tab", { action: "Info", uiDisplayInputValue: "TAB", isInputAlreadyDown: false });
+    keyBindings.set("Tab", { action: "More Info", uiDisplayInputValue: "TAB", isInputAlreadyDown: false });
     keyBindings.set("KeyT", { action: "Restart", uiDisplayInputValue: "T", isInputAlreadyDown: false });
     return keyBindings;
 }

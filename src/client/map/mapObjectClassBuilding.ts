@@ -180,14 +180,14 @@ function paintInteract(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, 
             const interactDestroyKey = playerInputBindingToDisplayValue("interact2", game);
             texts.push(`Press <${interactDestroyKey}> to destroy legendary.`);
             if (hasCharacterPreventedMultipleClass(classBuilding.characterClass.className, interacter)) {
-                const infoKey = playerInputBindingToDisplayValue("Info", game);
-                texts.push(`Press <${infoKey}> for details.`);
+                const infoKey = playerInputBindingToDisplayValue("More Info", game);
+                texts.push(`Press <${infoKey}> more info.`);
                 texts.push(`Can't burrow. Class can only be owned once.`);
             } else {
                 const interactBurrowKey = playerInputBindingToDisplayValue("interact1", game);
-                const infoKey = playerInputBindingToDisplayValue("Info", game);
+                const infoKey = playerInputBindingToDisplayValue("More Info", game);
                 texts.push(`Press <${interactBurrowKey}> to burrow.`);
-                texts.push(`Press <${infoKey}> for details.`);
+                texts.push(`Press <${infoKey}> more info.`);
             }
             game.UI.paintClosesInteractableMoreInfo = true;
         } else if (classBuilding.stuffBorrowed!.burrowed) {

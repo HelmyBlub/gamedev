@@ -42,11 +42,11 @@ function paintInteractSign(ctx: CanvasRenderingContext2D, mapObject: MapTileObje
     const cameraPosition = getCameraPosition(game);
     const topMiddlePos = mapKeyAndTileXYToPosition(key, mapObject.x, mapObject.y, map);
     const fontSize = 20;
-    const infoKey = playerInputBindingToDisplayValue("Info", game);
+    const infoKey = playerInputBindingToDisplayValue("More Info", game);
     const texts = [
         `King of the ${kingSign.kingDirection}`,
         `Distance = ${map.kingArea!.numberChunksUntil * map.chunkLength * map.tileSize}`,
-        `Press <${infoKey}> for details.`,
+        `Press <${infoKey}> for more info.`,
     ]
     const king = game.state.bossStuff.nextKings[kingSign.kingDirection];
     let textMaxWidth = king!.width;
