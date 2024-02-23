@@ -1,17 +1,15 @@
-next test run: tower builder , Sniper, Tamer, All
+next test run: Sniper, Tamer,  tower builder, All
 
 current tasks:
                 
 - balancing
-    - pets and tower level differently than sniper/ball. Bad for legendary balancing
-        - male pets/tower level slower but each level is stronger
-- tamer pet dash ability. Upgrade bounce is uselesss
-    - replace with something new: idea: damage taken increase debuff
+    - tamer pet dash ability. Upgrade bounce is uselesss
+        - replace with something new: idea: damage taken increase debuff
 
 - think about next bigger feature 
     - ideas
-        - Upgrade Building: multiple king tries
         - Upgrade Building: rerolls for random upgrades
+        - Upgrade Building: multiple king tries
 
 
 refactor possibilities:

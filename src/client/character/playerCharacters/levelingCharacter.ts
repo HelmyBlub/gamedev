@@ -8,6 +8,7 @@ import { CharacterClass } from "./playerCharacters.js";
 import { CHARACTER_UPGRADE_FUNCTIONS } from "../upgrades/characterUpgrades.js";
 import { CHARACTER_UPGRADE_BONUS_HP } from "../upgrades/characterUpgradeBonusHealth.js";
 import { CHARACTER_UPGRADE_BONUS_MOVE_SPEED } from "../upgrades/characterUpgradeMoveSpeed.js";
+import { levelUpIncreaseExperienceRequirement } from "../../game.js";
 
 export type Leveling = {
     level: number,
@@ -62,18 +63,18 @@ function levelingCharacterLevelUp(character: Character, game: Game) {
     character.level.level++;
     character.availableSkillPoints += 1;
     character.level.leveling.experience -= character.level.leveling.experienceForLevelUp;
-    character.level.leveling.experienceForLevelUp += Math.floor(character.level.level / 2);
+    levelUpIncreaseExperienceRequirement(character.level);
     fillRandomUpgradeOptionChoices(character, game);
 }
 
 function levelingClassLevelUp(character: Character, charClass: CharacterClass, game: Game) {
     if (!charClass.level?.leveling || charClass.availableSkillPoints === undefined) return;
     charClass.level.level++;
-    if (charClass.level.level % 5 === 0) {
+    if (charClass.level.level % 3 === 0) {
         charClass.availableSkillPoints += 1;
     }
     charClass.level.leveling.experience -= charClass.level.leveling.experienceForLevelUp;
-    charClass.level.leveling.experienceForLevelUp += Math.floor(charClass.level.level / 2);
+    levelUpIncreaseExperienceRequirement(charClass.level);
     fillRandomUpgradeOptionChoices(character, game);
 }
 

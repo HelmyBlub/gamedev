@@ -1,7 +1,7 @@
 import { determineCharactersInDistance, characterTakeDamage } from "../character/character.js"
 import { Character } from "../character/characterModel.js"
 import { BossEnemyCharacter } from "../character/enemy/bossEnemy.js"
-import { calculateDistance, getCameraPosition, takeTimeMeasure } from "../game.js"
+import { calculateDistance, getCameraPosition, levelUpIncreaseExperienceRequirement, takeTimeMeasure } from "../game.js"
 import { BossSkillPoints, FACTION_ENEMY, FACTION_PLAYER, Game, IdCounter, Legendary, Position } from "../gameModel.js"
 import { GameMap } from "../map/map.js"
 import { findPlayerByCharacterId, Player } from "../player.js"
@@ -521,10 +521,7 @@ function levelUp(ability: Ability) {
     if (ability.level?.leveling) {
         ability.level.level++;
         ability.level.leveling.experience -= ability.level.leveling.experienceForLevelUp;
-        ability.level.leveling.experienceForLevelUp += ability.level.level * 5;
-        if (ability.level.level > 100) {
-            ability.level.leveling.experienceForLevelUp = Math.floor(ability.level.leveling.experienceForLevelUp * 1.01);
-        }
+        levelUpIncreaseExperienceRequirement(ability.level);
         const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
         if (abilityFunctions.setAbilityToLevel) {
             abilityFunctions.setAbilityToLevel(ability, ability.level.level);

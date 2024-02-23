@@ -27,6 +27,7 @@ import { copyAndSetPermanentDataForReplay, localStorageLoad, localStorageSavePas
 import { MapTileObject, findNearesInteractableMapChunkObject } from "./map/mapObjects.js";
 import { classBuildingCheckAllPlayerForLegendaryAbilitiesAndMoveBackToBuilding } from "./map/buildings/classBuilding.js";
 import { mapObjectPlaceUpgradeBuilding } from "./map/mapObjectUpgradeBuilding.js";
+import { Leveling } from "./character/playerCharacters/levelingCharacter.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -427,6 +428,14 @@ export function addMoneyAmountToPlayer(moneyAmount: number, players: Player[], g
         }
     }
     localStorageSavePermanentPlayerData(game);
+}
+
+export function levelUpIncreaseExperienceRequirement(leveling: Leveling) {
+    if (!leveling.leveling) return;
+    leveling.leveling.experienceForLevelUp += leveling.level * 5;
+    if (leveling.level > 100) {
+        leveling.leveling.experienceForLevelUp = Math.floor(leveling.leveling.experienceForLevelUp * 1.01);
+    }
 }
 
 function tickAndPaint(game: Game) {

@@ -2,7 +2,7 @@ import { levelingCharacterAndClassXpGain } from "./playerCharacters/levelingChar
 import { calculateMovePosition, chunkXYToMapKey, determineMapKeysInDistance, GameMap, getChunksTouchingLine, MapChunk, mapKeyToChunkXY, positionToMapKey } from "../map/map.js";
 import { Character, CHARACTER_TYPE_FUNCTIONS, PLAYER_CHARACTER_TYPE } from "./characterModel.js";
 import { getNextWaypoint, getPathingCache, PathingCache } from "./pathing.js";
-import { addMoneyAmountToPlayer, calculateDirection, calculateDistance, calculateDistancePointToLine, changeCharacterAndAbilityIds, createPaintTextData, getNextId, takeTimeMeasure } from "../game.js";
+import { addMoneyAmountToPlayer, calculateDirection, calculateDistance, calculateDistancePointToLine, changeCharacterAndAbilityIds, createPaintTextData, getNextId, levelUpIncreaseExperienceRequirement, takeTimeMeasure } from "../game.js";
 import { Position, Game, IdCounter, Camera, FACTION_ENEMY, FACTION_PLAYER } from "../gameModel.js";
 import { findPlayerById, Player } from "../player.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
@@ -243,7 +243,7 @@ export function executeDefaultCharacterUpgradeOption(character: Character, upgra
 export function setCharacterAbilityLevel(ability: Ability, character: Character) {
     const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
     if (character.level?.leveling && abilityFunctions && abilityFunctions.setAbilityToLevel) {
-        const abilityLevel = Math.max(1, Math.ceil(character.level.level / 2));
+        const abilityLevel = Math.max(1, character.level.level);
         abilityFunctions.setAbilityToLevel(ability, abilityLevel);
     }
 }
@@ -587,7 +587,7 @@ function experienceForCharacter(character: Character, experienceWorth: number) {
         while (character.level.leveling.experience >= character.level.leveling.experienceForLevelUp) {
             character.level.level++;
             character.level.leveling.experience -= character.level.leveling.experienceForLevelUp;
-            character.level.leveling.experienceForLevelUp += Math.floor(character.level.level / 2);
+            levelUpIncreaseExperienceRequirement(character.level);
             for (let abilityIt of character.abilities) {
                 setCharacterAbilityLevel(abilityIt, character);
             }
