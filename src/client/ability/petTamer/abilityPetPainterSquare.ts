@@ -195,6 +195,7 @@ function paintShapeObjectPetPainterSquare(ctx: CanvasRenderingContext2D, ability
     ctx.globalAlpha = (square.deleteTime - game.state.time) / FADETIME;
     if (abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
     if (square.isFactory) {
+        ctx.beginPath();
         ctx.rect(paintPos.x, paintPos.y, square.size, square.size);
         ctx.stroke();
     } else {

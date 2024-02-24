@@ -1,8 +1,14 @@
-next test run: Tamer, tower builder, Sniper, All
+next test run: tower builder, Sniper, All
+increase version
 
 current tasks:
-- change money gain scalling based on distance
-                
+    - bug middle line in fire line when painter has square
+    - shoot ability outline for enemies
+    - save highscores permanent
+    - show money gain on end screen
+    - bug: replay stop by pressing restart. Does not load correct king
+
+
 - think about next bigger feature 
     - ideas
         - Upgrade Building: multiple king tries
