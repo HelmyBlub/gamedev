@@ -6,12 +6,14 @@ import { CelestialDirection, Game, GameVersion, IdCounter, NextKings, PastPlayer
 import { BUILDING_CLASS_BUILDING, ClassBuilding } from "./map/buildings/classBuilding.js";
 import { PermanentPlayerData } from "./player.js";
 import { GAME_VERSION } from "./main.js";
+import { Highscores } from "./highscores.js";
 
 export type PermanentDataParts = {
     pastCharacters?: PastPlayerCharacters,
     nextKings?: NextKings,
     buildings?: Building[],
     permanentPlayerData?: PermanentPlayerData,
+    highscores: Highscores,
     gameVersion?: GameVersion,
 }
 
@@ -20,6 +22,7 @@ const LOCALSTORAGE_NEXTKINGS = "nextKings";
 const LOCALSTORAGE_BUILDINGS = "buildings";
 const LOCALSTORAGE_PLAYER_DATA = "playerData";
 const LOCALSTORAGE_GAME_VERSION = "gameVersion";
+const LOCALSTORAGE_HIGHSCORES = "highscores";
 
 export function localStorageLoad(game: Game) {
     if (isDataGameVersionOutdated(GAME_VERSION)) {
@@ -34,6 +37,8 @@ export function localStorageLoad(game: Game) {
         if (localStorageBuildings) loadBuildings(JSON.parse(localStorageBuildings), game);
         const localStoragePlayerData = localStorage.getItem(LOCALSTORAGE_PLAYER_DATA);
         if (localStoragePlayerData) loadPlayerData(JSON.parse(localStoragePlayerData), game);
+        const localStorageHighscores = localStorage.getItem(LOCALSTORAGE_HIGHSCORES);
+        if (localStorageHighscores) loadHighscores(JSON.parse(localStorageHighscores), game);
     }
 }
 
@@ -49,6 +54,12 @@ export function localStorageSaveNextKings(game: Game) {
     if (!game.multiplayer.disableLocalStorage && !game.testing.replay) {
         localStorage.setItem(LOCALSTORAGE_NEXTKINGS, JSON.stringify(game.state.bossStuff.nextKings));
         localStorageSaveBuildings(game);
+    }
+}
+
+export function localStorageSaveHighscores(game: Game) {
+    if (!game.multiplayer.disableLocalStorage && !game.testing.replay) {
+        localStorage.setItem(LOCALSTORAGE_HIGHSCORES, JSON.stringify(game.state.highscores));
     }
 }
 
@@ -99,6 +110,10 @@ export function loadPlayerData(playerData: PermanentPlayerData, game: Game) {
     if (game.state.players.length > 0) {
         game.state.players[0].permanentData = playerData;
     }
+}
+
+function loadHighscores(highscores: Highscores, game: Game) {
+    game.state.highscores = highscores;
 }
 
 function isDataGameVersionOutdated(gameVersion: GameVersion): boolean {

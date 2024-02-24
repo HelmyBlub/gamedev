@@ -5,6 +5,7 @@ import { Game } from "./gameModel.js";
 import { paintKey } from "./gamePaint.js";
 import { getMapMidlePosition } from "./map/map.js";
 import { MoreInfoPart, createMoreInfosUI } from "./moreInfo.js";
+import { localStorageSaveHighscores } from "./permanentData.js";
 
 export type Highscores = {
     scoreBoards: {
@@ -88,7 +89,7 @@ export function calculateHighscoreOnGameEnd(game: Game, isKingKill: boolean): nu
             board.scores.pop();
         }
     }
-
+    localStorageSaveHighscores(game);
     return newScore;
 }
 

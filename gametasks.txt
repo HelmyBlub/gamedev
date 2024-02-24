@@ -2,11 +2,11 @@ next test run: tower builder, Sniper, All
 increase version
 
 current tasks:
-    - bug middle line in fire line when painter has square
-    - shoot ability outline for enemies
     - save highscores permanent
     - show money gain on end screen
+        - show as tab in more info
     - bug: replay stop by pressing restart. Does not load correct king
+    - reset pet size&happines?
 
 
 - think about next bigger feature 
