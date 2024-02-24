@@ -513,6 +513,10 @@ function paintDefault(ctx: CanvasRenderingContext2D, abilityObject: AbilityObjec
             circle.radius, 0, 2 * Math.PI
         );
         ctx.fill();
+        if (abilityObject.faction === FACTION_ENEMY) {
+            ctx.strokeStyle = "white";
+            ctx.stroke();
+        }
         ctx.globalAlpha = 1;
     }
 }
