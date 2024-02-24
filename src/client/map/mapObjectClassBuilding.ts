@@ -12,7 +12,7 @@ import { localStorageSaveBuildings } from "../permanentData.js";
 import { createCharacterClassMoreInfos, paintCharacters } from "../character/characterPaint.js";
 import { ABILITY_NAME_LEASH, AbilityLeash } from "../ability/abilityLeash.js";
 import { playerInputBindingToDisplayValue } from "../playerInput.js";
-import { MoreInfosPartContainer, createDefaultMoreInfosContainer, createMoreInfosUI } from "../moreInfo.js";
+import { MoreInfosPartContainer, createDefaultMoreInfosContainer, createMoreInfosPart } from "../moreInfo.js";
 import { IMAGE_BUILDING1, createBuildingClassBuilding, classBuildingFindCharacterClassToMakeLegendary, classBuildingPlacePlayerClassStuffInBuilding, classBuildingFindById, BUILDING_CLASS_BUILDING } from "./buildings/classBuilding.js";
 
 export type MapTileObjectBuilding = MapTileObject & {
@@ -79,12 +79,12 @@ function createMoreInfosClassBuilding(mapObject: MapTileObject, game: Game): Mor
             moreInfosContainer.moreInfoParts.push(...createTamerPetsCharacterMoreInfos(game.ctx, classBuilding.pets));
             moreInfosContainer.moreInfoParts.push(...createMoreInfosAbilities(game.ctx, classBuilding.abilities, game));
         } else if (classBuilding.stuffBorrowed.by) {
-            moreInfosContainer.moreInfoParts.push(createMoreInfosUI(game.ctx, [
+            moreInfosContainer.moreInfoParts.push(createMoreInfosPart(game.ctx, [
                 `Currently burrowed by ${classBuilding.stuffBorrowed.by}`,
             ]));
         }
     } else {
-        moreInfosContainer.moreInfoParts.push(createMoreInfosUI(game.ctx, [
+        moreInfosContainer.moreInfoParts.push(createMoreInfosPart(game.ctx, [
             `Empty Class Building.`,
             `This building type appears if a boss without`,
             `a class is defeated. It first spawns without`,

@@ -2,11 +2,9 @@ next test run: tower builder, Sniper, All
 increase version
 
 current tasks:
-    - save highscores permanent
-    - show money gain on end screen
-        - show as tab in more info
     - bug: replay stop by pressing restart. Does not load correct king
     - reset pet size&happines?
+    - prevent paused menu click to cast abilities
 
 
 - think about next bigger feature 

@@ -18,7 +18,7 @@ import { ABILITY_NAME_ICE_AURA } from "./abilityIceAura.js";
 import { ABILITY_NAME_SHOOT } from "./abilityShoot.js";
 import { ABILITY_NAME_SINGLETARGET } from "./abilitySingleTarget.js";
 import { ABILITY_NAME_SWORD } from "./abilitySword.js";
-import { MoreInfoPart, createMoreInfosUI } from "../moreInfo.js";
+import { MoreInfoPart, createMoreInfosPart } from "../moreInfo.js";
 
 type AbilityObjectTower = AbilityObject & {
     ownerId: number,
@@ -502,7 +502,7 @@ function createAbilityTowerMoreInfos(ctx: CanvasRenderingContext2D, ability: Abi
         textLines.push(`  - ${key}`);
     }
 
-    return createMoreInfosUI(ctx, textLines);
+    return createMoreInfosPart(ctx, textLines);
 }
 
 function tickAbilityTower(abilityOwner: AbilityOwner, ability: Ability, game: Game) {

@@ -6,7 +6,7 @@ import { getPointPaintPosition } from "../../../gamePaint.js";
 import { GAME_IMAGES, getImage } from "../../../imageLoad.js";
 import { moveByDirectionAndDistance } from "../../../map/map.js";
 import { nextRandom } from "../../../randomNumberGenerator.js";
-import { MoreInfoPart, createMoreInfosUI } from "../../../moreInfo.js";
+import { MoreInfoPart, createMoreInfosPart } from "../../../moreInfo.js";
 import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, calculateCharacterMovePosition, getPlayerCharacters, setCharacterPosition, getCharacterMoveSpeed } from "../../character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, createCharacter } from "../../characterModel.js";
 import { PathingCache, getNextWaypoint } from "../../pathing.js";
@@ -284,7 +284,7 @@ export function createTamerPetCharacterMoreInfos(ctx: CanvasRenderingContext2D, 
         }
     }
 
-    return createMoreInfosUI(ctx, textLines);
+    return createMoreInfosPart(ctx, textLines);
 }
 
 export function changeTamerPetHappines(pet: TamerPetCharacter, value: number, time: number, visualizeChange: boolean) {

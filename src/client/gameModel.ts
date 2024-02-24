@@ -8,7 +8,7 @@ import { createMap, GameMap } from "./map/map.js";
 import { KingAreaEntranceData } from "./map/mapKingArea.js";
 import { generateMissingChunks } from "./map/mapGeneration.js";
 import { PermanentDataParts } from "./permanentData.js";
-import { createPlayerWithPlayerCharacter, Player } from "./player.js";
+import { createPlayerWithPlayerCharacter, MoneyGainedThisRun, Player } from "./player.js";
 import { PlayerInput } from "./playerInput.js";
 import { nextRandom, RandomSeed } from "./randomNumberGenerator.js";
 import { MoreInfos, createDefaultEmptyMoreInfos } from "./moreInfo.js";
@@ -252,6 +252,11 @@ export type Game = {
         displayMoreInfos: boolean,
         playerGlobalAlphaMultiplier: number,
         paintClosesInteractableMoreInfo: boolean,
+        moneyGainedThisRun: MoneyGainedThisRun,
+        lastHighscore?: {
+            text: string,
+            amount: number,
+        }
     }
 }
 
@@ -358,6 +363,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             displayMoreInfos: false,
             playerGlobalAlphaMultiplier: 1,
             paintClosesInteractableMoreInfo: false,
+            moneyGainedThisRun: [],
         },
     }
 

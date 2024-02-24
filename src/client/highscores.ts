@@ -4,7 +4,7 @@ import { calculateDistance, getTimeSinceFirstKill } from "./game.js";
 import { Game } from "./gameModel.js";
 import { paintKey } from "./gamePaint.js";
 import { getMapMidlePosition } from "./map/map.js";
-import { MoreInfoPart, createMoreInfosUI } from "./moreInfo.js";
+import { MoreInfoPart, createMoreInfosPart } from "./moreInfo.js";
 import { localStorageSaveHighscores } from "./permanentData.js";
 
 export type Highscores = {
@@ -73,6 +73,7 @@ export function calculateHighscoreOnGameEnd(game: Game, isKingKill: boolean): nu
         newScore = getTimeSinceFirstKill(game.state);
         const board = state.highscores.scoreBoards[HIGHSCORE_KING_TIME];
         board.scores.push({ score: newScore, playerClass: playerClass });
+        game.UI.lastHighscore = { text: "New Score (King Kill Time): ", amount: newScore };
         board.scores.sort((a, b) => a.score - b.score);
         state.highscores.lastHighscorePosition = board.scores.findIndex((e) => e.score === newScore);
         state.highscores.lastBoard = HIGHSCORE_KING_TIME;
@@ -82,6 +83,7 @@ export function calculateHighscoreOnGameEnd(game: Game, isKingKill: boolean): nu
     } else {
         const board = state.highscores.scoreBoards[HIGHSCORE_DISTANCE];
         board.scores.push({ score: newScore, playerClass: playerClass });
+        game.UI.lastHighscore = { text: "New Score (Distance): ", amount: newScore };
         board.scores.sort((a, b) => b.score - a.score);
         state.highscores.lastHighscorePosition = board.scores.findIndex((e) => e.score === newScore);
         state.highscores.lastBoard = HIGHSCORE_DISTANCE;
@@ -91,44 +93,6 @@ export function calculateHighscoreOnGameEnd(game: Game, isKingKill: boolean): nu
     }
     localStorageSaveHighscores(game);
     return newScore;
-}
-
-export function paintHighscoreEndScreenStuff(ctx: CanvasRenderingContext2D, highscores: Highscores, restartKey: string) {
-    if (highscores.lastBoard === "") return;
-    const highscoreBoard = highscores.scoreBoards[highscores.lastBoard];
-    const paintMiddle = ctx.canvas.width / 2;
-    const paintY = ctx.canvas.height / 2 - highscoreBoard.scores.length * 10;
-
-    const fontSize = 18;
-    ctx.font = fontSize + "px Arial";
-
-    const restartText = "Restart with"
-    const restartHintWidth = ctx.measureText(restartText).width + 40;
-
-    let shortHighscoreDescriptionWidth = 0;
-    for (let text of highscoreBoard.description) {
-        const textWidth = ctx.measureText(text).width;
-        if (textWidth > shortHighscoreDescriptionWidth) {
-            shortHighscoreDescriptionWidth = textWidth;
-        }
-    }
-    shortHighscoreDescriptionWidth += 2;
-    ctx.fillStyle = "white";
-    ctx.fillRect(paintMiddle - shortHighscoreDescriptionWidth / 2 + 1, paintY - 140, shortHighscoreDescriptionWidth, 40 + 4);
-    ctx.fillStyle = "black";
-    ctx.font = fontSize + "px Arial";
-    for (let i = 0; i < highscoreBoard.description.length; i++) {
-        ctx.fillText(highscoreBoard.description[i], paintMiddle - shortHighscoreDescriptionWidth / 2 + 1, paintY - 120 + i * 20);
-    }
-
-    ctx.fillStyle = "white";
-    ctx.fillRect(paintMiddle - restartHintWidth / 2, paintY - 60, restartHintWidth, 20 + 4);
-    ctx.fillStyle = "black";
-    ctx.fillText(restartText, paintMiddle - restartHintWidth / 2, paintY - 40);
-    paintKey(ctx, restartKey, { x: paintMiddle + restartHintWidth / 2 - 40 - 2, y: paintY - 63 });
-
-    const highscoreWidth = getHighscoreWidth(ctx, highscoreBoard, fontSize);
-    paintHighscores(ctx, paintMiddle - highscoreWidth / 2, paintY - 20, highscoreBoard, highscores.lastHighscorePosition, fontSize);
 }
 
 export function createHighscoresMoreInfos(ctx: CanvasRenderingContext2D, highscores: Highscores): MoreInfoPart[] {
@@ -143,7 +107,7 @@ export function createHighscoresMoreInfos(ctx: CanvasRenderingContext2D, highsco
         for (let i = 0; i < scoreBoard.scores.length; i++) {
             textLines.push(getHighscoreTextLine(i, scoreBoard));
         }
-        moreInfosParts.push(createMoreInfosUI(ctx, textLines));
+        moreInfosParts.push(createMoreInfosPart(ctx, textLines));
     }
     return moreInfosParts;
 }

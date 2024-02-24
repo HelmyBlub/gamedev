@@ -1,8 +1,8 @@
 import { CharacterUpgrades } from "../../character/upgrades/characterUpgrades.js";
 import { getNextId } from "../../game.js";
 import { Game, IdCounter, Position } from "../../gameModel.js";
-import { Player } from "../../player.js";
-import { MoreInfoPart, createMoreInfosUI } from "../../moreInfo.js";
+import { Player, getTextYouGainMoneyWhen } from "../../player.js";
+import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
 import { MapTileObject } from "../mapObjects.js";
 import { Building, findBuildingByIdAndType } from "./building.js";
 import { IMAGE_BUILDING1 } from "./classBuilding.js";
@@ -70,17 +70,9 @@ function createBaseUpgradeBuildingMoreInfosPart(ctx: CanvasRenderingContext2D): 
         `Pay money to gain a permanent upgrade.`,
         `Upgrades apply to your character and your pets.`,
         ``,
-        `You gain money when:`,
-        `- your character dies`,
-        `    - money based on distance`,
-        `    - money gained linear until 20k distance.`,
-        `    - money gained exponential after 20k distance.`,
-        `- you defeat a King`,
-        `    - money based on King max HP`,
-        `- you defeat a Boss`,
-        `    - money based on Boss level`,
     ];
-    return createMoreInfosUI(ctx, texts);
+    texts.push(...getTextYouGainMoneyWhen());
+    return createMoreInfosPart(ctx, texts);
 
 }
 

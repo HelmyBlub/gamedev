@@ -3,7 +3,7 @@ import { FACTION_PLAYER, Game, Position } from "../gameModel.js";
 import { getPointPaintPosition } from "../gamePaint.js";
 import { GAME_IMAGES, getImage, loadImage } from "../imageLoad.js";
 import { randomizedCharacterImageToKey } from "../randomizedCharacterImage.js";
-import { MoreInfoPart, createMoreInfosUI } from "../moreInfo.js";
+import { MoreInfoPart, createMoreInfosPart } from "../moreInfo.js";
 import { getCharacterMoveSpeed, getPlayerCharacters } from "./character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_PLAYER_PARTS, IMAGE_SLIME } from "./characterModel.js";
 import { CHARACTER_TYPE_KING_ENEMY } from "./enemy/kingEnemy.js";
@@ -82,13 +82,13 @@ export function createCharacterMoreInfos(ctx: CanvasRenderingContext2D, characte
         textLines.push(``);
         addCharacterClassMoreInfosTextLines(character.characterClasses, textLines);
     }
-    return createMoreInfosUI(ctx, textLines);
+    return createMoreInfosPart(ctx, textLines);
 }
 
 export function createCharacterClassMoreInfos(ctx: CanvasRenderingContext2D, characterClasses: CharacterClass[]): MoreInfoPart {
     const textLines: string[] = [];
     addCharacterClassMoreInfosTextLines(characterClasses, textLines);
-    return createMoreInfosUI(ctx, textLines);
+    return createMoreInfosPart(ctx, textLines);
 }
 
 export function paintCharatersPets(ctx: CanvasRenderingContext2D, characters: (Character | undefined)[], cameraPosition: Position, game: Game) {

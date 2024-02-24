@@ -1,9 +1,9 @@
 import { changeCharacterId, countAlivePlayerCharacters, findAndSetNewCameraCharacterId, findCharacterById, findMyCharacter, getPlayerCharacters, resetCharacter, tickCharacters, tickMapCharacters } from "./character/character.js";
 import { paintAll } from "./gamePaint.js";
-import { Player, createDefaultKeyBindings1, createDefaultUiKeyBindings, findNearesPastPlayerCharacter, findPlayerByCharacterId, gameInitPlayers, isAutoSkillActive } from "./player.js";
+import { addPlayerMoney, createDefaultKeyBindings1, createDefaultUiKeyBindings, findNearesPastPlayerCharacter, findPlayerByCharacterId, gameInitPlayers, isAutoSkillActive } from "./player.js";
 import { MOUSE_ACTION, UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.js";
 import { Position, GameState, Game, IdCounter, Debugging, PaintTextData, ClientInfo } from "./gameModel.js";
-import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap, getMapMidlePosition, initBossArea } from "./map/map.js";
+import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap, initBossArea } from "./map/map.js";
 import { Character } from "./character/characterModel.js";
 import { generateMissingChunks, pastCharactersMapTilePositions } from "./map/mapGeneration.js";
 import { createFixPositionRespawnEnemiesOnInit } from "./character/enemy/fixPositionRespawnEnemyModel.js";
@@ -23,7 +23,7 @@ import { COMMAND_RESTART } from "./globalVars.js";
 import { consoleLogCombatlog } from "./combatlog.js";
 import { mapObjectPlaceClassBuilding } from "./map/mapObjectClassBuilding.js";
 import { hasPlayerChoosenStartClassUpgrade } from "./character/playerCharacters/playerCharacters.js";
-import { copyAndSetPermanentDataForReplay, localStorageLoad, localStorageSavePastCharacters, localStorageSavePermanentPlayerData, setPermanentDataFromReplayData } from "./permanentData.js";
+import { copyAndSetPermanentDataForReplay, localStorageLoad, localStorageSavePastCharacters, setPermanentDataFromReplayData } from "./permanentData.js";
 import { MapTileObject, findNearesInteractableMapChunkObject } from "./map/mapObjects.js";
 import { classBuildingCheckAllPlayerForLegendaryAbilitiesAndMoveBackToBuilding } from "./map/buildings/classBuilding.js";
 import { mapObjectPlaceUpgradeBuilding } from "./map/mapObjectUpgradeBuilding.js";
@@ -108,6 +108,7 @@ export function gameInit(game: Game) {
     game.state.enemyTypeDirectionSeed += 1;
     game.performance = {};
     game.UI.displayTextData = [];
+    game.UI.moneyGainedThisRun = [];
     game.testing.saveStates.autoSaves.nextSaveStateTime = 10000;
     game.state.map.activeChunkKeys = [];
     game.state.map.chunks = {};
@@ -417,19 +418,6 @@ export function findClosestInteractable(game: Game): { pastCharacter?: Character
     }
 }
 
-export function addMoneyAmountToPlayer(moneyAmount: number, players: Player[], game: Game) {
-    for (let player of players) {
-        const moneyFactor = player.character.bonusMoneyFactor !== undefined ? player.character.bonusMoneyFactor : 1;
-        const finalMoneyAmount = moneyAmount * moneyFactor;
-        player.permanentData.money += finalMoneyAmount;
-        if (finalMoneyAmount > 0 && player.clientId === game.multiplayer.myClientId) {
-            const textPosition = getCameraPosition(game);
-            game.UI.displayTextData.push(createPaintTextData(textPosition, `$${finalMoneyAmount.toFixed(1)}`, "black", "24", game.state.time, 5000));
-        }
-    }
-    localStorageSavePermanentPlayerData(game);
-}
-
 export function levelUpIncreaseExperienceRequirement(leveling: Leveling) {
     if (!leveling.leveling) return;
     leveling.leveling.experienceForLevelUp += leveling.level * 5;
@@ -560,26 +548,6 @@ function endGameReplayStuff(game: Game, newScore: number) {
             localStorageLoad(game);
         }
     }
-}
-
-function addPlayerMoney(game: Game, isKingKill: boolean = false) {
-    let highestPlayerDistane = 0;
-    for (let i = 0; i < game.state.players.length; i++) {
-        const player = game.state.players[i];
-        const distance = Math.round(calculateDistance(player.character, getMapMidlePosition(game.state.map)));
-        if (distance > highestPlayerDistane) highestPlayerDistane = distance;
-    }
-    let moneyGain = 0;
-    if (highestPlayerDistane < 20000) {
-        moneyGain = Math.floor(highestPlayerDistane / 1000);
-    } else {
-        moneyGain = 20 * Math.pow(10, Math.log2(highestPlayerDistane / 20000));
-    }
-    if (isKingKill && game.state.bossStuff.bosses.length >= 2) {
-        const boss = game.state.bossStuff.bosses[game.state.bossStuff.bosses.length - 2];
-        if (boss) moneyGain += boss.maxHp / 5000000;
-    }
-    addMoneyAmountToPlayer(moneyGain, game.state.players, game);
 }
 
 function tick(gameTimePassed: number, game: Game) {

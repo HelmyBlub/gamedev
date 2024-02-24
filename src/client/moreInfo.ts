@@ -10,7 +10,7 @@ import { findClosestInteractable, getRelativeMousePoistion } from "./game.js";
 import { Game } from "./gameModel.js";
 import { createHighscoresMoreInfos } from "./highscores.js";
 import { createMoreInfosForMabObject } from "./map/mapObjects.js";
-import { findPlayerById } from "./player.js";
+import { createMoreInfoMoney, createMoreInfoMoneyGainedPart, findPlayerById } from "./player.js";
 
 export type MoreInfoPart = {
     texts: string[],
@@ -40,7 +40,7 @@ export type MoreInfos = {
     containers: MoreInfosPartContainers,
 }
 
-export function createMoreInfosUI(ctx: CanvasRenderingContext2D, texts: string[], fontSize: number = 14): MoreInfoPart {
+export function createMoreInfosPart(ctx: CanvasRenderingContext2D, texts: string[], fontSize: number = 14): MoreInfoPart {
     ctx.font = fontSize + "px Arial";
     let width = 0;
     for (let text of texts) {
@@ -104,6 +104,17 @@ export function moreInfosHandleMouseClick(event: MouseEvent, game: Game) {
             }
         }
     }
+}
+
+export function createEndScreenMoreInfos(game: Game): MoreInfoPart[] {
+    const ctx = game.ctx;
+    if (!ctx) return [];
+    const parts: MoreInfoPart[] = [];
+    const moneyGained = createMoreInfoMoneyGainedPart(ctx, game);
+    if (moneyGained) parts.push(moneyGained);
+    const highscores = createHighscoresMoreInfos(ctx, game.state.highscores);
+    parts.push(...highscores);
+    return parts;
 }
 
 export function createRequiredMoreInfos(game: Game): MoreInfos {
@@ -178,7 +189,13 @@ export function createRequiredMoreInfos(game: Game): MoreInfos {
     moreInfos.containers.containers.push(highscoreContainer);
     paintX += highscoreContainer.headingWidth + moreInfos.headingHorizontalSpacing;
     highscoreContainer.moreInfoParts.push(...createHighscoresMoreInfos(ctx, game.state.highscores));
+    paintX += highscoreContainer.headingWidth + moreInfos.headingHorizontalSpacing;
 
+    const moneyContainer = createMoreInfoMoney(moreInfos, game);
+    if (moneyContainer) {
+        moreInfos.containers.containers.push(moneyContainer);
+        paintX += moneyContainer.headingWidth + moreInfos.headingHorizontalSpacing;
+    }
     return moreInfos;
 }
 
@@ -281,7 +298,7 @@ function createPastCharacterMoreInfos(ctx: CanvasRenderingContext2D, pastCharact
         `They can gift their original Abilities.`,
         `Abilities can only be gifted once.`,
     ]
-    moreInfosPartContainer.moreInfoParts.push(createMoreInfosUI(ctx, pastCharacterDefaultTexts))
+    moreInfosPartContainer.moreInfoParts.push(createMoreInfosPart(ctx, pastCharacterDefaultTexts))
     if (pastCharacter.characterClasses) {
         for (let charClass of pastCharacter.characterClasses)
             if (!charClass.gifted) {
@@ -302,7 +319,7 @@ function createPastCharacterMoreInfos(ctx: CanvasRenderingContext2D, pastCharact
     }
     moreInfosPartContainer.moreInfoParts.push(...createMoreInfosAbilities(ctx, abilities, game));
     if (moreInfosPartContainer.moreInfoParts.length <= 1) {
-        moreInfosPartContainer.moreInfoParts.push(createMoreInfosUI(ctx, [`This Character has nothing to gift.`]))
+        moreInfosPartContainer.moreInfoParts.push(createMoreInfosPart(ctx, [`This Character has nothing to gift.`]))
     }
     return moreInfosPartContainer;
 }
@@ -336,5 +353,5 @@ function createGameRulesMoreInfos(ctx: CanvasRenderingContext2D): MoreInfoPart {
         `beginns to grow.`,
         `Every minute one boss enemy spawns.`,
     ];
-    return createMoreInfosUI(ctx, textLines);
+    return createMoreInfosPart(ctx, textLines);
 }

@@ -2,7 +2,7 @@ import { TamerPetCharacter } from "../../character/playerCharacters/tamer/tamerP
 import { calculateDistance, getNextId } from "../../game.js";
 import { IdCounter, Position, Game } from "../../gameModel.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
-import { MoreInfoPart, createMoreInfosUI } from "../../moreInfo.js";
+import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, getAbilityNameUiText } from "../ability.js";
 import { ABILITY_NAME_LEASH, AbilityLeash } from "../abilityLeash.js";
 
@@ -110,5 +110,5 @@ function createAbilityMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability,
         "Leash or unleash targeted pet.",
         `Range: ${leash.range}`,
     );
-    return createMoreInfosUI(ctx, textLines);
+    return createMoreInfosPart(ctx, textLines);
 }

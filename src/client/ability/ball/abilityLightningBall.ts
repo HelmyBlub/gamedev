@@ -9,7 +9,7 @@ import { getPointPaintPosition } from "../../gamePaint.js";
 import { calculateMovePosition, getFirstBlockingGameMapTilePositionTouchingLine, isMoveFromToBlocking, isPositionBlocking } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { fixedRandom } from "../../randomNumberGenerator.js";
-import { MoreInfoPart, createMoreInfosUI } from "../../moreInfo.js";
+import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, detectSomethingToCharacterHit, getAbilityNameUiText } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
 import { addAbilityLightningBallUpgradeBounceBonus, lightningBallUpgradeBounceBonusGetBonusDamageFactor, lightningBallUpgradeBounceBonusSetBonusDamageFactor } from "./abilityLightningBallUpgradeBounceBonus.js";
@@ -340,6 +340,6 @@ function createAbilityMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability,
     );
     pushAbilityUpgradesUiTexts(ABILITY_LIGHTNING_BALL_UPGRADE_FUNCTIONS, textLines, ability);
 
-    return createMoreInfosUI(ctx, textLines);
+    return createMoreInfosPart(ctx, textLines);
 }
 

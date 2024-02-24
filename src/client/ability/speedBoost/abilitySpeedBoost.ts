@@ -6,7 +6,7 @@ import { applyDebuff } from "../../debuff/debuff.js";
 import { getNextId } from "../../game.js";
 import { Game, IdCounter, Position } from "../../gameModel.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
-import { MoreInfoPart, createMoreInfosUI } from "../../moreInfo.js";
+import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, getAbilityNameUiText } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
 import { ABILITY_SPEED_BOOST_UPGRADE_ADD_CHARGE, AbilitySpeedBoostUpgradeAddCharge, addAbilitySpeedBoostUpgradeAddCharge, tickAbilitySpeedBoostUpgradeAddCharge } from "./abilitySpeedBoostUpgradeAddCharge.js";
@@ -143,7 +143,7 @@ function createAbilitySpeedBoostMoreInfos(ctx: CanvasRenderingContext2D, ability
     );
     pushAbilityUpgradesUiTexts(ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS, textLines, ability);
 
-    return createMoreInfosUI(ctx, textLines);
+    return createMoreInfosPart(ctx, textLines);
 }
 
 function setAbilitySpeedBoostToLevel(ability: Ability, level: number) {

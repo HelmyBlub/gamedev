@@ -9,7 +9,7 @@ import { Position, Game, IdCounter, FACTION_ENEMY, ClientInfo, FACTION_PLAYER } 
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { calculateBounceAngle, calculateMovePosition, isMoveFromToBlocking, isPositionBlocking, moveByDirectionAndDistance } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
-import { MoreInfoPart, createMoreInfosUI } from "../../moreInfo.js";
+import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, detectSomethingToCharacterHit, getAbilityNameUiText } from "../ability.js";
 import { AbilityUpgradesFunctions, getAbilityUpgradesDamageFactor, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
 import { abilityBounceBallUpgradeBounceBonusDamageAddBounce, abilityBounceBallUpgradeBounceBonusDamageResetBounces, addAbilityBounceBallUpgradeBounceBonusDamage } from "./abilityBounceBallUpgradeBounceBonusDamage.js";
@@ -404,6 +404,6 @@ function createAbilityMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability,
     );
     pushAbilityUpgradesUiTexts(ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS, textLines, ability);
 
-    return createMoreInfosUI(ctx, textLines);
+    return createMoreInfosPart(ctx, textLines);
 }
 

@@ -7,14 +7,14 @@ import { CharacterClass, hasPlayerChoosenStartClassUpgrade, shareCharactersTrade
 import { TamerPetCharacter } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
 import { calculateDistance, findClosestInteractable, getCameraPosition, getTimeSinceFirstKill } from "./game.js";
 import { Game, Position, Debugging, PaintTextData } from "./gameModel.js";
-import { Highscores, paintHighscoreEndScreenStuff } from "./highscores.js";
+import { Highscores } from "./highscores.js";
 import { GAME_IMAGES, loadImage } from "./imageLoad.js";
 import { getMapMidlePosition } from "./map/map.js";
 import { MAP_OBJECTS_FUNCTIONS, findNearesInteractableMapChunkObject } from "./map/mapObjects.js";
 import { paintMap, paintMapCharacters } from "./map/mapPaint.js";
 import { Player, findNearesPastPlayerCharacter, findPlayerById, isAutoSkillActive } from "./player.js";
 import { playerInputBindingToDisplayValue } from "./playerInput.js";
-import { paintMoreInfos } from "./moreInfo.js";
+import { createEndScreenMoreInfos, paintMoreInfos, paintMoreInfosPart } from "./moreInfo.js";
 
 GAME_IMAGES["blankKey"] = {
     imagePath: "/images/singleBlankKey.png",
@@ -337,13 +337,32 @@ function paintEndScreen(ctx: CanvasRenderingContext2D, highscores: Highscores, g
     if (!game.state.ended) return;
 
     paintGameTitle(ctx);
-    let restartKey = "";
-    game.clientKeyBindings?.keyCodeToUiAction.forEach((e) => {
-        if (e.action === "Restart") {
-            restartKey = e.uiDisplayInputValue;
-        }
-    });
-    paintHighscoreEndScreenStuff(ctx, highscores, restartKey);
+
+    const paintPos = {
+        x: ctx.canvas.width / 2,
+        y: 200,
+    }
+
+    const restartKey = playerInputBindingToDisplayValue("Restart", game);
+    paintTextLinesWithKeys(ctx, [`Press <${restartKey}> to Restart.`], paintPos, 20, true);
+    if (game.UI.lastHighscore) {
+        paintPos.y += 50;
+        paintTextLinesWithKeys(ctx, [`${game.UI.lastHighscore!.text}: ${game.UI.lastHighscore!.amount}`], paintPos, 20, true);
+    }
+
+    const endParts = createEndScreenMoreInfos(game);
+    const spacing = 10;
+    let totalWidth = -spacing;
+    for (let part of endParts) {
+        totalWidth += part.width + spacing;
+    }
+
+    let paintY = 300;
+    let paintX = ctx.canvas.width / 2 - totalWidth / 2;
+    for (let part of endParts) {
+        paintMoreInfosPart(ctx, part, paintX, paintY);
+        paintX += part.width + spacing;
+    }
 }
 
 function paintGameTitle(ctx: CanvasRenderingContext2D) {

@@ -5,7 +5,7 @@ import { Game, Position } from "../../gameModel.js";
 import { paintTextWithOutline } from "../../gamePaint.js";
 import { Player } from "../../player.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
-import { MoreInfoPart, createMoreInfosUI } from "../../moreInfo.js";
+import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
 import { MapTileObject } from "../mapObjects.js";
 import { UPGRADE_BUILDINGS_FUNCTIONS } from "./upgradeBuilding.js";
 
@@ -44,7 +44,7 @@ function createUBMoreInfos(ctx: CanvasRenderingContext2D, characterUpgrades: Cha
     } else {
         texts.push(`Not yet purchased.`);
     }
-    return [createMoreInfosUI(ctx, texts)];
+    return [createMoreInfosPart(ctx, texts)];
 }
 
 function refund(player: Player, game: Game) {

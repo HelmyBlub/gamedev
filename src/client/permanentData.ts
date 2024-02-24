@@ -13,7 +13,7 @@ export type PermanentDataParts = {
     nextKings?: NextKings,
     buildings?: Building[],
     permanentPlayerData?: PermanentPlayerData,
-    highscores: Highscores,
+    highscores?: Highscores,
     gameVersion?: GameVersion,
 }
 

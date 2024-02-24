@@ -1,8 +1,13 @@
+import { findMyCharacter, resetCharacter } from "./character/character.js";
 import { Character, createPlayerCharacter } from "./character/characterModel.js";
+import { getCelestialDirection } from "./character/enemy/bossEnemy.js";
+import { CHARACTER_TYPE_KING_ENEMY, modifyCharacterToKing } from "./character/enemy/kingEnemy.js";
 import { CharacterUpgrades, addCharacterUpgrades } from "./character/upgrades/characterUpgrades.js";
-import { calculateDistance, deepCopy, findClientInfo, findClientInfoByCharacterId } from "./game.js";
+import { calculateDistance, createPaintTextData, deepCopy, findClientInfo, findClientInfoByCharacterId, getCameraPosition } from "./game.js";
 import { Game, IdCounter, KeyCodeToAction, Position } from "./gameModel.js";
-import { findNearNonBlockingPosition } from "./map/map.js";
+import { findNearNonBlockingPosition, getMapMidlePosition } from "./map/map.js";
+import { MoreInfoPart, MoreInfos, MoreInfosPartContainer, createDefaultMoreInfosContainer, createMoreInfosPart } from "./moreInfo.js";
+import { localStorageSavePermanentPlayerData } from "./permanentData.js";
 import { ActionsPressed, createActionsPressed } from "./playerInput.js";
 import { RandomSeed } from "./randomNumberGenerator.js";
 
@@ -17,6 +22,11 @@ export type Player = {
     actionsPressed: ActionsPressed,
     permanentData: PermanentPlayerData,
 }
+
+export type MoneyGainedThisRun = {
+    text: string,
+    amount: number,
+}[];
 
 export function createPlayer(clientId: number, character: Character): Player {
     return {
@@ -159,6 +169,129 @@ export function getPlayerFurthestAwayFromSpawn(players: Player[]): Player | unde
         }
     }
     return furthestPlayer;
+}
+
+export function addPlayerMoney(game: Game, isKingKill: boolean = false) {
+    let highestPlayerDistance = 0;
+    for (let i = 0; i < game.state.players.length; i++) {
+        const player = game.state.players[i];
+        const distance = Math.round(calculateDistance(player.character, getMapMidlePosition(game.state.map)));
+        if (distance > highestPlayerDistance) highestPlayerDistance = distance;
+    }
+    let moneyGain = calculateMoneyGainByDistance(highestPlayerDistance);
+    game.UI.moneyGainedThisRun.push({
+        amount: moneyGain,
+        text: `for distance of ${highestPlayerDistance}`,
+    });
+    if (isKingKill && game.state.bossStuff.bosses.length >= 2) {
+        const boss = game.state.bossStuff.bosses[game.state.bossStuff.bosses.length - 2];
+        if (boss) {
+            const kingMoney = calculateMoneyForKingMaxHp(boss.maxHp);
+            game.UI.moneyGainedThisRun.push({
+                amount: kingMoney,
+                text: `for King kill of ${boss.maxHp} HP`,
+            });
+            moneyGain += kingMoney;
+        };
+    }
+    addMoneyAmountToPlayer(moneyGain, game.state.players, game);
+}
+
+export function createMoreInfoMoney(moreInfos: MoreInfos, game: Game): MoreInfosPartContainer | undefined {
+    if (!game.ctx) return;
+    const container = createDefaultMoreInfosContainer(game.ctx, "Money", moreInfos.headingFontSize);
+    const moneyGainTexts: string[] = getTextYouGainMoneyWhen();
+    const moneyGainExplainPart = createMoreInfosPart(game.ctx, moneyGainTexts);
+    container.moreInfoParts.push(moneyGainExplainPart);
+
+    const moneyPossibilities = createMoreInfoMoneyPossibilitiesPart(game.ctx, game);
+    if (moneyPossibilities) container.moreInfoParts.push(moneyPossibilities);
+    const moneyGainedThisRun = createMoreInfoMoneyGainedPart(game.ctx, game);
+    if (moneyGainedThisRun) container.moreInfoParts.push(moneyGainedThisRun);
+    return container;
+}
+
+export function createMoreInfoMoneyPossibilitiesPart(ctx: CanvasRenderingContext2D, game: Game): MoreInfoPart | undefined {
+    const playerCharacter = findMyCharacter(game);
+    if (!playerCharacter) return;
+
+    const playerDistance = Math.round(calculateDistance(playerCharacter, getMapMidlePosition(game.state.map)));
+    const moneyForDistance = calculateMoneyGainByDistance(playerDistance);
+    const increasedDistance = playerDistance + 10000;
+    const moneyForIncreasedDistance = calculateMoneyGainByDistance(increasedDistance);
+    const celestialDirection = getCelestialDirection(playerCharacter, game.state.map);
+    let kingChar: Character | undefined = undefined;
+    const king = game.state.bossStuff.nextKings[celestialDirection];
+    if (!king) return;
+    kingChar = deepCopy(king) as Character;
+    modifyCharacterToKing(kingChar, game);
+    kingChar.type = CHARACTER_TYPE_KING_ENEMY;
+    resetCharacter(kingChar, game);
+    const moneyForKingKill = calculateMoneyForKingMaxHp(kingChar.maxHp);
+
+    const moneyPossibilities: string[] = [
+        `Possible money gains:`,
+        `  -for next Boss of level ${game.state.bossStuff.bossLevelCounter} kill: ${game.state.bossStuff.bossLevelCounter}$`,
+        `  -for King of the ${celestialDirection} kill: ${moneyForKingKill}$`,
+        `  -for ${playerDistance} distance on death: ${moneyForDistance.toFixed()}$`,
+        `  -for ${increasedDistance} distance on death: ${moneyForIncreasedDistance.toFixed()}$`,
+    ];
+    return createMoreInfosPart(ctx, moneyPossibilities);
+}
+
+export function createMoreInfoMoneyGainedPart(ctx: CanvasRenderingContext2D, game: Game): MoreInfoPart | undefined {
+    const gainedThisRun = game.UI.moneyGainedThisRun;
+    if (gainedThisRun.length === 0) return undefined;
+    const moneyGainedThisRunPart: string[] = [
+        `Money Gained this Run:`,
+    ];
+    for (let moneyGain of gainedThisRun) {
+        moneyGainedThisRunPart.push(`  -${moneyGain.text}: ${moneyGain.amount.toFixed(2)}$`);
+    }
+
+    return createMoreInfosPart(ctx, moneyGainedThisRunPart);
+}
+
+export function getTextYouGainMoneyWhen(): string[] {
+    const texts: string[] = [
+        `You gain money when:`,
+        `- your character dies`,
+        `    - money based on distance`,
+        `    - money gained linear until 20k distance.`,
+        `    - money gained exponential after 20k distance.`,
+        `- you defeat a King`,
+        `    - money based on King max HP`,
+        `- you defeat a Boss`,
+        `    - money based on Boss level`,
+    ];
+    return texts;
+}
+
+export function addMoneyAmountToPlayer(moneyAmount: number, players: Player[], game: Game) {
+    for (let player of players) {
+        const moneyFactor = player.character.bonusMoneyFactor !== undefined ? player.character.bonusMoneyFactor : 1;
+        const finalMoneyAmount = moneyAmount * moneyFactor;
+        player.permanentData.money += finalMoneyAmount;
+        if (finalMoneyAmount > 0 && player.clientId === game.multiplayer.myClientId) {
+            const textPosition = getCameraPosition(game);
+            game.UI.displayTextData.push(createPaintTextData(textPosition, `$${finalMoneyAmount.toFixed(1)}`, "black", "24", game.state.time, 5000));
+        }
+    }
+    localStorageSavePermanentPlayerData(game);
+}
+
+function calculateMoneyGainByDistance(distance: number): number {
+    let moneyGain = 0;
+    if (distance < 20000) {
+        moneyGain = Math.floor(distance / 1000);
+    } else {
+        moneyGain = 20 * Math.pow(10, Math.log2(distance / 20000));
+    }
+    return moneyGain;
+}
+
+function calculateMoneyForKingMaxHp(maxHp: number): number {
+    return maxHp / 2500000;;
 }
 
 function deletePlayersWhichLeft(game: Game) {
