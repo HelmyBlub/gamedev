@@ -436,6 +436,9 @@ function reset(character: Character) {
     pet.foodIntakeLevel.nextTick = undefined;
     pet.nextMovementUpdateTime = undefined;
     pet.forcedMovePosition = undefined;
+    pet.foodIntakeLevel.current = 50;
+    changeTamerPetHappines(pet, pet.happines.current - 50, 0, false);
+    pet.happines.current = 50;
 }
 
 function moveTick(pet: TamerPetCharacter, petOwner: Character, game: Game, pathingCache: PathingCache) {

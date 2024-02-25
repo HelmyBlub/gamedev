@@ -3,7 +3,6 @@ increase version
 
 current tasks:
     - bug: replay stop by pressing restart. Does not load correct king
-    - reset pet size&happines?
     - prevent paused menu click to cast abilities
 
 
