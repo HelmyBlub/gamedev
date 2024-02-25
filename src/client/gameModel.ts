@@ -253,10 +253,7 @@ export type Game = {
         playerGlobalAlphaMultiplier: number,
         paintClosesInteractableMoreInfo: boolean,
         moneyGainedThisRun: MoneyGainedThisRun,
-        lastHighscore?: {
-            text: string,
-            amount: number,
-        }
+        lastHighscoreText?: string;
     }
 }
 

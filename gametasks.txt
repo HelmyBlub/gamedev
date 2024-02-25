@@ -12,6 +12,7 @@ current tasks:
         - Upgrade Building: multiple king tries
     - bigger idea:
         - another class?
+            - with sound in my this time?
         - extends existings classes for more upgrade choice?
         - next boss type: "God"
             - more difficult than "Kings"

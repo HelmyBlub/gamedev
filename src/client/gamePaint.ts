@@ -345,9 +345,9 @@ function paintEndScreen(ctx: CanvasRenderingContext2D, highscores: Highscores, g
 
     const restartKey = playerInputBindingToDisplayValue("Restart", game);
     paintTextLinesWithKeys(ctx, [`Press <${restartKey}> to Restart.`], paintPos, 20, true);
-    if (game.UI.lastHighscore) {
+    if (game.UI.lastHighscoreText) {
         paintPos.y += 50;
-        paintTextLinesWithKeys(ctx, [`${game.UI.lastHighscore!.text}: ${game.UI.lastHighscore!.amount}`], paintPos, 20, true);
+        paintTextLinesWithKeys(ctx, [`${game.UI.lastHighscoreText}`], paintPos, 20, true);
     }
 
     const endParts = createEndScreenMoreInfos(game);

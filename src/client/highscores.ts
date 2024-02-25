@@ -73,7 +73,7 @@ export function calculateHighscoreOnGameEnd(game: Game, isKingKill: boolean): nu
         newScore = getTimeSinceFirstKill(game.state);
         const board = state.highscores.scoreBoards[HIGHSCORE_KING_TIME];
         board.scores.push({ score: newScore, playerClass: playerClass });
-        game.UI.lastHighscore = { text: "New Score (King Kill Time): ", amount: newScore };
+        game.UI.lastHighscoreText = `New Score (King Kill Time): ${(newScore / 1000).toFixed(2)}s`;
         board.scores.sort((a, b) => a.score - b.score);
         state.highscores.lastHighscorePosition = board.scores.findIndex((e) => e.score === newScore);
         state.highscores.lastBoard = HIGHSCORE_KING_TIME;
@@ -83,7 +83,7 @@ export function calculateHighscoreOnGameEnd(game: Game, isKingKill: boolean): nu
     } else {
         const board = state.highscores.scoreBoards[HIGHSCORE_DISTANCE];
         board.scores.push({ score: newScore, playerClass: playerClass });
-        game.UI.lastHighscore = { text: "New Score (Distance): ", amount: newScore };
+        game.UI.lastHighscoreText = `New Score (Distance): ${newScore}`;
         board.scores.sort((a, b) => b.score - a.score);
         state.highscores.lastHighscorePosition = board.scores.findIndex((e) => e.score === newScore);
         state.highscores.lastBoard = HIGHSCORE_DISTANCE;
