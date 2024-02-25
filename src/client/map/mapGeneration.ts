@@ -1,9 +1,9 @@
 import { addExistingBuildingsToSpawnChunk } from "./buildings/building.js";
 import { createFixPositionRespawnEnemies } from "../character/enemy/fixPositionRespawnEnemyModel.js";
-import { takeTimeMeasure } from "../game.js";
+import { calculateDistance, takeTimeMeasure } from "../game.js";
 import { Game, IdCounter, Position } from "../gameModel.js";
 import { fixedRandom } from "../randomNumberGenerator.js";
-import { GameMap, MapChunk, chunkXYToMapKey } from "./map.js";
+import { GameMap, MapChunk, chunkXYToMapKey, getMapMidlePosition } from "./map.js";
 import { mapGenerationKingChunkStuff } from "./mapKingArea.js";
 import { IMAGE_FIRE_ANIMATION, MAP_OBJECT_FIRE_ANIMATION } from "./mapObjectFireAnimation.js";
 
@@ -50,9 +50,26 @@ export function generateMissingChunks(map: GameMap, positions: Position[], idCou
 
 export function createNewChunk(map: GameMap, chunkX: number, chunkY: number, idCounter: IdCounter, game: Game): MapChunk {
     const newChunk = createNewChunkTiles(map, chunkX, chunkY, map.seed!, game);
+    if (checkCreateGodArea(chunkX, chunkY, map)) {
+        createGodAreaOnMap(chunkX, chunkY, map);
+    }
     map.chunks[chunkXYToMapKey(chunkX, chunkY)] = newChunk;
     createFixPositionRespawnEnemies(newChunk, chunkX, chunkY, map, idCounter, game);
     return newChunk;
+}
+
+function checkCreateGodArea(chunkX: number, chunkY: number, map: GameMap): boolean {
+    if (!map.godArea || map.godArea.areaCreated) return false;
+    const chunkLength = map.chunkLength * map.tileSize;
+    const distance = calculateDistance({ x: chunkX * chunkLength, y: chunkY * chunkLength }, getMapMidlePosition(map));
+    if (distance >= map.godArea.autoSpawnOnDistance) return true;
+    return false;
+}
+
+function createGodAreaOnMap(chunkX: number, chunkY: number, map: GameMap) {
+    if (!map.godArea) return;
+    map.godArea.areaCreated = true;
+    //TODO
 }
 
 export function createNewChunkTiles(map: GameMap, chunkX: number, chunkY: number, seed: number, game: Game): MapChunk {

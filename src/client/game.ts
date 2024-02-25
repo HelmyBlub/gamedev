@@ -3,7 +3,7 @@ import { paintAll } from "./gamePaint.js";
 import { addPlayerMoney, createDefaultKeyBindings1, createDefaultUiKeyBindings, findNearesPastPlayerCharacter, findPlayerByCharacterId, gameInitPlayers, isAutoSkillActive } from "./player.js";
 import { MOUSE_ACTION, UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.js";
 import { Position, GameState, Game, IdCounter, Debugging, PaintTextData, ClientInfo } from "./gameModel.js";
-import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap, initBossArea } from "./map/map.js";
+import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap, initGodArea, initKingArea } from "./map/map.js";
 import { Character } from "./character/characterModel.js";
 import { generateMissingChunks, pastCharactersMapTilePositions } from "./map/mapGeneration.js";
 import { createFixPositionRespawnEnemiesOnInit } from "./character/enemy/fixPositionRespawnEnemyModel.js";
@@ -83,9 +83,11 @@ export function closeGame(game: Game) {
 
 export function gameInit(game: Game) {
     if (!game.multiplayer.websocket && game.debug.closeKingArea) {
-        initBossArea(game.state.map, 1000);
+        initKingArea(game.state.map, 1000);
+        initGodArea(game.state.map, 2000);
     } else {
-        initBossArea(game.state.map, 20000);
+        initKingArea(game.state.map, 20000);
+        initGodArea(game.state.map, 100000);
     }
     game.state.abilityObjects = [];
     game.state.killCounter = 0;

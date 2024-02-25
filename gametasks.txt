@@ -1,18 +1,64 @@
-next test run: tower builder, Sniper, All
+next test run: Sniper, All
 increase version
 
 current tasks:
+    - continue in "createGodAreaOnMap"
+        - thinking about how to create area. Different to King area because King area seem more complicated
+        - create GodArea on trigger completely
+    - enemy type: "God"
+        - dev steps:
+            - area where to fight god
+                - 100k distance, each direction
+                    - debug option for 2000k distance spawn
+                - area created wherever the player first reaches 100k distance?
+            - fight start trigger
+                - like Kings, enter area
+                - bigger area than Kings
+            - create "God" enemy type
+                - create first ability
+                - create enemy type
+                - on fight start trigger, spawn God with first ability
+            - fight win
+                - new highscore board
+                - money amount
+            - improve
+                - more abilities
+                - balance
+        - idea:
+            - more difficult than "Kings"
+            - always the same, can not be replaced by player character
+            - ability design should be in a way that player can dodge 100% of abilities
+            - starts with 1 ability. Every 10%Hp loss get another ability
+            - ability damage scales based on how often player did take damage
+                - like: first time 10dmg, second time, 100dmg, third time 1000dmg and so on
+            - should work in multiplayer
+            - abilities should require "understanding" them
+            - ability idea:
+                - "ball", which the player can take, buff player
+                    - ground effect(or maybe seeker), which grows, player needs ball to remove it. removes "ball effect" from player
+                    - forces player to move around
+                - seeker ability. Follows player, becomes faster over time, once player reached it places ground effect on player position after delay
+                    - requires player to place effect in good way
+                - tile explosions patterns. Certain tiles begin to explode after time, expanding in certan patterns
+                    - player has to figure pattern out and react to it
+                - fire spawns randomly at the side of the arena. Moves always in the opposite direction the player is looking to. despawn outside of the arena
+                    - usure if it works?
+                - God immune to damage buff, spawn area where God loses it
+                    - player needs to bait boss to it
 
+
+
+next feature ideas:
 - think about next bigger feature 
-    - ideas
+    - small ideas
         - Upgrade Building: multiple king tries
     - bigger idea:
+            
+
+
         - another class?
             - with sound in my this time?
         - extends existings classes for more upgrade choice?
-        - next boss type: "God"
-            - more difficult than "Kings"
-            - always the same, can not be replaced by player character
 
 
 refactor possibilities:

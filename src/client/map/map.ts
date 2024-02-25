@@ -22,6 +22,7 @@ export type MapChunk = {
     objects: MapTileObject[],
     characters: Character[],
     isKingAreaChunk?: boolean,
+    isGodAreaChunk?: boolean,
 }
 
 export const TILE_VALUES: MapTiles = {
@@ -43,11 +44,18 @@ export type GameMap = {
     activeChunkRange: number,
     chunks: { [key: string]: MapChunk },
     kingArea?: GameMapKingArea,
+    godArea?: GameMapGodArea,
 }
 
 export type GameMapKingArea = {
     size: number,
     numberChunksUntil: number,
+}
+
+export type GameMapGodArea = {
+    size: number,
+    autoSpawnOnDistance: number,
+    areaCreated?: boolean,
 }
 
 export function createMap(): GameMap {
@@ -58,7 +66,7 @@ export function createMap(): GameMap {
         activeChunkRange: 1000,
         chunks: {},
     }
-    initBossArea(map, 20000);
+    initKingArea(map, 20000);
     return map;
 }
 
@@ -524,9 +532,16 @@ export function getMapTile(pos: Position, map: GameMap, idCounter: IdCounter, ga
     return TILE_VALUES[0];
 }
 
-export function initBossArea(map: GameMap, bossAreaDistance: number) {
+export function initKingArea(map: GameMap, bossAreaDistance: number) {
     map.kingArea = {
         size: 3,
         numberChunksUntil: Math.floor(bossAreaDistance / (map.tileSize * map.chunkLength)),
+    }
+}
+
+export function initGodArea(map: GameMap, distance: number) {
+    map.godArea = {
+        size: 5,
+        autoSpawnOnDistance: distance,
     }
 }
