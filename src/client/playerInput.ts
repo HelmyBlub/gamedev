@@ -48,12 +48,13 @@ export function createActionsPressed(): ActionsPressed {
 }
 
 export function mouseDown(event: MouseEvent, game: Game) {
-    playerInputChangeEvent(game, "Mouse" + event.button, true);
+    game.UI.lastMouseDownWasUIClick = moreInfosHandleMouseClick(event, game);
+    if (!game.UI.lastMouseDownWasUIClick) playerInputChangeEvent(game, "Mouse" + event.button, true);
 }
 
 export function mouseUp(event: MouseEvent, game: Game) {
-    playerInputChangeEvent(game, "Mouse" + event.button, false);
-    moreInfosHandleMouseClick(event, game);
+    if (!game.UI.lastMouseDownWasUIClick) playerInputChangeEvent(game, "Mouse" + event.button, false);
+
 }
 
 export function keyDown(event: { code: string, preventDefault?: Function, stopPropagation?: Function, shiftKey?: boolean }, game: Game) {

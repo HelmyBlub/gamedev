@@ -67,8 +67,8 @@ export function createDefaultEmptyMoreInfos(): MoreInfos {
     };
 }
 
-export function moreInfosHandleMouseClick(event: MouseEvent, game: Game) {
-    if (!game.UI.displayMoreInfos) return;
+export function moreInfosHandleMouseClick(event: MouseEvent, game: Game): boolean {
+    if (!game.UI.displayMoreInfos) return false;
     const moreInfos = game.UI.moreInfos;
     let mouseClickPos = getRelativeMousePoistion(event);
     if (moreInfos.paintStartY <= mouseClickPos.y
@@ -81,7 +81,7 @@ export function moreInfosHandleMouseClick(event: MouseEvent, game: Game) {
                 && paintX + container.headingWidth >= mouseClickPos.x
             ) {
                 moreInfos.containers.selected = i;
-                return;
+                return true;
             }
             paintX += container.headingWidth + moreInfos.headingHorizontalSpacing;
         }
@@ -92,18 +92,19 @@ export function moreInfosHandleMouseClick(event: MouseEvent, game: Game) {
         ) {
             const selectedContainer = moreInfos.containers.containers[moreInfos.containers.selected];
             let paintX = moreInfos.paintStartX;
-            for (let i = 0; i < moreInfos.containers.containers.length; i++) {
+            for (let i = 0; i < selectedContainer.subContainer.containers.length; i++) {
                 const container = selectedContainer.subContainer.containers[i];
                 if (paintX <= mouseClickPos.x
                     && paintX + container.headingWidth >= mouseClickPos.x
                 ) {
                     selectedContainer.subContainer.selected = i;
-                    return;
+                    return true;
                 }
                 paintX += container.headingWidth + moreInfos.headingHorizontalSpacing;
             }
         }
     }
+    return false;
 }
 
 export function createEndScreenMoreInfos(game: Game): MoreInfoPart[] {

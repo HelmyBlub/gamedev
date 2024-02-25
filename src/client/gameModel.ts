@@ -254,6 +254,7 @@ export type Game = {
         paintClosesInteractableMoreInfo: boolean,
         moneyGainedThisRun: MoneyGainedThisRun,
         lastHighscoreText?: string;
+        lastMouseDownWasUIClick: boolean,
     }
 }
 
@@ -361,6 +362,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             playerGlobalAlphaMultiplier: 1,
             paintClosesInteractableMoreInfo: false,
             moneyGainedThisRun: [],
+            lastMouseDownWasUIClick: false,
         },
     }
 
