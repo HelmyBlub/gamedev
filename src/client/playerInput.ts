@@ -239,6 +239,11 @@ function uiAction(game: Game, inputCode: string, isInputDown: boolean) {
     switch (action.action) {
         case "Restart":
             if (!isInputDown) return;
+            if (game.testing.replay) {
+                //end replay
+                game.testing.replay = undefined;
+                localStorageLoad(game);
+            }
             game.state.paused = false;
             const commandRestart: Omit<CommandRestart, "executeTime"> = {
                 command: "restart",
