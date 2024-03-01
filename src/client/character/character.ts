@@ -329,7 +329,7 @@ export function determineClosestCharacter(position: Position, characters: Charac
         if (excludeKingArea && map) {
             const mapKey = positionToMapKey(characters[i], map);
             const mapChunk = map.chunks[mapKey];
-            if (mapChunk.isKingAreaChunk) continue;
+            if (mapChunk.isKingAreaChunk || mapChunk.isGodAreaChunk) continue;
         }
         const distance = calculateDistance(position, characters[i]);
         if (minDistanceCharacter === null || minDistance > distance) {
