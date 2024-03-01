@@ -2,15 +2,8 @@ next test run: Sniper, All
 increase version
 
 current tasks:
-    - continue in "createGodAreaOnMap"
-        - thinking about how to create area. Different to King area because King area seem more complicated
-        - create GodArea on trigger completely
     - enemy type: "God"
         - dev steps:
-            - area where to fight god
-                - 100k distance, each direction
-                    - debug option for 2000k distance spawn
-                - area created wherever the player first reaches 100k distance?
             - fight start trigger
                 - like Kings, enter area
                 - bigger area than Kings

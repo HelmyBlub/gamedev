@@ -1,7 +1,7 @@
 import { getPlayerCharacters } from "../character/character.js";
 import { startKingFight } from "../character/enemy/kingEnemy.js";
 import { Game, Position } from "../gameModel.js";
-import { positionToMapKey, GameMapKingArea, GameMap, MapChunk, positionToChunkXY } from "./map.js";
+import { positionToMapKey, GameMap, MapChunk, positionToChunkXY } from "./map.js";
 import { IMAGE_SIGN, MAP_OBJECT_KING_SIGN, MapTileObjectNextKingSign } from "./mapObjectSign.js";
 
 type TileData = { x: number, y: number, tileId: number };
@@ -11,6 +11,11 @@ export type KingAreaEntranceData = {
     tileX: number,
     tileY: number,
     tileId: number
+}
+
+export type GameMapKingArea = {
+    size: number,
+    numberChunksUntil: number,
 }
 
 export function mapGenerationKingChunkStuff(mapChunk: MapChunk, map: GameMap, chunkX: number, chunkY: number) {

@@ -1,6 +1,8 @@
 import { Character } from "../character/characterModel.js";
 import { Game, IdCounter, Position } from "../gameModel.js"
 import { createNewChunk } from "./mapGeneration.js";
+import { GameMapGodArea } from "./mapGodArea.js";
+import { GameMapKingArea } from "./mapKingArea.js";
 import { MapTileObject } from "./mapObjects.js";
 import { MapPaintLayer } from "./mapPaint.js";
 
@@ -36,6 +38,15 @@ export const TILE_VALUES: MapTiles = {
     7: { name: "firepit", imagePath: "/images/firepit.png", blocking: false, layer: "Layer2" },
 }
 
+export const TILE_ID_GRASS = 0;
+export const TILE_ID_TREE = 1;
+export const TILE_ID_ROCK = 2;
+export const TILE_ID_PATH1_HORIZONTAL = 3;
+export const TILE_ID_PATH2_VERTICAL = 4;
+export const TILE_ID_LOG_HORIZONTAL = 5;
+export const TILE_ID_LOG_VERTICAL = 6;
+export const TILE_ID_FIREPIT = 7;
+
 export type GameMap = {
     seed?: number,
     tileSize: number,
@@ -47,15 +58,15 @@ export type GameMap = {
     godArea?: GameMapGodArea,
 }
 
-export type GameMapKingArea = {
-    size: number,
-    numberChunksUntil: number,
-}
-
-export type GameMapGodArea = {
-    size: number,
-    autoSpawnOnDistance: number,
-    areaCreated?: boolean,
+export function onDomLoadMapTiles() {
+    TILE_VALUES[TILE_ID_GRASS] = { name: "grass", imagePath: "/images/grass.png", blocking: false, layer: "Layer1" };
+    TILE_VALUES[TILE_ID_TREE] = { name: "tree", imagePath: "/images/tree.png", blocking: true, layer: "Layer2" };
+    TILE_VALUES[TILE_ID_ROCK] = { name: "rock", imagePath: "/images/rock.png", blocking: true, layer: "Layer2" };
+    TILE_VALUES[TILE_ID_PATH1_HORIZONTAL] = { name: "path1", imagePath: "/images/path1.png", blocking: false, layer: "Layer1" };
+    TILE_VALUES[TILE_ID_PATH2_VERTICAL] = { name: "path2", imagePath: "/images/path2.png", blocking: false, layer: "Layer1" };
+    TILE_VALUES[TILE_ID_LOG_HORIZONTAL] = { name: "logHorizontal", imagePath: "/images/log_Horizontal.png", blocking: false, layer: "Layer2" };
+    TILE_VALUES[TILE_ID_LOG_VERTICAL] = { name: "logVertical", imagePath: "/images/log_Vertical.png", blocking: false, layer: "Layer2" };
+    TILE_VALUES[TILE_ID_FIREPIT] = { name: "firepit", imagePath: "/images/firepit.png", blocking: false, layer: "Layer2" };
 }
 
 export function createMap(): GameMap {
@@ -543,5 +554,6 @@ export function initGodArea(map: GameMap, distance: number) {
     map.godArea = {
         size: 5,
         autoSpawnOnDistance: distance,
+        pathChunkGenerationLength: 3,
     }
 }

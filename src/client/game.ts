@@ -84,9 +84,12 @@ export function closeGame(game: Game) {
 export function gameInit(game: Game) {
     if (!game.multiplayer.websocket && game.debug.closeKingArea) {
         initKingArea(game.state.map, 1000);
-        initGodArea(game.state.map, 2000);
     } else {
         initKingArea(game.state.map, 20000);
+    }
+    if (!game.multiplayer.websocket && game.debug.closeGodArea) {
+        initGodArea(game.state.map, 5000);
+    } else {
         initGodArea(game.state.map, 100000);
     }
     game.state.abilityObjects = [];

@@ -106,6 +106,7 @@ export type Debugging = {
     lowKingHp?: boolean,
     disableDamageNumbers?: boolean,
     closeKingArea?: boolean,
+    closeGodArea?: boolean,
     timeMeasuresData?: { name: string, timeMeasures: number[], tempTime: number }[],
 }
 

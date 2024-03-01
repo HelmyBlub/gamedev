@@ -16,6 +16,7 @@ export function addHTMLDebugMenusToSettings(game: Game) {
     addSettingCheckbox("disableDamageNumbers", game);
     addSettingCheckbox("lowKingHp", game);
     addSettingCheckbox("closeKingArea", game);
+    addSettingCheckbox("closeGodArea", game);
     addBossSkillPointButton(game);
     addTankyButton(game);
     addSpawnBossButton(game);

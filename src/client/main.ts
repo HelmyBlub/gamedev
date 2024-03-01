@@ -14,12 +14,13 @@ import { addHTMLDebugMenusToSettings } from "./settingsHtmlMenu.js";
 import { localStorageLoad } from "./permanentData.js";
 import { addUpgradeBuildingsFunctions } from "./map/buildings/upgradeBuilding.js";
 import { onDomLoadImagesLoad } from "./imageLoad.js";
+import { onDomLoadMapTiles } from "./map/map.js";
 
 var gameCount: number = 0;
 export const GAME_VERSION: GameVersion = {
     major: 0,
     minor: 1,
-    patch: 207,
+    patch: 208,
 }
 
 export function start() {
@@ -73,6 +74,7 @@ export function createGame(canvasElementId: string | undefined, forTesting: bool
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+    onDomLoadMapTiles();
     onDomLoadSetCharacterClasses();
     addBossType();
     addKingType();

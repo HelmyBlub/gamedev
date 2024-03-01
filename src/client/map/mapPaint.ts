@@ -21,7 +21,6 @@ export function paintMap(layer: MapPaintLayer, ctx: CanvasRenderingContext2D, ca
             const chunkKey = chunkXYToMapKey(chunkX, chunkY);
             const chunk = map.chunks[chunkKey];
             if (chunk === undefined) {
-                if (game.state.time > 1000) console.log("missing chunk creation", chunkKey);
                 continue;
             }
             const x = Math.floor(chunkX * chunkSize - startX);
@@ -45,7 +44,7 @@ export function paintMap(layer: MapPaintLayer, ctx: CanvasRenderingContext2D, ca
 }
 
 export function paintMapCharacters(ctx: CanvasRenderingContext2D, cameraPosition: Position, map: GameMap, game: Game) {
-    for(let key of game.state.map.activeChunkKeys){
+    for (let key of game.state.map.activeChunkKeys) {
         const chunk = map.chunks[key];
         if (chunk === undefined) continue;
         paintCharacters(ctx, chunk.characters, cameraPosition, game);
