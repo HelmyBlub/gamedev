@@ -514,6 +514,7 @@ function paintDefault(ctx: CanvasRenderingContext2D, abilityObject: AbilityObjec
         );
         ctx.fill();
         if (abilityObject.faction === FACTION_ENEMY) {
+            ctx.lineWidth = 1;
             ctx.strokeStyle = "white";
             ctx.stroke();
         }

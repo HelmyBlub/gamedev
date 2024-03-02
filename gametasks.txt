@@ -5,8 +5,8 @@ current tasks:
     - enemy type: "God"
         - dev steps:
             - fight start trigger
-                - like Kings, enter area
-                - bigger area than Kings
+                - like Kings, all players enter area
+                - close of entrances
             - create "God" enemy type
                 - create first ability
                 - create enemy type
