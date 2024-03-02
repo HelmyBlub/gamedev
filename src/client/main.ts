@@ -15,6 +15,7 @@ import { localStorageLoad } from "./permanentData.js";
 import { addUpgradeBuildingsFunctions } from "./map/buildings/upgradeBuilding.js";
 import { onDomLoadImagesLoad } from "./imageLoad.js";
 import { onDomLoadMapTiles } from "./map/map.js";
+import { addGodEnemyType } from "./character/enemy/godEnemy.js";
 
 var gameCount: number = 0;
 export const GAME_VERSION: GameVersion = {
@@ -78,6 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
     onDomLoadSetCharacterClasses();
     addBossType();
     addKingType();
+    addGodEnemyType();
     addKingCrownType();
     addMapObjectsFunctions();
     addUpgradeBuildingsFunctions();

@@ -2,7 +2,7 @@ import { levelingCharacterAndClassXpGain } from "./playerCharacters/levelingChar
 import { calculateMovePosition, chunkXYToMapKey, determineMapKeysInDistance, GameMap, getChunksTouchingLine, MapChunk, mapKeyToChunkXY, positionToMapKey } from "../map/map.js";
 import { Character, CHARACTER_TYPE_FUNCTIONS, PLAYER_CHARACTER_TYPE } from "./characterModel.js";
 import { getNextWaypoint, getPathingCache, PathingCache } from "./pathing.js";
-import { calculateDirection, calculateDistance, calculateDistancePointToLine, changeCharacterAndAbilityIds, createPaintTextData, getNextId, levelUpIncreaseExperienceRequirement, takeTimeMeasure } from "../game.js";
+import { calculateDirection, calculateDistance, calculateDistancePointToLine, changeCharacterAndAbilityIds, createPaintTextData, endGame, getNextId, levelUpIncreaseExperienceRequirement, takeTimeMeasure } from "../game.js";
 import { Position, Game, IdCounter, Camera, FACTION_ENEMY, FACTION_PLAYER } from "../gameModel.js";
 import { addMoneyAmountToPlayer, findPlayerById, Player } from "../player.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
@@ -19,6 +19,7 @@ import { ENEMY_FIX_RESPAWN_POSITION } from "./enemy/fixPositionRespawnEnemyModel
 import { addCombatlogDamageTakenEntry } from "../combatlog.js";
 import { executeAbilityLevelingCharacterUpgradeOption } from "./playerCharacters/abilityLevelingCharacter.js";
 import { addCharacterUpgrades, CHARACTER_UPGRADE_FUNCTIONS } from "./upgrades/characterUpgrades.js";
+import { CHARACTER_TYPE_GOD_ENEMY } from "./enemy/godEnemy.js";
 
 export function findCharacterById(characters: Character[], id: number): Character | null {
     for (let i = 0; i < characters.length; i++) {
@@ -275,7 +276,7 @@ export function tickCharacters(characters: (Character | undefined)[], game: Game
             tickDefaultCharacter(char, game, pathingCache);
         }
         if (!char.isDead) {
-            if (game.state.bossStuff.kingFightStarted && char.type === ENEMY_FIX_RESPAWN_POSITION) continue;
+            if ((game.state.bossStuff.kingFightStarted || game.state.bossStuff.godFightStarted) && char.type === ENEMY_FIX_RESPAWN_POSITION) continue;
             for (let ability of char.abilities) {
                 const tickAbility = ABILITIES_FUNCTIONS[ability.name].tickAbility;
                 if (tickAbility) tickAbility(char, ability, game);
@@ -619,6 +620,8 @@ function killCharacter(character: Character, game: Game, abilityIdRef: number | 
     }
     if (character.type === CHARACTER_TYPE_KING_ENEMY) {
         game.state.bossStuff.bosses.push(createKingCrownCharacter(game.state.idCounter, character));
+    } else if (character.type === CHARACTER_TYPE_GOD_ENEMY) {
+        endGame(game);
     }
     if (abilityIdRef !== undefined && character.type !== CHARACTER_TYPE_BOSS_ENEMY) {
         const ability = findAbilityById(abilityIdRef, game);

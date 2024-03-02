@@ -125,7 +125,8 @@ export type NextKings = {
 export type BossStuff = {
     bossLevelCounter: number,
     bossSpawnEachXMilliSecond: number,
-    kingFightStarted: boolean,
+    kingFightStarted?: boolean,
+    godFightStarted?: boolean,
     nextKings: NextKings,
     closedOfKingAreaEntrance?: KingAreaEntranceData,
     bosses: Character[],

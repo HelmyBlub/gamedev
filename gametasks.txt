@@ -4,13 +4,8 @@ increase version
 current tasks:
     - enemy type: "God"
         - dev steps:
-            - fight start trigger
-                - like Kings, all players enter area
-                - close of entrances
             - create "God" enemy type
                 - create first ability
-                - create enemy type
-                - on fight start trigger, spawn God with first ability
             - fight win
                 - new highscore board
                 - money amount
@@ -26,6 +21,7 @@ current tasks:
                 - like: first time 10dmg, second time, 100dmg, third time 1000dmg and so on
             - should work in multiplayer
             - abilities should require "understanding" them
+            - want decisions to be made in combat, resulting in different fight challenges
             - ability idea:
                 - "ball", which the player can take, buff player
                     - ground effect(or maybe seeker), which grows, player needs ball to remove it. removes "ball effect" from player
@@ -38,6 +34,9 @@ current tasks:
                     - usure if it works?
                 - God immune to damage buff, spawn area where God loses it
                     - player needs to bait boss to it
+    - load state functionality to easier testing
+        - create one state for loading one state with optimal gear inside god area 
+    - replay tests perforamnce metrics save in localStorage for better see how it changes
 
 
 

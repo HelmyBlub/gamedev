@@ -37,6 +37,7 @@ import { addAbilityUnleashPet } from "./petTamer/abilityUnleashPet.js"
 import { Leveling } from "../character/playerCharacters/levelingCharacter.js"
 import { CharacterClass } from "../character/playerCharacters/playerCharacters.js"
 import { MoreInfoPart, paintMoreInfosPart, paintMoreInfosPartsContainer, paintMoreInfos } from "../moreInfo.js"
+import { addGodAbilitySeeker } from "./god/abilitySeeker.js"
 
 export type Ability = {
     id: number,
@@ -132,6 +133,7 @@ export function onDomLoadSetAbilitiesFunctions() {
     addAbilityLightningBall();
     addAbilityLightningStrikes();
     addAbilityUnleashPet();
+    addGodAbilitySeeker();
 }
 
 export function addAbilityToCharacter(character: Character, ability: Ability, charClass: CharacterClass | undefined = undefined) {

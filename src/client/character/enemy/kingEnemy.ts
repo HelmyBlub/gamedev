@@ -150,21 +150,7 @@ export function modifyCharacterToKing(boss: Character, game: Game) {
     changeBossAbilityLevelBasedOnHp(boss);
 }
 
-function paintKing(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
-    if (character.isDead) return;
-    paintCharatersPets(ctx, [character], cameraPosition, game);
-    paintCharacterWithAbilitiesDefault(ctx, character, cameraPosition, game);
-    const crownImage = getImage(IMAGE_CROWN);
-    if (crownImage) {
-        const paintPos = getPointPaintPosition(ctx, character, cameraPosition);
-        const crownX = Math.floor(paintPos.x - Math.floor(crownImage.width / 2));
-        const crownY = Math.floor(paintPos.y - character.height / 2 - crownImage.height);
-        ctx.drawImage(crownImage, crownX, crownY);
-    }
-    if (game.state.bossStuff.kingFightStarted) paintBossHpBar(ctx, character);
-}
-
-function paintBossHpBar(ctx: CanvasRenderingContext2D, boss: Character) {
+export function paintKingHpBar(ctx: CanvasRenderingContext2D, boss: Character) {
     const fillAmount = Math.max(0, boss.hp / boss.maxHp);
     if (fillAmount <= 0) return
     const hpBarWidth = Math.floor(ctx.canvas.width / 2);
@@ -203,6 +189,20 @@ function changeBossAbilityLevelBasedOnHp(enemy: KingEnemyCharacter) {
             }
         }
     }
+}
+
+function paintKing(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
+    if (character.isDead) return;
+    paintCharatersPets(ctx, [character], cameraPosition, game);
+    paintCharacterWithAbilitiesDefault(ctx, character, cameraPosition, game);
+    const crownImage = getImage(IMAGE_CROWN);
+    if (crownImage) {
+        const paintPos = getPointPaintPosition(ctx, character, cameraPosition);
+        const crownX = Math.floor(paintPos.x - Math.floor(crownImage.width / 2));
+        const crownY = Math.floor(paintPos.y - character.height / 2 - crownImage.height);
+        ctx.drawImage(crownImage, crownX, crownY);
+    }
+    if (game.state.bossStuff.kingFightStarted) paintKingHpBar(ctx, character);
 }
 
 function createKingAbilities(level: number, game: Game): Ability[] {

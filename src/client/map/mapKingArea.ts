@@ -26,7 +26,7 @@ export function mapGenerationKingChunkStuff(mapChunk: MapChunk, map: GameMap, ch
 }
 
 export function checkForKingAreaTrigger(game: Game) {
-    if (!game.state.map.kingArea || game.state.bossStuff.kingFightStarted) return;
+    if (!game.state.map.kingArea || game.state.bossStuff.kingFightStarted || game.state.bossStuff.godFightStarted) return;
     const allPlayers = getPlayerCharacters(game.state.players);
     for (let player of allPlayers) {
         const mapKey = positionToMapKey(player, game.state.map);

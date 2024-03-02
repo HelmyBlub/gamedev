@@ -80,7 +80,7 @@ export function paintBossCrown(ctx: CanvasRenderingContext2D, cameraPosition: Po
 }
 
 export function checkForBossSpawn(game: Game) {
-    if (game.state.bossStuff.kingFightStarted) return;
+    if (game.state.bossStuff.kingFightStarted || game.state.bossStuff.godFightStarted) return;
     const bossStuff = game.state.bossStuff;
     const nextBossSpawnTime = bossStuff.bossSpawnEachXMilliSecond * bossStuff.bossLevelCounter;
     if (getTimeSinceFirstKill(game.state) >= nextBossSpawnTime) {

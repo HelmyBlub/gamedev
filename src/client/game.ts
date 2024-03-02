@@ -28,6 +28,7 @@ import { MapTileObject, findNearesInteractableMapChunkObject } from "./map/mapOb
 import { classBuildingCheckAllPlayerForLegendaryAbilitiesAndMoveBackToBuilding } from "./map/buildings/classBuilding.js";
 import { mapObjectPlaceUpgradeBuilding } from "./map/mapObjectUpgradeBuilding.js";
 import { Leveling } from "./character/playerCharacters/levelingCharacter.js";
+import { checkGodFightStart } from "./map/mapGodArea.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -108,6 +109,7 @@ export function gameInit(game: Game) {
     game.state.bossStuff.bosses = [];
     game.state.bossStuff.bossLevelCounter = 1;
     game.state.bossStuff.kingFightStarted = false;
+    game.state.bossStuff.godFightStarted = false;
     game.state.deathCircleCreated = false;
     game.state.paused = false;
     game.state.enemyTypeDirectionSeed += 1;
@@ -599,6 +601,7 @@ function saveStates(game: Game) {
 
 function doStuff(game: Game) {
     checkForKingAreaTrigger(game);
+    checkGodFightStart(game);
     checkDeathCircleSpawn(game);
     checkForBossSpawn(game);
     checkMovementKeyPressedHint(game);

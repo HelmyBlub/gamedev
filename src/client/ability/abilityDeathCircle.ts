@@ -55,7 +55,7 @@ export function createObjectDeathCircle(map: GameMap): AbilityObjectDeathCircle 
 }
 
 function deleteObjectDeathCircle(abilityObject: AbilityObject, game: Game): boolean {
-    if (game.state.bossStuff.kingFightStarted) return true;
+    if (game.state.bossStuff.kingFightStarted || game.state.bossStuff.godFightStarted) return true;
     return false;
 }
 

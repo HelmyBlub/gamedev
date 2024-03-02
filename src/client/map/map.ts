@@ -119,6 +119,11 @@ export function findNearNonBlockingPosition(pos: Position, map: GameMap, idCount
 export function changeTileIdOfMapChunk(chunkX: number, chunkY: number, tileX: number, tileY: number, newTileId: number, game: Game) {
     const chunkKey = chunkXYToMapKey(chunkX, chunkY);
     game.state.map.chunks[chunkKey].tiles[tileX][tileY] = newTileId;
+    deletePaintCacheForMapChunk(chunkX, chunkY, game);
+}
+
+export function deletePaintCacheForMapChunk(chunkX: number, chunkY: number, game: Game) {
+    const chunkKey = chunkXYToMapKey(chunkX, chunkY);
     const mapPaintCache = game.performance.mapChunkPaintCache;
     if (mapPaintCache) {
         const paintCacheKey1 = chunkKey + "_Layer1";
