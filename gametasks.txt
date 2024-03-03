@@ -5,7 +5,9 @@ current tasks:
     - enemy type: "God"
         - dev steps:
             - create "God" enemy type
-                - create first ability
+                - create more abilities
+                    - tile explosions patterns. Certain tiles begin to explode after time, expanding in certan patterns
+                        - player has to figure pattern out and react to it
             - fight win
                 - new highscore board
                 - money amount
@@ -26,12 +28,6 @@ current tasks:
                 - "ball", which the player can take, buff player
                     - ground effect(or maybe seeker), which grows, player needs ball to remove it. removes "ball effect" from player
                     - forces player to move around
-                - seeker ability. Follows player, becomes faster over time, once player reached it places ground effect on player position after delay
-                    - requires player to place effect in good way
-                - tile explosions patterns. Certain tiles begin to explode after time, expanding in certan patterns
-                    - player has to figure pattern out and react to it
-                - fire spawns randomly at the side of the arena. Moves always in the opposite direction the player is looking to. despawn outside of the arena
-                    - usure if it works?
                 - God immune to damage buff, spawn area where God loses it
                     - player needs to bait boss to it
     - load state functionality to easier testing

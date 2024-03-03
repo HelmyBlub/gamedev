@@ -24,6 +24,7 @@ export type AbilityObjectSeekerFollow = AbilityObjectCircle & {
     playerReachedTime?: number,
     moveSpeed: number,
     moveSpeedIncreaseFactor: number,
+    groundCreated?: boolean,
 }
 
 export function addGodAbilitySeeker() {
@@ -91,8 +92,6 @@ function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: Abilit
         || (paintOrder === "afterCharacterPaint" && abilityObjectFireCircle.subType !== "SeekerGround")
     ) {
         ctx.fillStyle = abilityObject.color;
-        if (abilityObject.faction === FACTION_ENEMY) ctx.fillStyle = "black";
-        if (abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
         ctx.beginPath();
         ctx.arc(
             paintPos.x,
@@ -105,7 +104,6 @@ function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: Abilit
             ctx.strokeStyle = "white";
             ctx.stroke();
         }
-        ctx.globalAlpha = 1;
     }
 }
 
@@ -143,8 +141,9 @@ function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
                 abilityFollow.moveSpeed *= abilityFollow.moveSpeedIncreaseFactor;
             }
         } else {
-            if (abilityFollow.playerReachedTime + abilityFollow.groundSpawnDelay <= game.state.time) {
+            if (!abilityFollow.groundCreated && abilityFollow.playerReachedTime + abilityFollow.groundSpawnDelay <= game.state.time) {
                 const seekerGround = createObjectGround(abilityFollow, game.state.time);
+                abilityFollow.groundCreated = true;
                 game.state.abilityObjects.push(seekerGround);
             }
         }

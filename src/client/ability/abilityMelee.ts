@@ -5,7 +5,7 @@ import { getNextId } from "../game.js";
 import { FACTION_ENEMY, FACTION_PLAYER, Game, IdCounter } from "../gameModel.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner } from "./ability.js";
 
-type AbilityMelee = Ability & {
+export type AbilityMelee = Ability & {
     damage: number,
     tickInterval: number,
     nextTickTime?: number,

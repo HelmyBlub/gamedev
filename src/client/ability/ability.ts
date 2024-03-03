@@ -38,6 +38,8 @@ import { Leveling } from "../character/playerCharacters/levelingCharacter.js"
 import { CharacterClass } from "../character/playerCharacters/playerCharacters.js"
 import { MoreInfoPart, paintMoreInfosPart, paintMoreInfosPartsContainer, paintMoreInfos } from "../moreInfo.js"
 import { addGodAbilitySeeker } from "./god/abilitySeeker.js"
+import { addGodAbilityMovingFire } from "./god/abilityMovingFire.js"
+import { addGodAbilityTileExplosion } from "./god/abilityTileExplosions.js"
 
 export type Ability = {
     id: number,
@@ -134,6 +136,8 @@ export function onDomLoadSetAbilitiesFunctions() {
     addAbilityLightningStrikes();
     addAbilityUnleashPet();
     addGodAbilitySeeker();
+    addGodAbilityMovingFire();
+    addGodAbilityTileExplosion();
 }
 
 export function addAbilityToCharacter(character: Character, ability: Ability, charClass: CharacterClass | undefined = undefined) {

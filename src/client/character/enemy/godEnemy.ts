@@ -9,6 +9,9 @@ import { PathingCache } from "../pathing.js";
 import { paintKingHpBar } from "./kingEnemy.js";
 import { GameMapGodArea, getGodAreaMiddlePosition } from "../../map/mapGodArea.js";
 import { ABILITY_NAME_SEEKER } from "../../ability/god/abilitySeeker.js";
+import { ABILITY_NAME_MOVING_FIRE } from "../../ability/god/abilityMovingFire.js";
+import { ABILITY_NAME_TILE_EXPLOSION } from "../../ability/god/abilityTileExplosions.js";
+import { ABILITY_NAME_MELEE, AbilityMelee } from "../../ability/abilityMelee.js";
 
 export type GodEnemyCharacter = Character;
 export const CHARACTER_TYPE_GOD_ENEMY = "GodEnemyCharacter";
@@ -33,8 +36,12 @@ function createGodEnemy(idCounter: IdCounter, spawnPosition: Position, game: Gam
     const hp = 5 * 1000 * 1000 * 1000;
     const experienceWorth = 0;
     const godCharacter = createCharacter(getNextId(idCounter), spawnPosition.x, spawnPosition.y, bossSize, bossSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_GOD_ENEMY, experienceWorth);
-    const seeker = createAbility(ABILITY_NAME_SEEKER, game.state.idCounter);
-    godCharacter.abilities.push(seeker);
+    const abilityMelee = createAbility(ABILITY_NAME_MELEE, game.state.idCounter) as AbilityMelee;
+    abilityMelee.damage = 250;
+    godCharacter.abilities.push(abilityMelee);
+    godCharacter.abilities.push(createAbility(ABILITY_NAME_SEEKER, game.state.idCounter));
+    godCharacter.abilities.push(createAbility(ABILITY_NAME_MOVING_FIRE, game.state.idCounter));
+    godCharacter.abilities.push(createAbility(ABILITY_NAME_TILE_EXPLOSION, game.state.idCounter));
     godCharacter.paint.image = IMAGE_SLIME;
     if (game.debug.lowKingHp) {
         godCharacter.hp = 500;
