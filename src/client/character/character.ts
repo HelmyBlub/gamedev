@@ -19,7 +19,7 @@ import { ENEMY_FIX_RESPAWN_POSITION } from "./enemy/fixPositionRespawnEnemyModel
 import { addCombatlogDamageTakenEntry } from "../combatlog.js";
 import { executeAbilityLevelingCharacterUpgradeOption } from "./playerCharacters/abilityLevelingCharacter.js";
 import { addCharacterUpgrades, CHARACTER_UPGRADE_FUNCTIONS } from "./upgrades/characterUpgrades.js";
-import { CHARACTER_TYPE_GOD_ENEMY } from "./enemy/godEnemy.js";
+import { CHARACTER_TYPE_GOD_ENEMY } from "./enemy/god/godEnemy.js";
 
 export function findCharacterById(characters: Character[], id: number): Character | null {
     for (let i = 0; i < characters.length; i++) {

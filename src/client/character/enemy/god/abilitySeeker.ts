@@ -1,14 +1,16 @@
-import { determineClosestCharacter, findCharacterById, getPlayerCharacters } from "../../character/character.js";
-import { calculateDirection, calculateDistance, getCameraPosition, getNextId } from "../../game.js";
-import { FACTION_ENEMY, FACTION_PLAYER, Game, IdCounter } from "../../gameModel.js";
-import { getPointPaintPosition } from "../../gamePaint.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityObjectCircle, AbilityOwner, PaintOrderAbility, detectAbilityObjectCircleToCharacterHit } from "../ability.js";
+import { determineClosestCharacter, findCharacterById, getPlayerCharacters } from "../../character.js";
+import { calculateDirection, calculateDistance, getCameraPosition, getNextId } from "../../../game.js";
+import { Game, IdCounter, Position } from "../../../gameModel.js";
+import { getPointPaintPosition, paintTextWithOutline } from "../../../gamePaint.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityObjectCircle, AbilityOwner, PaintOrderAbility, detectAbilityObjectCircleToCharacterHit } from "../../../ability/ability.js";
+import { GodAbility } from "./godAbility.js";
 
 
 export const ABILITY_NAME_SEEKER = "SEEKER";
-export type AbilitySeeker = Ability & {
+export type AbilitySeeker = GodAbility & {
     cooldown: number,
     cooldownFinishedTime: number,
+    groundRadius: number,
 }
 
 export type AbilityObjectSeekerGround = AbilityObjectCircle & {
@@ -25,13 +27,16 @@ export type AbilityObjectSeekerFollow = AbilityObjectCircle & {
     moveSpeed: number,
     moveSpeedIncreaseFactor: number,
     groundCreated?: boolean,
+    groundRadius: number,
 }
 
 export function addGodAbilitySeeker() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_SEEKER] = {
         createAbility: createAbility,
         deleteAbilityObject: deleteObject,
+        paintAbility: paintAbility,
         paintAbilityObject: paintAbilityObject,
+        setAbilityToBossLevel: setAbilityToBossLevel,
         tickAbilityObject: tickAbilityObject,
         tickBossAI: tickBossAI,
     };
@@ -46,13 +51,15 @@ function createAbility(
         name: ABILITY_NAME_SEEKER,
         cooldown: 5000,
         cooldownFinishedTime: 0,
+        groundRadius: 50,
+        pickedUp: false,
         passive: false,
         playerInputBinding: playerInputBinding,
         upgrades: {},
     };
 }
 
-function createObjectFollow(targetCharacterID: number, owner: AbilityOwner, faction: string): AbilityObjectSeekerFollow {
+function createObjectFollow(targetCharacterID: number, owner: AbilityOwner, faction: string, groundRadius: number): AbilityObjectSeekerFollow {
     return {
         type: ABILITY_NAME_SEEKER,
         x: owner.x,
@@ -66,6 +73,7 @@ function createObjectFollow(targetCharacterID: number, owner: AbilityOwner, fact
         damage: 0,
         moveSpeedIncreaseFactor: 1.001,
         groundSpawnDelay: 2000,
+        groundRadius: groundRadius,
     }
 }
 
@@ -74,13 +82,27 @@ function createObjectGround(abilityObject: AbilityObjectSeekerFollow, gameTime: 
         type: ABILITY_NAME_SEEKER,
         x: abilityObject.x,
         y: abilityObject.y,
-        radius: 50,
+        radius: abilityObject.groundRadius,
         color: "black",
         damage: 50,
         faction: abilityObject.faction,
         subType: "SeekerGround",
         tickInterval: 250,
     }
+}
+
+function setAbilityToBossLevel(ability: Ability, level: number) {
+    const abilitySeeker = ability as AbilitySeeker;
+    abilitySeeker.groundRadius = 30 + level * 20;
+}
+
+function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
+    const abiltiyMovingFire = ability as AbilitySeeker;
+    const position: Position | undefined = abiltiyMovingFire.pickedUp ? undefined : abiltiyMovingFire.pickUpPosition;
+    if (!position) return;
+    const paintPos = getPointPaintPosition(ctx, position, cameraPosition);
+    ctx.fillStyle = "20px Arial";
+    paintTextWithOutline(ctx, "white", "black", "Seeker", paintPos.x, paintPos.y, true);
 }
 
 function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
@@ -109,11 +131,12 @@ function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: Abilit
 
 function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     const seeker = ability as AbilitySeeker;
+    if (!seeker.pickedUp) return;
     if (seeker.cooldownFinishedTime < game.state.time) {
         seeker.cooldownFinishedTime = game.state.time + seeker.cooldown;
         const closest = determineClosestCharacter(abilityOwner, getPlayerCharacters(game.state.players));
         if (!closest.minDistanceCharacter) return;
-        const seekerFollow = createObjectFollow(closest.minDistanceCharacter.id, abilityOwner, abilityOwner.faction);
+        const seekerFollow = createObjectFollow(closest.minDistanceCharacter.id, abilityOwner, abilityOwner.faction, seeker.groundRadius);
         game.state.abilityObjects.push(seekerFollow);
     }
 }

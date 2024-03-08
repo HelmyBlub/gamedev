@@ -1,13 +1,14 @@
-import { characterTakeDamage, getPlayerCharacters } from "../../character/character.js";
-import { getCameraPosition, getNextId } from "../../game.js";
-import { FACTION_ENEMY, Game, IdCounter, Position } from "../../gameModel.js";
-import { getPointPaintPosition } from "../../gamePaint.js";
-import { nextRandom } from "../../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility } from "../ability.js";
+import { characterTakeDamage, getPlayerCharacters } from "../../character.js";
+import { getCameraPosition, getNextId } from "../../../game.js";
+import { FACTION_ENEMY, Game, IdCounter, Position } from "../../../gameModel.js";
+import { getPointPaintPosition, paintTextWithOutline } from "../../../gamePaint.js";
+import { nextRandom } from "../../../randomNumberGenerator.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility } from "../../../ability/ability.js";
+import { GodAbility } from "./godAbility.js";
 
 
 export const ABILITY_NAME_TILE_EXPLOSION = "Tile Explosion";
-export type AbilityTileExplosion = Ability & {
+export type AbilityTileExplosion = GodAbility & {
     cooldown: number,
     cooldownFinishedTime?: number,
     spawnCount: number,
@@ -24,7 +25,9 @@ export function addGodAbilityTileExplosion() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_TILE_EXPLOSION] = {
         createAbility: createAbility,
         deleteAbilityObject: deleteObject,
+        paintAbility: paintAbility,
         paintAbilityObject: paintAbilityObject,
+        setAbilityToBossLevel: setAbilityToBossLevel,
         tickAbilityObject: tickAbilityObject,
         tickBossAI: tickBossAI,
     };
@@ -39,6 +42,7 @@ function createAbility(
         name: ABILITY_NAME_TILE_EXPLOSION,
         cooldown: 10000,
         spawnCount: 2,
+        pickedUp: false,
         passive: false,
         playerInputBinding: playerInputBinding,
         upgrades: {},
@@ -59,6 +63,20 @@ function createAbilityObject(position: Position, gameTime: number): AbilityObjec
         damage: 250,
         faction: FACTION_ENEMY,
     }
+}
+
+function setAbilityToBossLevel(ability: Ability, level: number) {
+    const abilitySeeker = ability as AbilityTileExplosion;
+    abilitySeeker.spawnCount = level;
+}
+
+function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
+    const abiltiyMovingFire = ability as AbilityTileExplosion;
+    const position: Position | undefined = abiltiyMovingFire.pickedUp ? undefined : abiltiyMovingFire.pickUpPosition;
+    if (!position) return;
+    const paintPos = getPointPaintPosition(ctx, position, cameraPosition);
+    ctx.fillStyle = "20px Arial";
+    paintTextWithOutline(ctx, "white", "black", "TileExplosions", paintPos.x, paintPos.y, true);
 }
 
 function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
@@ -117,7 +135,8 @@ function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: Abilit
 
 function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     const tileExplosion = ability as AbilityTileExplosion;
-    if (tileExplosion.cooldownFinishedTime === undefined) tileExplosion.cooldownFinishedTime = game.state.time + tileExplosion.cooldown;
+    if (!tileExplosion.pickedUp) return;
+    if (tileExplosion.cooldownFinishedTime === undefined) tileExplosion.cooldownFinishedTime = game.state.time;
     if (tileExplosion.cooldownFinishedTime < game.state.time) {
         tileExplosion.cooldownFinishedTime = game.state.time + tileExplosion.cooldown;
         const map = game.state.map;

@@ -1,13 +1,14 @@
-import { characterTakeDamage, determineClosestCharacter, getPlayerCharacters } from "../../character/character.js";
-import { getCameraPosition, getNextId } from "../../game.js";
-import { FACTION_ENEMY, Game, IdCounter, Position } from "../../gameModel.js";
-import { getPointPaintPosition } from "../../gamePaint.js";
-import { RandomSeed, nextRandom } from "../../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility } from "../ability.js";
+import { characterTakeDamage, determineClosestCharacter, getPlayerCharacters } from "../../character.js";
+import { getCameraPosition, getNextId } from "../../../game.js";
+import { FACTION_ENEMY, Game, IdCounter, Position } from "../../../gameModel.js";
+import { getPointPaintPosition, paintTextWithOutline } from "../../../gamePaint.js";
+import { RandomSeed, nextRandom } from "../../../randomNumberGenerator.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility } from "../../../ability/ability.js";
+import { GodAbility } from "./godAbility.js";
 
 
 export const ABILITY_NAME_MOVING_FIRE = "Moving Fire";
-export type AbilityMovingFire = Ability & {
+export type AbilityMovingFire = GodAbility & {
     cooldown: number,
     cooldownFinishedTime: number,
     fireSpawnCount: number,
@@ -25,6 +26,8 @@ export function addGodAbilityMovingFire() {
         createAbility: createAbility,
         deleteAbilityObject: deleteObject,
         paintAbilityObject: paintAbilityObject,
+        paintAbility: paintAbility,
+        setAbilityToBossLevel: setAbilityToBossLevel,
         tickAbilityObject: tickAbilityObject,
         tickBossAI: tickBossAI,
     };
@@ -43,6 +46,7 @@ function createAbility(
         passive: false,
         playerInputBinding: playerInputBinding,
         upgrades: {},
+        pickedUp: false,
     };
 }
 
@@ -58,6 +62,20 @@ function createAbilityObject(position: Position, randomSeed: RandomSeed): Abilit
         faction: FACTION_ENEMY,
         tickInterval: 100,
     }
+}
+
+function setAbilityToBossLevel(ability: Ability, level: number) {
+    const abilityMovingFire = ability as AbilityMovingFire;
+    abilityMovingFire.fireSpawnCount = level * 2;
+}
+
+function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
+    const abiltiyMovingFire = ability as AbilityMovingFire;
+    const position: Position | undefined = abiltiyMovingFire.pickedUp ? undefined : abiltiyMovingFire.pickUpPosition;
+    if (!position) return;
+    const paintPos = getPointPaintPosition(ctx, position, cameraPosition);
+    ctx.fillStyle = "20px Arial";
+    paintTextWithOutline(ctx, "white", "black", "MovingFire", paintPos.x, paintPos.y, true);
 }
 
 function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
@@ -78,6 +96,7 @@ function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: Abilit
 
 function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     const movingFire = ability as AbilityMovingFire;
+    if (!movingFire.pickedUp) return;
     if (movingFire.cooldownFinishedTime < game.state.time) {
         movingFire.cooldownFinishedTime = game.state.time + movingFire.cooldown;
         const map = game.state.map;

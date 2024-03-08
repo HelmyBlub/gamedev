@@ -37,9 +37,9 @@ import { addAbilityUnleashPet } from "./petTamer/abilityUnleashPet.js"
 import { Leveling } from "../character/playerCharacters/levelingCharacter.js"
 import { CharacterClass } from "../character/playerCharacters/playerCharacters.js"
 import { MoreInfoPart, paintMoreInfosPart, paintMoreInfosPartsContainer, paintMoreInfos } from "../moreInfo.js"
-import { addGodAbilitySeeker } from "./god/abilitySeeker.js"
-import { addGodAbilityMovingFire } from "./god/abilityMovingFire.js"
-import { addGodAbilityTileExplosion } from "./god/abilityTileExplosions.js"
+import { addGodAbilitySeeker } from "../character/enemy/god/abilitySeeker.js"
+import { addGodAbilityMovingFire } from "../character/enemy/god/abilityMovingFire.js"
+import { addGodAbilityTileExplosion } from "../character/enemy/god/abilityTileExplosions.js"
 
 export type Ability = {
     id: number,

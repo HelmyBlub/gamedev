@@ -6,8 +6,6 @@ current tasks:
         - dev steps:
             - create "God" enemy type
                 - create more abilities
-                    - tile explosions patterns. Certain tiles begin to explode after time, expanding in certan patterns
-                        - player has to figure pattern out and react to it
             - fight win
                 - new highscore board
                 - money amount
@@ -21,7 +19,7 @@ current tasks:
             - starts with 1 ability. Every 10%Hp loss get another ability
             - ability damage scales based on how often player did take damage
                 - like: first time 10dmg, second time, 100dmg, third time 1000dmg and so on
-            - should work in multiplayer
+            - should "work" in multiplayer
             - abilities should require "understanding" them
             - want decisions to be made in combat, resulting in different fight challenges
             - ability idea:
@@ -30,6 +28,7 @@ current tasks:
                     - forces player to move around
                 - God immune to damage buff, spawn area where God loses it
                     - player needs to bait boss to it
+
     - load state functionality to easier testing
         - create one state for loading one state with optimal gear inside god area 
     - replay tests perforamnce metrics save in localStorage for better see how it changes

@@ -1,5 +1,5 @@
 import { getPlayerCharacters } from "../character/character.js";
-import { spawnGodEnemy } from "../character/enemy/godEnemy.js";
+import { spawnGodEnemy } from "../character/enemy/god/godEnemy.js";
 import { calculateDistance } from "../game.js";
 import { Game, Position } from "../gameModel.js";
 import { GameMap, MapChunk, TILE_ID_GRASS, TILE_ID_PATH1_HORIZONTAL, TILE_ID_PATH2_VERTICAL, TILE_ID_ROCK, TILE_ID_TREE, changeTileIdOfMapChunk, chunkXYToMapKey, deletePaintCacheForMapChunk, getMapMidlePosition, positionToMapKey } from "./map.js";

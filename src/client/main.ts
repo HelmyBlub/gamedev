@@ -15,13 +15,13 @@ import { localStorageLoad } from "./permanentData.js";
 import { addUpgradeBuildingsFunctions } from "./map/buildings/upgradeBuilding.js";
 import { onDomLoadImagesLoad } from "./imageLoad.js";
 import { onDomLoadMapTiles } from "./map/map.js";
-import { addGodEnemyType } from "./character/enemy/godEnemy.js";
+import { addGodEnemyType } from "./character/enemy/god/godEnemy.js";
 
 var gameCount: number = 0;
 export const GAME_VERSION: GameVersion = {
     major: 0,
     minor: 1,
-    patch: 210,
+    patch: 211,
 }
 
 export function start() {
