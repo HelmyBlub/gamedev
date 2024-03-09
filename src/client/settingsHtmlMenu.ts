@@ -1,9 +1,10 @@
-import { experienceForEveryPlayersLeveling, playerCharactersAddBossSkillPoints } from "./character/character.js";
+import { experienceForEveryPlayersLeveling, findAndSetNewCameraCharacterId, playerCharactersAddBossSkillPoints } from "./character/character.js";
 import { createBossWithLevel } from "./character/enemy/bossEnemy.js";
 import { levelingCharacterAndClassXpGain } from "./character/playerCharacters/levelingCharacter.js";
 import { deepCopy } from "./game.js";
 import { Debugging, Game } from "./gameModel.js";
 import { GAME_VERSION } from "./main.js";
+import { compressString, decompressString, downloadBlob, loadCompressedStateFromUrl } from "./stringCompress.js";
 import { initReplay, replayReplayData, testGame } from "./test/gameTest.js";
 
 export function addHTMLDebugMenusToSettings(game: Game) {
@@ -26,8 +27,10 @@ export function addHTMLDebugMenusToSettings(game: Game) {
     addSettingInputBoxPlayerPaintAlpha(game);
     addGiveMoneyButton(game);
     addTestButton(game);
-    addCopyLastReplayButton(game);
     addReplayLastRunButton(game);
+    addCopyLastReplayButton(game);
+    addCurrentStateToFileButton(game);
+    addLoadTestStateButton(game);
 }
 
 function setVersionNumberToSettingButton() {
@@ -160,6 +163,35 @@ function addCopyLastReplayButton(game: Game) {
         });
     }
 }
+
+function addCurrentStateToFileButton(game: Game) {
+    const buttonName = "save current game state to file";
+    addSettingButton(buttonName);
+    const button = document.getElementById(buttonName) as HTMLButtonElement;
+    if (button) {
+        button.addEventListener('click', () => {
+            if (!game.multiplayer.websocket) {
+                const compressedString = compressString(JSON.stringify(game.state, undefined, 2));
+                downloadBlob(compressedString, 'testState1.bin', 'application/octet-stream');
+            }
+        });
+    }
+}
+function addLoadTestStateButton(game: Game) {
+    const buttonName = "load test state1";
+    addSettingButton(buttonName);
+    const button = document.getElementById(buttonName) as HTMLButtonElement;
+    if (button) {
+        button.addEventListener('click', async () => {
+            if (!game.multiplayer.websocket) {
+                game.state = await loadCompressedStateFromUrl("/data/testState1.bin", game);
+                game.performance = {};
+                findAndSetNewCameraCharacterId(game.camera, game.state.players, game.multiplayer.myClientId);
+            }
+        });
+    }
+}
+
 function addXpButton(game: Game) {
     const buttonName = "add alot experience";
     addSettingButton(buttonName);
