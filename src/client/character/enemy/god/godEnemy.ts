@@ -86,6 +86,7 @@ function tickEnemyCharacter(character: Character, game: Game, pathingCache: Path
         const godAbilityToPickUp = getAbilityToPickUp(enemy);
         if (godAbilityToPickUp) {
             enemy.isMoving = true;
+            enemy.isDebuffImmune = true;
             enemy.moveDirection = calculateDirection(enemy, godAbilityToPickUp.pickUpPosition!);
         }
     } else {
@@ -101,6 +102,7 @@ function tickEnemyCharacter(character: Character, game: Game, pathingCache: Path
             const distance = calculateDistance(enemy, godAbilityToPickUp.pickUpPosition!);
             if (distance < enemy.width + 10) {
                 godAbilityToPickUp.pickedUp = true;
+                enemy.isDebuffImmune = false;
                 enemy.pickUpCount++;
                 enemy.pickUpAbilityIndex = undefined;
                 setAbilityToBossLevel(godAbilityToPickUp, enemy.pickUpCount);

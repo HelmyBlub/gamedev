@@ -48,6 +48,7 @@ export function startGodFight(godArea: GameMapGodArea, map: GameMap, game: Game)
     game.state.bossStuff.godFightStarted = true;
     closeOfGodArea(godArea, map, game);
     spawnGodEnemy(godArea, game);
+    game.UI.playerGlobalAlphaMultiplier = 0.25;
 }
 
 export function getGodAreaMiddlePosition(godArea: GameMapGodArea, map: GameMap): Position | undefined {
