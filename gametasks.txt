@@ -2,10 +2,8 @@ next test run: tamer, Sniper, All
 increase version
 
 current tasks:
-    - game load test game state
-        - reduce player alpha on god/king fight start
-        - make god immune to "root" and "slow" when he want to grab ability
     - enemy type: "God"
+        - make immun to root. Rooted he can not be dragged to influence next ability pickup
         - dev steps:
             - create "God" enemy type
                 - create more abilities

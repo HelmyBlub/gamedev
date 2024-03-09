@@ -5,6 +5,8 @@ import { getPointPaintPosition, paintTextWithOutline } from "../../../gamePaint.
 import { nextRandom } from "../../../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility } from "../../../ability/ability.js";
 import { GodAbility } from "./godAbility.js";
+import { applyExponentialStackingDamageTakenDebuff } from "./godEnemy.js";
+import { Character } from "../../characterModel.js";
 
 
 export const ABILITY_NAME_TILE_EXPLOSION = "Tile Explosion";
@@ -60,7 +62,7 @@ function createAbilityObject(position: Position, gameTime: number): AbilityObjec
         damageTime: gameTime + damageDelay,
         growCount: 0,
         color: "black",
-        damage: 250,
+        damage: 25,
         faction: FACTION_ENEMY,
     }
 }
@@ -190,6 +192,7 @@ function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
                         && char.y > tempTilePos.y && char.y < tempTilePos.y + tileExplosion.size
                     ) {
                         characterTakeDamage(char, tileExplosion.damage, game, undefined, tileExplosion.type);
+                        applyExponentialStackingDamageTakenDebuff(char, game);
                     }
                 }
             }

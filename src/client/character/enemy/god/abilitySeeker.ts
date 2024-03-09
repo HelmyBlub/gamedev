@@ -4,6 +4,8 @@ import { Game, IdCounter, Position } from "../../../gameModel.js";
 import { getPointPaintPosition, paintTextWithOutline } from "../../../gamePaint.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityObjectCircle, AbilityOwner, PaintOrderAbility, detectAbilityObjectCircleToCharacterHit } from "../../../ability/ability.js";
 import { GodAbility } from "./godAbility.js";
+import { applyExponentialStackingDamageTakenDebuff } from "./godEnemy.js";
+import { Character } from "../../characterModel.js";
 
 
 export const ABILITY_NAME_SEEKER = "SEEKER";
@@ -34,6 +36,7 @@ export function addGodAbilitySeeker() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_SEEKER] = {
         createAbility: createAbility,
         deleteAbilityObject: deleteObject,
+        onObjectHit: onObjectHit,
         paintAbility: paintAbility,
         paintAbilityObject: paintAbilityObject,
         setAbilityToBossLevel: setAbilityToBossLevel,
@@ -84,11 +87,15 @@ function createObjectGround(abilityObject: AbilityObjectSeekerFollow, gameTime: 
         y: abilityObject.y,
         radius: abilityObject.groundRadius,
         color: "black",
-        damage: 50,
+        damage: 10,
         faction: abilityObject.faction,
         subType: "SeekerGround",
         tickInterval: 250,
     }
+}
+
+function onObjectHit(ability: AbilityObject, targetCharacter: Character, game: Game) {
+    applyExponentialStackingDamageTakenDebuff(targetCharacter, game);
 }
 
 function setAbilityToBossLevel(ability: Ability, level: number) {

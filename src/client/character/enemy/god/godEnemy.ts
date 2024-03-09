@@ -1,5 +1,5 @@
 import { ABILITIES_FUNCTIONS, createAbility, setAbilityToBossLevel } from "../../../ability/ability.js";
-import { tickCharacterDebuffs } from "../../../debuff/debuff.js";
+import { applyDebuff, tickCharacterDebuffs } from "../../../debuff/debuff.js";
 import { calculateDirection, calculateDistance, getNextId } from "../../../game.js";
 import { IdCounter, Game, Position, FACTION_ENEMY } from "../../../gameModel.js";
 import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick } from "../../character.js";
@@ -13,6 +13,7 @@ import { ABILITY_NAME_MOVING_FIRE } from "./abilityMovingFire.js";
 import { ABILITY_NAME_TILE_EXPLOSION } from "./abilityTileExplosions.js";
 import { ABILITY_NAME_MELEE, AbilityMelee } from "../../../ability/abilityMelee.js";
 import { GodAbility, setGodAbilityPickUpPosition } from "./godAbility.js";
+import { createDebuffDamageTaken } from "../../../debuff/debuffDamageTaken.js";
 
 
 const FIRST_PICK_UP_DELAY = 3000;
@@ -38,6 +39,13 @@ export function spawnGodEnemy(godArea: GameMapGodArea, game: Game) {
     game.state.bossStuff.bosses.push(king);
 }
 
+export function applyExponentialStackingDamageTakenDebuff(target: Character, game: Game) {
+    const factor = 2;
+    const duration = 30000;
+    const debuffDamageTaken = createDebuffDamageTaken(factor, duration, game.state.time, true);
+    applyDebuff(debuffDamageTaken, target, game);
+}
+
 function createGodEnemy(idCounter: IdCounter, spawnPosition: Position, game: Game): GodEnemyCharacter {
     const bossSize = 60;
     const color = "black";
@@ -50,7 +58,7 @@ function createGodEnemy(idCounter: IdCounter, spawnPosition: Position, game: Gam
         pickUpCount: 0,
     };
     const abilityMelee = createAbility(ABILITY_NAME_MELEE, game.state.idCounter) as AbilityMelee;
-    abilityMelee.damage = 250;
+    abilityMelee.damage = 50;
     godCharacter.abilities.push(abilityMelee);
     godCharacter.abilities.push(createAbility(ABILITY_NAME_SEEKER, game.state.idCounter));
     godCharacter.abilities.push(createAbility(ABILITY_NAME_MOVING_FIRE, game.state.idCounter));

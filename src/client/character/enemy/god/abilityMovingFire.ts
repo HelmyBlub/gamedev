@@ -5,6 +5,8 @@ import { getPointPaintPosition, paintTextWithOutline } from "../../../gamePaint.
 import { RandomSeed, nextRandom } from "../../../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility } from "../../../ability/ability.js";
 import { GodAbility } from "./godAbility.js";
+import { Character } from "../../characterModel.js";
+import { applyExponentialStackingDamageTakenDebuff } from "./godEnemy.js";
 
 
 export const ABILITY_NAME_MOVING_FIRE = "Moving Fire";
@@ -58,7 +60,7 @@ function createAbilityObject(position: Position, randomSeed: RandomSeed): Abilit
         size: 40,
         moveSpeed: 1 + nextRandom(randomSeed) * 2,
         color: "black",
-        damage: 25,
+        damage: 10,
         faction: FACTION_ENEMY,
         tickInterval: 100,
     }
@@ -135,6 +137,7 @@ function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
                 && char.y > movingFire.y && char.y < movingFire.y + movingFire.size
             ) {
                 characterTakeDamage(char, movingFire.damage, game, undefined, movingFire.type);
+                applyExponentialStackingDamageTakenDebuff(char, game);
             }
         }
 
