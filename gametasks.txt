@@ -1,11 +1,15 @@
-next test run: Sniper, All
+next test run: tamer, Sniper, All
 increase version
 
 current tasks:
+    - debug menu "give xp"
+    - game load test game state
     - enemy type: "God"
         - dev steps:
             - create "God" enemy type
                 - create more abilities
+                    - God immune to damage buff, spawn area where God loses it
+                        - player needs to bait boss to it
             - fight win
                 - new highscore board
                 - money amount
@@ -26,8 +30,6 @@ current tasks:
                 - "ball", which the player can take, buff player
                     - ground effect(or maybe seeker), which grows, player needs ball to remove it. removes "ball effect" from player
                     - forces player to move around
-                - God immune to damage buff, spawn area where God loses it
-                    - player needs to bait boss to it
 
     - load state functionality to easier testing
         - create one state for loading one state with optimal gear inside god area 

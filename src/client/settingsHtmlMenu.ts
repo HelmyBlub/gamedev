@@ -1,5 +1,6 @@
-import { playerCharactersAddBossSkillPoints } from "./character/character.js";
+import { experienceForEveryPlayersLeveling, playerCharactersAddBossSkillPoints } from "./character/character.js";
 import { createBossWithLevel } from "./character/enemy/bossEnemy.js";
+import { levelingCharacterAndClassXpGain } from "./character/playerCharacters/levelingCharacter.js";
 import { deepCopy } from "./game.js";
 import { Debugging, Game } from "./gameModel.js";
 import { GAME_VERSION } from "./main.js";
@@ -18,6 +19,7 @@ export function addHTMLDebugMenusToSettings(game: Game) {
     addSettingCheckbox("closeKingArea", game);
     addSettingCheckbox("closeGodArea", game);
     addBossSkillPointButton(game);
+    addXpButton(game);
     addTankyButton(game);
     addSpawnBossButton(game);
     addClearLocalStorageButton(game);
@@ -154,6 +156,20 @@ function addCopyLastReplayButton(game: Game) {
         button.addEventListener('click', () => {
             if (!game.multiplayer.websocket && game.testing.lastReplay) {
                 navigator.clipboard.writeText(JSON.stringify(game.testing.lastReplay, undefined, 2));
+            }
+        });
+    }
+}
+function addXpButton(game: Game) {
+    const buttonName = "add alot experience";
+    addSettingButton(buttonName);
+    const button = document.getElementById(buttonName) as HTMLButtonElement;
+    if (button) {
+        button.addEventListener('click', () => {
+            if (!game.multiplayer.websocket) {
+                const xp = 5000000;
+                levelingCharacterAndClassXpGain(game.state, xp, game);
+                experienceForEveryPlayersLeveling(xp, game);
             }
         });
     }

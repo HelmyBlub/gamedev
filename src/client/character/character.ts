@@ -562,7 +562,7 @@ export function getCharacterMoveSpeed(character: Character): number {
     return character.baseMoveSpeed * character.moveSpeedFactor;
 }
 
-function experienceForEveryPlayersLeveling(experience: number, game: Game) {
+export function experienceForEveryPlayersLeveling(experience: number, game: Game) {
     const playerCharacters = getPlayerCharacters(game.state.players);
     for (let character of playerCharacters) {
         experienceForCharacter(character, experience);
@@ -602,7 +602,7 @@ function experienceForCharacter(character: Character, experienceWorth: number) {
 function killCharacter(character: Character, game: Game, abilityIdRef: number | undefined = undefined) {
     character.isDead = true;
     if (game.state.timeFirstKill === undefined) game.state.timeFirstKill = game.state.time;
-    levelingCharacterAndClassXpGain(game.state, character, game);
+    levelingCharacterAndClassXpGain(game.state, character.experienceWorth, game);
     if (character.type === CHARACTER_TYPE_BOSS_ENEMY) {
         playerCharactersAddBossSkillPoints(character.level?.level, game);
         experienceForEveryPlayersLeveling(character.experienceWorth, game);
