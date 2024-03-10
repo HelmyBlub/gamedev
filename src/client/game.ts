@@ -126,6 +126,10 @@ export function gameInit(game: Game) {
         game.multiplayer.maxServerGameTime = 0;
         game.state.playerInputs = game.multiplayer.cachePlayerInputs!;
     }
+    const playerAlphaInput: HTMLInputElement = document.getElementById("playerGlobalAlphaMultiplier") as HTMLInputElement;
+    if (playerAlphaInput) {
+        game.UI.playerGlobalAlphaMultiplier = parseInt(playerAlphaInput.value) / 100;
+    }
     resetPastCharacters(game);
 }
 

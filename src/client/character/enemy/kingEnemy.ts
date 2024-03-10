@@ -107,6 +107,9 @@ export function startKingFight(kingAreaPosition: Position, game: Game) {
         game.state.bossStuff.bosses.push(king);
         game.state.bossStuff.closedOfKingAreaEntrance = entrance;
         game.state.bossStuff.kingFightStarted = true;
+        if (game.UI.playerGlobalAlphaMultiplier > 0.25) {
+            game.UI.playerGlobalAlphaMultiplier = 0.25;
+        }
     } else {
         throw new Error("bossArea entrance not found, should not be able to happen");
     }

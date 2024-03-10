@@ -11,8 +11,9 @@ current tasks:
                 - think about sound?
                 - performane imporve tile explosions
                 - highscore board should display best try percentages
+                - upgrade building: god/king tries
 
-    - replay tests perforamnce metrics save in localStorage for better see how it changes
+    - replay tests performance metrics save in localStorage for better see how it changes
     - moreInfos:
         - comabtlog to see what damage i took
         - damage meter. I want to know what does my damage
