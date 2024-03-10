@@ -8,12 +8,13 @@ import { paintCharacterWithAbilitiesDefault, paintCharatersPets } from "../../ch
 import { PathingCache } from "../../pathing.js";
 import { paintKingHpBar } from "../kingEnemy.js";
 import { GameMapGodArea, getGodAreaMiddlePosition } from "../../../map/mapGodArea.js";
-import { ABILITY_NAME_SEEKER } from "./abilitySeeker.js";
-import { ABILITY_NAME_MOVING_FIRE } from "./abilityMovingFire.js";
-import { ABILITY_NAME_TILE_EXPLOSION } from "./abilityTileExplosions.js";
+import { ABILITY_NAME_SEEKER, addGodAbilitySeeker } from "./abilitySeeker.js";
+import { ABILITY_NAME_MOVING_FIRE, addGodAbilityMovingFire } from "./abilityMovingFire.js";
+import { ABILITY_NAME_TILE_EXPLOSION, addGodAbilityTileExplosion } from "./abilityTileExplosions.js";
 import { ABILITY_NAME_MELEE, AbilityMelee } from "../../../ability/abilityMelee.js";
 import { GodAbility, setGodAbilityPickUpPosition } from "./godAbility.js";
 import { createDebuffDamageTaken } from "../../../debuff/debuffDamageTaken.js";
+import { ABILITY_NAME_GOD_IMMUNITY, addGodAbilityGodImmunity } from "./abilityGodImmunity.js";
 
 
 const FIRST_PICK_UP_DELAY = 3000;
@@ -31,6 +32,10 @@ export function addGodEnemyType() {
         tickFunction: tickEnemyCharacter,
         paintCharacterType: paint,
     }
+    addGodAbilityGodImmunity();
+    addGodAbilitySeeker();
+    addGodAbilityMovingFire();
+    addGodAbilityTileExplosion();
 }
 
 export function spawnGodEnemy(godArea: GameMapGodArea, game: Game) {
@@ -63,6 +68,7 @@ function createGodEnemy(idCounter: IdCounter, spawnPosition: Position, game: Gam
     godCharacter.abilities.push(createAbility(ABILITY_NAME_SEEKER, game.state.idCounter));
     godCharacter.abilities.push(createAbility(ABILITY_NAME_MOVING_FIRE, game.state.idCounter));
     godCharacter.abilities.push(createAbility(ABILITY_NAME_TILE_EXPLOSION, game.state.idCounter));
+    godCharacter.abilities.push(createAbility(ABILITY_NAME_GOD_IMMUNITY, game.state.idCounter));
     godCharacter.paint.image = IMAGE_SLIME;
     if (game.debug.lowKingHp) {
         godCharacter.hp = 50000;
@@ -112,7 +118,7 @@ function tickEnemyCharacter(character: Character, game: Game, pathingCache: Path
             const distance = calculateDistance(enemy, godAbilityToPickUp.pickUpPosition!);
             if (distance < enemy.width + 10) {
                 godAbilityToPickUp.pickedUp = true;
-                enemy.isDebuffImmune = false;
+                if (!enemy.isDamageImmune) enemy.isDebuffImmune = false;
                 enemy.pickUpCount++;
                 enemy.pickUpAbilityIndex = undefined;
                 setAbilityToBossLevel(godAbilityToPickUp, enemy.pickUpCount);

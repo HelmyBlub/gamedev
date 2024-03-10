@@ -76,7 +76,7 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
     const position: Position | undefined = abiltiyMovingFire.pickedUp ? undefined : abiltiyMovingFire.pickUpPosition;
     if (!position) return;
     const paintPos = getPointPaintPosition(ctx, position, cameraPosition);
-    ctx.fillStyle = "20px Arial";
+    ctx.font = "20px Arial";
     paintTextWithOutline(ctx, "white", "black", "MovingFire", paintPos.x, paintPos.y, true);
 }
 

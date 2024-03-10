@@ -135,9 +135,6 @@ export function onDomLoadSetAbilitiesFunctions() {
     addAbilityLightningBall();
     addAbilityLightningStrikes();
     addAbilityUnleashPet();
-    addGodAbilitySeeker();
-    addGodAbilityMovingFire();
-    addGodAbilityTileExplosion();
 }
 
 export function addAbilityToCharacter(character: Character, ability: Ability, charClass: CharacterClass | undefined = undefined) {

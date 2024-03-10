@@ -8,7 +8,7 @@ import { applyExponentialStackingDamageTakenDebuff } from "./godEnemy.js";
 import { Character } from "../../characterModel.js";
 
 
-export const ABILITY_NAME_SEEKER = "SEEKER";
+export const ABILITY_NAME_SEEKER = "Seeker";
 export type AbilitySeeker = GodAbility & {
     cooldown: number,
     cooldownFinishedTime: number,
@@ -108,7 +108,7 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
     const position: Position | undefined = abiltiyMovingFire.pickedUp ? undefined : abiltiyMovingFire.pickUpPosition;
     if (!position) return;
     const paintPos = getPointPaintPosition(ctx, position, cameraPosition);
-    ctx.fillStyle = "20px Arial";
+    ctx.font = "20px Arial";
     paintTextWithOutline(ctx, "white", "black", "Seeker", paintPos.x, paintPos.y, true);
 }
 
