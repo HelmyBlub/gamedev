@@ -1,5 +1,5 @@
 import { ABILITIES_FUNCTIONS, createAbility, setAbilityToBossLevel } from "../../../ability/ability.js";
-import { applyDebuff, tickCharacterDebuffs } from "../../../debuff/debuff.js";
+import { applyDebuff, removeCharacterDebuffs, tickCharacterDebuffs } from "../../../debuff/debuff.js";
 import { calculateDirection, calculateDistance, getNextId } from "../../../game.js";
 import { IdCounter, Game, Position, FACTION_ENEMY } from "../../../gameModel.js";
 import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick } from "../../character.js";
@@ -68,6 +68,7 @@ function createGodEnemy(idCounter: IdCounter, spawnPosition: Position, game: Gam
         godCharacter.hp = 50000;
         godCharacter.maxHp = 50000;
     }
+    godCharacter.isRootImmune = true;
     setGodAbilityPickUpPosition(godCharacter, game);
     return godCharacter;
 }
@@ -95,6 +96,7 @@ function tickEnemyCharacter(character: Character, game: Game, pathingCache: Path
         if (godAbilityToPickUp) {
             enemy.isMoving = true;
             enemy.isDebuffImmune = true;
+            removeCharacterDebuffs(enemy, game);
             enemy.moveDirection = calculateDirection(enemy, godAbilityToPickUp.pickUpPosition!);
         }
     } else {

@@ -516,7 +516,7 @@ export function turnCharacterToPet(character: Character, game: Game) {
 }
 
 export function moveCharacterTick(character: Character, map: GameMap, idCounter: IdCounter, game: Game) {
-    if (character.isRooted) return;
+    if (character.isRooted && !character.isRootImmune) return;
     if (character.isMoveTickDisabled) return;
     const newPosition = calculateCharacterMovePosition(character, map, idCounter, game);
     if (newPosition) {

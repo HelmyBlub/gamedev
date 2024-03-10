@@ -114,6 +114,7 @@ export type Character = Position & {
     }
     isPet?: boolean,
     isDamageImmune?: boolean,
+    isRootImmune?: boolean,
     isDebuffImmune?: boolean,
     isUnMoveAble?: boolean,
     becameKing?: boolean,
