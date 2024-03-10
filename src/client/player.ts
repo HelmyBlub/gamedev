@@ -1,6 +1,7 @@
 import { findMyCharacter, resetCharacter } from "./character/character.js";
 import { Character, createPlayerCharacter } from "./character/characterModel.js";
 import { getCelestialDirection } from "./character/enemy/bossEnemy.js";
+import { CHARACTER_TYPE_GOD_ENEMY } from "./character/enemy/god/godEnemy.js";
 import { CHARACTER_TYPE_KING_ENEMY, modifyCharacterToKing } from "./character/enemy/kingEnemy.js";
 import { CharacterUpgrades, addCharacterUpgrades } from "./character/upgrades/characterUpgrades.js";
 import { calculateDistance, createPaintTextData, deepCopy, findClientInfo, findClientInfoByCharacterId, getCameraPosition } from "./game.js";
@@ -171,7 +172,7 @@ export function getPlayerFurthestAwayFromSpawn(players: Player[]): Player | unde
     return furthestPlayer;
 }
 
-export function addPlayerMoney(game: Game, isKingKill: boolean = false) {
+export function addPlayerMoney(game: Game, isKingKill: boolean = false, isGodKill: boolean = false) {
     let highestPlayerDistance = 0;
     for (let i = 0; i < game.state.players.length; i++) {
         const player = game.state.players[i];
@@ -192,6 +193,16 @@ export function addPlayerMoney(game: Game, isKingKill: boolean = false) {
                 text: `for King kill of ${boss.maxHp} HP`,
             });
             moneyGain += kingMoney;
+        };
+    } else if (isGodKill) {
+        const boss = game.state.bossStuff.bosses[game.state.bossStuff.bosses.length - 1];
+        if (boss && boss.type === CHARACTER_TYPE_GOD_ENEMY) {
+            const godMoney = calculateMoneyForKingMaxHp(boss.maxHp) * 2;
+            game.UI.moneyGainedThisRun.push({
+                amount: godMoney,
+                text: `for God kill`,
+            });
+            moneyGain += godMoney;
         };
     }
     addMoneyAmountToPlayer(moneyGain, game.state.players, game);

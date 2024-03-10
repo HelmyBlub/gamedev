@@ -91,7 +91,7 @@ export function gameInit(game: Game) {
     if (!game.multiplayer.websocket && game.debug.closeGodArea) {
         initGodArea(game.state.map, 5000);
     } else {
-        initGodArea(game.state.map, 100000);
+        initGodArea(game.state.map, 40000);
     }
     game.state.abilityObjects = [];
     game.state.killCounter = 0;
@@ -278,10 +278,10 @@ export function deepCopy(object: any): any {
     return JSON.parse(json);
 }
 
-export function endGame(game: Game, isKingKill: boolean = false) {
+export function endGame(game: Game, isKingKill: boolean = false, isGodKill: boolean = false) {
     game.state.ended = true;
-    addPlayerMoney(game, isKingKill);
-    const newScore = calculateHighscoreOnGameEnd(game, isKingKill);
+    addPlayerMoney(game, isKingKill, isGodKill);
+    const newScore = calculateHighscoreOnGameEnd(game, isKingKill, isGodKill);
     if (isKingKill) {
         setPlayerAsKing(game);
         mapObjectPlaceClassBuilding(game);

@@ -621,7 +621,7 @@ function killCharacter(character: Character, game: Game, abilityIdRef: number | 
     if (character.type === CHARACTER_TYPE_KING_ENEMY) {
         game.state.bossStuff.bosses.push(createKingCrownCharacter(game.state.idCounter, character));
     } else if (character.type === CHARACTER_TYPE_GOD_ENEMY) {
-        endGame(game);
+        endGame(game, false, true);
     }
     if (abilityIdRef !== undefined && character.type !== CHARACTER_TYPE_BOSS_ENEMY) {
         const ability = findAbilityById(abilityIdRef, game);

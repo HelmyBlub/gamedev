@@ -36,7 +36,7 @@ function tickCrown(enemy: Character, game: Game, pathingCache: PathingCache | nu
         y: targetCharacter.y - targetCharacter.height / 2
     }
     if (calculateDistance(enemy, targetPos) <= getCharacterMoveSpeed(enemy)) {
-        endGame(game, true);
+        endGame(game, true, false);
     } else {
         enemy.moveDirection = calculateDirection(enemy, targetPos);
         moveCharacterTick(enemy, game.state.map, game.state.idCounter, game);

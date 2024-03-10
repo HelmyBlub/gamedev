@@ -1,8 +1,6 @@
 import { Character } from "./character/characterModel.js";
-import { findMainCharacterClass } from "./character/playerCharacters/playerCharacters.js";
 import { calculateDistance, getTimeSinceFirstKill } from "./game.js";
 import { Game } from "./gameModel.js";
-import { paintKey } from "./gamePaint.js";
 import { getMapMidlePosition } from "./map/map.js";
 import { MoreInfoPart, createMoreInfosPart } from "./moreInfo.js";
 import { localStorageSaveHighscores } from "./permanentData.js";
@@ -27,6 +25,7 @@ export type HighscoreBoard = {
 
 const HIGHSCORE_DISTANCE = "Distance";
 const HIGHSCORE_KING_TIME = "KingTime";
+const HIGHSCORE_GOD_TIME = "GodTime";
 const SCORE_TYPE_MILLISECONDS = "Score Type Milliseconds"
 
 export function createHighscoreBoards(): Highscores {
@@ -47,15 +46,15 @@ export function createHighscoreBoards(): Highscores {
         scores: [],
         description: [
             "Highscore number based on time",
-            "off end boss kill."
+            "off King kill."
         ],
         scoreType: SCORE_TYPE_MILLISECONDS,
     }
-
+    createAndSetGodBoard(highscores);
     return highscores;
 }
 
-export function calculateHighscoreOnGameEnd(game: Game, isKingKill: boolean): number {
+export function calculateHighscoreOnGameEnd(game: Game, isKingKill: boolean, isGodKill: boolean): number {
     let newScore: number = 0;
     let playerClass = "";
     const state = game.state;
@@ -77,6 +76,18 @@ export function calculateHighscoreOnGameEnd(game: Game, isKingKill: boolean): nu
         board.scores.sort((a, b) => a.score - b.score);
         state.highscores.lastHighscorePosition = board.scores.findIndex((e) => e.score === newScore);
         state.highscores.lastBoard = HIGHSCORE_KING_TIME;
+        if (board.scores.length > state.highscores.maxLength) {
+            board.scores.pop();
+        }
+    } else if (isGodKill) {
+        newScore = getTimeSinceFirstKill(game.state);
+        let board = state.highscores.scoreBoards[HIGHSCORE_GOD_TIME];
+        if (board === undefined) board = createAndSetGodBoard(state.highscores);;
+        board.scores.push({ score: newScore, playerClass: playerClass });
+        game.UI.lastHighscoreText = `New Score (God Kill Time): ${(newScore / 1000).toFixed(2)}s`;
+        board.scores.sort((a, b) => a.score - b.score);
+        state.highscores.lastHighscorePosition = board.scores.findIndex((e) => e.score === newScore);
+        state.highscores.lastBoard = HIGHSCORE_GOD_TIME;
         if (board.scores.length > state.highscores.maxLength) {
             board.scores.pop();
         }
@@ -135,6 +146,18 @@ export function paintHighscores(ctx: CanvasRenderingContext2D, paintX: number, p
     }
 
     return { width, height };
+}
+
+function createAndSetGodBoard(highscores: Highscores) {
+    highscores.scoreBoards[HIGHSCORE_GOD_TIME] = {
+        scores: [],
+        description: [
+            "Highscore number based on time",
+            "off God kill."
+        ],
+        scoreType: SCORE_TYPE_MILLISECONDS,
+    }
+    return highscores.scoreBoards[HIGHSCORE_GOD_TIME];
 }
 
 function getPlayerClassesString(character: Character): string {
