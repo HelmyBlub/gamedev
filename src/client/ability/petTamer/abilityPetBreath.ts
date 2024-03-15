@@ -4,7 +4,7 @@ import { BossEnemyCharacter } from "../../character/enemy/bossEnemy.js";
 import { TamerPetCharacter, petHappinessToDisplayText, tamerPetFeed } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { getNextId, calculateDirection, calculateDistance } from "../../game.js";
-import { IdCounter, Position, Game } from "../../gameModel.js";
+import { IdCounter, Position, Game, FACTION_PLAYER } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { GameMap, moveByDirectionAndDistance } from "../../map/map.js";
 import { Player } from "../../player.js";
@@ -108,6 +108,7 @@ function paintAbilityPetBreath(ctx: CanvasRenderingContext2D, abilityOwner: Abil
     const paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
     const startAngle = abilityPetBreath.directionAngle - abilityPetBreath.angleSize / 2;
     ctx.globalAlpha = 0.5;
+    if (abilityOwner.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
     ctx.fillStyle = abilityPetBreath.color;
     ctx.beginPath();
     const pos1 = { x: paintPos.x, y: paintPos.y };
