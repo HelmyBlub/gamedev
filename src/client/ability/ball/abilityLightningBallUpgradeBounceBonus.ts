@@ -31,7 +31,6 @@ export function lightningBallUpgradeBounceBonusSetBonusDamageFactor(ability: Abi
             const bounceBallBounceUpgrade: AbilityBounceBallUpgradeBounceBonusDamage = bounceBall.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_DAMAGE];
             if (bounceBallBounceUpgrade) {
                 up.bonusFactor = bounceBallBounceUpgrade.bounces * bounceBallBounceUpgrade.level;
-                bounceBallBounceUpgrade.bounces = 0;
             }
         }
     }

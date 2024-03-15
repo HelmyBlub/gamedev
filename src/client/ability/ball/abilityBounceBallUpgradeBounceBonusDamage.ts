@@ -1,6 +1,8 @@
+import { findMyCharacter } from "../../character/character.js";
 import { AbilityUpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
-import { Game } from "../../gameModel.js";
-import { Ability } from "../ability.js";
+import { Game, Position } from "../../gameModel.js";
+import { getPointPaintPosition, paintTextWithOutline } from "../../gamePaint.js";
+import { Ability, AbilityOwner } from "../ability.js";
 import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrade.js";
 import { ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS, AbilityBounceBall } from "./abilityBounceBall.js";
 
@@ -11,7 +13,7 @@ export type AbilityBounceBallUpgradeBounceBonusDamage = AbilityUpgrade & {
     maxBounceBonus: number,
 }
 
-const STACK_LOSS_INTERVAL = 1000;
+const STACK_LOSS_INTERVAL = 1500;
 const BONUS_DAMAGE_PER_LEVEL = 0.5;
 const MAX_BONUS_BOUNCE = 50;
 
@@ -34,6 +36,18 @@ export function abilityBounceBallUpgradeBounceBonusDamageAddBounce(ability: Abil
     up.bounces++;
     if (up.bounces > up.maxBounceBonus) up.bounces = up.maxBounceBonus;
 }
+
+export function abilityBounceBallUpgradeBounceBonusDamagePaintStacks(ctx: CanvasRenderingContext2D, ability: AbilityBounceBall, abiltiyOwner: AbilityOwner, cameraPosition: Position, game: Game) {
+    const char = findMyCharacter(game);
+    if (!char || char.id !== abiltiyOwner.id) return;
+    const up: AbilityBounceBallUpgradeBounceBonusDamage = ability.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_DAMAGE];
+    if (!up) return;
+    ctx.font = "bold 16px arial";
+    const paintPos = getPointPaintPosition(ctx, abiltiyOwner, cameraPosition);
+    paintTextWithOutline(ctx, "white", "black", up.bounces.toFixed(), paintPos.x, paintPos.y + 20, true, 3);
+
+}
+
 
 export function abilityBounceBallUpgradeBounceBonusDamageTick(ability: Ability, game: Game) {
     const up: AbilityBounceBallUpgradeBounceBonusDamage = ability.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_DAMAGE];

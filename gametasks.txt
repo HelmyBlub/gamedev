@@ -2,7 +2,6 @@ next test run: ball, tamer, Sniper, All
 increase version
 
 current tasks:
-    - ball bounce upgrade visualize stacks
     - bug: pet breath does not use player alpha?
     - enemy type: "God"
         - dev steps:
