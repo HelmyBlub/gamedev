@@ -8,9 +8,17 @@ import { nextRandom } from "../../../randomNumberGenerator.js";
 import { CHARACTER_TYPE_GOD_ENEMY, GodEnemyCharacter } from "./godEnemy.js";
 import { removeCharacterDebuffs } from "../../../debuff/debuff.js";
 import { Character } from "../../characterModel.js";
+import { GAME_IMAGES, loadImage } from "../../../imageLoad.js";
 
 
 export const ABILITY_NAME_GOD_IMMUNITY = "God Immunity";
+const IMAGE_SHIELD = "shield";
+GAME_IMAGES[IMAGE_SHIELD] = {
+    imagePath: "/images/shield.png",
+    spriteRowHeights: [],
+    spriteRowWidths: [],
+};
+
 export type AbilityGodImmunity = GodAbility & {
     cooldown: number,
     cooldownFinishedTime: number,
@@ -100,9 +108,7 @@ function setAbilityToBossLevel(ability: Ability, level: number) {
 
 function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
     const abiltiyMovingFire = ability as AbilityGodImmunity;
-    const position: Position | undefined = abiltiyMovingFire.pickedUp ? undefined : abiltiyMovingFire.pickUpPosition;
-    if (!position) {
-        if (!abilityOwner.isDamageImmune) return;
+    if (abiltiyMovingFire.pickedUp && abilityOwner.isDamageImmune) {
         const paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
         ctx.beginPath();
         ctx.lineWidth = 3;
@@ -113,10 +119,22 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
             abilityOwner.width!, 0, 2 * Math.PI
         );
         ctx.stroke();
-    } else {
-        const paintPos = getPointPaintPosition(ctx, position, cameraPosition);
-        ctx.font = "20px Arial";
-        paintTextWithOutline(ctx, "white", "black", "Immunity", paintPos.x, paintPos.y, true);
+    }
+    const position: Position = !abiltiyMovingFire.pickedUp && abiltiyMovingFire.pickUpPosition ? abiltiyMovingFire.pickUpPosition : abilityOwner;
+    const paintPos = getPointPaintPosition(ctx, position, cameraPosition);
+    paintPos.x += 20;
+    const sniperRifleImageRef = GAME_IMAGES[IMAGE_SHIELD];
+    loadImage(sniperRifleImageRef);
+    if (sniperRifleImageRef.imageRef?.complete) {
+        const sniperRifleImage: HTMLImageElement = sniperRifleImageRef.imageRef;
+        ctx.drawImage(
+            sniperRifleImage,
+            Math.floor(paintPos.x - sniperRifleImage.width / 2),
+            Math.floor(paintPos.y - sniperRifleImage.height / 2),
+            sniperRifleImage.width,
+            sniperRifleImage.height
+        )
+
     }
 }
 
