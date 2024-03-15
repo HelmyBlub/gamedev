@@ -1,13 +1,17 @@
 import { AbilityUpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
+import { Game } from "../../gameModel.js";
 import { Ability } from "../ability.js";
 import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrade.js";
 import { ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS, AbilityBounceBall } from "./abilityBounceBall.js";
 
 export type AbilityBounceBallUpgradeBounceBonusDamage = AbilityUpgrade & {
     bounces: number,
+    stackLossTime?: number,
+    lossInterval: number,
     maxBounceBonus: number,
 }
 
+const STACK_LOSS_INTERVAL = 1000;
 const BONUS_DAMAGE_PER_LEVEL = 0.5;
 const MAX_BONUS_BOUNCE = 50;
 
@@ -31,10 +35,14 @@ export function abilityBounceBallUpgradeBounceBonusDamageAddBounce(ability: Abil
     if (up.bounces > up.maxBounceBonus) up.bounces = up.maxBounceBonus;
 }
 
-export function abilityBounceBallUpgradeBounceBonusDamageResetBounces(ability: Ability) {
+export function abilityBounceBallUpgradeBounceBonusDamageTick(ability: Ability, game: Game) {
     const up: AbilityBounceBallUpgradeBounceBonusDamage = ability.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_DAMAGE];
     if (!up) return;
-    up.bounces = 0;
+    if (up.stackLossTime === undefined) up.stackLossTime = game.state.time + up.lossInterval;
+    if (up.stackLossTime < game.state.time) {
+        if (up.bounces > 0) up.bounces--;
+        up.stackLossTime = game.state.time + up.lossInterval;
+    }
 }
 
 function reset(ability: Ability) {
@@ -60,7 +68,7 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption) {
     const ball = ability as AbilityBounceBall;
     let up: AbilityBounceBallUpgradeBounceBonusDamage;
     if (ball.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_DAMAGE] === undefined) {
-        up = { level: 0, bounces: 0, maxBounceBonus: MAX_BONUS_BOUNCE };
+        up = { level: 0, bounces: 0, maxBounceBonus: MAX_BONUS_BOUNCE, lossInterval: 1000 };
         ball.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_DAMAGE] = up;
     } else {
         up = ball.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_DAMAGE];
@@ -71,8 +79,8 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption) {
 function getAbilityUpgradeUiText(ability: Ability): string {
     const up: AbilityBounceBallUpgradeBounceBonusDamage = ability.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_DAMAGE];
     const addMaxHint = up.bounces >= up.maxBounceBonus ? "(max)" : "";
-    const bouncesText = `Bounces: ${up.bounces}${addMaxHint}`;
-    return `${ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_DAMAGE}: ${up.level * BONUS_DAMAGE_PER_LEVEL * 100}%. ${bouncesText}`;
+    const bouncesText = `Stacks: ${up.bounces}${addMaxHint}`;
+    return `${ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_DAMAGE} per stack: ${up.level * BONUS_DAMAGE_PER_LEVEL * 100}%. ${bouncesText}`;
 }
 
 function getAbilityUpgradeUiTextLong(ability: Ability): string[] {
@@ -80,13 +88,17 @@ function getAbilityUpgradeUiTextLong(ability: Ability): string[] {
     const upgrade: AbilityBounceBallUpgradeBounceBonusDamage | undefined = ability.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_DAMAGE];
     if (upgrade) {
         textLines.push(
-            `Each Bounce while rolling increases damage.`,
-            `Bonus damage increase from ${BONUS_DAMAGE_PER_LEVEL * 100 * upgrade.level}% to ${BONUS_DAMAGE_PER_LEVEL * 100 * (upgrade.level + 1)}%.`
+            `Each bounce while rolling gives one stack which increases damage.`,
+            `Bonus damage increase from ${BONUS_DAMAGE_PER_LEVEL * 100 * upgrade.level}% to ${BONUS_DAMAGE_PER_LEVEL * 100 * (upgrade.level + 1)}%.`,
+            `Stacks decreas every ${STACK_LOSS_INTERVAL / upgrade.lossInterval}s.`,
+            `Max stacks of ${MAX_BONUS_BOUNCE}.`,
         );
     } else {
         textLines.push(
-            `Each Bounce while rolling increases damage`,
-            `by ${BONUS_DAMAGE_PER_LEVEL * 100}%.`
+            `Each bounce while rolling gives one stack which`,
+            `increases damage by ${BONUS_DAMAGE_PER_LEVEL * 100}%.`,
+            `Stacks decreas every ${STACK_LOSS_INTERVAL / 1000}s.`,
+            `Max stacks of ${MAX_BONUS_BOUNCE}.`,
         );
     }
     return textLines;

@@ -12,7 +12,7 @@ import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, detectSomethingToCharacterHit, getAbilityNameUiText } from "../ability.js";
 import { AbilityUpgradesFunctions, getAbilityUpgradesDamageFactor, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
-import { abilityBounceBallUpgradeBounceBonusDamageAddBounce, abilityBounceBallUpgradeBounceBonusDamageResetBounces, addAbilityBounceBallUpgradeBounceBonusDamage } from "./abilityBounceBallUpgradeBounceBonusDamage.js";
+import { abilityBounceBallUpgradeBounceBonusDamageAddBounce, abilityBounceBallUpgradeBounceBonusDamageTick, addAbilityBounceBallUpgradeBounceBonusDamage } from "./abilityBounceBallUpgradeBounceBonusDamage.js";
 import { addAbilityBounceBallUpgradeBounceShield, bounceBallUpgradeBounceShieldExecute } from "./abilityBounceBallUpgradeBounceShield.js";
 import { abilityBounceBallUpgradeFireLinePlace, abilityBounceBallUpgradeFireLineStart, addAbilityBounceBallUpgradeFireLine } from "./abilityBounceBallUpgradeFireLine.js";
 
@@ -146,7 +146,6 @@ function castBounceBall(abilityOwner: AbilityOwner, ability: Ability, castPositi
         }
     }
     applyDebuff(buffBallPhyscis, abilityOwner as any, game);
-    abilityBounceBallUpgradeBounceBonusDamageResetBounces(abilityBounceBall);
     abilityBounceBallUpgradeFireLineStart(abilityBounceBall, abilityOwner, game);
     if (abilityBounceBall.currentSpeed < abilityBounceBall.startSpeed || !keepCurrentSpeed) {
         abilityBounceBall.currentSpeed = abilityBounceBall.startSpeed;
@@ -270,6 +269,7 @@ function paintBall(ctx: CanvasRenderingContext2D, abilityBall: AbilityBounceBall
 function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     const abilityBounceBall = ability as AbilityBounceBall;
     rechargeTick(abilityBounceBall, game);
+    abilityBounceBallUpgradeBounceBonusDamageTick(ability, game);
 
     const ballBuff = findBallBuff(abilityOwner, abilityBounceBall);
     if (typeof ballBuff !== "object") {
