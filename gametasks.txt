@@ -2,7 +2,6 @@ next test run: tamer, Sniper, All
 increase version
 
 current tasks:
-    - map enemies still move tick when god/king fight started? but do no damage
     - moreInfo not showing when: pick builder, then pick legendary sniper
     - balancing: ball charcte: make stack not reset to zero directly, too much difference
         - e.g. make decrease over time

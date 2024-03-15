@@ -267,6 +267,7 @@ export function tickCharacters(characters: (Character | undefined)[], game: Game
     for (let j = characters.length - 1; j >= 0; j--) {
         const char = characters[j];
         if (!char) continue;
+        if ((game.state.bossStuff.kingFightStarted || game.state.bossStuff.godFightStarted) && char.type === ENEMY_FIX_RESPAWN_POSITION) continue;
         const functions = CHARACTER_TYPE_FUNCTIONS[char.type];
         if (functions?.tickFunction) {
             functions.tickFunction(char, game, pathingCache);
@@ -276,7 +277,6 @@ export function tickCharacters(characters: (Character | undefined)[], game: Game
             tickDefaultCharacter(char, game, pathingCache);
         }
         if (!char.isDead) {
-            if ((game.state.bossStuff.kingFightStarted || game.state.bossStuff.godFightStarted) && char.type === ENEMY_FIX_RESPAWN_POSITION) continue;
             for (let ability of char.abilities) {
                 const tickAbility = ABILITIES_FUNCTIONS[ability.name].tickAbility;
                 if (tickAbility) tickAbility(char, ability, game);
