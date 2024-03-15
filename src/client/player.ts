@@ -247,6 +247,10 @@ export function createMoreInfoMoneyPossibilitiesPart(ctx: CanvasRenderingContext
         `  -for ${playerDistance} distance on death: ${moneyForDistance.toFixed()}$`,
         `  -for ${increasedDistance} distance on death: ${moneyForIncreasedDistance.toFixed()}$`,
     ];
+    if (playerCharacter.bonusMoneyFactor !== undefined && playerCharacter.bonusMoneyFactor > 1) {
+        moneyPossibilities.push(``);
+        moneyPossibilities.push(`further increase by ${((playerCharacter.bonusMoneyFactor - 1) * 100).toFixed()}% from Upgrades.`);
+    }
     return createMoreInfosPart(ctx, moneyPossibilities);
 }
 
@@ -256,9 +260,15 @@ export function createMoreInfoMoneyGainedPart(ctx: CanvasRenderingContext2D, gam
     const moneyGainedThisRunPart: string[] = [
         `Money Gained this Run:`,
     ];
-    for (let moneyGain of gainedThisRun) {
-        moneyGainedThisRunPart.push(`  -${moneyGain.text}: ${moneyGain.amount.toFixed(2)}$`);
+    const myChar = findMyCharacter(game);
+    let bonusMoney = 1;
+    if (myChar && myChar.bonusMoneyFactor !== undefined && myChar.bonusMoneyFactor > 1) {
+        bonusMoney = myChar.bonusMoneyFactor;
     }
+    for (let moneyGain of gainedThisRun) {
+        moneyGainedThisRunPart.push(`  -${moneyGain.text}: ${(moneyGain.amount * bonusMoney).toFixed(2)}$`);
+    }
+
 
     return createMoreInfosPart(ctx, moneyGainedThisRunPart);
 }

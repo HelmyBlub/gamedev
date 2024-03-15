@@ -2,6 +2,12 @@ next test run: tamer, Sniper, All
 increase version
 
 current tasks:
+    - glitch: too much speed jump over blocking tiles. prevent it
+    - map enemies still move tick when god/king fight started? but do no damage
+    - moreInfo not showing when: pick builder, then pick legendary sniper
+    - balancing: ball charcte: make stack not reset to zero directly, too much difference
+        - e.g. make decrease over time
+    - bug: pet breath does not use player alpha?
     - enemy type: "God"
         - dev steps:
             - improve
@@ -26,9 +32,6 @@ next feature ideas:
     - small ideas
         - Upgrade Building: multiple king tries
     - bigger idea:
-            
-
-
         - another class?
             - with sound in my this time?
         - extends existings classes for more upgrade choice?
