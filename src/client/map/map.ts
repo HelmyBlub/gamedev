@@ -252,36 +252,55 @@ export function isMoveFromToBlocking(fromPosition: Position, toPosition: Positio
 }
 
 export function calculateMovePosition(position: Position, moveDirection: number, distance: number, checkColision: boolean, map: GameMap | undefined = undefined, idCounter: IdCounter | undefined = undefined, game: Game | undefined = undefined): Position {
-    const x = position.x + Math.cos(moveDirection) * distance;
-    const y = position.y + Math.sin(moveDirection) * distance;
     if (checkColision) {
         if (!map || !idCounter || !game) throw new Error("collision check requires map, idCounter and game");
-        const blocking = isPositionBlocking({ x, y }, map, idCounter, game!);
-        if (!blocking) {
-            const blockingBothSides = isPositionBlocking({ x: position.x, y }, map, idCounter, game!) && isPositionBlocking({ x, y: position.y }, map, idCounter, game!);
-            if (!blockingBothSides) {
-                return { x, y };
-            }
-        } else {
-            const xTile = Math.floor(position.x / map.tileSize);
-            const newXTile = Math.floor(x / map.tileSize);
-            if (xTile !== newXTile) {
-                if (!isPositionBlocking({ x: position.x, y }, map, idCounter, game!)) {
-                    return { x: position.x, y };
-                }
-            }
-            const yTile = Math.floor(position.y / map.tileSize);
-            const newYTile = Math.floor(y / map.tileSize);
-            if (yTile !== newYTile) {
-                if (!isPositionBlocking({ x, y: position.y }, map, idCounter, game!)) {
-                    return { x, y: position.y };
-                }
-            }
+        let currentPosition: Position = {
+            x: position.x,
+            y: position.y,
         }
-        return { x: position.x, y: position.y };
+        let distancePerStep = distance;
+        let steps = 1;
+        if (distance > map.tileSize) {
+            steps = Math.ceil(distance / map.tileSize);
+            distancePerStep = distance / steps;
+        }
+        for (let step = 0; step < steps; step++) {
+            currentPosition = moveStepWithCollision(currentPosition, moveDirection, distancePerStep, map, idCounter, game);
+        }
+        return currentPosition;
     } else {
+        const x = position.x + Math.cos(moveDirection) * distance;
+        const y = position.y + Math.sin(moveDirection) * distance;
         return { x, y };
     }
+}
+
+function moveStepWithCollision(position: Position, moveDirection: number, distance: number, map: GameMap, idCounter: IdCounter, game: Game): Position {
+    const x = position.x + Math.cos(moveDirection) * distance;
+    const y = position.y + Math.sin(moveDirection) * distance;
+    const blocking = isPositionBlocking({ x, y }, map, idCounter, game!);
+    if (!blocking) {
+        const blockingBothSides = isPositionBlocking({ x: position.x, y }, map, idCounter, game!) && isPositionBlocking({ x, y: position.y }, map, idCounter, game!);
+        if (!blockingBothSides) {
+            return { x, y };
+        }
+    } else {
+        const xTile = Math.floor(position.x / map.tileSize);
+        const newXTile = Math.floor(x / map.tileSize);
+        if (xTile !== newXTile) {
+            if (!isPositionBlocking({ x: position.x, y }, map, idCounter, game!)) {
+                return { x: position.x, y };
+            }
+        }
+        const yTile = Math.floor(position.y / map.tileSize);
+        const newYTile = Math.floor(y / map.tileSize);
+        if (yTile !== newYTile) {
+            if (!isPositionBlocking({ x, y: position.y }, map, idCounter, game!)) {
+                return { x, y: position.y };
+            }
+        }
+    }
+    return { x: position.x, y: position.y };
 }
 
 export function getChunksTouchingLine(map: GameMap, lineStart: Position, lineEnd: Position, width: number = 20): MapChunk[] {
