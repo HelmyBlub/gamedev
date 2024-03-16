@@ -8,7 +8,6 @@ import { GodEnemyCharacter, applyExponentialStackingDamageTakenDebuff } from "./
 import { Character } from "../../characterModel.js";
 import { GAME_IMAGES, loadImage } from "../../../imageLoad.js";
 
-
 export const ABILITY_NAME_SEEKER = "Seeker";
 export type AbilitySeeker = GodAbility & {
     cooldown: number,
@@ -147,6 +146,7 @@ function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: Abilit
 
     if (paintOrder === "beforeCharacterPaint" && abilityObjectFireCircle.subType === "SeekerGround") {
         ctx.fillStyle = abilityObject.color;
+        ctx.globalAlpha = 0.7;
         ctx.beginPath();
         ctx.arc(
             paintPos.x,
@@ -154,6 +154,7 @@ function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: Abilit
             abilityObjectFireCircle.radius, 0, 2 * Math.PI
         );
         ctx.fill();
+        ctx.globalAlpha = 1;
     } else if (paintOrder === "afterCharacterPaint" && abilityObjectFireCircle.subType !== "SeekerGround") {
         const abilityFollow = abilityObject as AbilityObjectSeekerFollow;
         const eyeImageRef = GAME_IMAGES[IMAGE_EYE];

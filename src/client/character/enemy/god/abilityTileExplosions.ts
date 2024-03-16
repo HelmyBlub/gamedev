@@ -5,8 +5,9 @@ import { getPointPaintPosition, paintTextWithOutline } from "../../../gamePaint.
 import { nextRandom } from "../../../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility } from "../../../ability/ability.js";
 import { GodAbility } from "./godAbility.js";
-import { applyExponentialStackingDamageTakenDebuff } from "./godEnemy.js";
+import { GodEnemyCharacter, applyExponentialStackingDamageTakenDebuff } from "./godEnemy.js";
 import { Character } from "../../characterModel.js";
+import { GAME_IMAGES, loadImage } from "../../../imageLoad.js";
 
 
 export const ABILITY_NAME_TILE_EXPLOSION = "Tile Explosion";
@@ -22,6 +23,13 @@ export type AbilityObjectTileExplosion = AbilityObject & {
     growCount: number,
     size: number,
 }
+
+const IMAGE_EXPLOSION = "explosion";
+GAME_IMAGES[IMAGE_EXPLOSION] = {
+    imagePath: "/images/explosion.png",
+    spriteRowHeights: [],
+    spriteRowWidths: [],
+};
 
 export function addGodAbilityTileExplosion() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_TILE_EXPLOSION] = {
@@ -73,12 +81,32 @@ function setAbilityToBossLevel(ability: Ability, level: number) {
 }
 
 function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
-    const abiltiyMovingFire = ability as AbilityTileExplosion;
-    const position: Position | undefined = abiltiyMovingFire.pickedUp ? undefined : abiltiyMovingFire.pickUpPosition;
-    if (!position) return;
+    const abiltiyTileExplosion = ability as AbilityTileExplosion;
+    const position: Position = !abiltiyTileExplosion.pickedUp && abiltiyTileExplosion.pickUpPosition ? abiltiyTileExplosion.pickUpPosition : abilityOwner;
     const paintPos = getPointPaintPosition(ctx, position, cameraPosition);
-    ctx.font = "20px Arial";
-    paintTextWithOutline(ctx, "white", "black", "TileExplosions", paintPos.x, paintPos.y, true);
+    if (abiltiyTileExplosion.pickedUp) paintPos.y -= 10;
+    const eyeImageRef = GAME_IMAGES[IMAGE_EXPLOSION];
+    loadImage(eyeImageRef);
+    const god = abilityOwner as GodEnemyCharacter;
+    const sizeFactor = abiltiyTileExplosion.pickedUp ? 0.4 : 0.5 + god.pickUpCount * 0.1;
+    if (eyeImageRef.imageRef?.complete) {
+        const explosionImage: HTMLImageElement = eyeImageRef.imageRef;
+        ctx.drawImage(
+            explosionImage,
+            0,
+            0,
+            explosionImage.width,
+            explosionImage.height,
+            Math.floor(paintPos.x - explosionImage.width / 2),
+            Math.floor(paintPos.y - explosionImage.height / 2),
+            Math.floor(explosionImage.width * sizeFactor),
+            Math.floor(explosionImage.height * sizeFactor)
+        )
+    }
+    if (!abiltiyTileExplosion.pickedUp) {
+        ctx.font = "bold 16px Arial";
+        paintTextWithOutline(ctx, "white", "black", `Lvl ${god.pickUpCount + 1}`, paintPos.x, paintPos.y + 25, true, 2);
+    }
 }
 
 function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
