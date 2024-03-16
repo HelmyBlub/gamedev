@@ -4,8 +4,9 @@ import { Game, IdCounter, Position } from "../../../gameModel.js";
 import { getPointPaintPosition, paintTextWithOutline } from "../../../gamePaint.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityObjectCircle, AbilityOwner, PaintOrderAbility, detectAbilityObjectCircleToCharacterHit } from "../../../ability/ability.js";
 import { GodAbility } from "./godAbility.js";
-import { applyExponentialStackingDamageTakenDebuff } from "./godEnemy.js";
+import { GodEnemyCharacter, applyExponentialStackingDamageTakenDebuff } from "./godEnemy.js";
 import { Character } from "../../characterModel.js";
+import { GAME_IMAGES, loadImage } from "../../../imageLoad.js";
 
 
 export const ABILITY_NAME_SEEKER = "Seeker";
@@ -31,6 +32,13 @@ export type AbilityObjectSeekerFollow = AbilityObjectCircle & {
     groundCreated?: boolean,
     groundRadius: number,
 }
+
+const IMAGE_EYE = "eye";
+GAME_IMAGES[IMAGE_EYE] = {
+    imagePath: "/images/eye.png",
+    spriteRowHeights: [],
+    spriteRowWidths: [],
+};
 
 export function addGodAbilitySeeker() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_SEEKER] = {
@@ -104,12 +112,32 @@ function setAbilityToBossLevel(ability: Ability, level: number) {
 }
 
 function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
-    const abiltiyMovingFire = ability as AbilitySeeker;
-    const position: Position | undefined = abiltiyMovingFire.pickedUp ? undefined : abiltiyMovingFire.pickUpPosition;
-    if (!position) return;
+    const abiltiySeeker = ability as AbilitySeeker;
+    const position: Position = !abiltiySeeker.pickedUp && abiltiySeeker.pickUpPosition ? abiltiySeeker.pickUpPosition : abilityOwner;
     const paintPos = getPointPaintPosition(ctx, position, cameraPosition);
-    ctx.font = "20px Arial";
-    paintTextWithOutline(ctx, "white", "black", "Seeker", paintPos.x, paintPos.y, true);
+    if (abiltiySeeker.pickedUp) paintPos.y += 10;
+    const eyeImageRef = GAME_IMAGES[IMAGE_EYE];
+    loadImage(eyeImageRef);
+    const god = abilityOwner as GodEnemyCharacter;
+    const sizeFactor = abiltiySeeker.pickedUp ? 0.4 : 0.5 + god.pickUpCount * 0.1;
+    if (eyeImageRef.imageRef?.complete) {
+        const eyeImage: HTMLImageElement = eyeImageRef.imageRef;
+        ctx.drawImage(
+            eyeImage,
+            0,
+            0,
+            eyeImage.width,
+            eyeImage.height,
+            Math.floor(paintPos.x - eyeImage.width / 2),
+            Math.floor(paintPos.y - eyeImage.height / 2),
+            Math.floor(eyeImage.width * sizeFactor),
+            Math.floor(eyeImage.height * sizeFactor)
+        )
+    }
+    if (!abiltiySeeker.pickedUp) {
+        ctx.font = "bold 16px Arial";
+        paintTextWithOutline(ctx, "white", "black", `Lvl ${god.pickUpCount + 1}`, paintPos.x, paintPos.y + 25, true, 2);
+    }
 }
 
 function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
@@ -117,9 +145,7 @@ function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: Abilit
     const cameraPosition = getCameraPosition(game);
     const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition);
 
-    if ((paintOrder === "beforeCharacterPaint" && abilityObjectFireCircle.subType === "SeekerGround")
-        || (paintOrder === "afterCharacterPaint" && abilityObjectFireCircle.subType !== "SeekerGround")
-    ) {
+    if (paintOrder === "beforeCharacterPaint" && abilityObjectFireCircle.subType === "SeekerGround") {
         ctx.fillStyle = abilityObject.color;
         ctx.beginPath();
         ctx.arc(
@@ -128,10 +154,38 @@ function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: Abilit
             abilityObjectFireCircle.radius, 0, 2 * Math.PI
         );
         ctx.fill();
-        if (abilityObjectFireCircle.subType !== "SeekerGround") {
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = "white";
-            ctx.stroke();
+    } else if (paintOrder === "afterCharacterPaint" && abilityObjectFireCircle.subType !== "SeekerGround") {
+        const abilityFollow = abilityObject as AbilityObjectSeekerFollow;
+        const eyeImageRef = GAME_IMAGES[IMAGE_EYE];
+        loadImage(eyeImageRef);
+        const sizeFactor = 0.5;
+        let direction = 0;
+        if (abilityFollow.playerReachedTime === undefined) {
+            const target = findCharacterById(getPlayerCharacters(game.state.players), abilityFollow.targetPlayerCharacterId);
+            if (!target) return;
+            direction = calculateDirection(abilityObject, target) + Math.PI;
+        } else {
+            direction = (game.state.time / 100) % (Math.PI * 2)
+        }
+        if (eyeImageRef.imageRef?.complete) {
+            const eyeImage: HTMLImageElement = eyeImageRef.imageRef;
+            ctx.translate(paintPos.x, paintPos.y);
+            ctx.rotate(direction);
+            ctx.translate(-paintPos.x, -paintPos.y);
+            const width = Math.floor(eyeImage.width * sizeFactor);
+            const height = Math.floor(eyeImage.height * sizeFactor);
+            ctx.drawImage(
+                eyeImage,
+                0,
+                0,
+                eyeImage.width,
+                eyeImage.height,
+                Math.floor(paintPos.x - width / 2),
+                Math.floor(paintPos.y - height / 2),
+                width,
+                height
+            )
+            ctx.resetTransform();
         }
     }
 }
