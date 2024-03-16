@@ -5,8 +5,9 @@ import { getPointPaintPosition, paintTextWithOutline } from "../../../gamePaint.
 import { RandomSeed, nextRandom } from "../../../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility } from "../../../ability/ability.js";
 import { GodAbility } from "./godAbility.js";
-import { Character } from "../../characterModel.js";
-import { applyExponentialStackingDamageTakenDebuff } from "./godEnemy.js";
+import { GodEnemyCharacter, applyExponentialStackingDamageTakenDebuff } from "./godEnemy.js";
+import { GAME_IMAGES, loadImage } from "../../../imageLoad.js";
+import { IMAGE_FIRE_ANIMATION } from "../../../map/mapObjectFireAnimation.js";
 
 
 export const ABILITY_NAME_MOVING_FIRE = "Moving Fire";
@@ -22,6 +23,13 @@ export type AbilityObjectMovingFire = AbilityObject & {
     moveSpeed: number,
     size: number,
 }
+
+const IMAGE_GROUND_FIRE_ANIMATION = "groundFireAnimation";
+GAME_IMAGES[IMAGE_GROUND_FIRE_ANIMATION] = {
+    imagePath: "/images/groundFireAnimation.png",
+    spriteRowHeights: [],
+    spriteRowWidths: [40],
+};
 
 export function addGodAbilityMovingFire() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_MOVING_FIRE] = {
@@ -73,11 +81,33 @@ function setAbilityToBossLevel(ability: Ability, level: number) {
 
 function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
     const abiltiyMovingFire = ability as AbilityMovingFire;
-    const position: Position | undefined = abiltiyMovingFire.pickedUp ? undefined : abiltiyMovingFire.pickUpPosition;
-    if (!position) return;
+    const position: Position = !abiltiyMovingFire.pickedUp && abiltiyMovingFire.pickUpPosition ? abiltiyMovingFire.pickUpPosition : abilityOwner;
     const paintPos = getPointPaintPosition(ctx, position, cameraPosition);
-    ctx.font = "20px Arial";
-    paintTextWithOutline(ctx, "white", "black", "MovingFire", paintPos.x, paintPos.y, true);
+    if (abiltiyMovingFire.pickedUp) paintPos.x -= 10;
+    const fireImageRef = GAME_IMAGES[IMAGE_FIRE_ANIMATION];
+    loadImage(fireImageRef);
+    const god = abilityOwner as GodEnemyCharacter;
+    const sizeFactor = abiltiyMovingFire.pickedUp ? 0.8 : 1 + god.pickUpCount * 0.2;
+    if (fireImageRef.imageRef?.complete) {
+        const fireImage: HTMLImageElement = fireImageRef.imageRef;
+        const width = fireImageRef.spriteRowWidths[0];
+        ctx.drawImage(
+            fireImage,
+            0,
+            0,
+            width,
+            fireImage.height,
+            Math.floor(paintPos.x - width / 2),
+            Math.floor(paintPos.y - fireImage.height / 2),
+            Math.floor(width * sizeFactor),
+            Math.floor(fireImage.height * sizeFactor)
+        )
+    }
+    if (!abiltiyMovingFire.pickedUp) {
+        ctx.font = "bold 16px Arial";
+        paintTextWithOutline(ctx, "white", "black", `Lvl ${god.pickUpCount + 1}`, paintPos.x, paintPos.y + 25, true, 2);
+    }
+
 }
 
 function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
@@ -86,13 +116,24 @@ function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: Abilit
     const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition);
 
     if (paintOrder === "beforeCharacterPaint") {
-        ctx.beginPath();
-        ctx.fillStyle = abilityObject.color;
-        ctx.strokeStyle = "white";
-        ctx.lineWidth = 1;
-        ctx.rect(paintPos.x, paintPos.y, abilityObjectFireCircle.size, abilityObjectFireCircle.size);
-        ctx.fill();
-        ctx.stroke();
+        const groundFireAnimation = GAME_IMAGES[IMAGE_GROUND_FIRE_ANIMATION];
+        loadImage(groundFireAnimation);
+        if (groundFireAnimation.imageRef?.complete) {
+            const fireAnimationImage: HTMLImageElement = groundFireAnimation.imageRef;
+            const width = groundFireAnimation.spriteRowWidths[0];
+            const animationIndex = (Math.floor(game.state.time / 250)) % 2;
+            ctx.drawImage(
+                fireAnimationImage,
+                width * animationIndex,
+                0,
+                width,
+                fireAnimationImage.height,
+                Math.floor(paintPos.x - fireAnimationImage.width / 2),
+                Math.floor(paintPos.y - fireAnimationImage.height / 2),
+                width,
+                fireAnimationImage.height
+            )
+        }
     }
 }
 

@@ -1,4 +1,4 @@
-next test run: ball, tamer, Sniper, All
+next test run: tamer, Sniper, All
 increase version
 
 current tasks:
@@ -6,11 +6,11 @@ current tasks:
         - dev steps:
             - improve
                 - graphics
-                    - new boss model
-                    - replace text
+                    - ablity graphics
                         - movingFire: fire icon
                         - seeker: eye icon
                         - tileExplosion: explosion icon?
+                    - new boss model
                 - visualize god ability level
                 - balance
                 - think about sound?

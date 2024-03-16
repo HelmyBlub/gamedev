@@ -122,19 +122,28 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
     }
     const position: Position = !abiltiyMovingFire.pickedUp && abiltiyMovingFire.pickUpPosition ? abiltiyMovingFire.pickUpPosition : abilityOwner;
     const paintPos = getPointPaintPosition(ctx, position, cameraPosition);
-    paintPos.x += 20;
-    const sniperRifleImageRef = GAME_IMAGES[IMAGE_SHIELD];
-    loadImage(sniperRifleImageRef);
-    if (sniperRifleImageRef.imageRef?.complete) {
-        const sniperRifleImage: HTMLImageElement = sniperRifleImageRef.imageRef;
+    if (abiltiyMovingFire.pickedUp) paintPos.x += 20;
+    const shieldImageRef = GAME_IMAGES[IMAGE_SHIELD];
+    loadImage(shieldImageRef);
+    const god = abilityOwner as GodEnemyCharacter;
+    const sizeFactor = abiltiyMovingFire.pickedUp ? 0.8 : 1 + god.pickUpCount * 0.2;
+    if (shieldImageRef.imageRef?.complete) {
+        const shieldImage: HTMLImageElement = shieldImageRef.imageRef;
         ctx.drawImage(
-            sniperRifleImage,
-            Math.floor(paintPos.x - sniperRifleImage.width / 2),
-            Math.floor(paintPos.y - sniperRifleImage.height / 2),
-            sniperRifleImage.width,
-            sniperRifleImage.height
+            shieldImage,
+            0,
+            0,
+            shieldImage.width,
+            shieldImage.height,
+            Math.floor(paintPos.x - shieldImage.width / 2),
+            Math.floor(paintPos.y - shieldImage.height / 2),
+            shieldImage.width * sizeFactor,
+            shieldImage.height * sizeFactor
         )
-
+    }
+    if (!abiltiyMovingFire.pickedUp) {
+        ctx.font = "bold 16px Arial";
+        paintTextWithOutline(ctx, "white", "black", `Lvl ${god.pickUpCount + 1}`, paintPos.x, paintPos.y + 25, true, 2);
     }
 }
 
