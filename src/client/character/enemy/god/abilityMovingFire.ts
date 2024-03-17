@@ -83,7 +83,10 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
     const abiltiyMovingFire = ability as AbilityMovingFire;
     const position: Position = !abiltiyMovingFire.pickedUp && abiltiyMovingFire.pickUpPosition ? abiltiyMovingFire.pickUpPosition : abilityOwner;
     const paintPos = getPointPaintPosition(ctx, position, cameraPosition);
-    if (abiltiyMovingFire.pickedUp) paintPos.x -= 10;
+    if (abiltiyMovingFire.pickedUp) {
+        paintPos.x -= 5;
+        paintPos.y += 25;
+    }
     const fireImageRef = GAME_IMAGES[IMAGE_FIRE_ANIMATION];
     loadImage(fireImageRef);
     const god = abilityOwner as GodEnemyCharacter;

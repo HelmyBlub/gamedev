@@ -107,17 +107,20 @@ function setAbilityToBossLevel(ability: Ability, level: number) {
 }
 
 function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
-    const abiltiyMovingFire = ability as AbilityGodImmunity;
-    const position: Position = !abiltiyMovingFire.pickedUp && abiltiyMovingFire.pickUpPosition ? abiltiyMovingFire.pickUpPosition : abilityOwner;
+    const abiltiyImmunity = ability as AbilityGodImmunity;
+    const position: Position = !abiltiyImmunity.pickedUp && abiltiyImmunity.pickUpPosition ? abiltiyImmunity.pickUpPosition : abilityOwner;
     const paintPos = getPointPaintPosition(ctx, position, cameraPosition);
     const shieldImageRef = GAME_IMAGES[IMAGE_SHIELD];
     loadImage(shieldImageRef);
     const god = abilityOwner as GodEnemyCharacter;
-    let sizeFactor = abiltiyMovingFire.pickedUp ? 0.4 : 0.5 + god.pickUpCount * 0.1;
+    let sizeFactor = abiltiyImmunity.pickedUp ? 0.4 : 0.5 + god.pickUpCount * 0.1;
     if (shieldImageRef.imageRef?.complete) {
         const shieldImage: HTMLImageElement = shieldImageRef.imageRef;
-        if (abiltiyMovingFire.pickedUp && !god.isDamageImmune) paintPos.x += 20;
-        if (god.isDamageImmune) sizeFactor = 1.2;
+        if (abiltiyImmunity.pickedUp && !god.isDamageImmune) {
+            paintPos.x += 25;
+            paintPos.y += 28;
+        }
+        if (god.isDamageImmune) sizeFactor = 1.4;
         const width = shieldImageRef.spriteRowWidths[0];
         ctx.drawImage(
             shieldImage,
@@ -131,7 +134,7 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
             shieldImage.height * sizeFactor
         );
     }
-    if (!abiltiyMovingFire.pickedUp) {
+    if (!abiltiyImmunity.pickedUp) {
         ctx.font = "bold 16px Arial";
         paintTextWithOutline(ctx, "white", "black", `Lvl ${god.pickUpCount + 1}`, paintPos.x, paintPos.y + 25, true, 2);
     }

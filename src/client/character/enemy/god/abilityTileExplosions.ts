@@ -84,7 +84,10 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
     const abiltiyTileExplosion = ability as AbilityTileExplosion;
     const position: Position = !abiltiyTileExplosion.pickedUp && abiltiyTileExplosion.pickUpPosition ? abiltiyTileExplosion.pickUpPosition : abilityOwner;
     const paintPos = getPointPaintPosition(ctx, position, cameraPosition);
-    if (abiltiyTileExplosion.pickedUp) paintPos.y -= 10;
+    if (abiltiyTileExplosion.pickedUp) {
+        paintPos.x += 25;
+        paintPos.y += 45;
+    }
     const eyeImageRef = GAME_IMAGES[IMAGE_EXPLOSION];
     loadImage(eyeImageRef);
     const god = abilityOwner as GodEnemyCharacter;

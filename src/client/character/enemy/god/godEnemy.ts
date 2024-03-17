@@ -4,7 +4,7 @@ import { calculateDirection, calculateDistance, getNextId } from "../../../game.
 import { IdCounter, Game, Position, FACTION_ENEMY } from "../../../gameModel.js";
 import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick } from "../../character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, createCharacter } from "../../characterModel.js";
-import { paintCharacterWithAbilitiesDefault, paintCharatersPets } from "../../characterPaint.js";
+import { paintCharacterAbilties } from "../../characterPaint.js";
 import { PathingCache } from "../../pathing.js";
 import { paintKingHpBar } from "../kingEnemy.js";
 import { GameMapGodArea, getGodAreaMiddlePosition } from "../../../map/mapGodArea.js";
@@ -15,6 +15,7 @@ import { ABILITY_NAME_MELEE, AbilityMelee } from "../../../ability/abilityMelee.
 import { GodAbility, setGodAbilityPickUpPosition } from "./godAbility.js";
 import { createDebuffDamageTaken } from "../../../debuff/debuffDamageTaken.js";
 import { ABILITY_NAME_GOD_IMMUNITY, addGodAbilityGodImmunity } from "./abilityGodImmunity.js";
+import { getPointPaintPosition } from "../../../gamePaint.js";
 
 
 const FIRST_PICK_UP_DELAY = 3000;
@@ -23,6 +24,10 @@ export type GodEnemyCharacter = Character & {
     pickUpCount: number,
     allAbilitiesPickedUp?: boolean,
     firstAttackedTime?: number,
+    animationState: {
+        state: "sleeping" | "waking up" | "angry",
+        data: any[],
+    }
 };
 
 export const CHARACTER_TYPE_GOD_ENEMY = "GodEnemyCharacter";
@@ -61,6 +66,10 @@ function createGodEnemy(idCounter: IdCounter, spawnPosition: Position, game: Gam
     const godCharacter: GodEnemyCharacter = {
         ...character,
         pickUpCount: 0,
+        animationState: {
+            state: "sleeping",
+            data: [],
+        }
     };
     const abilityMelee = createAbility(ABILITY_NAME_MELEE, game.state.idCounter) as AbilityMelee;
     abilityMelee.damage = 50;
@@ -85,6 +94,7 @@ function tickEnemyCharacter(character: Character, game: Game, pathingCache: Path
     if (enemy.firstAttackedTime === undefined) {
         if (enemy.hp < enemy.maxHp) {
             enemy.firstAttackedTime = game.state.time;
+            enemy.animationState.state = "waking up";
         }
         return;
     }
@@ -92,6 +102,7 @@ function tickEnemyCharacter(character: Character, game: Game, pathingCache: Path
     let pickUpAbility = false;
     if (!enemy.allAbilitiesPickedUp) {
         if (enemy.pickUpCount === 0 && enemy.firstAttackedTime !== undefined && enemy.firstAttackedTime + FIRST_PICK_UP_DELAY <= game.state.time) {
+            enemy.animationState.state = "angry";
             pickUpAbility = true;
         } else if (enemy.pickUpCount > 0 && enemy.pickUpCount <= (1 - enemy.hp / enemy.maxHp) * 10) {
             pickUpAbility = true;
@@ -165,7 +176,68 @@ function getAbilityToPickUp(enemy: GodEnemyCharacter): GodAbility | undefined {
 
 function paint(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
     if (character.isDead) return;
-    paintCharatersPets(ctx, [character], cameraPosition, game);
-    paintCharacterWithAbilitiesDefault(ctx, character, cameraPosition, game);
+    const god = character as GodEnemyCharacter;
+    const animation = god.animationState;
+    //    paintCharacterWithAbilitiesDefault(ctx, character, cameraPosition, game);
+    const paintPos = getPointPaintPosition(ctx, character, cameraPosition);
+    paintPos.y -= 20;
+    const width = 30;
+    const height = 80;
+    //body
+    ctx.beginPath();
+    ctx.fillStyle = "black";
+    ctx.strokeStyle = "black";
+    ctx.ellipse(paintPos.x, paintPos.y, width, height, 0, 0, Math.PI);
+    ctx.fill();
+    //eye setup
+    const eyeWidth = 10;
+    const eyePupilSize = 5;
+    let eyeTopSpacing = 12;
+    let eyeRotation = 1;
+    let eyeOpen = true;
+    let pupilDirection = character.moveDirection;
+    let pupilOffset: Position = {
+        x: Math.cos(pupilDirection) * 2.5,
+        y: Math.sin(pupilDirection) * 2.5,
+    }
+    if (animation.state === "sleeping") {
+        eyeRotation = 0;
+        eyeOpen = false;
+    } else if (animation.state === "waking up" && god.firstAttackedTime !== undefined) {
+        const wakingUpPerCent = Math.min((game.state.time - god.firstAttackedTime) / 1500, 1);
+        pupilOffset.x = 0;
+        pupilOffset.y = 0;
+        eyeRotation = 1 * wakingUpPerCent;
+    }
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = "white";
+    //eye left
+    ctx.beginPath();
+    ctx.fillStyle = "white";
+    ctx.ellipse(paintPos.x - eyeWidth, paintPos.y + eyeTopSpacing, eyeWidth, 7, eyeRotation, 0, Math.PI);
+    if (eyeOpen) {
+        ctx.fill();
+        ctx.beginPath();
+        ctx.fillStyle = "black";
+        ctx.arc(paintPos.x - eyeWidth * 1.3 + pupilOffset.x, paintPos.y + eyeTopSpacing + pupilOffset.y, eyePupilSize, 0, Math.PI * 2);
+        ctx.fill();
+    } else {
+        ctx.stroke();
+    }
+    //eye right
+    ctx.beginPath();
+    ctx.fillStyle = "white";
+    ctx.ellipse(paintPos.x + eyeWidth, paintPos.y + eyeTopSpacing, eyeWidth, 7, -eyeRotation, 0, Math.PI);
+    if (eyeOpen) {
+        ctx.fill();
+        ctx.beginPath();
+        ctx.fillStyle = "black";
+        ctx.arc(paintPos.x + eyeWidth * 1.3 + pupilOffset.x, paintPos.y + eyeTopSpacing + pupilOffset.y, eyePupilSize, 0, Math.PI * 2);
+        ctx.fill();
+    } else {
+        ctx.stroke();
+    }
+
+    paintCharacterAbilties(ctx, character, cameraPosition, game);
     paintKingHpBar(ctx, character);
 }

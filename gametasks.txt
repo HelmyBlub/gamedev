@@ -6,7 +6,7 @@ current tasks:
         - dev steps:
             - improve
                 - graphics
-                    - new boss model
+                    - eye animation with code
                 - moreInfo for god enemy
                 - think about sound?
                 - balance

@@ -101,6 +101,10 @@ export function paintCharatersPets(ctx: CanvasRenderingContext2D, characters: (C
 export function paintCharacterWithAbilitiesDefault(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game, preventDefaultCharacterPaint: boolean | undefined = undefined) {
     if (character.isDead) return;
     paintCharacterDefault(ctx, character, cameraPosition, game, preventDefaultCharacterPaint);
+    paintCharacterAbilties(ctx, character, cameraPosition, game);
+}
+
+export function paintCharacterAbilties(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
     for (let ability of character.abilities) {
         const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
         if (abilityFunctions.paintAbility !== undefined) {
