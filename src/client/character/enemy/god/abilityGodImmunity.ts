@@ -16,7 +16,7 @@ const IMAGE_SHIELD = "shield";
 GAME_IMAGES[IMAGE_SHIELD] = {
     imagePath: "/images/shield.png",
     spriteRowHeights: [],
-    spriteRowWidths: [],
+    spriteRowWidths: [40],
 };
 
 export type AbilityGodImmunity = GodAbility & {
@@ -108,38 +108,28 @@ function setAbilityToBossLevel(ability: Ability, level: number) {
 
 function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
     const abiltiyMovingFire = ability as AbilityGodImmunity;
-    if (abiltiyMovingFire.pickedUp && abilityOwner.isDamageImmune) {
-        const paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
-        ctx.beginPath();
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = "black";
-        ctx.arc(
-            paintPos.x,
-            paintPos.y,
-            abilityOwner.width!, 0, 2 * Math.PI
-        );
-        ctx.stroke();
-    }
     const position: Position = !abiltiyMovingFire.pickedUp && abiltiyMovingFire.pickUpPosition ? abiltiyMovingFire.pickUpPosition : abilityOwner;
     const paintPos = getPointPaintPosition(ctx, position, cameraPosition);
-    if (abiltiyMovingFire.pickedUp) paintPos.x += 20;
     const shieldImageRef = GAME_IMAGES[IMAGE_SHIELD];
     loadImage(shieldImageRef);
     const god = abilityOwner as GodEnemyCharacter;
-    const sizeFactor = abiltiyMovingFire.pickedUp ? 0.8 : 1 + god.pickUpCount * 0.2;
+    let sizeFactor = abiltiyMovingFire.pickedUp ? 0.4 : 0.5 + god.pickUpCount * 0.1;
     if (shieldImageRef.imageRef?.complete) {
         const shieldImage: HTMLImageElement = shieldImageRef.imageRef;
+        if (abiltiyMovingFire.pickedUp && !god.isDamageImmune) paintPos.x += 20;
+        if (god.isDamageImmune) sizeFactor = 1.2;
+        const width = shieldImageRef.spriteRowWidths[0];
         ctx.drawImage(
             shieldImage,
             0,
             0,
-            shieldImage.width,
+            width,
             shieldImage.height,
-            Math.floor(paintPos.x - shieldImage.width / 2),
+            Math.floor(paintPos.x - width / 2),
             Math.floor(paintPos.y - shieldImage.height / 2),
-            shieldImage.width * sizeFactor,
+            width * sizeFactor,
             shieldImage.height * sizeFactor
-        )
+        );
     }
     if (!abiltiyMovingFire.pickedUp) {
         ctx.font = "bold 16px Arial";
@@ -152,9 +142,12 @@ function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: Abilit
     const cameraPosition = getCameraPosition(game);
     const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition);
 
-    if ((paintOrder === "beforeCharacterPaint" && abilityObjectFireCircle.subType === "GodImmunityRemoveGround")
-        || (paintOrder === "afterCharacterPaint" && abilityObjectFireCircle.subType !== "GodImmunityRemoveGround")
-    ) {
+    const shieldImageRef = GAME_IMAGES[IMAGE_SHIELD];
+    loadImage(shieldImageRef);
+    if (!shieldImageRef.imageRef?.complete) return;
+    const shieldImage: HTMLImageElement = shieldImageRef.imageRef;
+    const width = shieldImageRef.spriteRowWidths[0];
+    if (paintOrder === "beforeCharacterPaint" && abilityObjectFireCircle.subType === "GodImmunityRemoveGround") {
         ctx.fillStyle = abilityObject.color;
         ctx.beginPath();
         ctx.arc(
@@ -163,11 +156,29 @@ function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: Abilit
             abilityObjectFireCircle.radius, 0, 2 * Math.PI
         );
         ctx.fill();
-        if (abilityObjectFireCircle.subType !== "GodImmunityRemoveGround") {
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = "white";
-            ctx.stroke();
-        }
+        ctx.drawImage(
+            shieldImage,
+            width,
+            0,
+            width,
+            shieldImage.height,
+            Math.floor(paintPos.x - width / 2),
+            Math.floor(paintPos.y - shieldImage.height / 2),
+            width,
+            shieldImage.height
+        );
+    } else if (paintOrder === "afterCharacterPaint" && abilityObjectFireCircle.subType !== "GodImmunityRemoveGround") {
+        ctx.drawImage(
+            shieldImage,
+            width,
+            0,
+            width,
+            shieldImage.height,
+            Math.floor(paintPos.x - width / 2),
+            Math.floor(paintPos.y - shieldImage.height / 2),
+            width,
+            shieldImage.height
+        );
     }
 }
 
