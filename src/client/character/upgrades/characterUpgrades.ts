@@ -10,6 +10,7 @@ import { addCharacterUpgradeBonusExperience } from "./characterUpgradeExperience
 import { addCharacterUpgradeBonusMoney } from "./characterUpgradeMoney.js";
 import { addCharacterUpgradeBonusDamage } from "./characterUpgradeBonusDamage.js";
 import { addCharacterUpgradeRerolls } from "./characterUpgradeRerolls.js";
+import { addCharacterUpgradeFightRetries } from "./characterUpgradeFightRetries.js";
 
 export type CharacterUpgrade = {
     level: number,
@@ -42,6 +43,7 @@ export function onDomLoadSetCharacterUpgradeFunctions() {
     addCharacterUpgradeBonusMoney();
     addCharacterUpgradeBonusDamage();
     addCharacterUpgradeRerolls();
+    addCharacterUpgradeFightRetries();
 }
 
 export function addCharacterUpgrades(characterUpgrades: CharacterUpgrades, character: Character, game: Game, characterClass: CharacterClass | undefined) {

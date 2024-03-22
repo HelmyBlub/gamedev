@@ -4,7 +4,7 @@ import { Character } from "./character/characterModel.js";
 import { Game, Position } from "./gameModel.js";
 import { websocketConnect } from "./multiplayerConenction.js";
 import { ABILITIES_FUNCTIONS } from "./ability/ability.js";
-import { calculateDirection, getCameraPosition, findClientInfo, resetGameNonStateData, takeTimeMeasure, findClosestInteractable } from "./game.js";
+import { calculateDirection, getCameraPosition, findClientInfo, resetGameNonStateData, takeTimeMeasure, findClosestInteractable, concedePlayerFightRetries, retryFight } from "./game.js";
 import { executeUpgradeOptionChoice } from "./character/upgrade.js";
 import { canCharacterTradeAbilityOrPets, characterTradeAbilityAndPets } from "./character/character.js";
 import { shareCharactersTradeablePreventedMultipleClass } from "./character/playerCharacters/playerCharacters.js";
@@ -373,6 +373,10 @@ function playerAction(clientId: number, data: any, game: Game) {
 
 function interactKeys(character: Character, specialAction: string, game: Game) {
     if (specialAction === "interact1") {
+        if (game.state.bossStuff.godFightStarted || game.state.bossStuff.kingFightStarted) {
+            retryFight(game);
+            return;
+        }
         const closestInteractable = findClosestInteractable(game);
         if (closestInteractable) {
             if (closestInteractable.mapObject) {
@@ -394,6 +398,10 @@ function interactKeys(character: Character, specialAction: string, game: Game) {
             }
         }
     } else {
+        if (game.state.bossStuff.godFightStarted || game.state.bossStuff.kingFightStarted) {
+            concedePlayerFightRetries(game);
+            return;
+        }
         const interactableMapObject = findNearesInteractableMapChunkObject(character, game);
         if (interactableMapObject) {
             interactWithMapObject(character, interactableMapObject, specialAction, game);

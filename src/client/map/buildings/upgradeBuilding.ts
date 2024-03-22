@@ -12,6 +12,7 @@ import { addUpgradeBuildingHp } from "./upgradeBuildingHp.js";
 import { addUpgradeBuildingMoney } from "./upgradeBuildingMoney.js";
 import { addUpgradeBuildingMovementSpeed } from "./upgradeBuildingMovementSpeed.js";
 import { addUpgradeBuildingRerolls } from "./upgradeBuildingRerolls.js";
+import { addUpgradeBuildingFightRetries } from "./upgradeBuildingFightRetries.js";
 
 export const UPGRADE_BUILDING = "Upgrade Building";
 export type UpgradeBuilding = Building & {
@@ -41,6 +42,7 @@ export function addUpgradeBuildingsFunctions() {
     addUpgradeBuildingMoney();
     addUpgradeBuildingDamage();
     addUpgradeBuildingRerolls();
+    //addUpgradeBuildingFightRetries();
 }
 
 export function createBuildingUpgradeBuilding(upgradeType: string, tileX: number, tileY: number, idCounter: IdCounter): UpgradeBuilding {

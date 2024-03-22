@@ -121,6 +121,7 @@ export type Character = Position & {
     willTurnToPetOnDeath?: boolean,
     upgradeChoices: UpgradeOption[],
     upgradeChoiceRerools?: number,
+    fightRetries?: number,
     pets?: TamerPetCharacter[],
     weight: number,
     bossSkillPoints?: BossSkillPoints,

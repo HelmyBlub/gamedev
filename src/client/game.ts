@@ -14,9 +14,9 @@ import { createObjectDeathCircle } from "./ability/abilityDeathCircle.js";
 import { checkForBossSpawn, tickBossCharacters } from "./character/enemy/bossEnemy.js";
 import { autoPlay } from "./test/autoPlay.js";
 import { replayGameEndAssert, replayNextInReplayQueue } from "./test/gameTest.js";
-import { checkForKingAreaTrigger } from "./map/mapKingArea.js";
+import { checkForKingAreaTrigger, getEntranceChunkAndTileXYForPosition } from "./map/mapKingArea.js";
 import { calculateHighscoreOnGameEnd } from "./highscores.js";
-import { setPlayerAsKing } from "./character/enemy/kingEnemy.js";
+import { setPlayerAsKing, startKingFight } from "./character/enemy/kingEnemy.js";
 import { ABILITY_NAME_FEED_PET } from "./ability/petTamer/abilityFeedPet.js";
 import { ABILITY_NAME_LOVE_PET } from "./ability/petTamer/abilityLovePet.js";
 import { COMMAND_RESTART } from "./globalVars.js";
@@ -28,7 +28,7 @@ import { MapTileObject, findNearesInteractableMapChunkObject } from "./map/mapOb
 import { classBuildingCheckAllPlayerForLegendaryAbilitiesAndMoveBackToBuilding } from "./map/buildings/classBuilding.js";
 import { mapObjectPlaceUpgradeBuilding } from "./map/mapObjectUpgradeBuilding.js";
 import { Leveling } from "./character/playerCharacters/levelingCharacter.js";
-import { checkGodFightStart } from "./map/mapGodArea.js";
+import { checkGodFightStart, startGodFight } from "./map/mapGodArea.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -437,6 +437,44 @@ export function levelUpIncreaseExperienceRequirement(leveling: Leveling) {
     }
 }
 
+export function concedePlayerFightRetries(game: Game) {
+    for (let player of game.state.players) {
+        if (player.character.fightRetries !== undefined && player.character.fightRetries > 0) {
+            player.character.fightRetries = 0;
+        }
+    }
+}
+
+export function retryFight(game: Game) {
+    for (let player of game.state.players) {
+        if (player.character.fightRetries !== undefined && player.character.fightRetries > 0) {
+            player.character.fightRetries -= 1;
+            break;
+        }
+    }
+    if (game.state.bossStuff.kingFightStarted || game.state.bossStuff.godFightStarted) {
+        game.state.abilityObjects = [];
+        game.state.bossStuff.bosses = [];
+        let playerOffsetX = 0;
+        if (game.state.bossStuff.kingFightStarted) {
+            startKingFight(game.state.players[0].character, game);
+            playerOffsetX = (game.state.map.kingArea!.size * game.state.map.chunkLength * game.state.map.tileSize) / 2 - game.state.map.tileSize * 2;
+        } else if (game.state.bossStuff.godFightStarted) {
+            startGodFight(game.state.map.godArea!, game.state.map, game);
+            playerOffsetX = (game.state.map.godArea!.size * game.state.map.chunkLength * game.state.map.tileSize) / 2 - game.state.map.tileSize * 2;
+        }
+        const bossEnemy = game.state.bossStuff.bosses[0];
+        for (let player of game.state.players) {
+            player.character.isPet = false;
+            player.character.isDead = false;
+            player.character.hp = player.character.maxHp;
+            player.character.x = bossEnemy.x - playerOffsetX;
+            player.character.y = bossEnemy.y;
+            resetCharacter(player.character, game);
+        }
+    }
+}
+
 function tickAndPaint(game: Game) {
     takeTimeMeasure(game.debug, "total", "");
     takeTimeMeasure(game.debug, "", "total");
@@ -537,6 +575,13 @@ function determineRunnerTimeout(game: Game): number {
 function gameEndedCheck(game: Game) {
     const alivePlayersCount = countAlivePlayerCharacters(game.state.players)
     if (alivePlayersCount === 0) {
+        if (game.state.bossStuff.godFightStarted || game.state.bossStuff.kingFightStarted) {
+            for (let player of game.state.players) {
+                if (player.character.fightRetries !== undefined && player.character.fightRetries > 0) {
+                    return false;
+                }
+            }
+        }
         return true;
     }
     return false;
