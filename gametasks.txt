@@ -4,7 +4,6 @@ increase version
 current tasks:
     - enemy type: "God"
         - dev steps:
-            - bug: movingFire hitbox is off
             - improve
                 - upgrade building: god/king tries
                     - visualize key press option on king/god wipe

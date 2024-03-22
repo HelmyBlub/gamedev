@@ -113,7 +113,6 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
 }
 
 function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
-    const abilityObjectFireCircle = abilityObject as AbilityObjectMovingFire;
     const cameraPosition = getCameraPosition(game);
     const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition);
 
@@ -130,8 +129,8 @@ function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: Abilit
                 0,
                 width,
                 fireAnimationImage.height,
-                Math.floor(paintPos.x - fireAnimationImage.width / 2),
-                Math.floor(paintPos.y - fireAnimationImage.height / 2),
+                paintPos.x,
+                paintPos.y,
                 width,
                 fireAnimationImage.height
             )
