@@ -5,14 +5,12 @@ current tasks:
     - enemy type: "God"
         - dev steps:
             - improve
-                - graphics
-                    - eye animation with code
-                - moreInfo for god enemy
-                - think about sound?
-                - balance
-                - performane imporve tile explosions
-                - highscore board should display best try percentages
                 - upgrade building: god/king tries
+                - performane improve tile explosions code
+                - think about sound?
+                    - make own sounds?
+                    - how to capture sound in my stream setup from VM? (offstream)
+                - balance
 
     - replay tests performance metrics save in localStorage for better see how it changes
     - moreInfos:

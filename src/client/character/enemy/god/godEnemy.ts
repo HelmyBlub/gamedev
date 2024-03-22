@@ -16,6 +16,7 @@ import { GodAbility, setGodAbilityPickUpPosition } from "./godAbility.js";
 import { createDebuffDamageTaken } from "../../../debuff/debuffDamageTaken.js";
 import { ABILITY_NAME_GOD_IMMUNITY, addGodAbilityGodImmunity } from "./abilityGodImmunity.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
+import { MoreInfosPartContainer, createCharacterMoreInfosPartContainer } from "../../../moreInfo.js";
 
 
 const FIRST_PICK_UP_DELAY = 3000;
@@ -54,6 +55,13 @@ export function applyExponentialStackingDamageTakenDebuff(target: Character, gam
     const duration = 30000;
     const debuffDamageTaken = createDebuffDamageTaken(factor, duration, game.state.time, true);
     applyDebuff(debuffDamageTaken, target, game);
+}
+
+export function godCreateMoreInfos(game: Game, heading: string): MoreInfosPartContainer | undefined {
+    if (!game.ctx) return;
+    if (!game.state.bossStuff.godFightStarted) return;
+    let god = game.state.bossStuff.bosses[game.state.bossStuff.bosses.length - 1];
+    return createCharacterMoreInfosPartContainer(game.ctx, god, game.UI.moreInfos, game, heading);
 }
 
 function createGodEnemy(idCounter: IdCounter, spawnPosition: Position, game: Game): GodEnemyCharacter {

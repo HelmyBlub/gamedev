@@ -285,7 +285,7 @@ export function deepCopy(object: any): any {
 export function endGame(game: Game, isKingKill: boolean = false, isGodKill: boolean = false) {
     game.state.ended = true;
     addPlayerMoney(game, isKingKill, isGodKill);
-    const newScore = calculateHighscoreOnGameEnd(game, isKingKill, isGodKill);
+    const newScore = calculateHighscoreOnGameEnd(game);
     if (isKingKill) {
         setPlayerAsKing(game);
         mapObjectPlaceClassBuilding(game);
