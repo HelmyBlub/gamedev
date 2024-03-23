@@ -2,21 +2,16 @@ next test run: All
 increase version
 
 current tasks:
-    - enemy type: "God"
-        - dev steps:
-            - improve
-                - performane improve tile explosions code
-                - think about sound?
-                    - make own sounds?
-                    - how to capture sound in my stream setup from VM? (offstream)
-                - balance
-
-    - replay tests performance metrics save in localStorage for better see how it changes
     - moreInfos:
-        - comabtlog to see what damage i took
         - damage meter. I want to know what does my damage
             - auto splits on each upgrade
+    - replay tests performance metrics save in localStorage for better see how it changes
 
+    - enemy type: "God"
+        - performane improve tile explosions code
+        - think about sound?
+            - make own sounds?
+            - how to capture sound in my stream setup from VM? (offstream)
 
 
 next feature ideas:

@@ -621,9 +621,11 @@ function killCharacter(character: Character, game: Game, abilityIdRef: number | 
         endGame(game, false, true);
     } else if (character.type === PLAYER_CHARACTER_TYPE) {
         if (character.willTurnToPetOnDeath) turnCharacterToPet(character, game);
-        const countAlive = countAlivePlayerCharacters(game.state.players);
-        if (countAlive === 0) {
-            game.state.bossStuff.fightWipe = true;
+        if (game.state.bossStuff.godFightStarted || game.state.bossStuff.kingFightStarted) {
+            const countAlive = countAlivePlayerCharacters(game.state.players);
+            if (countAlive === 0) {
+                game.state.bossStuff.fightWipe = true;
+            }
         }
     }
     if (abilityIdRef !== undefined && character.type !== CHARACTER_TYPE_BOSS_ENEMY) {

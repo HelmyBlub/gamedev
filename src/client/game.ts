@@ -20,7 +20,6 @@ import { setPlayerAsKing, startKingFight } from "./character/enemy/kingEnemy.js"
 import { ABILITY_NAME_FEED_PET } from "./ability/petTamer/abilityFeedPet.js";
 import { ABILITY_NAME_LOVE_PET } from "./ability/petTamer/abilityLovePet.js";
 import { COMMAND_RESTART } from "./globalVars.js";
-import { consoleLogCombatlog } from "./combatlog.js";
 import { mapObjectPlaceClassBuilding } from "./map/mapObjectClassBuilding.js";
 import { hasPlayerChoosenStartClassUpgrade } from "./character/playerCharacters/playerCharacters.js";
 import { copyAndSetPermanentDataForReplay, localStorageLoad, localStorageSavePastCharacters, setPermanentDataFromReplayData } from "./permanentData.js";
@@ -295,7 +294,6 @@ export function endGame(game: Game, isKingKill: boolean = false, isGodKill: bool
         savePlayerCharatersAsPastCharacters(game);
         if (!game.testing.replay) {
             const myCharacter = findMyCharacter(game);
-            if (myCharacter && myCharacter.combatlog) consoleLogCombatlog(myCharacter.combatlog);
         }
     }
     mapObjectPlaceUpgradeBuilding(game);
