@@ -1,8 +1,9 @@
-next test run: All
+next test run: 
 increase version
 
 current tasks:
     - moreInfos:
+        - only for own character?
         - damage meter. I want to know what does my damage
             - auto splits on each upgrade
     - replay tests performance metrics save in localStorage for better see how it changes

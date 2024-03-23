@@ -332,7 +332,7 @@ function paintAbilityObjectTower(ctx: CanvasRenderingContext2D, abilityObject: A
         paintPos.y -= towerBaseSize / 2;
         if (owner?.clientId === game.multiplayer.myClientId) {
             const ability = owner.character.abilities.find((e) => e.name === ABILITY_NAME_TOWER) as AbilityTower;
-            if (getTowerCountOfOwner(game.state.abilityObjects, tower.ownerId) >= ability.maxTowers) {
+            if (ability && getTowerCountOfOwner(game.state.abilityObjects, tower.ownerId) >= ability.maxTowers) {
                 const oldestTower = findOldesTowerOfOwner(game.state.abilityObjects, tower.ownerId)?.tower;
                 if (oldestTower && oldestTower === tower) {
                     ctx.fillStyle = "darkblue";
