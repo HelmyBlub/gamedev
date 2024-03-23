@@ -4,7 +4,7 @@ import { Character } from "./character/characterModel.js";
 import { Game, Position } from "./gameModel.js";
 import { websocketConnect } from "./multiplayerConenction.js";
 import { ABILITIES_FUNCTIONS } from "./ability/ability.js";
-import { calculateDirection, getCameraPosition, findClientInfo, resetGameNonStateData, takeTimeMeasure, findClosestInteractable, concedePlayerFightRetries, retryFight } from "./game.js";
+import { calculateDirection, getCameraPosition, findClientInfo, resetGameNonStateData, takeTimeMeasure, findClosestInteractable, concedePlayerFightRetries, retryFight, calculateFightRetryCounter } from "./game.js";
 import { executeUpgradeOptionChoice } from "./character/upgrade.js";
 import { canCharacterTradeAbilityOrPets, characterTradeAbilityAndPets } from "./character/character.js";
 import { shareCharactersTradeablePreventedMultipleClass } from "./character/playerCharacters/playerCharacters.js";
@@ -239,6 +239,10 @@ function uiAction(game: Game, inputCode: string, isInputDown: boolean) {
     switch (action.action) {
         case "Restart":
             if (!isInputDown) return;
+            if (game.state.bossStuff.fightWipe) {
+                const retries = calculateFightRetryCounter(game);
+                if (retries > 0) return;
+            }
             if (game.testing.replay) {
                 //end replay
                 game.testing.replay = undefined;

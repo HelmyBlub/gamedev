@@ -70,7 +70,14 @@ export function kingCreateMoreInfos(game: Game, celestialDirection: CelestialDir
 
 export function setPlayerAsKing(game: Game) {
     if (game.testing.replay) return;
-    const boss: Character = deepCopy(game.state.players[0].character);
+    let kingBaseCharacter: Character | undefined = undefined;
+    for (let player of game.state.players) {
+        if (!player.character.isDead && !player.character.isPet) {
+            kingBaseCharacter = player.character;
+            break;
+        }
+    }
+    const boss: Character = deepCopy(kingBaseCharacter);
     resetCharacter(boss, game);
     const celestialDirection = getCelestialDirection(boss, game.state.map);
     const oldBoss = game.state.bossStuff.nextKings[celestialDirection];

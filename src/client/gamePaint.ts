@@ -5,7 +5,7 @@ import { paintPlayerCharacters } from "./character/characterPaint.js";
 import { paintBossCharacters, paintBossCrown } from "./character/enemy/bossEnemy.js";
 import { CharacterClass, hasPlayerChoosenStartClassUpgrade, shareCharactersTradeablePreventedMultipleClass } from "./character/playerCharacters/playerCharacters.js";
 import { TamerPetCharacter } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
-import { calculateDistance, findClosestInteractable, getCameraPosition, getTimeSinceFirstKill } from "./game.js";
+import { calculateDistance, calculateFightRetryCounter, findClosestInteractable, getCameraPosition, getTimeSinceFirstKill } from "./game.js";
 import { Game, Position, Debugging, PaintTextData } from "./gameModel.js";
 import { Highscores } from "./highscores.js";
 import { GAME_IMAGES, loadImage } from "./imageLoad.js";
@@ -38,6 +38,7 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
     paintKillCounter(ctx, game.state.killCounter, game);
     paintClosestInteractable(ctx, cameraPosition, game);
     paintKeyInfo(ctx, game);
+    paintFightWipeUI(ctx, game);
     paintEndScreen(ctx, game.state.highscores, game);
     paintMyCharacterStats(ctx, game);
     paintMoreInfos(ctx, game.UI.moreInfos, game);
@@ -331,6 +332,23 @@ function paintTimeMeasures(ctx: CanvasRenderingContext2D, debug: Debugging | und
         }
         ctx.fillText(avg.toFixed(2) + " " + data.name, startX, startY + (i + 1) * fontSize);
     }
+}
+
+function paintFightWipeUI(ctx: CanvasRenderingContext2D, game: Game) {
+    if (!game.state.bossStuff.fightWipe) return;
+    const retryKey = playerInputBindingToDisplayValue("interact1", game);
+    const concedeKey = playerInputBindingToDisplayValue("interact2", game);
+    const paintPos = {
+        x: ctx.canvas.width / 2,
+        y: 200,
+    }
+    let retryCounter = calculateFightRetryCounter(game);
+    if (retryCounter === 0) return;
+    const textLines = [
+        `Press <${retryKey}> to use one fight retry. (${retryCounter} retries left).`,
+        `Press <${concedeKey}> to concede.`,
+    ];
+    paintTextLinesWithKeys(ctx, textLines, paintPos, 20, true);
 }
 
 function paintEndScreen(ctx: CanvasRenderingContext2D, highscores: Highscores, game: Game) {

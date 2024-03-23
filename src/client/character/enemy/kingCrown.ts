@@ -30,12 +30,19 @@ export function createKingCrownCharacter(idCounter: IdCounter, spawn: Position):
 
 function tickCrown(enemy: Character, game: Game, pathingCache: PathingCache | null) {
     if (enemy.isDead) return;
-    const targetCharacter = game.state.players[0].character;
+    let targetCharacter: Character | undefined = undefined;
+    for (let player of game.state.players) {
+        if (!player.character.isDead && !player.character.isPet) {
+            targetCharacter = player.character;
+            break;
+        }
+    }
+    if (!targetCharacter) return;
     const targetPos = {
         x: targetCharacter.x,
         y: targetCharacter.y - targetCharacter.height / 2
     }
-    if (calculateDistance(enemy, targetPos) <= getCharacterMoveSpeed(enemy)) {
+    if (calculateDistance(enemy, targetPos) <= getCharacterMoveSpeed(enemy) + 2) {
         endGame(game, true, false);
     } else {
         enemy.moveDirection = calculateDirection(enemy, targetPos);

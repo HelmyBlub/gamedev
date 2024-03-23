@@ -42,7 +42,7 @@ export function addUpgradeBuildingsFunctions() {
     addUpgradeBuildingMoney();
     addUpgradeBuildingDamage();
     addUpgradeBuildingRerolls();
-    //addUpgradeBuildingFightRetries();
+    addUpgradeBuildingFightRetries();
 }
 
 export function createBuildingUpgradeBuilding(upgradeType: string, tileX: number, tileY: number, idCounter: IdCounter): UpgradeBuilding {

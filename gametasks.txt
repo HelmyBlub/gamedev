@@ -1,14 +1,10 @@
-next test run: tamer, All
+next test run: All
 increase version
 
 current tasks:
     - enemy type: "God"
         - dev steps:
             - improve
-                - upgrade building: god/king tries
-                    - visualize key press option on king/god wipe
-                    - "stop fight". should no longer be possible to win fight
-
                 - performane improve tile explosions code
                 - think about sound?
                     - make own sounds?

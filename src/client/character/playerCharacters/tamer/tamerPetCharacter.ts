@@ -437,6 +437,9 @@ function reset(character: Character) {
     pet.nextMovementUpdateTime = undefined;
     pet.forcedMovePosition = undefined;
     pet.foodIntakeLevel.current = 50;
+    pet.sizeFactor = 1;
+    pet.width = pet.defaultSize * pet.sizeFactor;
+    pet.height = pet.width;
     changeTamerPetHappines(pet, pet.happines.current - 50, 0, false);
     pet.happines.current = 50;
 }

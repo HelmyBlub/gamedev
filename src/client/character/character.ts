@@ -56,6 +56,7 @@ export function findCharacterByIdInCompleteMap(id: number, game: Game) {
 
 export function characterTakeDamage(character: Character, damage: number, game: Game, abilityIdRef: number | undefined = undefined, abilityName: string) {
     if (character.isDead || character.isPet || character.isDamageImmune) return;
+    if (game.state.bossStuff.fightWipe) return;
     let sourceDamageFactor = findSourceDamageFactor(abilityIdRef, game);
     let modifiedDamage = damage * character.damageTakenModifierFactor * sourceDamageFactor;
     if (character.shield > 0) {
@@ -313,10 +314,6 @@ export function findMyCharacter(game: Game): Character | undefined {
 }
 
 export function tickDefaultCharacter(character: Character, game: Game, pathingCache: PathingCache | null) {
-    if (character.isDead) {
-        if (!character.willTurnToPetOnDeath) return;
-        turnCharacterToPet(character, game);
-    }
     moveCharacterTick(character, game.state.map, game.state.idCounter, game);
 }
 
@@ -509,9 +506,8 @@ export function turnCharacterToPet(character: Character, game: Game) {
             newPlayerOwnerId = possibleOwnerCharacters[randomOwnerIndex].id;
             character.x = possibleOwnerCharacters[randomOwnerIndex].x;
             character.y = possibleOwnerCharacters[randomOwnerIndex].y;
+            character.abilities.push(createAbilityLeash(game.state.idCounter, undefined, 100, newPlayerOwnerId));
         }
-
-        character.abilities.push(createAbilityLeash(game.state.idCounter, undefined, 100, newPlayerOwnerId));
     }
 }
 
@@ -601,6 +597,7 @@ function experienceForCharacter(character: Character, experienceWorth: number) {
 
 function killCharacter(character: Character, game: Game, abilityIdRef: number | undefined = undefined) {
     character.isDead = true;
+
     if (game.state.timeFirstKill === undefined) game.state.timeFirstKill = game.state.time;
     levelingCharacterAndClassXpGain(game.state, character.experienceWorth, game);
     if (character.type === CHARACTER_TYPE_BOSS_ENEMY) {
@@ -622,6 +619,12 @@ function killCharacter(character: Character, game: Game, abilityIdRef: number | 
         game.state.bossStuff.bosses.push(createKingCrownCharacter(game.state.idCounter, character));
     } else if (character.type === CHARACTER_TYPE_GOD_ENEMY) {
         endGame(game, false, true);
+    } else if (character.type === PLAYER_CHARACTER_TYPE) {
+        if (character.willTurnToPetOnDeath) turnCharacterToPet(character, game);
+        const countAlive = countAlivePlayerCharacters(game.state.players);
+        if (countAlive === 0) {
+            game.state.bossStuff.fightWipe = true;
+        }
     }
     if (abilityIdRef !== undefined && character.type !== CHARACTER_TYPE_BOSS_ENEMY) {
         const ability = findAbilityById(abilityIdRef, game);

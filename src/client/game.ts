@@ -29,6 +29,7 @@ import { classBuildingCheckAllPlayerForLegendaryAbilitiesAndMoveBackToBuilding }
 import { mapObjectPlaceUpgradeBuilding } from "./map/mapObjectUpgradeBuilding.js";
 import { Leveling } from "./character/playerCharacters/levelingCharacter.js";
 import { checkGodFightStart, startGodFight } from "./map/mapGodArea.js";
+import { ABILITY_NAME_LEASH } from "./ability/abilityLeash.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -110,6 +111,7 @@ export function gameInit(game: Game) {
     game.state.bossStuff.bossLevelCounter = 1;
     game.state.bossStuff.kingFightStarted = false;
     game.state.bossStuff.godFightStarted = false;
+    game.state.bossStuff.fightWipe = undefined;
     game.state.deathCircleCreated = false;
     game.state.paused = false;
     game.state.enemyTypeDirectionSeed += 1;
@@ -445,34 +447,53 @@ export function concedePlayerFightRetries(game: Game) {
     }
 }
 
+export function calculateFightRetryCounter(game: Game) {
+    let retryCounter = 0;
+    for (let player of game.state.players) {
+        if (player.character.fightRetries !== undefined) retryCounter += player.character.fightRetries;
+    }
+    return retryCounter;
+}
+
 export function retryFight(game: Game) {
+    if (!game.state.bossStuff.kingFightStarted && !game.state.bossStuff.godFightStarted) return;
+    if (!game.state.bossStuff.fightWipe) return;
+    let hasRetry = false;
     for (let player of game.state.players) {
         if (player.character.fightRetries !== undefined && player.character.fightRetries > 0) {
             player.character.fightRetries -= 1;
+            hasRetry = true;
             break;
         }
     }
-    if (game.state.bossStuff.kingFightStarted || game.state.bossStuff.godFightStarted) {
-        game.state.abilityObjects = [];
-        game.state.bossStuff.bosses = [];
-        let playerOffsetX = 0;
-        if (game.state.bossStuff.kingFightStarted) {
-            startKingFight(game.state.players[0].character, game);
-            playerOffsetX = (game.state.map.kingArea!.size * game.state.map.chunkLength * game.state.map.tileSize) / 2 - game.state.map.tileSize * 2;
-        } else if (game.state.bossStuff.godFightStarted) {
-            startGodFight(game.state.map.godArea!, game.state.map, game);
-            playerOffsetX = (game.state.map.godArea!.size * game.state.map.chunkLength * game.state.map.tileSize) / 2 - game.state.map.tileSize * 2;
-        }
-        const bossEnemy = game.state.bossStuff.bosses[0];
-        for (let player of game.state.players) {
-            player.character.isPet = false;
-            player.character.isDead = false;
-            player.character.hp = player.character.maxHp;
-            player.character.x = bossEnemy.x - playerOffsetX;
-            player.character.y = bossEnemy.y;
-            resetCharacter(player.character, game);
+    if (!hasRetry) return;
+    game.state.bossStuff.bosses = [];
+    game.state.bossStuff.fightWipe = false;
+    let playerOffsetX = 0;
+    if (game.state.bossStuff.kingFightStarted) {
+        startKingFight(game.state.players[0].character, game);
+        playerOffsetX = (game.state.map.kingArea!.size * game.state.map.chunkLength * game.state.map.tileSize) / 2 - game.state.map.tileSize * 2;
+    } else if (game.state.bossStuff.godFightStarted) {
+        startGodFight(game.state.map.godArea!, game.state.map, game);
+        playerOffsetX = (game.state.map.godArea!.size * game.state.map.chunkLength * game.state.map.tileSize) / 2 - game.state.map.tileSize * 2;
+    }
+    const bossEnemy = game.state.bossStuff.bosses[0];
+    for (let player of game.state.players) {
+        player.character.isPet = false;
+        player.character.isDead = false;
+        player.character.hp = player.character.maxHp;
+        player.character.x = bossEnemy.x - playerOffsetX;
+        player.character.y = bossEnemy.y;
+        resetCharacter(player.character, game);
+        for (let i = player.character.abilities.length - 1; i >= 0; i--) {
+            const ability = player.character.abilities[i];
+            if (ability.name === ABILITY_NAME_LEASH) {
+                player.character.abilities.splice(i, 1);
+                break;
+            }
         }
     }
+    game.state.abilityObjects = [];
 }
 
 function tickAndPaint(game: Game) {
@@ -573,7 +594,7 @@ function determineRunnerTimeout(game: Game): number {
 }
 
 function gameEndedCheck(game: Game) {
-    const alivePlayersCount = countAlivePlayerCharacters(game.state.players)
+    const alivePlayersCount = countAlivePlayerCharacters(game.state.players);
     if (alivePlayersCount === 0) {
         if (game.state.bossStuff.godFightStarted || game.state.bossStuff.kingFightStarted) {
             for (let player of game.state.players) {
