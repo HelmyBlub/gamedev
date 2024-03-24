@@ -73,7 +73,7 @@ export function addDamageBreakDownToDamageMeter(damageMeter: DamageMeter, abilit
 
 export function createDamageMeterMoreInfo(ctx: CanvasRenderingContext2D, moreInfos: MoreInfos, damageMeter: DamageMeter): MoreInfosPartContainer | undefined {
     if (damageMeter.splits.length === 0) return;
-    const moreInfosContainer = createDefaultMoreInfosContainer(ctx, "DamageMeter", moreInfos.headingFontSize);
+    const moreInfosContainer = createDefaultMoreInfosContainer(ctx, "DamageMeter(WIP)", moreInfos.headingFontSize);
     const textLines: string[] = [`Damage Done:`];
     for (let abilityData of damageMeter.splits[0]) {
         textLines.push(`${(abilityData.abilityName)}: ${abilityData.totalDamage.toLocaleString()}`);
