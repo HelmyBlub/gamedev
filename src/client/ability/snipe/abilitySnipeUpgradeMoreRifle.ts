@@ -34,7 +34,7 @@ export function castSnipeMoreRifles(position: Position, faction: string, ability
     if (!playerTriggered && !upgradeMoreRifles.upgradeSynergy) return;
     for (let i = 0; i < upgradeMoreRifles.numberRifles; i++) {
         const newPosition = getMoreRiflesPosition(position, upgradeMoreRifles, i);
-        createAbilityObjectSnipeInitial(newPosition, faction, abilitySnipe, castPosition, false, false, game);
+        createAbilityObjectSnipeInitial(newPosition, faction, abilitySnipe, castPosition, false, false, game, ABILITY_SNIPE_UPGRADE_MORE_RIFLES);
         if (playerTriggered) castSnipeAfterImage(newPosition, abilitySnipe, castPosition, false, game);
     }
 }

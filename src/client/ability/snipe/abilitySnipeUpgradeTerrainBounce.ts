@@ -28,7 +28,7 @@ export function addAbilitySnipeUpgradeTerrainBounce() {
     }
 }
 
-export function createAndPushAbilityObjectSnipeTerrainBounceInit(startPosition: Position, direction: number, abilitySnipe: AbilitySnipe, faction: string, canSplitOnHit: boolean | undefined, range: number, bounceCounter: number, triggeredByPlayer: boolean, game: Game) {
+export function createAndPushAbilityObjectSnipeTerrainBounceInit(startPosition: Position, direction: number, abilitySnipe: AbilitySnipe, faction: string, canSplitOnHit: boolean | undefined, range: number, bounceCounter: number, triggeredByPlayer: boolean, game: Game, createdByUpgrade: string | undefined = undefined) {
     const endPosistion = calcNewPositionMovedInDirection(startPosition, direction, range);
     const blockingPosistion = getFirstBlockingGameMapTilePositionTouchingLine(game.state.map, startPosition, endPosistion, game);
     createAndPush(
@@ -43,7 +43,8 @@ export function createAndPushAbilityObjectSnipeTerrainBounceInit(startPosition: 
         bounceCounter,
         undefined,
         triggeredByPlayer,
-        game
+        game,
+        createdByUpgrade
     );
 }
 
@@ -67,7 +68,8 @@ export function createAndPushAbilityObjectSnipeTerrainBounceBounce(abilityObject
         abilityObjectSnipe.bounceCounter ? abilityObjectSnipe.bounceCounter + 1 : 1,
         abilityObjectSnipe.hitSomething,
         abilityObjectSnipe.triggeredByPlayer,
-        game
+        game,
+        ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE
     );
 }
 
@@ -156,7 +158,8 @@ function createAndPush(
     bounceCounter: number,
     hitSomething: boolean | undefined,
     triggeredByPlayer: boolean,
-    game: Game
+    game: Game,
+    createdByUpgrade: string | undefined = undefined
 ) {
     let remainingRange: undefined | number = undefined;
     let range = availableRange;
@@ -176,7 +179,8 @@ function createAndPush(
         hitSomething,
         triggeredByPlayer,
         bounceCounter,
-        game.state.time
+        game.state.time,
+        createdByUpgrade
     );
     abilityObjectSnipe.remainingRange = remainingRange;
     abilityObjectSnipe.bounceCounter = bounceCounter;

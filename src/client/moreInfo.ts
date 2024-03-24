@@ -7,7 +7,7 @@ import { fixPositionRespawnEnemyCreateMoreInfos } from "./character/enemy/fixPos
 import { godCreateMoreInfos } from "./character/enemy/god/godEnemy.js";
 import { kingCreateMoreInfos } from "./character/enemy/kingEnemy.js";
 import { TamerPetCharacter, createTamerPetsCharacterMoreInfos } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
-import { createCombatLogMoreInfo } from "./combatlog.js";
+import { createCombatLogMoreInfo, createDamageMeterMoreInfo } from "./combatlog.js";
 import { findClosestInteractable, getRelativeMousePoistion } from "./game.js";
 import { Game } from "./gameModel.js";
 import { createHighscoresMoreInfos } from "./highscores.js";
@@ -211,6 +211,11 @@ export function createRequiredMoreInfos(game: Game): MoreInfos {
     if (combatlogContainer) {
         moreInfos.containers.containers.push(combatlogContainer);
         paintX += combatlogContainer.headingWidth + moreInfos.headingHorizontalSpacing;
+    }
+    const damageMeterContainer = createDamageMeterMoreInfo(ctx, moreInfos, game.UI.damageMeter);
+    if (damageMeterContainer) {
+        moreInfos.containers.containers.push(damageMeterContainer);
+        paintX += damageMeterContainer.headingWidth + moreInfos.headingHorizontalSpacing;
     }
     return moreInfos;
 }

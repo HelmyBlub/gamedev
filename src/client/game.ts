@@ -29,6 +29,7 @@ import { mapObjectPlaceUpgradeBuilding } from "./map/mapObjectUpgradeBuilding.js
 import { Leveling } from "./character/playerCharacters/levelingCharacter.js";
 import { checkGodFightStart, startGodFight } from "./map/mapGodArea.js";
 import { ABILITY_NAME_LEASH } from "./ability/abilityLeash.js";
+import { createDamageMeter } from "./combatlog.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -117,6 +118,7 @@ export function gameInit(game: Game) {
     game.performance = {};
     game.UI.displayTextData = [];
     game.UI.moneyGainedThisRun = [];
+    game.UI.damageMeter = createDamageMeter();
     game.testing.saveStates.autoSaves.nextSaveStateTime = 10000;
     game.state.map.activeChunkKeys = [];
     game.state.map.chunks = {};

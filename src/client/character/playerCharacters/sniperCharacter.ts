@@ -34,7 +34,9 @@ function changeCharacterToSniperClass(
         id: getNextId(game.state.idCounter),
     }
     character.characterClasses.push(charClass);
-    addAbilityToCharacter(character, createAbility(ABILITY_NAME_SNIPE, idCounter, true, true, "ability1"), charClass);
+    const snipe = createAbility(ABILITY_NAME_SNIPE, idCounter, true, true, "ability1");
+    addAbilityToCharacter(character, snipe, charClass);
+    snipe.doDamageBreakDown = true;
     addAbilityToCharacter(character, createAbilityHpRegen(idCounter, undefined, 2), charClass);
     addAbilityToCharacter(character, createAbility(ABILITY_NAME_SPEED_BOOST, idCounter, false, true, "ability2"), charClass);
     addAbilityToCharacter(character, createAbility(ABILITY_NAME_SNIPE_RELOAD, idCounter, false, false, "ability3"), charClass);

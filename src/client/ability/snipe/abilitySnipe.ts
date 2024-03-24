@@ -14,9 +14,10 @@ import { abilityUpgradeDamageAndRangeRangeFactor, addAbilitySnipeUpgradeDamageAn
 import { addAbilitySnipeUpgradeExplodeOnDeath, executeUpgradeExplodeOnDeath } from "./abilitySnipeUpgradeExplodeOnDeath.js";
 import { addAbilitySnipeUpgradeFireLine, castSnipeFireLine as castSnipeUpgradeFireLine } from "./abilitySnipeUpgradeFireLine.js";
 import { addAbilitySnipeUpgradeMoreRifles, castSnipeMoreRifles as castSnipeUpgradeMoreRifles, tickAbilityUpgradeMoreRifles } from "./abilitySnipeUpgradeMoreRifle.js";
-import { abilityUpgradeSplitShotOnSnipeHit, addAbilitySnipeUpgradeSplitShot } from "./abilitySnipeUpgradeSplitShot.js";
+import { ABILITY_SNIPE_UPGRADE_SPLIT_SHOT, abilityUpgradeSplitShotOnSnipeHit, addAbilitySnipeUpgradeSplitShot } from "./abilitySnipeUpgradeSplitShot.js";
 import { ABILITY_SNIPE_UPGRADE_STAY_STILL, addAbilitySnipeUpgradeStayStill, tickAbilityUpgradeStayStill } from "./abilitySnipeUpgradeStayStill.js";
 import { ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE, AbilityUpgradeTerrainBounce, addAbilitySnipeUpgradeTerrainBounce, createAndPushAbilityObjectSnipeTerrainBounceBounce, createAndPushAbilityObjectSnipeTerrainBounceInit, getAbilityUpgradeTerrainBounceDamageFactor } from "./abilitySnipeUpgradeTerrainBounce.js";
+import { AbilityDamageBreakdown, addDamageBreakDownToDamageMeter } from "../../combatlog.js";
 
 export type AbilityObjectSnipe = AbilityObject & {
     damage: number,
@@ -28,6 +29,7 @@ export type AbilityObjectSnipe = AbilityObject & {
     enemyFactionDamageTime?: number,
     remainingRange?: number,
     canSplitOnHit?: boolean,
+    createdByUpgrade?: string,
     bounceCounter: number,
     hitSomething?: boolean,
     triggeredByPlayer: boolean,
@@ -133,7 +135,7 @@ function createAbilitySnipe(
     };
 }
 
-export function createAbilityObjectSnipeByAbility(abilitySnipe: AbilitySnipe, abilityOwner: AbilityOwner, startPos: Position, direction: number, triggeredByPlayer: boolean, game: Game): AbilityObjectSnipe {
+export function createAbilityObjectSnipeByAbility(abilitySnipe: AbilitySnipe, abilityOwner: AbilityOwner, startPos: Position, direction: number, triggeredByPlayer: boolean, game: Game, createdByUpgrade: string | undefined = undefined): AbilityObjectSnipe {
     let deleteTime: number = game.state.time + abilitySnipe.paintFadeDuration;
     let enemyDamageTime = undefined;
     if (abilityOwner.faction === FACTION_ENEMY) {
@@ -157,6 +159,7 @@ export function createAbilityObjectSnipeByAbility(abilitySnipe: AbilitySnipe, ab
         triggeredByPlayer: triggeredByPlayer,
         bounceCounter: 0,
     }
+    if (createdByUpgrade) abilityObjectSnipe.createdByUpgrade = createdByUpgrade;
     return abilityObjectSnipe;
 }
 
@@ -172,7 +175,8 @@ export function createAbilityObjectSnipe(
     hitSomething: boolean | undefined,
     triggeredByPlayer: boolean,
     bounceCounter: number,
-    gameTime: number
+    gameTime: number,
+    createdByUpgrade: string | undefined = undefined,
 ): AbilityObjectSnipe {
     let deleteTime: number = gameTime + abilitySnipe.paintFadeDuration;
     let enemyDamageTime
@@ -199,7 +203,7 @@ export function createAbilityObjectSnipe(
         triggeredByPlayer: triggeredByPlayer,
         bounceCounter: bounceCounter,
     }
-
+    if (createdByUpgrade) abilityObjectSnipe.createdByUpgrade = createdByUpgrade;
     return abilityObjectSnipe;
 }
 
@@ -218,7 +222,7 @@ export function getAbilitySnipeRange(abilitySnipe: AbilitySnipe) {
     return range;
 }
 
-export function createAbilityObjectSnipeInitial(startPosition: Position, faction: string, abilitySnipe: AbilitySnipe, castPosition: Position, triggeredByPlayer: boolean, preventBackwardsShot: boolean, game: Game) {
+export function createAbilityObjectSnipeInitial(startPosition: Position, faction: string, abilitySnipe: AbilitySnipe, castPosition: Position, triggeredByPlayer: boolean, preventBackwardsShot: boolean, game: Game, createdByUpgrade: string | undefined = undefined) {
     castSnipeUpgradeFireLine(startPosition, faction, abilitySnipe, castPosition, triggeredByPlayer, game);
     if (!preventBackwardsShot) castSnipeBackwardsShot(startPosition, faction, abilitySnipe, castPosition, triggeredByPlayer, game);
 
@@ -240,7 +244,8 @@ export function createAbilityObjectSnipeInitial(startPosition: Position, faction
             undefined,
             triggeredByPlayer,
             0,
-            game.state.time
+            game.state.time,
+            createdByUpgrade,
         );
         game.state.abilityObjects.push(abilityObjectSnipt);
     }
@@ -476,6 +481,7 @@ function tickAbilityObjectSnipe(abilityObject: AbilityObject, game: Game) {
                 executeUpgradeExplodeOnDeath(abilitySnipe, abilityObject.faction, char, abilityObjectSnipe.triggeredByPlayer, game);
             }
             const damage = getAbilitySnipeDamage(abilitySnipe, abilityObjectSnipe.damage, abilityObjectSnipe.triggeredByPlayer, abilityObjectSnipe.bounceCounter);
+            doDamageBreakDown(damage, abilitySnipe, abilityObjectSnipe, game);
             characterTakeDamage(char, damage, game, abilityObject.abilityIdRef, abilityObject.type);
             if (abilityObjectSnipe.canSplitOnHit) abilityUpgradeSplitShotOnSnipeHit(char, abilitySnipe, abilityObjectSnipe, game);
         }
@@ -486,6 +492,70 @@ function tickAbilityObjectSnipe(abilityObject: AbilityObject, game: Game) {
             createAndPushAbilityObjectSnipeTerrainBounceBounce(abilityObjectSnipe, abilitySnipe, game);
         }
     }
+}
+
+function doDamageBreakDown(damage: number, snipe: AbilitySnipe | undefined, snipeObject: AbilityObjectSnipe, game: Game) {
+    if (!snipe || !snipe.doDamageBreakDown) return;
+    const breakdowns = createDamageBreakDown(damage, snipe, snipeObject);
+    addDamageBreakDownToDamageMeter(game.UI.damageMeter, snipe, breakdowns);
+}
+
+function createDamageBreakDown(damage: number, snipe: AbilitySnipe, snipeObject: AbilityObjectSnipe): AbilityDamageBreakdown[] {
+    const damageBreakDown: AbilityDamageBreakdown[] = [];
+    let openDamage = damage;
+    if (snipeObject.triggeredByPlayer) {
+        damageBreakDown.push({
+            damage: snipe.baseDamage,
+            name: "Main Shot Base Damage",
+        });
+        openDamage -= snipe.baseDamage;
+    }
+    if (snipeObject.canSplitOnHit === false && snipe.upgrades[ABILITY_SNIPE_UPGRADE_SPLIT_SHOT]) {
+        damageBreakDown.push({
+            damage: snipe.baseDamage,
+            name: ABILITY_SNIPE_UPGRADE_SPLIT_SHOT,
+        });
+        openDamage -= snipe.baseDamage;
+    }
+    if (snipeObject.createdByUpgrade !== undefined) {
+        damageBreakDown.push({
+            damage: snipe.baseDamage,
+            name: snipeObject.createdByUpgrade,
+        });
+        openDamage -= snipe.baseDamage;
+    }
+    const damageFactors = createDamageFactorBreakDown(snipe, snipeObject.triggeredByPlayer, snipeObject.bounceCounter);
+    let totalFactor = 0;
+    for (let damageFactor of damageFactors) {
+        totalFactor += damageFactor.factor;
+    }
+    for (let damageFactor of damageFactors) {
+        damageBreakDown.push({
+            damage: openDamage * (damageFactor.factor / totalFactor),
+            name: damageFactor.name,
+        });
+    }
+
+    return damageBreakDown;
+}
+
+function createDamageFactorBreakDown(snipe: AbilitySnipe, playerTriggered: boolean, bounceCouter: number): { name: string, factor: number }[] {
+    const keys = Object.keys(ABILITY_SNIPE_UPGRADE_FUNCTIONS);
+    let damageFactors: { name: string, factor: number }[] = [];
+    for (let key of keys) {
+        if (snipe.upgrades && snipe.upgrades[key]) {
+            let functions = ABILITY_SNIPE_UPGRADE_FUNCTIONS[key];
+            if (functions.getDamageFactor) {
+                const factor = functions.getDamageFactor(snipe, playerTriggered);
+                damageFactors.push({ factor: factor, name: key });
+            }
+        }
+    }
+    if (bounceCouter > 0) {
+        const factor = getAbilityUpgradeTerrainBounceDamageFactor(snipe, bounceCouter);
+        damageFactors.push({ factor: factor, name: ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE });
+    }
+    return damageFactors;
 }
 
 function createAbilityBossSnipeUpgradeOptions(ability: Ability, character: Character, game: Game): UpgradeOptionAndProbability[] {

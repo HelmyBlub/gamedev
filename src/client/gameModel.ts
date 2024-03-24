@@ -14,6 +14,7 @@ import { nextRandom, RandomSeed } from "./randomNumberGenerator.js";
 import { MoreInfos, createDefaultEmptyMoreInfos } from "./moreInfo.js";
 import { Building } from "./map/buildings/building.js";
 import { GAME_VERSION } from "./main.js";
+import { createDamageMeter, DamageMeter } from "./combatlog.js";
 
 export type Position = {
     x: number,
@@ -248,6 +249,7 @@ export type Game = {
     debug: Debugging,
     closeGame?: boolean,
     UI: {
+        damageMeter: DamageMeter,
         displayMovementKeyHint: boolean,
         movementKeyPressed: boolean,
         displayTextData: PaintTextData[],
@@ -357,6 +359,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
         debug: {
         },
         UI: {
+            damageMeter: createDamageMeter(),
             displayMovementKeyHint: false,
             movementKeyPressed: false,
             displayTextData: [],

@@ -30,7 +30,7 @@ export function castSnipeBackwardsShot(startPosition: Position, faction: string,
 
     for (let i = 0; i < upgradeBackwardsShot.level; i++) {
         const newCastPosition = getBackwardsShotPosition(startPosition, castPosition, upgradeBackwardsShot, i);
-        createAbilityObjectSnipeInitial(startPosition, faction, abilitySnipe, newCastPosition, false, true, game);
+        createAbilityObjectSnipeInitial(startPosition, faction, abilitySnipe, newCastPosition, false, true, game, ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT);
     }
 }
 

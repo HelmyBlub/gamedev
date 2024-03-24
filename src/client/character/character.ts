@@ -54,7 +54,7 @@ export function findCharacterByIdInCompleteMap(id: number, game: Game) {
     }
 }
 
-export function characterTakeDamage(character: Character, damage: number, game: Game, abilityIdRef: number | undefined = undefined, abilityName: string) {
+export function characterTakeDamage(character: Character, damage: number, game: Game, abilityIdRef: number | undefined, abilityName: string) {
     if (character.isDead || character.isPet || character.isDamageImmune) return;
     if (game.state.bossStuff.fightWipe) return;
     let sourceDamageFactor = findSourceDamageFactor(abilityIdRef, game);

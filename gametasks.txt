@@ -3,8 +3,12 @@ increase version
 
 current tasks:
     - moreInfos:
-        - only for own character?
-        - damage meter. I want to know what does my damage
+        - damage meter. Began for snipe only
+            - check damage calc for each upgrade
+            - check for synergy upgrade
+            - check explode, fireLine
+
+            
             - auto splits on each upgrade
     - replay tests performance metrics save in localStorage for better see how it changes
 
