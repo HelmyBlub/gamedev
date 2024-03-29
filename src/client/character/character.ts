@@ -6,7 +6,7 @@ import { calculateDirection, calculateDistance, calculateDistancePointToLine, ch
 import { Position, Game, IdCounter, Camera, FACTION_ENEMY, FACTION_PLAYER } from "../gameModel.js";
 import { addMoneyAmountToPlayer, findPlayerById, Player } from "../player.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, Ability, findAbilityById, findAbilityOwnerByAbilityIdInPlayers, findAbilityOwnerById, levelingAbilityXpGain, resetAllCharacterAbilities } from "../ability/ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, doAbilityDamageBreakDownForAbilityId, findAbilityById, findAbilityOwnerByAbilityIdInPlayers, findAbilityOwnerById, levelingAbilityXpGain, resetAllCharacterAbilities } from "../ability/ability.js";
 import { BossEnemyCharacter, CHARACTER_TYPE_BOSS_ENEMY } from "./enemy/bossEnemy.js";
 import { removeCharacterDebuffs, tickCharacterDebuffs } from "../debuff/debuff.js";
 import { ABILITY_NAME_LEASH, AbilityLeash, createAbilityLeash } from "../ability/abilityLeash.js";
@@ -54,10 +54,11 @@ export function findCharacterByIdInCompleteMap(id: number, game: Game) {
     }
 }
 
-export function characterTakeDamage(character: Character, damage: number, game: Game, abilityIdRef: number | undefined, abilityName: string) {
+export function characterTakeDamage(character: Character, damage: number, game: Game, abilityIdRef: number | undefined, abilityName: string, abilityObject: AbilityObject | undefined = undefined) {
     if (character.isDead || character.isPet || character.isDamageImmune) return;
     if (game.state.bossStuff.fightWipe) return;
     let sourceDamageFactor = findSourceDamageFactor(abilityIdRef, game);
+    if (abilityIdRef) doAbilityDamageBreakDownForAbilityId(damage, abilityIdRef, abilityObject, game);
     let modifiedDamage = damage * character.damageTakenModifierFactor * sourceDamageFactor;
     if (character.shield > 0) {
         character.shield -= modifiedDamage;

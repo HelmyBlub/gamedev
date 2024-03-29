@@ -484,8 +484,7 @@ function tickAbilityObjectSnipe(abilityObject: AbilityObject, game: Game) {
                 executeUpgradeExplodeOnDeath(abilitySnipe, abilityObject.faction, char, abilityObjectSnipe.triggeredByPlayer, game);
             }
             const damage = getAbilitySnipeDamage(abilitySnipe, abilityObjectSnipe.damage, abilityObjectSnipe.triggeredByPlayer, abilityObjectSnipe.bounceCounter);
-            doAbilityDamageBreakDown(damage, abilitySnipe, abilityObjectSnipe, game);
-            characterTakeDamage(char, damage, game, abilityObject.abilityIdRef, abilityObject.type);
+            characterTakeDamage(char, damage, game, abilityObject.abilityIdRef, abilityObject.type, abilityObjectSnipe);
             if (abilityObjectSnipe.canSplitOnHit) abilityUpgradeSplitShotOnSnipeHit(char, abilitySnipe, abilityObjectSnipe, game);
         }
         if (abilitySnipe) abilityUpgradeNoMissChainOnObjectSnipeDamageDone(abilitySnipe, abilityObjectSnipe);

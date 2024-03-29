@@ -3,7 +3,7 @@ import { Character } from "../character/characterModel.js";
 import { getCameraPosition, getNextId } from "../game.js";
 import { Position, Game, IdCounter, FACTION_PLAYER, FACTION_ENEMY } from "../gameModel.js";
 import { getPointPaintPosition } from "../gamePaint.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, PaintOrderAbility, doAbilityDamageBreakDownForAbilityId } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, PaintOrderAbility } from "./ability.js";
 
 export type AbilityFireLine = Ability & {
     tickInterval: number,
@@ -110,8 +110,7 @@ function tickAbilityObjectFireLine(abilityObject: AbilityObject, game: Game) {
     if (abilityObjectFireLine.nextTickTime <= game.state.time) {
         const characters: Character[] = getCharactersTouchingLine(game, abilityObjectFireLine, abilityObjectFireLine.endPosition, abilityObject.faction, abilityObjectFireLine.width);
         for (let char of characters) {
-            if (abilityObjectFireLine.abilityIdRef) doAbilityDamageBreakDownForAbilityId(abilityObjectFireLine.damage, abilityObjectFireLine.abilityIdRef, abilityObject, game);
-            characterTakeDamage(char, abilityObjectFireLine.damage, game, abilityObjectFireLine.abilityIdRef, abilityObject.type);
+            characterTakeDamage(char, abilityObjectFireLine.damage, game, abilityObjectFireLine.abilityIdRef, abilityObject.type, abilityObjectFireLine);
         }
         abilityObjectFireLine.nextTickTime += abilityObjectFireLine.tickInterval;
         if (abilityObjectFireLine.nextTickTime <= game.state.time) {

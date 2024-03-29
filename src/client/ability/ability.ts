@@ -367,16 +367,12 @@ export function detectCircleCharacterHit(map: GameMap, circleCenter: Position, c
         const distance = calculateDistance(c, circleCenter);
         if (distance < circleRadius + c.width / 2) {
             let abilityName = "Unknown";
-            let idRef: number | undefined = undefined;
             if (abilityObject) {
                 abilityName = abilityObject.type;
-                idRef = abilityObject.abilityIdRef;
             } else if (ability) {
                 abilityName = ability.name;
-                idRef = ability.id;
             }
-            if (idRef !== undefined) doAbilityDamageBreakDownForAbilityId(damage, idRef, abilityObject, game);
-            characterTakeDamage(c, damage, game, abilityId, abilityName);
+            characterTakeDamage(c, damage, game, abilityId, abilityName, abilityObject);
             if (abilityObject) {
                 const abilityFunction = ABILITIES_FUNCTIONS[abilityObject.type];
                 if (abilityFunction.onObjectHit) {
