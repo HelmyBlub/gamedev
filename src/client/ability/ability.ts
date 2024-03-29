@@ -1,4 +1,4 @@
-import { determineCharactersInDistance, characterTakeDamage } from "../character/character.js"
+import { determineCharactersInDistance, characterTakeDamage, getPlayerCharacters } from "../character/character.js"
 import { Character } from "../character/characterModel.js"
 import { BossEnemyCharacter } from "../character/enemy/bossEnemy.js"
 import { calculateDistance, getCameraPosition, levelUpIncreaseExperienceRequirement, takeTimeMeasure } from "../game.js"
@@ -37,6 +37,7 @@ import { addAbilityUnleashPet } from "./petTamer/abilityUnleashPet.js"
 import { Leveling } from "../character/playerCharacters/levelingCharacter.js"
 import { CharacterClass } from "../character/playerCharacters/playerCharacters.js"
 import { MoreInfoPart, paintMoreInfosPart, paintMoreInfosPartsContainer, paintMoreInfos } from "../moreInfo.js"
+import { AbilityDamageBreakdown, addDamageBreakDownToDamageMeter } from "../combatlog.js"
 
 export type Ability = {
     id: number,
@@ -81,6 +82,7 @@ export type AbilityFunctions = {
     createAbilityUpgradeOptions?: (ability: Ability) => UpgradeOptionAndProbability[],
     createAbilityBossUpgradeOptions?: (ability: Ability, character: Character, game: Game) => UpgradeOptionAndProbability[],
     createAbilityMoreInfos?: (ctx: CanvasRenderingContext2D, ability: Ability, game: Game) => MoreInfoPart,
+    createDamageBreakDown?: (damage: number, ability: Ability, abilityObject: AbilityObject | undefined, game: Game) => AbilityDamageBreakdown[],
     deleteAbilityObject?: (abilityObject: AbilityObject, game: Game) => boolean,
     executeUpgradeOption?: (ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game) => void,
     getMoreInfosText?: () => string[],
@@ -133,6 +135,28 @@ export function onDomLoadSetAbilitiesFunctions() {
     addAbilityLightningBall();
     addAbilityLightningStrikes();
     addAbilityUnleashPet();
+}
+
+export function doAbilityDamageBreakDown(damage: number, ability: Ability | undefined, abilityObject: AbilityObject | undefined, game: Game) {
+    if (!ability || !ability.doDamageBreakDown) return;
+    let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+    if (abilityFunctions && abilityFunctions.createDamageBreakDown) {
+        const breakdowns = abilityFunctions.createDamageBreakDown(damage, ability, abilityObject, game);
+        addDamageBreakDownToDamageMeter(game.UI.damageMeter, ability, breakdowns);
+    }
+}
+
+export function doAbilityDamageBreakDownForAbilityId(damage: number, abilityId: number, abilityObject: AbilityObject | undefined, game: Game) {
+    let ability: Ability | undefined = undefined;
+    for (let player of game.state.players) {
+        const result = findAbilityAndOwnerInCharacterById(player.character, abilityId);
+        if (result) {
+            ability = result.ability;
+            break;
+        }
+    }
+    if (!ability) return;
+    doAbilityDamageBreakDown(damage, ability, abilityObject, game);
 }
 
 export function addAbilityToCharacter(character: Character, ability: Ability, charClass: CharacterClass | undefined = undefined) {
@@ -343,11 +367,15 @@ export function detectCircleCharacterHit(map: GameMap, circleCenter: Position, c
         const distance = calculateDistance(c, circleCenter);
         if (distance < circleRadius + c.width / 2) {
             let abilityName = "Unknown";
+            let idRef: number | undefined = undefined;
             if (abilityObject) {
                 abilityName = abilityObject.type;
+                idRef = abilityObject.abilityIdRef;
             } else if (ability) {
                 abilityName = ability.name;
+                idRef = ability.id;
             }
+            if (idRef !== undefined) doAbilityDamageBreakDownForAbilityId(damage, idRef, abilityObject, game);
             characterTakeDamage(c, damage, game, abilityId, abilityName);
             if (abilityObject) {
                 const abilityFunction = ABILITIES_FUNCTIONS[abilityObject.type];

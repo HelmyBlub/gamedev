@@ -19,6 +19,7 @@ import { PathingCache } from "../pathing.js";
 import { getCelestialDirection } from "./bossEnemy.js";
 import { legendaryAbilityGiveBlessing, classBuildingPutLegendaryCharacterStuffBackIntoBuilding } from "../../map/buildings/classBuilding.js";
 import { MoreInfosPartContainer, createCharacterMoreInfosPartContainer } from "../../moreInfo.js";
+import { doDamageMeterSplit } from "../../combatlog.js";
 
 export type KingEnemyCharacter = Character;
 export const CHARACTER_TYPE_KING_ENEMY = "KingEnemyCharacter";
@@ -117,6 +118,7 @@ export function startKingFight(kingAreaPosition: Position, game: Game) {
         if (game.UI.playerGlobalAlphaMultiplier > 0.25) {
             game.UI.playerGlobalAlphaMultiplier = 0.25;
         }
+        doDamageMeterSplit("King Fight", game);
     } else {
         throw new Error("bossArea entrance not found, should not be able to happen");
     }

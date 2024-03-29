@@ -17,6 +17,7 @@ import { createDebuffDamageTaken } from "../../../debuff/debuffDamageTaken.js";
 import { ABILITY_NAME_GOD_IMMUNITY, addGodAbilityGodImmunity } from "./abilityGodImmunity.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
 import { MoreInfosPartContainer, createCharacterMoreInfosPartContainer } from "../../../moreInfo.js";
+import { doDamageMeterSplit } from "../../../combatlog.js";
 
 
 const FIRST_PICK_UP_DELAY = 3000;
@@ -48,6 +49,7 @@ export function spawnGodEnemy(godArea: GameMapGodArea, game: Game) {
     const spawn: Position = getGodAreaMiddlePosition(godArea, game.state.map)!;
     const king = createGodEnemy(game.state.idCounter, spawn, game);
     game.state.bossStuff.bosses.push(king);
+    doDamageMeterSplit("God Fight", game);
 }
 
 export function applyExponentialStackingDamageTakenDebuff(target: Character, game: Game) {

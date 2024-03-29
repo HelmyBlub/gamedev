@@ -16,7 +16,7 @@ type AbilityObjectExplode = AbilityObjectCircle & {
     explodeDelay: number,
 }
 
-const ABILITY_NAME_EXPLODE = "Explode";
+export const ABILITY_NAME_EXPLODE = "Explode";
 const PAINT_FADE_TIME = 500;
 
 export function addAbilityExplode() {

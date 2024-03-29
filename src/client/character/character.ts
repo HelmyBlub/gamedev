@@ -603,7 +603,7 @@ function killCharacter(character: Character, game: Game, abilityIdRef: number | 
     if (character.type === CHARACTER_TYPE_BOSS_ENEMY) {
         playerCharactersAddBossSkillPoints(character.level?.level, game);
         experienceForEveryPlayersLeveling(character.experienceWorth, game);
-        doDamageMeterSplit(game);
+        doDamageMeterSplit(game.state.bossStuff.bossLevelCounter.toFixed(), game);
         if (character.level?.level) {
             const moneyAmount = character.level.level;
             if (game.UI.moneyGainedThisRun.length === 0) {

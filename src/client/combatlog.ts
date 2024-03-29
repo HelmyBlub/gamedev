@@ -53,9 +53,9 @@ export function createDamageMeter(): DamageMeter {
     }
 }
 
-export function doDamageMeterSplit(game: Game) {
+export function doDamageMeterSplit(splitTitle: string, game: Game) {
     game.UI.damageMeter.splits.unshift({
-        title: `Split ${game.state.bossStuff.bossLevelCounter}`,
+        title: `Split ${splitTitle}`,
         damageData: [],
     });
 }

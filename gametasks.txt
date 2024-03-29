@@ -4,12 +4,9 @@ increase version
 current tasks:
     - moreInfos:
         - damage meter. Began for snipe only
-            - check damage calc for each upgrade
-            - check for synergy upgrade
-            - check explode, fireLine
-
-            
-            - auto splits on each upgrade
+            - seperate by character
+            - next character type: ball
+        
     - replay tests performance metrics save in localStorage for better see how it changes
 
     - enemy type: "God"

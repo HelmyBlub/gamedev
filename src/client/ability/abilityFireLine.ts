@@ -3,7 +3,7 @@ import { Character } from "../character/characterModel.js";
 import { getCameraPosition, getNextId } from "../game.js";
 import { Position, Game, IdCounter, FACTION_PLAYER, FACTION_ENEMY } from "../gameModel.js";
 import { getPointPaintPosition } from "../gamePaint.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, PaintOrderAbility } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, PaintOrderAbility, doAbilityDamageBreakDownForAbilityId } from "./ability.js";
 
 export type AbilityFireLine = Ability & {
     tickInterval: number,
@@ -84,11 +84,11 @@ function paintAbilityObjectFireLine(ctx: CanvasRenderingContext2D, abilityObject
 
     ctx.globalAlpha = 0.50;
     let color = "red";
-    if(abilityObject.faction === FACTION_ENEMY){
+    if (abilityObject.faction === FACTION_ENEMY) {
         color = "black";
         ctx.globalAlpha = 0.80;
     }
-    if(abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
+    if (abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
 
     ctx.strokeStyle = color;
     ctx.lineWidth = abilityObjectFireLine.width;
@@ -110,6 +110,7 @@ function tickAbilityObjectFireLine(abilityObject: AbilityObject, game: Game) {
     if (abilityObjectFireLine.nextTickTime <= game.state.time) {
         const characters: Character[] = getCharactersTouchingLine(game, abilityObjectFireLine, abilityObjectFireLine.endPosition, abilityObject.faction, abilityObjectFireLine.width);
         for (let char of characters) {
+            if (abilityObjectFireLine.abilityIdRef) doAbilityDamageBreakDownForAbilityId(abilityObjectFireLine.damage, abilityObjectFireLine.abilityIdRef, abilityObject, game);
             characterTakeDamage(char, abilityObjectFireLine.damage, game, abilityObjectFireLine.abilityIdRef, abilityObject.type);
         }
         abilityObjectFireLine.nextTickTime += abilityObjectFireLine.tickInterval;
