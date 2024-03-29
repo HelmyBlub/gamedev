@@ -22,7 +22,7 @@ export type MoreInfoPart = {
 }
 
 export type MoreInfosPartContainers = {
-    selected: number,
+    selected?: number,
     containers: MoreInfosPartContainer[],
 }
 
@@ -60,7 +60,7 @@ export function createMoreInfosPart(ctx: CanvasRenderingContext2D, texts: string
 
 export function createDefaultEmptyMoreInfos(): MoreInfos {
     return {
-        containers: { containers: [], selected: 0 },
+        containers: { containers: [] },
         paintStartX: 10,
         paintStartY: 60,
         headingFontSize: 26,
@@ -92,7 +92,7 @@ export function moreInfosHandleMouseClick(event: MouseEvent, game: Game): boolea
         if (containerY <= mouseClickPos.y
             && containerY + moreInfos.headingFontSize + moreInfos.headingBottomPadding >= mouseClickPos.y
         ) {
-            const selectedContainer = moreInfos.containers.containers[moreInfos.containers.selected];
+            const selectedContainer = moreInfos.containers.containers[moreInfos.containers.selected!];
             let paintX = moreInfos.paintStartX;
             for (let i = 0; i < selectedContainer.subContainer.containers.length; i++) {
                 const container = selectedContainer.subContainer.containers[i];
@@ -122,6 +122,7 @@ export function createEndScreenMoreInfos(game: Game): MoreInfoPart[] {
 
 export function createRequiredMoreInfos(game: Game): MoreInfos {
     const ctx = game.ctx;
+    const lastSelectedContainer = game.UI.moreInfos.containers.selected !== undefined ? game.UI.moreInfos.containers.containers[game.UI.moreInfos.containers.selected].heading : undefined;
     const moreInfos: MoreInfos = createDefaultEmptyMoreInfos();
     if (!ctx) return moreInfos;
     let paintX = moreInfos.paintStartX;
@@ -131,7 +132,6 @@ export function createRequiredMoreInfos(game: Game): MoreInfos {
     paintX += gameRuleContainer.headingWidth + moreInfos.headingHorizontalSpacing;
     gameRuleContainer.moreInfoParts.push(createGameRulesMoreInfos(ctx));
 
-
     for (let client of game.state.clientInfos) {
         const player = findPlayerById(game.state.players, client.id);
         if (!player) continue;
@@ -139,8 +139,8 @@ export function createRequiredMoreInfos(game: Game): MoreInfos {
         const characterContainer = createCharacterMoreInfosPartContainer(ctx, player.character, moreInfos, game, heading);
         moreInfos.containers.containers.push(characterContainer);
         if (game.multiplayer.myClientId === client.id) {
-            moreInfos.containers.selected = moreInfos.containers.containers.length - 1;
-            const selectedSub = moreInfos.containers.containers[moreInfos.containers.selected];
+            if (lastSelectedContainer === undefined) moreInfos.containers.selected = moreInfos.containers.containers.length - 1;
+            const selectedSub = moreInfos.containers.containers[moreInfos.containers.containers.length - 1];
             if (selectedSub.subContainer.containers.length > 0
                 && player.character.upgradeChoices.length > 0
                 && player.character.characterClasses
@@ -217,6 +217,18 @@ export function createRequiredMoreInfos(game: Game): MoreInfos {
         moreInfos.containers.containers.push(damageMeterContainer);
         paintX += damageMeterContainer.headingWidth + moreInfos.headingHorizontalSpacing;
     }
+    if (moreInfos.containers.selected === undefined) {
+        for (let i = 0; i < moreInfos.containers.containers.length; i++) {
+            const container = moreInfos.containers.containers[i]
+            if (lastSelectedContainer === container.heading) {
+                moreInfos.containers.selected = i;
+                break;
+            }
+        }
+        if (moreInfos.containers.selected === undefined) {
+            moreInfos.containers.selected = 1;
+        }
+    }
     return moreInfos;
 }
 
@@ -226,7 +238,7 @@ export function paintMoreInfos(ctx: CanvasRenderingContext2D, moreInfos: MoreInf
     let paintY = moreInfos.paintStartY;
     paintY = paintMoreInfosContainers(ctx, moreInfos.containers, moreInfos, paintY);
     if (moreInfos.containers.containers.length > 0) {
-        paintMoreInfosPartsContainer(ctx, moreInfos.containers.containers[moreInfos.containers.selected], paintX, paintY);
+        paintMoreInfosPartsContainer(ctx, moreInfos.containers.containers[moreInfos.containers.selected!], paintX, paintY);
     }
 }
 
@@ -290,8 +302,8 @@ function paintMoreInfosContainers(ctx: CanvasRenderingContext2D, containers: Mor
         paintX += container.headingWidth + moreInfos.headingHorizontalSpacing;
     }
     subPaintY += fontSize + moreInfos.headingBottomPadding + 4;
-    if (containers.containers[containers.selected].subContainer.containers.length > 0) {
-        subPaintY = paintMoreInfosContainers(ctx, containers.containers[containers.selected].subContainer, moreInfos, subPaintY);
+    if (containers.containers[containers.selected!].subContainer.containers.length > 0) {
+        subPaintY = paintMoreInfosContainers(ctx, containers.containers[containers.selected!].subContainer, moreInfos, subPaintY);
     }
     return subPaintY;
 }
@@ -305,7 +317,7 @@ export function paintMoreInfosPartsContainer(ctx: CanvasRenderingContext2D, more
         paintX += part.width + horizontalSpacing;
     }
     if (moreInfosPartsContainer.subContainer.containers.length > 0) {
-        paintMoreInfosPartsContainer(ctx, moreInfosPartsContainer.subContainer.containers[moreInfosPartsContainer.subContainer.selected], paintX, paintY);
+        paintMoreInfosPartsContainer(ctx, moreInfosPartsContainer.subContainer.containers[moreInfosPartsContainer.subContainer.selected!], paintX, paintY);
     }
 }
 

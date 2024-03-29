@@ -16,7 +16,12 @@ export type CombatlogEntry = {
 
 export type DamageMeter = {
     maxNumberSplits: number,
-    splits: AbilityDamageData[][],
+    splits: DamageMeterSplit[],
+}
+
+export type DamageMeterSplit = {
+    title: string,
+    damageData: AbilityDamageData[],
 }
 
 export type AbilityDamageData = {
@@ -41,13 +46,26 @@ export function createDefaultCombatLog(): Combatlog {
 export function createDamageMeter(): DamageMeter {
     return {
         maxNumberSplits: 2,
-        splits: [],
+        splits: [{
+            damageData: [],
+            title: "Split 1",
+        }],
     }
 }
 
+export function doDamageMeterSplit(game: Game) {
+    game.UI.damageMeter.splits.unshift({
+        title: `Split ${game.state.bossStuff.bossLevelCounter}`,
+        damageData: [],
+    });
+}
+
 export function addDamageBreakDownToDamageMeter(damageMeter: DamageMeter, ability: Ability, breakDowns: AbilityDamageBreakdown[]) {
-    if (damageMeter.splits.length === 0) damageMeter.splits.push([]);
-    let abilityDamageData = damageMeter.splits[0].find(data => data.abilityRefId === ability.id);
+    if (damageMeter.splits.length === 0) damageMeter.splits.push({
+        title: "",
+        damageData: []
+    });
+    let abilityDamageData = damageMeter.splits[0].damageData.find(data => data.abilityRefId === ability.id);
     if (!abilityDamageData) {
         abilityDamageData = {
             abilityName: ability.name,
@@ -55,7 +73,7 @@ export function addDamageBreakDownToDamageMeter(damageMeter: DamageMeter, abilit
             totalDamage: 0,
             damageBreakDown: [],
         };
-        damageMeter.splits[0].push(abilityDamageData);
+        damageMeter.splits[0].damageData.push(abilityDamageData);
     }
     for (let entry of breakDowns) {
         abilityDamageData.totalDamage += entry.damage;
@@ -74,16 +92,18 @@ export function addDamageBreakDownToDamageMeter(damageMeter: DamageMeter, abilit
 export function createDamageMeterMoreInfo(ctx: CanvasRenderingContext2D, moreInfos: MoreInfos, damageMeter: DamageMeter): MoreInfosPartContainer | undefined {
     if (damageMeter.splits.length === 0) return;
     const moreInfosContainer = createDefaultMoreInfosContainer(ctx, "DamageMeter(WIP)", moreInfos.headingFontSize);
-    const textLines: string[] = [`Damage Done:`];
-    for (let abilityData of damageMeter.splits[0]) {
-        textLines.push(`${(abilityData.abilityName)}: ${abilityData.totalDamage.toLocaleString()}`);
-        abilityData.damageBreakDown.sort((a, b) => b.damage - a.damage);
-        for (let breakDown of abilityData.damageBreakDown) {
-            textLines.push(`    ${(breakDown.name)}: ${(breakDown.damage / abilityData.totalDamage * 100).toFixed(1)}%`);
+    for (let split of damageMeter.splits) {
+        const textLines: string[] = [`Damage Done: ${split.title}`];
+        for (let abilityData of split.damageData) {
+            textLines.push(`${(abilityData.abilityName)}: ${abilityData.totalDamage.toLocaleString()}`);
+            abilityData.damageBreakDown.sort((a, b) => b.damage - a.damage);
+            for (let breakDown of abilityData.damageBreakDown) {
+                textLines.push(`    ${(breakDown.name)}: ${(breakDown.damage / abilityData.totalDamage * 100).toFixed(1)}%`);
+            }
         }
+        const damageMeterPart = createMoreInfosPart(ctx, textLines);
+        moreInfosContainer.moreInfoParts.push(damageMeterPart);
     }
-    const damageMeterPart = createMoreInfosPart(ctx, textLines);
-    moreInfosContainer.moreInfoParts.push(damageMeterPart);
     return moreInfosContainer;
 }
 

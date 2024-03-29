@@ -16,7 +16,7 @@ import { CHARACTER_TYPE_KING_ENEMY } from "./enemy/kingEnemy.js";
 import { createKingCrownCharacter } from "./enemy/kingCrown.js";
 import { TamerPetCharacter, tradePets } from "./playerCharacters/tamer/tamerPetCharacter.js";
 import { ENEMY_FIX_RESPAWN_POSITION } from "./enemy/fixPositionRespawnEnemyModel.js";
-import { addCombatlogDamageTakenEntry } from "../combatlog.js";
+import { addCombatlogDamageTakenEntry, doDamageMeterSplit } from "../combatlog.js";
 import { executeAbilityLevelingCharacterUpgradeOption } from "./playerCharacters/abilityLevelingCharacter.js";
 import { addCharacterUpgrades, CHARACTER_UPGRADE_FUNCTIONS } from "./upgrades/characterUpgrades.js";
 import { CHARACTER_TYPE_GOD_ENEMY } from "./enemy/god/godEnemy.js";
@@ -603,6 +603,7 @@ function killCharacter(character: Character, game: Game, abilityIdRef: number | 
     if (character.type === CHARACTER_TYPE_BOSS_ENEMY) {
         playerCharactersAddBossSkillPoints(character.level?.level, game);
         experienceForEveryPlayersLeveling(character.experienceWorth, game);
+        doDamageMeterSplit(game);
         if (character.level?.level) {
             const moneyAmount = character.level.level;
             if (game.UI.moneyGainedThisRun.length === 0) {
