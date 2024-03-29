@@ -3,9 +3,11 @@ increase version
 
 current tasks:
     - moreInfos:
-        - damage meter. Began for snipe only
-            - seperate by character
+        - damage meter
             - next character type: ball
+                - damage breakdown for upgrades
+                - improve visualization for multiple abilities
+            - seperate by character
         
     - replay tests performance metrics save in localStorage for better see how it changes
 

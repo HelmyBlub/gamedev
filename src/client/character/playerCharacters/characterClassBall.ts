@@ -39,8 +39,13 @@ function changeCharacterToBallClass(
     character.characterClasses.push(charClass);
     characterCreateAndAddUpgradeBonusHp(charClass, character, 200);
     characterCreateAndApplyUpgradeDamageReduction(charClass, character, game, 0.5);
-    addAbilityToCharacter(character, createAbility(ABILITY_NAME_BOUNCE_BALL, idCounter, true, true, "ability1"), charClass);
-    addAbilityToCharacter(character, createAbility(ABILITY_NAME_LIGHTNING_BALL, idCounter, true, true, "ability2"), charClass);
+    const abilityBounceBall = createAbility(ABILITY_NAME_BOUNCE_BALL, idCounter, true, true, "ability1");
+    abilityBounceBall.doDamageBreakDown = true;
+    addAbilityToCharacter(character, abilityBounceBall, charClass);
+
+    const abilityLightningBall = createAbility(ABILITY_NAME_LIGHTNING_BALL, idCounter, true, true, "ability2");
+    abilityLightningBall.doDamageBreakDown = true;
+    addAbilityToCharacter(character, abilityLightningBall, charClass);
     addAbilityToCharacter(character, createAbilityHpRegen(idCounter, undefined, 5), charClass);
 }
 
