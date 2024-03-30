@@ -12,10 +12,11 @@ import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectSomethingToCharacterHit, getAbilityNameUiText } from "../ability.js";
 import { AbilityUpgradesFunctions, getAbilityUpgradesDamageFactor, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
-import { abilityBounceBallUpgradeBounceBonusDamageAddBounce, abilityBounceBallUpgradeBounceBonusDamagePaintStacks, abilityBounceBallUpgradeBounceBonusDamageTick, addAbilityBounceBallUpgradeBounceBonusDamage } from "./abilityBounceBallUpgradeBounceBonusDamage.js";
+import { ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_DAMAGE, abilityBounceBallUpgradeBounceBonusDamageAddBounce, abilityBounceBallUpgradeBounceBonusDamagePaintStacks, abilityBounceBallUpgradeBounceBonusDamageTick, addAbilityBounceBallUpgradeBounceBonusDamage } from "./abilityBounceBallUpgradeBounceBonusDamage.js";
 import { addAbilityBounceBallUpgradeBounceShield, bounceBallUpgradeBounceShieldExecute } from "./abilityBounceBallUpgradeBounceShield.js";
-import { abilityBounceBallUpgradeFireLinePlace, abilityBounceBallUpgradeFireLineStart, addAbilityBounceBallUpgradeFireLine } from "./abilityBounceBallUpgradeFireLine.js";
+import { ABILITY_BOUNCE_BALL_UPGRADE_FIRE_LINE, abilityBounceBallUpgradeFireLinePlace, abilityBounceBallUpgradeFireLineStart, addAbilityBounceBallUpgradeFireLine } from "./abilityBounceBallUpgradeFireLine.js";
 import { AbilityDamageBreakdown } from "../../combatlog.js";
+import { ABILITY_NAME_FIRE_LINE } from "../abilityFireLine.js";
 
 export type AbilityBounceBall = Ability & {
     baseRechargeTime: number,
@@ -109,12 +110,29 @@ export function getAbilityBounceBallDamage(abilityBounceBall: AbilityBounceBall)
 }
 
 function createDamageBreakDown(damage: number, ability: Ability, abilityObject: AbilityObject | undefined, game: Game): AbilityDamageBreakdown[] {
+    const bounceBall = ability as AbilityBounceBall;
     const damageBreakDown: AbilityDamageBreakdown[] = [];
-    damageBreakDown.push({
-        damage: damage,
-        name: ABILITY_NAME_BOUNCE_BALL,
-    });
-
+    let openDamage = damage;
+    if (!abilityObject) {
+        damageBreakDown.push({
+            damage: bounceBall.damage,
+            name: "Base Damage",
+        });
+        openDamage -= bounceBall.damage;
+        if (openDamage > 0) {
+            damageBreakDown.push({
+                damage: openDamage,
+                name: ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_DAMAGE,
+            });
+        }
+    } else {
+        if (abilityObject.type === ABILITY_NAME_FIRE_LINE) {
+            damageBreakDown.push({
+                damage: damage,
+                name: ABILITY_BOUNCE_BALL_UPGRADE_FIRE_LINE,
+            });
+        }
+    }
     return damageBreakDown;
 }
 

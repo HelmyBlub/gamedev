@@ -403,6 +403,7 @@ export function detectSomethingToCharacterHit(
     abilityIdRef: number | undefined,
     onHitAndReturnIfContinue: ((target: Character) => boolean) | undefined,
     game: Game,
+    abilityObject: AbilityObject | undefined = undefined,
 ): number {
     const maxEnemySizeEstimate = 40;
     let hitCount = 0;
@@ -413,7 +414,7 @@ export function detectSomethingToCharacterHit(
         if (c.isDead || c.faction === faction) continue;
         const distance = calculateDistance(c, position);
         if (distance < size / 2 + c.width / 2) {
-            characterTakeDamage(c, damage, game, abilityIdRef, abilityName);
+            characterTakeDamage(c, damage, game, abilityIdRef, abilityName, abilityObject);
             hitCount++;
             if (onHitAndReturnIfContinue) {
                 const continueHitDetection = onHitAndReturnIfContinue(c);

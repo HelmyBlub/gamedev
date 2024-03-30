@@ -12,11 +12,15 @@ import { fixedRandom } from "../../randomNumberGenerator.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectSomethingToCharacterHit, getAbilityNameUiText } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
-import { addAbilityLightningBallUpgradeBounceBonus, lightningBallUpgradeBounceBonusGetBonusDamageFactor, lightningBallUpgradeBounceBonusSetBonusDamageFactor } from "./abilityLightningBallUpgradeBounceBonus.js";
+import { ABILITY_LIGHTNING_BALL_UPGRADE_BOUNCE_BONUS, addAbilityLightningBallUpgradeBounceBonus, lightningBallUpgradeBounceBonusGetBonusDamageFactor, lightningBallUpgradeBounceBonusSetBonusDamageFactor } from "./abilityLightningBallUpgradeBounceBonus.js";
 import { addAbilityLightningBallUpgradeHpLeach, lightningBallUpgradeHpLeachExecute } from "./abilityLightningBallUpgradeHpLeach.js";
-import { addAbilityLightningBallUpgradeIceAura, lightningBallUpgradeIceAuraExecute } from "./abilityLightningBallUpgradeIceAura.js";
-import { addAbilityLightningBallUpgradeLightningStrikes, lightningBallUpgradeLightningStirkesExecute } from "./abilityLightningBallUpgradeLightningStrikesBuff.js";
+import { ABILITY_LIGHTNING_BALL_UPGRADE_ICE_AURA, addAbilityLightningBallUpgradeIceAura, lightningBallUpgradeIceAuraExecute } from "./abilityLightningBallUpgradeIceAura.js";
+import { ABILITY_LIGHTNING_BALL_UPGRADE_LIGHTNING_STRIKES, addAbilityLightningBallUpgradeLightningStrikes, lightningBallUpgradeLightningStirkesExecute } from "./abilityLightningBallUpgradeLightningStrikesBuff.js";
 import { AbilityDamageBreakdown } from "../../combatlog.js";
+import { ABILITY_NAME_LIGHTNING_STRIKES } from "../abilityLightningStrikes.js";
+import { ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_DAMAGE } from "./abilityBounceBallUpgradeBounceBonusDamage.js";
+import { ABILITY_NAME_ICE_AURA } from "../abilityIceAura.js";
+import { ABILITY_NAME_EXPLODE } from "../abilityExplode.js";
 
 export type AbilityLightningBall = Ability & {
     baseRechargeTime: number,
@@ -94,11 +98,41 @@ export function getDamageAbilityLightningBall(abilityLightningBall: AbilityLight
 }
 
 function createDamageBreakDown(damage: number, ability: Ability, abilityObject: AbilityObject | undefined, game: Game): AbilityDamageBreakdown[] {
+    const lightningBall = ability as AbilityLightningBall;
     const damageBreakDown: AbilityDamageBreakdown[] = [];
-    damageBreakDown.push({
-        damage: damage,
-        name: ABILITY_NAME_LIGHTNING_BALL,
-    });
+    let openDamage = damage;
+    if (!abilityObject) {
+        damageBreakDown.push({
+            damage: lightningBall.damage,
+            name: "Base Damage",
+        });
+        openDamage -= lightningBall.damage;
+        if (openDamage > 0) {
+            damageBreakDown.push({
+                damage: openDamage,
+                name: ABILITY_LIGHTNING_BALL_UPGRADE_BOUNCE_BONUS,
+            });
+        }
+    } else {
+        if (abilityObject.type === ABILITY_NAME_EXPLODE) {
+            damageBreakDown.push({
+                damage: lightningBall.damage,
+                name: ABILITY_LIGHTNING_BALL_UPGRADE_LIGHTNING_STRIKES,
+            });
+            openDamage -= lightningBall.damage;
+            if (openDamage > 0) {
+                damageBreakDown.push({
+                    damage: openDamage,
+                    name: `${ABILITY_LIGHTNING_BALL_UPGRADE_LIGHTNING_STRIKES} bounce bonus`,
+                });
+            }
+        } else if (abilityObject.type === ABILITY_NAME_ICE_AURA) {
+            damageBreakDown.push({
+                damage: damage,
+                name: ABILITY_LIGHTNING_BALL_UPGRADE_ICE_AURA,
+            });
+        }
+    }
 
     return damageBreakDown;
 }

@@ -16,7 +16,7 @@ type IceBaseProperties = {
 
 type AbilityIce = Ability & IceBaseProperties;
 
-type AbilityObjectIce = AbilityObject & IceBaseProperties & {deleteTime: number};
+type AbilityObjectIce = AbilityObject & IceBaseProperties & { deleteTime: number };
 
 export const ABILITY_NAME_ICE_AURA = "Ice Aura";
 
@@ -79,9 +79,9 @@ export function createAbilityObjectIceAura(
     };
 }
 
-function deleteAbilityObject(ability: AbilityObject, game: Game){
+function deleteAbilityObject(ability: AbilityObject, game: Game) {
     const ice = ability as AbilityObjectIce;
-    if(ice.deleteTime < game.state.time){
+    if (ice.deleteTime < game.state.time) {
         return true;
     }
     return false;
@@ -115,7 +115,7 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
 
 function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
     const ice = abilityObject as AbilityObjectIce as IceBaseProperties;
-    if(paintOrder === "beforeCharacterPaint"){
+    if (paintOrder === "beforeCharacterPaint") {
         const cameraPosition = getCameraPosition(game);
         paintIceAura(ctx, ice, abilityObject, abilityObject.faction, cameraPosition, game);
     }
@@ -125,11 +125,11 @@ function paintIceAura(ctx: CanvasRenderingContext2D, ice: IceBaseProperties, pos
     const paintPos = getPointPaintPosition(ctx, position, cameraPosition);
     ctx.globalAlpha = 0.30;
     ctx.fillStyle = "white";
-    if(faction === FACTION_ENEMY){
+    if (faction === FACTION_ENEMY) {
         ctx.fillStyle = "darkgray";
         ctx.globalAlpha = 0.50;
     }
-    if(faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
+    if (faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
 
     ctx.beginPath();
     ctx.arc(
@@ -154,10 +154,10 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
 
 function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
     const ice = abilityObject as AbilityObjectIce as IceBaseProperties;
-    tickIceAura(abilityObject, abilityObject.faction, ice, abilityObject.abilityIdRef!, game);
+    tickIceAura(abilityObject, abilityObject.faction, ice, abilityObject.abilityIdRef!, game, abilityObject);
 }
 
-function tickIceAura(position: Position, faction: string, iceBaseProperties: IceBaseProperties, abilityIdRef: number, game: Game) {
+function tickIceAura(position: Position, faction: string, iceBaseProperties: IceBaseProperties, abilityIdRef: number, game: Game, abilityObject: AbilityObject | undefined = undefined) {
     if (iceBaseProperties.nextTickTime === undefined) iceBaseProperties.nextTickTime = game.state.time + iceBaseProperties.tickInterval;
     if (iceBaseProperties.nextTickTime <= game.state.time) {
         detectSomethingToCharacterHit(
@@ -171,7 +171,8 @@ function tickIceAura(position: Position, faction: string, iceBaseProperties: Ice
             ABILITY_NAME_ICE_AURA,
             abilityIdRef,
             (c: Character) => onHitEffect(c, iceBaseProperties, game),
-            game
+            game,
+            abilityObject
         );
 
         iceBaseProperties.nextTickTime += iceBaseProperties.tickInterval;

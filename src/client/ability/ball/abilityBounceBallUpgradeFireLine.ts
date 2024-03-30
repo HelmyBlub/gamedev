@@ -14,7 +14,7 @@ type AbilityBounceBallUpgradeFireLine = AbilityUpgrade & {
 
 const DURATION = 3000;
 const DURATION_PER_LEVEL = 3000;
-const DAMAGE_PER_SECOND_FACTOR = 1;
+const DAMAGE_PER_SECOND_FACTOR = 2;
 const TICK_INTERVAL = 250;
 
 export const ABILITY_BOUNCE_BALL_UPGRADE_FIRE_LINE = "Fire Line";
