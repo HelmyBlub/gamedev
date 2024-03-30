@@ -9,7 +9,7 @@ import { kingCreateMoreInfos } from "./character/enemy/kingEnemy.js";
 import { TamerPetCharacter, createTamerPetsCharacterMoreInfos } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
 import { createCombatLogMoreInfo, createDamageMeterMoreInfo } from "./combatlog.js";
 import { findClosestInteractable, getRelativeMousePoistion } from "./game.js";
-import { Game } from "./gameModel.js";
+import { Game, Position } from "./gameModel.js";
 import { createHighscoresMoreInfos } from "./highscores.js";
 import { createMoreInfosForMabObject } from "./map/mapObjects.js";
 import { createMoreInfoMoney, createMoreInfoMoneyGainedPart, findPlayerById } from "./player.js";
@@ -88,22 +88,29 @@ export function moreInfosHandleMouseClick(event: MouseEvent, game: Game): boolea
             paintX += container.headingWidth + moreInfos.headingHorizontalSpacing;
         }
     } else {
-        let containerY = moreInfos.paintStartY + moreInfos.headingFontSize + moreInfos.headingBottomPadding + 4;
-        if (containerY <= mouseClickPos.y
-            && containerY + moreInfos.headingFontSize + moreInfos.headingBottomPadding >= mouseClickPos.y
-        ) {
-            const selectedContainer = moreInfos.containers.containers[moreInfos.containers.selected!];
-            let paintX = moreInfos.paintStartX;
-            for (let i = 0; i < selectedContainer.subContainer.containers.length; i++) {
-                const container = selectedContainer.subContainer.containers[i];
-                if (paintX <= mouseClickPos.x
-                    && paintX + container.headingWidth >= mouseClickPos.x
-                ) {
-                    selectedContainer.subContainer.selected = i;
-                    return true;
+        let currentSubContainers = moreInfos.containers;
+        let containerY = moreInfos.paintStartY;
+        while (currentSubContainers.containers.length > 0) {
+            let selectedContainer = currentSubContainers.containers[currentSubContainers.selected!];
+            containerY += moreInfos.headingFontSize + moreInfos.headingBottomPadding + 4;
+            if (containerY <= mouseClickPos.y
+                && containerY + moreInfos.headingFontSize + moreInfos.headingBottomPadding >= mouseClickPos.y
+            ) {
+                let paintX = moreInfos.paintStartX;
+                for (let i = 0; i < selectedContainer.subContainer.containers.length; i++) {
+                    const container = selectedContainer.subContainer.containers[i];
+                    if (paintX <= mouseClickPos.x
+                        && paintX + container.headingWidth >= mouseClickPos.x
+                    ) {
+                        selectedContainer.subContainer.selected = i;
+                        return true;
+                    }
+                    paintX += container.headingWidth + moreInfos.headingHorizontalSpacing;
                 }
-                paintX += container.headingWidth + moreInfos.headingHorizontalSpacing;
+
+                return false;
             }
+            currentSubContainers = selectedContainer.subContainer;
         }
     }
     return false;
@@ -212,7 +219,7 @@ export function createRequiredMoreInfos(game: Game): MoreInfos {
         moreInfos.containers.containers.push(combatlogContainer);
         paintX += combatlogContainer.headingWidth + moreInfos.headingHorizontalSpacing;
     }
-    const damageMeterContainer = createDamageMeterMoreInfo(ctx, moreInfos, game.UI.damageMeter);
+    const damageMeterContainer = createDamageMeterMoreInfo(ctx, moreInfos, game.UI.damageMeter, game);
     if (damageMeterContainer) {
         moreInfos.containers.containers.push(damageMeterContainer);
         paintX += damageMeterContainer.headingWidth + moreInfos.headingHorizontalSpacing;

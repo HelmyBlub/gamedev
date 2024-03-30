@@ -144,6 +144,8 @@ export function paintPlayerCharacters(ctx: CanvasRenderingContext2D, cameraPosit
         if (playerChar.hp !== playerChar.maxHp || playerChar.shield > 0) {
             paintCharacterHpBarAboveCharacter(ctx, playerChar, cameraPosition);
             paintPlayerNameOverCharacter(ctx, playerChar, cameraPosition, game, +9);
+        } else {
+            paintPlayerNameOverCharacter(ctx, playerChar, cameraPosition, game);
         }
     }
     paintCharacters(ctx, game.state.pastPlayerCharacters.characters, cameraPosition, game);

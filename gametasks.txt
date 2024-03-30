@@ -2,12 +2,13 @@ next test run:
 increase version
 
 current tasks:
+    - bug multiplayer: player names not shown
     - moreInfos:
         - damage meter
-            - next character type: ball
-                - damage breakdown for upgrades
-                - improve visualization for multiple abilities
             - seperate by character
+            - next character type: ball
+                - improve visualization for multiple abilities
+                - bug multiplayer: sniper single ability shows not of correct character
         
     - replay tests performance metrics save in localStorage for better see how it changes
 
