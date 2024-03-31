@@ -58,7 +58,7 @@ export function characterTakeDamage(character: Character, damage: number, game: 
     if (character.isDead || character.isPet || character.isDamageImmune) return;
     if (game.state.bossStuff.fightWipe) return;
     let sourceDamageFactor = findSourceDamageFactor(abilityIdRef, game);
-    if (abilityIdRef) doAbilityDamageBreakDownForAbilityId(damage, abilityIdRef, abilityObject, game);
+    if (abilityIdRef) doAbilityDamageBreakDownForAbilityId(damage, abilityIdRef, abilityObject, abilityName, game);
     let modifiedDamage = damage * character.damageTakenModifierFactor * sourceDamageFactor;
     if (character.shield > 0) {
         character.shield -= modifiedDamage;

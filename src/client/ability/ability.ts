@@ -82,7 +82,7 @@ export type AbilityFunctions = {
     createAbilityUpgradeOptions?: (ability: Ability) => UpgradeOptionAndProbability[],
     createAbilityBossUpgradeOptions?: (ability: Ability, character: Character, game: Game) => UpgradeOptionAndProbability[],
     createAbilityMoreInfos?: (ctx: CanvasRenderingContext2D, ability: Ability, game: Game) => MoreInfoPart,
-    createDamageBreakDown?: (damage: number, ability: Ability, abilityObject: AbilityObject | undefined, game: Game) => AbilityDamageBreakdown[],
+    createDamageBreakDown?: (damage: number, ability: Ability, abilityObject: AbilityObject | undefined, damageAbilityName: string, game: Game) => AbilityDamageBreakdown[],
     deleteAbilityObject?: (abilityObject: AbilityObject, game: Game) => boolean,
     executeUpgradeOption?: (ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game) => void,
     getMoreInfosText?: () => string[],
@@ -101,6 +101,7 @@ export type AbilityFunctions = {
     tickAbilityObject?: (abilityObject: AbilityObject, game: Game) => void,
     abilityUpgradeFunctions?: AbilityUpgradesFunctions,
     canBeUsedByBosses?: boolean,
+    doDamageMeterForPlayers?: boolean,
 }
 
 export type AbilitiesFunctions = {
@@ -137,16 +138,16 @@ export function onDomLoadSetAbilitiesFunctions() {
     addAbilityUnleashPet();
 }
 
-export function doAbilityDamageBreakDown(damage: number, ability: Ability | undefined, abilityObject: AbilityObject | undefined, game: Game) {
+export function doAbilityDamageBreakDown(damage: number, ability: Ability | undefined, abilityObject: AbilityObject | undefined, damageAbilityName: string, game: Game) {
     if (!ability || !ability.doDamageBreakDown) return;
     let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
     if (abilityFunctions && abilityFunctions.createDamageBreakDown) {
-        const breakdowns = abilityFunctions.createDamageBreakDown(damage, ability, abilityObject, game);
+        const breakdowns = abilityFunctions.createDamageBreakDown(damage, ability, abilityObject, damageAbilityName, game);
         addDamageBreakDownToDamageMeter(game.UI.damageMeter, ability, breakdowns);
     }
 }
 
-export function doAbilityDamageBreakDownForAbilityId(damage: number, abilityId: number, abilityObject: AbilityObject | undefined, game: Game) {
+export function doAbilityDamageBreakDownForAbilityId(damage: number, abilityId: number, abilityObject: AbilityObject | undefined, damageAbilityName: string, game: Game) {
     let ability: Ability | undefined = undefined;
     for (let player of game.state.players) {
         const result = findAbilityAndOwnerInCharacterById(player.character, abilityId);
@@ -156,7 +157,7 @@ export function doAbilityDamageBreakDownForAbilityId(damage: number, abilityId: 
         }
     }
     if (!ability) return;
-    doAbilityDamageBreakDown(damage, ability, abilityObject, game);
+    doAbilityDamageBreakDown(damage, ability, abilityObject, damageAbilityName, game);
 }
 
 export function addAbilityToCharacter(character: Character, ability: Ability, charClass: CharacterClass | undefined = undefined) {
@@ -168,6 +169,12 @@ export function addAbilityToCharacter(character: Character, ability: Ability, ch
             } else {
                 character.abilities.splice(dupIndex, 1);
             }
+        }
+    }
+    if (character.faction === FACTION_PLAYER) {
+        let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+        if (abilityFunctions && abilityFunctions.doDamageMeterForPlayers) {
+            ability.doDamageBreakDown = true;
         }
     }
     character.abilities.push(ability);

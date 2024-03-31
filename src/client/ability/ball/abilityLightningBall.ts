@@ -60,6 +60,7 @@ export function addAbilityLightningBall() {
         tickBossAI: tickBossAI,
         abilityUpgradeFunctions: ABILITY_LIGHTNING_BALL_UPGRADE_FUNCTIONS,
         canBeUsedByBosses: true,
+        doDamageMeterForPlayers: true,
     };
     addAbilityLightningBallUpgradeLightningStrikes();
     addAbilityLightningBallUpgradeHpLeach();
@@ -97,7 +98,7 @@ export function getDamageAbilityLightningBall(abilityLightningBall: AbilityLight
     return abilityLightningBall.damage * damageFactor;
 }
 
-function createDamageBreakDown(damage: number, ability: Ability, abilityObject: AbilityObject | undefined, game: Game): AbilityDamageBreakdown[] {
+function createDamageBreakDown(damage: number, ability: Ability, abilityObject: AbilityObject | undefined, damageAbilityName: string, game: Game): AbilityDamageBreakdown[] {
     const lightningBall = ability as AbilityLightningBall;
     const damageBreakDown: AbilityDamageBreakdown[] = [];
     let openDamage = damage;

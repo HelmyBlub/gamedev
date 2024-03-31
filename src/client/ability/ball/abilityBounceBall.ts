@@ -63,6 +63,7 @@ export function addAbilityBounceBall() {
         tickBossAI: tickBossAI,
         abilityUpgradeFunctions: ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS,
         canBeUsedByBosses: true,
+        doDamageMeterForPlayers: true,
     };
     addAbilityBounceBallUpgradeBounceBonusDamage();
     addAbilityBounceBallUpgradeBounceShield();
@@ -109,7 +110,7 @@ export function getAbilityBounceBallDamage(abilityBounceBall: AbilityBounceBall)
     return damage;
 }
 
-function createDamageBreakDown(damage: number, ability: Ability, abilityObject: AbilityObject | undefined, game: Game): AbilityDamageBreakdown[] {
+function createDamageBreakDown(damage: number, ability: Ability, abilityObject: AbilityObject | undefined, damageAbilityName: string, game: Game): AbilityDamageBreakdown[] {
     const bounceBall = ability as AbilityBounceBall;
     const damageBreakDown: AbilityDamageBreakdown[] = [];
     let openDamage = damage;

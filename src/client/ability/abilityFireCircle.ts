@@ -76,7 +76,7 @@ function createAbilityFireCircle(
     };
 }
 
-function createObjectFireCircleTraveling(x: number, y: number, damage: number, faction: string, duration: number, radius: number, moveSpeed: number, owner: AbilityOwner): AbilityObjectFireCircleTraveling {
+function createObjectFireCircleTraveling(x: number, y: number, damage: number, faction: string, duration: number, radius: number, moveSpeed: number, abilityIdRef: number, owner: AbilityOwner): AbilityObjectFireCircleTraveling {
     return {
         type: ABILITY_NAME_FIRE_CIRCLE,
         x: owner.x,
@@ -90,6 +90,7 @@ function createObjectFireCircleTraveling(x: number, y: number, damage: number, f
         moveSpeed: moveSpeed,
         targetPosition: { x, y },
         toDelete: false,
+        abilityIdRef: abilityIdRef,
     }
 }
 
@@ -105,6 +106,7 @@ function createObjectFireCircle(abilityObject: AbilityObjectFireCircleTraveling,
         deleteTime: gameTime + abilityObject.duration,
         subType: "FireCircel",
         tickInterval: 250,
+        abilityIdRef: abilityObject.abilityIdRef,
     }
 }
 
@@ -118,7 +120,7 @@ function paintAbilityObjectFireCircle(ctx: CanvasRenderingContext2D, abilityObje
     if (abilityObjectFireCircle.subType === "FireCircel") {
         if (paintOrder === "beforeCharacterPaint") {
             ctx.globalAlpha = abilityObject.faction === FACTION_ENEMY ? 0.9 : 0.65;
-            if(abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
+            if (abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
             ctx.beginPath();
             ctx.arc(
                 paintPos.x,
@@ -130,7 +132,7 @@ function paintAbilityObjectFireCircle(ctx: CanvasRenderingContext2D, abilityObje
         }
     } else if (abilityObjectFireCircle.subType === "FireCircelTraveling") {
         if (paintOrder === "afterCharacterPaint") {
-            if(abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
+            if (abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
             ctx.beginPath();
             ctx.arc(
                 paintPos.x,
@@ -241,17 +243,17 @@ function tickAbilityObjectFireCircle(abilityObject: AbilityObject, game: Game) {
             abilityObjectFireCircle.nextTickTime += abilityObjectFireCircle.tickInterval;
         }
     } else if (abilityObjectFireCircle.subType === "FireCircelTraveling") {
-        const ability = abilityObject as AbilityObjectFireCircleTraveling;
-        if (ability.toDelete) return;
-        const distance = calculateDistance(ability, ability.targetPosition);
-        if (distance <= ability.moveSpeed) {
-            const fireCircle = createObjectFireCircle(ability, game.state.time);
+        const travelingObject = abilityObject as AbilityObjectFireCircleTraveling;
+        if (travelingObject.toDelete) return;
+        const distance = calculateDistance(travelingObject, travelingObject.targetPosition);
+        if (distance <= travelingObject.moveSpeed) {
+            const fireCircle = createObjectFireCircle(travelingObject, game.state.time);
             game.state.abilityObjects.push(fireCircle);
-            ability.toDelete = true;
+            travelingObject.toDelete = true;
         } else {
-            const direction = calculateDirection(ability, ability.targetPosition);
-            ability.x = ability.x + Math.cos(direction) * ability.moveSpeed;
-            ability.y = ability.y + Math.sin(direction) * ability.moveSpeed;
+            const direction = calculateDirection(travelingObject, travelingObject.targetPosition);
+            travelingObject.x = travelingObject.x + Math.cos(direction) * travelingObject.moveSpeed;
+            travelingObject.y = travelingObject.y + Math.sin(direction) * travelingObject.moveSpeed;
         }
     }
 }
@@ -278,6 +280,7 @@ function castFireCircle(abilityOwner: AbilityOwner, ability: Ability, castPositi
             abilityFireCircle.objectDuration,
             abilityFireCircle.radius,
             abilityFireCircle.moveSpeed,
+            abilityFireCircle.id,
             abilityOwner
         ));
         if (abilityFireCircle.currentCharges === abilityFireCircle.maxCharges) {

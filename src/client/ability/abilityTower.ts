@@ -19,6 +19,7 @@ import { ABILITY_NAME_SHOOT } from "./abilityShoot.js";
 import { ABILITY_NAME_SINGLETARGET } from "./abilitySingleTarget.js";
 import { ABILITY_NAME_SWORD } from "./abilitySword.js";
 import { MoreInfoPart, createMoreInfosPart } from "../moreInfo.js";
+import { AbilityDamageBreakdown } from "../combatlog.js";
 
 type AbilityObjectTower = AbilityObject & {
     ownerId: number,
@@ -58,6 +59,7 @@ export function addAbilityTower() {
         createAbility: createAbilityTower,
         createAbilityUpgradeOptions: createAbilityTowerUpgradeOptionsNew,
         createAbilityMoreInfos: createAbilityTowerMoreInfos,
+        createDamageBreakDown: createDamageBreakDown,
         deleteAbilityObject: deleteAbilityObjectTower,
         executeUpgradeOption: executeAbilityTowerUpgradeOption,
         paintAbilityObject: paintAbilityObjectTower,
@@ -71,6 +73,7 @@ export function addAbilityTower() {
         tickAbilityObject: tickAbilityObjectTower,
         tickBossAI: tickBossAI,
         canBeUsedByBosses: true,
+        doDamageMeterForPlayers: true,
     };
 }
 
@@ -124,6 +127,25 @@ function resetAbility(ability: Ability) {
     const abilityTower = ability as AbilityTower;
     abilityTower.lastBuildTime = undefined;
 }
+
+function createDamageBreakDown(damage: number, ability: Ability, abilityObject: AbilityObject | undefined, damageAbilityName: string, game: Game): AbilityDamageBreakdown[] {
+    const tower = ability as AbilityTower;
+    const damageBreakDown: AbilityDamageBreakdown[] = [];
+    if (abilityObject) {
+        damageBreakDown.push({
+            damage: damage,
+            name: abilityObject.type,
+        });
+    } else {
+        damageBreakDown.push({
+            damage: damage,
+            name: damageAbilityName,
+        });
+    }
+
+    return damageBreakDown;
+}
+
 
 function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: number) {
     const abilityTower = ability as AbilityTower;
@@ -450,7 +472,7 @@ function tickEffectConnected(abilityObjectTower: AbilityObjectTower, game: Game)
 
     const characters: Character[] = getCharactersTouchingLine(game, abilityObjectTower, connectedTower, abilityObjectTower.faction);
     for (let char of characters) {
-        characterTakeDamage(char, abilityObjectTower.damage * damageFactor, game, abilityObjectTower.abilityIdRef, abilityObjectTower.type);
+        characterTakeDamage(char, abilityObjectTower.damage * damageFactor, game, abilityObjectTower.abilityIdRef, abilityObjectTower.type + " Line");
     }
 }
 

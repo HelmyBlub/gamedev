@@ -90,6 +90,7 @@ export function addAbilitySnipe() {
         tickBossAI: tickBossAI,
         abilityUpgradeFunctions: ABILITY_SNIPE_UPGRADE_FUNCTIONS,
         canBeUsedByBosses: true,
+        doDamageMeterForPlayers: true,
     };
 
     addAbilitySnipeUpgradeAfterImage();
@@ -496,7 +497,7 @@ function tickAbilityObjectSnipe(abilityObject: AbilityObject, game: Game) {
     }
 }
 
-function createDamageBreakDown(damage: number, ability: Ability, abilityObject: AbilityObject | undefined, game: Game): AbilityDamageBreakdown[] {
+function createDamageBreakDown(damage: number, ability: Ability, abilityObject: AbilityObject | undefined, damageAbilityName: string, game: Game): AbilityDamageBreakdown[] {
     const snipe = ability as AbilitySnipe;
     let triggeredByPlayer = false;
     let bounceCounter = 0;

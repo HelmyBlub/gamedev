@@ -2,13 +2,10 @@ next test run:
 increase version
 
 current tasks:
-    - bug multiplayer: player names not shown
     - moreInfos:
+        - short button press keep moreInfo open
         - damage meter
-            - seperate by character
-            - next character type: ball
-                - improve visualization for multiple abilities
-                - bug multiplayer: sniper single ability shows not of correct character
+            - next character type: tower
         
     - replay tests performance metrics save in localStorage for better see how it changes
 

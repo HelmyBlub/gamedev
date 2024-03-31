@@ -102,6 +102,7 @@ export function createDamageMeterMoreInfo(ctx: CanvasRenderingContext2D, moreInf
         if (split.damageData.length <= 0) continue;
         if (damageMeter.splits.length > 1) {
             splitSubContainer = createDefaultMoreInfosContainer(ctx, split.title, moreInfos.headingFontSize);
+            playerSubContainer = splitSubContainer;
             moreInfosDamageMeter.subContainer.containers.push(splitSubContainer);
             moreInfosDamageMeter.subContainer.selected = 0;
         }
