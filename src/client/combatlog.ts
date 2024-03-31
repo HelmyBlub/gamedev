@@ -48,7 +48,7 @@ export function createDefaultCombatLog(): Combatlog {
 
 export function createDamageMeter(): DamageMeter {
     return {
-        maxNumberSplits: 3,
+        maxNumberSplits: 5,
         splits: [{
             damageData: [],
             title: "Split 1",
@@ -97,7 +97,7 @@ export function addDamageBreakDownToDamageMeter(damageMeter: DamageMeter, abilit
 
 export function createDamageMeterMoreInfo(ctx: CanvasRenderingContext2D, moreInfos: MoreInfos, damageMeter: DamageMeter, game: Game): MoreInfosPartContainer | undefined {
     if (damageMeter.splits.length === 0) return;
-    const moreInfosDamageMeter = createDefaultMoreInfosContainer(ctx, "DamageMeter(WIP)", moreInfos.headingFontSize);
+    const moreInfosDamageMeter = createDefaultMoreInfosContainer(ctx, "DamageMeter", moreInfos.headingFontSize);
     let splitSubContainer = moreInfosDamageMeter;
     let playerSubContainer = splitSubContainer;
     for (let split of damageMeter.splits) {
