@@ -90,7 +90,6 @@ export function addAbilitySnipe() {
         tickBossAI: tickBossAI,
         abilityUpgradeFunctions: ABILITY_SNIPE_UPGRADE_FUNCTIONS,
         canBeUsedByBosses: true,
-        doDamageMeterForPlayers: true,
     };
 
     addAbilitySnipeUpgradeAfterImage();

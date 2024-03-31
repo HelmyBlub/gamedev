@@ -3,6 +3,7 @@ import { Character } from "../../character/characterModel.js";
 import { getNextWaypoint } from "../../character/pathing.js";
 import { TamerPetCharacter, findPetOwner, petHappinessToDisplayText } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
+import { AbilityDamageBreakdown } from "../../combatlog.js";
 import { calculateDistance, getNextId } from "../../game.js";
 import { Position, Game, IdCounter } from "../../gameModel.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
@@ -54,6 +55,7 @@ export function addAbilityPetPainter() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_PET_PAINTER] = {
         createAbilityBossUpgradeOptions: createAbilityPetPainterUpgradeOptions,
         createAbility: createAbilityPetPainter,
+        createDamageBreakDown: createDamageBreakDown,
         executeUpgradeOption: executeAbilityPetPainterUpgradeOption,
         deleteAbilityObject: deleteAbilityObjectPetPainter,
         getMoreInfosText: getLongDescription,
@@ -74,16 +76,6 @@ export function addAbilityPetPainter() {
     addAbilityPetPainterUpgradeDuplicate();
     addAbilityPetPainterUpgradeFactory();
     addAbilityPetPainterUpgradeSplit();
-}
-
-function createAbilityPetPainter(idCounter: IdCounter): AbilityPetPainter {
-    return {
-        id: getNextId(idCounter),
-        name: ABILITY_NAME_PET_PAINTER,
-        baseDamage: 200,
-        passive: true,
-        upgrades: {},
-    }
 }
 
 export function createShapeAbilityPetPainter(shape: string, abilityOwner: AbilityOwner, ability: Ability, game: Game) {
@@ -118,6 +110,32 @@ export function abilityPetPainterTeleportIfOwnerUnreachableOrToFarAway(pet: Tame
     }
 }
 
+function createAbilityPetPainter(idCounter: IdCounter): AbilityPetPainter {
+    return {
+        id: getNextId(idCounter),
+        name: ABILITY_NAME_PET_PAINTER,
+        baseDamage: 200,
+        passive: true,
+        upgrades: {},
+    }
+}
+
+function createDamageBreakDown(damage: number, ability: Ability, abilityObject: AbilityObject | undefined, damageAbilityName: string, game: Game): AbilityDamageBreakdown[] {
+    const damageBreakDown: AbilityDamageBreakdown[] = [];
+    if (abilityObject) {
+        const painterObject = abilityObject as AbilityObjectPetPainter;
+        damageBreakDown.push({
+            damage: damage,
+            name: painterObject.subType,
+        });
+    } else {
+        damageBreakDown.push({
+            damage: damage,
+            name: ability.name,
+        });
+    }
+    return damageBreakDown;
+}
 
 function getLongDescription(): string[] {
     return [

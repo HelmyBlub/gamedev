@@ -73,7 +73,6 @@ export function addAbilityTower() {
         tickAbilityObject: tickAbilityObjectTower,
         tickBossAI: tickBossAI,
         canBeUsedByBosses: true,
-        doDamageMeterForPlayers: true,
     };
 }
 

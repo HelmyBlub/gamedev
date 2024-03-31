@@ -158,7 +158,7 @@ function tickShapeObjectPetPainterTriangle(abilityObject: AbilityObjectPetPainte
         if (triangle.nextTickTime === undefined) triangle.nextTickTime = game.state.time + triangle.tickInterval;
         if (triangle.nextTickTime <= game.state.time) {
             const center: Position = triangleCenter(triangle);
-            detectCircleCharacterHit(game.state.map, center, triangle.sideLength / 2, triangle.faction, triangle.abilityIdRef!, triangle.damage, game);
+            detectCircleCharacterHit(game.state.map, center, triangle.sideLength / 2, triangle.faction, triangle.abilityIdRef!, triangle.damage, game, triangle);
             triangle.nextTickTime += triangle.tickInterval;
             if (triangle.nextTickTime <= game.state.time) {
                 triangle.nextTickTime = game.state.time + triangle.tickInterval;

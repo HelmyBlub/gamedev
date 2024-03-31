@@ -60,7 +60,6 @@ export function addAbilityLightningBall() {
         tickBossAI: tickBossAI,
         abilityUpgradeFunctions: ABILITY_LIGHTNING_BALL_UPGRADE_FUNCTIONS,
         canBeUsedByBosses: true,
-        doDamageMeterForPlayers: true,
     };
     addAbilityLightningBallUpgradeLightningStrikes();
     addAbilityLightningBallUpgradeHpLeach();

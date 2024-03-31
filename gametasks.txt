@@ -4,8 +4,6 @@ increase version
 current tasks:
     - moreInfos:
         - short button press keep moreInfo open
-        - damage meter
-            - next character type: tower
         
     - replay tests performance metrics save in localStorage for better see how it changes
 

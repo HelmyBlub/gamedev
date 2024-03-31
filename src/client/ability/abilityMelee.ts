@@ -1,9 +1,10 @@
 import { characterTakeDamage, determineCharactersInDistance, determineClosestCharacter, getPlayerCharacters } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
 import { TAMER_PET_CHARACTER, TamerPetCharacter } from "../character/playerCharacters/tamer/tamerPetCharacter.js";
+import { AbilityDamageBreakdown } from "../combatlog.js";
 import { getNextId } from "../game.js";
 import { FACTION_ENEMY, FACTION_PLAYER, Game, IdCounter } from "../gameModel.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityOwner } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner } from "./ability.js";
 
 export type AbilityMelee = Ability & {
     damage: number,
@@ -16,6 +17,7 @@ export function addAbilityMelee() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_MELEE] = {
         tickAbility: tickAbilityMelee,
         createAbility: createAbilityMelee,
+        createDamageBreakDown: createDamageBreakDown,
         setAbilityToLevel: setAbilityMeleeToLevel,
         setAbilityToBossLevel: setAbilityMeleeToBossLevel,
         setAbilityToEnemyLevel: setAbilityToEnemyLevel,
@@ -41,6 +43,15 @@ export function createAbilityMelee(
 function resetAbility(ability: Ability) {
     const abilityMelee = ability as AbilityMelee;
     abilityMelee.nextTickTime = undefined;
+}
+
+function createDamageBreakDown(damage: number, ability: Ability, abilityObject: AbilityObject | undefined, damageAbilityName: string, game: Game): AbilityDamageBreakdown[] {
+    const damageBreakDown: AbilityDamageBreakdown[] = [];
+    damageBreakDown.push({
+        damage: damage,
+        name: ABILITY_NAME_MELEE,
+    });
+    return damageBreakDown;
 }
 
 function setAbilityMeleeToLevel(ability: Ability, level: number) {

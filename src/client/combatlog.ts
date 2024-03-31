@@ -1,6 +1,7 @@
-import { Ability } from "./ability/ability.js"
+import { Ability, findAbilityOwnerByAbilityIdInPlayers } from "./ability/ability.js"
 import { getPlayerCharacters } from "./character/character.js"
 import { Character } from "./character/characterModel.js"
+import { TamerPetCharacter } from "./character/playerCharacters/tamer/tamerPetCharacter.js"
 import { getTimeSinceFirstKill } from "./game.js"
 import { Game } from "./gameModel.js"
 import { MoreInfoPart, MoreInfos, MoreInfosPartContainer, createDefaultMoreInfosContainer, createMoreInfosPart } from "./moreInfo.js"
@@ -30,6 +31,7 @@ export type AbilityDamageData = {
     abilityName: string,
     totalDamage: number,
     damageBreakDown: AbilityDamageBreakdown[],
+    petName?: string,
 }
 
 export type AbilityDamageBreakdown = {
@@ -118,24 +120,28 @@ export function createDamageMeterMoreInfo(ctx: CanvasRenderingContext2D, moreInf
                 splitSubContainer.subContainer.selected = 0;
             }
             let damageMeterPart: MoreInfoPart | undefined;
-            let playerDamageAbilityDataCounter = 0;
+            let playerAbilityData: AbilityDamageData[] = [];
             for (let abilityData of split.damageData) {
-                if (!player.character.abilities.find(a => a.id === abilityData.abilityRefId)) continue;
-                playerDamageAbilityDataCounter++;
+                const playerOwner = findPlayerCharacterOwnerByAbilityIdInPlayers(abilityData.abilityRefId, game);
+                if (!playerOwner || playerOwner.character.id !== player.character.id) continue;
+                if (playerOwner.pet) {
+                    abilityData.petName = playerOwner.pet.paint.color;
+                }
+                playerAbilityData.push(abilityData);
             }
-            if (playerDamageAbilityDataCounter > 1) {
-                damageMeterPart = createDamageMeterPartForAbilities(ctx, split.damageData, player.character);
-                for (let abilityData of split.damageData) {
-                    if (!player.character.abilities.find(a => a.id === abilityData.abilityRefId)) continue;
+            if (playerAbilityData.length > 1) {
+                damageMeterPart = createDamageMeterPartForAbilities(ctx, playerAbilityData, player.character);
+                for (let abilityData of playerAbilityData) {
+                    if (abilityData.damageBreakDown.length <= 1) continue;
                     const abilityPart = createDamageMeterPartForAbility(ctx, abilityData);
-                    const abilitySubContainer = createDefaultMoreInfosContainer(ctx, abilityData.abilityName, moreInfos.headingFontSize);
+                    const abilityContainerName = `${(abilityData.petName ?? "")}${abilityData.abilityName}`
+                    const abilitySubContainer = createDefaultMoreInfosContainer(ctx, abilityContainerName, moreInfos.headingFontSize);
                     abilitySubContainer.moreInfoParts.push(abilityPart);
                     playerSubContainer.subContainer.containers.push(abilitySubContainer);
                     playerSubContainer.subContainer.selected = 0;
                 }
             } else {
-                for (let abilityData of split.damageData) {
-                    if (!player.character.abilities.find(a => a.id === abilityData.abilityRefId)) continue;
+                for (let abilityData of playerAbilityData) {
                     damageMeterPart = createDamageMeterPartForAbility(ctx, abilityData);
                     break;
                 }
@@ -147,11 +153,24 @@ export function createDamageMeterMoreInfo(ctx: CanvasRenderingContext2D, moreInf
     return moreInfosDamageMeter;
 }
 
+function findPlayerCharacterOwnerByAbilityIdInPlayers(abilityId: number, game: Game): { character: Character, pet: TamerPetCharacter | undefined } | undefined {
+    for (let player of game.state.players) {
+        const ability = player.character.abilities.find(a => a.id === abilityId);
+        if (ability) return { character: player.character, pet: undefined };
+        if (player.character.pets) {
+            for (let pet of player.character.pets) {
+                const abilityPet = pet.abilities.find(a => a.id === abilityId);
+                if (abilityPet) return { character: player.character, pet: pet };
+            }
+        }
+    }
+    return undefined;
+}
+
 function createDamageMeterPartForPlayers(ctx: CanvasRenderingContext2D, abilitiesData: AbilityDamageData[], game: Game): MoreInfoPart {
     const playersTotalDamage: { playerId: number, totalDamage: number }[] = [];
-    const playerChars = getPlayerCharacters(game.state.players);
     for (let abilityData of abilitiesData) {
-        let palyerChar = playerChars.find(c => c.abilities.find(a => a.id === abilityData.abilityRefId));
+        let palyerChar = findPlayerCharacterOwnerByAbilityIdInPlayers(abilityData.abilityRefId, game)?.character;
         if (!palyerChar) continue;
         let playerTotalDamage = playersTotalDamage.find(e => e.playerId === palyerChar!.id);
         if (playerTotalDamage === undefined) {
@@ -170,7 +189,7 @@ function createDamageMeterPartForPlayers(ctx: CanvasRenderingContext2D, abilitie
         const player = game.state.players.find(p => p.character.id === playerTotalDamage.playerId);
         if (!player) continue;
         const playerName = game.state.clientInfos.find(c => c.id === player.clientId)?.name ?? "Unknown";
-        textLines.push(`${(playerName)}: ${playerTotalDamage.totalDamage.toLocaleString()}`);
+        textLines.push(`${(playerName)}: ${playerTotalDamage.totalDamage.toLocaleString(undefined, { maximumFractionDigits: 0 })}`);
     }
     return createMoreInfosPart(ctx, textLines);
 }
@@ -179,15 +198,15 @@ function createDamageMeterPartForAbilities(ctx: CanvasRenderingContext2D, abilit
     const textLines: string[] = [];
     abilitiesData.sort((a, b) => b.totalDamage - a.totalDamage);
     for (let abilityData of abilitiesData) {
-        if (filterCharacter && !filterCharacter.abilities.find(a => a.id === abilityData.abilityRefId)) continue;
-        textLines.push(`${(abilityData.abilityName)}: ${abilityData.totalDamage.toLocaleString()}`);
+        textLines.push(`${(abilityData.petName ?? "")}${(abilityData.abilityName)}: ${abilityData.totalDamage.toLocaleString(undefined, { maximumFractionDigits: 0 })}`);
     }
     return createMoreInfosPart(ctx, textLines);
 }
 
 function createDamageMeterPartForAbility(ctx: CanvasRenderingContext2D, abilityData: AbilityDamageData): MoreInfoPart {
     const textLines: string[] = [];
-    textLines.push(`${(abilityData.abilityName)}: ${abilityData.totalDamage.toLocaleString()}`);
+    const abilityDataName = `${(abilityData.petName ?? "")}${abilityData.abilityName}`
+    textLines.push(`${abilityDataName}: ${abilityData.totalDamage.toLocaleString(undefined, { maximumFractionDigits: 0 })}`);
     abilityData.damageBreakDown.sort((a, b) => b.damage - a.damage);
     for (let breakDown of abilityData.damageBreakDown) {
         textLines.push(`    ${(breakDown.name)}: ${(breakDown.damage / abilityData.totalDamage * 100).toFixed(1)}%`);

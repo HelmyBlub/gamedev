@@ -63,7 +63,6 @@ export function addAbilityBounceBall() {
         tickBossAI: tickBossAI,
         abilityUpgradeFunctions: ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS,
         canBeUsedByBosses: true,
-        doDamageMeterForPlayers: true,
     };
     addAbilityBounceBallUpgradeBounceBonusDamage();
     addAbilityBounceBallUpgradeBounceShield();

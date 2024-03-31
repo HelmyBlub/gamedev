@@ -101,7 +101,6 @@ export type AbilityFunctions = {
     tickAbilityObject?: (abilityObject: AbilityObject, game: Game) => void,
     abilityUpgradeFunctions?: AbilityUpgradesFunctions,
     canBeUsedByBosses?: boolean,
-    doDamageMeterForPlayers?: boolean,
 }
 
 export type AbilitiesFunctions = {
@@ -173,7 +172,7 @@ export function addAbilityToCharacter(character: Character, ability: Ability, ch
     }
     if (character.faction === FACTION_PLAYER) {
         let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-        if (abilityFunctions && abilityFunctions.doDamageMeterForPlayers) {
+        if (abilityFunctions && abilityFunctions.createDamageBreakDown) {
             ability.doDamageBreakDown = true;
         }
     }

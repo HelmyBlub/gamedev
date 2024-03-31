@@ -163,7 +163,7 @@ function executeTamerBossUpgradeOption(character: Character, upgradeOption: Upgr
         const ability = createAbility(upgradeValues.abilityName, game.state.idCounter, false);
         const pet: TamerPetCharacter = character.pets!.find((p) => p.paint.color === upgradeValues.petName)!;
         ability.passive = true;
-        pet.abilities.push(ability);
+        addAbilityToCharacter(pet, ability);
         addTraitToTamerPet(pet, upgradeValues.traitName, game);
         pet.bossSkillPoints!.available--;
         pet.bossSkillPoints!.used++;
@@ -312,8 +312,10 @@ function valuesToUpgradeName(petName: string, abilityName: string, traitName: st
 function addPetToTamer(character: Character, color: string, characterClass: CharacterClass, game: Game) {
     if (character.pets === undefined) character.pets = [];
     const pet: TamerPetCharacter = createTamerPetCharacter(character, color, characterClass, game);
-    pet.abilities.push(createAbilityLeash(game.state.idCounter, undefined, 175, character.id));
-    pet.abilities.push(createAbility(ABILITY_NAME_MELEE, game.state.idCounter, false));
+
+    addAbilityToCharacter(pet, createAbilityLeash(game.state.idCounter, undefined, 175, character.id));
+    addAbilityToCharacter(pet, createAbility(ABILITY_NAME_MELEE, game.state.idCounter, false));
+
     const player = findPlayerByCharacterId(game.state.players, character.id);
     if (player) {
         addCharacterUpgrades(player.permanentData.upgrades, pet, game, undefined);

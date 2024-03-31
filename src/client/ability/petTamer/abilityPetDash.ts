@@ -2,11 +2,12 @@ import { getCharacterMoveSpeed } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
 import { TamerPetCharacter, petHappinessToDisplayText } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { UpgradeOptionAndProbability } from "../../character/upgrade.js";
+import { AbilityDamageBreakdown } from "../../combatlog.js";
 import { getNextId } from "../../game.js";
 import { IdCounter, Position, Game } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { calculateBounceAngle, calculateMovePosition, isPositionBlocking, moveByDirectionAndDistance } from "../../map/map.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, detectCircleCharacterHit } from "../ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectCircleCharacterHit } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions } from "../abilityUpgrade.js";
 import { abilityPetDashUpgradeDamageTakenApplyDebuff, addAbilityPetDashUpgradeIncreaseDamageTaken } from "./abilityPetDashIncreaseDamageTaken.js";
 import { ABILITY_PET_DASH_UPGRADE_TERRAIN_BOUNCE, AbilityPetDashUpgradeTerrainBounce, addAbilityPetDashUpgradeTerrainBounce } from "./abilityPetDashUpgradeBounce.js";
@@ -33,6 +34,7 @@ export function addAbilityPetDash() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_PET_DASH] = {
         createAbility: createAbilityPetDash,
         createAbilityBossUpgradeOptions: createAbilityPetDashUpgradeOptions,
+        createDamageBreakDown: createDamageBreakDown,
         getMoreInfosText: getLongDescription,
         onHit: onHit,
         paintAbility: paintAbilityPetDash,
@@ -44,7 +46,6 @@ export function addAbilityPetDash() {
         abilityUpgradeFunctions: ABILITY_PET_DASH_UPGRADE_FUNCTIONS,
     };
 
-    //addAbilityPetDashUpgradeTerrainBounce();
     addAbilityPetDashUpgradeFireLine();
     addAbilityPetDashUpgradeRoot();
     addAbilityPetDashUpgradeIncreaseDamageTaken();
@@ -87,6 +88,22 @@ function getLongDescription(): string[] {
         `Dashes forward a short distance.`,
         `Does damage to every enemy it hits.`,
     ];
+}
+
+function createDamageBreakDown(damage: number, ability: Ability, abilityObject: AbilityObject | undefined, damageAbilityName: string, game: Game): AbilityDamageBreakdown[] {
+    const damageBreakDown: AbilityDamageBreakdown[] = [];
+    if (abilityObject) {
+        damageBreakDown.push({
+            damage: damage,
+            name: abilityObject.type,
+        });
+    } else {
+        damageBreakDown.push({
+            damage: damage,
+            name: ability.name,
+        });
+    }
+    return damageBreakDown;
 }
 
 function onHit(ability: Ability, targetCharacter: Character, game: Game) {

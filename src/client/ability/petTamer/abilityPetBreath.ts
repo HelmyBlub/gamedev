@@ -3,12 +3,13 @@ import { Character } from "../../character/characterModel.js";
 import { BossEnemyCharacter } from "../../character/enemy/bossEnemy.js";
 import { TamerPetCharacter, petHappinessToDisplayText, tamerPetFeed } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { UpgradeOptionAndProbability } from "../../character/upgrade.js";
+import { AbilityDamageBreakdown } from "../../combatlog.js";
 import { getNextId, calculateDirection, calculateDistance } from "../../game.js";
 import { IdCounter, Position, Game, FACTION_PLAYER } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { GameMap, moveByDirectionAndDistance } from "../../map/map.js";
 import { Player } from "../../player.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityOwner } from "../ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions } from "../abilityUpgrade.js";
 import { abilityPetBreathUpgradeExplodeApplyExplode, addAbilityPetBreathUpgradeExplode } from "./abilityPetBreathUpgradeExplode.js";
 import { ABILITY_PET_BREATH_UPGRADE_RANGE_UP, AbilityPetBreathUpgradeRangeUp, abilityPetBreathUpgradeRangeUpGetAdditionFoodIntake, abilityPetBreathUpgradeRangeUpGetAdditionRange, addAbilityPetBreathUpgradeRangeUp } from "./abilityPetBreathUpgradeRangeUp.js";
@@ -31,6 +32,7 @@ export function addAbilityPetBreath() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_PET_BREATH] = {
         createAbility: createAbilityPetBreath,
         createAbilityBossUpgradeOptions: createAbilityPetBreathUpgradeOptions,
+        createDamageBreakDown: createDamageBreakDown,
         getMoreInfosText: getLongDescription,
         paintAbility: paintAbilityPetBreath,
         resetAbility: resetAbility,
@@ -72,6 +74,22 @@ function resetAbility(ability: Ability) {
     const abilityPetBreath = ability as AbilityPetBreath;
     abilityPetBreath.nextTickTime = undefined;
     abilityPetBreath.active = false;
+}
+
+function createDamageBreakDown(damage: number, ability: Ability, abilityObject: AbilityObject | undefined, damageAbilityName: string, game: Game): AbilityDamageBreakdown[] {
+    const damageBreakDown: AbilityDamageBreakdown[] = [];
+    if (abilityObject) {
+        damageBreakDown.push({
+            damage: damage,
+            name: abilityObject.type,
+        });
+    } else {
+        damageBreakDown.push({
+            damage: damage,
+            name: ability.name,
+        });
+    }
+    return damageBreakDown;
 }
 
 function getLongDescription(): string[] {
