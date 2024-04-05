@@ -1,8 +1,8 @@
 import { createCharacter } from "../character/characterModel.js";
 import { CommandRestart, handleCommand } from "../commands.js";
-import { closeGame } from "../game.js";
-import { FACTION_ENEMY, FACTION_PLAYER, Game, Replay, ReplayData } from "../gameModel.js";
-import { createGame } from "../main.js";
+import { closeGame, getGameVersionString } from "../game.js";
+import { FACTION_ENEMY, FACTION_PLAYER, Game, Replay, ReplayAssert, ReplayData } from "../gameModel.js";
+import { GAME_VERSION, createGame } from "../main.js";
 import { addEnemyToMap, chunkXYToMapKey, createMap, GameMap } from "../map/map.js";
 import { createNewChunkTiles } from "../map/mapGeneration.js";
 import { websocketConnect } from "../multiplayerConenction.js";
@@ -10,6 +10,58 @@ import { PlayerInput } from "../playerInput.js";
 import { createProjectile, Projectile } from "../ability/projectile.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
 import { detectAbilityObjectCircleToCharacterHit } from "../ability/ability.js";
+
+type PastReplayData = {
+    maxKeep: number,
+    results: {
+        [fileName: string]: ReplayResult[],
+    }
+}
+export type ReplayResult = {
+    fileName: string,
+    time: number,
+    runOnVersionNumber: string,
+    replayVersionNumber: string,
+    success: boolean,
+    replayAssertData: ReplayAssertResult[] | undefined,
+}
+export type ReplayAssertResult = {
+    type: string,
+    expected: any,
+    actual: any,
+}
+
+const LOCALSTORAGE_PAST_TEST_REPLAY_DATA = "testReplayData";
+export function saveReplayDataToLocalStorage(replayResult: ReplayResult) {
+    if (replayResult.fileName === "Unknown") {
+        console.log(replayResult);
+        return;
+    }
+    const localStoragePastReplayData = localStorage.getItem(LOCALSTORAGE_PAST_TEST_REPLAY_DATA);
+    let pastReplayData: PastReplayData = { maxKeep: 10, results: {} };
+    if (localStoragePastReplayData) {
+        pastReplayData = JSON.parse(localStoragePastReplayData) as PastReplayData;
+    }
+    if (!pastReplayData.results[replayResult.fileName]) pastReplayData.results[replayResult.fileName] = [];
+    const fileResults = pastReplayData.results[replayResult.fileName];
+    fileResults.push(replayResult);
+    localStorage.setItem(LOCALSTORAGE_PAST_TEST_REPLAY_DATA, JSON.stringify(pastReplayData));
+    let timeChangeToLastRun = 0;
+    if (fileResults.length > 1) {
+        const newTime = replayResult.time;
+        const lastTime = fileResults[fileResults.length - 2].time;
+        timeChangeToLastRun = (newTime - lastTime) / lastTime;
+        if (fileResults.length > pastReplayData.maxKeep) {
+            fileResults.shift();
+        }
+    }
+    console.log(
+        `Filename: ${replayResult.fileName}`,
+        replayResult.success ? `` : `success: ${replayResult.success}`,
+        timeChangeToLastRun ? `${(timeChangeToLastRun * 100).toFixed(2)}%` : ``,
+        fileResults
+    );
+}
 
 export function testGame(game: Game) {
     console.log("start test");
@@ -54,8 +106,8 @@ export function replayNextInReplayQueue(game: Game): boolean {
     const nextInputFile = replay.testInputFileQueue.shift()!;
     request.open("GET", nextInputFile, false);
     request.send(null)
-    const testData = JSON.parse(request.responseText);
-    console.log(`started replay: ${nextInputFile}`);
+    const testData = JSON.parse(request.responseText) as ReplayData;
+    replay.currentReplayName = nextInputFile;
     return replayReplayData(game, testData);
 }
 
@@ -64,6 +116,7 @@ export function replayReplayData(game: Game, replayData: ReplayData): boolean {
     if (!replay) return false;
     replay.replayInputCounter = 0;
     replay.data = replayData;
+    replay.startTime = performance.now();
 
     game.state.ended = true;
     if (replay.data!.replayPlayerInputs[0].command === "restart") {
@@ -78,26 +131,41 @@ export function replayReplayData(game: Game, replayData: ReplayData): boolean {
 
 export function replayGameEndAssert(game: Game, newScore: number) {
     const replay = game.testing.replay;
-    if (replay?.data?.gameEndAsserts) {
+    if (!replay?.data) return;
+    const time = performance.now() - replay.startTime;
+    let success = true;
+    const replayAssertResultData: ReplayAssertResult[] = [];
+    if (replay.data.gameEndAsserts) {
         for (let assert of replay.data?.gameEndAsserts) {
             switch (assert.type) {
                 case "score":
-                    assertEquals(assert.type, assert.data, newScore);
+                    success = (assert.data === newScore) && success;
+                    replayAssertResultData.push({
+                        type: assert.type,
+                        expected: assert.data,
+                        actual: newScore,
+                    });
                     break;
                 case "killCounter":
-                    assertEquals(assert.type, assert.data, game.state.killCounter);
+                    success = (assert.data === game.state.killCounter) && success;
+                    replayAssertResultData.push({
+                        type: assert.type,
+                        expected: assert.data,
+                        actual: game.state.killCounter,
+                    });
                     break;
             }
         }
     }
-}
-
-function assertEquals(type: string, expected: any, actual: any) {
-    if (expected === actual) {
-        console.debug(`assert ${type} success`);
-    } else {
-        console.log(`assert ${type} failed. Expected: ${expected}, actual: ${actual}`);
+    const replayResult: ReplayResult = {
+        fileName: replay.currentReplayName ?? "Unknown",
+        success,
+        time,
+        runOnVersionNumber: getGameVersionString(GAME_VERSION),
+        replayVersionNumber: getGameVersionString(replay.data.permanentData.gameVersion),
+        replayAssertData: replayAssertResultData,
     }
+    saveReplayDataToLocalStorage(replayResult);
 }
 
 function getUntilPromise(fn: Function, time = 1000) {

@@ -1,9 +1,10 @@
 import { experienceForEveryPlayersLeveling, findAndSetNewCameraCharacterId, playerCharactersAddBossSkillPoints } from "./character/character.js";
 import { createBossWithLevel } from "./character/enemy/bossEnemy.js";
 import { levelingCharacterAndClassXpGain } from "./character/playerCharacters/levelingCharacter.js";
-import { deepCopy } from "./game.js";
+import { deepCopy, getGameVersionString } from "./game.js";
 import { Debugging, Game } from "./gameModel.js";
 import { GAME_VERSION } from "./main.js";
+import { resetPermanentData } from "./permanentData.js";
 import { compressString, decompressString, downloadBlob, loadCompressedStateFromUrl } from "./stringCompress.js";
 import { initReplay, replayReplayData, testGame } from "./test/gameTest.js";
 
@@ -36,7 +37,7 @@ export function addHTMLDebugMenusToSettings(game: Game) {
 function setVersionNumberToSettingButton() {
     const settingsButtonElement = document.getElementById("settingButton");
     if (!settingsButtonElement) return;
-    settingsButtonElement.innerHTML = `Version: ${GAME_VERSION.major}.${GAME_VERSION.minor}.${GAME_VERSION.patch}`;
+    settingsButtonElement.innerHTML = `Version: ${getGameVersionString(GAME_VERSION)}`;
 }
 
 function addSettingCheckbox(checkboxName: keyof Debugging, game: Game) {
@@ -91,7 +92,7 @@ function addClearLocalStorageButton(game: Game) {
     const button = document.getElementById(buttonName) as HTMLButtonElement;
     if (button) {
         button.addEventListener('click', () => {
-            localStorage.clear();
+            resetPermanentData();
         });
     }
 }

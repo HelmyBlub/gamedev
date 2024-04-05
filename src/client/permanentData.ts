@@ -26,7 +26,7 @@ const LOCALSTORAGE_HIGHSCORES = "highscores";
 
 export function localStorageLoad(game: Game) {
     if (isDataGameVersionOutdated(GAME_VERSION)) {
-        localStorage.clear();
+        resetPermanentData();
         localStorageSaveGameVersion(game);
     } else {
         const localStoragePastCharacters = localStorage.getItem(LOCALSTORAGE_PASTCHARACTERS);
@@ -40,6 +40,14 @@ export function localStorageLoad(game: Game) {
         const localStorageHighscores = localStorage.getItem(LOCALSTORAGE_HIGHSCORES);
         if (localStorageHighscores) loadHighscores(JSON.parse(localStorageHighscores), game);
     }
+}
+
+export function resetPermanentData() {
+    localStorage.removeItem(LOCALSTORAGE_PASTCHARACTERS);
+    localStorage.removeItem(LOCALSTORAGE_NEXTKINGS);
+    localStorage.removeItem(LOCALSTORAGE_BUILDINGS);
+    localStorage.removeItem(LOCALSTORAGE_PLAYER_DATA);
+    localStorage.removeItem(LOCALSTORAGE_HIGHSCORES);
 }
 
 export function copyAndSetPermanentDataForReplay(permanentData: PermanentDataParts, game: Game) {
@@ -185,10 +193,6 @@ function changeBuildingIds(building: Building, idCounter: IdCounter, game: Game)
 export function setPermanentDataFromReplayData(game: Game) {
     const replay = game.testing.replay;
     if (!replay) return;
-    const replayGameVersion = replay.data?.permanentData.gameVersion;
-    if (replayGameVersion === undefined || isDataGameVersionOutdated(replayGameVersion)) {
-        console.log("Outdated replay!");
-    }
 
     if (game.state.map.kingArea) {
         if (replay.data?.permanentData.nextKings) {

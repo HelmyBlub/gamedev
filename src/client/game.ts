@@ -2,7 +2,7 @@ import { changeCharacterId, countAlivePlayerCharacters, findAndSetNewCameraChara
 import { paintAll } from "./gamePaint.js";
 import { addPlayerMoney, createDefaultKeyBindings1, createDefaultUiKeyBindings, findNearesPastPlayerCharacter, findPlayerByCharacterId, gameInitPlayers, isAutoSkillActive } from "./player.js";
 import { MOUSE_ACTION, UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.js";
-import { Position, GameState, Game, IdCounter, Debugging, PaintTextData, ClientInfo } from "./gameModel.js";
+import { Position, GameState, Game, IdCounter, Debugging, PaintTextData, ClientInfo, GameVersion } from "./gameModel.js";
 import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap, initGodArea, initKingArea } from "./map/map.js";
 import { Character } from "./character/characterModel.js";
 import { generateMissingChunks, pastCharactersMapTilePositions } from "./map/mapGeneration.js";
@@ -30,6 +30,7 @@ import { Leveling } from "./character/playerCharacters/levelingCharacter.js";
 import { checkGodFightStart, startGodFight } from "./map/mapGodArea.js";
 import { ABILITY_NAME_LEASH } from "./ability/abilityLeash.js";
 import { createDamageMeter } from "./combatlog.js";
+import { GAME_VERSION } from "./main.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -456,6 +457,11 @@ export function calculateFightRetryCounter(game: Game) {
     return retryCounter;
 }
 
+export function getGameVersionString(gameVersion: GameVersion | undefined) {
+    if (!gameVersion) return "Unknown";
+    return `${gameVersion.major}.${gameVersion.minor}.${gameVersion.patch}`;
+}
+
 export function retryFight(game: Game) {
     if (!game.state.bossStuff.kingFightStarted && !game.state.bossStuff.godFightStarted) return;
     if (!game.state.bossStuff.fightWipe) return;
@@ -620,7 +626,6 @@ function endGameReplayStuff(game: Game, newScore: number) {
     const replay = game.testing.replay;
     if (replay) {
         replayGameEndAssert(game, newScore);
-        console.log("time:", performance.now() - replay.startTime);
         const moreReplays = replayNextInReplayQueue(game);
         if (!moreReplays) {
             localStorageLoad(game);

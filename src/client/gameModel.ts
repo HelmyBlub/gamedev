@@ -44,10 +44,12 @@ export type Legendary = {
 export type ReplayData = {
     replayPlayerInputs: PlayerInput[],
     permanentData: PermanentDataParts,
-    gameEndAsserts?: {
-        type: string,
-        data: any,
-    }[]
+    gameEndAsserts?: ReplayAssert[],
+}
+
+export type ReplayAssert = {
+    type: string,
+    data: any,
 }
 
 export type Replay = {
@@ -61,6 +63,7 @@ export type Replay = {
     data?: ReplayData,
     replayInputCounter?: number,
     testInputFileQueue?: string[],
+    currentReplayName?: string,
 }
 
 export type TestingStuff = {

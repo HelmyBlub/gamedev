@@ -1,10 +1,7 @@
-next test run: 
+next test run: tamer, sniper, builder
 increase version
 
 current tasks:
-    - damage meter:
-        - included damage taken debuffs in damage
-        
     - replay tests performance metrics save in localStorage for better see how it changes
 
     - enemy type: "God"
