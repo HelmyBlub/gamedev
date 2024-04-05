@@ -255,6 +255,7 @@ export type Game = {
         displayTextData: PaintTextData[],
         moreInfos: MoreInfos,
         displayMoreInfos: boolean,
+        displayMorePressTimer?: number,
         playerGlobalAlphaMultiplier: number,
         paintClosesInteractableMoreInfo: boolean,
         moneyGainedThisRun: MoneyGainedThisRun,

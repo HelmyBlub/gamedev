@@ -269,12 +269,18 @@ function uiAction(game: Game, inputCode: string, isInputDown: boolean) {
             }
             break;
         case "More Info":
-            game.UI.displayMoreInfos = isInputDown;
-            if (isInputDown) {
+            if (isInputDown && game.UI.displayMorePressTimer === undefined) {
+                game.UI.displayMoreInfos = true;
                 game.UI.moreInfos = createRequiredMoreInfos(game);
+                game.UI.displayMorePressTimer = performance.now();
+            } else if (!isInputDown) {
+                if (game.UI.displayMorePressTimer === undefined || game.UI.displayMorePressTimer + 500 < performance.now()) {
+                    game.UI.displayMoreInfos = false;
+                    game.UI.displayMorePressTimer = undefined;
+                }
             }
             if (!game.multiplayer.websocket) {
-                game.state.paused = isInputDown;
+                game.state.paused = game.UI.displayMoreInfos;
             }
             break;
         case "AutoSkill":

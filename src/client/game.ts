@@ -119,6 +119,7 @@ export function gameInit(game: Game) {
     game.UI.displayTextData = [];
     game.UI.moneyGainedThisRun = [];
     game.UI.damageMeter = createDamageMeter();
+    game.UI.displayMoreInfos = false;
     game.testing.saveStates.autoSaves.nextSaveStateTime = 10000;
     game.state.map.activeChunkKeys = [];
     game.state.map.chunks = {};
