@@ -47,6 +47,7 @@ export type TamerPetCharacter = Character & {
 type Happiness = {
     current: number,
     unhappyAt: number,
+    unhappyStartTime?: number,
     hyperactiveAt: number,
     tickInterval: number,
     nextTick?: number,
@@ -63,7 +64,7 @@ type FoodIntakeLevel = {
     tickInterval: number,
     nextTick?: number,
 }
-
+const VERY_UNHAPPY_TIMER = 5000;
 export const TAMER_PET_CHARACTER = "tamerPet";
 GAME_IMAGES[TAMER_PET_CHARACTER] = {
     properties: { baseColor: "green" },
@@ -168,7 +169,7 @@ function tickTamerPetCharacter(character: Character, petOwner: Character, game: 
     }
 }
 
-export function tamerPetFeed(pet: TamerPetCharacter, feedValue: number, time: number) {
+export function tamerPetFeed(pet: TamerPetCharacter, feedValue: number, gameTime: number) {
     if (tamerPetIncludesTrait(TAMER_PET_TRAIT_GETS_FAT_EASILY, pet) && feedValue > 0) {
         feedValue *= 2;
     }
@@ -181,29 +182,29 @@ export function tamerPetFeed(pet: TamerPetCharacter, feedValue: number, time: nu
     if (pet.foodIntakeLevel.current > MAX_FOOD_INTAKE) pet.foodIntakeLevel.current = MAX_FOOD_INTAKE;
     if (feedValue > 0) {
         if (tamerPetIncludesTrait("loves food", pet)) {
-            changeTamerPetHappines(pet, 20, time, true);
+            changeTamerPetHappines(pet, 20, gameTime, true);
         } else if (tamerPetIncludesTrait("wants to stay slim", pet)) {
-            changeTamerPetHappines(pet, -5, time, true);
+            changeTamerPetHappines(pet, -5, gameTime, true);
         } else {
             if (beforeFeed < pet.foodIntakeLevel.underfedAt) {
-                changeTamerPetHappines(pet, 10, time, true);
+                changeTamerPetHappines(pet, 10, gameTime, true);
             } else if (beforeFeed > pet.foodIntakeLevel.overfedAt * 1.2) {
-                changeTamerPetHappines(pet, -10, time, true);
+                changeTamerPetHappines(pet, -10, gameTime, true);
             } else {
-                changeTamerPetHappines(pet, 5, time, true);
+                changeTamerPetHappines(pet, 5, gameTime, true);
             }
         }
 
     } else if (feedValue < 0) {
         if (pet.foodIntakeLevel.current < pet.foodIntakeLevel.underfedAt) {
-            changeTamerPetHappines(pet, feedValue, time, true);
+            changeTamerPetHappines(pet, feedValue, gameTime, true);
         }
     }
 }
 
-export function petHappinessToDisplayText(happines: Happiness): PetHappines {
+export function petHappinessToDisplayText(happines: Happiness, gameTime: number): PetHappines {
     if (happines.current < happines.unhappyAt) {
-        if (happines.current < happines.unhappyAt / 2) {
+        if (happines.current < happines.unhappyAt / 2 && happines.unhappyStartTime && happines.unhappyStartTime + VERY_UNHAPPY_TIMER < gameTime) {
             return "very unhappy";
         } else {
             return "unhappy";
@@ -225,17 +226,17 @@ export function petFoodIntakeToDisplayText(foodIntakeLevel: FoodIntakeLevel): Pe
     }
 }
 
-export function createTamerPetsCharacterMoreInfos(ctx: CanvasRenderingContext2D, pets: TamerPetCharacter[] | undefined): MoreInfoPart[] {
+export function createTamerPetsCharacterMoreInfos(ctx: CanvasRenderingContext2D, pets: TamerPetCharacter[] | undefined, game: Game): MoreInfoPart[] {
     const result: MoreInfoPart[] = [];
     if (pets) {
         for (let pet of pets) {
-            result.push(createTamerPetCharacterMoreInfos(ctx, pet));
+            result.push(createTamerPetCharacterMoreInfos(ctx, pet, game));
         }
     }
     return result;
 }
 
-export function createTamerPetCharacterMoreInfos(ctx: CanvasRenderingContext2D, pet: TamerPetCharacter): MoreInfoPart {
+export function createTamerPetCharacterMoreInfos(ctx: CanvasRenderingContext2D, pet: TamerPetCharacter, game: Game): MoreInfoPart {
     const textLines: string[] = [`Pet Stats:`];
     if (pet.gifted) {
         textLines[0] += " (gifted)"
@@ -253,7 +254,7 @@ export function createTamerPetCharacterMoreInfos(ctx: CanvasRenderingContext2D, 
     textLines.push(
         `Color: ${pet.paint.color}`,
         `food: ${petFoodIntakeToDisplayText(pet.foodIntakeLevel)}`,
-        `Happiness: ${petHappinessToDisplayText(pet.happines)}`,
+        `Happiness: ${petHappinessToDisplayText(pet.happines, game.state.time)}`,
         `Movement Speed: ${getCharacterMoveSpeed(pet).toFixed(2)}`,
         `Level: ${pet.level!.level.toFixed(0)}${levelLimitText}`,
         `XP: ${pet.level!.leveling!.experience.toFixed(0)}/${pet.level!.leveling!.experienceForLevelUp.toFixed(0)}`,
@@ -287,14 +288,14 @@ export function createTamerPetCharacterMoreInfos(ctx: CanvasRenderingContext2D, 
     return createMoreInfosPart(ctx, textLines);
 }
 
-export function changeTamerPetHappines(pet: TamerPetCharacter, value: number, time: number, visualizeChange: boolean) {
+export function changeTamerPetHappines(pet: TamerPetCharacter, value: number, gameTime: number, visualizeChange: boolean) {
     pet.happines.current += value;
     if (tamerPetIncludesTrait(TAMER_PET_TRAIT_HAPPY_ONE, pet)) {
         pet.happines.current = pet.happines.hyperactiveAt - 1;
     }
-    if (visualizeChange && pet.faction === FACTION_PLAYER) pet.happines.visualizations.push({ happy: value > 0, displayUntil: time + 500 });
+    if (visualizeChange && pet.faction === FACTION_PLAYER) pet.happines.visualizations.push({ happy: value > 0, displayUntil: gameTime + 500 });
     for (let i = pet.happines.visualizations.length - 1; i >= 0; i--) {
-        if (pet.happines.visualizations[i].displayUntil < time) {
+        if (pet.happines.visualizations[i].displayUntil < gameTime) {
             pet.happines.visualizations.splice(i, 1);
         }
     }
@@ -304,12 +305,15 @@ export function changeTamerPetHappines(pet: TamerPetCharacter, value: number, ti
     if (pet.happines.current < pet.happines.unhappyAt) {
         pet.petTargetBehavior = "passive";
         pet.petNoTargetBehavior = "stayClose";
+        if (pet.happines.unhappyStartTime === undefined) pet.happines.unhappyStartTime = gameTime;
     } else if (pet.happines.current > pet.happines.hyperactiveAt) {
         pet.petTargetBehavior = "aggressive";
         pet.petNoTargetBehavior = "hyperactive";
+        pet.happines.unhappyStartTime = undefined;
     } else {
         pet.petTargetBehavior = "protective";
         pet.petNoTargetBehavior = "following";
+        pet.happines.unhappyStartTime = undefined;
     }
 }
 
@@ -446,7 +450,7 @@ function reset(character: Character) {
 
 function moveTick(pet: TamerPetCharacter, petOwner: Character, game: Game, pathingCache: PathingCache) {
     if (pet.forcedMovePosition) {
-        if (petHappinessToDisplayText(pet.happines) === "very unhappy") {
+        if (petHappinessToDisplayText(pet.happines, game.state.time) === "very unhappy") {
             pet.forcedMovePosition = undefined;
         } else {
             pet.isMoving = true;

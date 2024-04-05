@@ -2,6 +2,7 @@ next test run:
 increase version
 
 current tasks:
+    - change: pet unhappy timer until stop casting 
     - moreInfos:
         - short button press keep moreInfo open
     - damage meter:

@@ -266,7 +266,7 @@ export function createCharacterMoreInfosPartContainer(ctx: CanvasRenderingContex
                 for (let pet of character.pets) {
                     if (pet.classIdRef === charClass.id) charClassPets.push(pet);
                 }
-                subContainer.moreInfoParts.push(...createTamerPetsCharacterMoreInfos(ctx, charClassPets));
+                subContainer.moreInfoParts.push(...createTamerPetsCharacterMoreInfos(ctx, charClassPets, game));
             }
             const charClassAbilities: Ability[] = [];
             for (let ability of character.abilities) {
@@ -280,7 +280,7 @@ export function createCharacterMoreInfosPartContainer(ctx: CanvasRenderingContex
         for (let pet of character.pets) {
             if (pet.classIdRef === undefined || !hasMoreThanOneCharacterClass) classlessPets.push(pet);
         }
-        characterContainer.moreInfoParts.push(...createTamerPetsCharacterMoreInfos(ctx, classlessPets));
+        characterContainer.moreInfoParts.push(...createTamerPetsCharacterMoreInfos(ctx, classlessPets, game));
     }
     const classlessAbilities: Ability[] = [];
     for (let ability of character.abilities) {
@@ -351,7 +351,7 @@ function createPastCharacterMoreInfos(ctx: CanvasRenderingContext2D, pastCharact
         for (let pet of pastCharacter.pets) {
             if (pet.tradable) pets.push(pet);
         }
-        moreInfosPartContainer.moreInfoParts.push(...createTamerPetsCharacterMoreInfos(ctx, pets));
+        moreInfosPartContainer.moreInfoParts.push(...createTamerPetsCharacterMoreInfos(ctx, pets, game));
     }
     let abilities: Ability[] = [];
     for (let ability of pastCharacter.abilities) {

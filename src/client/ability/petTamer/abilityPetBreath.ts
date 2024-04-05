@@ -154,7 +154,7 @@ function tickAbilityPetBreath(abilityOwner: AbilityOwner, ability: Ability, game
     const abilityPetBreath = ability as AbilityPetBreath;
     const pet = abilityOwner as TamerPetCharacter;
 
-    if (ability.disabled || petHappinessToDisplayText(pet.happines) === "very unhappy") {
+    if (ability.disabled || petHappinessToDisplayText(pet.happines, game.state.time) === "very unhappy") {
         abilityPetBreath.active = false;
         return;
     }

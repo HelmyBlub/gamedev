@@ -188,7 +188,7 @@ function tickAbilityPetDash(abilityOwner: AbilityOwner, ability: Ability, game: 
             detectCircleCharacterHit(game.state.map, pet, pet.width / 2 + abilityPetDash.sizeExtension, pet.faction, ability.id, getPetAbilityDashDamage(pet, abilityPetDash), game, undefined, ability);
         }
     } else if (abilityPetDash.readyTime <= game.state.time) {
-        if (petHappinessToDisplayText(pet.happines) === "very unhappy") {
+        if (petHappinessToDisplayText(pet.happines, game.state.time) === "very unhappy") {
             return;
         }
         if (abilityOwner.isMoving) {

@@ -223,7 +223,7 @@ function tickAbilityPetPainter(abilityOwner: AbilityOwner, ability: Ability, gam
     const abilityPetPainter = ability as AbilityPetPainter;
     const pet = abilityOwner as TamerPetCharacter;
     if (!abilityPetPainter.currentlyPainting) {
-        if (petHappinessToDisplayText(pet.happines) === "very unhappy") {
+        if (petHappinessToDisplayText(pet.happines, game.state.time) === "very unhappy") {
             return;
         }
         const shapes = Object.keys(ABILITY_PET_PAINTER_SHAPES_FUNCTIONS);

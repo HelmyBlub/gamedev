@@ -76,7 +76,7 @@ function createMoreInfosClassBuilding(mapObject: MapTileObject, game: Game): Mor
     if (classBuilding.characterClass) {
         moreInfosContainer.moreInfoParts.push(createCharacterClassMoreInfos(game.ctx, [classBuilding.characterClass]));
         if (!classBuilding.stuffBorrowed?.burrowed) {
-            moreInfosContainer.moreInfoParts.push(...createTamerPetsCharacterMoreInfos(game.ctx, classBuilding.pets));
+            moreInfosContainer.moreInfoParts.push(...createTamerPetsCharacterMoreInfos(game.ctx, classBuilding.pets, game));
             moreInfosContainer.moreInfoParts.push(...createMoreInfosAbilities(game.ctx, classBuilding.abilities, game));
         } else if (classBuilding.stuffBorrowed.by) {
             moreInfosContainer.moreInfoParts.push(createMoreInfosPart(game.ctx, [
