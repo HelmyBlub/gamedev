@@ -2,10 +2,8 @@ next test run:
 increase version
 
 current tasks:
-    - moreInfos:
-        - short button press keep moreInfo open
     - damage meter:
-        - should damage taken debuffs be included in damage?
+        - included damage taken debuffs in damage
         
     - replay tests performance metrics save in localStorage for better see how it changes
 

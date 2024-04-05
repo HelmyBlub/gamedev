@@ -28,7 +28,7 @@ export function addAbilityPetDashUpgradeIncreaseDamageTaken() {
 export function abilityPetDashUpgradeDamageTakenApplyDebuff(ability: AbilityPetDash, target: Character, game: Game) {
     const damageTaken = ability.upgrades[ABILITY_PET_DASH_UPGRADE_INCREASE_DAMAGE_TAKEN] as AbilityPetDashUpgradeIncreaseDamageTaken;
     if (damageTaken === undefined) return;
-    const debuffDamageTaken = createDebuffDamageTaken(damageTaken.increaseFactor, damageTaken.duration, game.state.time);
+    const debuffDamageTaken = createDebuffDamageTaken(damageTaken.increaseFactor, damageTaken.duration, game.state.time, false, ability.id);
     applyDebuff(debuffDamageTaken, target, game);
 }
 

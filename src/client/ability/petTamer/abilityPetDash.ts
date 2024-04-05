@@ -3,13 +3,14 @@ import { Character } from "../../character/characterModel.js";
 import { TamerPetCharacter, petHappinessToDisplayText } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { AbilityDamageBreakdown } from "../../combatlog.js";
+import { DEBUFF_NAME_DAMAGE_TAKEN } from "../../debuff/debuffDamageTaken.js";
 import { getNextId } from "../../game.js";
 import { IdCounter, Position, Game } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { calculateBounceAngle, calculateMovePosition, isPositionBlocking, moveByDirectionAndDistance } from "../../map/map.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectCircleCharacterHit } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions } from "../abilityUpgrade.js";
-import { abilityPetDashUpgradeDamageTakenApplyDebuff, addAbilityPetDashUpgradeIncreaseDamageTaken } from "./abilityPetDashIncreaseDamageTaken.js";
+import { ABILITY_PET_DASH_UPGRADE_INCREASE_DAMAGE_TAKEN, AbilityPetDashUpgradeIncreaseDamageTaken, abilityPetDashUpgradeDamageTakenApplyDebuff, addAbilityPetDashUpgradeIncreaseDamageTaken } from "./abilityPetDashIncreaseDamageTaken.js";
 import { ABILITY_PET_DASH_UPGRADE_TERRAIN_BOUNCE, AbilityPetDashUpgradeTerrainBounce, addAbilityPetDashUpgradeTerrainBounce } from "./abilityPetDashUpgradeBounce.js";
 import { ABILITY_PET_DASH_UPGRADE_FIRE_LINE, AbilityPetDashUpgradeFireLine, addAbilityPetDashUpgradeFireLine, createPetDashUpgradeFireLine } from "./abilityPetDashUpgradeFireLine.js";
 import { abilityPetDashUpgradeRootApplyRoot, addAbilityPetDashUpgradeRoot } from "./abilityPetDashUpgradeRoot.js";
@@ -98,10 +99,20 @@ function createDamageBreakDown(damage: number, ability: Ability, abilityObject: 
             name: abilityObject.type,
         });
     } else {
-        damageBreakDown.push({
-            damage: damage,
-            name: ability.name,
-        });
+        if (damageAbilityName === DEBUFF_NAME_DAMAGE_TAKEN) {
+            const damageTakenUpgrade = ability.upgrades[ABILITY_PET_DASH_UPGRADE_INCREASE_DAMAGE_TAKEN] as AbilityPetDashUpgradeIncreaseDamageTaken;
+            if (damageTakenUpgrade) {
+                damageBreakDown.push({
+                    damage: damage * (damageTakenUpgrade.increaseFactor - 1),
+                    name: ABILITY_PET_DASH_UPGRADE_INCREASE_DAMAGE_TAKEN,
+                });
+            }
+        } else {
+            damageBreakDown.push({
+                damage: damage,
+                name: ability.name,
+            });
+        }
     }
     return damageBreakDown;
 }

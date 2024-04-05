@@ -24,11 +24,13 @@ export function createDebuffDamageTaken(
     duration: number,
     gameTime: number,
     stacking: boolean = false,
+    abilityIdRef: number | undefined = undefined,
 ): DebuffDamageTaken {
     const debuff: DebuffDamageTaken = {
         name: DEBUFF_NAME_DAMAGE_TAKEN,
         removeTime: duration + gameTime,
-        damageTakenFactor: damageTakenFactor
+        damageTakenFactor: damageTakenFactor,
+        abilityIdRef: abilityIdRef,
     }
     if (stacking) {
         debuff.stacks = 1;

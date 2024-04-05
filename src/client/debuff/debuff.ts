@@ -13,6 +13,7 @@ import { addDebuffSlow } from "./debuffSlow.js";
 export type Debuff = {
     name: string,
     removeTime?: number,
+    abilityIdRef?: number,
 }
 
 export type DebuffFunctions = {

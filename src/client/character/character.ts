@@ -20,6 +20,7 @@ import { addCombatlogDamageTakenEntry, doDamageMeterSplit } from "../combatlog.j
 import { executeAbilityLevelingCharacterUpgradeOption } from "./playerCharacters/abilityLevelingCharacter.js";
 import { addCharacterUpgrades, CHARACTER_UPGRADE_FUNCTIONS } from "./upgrades/characterUpgrades.js";
 import { CHARACTER_TYPE_GOD_ENEMY } from "./enemy/god/godEnemy.js";
+import { DEBUFF_NAME_DAMAGE_TAKEN } from "../debuff/debuffDamageTaken.js";
 
 export function findCharacterById(characters: Character[], id: number): Character | null {
     for (let i = 0; i < characters.length; i++) {
@@ -58,7 +59,13 @@ export function characterTakeDamage(character: Character, damage: number, game: 
     if (character.isDead || character.isPet || character.isDamageImmune) return;
     if (game.state.bossStuff.fightWipe) return;
     let sourceDamageFactor = findSourceDamageFactor(abilityIdRef, game);
-    if (abilityIdRef) doAbilityDamageBreakDownForAbilityId(damage, abilityIdRef, abilityObject, abilityName, game);
+    if (abilityIdRef) {
+        doAbilityDamageBreakDownForAbilityId(damage, abilityIdRef, abilityObject, abilityName, game);
+        const damageTakenDebuff = character.debuffs.find(d => d.name === DEBUFF_NAME_DAMAGE_TAKEN);
+        if (damageTakenDebuff && damageTakenDebuff.abilityIdRef !== undefined) {
+            doAbilityDamageBreakDownForAbilityId(damage, damageTakenDebuff.abilityIdRef, undefined, DEBUFF_NAME_DAMAGE_TAKEN, game);
+        }
+    }
     let modifiedDamage = damage * character.damageTakenModifierFactor * sourceDamageFactor;
     if (character.shield > 0) {
         character.shield -= modifiedDamage;
