@@ -2,19 +2,16 @@ next test run: tamer, sniper, builder
 increase version
 
 current tasks:
-    - replay tests performance metrics save in localStorage for better see how it changes
-
+    - refactoring
     - enemy type: "God"
         - performane improve tile explosions code
         - think about sound?
-            - make own sounds?
             - how to capture sound in my stream setup from VM? (offstream)
+            - make own sounds?
 
 
 next feature ideas:
 - think about next bigger feature 
-    - small ideas
-        - Upgrade Building: multiple king tries
     - bigger idea:
         - another class?
             - with sound in my this time?

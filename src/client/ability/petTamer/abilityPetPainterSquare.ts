@@ -208,7 +208,7 @@ function paintShapeObjectPetPainterSquare(ctx: CanvasRenderingContext2D, ability
 function paintShapeSquare(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: AbilityPetPainter, cameraPosition: Position, game: Game) {
     if (!ability.paintPoints || ability.paintPoints.length === 0) return;
     const start = getPointPaintPosition(ctx, ability.paintPoints[0], cameraPosition);
-    ctx.fillStyle = "red";
+    ctx.strokeStyle = "red";
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(start.x, start.y);
