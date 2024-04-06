@@ -15,6 +15,8 @@ type AbilitySingleTarget = Ability & {
     sameTargetAttackCounter: number,
     damageIncreaseFactorPerAttack: number,
 }
+
+const MAX_SAME_TARGET_ATTACK_COUNTER = 100;
 export const ABILITY_NAME_SINGLETARGET = "SingleTarget";
 
 export function addAbilitySingleTarget() {
@@ -114,7 +116,7 @@ function tickAbilitySingleTarget(abilityOwner: AbilityOwner, ability: Ability, g
         if (target) {
             if (!target.isDead) {
                 const damage = abilitySingleTarget.damage * (1 + abilitySingleTarget.sameTargetAttackCounter * abilitySingleTarget.damageIncreaseFactorPerAttack);
-                abilitySingleTarget.sameTargetAttackCounter++;
+                if (abilitySingleTarget.sameTargetAttackCounter < MAX_SAME_TARGET_ATTACK_COUNTER) abilitySingleTarget.sameTargetAttackCounter++;
                 characterTakeDamage(target, damage, game, ability.id, ability.name);
             } else {
                 abilitySingleTarget.targetId = undefined;
