@@ -2,10 +2,17 @@ next test run: tamer, sniper, builder
 increase version
 
 current tasks:
+    - sound?
+        - i want to make my own sounds
+        - i want the download size to be minimal
+        - sound links
+            - web audio API: https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API
+            - be able to play notes: https://marcgg.com/blog/2016/11/01/javascript-audio/ 
+                - only code. would be minimal. Can i create decent sounds with it?
     - enemy type: "God"
         - think about sound?
-            - how to capture sound in my stream setup from VM? (offstream)
             - make own sounds?
+            - how to capture sound in my stream setup from VM? (offstream)
 
 
 next feature ideas:
