@@ -1,4 +1,4 @@
-import { determineCharactersInDistance, characterTakeDamage, getPlayerCharacters } from "../character/character.js"
+import { determineCharactersInDistance, characterTakeDamage } from "../character/character.js"
 import { Character } from "../character/characterModel.js"
 import { BossEnemyCharacter } from "../character/enemy/bossEnemy.js"
 import { calculateDistance, getCameraPosition, levelUpIncreaseExperienceRequirement, takeTimeMeasure } from "../game.js"
@@ -36,7 +36,7 @@ import { playerInputBindingToDisplayValue } from "../playerInput.js"
 import { addAbilityUnleashPet } from "./petTamer/abilityUnleashPet.js"
 import { Leveling } from "../character/playerCharacters/levelingCharacter.js"
 import { CharacterClass } from "../character/playerCharacters/playerCharacters.js"
-import { MoreInfoPart, paintMoreInfosPart, paintMoreInfosPartsContainer, paintMoreInfos } from "../moreInfo.js"
+import { MoreInfoPart, paintMoreInfosPart } from "../moreInfo.js"
 import { AbilityDamageBreakdown, addDamageBreakDownToDamageMeter } from "../combatlog.js"
 
 export type Ability = {
@@ -199,8 +199,6 @@ export function setAbilityToBossLevel(ability: Ability, level: number) {
                 }
             }
         }
-    } else {
-        //console.log("function setAbilityToBossLevel missing for " + ability.name);
     }
 }
 
@@ -442,6 +440,20 @@ export function createMoreInfosAbilities(ctx: CanvasRenderingContext2D, abilitie
     return result;
 }
 
+export function findAbilityAndOwnerInCharacterById(character: Character, abilityId: number): { ability: Ability, owner: AbilityOwner } | undefined {
+    for (let ability of character.abilities) {
+        if (ability.id === abilityId) return { ability: ability, owner: character };
+    }
+    if (character.pets) {
+        for (let pet of character.pets) {
+            for (let ability of pet.abilities) {
+                if (ability.id === abilityId) return { ability: ability, owner: pet };
+            }
+        }
+    }
+    return undefined;
+}
+
 export function paintUiForAbilities(ctx: CanvasRenderingContext2D, game: Game) {
     if (game.camera.characterId === undefined) return;
     const player = findPlayerByCharacterId(game.state.players, game.camera.characterId);
@@ -502,20 +514,6 @@ function paintKeyBindingUI(ctx: CanvasRenderingContext2D, ability: Ability, draw
     ctx.fillStyle = "black";
     ctx.font = "10px Arial";
     ctx.fillText(keyBind, drawStartX + 1, drawStartY + 8);
-}
-
-function findAbilityAndOwnerInCharacterById(character: Character, abilityId: number): { ability: Ability, owner: AbilityOwner } | undefined {
-    for (let ability of character.abilities) {
-        if (ability.id === abilityId) return { ability: ability, owner: character };
-    }
-    if (character.pets) {
-        for (let pet of character.pets) {
-            for (let ability of pet.abilities) {
-                if (ability.id === abilityId) return { ability: ability, owner: pet };
-            }
-        }
-    }
-    return undefined;
 }
 
 function paintAbilityObjectsForFaction(ctx: CanvasRenderingContext2D, abilityObjects: AbilityObject[], game: Game, paintOrder: PaintOrderAbility, faction: string) {

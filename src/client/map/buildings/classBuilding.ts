@@ -154,29 +154,6 @@ export function classBuildingPutLegendaryCharacterStuffBackIntoBuilding(characte
     localStorageSaveBuildings(game);
 }
 
-function setBurrowedByKingIfHasLegendary(player: Player, game: Game) {
-    if (player.character.characterClasses) {
-        for (let charClass of player.character.characterClasses) {
-            if (charClass.legendary) {
-                let classBuilding = undefined;
-                for (let building of game.state.buildings) {
-                    if (building.type !== BUILDING_CLASS_BUILDING) continue;
-                    const tempBuilding = building as ClassBuilding;
-                    if (tempBuilding.characterClass && tempBuilding.characterClass.id === charClass.id) {
-                        classBuilding = building as ClassBuilding;
-                        break;
-                    }
-                }
-                if (classBuilding && classBuilding.stuffBorrowed) {
-                    const celelstialDirection = getCelestialDirection(player.character, game.state.map);
-                    classBuilding.stuffBorrowed.by = `King of the ${celelstialDirection}`;
-                    localStorageSaveBuildings(game);
-                }
-            }
-        }
-    }
-}
-
 export function classBuildingFindCharacterClassToMakeLegendary(character: Character): string | undefined {
     if (character.characterClasses) {
         for (let charClass of character.characterClasses) {
@@ -233,6 +210,29 @@ export function classBuildingFindById(id: number, game: Game): ClassBuilding | u
     const building = findBuildingByIdAndType(id, BUILDING_CLASS_BUILDING, game);
     if (building) return building as ClassBuilding;
     return undefined;
+}
+
+function setBurrowedByKingIfHasLegendary(player: Player, game: Game) {
+    if (player.character.characterClasses) {
+        for (let charClass of player.character.characterClasses) {
+            if (charClass.legendary) {
+                let classBuilding = undefined;
+                for (let building of game.state.buildings) {
+                    if (building.type !== BUILDING_CLASS_BUILDING) continue;
+                    const tempBuilding = building as ClassBuilding;
+                    if (tempBuilding.characterClass && tempBuilding.characterClass.id === charClass.id) {
+                        classBuilding = building as ClassBuilding;
+                        break;
+                    }
+                }
+                if (classBuilding && classBuilding.stuffBorrowed) {
+                    const celelstialDirection = getCelestialDirection(player.character, game.state.map);
+                    classBuilding.stuffBorrowed.by = `King of the ${celelstialDirection}`;
+                    localStorageSaveBuildings(game);
+                }
+            }
+        }
+    }
 }
 
 function findFreeClassBuilding(game: Game): ClassBuilding | undefined {

@@ -11,7 +11,7 @@ import { calculateBounceAngle, calculateMovePosition, isPositionBlocking, moveBy
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectCircleCharacterHit } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions } from "../abilityUpgrade.js";
 import { ABILITY_PET_DASH_UPGRADE_INCREASE_DAMAGE_TAKEN, AbilityPetDashUpgradeIncreaseDamageTaken, abilityPetDashUpgradeDamageTakenApplyDebuff, addAbilityPetDashUpgradeIncreaseDamageTaken } from "./abilityPetDashIncreaseDamageTaken.js";
-import { ABILITY_PET_DASH_UPGRADE_TERRAIN_BOUNCE, AbilityPetDashUpgradeTerrainBounce, addAbilityPetDashUpgradeTerrainBounce } from "./abilityPetDashUpgradeBounce.js";
+import { ABILITY_PET_DASH_UPGRADE_TERRAIN_BOUNCE, AbilityPetDashUpgradeTerrainBounce } from "./abilityPetDashUpgradeBounce.js";
 import { ABILITY_PET_DASH_UPGRADE_FIRE_LINE, AbilityPetDashUpgradeFireLine, addAbilityPetDashUpgradeFireLine, createPetDashUpgradeFireLine } from "./abilityPetDashUpgradeFireLine.js";
 import { abilityPetDashUpgradeRootApplyRoot, addAbilityPetDashUpgradeRoot } from "./abilityPetDashUpgradeRoot.js";
 

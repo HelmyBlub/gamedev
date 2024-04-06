@@ -275,34 +275,6 @@ export function calculateMovePosition(position: Position, moveDirection: number,
     }
 }
 
-function moveStepWithCollision(position: Position, moveDirection: number, distance: number, map: GameMap, idCounter: IdCounter, game: Game): Position {
-    const x = position.x + Math.cos(moveDirection) * distance;
-    const y = position.y + Math.sin(moveDirection) * distance;
-    const blocking = isPositionBlocking({ x, y }, map, idCounter, game!);
-    if (!blocking) {
-        const blockingBothSides = isPositionBlocking({ x: position.x, y }, map, idCounter, game!) && isPositionBlocking({ x, y: position.y }, map, idCounter, game!);
-        if (!blockingBothSides) {
-            return { x, y };
-        }
-    } else {
-        const xTile = Math.floor(position.x / map.tileSize);
-        const newXTile = Math.floor(x / map.tileSize);
-        if (xTile !== newXTile) {
-            if (!isPositionBlocking({ x: position.x, y }, map, idCounter, game!)) {
-                return { x: position.x, y };
-            }
-        }
-        const yTile = Math.floor(position.y / map.tileSize);
-        const newYTile = Math.floor(y / map.tileSize);
-        if (yTile !== newYTile) {
-            if (!isPositionBlocking({ x, y: position.y }, map, idCounter, game!)) {
-                return { x, y: position.y };
-            }
-        }
-    }
-    return { x: position.x, y: position.y };
-}
-
 export function getChunksTouchingLine(map: GameMap, lineStart: Position, lineEnd: Position, width: number = 20): MapChunk[] {
     const chunkSize = map.chunkLength * map.tileSize;
     if (width / 2 > chunkSize) width = chunkSize * 2;
@@ -580,4 +552,32 @@ export function initGodArea(map: GameMap, distance: number) {
         autoSpawnOnDistance: distance,
         pathChunkGenerationLength: 3,
     }
+}
+
+function moveStepWithCollision(position: Position, moveDirection: number, distance: number, map: GameMap, idCounter: IdCounter, game: Game): Position {
+    const x = position.x + Math.cos(moveDirection) * distance;
+    const y = position.y + Math.sin(moveDirection) * distance;
+    const blocking = isPositionBlocking({ x, y }, map, idCounter, game!);
+    if (!blocking) {
+        const blockingBothSides = isPositionBlocking({ x: position.x, y }, map, idCounter, game!) && isPositionBlocking({ x, y: position.y }, map, idCounter, game!);
+        if (!blockingBothSides) {
+            return { x, y };
+        }
+    } else {
+        const xTile = Math.floor(position.x / map.tileSize);
+        const newXTile = Math.floor(x / map.tileSize);
+        if (xTile !== newXTile) {
+            if (!isPositionBlocking({ x: position.x, y }, map, idCounter, game!)) {
+                return { x: position.x, y };
+            }
+        }
+        const yTile = Math.floor(position.y / map.tileSize);
+        const newYTile = Math.floor(y / map.tileSize);
+        if (yTile !== newYTile) {
+            if (!isPositionBlocking({ x, y: position.y }, map, idCounter, game!)) {
+                return { x, y: position.y };
+            }
+        }
+    }
+    return { x: position.x, y: position.y };
 }

@@ -1,4 +1,3 @@
-import { determineClosestCharacter, findCharacterById, getPlayerCharacters } from "../../character.js";
 import { calculateDirection, calculateDistance, getCameraPosition, getNextId } from "../../../game.js";
 import { Game, IdCounter, Position } from "../../../gameModel.js";
 import { getPointPaintPosition, paintTextWithOutline } from "../../../gamePaint.js";
@@ -9,7 +8,6 @@ import { CHARACTER_TYPE_GOD_ENEMY, GodEnemyCharacter } from "./godEnemy.js";
 import { removeCharacterDebuffs } from "../../../debuff/debuff.js";
 import { Character } from "../../characterModel.js";
 import { GAME_IMAGES, loadImage } from "../../../imageLoad.js";
-
 
 export const ABILITY_NAME_GOD_IMMUNITY = "God Immunity";
 const IMAGE_SHIELD = "shield";

@@ -1,9 +1,9 @@
 import { addExistingBuildingsToSpawnChunk } from "./buildings/building.js";
 import { createFixPositionRespawnEnemies } from "../character/enemy/fixPositionRespawnEnemyModel.js";
-import { calculateDistance, takeTimeMeasure } from "../game.js";
+import { takeTimeMeasure } from "../game.js";
 import { Game, IdCounter, Position } from "../gameModel.js";
 import { fixedRandom } from "../randomNumberGenerator.js";
-import { GameMap, MapChunk, TILE_ID_GRASS, TILE_ID_TREE, chunkXYToMapKey, getMapMidlePosition, positionToGameMapTileXY } from "./map.js";
+import { GameMap, MapChunk, chunkXYToMapKey } from "./map.js";
 import { mapGenerationKingChunkStuff } from "./mapKingArea.js";
 import { IMAGE_FIRE_ANIMATION, MAP_OBJECT_FIRE_ANIMATION } from "./mapObjectFireAnimation.js";
 import { createAndSetGodAreaOnMap } from "./mapGodArea.js";

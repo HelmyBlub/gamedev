@@ -67,17 +67,6 @@ export function createUpgradeBuildingMoreInfos(ctx: CanvasRenderingContext2D, ch
     return result;
 }
 
-function createBaseUpgradeBuildingMoreInfosPart(ctx: CanvasRenderingContext2D): MoreInfoPart {
-    const texts: string[] = [
-        `Pay money to gain a permanent upgrade.`,
-        `Upgrades apply to your character and your pets.`,
-        ``,
-    ];
-    texts.push(...getTextYouGainMoneyWhen());
-    return createMoreInfosPart(ctx, texts);
-
-}
-
 export function upgradeBuildingFindById(id: number, game: Game): UpgradeBuilding | undefined {
     const building = findBuildingByIdAndType(id, UPGRADE_BUILDING, game);
     if (building) return building as UpgradeBuilding;
@@ -127,4 +116,14 @@ export function upgradeBuildingGetUpgradeText(characterUpgrades: CharacterUpgrad
         return upgradeBuildingFunctions.getUpgradeText(characterUpgrades, game);
     }
     return [];
+}
+
+function createBaseUpgradeBuildingMoreInfosPart(ctx: CanvasRenderingContext2D): MoreInfoPart {
+    const texts: string[] = [
+        `Pay money to gain a permanent upgrade.`,
+        `Upgrades apply to your character and your pets.`,
+        ``,
+    ];
+    texts.push(...getTextYouGainMoneyWhen());
+    return createMoreInfosPart(ctx, texts);
 }

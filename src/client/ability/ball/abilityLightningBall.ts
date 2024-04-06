@@ -6,7 +6,7 @@ import { applyDebuff, removeCharacterDebuff } from "../../debuff/debuff.js";
 import { calcNewPositionMovedInDirection, calculateDirection, findClientInfoByCharacterId, getNextId } from "../../game.js";
 import { Position, Game, IdCounter, FACTION_ENEMY, ClientInfo, FACTION_PLAYER } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
-import { calculateMovePosition, getFirstBlockingGameMapTilePositionTouchingLine, isMoveFromToBlocking, isPositionBlocking } from "../../map/map.js";
+import { calculateMovePosition, getFirstBlockingGameMapTilePositionTouchingLine, isMoveFromToBlocking } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { fixedRandom } from "../../randomNumberGenerator.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
@@ -17,8 +17,6 @@ import { addAbilityLightningBallUpgradeHpLeach, lightningBallUpgradeHpLeachExecu
 import { ABILITY_LIGHTNING_BALL_UPGRADE_ICE_AURA, addAbilityLightningBallUpgradeIceAura, lightningBallUpgradeIceAuraExecute } from "./abilityLightningBallUpgradeIceAura.js";
 import { ABILITY_LIGHTNING_BALL_UPGRADE_LIGHTNING_STRIKES, addAbilityLightningBallUpgradeLightningStrikes, lightningBallUpgradeLightningStirkesExecute } from "./abilityLightningBallUpgradeLightningStrikesBuff.js";
 import { AbilityDamageBreakdown } from "../../combatlog.js";
-import { ABILITY_NAME_LIGHTNING_STRIKES } from "../abilityLightningStrikes.js";
-import { ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_DAMAGE } from "./abilityBounceBallUpgradeBounceBonusDamage.js";
 import { ABILITY_NAME_ICE_AURA } from "../abilityIceAura.js";
 import { ABILITY_NAME_EXPLODE } from "../abilityExplode.js";
 

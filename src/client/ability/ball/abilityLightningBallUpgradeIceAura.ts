@@ -5,7 +5,7 @@ import { Game } from "../../gameModel.js";
 import { Ability, AbilityOwner } from "../ability.js";
 import { createAbilityObjectIceAura } from "../abilityIceAura.js";
 import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrade.js";
-import { ABILITY_LIGHTNING_BALL_UPGRADE_FUNCTIONS, ABILITY_NAME_LIGHTNING_BALL, AbilityLightningBall, getDamageAbilityLightningBall } from "./abilityLightningBall.js";
+import { ABILITY_LIGHTNING_BALL_UPGRADE_FUNCTIONS, AbilityLightningBall } from "./abilityLightningBall.js";
 
 type AbilityLightningBallUpgradeIceAura = AbilityUpgrade & {
     duration: number,

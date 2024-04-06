@@ -6,7 +6,6 @@ import { nextRandom } from "../../../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility } from "../../../ability/ability.js";
 import { GodAbility } from "./godAbility.js";
 import { GodEnemyCharacter, applyExponentialStackingDamageTakenDebuff } from "./godEnemy.js";
-import { Character } from "../../characterModel.js";
 import { GAME_IMAGES, loadImage } from "../../../imageLoad.js";
 
 

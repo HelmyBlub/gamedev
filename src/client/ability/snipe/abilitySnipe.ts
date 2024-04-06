@@ -4,7 +4,7 @@ import { UpgradeOptionAndProbability, UpgradeOption, AbilityUpgradeOption } from
 import { autoSendMousePositionHandler, calcNewPositionMovedInDirection, calculateDirection, findClientInfoByCharacterId, getNextId } from "../../game.js";
 import { Position, Game, IdCounter, ClientInfo, FACTION_ENEMY } from "../../gameModel.js";
 import { GAME_IMAGES } from "../../imageLoad.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, doAbilityDamageBreakDown, findAbilityById } from "../ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, findAbilityById } from "../ability.js";
 import { AbilityUpgrade, AbilityUpgradesFunctions, getAbilityUpgradeOptionDefault, getAbilityUpgradesDamageFactor, pushAbilityUpgradesOptions, upgradeAbility } from "../abilityUpgrade.js";
 import { paintAbilityObjectSnipe, paintAbilitySnipe, paintAbilitySnipeAccessoire, createAbilitySnipeMoreInfos, paintAbilitySnipeUI } from "./abilitySnipePaint.js";
 import { addAbilitySnipeUpgradeAfterImage, castSnipeAfterImage, tickAbilityUpgradeAfterImage } from "./abilitySnipeUpgradeAfterImage.js";
@@ -17,7 +17,7 @@ import { addAbilitySnipeUpgradeMoreRifles, castSnipeMoreRifles as castSnipeUpgra
 import { ABILITY_SNIPE_UPGRADE_SPLIT_SHOT, abilityUpgradeSplitShotOnSnipeHit, addAbilitySnipeUpgradeSplitShot } from "./abilitySnipeUpgradeSplitShot.js";
 import { ABILITY_SNIPE_UPGRADE_STAY_STILL, addAbilitySnipeUpgradeStayStill, tickAbilityUpgradeStayStill } from "./abilitySnipeUpgradeStayStill.js";
 import { ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE, AbilityUpgradeTerrainBounce, addAbilitySnipeUpgradeTerrainBounce, createAndPushAbilityObjectSnipeTerrainBounceBounce, createAndPushAbilityObjectSnipeTerrainBounceInit, getAbilityUpgradeTerrainBounceDamageFactor } from "./abilitySnipeUpgradeTerrainBounce.js";
-import { AbilityDamageBreakdown, addDamageBreakDownToDamageMeter } from "../../combatlog.js";
+import { AbilityDamageBreakdown } from "../../combatlog.js";
 import { ABILITY_NAME_EXPLODE } from "../abilityExplode.js";
 import { ABILITY_NAME_FIRE_LINE } from "../abilityFireLine.js";
 

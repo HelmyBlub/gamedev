@@ -188,7 +188,6 @@ function paint(ctx: CanvasRenderingContext2D, character: Character, cameraPositi
     if (character.isDead) return;
     const god = character as GodEnemyCharacter;
     const animation = god.animationState;
-    //    paintCharacterWithAbilitiesDefault(ctx, character, cameraPosition, game);
     const paintPos = getPointPaintPosition(ctx, character, cameraPosition);
     paintPos.y -= 20;
     const width = 30;

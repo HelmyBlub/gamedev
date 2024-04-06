@@ -62,7 +62,7 @@ export function createAbilitySword(
     };
 }
 
-function setAbilitySwordToLevel(ability: Ability, level: number){
+function setAbilitySwordToLevel(ability: Ability, level: number) {
     const abilitySword = ability as AbilitySword;
     abilitySword.damage = level * 50;
     abilitySword.swordCount = level;
@@ -80,7 +80,7 @@ function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: n
     abilitySword.angleChangePerSword = Math.PI * 2 / abilitySword.swordCount;
 }
 
-function setAbilitySwordToBossLevel(ability: Ability, level: number){
+function setAbilitySwordToBossLevel(ability: Ability, level: number) {
     const abilitySword = ability as AbilitySword;
     abilitySword.damage = level * 25;
     abilitySword.swordCount = level > 5 ? 2 : 1;
@@ -147,11 +147,10 @@ function paintAbilitySword(ctx: CanvasRenderingContext2D, abilityOwner: AbilityO
     const abilitySword = ability as AbilitySword;
     const paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
 
-    //ctx.fillStyle = character.color;
     const swordImage = GAME_IMAGES[ABILITY_NAME_SWORD];
     loadImage(swordImage);
 
-    if(abilityOwner.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
+    if (abilityOwner.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
     for (let i = 0; i < abilitySword.swordCount; i++) {
         ctx.translate(paintPos.x, paintPos.y);
         ctx.rotate(abilitySword.currentSwordAngle + Math.PI / 2 + abilitySword.angleChangePerSword * i);
@@ -180,10 +179,10 @@ function paintAbilitySword(ctx: CanvasRenderingContext2D, abilityOwner: AbilityO
     ctx.globalAlpha = 1;
 }
 
-function swordDistanceToHolder(abilityOwner: AbilityOwner): number{
+function swordDistanceToHolder(abilityOwner: AbilityOwner): number {
     const baseDistance = 10;
     let result = baseDistance;
-    if(abilityOwner.width){
+    if (abilityOwner.width) {
         result += abilityOwner.width / 2;
     }
 
@@ -192,13 +191,13 @@ function swordDistanceToHolder(abilityOwner: AbilityOwner): number{
 
 function tickAbilitySword(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     const abilitySword = ability as AbilitySword;
-    abilitySword.currentSwordAngle = (abilitySword.currentSwordAngle + abilitySword.angleChangePerTick) % (Math.PI * 2);    
+    abilitySword.currentSwordAngle = (abilitySword.currentSwordAngle + abilitySword.angleChangePerTick) % (Math.PI * 2);
 
-    if(abilitySword.nextTickTime === undefined) abilitySword.nextTickTime = game.state.time + abilitySword.tickInterval;
-    if(abilitySword.nextTickTime <= game.state.time){
+    if (abilitySword.nextTickTime === undefined) abilitySword.nextTickTime = game.state.time + abilitySword.tickInterval;
+    if (abilitySword.nextTickTime <= game.state.time) {
         detectSwordToCharactersHit(abilityOwner, abilitySword, game.state.map, game.state.players, game.state.bossStuff.bosses, game);
         abilitySword.nextTickTime += abilitySword.tickInterval;
-        if(abilitySword.nextTickTime <= game.state.time){
+        if (abilitySword.nextTickTime <= game.state.time) {
             abilitySword.nextTickTime = game.state.time + abilitySword.tickInterval;
         }
     }
@@ -207,7 +206,7 @@ function tickAbilitySword(abilityOwner: AbilityOwner, ability: Ability, game: Ga
 function detectSwordToCharactersHit(abilityOwner: AbilityOwner, ability: AbilitySword, map: GameMap, players: Player[], bosses: BossEnemyCharacter[], game: Game) {
     const maxEnemySizeEstimate = 40;
 
-    const targetCharacters = determineCharactersInDistance(abilityOwner, map, players, bosses ,ability.swordLength + maxEnemySizeEstimate);
+    const targetCharacters = determineCharactersInDistance(abilityOwner, map, players, bosses, ability.swordLength + maxEnemySizeEstimate);
     for (let charIt = targetCharacters.length - 1; charIt >= 0; charIt--) {
         const targetCharacter = targetCharacters[charIt];
         if (targetCharacter.isDead || targetCharacter.faction === abilityOwner.faction) continue;

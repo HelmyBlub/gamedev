@@ -95,6 +95,32 @@ export function addDamageBreakDownToDamageMeter(damageMeter: DamageMeter, abilit
     }
 }
 
+export function createCombatLogMoreInfo(ctx: CanvasRenderingContext2D, moreInfos: MoreInfos, combatlog: Combatlog | undefined): MoreInfosPartContainer | undefined {
+    if (combatlog === undefined) return;
+    if (combatlog.log.length === 0) return;
+    const moreInfosContainer = createDefaultMoreInfosContainer(ctx, "Combatlog", moreInfos.headingFontSize);
+    const textLines: string[] = [`Damage Taken Log:`, `<time>:<ability> <damage>, <your Hp>`];
+    for (let entry of combatlog.log) {
+        textLines.push(`${(entry.timestamp / 1000).toFixed(2)}s: ${entry.message}`);
+    }
+    const combatlogPart = createMoreInfosPart(ctx, textLines);
+    moreInfosContainer.moreInfoParts.push(combatlogPart);
+    return moreInfosContainer;
+}
+
+export function addCombatlogDamageTakenEntry(character: Character, damage: number, abilityName: string, game: Game) {
+    if (!character.combatlog) return;
+    const combatlog = character.combatlog;
+    const logMessage = `${abilityName} ${damage}, hp: ${character.hp}`;
+    combatlog.log.push({
+        message: logMessage,
+        timestamp: getTimeSinceFirstKill(game.state),
+    });
+    if (combatlog.log.length > combatlog.maxLogEntries) {
+        combatlog.log.shift();
+    }
+}
+
 export function createDamageMeterMoreInfo(ctx: CanvasRenderingContext2D, moreInfos: MoreInfos, damageMeter: DamageMeter, game: Game): MoreInfosPartContainer | undefined {
     if (damageMeter.splits.length === 0) return;
     const moreInfosDamageMeter = createDefaultMoreInfosContainer(ctx, "DamageMeter", moreInfos.headingFontSize);
@@ -212,30 +238,4 @@ function createDamageMeterPartForAbility(ctx: CanvasRenderingContext2D, abilityD
         textLines.push(`    ${(breakDown.name)}: ${(breakDown.damage / abilityData.totalDamage * 100).toFixed(1)}%`);
     }
     return createMoreInfosPart(ctx, textLines);
-}
-
-export function createCombatLogMoreInfo(ctx: CanvasRenderingContext2D, moreInfos: MoreInfos, combatlog: Combatlog | undefined): MoreInfosPartContainer | undefined {
-    if (combatlog === undefined) return;
-    if (combatlog.log.length === 0) return;
-    const moreInfosContainer = createDefaultMoreInfosContainer(ctx, "Combatlog", moreInfos.headingFontSize);
-    const textLines: string[] = [`Damage Taken Log:`, `<time>:<ability> <damage>, <your Hp>`];
-    for (let entry of combatlog.log) {
-        textLines.push(`${(entry.timestamp / 1000).toFixed(2)}s: ${entry.message}`);
-    }
-    const combatlogPart = createMoreInfosPart(ctx, textLines);
-    moreInfosContainer.moreInfoParts.push(combatlogPart);
-    return moreInfosContainer;
-}
-
-export function addCombatlogDamageTakenEntry(character: Character, damage: number, abilityName: string, game: Game) {
-    if (!character.combatlog) return;
-    const combatlog = character.combatlog;
-    const logMessage = `${abilityName} ${damage}, hp: ${character.hp}`;
-    combatlog.log.push({
-        message: logMessage,
-        timestamp: getTimeSinceFirstKill(game.state),
-    });
-    if (combatlog.log.length > combatlog.maxLogEntries) {
-        combatlog.log.shift();
-    }
 }

@@ -120,6 +120,37 @@ export function loadPlayerData(playerData: PermanentPlayerData, game: Game) {
     }
 }
 
+export function setPermanentDataFromReplayData(game: Game) {
+    const replay = game.testing.replay;
+    if (!replay) return;
+
+    if (game.state.map.kingArea) {
+        if (replay.data?.permanentData.nextKings) {
+            loadNextKings(replay.data?.permanentData.nextKings, game);
+        } else {
+            setDefaultNextKings(game);
+        }
+    }
+    if (replay.data?.permanentData.pastCharacters) {
+        loadPastCharacters(replay.data.permanentData.pastCharacters, game);
+    } else {
+        game.state.pastPlayerCharacters.characters = [];
+    }
+    if (replay.data?.permanentData.buildings) {
+        loadBuildings(replay.data.permanentData.buildings, game);
+    } else {
+        game.state.buildings = [];
+    }
+    if (replay.data?.permanentData.permanentPlayerData) {
+        loadPlayerData(replay.data.permanentData.permanentPlayerData, game);
+    } else if (game.state.players.length > 0) {
+        game.state.players[0].permanentData = {
+            money: 0,
+            upgrades: {},
+        };
+    }
+}
+
 function loadHighscores(highscores: Highscores, game: Game) {
     game.state.highscores = highscores;
 }
@@ -187,36 +218,5 @@ function changeBuildingIds(building: Building, idCounter: IdCounter, game: Game)
                 }
             }
         }
-    }
-}
-
-export function setPermanentDataFromReplayData(game: Game) {
-    const replay = game.testing.replay;
-    if (!replay) return;
-
-    if (game.state.map.kingArea) {
-        if (replay.data?.permanentData.nextKings) {
-            loadNextKings(replay.data?.permanentData.nextKings, game);
-        } else {
-            setDefaultNextKings(game);
-        }
-    }
-    if (replay.data?.permanentData.pastCharacters) {
-        loadPastCharacters(replay.data.permanentData.pastCharacters, game);
-    } else {
-        game.state.pastPlayerCharacters.characters = [];
-    }
-    if (replay.data?.permanentData.buildings) {
-        loadBuildings(replay.data.permanentData.buildings, game);
-    } else {
-        game.state.buildings = [];
-    }
-    if (replay.data?.permanentData.permanentPlayerData) {
-        loadPlayerData(replay.data.permanentData.permanentPlayerData, game);
-    } else if (game.state.players.length > 0) {
-        game.state.players[0].permanentData = {
-            money: 0,
-            upgrades: {},
-        };
     }
 }

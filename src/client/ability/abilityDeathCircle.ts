@@ -27,6 +27,7 @@ export function addAbilityDeathCircle() {
         paintAbilityObject: paintAbilityObjectDeathCircle,
     };
 }
+
 export function createAbilityDeathCircle(idCounter: IdCounter): AbilityDeathCircle {
     return {
         id: getNextId(idCounter),

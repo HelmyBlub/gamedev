@@ -81,11 +81,11 @@ function findLeashOwner(abilityOwner: AbilityOwner, ability: AbilityLeash, game:
     } else {
         characters = game.state.bossStuff.bosses;
         let character = findCharacterById(characters, ability.leashedToOwnerId);
-        if(character) return character;
+        if (character) return character;
         for (let i = 0; i < game.state.map.activeChunkKeys.length; i++) {
             const chunk = game.state.map.chunks[game.state.map.activeChunkKeys[i]];
             character = findCharacterById(chunk.characters, ability.leashedToOwnerId);
-            if(character) return character;    
+            if (character) return character;
         }
     }
     return null;
@@ -197,13 +197,11 @@ function findAndAddNewLeashBends(abilityOwner: Position, connectedOwner: Positio
         abilityLeash.leashBendPoints.push(newLeashBendPos);
         let blockingPos = getFirstBlockingGameMapTilePositionTouchingLine(map, connectedOwner, newLeashBendPos, game);
         if (blockingPos) {
-            console.log("blocking pos after adding bendPos!");
             return false;
         } else {
             const endPoint = abilityLeash.leashBendPoints.length > 1 ? abilityLeash.leashBendPoints[abilityLeash.leashBendPoints.length - 2] : abilityOwner;
             blockingPos = getFirstBlockingGameMapTilePositionTouchingLine(map, endPoint, newLeashBendPos, game);
             if (blockingPos) {
-                console.log("blocking pos 2 after adding bendPos!");
                 return false;
             }
         }
