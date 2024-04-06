@@ -2,9 +2,7 @@ next test run: tamer, sniper, builder
 increase version
 
 current tasks:
-    - refactoring
     - enemy type: "God"
-        - performane improve tile explosions code
         - think about sound?
             - how to capture sound in my stream setup from VM? (offstream)
             - make own sounds?

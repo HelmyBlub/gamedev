@@ -7,6 +7,7 @@ import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAb
 import { GodAbility } from "./godAbility.js";
 import { GodEnemyCharacter, applyExponentialStackingDamageTakenDebuff } from "./godEnemy.js";
 import { GAME_IMAGES, loadImage } from "../../../imageLoad.js";
+import { Character } from "../../characterModel.js";
 
 
 export const ABILITY_NAME_TILE_EXPLOSION = "Tile Explosion";
@@ -119,14 +120,7 @@ function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: Abilit
     if (paintOrder === "beforeCharacterPaint") {
         const fillPerCent = 1 - (tileExplosions.damageTime - game.state.time) / tileExplosions.damageDelay;
         if (tileExplosions.growCount === 0) {
-            ctx.beginPath();
-            ctx.fillStyle = abilityObject.color;
-            ctx.strokeStyle = abilityObject.color;
-            ctx.lineWidth = 1;
-            ctx.rect(paintPos.x, paintPos.y, tileExplosions.size, tileExplosions.size);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.fillRect(paintPos.x, paintPos.y, tileExplosions.size * fillPerCent, tileExplosions.size);
+            paintExplosionSquare(ctx, paintPos, tileExplosions.size, fillPerCent, abilityObject.color);
         } else {
             const godArea = game.state.map.godArea;
             if (!godArea || !godArea.spawnTopLeftChunk) return;
@@ -135,34 +129,55 @@ function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: Abilit
                 y: godArea.spawnTopLeftChunk.y * game.state.map.chunkLength * game.state.map.tileSize,
             }
             const size = godArea.size * game.state.map.chunkLength * game.state.map.tileSize;
+            //top, bottom row
             for (let i = -tileExplosions.growCount; i <= tileExplosions.growCount; i++) {
-                for (let j = -tileExplosions.growCount; j <= tileExplosions.growCount; j++) {
-                    if (Math.abs(i) !== tileExplosions.growCount && Math.abs(j) !== tileExplosions.growCount) continue;
-                    const tempTilePos = {
-                        x: tileExplosions.x + i * game.state.map.tileSize,
-                        y: tileExplosions.y + j * game.state.map.tileSize
-                    };
-                    if (tempTilePos.x < topLeftPos.x || tempTilePos.x > topLeftPos.x + size
-                        || tempTilePos.y < topLeftPos.y || tempTilePos.y > topLeftPos.y + size
-                    ) {
+                const tempTilePosX = tileExplosions.x + i * game.state.map.tileSize;
+                if (tempTilePosX < topLeftPos.x || tempTilePosX > topLeftPos.x + size) {
+                    continue;
+                }
+                for (let j = -tileExplosions.growCount; j <= tileExplosions.growCount; j += tileExplosions.growCount * 2) {
+                    const tempTilePosY = tileExplosions.y + j * game.state.map.tileSize;
+                    if (tempTilePosY < topLeftPos.y || tempTilePosY > topLeftPos.y + size) {
                         continue;
                     }
                     const tempPaintPos = {
                         x: paintPos.x + i * game.state.map.tileSize,
                         y: paintPos.y + j * game.state.map.tileSize
                     };
-                    ctx.beginPath();
-                    ctx.fillStyle = abilityObject.color;
-                    ctx.strokeStyle = abilityObject.color;
-                    ctx.lineWidth = 1;
-                    ctx.rect(tempPaintPos.x, tempPaintPos.y, tileExplosions.size, tileExplosions.size);
-                    ctx.stroke();
-                    ctx.beginPath();
-                    ctx.fillRect(tempPaintPos.x, tempPaintPos.y, tileExplosions.size * fillPerCent, tileExplosions.size);
+                    paintExplosionSquare(ctx, tempPaintPos, tileExplosions.size, fillPerCent, abilityObject.color);
+                }
+            }
+            //left, right columns
+            for (let j = -tileExplosions.growCount + 1; j <= tileExplosions.growCount - 1; j++) {
+                const tempTilePosY = tileExplosions.y + j * game.state.map.tileSize;
+                if (tempTilePosY < topLeftPos.y || tempTilePosY > topLeftPos.y + size) {
+                    continue;
+                }
+                for (let i = -tileExplosions.growCount; i <= tileExplosions.growCount; i += tileExplosions.growCount * 2) {
+                    const tempTilePosX = tileExplosions.x + i * game.state.map.tileSize;
+                    if (tempTilePosX < topLeftPos.x || tempTilePosX > topLeftPos.x + size) {
+                        continue;
+                    }
+                    const tempPaintPos = {
+                        x: paintPos.x + i * game.state.map.tileSize,
+                        y: paintPos.y + j * game.state.map.tileSize
+                    };
+                    paintExplosionSquare(ctx, tempPaintPos, tileExplosions.size, fillPerCent, abilityObject.color);
                 }
             }
         }
     }
+}
+
+function paintExplosionSquare(ctx: CanvasRenderingContext2D, paintPos: Position, size: number, fillPerCent: number, color: string) {
+    ctx.beginPath();
+    ctx.fillStyle = color;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1;
+    ctx.rect(paintPos.x, paintPos.y, size, size);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.fillRect(paintPos.x, paintPos.y, size * fillPerCent, size);
 }
 
 function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
@@ -193,9 +208,9 @@ function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
 }
 
 function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
-    const tileExplosion = abilityObject as AbilityObjectTileExplosion;
-    if (tileExplosion.damageTime <= game.state.time) {
-        tileExplosion.damageTime += tileExplosion.damageDelay;
+    const tileExplosions = abilityObject as AbilityObjectTileExplosion;
+    if (tileExplosions.damageTime <= game.state.time) {
+        tileExplosions.damageTime += tileExplosions.damageDelay;
         const playerCharacters = getPlayerCharacters(game.state.players);
         const godArea = game.state.map.godArea;
         if (!godArea || !godArea.spawnTopLeftChunk) return;
@@ -204,30 +219,50 @@ function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
             y: godArea.spawnTopLeftChunk.y * game.state.map.chunkLength * game.state.map.tileSize,
         }
         const size = godArea.size * game.state.map.chunkLength * game.state.map.tileSize;
-        for (let i = -tileExplosion.growCount; i <= tileExplosion.growCount; i++) {
-            for (let j = -tileExplosion.growCount; j <= tileExplosion.growCount; j++) {
-                if (Math.abs(i) !== tileExplosion.growCount && Math.abs(j) !== tileExplosion.growCount) continue;
-                const tempTilePos = {
-                    x: tileExplosion.x + i * game.state.map.tileSize,
-                    y: tileExplosion.y + j * game.state.map.tileSize
-                };
-
-                if (tempTilePos.x < topLeftPos.x || tempTilePos.x > topLeftPos.x + size
-                    || tempTilePos.y < topLeftPos.y || tempTilePos.y > topLeftPos.y + size
-                ) {
+        //top, bottom row
+        if (tileExplosions.growCount <= 0) {
+            checkExplosionSquareCharacterHit(playerCharacters, tileExplosions.x, tileExplosions.y, tileExplosions, game);
+        } else {
+            for (let i = -tileExplosions.growCount; i <= tileExplosions.growCount; i++) {
+                const tempTilePosX = tileExplosions.x + i * game.state.map.tileSize;
+                if (tempTilePosX < topLeftPos.x || tempTilePosX > topLeftPos.x + size) {
                     continue;
                 }
-                for (let char of playerCharacters) {
-                    if (char.x > tempTilePos.x && char.x < tempTilePos.x + tileExplosion.size
-                        && char.y > tempTilePos.y && char.y < tempTilePos.y + tileExplosion.size
-                    ) {
-                        characterTakeDamage(char, tileExplosion.damage, game, undefined, tileExplosion.type);
-                        applyExponentialStackingDamageTakenDebuff(char, game);
+                for (let j = -tileExplosions.growCount; j <= tileExplosions.growCount; j += tileExplosions.growCount * 2) {
+                    const tempTilePosY = tileExplosions.y + j * game.state.map.tileSize;
+                    if (tempTilePosY < topLeftPos.y || tempTilePosY > topLeftPos.y + size) {
+                        continue;
                     }
+                    checkExplosionSquareCharacterHit(playerCharacters, tempTilePosX, tempTilePosY, tileExplosions, game);
+                }
+            }
+            //left, right columns
+            for (let j = -tileExplosions.growCount + 1; j <= tileExplosions.growCount - 1; j++) {
+                const tempTilePosY = tileExplosions.y + j * game.state.map.tileSize;
+                if (tempTilePosY < topLeftPos.y || tempTilePosY > topLeftPos.y + size) {
+                    continue;
+                }
+                for (let i = -tileExplosions.growCount; i <= tileExplosions.growCount; i += tileExplosions.growCount * 2) {
+                    const tempTilePosX = tileExplosions.x + i * game.state.map.tileSize;
+                    if (tempTilePosX < topLeftPos.x || tempTilePosX > topLeftPos.x + size) {
+                        continue;
+                    }
+                    checkExplosionSquareCharacterHit(playerCharacters, tempTilePosX, tempTilePosY, tileExplosions, game);
                 }
             }
         }
-        tileExplosion.growCount++;
+        tileExplosions.growCount++;
+    }
+}
+
+function checkExplosionSquareCharacterHit(playerCharacters: Character[], tempTilePosX: number, tempTilePosY: number, tileExplosions: AbilityObjectTileExplosion, game: Game) {
+    for (let char of playerCharacters) {
+        if (char.x > tempTilePosX && char.x < tempTilePosX + tileExplosions.size
+            && char.y > tempTilePosY && char.y < tempTilePosY + tileExplosions.size
+        ) {
+            characterTakeDamage(char, tileExplosions.damage, game, undefined, tileExplosions.type);
+            applyExponentialStackingDamageTakenDebuff(char, game);
+        }
     }
 }
 
