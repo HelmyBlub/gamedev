@@ -15,6 +15,7 @@ import { MoreInfos, createDefaultEmptyMoreInfos } from "./moreInfo.js";
 import { Building } from "./map/buildings/building.js";
 import { GAME_VERSION } from "./main.js";
 import { createDamageMeter, DamageMeter } from "./combatlog.js";
+import { createSound, Sound } from "./soundTests.js";
 
 export type Position = {
     x: number,
@@ -251,6 +252,7 @@ export type Game = {
     testing: TestingStuff,
     debug: Debugging,
     closeGame?: boolean,
+    sound?: Sound,
     UI: {
         damageMeter: DamageMeter,
         displayMovementKeyHint: boolean,
@@ -374,6 +376,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             moneyGainedThisRun: [],
             lastMouseDownWasUIClick: false,
         },
+        sound: createSound(),
     }
 
     if (game.state.map.kingArea) {

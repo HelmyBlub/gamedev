@@ -5,6 +5,7 @@ import { deepCopy, getGameVersionString } from "./game.js";
 import { Debugging, Game } from "./gameModel.js";
 import { GAME_VERSION } from "./main.js";
 import { resetPermanentData } from "./permanentData.js";
+import { playMusicSheet1 } from "./soundTests.js";
 import { compressString, decompressString, downloadBlob, loadCompressedStateFromUrl } from "./stringCompress.js";
 import { initReplay, replayReplayData, testGame } from "./test/gameTest.js";
 
@@ -32,6 +33,7 @@ export function addHTMLDebugMenusToSettings(game: Game) {
     addCopyLastReplayButton(game);
     addCurrentStateToFileButton(game);
     addLoadTestStateButton(game);
+    addTestMusicButton(game);
 }
 
 function setVersionNumberToSettingButton() {
@@ -178,6 +180,18 @@ function addCurrentStateToFileButton(game: Game) {
         });
     }
 }
+function addTestMusicButton(game: Game) {
+    const buttonName = "play test music";
+    addSettingButton(buttonName);
+    const button = document.getElementById(buttonName) as HTMLButtonElement;
+    if (button) {
+        button.addEventListener('click', async () => {
+            playMusicSheet1(game.sound);
+        });
+    }
+}
+
+
 function addLoadTestStateButton(game: Game) {
     const buttonName = "load test state1";
     addSettingButton(buttonName);

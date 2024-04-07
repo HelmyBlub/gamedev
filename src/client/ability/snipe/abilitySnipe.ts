@@ -20,7 +20,7 @@ import { ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE, AbilityUpgradeTerrainBounce, addA
 import { AbilityDamageBreakdown } from "../../combatlog.js";
 import { ABILITY_NAME_EXPLODE } from "../abilityExplode.js";
 import { ABILITY_NAME_FIRE_LINE } from "../abilityFireLine.js";
-import { generateBeep } from "../../soundTests.js";
+import { Note, generateChordGBD, generateNote, notesToFrequencyIndex } from "../../soundTests.js";
 
 export type AbilityObjectSnipe = AbilityObject & {
     damage: number,
@@ -416,7 +416,6 @@ function createAbilityObjectSnipeInitialPlayerTriggered(abilityOwner: AbilityOwn
     castSnipeAfterImage(startPosition, abilitySnipe, castPosition, true, game);
     createAbilityObjectSnipeInitial(startPosition, abilityOwner.faction, abilitySnipe, castPosition, true, false, game);
     abilitySnipe.currentCharges--;
-    //generateBeep(200, Math.floor(game.state.time / 100));
     if (abilitySnipe.currentCharges === 0) {
         abilitySnipeReload(abilitySnipe, game.state.time);
     }
