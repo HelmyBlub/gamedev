@@ -5,7 +5,7 @@ import { deepCopy, getGameVersionString } from "./game.js";
 import { Debugging, Game } from "./gameModel.js";
 import { GAME_VERSION } from "./main.js";
 import { resetPermanentData } from "./permanentData.js";
-import { playMusicSheet1 } from "./soundTests.js";
+import { playMusicSheet1 } from "./sound.js";
 import { compressString, decompressString, downloadBlob, loadCompressedStateFromUrl } from "./stringCompress.js";
 import { initReplay, replayReplayData, testGame } from "./test/gameTest.js";
 

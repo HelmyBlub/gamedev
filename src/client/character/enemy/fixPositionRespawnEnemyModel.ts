@@ -7,7 +7,7 @@ import { FACTION_ENEMY, Game, IdCounter, Position } from "../../gameModel.js"
 import { MapChunk, GameMap, isPositionBlocking, mapKeyToChunkXY, chunkXYToMapKey, addEnemyToMap, getMapMidlePosition, positionToChunkXY } from "../../map/map.js"
 import { fixedRandom } from "../../randomNumberGenerator.js"
 import { Character, IMAGE_SLIME, createCharacter } from "../characterModel.js"
-import { createPetsBasedOnLevelAndCharacter } from "../playerCharacters/tamer/tamerCharacter.js"
+import { createPetsBasedOnLevelAndCharacter } from "../playerCharacters/tamer/characterClassTamer.js"
 import { TamerPetCharacter } from "../playerCharacters/tamer/tamerPetCharacter.js"
 import { getCelestialDirection, setAbilityToEnemyLevel } from "./bossEnemy.js"
 

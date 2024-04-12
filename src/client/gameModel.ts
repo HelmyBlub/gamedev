@@ -15,7 +15,7 @@ import { MoreInfos, createDefaultEmptyMoreInfos } from "./moreInfo.js";
 import { Building } from "./map/buildings/building.js";
 import { GAME_VERSION } from "./main.js";
 import { createDamageMeter, DamageMeter } from "./combatlog.js";
-import { createSound, Sound } from "./soundTests.js";
+import { createSound, Sound } from "./sound.js";
 
 export type Position = {
     x: number,

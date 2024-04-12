@@ -3,7 +3,7 @@ import { Game, GameState } from "../../gameModel.js";
 import { Character } from "../characterModel.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability, fillRandomUpgradeOptionChoices } from "../upgrade.js";
 import { ABILITIES_FUNCTIONS } from "../../ability/ability.js";
-import { PLAYER_CLASS_TOWER_BUILDER } from "./towerCharacterClass.js";
+import { PLAYER_CLASS_TOWER_BUILDER } from "./characterClassTower.js";
 import { CharacterClass } from "./playerCharacters.js";
 import { CHARACTER_UPGRADE_FUNCTIONS } from "../upgrades/characterUpgrades.js";
 import { CHARACTER_UPGRADE_BONUS_HP } from "../upgrades/characterUpgradeBonusHealth.js";

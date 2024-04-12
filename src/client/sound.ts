@@ -89,6 +89,10 @@ export function generateChordGBD(duration: number, octave: number, game: Game) {
     generateNote(duration, "D", octave, game.sound);
 }
 
+export function playMusicNote(musicSheet: MusicSheet, note: MusicNote, sound: Sound | undefined) {
+    generateNote(musicSheet.speed * 0.9, note.note, note.octave, sound);
+}
+
 export function generateNote(duration: number, node: Note, octave: number, sound: Sound | undefined) {
     if (sound === undefined) return;
     console.log("sound", node, `octave: ${octave}`);

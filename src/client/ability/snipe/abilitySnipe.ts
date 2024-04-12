@@ -20,7 +20,7 @@ import { ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE, AbilityUpgradeTerrainBounce, addA
 import { AbilityDamageBreakdown } from "../../combatlog.js";
 import { ABILITY_NAME_EXPLODE } from "../abilityExplode.js";
 import { ABILITY_NAME_FIRE_LINE } from "../abilityFireLine.js";
-import { Note, generateChordGBD, generateNote, notesToFrequencyIndex } from "../../soundTests.js";
+import { Note, generateChordGBD, generateNote, notesToFrequencyIndex } from "../../sound.js";
 
 export type AbilityObjectSnipe = AbilityObject & {
     damage: number,

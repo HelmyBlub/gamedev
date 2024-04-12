@@ -38,6 +38,7 @@ import { Leveling } from "../character/playerCharacters/levelingCharacter.js"
 import { CharacterClass } from "../character/playerCharacters/playerCharacters.js"
 import { MoreInfoPart, paintMoreInfosPart } from "../moreInfo.js"
 import { AbilityDamageBreakdown, addDamageBreakDownToDamageMeter } from "../combatlog.js"
+import { addAbilityMusicSheet } from "./musician/abilityMusicSheet.js"
 
 export type Ability = {
     id: number,
@@ -135,6 +136,7 @@ export function onDomLoadSetAbilitiesFunctions() {
     addAbilityLightningBall();
     addAbilityLightningStrikes();
     addAbilityUnleashPet();
+    addAbilityMusicSheet();
 }
 
 export function doAbilityDamageBreakDown(damage: number, ability: Ability | undefined, abilityObject: AbilityObject | undefined, damageAbilityName: string, game: Game) {

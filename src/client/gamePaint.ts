@@ -463,6 +463,7 @@ function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Charact
             totalWidthEsitmate += maxWidth;
         }
 
+        totalWidthEsitmate += optionSpacer * (character.upgradeChoices.length - 1);
         let currentX = Math.max(5, ctx.canvas.width / 2 - totalWidthEsitmate / 2);
         if (displayKeyHint) {
             const hintX = ctx.canvas.width / 2;

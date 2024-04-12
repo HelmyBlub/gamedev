@@ -4,9 +4,10 @@ import { CharacterUpgrade, CharacterUpgrades } from "../upgrades/characterUpgrad
 import { UpgradeOption, UpgradeOptionAndProbability } from "../upgrade.js"
 import { addBallClass } from "./characterClassBall.js"
 import { Leveling } from "./levelingCharacter.js"
-import { addSniperClass } from "./sniperCharacter.js"
-import { addTamerClass } from "./tamer/tamerCharacter.js"
-import { addTowerClass } from "./towerCharacterClass.js"
+import { addSniperClass } from "./characterClassSniper.js"
+import { addTamerClass } from "./tamer/characterClassTamer.js"
+import { addTowerClass } from "./characterClassTower.js"
+import { addMusicianClass } from "./characterClassMusician.js"
 
 export type PlayerCharacterClassFunctions = {
     changeCharacterToThisClass: (character: Character, idCounter: IdCounter, game: Game) => void,
@@ -42,11 +43,12 @@ export function onDomLoadSetCharacterClasses() {
     addTowerClass();
     addTamerClass();
     addBallClass();
+    addMusicianClass();
 }
 
 export function initPlayerCharacterChoiceOptions(character: Character, game: Game) {
     const options: UpgradeOption[] = createCharacterChooseUpgradeOptions(game);
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 5; i++) {
         if (options.length > i) {
             character.upgradeChoices.push(options[i]);
         }

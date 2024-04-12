@@ -13,7 +13,7 @@ import { localStorageLoad } from "./permanentData.js";
 import { createRequiredMoreInfos, moreInfosHandleMouseClick } from "./moreInfo.js";
 
 export const MOVE_ACTIONS = ["left", "down", "right", "up"];
-export const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3", "upgrade4"];
+export const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3", "upgrade4", "upgrade5"];
 export const ABILITY_ACTIONS = ["ability1", "ability2", "ability3"];
 export const SPECIAL_ACTIONS = ["interact1", "interact2"];
 export const MOUSE_ACTION = "mousePositionUpdate";
@@ -39,6 +39,7 @@ export function createActionsPressed(): ActionsPressed {
         upgrade2: false,
         upgrade3: false,
         upgrade4: false,
+        upgrade5: false,
         ability1: false,
         ability2: false,
         ability3: false,

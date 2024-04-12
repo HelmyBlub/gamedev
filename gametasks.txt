@@ -1,16 +1,23 @@
-next test run: builder, tamer
+next test run: tamer
 increase version
 
 current tasks:
     - sound?
-        - i want to make my own sounds
-        - i want the download size to be minimal
-        - try out different kind of sounds? e.g.: sine, triagle and custom? 
-        - can i create sound which sounds like a piano with this? or other existing instruments?
-        - make new class which is based on sound.
-            - class has to write "music sheet"
-        - sound links
-            - web audio API: https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API
+        - dev steps:
+            - new class "musician"
+                - new ability musicSheet
+                    - visualize music sheet
+                    - mouse click to place note on music sheet
+                    - music sheet runs in a loop
+                - upgrade gives instruments (different note types)
+                    - different note types have different damage effects
+        - thoughs and research
+            - i want to make my own sounds
+            - i want the download size to be minimal
+            - try out different kind of sounds? e.g.: sine, triagle and custom? 
+            - can i create sound which sounds like a piano with this? or other existing instruments?
+            - sound links
+                - web audio API: https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API
     - enemy type: "God"
         - think about sound?
             - make own sounds?
