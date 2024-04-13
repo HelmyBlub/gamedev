@@ -95,7 +95,7 @@ function addSettingInputBoxSoundDelay(game: Game) {
     let input: HTMLInputElement = document.getElementById(inputBoxId) as HTMLInputElement;
     if (!input) {
         let canvasHTML = `
-            <input type="number" id="${inputBoxId}" name="${inputBoxId}" value="0" style="width: 50;">
+            <input type="number" id="${inputBoxId}" step=10 name="${inputBoxId}" value="0" style="width: 50;">
             <label for="debug">: ${inputBoxId} in ms</label><br>
         `;
         settingsElement.insertAdjacentHTML("beforeend", canvasHTML);

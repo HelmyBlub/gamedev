@@ -1,7 +1,8 @@
 import { Game } from "./gameModel";
 
-export type Note = "C" | "C#" | "D" | "Eb" | "E" | "F" | "F#" | "G" | "G#" | "A" | "Bb" | "B";
-export type MusicNote = { note: Note, durationFactor: number, octave: number, tick: number };
+export type Note = "C" | "D" | "E" | "F" | "G" | "A" | "B";
+export type Semitone = "flat" | "sharp";
+export type MusicNote = { note: Note, semitone?: Semitone, durationFactor: number, octave: number, tick: number };
 export type MusicSheet = {
     notes: MusicNote[],
     speed: number,
@@ -71,7 +72,7 @@ export function playMusicSheet1(sound: Sound | undefined) {
 
 function playMusicSheetLoop(musicSheet: MusicSheet, sound: Sound, nextIndex: number) {
     const currentNote = musicSheet.notes[nextIndex];
-    generateNote(musicSheet.speed * 0.9, currentNote.note, currentNote.octave, sound);
+    generateNote(musicSheet.speed * 0.9, currentNote, sound);
     if (musicSheet.notes.length > nextIndex + 1) {
         const nextNote = musicSheet.notes[nextIndex + 1];
         const tickDiff = nextNote.tick - currentNote.tick;
@@ -85,25 +86,35 @@ function playMusicSheetLoop(musicSheet: MusicSheet, sound: Sound, nextIndex: num
     }
 }
 
-export function generateChordGBD(duration: number, octave: number, game: Game) {
-    generateNote(duration, "G", octave, game.sound);
-    generateNote(duration, "B", octave, game.sound);
-    generateNote(duration, "D", octave, game.sound);
-}
-
 export function playMusicNote(musicSheet: MusicSheet, note: MusicNote, sound: Sound | undefined) {
-    generateNote(musicSheet.speed * 0.9, note.note, note.octave, sound);
+    generateNote(musicSheet.speed * 0.9 * note.durationFactor, note, sound);
 }
 
-export function generateNote(duration: number, node: Note, octave: number, sound: Sound | undefined) {
+export function generateNote(duration: number, note: MusicNote, sound: Sound | undefined) {
     if (sound === undefined) return;
-    console.log("sound", node, `octave: ${octave}`);
 
     const gainNode = sound.audioContext.createGain();
     gainNode.connect(sound.volumne);
 
     const oscillator = sound.audioContext.createOscillator();
-    oscillator.frequency.setValueAtTime(notesFrequency[octave][notesToFrequencyIndex[node]], sound.audioContext.currentTime);
+    let frequencyIndex = notesToFrequencyIndex[note.note];
+    let octave = note.octave;
+    if (note.semitone) {
+        if (note.semitone === "flat") {
+            frequencyIndex--;
+        } else {
+            frequencyIndex++;
+        }
+        if (frequencyIndex < 0) {
+            frequencyIndex = notesFrequency[0].length - 1;
+            octave--;
+        }
+        if (frequencyIndex > notesFrequency[0].length - 1) {
+            frequencyIndex = 0;
+            octave++;
+        }
+    }
+    oscillator.frequency.setValueAtTime(notesFrequency[octave][frequencyIndex], sound.audioContext.currentTime);
     oscillator.connect(gainNode);
     oscillator.start();
     setTimeout(() => {
