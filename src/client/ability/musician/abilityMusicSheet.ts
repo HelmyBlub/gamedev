@@ -171,9 +171,8 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
         ctx.fillRect(topLeftMusicSheet.x + xOffset, topLeftMusicSheet.y + lineNumber * (abilityMusicSheet.paintHeight / lineCount), 5, 5);
     }
     //make line at current play time
-    let unknownSoundDelay = 1;
     ctx.fillStyle = "black";
-    const xOffset = (((abilityMusicSheet.lastNotePlayTick - unknownSoundDelay + abilityMusicSheet.maxPlayTicks) % abilityMusicSheet.maxPlayTicks) / abilityMusicSheet.maxPlayTicks) * abilityMusicSheet.paintWidth;
+    const xOffset = (((abilityMusicSheet.lastNotePlayTick + abilityMusicSheet.maxPlayTicks) % abilityMusicSheet.maxPlayTicks) / abilityMusicSheet.maxPlayTicks) * abilityMusicSheet.paintWidth;
     ctx.beginPath();
     ctx.moveTo(topLeftMusicSheet.x + xOffset, topLeftMusicSheet.y);
     ctx.lineTo(topLeftMusicSheet.x + xOffset, topLeftMusicSheet.y + abilityMusicSheet.paintHeight);
@@ -211,12 +210,15 @@ function yPosToMusicNote(yClickPos: number, yOwnerPos: number, abilityMusicSheet
 
 function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     const abilityMusicSheet = ability as AbilityMusicSheet;
-    const musicSheetTime = game.state.time % (abilityMusicSheet.musicSheet.speed * abilityMusicSheet.maxPlayTicks);
+    const musicSheetTime = (game.state.time) % (abilityMusicSheet.musicSheet.speed * abilityMusicSheet.maxPlayTicks);
     const currentTick = musicSheetTime / abilityMusicSheet.musicSheet.speed;
     const lastTick = abilityMusicSheet.lastNotePlayTick;
+    //warning: playing sound is client specific delayed. Casting ability must not.
+    const delayTicks = game.sound ? game.sound.customDelay / abilityMusicSheet.musicSheet.speed : 0;
     for (let note of abilityMusicSheet.musicSheet.notes) {
-        if ((lastTick < note.tick && note.tick <= currentTick)
-            || (lastTick > currentTick && note.tick <= currentTick)
+        const delayedNotTick = (note.tick + delayTicks) % abilityMusicSheet.maxPlayTicks;
+        if ((lastTick < delayedNotTick && delayedNotTick <= currentTick)
+            || (lastTick > currentTick && delayedNotTick <= currentTick)
         ) {
             playMusicNote(abilityMusicSheet.musicSheet, note, game.sound);
         }

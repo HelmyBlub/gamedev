@@ -27,6 +27,7 @@ export function addHTMLDebugMenusToSettings(game: Game) {
     addSpawnBossButton(game);
     addClearLocalStorageButton(game);
     addSettingInputBoxPlayerPaintAlpha(game);
+    addSettingInputBoxSoundDelay(game);
     addGiveMoneyButton(game);
     addTestButton(game);
     addReplayLastRunButton(game);
@@ -84,6 +85,25 @@ function addSettingInputBoxPlayerPaintAlpha(game: Game) {
     if (input) {
         input.addEventListener('input', () => {
             game.UI.playerGlobalAlphaMultiplier = parseInt(input.value) / 100;
+        });
+    }
+}
+function addSettingInputBoxSoundDelay(game: Game) {
+    const settingsElement = document.getElementById("settings");
+    if (!settingsElement) return;
+    const inputBoxId = "soundDelay";
+    let input: HTMLInputElement = document.getElementById(inputBoxId) as HTMLInputElement;
+    if (!input) {
+        let canvasHTML = `
+            <input type="number" id="${inputBoxId}" name="${inputBoxId}" value="0" style="width: 50;">
+            <label for="debug">: ${inputBoxId} in ms</label><br>
+        `;
+        settingsElement.insertAdjacentHTML("beforeend", canvasHTML);
+        input = document.getElementById(inputBoxId) as HTMLInputElement;
+    }
+    if (input) {
+        input.addEventListener('input', () => {
+            if (game.sound) game.sound.customDelay = parseInt(input.value);
         });
     }
 }

@@ -48,14 +48,16 @@ export const notesFrequency = [
 export type Sound = {
     audioContext: AudioContext,
     volumne: GainNode,
+    customDelay: number,
 }
 
 export function createSound(): Sound {
     const audioContext = new window.AudioContext();
     const volumne = audioContext.createGain();
-    const sound = {
+    const sound: Sound = {
         audioContext,
         volumne,
+        customDelay: 0,
     };
     volumne.connect(sound.audioContext.destination);
     volumne.gain.setValueAtTime(0.1, sound.audioContext.currentTime);

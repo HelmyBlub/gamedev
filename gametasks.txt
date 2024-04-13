@@ -3,14 +3,15 @@ increase version
 
 current tasks:
     - sound?
+        - sound delay hardware dependant
         - dev steps:
-            - new class "musician"
-                - new ability musicSheet
-                    - visualize music sheet
-                    - mouse click to place note on music sheet
-                    - music sheet runs in a loop
-                - upgrade gives instruments (different note types)
-                    - different note types have different damage effects
+            - new ability musicSheet
+                - alter existing note to different duration
+                - improve painting to circles
+                - see how precise clicking is
+                - paint music key symbole clef/notenschlüssel
+            - upgrade gives instruments (different note types)
+                - different note types have different damage effects
         - thoughs and research
             - i want to make my own sounds
             - i want the download size to be minimal
