@@ -1,39 +1,91 @@
-.mainCanvas{
-    border:1px solid #000000;
+.mainCanvas {
+    border: 1px solid #000000;
     position: absolute;
     top: 0;
     left: 0;
 }
 
-.settingButton{
-    position:absolute;
-    right:10px;
+.settingButton {
+    position: absolute;
+    right: 10px;
 }
 
-.settingAreaDiv{
-    position:absolute;
-    right:10px;
+.settingAreaDiv {
+    position: absolute;
+    right: 10px;
     top: 40px;
     background-color: white;
 }
 
-.textInput{
-    position:absolute;
-    left: 0; 
-    right: 0; 
-    top: 0;bottom: 0;
-    margin: auto; 
-    width: 190px;     
+.textInput {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    width: 190px;
     height: 120px;
     background-color: gray;
     padding: 5px;
 }
 
-.hide{
-    display:none;
+.hide {
+    display: none;
 }
 
-.iconInTextInput{
+.iconInTextInput {
     margin-left: -30px;
     cursor: pointer;
+}
+
+.tabs .tab {
+    float: left;
+    display: block;
+}
+
+.tabs .tab>input[type="radio"] {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+}
+
+.tabs .tab>label {
+    display: block;
+    padding: 6px 21px;
+    font-size: 12px;
+    text-transform: uppercase;
+    cursor: pointer;
+    position: relative;
+    color: #FFF;
+    background: #4A83FD;
+}
+
+.tabs .content {
+    z-index: 0;
+    /* or display: none; */
+    overflow: hidden;
+    width: 600px;
+    position: absolute;
+    top: 27px;
+    left: 0;
+    background: #303030;
+    color: #DFDFDF;
+
+    opacity: 0;
+    transition: opacity 400ms ease-out;
+}
+
+.tabs>.tab>[id^="tab"]:checked+label {
+    top: 0;
+    background: #303030;
+    color: #F5F5F5;
+}
+
+.tabs>.tab>[id^="tab"]:checked~.content {
+    z-index: 1;
+    /* or display: block; */
+
+    opacity: 1;
+    transition: opacity 400ms ease-out;
 }

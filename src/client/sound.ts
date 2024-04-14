@@ -8,30 +8,6 @@ export type MusicSheet = {
     speed: number,
 };
 
-const baseOctave = 4;
-const musicSheetAmazingGrace: MusicSheet = {
-    speed: 400,
-    notes: [
-        { note: "G", tick: 0, durationFactor: 1, octave: baseOctave - 2 },
-        { note: "C", tick: 2, durationFactor: 2, octave: baseOctave - 1 },
-        { note: "E", tick: 4, durationFactor: 1, octave: baseOctave - 1 },
-        { note: "C", tick: 5, durationFactor: 1, octave: baseOctave - 1 },
-        { note: "E", tick: 6, durationFactor: 2, octave: baseOctave - 1 },
-        { note: "D", tick: 8, durationFactor: 1, octave: baseOctave - 1 },
-        { note: "C", tick: 10, durationFactor: 2, octave: baseOctave - 1 },
-        { note: "A", tick: 12, durationFactor: 1, octave: baseOctave - 2 },
-
-        { note: "G", tick: 14, durationFactor: 2, octave: baseOctave - 2 },
-        { note: "G", tick: 16, durationFactor: 1, octave: baseOctave - 2 },
-        { note: "C", tick: 18, durationFactor: 2, octave: baseOctave - 1 },
-        { note: "E", tick: 20, durationFactor: 1, octave: baseOctave - 1 },
-        { note: "C", tick: 21, durationFactor: 1, octave: baseOctave - 1 },
-        { note: "E", tick: 22, durationFactor: 2, octave: baseOctave - 1 },
-        { note: "D", tick: 24, durationFactor: 1, octave: baseOctave - 1 },
-        { note: "G", tick: 26, durationFactor: 2, octave: baseOctave - 1 },
-    ]
-}
-
 export const notesToFrequencyIndex = { "C": 0, "C#": 1, "D": 2, "Eb": 3, "E": 4, "F": 5, "F#": 6, "G": 7, "G#": 8, "A": 9, "Bb": 10, "B": 11 };
 export const notesFrequency = [
     [16.35, 17.32, 18.35, 19.45, 20.60, 21.83, 23.12, 24.50, 25.96, 27.50, 29.14, 30.87],
@@ -48,42 +24,21 @@ export const notesFrequency = [
 
 export type Sound = {
     audioContext: AudioContext,
-    volumne: GainNode,
+    volume: GainNode,
     customDelay: number,
 }
 
 export function createSound(): Sound {
     const audioContext = new window.AudioContext();
-    const volumne = audioContext.createGain();
+    const volume = audioContext.createGain();
     const sound: Sound = {
         audioContext,
-        volumne,
+        volume: volume,
         customDelay: 0,
     };
-    volumne.connect(sound.audioContext.destination);
-    volumne.gain.setValueAtTime(0.1, sound.audioContext.currentTime);
+    volume.connect(sound.audioContext.destination);
+    volume.gain.setValueAtTime(0.1, sound.audioContext.currentTime);
     return sound;
-}
-
-export function playMusicSheet1(sound: Sound | undefined) {
-    if (!sound) return;
-    playMusicSheetLoop(musicSheetAmazingGrace, sound, 0);
-}
-
-function playMusicSheetLoop(musicSheet: MusicSheet, sound: Sound, nextIndex: number) {
-    const currentNote = musicSheet.notes[nextIndex];
-    generateNote(musicSheet.speed * 0.9, currentNote, sound);
-    if (musicSheet.notes.length > nextIndex + 1) {
-        const nextNote = musicSheet.notes[nextIndex + 1];
-        const tickDiff = nextNote.tick - currentNote.tick;
-        if (tickDiff < 0) {
-            console.log(`music sheet time broken at ${nextIndex + 1}`);
-        } else if (tickDiff === 0) {
-            playMusicSheetLoop(musicSheet, sound, ++nextIndex);
-        } else {
-            setTimeout(() => { playMusicSheetLoop(musicSheet, sound, ++nextIndex) }, tickDiff * musicSheet.speed);
-        }
-    }
 }
 
 export function playMusicNote(musicSheet: MusicSheet, note: MusicNote, sound: Sound | undefined) {
@@ -94,7 +49,7 @@ export function generateNote(duration: number, note: MusicNote, sound: Sound | u
     if (sound === undefined) return;
 
     const gainNode = sound.audioContext.createGain();
-    gainNode.connect(sound.volumne);
+    gainNode.connect(sound.volume);
 
     const oscillator = sound.audioContext.createOscillator();
     let frequencyIndex = notesToFrequencyIndex[note.note];

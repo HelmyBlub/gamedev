@@ -369,7 +369,7 @@ export function resetCharacter(character: Character, game: Game) {
     resetAllCharacterAbilities(character);
 }
 
-export function determineCharactersInDistance(position: Position, map: GameMap | undefined, players: Player[], bosses: BossEnemyCharacter[] | undefined, maxDistance: number, notFaction: string | undefined = undefined): Character[] {
+export function determineCharactersInDistance(position: Position, map: GameMap | undefined, players: Player[], bosses: BossEnemyCharacter[] | undefined, maxDistance: number, notFaction: string | undefined = undefined, onlyAlive: boolean = false): Character[] {
     const result: Character[] = [];
     if (notFaction === undefined || FACTION_ENEMY !== notFaction) {
         if (map) {
@@ -379,6 +379,7 @@ export function determineCharactersInDistance(position: Position, map: GameMap |
                 if (chunk === undefined) continue;
                 const characters: Character[] = chunk.characters;
                 for (let j = 0; j < characters.length; j++) {
+                    if (onlyAlive && characters[j].isDead) continue;
                     const distance = calculateDistance(position, characters[j]);
                     if (maxDistance >= distance) {
                         result.push(characters[j]);
@@ -388,6 +389,7 @@ export function determineCharactersInDistance(position: Position, map: GameMap |
         }
         if (bosses) {
             for (let boss of bosses) {
+                if (onlyAlive && boss.isDead) continue;
                 const distance = calculateDistance(position, boss);
                 if (maxDistance >= distance) {
                     result.push(boss);
@@ -399,6 +401,7 @@ export function determineCharactersInDistance(position: Position, map: GameMap |
     if (notFaction === undefined || FACTION_PLAYER !== notFaction) {
         for (let player of players) {
             if (player.character.faction === notFaction) continue;
+            if (onlyAlive && player.character.isDead) continue;
             const distance = calculateDistance(position, player.character);
             if (maxDistance >= distance) {
                 result.push(player.character);

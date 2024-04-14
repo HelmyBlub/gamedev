@@ -1,7 +1,7 @@
 import { Character } from "../../character/characterModel.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { getNextId } from "../../game.js";
-import { Position, Game, IdCounter } from "../../gameModel.js";
+import { Position, Game, IdCounter, FACTION_PLAYER } from "../../gameModel.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, getAbilityNameUiText } from "../ability.js";
@@ -9,14 +9,19 @@ import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgrad
 import { AbilityDamageBreakdown } from "../../combatlog.js";
 import { MusicNote, MusicSheet, Note, notesToFrequencyIndex, playMusicNote } from "../../sound.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
+import { determineCharactersInDistance, findMyCharacter } from "../../character/character.js";
+import { nextRandom } from "../../randomNumberGenerator.js";
+import { createAbilityObjectExplode } from "../abilityExplode.js";
 
 export type AbilityMusicSheet = Ability & {
-    lastNotePlayTick: number,
+    lastPlayTick: number,
+    lastPlayedNoteTime?: number,
     maxPlayTicks: number,
     musicSheet: MusicSheet,
     paintWidth: number,
     paintHeight: number,
     offestY: number,
+    damagePerSecond: number,
 }
 
 const LINE_COUNT = 5;
@@ -58,10 +63,11 @@ export function createAbilityMusicSheet(
         tradable: true,
         musicSheet: { speed: 400, notes: [] },
         maxPlayTicks: 16,
-        lastNotePlayTick: 0,
+        lastPlayTick: 0,
         paintWidth: 500,
         paintHeight: 80,
         offestY: 50,
+        damagePerSecond: 200,
     };
 }
 
@@ -89,7 +95,7 @@ function castNote(abilityOwner: AbilityOwner, ability: Ability, castPosition: Po
     const musicNote = yPosToMusicNote(castPosition.y, abilityOwner.y, musicSheet);
     if (!musicNote) return;
     musicNote.tick = tick;
-    let duplicateNoteIndex = musicSheet.musicSheet.notes.findIndex(n => n.note === musicNote.note && n.tick === tick);
+    let duplicateNoteIndex = musicSheet.musicSheet.notes.findIndex(n => n.note === musicNote.note && n.tick === tick && n.octave === musicNote.octave);
     if (duplicateNoteIndex > -1) {
         const dupNote = musicSheet.musicSheet.notes[duplicateNoteIndex];
         if (unroundedTick < tick - 0.1) {
@@ -125,6 +131,7 @@ function executeAbilityUpgradeOption(ability: Ability, character: Character, upg
 
 function setAbilityToLevel(ability: Ability, level: number) {
     const musicSheet = ability as AbilityMusicSheet;
+    musicSheet.damagePerSecond = 200 * level;
 }
 
 function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: number) {
@@ -163,11 +170,12 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
         x: Math.floor(ownerPaintPos.x - abilityMusicSheet.paintWidth / 2),
         y: ownerPaintPos.y + abilityMusicSheet.offestY,
     }
-
-    ctx.globalAlpha = 0.5;
+    if (findMyCharacter(game) !== abilityOwner) ctx.globalAlpha *= 0.5;
+    if (abilityOwner.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
+    ctx.globalAlpha *= 0.5;
     ctx.fillStyle = "white";
     ctx.fillRect(topLeftMusicSheet.x, topLeftMusicSheet.y, abilityMusicSheet.paintWidth, abilityMusicSheet.paintHeight);
-    ctx.globalAlpha = 1;
+    ctx.globalAlpha *= 2;
     ctx.strokeStyle = "black";
     ctx.lineWidth = 1;
     for (let i = 0; i < LINE_COUNT; i++) {
@@ -182,11 +190,12 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
 
     ctx.lineWidth = 1;
     ctx.fillStyle = "black";
-    const xOffset = (((abilityMusicSheet.lastNotePlayTick + abilityMusicSheet.maxPlayTicks) % abilityMusicSheet.maxPlayTicks) / abilityMusicSheet.maxPlayTicks) * abilityMusicSheet.paintWidth;
+    const xOffset = (((abilityMusicSheet.lastPlayTick + abilityMusicSheet.maxPlayTicks) % abilityMusicSheet.maxPlayTicks) / abilityMusicSheet.maxPlayTicks) * abilityMusicSheet.paintWidth;
     ctx.beginPath();
     ctx.moveTo(topLeftMusicSheet.x + xOffset, topLeftMusicSheet.y);
     ctx.lineTo(topLeftMusicSheet.x + xOffset, topLeftMusicSheet.y + abilityMusicSheet.paintHeight);
     ctx.stroke();
+    ctx.globalAlpha = 1;
 }
 
 function paintNotes(ctx: CanvasRenderingContext2D, abilityMusicSheet: AbilityMusicSheet, topLeftMusicSheet: Position) {
@@ -258,24 +267,69 @@ function yPosToMusicNote(yClickPos: number, yOwnerPos: number, abilityMusicSheet
     }
 }
 
-
 function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     const abilityMusicSheet = ability as AbilityMusicSheet;
     const musicSheetTime = (game.state.time) % (abilityMusicSheet.musicSheet.speed * abilityMusicSheet.maxPlayTicks);
     const currentTick = musicSheetTime / abilityMusicSheet.musicSheet.speed;
-    const lastTick = abilityMusicSheet.lastNotePlayTick;
-    //warning: playing sound is client specific delayed. Casting ability must not.
+    const lastTick = abilityMusicSheet.lastPlayTick;
     const delayTicks = game.sound ? game.sound.customDelay / abilityMusicSheet.musicSheet.speed : 0;
+    const notesDamageTick: MusicNote[] = [];
     for (let note of abilityMusicSheet.musicSheet.notes) {
-        const delayedNotTick = (note.tick + delayTicks) % abilityMusicSheet.maxPlayTicks;
-        if ((lastTick < delayedNotTick && delayedNotTick <= currentTick)
-            || (lastTick > currentTick && delayedNotTick <= currentTick)
+        const delayedNoteTick = (note.tick + delayTicks) % abilityMusicSheet.maxPlayTicks;
+        if ((lastTick < delayedNoteTick && delayedNoteTick <= currentTick)
+            || (lastTick > currentTick && delayedNoteTick <= currentTick)
         ) {
-            console.log("sound", note);
+            //warning: playing sound is client specific delayed. Casting ability must not.
             playMusicNote(abilityMusicSheet.musicSheet, note, game.sound);
         }
+        const noteTick = note.tick % abilityMusicSheet.maxPlayTicks;
+        if ((lastTick < noteTick && noteTick <= currentTick)
+            || (lastTick > currentTick && noteTick <= currentTick)
+        ) {
+            notesDamageTick.push(note);
+        }
     }
-    abilityMusicSheet.lastNotePlayTick = currentTick;
+    executeMusicNotesDamage(notesDamageTick, abilityOwner, abilityMusicSheet, game);
+    abilityMusicSheet.lastPlayTick = currentTick;
+}
+
+function executeMusicNotesDamage(notes: MusicNote[], abilityOwner: AbilityOwner, abilityMusicSheet: AbilityMusicSheet, game: Game) {
+    if (notes.length === 0) return;
+    let damage = 0;
+    if (abilityMusicSheet.lastPlayedNoteTime === undefined) {
+        damage = abilityMusicSheet.damagePerSecond;
+    } else {
+        const passedTime = (game.state.time - abilityMusicSheet.lastPlayedNoteTime) / 1000;
+        damage = abilityMusicSheet.damagePerSecond * passedTime;
+    }
+    let characters: Character[] = [];
+    if (abilityOwner.faction === FACTION_PLAYER) {
+        characters = determineCharactersInDistance(abilityOwner, game.state.map, game.state.players, game.state.bossStuff.bosses, 320, abilityOwner.faction, true);
+    }
+    const damagePerNote = damage / notes.length;
+    const explodeSize = 50;
+    for (let note of notes) {
+        let randomPos: Position | undefined = undefined;
+        if (characters.length > 0) {
+            const charIndex = Math.floor(nextRandom(game.state.randomSeed) * characters.length);
+            const character = characters[charIndex];
+            randomPos = {
+                x: character.x,
+                y: character.y,
+            };
+            characters.splice(charIndex, 1);
+        }
+        if (!randomPos) {
+            randomPos = {
+                x: abilityOwner.x + nextRandom(game.state.randomSeed) * 400 - 200,
+                y: abilityOwner.y + nextRandom(game.state.randomSeed) * 400 - 200,
+            }
+        }
+        const strikeObject = createAbilityObjectExplode(randomPos, damagePerNote, explodeSize, abilityOwner.faction, abilityMusicSheet.id, 0, game);
+        game.state.abilityObjects.push(strikeObject);
+    }
+
+    abilityMusicSheet.lastPlayedNoteTime = game.state.time;
 }
 
 function createAbilityMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability, game: Game): MoreInfoPart {
@@ -285,6 +339,14 @@ function createAbilityMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability,
         `Key: ${playerInputBindingToDisplayValue(abilityMusicSheet.playerInputBinding!, game)}`,
         `Click to place notes in music sheet.`,
     );
+    if (abilityMusicSheet.level) {
+        textLines.push(`Level: ${abilityMusicSheet.level.level}`);
+        if (abilityMusicSheet.level.leveling) {
+            textLines.push(
+                `XP: ${abilityMusicSheet.level.leveling.experience.toFixed(0)}/${abilityMusicSheet.level.leveling.experienceForLevelUp}`,
+            );
+        }
+    }
     pushAbilityUpgradesUiTexts(ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS, textLines, ability);
 
     return createMoreInfosPart(ctx, textLines);

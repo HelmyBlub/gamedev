@@ -1,11 +1,17 @@
-next test run: tamer
+next test run: 
 increase version
 
 current tasks:
+    - save certain settings
+        - volume 
+        - soundDelay
     - sound?
         - dev steps:
             - new ability musicSheet
                 - how to do damage
+                    - each note does an explosion random enemy location in range
+                    - damage and size dependant on note frequency
+                    - ability has a dps value and time till last note
         - thoughs and research
             - music ability
                 - dps should stay similar no mater how many or few notes

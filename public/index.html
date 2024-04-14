@@ -13,9 +13,29 @@
 <body>
     <canvas id="myCanvas" class="mainCanvas" width="400" height="300"></canvas>
     <button type="button" id="settingButton" class="settingButton"
-        onclick="document.getElementById('settings').classList.toggle('hide')">Version</button>
-    <div id="settings" class="settingAreaDiv hide">
-        <p>Debug Menu:</p>
+        onclick="document.getElementById('menu').classList.toggle('hide')">Version</button>
+    <div id="menu" class="tabs settingAreaDiv hide">
+        <div id="tab-settings" class="tab">
+            <input type="radio" id="tab1" class="" name="tabs" checked>
+            <label for="tab1" class="tab-label">Settings</label>
+            <div id="settings" class="content">
+                <p>Settings</p>
+            </div>
+        </div>
+        <div id="tab-debug" class="tab">
+            <input type="radio" id="tab2" class="" name="tabs">
+            <label for="tab2" class="tab-label">Debug</label>
+            <div id="debug" class="content">
+                <p>Debug Menu</p>
+            </div>
+        </div>
+        <div id="tab-test" class="tab">
+            <input type="radio" id="tab3" class="" name="tabs">
+            <label for="tab3" class="tab-label">Test</label>
+            <div id="test" class="content">
+                <p>Test</p>
+            </div>
+        </div>
     </div>
     <div id="stringInput" class="textInput hide">
         <label for="nameInput">Name:</label>

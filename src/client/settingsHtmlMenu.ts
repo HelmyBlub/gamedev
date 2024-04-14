@@ -5,19 +5,30 @@ import { deepCopy, getGameVersionString } from "./game.js";
 import { Debugging, Game } from "./gameModel.js";
 import { GAME_VERSION } from "./main.js";
 import { resetPermanentData } from "./permanentData.js";
-import { playMusicSheet1 } from "./sound.js";
 import { compressString, decompressString, downloadBlob, loadCompressedStateFromUrl } from "./stringCompress.js";
 import { initReplay, replayReplayData, testGame } from "./test/gameTest.js";
 
 export function addHTMLDebugMenusToSettings(game: Game) {
-    let settingsElement = document.getElementById("settings");
+    let settingsElement = document.getElementById("menu");
     if (!settingsElement) return;
     setVersionNumberToSettingButton();
+    addSettings(game);
+    addDebug(game);
+    addTest(game);
+}
+
+function addSettings(game: Game) {
+    addSettingSliderVolume(game);
+    addSettingInputBoxSoundDelay(game);
+    addSettingInputBoxPlayerPaintAlpha(game);
+    addSettingCheckbox("disableDamageNumbers", game, "settings");
+    addClearLocalStorageButton(game);
+}
+
+function addDebug(game: Game) {
     addSettingCheckbox("takeTimeMeasures", game);
     addSettingCheckbox("paintTileXYNumbers", game);
     addSettingCheckbox("paintMarkActiveChunks", game);
-    addSettingCheckbox("activateSaveStates", game);
-    addSettingCheckbox("disableDamageNumbers", game);
     addSettingCheckbox("lowKingHp", game);
     addSettingCheckbox("closeKingArea", game);
     addSettingCheckbox("closeGodArea", game);
@@ -25,16 +36,16 @@ export function addHTMLDebugMenusToSettings(game: Game) {
     addXpButton(game);
     addTankyButton(game);
     addSpawnBossButton(game);
-    addClearLocalStorageButton(game);
-    addSettingInputBoxPlayerPaintAlpha(game);
-    addSettingInputBoxSoundDelay(game);
     addGiveMoneyButton(game);
+}
+
+function addTest(game: Game) {
+    addSettingCheckbox("activateSaveStates", game, "test");
     addTestButton(game);
     addReplayLastRunButton(game);
     addCopyLastReplayButton(game);
     addCurrentStateToFileButton(game);
     addLoadTestStateButton(game);
-    addTestMusicButton(game);
 }
 
 function setVersionNumberToSettingButton() {
@@ -43,15 +54,15 @@ function setVersionNumberToSettingButton() {
     settingsButtonElement.innerHTML = `Version: ${getGameVersionString(GAME_VERSION)}`;
 }
 
-function addSettingCheckbox(checkboxName: keyof Debugging, game: Game) {
-    const settingsElement = document.getElementById("settings");
+function addSettingCheckbox(checkboxName: keyof Debugging, game: Game, tabCategory: string = "debug") {
+    const settingsElement = document.getElementById(tabCategory);
     if (!settingsElement) return;
     const debug: any = game.debug;
     let checkbox: HTMLInputElement = document.getElementById(checkboxName) as HTMLInputElement;
     if (!checkbox) {
         let canvasHTML = `
             <input type="checkbox" id="${checkboxName}" name="${checkboxName}">
-            <label for="debug">${checkboxName}</label><br>
+            <label for="${checkboxName}">${checkboxName}</label><br>
         `;
         settingsElement.insertAdjacentHTML("beforeend", canvasHTML);
         checkbox = document.getElementById(checkboxName) as HTMLInputElement;
@@ -69,6 +80,29 @@ function addSettingCheckbox(checkboxName: keyof Debugging, game: Game) {
     }
 }
 
+function addSettingSliderVolume(game: Game) {
+    const settingsElement = document.getElementById("settings");
+    if (!settingsElement) return;
+    const inputBoxId = "volume";
+    let input: HTMLInputElement = document.getElementById(inputBoxId) as HTMLInputElement;
+    if (!input) {
+        let canvasHTML = `
+            <input type="range" id="${inputBoxId}" name="${inputBoxId}" min=0 max=100 value="10" style="width: 50;" oninput="this.nextElementSibling.value = this.value">
+            <output>10</output>
+            <label for="debug">: ${inputBoxId}</label><br>
+        `;
+        settingsElement.insertAdjacentHTML("beforeend", canvasHTML);
+        input = document.getElementById(inputBoxId) as HTMLInputElement;
+    }
+    if (input) {
+        input.addEventListener('input', () => {
+            if (game.sound) {
+                game.sound.volume.gain.setValueAtTime(parseInt(input.value) / 100, game.sound.audioContext.currentTime);
+            }
+        });
+    }
+}
+
 function addSettingInputBoxPlayerPaintAlpha(game: Game) {
     const settingsElement = document.getElementById("settings");
     if (!settingsElement) return;
@@ -76,7 +110,7 @@ function addSettingInputBoxPlayerPaintAlpha(game: Game) {
     let input: HTMLInputElement = document.getElementById(inputBoxId) as HTMLInputElement;
     if (!input) {
         let canvasHTML = `
-            <input type="number" id="${inputBoxId}" name="${inputBoxId}" value="100" style="width: 50;">
+            <input type="number" id="${inputBoxId}" name="${inputBoxId}" value="100" style="width: 50px;">
             <label for="debug">%: ${inputBoxId}</label><br>
         `;
         settingsElement.insertAdjacentHTML("beforeend", canvasHTML);
@@ -88,6 +122,7 @@ function addSettingInputBoxPlayerPaintAlpha(game: Game) {
         });
     }
 }
+
 function addSettingInputBoxSoundDelay(game: Game) {
     const settingsElement = document.getElementById("settings");
     if (!settingsElement) return;
@@ -95,7 +130,7 @@ function addSettingInputBoxSoundDelay(game: Game) {
     let input: HTMLInputElement = document.getElementById(inputBoxId) as HTMLInputElement;
     if (!input) {
         let canvasHTML = `
-            <input type="number" id="${inputBoxId}" step=10 name="${inputBoxId}" value="0" style="width: 50;">
+            <input type="number" id="${inputBoxId}" step=10 name="${inputBoxId}" value="0" style="width: 50px;">
             <label for="debug">: ${inputBoxId} in ms</label><br>
         `;
         settingsElement.insertAdjacentHTML("beforeend", canvasHTML);
@@ -109,19 +144,20 @@ function addSettingInputBoxSoundDelay(game: Game) {
 }
 
 function addClearLocalStorageButton(game: Game) {
-    const buttonName = "clear local storage";
-    addSettingButton(buttonName);
+    const buttonName = "delete all data (page reload required)";
+    addButtonToTab(buttonName, "settings");
     const button = document.getElementById(buttonName) as HTMLButtonElement;
     if (button) {
         button.addEventListener('click', () => {
             resetPermanentData();
         });
+        button.style.marginTop = "20px";
     }
 }
 
 function addSpawnBossButton(game: Game) {
     const buttonName = "next boss spawn";
-    addSettingButton(buttonName);
+    addButtonToTab(buttonName, "debug");
     const button = document.getElementById(buttonName) as HTMLButtonElement;
     if (button) {
         button.addEventListener('click', () => {
@@ -135,7 +171,7 @@ function addSpawnBossButton(game: Game) {
 
 function addTankyButton(game: Game) {
     const buttonName = "Very Tanky";
-    addSettingButton(buttonName);
+    addButtonToTab(buttonName, "debug");
     const button = document.getElementById(buttonName) as HTMLButtonElement;
     if (button) {
         button.addEventListener('click', () => {
@@ -149,7 +185,7 @@ function addTankyButton(game: Game) {
 
 function addTestButton(game: Game) {
     const buttonName = "Run Test Replays";
-    addSettingButton(buttonName);
+    addButtonToTab(buttonName, "test");
     const button = document.getElementById(buttonName) as HTMLButtonElement;
     if (button) {
         button.addEventListener('click', () => {
@@ -162,7 +198,7 @@ function addTestButton(game: Game) {
 
 function addReplayLastRunButton(game: Game) {
     const buttonName = "Replay last run";
-    addSettingButton(buttonName);
+    addButtonToTab(buttonName, "test");
     const button = document.getElementById(buttonName) as HTMLButtonElement;
     if (button) {
         button.addEventListener('click', () => {
@@ -176,7 +212,7 @@ function addReplayLastRunButton(game: Game) {
 
 function addCopyLastReplayButton(game: Game) {
     const buttonName = "copy last replay";
-    addSettingButton(buttonName);
+    addButtonToTab(buttonName, "test");
     const button = document.getElementById(buttonName) as HTMLButtonElement;
     if (button) {
         button.addEventListener('click', () => {
@@ -189,7 +225,7 @@ function addCopyLastReplayButton(game: Game) {
 
 function addCurrentStateToFileButton(game: Game) {
     const buttonName = "save current game state to file";
-    addSettingButton(buttonName);
+    addButtonToTab(buttonName, "test");
     const button = document.getElementById(buttonName) as HTMLButtonElement;
     if (button) {
         button.addEventListener('click', () => {
@@ -200,21 +236,10 @@ function addCurrentStateToFileButton(game: Game) {
         });
     }
 }
-function addTestMusicButton(game: Game) {
-    const buttonName = "play test music";
-    addSettingButton(buttonName);
-    const button = document.getElementById(buttonName) as HTMLButtonElement;
-    if (button) {
-        button.addEventListener('click', async () => {
-            playMusicSheet1(game.sound);
-        });
-    }
-}
-
 
 function addLoadTestStateButton(game: Game) {
     const buttonName = "load test state1";
-    addSettingButton(buttonName);
+    addButtonToTab(buttonName, "test");
     const button = document.getElementById(buttonName) as HTMLButtonElement;
     if (button) {
         button.addEventListener('click', async () => {
@@ -229,7 +254,7 @@ function addLoadTestStateButton(game: Game) {
 
 function addXpButton(game: Game) {
     const buttonName = "add alot experience";
-    addSettingButton(buttonName);
+    addButtonToTab(buttonName, "debug");
     const button = document.getElementById(buttonName) as HTMLButtonElement;
     if (button) {
         button.addEventListener('click', () => {
@@ -244,7 +269,7 @@ function addXpButton(game: Game) {
 
 function addBossSkillPointButton(game: Game) {
     const buttonName = "addBossSkillPoint";
-    addSettingButton(buttonName);
+    addButtonToTab(buttonName, "debug");
     const button = document.getElementById(buttonName) as HTMLButtonElement;
     if (button) {
         button.addEventListener('click', () => {
@@ -255,7 +280,7 @@ function addBossSkillPointButton(game: Game) {
 
 function addGiveMoneyButton(game: Game) {
     const buttonName = "give Money";
-    addSettingButton(buttonName);
+    addButtonToTab(buttonName, "debug");
     const button = document.getElementById(buttonName) as HTMLButtonElement;
     if (button) {
         button.addEventListener('click', () => {
@@ -268,8 +293,8 @@ function addGiveMoneyButton(game: Game) {
     }
 }
 
-function addSettingButton(buttonName: string) {
-    const settingsElement = document.getElementById("settings");
+function addButtonToTab(buttonName: string, tabCategory: string) {
+    const settingsElement = document.getElementById(tabCategory);
     if (!settingsElement) return;
     const button: HTMLButtonElement = document.getElementById(buttonName) as HTMLButtonElement;
     if (!button) {
