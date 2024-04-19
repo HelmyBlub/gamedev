@@ -145,7 +145,7 @@ function addSettingInputBoxPlayerPaintAlpha(game: Game, settings: SettingsLocalS
     let input: HTMLInputElement = document.getElementById(inputBoxId) as HTMLInputElement;
     if (!input) {
         let canvasHTML = `
-            <input type="number" id="${inputBoxId}" step="5" name="${inputBoxId}" value="${settings.playerAlpha}" style="width: 50px;">
+            <input type="number" id="${inputBoxId}" step="5" max=100 min=0 name="${inputBoxId}" value="${settings.playerAlpha}" style="width: 50px;">
             <label for="debug">%: ${inputBoxId}</label><br>
         `;
         settingsElement.insertAdjacentHTML("beforeend", canvasHTML);

@@ -5,6 +5,9 @@ current tasks:
     - sound?
         - dev steps:
             - new ability musicSheet
+                - two/three music sheets
+                - 1/8 notes, 1/16 notes
+                - change base octave of music sheet
                 - more music note types (sound related)
                 - upgrades (damage related)
         - thoughs and research
