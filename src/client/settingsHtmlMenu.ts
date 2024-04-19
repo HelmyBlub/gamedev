@@ -8,6 +8,14 @@ import { resetPermanentData } from "./permanentData.js";
 import { compressString, decompressString, downloadBlob, loadCompressedStateFromUrl } from "./stringCompress.js";
 import { initReplay, replayReplayData, testGame } from "./test/gameTest.js";
 
+type SettingsLocalStorage = {
+    sliderVolume: number,
+    soundDelay: number,
+    playerAlpha: number,
+    disableDamageNumbers: boolean,
+}
+const LOCALSTORAGE_SETTINGS = "settings";
+
 export function addHTMLDebugMenusToSettings(game: Game) {
     let settingsElement = document.getElementById("menu");
     if (!settingsElement) return;
@@ -17,11 +25,27 @@ export function addHTMLDebugMenusToSettings(game: Game) {
     addTest(game);
 }
 
+function saveSettingsInLocalStorage(settingsLocalStorage: SettingsLocalStorage) {
+    localStorage.setItem(LOCALSTORAGE_SETTINGS, JSON.stringify(settingsLocalStorage));
+}
+
+function getSettingsFromLocalStorage(): SettingsLocalStorage {
+    const settings = localStorage.getItem(LOCALSTORAGE_SETTINGS);
+    if (settings) return JSON.parse(settings) as SettingsLocalStorage;
+    return {
+        disableDamageNumbers: false,
+        playerAlpha: 100,
+        sliderVolume: 10,
+        soundDelay: 0,
+    };
+}
+
 function addSettings(game: Game) {
-    addSettingSliderVolume(game);
-    addSettingInputBoxSoundDelay(game);
-    addSettingInputBoxPlayerPaintAlpha(game);
-    addSettingCheckbox("disableDamageNumbers", game, "settings");
+    const settings = getSettingsFromLocalStorage();
+    addSettingSliderVolume(game, settings);
+    addSettingInputBoxSoundDelay(game, settings);
+    addSettingInputBoxPlayerPaintAlpha(game, settings);
+    addSettingCheckbox("disableDamageNumbers", game, "settings", settings);
     addClearLocalStorageButton(game);
 }
 
@@ -54,7 +78,7 @@ function setVersionNumberToSettingButton() {
     settingsButtonElement.innerHTML = `Version: ${getGameVersionString(GAME_VERSION)}`;
 }
 
-function addSettingCheckbox(checkboxName: keyof Debugging, game: Game, tabCategory: string = "debug") {
+function addSettingCheckbox(checkboxName: keyof Debugging, game: Game, tabCategory: string = "debug", settings: SettingsLocalStorage | undefined = undefined) {
     const settingsElement = document.getElementById(tabCategory);
     if (!settingsElement) return;
     const debug: any = game.debug;
@@ -68,6 +92,11 @@ function addSettingCheckbox(checkboxName: keyof Debugging, game: Game, tabCatego
         checkbox = document.getElementById(checkboxName) as HTMLInputElement;
     }
     if (checkbox) {
+        let settingExists = settings && (settings as any)[checkboxName] !== undefined;
+        if (settingExists) {
+            checkbox.checked = (settings as any)[checkboxName];
+            debug[checkboxName] = checkbox.checked;
+        }
         checkbox.addEventListener('change', () => {
             if (checkbox.checked) {
                 debug[checkboxName] = true;
@@ -76,19 +105,23 @@ function addSettingCheckbox(checkboxName: keyof Debugging, game: Game, tabCatego
                 debug[checkboxName] = false;
                 game.performance = {};
             }
+            if (settings && settingExists) {
+                (settings as any)[checkboxName] = checkbox.checked;
+                saveSettingsInLocalStorage(settings);
+            }
         });
     }
 }
 
-function addSettingSliderVolume(game: Game) {
+function addSettingSliderVolume(game: Game, settings: SettingsLocalStorage) {
     const settingsElement = document.getElementById("settings");
     if (!settingsElement) return;
     const inputBoxId = "volume";
     let input: HTMLInputElement = document.getElementById(inputBoxId) as HTMLInputElement;
     if (!input) {
         let canvasHTML = `
-            <input type="range" id="${inputBoxId}" name="${inputBoxId}" min=0 max=100 value="10" style="width: 50;" oninput="this.nextElementSibling.value = this.value">
-            <output>10</output>
+            <input type="range" id="${inputBoxId}" name="${inputBoxId}" min=0 max=100 value="${settings.sliderVolume}" style="width: 50;" oninput="this.nextElementSibling.value = this.value">
+            <output>${settings.sliderVolume}</output>
             <label for="debug">: ${inputBoxId}</label><br>
         `;
         settingsElement.insertAdjacentHTML("beforeend", canvasHTML);
@@ -97,20 +130,22 @@ function addSettingSliderVolume(game: Game) {
     if (input) {
         input.addEventListener('input', () => {
             if (game.sound) {
-                game.sound.volume.gain.setValueAtTime(parseInt(input.value) / 100, game.sound.audioContext.currentTime);
+                settings.sliderVolume = parseInt(input.value);
+                saveSettingsInLocalStorage(settings);
+                game.sound.volume.gain.setValueAtTime(settings.sliderVolume / 100, game.sound.audioContext.currentTime);
             }
         });
     }
 }
 
-function addSettingInputBoxPlayerPaintAlpha(game: Game) {
+function addSettingInputBoxPlayerPaintAlpha(game: Game, settings: SettingsLocalStorage) {
     const settingsElement = document.getElementById("settings");
     if (!settingsElement) return;
     const inputBoxId = "playerGlobalAlphaMultiplier";
     let input: HTMLInputElement = document.getElementById(inputBoxId) as HTMLInputElement;
     if (!input) {
         let canvasHTML = `
-            <input type="number" id="${inputBoxId}" name="${inputBoxId}" value="100" style="width: 50px;">
+            <input type="number" id="${inputBoxId}" step="5" name="${inputBoxId}" value="${settings.playerAlpha}" style="width: 50px;">
             <label for="debug">%: ${inputBoxId}</label><br>
         `;
         settingsElement.insertAdjacentHTML("beforeend", canvasHTML);
@@ -118,19 +153,21 @@ function addSettingInputBoxPlayerPaintAlpha(game: Game) {
     }
     if (input) {
         input.addEventListener('input', () => {
-            game.UI.playerGlobalAlphaMultiplier = parseInt(input.value) / 100;
+            settings.playerAlpha = parseInt(input.value);
+            saveSettingsInLocalStorage(settings);
+            game.UI.playerGlobalAlphaMultiplier = settings.playerAlpha / 100;
         });
     }
 }
 
-function addSettingInputBoxSoundDelay(game: Game) {
+function addSettingInputBoxSoundDelay(game: Game, settings: SettingsLocalStorage) {
     const settingsElement = document.getElementById("settings");
     if (!settingsElement) return;
     const inputBoxId = "soundDelay";
     let input: HTMLInputElement = document.getElementById(inputBoxId) as HTMLInputElement;
     if (!input) {
         let canvasHTML = `
-            <input type="number" id="${inputBoxId}" step=10 name="${inputBoxId}" value="0" style="width: 50px;">
+            <input type="number" id="${inputBoxId}" step=10 name="${inputBoxId}" value="${settings.soundDelay}" style="width: 50px;">
             <label for="debug">: ${inputBoxId} in ms</label><br>
         `;
         settingsElement.insertAdjacentHTML("beforeend", canvasHTML);
@@ -138,7 +175,11 @@ function addSettingInputBoxSoundDelay(game: Game) {
     }
     if (input) {
         input.addEventListener('input', () => {
-            if (game.sound) game.sound.customDelay = parseInt(input.value);
+            if (game.sound) {
+                game.sound.customDelay = parseInt(input.value);
+                settings.soundDelay = game.sound.customDelay;
+                saveSettingsInLocalStorage(settings);
+            }
         });
     }
 }

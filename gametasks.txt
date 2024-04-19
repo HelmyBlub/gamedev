@@ -2,21 +2,15 @@ next test run:
 increase version
 
 current tasks:
-    - save certain settings
-        - volume 
-        - soundDelay
     - sound?
         - dev steps:
             - new ability musicSheet
-                - how to do damage
-                    - each note does an explosion random enemy location in range
-                    - damage and size dependant on note frequency
-                    - ability has a dps value and time till last note
+                - more music note types (sound related)
+                - upgrades (damage related)
         - thoughs and research
             - music ability
-                - dps should stay similar no mater how many or few notes
-                - many notes -> more damage effect with less damage
-                - less notes -> less effect wth more size & damage
+                - does not feel good yet (the music i made)
+                - am im not good with music or does my musicSheet ability need more options?
             - upgrade gives instruments (different note types)
                 - different note types have different damage effects
             - try out different kind of sounds? e.g.: sine, triagle and custom? 
