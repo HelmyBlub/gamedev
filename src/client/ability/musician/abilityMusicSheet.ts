@@ -367,8 +367,9 @@ function paintNotes(ctx: CanvasRenderingContext2D, abilityMusicSheet: AbilityMus
             ctx.lineWidth = 2;
             ctx.beginPath();
             const noteStemDirection = lineNumber < 3 ? 1 : -1;
-            ctx.moveTo(noteX + noteRadius - 1, noteY);
-            ctx.lineTo(noteX + noteRadius - 1, noteY + noteStemSize * noteStemDirection);
+            const noteStemOffsetX = noteStemDirection < 0 ? noteRadius - 1 : -noteRadius + 1;
+            ctx.moveTo(noteX + noteStemOffsetX, noteY);
+            ctx.lineTo(noteX + noteStemOffsetX, noteY + noteStemSize * noteStemDirection);
             ctx.stroke();
         }
         if (note.semitone) {
