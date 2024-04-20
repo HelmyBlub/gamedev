@@ -52,6 +52,7 @@ export function generateNote(duration: number, note: MusicNote, sound: Sound | u
     gainNode.connect(sound.volume);
 
     const oscillator = sound.audioContext.createOscillator();
+    oscillator.type = "sine";
     let frequencyIndex = notesToFrequencyIndex[note.note];
     let octave = note.octave;
     if (note.semitone) {
@@ -71,13 +72,19 @@ export function generateNote(duration: number, note: MusicNote, sound: Sound | u
     }
     oscillator.frequency.setValueAtTime(notesFrequency[octave][frequencyIndex], sound.audioContext.currentTime);
     oscillator.connect(gainNode);
-    oscillator.start();
-    setTimeout(() => {
-        if (sound === undefined) return;
-        let stopDuration = 0.5;
-        gainNode.gain.exponentialRampToValueAtTime(0.00001, sound.audioContext.currentTime + stopDuration);
-        setTimeout(() => {
-            oscillator.stop();
-        }, stopDuration * 1000);
-    }, duration);
+
+    const attackTime = 0.05;
+    const decayTime = 0.1;
+
+    const currentTime = sound.audioContext.currentTime;
+
+    gainNode.gain.setValueAtTime(0, currentTime);
+    gainNode.gain.linearRampToValueAtTime(1, currentTime + attackTime);
+    gainNode.gain.linearRampToValueAtTime(0.5, currentTime + attackTime + decayTime);
+    let stopTime = currentTime + duration / 1000;
+    if (stopTime <= currentTime + attackTime + decayTime) stopTime = currentTime + attackTime + decayTime + 0.05;
+    gainNode.gain.linearRampToValueAtTime(0, stopTime);
+
+    oscillator.start(currentTime);
+    oscillator.stop(stopTime);
 }
