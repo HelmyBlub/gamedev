@@ -5,11 +5,20 @@ current tasks:
     - sound?
         - dev steps:
             - new ability musicSheet
-                - 1/8 notes, 1/16 notes
-                - change base octave of music sheet
-                - how to handle long music sheets
-                - more music note types (sound related)
                 - upgrades (damage related)
+                    - instruments:
+                        - "sine" -> bullet (fly towards enemies, priorities boss)
+                        - "square" -> explosion
+                        - "triangle" -> rotating around player
+                    - instrument damage chains
+                        - 1."sine", 2."square" -> explosion spawns bullets
+                        - 1."square", 2. "Sine" -> bullets spawns explosions
+
+                - more music note types (sound related)
+                    - 1/8 notes, 1/16 notes
+                    - change base octave of music sheet
+                    - how to handle long music sheets
+                    - do not allow note stacking, prevent to loud notes
         - thoughs and research
             - music ability
                 - does not feel good yet (the music i made)

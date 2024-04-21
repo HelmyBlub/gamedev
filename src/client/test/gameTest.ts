@@ -45,16 +45,16 @@ export function saveReplayDataToLocalStorage(replayResult: ReplayResult) {
     if (!pastReplayData.results[replayResult.fileName]) pastReplayData.results[replayResult.fileName] = [];
     const fileResults = pastReplayData.results[replayResult.fileName];
     fileResults.push(replayResult);
-    localStorage.setItem(LOCALSTORAGE_PAST_TEST_REPLAY_DATA, JSON.stringify(pastReplayData));
     let timeChangeToLastRun = 0;
     if (fileResults.length > 1) {
         const newTime = replayResult.time;
         const lastTime = fileResults[fileResults.length - 2].time;
         timeChangeToLastRun = (newTime - lastTime) / lastTime;
-        if (fileResults.length > pastReplayData.maxKeep) {
+        while (fileResults.length > pastReplayData.maxKeep) {
             fileResults.shift();
         }
     }
+    localStorage.setItem(LOCALSTORAGE_PAST_TEST_REPLAY_DATA, JSON.stringify(pastReplayData));
     console.log(
         `Filename: ${replayResult.fileName}`,
         replayResult.success ? `` : `success: ${replayResult.success}`,

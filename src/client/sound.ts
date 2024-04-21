@@ -1,8 +1,17 @@
-import { Game } from "./gameModel";
+import { ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_SINE } from "./ability/musician/abilityMusicSheetInstrumentSine.js";
+import { ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_SQUARE } from "./ability/musician/abilityMusicSheetInstrumentSquare.js";
+import { ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_TRIANGLE } from "./ability/musician/abilityMusicSheetInstrumentTriangle.js";
 
 export type Note = "C" | "D" | "E" | "F" | "G" | "A" | "B";
 export type Semitone = "flat" | "sharp";
-export type MusicNote = { note: Note, semitone?: Semitone, durationFactor: number, octave: number, tick: number };
+export type MusicNote = {
+    note: Note,
+    semitone?: Semitone,
+    durationFactor: number,
+    octave: number,
+    tick: number,
+    type?: string
+};
 export type MusicSheet = {
     notes: MusicNote[],
     speed: number,
@@ -50,9 +59,18 @@ export function generateNote(duration: number, note: MusicNote, sound: Sound | u
 
     const gainNode = sound.audioContext.createGain();
     gainNode.connect(sound.volume);
-
+    let soundVolume2Modify = 1;
     const oscillator = sound.audioContext.createOscillator();
-    oscillator.type = "sine";
+    if (note.type) {
+        if (note.type === ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_SINE) oscillator.type = "sine";
+        if (note.type === ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_SQUARE) {
+            oscillator.type = "square";
+            soundVolume2Modify = 0.25;
+        }
+        if (note.type === ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_TRIANGLE) {
+            oscillator.type = "triangle";
+        }
+    }
     let frequencyIndex = notesToFrequencyIndex[note.note];
     let octave = note.octave;
     if (note.semitone) {
@@ -79,8 +97,8 @@ export function generateNote(duration: number, note: MusicNote, sound: Sound | u
     const currentTime = sound.audioContext.currentTime;
 
     gainNode.gain.setValueAtTime(0, currentTime);
-    gainNode.gain.linearRampToValueAtTime(1, currentTime + attackTime);
-    gainNode.gain.linearRampToValueAtTime(0.5, currentTime + attackTime + decayTime);
+    gainNode.gain.linearRampToValueAtTime(1 * soundVolume2Modify, currentTime + attackTime);
+    gainNode.gain.linearRampToValueAtTime(0.5 * soundVolume2Modify, currentTime + attackTime + decayTime);
     let stopTime = currentTime + duration / 1000;
     if (stopTime <= currentTime + attackTime + decayTime) stopTime = currentTime + attackTime + decayTime + 0.05;
     gainNode.gain.linearRampToValueAtTime(0, stopTime);

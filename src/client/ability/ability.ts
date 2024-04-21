@@ -39,6 +39,7 @@ import { CharacterClass } from "../character/playerCharacters/playerCharacters.j
 import { MoreInfoPart, paintMoreInfosPart } from "../moreInfo.js"
 import { AbilityDamageBreakdown, addDamageBreakDownToDamageMeter } from "../combatlog.js"
 import { addAbilityMusicSheet } from "./musician/abilityMusicSheet.js"
+import { addAbilityMusicSheetChangeInstrument } from "./musician/abilityMusicSheetChangeInstrument.js"
 
 export type Ability = {
     id: number,
@@ -137,6 +138,7 @@ export function onDomLoadSetAbilitiesFunctions() {
     addAbilityLightningStrikes();
     addAbilityUnleashPet();
     addAbilityMusicSheet();
+    addAbilityMusicSheetChangeInstrument();
 }
 
 export function doAbilityDamageBreakDown(damage: number, ability: Ability | undefined, abilityObject: AbilityObject | undefined, damageAbilityName: string, game: Game) {
