@@ -1,16 +1,17 @@
 import { determineCharactersInDistance } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
 import { UpgradeOptionAndProbability, AbilityUpgradeOption } from "../../character/upgrade.js";
+import { calculateDirection } from "../../game.js";
 import { Game, FACTION_PLAYER, Position } from "../../gameModel.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
 import { MusicNote } from "../../sound.js";
-import { Ability, AbilityOwner } from "../ability.js";
-import { createAbilityObjectExplode } from "../abilityExplode.js";
+import { Ability, AbilityObject, AbilityOwner } from "../ability.js";
+import { ABILITY_NAME_SHOOT } from "../abilityShoot.js";
 import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrade.js";
-import { ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS, AbilityMusicSheets, MusicInstrumentType } from "./abilityMusicSheet.js";
+import { createProjectile } from "../projectile.js";
+import { ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS, AbilityMusicSheets, getMusicSheetUpgradeChainPosition } from "./abilityMusicSheet.js";
 
 export type AbilityMusicSheetUpgradeInstrumentSine = AbilityUpgrade & {
-    type: MusicInstrumentType,
     lastPlayedNoteTime?: number,
 }
 
@@ -18,6 +19,7 @@ export const ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_SINE = "Instrument Sine";
 
 export function addAbilityMusicSheetUpgradeInstrumentSine() {
     ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS[ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_SINE] = {
+        getChainPosition: getChainPosition,
         getStatsDisplayText: getAbilityUpgradeUiText,
         getMoreInfoText: getAbilityUpgradeUiTextLong,
         getOptions: getOptions,
@@ -29,6 +31,22 @@ export function addAbilityMusicSheetUpgradeInstrumentSine() {
 }
 
 function reset(ability: Ability) {
+}
+
+function getChainPosition(abilityOwner: AbilityOwner, abilityMusicSheets: AbilityMusicSheets, game: Game): Position {
+    const sineObjects: AbilityObject[] = [];
+    for (let object of game.state.abilityObjects) {
+        if (object.abilityIdRef === abilityMusicSheets.id && object.type === ABILITY_NAME_SHOOT) {
+            sineObjects.push(object);
+        }
+    }
+    if (sineObjects.length < 1) {
+        return { x: abilityOwner.x, y: abilityOwner.y };
+    } else {
+        const randomIndex = sineObjects.length === 1 ? 0 : Math.floor(sineObjects.length * nextRandom(game.state.randomSeed));
+        const randomObject = sineObjects[randomIndex];
+        return { x: randomObject.x, y: randomObject.y };
+    }
 }
 
 function paintNote(ctx: CanvasRenderingContext2D, note: MusicNote, notePaintX: number, notePaintY: number, lineNumber: number, noteRadius: number) {
@@ -69,7 +87,7 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption) {
     const musicSheet = ability as AbilityMusicSheets;
     let up: AbilityMusicSheetUpgradeInstrumentSine;
     if (musicSheet.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_SINE] === undefined) {
-        up = { level: 0, type: "Sine" };
+        up = { level: 0 };
         musicSheet.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_SINE] = up;
         musicSheet.selectedInstrument = ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_SINE;
     } else {
@@ -111,30 +129,25 @@ function executeMusicNotesDamage(notes: MusicNote[], abilityOwner: AbilityOwner,
         damage = abilityMusicSheets.damagePerSecond * passedTime;
     }
     let characters: Character[] = [];
+    const chainPos = getMusicSheetUpgradeChainPosition(abilityMusicSheets, abilityOwner, game);
     if (abilityOwner.faction === FACTION_PLAYER) {
-        characters = determineCharactersInDistance(abilityOwner, game.state.map, game.state.players, game.state.bossStuff.bosses, 320, abilityOwner.faction, true);
+        characters = determineCharactersInDistance(chainPos, game.state.map, game.state.players, game.state.bossStuff.bosses, 160, abilityOwner.faction, true);
     }
     const damagePerNote = damage / notes.length;
-    const explodeSize = 50;
     for (let note of notes) {
-        let randomPos: Position | undefined = undefined;
+        let randomDirection: number | undefined = undefined;
         if (characters.length > 0) {
             const charIndex = Math.floor(nextRandom(game.state.randomSeed) * characters.length);
-            const character = characters[charIndex];
-            randomPos = {
-                x: character.x,
-                y: character.y,
-            };
+            const target = characters[charIndex];
+            randomDirection = calculateDirection(chainPos, target);
             characters.splice(charIndex, 1);
         }
-        if (!randomPos) {
-            randomPos = {
-                x: abilityOwner.x + nextRandom(game.state.randomSeed) * 400 - 200,
-                y: abilityOwner.y + nextRandom(game.state.randomSeed) * 400 - 200,
-            }
+        if (!randomDirection) {
+            randomDirection = nextRandom(game.state.randomSeed) * Math.PI * 2;
         }
-        const strikeObject = createAbilityObjectExplode(randomPos, damagePerNote, explodeSize, abilityOwner.faction, abilityMusicSheets.id, 0, game);
-        game.state.abilityObjects.push(strikeObject);
+        const radius = 10;
+        const bullet = createProjectile(chainPos.x, chainPos.y, randomDirection, damagePerNote, abilityOwner.faction, 4, game.state.time, 1000, 5000, ABILITY_NAME_SHOOT, abilityMusicSheets.id, radius);
+        game.state.abilityObjects.push(bullet);
     }
 
     upgrade.lastPlayedNoteTime = game.state.time;

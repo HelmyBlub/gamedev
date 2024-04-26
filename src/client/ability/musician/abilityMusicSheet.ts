@@ -15,6 +15,7 @@ import { findMyCharacter } from "../../character/character.js";
 import { addAbilityMusicSheetUpgradeInstrumentTriangle } from "./abilityMusicSheetInstrumentTriangle.js";
 
 export type AbilityMusicSheets = Ability & {
+    chainOrder?: string,
     musicSheets: AbilityMusicSheet[],
     selectedMusicSheetIndex: number,
     maxMusicSheets: number,
@@ -30,13 +31,12 @@ export type AbilityMusicSheets = Ability & {
 export type AbilityUpgradeFunctionsMusician = AbilityUpgradeFunctions & {
     executeNoteDamage: (notes: MusicNote[], abilityOwner: AbilityOwner, abilityMusicSheets: AbilityMusicSheets, game: Game) => void
     paintNote: (ctx: CanvasRenderingContext2D, note: MusicNote, notePaintX: number, notePaintY: number, lineNumber: number, noteRadius: number) => void,
+    getChainPosition: (abilityOwner: AbilityOwner, abilityMusicSheets: AbilityMusicSheets, game: Game) => Position,
 }
 
 export type AbilityUpgradesFunctionsMusician = {
     [key: string]: AbilityUpgradeFunctionsMusician,
 }
-
-export type MusicInstrumentType = "Sine" | "Square";
 
 export type AbilityMusicSheet = {
     musicSheet: MusicSheet,
@@ -110,6 +110,12 @@ export function createAbilityMusicSheet(
         damagePerSecond: 200,
         buttonWidth: 20,
     };
+}
+
+export function getMusicSheetUpgradeChainPosition(musicSheets: AbilityMusicSheets, abilityOwner: AbilityOwner, game: Game): Position {
+    if (!musicSheets.chainOrder) return { x: abilityOwner.x, y: abilityOwner.y };
+    const functions = ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS[musicSheets.chainOrder];
+    return functions.getChainPosition(abilityOwner, musicSheets, game);
 }
 
 function createDamageBreakDown(damage: number, ability: Ability, abilityObject: AbilityObject | undefined, damageAbilityName: string, game: Game): AbilityDamageBreakdown[] {
@@ -413,10 +419,10 @@ function yPosToMusicNote(yClickPos: number, yOwnerPos: number, abilityMusicSheet
 }
 
 function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
-    const abilityMusicSheet = ability as AbilityMusicSheets;
+    const abilityMusicSheets = ability as AbilityMusicSheets;
     const typeToArrayIndex = new Map<string, number>();
     const notesDamageTypeTicks: MusicNote[][] = [];
-    for (let selectedMusicSheet of abilityMusicSheet.musicSheets) {
+    for (let selectedMusicSheet of abilityMusicSheets.musicSheets) {
         const musicSheetTime = (game.state.time) % (selectedMusicSheet.musicSheet.speed * selectedMusicSheet.maxPlayTicks);
         const currentTick = musicSheetTime / selectedMusicSheet.musicSheet.speed;
         const lastTick = selectedMusicSheet.lastPlayTick;
@@ -456,7 +462,15 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
         const noteType = notesDamageTicks[0].type;
         if (noteType === undefined) continue;
         let upgradeFunctions = ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS[noteType];
-        upgradeFunctions.executeNoteDamage(notesDamageTicks, abilityOwner, abilityMusicSheet, game);
+        upgradeFunctions.executeNoteDamage(notesDamageTicks, abilityOwner, abilityMusicSheets, game);
+    }
+
+    if (abilityMusicSheets.musicSheets.length > 0) {
+        if (abilityMusicSheets.musicSheets[0].lastPlayTick % 4 === 3) {
+            abilityMusicSheets.chainOrder = undefined;
+        } else if (notesDamageTypeTicks.length > 0 && notesDamageTypeTicks[0].length > 0 && notesDamageTypeTicks[0][0].type) {
+            abilityMusicSheets.chainOrder = notesDamageTypeTicks[0][0].type;
+        }
     }
 }
 

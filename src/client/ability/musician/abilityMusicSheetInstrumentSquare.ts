@@ -7,10 +7,10 @@ import { MusicNote } from "../../sound.js";
 import { Ability, AbilityOwner } from "../ability.js";
 import { createAbilityObjectExplode } from "../abilityExplode.js";
 import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrade.js";
-import { ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS, AbilityMusicSheets, MusicInstrumentType } from "./abilityMusicSheet.js";
+import { ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS, AbilityMusicSheets, getMusicSheetUpgradeChainPosition } from "./abilityMusicSheet.js";
 
 export type AbilityMusicSheetUpgradeInstrumentSquare = AbilityUpgrade & {
-    type: MusicInstrumentType,
+    lastSpawns: Position[],
     lastPlayedNoteTime?: number,
 }
 
@@ -18,6 +18,7 @@ export const ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_SQUARE = "Instrument Square"
 
 export function addAbilityMusicSheetUpgradeInstrumentSquare() {
     ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS[ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_SQUARE] = {
+        getChainPosition: getChainPosition,
         getStatsDisplayText: getAbilityUpgradeUiText,
         getMoreInfoText: getAbilityUpgradeUiTextLong,
         getOptions: getOptions,
@@ -29,6 +30,15 @@ export function addAbilityMusicSheetUpgradeInstrumentSquare() {
 }
 
 function reset(ability: Ability) {
+}
+
+function getChainPosition(abilityOwner: AbilityOwner, abilityMusicSheets: AbilityMusicSheets, game: Game): Position {
+    const upgrade: AbilityMusicSheetUpgradeInstrumentSquare | undefined = abilityMusicSheets.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_SQUARE];
+    if (!upgrade || upgrade.lastSpawns.length < 1) return { x: abilityOwner.x, y: abilityOwner.y };
+
+    const randomIndex = upgrade.lastSpawns.length === 1 ? 0 : Math.floor(upgrade.lastSpawns.length * nextRandom(game.state.randomSeed));
+    const randomPos = upgrade.lastSpawns[randomIndex];
+    return { x: randomPos.x, y: randomPos.y };
 }
 
 function paintNote(ctx: CanvasRenderingContext2D, note: MusicNote, notePaintX: number, notePaintY: number, lineNumber: number, noteRadius: number) {
@@ -69,7 +79,7 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption) {
     const musicSheet = ability as AbilityMusicSheets;
     let up: AbilityMusicSheetUpgradeInstrumentSquare;
     if (musicSheet.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_SQUARE] === undefined) {
-        up = { level: 0, type: "Square" };
+        up = { level: 0, lastSpawns: [] };
         musicSheet.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_SQUARE] = up;
         musicSheet.selectedInstrument = ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_SQUARE;
     } else {
@@ -111,9 +121,11 @@ function executeMusicNotesDamage(notes: MusicNote[], abilityOwner: AbilityOwner,
         damage = abilityMusicSheets.damagePerSecond * passedTime;
     }
     let characters: Character[] = [];
+    const chainPos = getMusicSheetUpgradeChainPosition(abilityMusicSheets, abilityOwner, game);
     if (abilityOwner.faction === FACTION_PLAYER) {
-        characters = determineCharactersInDistance(abilityOwner, game.state.map, game.state.players, game.state.bossStuff.bosses, 320, abilityOwner.faction, true);
+        characters = determineCharactersInDistance(chainPos, game.state.map, game.state.players, game.state.bossStuff.bosses, 320, abilityOwner.faction, true);
     }
+    upgrade.lastSpawns = [];
     const damagePerNote = damage / notes.length;
     const explodeSize = 50;
     for (let note of notes) {
@@ -129,10 +141,11 @@ function executeMusicNotesDamage(notes: MusicNote[], abilityOwner: AbilityOwner,
         }
         if (!randomPos) {
             randomPos = {
-                x: abilityOwner.x + nextRandom(game.state.randomSeed) * 400 - 200,
-                y: abilityOwner.y + nextRandom(game.state.randomSeed) * 400 - 200,
+                x: chainPos.x + nextRandom(game.state.randomSeed) * 400 - 200,
+                y: chainPos.y + nextRandom(game.state.randomSeed) * 400 - 200,
             }
         }
+        upgrade.lastSpawns.push({ x: randomPos.x, y: randomPos.y });
         const strikeObject = createAbilityObjectExplode(randomPos, damagePerNote, explodeSize, abilityOwner.faction, abilityMusicSheets.id, 0, game);
         game.state.abilityObjects.push(strikeObject);
     }

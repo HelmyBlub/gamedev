@@ -1,13 +1,11 @@
-import { determineCharactersInDistance } from "../../character/character.js";
-import { Character } from "../../character/characterModel.js";
 import { UpgradeOptionAndProbability, AbilityUpgradeOption } from "../../character/upgrade.js";
-import { Game, FACTION_PLAYER, Position } from "../../gameModel.js";
+import { Game, Position } from "../../gameModel.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
 import { MusicNote } from "../../sound.js";
-import { Ability, AbilityOwner } from "../ability.js";
-import { createAbilityObjectExplode } from "../abilityExplode.js";
+import { Ability, AbilityObject, AbilityOwner } from "../ability.js";
+import { ABILITY_NAME_CIRCLE_AROUND, createAbilityObjectCircleAround } from "../abilityCircleAround.js";
 import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrade.js";
-import { ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS, AbilityMusicSheets, MusicInstrumentType } from "./abilityMusicSheet.js";
+import { ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS, AbilityMusicSheets, getMusicSheetUpgradeChainPosition } from "./abilityMusicSheet.js";
 
 export type AbilityMusicSheetUpgradeInstrumentTriangle = AbilityUpgrade & {
     lastPlayedNoteTime?: number,
@@ -17,6 +15,7 @@ export const ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_TRIANGLE = "Instrument Trian
 
 export function addAbilityMusicSheetUpgradeInstrumentTriangle() {
     ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS[ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_TRIANGLE] = {
+        getChainPosition: getChainPosition,
         getStatsDisplayText: getAbilityUpgradeUiText,
         getMoreInfoText: getAbilityUpgradeUiTextLong,
         getOptions: getOptions,
@@ -28,6 +27,22 @@ export function addAbilityMusicSheetUpgradeInstrumentTriangle() {
 }
 
 function reset(ability: Ability) {
+}
+
+function getChainPosition(abilityOwner: AbilityOwner, abilityMusicSheets: AbilityMusicSheets, game: Game): Position {
+    const sineObjects: AbilityObject[] = [];
+    for (let object of game.state.abilityObjects) {
+        if (object.abilityIdRef === abilityMusicSheets.id && object.type === ABILITY_NAME_CIRCLE_AROUND) {
+            sineObjects.push(object);
+        }
+    }
+    if (sineObjects.length < 1) {
+        return { x: abilityOwner.x, y: abilityOwner.y };
+    } else {
+        const randomIndex = sineObjects.length === 1 ? 0 : Math.floor(sineObjects.length * nextRandom(game.state.randomSeed));
+        const randomObject = sineObjects[randomIndex];
+        return { x: randomObject.x, y: randomObject.y };
+    }
 }
 
 function paintNote(ctx: CanvasRenderingContext2D, note: MusicNote, notePaintX: number, notePaintY: number, lineNumber: number, noteRadius: number) {
@@ -115,30 +130,10 @@ function executeMusicNotesDamage(notes: MusicNote[], abilityOwner: AbilityOwner,
         const passedTime = (game.state.time - upgrade.lastPlayedNoteTime) / 1000;
         damage = abilityMusicSheets.damagePerSecond * passedTime;
     }
-    let characters: Character[] = [];
-    if (abilityOwner.faction === FACTION_PLAYER) {
-        characters = determineCharactersInDistance(abilityOwner, game.state.map, game.state.players, game.state.bossStuff.bosses, 320, abilityOwner.faction, true);
-    }
     const damagePerNote = damage / notes.length;
-    const explodeSize = 50;
+    const chainPos = getMusicSheetUpgradeChainPosition(abilityMusicSheets, abilityOwner, game);
     for (let note of notes) {
-        let randomPos: Position | undefined = undefined;
-        if (characters.length > 0) {
-            const charIndex = Math.floor(nextRandom(game.state.randomSeed) * characters.length);
-            const character = characters[charIndex];
-            randomPos = {
-                x: character.x,
-                y: character.y,
-            };
-            characters.splice(charIndex, 1);
-        }
-        if (!randomPos) {
-            randomPos = {
-                x: abilityOwner.x + nextRandom(game.state.randomSeed) * 400 - 200,
-                y: abilityOwner.y + nextRandom(game.state.randomSeed) * 400 - 200,
-            }
-        }
-        const strikeObject = createAbilityObjectExplode(randomPos, damagePerNote, explodeSize, abilityOwner.faction, abilityMusicSheets.id, 0, game);
+        const strikeObject = createAbilityObjectCircleAround(chainPos, damagePerNote, 10, abilityOwner.faction, abilityMusicSheets.id, 5000, game);
         game.state.abilityObjects.push(strikeObject);
     }
 
