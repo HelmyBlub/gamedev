@@ -1,13 +1,17 @@
 import { UpgradeOptionAndProbability, AbilityUpgradeOption } from "../../character/upgrade.js";
+import { getNextId } from "../../game.js";
 import { Game, Position } from "../../gameModel.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
 import { MusicNote } from "../../sound.js";
 import { Ability, AbilityObject, AbilityOwner } from "../ability.js";
-import { ABILITY_NAME_CIRCLE_AROUND, createAbilityObjectCircleAround } from "../abilityCircleAround.js";
+import { createAbilityObjectCircleAround } from "../abilityCircleAround.js";
 import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrade.js";
 import { ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS, AbilityMusicSheets, getMusicSheetUpgradeChainPosition } from "./abilityMusicSheet.js";
+import { getAbilityMusicSheetsUpgradeMultiplyAmount } from "./abilityMusicSheetUpgradeMultiply.js";
+import { getAbilityMusicSheetsUpgradeAreaFactor } from "./abilityMusicSheetUpgradeSize.js";
 
 export type AbilityMusicSheetUpgradeInstrumentTriangle = AbilityUpgrade & {
+    lastSpawnObjectIds: number[],
     lastPlayedNoteTime?: number,
 }
 
@@ -30,17 +34,20 @@ function reset(ability: Ability) {
 }
 
 function getChainPosition(abilityOwner: AbilityOwner, abilityMusicSheets: AbilityMusicSheets, game: Game): Position {
-    const sineObjects: AbilityObject[] = [];
+    const up: AbilityMusicSheetUpgradeInstrumentTriangle = abilityMusicSheets.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_TRIANGLE];
+    if (!up) return { x: abilityOwner.x, y: abilityOwner.y };
+    const triangleObjects: AbilityObject[] = [];
     for (let object of game.state.abilityObjects) {
-        if (object.abilityIdRef === abilityMusicSheets.id && object.type === ABILITY_NAME_CIRCLE_AROUND) {
-            sineObjects.push(object);
+        if (object.id !== undefined && up.lastSpawnObjectIds.find(n => n === object.id) !== undefined) {
+            triangleObjects.push(object);
         }
     }
-    if (sineObjects.length < 1) {
+
+    if (triangleObjects.length < 1) {
         return { x: abilityOwner.x, y: abilityOwner.y };
     } else {
-        const randomIndex = sineObjects.length === 1 ? 0 : Math.floor(sineObjects.length * nextRandom(game.state.randomSeed));
-        const randomObject = sineObjects[randomIndex];
+        const randomIndex = triangleObjects.length === 1 ? 0 : Math.floor(triangleObjects.length * nextRandom(game.state.randomSeed));
+        const randomObject = triangleObjects[randomIndex];
         return { x: randomObject.x, y: randomObject.y };
     }
 }
@@ -89,7 +96,7 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption) {
     const musicSheet = ability as AbilityMusicSheets;
     let up: AbilityMusicSheetUpgradeInstrumentTriangle;
     if (musicSheet.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_TRIANGLE] === undefined) {
-        up = { level: 0 };
+        up = { level: 0, lastSpawnObjectIds: [] };
         musicSheet.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_TRIANGLE] = up;
         musicSheet.selectedInstrument = ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_TRIANGLE;
     } else {
@@ -124,17 +131,28 @@ function executeMusicNotesDamage(notes: MusicNote[], abilityOwner: AbilityOwner,
 
     if (notes.length === 0) return;
     let damage = 0;
+    const triangleMultiplier = 10;
     if (upgrade.lastPlayedNoteTime === undefined) {
         damage = abilityMusicSheets.damagePerSecond;
     } else {
         const passedTime = (game.state.time - upgrade.lastPlayedNoteTime) / 1000;
         damage = abilityMusicSheets.damagePerSecond * passedTime;
     }
-    const damagePerNote = damage / notes.length;
+    const damagePerSecondPerNote = damage / notes.length * triangleMultiplier * upgrade.level;
     const chainPos = getMusicSheetUpgradeChainPosition(abilityMusicSheets, abilityOwner, game);
+    const areaFactor = getAbilityMusicSheetsUpgradeAreaFactor(abilityMusicSheets);
+    const defaultRadius = 10;
+    const area = (defaultRadius * defaultRadius) * Math.PI * areaFactor;
+    const radius = Math.sqrt(area / Math.PI);
+    const multiply = getAbilityMusicSheetsUpgradeMultiplyAmount(abilityMusicSheets);
+    upgrade.lastSpawnObjectIds = [];
     for (let note of notes) {
-        const strikeObject = createAbilityObjectCircleAround(chainPos, damagePerNote, 10, abilityOwner.faction, abilityMusicSheets.id, 5000, game);
-        game.state.abilityObjects.push(strikeObject);
+        for (let i = 0; i < multiply; i++) {
+            const strikeObject = createAbilityObjectCircleAround(chainPos, damagePerSecondPerNote, radius, abilityOwner.faction, abilityMusicSheets.id, 5000, game);
+            game.state.abilityObjects.push(strikeObject);
+            strikeObject.id = getNextId(game.state.idCounter);
+            upgrade.lastSpawnObjectIds.push(strikeObject.id);
+        }
     }
 
     upgrade.lastPlayedNoteTime = game.state.time;

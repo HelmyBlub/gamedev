@@ -36,7 +36,10 @@ function changeCharacterToMusicianClass(
     }
     character.characterClasses.push(charClass);
     const abilityMusicSheets = createAbility(ABILITY_NAME_MUSIC_SHEET, idCounter, true, true, "ability1");
-    if (abilityMusicSheets.bossSkillPoints) abilityMusicSheets.bossSkillPoints.available++;
+    if (abilityMusicSheets.bossSkillPoints) {
+        abilityMusicSheets.bossSkillPoints.available++;
+        abilityMusicSheets.bossSkillPoints.used--;
+    }
     addAbilityToCharacter(character, abilityMusicSheets, charClass);
     addAbilityToCharacter(character, createAbility(ABILITY_NAME_MUSIC_SHEET_CHANGE_INSTRUMENT, idCounter, false, false, "ability2"), charClass);
     addAbilityToCharacter(character, createAbilityHpRegen(idCounter, undefined, 2), charClass);
@@ -46,7 +49,7 @@ function getLongUiText(): string[] {
     let text: string[] = [];
     text.push("Become a musician.");
     text.push("Places Notes in a music sheet");
-    text.push("to create music.");
+    text.push("to create music. Music does Damage");
     return text;
 }
 

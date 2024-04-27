@@ -3,7 +3,8 @@ import { IdCounter, Game, Position } from "../../gameModel.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, getAbilityNameUiText } from "../ability.js";
-import { ABILITY_NAME_MUSIC_SHEET, AbilityMusicSheets } from "./abilityMusicSheet.js";
+import { ABILITY_NAME_MUSIC_SHEET, AbilityMusicSheets, AbilityUpgradeFunctionsMusicSheets } from "./abilityMusicSheet.js";
+import { AbilityMusicSheetUpgradeInstrumentSquare } from "./abilityMusicSheetInstrumentSquare.js";
 
 export type AbilityMusicSheetChangeInstrument = Ability & {
 }
@@ -36,9 +37,17 @@ function castInstrumentChange(abilityOwner: AbilityOwner, ability: Ability, cast
             const musicSheets = abilityIter as AbilityMusicSheets;
             const instruments = Object.keys(musicSheets.upgrades);
             if (instruments.length > 1) {
-                const currentIndex = instruments.findIndex(i => i === musicSheets.selectedInstrument);
-                if (currentIndex > -1) {
-                    musicSheets.selectedInstrument = instruments[(currentIndex + 1) % instruments.length];
+                const startIndex = instruments.findIndex(i => i === musicSheets.selectedInstrument);
+                if (startIndex > -1) {
+                    let currentIndex = startIndex;
+                    do {
+                        currentIndex = (currentIndex + 1) % instruments.length;
+                        const instrumentUpgrade = musicSheets.upgrades[instruments[currentIndex]] as AbilityUpgradeFunctionsMusicSheets;
+                        if (instrumentUpgrade.executeNoteDamage) {
+                            musicSheets.selectedInstrument = instruments[currentIndex];
+                            return;
+                        }
+                    } while (currentIndex !== startIndex);
                 }
             }
         }

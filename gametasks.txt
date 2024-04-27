@@ -6,7 +6,10 @@ current tasks:
         - dev steps:
             - new ability musicSheet
                 - upgrades (damage related)
-                    - ?how to improve fun?
+                    - two upgrades per boss skill point. +instrument, +some effect
+                        - bigger effect radius
+                        - multiply effects
+                        - move speed for many notes
 
                 - more music note types (sound related)
                     - 1/8 notes, 1/16 notes

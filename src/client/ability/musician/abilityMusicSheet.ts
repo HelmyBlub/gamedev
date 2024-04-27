@@ -5,7 +5,7 @@ import { Position, Game, IdCounter, FACTION_PLAYER } from "../../gameModel.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, getAbilityNameUiText } from "../ability.js";
-import { AbilityUpgradeFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
+import { AbilityUpgrade, AbilityUpgradeFunctions, AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
 import { AbilityDamageBreakdown } from "../../combatlog.js";
 import { MusicNote, MusicSheet, Note, playMusicNote } from "../../sound.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
@@ -13,8 +13,11 @@ import { addAbilityMusicSheetUpgradeInstrumentSine } from "./abilityMusicSheetIn
 import { addAbilityMusicSheetUpgradeInstrumentSquare } from "./abilityMusicSheetInstrumentSquare.js";
 import { findMyCharacter } from "../../character/character.js";
 import { addAbilityMusicSheetUpgradeInstrumentTriangle } from "./abilityMusicSheetInstrumentTriangle.js";
+import { addAbilityMusicSheetUpgradeSize } from "./abilityMusicSheetUpgradeSize.js";
+import { addAbilityMusicSheetUpgradeMultiply } from "./abilityMusicSheetUpgradeMultiply.js";
 
 export type AbilityMusicSheets = Ability & {
+    nextUpgradeAddInstrument: boolean,
     chainOrder?: string,
     musicSheets: AbilityMusicSheet[],
     selectedMusicSheetIndex: number,
@@ -28,14 +31,14 @@ export type AbilityMusicSheets = Ability & {
     selectedInstrument?: string,
 }
 
-export type AbilityUpgradeFunctionsMusician = AbilityUpgradeFunctions & {
-    executeNoteDamage: (notes: MusicNote[], abilityOwner: AbilityOwner, abilityMusicSheets: AbilityMusicSheets, game: Game) => void
-    paintNote: (ctx: CanvasRenderingContext2D, note: MusicNote, notePaintX: number, notePaintY: number, lineNumber: number, noteRadius: number) => void,
-    getChainPosition: (abilityOwner: AbilityOwner, abilityMusicSheets: AbilityMusicSheets, game: Game) => Position,
+export type AbilityUpgradeFunctionsMusicSheets = AbilityUpgradeFunctions & {
+    executeNoteDamage?: (notes: MusicNote[], abilityOwner: AbilityOwner, abilityMusicSheets: AbilityMusicSheets, game: Game) => void
+    paintNote?: (ctx: CanvasRenderingContext2D, note: MusicNote, notePaintX: number, notePaintY: number, lineNumber: number, noteRadius: number) => void,
+    getChainPosition?: (abilityOwner: AbilityOwner, abilityMusicSheets: AbilityMusicSheets, game: Game) => Position,
 }
 
-export type AbilityUpgradesFunctionsMusician = {
-    [key: string]: AbilityUpgradeFunctionsMusician,
+export type AbilityUpgradesFunctionsMusicSheets = {
+    [key: string]: AbilityUpgradeFunctionsMusicSheets,
 }
 
 export type AbilityMusicSheet = {
@@ -54,13 +57,13 @@ const LINE_COUNT = 5;
 const BASE_OCATAVE = 4;
 const NOTE_PAINT_OFFSETX = 20;
 export const ABILITY_NAME_MUSIC_SHEET = "Music Sheet";
-export const ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS: AbilityUpgradesFunctionsMusician = {};
+export const ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS: AbilityUpgradesFunctionsMusicSheets = {};
 
 export function addAbilityMusicSheet() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_MUSIC_SHEET] = {
         activeAbilityCast: castAbility,
         createAbility: createAbilityMusicSheet,
-        createAbilityBossUpgradeOptions: createAbilityBossSpeedBoostUpgradeOptions,
+        createAbilityBossUpgradeOptions: createAbilityBossUpgradeOptions,
         createAbilityMoreInfos: createAbilityMoreInfos,
         createDamageBreakDown: createDamageBreakDown,
         executeUpgradeOption: executeAbilityUpgradeOption,
@@ -78,6 +81,8 @@ export function addAbilityMusicSheet() {
     addAbilityMusicSheetUpgradeInstrumentSine();
     addAbilityMusicSheetUpgradeInstrumentSquare();
     addAbilityMusicSheetUpgradeInstrumentTriangle();
+    addAbilityMusicSheetUpgradeSize();
+    addAbilityMusicSheetUpgradeMultiply();
 }
 
 export function createAbilityMusicSheet(
@@ -109,12 +114,14 @@ export function createAbilityMusicSheet(
         offestY: 50,
         damagePerSecond: 200,
         buttonWidth: 20,
+        nextUpgradeAddInstrument: true,
     };
 }
 
 export function getMusicSheetUpgradeChainPosition(musicSheets: AbilityMusicSheets, abilityOwner: AbilityOwner, game: Game): Position {
     if (!musicSheets.chainOrder) return { x: abilityOwner.x, y: abilityOwner.y };
     const functions = ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS[musicSheets.chainOrder];
+    if (!functions.getChainPosition) return { x: abilityOwner.x, y: abilityOwner.y };
     return functions.getChainPosition(abilityOwner, musicSheets, game);
 }
 
@@ -233,15 +240,43 @@ function castNote(abilityOwner: AbilityOwner, musicSheets: AbilityMusicSheets, s
     return true;
 }
 
-function createAbilityBossSpeedBoostUpgradeOptions(ability: Ability, character: Character, game: Game): UpgradeOptionAndProbability[] {
+function createAbilityBossUpgradeOptions(ability: Ability, character: Character, game: Game): UpgradeOptionAndProbability[] {
+    const musicSheets = ability as AbilityMusicSheets;
     const upgradeOptions: UpgradeOptionAndProbability[] = [];
-    pushAbilityUpgradesOptions(ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS, upgradeOptions, ability, character, game);
+    const upgradeFunctionkeys = Object.keys(ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS);
+    const upgradeOptionsFuncitons: AbilityUpgradesFunctions = {};
+    if (musicSheets.nextUpgradeAddInstrument) {
+        for (let upFuncKey of upgradeFunctionkeys) {
+            const functions = ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS[upFuncKey];
+            if (functions.executeNoteDamage) {
+                upgradeOptionsFuncitons[upFuncKey] = functions;
+            }
+        }
+        const isFirstInstrument = Object.keys(musicSheets.upgrades).length === 0;
+        if (!isFirstInstrument) {
+            musicSheets.nextUpgradeAddInstrument = false;
+        }
+    } else {
+        for (let upFuncKey of upgradeFunctionkeys) {
+            const functions = ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS[upFuncKey];
+            if (!functions.executeNoteDamage) {
+                upgradeOptionsFuncitons[upFuncKey] = functions;
+            }
+        }
+        musicSheets.nextUpgradeAddInstrument = true;
+    }
+    pushAbilityUpgradesOptions(upgradeOptionsFuncitons, upgradeOptions, ability, character, game);
     return upgradeOptions;
 }
 
 function executeAbilityUpgradeOption(ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game) {
     const abilityUpgradeOption: AbilityUpgradeOption = upgradeOption as AbilityUpgradeOption;
+    const musicSheets = ability as AbilityMusicSheets;
     upgradeAbility(ability, character, abilityUpgradeOption);
+    if (!musicSheets.nextUpgradeAddInstrument && ability.bossSkillPoints) {
+        ability.bossSkillPoints.available++;
+        ability.bossSkillPoints.used--;
+    }
 }
 
 function setAbilityToLevel(ability: Ability, level: number) {
@@ -374,7 +409,7 @@ function paintNotes(ctx: CanvasRenderingContext2D, abilityMusicSheet: AbilityMus
         const upgradeFunctions = ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS[note.type];
         const noteX = topLeftMusicSheet.x + xOffset;
         const noteY = topLeftMusicSheet.y + lineNumber * (abilityMusicSheet.paintHeight / LINE_COUNT);
-        upgradeFunctions.paintNote(ctx, note, noteX, noteY, lineNumber, noteRadius);
+        if (upgradeFunctions.paintNote) upgradeFunctions.paintNote(ctx, note, noteX, noteY, lineNumber, noteRadius);
 
         if (note.semitone) {
             const char = note.semitone === "flat" ? "b" : "#";
@@ -384,10 +419,6 @@ function paintNotes(ctx: CanvasRenderingContext2D, abilityMusicSheet: AbilityMus
             ctx.fillText(char, noteX - noteRadius - charWidth, noteY + noteRadius - 2);
         }
     }
-}
-
-function paintNote() {
-
 }
 
 /** 0 = inside top line | 0.5 = between top line and second top line etc.  */
@@ -462,7 +493,7 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
         const noteType = notesDamageTicks[0].type;
         if (noteType === undefined) continue;
         let upgradeFunctions = ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS[noteType];
-        upgradeFunctions.executeNoteDamage(notesDamageTicks, abilityOwner, abilityMusicSheets, game);
+        if (upgradeFunctions.executeNoteDamage) upgradeFunctions.executeNoteDamage(notesDamageTicks, abilityOwner, abilityMusicSheets, game);
     }
 
     if (abilityMusicSheets.musicSheets.length > 0) {
@@ -480,6 +511,8 @@ function createAbilityMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability,
     textLines.push(
         `Key: ${playerInputBindingToDisplayValue(abilityMusicSheet.playerInputBinding!, game)}`,
         `Click to place notes in music sheet.`,
+        `Each note creates an damage effect.`,
+        `More notes => less damage per Note.`,
     );
     if (abilityMusicSheet.level) {
         textLines.push(`Level: ${abilityMusicSheet.level.level}`);

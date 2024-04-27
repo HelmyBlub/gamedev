@@ -8,6 +8,8 @@ import { Ability, AbilityOwner } from "../ability.js";
 import { createAbilityObjectExplode } from "../abilityExplode.js";
 import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrade.js";
 import { ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS, AbilityMusicSheets, getMusicSheetUpgradeChainPosition } from "./abilityMusicSheet.js";
+import { getAbilityMusicSheetsUpgradeMultiplyAmount } from "./abilityMusicSheetUpgradeMultiply.js";
+import { getAbilityMusicSheetsUpgradeAreaFactor } from "./abilityMusicSheetUpgradeSize.js";
 
 export type AbilityMusicSheetUpgradeInstrumentSquare = AbilityUpgrade & {
     lastSpawns: Position[],
@@ -121,33 +123,53 @@ function executeMusicNotesDamage(notes: MusicNote[], abilityOwner: AbilityOwner,
         damage = abilityMusicSheets.damagePerSecond * passedTime;
     }
     let characters: Character[] = [];
+    let bosses: Character[] = [];
+    const baseSpawnRadius = 200;
     const chainPos = getMusicSheetUpgradeChainPosition(abilityMusicSheets, abilityOwner, game);
     if (abilityOwner.faction === FACTION_PLAYER) {
-        characters = determineCharactersInDistance(chainPos, game.state.map, game.state.players, game.state.bossStuff.bosses, 320, abilityOwner.faction, true);
+        bosses = determineCharactersInDistance(chainPos, undefined, [], game.state.bossStuff.bosses, 400, abilityOwner.faction, true);
+        characters = determineCharactersInDistance(chainPos, game.state.map, [], [], baseSpawnRadius, abilityOwner.faction, true);
+        if (characters.length === 0) {
+            characters = determineCharactersInDistance(chainPos, game.state.map, [], [], baseSpawnRadius * 2, abilityOwner.faction, true);
+        }
     }
     upgrade.lastSpawns = [];
-    const damagePerNote = damage / notes.length;
-    const explodeSize = 50;
+    const damagePerNote = damage / notes.length * upgrade.level;
+    const areaFactor = getAbilityMusicSheetsUpgradeAreaFactor(abilityMusicSheets);
+    const defaultRadius = 50;
+    const area = (defaultRadius * defaultRadius) * Math.PI * areaFactor;
+    const explodeRadius = Math.sqrt(area / Math.PI);
+    const multiply = getAbilityMusicSheetsUpgradeMultiplyAmount(abilityMusicSheets);
     for (let note of notes) {
-        let randomPos: Position | undefined = undefined;
-        if (characters.length > 0) {
-            const charIndex = Math.floor(nextRandom(game.state.randomSeed) * characters.length);
-            const character = characters[charIndex];
-            randomPos = {
-                x: character.x,
-                y: character.y,
-            };
-            characters.splice(charIndex, 1);
-        }
-        if (!randomPos) {
-            randomPos = {
-                x: chainPos.x + nextRandom(game.state.randomSeed) * 400 - 200,
-                y: chainPos.y + nextRandom(game.state.randomSeed) * 400 - 200,
+        for (let i = 0; i < multiply; i++) {
+            let randomPos: Position | undefined = undefined;
+            if (bosses.length > 0) {
+                const charIndex = Math.floor(nextRandom(game.state.randomSeed) * bosses.length);
+                const boss = bosses[charIndex];
+                randomPos = {
+                    x: boss.x,
+                    y: boss.y,
+                };
+                bosses.splice(charIndex, 1);
+            } else if (characters.length > 0) {
+                const charIndex = Math.floor(nextRandom(game.state.randomSeed) * characters.length);
+                const character = characters[charIndex];
+                randomPos = {
+                    x: character.x,
+                    y: character.y,
+                };
+                characters.splice(charIndex, 1);
             }
+            if (!randomPos) {
+                randomPos = {
+                    x: chainPos.x + nextRandom(game.state.randomSeed) * baseSpawnRadius * 2 - baseSpawnRadius,
+                    y: chainPos.y + nextRandom(game.state.randomSeed) * baseSpawnRadius * 2 - baseSpawnRadius,
+                }
+            }
+            upgrade.lastSpawns.push({ x: randomPos.x, y: randomPos.y });
+            const strikeObject = createAbilityObjectExplode(randomPos, damagePerNote, explodeRadius, abilityOwner.faction, abilityMusicSheets.id, 0, game);
+            game.state.abilityObjects.push(strikeObject);
         }
-        upgrade.lastSpawns.push({ x: randomPos.x, y: randomPos.y });
-        const strikeObject = createAbilityObjectExplode(randomPos, damagePerNote, explodeSize, abilityOwner.faction, abilityMusicSheets.id, 0, game);
-        game.state.abilityObjects.push(strikeObject);
     }
 
     upgrade.lastPlayedNoteTime = game.state.time;

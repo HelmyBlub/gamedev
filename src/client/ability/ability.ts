@@ -67,6 +67,7 @@ export type AbilityObject = Position & {
     damage: number,
     faction: string,
     abilityIdRef?: number,
+    id?: number,
 }
 
 export type AbilityObjectCircle = AbilityObject & {
