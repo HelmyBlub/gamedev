@@ -6,14 +6,15 @@ current tasks:
         - dev steps:
             - new ability musicSheet
                 - upgrades (damage related)
-                    - shield gain for notes
-                    - dot damage stacking
+                    - dot damage stacking, capped stacks
+                        - make debuff for each character/abilityId. Currently one for all
 
                 - more music note types (sound related)
                     - 1/8 notes, 1/16 notes
                     - change base octave of music sheet
                     - how to handle long music sheets
                     - do not allow note stacking, prevent to loud notes
+                - check damage meter
         - thoughs and research
             - damage:
                 - still to weak against single target

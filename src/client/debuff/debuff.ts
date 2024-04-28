@@ -5,6 +5,7 @@ import { addBuffImmunity } from "./buffImmunity.js";
 import { addBuffLightningStrikes } from "./buffLightningStrikes.js";
 import { addBuffSlowTrail } from "./buffSlowTrail.js";
 import { addBuffSpeed } from "./buffSpeed.js";
+import { addDebuffDamageOverTime } from "./debuffDamageOverTime.js";
 import { addDebuffDamageTaken } from "./debuffDamageTaken.js";
 import { addDebuffExplodeOnDeath } from "./debuffExplodeOnDeath.js";
 import { addDebuffRoot } from "./debuffRoot.js";
@@ -39,6 +40,7 @@ export function onDomLoadSetDebuffsFunctions() {
     addBuffLightningStrikes();
     addBuffImmunity();
     addDebuffDamageTaken();
+    addDebuffDamageOverTime();
 }
 
 export function applyDebuff(debuff: Debuff, character: Character, game: Game) {

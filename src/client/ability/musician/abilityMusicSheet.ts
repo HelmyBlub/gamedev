@@ -19,6 +19,7 @@ import { abilityMusicSheetsUpgradeSlowApplySlow, addAbilityMusicSheetUpgradeSlow
 import { deleteProjectile, tickProjectile } from "../projectile.js";
 import { abilityMusicSheetsUpgradeSpeedSetSpeed, addAbilityMusicSheetUpgradeSpeed } from "./abilityMusicSheetUpgradeSpeed.js";
 import { addAbilityMusicSheetUpgradeShield, executeAbilityMusicSheetsUpgradeShield } from "./abilityMusicSheetUpgradeShield.js";
+import { abilityMusicSheetsUpgradeDamageOverTimeApply, addAbilityMusicSheetUpgradeDamageOverTime } from "./abilityMusicSheetUpgradeDamageOverTime.js";
 
 export type AbilityMusicSheets = Ability & {
     nextUpgradeAddInstrument: boolean,
@@ -93,6 +94,7 @@ export function addAbilityMusicSheet() {
     addAbilityMusicSheetUpgradeSlow();
     addAbilityMusicSheetUpgradeSpeed();
     addAbilityMusicSheetUpgradeShield();
+    addAbilityMusicSheetUpgradeDamageOverTime();
 }
 
 export function createAbilityMusicSheet(
@@ -148,6 +150,7 @@ function onObjectHit(abilityObject: AbilityObject, targetCharacter: Character, g
     const ability = findAbilityById(abilityObject.abilityIdRef, game) as AbilityMusicSheets;
     if (!ability) return;
     abilityMusicSheetsUpgradeSlowApplySlow(ability, targetCharacter, game);
+    abilityMusicSheetsUpgradeDamageOverTimeApply(ability, targetCharacter, game);
 }
 
 function createDamageBreakDown(damage: number, ability: Ability, abilityObject: AbilityObject | undefined, damageAbilityName: string, game: Game): AbilityDamageBreakdown[] {
@@ -497,7 +500,7 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
             if ((lastTick < delayedNoteTick && delayedNoteTick <= currentTick)
                 || (lastTick > currentTick && delayedNoteTick <= currentTick)
             ) {
-                //warning: playing sound is client specific delayed. Casting ability must not.
+                //warning: playing sound is client specific delayed. other things should not.
                 playMusicNote(selectedMusicSheet.musicSheet, note, game.sound);
             }
             const noteTick = note.tick % selectedMusicSheet.maxPlayTicks;
