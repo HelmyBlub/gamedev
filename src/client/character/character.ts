@@ -98,7 +98,7 @@ function findSourceDamageFactor(abilityIdRef: number | undefined, game: Game): n
     return sourceDamageFactor;
 }
 
-export function characterGetShield(character: Character, shieldValue: number) {
+export function characterAddShield(character: Character, shieldValue: number) {
     if (character.isDead) return;
     character.shield += shieldValue;
     if (character.shield > character.maxShieldFactor * character.maxHp) {

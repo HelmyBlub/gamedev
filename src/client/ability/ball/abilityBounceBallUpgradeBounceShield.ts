@@ -1,4 +1,4 @@
-import { characterGetShield } from "../../character/character.js";
+import { characterAddShield } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
 import { AbilityUpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { Ability, AbilityOwner } from "../ability.js";
@@ -23,7 +23,7 @@ export function addAbilityBounceBallUpgradeBounceShield() {
 export function bounceBallUpgradeBounceShieldExecute(ability: AbilityBounceBall, owner: AbilityOwner) {
     const up: AbilityBounceBallUpgradeBounceShield = ability.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_SHIELD];
     if (!up) return;
-    characterGetShield(owner as Character, up.level * SHIELD_VALUE);
+    characterAddShield(owner as Character, up.level * SHIELD_VALUE);
 }
 
 function getOptions(ability: Ability): UpgradeOptionAndProbability[] {

@@ -6,7 +6,6 @@ current tasks:
         - dev steps:
             - new ability musicSheet
                 - upgrades (damage related)
-                    - speed buff for every different note in the music sheet
                     - shield gain for notes
                     - dot damage stacking
 

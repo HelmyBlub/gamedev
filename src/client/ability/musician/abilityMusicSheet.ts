@@ -18,6 +18,7 @@ import { addAbilityMusicSheetUpgradeMultiply } from "./abilityMusicSheetUpgradeM
 import { abilityMusicSheetsUpgradeSlowApplySlow, addAbilityMusicSheetUpgradeSlow } from "./abilityMusicSheetUpgradeSlow.js";
 import { deleteProjectile, tickProjectile } from "../projectile.js";
 import { abilityMusicSheetsUpgradeSpeedSetSpeed, addAbilityMusicSheetUpgradeSpeed } from "./abilityMusicSheetUpgradeSpeed.js";
+import { addAbilityMusicSheetUpgradeShield, executeAbilityMusicSheetsUpgradeShield } from "./abilityMusicSheetUpgradeShield.js";
 
 export type AbilityMusicSheets = Ability & {
     nextUpgradeAddInstrument: boolean,
@@ -91,6 +92,7 @@ export function addAbilityMusicSheet() {
     addAbilityMusicSheetUpgradeMultiply();
     addAbilityMusicSheetUpgradeSlow();
     addAbilityMusicSheetUpgradeSpeed();
+    addAbilityMusicSheetUpgradeShield();
 }
 
 export function createAbilityMusicSheet(
@@ -517,7 +519,10 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
         const noteType = notesDamageTicks[0].type;
         if (noteType === undefined) continue;
         let upgradeFunctions = ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS[noteType];
-        if (upgradeFunctions.executeNoteDamage) upgradeFunctions.executeNoteDamage(notesDamageTicks, abilityOwner, abilityMusicSheets, game);
+        if (upgradeFunctions.executeNoteDamage) {
+            upgradeFunctions.executeNoteDamage(notesDamageTicks, abilityOwner, abilityMusicSheets, game);
+            executeAbilityMusicSheetsUpgradeShield(abilityMusicSheets, abilityOwner, notesDamageTicks.length);
+        }
     }
 
     if (abilityMusicSheets.musicSheets.length > 0) {
