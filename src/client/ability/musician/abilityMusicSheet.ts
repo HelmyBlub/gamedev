@@ -17,6 +17,7 @@ import { addAbilityMusicSheetUpgradeSize } from "./abilityMusicSheetUpgradeSize.
 import { addAbilityMusicSheetUpgradeMultiply } from "./abilityMusicSheetUpgradeMultiply.js";
 import { abilityMusicSheetsUpgradeSlowApplySlow, addAbilityMusicSheetUpgradeSlow } from "./abilityMusicSheetUpgradeSlow.js";
 import { deleteProjectile, tickProjectile } from "../projectile.js";
+import { abilityMusicSheetsUpgradeSpeedSetSpeed, addAbilityMusicSheetUpgradeSpeed } from "./abilityMusicSheetUpgradeSpeed.js";
 
 export type AbilityMusicSheets = Ability & {
     nextUpgradeAddInstrument: boolean,
@@ -89,6 +90,7 @@ export function addAbilityMusicSheet() {
     addAbilityMusicSheetUpgradeSize();
     addAbilityMusicSheetUpgradeMultiply();
     addAbilityMusicSheetUpgradeSlow();
+    addAbilityMusicSheetUpgradeSpeed();
 }
 
 export function createAbilityMusicSheet(
@@ -258,6 +260,7 @@ function castNote(abilityOwner: AbilityOwner, musicSheets: AbilityMusicSheets, s
     } else {
         selectedSheet.musicSheet.notes.push(musicNote);
     }
+    abilityMusicSheetsUpgradeSpeedSetSpeed(musicSheets, abilityOwner);
     return true;
 }
 

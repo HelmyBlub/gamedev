@@ -43,8 +43,7 @@ function refreshBuffEffectSpeed(newDebuff: Debuff, currentDebuff: Debuff, target
     if (newBuffSpeed.speedFactor > currentBuffSpeed.speedFactor) {
         removeBuffEffectSpeed(currentBuffSpeed, targetCharacter, game);
         applyBuffEffectSpeed(newBuffSpeed, targetCharacter, game);
-        currentBuffSpeed.speedFactor = newBuffSpeed.speedFactor;
-    } else {
+    } else if (newBuffSpeed.speedFactor === currentBuffSpeed.speedFactor) {
         currentDebuff.removeTime = newBuffSpeed.removeTime;
     }
 }
