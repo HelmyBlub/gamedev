@@ -7,7 +7,7 @@ import { MusicNote } from "../../sound.js";
 import { Ability, AbilityOwner } from "../ability.js";
 import { createAbilityObjectExplode } from "../abilityExplode.js";
 import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrade.js";
-import { ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS, AbilityMusicSheets, getMusicSheetUpgradeChainPosition } from "./abilityMusicSheet.js";
+import { ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS, ABILITY_NAME_MUSIC_SHEET, AbilityMusicSheets, getMusicSheetUpgradeChainPosition } from "./abilityMusicSheet.js";
 import { getAbilityMusicSheetsUpgradeMultiplyAmount } from "./abilityMusicSheetUpgradeMultiply.js";
 import { getAbilityMusicSheetsUpgradeAreaFactor } from "./abilityMusicSheetUpgradeSize.js";
 
@@ -168,6 +168,7 @@ function executeMusicNotesDamage(notes: MusicNote[], abilityOwner: AbilityOwner,
             }
             upgrade.lastSpawns.push({ x: randomPos.x, y: randomPos.y });
             const strikeObject = createAbilityObjectExplode(randomPos, damagePerNote, explodeRadius, abilityOwner.faction, abilityMusicSheets.id, 0, game);
+            strikeObject.abilityRefTypeDoOnHit = ABILITY_NAME_MUSIC_SHEET;
             game.state.abilityObjects.push(strikeObject);
         }
     }

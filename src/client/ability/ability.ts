@@ -68,6 +68,7 @@ export type AbilityObject = Position & {
     faction: string,
     abilityIdRef?: number,
     id?: number,
+    abilityRefTypeDoOnHit?: string,
 }
 
 export type AbilityObjectCircle = AbilityObject & {
@@ -385,7 +386,10 @@ export function detectCircleCharacterHit(map: GameMap, circleCenter: Position, c
             }
             characterTakeDamage(c, damage, game, abilityId, abilityName, abilityObject);
             if (abilityObject) {
-                const abilityFunction = ABILITIES_FUNCTIONS[abilityObject.type];
+                let abilityFunction = ABILITIES_FUNCTIONS[abilityObject.type];
+                if (abilityObject.abilityRefTypeDoOnHit) {
+                    abilityFunction = ABILITIES_FUNCTIONS[abilityObject.abilityRefTypeDoOnHit];
+                }
                 if (abilityFunction.onObjectHit) {
                     abilityFunction.onObjectHit(abilityObject, c, game);
                     if (abilityFunction.canObjectHitMore && !abilityFunction.canObjectHitMore(abilityObject)) {

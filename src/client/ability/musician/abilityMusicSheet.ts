@@ -4,7 +4,7 @@ import { getNextId } from "../../game.js";
 import { Position, Game, IdCounter, FACTION_PLAYER } from "../../gameModel.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, getAbilityNameUiText } from "../ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, findAbilityById, getAbilityNameUiText } from "../ability.js";
 import { AbilityUpgrade, AbilityUpgradeFunctions, AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
 import { AbilityDamageBreakdown } from "../../combatlog.js";
 import { MusicNote, MusicSheet, Note, playMusicNote } from "../../sound.js";
@@ -15,6 +15,8 @@ import { findMyCharacter } from "../../character/character.js";
 import { addAbilityMusicSheetUpgradeInstrumentTriangle } from "./abilityMusicSheetInstrumentTriangle.js";
 import { addAbilityMusicSheetUpgradeSize } from "./abilityMusicSheetUpgradeSize.js";
 import { addAbilityMusicSheetUpgradeMultiply } from "./abilityMusicSheetUpgradeMultiply.js";
+import { abilityMusicSheetsUpgradeSlowApplySlow, addAbilityMusicSheetUpgradeSlow } from "./abilityMusicSheetUpgradeSlow.js";
+import { deleteProjectile, tickProjectile } from "../projectile.js";
 
 export type AbilityMusicSheets = Ability & {
     nextUpgradeAddInstrument: boolean,
@@ -66,7 +68,9 @@ export function addAbilityMusicSheet() {
         createAbilityBossUpgradeOptions: createAbilityBossUpgradeOptions,
         createAbilityMoreInfos: createAbilityMoreInfos,
         createDamageBreakDown: createDamageBreakDown,
+        deleteAbilityObject: deleteAbilityObject,
         executeUpgradeOption: executeAbilityUpgradeOption,
+        onObjectHit: onObjectHit,
         paintAbility: paintAbility,
         paintAbilityUI: paintAbilityUI,
         resetAbility: resetAbility,
@@ -74,6 +78,7 @@ export function addAbilityMusicSheet() {
         setAbilityToBossLevel: setAbilityToBossLevel,
         setAbilityToEnemyLevel: setAbilityToEnemyLevel,
         tickAbility: tickAbility,
+        tickAbilityObject: tickAbilityObject,
         tickBossAI: tickBossAI,
         abilityUpgradeFunctions: ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS,
         canBeUsedByBosses: true,
@@ -83,6 +88,7 @@ export function addAbilityMusicSheet() {
     addAbilityMusicSheetUpgradeInstrumentTriangle();
     addAbilityMusicSheetUpgradeSize();
     addAbilityMusicSheetUpgradeMultiply();
+    addAbilityMusicSheetUpgradeSlow();
 }
 
 export function createAbilityMusicSheet(
@@ -123,6 +129,21 @@ export function getMusicSheetUpgradeChainPosition(musicSheets: AbilityMusicSheet
     const functions = ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS[musicSheets.chainOrder];
     if (!functions.getChainPosition) return { x: abilityOwner.x, y: abilityOwner.y };
     return functions.getChainPosition(abilityOwner, musicSheets, game);
+}
+
+function deleteAbilityObject(abilityObject: AbilityObject, game: Game): boolean {
+    return deleteProjectile(abilityObject, game);
+}
+
+function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
+    tickProjectile(abilityObject, game);
+}
+
+function onObjectHit(abilityObject: AbilityObject, targetCharacter: Character, game: Game) {
+    if (abilityObject.abilityIdRef === undefined) return;
+    const ability = findAbilityById(abilityObject.abilityIdRef, game) as AbilityMusicSheets;
+    if (!ability) return;
+    abilityMusicSheetsUpgradeSlowApplySlow(ability, targetCharacter, game);
 }
 
 function createDamageBreakDown(damage: number, ability: Ability, abilityObject: AbilityObject | undefined, damageAbilityName: string, game: Game): AbilityDamageBreakdown[] {
