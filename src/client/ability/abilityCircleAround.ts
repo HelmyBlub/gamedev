@@ -98,7 +98,10 @@ function paintAbilityObjectCircleAround(ctx: CanvasRenderingContext2D, abilityOb
 
 function tickAbilityObjectCircleAround(abilityObject: AbilityObject, game: Game) {
     const abilityObjectCircleAround = abilityObject as AbilityObjectCircleAround;
-    detectAbilityObjectCircleToCharacterHit(game.state.map, abilityObjectCircleAround, game);
+    if (abilityObjectCircleAround.nextTickTime === undefined || abilityObjectCircleAround.nextTickTime <= game.state.time) {
+        abilityObjectCircleAround.nextTickTime = game.state.time + abilityObjectCircleAround.tickInterval;
+        detectAbilityObjectCircleToCharacterHit(game.state.map, abilityObjectCircleAround, game);
+    }
 
     const currDirection = calculateDirection(abilityObjectCircleAround.center, abilityObject);
     const newDirection = currDirection + 0.05 % (Math.PI * 2);
