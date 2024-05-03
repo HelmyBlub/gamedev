@@ -1,14 +1,14 @@
-import { addAbilityToCharacter, createAbility } from "../../ability/ability.js";
+import { addAbilityToCharacter, createAbility, setAbilityToBossLevel } from "../../ability/ability.js";
 import { createAbilityHpRegen } from "../../ability/abilityHpRegen.js";
 import { ABILITY_NAME_SNIPE } from "../../ability/snipe/abilitySnipe.js";
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../gameModel.js";
-import { Character, createCharacter } from "../characterModel.js";
+import { Character, IMAGE_SLIME, createCharacter } from "../characterModel.js";
 import { createBossUpgradeOptionsAbilityLeveling, executeAbilityLevelingCharacterUpgradeOption } from "./abilityLevelingCharacter.js";
 import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters.js";
-import { getNextId } from "../../game.js";
+import { deepCopy, getNextId } from "../../game.js";
 import { resetCharacter } from "../character.js";
 import { CHARACTER_TYPE_BOSS_ENEMY } from "../enemy/bossEnemy.js";
-import { ABILITY_NAME_MUSIC_SHEET } from "../../ability/musician/abilityMusicSheet.js";
+import { ABILITY_NAME_MUSIC_SHEET, AbilityMusicSheets } from "../../ability/musician/abilityMusicSheet.js";
 import { ABILITY_NAME_MUSIC_SHEET_CHANGE_INSTRUMENT } from "../../ability/musician/abilityMusicSheetChangeInstrument.js";
 
 export const CHARACTER_CLASS_MUSICIAN_NAME = "Musician (work in progress)";
@@ -62,6 +62,12 @@ function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: 
     const experienceWorth = Math.pow(level, 2) * 100;
 
     const bossCharacter = createCharacter(getNextId(idCounter), spawn.x, spawn.y, bossSize, bossSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_BOSS_ENEMY, experienceWorth);
+    bossCharacter.paint.image = IMAGE_SLIME;
+    bossCharacter.level = { level: level };
+    const baseMusicSheets = basedOnCharacter.abilities.find((a) => a.name === ABILITY_NAME_MUSIC_SHEET);
+    const musicSheets: AbilityMusicSheets = deepCopy(baseMusicSheets);
+    bossCharacter.abilities.push(musicSheets);
+    setAbilityToBossLevel(musicSheets, level);
     resetCharacter(bossCharacter, game);
 
     return bossCharacter;

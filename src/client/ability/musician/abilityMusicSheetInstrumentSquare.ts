@@ -1,7 +1,7 @@
 import { determineCharactersInDistance } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
 import { UpgradeOptionAndProbability, AbilityUpgradeOption } from "../../character/upgrade.js";
-import { Game, FACTION_PLAYER, Position } from "../../gameModel.js";
+import { Game, FACTION_PLAYER, Position, FACTION_ENEMY } from "../../gameModel.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
 import { MusicNote } from "../../sound.js";
 import { Ability, AbilityOwner } from "../ability.js";
@@ -167,7 +167,9 @@ function executeMusicNotesDamage(notes: MusicNote[], abilityOwner: AbilityOwner,
                 }
             }
             upgrade.lastSpawns.push({ x: randomPos.x, y: randomPos.y });
-            const strikeObject = createAbilityObjectExplode(randomPos, damagePerNote, explodeRadius, abilityOwner.faction, abilityMusicSheets.id, 0, game);
+            let explodeDelay = 0;
+            if (abilityOwner.faction === FACTION_ENEMY) explodeDelay = 1500;
+            const strikeObject = createAbilityObjectExplode(randomPos, damagePerNote, explodeRadius, abilityOwner.faction, abilityMusicSheets.id, explodeDelay, game);
             strikeObject.abilityRefTypeDoOnHit = ABILITY_NAME_MUSIC_SHEET;
             game.state.abilityObjects.push(strikeObject);
         }

@@ -5,8 +5,10 @@ current tasks:
     - sound?
         - dev steps:
             - new ability musicSheet
-                - check damage meter
                 - check king/boss
+                    - balancing
+                        - reduce upgrades of boss
+                        - scale upgrades with hp
                 - check record/replays
                 - more music note types (sound related)
                     - 1/8 notes, 1/16 notes
@@ -14,10 +16,6 @@ current tasks:
                     - how to handle long music sheets
                     - do not allow note stacking, prevent to loud notes
         - thoughs and research
-            - damage:
-                - still to weak against single target
-                - damage scaling to low
-                - neither tanky nor can run away
             - music ability
                 - does not feel good yet (the music i made)
                 - am im not good with music or does my musicSheet ability need more options?
