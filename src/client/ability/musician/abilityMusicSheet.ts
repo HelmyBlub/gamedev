@@ -9,10 +9,10 @@ import { AbilityUpgradeFunctions, AbilityUpgradesFunctions, pushAbilityUpgradesO
 import { AbilityDamageBreakdown } from "../../combatlog.js";
 import { MusicNote, MusicSheet, Note, playMusicNote } from "../../sound.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
-import { addAbilityMusicSheetUpgradeInstrumentSine } from "./abilityMusicSheetInstrumentSine.js";
-import { addAbilityMusicSheetUpgradeInstrumentSquare } from "./abilityMusicSheetInstrumentSquare.js";
+import { ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_SINE, addAbilityMusicSheetUpgradeInstrumentSine } from "./abilityMusicSheetInstrumentSine.js";
+import { ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_SQUARE, addAbilityMusicSheetUpgradeInstrumentSquare } from "./abilityMusicSheetInstrumentSquare.js";
 import { findMyCharacter } from "../../character/character.js";
-import { addAbilityMusicSheetUpgradeInstrumentTriangle } from "./abilityMusicSheetInstrumentTriangle.js";
+import { ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_TRIANGLE, addAbilityMusicSheetUpgradeInstrumentTriangle } from "./abilityMusicSheetInstrumentTriangle.js";
 import { addAbilityMusicSheetUpgradeSize } from "./abilityMusicSheetUpgradeSize.js";
 import { addAbilityMusicSheetUpgradeMultiply } from "./abilityMusicSheetUpgradeMultiply.js";
 import { abilityMusicSheetsUpgradeSlowApplySlow, addAbilityMusicSheetUpgradeSlow } from "./abilityMusicSheetUpgradeSlow.js";
@@ -20,6 +20,8 @@ import { deleteProjectile, tickProjectile } from "../projectile.js";
 import { abilityMusicSheetsUpgradeSpeedSetSpeed, addAbilityMusicSheetUpgradeSpeed } from "./abilityMusicSheetUpgradeSpeed.js";
 import { addAbilityMusicSheetUpgradeShield, executeAbilityMusicSheetsUpgradeShield } from "./abilityMusicSheetUpgradeShield.js";
 import { abilityMusicSheetsUpgradeDamageOverTimeApply, addAbilityMusicSheetUpgradeDamageOverTime } from "./abilityMusicSheetUpgradeDamageOverTime.js";
+import { ABILITY_NAME_EXPLODE } from "../abilityExplode.js";
+import { ABILITY_NAME_CIRCLE_AROUND } from "../abilityCircleAround.js";
 
 export type AbilityMusicSheets = Ability & {
     nextUpgradeAddInstrument: boolean,
@@ -155,10 +157,29 @@ function onObjectHit(abilityObject: AbilityObject, targetCharacter: Character, g
 
 function createDamageBreakDown(damage: number, ability: Ability, abilityObject: AbilityObject | undefined, damageAbilityName: string, game: Game): AbilityDamageBreakdown[] {
     const damageBreakDown: AbilityDamageBreakdown[] = [];
-    damageBreakDown.push({
-        damage: damage,
-        name: "Base Damage",
-    });
+    if (abilityObject) {
+        let name = "Base Damage";
+        switch (abilityObject.type) {
+            case ABILITY_NAME_EXPLODE:
+                name = ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_SQUARE;
+                break;
+            case ABILITY_NAME_CIRCLE_AROUND:
+                name = ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_TRIANGLE;
+                break;
+            case ABILITY_NAME_MUSIC_SHEET:
+                name = ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_SINE;
+                break;
+        }
+        damageBreakDown.push({
+            damage: damage,
+            name: name,
+        });
+    } else {
+        damageBreakDown.push({
+            damage: damage,
+            name: damageAbilityName,
+        });
+    }
     return damageBreakDown;
 }
 
