@@ -5,7 +5,7 @@ import { Position, Game, IdCounter, FACTION_PLAYER } from "../../gameModel.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, findAbilityById, getAbilityNameUiText } from "../ability.js";
-import { AbilityUpgrade, AbilityUpgradeFunctions, AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
+import { AbilityUpgradeFunctions, AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
 import { AbilityDamageBreakdown } from "../../combatlog.js";
 import { MusicNote, MusicSheet, Note, playMusicNote } from "../../sound.js";
 import { getPointPaintPosition } from "../../gamePaint.js";

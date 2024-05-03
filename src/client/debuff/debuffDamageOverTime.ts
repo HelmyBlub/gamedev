@@ -15,6 +15,7 @@ export function addDebuffDamageOverTime() {
     DEBUFFS_FUNCTIONS[DEBUFF_NAME_DAMAGE_OVER_TIME] = {
         refreshDebuffEffect: refreshDebuffEffect,
         tickDebuffEffect: tickDebuff,
+        allowMultiple: true,
     };
 }
 

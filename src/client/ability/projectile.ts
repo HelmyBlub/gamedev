@@ -33,7 +33,7 @@ export function createProjectile(x: number, y: number, moveDirection: number, da
 export function tickProjectile(abilityObject: AbilityObject, game: Game) {
     const projectile = abilityObject as Projectile;
     moveProjectileTick(projectile);
-    if (projectile.nextDamageTickTime === undefined) projectile.nextDamageTickTime = game.state.time + projectile.damageTickInterval;
+    if (projectile.nextDamageTickTime === undefined) projectile.nextDamageTickTime = game.state.time;
     if (projectile.nextDamageTickTime <= game.state.time) {
         detectAbilityObjectCircleToCharacterHit(game.state.map, projectile, game);
         projectile.nextDamageTickTime += projectile.damageTickInterval;

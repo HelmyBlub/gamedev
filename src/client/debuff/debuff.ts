@@ -22,6 +22,7 @@ export type DebuffFunctions = {
     removeDebuffEffect?: (debuff: Debuff, targetCharacter: Character, game: Game) => void,
     refreshDebuffEffect?: (newDebuff: Debuff, currentDebuff: Debuff, targetCharacter: Character, game: Game) => void,
     tickDebuffEffect?: (debuff: Debuff, targetCharacter: Character, game: Game) => void,
+    allowMultiple?: boolean,
 }
 
 export type DebuffsFunctions = {
@@ -45,8 +46,13 @@ export function onDomLoadSetDebuffsFunctions() {
 
 export function applyDebuff(debuff: Debuff, character: Character, game: Game) {
     if (character.isDebuffImmune) return;
-    const currentDebuff = character.debuffs.find((d) => d.name === debuff.name);
     const debuffFunctions: DebuffFunctions | undefined = DEBUFFS_FUNCTIONS[debuff.name];
+    let currentDebuff: Debuff | undefined;
+    if (debuffFunctions.allowMultiple) {
+        currentDebuff = character.debuffs.find((d) => d.name === debuff.name && d.abilityIdRef === debuff.abilityIdRef);
+    } else {
+        currentDebuff = character.debuffs.find((d) => d.name === debuff.name);
+    }
     if (currentDebuff) {
         if (debuffFunctions && debuffFunctions.refreshDebuffEffect) debuffFunctions.refreshDebuffEffect(debuff, currentDebuff, character, game);
     } else {

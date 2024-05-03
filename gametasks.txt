@@ -1,4 +1,4 @@
-next test run: 
+next test run: tower builder
 increase version
 
 current tasks:
@@ -6,7 +6,6 @@ current tasks:
         - dev steps:
             - new ability musicSheet
                 - upgrades (damage related)
-                    - bug: slow debuff game crash. Unknown how to reproduce
                     - dot damage stacking, capped stacks
                         - make debuff for each character/abilityId. Currently one for all
 
