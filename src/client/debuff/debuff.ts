@@ -81,6 +81,7 @@ export function tickCharacterDebuffs(character: Character, game: Game) {
     const debuffs = character.debuffs;
     for (let i = debuffs.length - 1; i >= 0; i--) {
         const debuff = debuffs[i];
+        if (debuff === undefined) continue;
         const debuffFunctions = DEBUFFS_FUNCTIONS[debuff.name];
         if (debuff.removeTime && debuff.removeTime <= game.state.time) {
             if (debuffFunctions && debuffFunctions.removeDebuffEffect) debuffFunctions.removeDebuffEffect(debuff, character, game);

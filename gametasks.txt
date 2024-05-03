@@ -6,6 +6,7 @@ current tasks:
         - dev steps:
             - new ability musicSheet
                 - upgrades (damage related)
+                    - bug: slow debuff game crash. Unknown how to reproduce
                     - dot damage stacking, capped stacks
                         - make debuff for each character/abilityId. Currently one for all
 
@@ -15,6 +16,7 @@ current tasks:
                     - how to handle long music sheets
                     - do not allow note stacking, prevent to loud notes
                 - check damage meter
+                - check record/replays
         - thoughs and research
             - damage:
                 - still to weak against single target
@@ -31,6 +33,7 @@ current tasks:
             - make own sounds?
             - how to capture sound in my stream setup from VM? (offstream)
     - replayData: add zoom factor. zoom has influence on time of replay
+    - short king replay on its own creating problems when king defeated
 
 
 next feature ideas:

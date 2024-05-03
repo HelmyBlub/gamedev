@@ -501,7 +501,7 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
                 || (lastTick > currentTick && delayedNoteTick <= currentTick)
             ) {
                 //warning: playing sound is client specific delayed. other things should not.
-                playMusicNote(selectedMusicSheet.musicSheet, note, game.sound);
+                if (!game.testing.replay) playMusicNote(selectedMusicSheet.musicSheet, note, game.sound);
             }
             const noteTick = note.tick % selectedMusicSheet.maxPlayTicks;
             if ((lastTick < noteTick && noteTick <= currentTick)
