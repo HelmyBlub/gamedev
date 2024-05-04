@@ -5,10 +5,10 @@ current tasks:
     - sound?
         - dev steps:
             - new ability musicSheet
-                - check record/replays
                 - more music note types (sound related)
-                    - stop/start music sheet
                     - on mouse move visualize where note is placed
+                        - visualize how existing note is changed
+                    - stop/start music sheet
                     - 1/8 notes, 1/16 notes
                     - change base octave of music sheet
                     - how to handle long music sheets

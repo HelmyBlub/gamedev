@@ -3,7 +3,7 @@ import { paintAll } from "./gamePaint.js";
 import { addPlayerMoney, createDefaultKeyBindings1, createDefaultUiKeyBindings, findNearesPastPlayerCharacter, findPlayerByCharacterId, gameInitPlayers, isAutoSkillActive } from "./player.js";
 import { MOUSE_ACTION, UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.js";
 import { Position, GameState, Game, IdCounter, Debugging, PaintTextData, ClientInfo, GameVersion } from "./gameModel.js";
-import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap, initGodArea, initKingArea } from "./map/map.js";
+import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap, initGodArea, initKingArea, mousePositionToMapPosition } from "./map/map.js";
 import { Character } from "./character/characterModel.js";
 import { generateMissingChunks, pastCharactersMapTilePositions } from "./map/mapGeneration.js";
 import { createFixPositionRespawnEnemiesOnInit } from "./character/enemy/fixPositionRespawnEnemyModel.js";
@@ -698,11 +698,7 @@ function autoSendMyMousePosition(game: Game) {
     if (game.multiplayer.autosendMousePosition.sendForOwners.length === 0) return;
     if (game.multiplayer.autosendMousePosition.nextTime <= game.state.time) {
         const cameraPosition = getCameraPosition(game);
-        const castPosition = {
-            x: game.mouseRelativeCanvasPosition.x - game.canvasElement!.width / 2 + cameraPosition.x,
-            y: game.mouseRelativeCanvasPosition.y - game.canvasElement!.height / 2 + cameraPosition.y
-        }
-
+        const castPosition = mousePositionToMapPosition(game, cameraPosition);
         handleCommand(game, {
             command: "playerInput",
             clientId: game.multiplayer.myClientId,

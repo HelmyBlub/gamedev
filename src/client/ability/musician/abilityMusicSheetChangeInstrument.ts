@@ -3,7 +3,7 @@ import { IdCounter, Game, Position } from "../../gameModel.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, getAbilityNameUiText } from "../ability.js";
-import { ABILITY_NAME_MUSIC_SHEET, AbilityMusicSheets, AbilityUpgradeFunctionsMusicSheets } from "./abilityMusicSheet.js";
+import { ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS, ABILITY_NAME_MUSIC_SHEET, AbilityMusicSheets, AbilityUpgradeFunctionsMusicSheets } from "./abilityMusicSheet.js";
 import { AbilityMusicSheetUpgradeInstrumentSquare } from "./abilityMusicSheetInstrumentSquare.js";
 
 export type AbilityMusicSheetChangeInstrument = Ability & {
@@ -42,8 +42,8 @@ function castInstrumentChange(abilityOwner: AbilityOwner, ability: Ability, cast
                     let currentIndex = startIndex;
                     do {
                         currentIndex = (currentIndex + 1) % instruments.length;
-                        const instrumentUpgrade = musicSheets.upgrades[instruments[currentIndex]] as AbilityUpgradeFunctionsMusicSheets;
-                        if (instrumentUpgrade.executeNoteDamage) {
+                        const instrumentUpgradeFunctions = ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS[instruments[currentIndex]] as AbilityUpgradeFunctionsMusicSheets;
+                        if (instrumentUpgradeFunctions.executeNoteDamage) {
                             musicSheets.selectedInstrument = instruments[currentIndex];
                             return;
                         }

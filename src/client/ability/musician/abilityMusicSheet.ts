@@ -22,6 +22,7 @@ import { addAbilityMusicSheetUpgradeShield, executeAbilityMusicSheetsUpgradeShie
 import { abilityMusicSheetsUpgradeDamageOverTimeApply, addAbilityMusicSheetUpgradeDamageOverTime } from "./abilityMusicSheetUpgradeDamageOverTime.js";
 import { ABILITY_NAME_EXPLODE } from "../abilityExplode.js";
 import { ABILITY_NAME_CIRCLE_AROUND } from "../abilityCircleAround.js";
+import { mousePositionToMapPosition } from "../../map/map.js";
 
 export type AbilityMusicSheets = Ability & {
     nextUpgradeAddInstrument: boolean,
@@ -260,11 +261,9 @@ function determineClickedButton(abilityMusicSheets: AbilityMusicSheets, abilityO
 /** returns true if clicked inside music sheet for note placing */
 function castNote(abilityOwner: AbilityOwner, musicSheets: AbilityMusicSheets, selectedSheet: AbilityMusicSheet, castPosition: Position, musicSheetWidth: number): boolean {
     const unroundedTick = (((castPosition.x - abilityOwner.x) + musicSheetWidth / 2 - NOTE_PAINT_OFFSETX + 4) / musicSheetWidth) * selectedSheet.maxPlayTicks;
-    const tick = Math.round(unroundedTick);
-    if (tick < 0 || tick >= selectedSheet.maxPlayTicks) return false;
-    const musicNote = yPosToMusicNote(castPosition.y, abilityOwner.y, musicSheets);
+    const musicNote = positionToMusicNote(abilityOwner, musicSheets, selectedSheet, castPosition, musicSheetWidth);
     if (!musicNote) return false;
-    musicNote.tick = tick;
+    const tick = Math.round(unroundedTick);
     let duplicateNoteIndex = selectedSheet.musicSheet.notes.findIndex(n => n.note === musicNote.note && n.tick === tick && n.octave === musicNote.octave);
     if (duplicateNoteIndex > -1) {
         const dupNote = selectedSheet.musicSheet.notes[duplicateNoteIndex];
@@ -288,6 +287,16 @@ function castNote(abilityOwner: AbilityOwner, musicSheets: AbilityMusicSheets, s
     }
     abilityMusicSheetsUpgradeSpeedSetSpeed(musicSheets, abilityOwner);
     return true;
+}
+
+function positionToMusicNote(abilityOwner: AbilityOwner, musicSheets: AbilityMusicSheets, selectedSheet: AbilityMusicSheet, castPosition: Position, musicSheetWidth: number): MusicNote | undefined {
+    const unroundedTick = (((castPosition.x - abilityOwner.x) + musicSheetWidth / 2 - NOTE_PAINT_OFFSETX + 4) / musicSheetWidth) * selectedSheet.maxPlayTicks;
+    const tick = Math.round(unroundedTick);
+    if (tick < 0 || tick >= selectedSheet.maxPlayTicks) return undefined;
+    const musicNote = yPosToMusicNote(castPosition.y, abilityOwner.y, musicSheets);
+    if (!musicNote) return undefined;
+    musicNote.tick = tick;
+    return musicNote;
 }
 
 function createAbilityBossUpgradeOptions(ability: Ability, character: Character, game: Game): UpgradeOptionAndProbability[] {
@@ -415,11 +424,19 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
         ctx.fillRect(topLeftMusicSheet.x - abilityMusicSheets.buttonWidth, topLeftMusicSheet.y + leftOffsetY, abilityMusicSheets.buttonWidth, abilityMusicSheets.buttonWidth);
         ctx.fillStyle = "black";
         ctx.fillText((1 + abilityMusicSheets.selectedMusicSheetIndex).toFixed(), topLeftMusicSheet.x - abilityMusicSheets.buttonWidth + 5, Math.floor(topLeftMusicSheet.y + leftOffsetY + abilityMusicSheets.buttonWidth / 2 + fontSize / 2) - 5);
+
+        const currentMousePosition = mousePositionToMapPosition(game, cameraPosition);
+        const hoverNote = positionToMusicNote(abilityOwner, abilityMusicSheets, selectedSheet, currentMousePosition, musicSheetWidth);
+        if (hoverNote) {
+            ctx.globalAlpha *= 0.5;
+            paintNote(ctx, hoverNote, abilityMusicSheets, topLeftMusicSheet, selectedSheet, "blue");
+        }
+
     }
     ctx.globalAlpha = 1;
 }
 
-function paintMovingLineTimeIndicator(ctx: CanvasRenderingContext2D, abilityMusicSheet: AbilityMusicSheets, topLeftMusicSheet: Position, musicSheetWidth: number, selectedSheet: AbilityMusicSheet) {
+function paintMovingLineTimeIndicator(ctx: CanvasRenderingContext2D, abilityMusicSheets: AbilityMusicSheets, topLeftMusicSheet: Position, musicSheetWidth: number, selectedSheet: AbilityMusicSheet) {
     ctx.lineWidth = 1;
     ctx.fillStyle = "black";
     if (selectedSheet.lastPlayTick === undefined) return;
@@ -427,7 +444,7 @@ function paintMovingLineTimeIndicator(ctx: CanvasRenderingContext2D, abilityMusi
     const xOffset = (xOffset1 + NOTE_PAINT_OFFSETX) % musicSheetWidth;
     ctx.beginPath();
     ctx.moveTo(topLeftMusicSheet.x + xOffset, topLeftMusicSheet.y);
-    ctx.lineTo(topLeftMusicSheet.x + xOffset, topLeftMusicSheet.y + abilityMusicSheet.paintHeight);
+    ctx.lineTo(topLeftMusicSheet.x + xOffset, topLeftMusicSheet.y + abilityMusicSheets.paintHeight);
     ctx.stroke();
 }
 
@@ -456,30 +473,33 @@ function paintMusicSheetLines(ctx: CanvasRenderingContext2D, topLeftMusicSheet: 
     }
 }
 
-function paintNotes(ctx: CanvasRenderingContext2D, abilityMusicSheet: AbilityMusicSheets, topLeftMusicSheet: Position, selectedSheet: AbilityMusicSheet) {
-    const noteRadius = Math.floor(abilityMusicSheet.paintHeight / LINE_COUNT / 2);
-    const noteStemSize = Math.floor(abilityMusicSheet.paintHeight / 2);
-    const musicSheetWidth = abilityMusicSheet.widthPerNote * selectedSheet.maxPlayTicks;
+function paintNotes(ctx: CanvasRenderingContext2D, abilityMusicSheets: AbilityMusicSheets, topLeftMusicSheet: Position, selectedSheet: AbilityMusicSheet) {
     for (let note of selectedSheet.musicSheet.notes) {
-        ctx.fillStyle = "black";
-        ctx.strokeStyle = "black";
-        const lineNumber = musicNoteToMusicSheetLine(note) + 0.5;
-        const xOffset = (note.tick / selectedSheet.maxPlayTicks) * musicSheetWidth + NOTE_PAINT_OFFSETX;
-        if (xOffset > musicSheetWidth) continue;
+        paintNote(ctx, note, abilityMusicSheets, topLeftMusicSheet, selectedSheet);
+    }
+}
 
-        if (note.type === undefined) continue;
-        const upgradeFunctions = ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS[note.type];
-        const noteX = topLeftMusicSheet.x + xOffset;
-        const noteY = topLeftMusicSheet.y + lineNumber * (abilityMusicSheet.paintHeight / LINE_COUNT);
-        if (upgradeFunctions.paintNote) upgradeFunctions.paintNote(ctx, note, noteX, noteY, lineNumber, noteRadius);
+function paintNote(ctx: CanvasRenderingContext2D, note: MusicNote, abilityMusicSheet: AbilityMusicSheets, topLeftMusicSheet: Position, selectedSheet: AbilityMusicSheet, color: string = "black") {
+    const musicSheetWidth = abilityMusicSheet.widthPerNote * selectedSheet.maxPlayTicks;
+    const noteRadius = Math.floor(abilityMusicSheet.paintHeight / LINE_COUNT / 2);
+    ctx.fillStyle = color;
+    ctx.strokeStyle = color;
+    const lineNumber = musicNoteToMusicSheetLine(note) + 0.5;
+    const xOffset = (note.tick / selectedSheet.maxPlayTicks) * musicSheetWidth + NOTE_PAINT_OFFSETX;
+    if (xOffset > musicSheetWidth) return;
 
-        if (note.semitone) {
-            const char = note.semitone === "flat" ? "b" : "#";
-            ctx.font = `bold ${noteRadius * 2.5}px Arial`;
-            ctx.fillStyle = "black";
-            const charWidth = ctx.measureText(char).width;
-            ctx.fillText(char, noteX - noteRadius - charWidth, noteY + noteRadius - 2);
-        }
+    if (note.type === undefined) return;
+    const upgradeFunctions = ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS[note.type];
+    const noteX = topLeftMusicSheet.x + xOffset;
+    const noteY = topLeftMusicSheet.y + lineNumber * (abilityMusicSheet.paintHeight / LINE_COUNT);
+    if (upgradeFunctions.paintNote) upgradeFunctions.paintNote(ctx, note, noteX, noteY, lineNumber, noteRadius);
+
+    if (note.semitone) {
+        const char = note.semitone === "flat" ? "b" : "#";
+        ctx.font = `bold ${noteRadius * 2.5}px Arial`;
+        ctx.fillStyle = color;
+        const charWidth = ctx.measureText(char).width;
+        ctx.fillText(char, noteX - noteRadius - charWidth, noteY + noteRadius - 2);
     }
 }
 
@@ -497,6 +517,7 @@ function yPosToMusicNote(yClickPos: number, yOwnerPos: number, abilityMusicSheet
     const indexToNote = ["B", "A", "G", "F", "E", "D", "C"];
     const offsetTopMusciSheet = (yClickPos - yOwnerPos - abilityMusicSheets.offestY);
     const lineNumber = offsetTopMusciSheet / abilityMusicSheets.paintHeight * LINE_COUNT;
+    if (lineNumber < -1) return undefined;
     const index = Math.round(lineNumber * 2) + 2;
     const octave = BASE_OCATAVE - (Math.floor(index / indexToNote.length));
     if (octave < BASE_OCATAVE - 1 || octave > BASE_OCATAVE + 1) return undefined;

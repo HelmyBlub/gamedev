@@ -11,6 +11,7 @@ import { shareCharactersTradeablePreventedMultipleClass } from "./character/play
 import { findNearesInteractableMapChunkObject, interactWithMapObject } from "./map/mapObjects.js";
 import { localStorageLoad } from "./permanentData.js";
 import { createRequiredMoreInfos, moreInfosHandleMouseClick } from "./moreInfo.js";
+import { mousePositionToMapPosition } from "./map/map.js";
 
 export const MOVE_ACTIONS = ["left", "down", "right", "up"];
 export const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3", "upgrade4", "upgrade5"];
@@ -307,10 +308,7 @@ function playerInputChangeEvent(game: Game, inputCode: string, isInputDown: bool
     action.isInputAlreadyDown = isInputDown;
     if (action.action.indexOf("ability") > -1) {
         const cameraPosition = getCameraPosition(game);
-        const castPosition: Position = {
-            x: game.mouseRelativeCanvasPosition.x - game.canvasElement!.width / 2 + cameraPosition.x,
-            y: game.mouseRelativeCanvasPosition.y - game.canvasElement!.height / 2 + cameraPosition.y
-        }
+        const castPosition = mousePositionToMapPosition(game, cameraPosition);
         handleCommand(game, {
             command: "playerInput",
             clientId: clientId,

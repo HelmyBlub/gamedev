@@ -514,6 +514,13 @@ export function calculateDistanceToMapChunk(chunkX: number, chunkY: number, posi
     return Math.sqrt(dx * dx + dy * dy);
 }
 
+export function mousePositionToMapPosition(game: Game, cameraPosition: Position): Position {
+    return {
+        x: game.mouseRelativeCanvasPosition.x - game.canvasElement!.width / 2 + cameraPosition.x,
+        y: game.mouseRelativeCanvasPosition.y - game.canvasElement!.height / 2 + cameraPosition.y
+    }
+}
+
 export function getMapTile(pos: Position, map: GameMap, idCounter: IdCounter, game: Game): MapTile {
     const chunkSize = map.tileSize * map.chunkLength;
     const chunkX = Math.floor(pos.x / chunkSize);
