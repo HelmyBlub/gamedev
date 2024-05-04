@@ -2,7 +2,7 @@ import { Character } from "../../character/characterModel.js";
 import { UpgradeOptionAndProbability, AbilityUpgradeOption } from "../../character/upgrade.js";
 import { applyDebuff } from "../../debuff/debuff.js";
 import { createDebuffDamageOverTime } from "../../debuff/debuffDamageOverTime.js";
-import { Game } from "../../gameModel.js";
+import { FACTION_PLAYER, Game } from "../../gameModel.js";
 import { Ability } from "../ability.js";
 import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrade.js";
 import { ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS, AbilityMusicSheets } from "./abilityMusicSheet.js";
@@ -26,6 +26,7 @@ export function abilityMusicSheetsUpgradeDamageOverTimeApply(ability: AbilityMus
     const up = ability.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_DAMAGE_OVER_TIME] as AbilityMusicSheetUpgradeDamageOverTime;
     if (up === undefined) return;
     const debuffDamageOverTime = createDebuffDamageOverTime(ability.damagePerSecond * up.level, ability.id);
+    if (target.faction === FACTION_PLAYER) debuffDamageOverTime.removeTime = game.state.time + 2000;
     applyDebuff(debuffDamageOverTime, target, game);
 }
 
