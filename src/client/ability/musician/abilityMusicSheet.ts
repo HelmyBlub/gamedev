@@ -365,6 +365,7 @@ function paintAbilityUI(ctx: CanvasRenderingContext2D, ability: Ability, drawSta
 }
 
 function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
+    if (ability.disabled) return;
     const abilityMusicSheets = ability as AbilityMusicSheets;
     if (abilityMusicSheets.selectedInstrument === undefined) return;
     const selectedSheet = abilityMusicSheets.musicSheets[abilityMusicSheets.selectedMusicSheetIndex];

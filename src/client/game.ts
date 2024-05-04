@@ -333,6 +333,7 @@ export function saveCharacterAsPastCharacter(character: Character, game: Game) {
     const newPastCharacter: Character = deepCopy(character);
     for (let i = newPastCharacter.abilities.length - 1; i >= 0; i--) {
         const ability = newPastCharacter.abilities[i];
+        ability.disabled = true;
         if (ability.legendary) {
             newPastCharacter.abilities.splice(i, 1);
         }

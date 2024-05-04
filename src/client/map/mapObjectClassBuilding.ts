@@ -14,6 +14,7 @@ import { ABILITY_NAME_LEASH, AbilityLeash } from "../ability/abilityLeash.js";
 import { playerInputBindingToDisplayValue } from "../playerInput.js";
 import { MoreInfosPartContainer, createDefaultMoreInfosContainer, createMoreInfosPart } from "../moreInfo.js";
 import { IMAGE_BUILDING1, createBuildingClassBuilding, classBuildingFindCharacterClassToMakeLegendary, classBuildingPlacePlayerClassStuffInBuilding, classBuildingFindById, BUILDING_CLASS_BUILDING } from "./buildings/classBuilding.js";
+import { fillRandomUpgradeOptionChoices } from "../character/upgrade.js";
 
 export type MapTileObjectBuilding = MapTileObject & {
     buildingId: number,
@@ -155,6 +156,7 @@ function interactBurrow(interacter: Character, mapObject: MapTileObject, game: G
         interacter.upgradeChoices = [];
     }
     resetCharacter(interacter, game);
+    fillRandomUpgradeOptionChoices(interacter, game);
 }
 
 function paintInteract(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, interacter: Character, game: Game) {

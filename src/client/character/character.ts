@@ -190,6 +190,7 @@ export function characterTradeAbilityAndPets(fromCharacter: Character, toCharact
             fromCharacter.abilities.splice(i, 1);
             ability.tradable = false;
             ability.gifted = true;
+            ability.disabled = false;
             if (ability.bossSkillPoints != undefined) ability.bossSkillPoints = undefined;
             if (ability.level) ability.level.leveling = undefined;
             toCharacter.abilities.push(ability);
@@ -287,6 +288,7 @@ export function tickCharacters(characters: (Character | undefined)[], game: Game
         }
         if (!char.isDead) {
             for (let ability of char.abilities) {
+                if (ability.disabled) continue;
                 const tickAbility = ABILITIES_FUNCTIONS[ability.name].tickAbility;
                 if (tickAbility) tickAbility(char, ability, game);
             }
