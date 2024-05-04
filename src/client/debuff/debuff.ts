@@ -45,7 +45,7 @@ export function onDomLoadSetDebuffsFunctions() {
 }
 
 export function applyDebuff(debuff: Debuff, character: Character, game: Game) {
-    if (character.isDebuffImmune) return;
+    if (character.isDebuffImmune || character.isDead) return;
     const debuffFunctions: DebuffFunctions | undefined = DEBUFFS_FUNCTIONS[debuff.name];
     let currentDebuff: Debuff | undefined;
     if (debuffFunctions.allowMultiple) {

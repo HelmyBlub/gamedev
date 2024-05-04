@@ -1,13 +1,10 @@
-next test run: tower builder
+next test run: tower builder, musician
 increase version
 
 current tasks:
     - sound?
         - dev steps:
             - new ability musicSheet
-                - check king/boss
-                    - balancing
-                        - DOT for enemies not endless
                 - check record/replays
                 - more music note types (sound related)
                     - stop/start music sheet
