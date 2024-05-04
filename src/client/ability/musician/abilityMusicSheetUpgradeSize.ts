@@ -4,7 +4,6 @@ import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrad
 import { ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS, AbilityMusicSheets } from "./abilityMusicSheet.js";
 
 export type AbilityMusicSheetUpgradeSize = AbilityUpgrade & {
-    areaFactor: number
 }
 
 export const ABILITY_MUSIC_SHEET_UPGRADE_SIZE = "Effect Size";
@@ -22,7 +21,7 @@ export function addAbilityMusicSheetUpgradeSize() {
 export function getAbilityMusicSheetsUpgradeAreaFactor(ability: AbilityMusicSheets): number {
     const up: AbilityMusicSheetUpgradeSize = ability.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_SIZE];
     if (!up) return 1;
-    return up.areaFactor;
+    return up.level + 1;
 }
 
 function reset(ability: Ability) {
@@ -38,13 +37,12 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption) {
     const musicSheet = ability as AbilityMusicSheets;
     let up: AbilityMusicSheetUpgradeSize;
     if (musicSheet.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_SIZE] === undefined) {
-        up = { level: 0, areaFactor: 1 };
+        up = { level: 0 };
         musicSheet.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_SIZE] = up;
     } else {
         up = musicSheet.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_SIZE];
     }
     up.level++;
-    up.areaFactor++;
 }
 
 function getAbilityUpgradeUiText(ability: Ability): string {

@@ -138,7 +138,7 @@ function tickKingEnemyCharacter(enemy: KingEnemyCharacter, game: Game, pathingCa
             if (abilityFunctions.tickBossAI) abilityFunctions.tickBossAI(enemy, ability, game);
         }
     }
-    changeBossAbilityLevelBasedOnHp(enemy);
+    changeKingAbilityLevelBasedOnHp(enemy);
     tickCharacterDebuffs(enemy, game);
 }
 
@@ -159,7 +159,7 @@ export function modifyCharacterToKing(boss: Character, game: Game) {
     }
     boss.baseMoveSpeed = 1;
     resetCharacter(boss, game);
-    changeBossAbilityLevelBasedOnHp(boss);
+    changeKingAbilityLevelBasedOnHp(boss);
 }
 
 export function paintKingHpBar(ctx: CanvasRenderingContext2D, boss: Character) {
@@ -185,7 +185,7 @@ export function paintKingHpBar(ctx: CanvasRenderingContext2D, boss: Character) {
     ctx.fillText(hpBarText, Math.floor(ctx.canvas.width / 2 - textWidth / 2), top + fontSize + 1);
 }
 
-function changeBossAbilityLevelBasedOnHp(enemy: KingEnemyCharacter) {
+function changeKingAbilityLevelBasedOnHp(enemy: KingEnemyCharacter) {
     const hpLeftPerCent = enemy.hp / enemy.maxHp;
     const hpBasedlevel = Math.max(Math.floor((1 - hpLeftPerCent) * 10 + 1), 1);
 

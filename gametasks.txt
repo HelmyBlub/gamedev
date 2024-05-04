@@ -7,8 +7,7 @@ current tasks:
             - new ability musicSheet
                 - check king/boss
                     - balancing
-                        - reduce upgrades of boss
-                        - scale upgrades with hp
+                        - DOT for enemies not endless
                 - check record/replays
                 - more music note types (sound related)
                     - stop/start music sheet

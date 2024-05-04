@@ -5,7 +5,7 @@ import { Position, Game, IdCounter, FACTION_PLAYER } from "../../gameModel.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, findAbilityById, getAbilityNameUiText } from "../ability.js";
-import { AbilityUpgradeFunctions, AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
+import { AbilityUpgrade, AbilityUpgradeFunctions, AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
 import { AbilityDamageBreakdown } from "../../combatlog.js";
 import { MusicNote, MusicSheet, Note, playMusicNote } from "../../sound.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
@@ -340,8 +340,16 @@ function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: n
 }
 
 function setAbilityToBossLevel(ability: Ability, level: number) {
-    const musicSheet = ability as AbilityMusicSheets;
-    musicSheet.damagePerSecond = 10 * level;
+    const musicSheets = ability as AbilityMusicSheets;
+    musicSheets.damagePerSecond = 10 * level;
+    const upgradeKeys = Object.keys(musicSheets.upgrades);
+    const levelForEachUpgrade = Math.floor(level / upgradeKeys.length);
+    const additionalLevelUntilIndex = level % upgradeKeys.length;
+    for (let i = 0; i < upgradeKeys.length; i++) {
+        const upgrade: AbilityUpgrade = musicSheets.upgrades[upgradeKeys[i]];
+        upgrade.level = 1 + levelForEachUpgrade;
+        if (i < additionalLevelUntilIndex) upgrade.level++;
+    }
 }
 
 function paintAbilityUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {

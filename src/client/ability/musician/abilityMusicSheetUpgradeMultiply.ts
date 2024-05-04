@@ -4,7 +4,6 @@ import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrad
 import { ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS, AbilityMusicSheets } from "./abilityMusicSheet.js";
 
 export type AbilityMusicSheetUpgradeMultiply = AbilityUpgrade & {
-    multiply: number
 }
 
 export const ABILITY_MUSIC_SHEET_UPGRADE_MULTIPLY = "Multiply";
@@ -22,7 +21,7 @@ export function addAbilityMusicSheetUpgradeMultiply() {
 export function getAbilityMusicSheetsUpgradeMultiplyAmount(ability: AbilityMusicSheets): number {
     const up: AbilityMusicSheetUpgradeMultiply = ability.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_MULTIPLY];
     if (!up) return 1;
-    return up.multiply;
+    return up.level + 1;
 }
 
 function reset(ability: Ability) {
@@ -38,13 +37,12 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption) {
     const musicSheet = ability as AbilityMusicSheets;
     let up: AbilityMusicSheetUpgradeMultiply;
     if (musicSheet.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_MULTIPLY] === undefined) {
-        up = { level: 0, multiply: 1 };
+        up = { level: 0 };
         musicSheet.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_MULTIPLY] = up;
     } else {
         up = musicSheet.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_MULTIPLY];
     }
     up.level++;
-    up.multiply++;
 }
 
 function getAbilityUpgradeUiText(ability: Ability): string {

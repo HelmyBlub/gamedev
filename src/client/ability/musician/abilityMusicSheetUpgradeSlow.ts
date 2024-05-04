@@ -8,8 +8,6 @@ import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrad
 import { ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS, AbilityMusicSheets } from "./abilityMusicSheet.js";
 
 export type AbilityMusicSheetUpgradeSlow = AbilityUpgrade & {
-    factor: number,
-    duration: number,
 }
 export const ABILITY_MUSIC_SHEET_UPGRADE_SLOW = "Slow on hit";
 const SLOW_FACTOR_PER_LEVEL = 1;
@@ -28,11 +26,15 @@ export function addAbilityMusicSheetUpgradeSlow() {
 export function abilityMusicSheetsUpgradeSlowApplySlow(ability: AbilityMusicSheets, target: Character, game: Game) {
     const slow = ability.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_SLOW] as AbilityMusicSheetUpgradeSlow;
     if (slow === undefined) return;
-    const debuffSlow = createDebuffSlow(slow.factor, slow.duration, game.state.time);
+    const debuffSlow = createDebuffSlow(getSlowFactor(slow), BASEDURATION, game.state.time);
     applyDebuff(debuffSlow, target, game);
 }
 
 function reset(ability: Ability) {
+}
+
+function getSlowFactor(up: AbilityMusicSheetUpgradeSlow): number {
+    return 1 + up.level * SLOW_FACTOR_PER_LEVEL;
 }
 
 function getOptions(ability: Ability): UpgradeOptionAndProbability[] {
@@ -45,13 +47,12 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption) {
     const musicSheet = ability as AbilityMusicSheets;
     let up: AbilityMusicSheetUpgradeSlow;
     if (musicSheet.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_SLOW] === undefined) {
-        up = { level: 0, factor: 1, duration: BASEDURATION };
+        up = { level: 0 };
         musicSheet.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_SLOW] = up;
     } else {
         up = musicSheet.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_SLOW];
     }
     up.level++;
-    up.factor += SLOW_FACTOR_PER_LEVEL;
 }
 
 function getAbilityUpgradeUiText(ability: Ability): string {
@@ -63,11 +64,11 @@ function getAbilityUpgradeUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
     const upgrade: AbilityMusicSheetUpgradeSlow | undefined = ability.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_SLOW];
     if (upgrade) {
-        const currentSlowAmount = debuffSlowGetSlowAmountAsPerCentText(upgrade.factor);
-        const newSlowAmount = debuffSlowGetSlowAmountAsPerCentText(upgrade.factor + SLOW_FACTOR_PER_LEVEL);
+        const currentSlowAmount = debuffSlowGetSlowAmountAsPerCentText(getSlowFactor(upgrade));
+        const newSlowAmount = debuffSlowGetSlowAmountAsPerCentText(getSlowFactor(upgrade) + SLOW_FACTOR_PER_LEVEL);
         textLines.push(`Slow enemies on hit.`);
         textLines.push(`Increase slow from ${currentSlowAmount}% to ${newSlowAmount}%.`);
-        textLines.push(`Slow lasts ${(upgrade.duration) / 1000}s.`);
+        textLines.push(`Slow lasts ${(BASEDURATION) / 1000}s.`);
     } else {
         const slowAmount = debuffSlowGetSlowAmountAsPerCentText(1 + SLOW_FACTOR_PER_LEVEL);
         textLines.push(`Slow enemies on hit.`);
