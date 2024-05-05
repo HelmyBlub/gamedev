@@ -65,10 +65,11 @@ export function generateNote(duration: number, note: MusicNote, sound: Sound | u
         if (note.type === ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_SINE) oscillator.type = "sine";
         if (note.type === ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_SQUARE) {
             oscillator.type = "square";
-            soundVolume2Modify = 0.25;
+            soundVolume2Modify = 0.15;
         }
         if (note.type === ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_TRIANGLE) {
             oscillator.type = "triangle";
+            soundVolume2Modify = 0.90;
         }
     }
     let frequencyIndex = notesToFrequencyIndex[note.note];

@@ -1,9 +1,10 @@
-next test run:, musician
+next test run: musician
 increase version
 
 current tasks:
     - sound?
         - dev steps:
+            - check big enemies
             - new ability musicSheet
                 - more music note types (sound related)
                     - 1/8 notes, 1/16 notes
