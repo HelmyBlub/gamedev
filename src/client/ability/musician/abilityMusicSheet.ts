@@ -51,14 +51,17 @@ export type AbilityUpgradesFunctionsMusicSheets = {
 
 export type AbilityMusicSheet = {
     musicSheet: MusicSheet,
+    stopping?: boolean,
+    stopped: boolean,
     maxPlayTicks: number,
     lastPlayTick?: number,
+    lastPlayGameTime?: number,
 }
 
 type MusicSheetButton = {
     isLeft: boolean,
     height: number,
-    action: "+" | "-" | "↑" | "↓",
+    action: "+" | "-" | "↑" | "↓" | "start/stop",
 }
 
 const LINE_COUNT = 5;
@@ -113,7 +116,8 @@ export function createAbilityMusicSheet(
         tradable: true,
         musicSheets: [{
             musicSheet: { speed: 400, notes: [] },
-            lastPlayTick: 0,
+            stopped: true,
+            lastPlayTick: -0.5,
             maxPlayTicks: 8,
         }],
         buttons: [
@@ -121,6 +125,7 @@ export function createAbilityMusicSheet(
             { action: "-", isLeft: false, height: 20 },
             { action: "↑", isLeft: true, height: 20 },
             { action: "↓", isLeft: true, height: 20 },
+            { action: "start/stop", isLeft: true, height: 20 },
         ],
         maxMusicSheets: 5,
         selectedMusicSheetIndex: 0,
@@ -207,14 +212,10 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, castPosition:
         switch (clickedButton.action) {
             case "+":
                 selectedMusicSheet.maxPlayTicks += 4;
-                const musicSheetTime = (game.state.time) % (selectedMusicSheet.musicSheet.speed * selectedMusicSheet.maxPlayTicks);
-                selectedMusicSheet.lastPlayTick = musicSheetTime / selectedMusicSheet.musicSheet.speed;
                 break;
             case "-":
                 if (selectedMusicSheet.maxPlayTicks > 4) {
                     selectedMusicSheet.maxPlayTicks -= 4;
-                    const musicSheetTime = (game.state.time) % (selectedMusicSheet.musicSheet.speed * selectedMusicSheet.maxPlayTicks);
-                    selectedMusicSheet.lastPlayTick = musicSheetTime / selectedMusicSheet.musicSheet.speed;
                 }
                 break;
             case "↑":
@@ -227,12 +228,17 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, castPosition:
                     abilityMusicSheets.selectedMusicSheetIndex++;
                     if (abilityMusicSheets.musicSheets[abilityMusicSheets.selectedMusicSheetIndex] === undefined) {
                         abilityMusicSheets.musicSheets[abilityMusicSheets.selectedMusicSheetIndex] = {
-                            lastPlayTick: 0,
+                            lastPlayTick: -0.5,
                             maxPlayTicks: 8,
+                            stopped: true,
                             musicSheet: { notes: [], speed: 400 },
                         }
                     }
                 }
+                break;
+            case "start/stop":
+                selectedMusicSheet.stopping = !selectedMusicSheet.stopping;
+                break;
         }
     }
 }
@@ -440,11 +446,19 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
         for (let button of abilityMusicSheets.buttons) {
             const paintX = button.isLeft ? topLeftMusicSheet.x - abilityMusicSheets.buttonWidth : topLeftMusicSheet.x + musicSheetWidth;
             const paintY = button.isLeft ? topLeftMusicSheet.y + leftOffsetY : topLeftMusicSheet.y + rightOffsetY;
-            const textWidth = ctx.measureText(button.action).width;
+            let buttonText: string = button.action;
+            if (button.action === "start/stop") {
+                if (selectedSheet.stopping) {
+                    buttonText = "►";
+                } else {
+                    buttonText = "■";
+                }
+            }
+            const textWidth = ctx.measureText(buttonText).width;
             ctx.fillStyle = "white";
             ctx.fillRect(paintX, paintY, abilityMusicSheets.buttonWidth, button.height);
             ctx.fillStyle = "black";
-            ctx.fillText(button.action, paintX + Math.floor(abilityMusicSheets.buttonWidth / 2 - textWidth / 2), Math.floor(paintY + button.height / 2 + fontSize / 2) - 5);
+            ctx.fillText(buttonText, paintX + Math.floor(abilityMusicSheets.buttonWidth / 2 - textWidth / 2), Math.floor(paintY + button.height / 2 + fontSize / 2) - 5);
             if (button.isLeft) {
                 leftOffsetY += button.height + spacing;
             } else {
@@ -570,8 +584,28 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     const typeToArrayIndex = new Map<string, number>();
     const notesDamageTypeTicks: MusicNote[][] = [];
     for (let selectedMusicSheet of abilityMusicSheets.musicSheets) {
-        const musicSheetTime = (game.state.time) % (selectedMusicSheet.musicSheet.speed * selectedMusicSheet.maxPlayTicks);
+        if (selectedMusicSheet.lastPlayGameTime === undefined) selectedMusicSheet.lastPlayGameTime = game.state.time;
+        if (selectedMusicSheet.lastPlayTick === undefined) selectedMusicSheet.lastPlayTick = 0;
+        if (selectedMusicSheet.stopped && !selectedMusicSheet.stopping) {
+            const interval = selectedMusicSheet.musicSheet.speed * 4;
+            const gameTimeInterval = game.state.time % interval;
+            if (gameTimeInterval < 16) {
+                selectedMusicSheet.lastPlayTick = -0.5;
+                selectedMusicSheet.stopped = false;
+                selectedMusicSheet.lastPlayGameTime = game.state.time;
+            }
+        }
+
+        const musicSheetTime = (selectedMusicSheet.musicSheet.speed * selectedMusicSheet.lastPlayTick + (game.state.time - selectedMusicSheet.lastPlayGameTime)) % (selectedMusicSheet.musicSheet.speed * selectedMusicSheet.maxPlayTicks);
         const currentTick = musicSheetTime / selectedMusicSheet.musicSheet.speed;
+        if (selectedMusicSheet.stopping) {
+            if (currentTick % 4 >= 3.4) {
+                selectedMusicSheet.stopped = true;
+                selectedMusicSheet.lastPlayTick = -0.5;
+            }
+        }
+
+        if (selectedMusicSheet.stopped) continue;
         if (selectedMusicSheet.lastPlayTick === undefined) selectedMusicSheet.lastPlayTick = currentTick - 1;
         const lastTick = selectedMusicSheet.lastPlayTick;
         const delayTicks = game.sound ? game.sound.customDelay / selectedMusicSheet.musicSheet.speed : 0;
@@ -603,7 +637,9 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
                 if (index !== undefined) notesDamageTypeTicks[index].push(note);
             }
         }
+
         selectedMusicSheet.lastPlayTick = currentTick;
+        selectedMusicSheet.lastPlayGameTime = game.state.time;
     }
 
     for (let notesDamageTicks of notesDamageTypeTicks) {
@@ -617,7 +653,7 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     }
 
     if (abilityMusicSheets.musicSheets.length > 0 && abilityMusicSheets.musicSheets[0].lastPlayTick !== undefined) {
-        if (abilityMusicSheets.musicSheets[0].lastPlayTick % 4 === 3) {
+        if (abilityMusicSheets.musicSheets[0].lastPlayTick % 4 > 3) {
             abilityMusicSheets.chainOrder = undefined;
         } else if (notesDamageTypeTicks.length > 0 && notesDamageTypeTicks[0].length > 0 && notesDamageTypeTicks[0][0].type) {
             abilityMusicSheets.chainOrder = notesDamageTypeTicks[0][0].type;

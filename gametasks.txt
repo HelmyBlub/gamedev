@@ -6,7 +6,6 @@ current tasks:
         - dev steps:
             - new ability musicSheet
                 - more music note types (sound related)
-                    - stop/start music sheet
                     - 1/8 notes, 1/16 notes
                     - change base octave of music sheet
                     - how to handle long music sheets
