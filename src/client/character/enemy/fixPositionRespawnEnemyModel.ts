@@ -68,7 +68,7 @@ export function createEnemyWithLevel(idCounter: IdCounter, enemyPos: Position, l
             const king = game.state.bossStuff.nextKings[celestialDirection]!;
             const whatToAdd = randomWhatToAdd(king, enemy, game);
             if (whatToAdd === "addAbility") {
-                const ability = createEnemyAbilityBasedOnKing(level, king, enemyPos, enemyType.damageFactor, game);
+                const ability = createEnemyAbilityBasedOnKing(level, king, enemyPos, enemyType.damageFactor, game, enemy);
                 if (ability) {
                     enemy.experienceWorth *= 2;
                     enemy.respawnTime *= 2;
@@ -235,7 +235,7 @@ function randomWhatToAdd(nextKing: Character, charPosition: Position, game: Game
     }
 }
 
-function createEnemyAbilityBasedOnKing(level: number, nextKing: Character, enemyPos: Position, damageFactor: number, game: Game): Ability | undefined {
+function createEnemyAbilityBasedOnKing(level: number, nextKing: Character, enemyPos: Position, damageFactor: number, game: Game, enemy: Character): Ability | undefined {
     const possibleAbilities: Ability[] = [];
     for (let ability of nextKing!.abilities) {
         if (ABILITIES_FUNCTIONS[ability.name].canBeUsedByBosses) {
@@ -252,6 +252,9 @@ function createEnemyAbilityBasedOnKing(level: number, nextKing: Character, enemy
             const randomAbility: Ability = possibleAbilities[randomChoice];
             const abilityFunctions = ABILITIES_FUNCTIONS[randomAbility.name];
             const ability = abilityFunctions.createAbility(game.state.idCounter);
+            if (abilityFunctions.setUpAbilityForEnemy) {
+                abilityFunctions.setUpAbilityForEnemy(enemy, ability, game);
+            }
             setAbilityToEnemyLevel(ability, level, damageFactor);
             ability.passive = true;
             return ability;

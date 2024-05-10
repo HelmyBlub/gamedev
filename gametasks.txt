@@ -2,10 +2,11 @@ next test run: musician
 increase version
 
 current tasks:
-    - sound?
+    - musician
         - dev steps:
             - check big enemies
-            - new ability musicSheet
+            - check overtaking music sheets. because now stop/start button
+            - ability musicSheet
                 - more music note types (sound related)
                     - 1/8 notes, 1/16 notes
                     - change base octave of music sheet

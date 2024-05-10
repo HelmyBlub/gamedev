@@ -6,12 +6,11 @@ import { Game, FACTION_PLAYER, Position } from "../../gameModel.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
 import { MusicNote } from "../../sound.js";
 import { Ability, AbilityObject, AbilityOwner } from "../ability.js";
-import { ABILITY_NAME_SHOOT } from "../abilityShoot.js";
 import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrade.js";
 import { createProjectile } from "../projectile.js";
 import { ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS, ABILITY_NAME_MUSIC_SHEET, AbilityMusicSheets, getMusicSheetUpgradeChainPosition } from "./abilityMusicSheet.js";
 import { getAbilityMusicSheetsUpgradeMultiplyAmount } from "./abilityMusicSheetUpgradeMultiply.js";
-import { addAbilityMusicSheetUpgradeSize, getAbilityMusicSheetsUpgradeAreaFactor } from "./abilityMusicSheetUpgradeSize.js";
+import { getAbilityMusicSheetsUpgradeAreaFactor } from "./abilityMusicSheetUpgradeSize.js";
 
 export type AbilityMusicSheetUpgradeInstrumentSine = AbilityUpgrade & {
     lastSpawnObjectIds: number[],

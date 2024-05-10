@@ -1,11 +1,11 @@
 import { Character } from "../../character/characterModel.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
-import { getNextId } from "../../game.js";
+import { calculateDistance, getCameraPosition, getNextId } from "../../game.js";
 import { Position, Game, IdCounter, FACTION_PLAYER } from "../../gameModel.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, findAbilityById, getAbilityNameUiText } from "../ability.js";
-import { AbilityUpgrade, AbilityUpgradeFunctions, AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
+import { AbilityUpgrade, AbilityUpgradeFunctions, AbilityUpgradesFunctions, getAbilityUpgradeOptionDefault, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
 import { AbilityDamageBreakdown } from "../../combatlog.js";
 import { MusicNote, MusicSheet, Note, playMusicNote } from "../../sound.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
@@ -23,6 +23,7 @@ import { abilityMusicSheetsUpgradeDamageOverTimeApply, addAbilityMusicSheetUpgra
 import { ABILITY_NAME_EXPLODE } from "../abilityExplode.js";
 import { ABILITY_NAME_CIRCLE_AROUND } from "../abilityCircleAround.js";
 import { mousePositionToMapPosition } from "../../map/map.js";
+import { nextRandom } from "../../randomNumberGenerator.js";
 
 export type AbilityMusicSheets = Ability & {
     nextUpgradeAddInstrument: boolean,
@@ -86,6 +87,7 @@ export function addAbilityMusicSheet() {
         setAbilityToLevel: setAbilityToLevel,
         setAbilityToBossLevel: setAbilityToBossLevel,
         setAbilityToEnemyLevel: setAbilityToEnemyLevel,
+        setUpAbilityForEnemy: setUpAbilityForEnemy,
         tickAbility: tickAbility,
         tickAbilityObject: tickAbilityObject,
         tickBossAI: tickBossAI,
@@ -379,6 +381,61 @@ function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: n
     musicSheet.damagePerSecond = level * 1 * damageFactor;
 }
 
+function setUpAbilityForEnemy(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
+    const musicSheets = ability as AbilityMusicSheets;
+    musicSheets.musicSheets[0].maxPlayTicks = 4;
+    if (Object.keys(musicSheets.upgrades).length > 0) return;
+    addRandomInstrument(musicSheets, abilityOwner as Character, game);
+    addRandomNote(musicSheets, game);
+}
+
+function addRandomNote(ability: AbilityMusicSheets, game: Game) {
+    const musicSheet = ability.musicSheets[0];
+    const indexToNote = ["B", "A", "G", "F", "E", "D", "C"];
+    const randomTick = Math.floor(nextRandom(game.state.randomSeed) * musicSheet.maxPlayTicks);
+    const randomNoteIndex = Math.floor(nextRandom(game.state.randomSeed) * indexToNote.length);
+    const randomNote = indexToNote[randomNoteIndex] as Note;
+    const octave = 3;
+    const instrumentKeys = getInstrumentKeys();
+    const availableInstrumentKeys: string[] = [];
+    for (let instrumentKey of instrumentKeys) {
+        if (ability.upgrades[instrumentKey]) {
+            availableInstrumentKeys.push(instrumentKey);
+        }
+    }
+    const randomNoteTypeIndex = Math.floor(nextRandom(game.state.randomSeed) * availableInstrumentKeys.length);
+    const randomNoteType = availableInstrumentKeys[randomNoteTypeIndex];
+    const randomMusicNote: MusicNote = {
+        durationFactor: 1,
+        note: randomNote,
+        octave: octave,
+        tick: randomTick,
+        type: randomNoteType,
+    }
+    musicSheet.musicSheet.notes.push(randomMusicNote);
+}
+
+function getInstrumentKeys(): string[] {
+    const upgradeFunctionsKeys = Object.keys(ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS);
+    const instrumentKeys: string[] = [];
+    for (let upgradeFunctionsKey of upgradeFunctionsKeys) {
+        const functions = ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS[upgradeFunctionsKey];
+        if (functions.executeNoteDamage) {
+            instrumentKeys.push(upgradeFunctionsKey);
+        }
+    }
+    return instrumentKeys;
+}
+
+function addRandomInstrument(ability: AbilityMusicSheets, abilityOwner: Character, game: Game) {
+    const instrumentKeys = getInstrumentKeys();
+    const randomInstrumentKeyIndex = Math.floor(nextRandom(game.state.randomSeed) * instrumentKeys.length);
+    const randomInstrumentKey = instrumentKeys[randomInstrumentKeyIndex];
+    const functions = ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS[randomInstrumentKey];
+    const option = getAbilityUpgradeOptionDefault(ability, randomInstrumentKey)[0].option as AbilityUpgradeOption;
+    functions.executeOption(ability, option, abilityOwner);
+}
+
 function setAbilityToBossLevel(ability: Ability, level: number) {
     const musicSheets = ability as AbilityMusicSheets;
     musicSheets.damagePerSecond = 10 * level;
@@ -583,6 +640,7 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     const abilityMusicSheets = ability as AbilityMusicSheets;
     const typeToArrayIndex = new Map<string, number>();
     const notesDamageTypeTicks: MusicNote[][] = [];
+    const distanceToCamera = calculateDistance(getCameraPosition(game), abilityOwner);
     for (let selectedMusicSheet of abilityMusicSheets.musicSheets) {
         if (selectedMusicSheet.lastPlayGameTime === undefined) selectedMusicSheet.lastPlayGameTime = game.state.time;
         if (selectedMusicSheet.lastPlayTick === undefined) selectedMusicSheet.lastPlayTick = 0;
@@ -623,7 +681,7 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
                 || (lastTick > currentTick && delayedNoteTick <= currentTick)
             ) {
                 //warning: playing sound is client specific delayed. other things should not.
-                if (!game.testing.replay) playMusicNote(selectedMusicSheet.musicSheet, note, game.sound);
+                if (!game.testing.replay) playMusicNote(selectedMusicSheet.musicSheet, note, distanceToCamera, game.sound);
             }
             const noteTick = note.tick % selectedMusicSheet.maxPlayTicks;
             if ((lastTick < noteTick && noteTick <= currentTick)
