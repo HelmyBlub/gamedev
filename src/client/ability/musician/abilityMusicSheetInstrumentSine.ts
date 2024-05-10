@@ -27,7 +27,7 @@ export function addAbilityMusicSheetUpgradeInstrumentSine() {
         getOptions: getOptions,
         executeOption: executeOption,
         executeNoteDamage: executeMusicNotesDamage,
-        paintNote: paintNote,
+        paintNoteHead: paintNoteHead,
         reset: reset,
     }
 }
@@ -53,11 +53,12 @@ function getChainPosition(abilityOwner: AbilityOwner, abilityMusicSheets: Abilit
     }
 }
 
-function paintNote(ctx: CanvasRenderingContext2D, note: MusicNote, notePaintX: number, notePaintY: number, lineNumber: number, noteRadius: number) {
-    const noteStemSize = noteRadius * 5;
+function paintNoteHead(ctx: CanvasRenderingContext2D, note: MusicNote, notePaintX: number, notePaintY: number, lineNumber: number, noteRadius: number) {
     ctx.beginPath();
     ctx.arc(notePaintX, notePaintY, noteRadius, 0, Math.PI * 2);
     switch (note.durationFactor) {
+        case 0.25:
+        case 0.5:
         case 1:
             ctx.fill();
             break;
@@ -69,15 +70,6 @@ function paintNote(ctx: CanvasRenderingContext2D, note: MusicNote, notePaintX: n
             ctx.lineWidth = 3;
             ctx.stroke();
             break;
-    }
-    if (note.durationFactor < 4) {
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        const noteStemDirection = lineNumber < 3 ? 1 : -1;
-        const noteStemOffsetX = noteStemDirection < 0 ? noteRadius - 1 : -noteRadius + 1;
-        ctx.moveTo(notePaintX + noteStemOffsetX, notePaintY);
-        ctx.lineTo(notePaintX + noteStemOffsetX, notePaintY + noteStemSize * noteStemDirection);
-        ctx.stroke();
     }
 }
 

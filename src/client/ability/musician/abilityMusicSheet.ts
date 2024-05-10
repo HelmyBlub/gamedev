@@ -42,7 +42,7 @@ export type AbilityMusicSheets = Ability & {
 
 export type AbilityUpgradeFunctionsMusicSheets = AbilityUpgradeFunctions & {
     executeNoteDamage?: (notes: MusicNote[], abilityOwner: AbilityOwner, abilityMusicSheets: AbilityMusicSheets, game: Game) => void
-    paintNote?: (ctx: CanvasRenderingContext2D, note: MusicNote, notePaintX: number, notePaintY: number, lineNumber: number, noteRadius: number) => void,
+    paintNoteHead?: (ctx: CanvasRenderingContext2D, note: MusicNote, notePaintX: number, notePaintY: number, lineNumber: number, noteRadius: number) => void,
     getChainPosition?: (abilityOwner: AbilityOwner, abilityMusicSheets: AbilityMusicSheets, game: Game) => Position,
 }
 
@@ -52,6 +52,7 @@ export type AbilityUpgradesFunctionsMusicSheets = {
 
 export type AbilityMusicSheet = {
     musicSheet: MusicSheet,
+    shortestAllowedNote: 1 | 0.5 | 0.25,
     stopping?: boolean,
     stopped: boolean,
     maxPlayTicks: number,
@@ -65,6 +66,9 @@ type MusicSheetButton = {
     action: "+" | "-" | "↑" | "↓" | "start/stop",
 }
 
+const NOTE_LENGTH_1_4 = 1;
+const NOTE_LENGTH_1_8 = 0.5;
+const NOTE_LENGTH_1_16 = 0.25;
 const LINE_COUNT = 5;
 const BASE_OCATAVE = 4;
 const NOTE_PAINT_OFFSETX = 20;
@@ -121,6 +125,7 @@ export function createAbilityMusicSheet(
             stopped: true,
             lastPlayTick: -0.5,
             maxPlayTicks: 8,
+            shortestAllowedNote: NOTE_LENGTH_1_4,
         }],
         buttons: [
             { action: "+", isLeft: false, height: 20 },
@@ -234,6 +239,7 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, castPosition:
                             maxPlayTicks: 8,
                             stopped: true,
                             musicSheet: { notes: [], speed: 400 },
+                            shortestAllowedNote: NOTE_LENGTH_1_4,
                         }
                     }
                 }
@@ -288,7 +294,7 @@ function positionToMusicNote(abilityOwner: AbilityOwner, musicSheets: AbilityMus
     const unroundedTick = (((castPosition.x - abilityOwner.x) + musicSheetWidth / 2 - NOTE_PAINT_OFFSETX + 4) / musicSheetWidth) * selectedSheet.maxPlayTicks;
     const tick = Math.round(unroundedTick);
     if (tick < 0 || tick >= selectedSheet.maxPlayTicks) return undefined;
-    const musicNote = yPosToMusicNote(castPosition.y, abilityOwner.y, musicSheets);
+    const musicNote = yPosToMusicNote(castPosition.y, abilityOwner.y, musicSheets, selectedSheet);
     if (!musicNote) return undefined;
     musicNote.tick = tick;
     return musicNote;
@@ -595,8 +601,8 @@ function paintNote(ctx: CanvasRenderingContext2D, note: MusicNote, abilityMusicS
     const upgradeFunctions = ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS[note.type];
     const noteX = topLeftMusicSheet.x + xOffset;
     const noteY = topLeftMusicSheet.y + lineNumber * (abilityMusicSheet.paintHeight / LINE_COUNT);
-    if (upgradeFunctions.paintNote) upgradeFunctions.paintNote(ctx, note, noteX, noteY, lineNumber, noteRadius);
-
+    if (upgradeFunctions.paintNoteHead) upgradeFunctions.paintNoteHead(ctx, note, noteX, noteY, lineNumber, noteRadius);
+    paintNoteStem(ctx, note, noteX, noteY, abilityMusicSheet, noteRadius, lineNumber);
     if (note.semitone) {
         const char = note.semitone === "flat" ? "b" : "#";
         ctx.font = `bold ${noteRadius * 2.5}px Arial`;
@@ -607,11 +613,45 @@ function paintNote(ctx: CanvasRenderingContext2D, note: MusicNote, abilityMusicS
     if (lineNumber % 1 !== 0 && (lineNumber < 0 || lineNumber > 5)) {
         ctx.beginPath();
         ctx.lineWidth = 1;
-        ctx.moveTo(noteX - 15, noteY);
-        ctx.lineTo(noteX + 15, noteY)
+        ctx.moveTo(noteX - noteRadius * 2, noteY);
+        ctx.lineTo(noteX + noteRadius * 2, noteY)
         ctx.stroke();
     }
     if (globalAlphaModifier) ctx.globalAlpha /= globalAlphaModifier;
+}
+
+function paintNoteStem(ctx: CanvasRenderingContext2D, note: MusicNote, noteX: number, noteY: number, abilityMusicSheet: AbilityMusicSheets, noteRadius: number, lineNumber: number) {
+    if (note.durationFactor >= 4) return;
+    const noteStemSize = noteRadius * 5;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    const noteStemDirection = lineNumber < 3 ? 1 : -1;
+    const noteStemOffsetX = noteStemDirection < 0 ? noteRadius - 1 : -noteRadius + 1;
+    ctx.moveTo(noteX + noteStemOffsetX, noteY);
+    ctx.lineTo(noteX + noteStemOffsetX, noteY + noteStemSize * noteStemDirection);
+    ctx.stroke();
+    if (note.durationFactor >= 1) return;
+    ctx.beginPath();
+    ctx.moveTo(noteX + noteStemOffsetX, noteY + noteStemSize * noteStemDirection);
+    ctx.quadraticCurveTo(
+        noteX + noteStemOffsetX,
+        noteY + (noteStemSize * noteStemDirection) * 0.4,
+        noteX + noteStemOffsetX - noteStemDirection * noteRadius,
+        noteY + (noteStemSize * noteStemDirection) * 0.7
+    );
+    ctx.stroke();
+    if (note.durationFactor >= 0.5) return;
+    const noteStemOffsetY = noteStemSize * noteStemDirection * 0.8;
+    ctx.beginPath();
+    ctx.moveTo(noteX + noteStemOffsetX, noteY + noteStemOffsetY);
+    ctx.quadraticCurveTo(
+        noteX + noteStemOffsetX,
+        noteY + noteStemOffsetY - noteStemSize * noteStemDirection * 0.6,
+        noteX + noteStemOffsetX - noteStemDirection * noteRadius,
+        noteY + noteStemOffsetY - noteStemSize * noteStemDirection * 0.3
+    );
+    ctx.stroke();
+
 }
 
 /** 0 = inside top line | 0.5 = between top line and second top line etc.  */
@@ -624,7 +664,7 @@ function musicNoteToMusicSheetLine(musicNote: MusicNote): number {
     return lineWithOctave;
 }
 
-function yPosToMusicNote(yClickPos: number, yOwnerPos: number, abilityMusicSheets: AbilityMusicSheets): MusicNote | undefined {
+function yPosToMusicNote(yClickPos: number, yOwnerPos: number, abilityMusicSheets: AbilityMusicSheets, selectedSheet: AbilityMusicSheet): MusicNote | undefined {
     const indexToNote = ["B", "A", "G", "F", "E", "D", "C"];
     const offsetTopMusciSheet = (yClickPos - yOwnerPos - abilityMusicSheets.offestY);
     const lineNumber = offsetTopMusciSheet / abilityMusicSheets.paintHeight * LINE_COUNT;
@@ -635,7 +675,7 @@ function yPosToMusicNote(yClickPos: number, yOwnerPos: number, abilityMusicSheet
     const note = indexToNote[(index + indexToNote.length) % indexToNote.length] as Note;
     const noteType = abilityMusicSheets.selectedInstrument;
     return {
-        durationFactor: 1,
+        durationFactor: selectedSheet.shortestAllowedNote,
         note: note,
         octave: octave,
         tick: 0,

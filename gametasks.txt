@@ -6,8 +6,8 @@ current tasks:
         - dev steps:
             - ability musicSheet
                 - more music note types (sound related)
-                    - paint line though notes outside sheet lines
                     - 1/8 notes, 1/16 notes
+                        - musicSheet width is based on shortest allowed note
                     - change base octave of music sheet
                     - how to handle long music sheets
                     - do not allow note stacking, prevent to loud notes
