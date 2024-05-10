@@ -4,17 +4,15 @@ increase version
 current tasks:
     - musician
         - dev steps:
-            - check big enemies
-            - check overtaking music sheets. because now stop/start button
             - ability musicSheet
                 - more music note types (sound related)
+                    - paint line though notes outside sheet lines
                     - 1/8 notes, 1/16 notes
                     - change base octave of music sheet
                     - how to handle long music sheets
                     - do not allow note stacking, prevent to loud notes
         - thoughs and research
             - music ability
-                - does not feel good yet (the music i made)
                 - am im not good with music or does my musicSheet ability need more options?
             - can i create sound which sounds like a piano with this? or other existing instruments?
             - sound links

@@ -604,6 +604,13 @@ function paintNote(ctx: CanvasRenderingContext2D, note: MusicNote, abilityMusicS
         const charWidth = ctx.measureText(char).width;
         ctx.fillText(char, noteX - noteRadius - charWidth, noteY + noteRadius - 2);
     }
+    if (lineNumber % 1 !== 0 && (lineNumber < 0 || lineNumber > 5)) {
+        ctx.beginPath();
+        ctx.lineWidth = 1;
+        ctx.moveTo(noteX - 15, noteY);
+        ctx.lineTo(noteX + 15, noteY)
+        ctx.stroke();
+    }
     if (globalAlphaModifier) ctx.globalAlpha /= globalAlphaModifier;
 }
 
