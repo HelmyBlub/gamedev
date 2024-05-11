@@ -26,7 +26,7 @@ export function addAbilityMusicSheetUpgradeInstrumentSquare() {
         getOptions: getOptions,
         executeOption: executeOption,
         executeNoteDamage: executeMusicNotesDamage,
-        paintNoteHead: paintNote,
+        paintNoteHead: paintNoteHead,
         reset: reset,
     }
 }
@@ -43,10 +43,12 @@ function getChainPosition(abilityOwner: AbilityOwner, abilityMusicSheets: Abilit
     return { x: randomPos.x, y: randomPos.y };
 }
 
-function paintNote(ctx: CanvasRenderingContext2D, note: MusicNote, notePaintX: number, notePaintY: number, lineNumber: number, noteRadius: number) {
+function paintNoteHead(ctx: CanvasRenderingContext2D, note: MusicNote, notePaintX: number, notePaintY: number, lineNumber: number, noteRadius: number) {
     ctx.beginPath();
     ctx.rect(notePaintX - noteRadius, notePaintY - noteRadius, noteRadius * 2, noteRadius * 2);
     switch (note.durationFactor) {
+        case 0.25:
+        case 0.5:
         case 1:
             ctx.fill();
             break;

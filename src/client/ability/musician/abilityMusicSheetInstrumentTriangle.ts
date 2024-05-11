@@ -25,7 +25,7 @@ export function addAbilityMusicSheetUpgradeInstrumentTriangle() {
         getOptions: getOptions,
         executeOption: executeOption,
         executeNoteDamage: executeMusicNotesDamage,
-        paintNoteHead: paintNote,
+        paintNoteHead: paintNoteHead,
         reset: reset,
     }
 }
@@ -52,7 +52,7 @@ function getChainPosition(abilityOwner: AbilityOwner, abilityMusicSheets: Abilit
     }
 }
 
-function paintNote(ctx: CanvasRenderingContext2D, note: MusicNote, notePaintX: number, notePaintY: number, lineNumber: number, noteRadius: number) {
+function paintNoteHead(ctx: CanvasRenderingContext2D, note: MusicNote, notePaintX: number, notePaintY: number, lineNumber: number, noteRadius: number) {
     ctx.beginPath();
     const noteStemDirection = lineNumber < 3 ? 1 : -1;
     const offset = noteRadius * noteStemDirection;
@@ -62,6 +62,8 @@ function paintNote(ctx: CanvasRenderingContext2D, note: MusicNote, notePaintX: n
     ctx.lineTo(notePaintX + noteRadius, notePaintY + offset);
 
     switch (note.durationFactor) {
+        case 0.25:
+        case 0.5:
         case 1:
             ctx.fill();
             break;

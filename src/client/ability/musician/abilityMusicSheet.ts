@@ -63,7 +63,7 @@ export type AbilityMusicSheet = {
 type MusicSheetButton = {
     isLeft: boolean,
     height: number,
-    action: "+" | "-" | "↑" | "↓" | "start/stop",
+    action: "+" | "-" | "↑" | "↓" | "start/stop" | "shortestNote",
 }
 
 const NOTE_LENGTH_1_4 = 1;
@@ -133,6 +133,7 @@ export function createAbilityMusicSheet(
             { action: "↑", isLeft: true, height: 20 },
             { action: "↓", isLeft: true, height: 20 },
             { action: "start/stop", isLeft: true, height: 20 },
+            { action: "shortestNote", isLeft: false, height: 20 },
         ],
         maxMusicSheets: 5,
         selectedMusicSheetIndex: 0,
@@ -211,7 +212,7 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, castPosition:
     const abilityMusicSheets = ability as AbilityMusicSheets;
     if (abilityMusicSheets.selectedInstrument === undefined) return;
     const selectedMusicSheet = abilityMusicSheets.musicSheets[abilityMusicSheets.selectedMusicSheetIndex];
-    const musicSheetWidth = abilityMusicSheets.widthPerNote * selectedMusicSheet.maxPlayTicks;
+    const musicSheetWidth = abilityMusicSheets.widthPerNote * selectedMusicSheet.maxPlayTicks / selectedMusicSheet.shortestAllowedNote;
     const didCastNote = castNote(abilityOwner, abilityMusicSheets, selectedMusicSheet, castPosition, musicSheetWidth);
     if (didCastNote) return;
     const clickedButton = determineClickedButton(abilityMusicSheets, abilityOwner, musicSheetWidth, castPosition);
@@ -247,6 +248,19 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, castPosition:
             case "start/stop":
                 selectedMusicSheet.stopping = !selectedMusicSheet.stopping;
                 break;
+            case "shortestNote":
+                switch (selectedMusicSheet.shortestAllowedNote) {
+                    case NOTE_LENGTH_1_4:
+                        selectedMusicSheet.shortestAllowedNote = NOTE_LENGTH_1_8;
+                        break;
+                    case NOTE_LENGTH_1_8:
+                        selectedMusicSheet.shortestAllowedNote = NOTE_LENGTH_1_16;
+                        break;
+                    case NOTE_LENGTH_1_16:
+                        selectedMusicSheet.shortestAllowedNote = NOTE_LENGTH_1_4;
+                        break;
+                }
+                break;
         }
     }
 }
@@ -277,7 +291,7 @@ function castNote(abilityOwner: AbilityOwner, musicSheets: AbilityMusicSheets, s
     const unroundedTick = (((castPosition.x - abilityOwner.x) + musicSheetWidth / 2 - NOTE_PAINT_OFFSETX + 4) / musicSheetWidth) * selectedSheet.maxPlayTicks;
     const musicNote = positionToMusicNote(abilityOwner, musicSheets, selectedSheet, castPosition, musicSheetWidth);
     if (!musicNote) return false;
-    const tick = Math.round(unroundedTick);
+    const tick = Math.round(unroundedTick / selectedSheet.shortestAllowedNote) * selectedSheet.shortestAllowedNote;
     let duplicateNoteIndex = selectedSheet.musicSheet.notes.findIndex(n => n.note === musicNote.note && n.tick === tick && n.octave === musicNote.octave);
     if (duplicateNoteIndex > -1) {
         const dupNote = selectedSheet.musicSheet.notes[duplicateNoteIndex];
@@ -292,7 +306,7 @@ function castNote(abilityOwner: AbilityOwner, musicSheets: AbilityMusicSheets, s
 
 function positionToMusicNote(abilityOwner: AbilityOwner, musicSheets: AbilityMusicSheets, selectedSheet: AbilityMusicSheet, castPosition: Position, musicSheetWidth: number): MusicNote | undefined {
     const unroundedTick = (((castPosition.x - abilityOwner.x) + musicSheetWidth / 2 - NOTE_PAINT_OFFSETX + 4) / musicSheetWidth) * selectedSheet.maxPlayTicks;
-    const tick = Math.round(unroundedTick);
+    const tick = Math.round(unroundedTick / selectedSheet.shortestAllowedNote) * selectedSheet.shortestAllowedNote;
     if (tick < 0 || tick >= selectedSheet.maxPlayTicks) return undefined;
     const musicNote = yPosToMusicNote(castPosition.y, abilityOwner.y, musicSheets, selectedSheet);
     if (!musicNote) return undefined;
@@ -322,7 +336,7 @@ function modifyNoteClick(note: MusicNote, unroundedTick: number, tick: number): 
 
 function positionToHoverNote(abilityOwner: AbilityOwner, musicSheets: AbilityMusicSheets, selectedSheet: AbilityMusicSheet, castPosition: Position, musicSheetWidth: number): { note: MusicNote, delete?: boolean } | undefined {
     const unroundedTick = (((castPosition.x - abilityOwner.x) + musicSheetWidth / 2 - NOTE_PAINT_OFFSETX + 4) / musicSheetWidth) * selectedSheet.maxPlayTicks;
-    const tick = Math.round(unroundedTick);
+    const tick = Math.round(unroundedTick / selectedSheet.shortestAllowedNote) * selectedSheet.shortestAllowedNote;
 
     const note = positionToMusicNote(abilityOwner, musicSheets, selectedSheet, castPosition, musicSheetWidth);
     if (!note) return;
@@ -480,7 +494,7 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
     const abilityMusicSheets = ability as AbilityMusicSheets;
     if (abilityMusicSheets.selectedInstrument === undefined) return;
     const selectedSheet = abilityMusicSheets.musicSheets[abilityMusicSheets.selectedMusicSheetIndex];
-    const musicSheetWidth = abilityMusicSheets.widthPerNote * selectedSheet.maxPlayTicks;
+    const musicSheetWidth = abilityMusicSheets.widthPerNote * selectedSheet.maxPlayTicks / selectedSheet.shortestAllowedNote;
     const isMyAbility = findMyCharacter(game) === abilityOwner;
     let hoverNote: { note: MusicNote, delete?: boolean } | undefined;
     let ownerPaintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
@@ -516,7 +530,10 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
                 } else {
                     buttonText = "■";
                 }
+            } else if (button.action === "shortestNote") {
+                buttonText = (1 / selectedSheet.shortestAllowedNote * 4).toFixed();
             }
+
             const textWidth = ctx.measureText(buttonText).width;
             ctx.fillStyle = "white";
             ctx.fillRect(paintX, paintY, abilityMusicSheets.buttonWidth, button.height);
@@ -588,7 +605,7 @@ function paintNotes(ctx: CanvasRenderingContext2D, abilityMusicSheets: AbilityMu
 }
 
 function paintNote(ctx: CanvasRenderingContext2D, note: MusicNote, abilityMusicSheet: AbilityMusicSheets, topLeftMusicSheet: Position, selectedSheet: AbilityMusicSheet, color: string = "black", globalAlphaModifier: number | undefined = undefined) {
-    const musicSheetWidth = abilityMusicSheet.widthPerNote * selectedSheet.maxPlayTicks;
+    const musicSheetWidth = abilityMusicSheet.widthPerNote * selectedSheet.maxPlayTicks / selectedSheet.shortestAllowedNote;
     const noteRadius = Math.floor(abilityMusicSheet.paintHeight / LINE_COUNT / 2);
     if (globalAlphaModifier) ctx.globalAlpha *= globalAlphaModifier;
     ctx.fillStyle = color;
