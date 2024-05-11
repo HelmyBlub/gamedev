@@ -24,6 +24,7 @@ import { ABILITY_NAME_EXPLODE } from "../abilityExplode.js";
 import { ABILITY_NAME_CIRCLE_AROUND } from "../abilityCircleAround.js";
 import { mousePositionToMapPosition } from "../../map/map.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
+import { GAME_IMAGES, getImage } from "../../imageLoad.js";
 
 export type AbilityMusicSheets = Ability & {
     nextUpgradeAddInstrument: boolean,
@@ -52,6 +53,7 @@ export type AbilityUpgradesFunctionsMusicSheets = {
 
 export type AbilityMusicSheet = {
     musicSheet: MusicSheet,
+    clef: "treble" | "bass",
     shortestAllowedNote: 1 | 0.5 | 0.25,
     stopping?: boolean,
     stopped: boolean,
@@ -70,10 +72,23 @@ const NOTE_LENGTH_1_4 = 1;
 const NOTE_LENGTH_1_8 = 0.5;
 const NOTE_LENGTH_1_16 = 0.25;
 const LINE_COUNT = 5;
-const BASE_OCATAVE = 4;
+const TREBLE_OCTAVE = 5;
 const NOTE_PAINT_OFFSETX = 20;
+const CLEF_WIDTH = 30;
 export const ABILITY_NAME_MUSIC_SHEET = "Music Sheet";
 export const ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS: AbilityUpgradesFunctionsMusicSheets = {};
+export const IMAGE_TREBLE_CLEF = "treble";
+export const IMAGE_TREBLE_BASS = "bass";
+GAME_IMAGES[IMAGE_TREBLE_CLEF] = {
+    imagePath: "/images/trebleClef.png",
+    spriteRowHeights: [100],
+    spriteRowWidths: [30],
+};
+GAME_IMAGES[IMAGE_TREBLE_BASS] = {
+    imagePath: "/images/bassClef.png",
+    spriteRowHeights: [100],
+    spriteRowWidths: [30],
+};
 
 export function addAbilityMusicSheet() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_MUSIC_SHEET] = {
@@ -126,6 +141,7 @@ export function createAbilityMusicSheet(
             lastPlayTick: -0.5,
             maxPlayTicks: 8,
             shortestAllowedNote: NOTE_LENGTH_1_4,
+            clef: "treble",
         }],
         buttons: [
             { action: "+", isLeft: false, height: 20 },
@@ -217,51 +233,76 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, castPosition:
     if (didCastNote) return;
     const clickedButton = determineClickedButton(abilityMusicSheets, abilityOwner, musicSheetWidth, castPosition);
     if (clickedButton) {
-        switch (clickedButton.action) {
-            case "+":
-                selectedMusicSheet.maxPlayTicks += 4;
-                break;
-            case "-":
-                if (selectedMusicSheet.maxPlayTicks > 4) {
-                    selectedMusicSheet.maxPlayTicks -= 4;
+        executeButtonClick(clickedButton, abilityMusicSheets, selectedMusicSheet);
+    } else {
+        const clefClick = determineCleffClick(abilityOwner, abilityMusicSheets, castPosition, musicSheetWidth);
+        if (clefClick) {
+            selectedMusicSheet.clef = selectedMusicSheet.clef === "bass" ? "treble" : "bass";
+            const octaveChange = selectedMusicSheet.clef === "bass" ? -2 : +2;
+            for (let note of selectedMusicSheet.musicSheet.notes) {
+                if (selectedMusicSheet.clef) {
+                    note.octave += octaveChange;
                 }
-                break;
-            case "↑":
-                if (abilityMusicSheets.selectedMusicSheetIndex > 0) {
-                    abilityMusicSheets.selectedMusicSheetIndex--;
-                }
-                break;
-            case "↓":
-                if (abilityMusicSheets.selectedMusicSheetIndex < abilityMusicSheets.maxMusicSheets - 1) {
-                    abilityMusicSheets.selectedMusicSheetIndex++;
-                    if (abilityMusicSheets.musicSheets[abilityMusicSheets.selectedMusicSheetIndex] === undefined) {
-                        abilityMusicSheets.musicSheets[abilityMusicSheets.selectedMusicSheetIndex] = {
-                            lastPlayTick: -0.5,
-                            maxPlayTicks: 8,
-                            stopped: true,
-                            musicSheet: { notes: [], speed: 400 },
-                            shortestAllowedNote: NOTE_LENGTH_1_4,
-                        }
+            }
+        }
+    }
+}
+
+function determineCleffClick(abilityOwner: AbilityOwner, abilityMusicSheets: AbilityMusicSheets, castPosition: Position, musicSheetWidth: number): boolean {
+    const musicSheetLeft = abilityOwner.x - musicSheetWidth / 2;
+    const clefXHit = castPosition.x <= musicSheetLeft && castPosition.x > musicSheetLeft - CLEF_WIDTH;
+    if (!clefXHit) return false;
+    const musicSheetTop = abilityOwner.y + abilityMusicSheets.offestY;
+    const clefYHit = castPosition.y >= musicSheetTop && castPosition.y < musicSheetTop + abilityMusicSheets.paintHeight;
+    return clefYHit;
+}
+
+function executeButtonClick(clickedButton: MusicSheetButton, abilityMusicSheets: AbilityMusicSheets, selectedMusicSheet: AbilityMusicSheet) {
+    switch (clickedButton.action) {
+        case "+":
+            selectedMusicSheet.maxPlayTicks += 4;
+            break;
+        case "-":
+            if (selectedMusicSheet.maxPlayTicks > 4) {
+                selectedMusicSheet.maxPlayTicks -= 4;
+            }
+            break;
+        case "↑":
+            if (abilityMusicSheets.selectedMusicSheetIndex > 0) {
+                abilityMusicSheets.selectedMusicSheetIndex--;
+            }
+            break;
+        case "↓":
+            if (abilityMusicSheets.selectedMusicSheetIndex < abilityMusicSheets.maxMusicSheets - 1) {
+                abilityMusicSheets.selectedMusicSheetIndex++;
+                if (abilityMusicSheets.musicSheets[abilityMusicSheets.selectedMusicSheetIndex] === undefined) {
+                    abilityMusicSheets.musicSheets[abilityMusicSheets.selectedMusicSheetIndex] = {
+                        lastPlayTick: -0.5,
+                        maxPlayTicks: 8,
+                        stopped: true,
+                        musicSheet: { notes: [], speed: 400 },
+                        shortestAllowedNote: NOTE_LENGTH_1_4,
+                        clef: "treble",
                     }
                 }
-                break;
-            case "start/stop":
-                selectedMusicSheet.stopping = !selectedMusicSheet.stopping;
-                break;
-            case "shortestNote":
-                switch (selectedMusicSheet.shortestAllowedNote) {
-                    case NOTE_LENGTH_1_4:
-                        selectedMusicSheet.shortestAllowedNote = NOTE_LENGTH_1_8;
-                        break;
-                    case NOTE_LENGTH_1_8:
-                        selectedMusicSheet.shortestAllowedNote = NOTE_LENGTH_1_16;
-                        break;
-                    case NOTE_LENGTH_1_16:
-                        selectedMusicSheet.shortestAllowedNote = NOTE_LENGTH_1_4;
-                        break;
-                }
-                break;
-        }
+            }
+            break;
+        case "start/stop":
+            selectedMusicSheet.stopping = !selectedMusicSheet.stopping;
+            break;
+        case "shortestNote":
+            switch (selectedMusicSheet.shortestAllowedNote) {
+                case NOTE_LENGTH_1_4:
+                    selectedMusicSheet.shortestAllowedNote = NOTE_LENGTH_1_8;
+                    break;
+                case NOTE_LENGTH_1_8:
+                    selectedMusicSheet.shortestAllowedNote = NOTE_LENGTH_1_16;
+                    break;
+                case NOTE_LENGTH_1_16:
+                    selectedMusicSheet.shortestAllowedNote = NOTE_LENGTH_1_4;
+                    break;
+            }
+            break;
     }
 }
 
@@ -269,7 +310,7 @@ function determineClickedButton(abilityMusicSheets: AbilityMusicSheets, abilityO
     const musicSheetLeft = abilityOwner.x - musicSheetWidth / 2;
     const musicSheetRight = musicSheetLeft + musicSheetWidth;
     const musicSheetTop = abilityOwner.y + abilityMusicSheets.offestY;
-    const leftButtonHit = musicSheetLeft > castPosition.x && castPosition.x > musicSheetLeft - abilityMusicSheets.buttonWidth;
+    const leftButtonHit = musicSheetLeft - CLEF_WIDTH > castPosition.x && castPosition.x > musicSheetLeft - abilityMusicSheets.buttonWidth - CLEF_WIDTH;
     const rightButtonHit = musicSheetRight < castPosition.x && castPosition.x < musicSheetRight + abilityMusicSheets.buttonWidth;
     if (!leftButtonHit && !rightButtonHit) return undefined;
     const isLeft = leftButtonHit;
@@ -502,10 +543,11 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
         x: Math.floor(ownerPaintPos.x - musicSheetWidth / 2),
         y: ownerPaintPos.y + abilityMusicSheets.offestY,
     }
+    let currentMousePosition: undefined | Position;
     if (!isMyAbility) {
         ctx.globalAlpha *= 0.5;
     } else {
-        const currentMousePosition = mousePositionToMapPosition(game, cameraPosition);
+        currentMousePosition = mousePositionToMapPosition(game, cameraPosition);
         hoverNote = positionToHoverNote(abilityOwner, abilityMusicSheets, selectedSheet, currentMousePosition, musicSheetWidth);
     }
     if (abilityOwner.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
@@ -514,47 +556,65 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
     paintNotes(ctx, abilityMusicSheets, topLeftMusicSheet, selectedSheet, hoverNote);
     paintMovingLineTimeIndicator(ctx, abilityMusicSheets, topLeftMusicSheet, musicSheetWidth, selectedSheet);
 
-    if (isMyAbility) {
-        let spacing = 2;
-        let leftOffsetY = 0;
-        let rightOffsetY = 0;
-        const fontSize = 24;
-        ctx.font = `bold ${fontSize}px Arial`;
-        for (let button of abilityMusicSheets.buttons) {
-            const paintX = button.isLeft ? topLeftMusicSheet.x - abilityMusicSheets.buttonWidth : topLeftMusicSheet.x + musicSheetWidth;
-            const paintY = button.isLeft ? topLeftMusicSheet.y + leftOffsetY : topLeftMusicSheet.y + rightOffsetY;
-            let buttonText: string = button.action;
-            if (button.action === "start/stop") {
-                if (selectedSheet.stopping) {
-                    buttonText = "►";
-                } else {
-                    buttonText = "■";
-                }
-            } else if (button.action === "shortestNote") {
-                buttonText = (1 / selectedSheet.shortestAllowedNote * 4).toFixed();
-            }
+    if (isMyAbility && currentMousePosition) {
+        const clefHover = determineCleffClick(abilityOwner, abilityMusicSheets, currentMousePosition, musicSheetWidth);
+        paintClef(ctx, abilityMusicSheets, topLeftMusicSheet, selectedSheet, clefHover);
 
-            const textWidth = ctx.measureText(buttonText).width;
-            ctx.fillStyle = "white";
-            ctx.fillRect(paintX, paintY, abilityMusicSheets.buttonWidth, button.height);
-            ctx.fillStyle = "black";
-            ctx.fillText(buttonText, paintX + Math.floor(abilityMusicSheets.buttonWidth / 2 - textWidth / 2), Math.floor(paintY + button.height / 2 + fontSize / 2) - 5);
-            if (button.isLeft) {
-                leftOffsetY += button.height + spacing;
-            } else {
-                rightOffsetY += button.height + spacing;
-            }
-        }
-        ctx.fillStyle = "white";
-        ctx.fillRect(topLeftMusicSheet.x - abilityMusicSheets.buttonWidth, topLeftMusicSheet.y + leftOffsetY, abilityMusicSheets.buttonWidth, abilityMusicSheets.buttonWidth);
-        ctx.fillStyle = "black";
-        ctx.fillText((1 + abilityMusicSheets.selectedMusicSheetIndex).toFixed(), topLeftMusicSheet.x - abilityMusicSheets.buttonWidth + 5, Math.floor(topLeftMusicSheet.y + leftOffsetY + abilityMusicSheets.buttonWidth / 2 + fontSize / 2) - 5);
-
+        paintButtons(ctx, abilityMusicSheets, topLeftMusicSheet, selectedSheet, musicSheetWidth);
         if (hoverNote && !hoverNote.delete) {
             paintNote(ctx, hoverNote.note, abilityMusicSheets, topLeftMusicSheet, selectedSheet, "blue", 0.5);
         }
+    } else {
+        paintClef(ctx, abilityMusicSheets, topLeftMusicSheet, selectedSheet, false);
     }
     ctx.globalAlpha = 1;
+}
+
+function paintClef(ctx: CanvasRenderingContext2D, abilityMusicSheets: AbilityMusicSheets, topLeftMusicSheet: Position, selectedSheet: AbilityMusicSheet, hoverEffect: boolean) {
+    const clef = getImage(selectedSheet.clef);
+    if (clef) {
+        if (hoverEffect) ctx.globalAlpha *= 0.5;
+        ctx.drawImage(clef, topLeftMusicSheet.x - CLEF_WIDTH, topLeftMusicSheet.y - 10);
+        if (hoverEffect) ctx.globalAlpha /= 0.5;
+    }
+}
+
+function paintButtons(ctx: CanvasRenderingContext2D, abilityMusicSheets: AbilityMusicSheets, topLeftMusicSheet: Position, selectedSheet: AbilityMusicSheet, musicSheetWidth: number) {
+    const spacing = 2;
+    let leftOffsetY = 0;
+    let rightOffsetY = 0;
+    const fontSize = 24;
+    ctx.font = `bold ${fontSize}px Arial`;
+    for (let button of abilityMusicSheets.buttons) {
+        const paintX = button.isLeft ? topLeftMusicSheet.x - abilityMusicSheets.buttonWidth - CLEF_WIDTH : topLeftMusicSheet.x + musicSheetWidth;
+        const paintY = button.isLeft ? topLeftMusicSheet.y + leftOffsetY : topLeftMusicSheet.y + rightOffsetY;
+        let buttonText: string = button.action;
+        if (button.action === "start/stop") {
+            if (selectedSheet.stopping) {
+                buttonText = "►";
+            } else {
+                buttonText = "■";
+            }
+        } else if (button.action === "shortestNote") {
+            buttonText = (1 / selectedSheet.shortestAllowedNote * 4).toFixed();
+        }
+
+        const textWidth = ctx.measureText(buttonText).width;
+        ctx.fillStyle = "white";
+        ctx.fillRect(paintX, paintY, abilityMusicSheets.buttonWidth, button.height);
+        ctx.fillStyle = "black";
+        ctx.fillText(buttonText, paintX + Math.floor(abilityMusicSheets.buttonWidth / 2 - textWidth / 2), Math.floor(paintY + button.height / 2 + fontSize / 2) - 5);
+        if (button.isLeft) {
+            leftOffsetY += button.height + spacing;
+        } else {
+            rightOffsetY += button.height + spacing;
+        }
+    }
+    //visualize sheet number
+    ctx.fillStyle = "white";
+    ctx.fillRect(topLeftMusicSheet.x - abilityMusicSheets.buttonWidth - CLEF_WIDTH, topLeftMusicSheet.y + leftOffsetY, abilityMusicSheets.buttonWidth, abilityMusicSheets.buttonWidth);
+    ctx.fillStyle = "black";
+    ctx.fillText((1 + abilityMusicSheets.selectedMusicSheetIndex).toFixed(), topLeftMusicSheet.x - CLEF_WIDTH - abilityMusicSheets.buttonWidth + 5, Math.floor(topLeftMusicSheet.y + leftOffsetY + abilityMusicSheets.buttonWidth / 2 + fontSize / 2) - 5);
 }
 
 function paintMovingLineTimeIndicator(ctx: CanvasRenderingContext2D, abilityMusicSheets: AbilityMusicSheets, topLeftMusicSheet: Position, musicSheetWidth: number, selectedSheet: AbilityMusicSheet) {
@@ -572,14 +632,14 @@ function paintMovingLineTimeIndicator(ctx: CanvasRenderingContext2D, abilityMusi
 function paintMusicSheetLines(ctx: CanvasRenderingContext2D, topLeftMusicSheet: Position, musicSheetWidth: number, abilityMusicSheets: AbilityMusicSheets, selectedSheet: AbilityMusicSheet) {
     ctx.globalAlpha *= 0.5;
     ctx.fillStyle = "white";
-    ctx.fillRect(topLeftMusicSheet.x, topLeftMusicSheet.y, musicSheetWidth, abilityMusicSheets.paintHeight);
+    ctx.fillRect(topLeftMusicSheet.x - CLEF_WIDTH, topLeftMusicSheet.y, musicSheetWidth + CLEF_WIDTH, abilityMusicSheets.paintHeight);
     ctx.globalAlpha *= 2;
     ctx.strokeStyle = "black";
     ctx.lineWidth = 1;
     for (let i = 0; i < LINE_COUNT; i++) {
         ctx.beginPath();
         const tempY = Math.floor(topLeftMusicSheet.y + (abilityMusicSheets.paintHeight / LINE_COUNT) * (i + 0.5));
-        ctx.moveTo(topLeftMusicSheet.x, tempY);
+        ctx.moveTo(topLeftMusicSheet.x - CLEF_WIDTH, tempY);
         ctx.lineTo(topLeftMusicSheet.x + musicSheetWidth, tempY);
         ctx.stroke();
     }
@@ -610,7 +670,7 @@ function paintNote(ctx: CanvasRenderingContext2D, note: MusicNote, abilityMusicS
     if (globalAlphaModifier) ctx.globalAlpha *= globalAlphaModifier;
     ctx.fillStyle = color;
     ctx.strokeStyle = color;
-    const lineNumber = musicNoteToMusicSheetLine(note) + 0.5;
+    const lineNumber = musicNoteToMusicSheetLine(note, selectedSheet) + 0.5;
     const xOffset = (note.tick / selectedSheet.maxPlayTicks) * musicSheetWidth + NOTE_PAINT_OFFSETX;
     if (xOffset > musicSheetWidth) return;
 
@@ -672,12 +732,15 @@ function paintNoteStem(ctx: CanvasRenderingContext2D, note: MusicNote, noteX: nu
 }
 
 /** 0 = inside top line | 0.5 = between top line and second top line etc.  */
-function musicNoteToMusicSheetLine(musicNote: MusicNote): number {
+function musicNoteToMusicSheetLine(musicNote: MusicNote, selectedMusicSheet: AbilityMusicSheet): number {
     const noteToLineMap: { [key: string]: number } = {
         "B": -1.5, "A": -1, "G": -0.5, "F": 0, "E": 0.5, "D": 1, "C": 1.5,
     };
     const line = noteToLineMap[(musicNote.note.charAt(0))];
-    const lineWithOctave = line + (BASE_OCATAVE - musicNote.octave) * 3.5;
+    let lineWithOctave = line + (TREBLE_OCTAVE - musicNote.octave) * 3.5;
+    if (selectedMusicSheet.clef === "bass") {
+        lineWithOctave -= 6;
+    }
     return lineWithOctave;
 }
 
@@ -685,10 +748,10 @@ function yPosToMusicNote(yClickPos: number, yOwnerPos: number, abilityMusicSheet
     const indexToNote = ["B", "A", "G", "F", "E", "D", "C"];
     const offsetTopMusciSheet = (yClickPos - yOwnerPos - abilityMusicSheets.offestY);
     const lineNumber = offsetTopMusciSheet / abilityMusicSheets.paintHeight * LINE_COUNT;
-    if (lineNumber < -1) return undefined;
-    const index = Math.round(lineNumber * 2) + 2;
-    const octave = BASE_OCATAVE - (Math.floor(index / indexToNote.length));
-    if (octave < BASE_OCATAVE - 1 || octave > BASE_OCATAVE + 1) return undefined;
+    if (lineNumber < -1 || lineNumber > 6) return undefined;
+    let index = Math.round(lineNumber * 2) + 2;
+    if (selectedSheet.clef === "bass") index += 12;
+    const octave = TREBLE_OCTAVE - (Math.floor(index / indexToNote.length));
     const note = indexToNote[(index + indexToNote.length) % indexToNote.length] as Note;
     const noteType = abilityMusicSheets.selectedInstrument;
     return {
