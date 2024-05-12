@@ -11,6 +11,7 @@ import { CHARACTER_TYPE_BOSS_ENEMY } from "../enemy/bossEnemy.js";
 import { ABILITY_NAME_MUSIC_SHEET, AbilityMusicSheets } from "../../ability/musician/abilityMusicSheet.js";
 import { ABILITY_NAME_MUSIC_SHEET_CHANGE_INSTRUMENT } from "../../ability/musician/abilityMusicSheetChangeInstrument.js";
 import { AbilityUpgrade } from "../../ability/abilityUpgrade.js";
+import { createAbilityMelee } from "../../ability/abilityMelee.js";
 
 export const CHARACTER_CLASS_MUSICIAN_NAME = "Musician (work in progress)";
 
@@ -70,6 +71,10 @@ function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: 
     bossCharacter.abilities.push(musicSheets);
     deleteUpgradesBasedOnBossLevel(musicSheets, level);
     setAbilityToBossLevel(musicSheets, level);
+    const abilityMelee = createAbilityMelee(game.state.idCounter);
+    setAbilityToBossLevel(abilityMelee, level);
+    bossCharacter.abilities.push(abilityMelee);
+
     resetCharacter(bossCharacter, game);
 
     return bossCharacter;

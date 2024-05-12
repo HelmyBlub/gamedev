@@ -62,6 +62,10 @@ export type AbilityMusicSheet = {
     lastPlayGameTime?: number,
 }
 
+export type AbilityMusicSheetUpgradeInstrument = AbilityUpgrade & {
+    lastPlayedNoteTime?: number,
+}
+
 type MusicSheetButton = {
     isLeft: boolean,
     height: number,
@@ -214,12 +218,46 @@ function createDamageBreakDown(damage: number, ability: Ability, abilityObject: 
 }
 
 function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
+    const abilityMusicSheets = ability as AbilityMusicSheets;
+    let activeSheet: undefined | AbilityMusicSheet = undefined;
+    for (let sheet of abilityMusicSheets.musicSheets) {
+        if (sheet.stopped) continue;
+        if (sheet.musicSheet.notes.length <= 0) continue;
+        if (!activeSheet) activeSheet = sheet;
+    }
+    if (!activeSheet) {
+        activeSheet = abilityMusicSheets.musicSheets[abilityMusicSheets.selectedMusicSheetIndex];
+        if (activeSheet.stopped) activeSheet.stopping = false;
+    }
+    if (activeSheet.stopped) return;
+    let allInstrumentsLastPlayedNoteTime = -1;
+    const upgradeKeys = Object.keys(abilityMusicSheets.upgrades);
+    let tempInstrument: AbilityMusicSheetUpgradeInstrument | undefined = undefined;
+    for (let key of upgradeKeys) {
+        const functions = ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS[key];
+        if (functions && functions.executeNoteDamage) {
+            const instrument: AbilityMusicSheetUpgradeInstrument = abilityMusicSheets.upgrades[key];
+            if (instrument.lastPlayedNoteTime !== undefined && allInstrumentsLastPlayedNoteTime < instrument.lastPlayedNoteTime) {
+                allInstrumentsLastPlayedNoteTime = instrument.lastPlayedNoteTime;
+                tempInstrument = instrument;
+            } else {
+                instrument.lastPlayedNoteTime = game.state.time;
+            }
+        }
+    }
+
+    const waitTime = 5000;
+    if (tempInstrument && allInstrumentsLastPlayedNoteTime >= 0 && allInstrumentsLastPlayedNoteTime + waitTime < game.state.time) {
+        addRandomNote(abilityMusicSheets, activeSheet, game);
+        tempInstrument.lastPlayedNoteTime = game.state.time - waitTime * 0.9;
+    }
 }
 
 function resetAbility(ability: Ability) {
     const abilityMusicSheet = ability as AbilityMusicSheets;
     for (let musicSheet of abilityMusicSheet.musicSheets) {
         musicSheet.lastPlayTick = undefined;
+        musicSheet.lastPlayGameTime = undefined;
     }
 }
 
@@ -447,16 +485,15 @@ function setUpAbilityForEnemy(abilityOwner: AbilityOwner, ability: Ability, game
     musicSheets.musicSheets[0].maxPlayTicks = 4;
     if (Object.keys(musicSheets.upgrades).length > 0) return;
     addRandomInstrument(musicSheets, abilityOwner as Character, game);
-    addRandomNote(musicSheets, game);
+    addRandomNote(musicSheets, musicSheets.musicSheets[0], game);
 }
 
-function addRandomNote(ability: AbilityMusicSheets, game: Game) {
-    const musicSheet = ability.musicSheets[0];
+function addRandomNote(ability: AbilityMusicSheets, musicSheet: AbilityMusicSheet, game: Game) {
     const indexToNote = ["B", "A", "G", "F", "E", "D", "C"];
     const randomTick = Math.floor(nextRandom(game.state.randomSeed) * musicSheet.maxPlayTicks);
     const randomNoteIndex = Math.floor(nextRandom(game.state.randomSeed) * indexToNote.length);
     const randomNote = indexToNote[randomNoteIndex] as Note;
-    const octave = 3;
+    const octave = TREBLE_OCTAVE;
     const instrumentKeys = getInstrumentKeys();
     const availableInstrumentKeys: string[] = [];
     for (let instrumentKey of instrumentKeys) {

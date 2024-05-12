@@ -6,13 +6,12 @@ import { MusicNote } from "../../sound.js";
 import { Ability, AbilityObject, AbilityOwner } from "../ability.js";
 import { createAbilityObjectCircleAround } from "../abilityCircleAround.js";
 import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrade.js";
-import { ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS, ABILITY_NAME_MUSIC_SHEET, AbilityMusicSheets, getMusicSheetUpgradeChainPosition } from "./abilityMusicSheet.js";
+import { ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS, ABILITY_NAME_MUSIC_SHEET, AbilityMusicSheetUpgradeInstrument, AbilityMusicSheets, getMusicSheetUpgradeChainPosition } from "./abilityMusicSheet.js";
 import { getAbilityMusicSheetsUpgradeMultiplyAmount } from "./abilityMusicSheetUpgradeMultiply.js";
 import { getAbilityMusicSheetsUpgradeAreaFactor } from "./abilityMusicSheetUpgradeSize.js";
 
-export type AbilityMusicSheetUpgradeInstrumentTriangle = AbilityUpgrade & {
+export type AbilityMusicSheetUpgradeInstrumentTriangle = AbilityMusicSheetUpgradeInstrument & {
     lastSpawnObjectIds: number[],
-    lastPlayedNoteTime?: number,
 }
 
 export const ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_TRIANGLE = "Instrument Triangle";
@@ -31,6 +30,8 @@ export function addAbilityMusicSheetUpgradeInstrumentTriangle() {
 }
 
 function reset(ability: Ability) {
+    const upgrade: AbilityMusicSheetUpgradeInstrumentTriangle | undefined = ability.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_TRIANGLE];
+    if (upgrade) upgrade.lastPlayedNoteTime = undefined;
 }
 
 function getChainPosition(abilityOwner: AbilityOwner, abilityMusicSheets: AbilityMusicSheets, game: Game): Position {

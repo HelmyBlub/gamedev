@@ -1,13 +1,15 @@
-next test run: 
+next test run: musician
 increase version
 
 current tasks:
     - musician
         - dev steps:
+            - check trick: defeat king and mute music sheet while crown is flying -> king/boss does nothing
             - ability musicSheet
                 - more music note types (sound related)
                     - how to handle long music sheets
                     - do not allow note stacking, prevent to loud notes
+            - change minor version when remove WIP because of many breaking changes in musician
         - thoughs and research
             - music ability
                 - am im not good with music or does my musicSheet ability need more options?

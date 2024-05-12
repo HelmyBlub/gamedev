@@ -6,14 +6,13 @@ import { nextRandom } from "../../randomNumberGenerator.js";
 import { MusicNote } from "../../sound.js";
 import { Ability, AbilityOwner } from "../ability.js";
 import { createAbilityObjectExplode } from "../abilityExplode.js";
-import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrade.js";
-import { ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS, ABILITY_NAME_MUSIC_SHEET, AbilityMusicSheets, getMusicSheetUpgradeChainPosition } from "./abilityMusicSheet.js";
+import { getAbilityUpgradeOptionDefault } from "../abilityUpgrade.js";
+import { ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS, ABILITY_NAME_MUSIC_SHEET, AbilityMusicSheetUpgradeInstrument, AbilityMusicSheets, getMusicSheetUpgradeChainPosition } from "./abilityMusicSheet.js";
 import { getAbilityMusicSheetsUpgradeMultiplyAmount } from "./abilityMusicSheetUpgradeMultiply.js";
 import { getAbilityMusicSheetsUpgradeAreaFactor } from "./abilityMusicSheetUpgradeSize.js";
 
-export type AbilityMusicSheetUpgradeInstrumentSquare = AbilityUpgrade & {
+export type AbilityMusicSheetUpgradeInstrumentSquare = AbilityMusicSheetUpgradeInstrument & {
     lastSpawns: Position[],
-    lastPlayedNoteTime?: number,
 }
 
 export const ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_SQUARE = "Instrument Square";
@@ -32,6 +31,8 @@ export function addAbilityMusicSheetUpgradeInstrumentSquare() {
 }
 
 function reset(ability: Ability) {
+    const upgrade: AbilityMusicSheetUpgradeInstrumentSquare | undefined = ability.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_SQUARE];
+    if (upgrade) upgrade.lastPlayedNoteTime = undefined;
 }
 
 function getChainPosition(abilityOwner: AbilityOwner, abilityMusicSheets: AbilityMusicSheets, game: Game): Position {
