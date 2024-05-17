@@ -399,8 +399,7 @@ function determineClickedButton(abilityMusicSheets: AbilityMusicSheets, abilityO
 
 /** returns true if clicked inside music sheet for note placing */
 function castNote(abilityOwner: AbilityOwner, musicSheets: AbilityMusicSheets, selectedSheet: AbilityMusicSheet, castPosition: Position, musicSheetWidth: number): boolean {
-    const widthPerQuaterNote = getQuaterNoteWidth(musicSheets, selectedSheet);
-    const unroundedTick = ((castPosition.x - abilityOwner.x) + musicSheetWidth / 2 - NOTE_PAINT_OFFSETX + 4 + selectedSheet.timePaintOffsetX) / widthPerQuaterNote;
+    const unroundedTick = calculateUnroundedTick(abilityOwner, musicSheets, selectedSheet, castPosition, musicSheetWidth);
     const musicNote = positionToMusicNote(abilityOwner, musicSheets, selectedSheet, castPosition, musicSheetWidth);
     if (!musicNote) return false;
     let duplicateNoteIndex = selectedSheet.musicSheet.notes.findIndex(n => n.note === musicNote.note && n.tick === musicNote.tick && n.octave === musicNote.octave);
@@ -415,9 +414,13 @@ function castNote(abilityOwner: AbilityOwner, musicSheets: AbilityMusicSheets, s
     return true;
 }
 
-function positionToMusicNote(abilityOwner: AbilityOwner, musicSheets: AbilityMusicSheets, selectedSheet: AbilityMusicSheet, castPosition: Position, musicSheetWidth: number): MusicNote | undefined {
+function calculateUnroundedTick(abilityOwner: AbilityOwner, musicSheets: AbilityMusicSheets, selectedSheet: AbilityMusicSheet, castPosition: Position, musicSheetWidth: number) {
     const widthPerQuaterNote = getQuaterNoteWidth(musicSheets, selectedSheet);
-    const unroundedTick = ((castPosition.x - abilityOwner.x) + musicSheetWidth / 2 - NOTE_PAINT_OFFSETX + 4 + selectedSheet.timePaintOffsetX) / widthPerQuaterNote;
+    return ((castPosition.x - abilityOwner.x) + musicSheetWidth / 2 - NOTE_PAINT_OFFSETX + 4 + selectedSheet.timePaintOffsetX) / widthPerQuaterNote;
+}
+
+function positionToMusicNote(abilityOwner: AbilityOwner, musicSheets: AbilityMusicSheets, selectedSheet: AbilityMusicSheet, castPosition: Position, musicSheetWidth: number): MusicNote | undefined {
+    const unroundedTick = calculateUnroundedTick(abilityOwner, musicSheets, selectedSheet, castPosition, musicSheetWidth);
     const tick = Math.round(unroundedTick / selectedSheet.shortestAllowedNote) * selectedSheet.shortestAllowedNote;
     if (tick < 0 || tick >= selectedSheet.maxPlayTicks) return undefined;
     const musicNote = yPosToMusicNote(castPosition.y, abilityOwner.y, musicSheets, selectedSheet);
@@ -447,8 +450,7 @@ function modifyNoteClick(note: MusicNote, unroundedTick: number, tick: number): 
 }
 
 function positionToHoverNote(abilityOwner: AbilityOwner, musicSheets: AbilityMusicSheets, selectedSheet: AbilityMusicSheet, castPosition: Position, musicSheetWidth: number): { note: MusicNote, delete?: boolean } | undefined {
-    const widthPerQuaterNote = getQuaterNoteWidth(musicSheets, selectedSheet);
-    const unroundedTick = ((castPosition.x - abilityOwner.x) + musicSheetWidth / 2 - NOTE_PAINT_OFFSETX + 4 + selectedSheet.timePaintOffsetX) / widthPerQuaterNote;
+    const unroundedTick = calculateUnroundedTick(abilityOwner, musicSheets, selectedSheet, castPosition, musicSheetWidth);
     const note = positionToMusicNote(abilityOwner, musicSheets, selectedSheet, castPosition, musicSheetWidth);
     if (!note) return;
     let duplicateNoteIndex = selectedSheet.musicSheet.notes.findIndex(n => n.note === note.note && n.tick === note.tick && n.octave === note.octave);
@@ -649,6 +651,8 @@ function paintClef(ctx: CanvasRenderingContext2D, abilityMusicSheets: AbilityMus
 }
 
 function paintButtons(ctx: CanvasRenderingContext2D, abilityMusicSheets: AbilityMusicSheets, topLeftMusicSheet: Position, selectedSheet: AbilityMusicSheet, musicSheetWidth: number) {
+    const buttonsAlpha = 0.8;
+    ctx.globalAlpha *= buttonsAlpha;
     const spacing = 2;
     let leftOffsetY = 0;
     let rightOffsetY = 0;
@@ -692,6 +696,7 @@ function paintButtons(ctx: CanvasRenderingContext2D, abilityMusicSheets: Ability
     ctx.fillRect(topLeftMusicSheet.x - abilityMusicSheets.buttonWidth - CLEF_WIDTH, topLeftMusicSheet.y + leftOffsetY, abilityMusicSheets.buttonWidth, abilityMusicSheets.buttonWidth);
     ctx.fillStyle = "black";
     ctx.fillText((1 + abilityMusicSheets.selectedMusicSheetIndex).toFixed(), topLeftMusicSheet.x - CLEF_WIDTH - abilityMusicSheets.buttonWidth + 5, Math.floor(topLeftMusicSheet.y + leftOffsetY + abilityMusicSheets.buttonWidth / 2 + fontSize / 2) - 5);
+    ctx.globalAlpha /= buttonsAlpha;
 }
 
 function paintMovingLineTimeIndicator(ctx: CanvasRenderingContext2D, abilityMusicSheets: AbilityMusicSheets, topLeftMusicSheet: Position, musicSheetWidth: number, selectedSheet: AbilityMusicSheet) {
@@ -954,6 +959,7 @@ function createAbilityMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability,
             );
         }
     }
+    textLines.push(`damage per second: ${abilityMusicSheet.damagePerSecond}`);
     pushAbilityUpgradesUiTexts(ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS, textLines, ability);
 
     return createMoreInfosPart(ctx, textLines);

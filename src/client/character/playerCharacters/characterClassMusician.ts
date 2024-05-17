@@ -1,6 +1,5 @@
 import { addAbilityToCharacter, createAbility, setAbilityToBossLevel } from "../../ability/ability.js";
 import { createAbilityHpRegen } from "../../ability/abilityHpRegen.js";
-import { ABILITY_NAME_SNIPE } from "../../ability/snipe/abilitySnipe.js";
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../gameModel.js";
 import { Character, IMAGE_SLIME, createCharacter } from "../characterModel.js";
 import { createBossUpgradeOptionsAbilityLeveling, executeAbilityLevelingCharacterUpgradeOption } from "./abilityLevelingCharacter.js";
@@ -10,10 +9,9 @@ import { resetCharacter } from "../character.js";
 import { CHARACTER_TYPE_BOSS_ENEMY } from "../enemy/bossEnemy.js";
 import { ABILITY_NAME_MUSIC_SHEET, AbilityMusicSheets } from "../../ability/musician/abilityMusicSheet.js";
 import { ABILITY_NAME_MUSIC_SHEET_CHANGE_INSTRUMENT } from "../../ability/musician/abilityMusicSheetChangeInstrument.js";
-import { AbilityUpgrade } from "../../ability/abilityUpgrade.js";
 import { createAbilityMelee } from "../../ability/abilityMelee.js";
 
-export const CHARACTER_CLASS_MUSICIAN_NAME = "Musician (work in progress)";
+export const CHARACTER_CLASS_MUSICIAN_NAME = "Musician";
 
 export function addMusicianClass() {
     PLAYER_CHARACTER_CLASSES_FUNCTIONS[CHARACTER_CLASS_MUSICIAN_NAME] = {

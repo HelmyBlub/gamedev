@@ -93,7 +93,8 @@ function getAbilityUpgradeUiTextLong(ability: Ability): string[] {
     const upgrade: AbilityMusicSheetUpgradeInstrumentSquare | undefined = ability.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_SQUARE];
     if (upgrade) {
         textLines.push(
-            `Instrument Square +Level`,
+            `Instrument Square +Level.`,
+            `Damage increase from ${upgrade.level * 100}% to ${(upgrade.level + 1) * 100}%.`,
         );
     } else {
         textLines.push(

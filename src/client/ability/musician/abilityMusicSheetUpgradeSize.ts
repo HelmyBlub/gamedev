@@ -56,10 +56,11 @@ function getAbilityUpgradeUiTextLong(ability: Ability): string[] {
     if (upgrade) {
         textLines.push(
             `Increase effect size further.`,
+            `Size increase from ${upgrade.level * 100}% to ${(upgrade.level + 1) * 100}%.`,
         );
     } else {
         textLines.push(
-            `Increase effect size.`,
+            `Increase effect size by 100%.`,
         );
     }
     return textLines;

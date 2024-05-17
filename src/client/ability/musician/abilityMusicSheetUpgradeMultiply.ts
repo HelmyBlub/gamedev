@@ -56,10 +56,11 @@ function getAbilityUpgradeUiTextLong(ability: Ability): string[] {
     if (upgrade) {
         textLines.push(
             `Increase effect amount further.`,
+            `Additional amount increase from ${upgrade.level} to ${(upgrade.level + 1)}.`,
         );
     } else {
         textLines.push(
-            `Increase effect amount.`,
+            `Increase effect amount by 1.`,
         );
     }
     return textLines;

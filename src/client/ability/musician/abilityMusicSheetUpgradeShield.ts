@@ -59,7 +59,7 @@ function getAbilityUpgradeUiTextLong(ability: Ability): string[] {
     if (upgrade) {
         textLines.push(
             `Gain shield for every note played.`,
-            `Increse from ${SHIELD_GAIN_PER_NOTE * upgrade.level} to ${SHIELD_GAIN_PER_NOTE * (upgrade.level + 1)}.`,
+            `Increase from ${SHIELD_GAIN_PER_NOTE * upgrade.level} to ${SHIELD_GAIN_PER_NOTE * (upgrade.level + 1)}.`,
         );
     } else {
         textLines.push(

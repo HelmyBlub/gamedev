@@ -10,7 +10,6 @@ import { ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS, AbilityMusicSheets } from "./abi
 export type AbilityMusicSheetUpgradeDamageOverTime = AbilityUpgrade & {
 }
 export const ABILITY_MUSIC_SHEET_UPGRADE_DAMAGE_OVER_TIME = "Damage Over Time on Hit";
-const DAMAGE_OVER_TIME_DAMAGE_FACTOR_PER_LEVEL = 1;
 
 export function addAbilityMusicSheetUpgradeDamageOverTime() {
     ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS[ABILITY_MUSIC_SHEET_UPGRADE_DAMAGE_OVER_TIME] = {
@@ -60,10 +59,10 @@ function getAbilityUpgradeUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
     const upgrade: AbilityMusicSheetUpgradeDamageOverTime | undefined = ability.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_DAMAGE_OVER_TIME];
     if (upgrade) {
-        textLines.push(`Apply damage over time effect on hit.`);
-        textLines.push(`Damage increases with upgrade level.`);
+        textLines.push(`Apply permanent damage over time effect on hit.`);
+        textLines.push(`Damage increase from ${upgrade.level * 100}% to ${(upgrade.level + 1) * 100}%.`);
     } else {
-        textLines.push(`Apply damage over time effect on hit.`);
+        textLines.push(`Apply permanent damage over time effect on hit.`);
     }
     return textLines;
 }

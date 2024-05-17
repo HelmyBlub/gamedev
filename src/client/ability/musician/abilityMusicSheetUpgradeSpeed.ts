@@ -90,9 +90,9 @@ function getAbilityUpgradeUiTextLong(ability: Ability): string[] {
     const upgrade: AbilityMusicSheetUpgradeSpeed | undefined = ability.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_SPEED];
     if (upgrade) {
         textLines.push(`Gain speed for every unique note.`);
-        textLines.push(`Speed increases with upgrade level.`);
+        textLines.push(`Speed increases per unique note from ${(upgrade.level * SPEED_PER_LEVEL_PER_NOTE).toFixed(1)} to ${((upgrade.level + 1) * SPEED_PER_LEVEL_PER_NOTE).toFixed(1)}.`);
     } else {
-        textLines.push(`Gain speed for every unique note.`);
+        textLines.push(`Gain ${SPEED_PER_LEVEL_PER_NOTE} speed for every unique note.`);
     }
     return textLines;
 }

@@ -3,20 +3,11 @@ increase version
 
 current tasks:
     - musician
-        - dev steps:
-            - ability musicSheet
-                - do not allow note stacking, prevent to loud notes
-            - change minor version when remove WIP because of many breaking changes in musician
+        - check all moreInfo texts
         - thoughs and research
-            - music ability
-                - am im not good with music or does my musicSheet ability need more options?
             - can i create sound which sounds like a piano with this? or other existing instruments?
             - sound links
                 - web audio API: https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API
-    - enemy type: "God"
-        - think about sound?
-            - make own sounds?
-            - how to capture sound in my stream setup from VM? (offstream)
     - replayData: add zoom factor. zoom has influence on time of replay
     - short king replay on its own creating problems when king defeated
 
