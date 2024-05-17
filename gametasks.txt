@@ -5,10 +5,9 @@ current tasks:
     - musician
         - dev steps:
             - ability musicSheet
-                - more music note types (sound related)
-                    - how to handle long music sheets
-                        - try around and see what bugs still exist
-                    - do not allow note stacking, prevent to loud notes
+                - how to handle long music sheets
+                    - try around and see what bugs still exist
+                - do not allow note stacking, prevent to loud notes
             - change minor version when remove WIP because of many breaking changes in musician
         - thoughs and research
             - music ability
