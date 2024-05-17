@@ -399,7 +399,8 @@ function determineClickedButton(abilityMusicSheets: AbilityMusicSheets, abilityO
 
 /** returns true if clicked inside music sheet for note placing */
 function castNote(abilityOwner: AbilityOwner, musicSheets: AbilityMusicSheets, selectedSheet: AbilityMusicSheet, castPosition: Position, musicSheetWidth: number): boolean {
-    const unroundedTick = (((castPosition.x - abilityOwner.x) + musicSheetWidth / 2 - NOTE_PAINT_OFFSETX + 4) / musicSheetWidth) * selectedSheet.maxPlayTicks;
+    const widthPerQuaterNote = getQuaterNoteWidth(musicSheets, selectedSheet);
+    const unroundedTick = ((castPosition.x - abilityOwner.x) + musicSheetWidth / 2 - NOTE_PAINT_OFFSETX + 4 + selectedSheet.timePaintOffsetX) / widthPerQuaterNote;
     const musicNote = positionToMusicNote(abilityOwner, musicSheets, selectedSheet, castPosition, musicSheetWidth);
     if (!musicNote) return false;
     let duplicateNoteIndex = selectedSheet.musicSheet.notes.findIndex(n => n.note === musicNote.note && n.tick === musicNote.tick && n.octave === musicNote.octave);
@@ -446,17 +447,16 @@ function modifyNoteClick(note: MusicNote, unroundedTick: number, tick: number): 
 }
 
 function positionToHoverNote(abilityOwner: AbilityOwner, musicSheets: AbilityMusicSheets, selectedSheet: AbilityMusicSheet, castPosition: Position, musicSheetWidth: number): { note: MusicNote, delete?: boolean } | undefined {
-    const unroundedTick = (((castPosition.x - abilityOwner.x) + musicSheetWidth / 2 - NOTE_PAINT_OFFSETX + 4) / musicSheetWidth) * selectedSheet.maxPlayTicks;
-    const tick = Math.round(unroundedTick / selectedSheet.shortestAllowedNote) * selectedSheet.shortestAllowedNote;
-
+    const widthPerQuaterNote = getQuaterNoteWidth(musicSheets, selectedSheet);
+    const unroundedTick = ((castPosition.x - abilityOwner.x) + musicSheetWidth / 2 - NOTE_PAINT_OFFSETX + 4 + selectedSheet.timePaintOffsetX) / widthPerQuaterNote;
     const note = positionToMusicNote(abilityOwner, musicSheets, selectedSheet, castPosition, musicSheetWidth);
     if (!note) return;
-    let duplicateNoteIndex = selectedSheet.musicSheet.notes.findIndex(n => n.note === note.note && n.tick === tick && n.octave === note.octave);
+    let duplicateNoteIndex = selectedSheet.musicSheet.notes.findIndex(n => n.note === note.note && n.tick === note.tick && n.octave === note.octave);
     if (duplicateNoteIndex > -1) {
         const dupNote = selectedSheet.musicSheet.notes[duplicateNoteIndex];
         note.semitone = dupNote.semitone;
         note.durationFactor = dupNote.durationFactor;
-        const modifyDelete = modifyNoteClick(note, unroundedTick, tick);
+        const modifyDelete = modifyNoteClick(note, unroundedTick, note.tick);
         if (modifyDelete) return { note, delete: true };
     }
 
