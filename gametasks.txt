@@ -2,18 +2,17 @@ next test run:
 increase version
 
 current tasks:
-    - replayData: add zoom factor. zoom has influence on time of replay
-    - musician
-        - thoughs and research
-            - can i create sound which sounds like a piano with this? or other existing instruments?
+- musician: accessoire
+- play game
 
 
 next feature ideas:
 - think about next bigger feature 
-    - bigger idea:
-        - another class?
-            - with sound in mind this time?
-        - extends existings classes for more upgrade choice?
+    - hard mode for God
+        - if god is killed before he picked up anything -> activate "hard mode"
+            - gains every ability on level 5
+            - hp to full and x100
+    - extends existings classes for more upgrade choice?
 
 
 refactor possibilities:

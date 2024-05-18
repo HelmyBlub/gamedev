@@ -107,6 +107,7 @@ export function addAbilityMusicSheet() {
         executeUpgradeOption: executeAbilityUpgradeOption,
         onObjectHit: onObjectHit,
         paintAbility: paintAbility,
+        paintAbilityAccessoire: paintAbilityAccessoire,
         paintAbilityUI: paintAbilityUI,
         resetAbility: resetAbility,
         setAbilityToLevel: setAbilityToLevel,
@@ -177,6 +178,31 @@ export function getMusicSheetUpgradeChainPosition(musicSheets: AbilityMusicSheet
     if (!functions.getChainPosition) return { x: abilityOwner.x, y: abilityOwner.y };
     return functions.getChainPosition(abilityOwner, musicSheets, game);
 }
+
+function paintAbilityAccessoire(ctx: CanvasRenderingContext2D, ability: Ability, paintPosition: Position, game: Game) {
+    const abilityMusicSheets = ability as AbilityMusicSheets;
+    const noteRadius = 4;
+    const lineNumberForNodeStemDirection = 4;
+    const noteX = paintPosition.x;
+    const noteY = paintPosition.y + 10;
+    const noteType = abilityMusicSheets.selectedInstrument ? abilityMusicSheets.selectedInstrument : ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_SINE;
+    const selectedSheet = abilityMusicSheets.musicSheets[abilityMusicSheets.selectedMusicSheetIndex];
+    const note: MusicNote = {
+        durationFactor: selectedSheet.shortestAllowedNote,
+        note: "A",
+        octave: TREBLE_OCTAVE,
+        tick: 0,
+        type: noteType,
+    }
+    ctx.fillStyle = "black";
+    ctx.strokeStyle = "black";
+    const upgradeFunctions = ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS[note.type!];
+
+    if (upgradeFunctions.paintNoteHead) upgradeFunctions.paintNoteHead(ctx, note, noteX, noteY, lineNumberForNodeStemDirection, noteRadius);
+    paintNoteStem(ctx, note, noteX, noteY, abilityMusicSheets, noteRadius, lineNumberForNodeStemDirection);
+
+}
+
 
 function getMusicSheetPaintWidth(ability: AbilityMusicSheets, selectedSheet: AbilityMusicSheet): number {
     let musicSheetWidth = ability.widthPerNote * selectedSheet.maxPlayTicks / selectedSheet.shortestAllowedNote;
@@ -604,6 +630,8 @@ function paintAbilityUI(ctx: CanvasRenderingContext2D, ability: Ability, drawSta
 }
 
 function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
+    let ownerPaintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
+    paintAbilityAccessoire(ctx, ability, { x: ownerPaintPos.x - 10, y: ownerPaintPos.y }, game);
     if (ability.disabled) return;
     const abilityMusicSheets = ability as AbilityMusicSheets;
     if (abilityMusicSheets.selectedInstrument === undefined) return;
@@ -611,7 +639,6 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
     const musicSheetWidth = getMusicSheetPaintWidth(abilityMusicSheets, selectedSheet);
     const isMyAbility = findMyCharacter(game) === abilityOwner;
     let hoverNote: { note: MusicNote, delete?: boolean } | undefined;
-    let ownerPaintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
     const topLeftMusicSheet = {
         x: Math.floor(ownerPaintPos.x - musicSheetWidth / 2),
         y: ownerPaintPos.y + abilityMusicSheets.offestY,
