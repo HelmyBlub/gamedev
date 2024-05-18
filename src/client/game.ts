@@ -307,6 +307,7 @@ export function endGame(game: Game, isKingKill: boolean = false, isGodKill: bool
         }
     }
     mapObjectPlaceUpgradeBuilding(game);
+    classBuildingCheckAllPlayerForLegendaryAbilitiesAndMoveBackToBuilding(game);
     endGameReplayStuff(game, newScore);
     if (game.testing.record) {
         if (game.testing.record.data.replayPlayerInputs) {
@@ -318,7 +319,6 @@ export function endGame(game: Game, isKingKill: boolean = false, isGodKill: bool
             }
         }
     }
-    classBuildingCheckAllPlayerForLegendaryAbilitiesAndMoveBackToBuilding(game);
 }
 
 export function changeCharacterAndAbilityIds(character: Character, idCounter: IdCounter) {

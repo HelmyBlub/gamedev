@@ -2,13 +2,10 @@ next test run:
 increase version
 
 current tasks:
+    - replayData: add zoom factor. zoom has influence on time of replay
     - musician
-        - check speed per note upgrade. Should be character upgrade? does not activate correctly on takeover
-            - check on auto note removal
         - thoughs and research
             - can i create sound which sounds like a piano with this? or other existing instruments?
-    - replayData: add zoom factor. zoom has influence on time of replay
-    - short king replay on its own creating problems when king defeated
 
 
 next feature ideas:
