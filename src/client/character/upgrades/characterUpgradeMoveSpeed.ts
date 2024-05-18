@@ -79,7 +79,7 @@ function executeOption(option: UpgradeOption, character: Character) {
 
 function getStatsDisplayText(characterUpgrade: CharacterUpgrade): string {
     const up: CharacterUpgradeBonusMoveSpeed = characterUpgrade as CharacterUpgradeBonusMoveSpeed;
-    return `${CHARACTER_UPGRADE_BONUS_MOVE_SPEED}: ${up.bonusMoveSpeed}`;
+    return `${CHARACTER_UPGRADE_BONUS_MOVE_SPEED}: ${up.bonusMoveSpeed.toFixed(1)}`;
 }
 
 function getMoreInfoText(character: Character, option: UpgradeOption): string[] {

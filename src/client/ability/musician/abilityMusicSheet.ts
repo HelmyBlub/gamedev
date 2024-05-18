@@ -283,7 +283,7 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, castPosition:
     const musicSheetWidth = getMusicSheetPaintWidth(abilityMusicSheets, selectedMusicSheet);
     const clickedButton = determineClickedButton(abilityMusicSheets, abilityOwner, musicSheetWidth, castPosition);
     if (clickedButton) {
-        executeButtonClick(clickedButton, abilityMusicSheets, selectedMusicSheet);
+        executeButtonClick(clickedButton, abilityMusicSheets, selectedMusicSheet, abilityOwner);
         return;
     }
     const didCastNote = castNote(abilityOwner, abilityMusicSheets, selectedMusicSheet, castPosition, musicSheetWidth);
@@ -309,10 +309,11 @@ function determineCleffClick(abilityOwner: AbilityOwner, abilityMusicSheets: Abi
     return clefYHit;
 }
 
-function executeButtonClick(clickedButton: MusicSheetButton, abilityMusicSheets: AbilityMusicSheets, selectedMusicSheet: AbilityMusicSheet) {
+function executeButtonClick(clickedButton: MusicSheetButton, abilityMusicSheets: AbilityMusicSheets, selectedMusicSheet: AbilityMusicSheet, abilityOwner: AbilityOwner) {
     switch (clickedButton.action) {
         case "+":
             selectedMusicSheet.maxPlayTicks += 4;
+            abilityMusicSheetsUpgradeSpeedSetSpeed(abilityMusicSheets, abilityOwner);
             break;
         case "-":
             if (selectedMusicSheet.maxPlayTicks > 4) {
@@ -323,6 +324,7 @@ function executeButtonClick(clickedButton: MusicSheetButton, abilityMusicSheets:
                 if (totalWidth - musicSheetWidth < selectedMusicSheet.timePaintOffsetX) {
                     selectedMusicSheet.timePaintOffsetX = 0;
                 }
+                abilityMusicSheetsUpgradeSpeedSetSpeed(abilityMusicSheets, abilityOwner);
             }
             break;
         case "↑":
@@ -864,6 +866,7 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     const typeToArrayIndex = new Map<string, number>();
     const notesDamageTypeTicks: MusicNote[][] = [];
     const distanceToCamera = calculateDistance(getCameraPosition(game), abilityOwner);
+    let noteDeleted = false;
     for (let selectedMusicSheet of abilityMusicSheets.musicSheets) {
         if (selectedMusicSheet.lastPlayGameTime === undefined) selectedMusicSheet.lastPlayGameTime = game.state.time;
         if (selectedMusicSheet.lastPlayTick === undefined) selectedMusicSheet.lastPlayTick = 0;
@@ -874,6 +877,7 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
                 selectedMusicSheet.lastPlayTick = -0.5;
                 selectedMusicSheet.stopped = false;
                 selectedMusicSheet.lastPlayGameTime = game.state.time;
+                abilityMusicSheetsUpgradeSpeedSetSpeed(abilityMusicSheets, abilityOwner);
             }
         }
 
@@ -883,6 +887,7 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
             if (currentTick % 4 >= 3.4) {
                 selectedMusicSheet.stopped = true;
                 selectedMusicSheet.lastPlayTick = -0.5;
+                abilityMusicSheetsUpgradeSpeedSetSpeed(abilityMusicSheets, abilityOwner);
             }
         }
 
@@ -896,6 +901,7 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
             if (note.tick >= selectedMusicSheet.maxPlayTicks) {
                 if (note.tick > selectedMusicSheet.maxPlayTicks + 4) {
                     selectedMusicSheet.musicSheet.notes.splice(i, 1);
+                    noteDeleted = true;
                 }
                 continue;
             }
@@ -940,6 +946,7 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
             abilityMusicSheets.chainOrder = notesDamageTypeTicks[0][0].type;
         }
     }
+    if (noteDeleted) abilityMusicSheetsUpgradeSpeedSetSpeed(abilityMusicSheets, abilityOwner);
 }
 
 function createAbilityMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability, game: Game): MoreInfoPart {

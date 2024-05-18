@@ -32,7 +32,7 @@ export function abilityMusicSheetsUpgradeSpeedSetSpeed(ability: AbilityMusicShee
 
     if (up === undefined) return;
     if (!abilityOwner.baseMoveSpeed) return;
-    const count = countUniqueNotes(ability);
+    const count = countUniquePlayedNotes(ability);
     const bonusSpeed = count * up.level * SPEED_PER_LEVEL_PER_NOTE;
     if (up.currentBonusSpeed > 0) {
         abilityOwner.baseMoveSpeed -= up.currentBonusSpeed;
@@ -43,10 +43,12 @@ export function abilityMusicSheetsUpgradeSpeedSetSpeed(ability: AbilityMusicShee
     charSpeedUp.bonusMoveSpeed += bonusSpeed;
 }
 
-function countUniqueNotes(ability: AbilityMusicSheets): number {
+function countUniquePlayedNotes(ability: AbilityMusicSheets): number {
     const uniqueNotes: MusicNote[] = [];
     for (let musicSheet of ability.musicSheets) {
+        if (musicSheet.stopped) continue;
         for (let note of musicSheet.musicSheet.notes) {
+            if (note.tick >= musicSheet.maxPlayTicks) continue;
             const dup = uniqueNotes.find(un => equalsNoteSound(un, note));
             if (dup) continue;
             uniqueNotes.push(note);
