@@ -37,12 +37,12 @@ export function characterCreateAndAddUpgradeBonusSpeed(charClass: CharacterClass
 }
 
 function addUpgrade(characterUpgrade: CharacterUpgrade, character: Character, game: Game, charClass: CharacterClass | undefined) {
-    const bonusHp = characterUpgrade as CharacterUpgradeBonusMoveSpeed;
+    const bonusSpeed = characterUpgrade as CharacterUpgradeBonusMoveSpeed;
     if (charClass) {
         if (!charClass.characterClassUpgrades) charClass.characterClassUpgrades = {};
         charClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_MOVE_SPEED] = characterUpgrade;
     }
-    character.baseMoveSpeed += bonusHp.bonusMoveSpeed;
+    character.baseMoveSpeed += bonusSpeed.bonusMoveSpeed;
 }
 
 function getOptions(character: Character, game: Game): UpgradeOptionAndProbability[] {

@@ -57,7 +57,7 @@ export function addAbilityTower() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_TOWER] = {
         activeAbilityCast: castTower,
         createAbility: createAbilityTower,
-        createAbilityUpgradeOptions: createAbilityTowerUpgradeOptionsNew,
+        createAbilityUpgradeOptions: createAbilityTowerUpgradeOptions,
         createAbilityMoreInfos: createAbilityTowerMoreInfos,
         createDamageBreakDown: createDamageBreakDown,
         deleteAbilityObject: deleteAbilityObjectTower,
@@ -550,7 +550,7 @@ function tickAbilityObjectTower(abilityObject: AbilityObject, game: Game) {
     }
 }
 
-function createAbilityTowerUpgradeOptionsNew(ability: Ability): UpgradeOptionAndProbability[] {
+function createAbilityTowerUpgradeOptions(ability: Ability): UpgradeOptionAndProbability[] {
     const abilityTower = ability as AbilityTower;
     const upgradeOptions: UpgradeOptionAndProbability[] = [];
     const option: AbilityUpgradeOption = {

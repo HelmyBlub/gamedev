@@ -1,5 +1,7 @@
 import { Character } from "../../character/characterModel.js";
+import { findCharacterClassById } from "../../character/playerCharacters/levelingCharacter.js";
 import { UpgradeOptionAndProbability, AbilityUpgradeOption } from "../../character/upgrade.js";
+import { CHARACTER_UPGRADE_BONUS_MOVE_SPEED, CharacterUpgradeBonusMoveSpeed, characterCreateAndAddUpgradeBonusSpeed } from "../../character/upgrades/characterUpgradeMoveSpeed.js";
 import { MusicNote } from "../../sound.js";
 import { Ability, AbilityOwner } from "../ability.js";
 import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrade.js";
@@ -24,15 +26,21 @@ export function addAbilityMusicSheetUpgradeSpeed() {
 
 export function abilityMusicSheetsUpgradeSpeedSetSpeed(ability: AbilityMusicSheets, abilityOwner: AbilityOwner) {
     const up = ability.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_SPEED] as AbilityMusicSheetUpgradeSpeed;
+    const charClass = findCharacterClassById(abilityOwner as Character, ability.classIdRef);
+    if (!charClass || !charClass.characterClassUpgrades) return;
+    const charSpeedUp: CharacterUpgradeBonusMoveSpeed = charClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_MOVE_SPEED] as CharacterUpgradeBonusMoveSpeed;
+
     if (up === undefined) return;
     if (!abilityOwner.baseMoveSpeed) return;
     const count = countUniqueNotes(ability);
     const bonusSpeed = count * up.level * SPEED_PER_LEVEL_PER_NOTE;
     if (up.currentBonusSpeed > 0) {
         abilityOwner.baseMoveSpeed -= up.currentBonusSpeed;
+        charSpeedUp.bonusMoveSpeed -= up.currentBonusSpeed;
     }
     up.currentBonusSpeed = bonusSpeed;
     abilityOwner.baseMoveSpeed += bonusSpeed;
+    charSpeedUp.bonusMoveSpeed += bonusSpeed;
 }
 
 function countUniqueNotes(ability: AbilityMusicSheets): number {
@@ -58,7 +66,6 @@ function equalsNoteSound(note1: MusicNote, note2: MusicNote) {
 function reset(ability: Ability) {
     const up = ability.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_SPEED] as AbilityMusicSheetUpgradeSpeed;
     if (up === undefined) return;
-    up.currentBonusSpeed = 0;
 }
 
 function getOptions(ability: Ability): UpgradeOptionAndProbability[] {
@@ -77,7 +84,12 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption, character
         up = musicSheet.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_SPEED];
     }
     up.level++;
-    abilityMusicSheetsUpgradeSpeedSetSpeed(musicSheet, character);
+
+    const charClass = findCharacterClassById(character, ability.classIdRef);
+    if (charClass) {
+        characterCreateAndAddUpgradeBonusSpeed(charClass, character, 0);
+        abilityMusicSheetsUpgradeSpeedSetSpeed(musicSheet, character);
+    }
 }
 
 function getAbilityUpgradeUiText(ability: Ability): string {
