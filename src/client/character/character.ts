@@ -19,7 +19,7 @@ import { ENEMY_FIX_RESPAWN_POSITION } from "./enemy/fixPositionRespawnEnemyModel
 import { addCombatlogDamageTakenEntry, doDamageMeterSplit } from "../combatlog.js";
 import { executeAbilityLevelingCharacterUpgradeOption } from "./playerCharacters/abilityLevelingCharacter.js";
 import { addCharacterUpgrades, CHARACTER_UPGRADE_FUNCTIONS } from "./upgrades/characterUpgrades.js";
-import { CHARACTER_TYPE_GOD_ENEMY } from "./enemy/god/godEnemy.js";
+import { CHARACTER_TYPE_GOD_ENEMY, godEnemyActivateHardMode, godEnemyHardModeConditionFullfiled } from "./enemy/god/godEnemy.js";
 import { DEBUFF_NAME_DAMAGE_TAKEN } from "../debuff/debuffDamageTaken.js";
 
 export function findCharacterById(characters: Character[], id: number): Character | null {
@@ -632,7 +632,11 @@ function killCharacter(character: Character, game: Game, abilityIdRef: number | 
     if (character.type === CHARACTER_TYPE_KING_ENEMY) {
         game.state.bossStuff.bosses.push(createKingCrownCharacter(game.state.idCounter, character));
     } else if (character.type === CHARACTER_TYPE_GOD_ENEMY) {
-        endGame(game, false, true);
+        if (godEnemyHardModeConditionFullfiled(game)) {
+            godEnemyActivateHardMode(game);
+        } else {
+            endGame(game, false, true);
+        }
     } else if (character.type === PLAYER_CHARACTER_TYPE) {
         if (character.willTurnToPetOnDeath) turnCharacterToPet(character, game);
         if (game.state.bossStuff.godFightStarted || game.state.bossStuff.kingFightStarted) {

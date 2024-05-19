@@ -30,6 +30,7 @@ export type GodEnemyCharacter = Character & {
         state: "sleeping" | "waking up" | "angry",
         data: any[],
     }
+    hardModeActivated?: boolean,
 };
 
 export const CHARACTER_TYPE_GOD_ENEMY = "GodEnemyCharacter";
@@ -43,6 +44,33 @@ export function addGodEnemyType() {
     addGodAbilitySeeker();
     addGodAbilityMovingFire();
     addGodAbilityTileExplosion();
+}
+
+export function godEnemyHardModeConditionFullfiled(game: Game): boolean {
+    if (!game.state.bossStuff.godFightStarted) return false;
+    const god = game.state.bossStuff.bosses.find(b => b.type === CHARACTER_TYPE_GOD_ENEMY);
+    if (!god) return false;
+    for (let ability of god.abilities) {
+        if ((ability as GodAbility).pickedUp === undefined) continue;
+        if ((ability as GodAbility).pickedUp === true) return false;
+    }
+    return true;
+}
+
+export function godEnemyActivateHardMode(game: Game) {
+    const god: GodEnemyCharacter = game.state.bossStuff.bosses.find(b => b.type === CHARACTER_TYPE_GOD_ENEMY) as GodEnemyCharacter;
+    god.maxHp *= 100;
+    god.hp = god.maxHp;
+    god.isDead = false;
+    const hardModeAbilityLevel = 5;
+    for (let ability of god.abilities) {
+        if ((ability as GodAbility).pickedUp === false) {
+            const godAbility = ability as GodAbility;
+            godAbility.pickedUp = true;
+            setAbilityToBossLevel(godAbility, hardModeAbilityLevel);
+        }
+    }
+    if (!god.isDamageImmune) god.isDebuffImmune = false;
 }
 
 export function spawnGodEnemy(godArea: GameMapGodArea, game: Game) {

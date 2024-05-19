@@ -3,6 +3,7 @@ increase version
 
 current tasks:
 
+
 next feature ideas:
 - think about next bigger feature 
     - hard mode for God
