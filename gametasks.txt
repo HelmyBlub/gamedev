@@ -2,9 +2,6 @@ next test run:
 increase version
 
 current tasks:
-- more damage meter splits saved
-- can i keep old damage meters?
-
 
 next feature ideas:
 - think about next bigger feature 

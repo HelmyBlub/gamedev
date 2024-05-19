@@ -41,6 +41,7 @@ import { AbilityDamageBreakdown, addDamageBreakDownToDamageMeter } from "../comb
 import { addAbilityMusicSheet } from "./musician/abilityMusicSheet.js"
 import { addAbilityMusicSheetChangeInstrument } from "./musician/abilityMusicSheetChangeInstrument.js"
 import { addAbilityCircleAround } from "./abilityCircleAround.js"
+import { TamerPetCharacter } from "../character/playerCharacters/tamer/tamerPetCharacter.js"
 
 export type Ability = {
     id: number,
@@ -145,26 +146,30 @@ export function onDomLoadSetAbilitiesFunctions() {
     addAbilityCircleAround();
 }
 
-export function doAbilityDamageBreakDown(damage: number, ability: Ability | undefined, abilityObject: AbilityObject | undefined, damageAbilityName: string, game: Game) {
+export function doAbilityDamageBreakDown(damage: number, ability: Ability | undefined, abilityObject: AbilityObject | undefined, damageAbilityName: string, clientId: number, petName: string | undefined, game: Game) {
     if (!ability || !ability.doDamageBreakDown) return;
     let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
     if (abilityFunctions && abilityFunctions.createDamageBreakDown) {
         const breakdowns = abilityFunctions.createDamageBreakDown(damage, ability, abilityObject, damageAbilityName, game);
-        addDamageBreakDownToDamageMeter(game.UI.damageMeter, ability, breakdowns);
+        addDamageBreakDownToDamageMeter(game.UI.damageMeter, ability, breakdowns, clientId, petName);
     }
 }
 
 export function doAbilityDamageBreakDownForAbilityId(damage: number, abilityId: number, abilityObject: AbilityObject | undefined, damageAbilityName: string, game: Game) {
     let ability: Ability | undefined = undefined;
+    let clientId = -1;
+    let petName: string | undefined = undefined;
     for (let player of game.state.players) {
         const result = findAbilityAndOwnerInCharacterById(player.character, abilityId);
         if (result) {
             ability = result.ability;
+            clientId = player.clientId;
+            if (result.owner.paint?.color) petName = result.owner.paint.color;
             break;
         }
     }
     if (!ability) return;
-    doAbilityDamageBreakDown(damage, ability, abilityObject, damageAbilityName, game);
+    doAbilityDamageBreakDown(damage, ability, abilityObject, damageAbilityName, clientId, petName, game);
 }
 
 export function addAbilityToCharacter(character: Character, ability: Ability, charClass: CharacterClass | undefined = undefined) {

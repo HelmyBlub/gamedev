@@ -1,4 +1,5 @@
 import { findAndSetNewCameraCharacterId } from "./character/character.js";
+import { createDamageMeter, damageMeterChangeClientId } from "./combatlog.js";
 import { createPaintTextData, getCameraPosition } from "./game.js";
 import { Game, GameState } from "./gameModel.js";
 import { sendMultiplayer } from "./multiplayerConenction.js";
@@ -98,8 +99,10 @@ function connectInfo(game: Game, data: ConnectInfo) {
     game.multiplayer.updateInterval = data.updateInterval;
     if (data.numberConnections === 0) {
         game.multiplayer.awaitingGameState.waiting = false;
+        const oldId = game.state.players[0].clientId;
         game.state.players[0].clientId = data.clientId;
         game.clientKeyBindings!.clientIdRef = data.clientId;
+        damageMeterChangeClientId(game.UI.damageMeter, oldId, data.clientId);
     }
     if (data.randomIdentifier) {
         console.log("myIdentifier", data.randomIdentifier);
