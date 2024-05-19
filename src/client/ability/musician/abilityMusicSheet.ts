@@ -25,6 +25,8 @@ import { ABILITY_NAME_CIRCLE_AROUND } from "../abilityCircleAround.js";
 import { mousePositionToMapPosition } from "../../map/map.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
 import { GAME_IMAGES, getImage } from "../../imageLoad.js";
+import { addAbilityMusicSheetDeleteNote } from "./abilityMusicSheetDeleteNote.js";
+import { addAbilityMusicSheetChangeInstrument } from "./abilityMusicSheetChangeInstrument.js";
 
 export type AbilityMusicSheets = Ability & {
     nextUpgradeAddInstrument: boolean,
@@ -129,6 +131,9 @@ export function addAbilityMusicSheet() {
     addAbilityMusicSheetUpgradeSpeed();
     addAbilityMusicSheetUpgradeShield();
     addAbilityMusicSheetUpgradeDamageOverTime();
+
+    addAbilityMusicSheetDeleteNote();
+    addAbilityMusicSheetChangeInstrument();
 }
 
 export function createAbilityMusicSheet(
@@ -177,6 +182,12 @@ export function getMusicSheetUpgradeChainPosition(musicSheets: AbilityMusicSheet
     const functions = ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS[musicSheets.chainOrder];
     if (!functions.getChainPosition) return { x: abilityOwner.x, y: abilityOwner.y };
     return functions.getChainPosition(abilityOwner, musicSheets, game);
+}
+
+export function abilityMusicSheetsDeleteNoteClick(abilityOwner: AbilityOwner, musicSheets: AbilityMusicSheets, castPosition: Position) {
+    const selectedSheet = musicSheets.musicSheets[musicSheets.selectedMusicSheetIndex];
+    const musicSheetWidth = getMusicSheetPaintWidth(musicSheets, selectedSheet);
+    castNote(abilityOwner, musicSheets, selectedSheet, castPosition, musicSheetWidth, true);
 }
 
 function paintAbilityAccessoire(ctx: CanvasRenderingContext2D, ability: Ability, paintPosition: Position, game: Game) {
@@ -426,15 +437,20 @@ function determineClickedButton(abilityMusicSheets: AbilityMusicSheets, abilityO
 }
 
 /** returns true if clicked inside music sheet for note placing */
-function castNote(abilityOwner: AbilityOwner, musicSheets: AbilityMusicSheets, selectedSheet: AbilityMusicSheet, castPosition: Position, musicSheetWidth: number): boolean {
+function castNote(abilityOwner: AbilityOwner, musicSheets: AbilityMusicSheets, selectedSheet: AbilityMusicSheet, castPosition: Position, musicSheetWidth: number, deleteClick: boolean = false): boolean {
     const unroundedTick = calculateUnroundedTick(abilityOwner, musicSheets, selectedSheet, castPosition, musicSheetWidth);
     const musicNote = positionToMusicNote(abilityOwner, musicSheets, selectedSheet, castPosition, musicSheetWidth);
     if (!musicNote) return false;
     let duplicateNoteIndex = selectedSheet.musicSheet.notes.findIndex(n => n.note === musicNote.note && n.tick === musicNote.tick && n.octave === musicNote.octave);
+    if (duplicateNoteIndex === -1 && deleteClick) return true;
     if (duplicateNoteIndex > -1) {
-        const dupNote = selectedSheet.musicSheet.notes[duplicateNoteIndex];
-        const modifyDelete = modifyNoteClick(dupNote, unroundedTick, musicNote.tick);
-        if (modifyDelete) selectedSheet.musicSheet.notes.splice(duplicateNoteIndex, 1);
+        if (deleteClick) {
+            selectedSheet.musicSheet.notes.splice(duplicateNoteIndex, 1);
+        } else {
+            const dupNote = selectedSheet.musicSheet.notes[duplicateNoteIndex];
+            const modifyDelete = modifyNoteClick(dupNote, unroundedTick, musicNote.tick);
+            if (modifyDelete) selectedSheet.musicSheet.notes.splice(duplicateNoteIndex, 1);
+        }
     } else {
         selectedSheet.musicSheet.notes.push(musicNote);
     }

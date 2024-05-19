@@ -142,7 +142,6 @@ export function onDomLoadSetAbilitiesFunctions() {
     addAbilityLightningStrikes();
     addAbilityUnleashPet();
     addAbilityMusicSheet();
-    addAbilityMusicSheetChangeInstrument();
     addAbilityCircleAround();
 }
 

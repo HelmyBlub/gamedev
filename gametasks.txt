@@ -2,8 +2,8 @@ next test run:
 increase version
 
 current tasks:
-- musician: accessoire
-- play game
+- more damage meter splits saved
+- can i keep old damage meters?
 
 
 next feature ideas:

@@ -10,6 +10,7 @@ import { CHARACTER_TYPE_BOSS_ENEMY } from "../enemy/bossEnemy.js";
 import { ABILITY_NAME_MUSIC_SHEET, AbilityMusicSheets } from "../../ability/musician/abilityMusicSheet.js";
 import { ABILITY_NAME_MUSIC_SHEET_CHANGE_INSTRUMENT } from "../../ability/musician/abilityMusicSheetChangeInstrument.js";
 import { createAbilityMelee } from "../../ability/abilityMelee.js";
+import { ABILITY_NAME_MUSIC_SHEET_DELETE_NOTE } from "../../ability/musician/abilityMusicSheetDeleteNote.js";
 
 export const CHARACTER_CLASS_MUSICIAN_NAME = "Musician";
 
@@ -42,6 +43,7 @@ function changeCharacterToMusicianClass(
     }
     addAbilityToCharacter(character, abilityMusicSheets, charClass);
     addAbilityToCharacter(character, createAbility(ABILITY_NAME_MUSIC_SHEET_CHANGE_INSTRUMENT, idCounter, false, false, "ability2"), charClass);
+    addAbilityToCharacter(character, createAbility(ABILITY_NAME_MUSIC_SHEET_DELETE_NOTE, idCounter, false, false, "ability3"), charClass);
     addAbilityToCharacter(character, createAbilityHpRegen(idCounter, undefined, 2), charClass);
 }
 
