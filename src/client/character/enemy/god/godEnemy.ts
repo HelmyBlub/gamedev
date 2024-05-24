@@ -19,6 +19,7 @@ import { getPointPaintPosition } from "../../../gamePaint.js";
 import { MoreInfosPartContainer, createCharacterMoreInfosPartContainer } from "../../../moreInfo.js";
 import { doDamageMeterSplit } from "../../../combatlog.js";
 import { addMoneyAmountToPlayer, calculateMoneyForKingMaxHp } from "../../../player.js";
+import { calculateMovePosition } from "../../../map/map.js";
 
 
 const FIRST_PICK_UP_DELAY = 3000;
@@ -28,7 +29,7 @@ export type GodEnemyCharacter = Character & {
     allAbilitiesPickedUp?: boolean,
     firstAttackedTime?: number,
     animationState: {
-        state: "sleeping" | "waking up" | "angry",
+        state: "sleeping" | "waking up" | "angry" | "hardModeActivation",
         data: any[],
     }
     hardModeActivated?: boolean,
@@ -38,7 +39,7 @@ export const CHARACTER_TYPE_GOD_ENEMY = "GodEnemyCharacter";
 
 export function addGodEnemyType() {
     CHARACTER_TYPE_FUNCTIONS[CHARACTER_TYPE_GOD_ENEMY] = {
-        tickFunction: tickEnemyCharacter,
+        tickFunction: tickGodCharacter,
         paintCharacterType: paint,
     }
     addGodAbilityGodImmunity();
@@ -71,17 +72,11 @@ export function godEnemyActivateHardMode(game: Game) {
 
     }
     god.maxHp *= 100;
-    god.hp = god.maxHp;
+    god.hp = 1;
     god.isDead = false;
-    const hardModeAbilityLevel = 5;
-    for (let ability of god.abilities) {
-        if ((ability as GodAbility).pickedUp === false) {
-            const godAbility = ability as GodAbility;
-            godAbility.pickedUp = true;
-            setAbilityToBossLevel(godAbility, hardModeAbilityLevel);
-        }
-    }
+    god.isDamageImmune = true;
     if (!god.isDamageImmune) god.isDebuffImmune = false;
+    god.animationState.state = "hardModeActivation";
 }
 
 export function spawnGodEnemy(godArea: GameMapGodArea, game: Game) {
@@ -137,62 +132,98 @@ function createGodEnemy(idCounter: IdCounter, spawnPosition: Position, game: Gam
     return godCharacter;
 }
 
-function tickEnemyCharacter(character: Character, game: Game, pathingCache: PathingCache | null) {
-    const enemy = character as GodEnemyCharacter;
-    if (enemy.isDead) return;
-    if (enemy.firstAttackedTime === undefined) {
-        if (enemy.hp < enemy.maxHp) {
-            enemy.firstAttackedTime = game.state.time;
-            enemy.animationState.state = "waking up";
+function tickGodCharacter(character: Character, game: Game, pathingCache: PathingCache | null) {
+    const god = character as GodEnemyCharacter;
+    if (god.isDead) return;
+    if (god.firstAttackedTime === undefined) {
+        if (god.hp < god.maxHp) {
+            god.firstAttackedTime = game.state.time;
+            god.animationState.state = "waking up";
         }
+        return;
+    }
+    if (god.animationState.state === "hardModeActivation") {
+        hardModeActivationSequence(god, game);
         return;
     }
 
     let pickUpAbility = false;
-    if (!enemy.allAbilitiesPickedUp) {
-        if (enemy.pickUpCount === 0 && enemy.firstAttackedTime !== undefined && enemy.firstAttackedTime + FIRST_PICK_UP_DELAY <= game.state.time) {
-            enemy.animationState.state = "angry";
+    if (!god.allAbilitiesPickedUp) {
+        if (god.pickUpCount === 0 && god.firstAttackedTime !== undefined && god.firstAttackedTime + FIRST_PICK_UP_DELAY <= game.state.time) {
+            god.animationState.state = "angry";
             pickUpAbility = true;
-        } else if (enemy.pickUpCount > 0 && enemy.pickUpCount <= (1 - enemy.hp / enemy.maxHp) * 10) {
+        } else if (god.pickUpCount > 0 && god.pickUpCount <= (1 - god.hp / god.maxHp) * 10) {
             pickUpAbility = true;
         }
     }
     if (pickUpAbility) {
-        const godAbilityToPickUp = getAbilityToPickUp(enemy);
+        const godAbilityToPickUp = getAbilityToPickUp(god);
         if (godAbilityToPickUp) {
-            enemy.isMoving = true;
-            enemy.isDebuffImmune = true;
-            removeCharacterDebuffs(enemy, game);
-            enemy.moveDirection = calculateDirection(enemy, godAbilityToPickUp.pickUpPosition!);
+            god.isMoving = true;
+            god.isDebuffImmune = true;
+            removeCharacterDebuffs(god, game);
+            god.moveDirection = calculateDirection(god, godAbilityToPickUp.pickUpPosition!);
         }
     } else {
         const playerCharacters = getPlayerCharacters(game.state.players);
-        const closest = determineClosestCharacter(enemy, playerCharacters);
-        calculateAndSetMoveDirectionToPositionWithPathing(enemy, closest.minDistanceCharacter, game.state.map, pathingCache, game.state.idCounter, game.state.time, game);
+        const closest = determineClosestCharacter(god, playerCharacters);
+        calculateAndSetMoveDirectionToPositionWithPathing(god, closest.minDistanceCharacter, game.state.map, pathingCache, game.state.idCounter, game.state.time, game);
     }
 
-    moveCharacterTick(enemy, game.state.map, game.state.idCounter, game);
+    moveCharacterTick(god, game.state.map, game.state.idCounter, game);
     if (pickUpAbility) {
-        const godAbilityToPickUp = getAbilityToPickUp(enemy);
+        const godAbilityToPickUp = getAbilityToPickUp(god);
         if (godAbilityToPickUp) {
-            const distance = calculateDistance(enemy, godAbilityToPickUp.pickUpPosition!);
-            if (distance < enemy.width + 10) {
+            const distance = calculateDistance(god, godAbilityToPickUp.pickUpPosition!);
+            if (distance < god.width + 10) {
                 godAbilityToPickUp.pickedUp = true;
-                if (!enemy.isDamageImmune) enemy.isDebuffImmune = false;
-                enemy.pickUpCount++;
-                enemy.pickUpAbilityIndex = undefined;
-                setAbilityToBossLevel(godAbilityToPickUp, enemy.pickUpCount);
+                if (!god.isDamageImmune) god.isDebuffImmune = false;
+                god.pickUpCount++;
+                god.pickUpAbilityIndex = undefined;
+                for (let ability of god.abilities) {
+                    const godAbility = ability as GodAbility;
+                    if (godAbility.pickedUp === false) {
+                        setAbilityToBossLevel(ability, god.pickUpCount + 1);
+                    }
+                }
             }
         }
     }
 
-    for (let ability of enemy.abilities) {
+    for (let ability of god.abilities) {
         const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
         if (abilityFunctions) {
-            if (abilityFunctions.tickBossAI) abilityFunctions.tickBossAI(enemy, ability, game);
+            if (abilityFunctions.tickBossAI) abilityFunctions.tickBossAI(god, ability, game);
         }
     }
-    tickCharacterDebuffs(enemy, game);
+    tickCharacterDebuffs(god, game);
+}
+
+function hardModeActivationSequence(god: GodEnemyCharacter, game: Game) {
+    const hardModeAbilityLevel = 5;
+    const moveSpeedAbility = 2;
+    let pickedAllUp = true;
+    for (let ability of god.abilities) {
+        const godAbility = ability as GodAbility;
+        if (godAbility.pickedUp === false && godAbility.pickUpPosition) {
+            const direction = calculateDirection(godAbility.pickUpPosition, god);
+            godAbility.pickUpPosition = calculateMovePosition(godAbility.pickUpPosition, direction, moveSpeedAbility, false);
+            const distance = calculateDistance(godAbility.pickUpPosition, god);
+            const abilityLevel = Math.ceil(Math.max(hardModeAbilityLevel - (distance / 80), 1));
+            setAbilityToBossLevel(godAbility, abilityLevel);
+            if (distance <= moveSpeedAbility) {
+                godAbility.pickedUp = true;
+                god.hp += god.maxHp / 4;
+                if (god.hp > god.maxHp) god.hp = god.maxHp;
+            } else {
+                pickedAllUp = false;
+            }
+        }
+    }
+    if (pickedAllUp) {
+        god.isDamageImmune = false;
+        god.animationState.state = "angry";
+    }
 }
 
 function getAbilityToPickUp(enemy: GodEnemyCharacter): GodAbility | undefined {
@@ -248,7 +279,7 @@ function paint(ctx: CanvasRenderingContext2D, character: Character, cameraPositi
         x: Math.cos(pupilDirection) * 2.5,
         y: Math.sin(pupilDirection) * 2.5,
     }
-    if (animation.state === "sleeping") {
+    if (animation.state === "sleeping" || animation.state === "hardModeActivation") {
         eyeRotation = 0;
         eyeOpen = false;
     } else if (animation.state === "waking up" && god.firstAttackedTime !== undefined) {

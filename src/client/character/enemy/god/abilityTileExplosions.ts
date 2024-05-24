@@ -56,6 +56,7 @@ function createAbility(
         passive: false,
         playerInputBinding: playerInputBinding,
         upgrades: {},
+        level: { level: 1 },
     };
 }
 
@@ -76,8 +77,9 @@ function createAbilityObject(position: Position, gameTime: number): AbilityObjec
 }
 
 function setAbilityToBossLevel(ability: Ability, level: number) {
-    const abilitySeeker = ability as AbilityTileExplosion;
-    abilitySeeker.spawnCount = level;
+    const abilityTileEx = ability as AbilityTileExplosion;
+    abilityTileEx.level.level = level;
+    abilityTileEx.spawnCount = level;
 }
 
 function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
@@ -91,7 +93,7 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
     const eyeImageRef = GAME_IMAGES[IMAGE_EXPLOSION];
     loadImage(eyeImageRef);
     const god = abilityOwner as GodEnemyCharacter;
-    const sizeFactor = abiltiyTileExplosion.pickedUp ? 0.4 : 0.5 + god.pickUpCount * 0.1;
+    const sizeFactor = abiltiyTileExplosion.pickedUp ? 0.4 : 0.5 + abiltiyTileExplosion.level.level * 0.1;
     if (eyeImageRef.imageRef?.complete) {
         const explosionImage: HTMLImageElement = eyeImageRef.imageRef;
         ctx.drawImage(
@@ -108,7 +110,7 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
     }
     if (!abiltiyTileExplosion.pickedUp) {
         ctx.font = "bold 16px Arial";
-        paintTextWithOutline(ctx, "white", "black", `Lvl ${god.pickUpCount + 1}`, paintPos.x, paintPos.y + 25, true, 2);
+        paintTextWithOutline(ctx, "white", "black", `Lvl ${abiltiyTileExplosion.level.level}`, paintPos.x, paintPos.y + 25, true, 2);
     }
 }
 

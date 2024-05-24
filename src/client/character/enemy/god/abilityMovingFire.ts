@@ -57,6 +57,7 @@ function createAbility(
         playerInputBinding: playerInputBinding,
         upgrades: {},
         pickedUp: false,
+        level: { level: 1 },
     };
 }
 
@@ -76,6 +77,7 @@ function createAbilityObject(position: Position, randomSeed: RandomSeed): Abilit
 
 function setAbilityToBossLevel(ability: Ability, level: number) {
     const abilityMovingFire = ability as AbilityMovingFire;
+    abilityMovingFire.level.level = level;
     abilityMovingFire.fireSpawnCount = level * 2;
 }
 
@@ -90,7 +92,7 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
     const fireImageRef = GAME_IMAGES[IMAGE_FIRE_ANIMATION];
     loadImage(fireImageRef);
     const god = abilityOwner as GodEnemyCharacter;
-    const sizeFactor = abiltiyMovingFire.pickedUp ? 0.8 : 1 + god.pickUpCount * 0.2;
+    const sizeFactor = abiltiyMovingFire.pickedUp ? 0.8 : 1 + abiltiyMovingFire.level.level * 0.2;
     if (fireImageRef.imageRef?.complete) {
         const fireImage: HTMLImageElement = fireImageRef.imageRef;
         const width = fireImageRef.spriteRowWidths[0];
@@ -108,7 +110,7 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
     }
     if (!abiltiyMovingFire.pickedUp) {
         ctx.font = "bold 16px Arial";
-        paintTextWithOutline(ctx, "white", "black", `Lvl ${god.pickUpCount + 1}`, paintPos.x, paintPos.y + 25, true, 2);
+        paintTextWithOutline(ctx, "white", "black", `Lvl ${abiltiyMovingFire.level.level}`, paintPos.x, paintPos.y + 25, true, 2);
     }
 }
 

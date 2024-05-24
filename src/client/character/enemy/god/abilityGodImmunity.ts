@@ -21,6 +21,7 @@ export type AbilityGodImmunity = GodAbility & {
     cooldown: number,
     cooldownFinishedTime: number,
     groundRadius: number,
+    firstActivation: boolean,
 }
 
 export type AbilityObjectGodImmunityRemoveGround = AbilityObjectCircle & {
@@ -64,6 +65,8 @@ function createAbility(
         passive: false,
         playerInputBinding: playerInputBinding,
         upgrades: {},
+        level: { level: 1 },
+        firstActivation: true,
     };
 }
 
@@ -72,7 +75,7 @@ function createObjectFlying(targetPosition: Position, owner: AbilityOwner, facti
         type: ABILITY_NAME_GOD_IMMUNITY,
         x: owner.x,
         y: owner.y,
-        targetPosition: targetPosition,
+        targetPosition: { x: targetPosition.x, y: targetPosition.y },
         radius: 6,
         color: "blue",
         faction: faction,
@@ -100,7 +103,8 @@ function createObjectGround(abilityObject: AbilityObjectGodImmunityFlying, gameT
 
 function setAbilityToBossLevel(ability: Ability, level: number) {
     const abilityImmunity = ability as AbilityGodImmunity;
-    abilityImmunity.groundRadius = 100 / (level + 1);
+    abilityImmunity.level.level = level;
+    abilityImmunity.groundRadius = Math.max(100 / (level + 1), 25);
     abilityImmunity.cooldown = 120000 / (level + 1);
 }
 
@@ -111,7 +115,7 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
     const shieldImageRef = GAME_IMAGES[IMAGE_SHIELD];
     loadImage(shieldImageRef);
     const god = abilityOwner as GodEnemyCharacter;
-    let sizeFactor = abiltiyImmunity.pickedUp ? 0.4 : 0.5 + god.pickUpCount * 0.1;
+    let sizeFactor = abiltiyImmunity.pickedUp ? 0.4 : 0.5 + abiltiyImmunity.level.level * 0.1;
     if (shieldImageRef.imageRef?.complete) {
         const shieldImage: HTMLImageElement = shieldImageRef.imageRef;
         if (abiltiyImmunity.pickedUp && !god.isDamageImmune) {
@@ -134,7 +138,7 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
     }
     if (!abiltiyImmunity.pickedUp) {
         ctx.font = "bold 16px Arial";
-        paintTextWithOutline(ctx, "white", "black", `Lvl ${god.pickUpCount + 1}`, paintPos.x, paintPos.y + 25, true, 2);
+        paintTextWithOutline(ctx, "white", "black", `Lvl ${abiltiyImmunity.level.level}`, paintPos.x, paintPos.y + 25, true, 2);
     }
 }
 
@@ -201,18 +205,22 @@ function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
         const targetPosition = { x: 0, y: 0 };
         let randomDirection = nextRandom(game.state.randomSeed) * Math.PI * 2;
         const distanceFromGod = 500;
-        do {
-            targetPosition.x = abilityOwner.x + distanceFromGod * Math.sin(randomDirection);
-            targetPosition.y = abilityOwner.y + distanceFromGod * Math.cos(randomDirection);
-            randomDirection += Math.PI / 17;
-        } while (targetPosition.x < allowedAreaTopLeft.x || targetPosition.x > allowedAreaTopLeft.x + allowedAreaSize
-        || targetPosition.y < allowedAreaTopLeft.y || targetPosition.y > allowedAreaTopLeft.y + allowedAreaSize);
+        const repeat = immunity.firstActivation ? 2 : 1;
+        immunity.firstActivation = false;
+        for (let i = 0; i < repeat; i++) {
+            do {
+                targetPosition.x = abilityOwner.x + distanceFromGod * Math.sin(randomDirection);
+                targetPosition.y = abilityOwner.y + distanceFromGod * Math.cos(randomDirection);
+                randomDirection += Math.PI / 17;
+            } while (targetPosition.x < allowedAreaTopLeft.x || targetPosition.x > allowedAreaTopLeft.x + allowedAreaSize
+            || targetPosition.y < allowedAreaTopLeft.y || targetPosition.y > allowedAreaTopLeft.y + allowedAreaSize);
 
-        const flying = createObjectFlying(targetPosition, abilityOwner, abilityOwner.faction, immunity.groundRadius);
+            const flying = createObjectFlying(targetPosition, abilityOwner, abilityOwner.faction, immunity.groundRadius);
+            game.state.abilityObjects.push(flying);
+        }
         abilityOwner.isDamageImmune = true;
         abilityOwner.isDebuffImmune = true;
         removeCharacterDebuffs(abilityOwner as Character, game);
-        game.state.abilityObjects.push(flying);
     }
 }
 

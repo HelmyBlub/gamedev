@@ -3,11 +3,7 @@ increase version
 
 current tasks:
 - hard mode for God
-    - better visualize that it is a "hard Mode"
-        - some hard mode activate animation
-            - god "dies" -> weapons move towards dead god -> god revives
-    - activating hard mode gives normal mode money once
-    - shield shoots two zones first time, when low coldown
+    - highscore board check 
 - check combat log missing entries?
 - load test state somehow merged two states
 

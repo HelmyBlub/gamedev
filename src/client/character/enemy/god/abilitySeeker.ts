@@ -66,6 +66,7 @@ function createAbility(
         passive: false,
         playerInputBinding: playerInputBinding,
         upgrades: {},
+        level: { level: 1 },
     };
 }
 
@@ -107,6 +108,7 @@ function onObjectHit(ability: AbilityObject, targetCharacter: Character, game: G
 
 function setAbilityToBossLevel(ability: Ability, level: number) {
     const abilitySeeker = ability as AbilitySeeker;
+    abilitySeeker.level.level = level;
     abilitySeeker.groundRadius = 30 + level * 20;
 }
 
@@ -121,7 +123,7 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
     const eyeImageRef = GAME_IMAGES[IMAGE_EYE];
     loadImage(eyeImageRef);
     const god = abilityOwner as GodEnemyCharacter;
-    const sizeFactor = abiltiySeeker.pickedUp ? 0.4 : 0.5 + god.pickUpCount * 0.1;
+    const sizeFactor = abiltiySeeker.pickedUp ? 0.4 : 0.5 + abiltiySeeker.level.level * 0.1;
     if (eyeImageRef.imageRef?.complete) {
         const eyeImage: HTMLImageElement = eyeImageRef.imageRef;
         ctx.drawImage(
@@ -138,7 +140,7 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
     }
     if (!abiltiySeeker.pickedUp) {
         ctx.font = "bold 16px Arial";
-        paintTextWithOutline(ctx, "white", "black", `Lvl ${god.pickUpCount + 1}`, paintPos.x, paintPos.y + 25, true, 2);
+        paintTextWithOutline(ctx, "white", "black", `Lvl ${abiltiySeeker.level.level}`, paintPos.x, paintPos.y + 25, true, 2);
     }
 }
 
