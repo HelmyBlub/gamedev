@@ -1,5 +1,5 @@
 import { Character } from "./character/characterModel.js";
-import { CHARACTER_TYPE_GOD_ENEMY } from "./character/enemy/god/godEnemy.js";
+import { CHARACTER_TYPE_GOD_ENEMY, GodEnemyCharacter } from "./character/enemy/god/godEnemy.js";
 import { CHARACTER_TYPE_KING_ENEMY } from "./character/enemy/kingEnemy.js";
 import { calculateDistance, getTimeSinceFirstKill } from "./game.js";
 import { Game } from "./gameModel.js";
@@ -74,9 +74,9 @@ export function calculateHighscoreOnGameEnd(game: Game): number {
     }
 
     if (game.state.bossStuff.kingFightStarted) {
-        newScore = createAndPushGodOrKingScore(CHARACTER_TYPE_KING_ENEMY, playerClass, game);
+        newScore = createAndPushKingScore(playerClass, game);
     } else if (game.state.bossStuff.godFightStarted) {
-        newScore = createAndPushGodOrKingScore(CHARACTER_TYPE_GOD_ENEMY, playerClass, game);
+        newScore = createAndPushGodScore(playerClass, game);
     } else {
         newScore = highestPlayerDistance;
         const board = state.highscores.scoreBoards[HIGHSCORE_DISTANCE];
@@ -135,26 +135,55 @@ export function paintHighscores(ctx: CanvasRenderingContext2D, paintX: number, p
     return { width, height };
 }
 
-function createAndPushGodOrKingScore(characterType: string, playerClass: string, game: Game): number {
+function createAndPushGodScore(playerClass: string, game: Game): number {
     let newScore = 0;
-    const enemyTypeText = characterType === CHARACTER_TYPE_KING_ENEMY ? "King" : "God";
+    const board = game.state.highscores.scoreBoards[HIGHSCORE_GOD_TIME];
+    const bosses = game.state.bossStuff.bosses;
+    let god: GodEnemyCharacter | undefined;
+    god = bosses[bosses.length - 1] as GodEnemyCharacter;
+    if (god === undefined) throw Error("should not be possible?");
+    const hardModeText = god.hardModeActivated ? "Hard Mode " : "";
+    if (god.hp <= 0) {
+        newScore = getTimeSinceFirstKill(game.state) / 1000;
+        let scoreTypePrio = 3;
+        if (god.hardModeActivated) {
+            scoreTypePrio = 1;
+        }
+        board.scores.push({ score: newScore, playerClass: playerClass, scoreTypePrio: scoreTypePrio, scoreSuffix: "s" });
+        game.UI.lastHighscoreText = `New Score (God ${hardModeText}Kill Time): ${(newScore).toFixed(2)}s`;
+    } else {
+        let scoreTypePrio = 4;
+        if (god.hardModeActivated) {
+            scoreTypePrio = 2;
+        }
+        newScore = god.hp / god.maxHp * 100;
+        board.scores.push({ score: newScore, playerClass: playerClass, scoreTypePrio: scoreTypePrio, scoreSuffix: "%" });
+        game.UI.lastHighscoreText = `New Score (God ${hardModeText}HP %): ${(newScore).toFixed(2)}%`;
+    }
+    board.scores.sort(highscoreSort);
+    game.state.highscores.lastHighscorePosition = board.scores.findIndex((e) => e.score === newScore);
+    game.state.highscores.lastBoard = HIGHSCORE_KING_TIME;
+    if (board.scores.length > game.state.highscores.maxLength) {
+        board.scores.pop();
+    }
+    return newScore;
+}
+
+function createAndPushKingScore(playerClass: string, game: Game): number {
+    let newScore = 0;
     const board = game.state.highscores.scoreBoards[HIGHSCORE_KING_TIME];
     const bosses = game.state.bossStuff.bosses;
-    let enemy: Character | undefined;
-    if (bosses[bosses.length - 1].type === characterType) {
-        enemy = bosses[bosses.length - 1];
-    } else if (bosses[bosses.length - 2].type === characterType) {
-        enemy = bosses[bosses.length - 2];
-    }
+    let enemy: Character | undefined = bosses[bosses.length - 2];
+    if (enemy === undefined) enemy = bosses[bosses.length - 1];;
     if (enemy === undefined) throw Error("should not be possible?");
     if (enemy.hp <= 0) {
         newScore = getTimeSinceFirstKill(game.state) / 1000;
         board.scores.push({ score: newScore, playerClass: playerClass, scoreTypePrio: 1, scoreSuffix: "s" });
-        game.UI.lastHighscoreText = `New Score (${enemyTypeText} Kill Time): ${(newScore).toFixed(2)}s`;
+        game.UI.lastHighscoreText = `New Score (King Kill Time): ${(newScore).toFixed(2)}s`;
     } else {
         newScore = enemy.hp / enemy.maxHp * 100;
         board.scores.push({ score: newScore, playerClass: playerClass, scoreTypePrio: 2, scoreSuffix: "%" });
-        game.UI.lastHighscoreText = `New Score (${enemyTypeText} HP %): ${(newScore).toFixed(2)}%`;
+        game.UI.lastHighscoreText = `New Score (King HP %): ${(newScore).toFixed(2)}%`;
     }
     board.scores.sort(highscoreSort);
     game.state.highscores.lastHighscorePosition = board.scores.findIndex((e) => e.score === newScore);

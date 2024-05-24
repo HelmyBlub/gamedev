@@ -303,12 +303,10 @@ export function endGame(game: Game, isKingKill: boolean = false, isGodKill: bool
         mapObjectPlaceClassBuilding(game);
     } else {
         savePlayerCharatersAsPastCharacters(game);
-        if (!game.testing.replay) {
-            const myCharacter = findMyCharacter(game);
-        }
     }
     mapObjectPlaceUpgradeBuilding(game);
     classBuildingCheckAllPlayerForLegendaryAbilitiesAndMoveBackToBuilding(game);
+
     endGameReplayStuff(game, newScore);
     if (game.testing.record) {
         if (game.testing.record.data.replayPlayerInputs) {

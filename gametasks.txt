@@ -2,8 +2,6 @@ next test run:
 increase version
 
 current tasks:
-- hard mode for God
-    - highscore board check 
 - check combat log missing entries?
 - load test state somehow merged two states
 
