@@ -113,6 +113,7 @@ export function gameInit(game: Game) {
     game.state.bossStuff.kingFightStarted = false;
     game.state.bossStuff.godFightStarted = false;
     game.state.bossStuff.fightWipe = undefined;
+    game.state.bossStuff.normalModeMoneyAwarded = undefined;
     game.state.deathCircleCreated = false;
     game.state.paused = false;
     game.state.enemyTypeDirectionSeed += 1;

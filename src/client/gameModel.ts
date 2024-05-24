@@ -136,6 +136,7 @@ export type BossStuff = {
     nextKings: NextKings,
     closedOfKingAreaEntrance?: KingAreaEntranceData,
     bosses: Character[],
+    normalModeMoneyAwarded?: boolean,
 }
 
 export type ClientInfo = {

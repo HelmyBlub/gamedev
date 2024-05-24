@@ -2,14 +2,18 @@ next test run:
 increase version
 
 current tasks:
+- hard mode for God
+    - better visualize that it is a "hard Mode"
+        - some hard mode activate animation
+            - god "dies" -> weapons move towards dead god -> god revives
+    - activating hard mode gives normal mode money once
+    - shield shoots two zones first time, when low coldown
+- check combat log missing entries?
+- load test state somehow merged two states
 
 
 next feature ideas:
 - think about next bigger feature 
-    - hard mode for God
-        - if god is killed before he picked up anything -> activate "hard mode"
-            - gains every ability on level 5
-            - hp to full and x100
     - extends existings classes for more upgrade choice?
 
 

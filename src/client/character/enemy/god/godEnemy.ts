@@ -18,6 +18,7 @@ import { ABILITY_NAME_GOD_IMMUNITY, addGodAbilityGodImmunity } from "./abilityGo
 import { getPointPaintPosition } from "../../../gamePaint.js";
 import { MoreInfosPartContainer, createCharacterMoreInfosPartContainer } from "../../../moreInfo.js";
 import { doDamageMeterSplit } from "../../../combatlog.js";
+import { addMoneyAmountToPlayer, calculateMoneyForKingMaxHp } from "../../../player.js";
 
 
 const FIRST_PICK_UP_DELAY = 3000;
@@ -59,6 +60,16 @@ export function godEnemyHardModeConditionFullfiled(game: Game): boolean {
 
 export function godEnemyActivateHardMode(game: Game) {
     const god: GodEnemyCharacter = game.state.bossStuff.bosses.find(b => b.type === CHARACTER_TYPE_GOD_ENEMY) as GodEnemyCharacter;
+    if (!game.state.bossStuff.normalModeMoneyAwarded) {
+        const moneyGain = calculateMoneyForKingMaxHp(god.maxHp) * 2;
+        addMoneyAmountToPlayer(moneyGain, game.state.players, game);
+        game.UI.moneyGainedThisRun.push({
+            amount: moneyGain,
+            text: `for God kill`,
+        });
+        game.state.bossStuff.normalModeMoneyAwarded = true;
+
+    }
     god.maxHp *= 100;
     god.hp = god.maxHp;
     god.isDead = false;

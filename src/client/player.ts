@@ -1,7 +1,7 @@
 import { findMyCharacter, resetCharacter } from "./character/character.js";
 import { Character, createPlayerCharacter } from "./character/characterModel.js";
 import { getCelestialDirection } from "./character/enemy/bossEnemy.js";
-import { CHARACTER_TYPE_GOD_ENEMY } from "./character/enemy/god/godEnemy.js";
+import { CHARACTER_TYPE_GOD_ENEMY, GodEnemyCharacter } from "./character/enemy/god/godEnemy.js";
 import { CHARACTER_TYPE_KING_ENEMY, modifyCharacterToKing } from "./character/enemy/kingEnemy.js";
 import { CharacterUpgrades, addCharacterUpgrades } from "./character/upgrades/characterUpgrades.js";
 import { calculateDistance, createPaintTextData, deepCopy, findClientInfo, getCameraPosition } from "./game.js";
@@ -198,12 +198,16 @@ export function addPlayerMoney(game: Game, isKingKill: boolean = false, isGodKil
     } else if (isGodKill) {
         const boss = game.state.bossStuff.bosses[game.state.bossStuff.bosses.length - 1];
         if (boss && boss.type === CHARACTER_TYPE_GOD_ENEMY) {
-            const godMoney = calculateMoneyForKingMaxHp(boss.maxHp) * 2;
-            game.UI.moneyGainedThisRun.push({
-                amount: godMoney,
-                text: `for God kill`,
-            });
-            moneyGain += godMoney;
+            const god = boss as GodEnemyCharacter;
+            if (god.hardModeActivated || !game.state.bossStuff.normalModeMoneyAwarded) {
+                const godMoney = calculateMoneyForKingMaxHp(boss.maxHp) * 2;
+                const hardModeText = god.hardModeActivated ? "hard mode " : "";
+                game.UI.moneyGainedThisRun.push({
+                    amount: godMoney,
+                    text: `for ${hardModeText}God kill`,
+                });
+                moneyGain += godMoney;
+            }
         };
     }
     addMoneyAmountToPlayer(moneyGain, game.state.players, game);
@@ -302,6 +306,10 @@ export function addMoneyAmountToPlayer(moneyAmount: number, players: Player[], g
     localStorageSavePermanentPlayerData(game);
 }
 
+export function calculateMoneyForKingMaxHp(maxHp: number): number {
+    return maxHp / 2500000;;
+}
+
 function calculateMoneyGainByDistance(distance: number): number {
     let moneyGain = 0;
     if (distance < 20000) {
@@ -310,10 +318,6 @@ function calculateMoneyGainByDistance(distance: number): number {
         moneyGain = 20 * Math.pow(10, Math.log2(distance / 20000));
     }
     return moneyGain;
-}
-
-function calculateMoneyForKingMaxHp(maxHp: number): number {
-    return maxHp / 2500000;;
 }
 
 function deletePlayersWhichLeft(game: Game) {
