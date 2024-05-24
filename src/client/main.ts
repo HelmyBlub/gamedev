@@ -21,7 +21,7 @@ var gameCount: number = 0;
 export const GAME_VERSION: GameVersion = {
     major: 0,
     minor: 2,
-    patch: 243,
+    patch: 244,
 }
 
 export function start() {
