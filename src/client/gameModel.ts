@@ -16,6 +16,7 @@ import { Building } from "./map/buildings/building.js";
 import { GAME_VERSION } from "./main.js";
 import { createDamageMeter, DamageMeter } from "./combatlog.js";
 import { createSound, Sound } from "./sound.js";
+import { Achievements, createDefaultAchivements } from "./achievements/achievements.js";
 
 export type Position = {
     x: number,
@@ -168,6 +169,7 @@ export type GameState = {
     buildings: Building[],
     enemyTypeDirectionSeed: number,
     gameVersion: GameVersion,
+    achievements: Achievements,
 }
 
 export type PastPlayerCharacters = {
@@ -310,6 +312,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             buildings: [],
             enemyTypeDirectionSeed: 0,
             gameVersion: GAME_VERSION,
+            achievements: createDefaultAchivements(),
         },
         tickInterval: 16,
         multiplayer: {

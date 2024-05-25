@@ -16,6 +16,7 @@ import { addUpgradeBuildingsFunctions } from "./map/buildings/upgradeBuilding.js
 import { onDomLoadImagesLoad } from "./imageLoad.js";
 import { onDomLoadMapTiles } from "./map/map.js";
 import { addGodEnemyType } from "./character/enemy/god/godEnemy.js";
+import { onDomLoadSetAchievementsFunctions } from "./achievements/achievements.js";
 
 var gameCount: number = 0;
 export const GAME_VERSION: GameVersion = {
@@ -86,6 +87,7 @@ document.addEventListener("DOMContentLoaded", function () {
     onDomLoadSetAbilitiesFunctions();
     onDomLoadSetDebuffsFunctions();
     onDomLoadSetCharacterUpgradeFunctions();
+    onDomLoadSetAchievementsFunctions();
 
     onDomLoadImagesLoad(); // should be the last load
     start();

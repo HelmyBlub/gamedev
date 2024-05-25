@@ -2,13 +2,34 @@ next test run:
 increase version
 
 current tasks:
-
+- achievements
+    - new type achievements
+        - name
+    - put achievements into state
+        - open achievements
+        - finished achievements
 
 next feature ideas:
 - think about next bigger feature 
+    - achievements -> some player goal & information of what can be done
+        - moreInfo tile for showing all achievements
+        - when achievement gained congratulating message 
+        - on game end screen visualize gained achievements
+        - part of permanent state
+        - achievements:  
+            - defeat boss
+            - reach 10k distance
+            - defeat king
+            - play each class once
+            - unlock legendary
+            - gain blessings for legendary
+            - defeat king with class <x>
+            - reach 40k distance
+            - defeat god
+            - defeat hard mode god
+            - reach 100k distance
     - extends existings classes for more upgrade choice?
         - more run variation
-    - achivements -> some player goal & information of what can be done 
 
 
 refactor possibilities:

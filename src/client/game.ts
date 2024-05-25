@@ -31,6 +31,7 @@ import { checkGodFightStart, startGodFight } from "./map/mapGodArea.js";
 import { ABILITY_NAME_LEASH } from "./ability/abilityLeash.js";
 import { createDamageMeter, doDamageMeterSplit } from "./combatlog.js";
 import { GAME_VERSION } from "./main.js";
+import { achievementCheckOnGameEnd } from "./achievements/achievements.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -297,6 +298,7 @@ export function deepCopy(object: any): any {
 export function endGame(game: Game, isKingKill: boolean = false, isGodKill: boolean = false) {
     game.state.ended = true;
     addPlayerMoney(game, isKingKill, isGodKill);
+    achievementCheckOnGameEnd(game.state.achievements, game);
     const newScore = calculateHighscoreOnGameEnd(game);
     if (isKingKill) {
         setPlayerAsKing(game);

@@ -1,3 +1,4 @@
+import { createDefaultAchivements } from "./achievements/achievements.js";
 import { experienceForEveryPlayersLeveling, findAndSetNewCameraCharacterId, playerCharactersAddBossSkillPoints } from "./character/character.js";
 import { createBossWithLevel } from "./character/enemy/bossEnemy.js";
 import { levelingCharacterAndClassXpGain } from "./character/playerCharacters/levelingCharacter.js";
@@ -286,6 +287,7 @@ function addLoadTestStateButton(game: Game) {
         button.addEventListener('click', async () => {
             if (!game.multiplayer.websocket) {
                 game.state = await loadCompressedStateFromUrl("/data/testState1.bin", game);
+                if (game.state.achievements === undefined) game.state.achievements = createDefaultAchivements();
                 game.multiplayer.disableLocalStorage = true;
                 game.performance = {};
                 findAndSetNewCameraCharacterId(game.camera, game.state.players, game.multiplayer.myClientId);

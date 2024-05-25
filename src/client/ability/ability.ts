@@ -39,9 +39,7 @@ import { CharacterClass } from "../character/playerCharacters/playerCharacters.j
 import { MoreInfoPart, paintMoreInfosPart } from "../moreInfo.js"
 import { AbilityDamageBreakdown, addDamageBreakDownToDamageMeter } from "../combatlog.js"
 import { addAbilityMusicSheet } from "./musician/abilityMusicSheet.js"
-import { addAbilityMusicSheetChangeInstrument } from "./musician/abilityMusicSheetChangeInstrument.js"
 import { addAbilityCircleAround } from "./abilityCircleAround.js"
-import { TamerPetCharacter } from "../character/playerCharacters/tamer/tamerPetCharacter.js"
 
 export type Ability = {
     id: number,

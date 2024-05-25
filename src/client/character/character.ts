@@ -21,6 +21,7 @@ import { executeAbilityLevelingCharacterUpgradeOption } from "./playerCharacters
 import { addCharacterUpgrades, CHARACTER_UPGRADE_FUNCTIONS } from "./upgrades/characterUpgrades.js";
 import { CHARACTER_TYPE_GOD_ENEMY, godEnemyActivateHardMode, godEnemyHardModeConditionFullfiled } from "./enemy/god/godEnemy.js";
 import { DEBUFF_NAME_DAMAGE_TAKEN } from "../debuff/debuffDamageTaken.js";
+import { achievementCheckOnBossKill } from "../achievements/achievements.js";
 
 export function findCharacterById(characters: Character[], id: number): Character | null {
     for (let i = 0; i < characters.length; i++) {
@@ -628,6 +629,7 @@ function killCharacter(character: Character, game: Game, abilityIdRef: number | 
             game.UI.moneyGainedThisRun[0].amount += moneyAmount;
             addMoneyAmountToPlayer(moneyAmount, game.state.players, game);
         }
+        achievementCheckOnBossKill(game.state.achievements, game);
     }
     if (character.type === CHARACTER_TYPE_KING_ENEMY) {
         game.state.bossStuff.bosses.push(createKingCrownCharacter(game.state.idCounter, character));

@@ -1,4 +1,5 @@
 import { Ability, createMoreInfosAbilities } from "./ability/ability.js";
+import { createAchievementsMoreInfo } from "./achievements/achievements.js";
 import { findMyCharacter } from "./character/character.js";
 import { Character } from "./character/characterModel.js";
 import { createCharacterClassMoreInfos, createCharacterMoreInfos } from "./character/characterPaint.js";
@@ -236,6 +237,10 @@ export function createRequiredMoreInfos(game: Game): MoreInfos {
             moreInfos.containers.selected = 1;
         }
     }
+    const achievemntsContainer = createAchievementsMoreInfo(ctx, moreInfos, game.state.achievements);
+    moreInfos.containers.containers.push(achievemntsContainer);
+    paintX += achievemntsContainer.headingWidth + moreInfos.headingHorizontalSpacing;
+
     return moreInfos;
 }
 
