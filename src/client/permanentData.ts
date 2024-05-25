@@ -6,7 +6,7 @@ import { CelestialDirection, Game, GameVersion, IdCounter, NextKings, PastPlayer
 import { BUILDING_CLASS_BUILDING, ClassBuilding } from "./map/buildings/classBuilding.js";
 import { PermanentPlayerData } from "./player.js";
 import { GAME_VERSION } from "./main.js";
-import { Highscores } from "./highscores.js";
+import { Highscores, createHighscoreBoards } from "./highscores.js";
 
 export type PermanentDataParts = {
     pastCharacters?: PastPlayerCharacters,
@@ -30,15 +30,15 @@ export function localStorageLoad(game: Game) {
         localStorageSaveGameVersion(game);
     } else {
         const localStoragePastCharacters = localStorage.getItem(LOCALSTORAGE_PASTCHARACTERS);
-        if (localStoragePastCharacters) loadPastCharacters(JSON.parse(localStoragePastCharacters), game);
+        loadPastCharacters(jsonParseNullAllowed(localStoragePastCharacters), game);
         const localStorageNextKings = localStorage.getItem(LOCALSTORAGE_NEXTKINGS);
-        if (localStorageNextKings) loadNextKings(JSON.parse(localStorageNextKings), game);
+        loadNextKings(jsonParseNullAllowed(localStorageNextKings), game);
         const localStorageBuildings = localStorage.getItem(LOCALSTORAGE_BUILDINGS);
-        if (localStorageBuildings) loadBuildings(JSON.parse(localStorageBuildings), game);
+        loadBuildings(jsonParseNullAllowed(localStorageBuildings), game);
         const localStoragePlayerData = localStorage.getItem(LOCALSTORAGE_PLAYER_DATA);
-        if (localStoragePlayerData) loadPlayerData(JSON.parse(localStoragePlayerData), game);
+        loadPlayerData(jsonParseNullAllowed(localStoragePlayerData), game);
         const localStorageHighscores = localStorage.getItem(LOCALSTORAGE_HIGHSCORES);
-        if (localStorageHighscores) loadHighscores(JSON.parse(localStorageHighscores), game);
+        loadHighscores(jsonParseNullAllowed(localStorageHighscores), game);
     }
 }
 
@@ -89,7 +89,11 @@ export function localStorageSavePermanentPlayerData(game: Game) {
     }
 }
 
-export function loadPastCharacters(pastPlayerCharacters: PastPlayerCharacters, game: Game) {
+export function loadPastCharacters(pastPlayerCharacters: PastPlayerCharacters | undefined, game: Game) {
+    if (!pastPlayerCharacters) {
+        game.state.pastPlayerCharacters.characters = [];
+        return;
+    }
     game.state.pastPlayerCharacters = pastPlayerCharacters;
     for (let pastChar of pastPlayerCharacters.characters) {
         if (!pastChar) continue;
@@ -98,7 +102,11 @@ export function loadPastCharacters(pastPlayerCharacters: PastPlayerCharacters, g
     }
 }
 
-export function loadNextKings(nextKings: NextKings, game: Game) {
+export function loadNextKings(nextKings: NextKings | undefined, game: Game) {
+    if (!nextKings) {
+        setDefaultNextKings(game);
+        return;
+    }
     game.state.bossStuff.nextKings = nextKings;
     const keys = Object.keys(nextKings) as CelestialDirection[];
     for (let key of keys) {
@@ -107,16 +115,24 @@ export function loadNextKings(nextKings: NextKings, game: Game) {
     }
 }
 
-export function loadBuildings(buildings: Building[], game: Game) {
+export function loadBuildings(buildings: Building[] | undefined, game: Game) {
+    if (!buildings) {
+        game.state.buildings = [];
+        return;
+    }
     game.state.buildings = buildings;
     for (let building of buildings) {
         changeBuildingIds(building, game.state.idCounter, game);
     }
 }
 
-export function loadPlayerData(playerData: PermanentPlayerData, game: Game) {
+export function loadPlayerData(playerData: PermanentPlayerData | undefined, game: Game) {
     if (game.state.players.length > 0) {
-        game.state.players[0].permanentData = playerData;
+        if (!playerData) {
+            game.state.players[0].permanentData = { money: 0, upgrades: {} };
+        } else {
+            game.state.players[0].permanentData = playerData;
+        }
     }
 }
 
@@ -151,8 +167,12 @@ export function setPermanentDataFromReplayData(game: Game) {
     }
 }
 
-function loadHighscores(highscores: Highscores, game: Game) {
-    game.state.highscores = highscores;
+function loadHighscores(highscores: Highscores | undefined, game: Game) {
+    if (!highscores) {
+        game.state.highscores = createHighscoreBoards();
+    } else {
+        game.state.highscores = highscores;
+    }
 }
 
 function isDataGameVersionOutdated(gameVersion: GameVersion): boolean {
@@ -219,4 +239,10 @@ function changeBuildingIds(building: Building, idCounter: IdCounter, game: Game)
             }
         }
     }
+}
+
+function jsonParseNullAllowed(jsonString: string | null): any {
+    if (jsonString === null) return undefined;
+    const result = JSON.parse(jsonString);
+    return result;
 }

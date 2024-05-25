@@ -2,7 +2,6 @@ next test run:
 increase version
 
 current tasks:
-- bug: load test state somehow merged two states
 
 
 next feature ideas:

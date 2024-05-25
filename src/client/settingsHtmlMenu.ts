@@ -286,6 +286,7 @@ function addLoadTestStateButton(game: Game) {
         button.addEventListener('click', async () => {
             if (!game.multiplayer.websocket) {
                 game.state = await loadCompressedStateFromUrl("/data/testState1.bin", game);
+                game.multiplayer.disableLocalStorage = true;
                 game.performance = {};
                 findAndSetNewCameraCharacterId(game.camera, game.state.players, game.multiplayer.myClientId);
             }
