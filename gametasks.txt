@@ -2,13 +2,14 @@ next test run:
 increase version
 
 current tasks:
-- check combat log missing entries?
-- load test state somehow merged two states
+- bug: load test state somehow merged two states
 
 
 next feature ideas:
 - think about next bigger feature 
     - extends existings classes for more upgrade choice?
+        - more run variation
+    - achivements -> some player goal & information of what can be done 
 
 
 refactor possibilities:

@@ -113,7 +113,8 @@ export function createCombatLogMoreInfo(ctx: CanvasRenderingContext2D, moreInfos
 export function addCombatlogDamageTakenEntry(character: Character, damage: number, abilityName: string, game: Game) {
     if (!character.combatlog) return;
     const combatlog = character.combatlog;
-    const logMessage = `${abilityName} ${damage}, hp: ${character.hp}`;
+    const shieldText = character.shield > 0 ? `, shield: ${character.shield}` : ``;
+    const logMessage = `${abilityName} ${damage}, hp: ${character.hp}${shieldText}`;
     combatlog.log.push({
         message: logMessage,
         timestamp: getTimeSinceFirstKill(game.state),

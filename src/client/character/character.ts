@@ -75,8 +75,8 @@ export function characterTakeDamage(character: Character, damage: number, game: 
         }
     } else {
         character.hp -= modifiedDamage;
-        addCombatlogDamageTakenEntry(character, modifiedDamage, abilityName, game);
     }
+    addCombatlogDamageTakenEntry(character, modifiedDamage, abilityName, game);
     if (character.hp <= 0) {
         killCharacter(character, game, abilityIdRef);
     }
