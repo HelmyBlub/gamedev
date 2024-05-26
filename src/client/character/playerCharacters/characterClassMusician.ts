@@ -12,10 +12,10 @@ import { ABILITY_NAME_MUSIC_SHEET_CHANGE_INSTRUMENT } from "../../ability/musici
 import { createAbilityMelee } from "../../ability/abilityMelee.js";
 import { ABILITY_NAME_MUSIC_SHEET_DELETE_NOTE } from "../../ability/musician/abilityMusicSheetDeleteNote.js";
 
-export const CHARACTER_CLASS_MUSICIAN_NAME = "Musician";
+export const CHARACTER_CLASS_MUSICIAN = "Musician";
 
 export function addMusicianClass() {
-    PLAYER_CHARACTER_CLASSES_FUNCTIONS[CHARACTER_CLASS_MUSICIAN_NAME] = {
+    PLAYER_CHARACTER_CLASSES_FUNCTIONS[CHARACTER_CLASS_MUSICIAN] = {
         changeCharacterToThisClass: changeCharacterToMusicianClass,
         createBossBasedOnClassAndCharacter: createBossBasedOnClassAndCharacter,
         createBossUpgradeOptions: createBossUpgradeOptionsAbilityLeveling,
@@ -32,7 +32,7 @@ function changeCharacterToMusicianClass(
 ) {
     if (!character.characterClasses) character.characterClasses = [];
     const charClass = {
-        className: CHARACTER_CLASS_MUSICIAN_NAME,
+        className: CHARACTER_CLASS_MUSICIAN,
         id: getNextId(game.state.idCounter),
     }
     character.characterClasses.push(charClass);

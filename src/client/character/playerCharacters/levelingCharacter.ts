@@ -3,7 +3,7 @@ import { Game, GameState } from "../../gameModel.js";
 import { Character } from "../characterModel.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability, fillRandomUpgradeOptionChoices } from "../upgrade.js";
 import { ABILITIES_FUNCTIONS } from "../../ability/ability.js";
-import { PLAYER_CLASS_TOWER_BUILDER } from "./characterClassTower.js";
+import { CHARACTER_CLASS_TOWER_BUILDER } from "./characterClassTower.js";
 import { CharacterClass } from "./playerCharacters.js";
 import { CHARACTER_UPGRADE_FUNCTIONS } from "../upgrades/characterUpgrades.js";
 import { CHARACTER_UPGRADE_BONUS_HP } from "../upgrades/characterUpgradeBonusHealth.js";
@@ -115,7 +115,7 @@ export function createCharacterUpgradeOptions(character: Character, characterCla
         }
     }
     for (let option of upgradeOptions) {
-        option.option.characterClass = PLAYER_CLASS_TOWER_BUILDER;
+        option.option.characterClass = CHARACTER_CLASS_TOWER_BUILDER;
         option.option.classIdRef = characterClass.id;
     }
     return upgradeOptions;

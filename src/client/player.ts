@@ -293,17 +293,30 @@ export function getTextYouGainMoneyWhen(): string[] {
     return texts;
 }
 
-export function addMoneyAmountToPlayer(moneyAmount: number, players: Player[], game: Game) {
+export function addMoneyAmountToPlayer(moneyAmount: number, players: Player[], game: Game, floatingTextOffsetY: number = 0) {
     for (let player of players) {
         const moneyFactor = player.character.bonusMoneyFactor !== undefined ? player.character.bonusMoneyFactor : 1;
         const finalMoneyAmount = moneyAmount * moneyFactor;
         player.permanentData.money += finalMoneyAmount;
         if (finalMoneyAmount > 0 && player.clientId === game.multiplayer.myClientId) {
             const textPosition = getCameraPosition(game);
+            textPosition.y += floatingTextOffsetY;
             game.UI.displayTextData.push(createPaintTextData(textPosition, `$${finalMoneyAmount.toFixed(1)}`, "black", "24", game.state.time, 5000));
         }
     }
     localStorageSavePermanentPlayerData(game);
+}
+
+export function addMoneyUiMoreInfo(amount: number, textIdentifier: string, game: Game) {
+    let moneyGained = game.UI.moneyGainedThisRun.find(e => e.text === textIdentifier);
+    if (!moneyGained) {
+        moneyGained = {
+            amount: 0,
+            text: textIdentifier,
+        };
+        game.UI.moneyGainedThisRun.push(moneyGained);
+    }
+    moneyGained.amount += amount;
 }
 
 export function calculateMoneyForKingMaxHp(maxHp: number): number {

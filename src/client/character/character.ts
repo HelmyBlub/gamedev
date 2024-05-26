@@ -4,7 +4,7 @@ import { Character, CHARACTER_TYPE_FUNCTIONS, PLAYER_CHARACTER_TYPE } from "./ch
 import { getNextWaypoint, getPathingCache, PathingCache } from "./pathing.js";
 import { calculateDirection, calculateDistance, calculateDistancePointToLine, changeCharacterAndAbilityIds, createPaintTextData, endGame, getNextId, levelUpIncreaseExperienceRequirement, takeTimeMeasure } from "../game.js";
 import { Position, Game, IdCounter, Camera, FACTION_ENEMY, FACTION_PLAYER } from "../gameModel.js";
-import { addMoneyAmountToPlayer, findPlayerById, Player } from "../player.js";
+import { addMoneyAmountToPlayer, addMoneyUiMoreInfo, findPlayerById, Player } from "../player.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, doAbilityDamageBreakDownForAbilityId, findAbilityById, findAbilityOwnerByAbilityIdInPlayers, findAbilityOwnerById, levelingAbilityXpGain, resetAllCharacterAbilities } from "../ability/ability.js";
 import { BossEnemyCharacter, CHARACTER_TYPE_BOSS_ENEMY } from "./enemy/bossEnemy.js";
@@ -620,13 +620,7 @@ function killCharacter(character: Character, game: Game, abilityIdRef: number | 
         doDamageMeterSplit(game.state.bossStuff.bossLevelCounter.toFixed(), game);
         if (character.level?.level) {
             const moneyAmount = character.level.level;
-            if (game.UI.moneyGainedThisRun.length === 0) {
-                game.UI.moneyGainedThisRun.push({
-                    amount: 0,
-                    text: `for Boss kills`,
-                });
-            }
-            game.UI.moneyGainedThisRun[0].amount += moneyAmount;
+            addMoneyUiMoreInfo(moneyAmount, `for Boss kills`, game);
             addMoneyAmountToPlayer(moneyAmount, game.state.players, game);
         }
         achievementCheckOnBossKill(game.state.achievements, game);

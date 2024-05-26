@@ -24,16 +24,16 @@ import { characterCreateAndAddUpgradeBonusSpeed } from "../../upgrades/character
 import { findPlayerByCharacterId } from "../../../player.js";
 import { addCharacterUpgrades } from "../../upgrades/characterUpgrades.js";
 
-export const TAMER_CHARACTER = "Tamer";
+export const CHARACTER_CLASS_TAMER = "Tamer";
 export function addTamerClass() {
-    PLAYER_CHARACTER_CLASSES_FUNCTIONS[TAMER_CHARACTER] = {
+    PLAYER_CHARACTER_CLASSES_FUNCTIONS[CHARACTER_CLASS_TAMER] = {
         changeCharacterToThisClass: changeCharacterToTamerClass,
         createBossBasedOnClassAndCharacter: createBossBasedOnClassAndCharacter,
         createBossUpgradeOptions: createTamerBossUpgradeOptions,
         executeUpgradeOption: executeTamerBossUpgradeOption,
         getMoreInfosText: getLongUiText,
     }
-    CHARACTER_TYPE_FUNCTIONS[TAMER_CHARACTER] = {
+    CHARACTER_TYPE_FUNCTIONS[CHARACTER_CLASS_TAMER] = {
         tickFunction: tickDefaultCharacter,
     }
     addTamerPetFunctions();
@@ -78,7 +78,7 @@ function changeCharacterToTamerClass(
 ) {
     if (!character.characterClasses) character.characterClasses = [];
     const charClass: CharacterClass = {
-        className: TAMER_CHARACTER,
+        className: CHARACTER_CLASS_TAMER,
         id: getNextId(game.state.idCounter),
     };
     character.characterClasses.push(charClass);
@@ -206,7 +206,7 @@ function createTamerBossUpgradeOptions(character: Character, game: Game): Upgrad
                         const option: UpgradeOptionAndProbability = {
                             option: {
                                 type: "Pet",
-                                characterClass: TAMER_CHARACTER,
+                                characterClass: CHARACTER_CLASS_TAMER,
                                 identifier: indentifier,
                                 displayText: indentifier,
                                 classIdRef: pet.classIdRef,
@@ -236,7 +236,7 @@ function createTamerBossUpgradeOptions(character: Character, game: Game): Upgrad
                                 petOption.abilityName = abilityOption.name;
                                 petOption.petId = pet.id;
                                 petOption.type = "PetAbility";
-                                petOption.characterClass = TAMER_CHARACTER;
+                                petOption.characterClass = CHARACTER_CLASS_TAMER;
                                 petOption.classIdRef = pet.classIdRef;
 
                                 if (availableTraits.length > 0) {

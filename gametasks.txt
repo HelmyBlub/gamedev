@@ -3,27 +3,19 @@ increase version
 
 current tasks:
 - achievements
-    - award something on finishing
-        - unlock something
-        - give gold
+    - how to visualize many achivements better in moreInfo
+    - add more:
+        - unlock legendary
+        - gain blessings for legendary
+        - defeat king with class <x>
+        - defeat hard mode god
 
 next feature ideas:
 - think about next bigger feature 
-    - achievements -> some player goal & information of what can be done
-        - on game end screen visualize gained achievements
-        - when achievement gained congratulating message 
-        - achievements:  
-            - defeat boss
-            - reach 10k distance
-            - defeat king
-            - play each class once
-            - unlock legendary
-            - gain blessings for legendary
-            - defeat king with class <x>
-            - reach 40k distance
-            - defeat god
-            - defeat hard mode god
-            - reach 100k distance
+    - achievements:  
+        - unlock something thorugh achievement
+            - show achievement after before one finished
+                - like 2000 distance finished -> now show 10k distance
     - extends existings classes for more upgrade choice?
         - more run variation
 

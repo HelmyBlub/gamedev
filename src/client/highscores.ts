@@ -58,9 +58,17 @@ export function createHighscoreBoards(): Highscores {
     return highscores;
 }
 
+export function getHighestPlayerDistanceFromMapMiddle(game: Game): number {
+    let highestPlayerDistance = 0;
+    for (let player of game.state.players) {
+        const distance = Math.round(calculateDistance(player.character, getMapMidlePosition(game.state.map)));
+        if (distance > highestPlayerDistance) highestPlayerDistance = distance;
+    }
+    return highestPlayerDistance;
+}
+
 export function calculateHighscoreOnGameEnd(game: Game): number {
     let newScore: number = 0;
-    let highestPlayerDistance = 0;
     let playerClass = "";
     const state = game.state;
     for (let i = 0; i < game.state.players.length; i++) {
@@ -69,8 +77,6 @@ export function calculateHighscoreOnGameEnd(game: Game): number {
             if (playerClass.length > 1) playerClass += ", ";
             playerClass += getPlayerClassesString(player.character);
         }
-        const distance = Math.round(calculateDistance(player.character, getMapMidlePosition(state.map)));
-        if (distance > highestPlayerDistance) highestPlayerDistance = distance;
     }
 
     if (game.state.bossStuff.kingFightStarted) {
@@ -78,7 +84,7 @@ export function calculateHighscoreOnGameEnd(game: Game): number {
     } else if (game.state.bossStuff.godFightStarted) {
         newScore = createAndPushGodScore(playerClass, game);
     } else {
-        newScore = highestPlayerDistance;
+        let newScore = getHighestPlayerDistanceFromMapMiddle(game);
         const board = state.highscores.scoreBoards[HIGHSCORE_DISTANCE];
         board.scores.push({ score: newScore, playerClass: playerClass });
         game.UI.lastHighscoreText = `New Score (Distance): ${newScore}`;

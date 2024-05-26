@@ -31,7 +31,7 @@ import { checkGodFightStart, startGodFight } from "./map/mapGodArea.js";
 import { ABILITY_NAME_LEASH } from "./ability/abilityLeash.js";
 import { createDamageMeter, doDamageMeterSplit } from "./combatlog.js";
 import { GAME_VERSION } from "./main.js";
-import { achievementCheckOnGameEnd } from "./achievements/achievements.js";
+import { achievementCheckOnGameEnd, achievementCheckOnGameTick } from "./achievements/achievements.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -684,6 +684,7 @@ function saveStates(game: Game) {
 }
 
 function doStuff(game: Game) {
+    achievementCheckOnGameTick(game.state.achievements, game);
     checkForKingAreaTrigger(game);
     checkGodFightStart(game);
     checkDeathCircleSpawn(game);

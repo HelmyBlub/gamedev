@@ -10,10 +10,10 @@ import { CHARACTER_TYPE_BOSS_ENEMY } from "../enemy/bossEnemy.js";
 import { createCharacterUpgradeOptions, executeLevelingCharacterUpgradeOption } from "./levelingCharacter.js";
 import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters.js";
 
-export const PLAYER_CLASS_TOWER_BUILDER = "Tower Builder";
+export const CHARACTER_CLASS_TOWER_BUILDER = "Tower Builder";
 
 export function addTowerClass() {
-    PLAYER_CHARACTER_CLASSES_FUNCTIONS[PLAYER_CLASS_TOWER_BUILDER] = {
+    PLAYER_CHARACTER_CLASSES_FUNCTIONS[CHARACTER_CLASS_TOWER_BUILDER] = {
         changeCharacterToThisClass: changeCharacterToTowerBuilderClass,
         createBossBasedOnClassAndCharacter: createBossBasedOnClassAndCharacter,
         createUpgradeOptions: createCharacterUpgradeOptions,
@@ -31,7 +31,7 @@ function changeCharacterToTowerBuilderClass(
     if (!character.characterClasses) character.characterClasses = [];
     const charClass = {
         id: getNextId(game.state.idCounter),
-        className: PLAYER_CLASS_TOWER_BUILDER,
+        className: CHARACTER_CLASS_TOWER_BUILDER,
         level: {
             level: 0,
             leveling: {

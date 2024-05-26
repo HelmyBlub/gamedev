@@ -11,10 +11,10 @@ import { resetCharacter } from "../character.js";
 import { CHARACTER_TYPE_BOSS_ENEMY } from "../enemy/bossEnemy.js";
 import { ABILITY_NAME_SNIPE_RELOAD } from "../../ability/snipe/abilitySnipeReload.js";
 
-export const CHARACTER_CLASS_SNIPER_NAME = "Sniper";
+export const CHARACTER_CLASS_SNIPER = "Sniper";
 
 export function addSniperClass() {
-    PLAYER_CHARACTER_CLASSES_FUNCTIONS[CHARACTER_CLASS_SNIPER_NAME] = {
+    PLAYER_CHARACTER_CLASSES_FUNCTIONS[CHARACTER_CLASS_SNIPER] = {
         changeCharacterToThisClass: changeCharacterToSniperClass,
         createBossBasedOnClassAndCharacter: createBossBasedOnClassAndCharacter,
         createBossUpgradeOptions: createBossUpgradeOptionsAbilityLeveling,
@@ -30,7 +30,7 @@ function changeCharacterToSniperClass(
 ) {
     if (!character.characterClasses) character.characterClasses = [];
     const charClass = {
-        className: CHARACTER_CLASS_SNIPER_NAME,
+        className: CHARACTER_CLASS_SNIPER,
         id: getNextId(game.state.idCounter),
     }
     character.characterClasses.push(charClass);
