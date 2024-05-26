@@ -3,19 +3,15 @@ increase version
 
 current tasks:
 - achievements
-    - new type achievements
-        - name
-    - put achievements into state
-        - open achievements
-        - finished achievements
+    - award something on finishing
+        - unlock something
+        - give gold
 
 next feature ideas:
 - think about next bigger feature 
     - achievements -> some player goal & information of what can be done
-        - moreInfo tile for showing all achievements
-        - when achievement gained congratulating message 
         - on game end screen visualize gained achievements
-        - part of permanent state
+        - when achievement gained congratulating message 
         - achievements:  
             - defeat boss
             - reach 10k distance

@@ -1,5 +1,6 @@
 import { Game } from "../gameModel.js"
 import { MoreInfos, MoreInfosPartContainer, createDefaultMoreInfosContainer, createMoreInfosPart } from "../moreInfo.js"
+import { localStorageSaveAchievements } from "../permanentData.js"
 import { addAchievementBossKill } from "./achievementBossKill.js"
 import { addAchievementGodKill } from "./achievementGodKill.js"
 import { addAchievementKingKill } from "./achievementKingKill.js"
@@ -39,7 +40,7 @@ export function achievementCheckOnBossKill(achievements: Achievements, game: Gam
         if (functions.onBossKillCheck) {
             let finished = functions.onBossKillCheck(game);
             if (finished) {
-                finishAchievement(achievement.name, achievements);
+                finishAchievement(achievement.name, achievements, game);
             }
         }
     }
@@ -52,13 +53,13 @@ export function achievementCheckOnGameEnd(achievements: Achievements, game: Game
         if (functions.onGameEndCheck) {
             let finished = functions.onGameEndCheck(game);
             if (finished) {
-                finishAchievement(achievement.name, achievements);
+                finishAchievement(achievement.name, achievements, game);
             }
         }
     }
 }
 
-export function finishAchievement(achievementName: string, achievements: Achievements) {
+export function finishAchievement(achievementName: string, achievements: Achievements, game: Game) {
     const index = achievements.open.findIndex((a) => a.name === achievementName);
     if (index === -1) {
         console.log(`achievement not found. Name: ${achievementName}`, achievements);
@@ -66,7 +67,7 @@ export function finishAchievement(achievementName: string, achievements: Achieve
     }
     const achievement = achievements.open.splice(index, 1)[0];
     achievements.finished.push(achievement);
-    console.log("finished achievement", achievementName);
+    localStorageSaveAchievements(game);
 }
 
 export function createDefaultAchivements(): Achievements {

@@ -7,6 +7,7 @@ import { BUILDING_CLASS_BUILDING, ClassBuilding } from "./map/buildings/classBui
 import { PermanentPlayerData } from "./player.js";
 import { GAME_VERSION } from "./main.js";
 import { Highscores, createHighscoreBoards } from "./highscores.js";
+import { Achievements, createDefaultAchivements } from "./achievements/achievements.js";
 
 export type PermanentDataParts = {
     pastCharacters?: PastPlayerCharacters,
@@ -14,6 +15,7 @@ export type PermanentDataParts = {
     buildings?: Building[],
     permanentPlayerData?: PermanentPlayerData,
     highscores?: Highscores,
+    achievements?: Achievements,
     gameVersion?: GameVersion,
 }
 
@@ -23,6 +25,7 @@ const LOCALSTORAGE_BUILDINGS = "buildings";
 const LOCALSTORAGE_PLAYER_DATA = "playerData";
 const LOCALSTORAGE_GAME_VERSION = "gameVersion";
 const LOCALSTORAGE_HIGHSCORES = "highscores";
+const LOCALSTORAGE_ACHIEVEMENTS = "achievements";
 
 export function localStorageLoad(game: Game) {
     if (isDataGameVersionOutdated(GAME_VERSION)) {
@@ -39,6 +42,8 @@ export function localStorageLoad(game: Game) {
         loadPlayerData(jsonParseNullAllowed(localStoragePlayerData), game);
         const localStorageHighscores = localStorage.getItem(LOCALSTORAGE_HIGHSCORES);
         loadHighscores(jsonParseNullAllowed(localStorageHighscores), game);
+        const localStorageAchievements = localStorage.getItem(LOCALSTORAGE_ACHIEVEMENTS);
+        loadAchievements(jsonParseNullAllowed(localStorageAchievements), game);
     }
 }
 
@@ -48,6 +53,7 @@ export function resetPermanentData() {
     localStorage.removeItem(LOCALSTORAGE_BUILDINGS);
     localStorage.removeItem(LOCALSTORAGE_PLAYER_DATA);
     localStorage.removeItem(LOCALSTORAGE_HIGHSCORES);
+    localStorage.removeItem(LOCALSTORAGE_ACHIEVEMENTS);
 }
 
 export function copyAndSetPermanentDataForReplay(permanentData: PermanentDataParts, game: Game) {
@@ -55,6 +61,7 @@ export function copyAndSetPermanentDataForReplay(permanentData: PermanentDataPar
     permanentData.pastCharacters = deepCopy(game.state.pastPlayerCharacters);
     permanentData.buildings = deepCopy(game.state.buildings);
     permanentData.gameVersion = deepCopy(game.state.gameVersion);
+    permanentData.achievements = deepCopy(game.state.achievements);
     if (game.state.players.length > 0) permanentData.permanentPlayerData = deepCopy(game.state.players[0].permanentData);
 }
 
@@ -89,7 +96,26 @@ export function localStorageSavePermanentPlayerData(game: Game) {
     }
 }
 
-export function loadPastCharacters(pastPlayerCharacters: PastPlayerCharacters | undefined, game: Game) {
+export function localStorageSaveAchievements(game: Game) {
+    if (!game.multiplayer.disableLocalStorage && !game.testing.replay) {
+        localStorage.setItem(LOCALSTORAGE_ACHIEVEMENTS, JSON.stringify(game.state.achievements));
+    }
+}
+
+export function setPermanentDataFromReplayData(game: Game) {
+    const replay = game.testing.replay;
+    if (!replay) return;
+
+    if (game.state.map.kingArea) {
+        loadNextKings(replay.data?.permanentData.nextKings, game);
+    }
+    loadPastCharacters(replay.data?.permanentData.pastCharacters, game);
+    loadBuildings(replay.data?.permanentData.buildings, game);
+    loadPlayerData(replay.data?.permanentData.permanentPlayerData, game);
+    loadAchievements(replay.data?.permanentData.achievements, game);
+}
+
+function loadPastCharacters(pastPlayerCharacters: PastPlayerCharacters | undefined, game: Game) {
     if (!pastPlayerCharacters) {
         game.state.pastPlayerCharacters.characters = [];
         return;
@@ -102,7 +128,7 @@ export function loadPastCharacters(pastPlayerCharacters: PastPlayerCharacters | 
     }
 }
 
-export function loadNextKings(nextKings: NextKings | undefined, game: Game) {
+function loadNextKings(nextKings: NextKings | undefined, game: Game) {
     if (!nextKings) {
         setDefaultNextKings(game);
         return;
@@ -115,7 +141,7 @@ export function loadNextKings(nextKings: NextKings | undefined, game: Game) {
     }
 }
 
-export function loadBuildings(buildings: Building[] | undefined, game: Game) {
+function loadBuildings(buildings: Building[] | undefined, game: Game) {
     if (!buildings) {
         game.state.buildings = [];
         return;
@@ -126,7 +152,7 @@ export function loadBuildings(buildings: Building[] | undefined, game: Game) {
     }
 }
 
-export function loadPlayerData(playerData: PermanentPlayerData | undefined, game: Game) {
+function loadPlayerData(playerData: PermanentPlayerData | undefined, game: Game) {
     if (game.state.players.length > 0) {
         if (!playerData) {
             game.state.players[0].permanentData = { money: 0, upgrades: {} };
@@ -136,42 +162,19 @@ export function loadPlayerData(playerData: PermanentPlayerData | undefined, game
     }
 }
 
-export function setPermanentDataFromReplayData(game: Game) {
-    const replay = game.testing.replay;
-    if (!replay) return;
-
-    if (game.state.map.kingArea) {
-        if (replay.data?.permanentData.nextKings) {
-            loadNextKings(replay.data?.permanentData.nextKings, game);
-        } else {
-            setDefaultNextKings(game);
-        }
-    }
-    if (replay.data?.permanentData.pastCharacters) {
-        loadPastCharacters(replay.data.permanentData.pastCharacters, game);
-    } else {
-        game.state.pastPlayerCharacters.characters = [];
-    }
-    if (replay.data?.permanentData.buildings) {
-        loadBuildings(replay.data.permanentData.buildings, game);
-    } else {
-        game.state.buildings = [];
-    }
-    if (replay.data?.permanentData.permanentPlayerData) {
-        loadPlayerData(replay.data.permanentData.permanentPlayerData, game);
-    } else if (game.state.players.length > 0) {
-        game.state.players[0].permanentData = {
-            money: 0,
-            upgrades: {},
-        };
-    }
-}
-
 function loadHighscores(highscores: Highscores | undefined, game: Game) {
     if (!highscores) {
         game.state.highscores = createHighscoreBoards();
     } else {
         game.state.highscores = highscores;
+    }
+}
+
+function loadAchievements(achievements: Achievements | undefined, game: Game) {
+    if (!achievements) {
+        game.state.achievements = createDefaultAchivements();
+    } else {
+        game.state.achievements = achievements;
     }
 }
 
