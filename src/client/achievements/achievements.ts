@@ -7,6 +7,7 @@ import { Game } from "../gameModel.js"
 import { MoreInfoPart, MoreInfos, MoreInfosPartContainer, createDefaultMoreInfosContainer, createMoreInfosPart } from "../moreInfo.js"
 import { localStorageSaveAchievements } from "../permanentData.js"
 import { ACHIEVEMENT_NAME_BOSS_KILL, addAchievementBossKill } from "./achievementBossKill.js"
+import { ACHIEVEMENT_NAME_GOD_HARD_MODE_KILL, addAchievementGodHardModeKill } from "./achievementGodHardModeKill.js"
 import { ACHIEVEMENT_NAME_GOD_KILL, addAchievementGodKill } from "./achievementGodKill.js"
 import { ACHIEVEMENT_NAME_KING_KILL, addAchievementKingKill } from "./achievementKingKill.js"
 import { addAchievementClassKingKill, createAchievementKingClass } from "./achievementKingKillWithClass.js"
@@ -48,6 +49,7 @@ export function onDomLoadSetAchievementsFunctions() {
     addAchievementClassKingKill();
     addAchievementUnlockLegendary();
     addAchievementUnlockLegendaryOfClass();
+    addAchievementGodHardModeKill();
 }
 
 export function achievementCheckOnBossKill(achievements: Achievements, game: Game) {
@@ -84,6 +86,7 @@ export function createDefaultAchivements(): Achievements {
     achievements.open.push({ name: ACHIEVEMENT_NAME_BOSS_KILL });
     achievements.open.push({ name: ACHIEVEMENT_NAME_KING_KILL });
     achievements.open.push({ name: ACHIEVEMENT_NAME_GOD_KILL });
+    achievements.open.push({ name: ACHIEVEMENT_NAME_GOD_HARD_MODE_KILL });
     achievements.open.push(createAchievementPlayClass(CHARACTER_CLASS_SNIPER));
     achievements.open.push(createAchievementPlayClass(CHARACTER_CLASS_BALL));
     achievements.open.push(createAchievementPlayClass(CHARACTER_CLASS_MUSICIAN));

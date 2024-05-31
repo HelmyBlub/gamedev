@@ -4,9 +4,8 @@ increase version
 current tasks:
 - achievements
     - add more:
-        - unlock legendary
-        - gain blessings for legendary
         - defeat hard mode god
+        - gain blessings for legendary
 - moreInfo grouping for some other abilities
 
 next feature ideas:

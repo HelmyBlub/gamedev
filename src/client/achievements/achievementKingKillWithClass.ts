@@ -54,7 +54,6 @@ function onGameEndCheck(achievement: Achievement, game: Game) {
         }
     }
     if (!playerAlive) return false;
-    let king: KingEnemyCharacter;
     for (let bosses of game.state.bossStuff.bosses) {
         if (bosses.characterClasses && bosses.characterClasses.findIndex(c => c.className === kingClass.kingClass) !== -1) {
             return true;
