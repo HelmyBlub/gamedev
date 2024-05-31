@@ -1,4 +1,5 @@
 import { Game } from "../gameModel.js";
+import { MoreInfoPart, createMoreInfosPart } from "../moreInfo.js";
 import { addMoneyAmountToPlayer, addMoneyUiMoreInfo } from "../player.js";
 import { ACHIEVEMENTS_FUNCTIONS, Achievement } from "./achievements.js";
 
@@ -7,10 +8,19 @@ const REWARD_MONEY_AMOUNT = 5000;
 
 export function addAchievementGodKill() {
     ACHIEVEMENTS_FUNCTIONS[ACHIEVEMENT_NAME_GOD_KILL] = {
+        createMoreInfoPart: createMoreInfoPart,
         onGameEndCheck: onGameEndCheck,
         getDescription: getDescription,
         giveReward: giveReward,
     }
+}
+
+function createMoreInfoPart(achievement: Achievement, ctx: CanvasRenderingContext2D): MoreInfoPart {
+    const textLines: string[] = [`${achievement.name}:`];
+    textLines.push(...getDescription());
+    const part: MoreInfoPart = createMoreInfosPart(ctx, textLines);
+    part.group = "Kill";
+    return part;
 }
 
 function getDescription() {

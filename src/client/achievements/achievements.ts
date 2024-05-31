@@ -4,7 +4,7 @@ import { CHARACTER_CLASS_SNIPER } from "../character/playerCharacters/characterC
 import { CHARACTER_CLASS_TOWER_BUILDER } from "../character/playerCharacters/characterClassTower.js"
 import { CHARACTER_CLASS_TAMER } from "../character/playerCharacters/tamer/characterClassTamer.js"
 import { Game } from "../gameModel.js"
-import { MoreInfos, MoreInfosPartContainer, createDefaultMoreInfosContainer, createMoreInfosPart } from "../moreInfo.js"
+import { MoreInfoPart, MoreInfos, MoreInfosPartContainer, createDefaultMoreInfosContainer, createMoreInfosPart } from "../moreInfo.js"
 import { localStorageSaveAchievements } from "../permanentData.js"
 import { addAchievementBossKill } from "./achievementBossKill.js"
 import { addAchievementGodKill } from "./achievementGodKill.js"
@@ -22,11 +22,12 @@ export type Achievements = {
 }
 
 export type AchievementFunctions = {
+    createMoreInfoPart?: (achievement: Achievement, ctx: CanvasRenderingContext2D) => MoreInfoPart,
     onGameTickCheck?: (achievement: Achievement, game: Game) => boolean,
     onBossKillCheck?: (achievement: Achievement, game: Game) => boolean,
     onGameEndCheck?: (achievement: Achievement, game: Game) => boolean,
     giveReward?: (achievement: Achievement, game: Game) => void,
-    getDescription: (achievement: Achievement,) => string[],
+    getDescription: (achievement: Achievement) => string[],
 }
 
 export type AchievementsFunctions = {
@@ -61,7 +62,7 @@ function achievementCheck<K extends keyof AchievementFunctions>(achievements: Ac
         const functions = ACHIEVEMENTS_FUNCTIONS[achievement.name];
         const func = functions[functionName];
         if (func) {
-            let finished = func(achievement, game);
+            let finished = func(achievement, game as any);
             if (finished) {
                 finishAchievement(achievement, achievements, game);
             }
@@ -99,11 +100,11 @@ export function createAchievementsMoreInfo(ctx: CanvasRenderingContext2D, moreIn
     moreInfosContainer.subContainer.containers.push(finishedAchievementsSubContainer);
 
     for (let entry of achievements.open) {
-        const openAchievementsPart = createMoreInfosPart(ctx, getMoreInfoPartTextLines(entry));
+        const openAchievementsPart = getAchievementMoreInfoPart(entry, ctx);
         openAchievementsSubContainer.moreInfoParts.push(openAchievementsPart);
     }
     for (let entry of achievements.finished) {
-        const finishedAchievementsPart = createMoreInfosPart(ctx, getMoreInfoPartTextLines(entry));
+        const finishedAchievementsPart = getAchievementMoreInfoPart(entry, ctx);
         finishedAchievementsSubContainer.moreInfoParts.push(finishedAchievementsPart);
     }
     return moreInfosContainer;
@@ -122,10 +123,15 @@ function finishAchievement(achievement: Achievement, achievements: Achievements,
     localStorageSaveAchievements(game);
 }
 
-function getMoreInfoPartTextLines(achievement: Achievement): string[] {
-    const textLines: string[] = [`${achievement.name}:`];
+function getAchievementMoreInfoPart(achievement: Achievement, ctx: CanvasRenderingContext2D): MoreInfoPart {
     const functions = ACHIEVEMENTS_FUNCTIONS[achievement.name];
-    textLines.push(...functions.getDescription(achievement));
-    return textLines;
+    if (functions.createMoreInfoPart) {
+        return functions.createMoreInfoPart(achievement, ctx);
+    } else {
+        const textLines: string[] = [`${achievement.name}:`];
+        textLines.push(...functions.getDescription(achievement));
+        const part = createMoreInfosPart(ctx, textLines);
+        return part;
+    }
 }
 

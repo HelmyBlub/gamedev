@@ -1,5 +1,6 @@
 import { Game } from "../gameModel.js";
 import { getHighestPlayerDistanceFromMapMiddle } from "../highscores.js";
+import { MoreInfoPart, createMoreInfosPart } from "../moreInfo.js";
 import { addMoneyAmountToPlayer, addMoneyUiMoreInfo } from "../player.js";
 import { ACHIEVEMENTS_FUNCTIONS, Achievement } from "./achievements.js";
 
@@ -11,6 +12,7 @@ export type AchievementDistance = Achievement & {
 
 export function addAchievementDistance() {
     ACHIEVEMENTS_FUNCTIONS[ACHIEVEMENT_NAME_DISTANCE] = {
+        createMoreInfoPart: createMoreInfoPart,
         getDescription: getDescription,
         giveReward: giveReward,
         onGameTickCheck: onGameTickCheck,
@@ -23,6 +25,14 @@ export function createAchievementDistance(distance: number, rewardMoney: number)
         distance,
         rewardMoney
     }
+}
+
+function createMoreInfoPart(achievement: Achievement, ctx: CanvasRenderingContext2D): MoreInfoPart {
+    const textLines: string[] = [`${achievement.name}:`];
+    textLines.push(...getDescription(achievement));
+    const part: MoreInfoPart = createMoreInfosPart(ctx, textLines);
+    part.group = "ReachDistance";
+    return part;
 }
 
 function onGameTickCheck(achievement: Achievement, game: Game): boolean {

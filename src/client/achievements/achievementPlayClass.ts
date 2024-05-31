@@ -1,5 +1,6 @@
 import { Game } from "../gameModel.js";
 import { getHighestPlayerDistanceFromMapMiddle } from "../highscores.js";
+import { MoreInfoPart, createMoreInfosPart } from "../moreInfo.js";
 import { addMoneyAmountToPlayer, addMoneyUiMoreInfo } from "../player.js";
 import { ACHIEVEMENTS_FUNCTIONS, Achievement } from "./achievements.js";
 
@@ -11,6 +12,7 @@ export type AchievementPlayClass = Achievement & {
 
 export function addAchievementPlayClass() {
     ACHIEVEMENTS_FUNCTIONS[ACHIEVEMENT_NAME_PLAY_CLASS] = {
+        createMoreInfoPart: createMoreInfoPart,
         getDescription: getDescription,
         giveReward: giveReward,
         onGameEndCheck: onGameEndCheck,
@@ -22,6 +24,14 @@ export function createAchievementPlayClass(className: string): AchievementPlayCl
         name: ACHIEVEMENT_NAME_PLAY_CLASS,
         className: className,
     }
+}
+
+function createMoreInfoPart(achievement: Achievement, ctx: CanvasRenderingContext2D): MoreInfoPart {
+    const textLines: string[] = [`${achievement.name}:`];
+    textLines.push(...getDescription(achievement));
+    const part: MoreInfoPart = createMoreInfosPart(ctx, textLines);
+    part.group = "PlayClass";
+    return part;
 }
 
 function onGameEndCheck(achievement: Achievement, game: Game): boolean {

@@ -19,7 +19,8 @@ export type MoreInfoPart = {
     texts: string[],
     fontSize: number,
     width: number,
-    height: number
+    height: number,
+    group?: string,
 }
 
 export type MoreInfosPartContainers = {
@@ -323,10 +324,28 @@ function paintMoreInfosContainers(ctx: CanvasRenderingContext2D, containers: Mor
 export function paintMoreInfosPartsContainer(ctx: CanvasRenderingContext2D, moreInfosPartsContainer: MoreInfosPartContainer, drawStartX: number = 10, drawStartY: number = 60) {
     let paintX = drawStartX;
     let paintY = drawStartY;
-    let horizontalSpacing = 5;
+    const horizontalSpacing = 5;
+    const verticalSpacing = 5;
+    const groupOffsets: { [key: string]: Position } = {};
     for (let part of moreInfosPartsContainer.moreInfoParts) {
-        paintMoreInfosPart(ctx, part, paintX, paintY);
-        paintX += part.width + horizontalSpacing;
+        if (part.group) {
+            if (!groupOffsets[part.group]) {
+                groupOffsets[part.group] = { x: paintX, y: paintY };
+                let maxWidth = 0;
+                for (let part2 of moreInfosPartsContainer.moreInfoParts) {
+                    if (part2.group === part.group) {
+                        if (part2.width > maxWidth) maxWidth = part2.width;
+                    }
+                }
+                paintX += maxWidth + horizontalSpacing;
+            }
+            const groupOffset = groupOffsets[part.group];
+            paintMoreInfosPart(ctx, part, groupOffset.x, groupOffset.y);
+            groupOffset.y += part.height + verticalSpacing;
+        } else {
+            paintMoreInfosPart(ctx, part, paintX, paintY);
+            paintX += part.width + horizontalSpacing;
+        }
     }
     if (moreInfosPartsContainer.subContainer.containers.length > 0) {
         paintMoreInfosPartsContainer(ctx, moreInfosPartsContainer.subContainer.containers[moreInfosPartsContainer.subContainer.selected!], paintX, paintY);
