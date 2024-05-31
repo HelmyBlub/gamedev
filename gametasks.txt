@@ -3,12 +3,12 @@ increase version
 
 current tasks:
 - achievements
-    - how to visualize many achivements better in moreInfo
     - add more:
+        - defeat king with class <x>
         - unlock legendary
         - gain blessings for legendary
-        - defeat king with class <x>
         - defeat hard mode god
+- moreInfo grouping for some other abilities
 
 next feature ideas:
 - think about next bigger feature 

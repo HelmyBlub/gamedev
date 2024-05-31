@@ -6,9 +6,10 @@ import { CHARACTER_CLASS_TAMER } from "../character/playerCharacters/tamer/chara
 import { Game } from "../gameModel.js"
 import { MoreInfoPart, MoreInfos, MoreInfosPartContainer, createDefaultMoreInfosContainer, createMoreInfosPart } from "../moreInfo.js"
 import { localStorageSaveAchievements } from "../permanentData.js"
-import { addAchievementBossKill } from "./achievementBossKill.js"
-import { addAchievementGodKill } from "./achievementGodKill.js"
-import { addAchievementKingKill } from "./achievementKingKill.js"
+import { ACHIEVEMENT_NAME_BOSS_KILL, addAchievementBossKill } from "./achievementBossKill.js"
+import { ACHIEVEMENT_NAME_GOD_KILL, addAchievementGodKill } from "./achievementGodKill.js"
+import { ACHIEVEMENT_NAME_KING_KILL, addAchievementKingKill } from "./achievementKingKill.js"
+import { addAchievementClassKingKill, createAchievementKingClass } from "./achievementKingKillWithClass.js"
 import { ACHIEVEMENT_NAME_PLAY_CLASS, addAchievementPlayClass, createAchievementPlayClass } from "./achievementPlayClass.js"
 import { ACHIEVEMENT_NAME_DISTANCE, addAchievementDistance, createAchievementDistance } from "./achievementReachDistance.js"
 
@@ -42,6 +43,7 @@ export function onDomLoadSetAchievementsFunctions() {
     addAchievementGodKill();
     addAchievementDistance();
     addAchievementPlayClass();
+    addAchievementClassKingKill();
 }
 
 export function achievementCheckOnBossKill(achievements: Achievements, game: Game) {
@@ -75,11 +77,9 @@ export function createDefaultAchivements(): Achievements {
         open: [],
         finished: [],
     }
-    const achievementKeys = Object.keys(ACHIEVEMENTS_FUNCTIONS);
-    for (let key of achievementKeys) {
-        if (key === ACHIEVEMENT_NAME_DISTANCE || key === ACHIEVEMENT_NAME_PLAY_CLASS) continue;
-        achievements.open.push({ name: key });
-    }
+    achievements.open.push({ name: ACHIEVEMENT_NAME_BOSS_KILL });
+    achievements.open.push({ name: ACHIEVEMENT_NAME_KING_KILL });
+    achievements.open.push({ name: ACHIEVEMENT_NAME_GOD_KILL });
     achievements.open.push(createAchievementPlayClass(CHARACTER_CLASS_SNIPER));
     achievements.open.push(createAchievementPlayClass(CHARACTER_CLASS_BALL));
     achievements.open.push(createAchievementPlayClass(CHARACTER_CLASS_MUSICIAN));
@@ -89,6 +89,11 @@ export function createDefaultAchivements(): Achievements {
     achievements.open.push(createAchievementDistance(10000, 20));
     achievements.open.push(createAchievementDistance(40000, 500));
     achievements.open.push(createAchievementDistance(100000, 10000));
+    achievements.open.push(createAchievementKingClass(CHARACTER_CLASS_SNIPER));
+    achievements.open.push(createAchievementKingClass(CHARACTER_CLASS_BALL));
+    achievements.open.push(createAchievementKingClass(CHARACTER_CLASS_MUSICIAN));
+    achievements.open.push(createAchievementKingClass(CHARACTER_CLASS_TOWER_BUILDER));
+    achievements.open.push(createAchievementKingClass(CHARACTER_CLASS_TAMER));
     return achievements;
 }
 
