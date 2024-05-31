@@ -4,7 +4,6 @@ increase version
 current tasks:
 - achievements
     - add more:
-        - defeat king with class <x>
         - unlock legendary
         - gain blessings for legendary
         - defeat hard mode god

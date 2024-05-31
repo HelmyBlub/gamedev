@@ -12,6 +12,8 @@ import { ACHIEVEMENT_NAME_KING_KILL, addAchievementKingKill } from "./achievemen
 import { addAchievementClassKingKill, createAchievementKingClass } from "./achievementKingKillWithClass.js"
 import { ACHIEVEMENT_NAME_PLAY_CLASS, addAchievementPlayClass, createAchievementPlayClass } from "./achievementPlayClass.js"
 import { ACHIEVEMENT_NAME_DISTANCE, addAchievementDistance, createAchievementDistance } from "./achievementReachDistance.js"
+import { ACHIEVEMENT_NAME_UNLOCK_LEGENDARY, addAchievementUnlockLegendary } from "./achievementUnlockLegendary.js"
+import { addAchievementUnlockLegendaryOfClass, createAchievementUnlockLegendaryOfClass } from "./achievementUnlockLegendaryOfClass.js"
 
 export type Achievement = {
     name: string
@@ -44,6 +46,8 @@ export function onDomLoadSetAchievementsFunctions() {
     addAchievementDistance();
     addAchievementPlayClass();
     addAchievementClassKingKill();
+    addAchievementUnlockLegendary();
+    addAchievementUnlockLegendaryOfClass();
 }
 
 export function achievementCheckOnBossKill(achievements: Achievements, game: Game) {
@@ -94,6 +98,12 @@ export function createDefaultAchivements(): Achievements {
     achievements.open.push(createAchievementKingClass(CHARACTER_CLASS_MUSICIAN));
     achievements.open.push(createAchievementKingClass(CHARACTER_CLASS_TOWER_BUILDER));
     achievements.open.push(createAchievementKingClass(CHARACTER_CLASS_TAMER));
+    achievements.open.push({ name: ACHIEVEMENT_NAME_UNLOCK_LEGENDARY });
+    achievements.open.push(createAchievementUnlockLegendaryOfClass(CHARACTER_CLASS_SNIPER));
+    achievements.open.push(createAchievementUnlockLegendaryOfClass(CHARACTER_CLASS_BALL));
+    achievements.open.push(createAchievementUnlockLegendaryOfClass(CHARACTER_CLASS_MUSICIAN));
+    achievements.open.push(createAchievementUnlockLegendaryOfClass(CHARACTER_CLASS_TOWER_BUILDER));
+    achievements.open.push(createAchievementUnlockLegendaryOfClass(CHARACTER_CLASS_TAMER));
     return achievements;
 }
 
