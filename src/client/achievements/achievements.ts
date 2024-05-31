@@ -7,12 +7,13 @@ import { Game } from "../gameModel.js"
 import { MoreInfoPart, MoreInfos, MoreInfosPartContainer, createDefaultMoreInfosContainer, createMoreInfosPart } from "../moreInfo.js"
 import { localStorageSaveAchievements } from "../permanentData.js"
 import { ACHIEVEMENT_NAME_BOSS_KILL, addAchievementBossKill } from "./achievementBossKill.js"
+import { ACHIEVEMENT_NAME_GAIN_LEGENDARY_BLESSING, addAchievementGainLegendaryBlessing } from "./achievementGainLegendaryBlessing.js"
 import { ACHIEVEMENT_NAME_GOD_HARD_MODE_KILL, addAchievementGodHardModeKill } from "./achievementGodHardModeKill.js"
 import { ACHIEVEMENT_NAME_GOD_KILL, addAchievementGodKill } from "./achievementGodKill.js"
 import { ACHIEVEMENT_NAME_KING_KILL, addAchievementKingKill } from "./achievementKingKill.js"
 import { addAchievementClassKingKill, createAchievementKingClass } from "./achievementKingKillWithClass.js"
-import { ACHIEVEMENT_NAME_PLAY_CLASS, addAchievementPlayClass, createAchievementPlayClass } from "./achievementPlayClass.js"
-import { ACHIEVEMENT_NAME_DISTANCE, addAchievementDistance, createAchievementDistance } from "./achievementReachDistance.js"
+import { addAchievementPlayClass, createAchievementPlayClass } from "./achievementPlayClass.js"
+import { addAchievementDistance, createAchievementDistance } from "./achievementReachDistance.js"
 import { ACHIEVEMENT_NAME_UNLOCK_LEGENDARY, addAchievementUnlockLegendary } from "./achievementUnlockLegendary.js"
 import { addAchievementUnlockLegendaryOfClass, createAchievementUnlockLegendaryOfClass } from "./achievementUnlockLegendaryOfClass.js"
 
@@ -50,6 +51,7 @@ export function onDomLoadSetAchievementsFunctions() {
     addAchievementUnlockLegendary();
     addAchievementUnlockLegendaryOfClass();
     addAchievementGodHardModeKill();
+    addAchievementGainLegendaryBlessing();
 }
 
 export function achievementCheckOnBossKill(achievements: Achievements, game: Game) {
@@ -107,6 +109,7 @@ export function createDefaultAchivements(): Achievements {
     achievements.open.push(createAchievementUnlockLegendaryOfClass(CHARACTER_CLASS_MUSICIAN));
     achievements.open.push(createAchievementUnlockLegendaryOfClass(CHARACTER_CLASS_TOWER_BUILDER));
     achievements.open.push(createAchievementUnlockLegendaryOfClass(CHARACTER_CLASS_TAMER));
+    achievements.open.push({ name: ACHIEVEMENT_NAME_GAIN_LEGENDARY_BLESSING });
     return achievements;
 }
 

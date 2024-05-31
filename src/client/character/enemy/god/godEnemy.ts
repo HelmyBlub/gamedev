@@ -76,6 +76,7 @@ export function godEnemyActivateHardMode(game: Game) {
     god.isDead = false;
     god.isDamageImmune = true;
     god.hardModeActivated = true;
+    god.firstAttackedTime = game.state.time;
     if (!god.isDamageImmune) god.isDebuffImmune = false;
     god.animationState.state = "hardModeActivation";
 }
