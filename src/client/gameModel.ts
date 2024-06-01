@@ -8,7 +8,7 @@ import { createMap, GameMap } from "./map/map.js";
 import { KingAreaEntranceData } from "./map/mapKingArea.js";
 import { generateMissingChunks } from "./map/mapGeneration.js";
 import { PermanentDataParts } from "./permanentData.js";
-import { createPlayerWithPlayerCharacter, MoneyGainedThisRun, Player } from "./player.js";
+import { createPlayerWithPlayerCharacter, MoneyGainedThisRun, PermanentPlayerData, Player } from "./player.js";
 import { PlayerInput } from "./playerInput.js";
 import { nextRandom, RandomSeed } from "./randomNumberGenerator.js";
 import { MoreInfos, createDefaultEmptyMoreInfos } from "./moreInfo.js";
@@ -27,9 +27,15 @@ export type IdCounter = {
     nextId: number
 }
 
+export type RecordDataMultiplayer = {
+    clientInfo: ClientInfo,
+    playerCharacterPermanentUpgrades: PermanentPlayerData,
+}
+
 export type RecordData = {
     replayPlayerInputs: Omit<PlayerInput, "executeTime">[],
     permanentData: PermanentDataParts,
+    multiplayerData?: RecordDataMultiplayer[],
     gameEndAsserts?: {
         type: string,
         data: any,
@@ -46,6 +52,7 @@ export type Legendary = {
 export type ReplayData = {
     replayPlayerInputs: PlayerInput[],
     permanentData: PermanentDataParts,
+    multiplayerData?: RecordDataMultiplayer[],
     gameEndAsserts?: ReplayAssert[],
 }
 
@@ -388,7 +395,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
     }
     game.state.map.seed = nextRandom(game.state.randomSeed);
     generateMissingChunks(game.state.map, [{ x: 0, y: 0 }], game.state.idCounter, game);
-    const player = createPlayerWithPlayerCharacter(game.state.idCounter, game.state.clientInfos[0].id, game.state.players, { x: 0, y: 0 }, game.state.randomSeed, game);
+    const player = createPlayerWithPlayerCharacter(game.state.idCounter, game.state.clientInfos[0].id, { x: 0, y: 0 }, game.state.randomSeed, game);
     game.state.players.push(player);
 
     return game;

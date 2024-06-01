@@ -26,6 +26,7 @@ export function createAndSetGodAreaOnMap(chunkX: number, chunkY: number, map: Ga
 export function checkGodFightStart(game: Game) {
     if (!game.state.map.godArea || game.state.bossStuff.kingFightStarted || game.state.bossStuff.godFightStarted) return;
     const allPlayers = getPlayerCharacters(game.state.players);
+    if (allPlayers === undefined || allPlayers.length === 0) return;
     for (let player of allPlayers) {
         const mapKey = positionToMapKey(player, game.state.map);
         const chunk = game.state.map.chunks[mapKey];

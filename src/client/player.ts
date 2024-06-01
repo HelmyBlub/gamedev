@@ -102,7 +102,7 @@ export function isAutoSkillActive(game: Game): boolean {
     return false;
 }
 
-export function createPlayerWithPlayerCharacter(idCounter: IdCounter, clientId: number, players: Player[], pos: Position, seed: RandomSeed, game: Game): Player {
+export function createPlayerWithPlayerCharacter(idCounter: IdCounter, clientId: number, pos: Position, seed: RandomSeed, game: Game): Player {
     const character = createPlayerCharacter(idCounter, pos, seed, game);
     return createPlayer(clientId, character);
 }
@@ -118,7 +118,7 @@ export function gameInitPlayers(game: Game) {
         let playerSpawn: Position = { x: 100, y: 100 + i * 50 };
         playerSpawn = findNearNonBlockingPosition(playerSpawn, game.state.map, game.state.idCounter, game);
         if (!player) {
-            player = createPlayerWithPlayerCharacter(game.state.idCounter, game.state.clientInfos[i].id, game.state.players, playerSpawn, game.state.randomSeed, game);
+            player = createPlayerWithPlayerCharacter(game.state.idCounter, game.state.clientInfos[i].id, playerSpawn, game.state.randomSeed, game);
             if (game.state.players.length > 0) {
                 player.permanentData = deepCopy(game.state.players[0].permanentData);
                 addCharacterUpgrades(player.permanentData.upgrades, player.character, game, undefined);

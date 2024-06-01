@@ -2,12 +2,16 @@ next test run:
 increase version
 
 current tasks:
-- moreInfo grouping for some other abilities
-
-next feature ideas:
 - technical stuff:
     - make multiplayer replays possible. copy multipalyer replay, but only replay in single player
+        -dev steps:
+            - save clients
+        - last replay
+        - test with one player how did not do any action
+        - current replay 
     - check for sync loss in multiplayer
+
+next feature ideas:
 - think about next bigger feature 
     - extends existings classes for more upgrade choice?
         - more run variation

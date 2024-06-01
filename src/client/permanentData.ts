@@ -4,7 +4,7 @@ import { Character } from "./character/characterModel.js";
 import { changeCharacterAndAbilityIds, deepCopy, getNextId } from "./game.js";
 import { CelestialDirection, Game, GameVersion, IdCounter, NextKings, PastPlayerCharacters, setDefaultNextKings } from "./gameModel.js";
 import { BUILDING_CLASS_BUILDING, ClassBuilding } from "./map/buildings/classBuilding.js";
-import { PermanentPlayerData } from "./player.js";
+import { PermanentPlayerData, createPlayerWithPlayerCharacter } from "./player.js";
 import { GAME_VERSION } from "./main.js";
 import { Highscores, createHighscoreBoards } from "./highscores.js";
 import { Achievements, createDefaultAchivements } from "./achievements/achievements.js";
@@ -113,6 +113,15 @@ export function setPermanentDataFromReplayData(game: Game) {
     loadBuildings(replay.data?.permanentData.buildings, game);
     loadPlayerData(replay.data?.permanentData.permanentPlayerData, game);
     loadAchievements(replay.data?.permanentData.achievements, game);
+    if (replay.data?.multiplayerData) {
+        game.state.clientInfos = [];
+        game.state.players = [];
+        for (let replayClient of replay.data.multiplayerData) {
+            game.state.clientInfos.push(deepCopy(replayClient.clientInfo));
+            const player = createPlayerWithPlayerCharacter(game.state.idCounter, replayClient.clientInfo.id, { x: 0, y: 0 }, game.state.randomSeed, game);
+            game.state.players.push(player);
+        }
+    }
 }
 
 function loadPastCharacters(pastPlayerCharacters: PastPlayerCharacters | undefined, game: Game) {

@@ -1,9 +1,9 @@
 import { findAndSetNewCameraCharacterId } from "./character/character.js";
 import { createDamageMeter, damageMeterChangeClientId } from "./combatlog.js";
-import { createPaintTextData, getCameraPosition } from "./game.js";
-import { Game, GameState } from "./gameModel.js";
+import { createPaintTextData, deepCopy, getCameraPosition } from "./game.js";
+import { Game, GameState, RecordDataMultiplayer } from "./gameModel.js";
 import { sendMultiplayer } from "./multiplayerConenction.js";
-import { createDefaultKeyBindings1, createDefaultUiKeyBindings } from "./player.js";
+import { createDefaultKeyBindings1, createDefaultUiKeyBindings, findPlayerByCliendId } from "./player.js";
 import { PlayerInput } from "./playerInput.js";
 import { compressString } from "./stringCompress.js";
 
@@ -145,6 +145,19 @@ function restart(game: Game, data: CommandRestart) {
     game.multiplayer.cachePlayerInputs = [];
     if (data.recordInputs) {
         game.testing.record = { data: { replayPlayerInputs: [], permanentData: {} } };
+        if (game.multiplayer.websocket && game.state.clientInfos.length > 1) {
+            game.testing.record.data.multiplayerData = [];
+            for (let client of game.state.clientInfos) {
+                const player = findPlayerByCliendId(client.id, game.state.players);
+                let playerPermanentData = player?.permanentData;
+                if (playerPermanentData === undefined) playerPermanentData = { money: 0, upgrades: {} };
+                const multiplayerDataClient: RecordDataMultiplayer = {
+                    clientInfo: deepCopy(client),
+                    playerCharacterPermanentUpgrades: deepCopy(playerPermanentData),
+                }
+                game.testing.record.data.multiplayerData.push(multiplayerDataClient);
+            }
+        }
         game.testing.record.restartPlayerInput = { ...data };
         if (data.testMapSeed !== undefined) game.testing.record.mapSeed = data.testMapSeed;
     } else if (game.testing.record) {

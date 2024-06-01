@@ -258,7 +258,7 @@ function addCopyLastReplayButton(game: Game) {
     const button = document.getElementById(buttonName) as HTMLButtonElement;
     if (button) {
         button.addEventListener('click', () => {
-            if (!game.multiplayer.websocket && game.testing.lastReplay) {
+            if (game.testing.lastReplay) {
                 navigator.clipboard.writeText(JSON.stringify(game.testing.lastReplay, undefined, 2));
             }
         });

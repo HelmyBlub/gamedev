@@ -1,6 +1,6 @@
 import { changeCharacterId, countAlivePlayerCharacters, findAndSetNewCameraCharacterId, findCharacterById, findMyCharacter, getPlayerCharacters, resetCharacter, tickCharacters, tickMapCharacters } from "./character/character.js";
 import { paintAll } from "./gamePaint.js";
-import { addPlayerMoney, createDefaultKeyBindings1, createDefaultUiKeyBindings, findNearesPastPlayerCharacter, findPlayerByCharacterId, gameInitPlayers, isAutoSkillActive } from "./player.js";
+import { addPlayerMoney, createDefaultKeyBindings1, createDefaultUiKeyBindings, createPlayerWithPlayerCharacter, findNearesPastPlayerCharacter, findPlayerByCharacterId, gameInitPlayers, isAutoSkillActive } from "./player.js";
 import { MOUSE_ACTION, UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.js";
 import { Position, GameState, Game, IdCounter, Debugging, PaintTextData, ClientInfo, GameVersion } from "./gameModel.js";
 import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap, initGodArea, initKingArea, mousePositionToMapPosition } from "./map/map.js";
@@ -14,7 +14,7 @@ import { createObjectDeathCircle } from "./ability/abilityDeathCircle.js";
 import { checkForBossSpawn, tickBossCharacters } from "./character/enemy/bossEnemy.js";
 import { autoPlay } from "./test/autoPlay.js";
 import { replayGameEndAssert, replayNextInReplayQueue } from "./test/gameTest.js";
-import { checkForKingAreaTrigger, getEntranceChunkAndTileXYForPosition } from "./map/mapKingArea.js";
+import { checkForKingAreaTrigger } from "./map/mapKingArea.js";
 import { calculateHighscoreOnGameEnd } from "./highscores.js";
 import { setPlayerAsKing, startKingFight } from "./character/enemy/kingEnemy.js";
 import { ABILITY_NAME_FEED_PET } from "./ability/petTamer/abilityFeedPet.js";
@@ -29,8 +29,7 @@ import { mapObjectPlaceUpgradeBuilding } from "./map/mapObjectUpgradeBuilding.js
 import { Leveling } from "./character/playerCharacters/levelingCharacter.js";
 import { checkGodFightStart, startGodFight } from "./map/mapGodArea.js";
 import { ABILITY_NAME_LEASH } from "./ability/abilityLeash.js";
-import { createDamageMeter, doDamageMeterSplit } from "./combatlog.js";
-import { GAME_VERSION } from "./main.js";
+import { doDamageMeterSplit } from "./combatlog.js";
 import { achievementCheckOnGameEnd, achievementCheckOnGameTick } from "./achievements/achievements.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
@@ -291,6 +290,7 @@ export function calculateDistancePointToLine(point: Position, linestart: Positio
 }
 
 export function deepCopy(object: any): any {
+    if (object === undefined) return undefined;
     const json = JSON.stringify(object);
     return JSON.parse(json);
 }
@@ -636,6 +636,10 @@ function endGameReplayStuff(game: Game, newScore: number) {
         replayGameEndAssert(game, newScore);
         const moreReplays = replayNextInReplayQueue(game);
         if (!moreReplays) {
+            const myClientId = game.multiplayer.myClientId;
+            game.state.clientInfos = [{ id: myClientId, lastMousePosition: { x: 0, y: 0 }, name: "" }];
+            const player = createPlayerWithPlayerCharacter(game.state.idCounter, myClientId, { x: 0, y: 0 }, game.state.randomSeed, game);
+            game.state.players = [player];
             localStorageLoad(game);
         }
     }
