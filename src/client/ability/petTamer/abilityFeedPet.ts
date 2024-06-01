@@ -8,7 +8,7 @@ import { GAME_IMAGES, getImage } from "../../imageLoad.js";
 import { moveByDirectionAndDistance } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, findAbilityOwnerById, getAbilityNameUiText } from "../ability.js";
+import { ABILITIES_FUNCTIONS, ABILITY_DEFAULT_SMALL_GROUP, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, findAbilityOwnerById, getAbilityNameUiText } from "../ability.js";
 
 export type AbilityFeedPet = Ability & {
     feedValue: number,
@@ -196,5 +196,5 @@ function createAbilityMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability,
         "Feed targeted pet.",
         `Range: ${feed.range}`,
     );
-    return createMoreInfosPart(ctx, textLines);
+    return createMoreInfosPart(ctx, textLines, ABILITY_DEFAULT_SMALL_GROUP);
 }

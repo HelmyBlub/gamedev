@@ -2,17 +2,13 @@ next test run:
 increase version
 
 current tasks:
-- achievements
-    - add more:
-        - gain blessings for legendary
 - moreInfo grouping for some other abilities
 
 next feature ideas:
+- technical stuff:
+    - make multiplayer replays possible. copy multipalyer replay, but only replay in single player
+    - check for sync loss in multiplayer
 - think about next bigger feature 
-    - achievements:  
-        - unlock something thorugh achievement
-            - show achievement after before one finished
-                - like 2000 distance finished -> now show 10k distance
     - extends existings classes for more upgrade choice?
         - more run variation
 

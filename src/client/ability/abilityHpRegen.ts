@@ -3,7 +3,7 @@ import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from
 import { getNextId } from "../game.js";
 import { Game, IdCounter } from "../gameModel.js";
 import { MoreInfoPart, createMoreInfosPart } from "../moreInfo.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, getAbilityNameUiText } from "./ability.js";
+import { ABILITIES_FUNCTIONS, ABILITY_DEFAULT_SMALL_GROUP, Ability, AbilityOwner, getAbilityNameUiText } from "./ability.js";
 
 type AbilityHpRegen = Ability & {
     amount: number,
@@ -93,5 +93,5 @@ function createAbilityHpRegenMoreInfos(ctx: CanvasRenderingContext2D, ability: A
         `Hp Tick Interval: ${(abilityHpRegen.tickInterval / 1000).toFixed(2)}s`,
         `Hp Tick Amount: ${abilityHpRegen.amount}`,
     );
-    return createMoreInfosPart(ctx, textLines);
+    return createMoreInfosPart(ctx, textLines, ABILITY_DEFAULT_SMALL_GROUP);
 }

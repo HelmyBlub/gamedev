@@ -3,7 +3,7 @@ import { calculateDistance, getNextId } from "../../game.js";
 import { IdCounter, Position, Game } from "../../gameModel.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, getAbilityNameUiText } from "../ability.js";
+import { ABILITIES_FUNCTIONS, ABILITY_DEFAULT_SMALL_GROUP, Ability, AbilityOwner, getAbilityNameUiText } from "../ability.js";
 import { ABILITY_NAME_LEASH, AbilityLeash } from "../abilityLeash.js";
 
 export type AbilityUnleashPet = Ability & {
@@ -110,5 +110,5 @@ function createAbilityMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability,
         "Leash or unleash targeted pet.",
         `Range: ${leash.range}`,
     );
-    return createMoreInfosPart(ctx, textLines);
+    return createMoreInfosPart(ctx, textLines, ABILITY_DEFAULT_SMALL_GROUP);
 }

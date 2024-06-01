@@ -112,6 +112,7 @@ export type AbilitiesFunctions = {
     [key: string]: AbilityFunctions,
 }
 
+export const ABILITY_DEFAULT_SMALL_GROUP = "SmallGroup";
 export const ABILITIES_FUNCTIONS: AbilitiesFunctions = {};
 
 export function onDomLoadSetAbilitiesFunctions() {

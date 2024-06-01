@@ -44,7 +44,7 @@ export type MoreInfos = {
     containers: MoreInfosPartContainers,
 }
 
-export function createMoreInfosPart(ctx: CanvasRenderingContext2D, texts: string[], fontSize: number = 14): MoreInfoPart {
+export function createMoreInfosPart(ctx: CanvasRenderingContext2D, texts: string[], group: string | undefined = undefined, fontSize: number = 14): MoreInfoPart {
     ctx.font = fontSize + "px Arial";
     let width = 0;
     for (let text of texts) {
@@ -57,6 +57,7 @@ export function createMoreInfosPart(ctx: CanvasRenderingContext2D, texts: string
         height: height,
         texts: texts,
         width: width,
+        group: group,
     }
 }
 
