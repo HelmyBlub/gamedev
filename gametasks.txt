@@ -4,11 +4,9 @@ increase version
 current tasks:
 - technical stuff:
     - make multiplayer replays possible. copy multipalyer replay, but only replay in single player
-        -dev steps:
-            - save clients
-        - last replay
+        - copy current replay, so i have a replay on a crash case 
         - test with one player how did not do any action
-        - current replay 
+        - what to do on takeover of multiplayer replays? let it just break?
     - check for sync loss in multiplayer
 
 next feature ideas:

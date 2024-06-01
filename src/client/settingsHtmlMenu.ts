@@ -69,6 +69,7 @@ function addTest(game: Game) {
     addTestButton(game);
     addReplayLastRunButton(game);
     addCopyLastReplayButton(game);
+    addCopyCurrentReplayButton(game);
     addCurrentStateToFileButton(game);
     addLoadTestStateButton(game);
 }
@@ -260,6 +261,19 @@ function addCopyLastReplayButton(game: Game) {
         button.addEventListener('click', () => {
             if (game.testing.lastReplay) {
                 navigator.clipboard.writeText(JSON.stringify(game.testing.lastReplay, undefined, 2));
+            }
+        });
+    }
+}
+
+function addCopyCurrentReplayButton(game: Game) {
+    const buttonName = "copy current replay";
+    addButtonToTab(buttonName, "test");
+    const button = document.getElementById(buttonName) as HTMLButtonElement;
+    if (button) {
+        button.addEventListener('click', () => {
+            if (game.testing.record) {
+                navigator.clipboard.writeText(JSON.stringify(game.testing.record.data, undefined, 2));
             }
         });
     }
