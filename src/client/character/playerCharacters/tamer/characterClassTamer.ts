@@ -2,7 +2,7 @@ import { ABILITIES_FUNCTIONS, addAbilityToCharacter, createAbility, setAbilityTo
 import { createAbilityHpRegen } from "../../../ability/abilityHpRegen.js";
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../../gameModel.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, createCharacter } from "../../characterModel.js";
-import { CharacterClass, PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "../playerCharacters.js";
+import { CharacterClass, PLAYER_CHARACTER_CLASSES_FUNCTIONS, paintPlayerPetLevelUI } from "../playerCharacters.js";
 import { ABILITY_NAME_LEASH, AbilityLeash, createAbilityLeash } from "../../../ability/abilityLeash.js";
 import { ABILITY_NAME_MELEE, createAbilityMelee } from "../../../ability/abilityMelee.js";
 import { TamerPetCharacter, addTamerPetFunctions, createTamerPetCharacter } from "./tamerPetCharacter.js";
@@ -32,6 +32,7 @@ export function addTamerClass() {
         createBossUpgradeOptions: createTamerBossUpgradeOptions,
         executeUpgradeOption: executeTamerBossUpgradeOption,
         getMoreInfosText: getLongUiText,
+        paintLevelUI: paintLevelUI,
     }
     CHARACTER_TYPE_FUNCTIONS[CHARACTER_CLASS_TAMER] = {
         tickFunction: tickDefaultCharacter,
@@ -69,6 +70,16 @@ export function createPetsBasedOnLevelAndCharacter(basedOnCharacter: Character, 
     resetCharacter(pet, game);
 
     return [pet];
+}
+
+function paintLevelUI(ctx: CanvasRenderingContext2D, character: Character, charClass: CharacterClass, topLeft: Position, width: number, height: number, game: Game) {
+    const tempTopLeft = { x: topLeft.x, y: topLeft.y };
+    const tempWidth = Math.floor(width / 3);
+    if (!character.pets) return;
+    for (let pet of character.pets) {
+        paintPlayerPetLevelUI(ctx, pet, tempTopLeft, tempWidth, height, game);
+        tempTopLeft.x += tempWidth;
+    }
 }
 
 function changeCharacterToTamerClass(

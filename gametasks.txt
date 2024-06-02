@@ -3,11 +3,13 @@ increase version
 
 current tasks:
 - technical stuff:
-    - make multiplayer replays possible. copy multipalyer replay, but only replay in single player
-        - copy current replay, so i have a replay on a crash case 
-        - test with one player how did not do any action
-        - what to do on takeover of multiplayer replays? let it just break?
+    - visualize abilitiy level and boss spawn timer better
+        - coloring?
+        - how to position time?
+            - better display time until next boss?
+        - display money
     - check for sync loss in multiplayer
+        - add button to hash state and compare with other clients
 
 next feature ideas:
 - think about next bigger feature 

@@ -8,7 +8,7 @@ import { resetCharacter } from "../character.js";
 import { Character, IMAGE_SLIME, createCharacter } from "../characterModel.js";
 import { CHARACTER_TYPE_BOSS_ENEMY } from "../enemy/bossEnemy.js";
 import { createCharacterUpgradeOptions, executeLevelingCharacterUpgradeOption } from "./levelingCharacter.js";
-import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters.js";
+import { CharacterClass, PLAYER_CHARACTER_CLASSES_FUNCTIONS, paintPlayerLevelUI } from "./playerCharacters.js";
 
 export const CHARACTER_CLASS_TOWER_BUILDER = "Tower Builder";
 
@@ -19,8 +19,14 @@ export function addTowerClass() {
         createUpgradeOptions: createCharacterUpgradeOptions,
         executeUpgradeOption: executeLevelingCharacterUpgradeOption,
         getMoreInfosText: getLongUiText,
+        paintLevelUI: paintLevelUI,
         preventMultiple: true,
     }
+}
+
+function paintLevelUI(ctx: CanvasRenderingContext2D, character: Character, charClass: CharacterClass, topLeft: Position, width: number, height: number, game: Game) {
+    if (charClass.level?.leveling === undefined) return;
+    paintPlayerLevelUI(ctx, charClass.level, charClass.id, charClass.id, topLeft, width, height, charClass.className + ":", game);
 }
 
 function changeCharacterToTowerBuilderClass(

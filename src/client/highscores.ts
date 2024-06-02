@@ -84,7 +84,7 @@ export function calculateHighscoreOnGameEnd(game: Game): number {
     } else if (game.state.bossStuff.godFightStarted) {
         newScore = createAndPushGodScore(playerClass, game);
     } else {
-        let newScore = getHighestPlayerDistanceFromMapMiddle(game);
+        newScore = getHighestPlayerDistanceFromMapMiddle(game);
         const board = state.highscores.scoreBoards[HIGHSCORE_DISTANCE];
         board.scores.push({ score: newScore, playerClass: playerClass });
         game.UI.lastHighscoreText = `New Score (Distance): ${newScore}`;

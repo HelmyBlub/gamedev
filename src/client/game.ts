@@ -634,12 +634,14 @@ function endGameReplayStuff(game: Game, newScore: number) {
     const replay = game.testing.replay;
     if (replay) {
         replayGameEndAssert(game, newScore);
-        const moreReplays = replayNextInReplayQueue(game);
-        if (!moreReplays) {
-            const myClientId = game.multiplayer.myClientId;
+        const myClientId = game.multiplayer.myClientId;
+        if (replay.data?.multiplayerData) {
             game.state.clientInfos = [{ id: myClientId, lastMousePosition: { x: 0, y: 0 }, name: "" }];
             const player = createPlayerWithPlayerCharacter(game.state.idCounter, myClientId, { x: 0, y: 0 }, game.state.randomSeed, game);
             game.state.players = [player];
+        }
+        const moreReplays = replayNextInReplayQueue(game);
+        if (!moreReplays) {
             localStorageLoad(game);
         }
     }

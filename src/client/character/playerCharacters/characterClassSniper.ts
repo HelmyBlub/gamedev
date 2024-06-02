@@ -5,11 +5,12 @@ import { ABILITY_NAME_SNIPE, AbilitySnipe } from "../../ability/snipe/abilitySni
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../gameModel.js";
 import { Character, IMAGE_SLIME, createCharacter } from "../characterModel.js";
 import { createBossUpgradeOptionsAbilityLeveling, executeAbilityLevelingCharacterUpgradeOption } from "./abilityLevelingCharacter.js";
-import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters.js";
+import { CharacterClass, PLAYER_CHARACTER_CLASSES_FUNCTIONS, PlayerCharacterLevelUI, paintPlayerAbilityLevelUI } from "./playerCharacters.js";
 import { deepCopy, getNextId } from "../../game.js";
 import { resetCharacter } from "../character.js";
 import { CHARACTER_TYPE_BOSS_ENEMY } from "../enemy/bossEnemy.js";
 import { ABILITY_NAME_SNIPE_RELOAD } from "../../ability/snipe/abilitySnipeReload.js";
+import { paintTextWithOutline } from "../../gamePaint.js";
 
 export const CHARACTER_CLASS_SNIPER = "Sniper";
 
@@ -20,7 +21,14 @@ export function addSniperClass() {
         createBossUpgradeOptions: createBossUpgradeOptionsAbilityLeveling,
         executeUpgradeOption: executeAbilityLevelingCharacterUpgradeOption,
         getMoreInfosText: getLongUiText,
+        paintLevelUI: paintLevelUI,
     }
+}
+
+function paintLevelUI(ctx: CanvasRenderingContext2D, character: Character, charClass: CharacterClass, topLeft: Position, width: number, height: number, game: Game) {
+    const sniperAbility = character.abilities.find(a => a.classIdRef === charClass.id && a.name === ABILITY_NAME_SNIPE);
+    if (!sniperAbility || sniperAbility.level?.leveling === undefined) return;
+    paintPlayerAbilityLevelUI(ctx, sniperAbility, topLeft, width, height, game);
 }
 
 function changeCharacterToSniperClass(

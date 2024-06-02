@@ -2569,7 +2569,7 @@
     "gameEndAsserts": [
         {
             "type": "score",
-            "data": 0
+            "data": 1668
         },
         {
             "type": "killCounter",

@@ -3,7 +3,7 @@ import { createAbilityHpRegen } from "../../ability/abilityHpRegen.js";
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../gameModel.js";
 import { Character, IMAGE_SLIME, createCharacter } from "../characterModel.js";
 import { createBossUpgradeOptionsAbilityLeveling, executeAbilityLevelingCharacterUpgradeOption } from "./abilityLevelingCharacter.js";
-import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters.js";
+import { CharacterClass, PLAYER_CHARACTER_CLASSES_FUNCTIONS, paintPlayerAbilityLevelUI } from "./playerCharacters.js";
 import { deepCopy, getNextId } from "../../game.js";
 import { resetCharacter } from "../character.js";
 import { CHARACTER_TYPE_BOSS_ENEMY } from "../enemy/bossEnemy.js";
@@ -21,8 +21,15 @@ export function addMusicianClass() {
         createBossUpgradeOptions: createBossUpgradeOptionsAbilityLeveling,
         executeUpgradeOption: executeAbilityLevelingCharacterUpgradeOption,
         getMoreInfosText: getLongUiText,
+        paintLevelUI: paintLevelUI,
         preventMultiple: true,
     }
+}
+
+function paintLevelUI(ctx: CanvasRenderingContext2D, character: Character, charClass: CharacterClass, topLeft: Position, width: number, height: number, game: Game) {
+    const musicSheet = character.abilities.find(a => a.classIdRef === charClass.id && a.name === ABILITY_NAME_MUSIC_SHEET);
+    if (!musicSheet || musicSheet.level?.leveling === undefined) return;
+    paintPlayerAbilityLevelUI(ctx, musicSheet, topLeft, width, height, game);
 }
 
 function changeCharacterToMusicianClass(

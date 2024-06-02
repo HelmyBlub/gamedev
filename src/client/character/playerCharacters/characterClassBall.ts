@@ -3,7 +3,7 @@ import { createAbilityHpRegen } from "../../ability/abilityHpRegen.js";
 import { AbilitySnipe as AbilityBounceBall } from "../../ability/snipe/abilitySnipe.js";
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../gameModel.js";
 import { Character, IMAGE_SLIME, createCharacter } from "../characterModel.js";
-import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters.js";
+import { CharacterClass, PLAYER_CHARACTER_CLASSES_FUNCTIONS, paintPlayerAbilityLevelUI } from "./playerCharacters.js";
 import { deepCopy, getNextId } from "../../game.js";
 import { resetCharacter } from "../character.js";
 import { CHARACTER_TYPE_BOSS_ENEMY } from "../enemy/bossEnemy.js";
@@ -22,8 +22,22 @@ export function addBallClass() {
         createBossUpgradeOptions: createBossUpgradeOptionsAbilityLeveling,
         executeUpgradeOption: executeAbilityLevelingCharacterUpgradeOption,
         getMoreInfosText: getLongUiText,
+        paintLevelUI: paintLevelUI,
         preventMultiple: true,
     }
+}
+
+function paintLevelUI(ctx: CanvasRenderingContext2D, character: Character, charClass: CharacterClass, topLeft: Position, width: number, height: number, game: Game) {
+    const tempTopLeft = { x: topLeft.x, y: topLeft.y };
+    const tempWidth = Math.floor(width / 2);
+    const bounceBall = character.abilities.find(a => a.classIdRef === charClass.id && a.name === ABILITY_NAME_BOUNCE_BALL);
+    if (!bounceBall || bounceBall.level?.leveling === undefined) return;
+    paintPlayerAbilityLevelUI(ctx, bounceBall, tempTopLeft, tempWidth, height, game);
+    tempTopLeft.x += tempWidth;
+
+    const lightningBall = character.abilities.find(a => a.classIdRef === charClass.id && a.name === ABILITY_NAME_LIGHTNING_BALL);
+    if (!lightningBall || lightningBall.level?.leveling === undefined) return;
+    paintPlayerAbilityLevelUI(ctx, lightningBall, tempTopLeft, tempWidth, height, game);
 }
 
 function changeCharacterToBallClass(

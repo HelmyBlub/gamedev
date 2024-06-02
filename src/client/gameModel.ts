@@ -17,6 +17,7 @@ import { GAME_VERSION } from "./main.js";
 import { createDamageMeter, DamageMeter } from "./combatlog.js";
 import { createSound, Sound } from "./sound.js";
 import { Achievements, createDefaultAchivements } from "./achievements/achievements.js";
+import { PlayerCharacterLevelUI } from "./character/playerCharacters/playerCharacters.js";
 
 export type Position = {
     x: number,
@@ -276,6 +277,7 @@ export type Game = {
         moneyGainedThisRun: MoneyGainedThisRun,
         lastHighscoreText?: string;
         lastMouseDownWasUIClick: boolean,
+        playerCharacterLevelUI?: PlayerCharacterLevelUI,
     }
 }
 

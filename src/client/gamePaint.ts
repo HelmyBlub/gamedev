@@ -3,7 +3,7 @@ import { canCharacterTradeAbilityOrPets } from "./character/character.js";
 import { Character } from "./character/characterModel.js";
 import { paintPlayerCharacters } from "./character/characterPaint.js";
 import { paintBossCharacters, paintBossCrown } from "./character/enemy/bossEnemy.js";
-import { CharacterClass, hasPlayerChoosenStartClassUpgrade, shareCharactersTradeablePreventedMultipleClass } from "./character/playerCharacters/playerCharacters.js";
+import { CharacterClass, hasPlayerChoosenStartClassUpgrade, paintPlayerCharacterUI, shareCharactersTradeablePreventedMultipleClass } from "./character/playerCharacters/playerCharacters.js";
 import { TamerPetCharacter } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
 import { calculateDistance, calculateFightRetryCounter, findClosestInteractable, getCameraPosition, getTimeSinceFirstKill } from "./game.js";
 import { Game, Position, Debugging, PaintTextData } from "./gameModel.js";
@@ -167,7 +167,7 @@ export function paintKey(ctx: CanvasRenderingContext2D, key: string, paintPositi
 function paintMultiplayerPing(ctx: CanvasRenderingContext2D, game: Game) {
     if (game.multiplayer.websocket !== null) {
         ctx.font = "16px Arial";
-        ctx.fillText("Ping: " + Math.round(game.multiplayer.delay), 10, 60);
+        ctx.fillText("Ping: " + Math.round(game.multiplayer.delay), 10, 80);
     }
 }
 
@@ -401,12 +401,11 @@ function paintKillCounter(ctx: CanvasRenderingContext2D, killCounter: number, ga
 function paintMyCharacterStats(ctx: CanvasRenderingContext2D, game: Game) {
     const player = findPlayerById(game.state.players, game.multiplayer.myClientId);
     if (player === null) return;
-    paintPlayerStats(ctx, player, getTimeSinceFirstKill(game.state), game);
+    paintPlayerStats(ctx, player, game);
 }
 
-function paintPlayerStats(ctx: CanvasRenderingContext2D, player: Player, gameTime: number, game: Game) {
+function paintPlayerStats(ctx: CanvasRenderingContext2D, player: Player, game: Game) {
     const character = player.character;
-    const distance = Math.round(calculateDistance(character, getMapMidlePosition(game.state.map)));
     ctx.fillStyle = "black";
     ctx.font = "18px Arial";
 
@@ -416,10 +415,10 @@ function paintPlayerStats(ctx: CanvasRenderingContext2D, player: Player, gameTim
             200, 20
         );
     }
-    paintTextWithOutline(ctx, "white", "black", "HP: " + Math.ceil(character.hp), 100, 20);
-    if (player.permanentData.money > 0) paintTextWithOutline(ctx, "white", "black", "$ " + Math.ceil(player.permanentData.money), 300, 20);
-    paintTextWithOutline(ctx, "white", "black", "Time: " + Math.round(gameTime / 1000), 400, 20);
-    paintTextWithOutline(ctx, "white", "black", "Distance: " + distance, 10, 40);
+    const offsetX = ctx.canvas.width * 0.1;
+    const playerUiWidth = Math.floor(ctx.canvas.width * 0.8);
+    const playerUiHeight = 40;
+    paintPlayerCharacterUI(ctx, player, { x: offsetX, y: 10 }, playerUiWidth, playerUiHeight, game);
 
     if (!game.state.ended && game.multiplayer.websocket && game.multiplayer.timePassedWithoutSeverUpdate + 2000 < performance.now()) {
         const text = "Bad Connection...";
