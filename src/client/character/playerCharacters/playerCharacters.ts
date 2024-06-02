@@ -214,9 +214,9 @@ export function paintPlayerLevelUI(ctx: CanvasRenderingContext2D, leveling: Leve
     ctx.globalAlpha /= levelUiGlobalAlpha;
 }
 
-
 function paintCharacterClassLevels(ctx: CanvasRenderingContext2D, character: Character, topLeft: Position, width: number, height: number, game: Game) {
     if (!character.characterClasses) return;
+    if (game.state.bossStuff.godFightStarted || game.state.bossStuff.kingFightStarted) return;
     let classPaintCounter = 0;
     const tempTopLeft = { x: topLeft.x, y: topLeft.y };
     for (let charClass of character.characterClasses) {
