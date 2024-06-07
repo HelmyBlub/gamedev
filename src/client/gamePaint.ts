@@ -5,14 +5,13 @@ import { paintPlayerCharacters } from "./character/characterPaint.js";
 import { paintBossCharacters, paintBossCrown } from "./character/enemy/bossEnemy.js";
 import { CharacterClass, hasPlayerChoosenStartClassUpgrade, paintPlayerCharacterUI, shareCharactersTradeablePreventedMultipleClass } from "./character/playerCharacters/playerCharacters.js";
 import { TamerPetCharacter } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
-import { calculateDistance, calculateFightRetryCounter, findClosestInteractable, getCameraPosition, getTimeSinceFirstKill } from "./game.js";
+import { calculateFightRetryCounter, findClosestInteractable, getCameraPosition } from "./game.js";
 import { Game, Position, Debugging, PaintTextData } from "./gameModel.js";
 import { Highscores } from "./highscores.js";
 import { GAME_IMAGES, loadImage } from "./imageLoad.js";
-import { getMapMidlePosition } from "./map/map.js";
-import { MAP_OBJECTS_FUNCTIONS, findNearesInteractableMapChunkObject } from "./map/mapObjects.js";
+import { MAP_OBJECTS_FUNCTIONS } from "./map/mapObjects.js";
 import { paintMap, paintMapCharacters } from "./map/mapPaint.js";
-import { Player, findNearesPastPlayerCharacter, findPlayerById, isAutoSkillActive } from "./player.js";
+import { Player, findPlayerById, isAutoSkillActive } from "./player.js";
 import { playerInputBindingToDisplayValue } from "./playerInput.js";
 import { createEndScreenMoreInfos, paintMoreInfos, paintMoreInfosPart } from "./moreInfo.js";
 
@@ -35,15 +34,14 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
     paintBossCrown(ctx, cameraPosition, game);
     paintAbilityObjects(ctx, game.state.abilityObjects, game, "afterCharacterPaint");
     paintDamageNumbers(ctx, game.UI.displayTextData, cameraPosition, game.state.time);
-    paintKillCounter(ctx, game.state.killCounter, game);
     paintClosestInteractable(ctx, cameraPosition, game);
     paintKeyInfo(ctx, game);
     paintFightWipeUI(ctx, game);
     paintEndScreen(ctx, game.state.highscores, game);
     paintMyCharacterStats(ctx, game);
+    paintTimeMeasures(ctx, game.debug);
     paintMoreInfos(ctx, game.UI.moreInfos, game);
     paintMultiplayerPing(ctx, game);
-    paintTimeMeasures(ctx, game.debug);
     paintPausedText(ctx, game);
     paintUiForAbilities(ctx, game);
 }
@@ -392,12 +390,6 @@ function paintGameTitle(ctx: CanvasRenderingContext2D) {
     paintTextWithOutline(ctx, "white", "black", "(Earliest Early Access)", middleX, 105, true, 2);
 }
 
-function paintKillCounter(ctx: CanvasRenderingContext2D, killCounter: number, game: Game) {
-    if (game.state.ended && killCounter === 0) return;
-    ctx.font = "18px Arial";
-    paintTextWithOutline(ctx, "white", "black", "Kills: " + killCounter, 10, 20);
-}
-
 function paintMyCharacterStats(ctx: CanvasRenderingContext2D, game: Game) {
     const player = findPlayerById(game.state.players, game.multiplayer.myClientId);
     if (player === null) return;
@@ -409,16 +401,9 @@ function paintPlayerStats(ctx: CanvasRenderingContext2D, player: Player, game: G
     ctx.fillStyle = "black";
     ctx.font = "18px Arial";
 
-    if (character.level?.leveling) {
-        ctx.fillText("Level: " + character.level.level
-            + "  SkillPoints:" + character.availableSkillPoints,
-            200, 20
-        );
-    }
-    const offsetX = ctx.canvas.width * 0.1;
-    const playerUiWidth = Math.floor(ctx.canvas.width * 0.8);
+    const playerUiWidth = Math.floor(ctx.canvas.width * 0.9);
     const playerUiHeight = 40;
-    paintPlayerCharacterUI(ctx, player, { x: offsetX, y: 10 }, playerUiWidth, playerUiHeight, game);
+    paintPlayerCharacterUI(ctx, player, { x: 5, y: 10 }, playerUiWidth, playerUiHeight, game);
 
     if (!game.state.ended && game.multiplayer.websocket && game.multiplayer.timePassedWithoutSeverUpdate + 2000 < performance.now()) {
         const text = "Bad Connection...";

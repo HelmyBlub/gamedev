@@ -82,11 +82,16 @@ export function paintBossCrown(ctx: CanvasRenderingContext2D, cameraPosition: Po
 export function checkForBossSpawn(game: Game) {
     if (game.state.bossStuff.kingFightStarted || game.state.bossStuff.godFightStarted) return;
     const bossStuff = game.state.bossStuff;
-    const nextBossSpawnTime = bossStuff.bossSpawnEachXMilliSecond * bossStuff.bossLevelCounter;
+    const nextBossSpawnTime = getNextBossSpawnTime(bossStuff);
     if (getTimeSinceFirstKill(game.state) >= nextBossSpawnTime) {
         bossStuff.bosses.push(createBossWithLevel(game.state.idCounter, bossStuff.bossLevelCounter, game));
         bossStuff.bossLevelCounter++;
     }
+}
+
+/// relative to timeSinceFirstKill
+export function getNextBossSpawnTime(bossStuff: BossStuff): number {
+    return bossStuff.bossSpawnEachXMilliSecond * bossStuff.bossLevelCounter;
 }
 
 export function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: number) {

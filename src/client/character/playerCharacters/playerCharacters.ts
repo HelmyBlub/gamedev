@@ -14,6 +14,7 @@ import { calculateDistance, getTimeSinceFirstKill } from "../../game.js"
 import { getMapMidlePosition } from "../../map/map.js"
 import { Ability } from "../../ability/ability.js"
 import { TamerPetCharacter } from "./tamer/tamerPetCharacter.js"
+import { getNextBossSpawnTime } from "../enemy/bossEnemy.js"
 
 export type PlayerCharacterClassFunctions = {
     changeCharacterToThisClass: (character: Character, idCounter: IdCounter, game: Game) => void,
@@ -66,13 +67,31 @@ export function onDomLoadSetCharacterClasses() {
 }
 
 export function paintPlayerCharacterUI(ctx: CanvasRenderingContext2D, player: Player, topLeft: Position, width: number, height: number, game: Game) {
-    if (player.permanentData.money > 0) paintTextWithOutline(ctx, "white", "black", "$ " + Math.ceil(player.permanentData.money), 300, 20);
-    const gameTime = getTimeSinceFirstKill(game.state);
+    if (game.state.bossStuff.godFightStarted || game.state.bossStuff.kingFightStarted) return;
+
+    const aplha = 0.75;
+    ctx.globalAlpha *= aplha;
+
+    const tempTopLeft = { x: topLeft.x, y: topLeft.y };
+    const horizontalSpacing = 3;
+    let tempWidth = width;
     const character = player.character;
-    const distance = Math.round(calculateDistance(character, getMapMidlePosition(game.state.map)));
-    paintTextWithOutline(ctx, "white", "black", "Time: " + Math.round(gameTime / 1000), 10, 60);
-    paintTextWithOutline(ctx, "white", "black", "Distance: " + distance, 10, 40);
-    paintCharacterClassLevels(ctx, character, topLeft, width, height, game);
+
+    const distancePaintWidth = paintPlayerDistance(ctx, player, tempTopLeft, height, game) + horizontalSpacing;
+    tempTopLeft.x += distancePaintWidth;
+    tempWidth -= distancePaintWidth;
+
+    const bossTimerPaintWidth = paintBossTimer(ctx, player, tempTopLeft, height, game) + horizontalSpacing;
+    tempTopLeft.x += bossTimerPaintWidth;
+    tempWidth -= bossTimerPaintWidth;
+
+    const moneyPaintWidth = paintMoney(ctx, player, tempTopLeft, height, game) + horizontalSpacing;
+    tempTopLeft.x += moneyPaintWidth;
+    tempWidth -= moneyPaintWidth;
+
+
+    paintCharacterClassLevels(ctx, character, tempTopLeft, tempWidth, height, game);
+    ctx.globalAlpha /= aplha;
 }
 
 export function paintPlayerAbilityLevelUI(ctx: CanvasRenderingContext2D, ability: Ability, topLeft: Position, width: number, height: number, game: Game) {
@@ -150,8 +169,6 @@ export function hasPlayerChoosenStartClassUpgrade(character: Character): boolean
 
 export function paintPlayerLevelUI(ctx: CanvasRenderingContext2D, leveling: Leveling, classIdRef: number, idRef: number, topLeft: Position, width: number, height: number, text: string, game: Game) {
     if (leveling.leveling === undefined) return;
-    const levelUiGlobalAlpha = 0.8;
-    ctx.globalAlpha *= levelUiGlobalAlpha;
     const level = leveling.level;
     const levelXpPerCent = leveling.leveling.experience / leveling.leveling.experienceForLevelUp;
     let levelUI = game.UI.playerCharacterLevelUI;
@@ -211,12 +228,10 @@ export function paintPlayerLevelUI(ctx: CanvasRenderingContext2D, leveling: Leve
     lastDisplayed.lastPaintedLevel = displayedLevel;
     lastDisplayed.lastPaintedPerCent = displayLevelPerCent;
     lastDisplayed.lastPaintedTime = game.state.time;
-    ctx.globalAlpha /= levelUiGlobalAlpha;
 }
 
 function paintCharacterClassLevels(ctx: CanvasRenderingContext2D, character: Character, topLeft: Position, width: number, height: number, game: Game) {
     if (!character.characterClasses) return;
-    if (game.state.bossStuff.godFightStarted || game.state.bossStuff.kingFightStarted) return;
     let classPaintCounter = 0;
     const tempTopLeft = { x: topLeft.x, y: topLeft.y };
     for (let charClass of character.characterClasses) {
@@ -231,4 +246,74 @@ function paintCharacterClassLevels(ctx: CanvasRenderingContext2D, character: Cha
         charClassFunctions.paintLevelUI(ctx, character, charClass, tempTopLeft, width, heightPerClass, game);
         tempTopLeft.y += heightPerClass;
     }
+}
+
+function paintMoney(ctx: CanvasRenderingContext2D, player: Player, topLeft: Position, height: number, game: Game): number {
+    let fontSize = height;
+    ctx.font = `${fontSize}px Arial`;
+    ctx.strokeStyle = "black";
+    ctx.fillStyle = "white";
+    ctx.lineWidth = 2;
+    const margin = 1;
+    const moneyText = "$ " + Math.ceil(player.permanentData.money);
+    let moneyPaintWidth = ctx.measureText(moneyText).width + margin * 2;
+    const maxMoneyWidth = 100;
+    if (moneyPaintWidth > maxMoneyWidth) {
+        const shrinkFaktor = maxMoneyWidth / moneyPaintWidth;
+        moneyPaintWidth = Math.floor(moneyPaintWidth * shrinkFaktor);
+        fontSize = Math.floor(fontSize * shrinkFaktor);
+        ctx.font = `${fontSize}px Arial`;
+    }
+    if (player.permanentData.money > 0) {
+        ctx.fillRect(topLeft.x, topLeft.y, moneyPaintWidth, height);
+        ctx.beginPath();
+        ctx.rect(topLeft.x, topLeft.y, moneyPaintWidth, height);
+        ctx.stroke();
+        paintTextWithOutline(ctx, "white", "black", moneyText, topLeft.x + margin, topLeft.y + fontSize - 2 + Math.floor((height - fontSize) / 2));
+    }
+    return moneyPaintWidth;
+}
+
+
+function paintBossTimer(ctx: CanvasRenderingContext2D, player: Player, topLeft: Position, height: number, game: Game): number {
+    const fontSize = Math.floor(height / 2);
+    ctx.font = `${fontSize}px Arial`;
+    ctx.strokeStyle = "black";
+    ctx.fillStyle = "white";
+    ctx.lineWidth = 2;
+    const margin = 1;
+    const timerDisplayText = `Boss ${game.state.bossStuff.bossLevelCounter}`;
+    const timerPaintWidth = ctx.measureText(timerDisplayText).width + margin * 2;
+    if (game.state.timeFirstKill !== undefined) {
+        const timeUntiLNextBossMS = getNextBossSpawnTime(game.state.bossStuff) - getTimeSinceFirstKill(game.state);
+        const timeUntilNextBossSeconds = Math.round(timeUntiLNextBossMS / 1000);
+        ctx.fillRect(topLeft.x, topLeft.y, timerPaintWidth, height);
+        ctx.beginPath();
+        ctx.rect(topLeft.x, topLeft.y, timerPaintWidth, height);
+        ctx.stroke();
+        paintTextWithOutline(ctx, "white", "black", timerDisplayText, topLeft.x + margin, topLeft.y + fontSize);
+        paintTextWithOutline(ctx, "white", "black", `${timeUntilNextBossSeconds}s`, topLeft.x + Math.floor(timerPaintWidth / 2), topLeft.y + height - 1, true);
+    }
+    return timerPaintWidth;
+}
+
+function paintPlayerDistance(ctx: CanvasRenderingContext2D, player: Player, topLeft: Position, height: number, game: Game): number {
+    const distance = Math.round(calculateDistance(player.character, getMapMidlePosition(game.state.map)));
+    const fontSize = Math.floor(height / 2);
+    ctx.strokeStyle = "black";
+    ctx.fillStyle = "white";
+    ctx.lineWidth = 2;
+    ctx.font = `${fontSize}px Arial`;
+    const margin = 1;
+    const distanceDisplayText = `Distance`;
+    const distanceDisplayPaintTextWidth = ctx.measureText(distanceDisplayText).width;
+    const distanceValuePaintWidth = ctx.measureText(distance.toFixed(0)).width
+    const distancePaintWidth = Math.max(distanceDisplayPaintTextWidth, distanceValuePaintWidth) + margin * 2;
+    ctx.fillRect(topLeft.x, topLeft.y, distancePaintWidth, height);
+    ctx.beginPath();
+    ctx.rect(topLeft.x, topLeft.y, distancePaintWidth, height);
+    ctx.stroke();
+    paintTextWithOutline(ctx, "white", "black", distanceDisplayText, topLeft.x + margin, topLeft.y + fontSize);
+    paintTextWithOutline(ctx, "white", "black", `${distance}`, topLeft.x + Math.floor(distancePaintWidth / 2), topLeft.y + height - 1, true);
+    return distancePaintWidth;
 }
