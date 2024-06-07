@@ -240,6 +240,13 @@ export type Multiplayer = {
         interval: number,
         nextTime: number,
     }
+    gameStateCompare?: {
+        compareInterval: number,
+        nextCompareTime?: number,
+        maxKeep: number,
+        timeAndHash: { time: number, hash: number }[],
+        stateTainted: boolean,
+    }
 }
 
 export type Game = {
@@ -349,6 +356,12 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
                 sendForOwners: [],
                 interval: 100,
                 nextTime: 0,
+            },
+            gameStateCompare: {
+                compareInterval: 1000,
+                maxKeep: 10,
+                timeAndHash: [],
+                stateTainted: false,
             }
         },
         camera: {

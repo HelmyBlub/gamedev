@@ -166,6 +166,11 @@ function paintMultiplayerPing(ctx: CanvasRenderingContext2D, game: Game) {
     if (game.multiplayer.websocket !== null) {
         ctx.font = "16px Arial";
         ctx.fillText("Ping: " + Math.round(game.multiplayer.delay), 10, 80);
+        if (game.multiplayer.gameStateCompare?.stateTainted) {
+            ctx.font = "64px Arial";
+            ctx.fillStyle = "black";
+            ctx.fillText("Multiplayer State Broken", 10, 80);
+        }
     }
 }
 

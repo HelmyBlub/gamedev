@@ -1,5 +1,5 @@
 import { findAndSetNewCameraCharacterId } from "./character/character.js";
-import { createDamageMeter, damageMeterChangeClientId } from "./combatlog.js";
+import { damageMeterChangeClientId } from "./combatlog.js";
 import { createPaintTextData, deepCopy, getCameraPosition } from "./game.js";
 import { Game, GameState, RecordDataMultiplayer } from "./gameModel.js";
 import { sendMultiplayer } from "./multiplayerConenction.js";
@@ -9,6 +9,7 @@ import { compressString } from "./stringCompress.js";
 
 type Command = { command: string };
 type CommandTimeUpdate = Command & { time: number };
+export const COMMAND_COMPARE_STATE = "COMPARE_STATE"
 export type CommandRestart = PlayerInput & {
     recordInputs?: boolean,
     replay?: boolean,
@@ -28,6 +29,11 @@ type ConnectInfo = {
 type PlayerJoined = {
     clientName: string,
     clientId: number,
+}
+
+type StateCompare = {
+    time: number,
+    hash: number,
 }
 
 export function handleCommand(game: Game, data: any) {
@@ -82,8 +88,26 @@ export function executeCommand(game: Game, data: any) {
         case "timeUpdate":
             timeUpdate(game, data);
             break;
+        case COMMAND_COMPARE_STATE:
+            compareStateHash(game, data.data);
+            break;
         default:
             console.log("unkown command: " + command, data);
+    }
+}
+
+function compareStateHash(game: Game, data: StateCompare) {
+    const compare = game.multiplayer.gameStateCompare;
+    if (!compare) return;
+    let timeAndHash = compare.timeAndHash.find(e => e.time === data.time);
+    if (timeAndHash === undefined) {
+        compare.timeAndHash.push({ hash: data.hash, time: data.time });
+        return;
+    }
+    if (timeAndHash.hash !== data.hash) {
+        compare.stateTainted = true;
+    } else {
+        compare.stateTainted = false;
     }
 }
 

@@ -3,13 +3,8 @@ increase version
 
 current tasks:
 - technical stuff:
-    - visualize abilitiy level and boss spawn timer better
-        - coloring?
-        - how to position time?
-            - better display time until next boss?
-        - display money
     - check for sync loss in multiplayer
-        - add button to hash state and compare with other clients
+        - do it always, every second (configureable)
 
 next feature ideas:
 - think about next bigger feature 

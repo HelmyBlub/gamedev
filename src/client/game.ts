@@ -7,7 +7,7 @@ import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap,
 import { Character } from "./character/characterModel.js";
 import { generateMissingChunks, pastCharactersMapTilePositions } from "./map/mapGeneration.js";
 import { createFixPositionRespawnEnemiesOnInit } from "./character/enemy/fixPositionRespawnEnemyModel.js";
-import { CommandRestart, handleCommand } from "./commands.js";
+import { COMMAND_COMPARE_STATE, CommandRestart, handleCommand } from "./commands.js";
 import { ABILITIES_FUNCTIONS, tickAbilityObjects } from "./ability/ability.js";
 import { garbageCollectPathingCache, getPathingCache } from "./character/pathing.js";
 import { createObjectDeathCircle } from "./ability/abilityDeathCircle.js";
@@ -129,6 +129,7 @@ export function gameInit(game: Game) {
     game.multiplayer.autosendMousePosition.nextTime = 0;
     if (game.multiplayer.websocket !== null) {
         game.multiplayer.maxServerGameTime = 0;
+        if (game.multiplayer.gameStateCompare) game.multiplayer.gameStateCompare.nextCompareTime = undefined;
         game.state.playerInputs = game.multiplayer.cachePlayerInputs!;
     }
     const playerAlphaInput: HTMLInputElement = document.getElementById("playerGlobalAlphaMultiplier") as HTMLInputElement;
@@ -256,6 +257,27 @@ export function getTimeSinceFirstKill(gameState: GameState): number {
     if (gameState.timeFirstKill === undefined) return 0;
     return gameState.time - gameState.timeFirstKill;
 }
+
+export function createGamePlayerHash(state: GameState) {
+    const gameStateString = JSON.stringify(state.players);
+    const result = createHash(gameStateString);
+    return result;
+}
+
+export function createHash(str: string, seed: number = 0): number {
+    let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
+    for (let i = 0, ch; i < str.length; i++) {
+        ch = str.charCodeAt(i);
+        h1 = Math.imul(h1 ^ ch, 2654435761);
+        h2 = Math.imul(h2 ^ ch, 1597334677);
+    }
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
+    h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
+    h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+
+    return 4294967296 * (2097151 & h2) + (h1 >>> 0);
+};
 
 export function calculateDistancePointToLine(point: Position, linestart: Position, lineEnd: Position) {
     const A = point.x - linestart.x;
@@ -699,6 +721,7 @@ function doStuff(game: Game) {
     checkForAutoSkill(game);
     autoPlay(game);
     autoSendMyMousePosition(game);
+    autoSendGamePlayerHashInMultiplayer(game);
 }
 
 function autoSendMyMousePosition(game: Game) {
@@ -713,6 +736,27 @@ function autoSendMyMousePosition(game: Game) {
             data: { action: MOUSE_ACTION, mousePosition: castPosition },
         });
         game.multiplayer.autosendMousePosition.nextTime = game.state.time + game.multiplayer.autosendMousePosition.interval;
+    }
+}
+
+function autoSendGamePlayerHashInMultiplayer(game: Game) {
+    if (!game.multiplayer.websocket) return;
+    if (!game.multiplayer.gameStateCompare) return;
+    const compare = game.multiplayer.gameStateCompare;
+    if (compare.nextCompareTime === undefined) {
+        compare.nextCompareTime = game.state.time + compare.compareInterval - (game.state.time % compare.compareInterval);
+    }
+    if (compare.nextCompareTime <= game.state.time) {
+        const hash = createGamePlayerHash(game.state);
+        handleCommand(game, {
+            command: COMMAND_COMPARE_STATE,
+            clientId: game.multiplayer.myClientId,
+            data: { hash: hash, time: game.state.time },
+        });
+        if (compare.timeAndHash.length > compare.maxKeep) {
+            compare.timeAndHash.shift();
+        }
+        compare.nextCompareTime += compare.compareInterval;
     }
 }
 

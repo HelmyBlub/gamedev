@@ -1,7 +1,7 @@
 import { CommandRestart, handleCommand } from "./commands.js";
 import { findPlayerById } from "./player.js";
 import { Character } from "./character/characterModel.js";
-import { Game, Position } from "./gameModel.js";
+import { Game } from "./gameModel.js";
 import { websocketConnect } from "./multiplayerConenction.js";
 import { ABILITIES_FUNCTIONS } from "./ability/ability.js";
 import { calculateDirection, getCameraPosition, findClientInfo, resetGameNonStateData, takeTimeMeasure, findClosestInteractable, concedePlayerFightRetries, retryFight, calculateFightRetryCounter } from "./game.js";
