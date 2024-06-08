@@ -494,6 +494,8 @@ function modifyNoteClick(note: MusicNote, unroundedTick: number, tick: number): 
 }
 
 function positionToHoverNote(abilityOwner: AbilityOwner, musicSheets: AbilityMusicSheets, selectedSheet: AbilityMusicSheet, castPosition: Position, musicSheetWidth: number): { note: MusicNote, delete?: boolean } | undefined {
+    const musicSheetLeft = Math.floor(abilityOwner.x - musicSheetWidth / 2);
+    if (castPosition.x >= musicSheetLeft + musicSheetWidth) return undefined;
     const unroundedTick = calculateUnroundedTick(abilityOwner, musicSheets, selectedSheet, castPosition, musicSheetWidth);
     const note = positionToMusicNote(abilityOwner, musicSheets, selectedSheet, castPosition, musicSheetWidth);
     if (!note) return;
