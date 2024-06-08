@@ -2,9 +2,18 @@ next test run:
 increase version
 
 current tasks:
-- technical stuff:
-    - check for sync loss in multiplayer
-        - do it always, every second (configureable)
+- Multiplayer: indicate where other players are
+    - when other players not on screen. Paint arrow at the edge of screen towards player
+    - paint name and distance
+- Bug: movement speed bug two snipers
+- Bug: music sheet and right buttons "overlap" with music sheet
+    - transparency issue
+- Bug: musician damage spawn can somehow bug to never be at player location
+- open multiplayer: focus name field. "Enter" key for connect
+- change: visualize tamer pet what they need
+- two much lag with ball characters and many enemies
+    - change runback method for enemies
+- Bug: "mulitplayer sync message" directly at the start?
 
 next feature ideas:
 - think about next bigger feature 

@@ -5,7 +5,7 @@ import { paintPlayerCharacters } from "./character/characterPaint.js";
 import { paintBossCharacters, paintBossCrown } from "./character/enemy/bossEnemy.js";
 import { CharacterClass, hasPlayerChoosenStartClassUpgrade, paintPlayerCharacterUI, shareCharactersTradeablePreventedMultipleClass } from "./character/playerCharacters/playerCharacters.js";
 import { TamerPetCharacter } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
-import { calculateFightRetryCounter, findClosestInteractable, getCameraPosition } from "./game.js";
+import { calculateDirection, calculateDistance, calculateFightRetryCounter, findClientInfo, findClosestInteractable, getCameraPosition } from "./game.js";
 import { Game, Position, Debugging, PaintTextData } from "./gameModel.js";
 import { Highscores } from "./highscores.js";
 import { GAME_IMAGES, loadImage } from "./imageLoad.js";
@@ -41,7 +41,7 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
     paintMyCharacterStats(ctx, game);
     paintTimeMeasures(ctx, game.debug);
     paintMoreInfos(ctx, game.UI.moreInfos, game);
-    paintMultiplayerPing(ctx, game);
+    paintMultiplayer(ctx, game);
     paintPausedText(ctx, game);
     paintUiForAbilities(ctx, game);
 }
@@ -162,16 +162,77 @@ export function paintKey(ctx: CanvasRenderingContext2D, key: string, paintPositi
     }
 }
 
-function paintMultiplayerPing(ctx: CanvasRenderingContext2D, game: Game) {
-    if (game.multiplayer.websocket !== null) {
-        ctx.font = "16px Arial";
-        ctx.fillText("Ping: " + Math.round(game.multiplayer.delay), 10, 80);
-        if (game.multiplayer.gameStateCompare?.stateTainted) {
-            ctx.font = "64px Arial";
-            ctx.fillStyle = "black";
-            ctx.fillText("Multiplayer State Broken", 10, 80);
+function paintMultiplayer(ctx: CanvasRenderingContext2D, game: Game) {
+    if (!game.multiplayer.websocket) return;
+    ctx.font = "16px Arial";
+    ctx.fillText("Ping: " + Math.round(game.multiplayer.delay), 10, 80);
+    if (game.multiplayer.gameStateCompare?.stateTainted) {
+        ctx.font = "64px Arial";
+        ctx.fillStyle = "black";
+        ctx.fillText("Multiplayer Synchronization Broken", 10, 80);
+    }
+    paintOtherPlayerIndicator(ctx, game);
+}
+
+function paintOtherPlayerIndicator(ctx: CanvasRenderingContext2D, game: Game) {
+    const cameraPosition = getCameraPosition(game);
+    const bufferSpace = 10;
+    const alpha = 0.75;
+    ctx.globalAlpha *= alpha;
+    for (let player of game.state.players) {
+        if (player.character.isDead) continue;
+        const playerCharacter = player.character;
+        if (playerCharacter.x < cameraPosition.x - ctx.canvas.width / 2 - bufferSpace
+            || playerCharacter.y < cameraPosition.y - ctx.canvas.height / 2 - bufferSpace
+            || playerCharacter.x > cameraPosition.x + ctx.canvas.width / 2 + bufferSpace
+            || playerCharacter.y > cameraPosition.y + ctx.canvas.height / 2 + bufferSpace
+        ) {
+            const clientInfo = findClientInfo(player.clientId, game);
+            if (!clientInfo) continue;
+            const direction = calculateDirection(cameraPosition, playerCharacter);
+            const circleRadius = 40;
+            const indicatorPosition = calculatePositionToSquareEdge(cameraPosition.x, cameraPosition.y, ctx.canvas.width, ctx.canvas.height, direction, circleRadius);
+            const paintPos = getPointPaintPosition(ctx, indicatorPosition, cameraPosition);
+            const playerName = clientInfo.name;
+            const playerDistance = Math.floor(calculateDistance(indicatorPosition, playerCharacter));
+            const fontSize = 18;
+            ctx.font = `${fontSize}px Arial`;
+            const playerNamePaintWidht = ctx.measureText(playerName).width;
+            ctx.strokeStyle = "black";
+            ctx.fillStyle = "white";
+            ctx.globalAlpha *= alpha;
+            ctx.beginPath();
+            ctx.arc(paintPos.x, paintPos.y, circleRadius, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.fill();
+            ctx.globalAlpha /= alpha;
+            paintTextWithOutline(ctx, "white", "black", playerDistance.toFixed(0), paintPos.x, paintPos.y + fontSize, true);
+            if (playerNamePaintWidht > circleRadius * 1.9) {
+                const newFontSize = fontSize * (circleRadius / playerNamePaintWidht) * 1.9;
+                ctx.font = `${newFontSize}px Arial`;
+            }
+            paintTextWithOutline(ctx, "white", "black", playerName, paintPos.x, paintPos.y, true);
         }
     }
+    ctx.globalAlpha /= alpha;
+}
+
+function calculatePositionToSquareEdge(centerX: number, centerY: number, rectWidth: number, rectHeight: number, direction: number, centerRadius: number): Position {
+    const directionX = Math.cos(direction);
+    const directionY = Math.sin(direction);
+    const horizontalStep = Math.floor(rectWidth / 2) - centerRadius;
+    const verticalStep = Math.floor(rectHeight / 2) - centerRadius;
+    let moveDistance = Infinity;
+
+    if (directionX !== 0) moveDistance = Math.abs(horizontalStep / directionX);
+    if (directionY !== 0) {
+        const distanceToMoveY = Math.abs(verticalStep / directionY);
+        moveDistance = Math.min(moveDistance, distanceToMoveY);
+    }
+
+    centerX += directionX * moveDistance;
+    centerY += directionY * moveDistance;
+    return { x: centerX, y: centerY };
 }
 
 function paintClosestInteractable(ctx: CanvasRenderingContext2D, cameraPosition: Position, game: Game) {
