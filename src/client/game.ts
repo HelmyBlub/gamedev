@@ -129,7 +129,10 @@ export function gameInit(game: Game) {
     game.multiplayer.autosendMousePosition.nextTime = 0;
     if (game.multiplayer.websocket !== null) {
         game.multiplayer.maxServerGameTime = 0;
-        if (game.multiplayer.gameStateCompare) game.multiplayer.gameStateCompare.nextCompareTime = undefined;
+        if (game.multiplayer.gameStateCompare) {
+            game.multiplayer.gameStateCompare.timeAndHash = [];
+            game.multiplayer.gameStateCompare.nextCompareTime = undefined;
+        }
         game.state.playerInputs = game.multiplayer.cachePlayerInputs!;
     }
     const playerAlphaInput: HTMLInputElement = document.getElementById("playerGlobalAlphaMultiplier") as HTMLInputElement;

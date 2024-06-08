@@ -2,7 +2,6 @@ next test run:
 increase version
 
 current tasks:
-- open multiplayer: focus name field. "Enter" key for connect
 - change: visualize tamer pet what they need
 - two much lag with ball characters and many enemies
     - change runback method for enemies
