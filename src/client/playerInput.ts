@@ -190,19 +190,14 @@ function multiplayerConnectMenu(game: Game) {
         (document.getElementById('multiplayerConnect') as HTMLButtonElement).disabled = false;
         document.getElementById('stringInput')?.classList.toggle('hide');
         multiplayer.connectMenuOpen = true;
+        const nameInput = document.getElementById('nameInput') as HTMLInputElement;
+        nameInput.focus();
         if (!multiplayer.connectMenuListenerSet) {
             multiplayer.connectMenuListenerSet = true;
             const connectButton = document.getElementById('multiplayerConnect');
-            connectButton?.addEventListener("click", (e) => {
-                const nameInput = document.getElementById('nameInput') as HTMLInputElement;
-                const clientName = nameInput.value ? nameInput.value : "Unknown";
-                const lobbyCodeElement = document.getElementById('lobbyCode') as HTMLInputElement;
-                const lobbyCode = lobbyCodeElement.value;
-                try {
-                    websocketConnect(game, clientName, lobbyCode);
-                } catch (e) {
-                    document.getElementById('stringInput')?.classList.toggle('hide');
-                }
+            connectButton?.addEventListener("click", () => connectMultiplayer(game));
+            nameInput?.addEventListener("keypress", (e) => {
+                if (e.code === "Enter") connectMultiplayer(game);
             });
             const cancelButton = document.getElementById('multiplayerCancel');
             cancelButton?.addEventListener("click", (e) => {
@@ -212,6 +207,18 @@ function multiplayerConnectMenu(game: Game) {
     } else {
         game.multiplayer.intentionalDisconnect = true;
         multiplayer.websocket?.close();
+    }
+}
+
+function connectMultiplayer(game: Game) {
+    const nameInput = document.getElementById('nameInput') as HTMLInputElement;
+    const clientName = nameInput.value ? nameInput.value : "Unknown";
+    const lobbyCodeElement = document.getElementById('lobbyCode') as HTMLInputElement;
+    const lobbyCode = lobbyCodeElement.value;
+    try {
+        websocketConnect(game, clientName, lobbyCode);
+    } catch (e) {
+        document.getElementById('stringInput')?.classList.toggle('hide');
     }
 }
 
