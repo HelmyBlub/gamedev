@@ -2,9 +2,9 @@ next test run:
 increase version
 
 current tasks:
+- Bug: musician damage spawn can somehow bug to never be at player location
 - Bug: music sheet and right buttons "overlap" with music sheet
     - transparency issue
-- Bug: musician damage spawn can somehow bug to never be at player location
 - open multiplayer: focus name field. "Enter" key for connect
 - change: visualize tamer pet what they need
 - two much lag with ball characters and many enemies

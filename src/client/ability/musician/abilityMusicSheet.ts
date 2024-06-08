@@ -983,7 +983,9 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     }
 
     if (abilityMusicSheets.musicSheets.length > 0 && abilityMusicSheets.musicSheets[0].lastPlayTick !== undefined) {
-        if (abilityMusicSheets.musicSheets[0].lastPlayTick % 4 > 3) {
+        const interval = abilityMusicSheets.musicSheets[0].musicSheet.speed * 4;
+        const gameTimeInterval = game.state.time % interval;
+        if (gameTimeInterval < 16) {
             abilityMusicSheets.chainOrder = undefined;
         } else if (notesDamageTypeTicks.length > 0 && notesDamageTypeTicks[0].length > 0 && notesDamageTypeTicks[0][0].type) {
             abilityMusicSheets.chainOrder = notesDamageTypeTicks[0][0].type;
