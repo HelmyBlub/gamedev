@@ -2,10 +2,6 @@ next test run:
 increase version
 
 current tasks:
-- Multiplayer: indicate where other players are
-    - when other players not on screen. Paint arrow at the edge of screen towards player
-    - paint name and distance
-- Bug: movement speed bug two snipers
 - Bug: music sheet and right buttons "overlap" with music sheet
     - transparency issue
 - Bug: musician damage spawn can somehow bug to never be at player location

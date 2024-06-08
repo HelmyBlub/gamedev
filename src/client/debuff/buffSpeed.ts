@@ -1,6 +1,6 @@
 import { Character } from "../character/characterModel.js";
 import { Game } from "../gameModel.js";
-import { DEBUFFS_FUNCTIONS, Debuff } from "./debuff.js";
+import { DEBUFFS_FUNCTIONS, Debuff, applyDebuff, removeCharacterDebuff } from "./debuff.js";
 
 export const BUFF_NAME_SPEED = "SPEED";
 export type BuffSpeed = Debuff & {
@@ -41,8 +41,8 @@ function refreshBuffEffectSpeed(newDebuff: Debuff, currentDebuff: Debuff, target
     const newBuffSpeed = newDebuff as BuffSpeed;
     const currentBuffSpeed = currentDebuff as BuffSpeed;
     if (newBuffSpeed.speedFactor > currentBuffSpeed.speedFactor) {
-        removeBuffEffectSpeed(currentBuffSpeed, targetCharacter, game);
-        applyBuffEffectSpeed(newBuffSpeed, targetCharacter, game);
+        removeCharacterDebuff(currentBuffSpeed, targetCharacter, game);
+        applyDebuff(newBuffSpeed, targetCharacter, game);
     } else {
         currentDebuff.removeTime = newBuffSpeed.removeTime;
     }
