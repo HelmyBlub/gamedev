@@ -48,6 +48,7 @@ type Happiness = {
     current: number,
     unhappyAt: number,
     unhappyStartTime?: number,
+    nextUnhappyIndicatorTime?: number,
     hyperactiveAt: number,
     tickInterval: number,
     nextTick?: number,
@@ -165,6 +166,13 @@ function tickTamerPetCharacter(character: Character, petOwner: Character, game: 
         if (pet.happines.nextTick === undefined || pet.happines.nextTick < game.state.time) {
             pet.happines.nextTick = game.state.time + pet.happines.tickInterval;
             changeTamerPetHappines(pet, -1, game.state.time, false);
+        }
+    }
+    if (pet.happines.unhappyStartTime !== undefined && pet.happines.unhappyStartTime < game.state.time - 5000) {
+        if (pet.happines.nextUnhappyIndicatorTime === undefined) pet.happines.nextUnhappyIndicatorTime = game.state.time;
+        if (game.state.time >= pet.happines.nextUnhappyIndicatorTime) {
+            pet.happines.nextUnhappyIndicatorTime = game.state.time + 2000;
+            pet.happines.visualizations.push({ happy: false, displayUntil: game.state.time + 500 });
         }
     }
 }
@@ -383,7 +391,8 @@ function paintTamerPetCharacter(ctx: CanvasRenderingContext2D, character: Charac
         paintPos.y -= Math.floor(character.height / 2);
         const happyImage = getImage("HAPPY");
         const unhappyImage = getImage("UNHAPPY");
-        for (let visu of tamerPetCharacter.happines.visualizations) {
+        for (let i = tamerPetCharacter.happines.visualizations.length - 1; i >= 0; i--) {
+            const visu = tamerPetCharacter.happines.visualizations[i];
             if (visu.displayUntil >= game.state.time) {
                 if (visu.happy && happyImage) {
                     ctx.drawImage(happyImage, paintPos.x - Math.floor(happyImage.width / 2), paintPos.y - happyImage.height);
@@ -392,6 +401,8 @@ function paintTamerPetCharacter(ctx: CanvasRenderingContext2D, character: Charac
                     ctx.drawImage(unhappyImage, paintPos.x - Math.floor(unhappyImage.width / 2), paintPos.y - unhappyImage.height);
                     paintPos.y -= unhappyImage.height;
                 }
+            } else {
+                tamerPetCharacter.happines.visualizations.splice(i, 1);
             }
         }
     }

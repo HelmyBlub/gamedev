@@ -2,8 +2,6 @@ next test run:
 increase version
 
 current tasks:
-- two much lag with ball characters and many enemies
-    - change runback method for enemies
 - change: visualize tamer pet what they need
 
 next feature ideas:
