@@ -1,9 +1,9 @@
-next test run: 
+next test run: builder, tamer, ball
 increase version
 
 current tasks:
-- building purchase breaks game
 - multiplayer sync broken easy compare?
+    - make send data from same tick/game time?
 
 next feature ideas:
 - think about next bigger feature 

@@ -246,6 +246,7 @@ export type Multiplayer = {
         maxKeep: number,
         timeAndHash: { time: number, hash: number }[],
         stateTainted: boolean,
+        stateCompareSend?: boolean,
     }
 }
 

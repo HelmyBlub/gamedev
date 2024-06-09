@@ -7,7 +7,7 @@ import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap,
 import { Character } from "./character/characterModel.js";
 import { generateMissingChunks, pastCharactersMapTilePositions } from "./map/mapGeneration.js";
 import { createFixPositionRespawnEnemiesOnInit } from "./character/enemy/fixPositionRespawnEnemyModel.js";
-import { COMMAND_COMPARE_STATE, CommandRestart, handleCommand } from "./commands.js";
+import { COMMAND_COMPARE_STATE, COMMAND_COMPARE_STATE_HASH, CommandRestart, handleCommand } from "./commands.js";
 import { ABILITIES_FUNCTIONS, tickAbilityObjects } from "./ability/ability.js";
 import { garbageCollectPathingCache, getPathingCache } from "./character/pathing.js";
 import { createObjectDeathCircle } from "./ability/abilityDeathCircle.js";
@@ -132,6 +132,7 @@ export function gameInit(game: Game) {
         if (game.multiplayer.gameStateCompare) {
             game.multiplayer.gameStateCompare.timeAndHash = [];
             game.multiplayer.gameStateCompare.nextCompareTime = undefined;
+            game.multiplayer.gameStateCompare.stateCompareSend = undefined;
         }
         game.state.playerInputs = game.multiplayer.cachePlayerInputs!;
     }
@@ -749,14 +750,21 @@ function autoSendGamePlayerHashInMultiplayer(game: Game) {
         compare.nextCompareTime = game.state.time + compare.compareInterval - (game.state.time % compare.compareInterval);
     }
     if (compare.nextCompareTime <= game.state.time) {
-        const hash = createGamePlayerHash(game.state);
-        handleCommand(game, {
-            command: COMMAND_COMPARE_STATE,
-            clientId: game.multiplayer.myClientId,
-            data: { hash: hash, time: game.state.time },
-        });
-        if (compare.timeAndHash.length > compare.maxKeep) {
-            compare.timeAndHash.shift();
+        if (compare.stateTainted && !compare.stateCompareSend) {
+            const playersJson = JSON.stringify(game.state.players);
+            handleCommand(game, {
+                command: COMMAND_COMPARE_STATE,
+                clientId: game.multiplayer.myClientId,
+                data: { playersJson: playersJson, time: game.state.time },
+            });
+            compare.stateCompareSend = true;
+        } else {
+            const hash = createGamePlayerHash(game.state);
+            handleCommand(game, {
+                command: COMMAND_COMPARE_STATE_HASH,
+                clientId: game.multiplayer.myClientId,
+                data: { hash: hash, time: game.state.time },
+            });
         }
         compare.nextCompareTime += compare.compareInterval;
     }

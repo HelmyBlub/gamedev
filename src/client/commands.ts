@@ -9,7 +9,8 @@ import { compressString } from "./stringCompress.js";
 
 type Command = { command: string };
 type CommandTimeUpdate = Command & { time: number };
-export const COMMAND_COMPARE_STATE = "COMPARE_STATE"
+export const COMMAND_COMPARE_STATE_HASH = "COMPARE_STATE_HASH";
+export const COMMAND_COMPARE_STATE = "COMPARE_STATE";
 export type CommandRestart = PlayerInput & {
     recordInputs?: boolean,
     replay?: boolean,
@@ -31,9 +32,14 @@ type PlayerJoined = {
     clientId: number,
 }
 
-type StateCompare = {
+type StateCompareHash = {
     time: number,
     hash: number,
+}
+
+type StateComparePlayers = {
+    time: number,
+    playersJson: string,
 }
 
 export function handleCommand(game: Game, data: any) {
@@ -88,20 +94,32 @@ export function executeCommand(game: Game, data: any) {
         case "timeUpdate":
             timeUpdate(game, data);
             break;
-        case COMMAND_COMPARE_STATE:
+        case COMMAND_COMPARE_STATE_HASH:
             compareStateHash(game, data.data);
+            break;
+        case COMMAND_COMPARE_STATE:
+            compareStatePlayers(game, data.data);
             break;
         default:
             console.log("unkown command: " + command, data);
     }
 }
 
-function compareStateHash(game: Game, data: StateCompare) {
+function compareStatePlayers(game: Game, data: StateComparePlayers) {
+    const compare = game.multiplayer.gameStateCompare;
+    if (!compare) return;
+    console.log(JSON.parse(data.playersJson), data.time);
+}
+
+function compareStateHash(game: Game, data: StateCompareHash) {
     const compare = game.multiplayer.gameStateCompare;
     if (!compare) return;
     let timeAndHash = compare.timeAndHash.find(e => e.time === data.time);
     if (timeAndHash === undefined) {
         compare.timeAndHash.push({ hash: data.hash, time: data.time });
+        if (compare.timeAndHash.length > compare.maxKeep) {
+            compare.timeAndHash.shift();
+        }
         return;
     }
     if (timeAndHash.hash !== data.hash) {
