@@ -2,10 +2,9 @@ next test run:
 increase version
 
 current tasks:
-- change: visualize tamer pet what they need
 - two much lag with ball characters and many enemies
     - change runback method for enemies
-- Bug: "mulitplayer sync message" directly at the start?
+- change: visualize tamer pet what they need
 
 next feature ideas:
 - think about next bigger feature 

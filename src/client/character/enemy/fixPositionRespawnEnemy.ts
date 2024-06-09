@@ -6,7 +6,7 @@ import { MoreInfosPartContainer, createCharacterMoreInfosPartContainer } from ".
 import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick, setCharacterPosition, findMyCharacter } from "../character.js";
 import { Character } from "../characterModel.js";
 import { PathingCache } from "../pathing.js";
-import { FixPositionRespawnEnemyCharacter, createEnemyFixPositionRespawnEnemyWithPosition } from "./fixPositionRespawnEnemyModel.js";
+import { ENEMY_TYPES, FixPositionRespawnEnemyCharacter, createEnemyFixPositionRespawnEnemyWithPosition } from "./fixPositionRespawnEnemyModel.js";
 
 export function tickFixPositionRespawnEnemyCharacter(character: Character, game: Game, pathingCache: PathingCache | null) {
     if (pathingCache === null) {
@@ -42,9 +42,9 @@ export function tickFixPositionRespawnEnemyCharacter(character: Character, game:
             } else {
                 const spawnDistance = calculateDistance(enemy, enemy.spawnPosition);
                 enemy.isAggroed = false;
-                const notCloseEnough = spawnDistance > game.state.map.tileSize / 2;
-                const preventToFarAwayPathfinding = spawnDistance > 800;
-                if (notCloseEnough && !preventToFarAwayPathfinding) {
+                const notCloseEnoughToSpawn = spawnDistance > game.state.map.tileSize / 2;
+                const preventToFarAwayPathfinding = spawnDistance > ENEMY_TYPES[enemy.enemyTypeKey].maxPathfindBackDistance;
+                if (notCloseEnoughToSpawn && !preventToFarAwayPathfinding) {
                     calculateAndSetMoveDirectionToPositionWithPathing(enemy, enemy.spawnPosition, game.state.map, pathingCache, game.state.idCounter, game.state.time, game);
                 } else {
                     enemy.nextTickTime = game.state.time + closest.minDistance;
