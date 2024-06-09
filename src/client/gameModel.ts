@@ -389,8 +389,6 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             }
         },
         debug: {
-            closeKingArea: true,
-            lowKingHp: true,
         },
         UI: {
             damageMeter: createDamageMeter(),

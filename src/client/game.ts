@@ -85,7 +85,7 @@ export function closeGame(game: Game) {
 }
 
 export function gameInit(game: Game) {
-    if (game.debug.closeKingArea) {
+    if (!game.multiplayer.websocket && game.debug.closeKingArea) {
         initKingArea(game.state.map, 1000);
     } else {
         initKingArea(game.state.map, 20000);
