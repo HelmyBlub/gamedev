@@ -393,7 +393,7 @@ function interactKeys(character: Character, specialAction: string, game: Game) {
             retryFight(game);
             return;
         }
-        const closestInteractable = findClosestInteractable(game);
+        const closestInteractable = findClosestInteractable(character, game);
         if (closestInteractable) {
             if (closestInteractable.mapObject) {
                 interactWithMapObject(character, closestInteractable.mapObject, specialAction, game);

@@ -2,7 +2,8 @@ next test run:
 increase version
 
 current tasks:
-- change: visualize tamer pet what they need
+- building purchase breaks game
+- multiplayer sync broken easy compare?
 
 next feature ideas:
 - think about next bigger feature 

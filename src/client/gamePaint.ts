@@ -241,7 +241,7 @@ function paintClosestInteractable(ctx: CanvasRenderingContext2D, cameraPosition:
     const player = findPlayerById(game.state.players, game.multiplayer.myClientId);
     if (player === null) return;
     const character = player.character;
-    const closestInteractable = findClosestInteractable(game);
+    const closestInteractable = findClosestInteractable(character, game);
     if (closestInteractable) {
         if (closestInteractable.mapObject) {
             const mapObejctFunctions = MAP_OBJECTS_FUNCTIONS[closestInteractable.mapObject.type];

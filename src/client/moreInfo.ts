@@ -135,6 +135,7 @@ export function createRequiredMoreInfos(game: Game): MoreInfos {
     const lastSelectedContainer = game.UI.moreInfos.containers.selected !== undefined ? game.UI.moreInfos.containers.containers[game.UI.moreInfos.containers.selected].heading : undefined;
     const moreInfos: MoreInfos = createDefaultEmptyMoreInfos();
     if (!ctx) return moreInfos;
+    const playerChar = findMyCharacter(game);
     let paintX = moreInfos.paintStartX;
 
     const gameRuleContainer = createDefaultMoreInfosContainer(ctx, "Game Rules", moreInfos.headingFontSize);
@@ -169,7 +170,7 @@ export function createRequiredMoreInfos(game: Game): MoreInfos {
         paintX += characterContainer.headingWidth + moreInfos.headingHorizontalSpacing;
     }
 
-    const closest = findClosestInteractable(game);
+    const closest = findClosestInteractable(playerChar, game);
     if (closest) {
         if (closest.pastCharacter) {
             const moreInfosContainer = createPastCharacterMoreInfos(ctx, closest.pastCharacter, moreInfos, game);
@@ -186,7 +187,6 @@ export function createRequiredMoreInfos(game: Game): MoreInfos {
             }
         }
     } else {
-        const playerChar = findMyCharacter(game);
         if (playerChar) {
             const celestialDirection = getCelestialDirection(playerChar, game.state.map);
             if (game.state.bossStuff.godFightStarted) {

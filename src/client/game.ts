@@ -85,7 +85,7 @@ export function closeGame(game: Game) {
 }
 
 export function gameInit(game: Game) {
-    if (!game.multiplayer.websocket && game.debug.closeKingArea) {
+    if (game.debug.closeKingArea) {
         initKingArea(game.state.map, 1000);
     } else {
         initKingArea(game.state.map, 20000);
@@ -444,9 +444,8 @@ export function autoSendMousePositionHandler(ownerId: number, identifier: string
     if (castPosition) clientInfo.lastMousePosition = castPosition;
 }
 
-export function findClosestInteractable(game: Game): { pastCharacter?: Character, mapObject?: MapTileObject } | undefined {
-    const character = findMyCharacter(game);
-    if (!character) return;
+export function findClosestInteractable(character: Character | undefined, game: Game): { pastCharacter?: Character, mapObject?: MapTileObject } | undefined {
+    if (!character) return undefined;
     const pastCharacter = findNearesPastPlayerCharacter(character, game);
     const interactableMapObject = findNearesInteractableMapChunkObject(character, game);
     if (pastCharacter && interactableMapObject) {
