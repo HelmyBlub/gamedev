@@ -153,6 +153,13 @@ export function createTamerPetCharacter(owner: Character, color: string, charact
     return tamerPetCharacter;
 }
 
+function cleanUpVisualizations(pet: TamerPetCharacter, game: Game) {
+    for (let i = pet.happines.visualizations.length - 1; i >= 0; i--) {
+        const visu = pet.happines.visualizations[i];
+        if (visu.displayUntil < game.state.time) pet.happines.visualizations.splice(i, 1);
+    }
+}
+
 function tickTamerPetCharacter(character: Character, petOwner: Character, game: Game, pathingCache: PathingCache | null) {
     const pet: TamerPetCharacter = character as TamerPetCharacter;
     if (pathingCache === null) {
@@ -160,6 +167,7 @@ function tickTamerPetCharacter(character: Character, petOwner: Character, game: 
         return;
     }
     if (character.isDead) return;
+    cleanUpVisualizations(pet, game);
     moveTick(pet, petOwner, game, pathingCache);
     foodIntakeLevelTick(pet, game);
     if (pet.happines.current >= pet.happines.hyperactiveAt - 10 || tamerPetIncludesTrait(TAMER_PET_TRAIT_NEEDS_MORE_LOVE, pet)) {
@@ -401,8 +409,6 @@ function paintTamerPetCharacter(ctx: CanvasRenderingContext2D, character: Charac
                     ctx.drawImage(unhappyImage, paintPos.x - Math.floor(unhappyImage.width / 2), paintPos.y - unhappyImage.height);
                     paintPos.y -= unhappyImage.height;
                 }
-            } else {
-                tamerPetCharacter.happines.visualizations.splice(i, 1);
             }
         }
     }

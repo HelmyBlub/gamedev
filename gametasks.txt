@@ -2,15 +2,14 @@ next test run: tamer, ball
 increase version
 
 current tasks:
-- multiplayer Bug: camera on wrong player on recconect? but can control the right character
-    - server restarts and can no longer know which client id belongs to who
 - multipalyer sync issue
-    - don't know how to reproduce
-    - have a replay. have some state to compare
+    - false positive:
+        - some id issues, but should no result in problems
+        - some ordering of attribute, but should not result in problems
+            - is it maybe of json parse and stringify don't order always in the same way?
 - multiplayer ping issue:
     - somehow when connecting with "bad" ping it will not correct itself to a better value
-- multiplayer sync broken easy compare?
-    - make send data from same tick/game time?
+    - could not reproduce
 - change: ability "capped" state instead of part of gifted
 
 

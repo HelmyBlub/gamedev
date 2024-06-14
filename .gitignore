@@ -3,3 +3,5 @@ public/js/
 cert.pem
 key.pem
 remember.txt
+compareFile1.json
+compareFile2.json
