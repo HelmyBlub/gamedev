@@ -136,13 +136,14 @@ function playerJoined(game: Game, data: PlayerJoined) {
 }
 
 function connectInfo(game: Game, data: ConnectInfo) {
+    const oldId = game.multiplayer.myClientId;
     game.multiplayer.myClientId = data.clientId;
     game.state.clientInfos = [{ id: data.clientId, name: data.clientName, lastMousePosition: { x: 0, y: 0 } }];
     game.multiplayer.updateInterval = data.updateInterval;
     if (data.numberConnections === 0) {
         game.multiplayer.awaitingGameState.waiting = false;
-        const oldId = game.state.players[0].clientId;
-        game.state.players[0].clientId = data.clientId;
+        const myPlayerIndex = game.state.players.findIndex(p => p.clientId === oldId);
+        game.state.players[myPlayerIndex].clientId = data.clientId;
         game.clientKeyBindings!.clientIdRef = data.clientId;
         damageMeterChangeClientId(game.UI.damageMeter, oldId, data.clientId);
     }

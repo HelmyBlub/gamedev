@@ -2,6 +2,8 @@ next test run: tamer, ball
 increase version
 
 current tasks:
+- multiplayer Bug: camera on wrong player on recconect? but can control the right character
+    - server restarts and can no longer know which client id belongs to who
 - multipalyer sync issue
     - don't know how to reproduce
     - have a replay. have some state to compare
@@ -9,8 +11,7 @@ current tasks:
     - somehow when connecting with "bad" ping it will not correct itself to a better value
 - multiplayer sync broken easy compare?
     - make send data from same tick/game time?
-- multiplayer Bug: camera on wrong player on recconect? but can control the right character
-- Bug: past ball character stacks did not reset
+- change: ability "capped" state instead of part of gifted
 
 
 next feature ideas:
