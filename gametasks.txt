@@ -1,9 +1,19 @@
-next test run: builder, tamer, ball
+next test run: tamer, ball
 increase version
 
 current tasks:
+- tower builder: write number of upgrades on upgrade
+- multipalyer sync issue
+    - don't know how to reproduce
+    - have a replay. have some state to compare
+- multiplayer ping issue:
+    - somehow when connecting with "bad" ping it will not correct itself to a better value
 - multiplayer sync broken easy compare?
     - make send data from same tick/game time?
+- Bug: sound volumne not loaded correctly?
+- multiplayer Bug: camera on wrong player on recconect? but can control the right character
+- Bug: ball character stacks did not reset
+
 
 next feature ideas:
 - think about next bigger feature 
