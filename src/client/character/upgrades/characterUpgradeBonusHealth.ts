@@ -16,7 +16,6 @@ export function addCharacterUpgradeBonusHp() {
     CHARACTER_UPGRADE_FUNCTIONS[CHARACTER_UPGRADE_BONUS_HP] = {
         addUpgrade: addUpgrade,
         executeOption: executeOption,
-        getMoreInfoText: getMoreInfoText,
         getOptions: getOptions,
         getStatsDisplayText: getStatsDisplayText,
     }
@@ -47,17 +46,25 @@ function addUpgrade(characterUpgrade: CharacterUpgrade, character: Character, ga
     character.maxHp += bonusHp.bonusHp;
 }
 
-function getOptions(character: Character, game: Game): UpgradeOptionAndProbability[] {
+function getOptions(character: Character, characterClass: CharacterClass, game: Game): UpgradeOptionAndProbability[] {
     const upgradeOptions: UpgradeOptionAndProbability[] = [];
+    let upgradeCounter = "";
+    if (characterClass.characterClassUpgrades) {
+        const hpUp = characterClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_HP]
+        if (hpUp) {
+            upgradeCounter = ` (${hpUp.level + 1})`;
+        }
+    }
+
     const optionAndProbability: UpgradeOptionAndProbability = {
         option: {
             identifier: CHARACTER_UPGRADE_BONUS_HP,
-            displayText: CHARACTER_UPGRADE_BONUS_HP,
+            displayText: CHARACTER_UPGRADE_BONUS_HP + upgradeCounter,
+            displayMoreInfoText: [`Increase max HP speed from ${character.maxHp} to ${character.maxHp + BONUS_HP_PER_LEVEL}`],
             type: "Character",
         },
         probability: 1,
     };
-    optionAndProbability.option.displayMoreInfoText = getMoreInfoText(character, optionAndProbability.option);
     upgradeOptions.push(optionAndProbability);
     return upgradeOptions;
 }
@@ -83,10 +90,4 @@ function executeOption(option: UpgradeOption, character: Character) {
 function getStatsDisplayText(characterUpgrade: CharacterUpgrade): string {
     const up: CharacterUpgradeBonusHP = characterUpgrade as CharacterUpgradeBonusHP;
     return `${CHARACTER_UPGRADE_BONUS_HP}: ${up.bonusHp}`;
-}
-
-function getMoreInfoText(character: Character, option: UpgradeOption): string[] {
-    const textLines: string[] = [];
-    textLines.push(`Get ${BONUS_HP_PER_LEVEL} bonus hp and max hp.`);
-    return textLines;
 }

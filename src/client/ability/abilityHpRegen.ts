@@ -12,6 +12,8 @@ type AbilityHpRegen = Ability & {
 }
 
 const ABILITY_NAME_HP_REGEN = "HP Regen";
+const START_HP_REG = 1;
+const UPGRADE_HP_REG = 5;
 
 export function addAbilityHpRegen() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_HP_REGEN] = {
@@ -27,7 +29,7 @@ export function addAbilityHpRegen() {
 export function createAbilityHpRegen(
     idCounter: IdCounter,
     playerInputBinding?: string,
-    regAmount: number = 1,
+    regAmount: number = START_HP_REG,
 ): AbilityHpRegen {
     return {
         id: getNextId(idCounter),
@@ -63,11 +65,15 @@ function tickAbilityHpRegen(abilityOwner: AbilityOwner, ability: Ability, game: 
 }
 
 function createAbilityHpRegenUpgradeOptions(ability: Ability): UpgradeOptionAndProbability[] {
+    const abilityReg = ability as AbilityHpRegen;
     const upgradeOptions: UpgradeOptionAndProbability[] = [];
+    const upgradeCountReg = abilityReg.amount > START_HP_REG ? ` (${(abilityReg.amount - START_HP_REG) / UPGRADE_HP_REG + 1})` : "";
+
     const option: AbilityUpgradeOption = {
-        displayText: "Hp Regen +5",
+        displayText: `Hp Regen +${UPGRADE_HP_REG}${upgradeCountReg}`,
         type: "Ability",
-        identifier: "Hp Regen +5",
+        identifier: "Hp Regen",
+        displayMoreInfoText: [`Increase hp reg from ${abilityReg.amount} to ${abilityReg.amount + UPGRADE_HP_REG} `],
         name: ability.name,
     }
     upgradeOptions.push({
@@ -79,8 +85,8 @@ function createAbilityHpRegenUpgradeOptions(ability: Ability): UpgradeOptionAndP
 
 function executeAbilityHpRegenUpgradeOption(ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game) {
     const abilityHpRegen = ability as AbilityHpRegen;
-    if (upgradeOption.identifier === "Hp Regen +5") {
-        abilityHpRegen.amount += 5;
+    if (upgradeOption.identifier === "Hp Regen") {
+        abilityHpRegen.amount += UPGRADE_HP_REG;
         return;
     }
 }

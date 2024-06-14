@@ -46,6 +46,10 @@ type AbilityTower = Ability & {
 }
 
 export const ABILITY_NAME_TOWER = "Tower";
+const START_MAX_TOWER = 5;
+const START_DAMAGE = 50;
+const UPGRADE_DAMAGE = 250;
+const UPGRADE_TOWER_COUNT = 5;
 const ENEMY_TOWER_DESPAWN_TIME = 30000;
 GAME_IMAGES[ABILITY_NAME_TOWER] = {
     imagePath: "/images/hammer.png",
@@ -79,7 +83,7 @@ export function addAbilityTower() {
 export function createAbilityTower(
     idCounter: IdCounter,
     playerInputBinding?: string,
-    damage: number = 50,
+    damage: number = START_DAMAGE,
 ): AbilityTower {
     const maxNumberTowers = 5;
     const keys = getRandomPassiveAbilitiyKeys();
@@ -100,7 +104,7 @@ export function createAbilityTower(
         maxClickRange: 1500,
         currentAbilityIndex: 0,
         availableAbilityKeys: availableAbilities,
-        maxTowers: 5,
+        maxTowers: START_MAX_TOWER,
         upgrades: {},
         tradable: true,
     };
@@ -553,10 +557,13 @@ function tickAbilityObjectTower(abilityObject: AbilityObject, game: Game) {
 function createAbilityTowerUpgradeOptions(ability: Ability): UpgradeOptionAndProbability[] {
     const abilityTower = ability as AbilityTower;
     const upgradeOptions: UpgradeOptionAndProbability[] = [];
+    const upgradeCountTower = abilityTower.maxTowers > START_MAX_TOWER ? ` (${(abilityTower.maxTowers - START_MAX_TOWER) / UPGRADE_TOWER_COUNT + 1})` : "";
+    const upgradeCountDamage = abilityTower.damage > START_DAMAGE ? ` (${(abilityTower.damage - START_DAMAGE) / UPGRADE_DAMAGE + 1})` : "";
     const option: AbilityUpgradeOption = {
-        displayText: "Line Damage+250",
+        displayText: `Line Damage +${UPGRADE_DAMAGE}${upgradeCountDamage}`,
         type: "Ability",
-        identifier: "Line Damage+250",
+        identifier: "Line Damage",
+        displayMoreInfoText: [`Increase line damage from ${abilityTower.damage} to ${abilityTower.damage + UPGRADE_DAMAGE}`],
         name: ability.name,
     }
     upgradeOptions.push({
@@ -565,9 +572,10 @@ function createAbilityTowerUpgradeOptions(ability: Ability): UpgradeOptionAndPro
     });
 
     const abilityOption: AbilityUpgradeOption = {
-        displayText: `+5 Max Towers`,
-        identifier: `+5 Max Towers`,
+        displayText: `Max Towers +${UPGRADE_TOWER_COUNT}${upgradeCountTower}`,
+        identifier: `Max Towers`,
         type: "Ability",
+        displayMoreInfoText: [`Increase max towers from ${abilityTower.maxTowers} to ${abilityTower.maxTowers + UPGRADE_TOWER_COUNT}`],
         name: ability.name,
     }
     upgradeOptions.push({
@@ -580,12 +588,12 @@ function createAbilityTowerUpgradeOptions(ability: Ability): UpgradeOptionAndPro
 
 function executeAbilityTowerUpgradeOption(ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game) {
     const abilityTower = ability as AbilityTower;
-    if (upgradeOption.identifier === "Line Damage+250") {
-        abilityTower.damage += 250;
+    if (upgradeOption.identifier === "Line Damage") {
+        abilityTower.damage += UPGRADE_DAMAGE;
         return;
     }
-    if (upgradeOption.identifier === "+5 Max Towers") {
-        abilityTower.maxTowers += 5;
+    if (upgradeOption.identifier === "Max Towers") {
+        abilityTower.maxTowers += UPGRADE_TOWER_COUNT;
         return;
     }
 }

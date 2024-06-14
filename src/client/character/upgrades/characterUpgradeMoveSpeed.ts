@@ -16,7 +16,6 @@ export function addCharacterUpgradeBonusMoveSpeed() {
     CHARACTER_UPGRADE_FUNCTIONS[CHARACTER_UPGRADE_BONUS_MOVE_SPEED] = {
         addUpgrade: addUpgrade,
         executeOption: executeOption,
-        getMoreInfoText: getMoreInfoText,
         getOptions: getOptions,
         getStatsDisplayText: getStatsDisplayText,
     }
@@ -45,17 +44,24 @@ function addUpgrade(characterUpgrade: CharacterUpgrade, character: Character, ga
     character.baseMoveSpeed += bonusSpeed.bonusMoveSpeed;
 }
 
-function getOptions(character: Character, game: Game): UpgradeOptionAndProbability[] {
+function getOptions(character: Character, characterClass: CharacterClass, game: Game): UpgradeOptionAndProbability[] {
     const upgradeOptions: UpgradeOptionAndProbability[] = [];
+    let upgradeCounter = "";
+    if (characterClass.characterClassUpgrades) {
+        const speedUp = characterClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_MOVE_SPEED]
+        if (speedUp) {
+            upgradeCounter = ` (${speedUp.level + 1})`;
+        }
+    }
     const optionAndProbability: UpgradeOptionAndProbability = {
         option: {
             identifier: CHARACTER_UPGRADE_BONUS_MOVE_SPEED,
-            displayText: CHARACTER_UPGRADE_BONUS_MOVE_SPEED,
+            displayText: CHARACTER_UPGRADE_BONUS_MOVE_SPEED + upgradeCounter,
+            displayMoreInfoText: [`Increase movement speed from ${character.baseMoveSpeed} to ${character.baseMoveSpeed + BONUS_MOVE_SPEED_PER_LEVEL}`],
             type: "Character",
         },
         probability: 1,
     };
-    optionAndProbability.option.displayMoreInfoText = getMoreInfoText(character, optionAndProbability.option);
     upgradeOptions.push(optionAndProbability);
     return upgradeOptions;
 }
@@ -80,10 +86,4 @@ function executeOption(option: UpgradeOption, character: Character) {
 function getStatsDisplayText(characterUpgrade: CharacterUpgrade): string {
     const up: CharacterUpgradeBonusMoveSpeed = characterUpgrade as CharacterUpgradeBonusMoveSpeed;
     return `${CHARACTER_UPGRADE_BONUS_MOVE_SPEED}: ${up.bonusMoveSpeed.toFixed(1)}`;
-}
-
-function getMoreInfoText(character: Character, option: UpgradeOption): string[] {
-    const textLines: string[] = [];
-    textLines.push(`Get ${BONUS_MOVE_SPEED_PER_LEVEL} bonus move speed.`);
-    return textLines;
 }
