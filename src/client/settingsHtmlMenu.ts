@@ -6,7 +6,7 @@ import { deepCopy, getGameVersionString } from "./game.js";
 import { Debugging, Game } from "./gameModel.js";
 import { GAME_VERSION } from "./main.js";
 import { resetPermanentData } from "./permanentData.js";
-import { compressString, decompressString, downloadBlob, loadCompressedStateFromUrl } from "./stringCompress.js";
+import { compressString, downloadBlob, loadCompressedStateFromUrl } from "./stringCompress.js";
 import { initReplay, replayReplayData, testGame } from "./test/gameTest.js";
 
 type SettingsLocalStorage = {
@@ -128,6 +128,7 @@ function addSettingSliderVolume(game: Game, settings: SettingsLocalStorage) {
         `;
         settingsElement.insertAdjacentHTML("beforeend", canvasHTML);
         input = document.getElementById(inputBoxId) as HTMLInputElement;
+        if (game.sound) game.sound.volume.gain.setValueAtTime(settings.sliderVolume / 100, game.sound.audioContext.currentTime);
     }
     if (input) {
         input.addEventListener('input', () => {
@@ -151,6 +152,7 @@ function addSettingInputBoxPlayerPaintAlpha(game: Game, settings: SettingsLocalS
             <label for="debug">%: ${inputBoxId}</label><br>
         `;
         settingsElement.insertAdjacentHTML("beforeend", canvasHTML);
+        game.UI.playerGlobalAlphaMultiplier = settings.playerAlpha / 100;
         input = document.getElementById(inputBoxId) as HTMLInputElement;
     }
     if (input) {
@@ -173,6 +175,7 @@ function addSettingInputBoxSoundDelay(game: Game, settings: SettingsLocalStorage
             <label for="debug">: ${inputBoxId} in ms</label><br>
         `;
         settingsElement.insertAdjacentHTML("beforeend", canvasHTML);
+        if (game.sound) game.sound.customDelay = settings.soundDelay;
         input = document.getElementById(inputBoxId) as HTMLInputElement;
     }
     if (input) {
