@@ -2,7 +2,6 @@ next test run: tamer, ball
 increase version
 
 current tasks:
-- Bug: sound volumne not loaded correctly?
 - multipalyer sync issue
     - don't know how to reproduce
     - have a replay. have some state to compare
@@ -11,7 +10,7 @@ current tasks:
 - multiplayer sync broken easy compare?
     - make send data from same tick/game time?
 - multiplayer Bug: camera on wrong player on recconect? but can control the right character
-- Bug: ball character stacks did not reset
+- Bug: past ball character stacks did not reset
 
 
 next feature ideas:

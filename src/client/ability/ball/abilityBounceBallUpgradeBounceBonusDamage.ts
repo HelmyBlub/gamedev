@@ -64,6 +64,7 @@ function reset(ability: Ability) {
     const upgrade: AbilityBounceBallUpgradeBounceBonusDamage | undefined = abilityBall.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_DAMAGE];
     if (!upgrade) return;
     upgrade.bounces = 0;
+    upgrade.stackLossTime = undefined;
 }
 
 function getDamageFactor(ability: Ability): number {
