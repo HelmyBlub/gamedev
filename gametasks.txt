@@ -3,11 +3,14 @@ increase version
 
 current tasks:
 - multiplayer
-    - musician bug: moving and delay causes notes to be placed incorrectly            
-        - send relativ to own character mouse position?
     - player duplication issues
         - somehow i got my character two times (stream 254)
         - use my own streams to find out what happened?
+        - thoughts:
+            - when server restarts it losese client ids.
+            - but game state still has players with client ids
+            - on reconect, server gives a client id, by chance, this id might exists still in players
+            - find out order of action to reproduce
     - sync issue
         - false positive:
             - some id issues, but should no result in problems
