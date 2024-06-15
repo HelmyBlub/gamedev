@@ -74,7 +74,7 @@ function tickAbilitySpeedBoost(abilityOwner: AbilityOwner, ability: Ability, gam
     tickAbilitySpeedBoostUpgradeAddCharge(abilitySpeedBoost, game);
 }
 
-function castSpeedBoost(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isInputdown: boolean, game: Game) {
+function castSpeedBoost(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, castPositionRelativeToCharacter: Position | undefined, isInputdown: boolean, game: Game) {
     if (!isInputdown) return;
     const abilitySpeedBoost = ability as AbilitySpeedBoost;
     const chargeUpgrade: AbilitySpeedBoostUpgradeAddCharge | undefined = ability.upgrades[ABILITY_SPEED_BOOST_UPGRADE_ADD_CHARGE];

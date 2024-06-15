@@ -32,9 +32,10 @@ type PlayerJoined = {
     clientId: number,
 }
 
-type StateCompareHash = {
+export type StateCompareHash = {
     time: number,
     hash: number,
+    playersJson?: string,
 }
 
 type StateComparePlayers = {
@@ -111,18 +112,37 @@ function compareStatePlayers(game: Game, data: StateComparePlayers) {
     console.log(JSON.parse(data.playersJson), data.time);
 }
 
+function logFirstStringDifference(string1: string, string2: string) {
+    const length = Math.max(string1.length, string2.length);
+    for (let i = 0; i < length; i++) {
+        if (string1[i] !== string2[i]) {
+            const substringSize = 15;
+            let substringStart = i - substringSize;
+            if (substringStart < 0) substringStart = 0;
+            const substring1 = string1.substring(substringStart, i + substringSize);
+            const substring2 = string2.substring(substringStart, i + substringSize);
+            console.log(substring1, substring2);;
+            break;
+        }
+    }
+}
+
 function compareStateHash(game: Game, data: StateCompareHash) {
     const compare = game.multiplayer.gameStateCompare;
     if (!compare) return;
     let timeAndHash = compare.timeAndHash.find(e => e.time === data.time);
     if (timeAndHash === undefined) {
-        compare.timeAndHash.push({ hash: data.hash, time: data.time });
+        compare.timeAndHash.push({ hash: data.hash, time: data.time, playersJson: data.playersJson });
         if (compare.timeAndHash.length > compare.maxKeep) {
             compare.timeAndHash.shift();
         }
         return;
     }
     if (timeAndHash.hash !== data.hash) {
+        if (timeAndHash.playersJson && data.playersJson) {
+            logFirstStringDifference(timeAndHash.playersJson, data.playersJson);
+            console.log(timeAndHash, data);
+        }
         compare.stateTainted = true;
     } else {
         compare.stateTainted = false;

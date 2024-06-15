@@ -75,7 +75,7 @@ function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
         for (let pet of abilityOwner.pets) {
             const happines: PetHappines = petHappinessToDisplayText(pet.happines, game.state.time);
             if ((happines === "unhappy" || happines === "very unhappy") && (!abilityLovePet.nextRechargeTime || abilityLovePet.nextRechargeTime + 500 <= game.state.time)) {
-                castLovePet(abilityOwner, ability, pet, true, game);
+                castLovePet(abilityOwner, ability, pet, undefined, true, game);
                 break;
             }
         }
@@ -154,7 +154,7 @@ function paintAbilityLovePetUI(ctx: CanvasRenderingContext2D, ability: Ability, 
     }
 }
 
-function castLovePet(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isInputdown: boolean, game: Game) {
+function castLovePet(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, castPositionRelativeToCharacter: Position | undefined, isInputdown: boolean, game: Game) {
     if (!isInputdown || abilityOwner.pets === undefined) return;
     const abilityLovePet = ability as AbilityLovePet;
 

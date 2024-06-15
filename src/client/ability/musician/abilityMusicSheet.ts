@@ -174,6 +174,8 @@ export function createAbilityMusicSheet(
         buttonWidth: 20,
         nextUpgradeAddInstrument: true,
         maxPaintWidth: 800,
+        selectedInstrument: undefined,
+        chainOrder: undefined,
     };
 }
 
@@ -312,20 +314,24 @@ function resetAbility(ability: Ability) {
     }
 }
 
-function castAbility(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isKeydown: boolean, game: Game) {
-    if (!isKeydown) return;
+function castAbility(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, castPositionRelativeToCharacter: Position | undefined, isKeydown: boolean, game: Game) {
+    if (!isKeydown || !castPositionRelativeToCharacter) return;
+    const fixedCastPosition = {
+        x: abilityOwner.x + castPositionRelativeToCharacter.x,
+        y: abilityOwner.y + castPositionRelativeToCharacter.y,
+    }
     const abilityMusicSheets = ability as AbilityMusicSheets;
     if (abilityMusicSheets.selectedInstrument === undefined) return;
     const selectedMusicSheet = abilityMusicSheets.musicSheets[abilityMusicSheets.selectedMusicSheetIndex];
     const musicSheetWidth = getMusicSheetPaintWidth(abilityMusicSheets, selectedMusicSheet);
-    const clickedButton = determineClickedButton(abilityMusicSheets, abilityOwner, musicSheetWidth, castPosition);
+    const clickedButton = determineClickedButton(abilityMusicSheets, abilityOwner, musicSheetWidth, fixedCastPosition);
     if (clickedButton) {
         executeButtonClick(clickedButton, abilityMusicSheets, selectedMusicSheet, abilityOwner);
         return;
     }
-    const didCastNote = castNote(abilityOwner, abilityMusicSheets, selectedMusicSheet, castPosition, musicSheetWidth);
+    const didCastNote = castNote(abilityOwner, abilityMusicSheets, selectedMusicSheet, fixedCastPosition, musicSheetWidth);
     if (didCastNote) return;
-    const clefClick = determineCleffClick(abilityOwner, abilityMusicSheets, castPosition, musicSheetWidth);
+    const clefClick = determineCleffClick(abilityOwner, abilityMusicSheets, fixedCastPosition, musicSheetWidth);
     if (clefClick) {
         selectedMusicSheet.clef = selectedMusicSheet.clef === "bass" ? "treble" : "bass";
         const octaveChange = selectedMusicSheet.clef === "bass" ? -2 : +2;

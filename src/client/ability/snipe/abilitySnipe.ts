@@ -398,7 +398,7 @@ function deleteAbilityObjectSnipe(abilityObject: AbilityObject, game: Game) {
     return abilityObjectSnipe.deleteTime <= game.state.time;
 }
 
-function castSnipe(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isInputdown: boolean, game: Game) {
+function castSnipe(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, castPositionRelativeToCharacter: Position | undefined, isInputdown: boolean, game: Game) {
     const abilitySnipe = ability as AbilitySnipe;
     abilitySnipe.shotNextAllowedTime = isInputdown;
     autoSendMousePositionHandler(abilityOwner.id, ability.id.toString(), isInputdown, castPosition, game);

@@ -174,7 +174,7 @@ function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
             x: abilityOwner.x + (nextRandom(game.state.randomSeed) * 50 - 25),
             y: abilityOwner.y + (nextRandom(game.state.randomSeed) * 50 - 25)
         };
-        castTower(abilityOwner, ability, pos, true, game);
+        castTower(abilityOwner, ability, pos, undefined, true, game);
     }
 }
 
@@ -187,7 +187,7 @@ function deleteAbilityObjectTower(abilityObject: AbilityObject, game: Game) {
     return false;
 }
 
-function castTower(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isKeydown: boolean, game: Game) {
+function castTower(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, castPositionRelativeToCharacter: Position | undefined, isKeydown: boolean, game: Game) {
     if (!isKeydown) return;
     const abilityTower = ability as AbilityTower;
     const distance = calculateDistance(abilityOwner, castPosition);

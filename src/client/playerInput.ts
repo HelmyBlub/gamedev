@@ -1,7 +1,7 @@
 import { CommandRestart, handleCommand } from "./commands.js";
-import { findPlayerById } from "./player.js";
+import { findPlayerByCliendId, findPlayerById } from "./player.js";
 import { Character } from "./character/characterModel.js";
-import { Game } from "./gameModel.js";
+import { Game, Position } from "./gameModel.js";
 import { websocketConnect } from "./multiplayerConenction.js";
 import { ABILITIES_FUNCTIONS } from "./ability/ability.js";
 import { calculateDirection, getCameraPosition, findClientInfo, resetGameNonStateData, takeTimeMeasure, findClosestInteractable, concedePlayerFightRetries, retryFight, calculateFightRetryCounter } from "./game.js";
@@ -316,10 +316,17 @@ function playerInputChangeEvent(game: Game, inputCode: string, isInputDown: bool
     if (action.action.indexOf("ability") > -1) {
         const cameraPosition = getCameraPosition(game);
         const castPosition = mousePositionToMapPosition(game, cameraPosition);
+        const player = findPlayerByCliendId(clientId, game.state.players);
+        if (!player) return;
+        const castPositionRelativeToCharacter: Position = {
+            x: castPosition.x - player.character.x,
+            y: castPosition.y - player.character.y,
+        };
+
         handleCommand(game, {
             command: "playerInput",
             clientId: clientId,
-            data: { action: action.action, isKeydown: isInputDown, castPosition: castPosition },
+            data: { action: action.action, isKeydown: isInputDown, castPosition: castPosition, castPositionRelativeToCharacter: castPositionRelativeToCharacter },
         });
     } else {
         if (action.action.indexOf("upgrade") > -1) {
@@ -367,7 +374,7 @@ function playerAction(clientId: number, data: any, game: Game) {
                 if (ability.playerInputBinding && ability.playerInputBinding === action) {
                     const functions = ABILITIES_FUNCTIONS[ability.name];
                     if (functions.activeAbilityCast !== undefined) {
-                        functions.activeAbilityCast(character, ability, data.castPosition, isKeydown, game);
+                        functions.activeAbilityCast(character, ability, data.castPosition, data.castPositionRelativeToCharacter, isKeydown, game);
                     } else {
                         console.log("missing activeAbilityCast function for", action, ability);
                     }

@@ -28,12 +28,16 @@ export function createAbility(idCounter: IdCounter, playerInputBinding?: string)
     }
 }
 
-function castDeleteNote(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isKeydown: boolean, game: Game) {
-    if (!isKeydown) return;
+function castDeleteNote(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, castPositionRelativeToCharacter: Position | undefined, isKeydown: boolean, game: Game) {
+    if (!isKeydown || !castPositionRelativeToCharacter) return;
     if (!abilityOwner.abilities) return;
     const abilityMusicSheets: AbilityMusicSheets | undefined = abilityOwner.abilities.find(a => a.name === ABILITY_NAME_MUSIC_SHEET) as AbilityMusicSheets;
     if (!abilityMusicSheets) return;
-    abilityMusicSheetsDeleteNoteClick(abilityOwner, abilityMusicSheets, castPosition);
+    const fixedCastPosition = {
+        x: abilityOwner.x + castPositionRelativeToCharacter.x,
+        y: abilityOwner.y + castPositionRelativeToCharacter.y,
+    }
+    abilityMusicSheetsDeleteNoteClick(abilityOwner, abilityMusicSheets, fixedCastPosition);
 
 }
 

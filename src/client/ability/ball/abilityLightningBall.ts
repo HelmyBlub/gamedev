@@ -154,7 +154,7 @@ function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
         pos = calculateMovePosition(abilityOwner, abilityOwner.moveDirection, 1, false);
     }
 
-    castLightningBall(abilityOwner, ability, pos, true, game);
+    castLightningBall(abilityOwner, ability, pos, undefined, true, game);
 }
 
 function resetAbility(ability: Ability) {
@@ -163,7 +163,7 @@ function resetAbility(ability: Ability) {
     ball.currentCharges = ball.maxCharges;
 }
 
-function castLightningBall(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isKeydown: boolean, game: Game) {
+function castLightningBall(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, castPositionRelativeToCharacter: Position | undefined, isKeydown: boolean, game: Game) {
     if (!isKeydown) return;
     const abilityLightningBall = ability as AbilityLightningBall;
     if (abilityLightningBall.currentCharges <= 0) return;

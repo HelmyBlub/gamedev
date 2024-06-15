@@ -2,7 +2,7 @@ import { AbilityObject } from "./ability/ability.js";
 import { Character } from "./character/characterModel.js";
 import { createDefaultNextKing } from "./character/enemy/kingEnemy.js";
 import { PathingCache } from "./character/pathing.js";
-import { CommandRestart } from "./commands.js";
+import { CommandRestart, StateCompareHash } from "./commands.js";
 import { createHighscoreBoards, Highscores } from "./highscores.js";
 import { createMap, GameMap } from "./map/map.js";
 import { KingAreaEntranceData } from "./map/mapKingArea.js";
@@ -244,7 +244,7 @@ export type Multiplayer = {
         compareInterval: number,
         nextCompareTime?: number,
         maxKeep: number,
-        timeAndHash: { time: number, hash: number }[],
+        timeAndHash: StateCompareHash[],
         stateTainted: boolean,
         stateCompareSend?: boolean,
     }

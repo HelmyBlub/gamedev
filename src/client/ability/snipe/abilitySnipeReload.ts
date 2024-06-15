@@ -28,7 +28,7 @@ export function createAbility(idCounter: IdCounter, playerInputBinding?: string)
     }
 }
 
-function castReload(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isKeydown: boolean, game: Game) {
+function castReload(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, castPositionRelativeToCharacter: Position | undefined, isKeydown: boolean, game: Game) {
     if (!isKeydown) return;
     if (!abilityOwner.abilities) return;
     for (let abilityIter of abilityOwner.abilities) {

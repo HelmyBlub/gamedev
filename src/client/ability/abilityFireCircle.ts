@@ -203,7 +203,7 @@ function autoCastAbility(abilityOwner: AbilityOwner, abilityFireCircle: AbilityF
         y: abilityOwner.y + nextRandom(game.state.randomSeed) * areaSize * 2 - areaSize
     };
 
-    castFireCircle(abilityOwner, abilityFireCircle, castRandomPosition, true, game);
+    castFireCircle(abilityOwner, abilityFireCircle, castRandomPosition, undefined, true, game);
 }
 
 function paintAbilityFireCircleUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
@@ -268,7 +268,7 @@ function deleteObjectFireCircle(abilityObject: AbilityObject, game: Game): boole
     }
 }
 
-function castFireCircle(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isKeydown: boolean, game: Game) {
+function castFireCircle(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, castPositionRelativeToCharacter: Position | undefined, isKeydown: boolean, game: Game) {
     if (!isKeydown) return;
     const abilityFireCircle = ability as AbilityFireCircle;
     if (abilityFireCircle.currentCharges > 0) {

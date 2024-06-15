@@ -80,7 +80,7 @@ export type AbilityOwner = Position & Partial<Character> & {
 }
 
 export type AbilityFunctions = {
-    activeAbilityCast?: (abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isKeydown: boolean, game: Game) => void,
+    activeAbilityCast?: (abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, castPositionRelativeToCharacter: Position | undefined, isKeydown: boolean, game: Game) => void,
     canObjectHitMore?: (abilityObject: AbilityObject) => boolean,
     createAbility: (idCounter: IdCounter, playerInputBinding?: string) => Ability,
     createAbilityUpgradeOptions?: (ability: Ability) => UpgradeOptionAndProbability[],

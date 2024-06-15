@@ -760,10 +760,11 @@ function autoSendGamePlayerHashInMultiplayer(game: Game) {
             compare.stateCompareSend = true;
         } else {
             const hash = createGamePlayerHash(game.state);
+            const playersJson = JSON.stringify(game.state.players);
             handleCommand(game, {
                 command: COMMAND_COMPARE_STATE_HASH,
                 clientId: game.multiplayer.myClientId,
-                data: { hash: hash, time: game.state.time },
+                data: { hash: hash, time: game.state.time, playersJson: playersJson },
             });
         }
         compare.nextCompareTime += compare.compareInterval;

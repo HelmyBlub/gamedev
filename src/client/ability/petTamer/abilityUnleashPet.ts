@@ -78,7 +78,7 @@ function paintAbilityUI(ctx: CanvasRenderingContext2D, ability: Ability, drawSta
     }
 }
 
-function castFeedPet(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isInputdown: boolean, game: Game) {
+function castFeedPet(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, castPositionRelativeToCharacter: Position | undefined, isInputdown: boolean, game: Game) {
     if (!isInputdown || abilityOwner.pets === undefined) return;
     const abilityFeedPet = ability as AbilityUnleashPet;
 

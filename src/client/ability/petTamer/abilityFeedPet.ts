@@ -80,7 +80,7 @@ function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
         for (let pet of abilityOwner.pets) {
             const hunger: PetHunger = petFoodIntakeToDisplayText(pet.foodIntakeLevel);
             if (hunger === "hungry" && (!abilityFeedPet.nextRechargeTime || abilityFeedPet.nextRechargeTime + 500 <= game.state.time)) {
-                castFeedPet(abilityOwner, ability, pet, true, game);
+                castFeedPet(abilityOwner, ability, pet, undefined, true, game);
                 break;
             }
         }
@@ -153,7 +153,7 @@ function paintAbilityFeedPetUI(ctx: CanvasRenderingContext2D, ability: Ability, 
     }
 }
 
-function castFeedPet(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, isInputdown: boolean, game: Game) {
+function castFeedPet(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, castPositionRelativeToCharacter: Position | undefined, isInputdown: boolean, game: Game) {
     if (!isInputdown || abilityOwner.pets === undefined) return;
     const abilityFeedPet = ability as AbilityFeedPet;
 

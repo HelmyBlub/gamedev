@@ -2,14 +2,20 @@ next test run: tamer, ball
 increase version
 
 current tasks:
-- multipalyer sync issue
-    - false positive:
-        - some id issues, but should no result in problems
-        - some ordering of attribute, but should not result in problems
-            - is it maybe of json parse and stringify don't order always in the same way?
-- multiplayer ping issue:
-    - somehow when connecting with "bad" ping it will not correct itself to a better value
-    - could not reproduce
+- multiplayer
+    - musician bug: moving and delay causes notes to be placed incorrectly            
+        - send relativ to own character mouse position?
+    - player duplication issues
+        - somehow i got my character two times (stream 254)
+        - use my own streams to find out what happened?
+    - sync issue
+        - false positive:
+            - some id issues, but should no result in problems
+            - some ordering of attribute, but should not result in problems
+                - is it maybe of json parse and stringify don't order always in the same way?
+    - ping issue:
+        - somehow when connecting with "bad" ping it will not correct itself to a better value
+        - could not reproduce
 - change: ability "capped" state instead of part of gifted
 
 
