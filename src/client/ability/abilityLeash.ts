@@ -20,6 +20,7 @@ export function addAbilityLesh() {
         paintAbility: paintAbilityLeash,
         setAbilityToBossLevel: setAbilityToBossLevel,
         tickAbility: tickAbilityLeash,
+        resetAbility: reset,
     };
 }
 
@@ -38,6 +39,11 @@ export function createAbilityLeash(
         leashBendPoints: [],
         upgrades: {},
     };
+}
+
+function reset(ability: Ability) {
+    const abilityLeash = ability as AbilityLeash;
+    abilityLeash.leashBendPoints = [];
 }
 
 function setAbilityToBossLevel(ability: Ability, level: number) {
