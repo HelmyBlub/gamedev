@@ -163,7 +163,14 @@ function connectInfo(game: Game, data: ConnectInfo) {
     if (data.numberConnections === 0) {
         game.multiplayer.awaitingGameState.waiting = false;
         const myPlayerIndex = game.state.players.findIndex(p => p.clientId === oldId);
-        game.state.players[myPlayerIndex].clientId = data.clientId;
+        const correctToNewClientIds = myPlayerIndex !== -1 && game.state.players[myPlayerIndex].clientId !== data.clientId;
+        if (correctToNewClientIds) {
+            const replaceOtherClientId = game.state.players.findIndex(p => p.clientId === data.clientId);
+            game.state.players[myPlayerIndex].clientId = data.clientId;
+            if (replaceOtherClientId !== -1) {
+                game.state.players[replaceOtherClientId].clientId = oldId;
+            }
+        }
         game.clientKeyBindings!.clientIdRef = data.clientId;
         damageMeterChangeClientId(game.UI.damageMeter, oldId, data.clientId);
     }

@@ -11,6 +11,12 @@ current tasks:
             - but game state still has players with client ids
             - on reconect, server gives a client id, by chance, this id might exists still in players
             - find out order of action to reproduce
+                - player 1 joins multiplayer
+                - player 2 joins multiplayer
+                - server restarts
+                - player 2 rejoins first (can be force by disconnecting with player 1)
+                - player 1 reconnects
+                - restart and there are 3 player characters
     - sync issue
         - false positive:
             - some id issues, but should no result in problems
