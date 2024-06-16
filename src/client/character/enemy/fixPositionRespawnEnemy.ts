@@ -1,12 +1,12 @@
 import { ABILITIES_FUNCTIONS } from "../../ability/ability.js";
 import { calculateDistance } from "../../game.js";
-import { Game } from "../../gameModel.js";
+import { Game, IdCounter } from "../../gameModel.js";
 import { GameMap } from "../../map/map.js";
 import { MoreInfosPartContainer, createCharacterMoreInfosPartContainer } from "../../moreInfo.js";
 import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick, setCharacterPosition, findMyCharacter } from "../character.js";
 import { Character } from "../characterModel.js";
 import { PathingCache } from "../pathing.js";
-import { ENEMY_TYPES, FixPositionRespawnEnemyCharacter, createEnemyFixPositionRespawnEnemyWithPosition } from "./fixPositionRespawnEnemyModel.js";
+import { ENEMY_TYPES, FixPositionRespawnEnemyCharacter, createFakeEnemyFixPositionRespawnEnemyWithPosition } from "./fixPositionRespawnEnemyModel.js";
 
 export function tickFixPositionRespawnEnemyCharacter(character: Character, game: Game, pathingCache: PathingCache | null) {
     if (pathingCache === null) {
@@ -62,7 +62,7 @@ export function fixPositionRespawnEnemyCreateMoreInfos(game: Game, heading: stri
     const myCharacter = findMyCharacter(game);
     if (!myCharacter) return;
     const position = { x: myCharacter.x, y: myCharacter.y };
-    let enemy: Character | undefined = createEnemyFixPositionRespawnEnemyWithPosition(position, game);
+    let enemy: Character | undefined = createFakeEnemyFixPositionRespawnEnemyWithPosition(position, game);
     if (!enemy) return;
     return createCharacterMoreInfosPartContainer(game.ctx, enemy, game.UI.moreInfos, game, heading);
 }

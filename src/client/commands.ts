@@ -121,7 +121,7 @@ function logFirstStringDifference(string1: string, string2: string) {
             if (substringStart < 0) substringStart = 0;
             const substring1 = string1.substring(substringStart, i + substringSize);
             const substring2 = string2.substring(substringStart, i + substringSize);
-            console.log(substring1, substring2);;
+            console.log(substring1, substring2);
             break;
         }
     }

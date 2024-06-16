@@ -3,23 +3,14 @@ increase version
 
 current tasks:
 - multiplayer
-    - player duplication issues
-        - somehow i got my character two times (stream 254)
-        - use my own streams to find out what happened?
-        - thoughts:
-            - when server restarts it losese client ids.
-            - but game state still has players with client ids
-            - on reconect, server gives a client id, by chance, this id might exists still in players
-            - find out order of action to reproduce
-                - player 1 joins multiplayer
-                - player 2 joins multiplayer
-                - server restarts
-                - player 2 rejoins first (can be force by disconnecting with player 1)
-                - player 1 reconnects
-                - restart and there are 3 player characters
     - sync issue
         - false positive:
             - some id issues, but should no result in problems
+                - assumption: out of secreen musician instrumnent choice
+            - reproduce id problem
+                - run away from other player
+                - do an upgrade action, id now different
+
             - some ordering of attribute, but should not result in problems
                 - is it maybe of json parse and stringify don't order always in the same way?
     - ping issue:

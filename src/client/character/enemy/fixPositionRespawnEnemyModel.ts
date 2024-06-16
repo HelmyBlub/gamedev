@@ -70,7 +70,7 @@ export function createEnemyWithLevel(idCounter: IdCounter, enemyPos: Position, l
             const king = game.state.bossStuff.nextKings[celestialDirection]!;
             const whatToAdd = randomWhatToAdd(king, enemy, game);
             if (whatToAdd === "addAbility") {
-                const ability = createEnemyAbilityBasedOnKing(level, king, enemyPos, enemyType.damageFactor, game, enemy);
+                const ability = createEnemyAbilityBasedOnKing(level, king, enemyPos, enemyType.damageFactor, game, enemy, idCounter);
                 if (ability) {
                     enemy.experienceWorth *= 2;
                     enemy.respawnTime *= 2;
@@ -106,17 +106,16 @@ export function createFixPositionRespawnEnemiesOnInit(game: Game) {
     }
 }
 
-export function createEnemyFixPositionRespawnEnemyWithPosition(position: Position, game: Game): Character | undefined {
+export function createFakeEnemyFixPositionRespawnEnemyWithPosition(position: Position, game: Game): Character | undefined {
     const mapCenter = getMapMidlePosition(game.state.map);
     const distance = calculateDistance(mapCenter, position);
     if (ENEMY_MIN_SPAWN_DISTANCE_MAP_MIDDLE < distance) {
-        if (!isPositionBlocking(position, game.state.map, game.state.idCounter, game)) {
-            const chunk = positionToChunkXY(position, game.state.map);
-            const enemyType: string = decideEnemyType(chunk.x, chunk.y, game);
-            const level = Math.max(Math.floor((distance - ENEMY_MIN_SPAWN_DISTANCE_MAP_MIDDLE) / 1000), 0) + 1;
-            const enemy = createEnemyWithLevel(game.state.idCounter, position, level, ENEMY_TYPES[enemyType], enemyType, game);
-            return enemy;
-        }
+        const chunk = positionToChunkXY(position, game.state.map);
+        const enemyType: string = decideEnemyType(chunk.x, chunk.y, game);
+        const level = Math.max(Math.floor((distance - ENEMY_MIN_SPAWN_DISTANCE_MAP_MIDDLE) / 1000), 0) + 1;
+        const fakeIdCounter: IdCounter = { nextId: 0 };
+        const enemy = createEnemyWithLevel(fakeIdCounter, position, level, ENEMY_TYPES[enemyType], enemyType, game);
+        return enemy;
     }
     return undefined;
 }
@@ -239,7 +238,7 @@ function randomWhatToAdd(nextKing: Character, charPosition: Position, game: Game
     }
 }
 
-function createEnemyAbilityBasedOnKing(level: number, nextKing: Character, enemyPos: Position, damageFactor: number, game: Game, enemy: Character): Ability | undefined {
+function createEnemyAbilityBasedOnKing(level: number, nextKing: Character, enemyPos: Position, damageFactor: number, game: Game, enemy: Character, idCounter: IdCounter): Ability | undefined {
     const possibleAbilities: Ability[] = [];
     for (let ability of nextKing!.abilities) {
         if (ABILITIES_FUNCTIONS[ability.name].canBeUsedByBosses) {
@@ -255,7 +254,7 @@ function createEnemyAbilityBasedOnKing(level: number, nextKing: Character, enemy
         if (randomChoice < possibleAbilities.length) {
             const randomAbility: Ability = possibleAbilities[randomChoice];
             const abilityFunctions = ABILITIES_FUNCTIONS[randomAbility.name];
-            const ability = abilityFunctions.createAbility(game.state.idCounter);
+            const ability = abilityFunctions.createAbility(idCounter);
             if (abilityFunctions.setUpAbilityForEnemy) {
                 abilityFunctions.setUpAbilityForEnemy(enemy, ability, game);
             }

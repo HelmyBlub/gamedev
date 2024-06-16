@@ -263,7 +263,7 @@ export function getTimeSinceFirstKill(gameState: GameState): number {
 }
 
 export function createGamePlayerHash(state: GameState) {
-    const gameStateString = JSON.stringify(state.players);
+    const gameStateString = JSON.stringify(state.players) + "," + JSON.stringify(state.idCounter);
     const result = createHash(gameStateString);
     return result;
 }
@@ -760,7 +760,7 @@ function autoSendGamePlayerHashInMultiplayer(game: Game) {
             compare.stateCompareSend = true;
         } else {
             const hash = createGamePlayerHash(game.state);
-            const playersJson = JSON.stringify(game.state.players);
+            const playersJson = JSON.stringify(game.state.players) + "," + JSON.stringify(game.state.idCounter);
             handleCommand(game, {
                 command: COMMAND_COMPARE_STATE_HASH,
                 clientId: game.multiplayer.myClientId,
