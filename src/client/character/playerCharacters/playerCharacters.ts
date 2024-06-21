@@ -94,6 +94,30 @@ export function paintPlayerCharacterUI(ctx: CanvasRenderingContext2D, player: Pl
     ctx.globalAlpha /= aplha;
 }
 
+export function playerCharacterGetLevelClassText(character: Character, charClass: CharacterClass): string {
+    let averageLevel = 0;
+    let counter = 0;
+    if (charClass.level) {
+        counter++;
+        averageLevel += (charClass.level.level - averageLevel) / counter;
+    }
+    for (let ability of character.abilities) {
+        if (ability.classIdRef === charClass.id && ability.level) {
+            counter++;
+            averageLevel += (ability.level.level - averageLevel) / counter;
+        }
+    }
+    if (character.pets) {
+        for (let pet of character.pets) {
+            if (pet.classIdRef === charClass.id && pet.level) {
+                counter++;
+                averageLevel += (pet.level.level - averageLevel) / counter;
+            }
+        }
+    }
+    return `${charClass.className} level ${Math.floor(averageLevel)}`;
+}
+
 export function paintPlayerAbilityLevelUI(ctx: CanvasRenderingContext2D, ability: Ability, topLeft: Position, width: number, height: number, game: Game) {
     if (!ability.level || ability.classIdRef === undefined) return;
     const text = ability.name + ": ";
@@ -138,7 +162,8 @@ export function createCharacterChooseUpgradeOptions(game: Game): UpgradeOption[]
 export function shareCharactersTradeablePreventedMultipleClass(fromCharacter: Character, toCharacter: Character): boolean {
     if (!fromCharacter.characterClasses) return false;
     const giftingClass = findMainCharacterClass(fromCharacter);
-    return hasCharacterPreventedMultipleClass(giftingClass, toCharacter);
+    if (!giftingClass) return false;
+    return hasCharacterPreventedMultipleClass(giftingClass.className, toCharacter);
 }
 
 export function hasCharacterPreventedMultipleClass(newCharacterClassName: string, toCharacter: Character): boolean {
@@ -151,13 +176,13 @@ export function hasCharacterPreventedMultipleClass(newCharacterClassName: string
     return false;
 }
 
-export function findMainCharacterClass(character: Character): string {
+export function findMainCharacterClass(character: Character): CharacterClass | undefined {
     if (character.characterClasses) {
         for (let charClass of character.characterClasses) {
-            if (!charClass.gifted && !charClass.legendary) return charClass.className;
+            if (!charClass.gifted && !charClass.legendary) return charClass;
         }
     }
-    return "";
+    return undefined;
 }
 
 export function hasPlayerChoosenStartClassUpgrade(character: Character): boolean {

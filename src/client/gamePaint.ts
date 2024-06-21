@@ -3,7 +3,7 @@ import { canCharacterTradeAbilityOrPets } from "./character/character.js";
 import { Character } from "./character/characterModel.js";
 import { paintPlayerCharacters } from "./character/characterPaint.js";
 import { paintBossCharacters, paintBossCrown } from "./character/enemy/bossEnemy.js";
-import { CharacterClass, hasPlayerChoosenStartClassUpgrade, paintPlayerCharacterUI, shareCharactersTradeablePreventedMultipleClass } from "./character/playerCharacters/playerCharacters.js";
+import { CharacterClass, findMainCharacterClass, hasPlayerChoosenStartClassUpgrade, paintPlayerCharacterUI, playerCharacterGetLevelClassText, shareCharactersTradeablePreventedMultipleClass } from "./character/playerCharacters/playerCharacters.js";
 import { TamerPetCharacter } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
 import { calculateDirection, calculateDistance, calculateFightRetryCounter, findClientInfo, findClosestInteractable, getCameraPosition } from "./game.js";
 import { Game, Position, Debugging, PaintTextData } from "./gameModel.js";
@@ -263,9 +263,11 @@ function paintPastPlayerGiftInfo(ctx: CanvasRenderingContext2D, pastCharacter: C
     textsWithKeys.push(`Past Character:`);
     if (canTrade) {
         if (!classAlreadyTaken) {
+            const charClass = findMainCharacterClass(pastCharacter);
+            const classLevelText = playerCharacterGetLevelClassText(pastCharacter, charClass!);
             const interactKey = playerInputBindingToDisplayValue("interact1", game);
             const infoKey = playerInputBindingToDisplayValue("More Info", game);
-            textsWithKeys.push(`Press <${interactKey}> to get Abiltites gifted,`);
+            textsWithKeys.push(`Press <${interactKey}> to get ${classLevelText} gifted,`);
             textsWithKeys.push(`one time only.`);
             textsWithKeys.push(`<${infoKey}> for more info.`);
             game.UI.paintClosesInteractableMoreInfo = true;

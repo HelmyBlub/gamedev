@@ -3,10 +3,11 @@ increase version
 
 current tasks:
 - visualization change past character:
-    - show level and ability of what he can gift
+    - show average level and class of what he gift as simple text
 - prevent unusable music sheet visualizations
     -  prevent chaning away from 1/8 1/16 notes only when there are not placed
 - mutliplayer: needs testing
+- change: past character don't rotate last out but weakest
 
 
 next feature ideas:
