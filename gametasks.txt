@@ -1,7 +1,8 @@
-next test run: tamer, ball, musician
+next test run: musician, tamer, ball, 
 increase version
 
 current tasks:
+- creat new short king replay
 - prevent unusable music sheet visualizations
     -  prevent chaning away from 1/8 1/16 notes only when there are not placed
 - mutliplayer: needs testing

@@ -647,20 +647,23 @@ function killCharacter(character: Character, game: Game, abilityIdRef: number | 
 
 function cappCharacterOnDeath(character: Character, game: Game) {
     if (character.level) character.level.capped = true;
-    if (character.bossSkillPoints) character.bossSkillPoints.capped = true;
+    if (character.bossSkillPoints && !character.legendary) character.bossSkillPoints.capped = true;
     if (character.characterClasses) {
         for (let charClass of character.characterClasses) {
+            if (charClass.legendary) continue;
             if (charClass.availableSkillPoints) charClass.availableSkillPoints.capped = true;
-            if (charClass.level && !charClass.legendary) charClass.level.capped = true;
+            if (charClass.level) charClass.level.capped = true;
         }
     }
     for (let ability of character.abilities) {
+        if (ability.legendary) continue;
         if (ability.bossSkillPoints) ability.bossSkillPoints.capped = true;
-        if (ability.level && !ability.legendary) ability.level.capped = true;
+        if (ability.level) ability.level.capped = true;
     }
     if (character.pets) {
         for (let pet of character.pets) {
-            if (pet.level && !pet.legendary) pet.level.capped = true;
+            if (pet.legendary) continue;
+            if (pet.level) pet.level.capped = true;
             if (pet.bossSkillPoints) pet.bossSkillPoints.capped = true;
             for (let ability of pet.abilities) {
                 if (ability.bossSkillPoints) ability.bossSkillPoints.capped = true;
