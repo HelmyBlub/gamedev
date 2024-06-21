@@ -12,6 +12,7 @@ import { levelUpIncreaseExperienceRequirement } from "../../game.js";
 
 export type Leveling = {
     level: number,
+    capped?: boolean,
     leveling?: {
         experience: number,
         experienceForLevelUp: number,
@@ -30,8 +31,7 @@ export function levelingCharacterAndClassXpGain(state: GameState, experience: nu
         }
         if (character.characterClasses) {
             for (let charClass of character.characterClasses) {
-                if (charClass.gifted) continue;
-                if (charClass.level?.leveling !== undefined) {
+                if (charClass.level?.leveling !== undefined && !charClass.level.capped) {
                     if (charClass.legendary) {
                         if (charClass.level.level >= charClass.legendary.levelCap) {
                             continue;
@@ -71,7 +71,7 @@ function levelingClassLevelUp(character: Character, charClass: CharacterClass, g
     if (!charClass.level?.leveling || charClass.availableSkillPoints === undefined) return;
     charClass.level.level++;
     if (charClass.level.level % 3 === 0) {
-        charClass.availableSkillPoints += 1;
+        charClass.availableSkillPoints.available += 1;
     }
     charClass.level.leveling.experience -= charClass.level.leveling.experienceForLevelUp;
     levelUpIncreaseExperienceRequirement(charClass.level);
@@ -80,7 +80,7 @@ function levelingClassLevelUp(character: Character, charClass: CharacterClass, g
 
 export function executeLevelingCharacterUpgradeOption(character: Character, upgradeOption: UpgradeOption, game: Game) {
     const charClass = findCharacterClassById(character, upgradeOption.classIdRef!);
-    if (!charClass || !charClass.availableSkillPoints || charClass.availableSkillPoints <= 0) return;
+    if (!charClass || !charClass.availableSkillPoints || charClass.availableSkillPoints.available <= 0) return;
     if (upgradeOption.type === "Character") {
         const charUpFunctions = CHARACTER_UPGRADE_FUNCTIONS[upgradeOption.identifier];
         if (charUpFunctions) {
@@ -98,12 +98,13 @@ export function executeLevelingCharacterUpgradeOption(character: Character, upgr
             }
         }
     }
-    charClass.availableSkillPoints--;
+    charClass.availableSkillPoints.available--;
+    charClass.availableSkillPoints.used++;
 }
 
 export function createCharacterUpgradeOptions(character: Character, characterClass: CharacterClass, game: Game): UpgradeOptionAndProbability[] {
     const upgradeOptions: UpgradeOptionAndProbability[] = [];
-    if (characterClass.availableSkillPoints === undefined || characterClass.availableSkillPoints <= 0) return upgradeOptions;
+    if (characterClass.availableSkillPoints === undefined || characterClass.availableSkillPoints.available <= 0) return upgradeOptions;
     upgradeOptions.push(...CHARACTER_UPGRADE_FUNCTIONS[CHARACTER_UPGRADE_BONUS_HP].getOptions!(character, characterClass, game));
     upgradeOptions.push(...CHARACTER_UPGRADE_FUNCTIONS[CHARACTER_UPGRADE_BONUS_MOVE_SPEED].getOptions!(character, characterClass, game));
 

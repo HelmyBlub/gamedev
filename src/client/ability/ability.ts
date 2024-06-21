@@ -2,7 +2,7 @@ import { determineCharactersInDistance, characterTakeDamage } from "../character
 import { Character } from "../character/characterModel.js"
 import { BossEnemyCharacter } from "../character/enemy/bossEnemy.js"
 import { calculateDistance, getCameraPosition, levelUpIncreaseExperienceRequirement, takeTimeMeasure } from "../game.js"
-import { BossSkillPoints, FACTION_ENEMY, FACTION_PLAYER, Game, IdCounter, Legendary, Position } from "../gameModel.js"
+import { SkillPoints, FACTION_ENEMY, FACTION_PLAYER, Game, IdCounter, Legendary, Position } from "../gameModel.js"
 import { GameMap } from "../map/map.js"
 import { findPlayerByCharacterId, Player } from "../player.js"
 import { addAbilityDeathCircle } from "./abilityDeathCircle.js"
@@ -47,7 +47,7 @@ export type Ability = {
     passive: boolean,
     playerInputBinding?: string,
     level?: Leveling,
-    bossSkillPoints?: BossSkillPoints,
+    bossSkillPoints?: SkillPoints,
     upgrades: {
         [key: string]: any,
     },
@@ -257,8 +257,8 @@ export function tickAbilityObjects(abilityObjects: AbilityObject[], game: Game) 
 }
 
 export function levelingAbilityXpGain(ability: Ability, owner: Character, experience: number, game: Game) {
-    if (ability.level?.leveling) {
-        if (!owner || owner.isDead || owner.isPet) return;
+    if (ability.level?.leveling && !ability.level.capped) {
+        if (!owner) return;
         if (ability.legendary && ability.legendary.levelCap <= ability.level.level) return;
         ability.level.leveling.experience += experience * (owner.experienceGainFactor ?? 1);
         while (ability.level.leveling.experience >= ability.level.leveling.experienceForLevelUp) {
@@ -346,7 +346,10 @@ export function getAbilityNameUiText(ability: Ability): string[] {
     const text: string[] = [`Ability: ${ability.name}`];
     if (ability.gifted) {
         text[0] += " (gifted)";
-        text.push("Gifted abilities can not get stronger.");
+    }
+    if (ability.level?.capped || ability.bossSkillPoints?.capped) {
+        text[0] += " (capped)";
+        text.push("capped abilities can no longer get stronger.");
     }
     if (ability.legendary) {
         text.push(`Legendary: Ability levels and upgrades are permanent.`);

@@ -1,22 +1,12 @@
-next test run: tamer, ball
+next test run: tamer, ball, musician
 increase version
 
 current tasks:
-- multiplayer
-    - sync issue
-        - false positive:
-            - some id issues, but should no result in problems
-                - assumption: out of secreen musician instrumnent choice
-            - reproduce id problem
-                - run away from other player
-                - do an upgrade action, id now different
-
-            - some ordering of attribute, but should not result in problems
-                - is it maybe of json parse and stringify don't order always in the same way?
-    - ping issue:
-        - somehow when connecting with "bad" ping it will not correct itself to a better value
-        - could not reproduce
-- change: ability "capped" state instead of part of gifted
+- visualization change past character:
+    - show level and ability of what he can gift
+- prevent unusable music sheet visualizations
+    -  prevent chaning away from 1/8 1/16 notes only when there are not placed
+- mutliplayer: needs testing
 
 
 next feature ideas:

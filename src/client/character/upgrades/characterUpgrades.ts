@@ -72,7 +72,8 @@ export function upgradeCharacter(character: Character, upgradeOption: UpgradeOpt
         const charClass = findCharacterClassById(character, upgradeOption.classIdRef);
         upgradeFunctions.executeOption(upgradeOption, character);
         if (charClass?.availableSkillPoints !== undefined) {
-            charClass.availableSkillPoints--;
+            charClass.availableSkillPoints.available--;
+            charClass.availableSkillPoints.used++;
         }
     }
     character.upgradeChoices = [];

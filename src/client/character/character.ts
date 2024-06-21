@@ -113,18 +113,8 @@ export function playerCharactersAddBossSkillPoints(bossLevel: number | undefined
     for (let character of playerCharacters) {
         if (!character.isDead && !character.isPet) {
             let gotSkillPoint = false;
-            if (character.bossSkillPoints !== undefined) {
-                if (character.bossSkillPoints.used + character.bossSkillPoints.available < bossLevel) {
-                    const legendaryAbilitySkillPointCapReached = character.legendary && character.legendary.skillPointCap <= character.bossSkillPoints.used + character.bossSkillPoints.available;
-                    if (!legendaryAbilitySkillPointCapReached) {
-                        character.bossSkillPoints.available++;
-                        gotSkillPoint = true;
-                    }
-                }
-            }
             for (let ability of character.abilities) {
-                if (ability.gifted) continue;
-                if (ability.bossSkillPoints !== undefined) {
+                if (ability.bossSkillPoints !== undefined && !ability.bossSkillPoints.capped) {
                     if (ability.bossSkillPoints.used + ability.bossSkillPoints.available < bossLevel) {
                         const legendaryAbilitySkillPointCapReached = ability.legendary && ability.legendary.skillPointCap <= ability.bossSkillPoints.used + ability.bossSkillPoints.available;
                         if (legendaryAbilitySkillPointCapReached) {
@@ -137,8 +127,7 @@ export function playerCharactersAddBossSkillPoints(bossLevel: number | undefined
             }
             if (character.pets) {
                 for (let pet of character.pets) {
-                    if (pet.gifted) continue;
-                    if (pet.bossSkillPoints !== undefined) {
+                    if (pet.bossSkillPoints !== undefined && !pet.bossSkillPoints.capped) {
                         if (pet.bossSkillPoints.used + pet.bossSkillPoints.available < bossLevel) {
                             const legendaryAbilitySkillPointCapReached = pet.legendary && pet.legendary.skillPointCap <= pet.bossSkillPoints.used + pet.bossSkillPoints.available;
                             if (!legendaryAbilitySkillPointCapReached) {
@@ -148,7 +137,7 @@ export function playerCharactersAddBossSkillPoints(bossLevel: number | undefined
                         }
                     }
                     for (let ability of pet.abilities) {
-                        if (ability.bossSkillPoints !== undefined) {
+                        if (ability.bossSkillPoints !== undefined && !ability.bossSkillPoints.capped) {
                             if (ability.bossSkillPoints.used + ability.bossSkillPoints.available < bossLevel) {
                                 const legendaryAbilitySkillPointCapReached = ability.legendary && ability.legendary.skillPointCap <= ability.bossSkillPoints.used + ability.bossSkillPoints.available;
                                 if (legendaryAbilitySkillPointCapReached) {
@@ -592,8 +581,7 @@ export function experienceForEveryPlayersLeveling(experience: number, game: Game
 
 function experienceForCharacter(character: Character, experienceWorth: number) {
     if (character && character.level?.leveling
-        && !character.isDead && !character.isPet
-        && !(character as TamerPetCharacter).gifted
+        && !character.level.capped
     ) {
         if (character.legendary && character.legendary.levelCap <= character.level.level) return;
         character.level.leveling.experience += experienceWorth * (character.experienceGainFactor ?? 1);
@@ -634,6 +622,7 @@ function killCharacter(character: Character, game: Game, abilityIdRef: number | 
             endGame(game, false, true);
         }
     } else if (character.type === PLAYER_CHARACTER_TYPE) {
+        cappCharacterOnDeath(character, game);
         if (character.willTurnToPetOnDeath) turnCharacterToPet(character, game);
         if (game.state.bossStuff.godFightStarted || game.state.bossStuff.kingFightStarted) {
             const countAlive = countAlivePlayerCharacters(game.state.players);
@@ -654,6 +643,31 @@ function killCharacter(character: Character, game: Game, abilityIdRef: number | 
     }
     removeCharacterDebuffs(character, game);
     game.state.killCounter++;
+}
+
+function cappCharacterOnDeath(character: Character, game: Game) {
+    if (character.level) character.level.capped = true;
+    if (character.bossSkillPoints) character.bossSkillPoints.capped = true;
+    if (character.characterClasses) {
+        for (let charClass of character.characterClasses) {
+            if (charClass.availableSkillPoints) charClass.availableSkillPoints.capped = true;
+            if (charClass.level && !charClass.legendary) charClass.level.capped = true;
+        }
+    }
+    for (let ability of character.abilities) {
+        if (ability.bossSkillPoints) ability.bossSkillPoints.capped = true;
+        if (ability.level && !ability.legendary) ability.level.capped = true;
+    }
+    if (character.pets) {
+        for (let pet of character.pets) {
+            if (pet.level && !pet.legendary) pet.level.capped = true;
+            if (pet.bossSkillPoints) pet.bossSkillPoints.capped = true;
+            for (let ability of pet.abilities) {
+                if (ability.bossSkillPoints) ability.bossSkillPoints.capped = true;
+                if (ability.level && !ability.legendary) ability.level.capped = true;
+            }
+        }
+    }
 }
 
 function tickCharacterPets(character: Character, game: Game, pathingCache: PathingCache | null) {

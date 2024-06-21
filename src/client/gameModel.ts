@@ -205,9 +205,10 @@ export type KeyCodeToAction = Map<string, {
     activated?: boolean,
 }>;
 
-export type BossSkillPoints = {
+export type SkillPoints = {
     available: number,
     used: number,
+    capped?: boolean,
 }
 
 export type Multiplayer = {

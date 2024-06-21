@@ -35,7 +35,7 @@ function changeCharacterToTowerBuilderClass(
     game: Game,
 ) {
     if (!character.characterClasses) character.characterClasses = [];
-    const charClass = {
+    const charClass: CharacterClass = {
         id: getNextId(game.state.idCounter),
         className: CHARACTER_CLASS_TOWER_BUILDER,
         level: {
@@ -45,7 +45,7 @@ function changeCharacterToTowerBuilderClass(
                 experienceForLevelUp: 10,
             }
         },
-        availableSkillPoints: 0,
+        availableSkillPoints: { available: 0, used: 0 },
     };
     character.characterClasses.push(charClass);
     addAbilityToCharacter(character, createAbilityTower(idCounter, "ability1"), charClass);

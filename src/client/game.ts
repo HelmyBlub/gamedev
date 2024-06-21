@@ -121,6 +121,7 @@ export function gameInit(game: Game) {
     game.UI.displayTextData = [];
     game.UI.moneyGainedThisRun = [];
     game.UI.displayMoreInfos = false;
+    if (game.UI.playerCharacterLevelUI) game.UI.playerCharacterLevelUI.levelUI = [];
     game.testing.saveStates.autoSaves.nextSaveStateTime = 10000;
     game.state.map.activeChunkKeys = [];
     game.state.map.chunks = {};

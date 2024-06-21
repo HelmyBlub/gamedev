@@ -256,8 +256,12 @@ export function createTamerPetCharacterMoreInfos(ctx: CanvasRenderingContext2D, 
     const textLines: string[] = [`Pet Stats:`];
     if (pet.gifted) {
         textLines[0] += " (gifted)"
-        textLines.push("gifted pets don't get stronger");
     }
+    if (pet.level?.capped) {
+        textLines[0] += " (capped)";
+        textLines.push("capped pets can no longer get stronger");
+    }
+
     if (pet.legendary) {
         textLines.push(`Legendary: Pet levels and upgrades are permanent`);
         if (pet.bossSkillPoints) textLines.push(`SkillPointCap: ${pet.bossSkillPoints.used}/${pet.legendary.skillPointCap}`);

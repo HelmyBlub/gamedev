@@ -190,7 +190,7 @@ function addCharacterClassMoreInfosTextLines(characterClasses: CharacterClass[],
                 textLines.push(`Gains XP for every enemy killed by anyone.`);
             }
         }
-        if (charClass.availableSkillPoints) textLines.push(`SkillPoints: ${charClass.availableSkillPoints}`);
+        if (charClass.availableSkillPoints) textLines.push(`SkillPoints: ${charClass.availableSkillPoints.available}`);
         pushCharacterClassUpgradesUiTexts(textLines, charClass);
     }
     if (hasLegendary) {
