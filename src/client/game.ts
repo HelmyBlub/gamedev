@@ -21,7 +21,7 @@ import { ABILITY_NAME_FEED_PET } from "./ability/petTamer/abilityFeedPet.js";
 import { ABILITY_NAME_LOVE_PET } from "./ability/petTamer/abilityLovePet.js";
 import { COMMAND_RESTART } from "./globalVars.js";
 import { mapObjectPlaceClassBuilding } from "./map/mapObjectClassBuilding.js";
-import { hasPlayerChoosenStartClassUpgrade } from "./character/playerCharacters/playerCharacters.js";
+import { findMainCharacterClass, hasPlayerChoosenStartClassUpgrade, playerCharacterClassGetAverageLevel } from "./character/playerCharacters/playerCharacters.js";
 import { copyAndSetPermanentDataForReplay, localStorageLoad, localStorageSavePastCharacters, setPermanentDataFromReplayData } from "./permanentData.js";
 import { MapTileObject, findNearesInteractableMapChunkObject } from "./map/mapObjects.js";
 import { classBuildingCheckAllPlayerForLegendaryAbilitiesAndMoveBackToBuilding } from "./map/buildings/classBuilding.js";
@@ -396,7 +396,21 @@ export function saveCharacterAsPastCharacter(character: Character, game: Game) {
     }
 
     if (pastCharacters.length > game.state.pastPlayerCharacters.maxNumber) {
-        pastCharacters.splice(0, 1);
+        let lowestAvgLevelPastCharacterIndex = 0;
+        let lowestAvgLevel = Number.MAX_VALUE;
+        for (let i = 0; i < pastCharacters.length; i++) {
+            const pastChar = pastCharacters[i];
+            if (!pastChar) continue;
+            const charClass = findMainCharacterClass(pastChar);
+            let currAvgLevel = 0;
+            if (charClass) currAvgLevel = playerCharacterClassGetAverageLevel(pastChar, charClass);
+            if (currAvgLevel < lowestAvgLevel) {
+                lowestAvgLevel = currAvgLevel;
+                lowestAvgLevelPastCharacterIndex = i;
+            }
+        }
+        console.log("splice index " + lowestAvgLevelPastCharacterIndex + " " + lowestAvgLevel, pastCharacters[lowestAvgLevelPastCharacterIndex]);
+        pastCharacters.splice(lowestAvgLevelPastCharacterIndex, 1);
     }
 
     for (let i = 0; i < pastCharacters.length; i++) {

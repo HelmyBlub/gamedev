@@ -95,6 +95,10 @@ export function paintPlayerCharacterUI(ctx: CanvasRenderingContext2D, player: Pl
 }
 
 export function playerCharacterGetLevelClassText(character: Character, charClass: CharacterClass): string {
+    return `${charClass.className} level ${Math.floor(playerCharacterClassGetAverageLevel(character, charClass))}`;
+}
+
+export function playerCharacterClassGetAverageLevel(character: Character, charClass: CharacterClass): number {
     let averageLevel = 0;
     let counter = 0;
     if (charClass.level) {
@@ -115,7 +119,7 @@ export function playerCharacterGetLevelClassText(character: Character, charClass
             }
         }
     }
-    return `${charClass.className} level ${Math.floor(averageLevel)}`;
+    return averageLevel;
 }
 
 export function paintPlayerAbilityLevelUI(ctx: CanvasRenderingContext2D, ability: Ability, topLeft: Position, width: number, height: number, game: Game) {
