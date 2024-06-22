@@ -15,6 +15,7 @@ import { playerInputBindingToDisplayValue } from "../playerInput.js";
 import { MoreInfosPartContainer, createDefaultMoreInfosContainer, createMoreInfosPart } from "../moreInfo.js";
 import { IMAGE_BUILDING1, createBuildingClassBuilding, classBuildingFindCharacterClassToMakeLegendary, classBuildingPlacePlayerClassStuffInBuilding, classBuildingFindById, BUILDING_CLASS_BUILDING } from "./buildings/classBuilding.js";
 import { fillRandomUpgradeOptionChoices } from "../character/upgrade.js";
+import { CHARACTER_CLASS_TOWER_BUILDER } from "../character/playerCharacters/characterClassTower.js";
 
 export type MapTileObjectBuilding = MapTileObject & {
     buildingId: number,
@@ -187,7 +188,8 @@ function paintInteract(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, 
             } else {
                 const interactBurrowKey = playerInputBindingToDisplayValue("interact1", game);
                 const infoKey = playerInputBindingToDisplayValue("More Info", game);
-                const avgLevel = getAverageLevelOfAbilitiesPetsCharClassId(classBuilding.characterClass.id, classBuilding.abilities, classBuilding.pets);
+                let avgLevel = getAverageLevelOfAbilitiesPetsCharClassId(classBuilding.characterClass.id, classBuilding.abilities, classBuilding.pets);
+                if (classBuilding.characterClass.className === CHARACTER_CLASS_TOWER_BUILDER) avgLevel = classBuilding.characterClass.level!.level;
                 texts.push(`Press <${interactBurrowKey}> to burrow ${classBuilding.characterClass.className} ${avgLevel.toFixed()}.`);
                 texts.push(`Press <${infoKey}> more info.`);
             }

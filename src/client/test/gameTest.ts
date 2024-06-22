@@ -88,7 +88,7 @@ function testPlayerClasses(game: Game) {
     replay.testInputFileQueue.push("/data/testInputShortBuilder.json");
     replay.testInputFileQueue.push("/data/testInputShortSniper.json");
     replay.testInputFileQueue.push("/data/testInputShortTamer.json");
-    replay.testInputFileQueue.push("/data/testReplayShortKing.json");
+    // replay.testInputFileQueue.push("/data/testReplayShortKing.json");
 
     replay.testInputFileQueue.push("/data/testReplayMultiplayer.json");
 

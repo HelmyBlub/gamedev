@@ -2,13 +2,12 @@ next test run: musician, tamer, ball,
 increase version
 
 current tasks:
-- prevent unusable music sheet visualizations
-    - prevent changing away from 1/8 1/16 notes only when there are not placed
-    - when changing away frin 1/8 1/16 when longer music sheet, beeing in wrong position
+- legendary pets get no skill points and no xp. Class ref id is wrong?
+- replay stats: don't compare time for new runs
+- create new short king replay
 - think about how make introduction to game more understandable
     - better notice what abilities you can on choosing class
     - when pressing of cooldown ability: show colldown message
-- create new short king replay
 - desyncs mutliplayer
     - false positives
         - only property order different
