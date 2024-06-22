@@ -18,7 +18,7 @@ export function addTowerClass() {
         createBossBasedOnClassAndCharacter: createBossBasedOnClassAndCharacter,
         createUpgradeOptions: createCharacterUpgradeOptions,
         executeUpgradeOption: executeLevelingCharacterUpgradeOption,
-        getMoreInfosText: getLongUiText,
+        getMoreInfosText: getMoreInfoText,
         paintLevelUI: paintLevelUI,
         preventMultiple: true,
     }
@@ -52,7 +52,7 @@ function changeCharacterToTowerBuilderClass(
     addAbilityToCharacter(character, createAbilityHpRegen(idCounter), charClass);
 }
 
-function getLongUiText(): string[] {
+function getMoreInfoText(): string[] {
     let text: string[] = [];
     text.push("Build Towers. Tower Connect to each other.");
     text.push("Towers are stronger with more connections.");

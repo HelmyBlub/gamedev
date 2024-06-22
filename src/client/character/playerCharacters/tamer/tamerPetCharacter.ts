@@ -252,62 +252,6 @@ export function createTamerPetsCharacterMoreInfos(ctx: CanvasRenderingContext2D,
     return result;
 }
 
-export function createTamerPetCharacterMoreInfos(ctx: CanvasRenderingContext2D, pet: TamerPetCharacter, game: Game): MoreInfoPart {
-    const textLines: string[] = [`Pet Stats:`];
-    if (pet.gifted) {
-        textLines[0] += " (gifted)"
-    }
-    if (pet.level?.capped) {
-        textLines[0] += " (capped)";
-        textLines.push("capped pets can no longer get stronger");
-    }
-
-    if (pet.legendary) {
-        textLines.push(`Legendary: Pet levels and upgrades are permanent`);
-        if (pet.bossSkillPoints) textLines.push(`SkillPointCap: ${pet.bossSkillPoints.used}/${pet.legendary.skillPointCap}`);
-    }
-
-    let levelLimitText = "";
-    if (pet.legendary) {
-        levelLimitText = `/${pet.legendary.levelCap}`;
-    }
-    textLines.push(
-        `Color: ${pet.paint.color}`,
-        `food: ${petFoodIntakeToDisplayText(pet.foodIntakeLevel)}`,
-        `Happiness: ${petHappinessToDisplayText(pet.happines, game.state.time)}`,
-        `Movement Speed: ${getCharacterMoveSpeed(pet).toFixed(2)}`,
-        `Level: ${pet.level!.level.toFixed(0)}${levelLimitText}`,
-        `XP: ${pet.level!.leveling!.experience.toFixed(0)}/${pet.level!.leveling!.experienceForLevelUp.toFixed(0)}`,
-    );
-
-    if (pet.abilities.length > 0) {
-        textLines.push("");
-        textLines.push("Abilities:");
-        for (let ability of pet.abilities) {
-            textLines.push(ability.name);
-            const upgradeKeys = Object.keys(ability.upgrades);
-            if (upgradeKeys.length > 0) {
-                const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-                const upgradeFunctions = abilityFunctions.abilityUpgradeFunctions;
-                if (!upgradeFunctions) continue;
-                for (let key of upgradeKeys) {
-                    textLines.push(" -" + upgradeFunctions[key].getStatsDisplayText(ability));
-                }
-            }
-        }
-    }
-
-    if (pet.traits.length > 0) {
-        textLines.push("");
-        textLines.push("Traits:");
-        for (let trait of pet.traits) {
-            textLines.push(trait.name);
-        }
-    }
-
-    return createMoreInfosPart(ctx, textLines);
-}
-
 export function changeTamerPetHappines(pet: TamerPetCharacter, value: number, gameTime: number, visualizeChange: boolean) {
     pet.happines.current += value;
     if (tamerPetIncludesTrait(TAMER_PET_TRAIT_HAPPY_ONE, pet)) {
@@ -368,6 +312,58 @@ export function findPetOwner(pet: TamerPetCharacter, game: Game): Character | un
         }
     }
     return undefined;
+}
+
+function createTamerPetCharacterMoreInfos(ctx: CanvasRenderingContext2D, pet: TamerPetCharacter, game: Game): MoreInfoPart {
+    const textLines: string[] = [`Pet Stats:`];
+    if (pet.gifted) {
+        textLines[0] += " (gifted)"
+    }
+
+    if (pet.legendary) {
+        textLines.push(`Legendary: Pet levels and upgrades are permanent`);
+        if (pet.bossSkillPoints) textLines.push(`SkillPointCap: ${pet.bossSkillPoints.used}/${pet.legendary.skillPointCap}`);
+    }
+
+    let levelLimitText = "";
+    if (pet.legendary) {
+        levelLimitText = `/${pet.legendary.levelCap}`;
+    }
+    textLines.push(
+        `Color: ${pet.paint.color}`,
+        `food: ${petFoodIntakeToDisplayText(pet.foodIntakeLevel)}`,
+        `Happiness: ${petHappinessToDisplayText(pet.happines, game.state.time)}`,
+        `Movement Speed: ${getCharacterMoveSpeed(pet).toFixed(2)}`,
+        `Level: ${pet.level!.level.toFixed(0)}${levelLimitText}`,
+        `XP: ${pet.level!.leveling!.experience.toFixed(0)}/${pet.level!.leveling!.experienceForLevelUp.toFixed(0)}`,
+    );
+
+    if (pet.abilities.length > 0) {
+        textLines.push("");
+        textLines.push("Abilities:");
+        for (let ability of pet.abilities) {
+            textLines.push(ability.name);
+            const upgradeKeys = Object.keys(ability.upgrades);
+            if (upgradeKeys.length > 0) {
+                const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+                const upgradeFunctions = abilityFunctions.abilityUpgradeFunctions;
+                if (!upgradeFunctions) continue;
+                for (let key of upgradeKeys) {
+                    textLines.push(" -" + upgradeFunctions[key].getStatsDisplayText(ability));
+                }
+            }
+        }
+    }
+
+    if (pet.traits.length > 0) {
+        textLines.push("");
+        textLines.push("Traits:");
+        for (let trait of pet.traits) {
+            textLines.push(trait.name);
+        }
+    }
+
+    return createMoreInfosPart(ctx, textLines);
 }
 
 function paintTamerPetCharacter(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {

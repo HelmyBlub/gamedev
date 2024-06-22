@@ -1,4 +1,4 @@
-import { ABILITIES_FUNCTIONS } from "../ability/ability.js";
+import { ABILITIES_FUNCTIONS, Ability } from "../ability/ability.js";
 import { FACTION_PLAYER, Game, Position } from "../gameModel.js";
 import { getPointPaintPosition } from "../gamePaint.js";
 import { GAME_IMAGES, getImage, loadImage } from "../imageLoad.js";
@@ -7,8 +7,9 @@ import { MoreInfoPart, createMoreInfosPart } from "../moreInfo.js";
 import { getCharacterMoveSpeed, getPlayerCharacters } from "./character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_PLAYER_PARTS, IMAGE_SLIME } from "./characterModel.js";
 import { CHARACTER_TYPE_KING_ENEMY } from "./enemy/kingEnemy.js";
-import { CharacterClass } from "./playerCharacters/playerCharacters.js";
+import { CharacterClass, getAverageLevelOfAbilitiesPetsCharClassId, playerCharacterClassGetAverageLevel } from "./playerCharacters/playerCharacters.js";
 import { pushCharacterClassUpgradesUiTexts } from "./upgrades/characterUpgrades.js";
+import { TamerPetCharacter } from "./playerCharacters/tamer/tamerPetCharacter.js";
 
 export function paintCharacters(ctx: CanvasRenderingContext2D, characters: (Character | undefined)[], cameraPosition: Position, game: Game) {
     for (let i = 0; i < characters.length; i++) {
@@ -80,14 +81,14 @@ export function createCharacterMoreInfos(ctx: CanvasRenderingContext2D, characte
     }
     if (character.characterClasses) {
         textLines.push(``);
-        addCharacterClassMoreInfosTextLines(character.characterClasses, textLines);
+        addCharacterClassMoreInfosTextLines(character.characterClasses, character.abilities, character.pets, textLines);
     }
     return createMoreInfosPart(ctx, textLines);
 }
 
-export function createCharacterClassMoreInfos(ctx: CanvasRenderingContext2D, characterClasses: CharacterClass[]): MoreInfoPart {
+export function createCharacterClassMoreInfos(ctx: CanvasRenderingContext2D, characterClasses: CharacterClass[], abilities: Ability[] | undefined, pets: TamerPetCharacter[] | undefined): MoreInfoPart {
     const textLines: string[] = [];
-    addCharacterClassMoreInfosTextLines(characterClasses, textLines);
+    addCharacterClassMoreInfosTextLines(characterClasses, abilities, pets, textLines);
     return createMoreInfosPart(ctx, textLines);
 }
 
@@ -151,7 +152,7 @@ export function paintPlayerCharacters(ctx: CanvasRenderingContext2D, cameraPosit
     paintCharacters(ctx, game.state.pastPlayerCharacters.characters, cameraPosition, game);
 }
 
-function addCharacterClassMoreInfosTextLines(characterClasses: CharacterClass[], textLines: string[]) {
+function addCharacterClassMoreInfosTextLines(characterClasses: CharacterClass[], abilities: Ability[] | undefined, pets: TamerPetCharacter[] | undefined, textLines: string[]) {
     let first: boolean = true;
     let hasLegendary = false;
     for (let charClass of characterClasses) {
@@ -161,7 +162,12 @@ function addCharacterClassMoreInfosTextLines(characterClasses: CharacterClass[],
             textLines.push(``);
         }
         textLines.push(`Class: ${charClass.className}`);
-        if (charClass.gifted) textLines.push(`Gifted: Abilities can now longer get stronger`);
+        const classTextLine = textLines.length - 1;
+        if (charClass.capped) {
+            textLines[classTextLine] += " (capped)";
+            textLines.push(`Capped: Abilities can now longer get stronger`);
+        }
+        if (charClass.gifted) textLines[classTextLine] += ` (gifted)`;
         if (charClass.legendary) {
             hasLegendary = true;
             textLines.push(`Legendary: Class levels and upgrades are permanent`);
@@ -189,6 +195,13 @@ function addCharacterClassMoreInfosTextLines(characterClasses: CharacterClass[],
                 textLines.push(`XP: ${Math.floor(charClass.level.leveling.experience)}/${Math.floor(charClass.level.leveling.experienceForLevelUp)}`);
                 textLines.push(`Gains XP for every enemy killed by anyone.`);
             }
+        } else {
+            const avgLevel = getAverageLevelOfAbilitiesPetsCharClassId(charClass.id, abilities, pets);
+            let levelCapText = "";
+            if (charClass.legendary) {
+
+            }
+            textLines.push(`Level: ${avgLevel.toFixed()}${levelCapText}`);
         }
         if (charClass.availableSkillPoints) textLines.push(`SkillPoints: ${charClass.availableSkillPoints.available}`);
         pushCharacterClassUpgradesUiTexts(textLines, charClass);

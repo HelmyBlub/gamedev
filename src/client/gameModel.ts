@@ -208,7 +208,6 @@ export type KeyCodeToAction = Map<string, {
 export type SkillPoints = {
     available: number,
     used: number,
-    capped?: boolean,
 }
 
 export type Multiplayer = {

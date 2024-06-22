@@ -12,7 +12,6 @@ import { levelUpIncreaseExperienceRequirement } from "../../game.js";
 
 export type Leveling = {
     level: number,
-    capped?: boolean,
     leveling?: {
         experience: number,
         experienceForLevelUp: number,
@@ -31,7 +30,7 @@ export function levelingCharacterAndClassXpGain(state: GameState, experience: nu
         }
         if (character.characterClasses) {
             for (let charClass of character.characterClasses) {
-                if (charClass.level?.leveling !== undefined && !charClass.level.capped) {
+                if (charClass.level?.leveling !== undefined && !charClass.capped) {
                     if (charClass.legendary) {
                         if (charClass.level.level >= charClass.legendary.levelCap) {
                             continue;

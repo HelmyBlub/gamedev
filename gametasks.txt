@@ -2,9 +2,8 @@ next test run: musician, tamer, ball,
 increase version
 
 current tasks:
-- combatlog round hp
-- character class add "capped" to moreInfo
 - legendary building display class level like past character
+- visualize class legendary/gifted in more info tabs
 - prevent unusable music sheet visualizations
     -  prevent chaning away from 1/8 1/16 notes only when there are not placed
 - think about how make introduction to game more understandable

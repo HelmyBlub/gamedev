@@ -32,6 +32,7 @@ export type CharacterClass = {
     className: string,
     level?: Leveling,
     gifted?: boolean,
+    capped?: boolean,
     legendary?: {
         levelCap: number,
         blessings: string[],
@@ -96,6 +97,28 @@ export function paintPlayerCharacterUI(ctx: CanvasRenderingContext2D, player: Pl
 
 export function playerCharacterGetLevelClassText(character: Character, charClass: CharacterClass): string {
     return `${charClass.className} level ${Math.floor(playerCharacterClassGetAverageLevel(character, charClass))}`;
+}
+
+export function getAverageLevelOfAbilitiesPetsCharClassId(charClassId: number, abilities: Ability[] | undefined, pets: TamerPetCharacter[] | undefined): number {
+    let averageLevel = 0;
+    let counter = 0;
+    if (abilities) {
+        for (let ability of abilities) {
+            if (ability.classIdRef === charClassId && ability.level) {
+                counter++;
+                averageLevel += (ability.level.level - averageLevel) / counter;
+            }
+        }
+    }
+    if (pets) {
+        for (let pet of pets) {
+            if (pet.classIdRef === charClassId && pet.level) {
+                counter++;
+                averageLevel += (pet.level.level - averageLevel) / counter;
+            }
+        }
+    }
+    return averageLevel;
 }
 
 export function playerCharacterClassGetAverageLevel(character: Character, charClass: CharacterClass): number {

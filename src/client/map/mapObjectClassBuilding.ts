@@ -75,7 +75,7 @@ function createMoreInfosClassBuilding(mapObject: MapTileObject, game: Game): Mor
     if (!classBuilding || !game.ctx) return;
     const moreInfosContainer = createDefaultMoreInfosContainer(game.ctx, mapObject.type, game.UI.moreInfos.headingFontSize);
     if (classBuilding.characterClass) {
-        moreInfosContainer.moreInfoParts.push(createCharacterClassMoreInfos(game.ctx, [classBuilding.characterClass]));
+        moreInfosContainer.moreInfoParts.push(createCharacterClassMoreInfos(game.ctx, [classBuilding.characterClass], classBuilding.abilities, classBuilding.pets));
         if (!classBuilding.stuffBorrowed?.burrowed) {
             moreInfosContainer.moreInfoParts.push(...createTamerPetsCharacterMoreInfos(game.ctx, classBuilding.pets, game));
             moreInfosContainer.moreInfoParts.push(...createMoreInfosAbilities(game.ctx, classBuilding.abilities, game));

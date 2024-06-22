@@ -257,7 +257,7 @@ export function tickAbilityObjects(abilityObjects: AbilityObject[], game: Game) 
 }
 
 export function levelingAbilityXpGain(ability: Ability, owner: Character, experience: number, game: Game) {
-    if (ability.level?.leveling && !ability.level.capped) {
+    if (ability.level?.leveling) {
         if (!owner) return;
         if (ability.legendary && ability.legendary.levelCap <= ability.level.level) return;
         ability.level.leveling.experience += experience * (owner.experienceGainFactor ?? 1);
@@ -346,10 +346,6 @@ export function getAbilityNameUiText(ability: Ability): string[] {
     const text: string[] = [`Ability: ${ability.name}`];
     if (ability.gifted) {
         text[0] += " (gifted)";
-    }
-    if (ability.level?.capped || ability.bossSkillPoints?.capped) {
-        text[0] += " (capped)";
-        text.push("capped abilities can no longer get stronger.");
     }
     if (ability.legendary) {
         text.push(`Legendary: Ability levels and upgrades are permanent.`);
