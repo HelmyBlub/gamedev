@@ -233,6 +233,12 @@ export function setRelativeMousePosition(event: MouseEvent, game: Game) {
     game.mouseRelativeCanvasPosition = getRelativeMousePoistion(event);
 }
 
+export function displayTextAtCameraPosition(text: string, game: Game) {
+    let textPosition1 = getCameraPosition(game);
+    textPosition1.y += 24;
+    game.UI.displayTextData.push(createPaintTextData(textPosition1, text, "black", "24", game.state.time, 5000));
+}
+
 export function createPaintTextData(position: Position, text: string, color: string, fontSize: string, currentTime: number, duration: number = 1000): PaintTextData {
     return {
         text: text,

@@ -1,5 +1,5 @@
 import { executeCommand } from "./commands.js";
-import { createPaintTextData, getCameraPosition } from "./game.js";
+import { createPaintTextData, displayTextAtCameraPosition, getCameraPosition } from "./game.js";
 import { Game } from "./gameModel.js";
 import { PlayerInput } from "./playerInput.js";
 import { decompressString } from "./stringCompress.js";
@@ -22,9 +22,7 @@ export function websocketConnect(game: Game, clientName: string, lobbyCode: stri
         console.log("websocket open");
         game.multiplayer.disableLocalStorage = true;
         document.getElementById('stringInput')?.classList.add('hide');
-        let textPosition1 = getCameraPosition(game);
-        textPosition1.y += 24;
-        game.UI.displayTextData.push(createPaintTextData(textPosition1, `Multiplayer Connected`, "black", "24", game.state.time, 5000));
+        displayTextAtCameraPosition(`Multiplayer Connected`, game);
 
         game.multiplayer.connectMenuOpen = false;
         game.multiplayer.lastSendTime = [];

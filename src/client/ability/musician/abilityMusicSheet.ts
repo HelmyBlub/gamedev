@@ -1,6 +1,6 @@
 import { Character } from "../../character/characterModel.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
-import { calculateDistance, getCameraPosition, getNextId } from "../../game.js";
+import { calculateDistance, displayTextAtCameraPosition, getCameraPosition, getNextId } from "../../game.js";
 import { Position, Game, IdCounter, FACTION_PLAYER } from "../../gameModel.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
@@ -326,7 +326,7 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, castPosition:
     const musicSheetWidth = getMusicSheetPaintWidth(abilityMusicSheets, selectedMusicSheet);
     const clickedButton = determineClickedButton(abilityMusicSheets, abilityOwner, musicSheetWidth, fixedCastPosition);
     if (clickedButton) {
-        executeButtonClick(clickedButton, abilityMusicSheets, selectedMusicSheet, abilityOwner);
+        executeButtonClick(clickedButton, abilityMusicSheets, selectedMusicSheet, abilityOwner, game);
         return;
     }
     const didCastNote = castNote(abilityOwner, abilityMusicSheets, selectedMusicSheet, fixedCastPosition, musicSheetWidth);
@@ -352,7 +352,7 @@ function determineCleffClick(abilityOwner: AbilityOwner, abilityMusicSheets: Abi
     return clefYHit;
 }
 
-function executeButtonClick(clickedButton: MusicSheetButton, abilityMusicSheets: AbilityMusicSheets, selectedMusicSheet: AbilityMusicSheet, abilityOwner: AbilityOwner) {
+function executeButtonClick(clickedButton: MusicSheetButton, abilityMusicSheets: AbilityMusicSheets, selectedMusicSheet: AbilityMusicSheet, abilityOwner: AbilityOwner, game: Game) {
     switch (clickedButton.action) {
         case "+":
             selectedMusicSheet.maxPlayTicks += 4;
@@ -395,17 +395,7 @@ function executeButtonClick(clickedButton: MusicSheetButton, abilityMusicSheets:
             selectedMusicSheet.stopping = !selectedMusicSheet.stopping;
             break;
         case "shortestNote":
-            switch (selectedMusicSheet.shortestAllowedNote) {
-                case NOTE_LENGTH_1_4:
-                    selectedMusicSheet.shortestAllowedNote = NOTE_LENGTH_1_8;
-                    break;
-                case NOTE_LENGTH_1_8:
-                    selectedMusicSheet.shortestAllowedNote = NOTE_LENGTH_1_16;
-                    break;
-                case NOTE_LENGTH_1_16:
-                    selectedMusicSheet.shortestAllowedNote = NOTE_LENGTH_1_4;
-                    break;
-            }
+            changeShortestAllowedNote(selectedMusicSheet, abilityOwner, game);
             break;
         case "nextInterval":
             const quaterWidth = getQuaterNoteWidth(abilityMusicSheets, selectedMusicSheet);
@@ -417,6 +407,36 @@ function executeButtonClick(clickedButton: MusicSheetButton, abilityMusicSheets:
             } else {
                 selectedMusicSheet.timePaintOffsetX += offsetPerClick;
             }
+            break;
+    }
+}
+
+function changeShortestAllowedNote(selectedMusicSheet: AbilityMusicSheet, abilityOwner: AbilityOwner, game: Game) {
+    switch (selectedMusicSheet.shortestAllowedNote) {
+        case NOTE_LENGTH_1_4:
+            selectedMusicSheet.shortestAllowedNote = NOTE_LENGTH_1_8;
+            break;
+        case NOTE_LENGTH_1_8:
+            selectedMusicSheet.shortestAllowedNote = NOTE_LENGTH_1_16;
+            break;
+        case NOTE_LENGTH_1_16:
+            let notePlacedPlayLocationType: 1 | 0.5 | 0.25 = NOTE_LENGTH_1_4;
+            for (let note of selectedMusicSheet.musicSheet.notes) {
+                if (note.tick % NOTE_LENGTH_1_4 !== 0) {
+                    if (note.tick % NOTE_LENGTH_1_8 !== 0) {
+                        notePlacedPlayLocationType = NOTE_LENGTH_1_16;
+                        break;
+                    } else {
+                        notePlacedPlayLocationType = NOTE_LENGTH_1_8;
+                    }
+                }
+            }
+            if (notePlacedPlayLocationType === NOTE_LENGTH_1_16) {
+                const myChar = findMyCharacter(game);
+                if (myChar === abilityOwner) displayTextAtCameraPosition(`can not change. A Note is blocking.`, game);
+            }
+            selectedMusicSheet.shortestAllowedNote = notePlacedPlayLocationType;
+            selectedMusicSheet.timePaintOffsetX = 0;
             break;
     }
 }
@@ -745,6 +765,7 @@ function paintButtons(ctx: CanvasRenderingContext2D, abilityMusicSheets: Ability
         }
     }
     //visualize sheet number
+    ctx.font = `bold ${fontSize}px Arial`;
     ctx.fillStyle = "white";
     ctx.fillRect(topLeftMusicSheet.x - abilityMusicSheets.buttonWidth - CLEF_WIDTH, topLeftMusicSheet.y + leftOffsetY, abilityMusicSheets.buttonWidth, abilityMusicSheets.buttonWidth);
     ctx.fillStyle = "black";

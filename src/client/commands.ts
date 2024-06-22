@@ -1,6 +1,6 @@
 import { findAndSetNewCameraCharacterId } from "./character/character.js";
 import { damageMeterChangeClientId } from "./combatlog.js";
-import { createPaintTextData, deepCopy, getCameraPosition } from "./game.js";
+import { createPaintTextData, deepCopy, displayTextAtCameraPosition, getCameraPosition } from "./game.js";
 import { Game, GameState, RecordDataMultiplayer } from "./gameModel.js";
 import { sendMultiplayer } from "./multiplayerConenction.js";
 import { createDefaultKeyBindings1, createDefaultUiKeyBindings, findPlayerByCliendId } from "./player.js";
@@ -84,8 +84,7 @@ export function executeCommand(game: Game, data: any) {
         case "playerLeft":
             for (let i = 0; i < game.state.clientInfos.length; i++) {
                 if (game.state.clientInfos[i].id === data.clientId) {
-                    const textPosition = getCameraPosition(game);
-                    game.UI.displayTextData.push(createPaintTextData(textPosition, `${game.state.clientInfos[i].name} diconnected`, "black", "24", game.state.time, 5000));
+                    displayTextAtCameraPosition(`${game.state.clientInfos[i].name} diconnected`, game);
                     console.log("client removed", game.state.clientInfos[i]);
                     game.state.clientInfos.splice(i, 1);
                     break;
@@ -151,8 +150,7 @@ function compareStateHash(game: Game, data: StateCompareHash) {
 
 function playerJoined(game: Game, data: PlayerJoined) {
     game.state.clientInfos.push({ id: data.clientId, name: data.clientName, lastMousePosition: { x: 0, y: 0 } });
-    const textPosition = getCameraPosition(game);
-    game.UI.displayTextData.push(createPaintTextData(textPosition, `${data.clientName} joined`, "black", "24", game.state.time, 5000));
+    displayTextAtCameraPosition(`${data.clientName} joined`, game);
 }
 
 function connectInfo(game: Game, data: ConnectInfo) {
