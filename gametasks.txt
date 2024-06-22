@@ -2,15 +2,23 @@ next test run: musician, tamer, ball,
 increase version
 
 current tasks:
-- bug: first note of music sheet played at wrong time?
-- creat new short king replay
+- combatlog round hp
+- character class add "capped" to moreInfo
+- legendary building display class level like past character
 - prevent unusable music sheet visualizations
     -  prevent chaning away from 1/8 1/16 notes only when there are not placed
 - think about how make introduction to game more understandable
     - better notice what abilities you can on choosing class
     - when pressing of cooldown ability: show colldown message
-    - 
-- mutliplayer: needs testing
+- creat new short king replay
+- desyncs mutliplayer
+    - false positives
+        - only property order different
+        - chainOrder and classIdRef switched
+        - disabled flag of ability
+- moreinfo show what building upgrades where bought
+- multiplayer:
+    - bug: choosing class after becomig pet makes it not capped
 
 
 next feature ideas:
