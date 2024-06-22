@@ -1,10 +1,15 @@
-next test run: musician, tamer, ball, 
+next test run: musician, tamer, ball,
 increase version
 
 current tasks:
+- bug: first note of music sheet played at wrong time?
 - creat new short king replay
 - prevent unusable music sheet visualizations
     -  prevent chaning away from 1/8 1/16 notes only when there are not placed
+- think about how make introduction to game more understandable
+    - better notice what abilities you can on choosing class
+    - when pressing of cooldown ability: show colldown message
+    - 
 - mutliplayer: needs testing
 
 

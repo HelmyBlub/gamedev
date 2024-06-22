@@ -956,7 +956,7 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
                 }
                 continue;
             }
-            const delayedNoteTick = (note.tick + delayTicks) % selectedMusicSheet.maxPlayTicks;
+            const delayedNoteTick = (note.tick + delayTicks + selectedMusicSheet.maxPlayTicks) % selectedMusicSheet.maxPlayTicks;
             if ((lastTick < delayedNoteTick && delayedNoteTick <= currentTick)
                 || (lastTick > currentTick && delayedNoteTick <= currentTick)
             ) {
