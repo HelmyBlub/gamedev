@@ -1,7 +1,7 @@
 import { ABILITIES_FUNCTIONS, createMoreInfosAbilities } from "../ability/ability.js";
 import { characterAddExistingCharacterClass, resetCharacter } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
-import { hasCharacterPreventedMultipleClass } from "../character/playerCharacters/playerCharacters.js";
+import { getAverageLevelOfAbilitiesPetsCharClassId, hasCharacterPreventedMultipleClass } from "../character/playerCharacters/playerCharacters.js";
 import { createTamerPetsCharacterMoreInfos } from "../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { deepCopy, getCameraPosition } from "../game.js";
 import { Game, Position } from "../gameModel.js";
@@ -180,7 +180,6 @@ function paintInteract(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, 
         texts.push(`Class building ${classBuilding.characterClass.className}:`);
         if (!classBuilding.stuffBorrowed!.burrowed) {
             const interactDestroyKey = playerInputBindingToDisplayValue("interact2", game);
-            texts.push(`Press <${interactDestroyKey}> to destroy legendary.`);
             if (hasCharacterPreventedMultipleClass(classBuilding.characterClass.className, interacter)) {
                 const infoKey = playerInputBindingToDisplayValue("More Info", game);
                 texts.push(`Press <${infoKey}> more info.`);
@@ -188,9 +187,11 @@ function paintInteract(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, 
             } else {
                 const interactBurrowKey = playerInputBindingToDisplayValue("interact1", game);
                 const infoKey = playerInputBindingToDisplayValue("More Info", game);
-                texts.push(`Press <${interactBurrowKey}> to burrow.`);
+                const avgLevel = getAverageLevelOfAbilitiesPetsCharClassId(classBuilding.characterClass.id, classBuilding.abilities, classBuilding.pets);
+                texts.push(`Press <${interactBurrowKey}> to burrow ${classBuilding.characterClass.className} ${avgLevel.toFixed()}.`);
                 texts.push(`Press <${infoKey}> more info.`);
             }
+            texts.push(`Press <${interactDestroyKey}> to destroy legendary.`);
             game.UI.paintClosesInteractableMoreInfo = true;
         } else if (classBuilding.stuffBorrowed!.burrowed) {
             texts.push(`Currently burrowed by ${classBuilding.stuffBorrowed!.by}`);
