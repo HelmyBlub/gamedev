@@ -170,6 +170,7 @@ function addCharacterClassMoreInfosTextLines(characterClasses: CharacterClass[],
         if (charClass.gifted) textLines[classTextLine] += ` (gifted)`;
         if (charClass.legendary) {
             hasLegendary = true;
+            textLines[classTextLine] += " (legendary)";
             textLines.push(`Legendary: Class levels and upgrades are permanent`);
             if (charClass.level) {
                 textLines.push(`  Level Cap: ${charClass.legendary.levelCap}`);

@@ -265,7 +265,8 @@ export function createCharacterMoreInfosPartContainer(ctx: CanvasRenderingContex
     if (character.characterClasses && character.characterClasses.length > 1) {
         hasMoreThanOneCharacterClass = true;
         for (let charClass of character.characterClasses) {
-            const subContainer = createDefaultMoreInfosContainer(ctx, charClass.className, moreInfos.headingFontSize);
+            const classNameWithTypes = `${charClass.className}${charClass.gifted ? "(gifted)" : ""}${charClass.legendary ? "(legendary)" : ""}`;
+            const subContainer = createDefaultMoreInfosContainer(ctx, classNameWithTypes, moreInfos.headingFontSize);
             subHeadingPaintX += subContainer.headingWidth + moreInfos.headingHorizontalSpacing;
             characterContainer.subContainer.containers.push(subContainer);
             if (character.pets) {
