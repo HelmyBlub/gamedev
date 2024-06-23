@@ -144,7 +144,7 @@ function reducePetLevel(pet: TamerPetCharacter, amount: number, randomSeed: Rand
             const upgradeKeys = Object.keys(ability.upgrades);
             for (let upgradeKeyIndex = upgradeKeys.length - 1; upgradeKeyIndex >= 0; upgradeKeyIndex--) {
                 const upgrade: AbilityUpgrade = ability.upgrades[upgradeKeys[upgradeKeyIndex]];
-                ability.upgrades[upgradeKeys[upgradeKeyIndex]] = undefined;
+                delete ability.upgrades[upgradeKeys[upgradeKeyIndex]];
                 amount -= upgrade.level;
                 if (amount <= 0) {
                     return;

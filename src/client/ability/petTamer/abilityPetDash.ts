@@ -214,7 +214,7 @@ function tickAbilityPetDash(abilityOwner: AbilityOwner, ability: Ability, game: 
     if (upgradeFireLine && upgradeFireLine.startPosition) {
         if (abilityPetDash.activeUntilTime! <= game.state.time) {
             createPetDashUpgradeFireLine(pet, abilityPetDash, game);
-            upgradeFireLine.startPosition = undefined;
+            delete upgradeFireLine.startPosition;
         }
     }
 }

@@ -43,7 +43,7 @@ function tickDebuffEffect(debuff: Debuff, targetCharacter: Character, game: Game
     const debuffDamageTaken = debuff as DebuffDamageTaken;
     if (debuffDamageTaken.stacks === undefined) return;
     if (debuffDamageTaken.stacks > 1) {
-        if (debuffDamageTaken.removeTime) debuffDamageTaken.removeTime = undefined;
+        if (debuffDamageTaken.removeTime) delete debuffDamageTaken.removeTime;
         if (debuffDamageTaken.stackReduceTime === undefined && debuffDamageTaken.duration !== undefined) {
             debuffDamageTaken.stackReduceTime = game.state.time + debuffDamageTaken.duration;
         }
@@ -51,7 +51,7 @@ function tickDebuffEffect(debuff: Debuff, targetCharacter: Character, game: Game
             removeDebuffEffect(debuffDamageTaken, targetCharacter, game);
             debuffDamageTaken.stacks--;
             applyDebuffEffect(debuffDamageTaken, targetCharacter, game);
-            debuffDamageTaken.stackReduceTime = undefined;
+            delete debuffDamageTaken.stackReduceTime;
         }
     } else {
         if (debuffDamageTaken.removeTime === undefined && debuffDamageTaken.duration !== undefined) {

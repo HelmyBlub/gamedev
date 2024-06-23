@@ -175,7 +175,6 @@ export function createAbilityMusicSheet(
         nextUpgradeAddInstrument: true,
         maxPaintWidth: 800,
         selectedInstrument: undefined,
-        chainOrder: undefined,
     };
 }
 
@@ -507,7 +506,7 @@ function modifyNoteClick(note: MusicNote, unroundedTick: number, tick: number): 
         } else if (note.semitone === "sharp") {
             note.semitone = "flat";
         } else {
-            note.semitone = undefined;
+            delete note.semitone;
         }
     } else {
         if (note.durationFactor < 4) {
@@ -1015,7 +1014,7 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
         const interval = abilityMusicSheets.musicSheets[0].musicSheet.speed * 4;
         const gameTimeInterval = game.state.time % interval;
         if (gameTimeInterval < 16) {
-            abilityMusicSheets.chainOrder = undefined;
+            delete abilityMusicSheets.chainOrder;
         } else if (notesDamageTypeTicks.length > 0 && notesDamageTypeTicks[0].length > 0 && notesDamageTypeTicks[0][0].type) {
             abilityMusicSheets.chainOrder = notesDamageTypeTicks[0][0].type;
         }

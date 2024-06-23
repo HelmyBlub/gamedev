@@ -273,11 +273,11 @@ export function changeTamerPetHappines(pet: TamerPetCharacter, value: number, ga
     } else if (pet.happines.current > pet.happines.hyperactiveAt) {
         pet.petTargetBehavior = "aggressive";
         pet.petNoTargetBehavior = "hyperactive";
-        pet.happines.unhappyStartTime = undefined;
+        delete pet.happines.unhappyStartTime;
     } else {
         pet.petTargetBehavior = "protective";
         pet.petNoTargetBehavior = "following";
-        pet.happines.unhappyStartTime = undefined;
+        delete pet.happines.unhappyStartTime;
     }
 }
 
@@ -468,7 +468,7 @@ function reset(character: Character) {
 function moveTick(pet: TamerPetCharacter, petOwner: Character, game: Game, pathingCache: PathingCache) {
     if (pet.forcedMovePosition) {
         if (petHappinessToDisplayText(pet.happines, game.state.time) === "very unhappy") {
-            pet.forcedMovePosition = undefined;
+            delete pet.forcedMovePosition;
         } else {
             pet.isMoving = true;
             let waypoint = getNextWaypoint(pet, pet.forcedMovePosition, game.state.map, game.performance.pathingCache, game.state.idCounter, game.state.time, game);
@@ -476,7 +476,7 @@ function moveTick(pet: TamerPetCharacter, petOwner: Character, game: Game, pathi
                 const direction = calculateDirection(pet, waypoint);
                 pet.moveDirection = direction;
             } else {
-                pet.forcedMovePosition = undefined;
+                delete pet.forcedMovePosition;
             }
         }
     } else {

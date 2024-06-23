@@ -187,8 +187,8 @@ export function characterTradeAbilityAndPets(fromCharacter: Character, toCharact
             ability.tradable = false;
             ability.gifted = true;
             ability.disabled = false;
-            if (ability.bossSkillPoints != undefined) ability.bossSkillPoints = undefined;
-            if (ability.level) ability.level.leveling = undefined;
+            if (ability.bossSkillPoints != undefined) delete ability.bossSkillPoints;
+            if (ability.level) delete ability.level.leveling;
             toCharacter.abilities.push(ability);
         }
     }
@@ -227,7 +227,7 @@ export function changeCharacterId(character: Character, idCounter: IdCounter) {
     }
     const leash: AbilityLeash = character.abilities.find((a) => a.name === ABILITY_NAME_LEASH) as AbilityLeash;
     if (leash) {
-        leash.leashedToOwnerId = undefined;
+        delete leash.leashedToOwnerId;
     }
 }
 

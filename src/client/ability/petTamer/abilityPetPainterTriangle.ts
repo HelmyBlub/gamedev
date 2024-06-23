@@ -241,7 +241,7 @@ function getRandomStartPaintPositionTriangle(pet: TamerPetCharacter, game: Game)
 
 function tickTriangle(pet: TamerPetCharacter, abilityPetPainter: AbilityPetPainter, game: Game) {
     if (!pet.forcedMovePosition) {
-        abilityPetPainter.currentlyPainting = undefined;
+        delete abilityPetPainter.currentlyPainting;
         return;
     }
     const targetPos = pet.forcedMovePosition;
@@ -268,12 +268,12 @@ function tickTriangle(pet: TamerPetCharacter, abilityPetPainter: AbilityPetPaint
                 pet.forcedMovePosition = nextPosition;
                 break;
             case 3:
-                abilityPetPainter.currentlyPainting = undefined;
-                pet.forcedMovePosition = undefined;
+                delete abilityPetPainter.currentlyPainting;
+                delete pet.forcedMovePosition;
                 createShapeAbilityPetPainter(PET_PAINTER_TRIANGLE, pet, abilityPetPainter, game);
                 break;
         }
     } else if (distance > 150) {
-        abilityPetPainter.currentlyPainting = undefined;
+        delete abilityPetPainter.currentlyPainting;
     }
 }

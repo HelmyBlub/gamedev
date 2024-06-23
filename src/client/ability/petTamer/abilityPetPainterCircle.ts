@@ -208,7 +208,7 @@ function getRandomStartPaintPositionCircle(pet: TamerPetCharacter, game: Game): 
 
 function tickCircle(pet: TamerPetCharacter, abilityPetPainter: AbilityPetPainter, game: Game) {
     if (!pet.forcedMovePosition) {
-        abilityPetPainter.currentlyPainting = undefined;
+        delete abilityPetPainter.currentlyPainting;
         return;
     }
     const targetPos = pet.forcedMovePosition;
@@ -217,8 +217,8 @@ function tickCircle(pet: TamerPetCharacter, abilityPetPainter: AbilityPetPainter
         abilityPetPainter.paintCircle!.currentAngle += Math.PI / 10;
         const angle = abilityPetPainter.paintCircle!.currentAngle;
         if (angle > Math.PI * 2) {
-            abilityPetPainter.currentlyPainting = undefined;
-            pet.forcedMovePosition = undefined;
+            delete abilityPetPainter.currentlyPainting;
+            delete pet.forcedMovePosition;
             createShapeAbilityPetPainter(PET_PAINTER_CIRCLE, pet, abilityPetPainter, game);
         } else {
             const nextPosition: Position = {
@@ -228,7 +228,7 @@ function tickCircle(pet: TamerPetCharacter, abilityPetPainter: AbilityPetPainter
             pet.forcedMovePosition = nextPosition;
         }
     } else if (distance > 150) {
-        abilityPetPainter.currentlyPainting = undefined;
+        delete abilityPetPainter.currentlyPainting;
     }
 }
 

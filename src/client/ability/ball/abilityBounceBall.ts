@@ -414,7 +414,7 @@ function rechargeTick(abilityBounceBall: AbilityBounceBall, game: Game) {
         if (abilityBounceBall.currentCharges < abilityBounceBall.maxCharges) {
             abilityBounceBall.nextRechargeTime = game.state.time + abilityBounceBall.baseRechargeTime;
         } else {
-            abilityBounceBall.nextRechargeTime = undefined;
+            delete abilityBounceBall.nextRechargeTime;
         }
     }
 }
