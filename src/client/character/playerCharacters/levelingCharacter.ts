@@ -21,7 +21,6 @@ export type Leveling = {
 export function levelingCharacterAndClassXpGain(state: GameState, experience: number, game: Game) {
     let playerCharacters = getPlayerCharacters(state.players);
     for (let character of playerCharacters) {
-        if (character.isDead || character.isPet) continue;
         if (character.level?.leveling !== undefined) {
             character.level.leveling.experience += experience * (character.experienceGainFactor ?? 1);
             while (character.level.leveling.experience >= character.level.leveling.experienceForLevelUp) {
@@ -30,6 +29,7 @@ export function levelingCharacterAndClassXpGain(state: GameState, experience: nu
         }
         if (character.characterClasses) {
             for (let charClass of character.characterClasses) {
+                if (charClass.capped) continue;
                 if (charClass.level?.leveling !== undefined && !charClass.capped) {
                     if (charClass.legendary) {
                         if (charClass.level.level >= charClass.legendary.levelCap) {

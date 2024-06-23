@@ -1,4 +1,4 @@
-import { changeCharacterId, countAlivePlayerCharacters, findAndSetNewCameraCharacterId, findCharacterById, findMyCharacter, getPlayerCharacters, resetCharacter, tickCharacters, tickMapCharacters } from "./character/character.js";
+import { cappCharacter, changeCharacterId, countAlivePlayerCharacters, findAndSetNewCameraCharacterId, findCharacterById, findMyCharacter, getPlayerCharacters, resetCharacter, tickCharacters, tickMapCharacters } from "./character/character.js";
 import { paintAll } from "./gamePaint.js";
 import { addPlayerMoney, createDefaultKeyBindings1, createDefaultUiKeyBindings, createPlayerWithPlayerCharacter, findNearesPastPlayerCharacter, findPlayerByCharacterId, gameInitPlayers, isAutoSkillActive } from "./player.js";
 import { MOUSE_ACTION, UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.js";
@@ -394,7 +394,9 @@ export function saveCharacterAsPastCharacter(character: Character, game: Game) {
     }
     newPastCharacter.isUnMoveAble = true;
     const pastCharacters = game.state.pastPlayerCharacters.characters;
+    cappCharacter(newPastCharacter);
     pastCharacters.push(newPastCharacter);
+
     for (let i = 0; i < pastCharacters.length; i++) {
         while (!pastCharacters[i]) {
             pastCharacters.splice(i, 1);
@@ -415,7 +417,6 @@ export function saveCharacterAsPastCharacter(character: Character, game: Game) {
                 lowestAvgLevelPastCharacterIndex = i;
             }
         }
-        console.log("splice index " + lowestAvgLevelPastCharacterIndex + " " + lowestAvgLevel, pastCharacters[lowestAvgLevelPastCharacterIndex]);
         pastCharacters.splice(lowestAvgLevelPastCharacterIndex, 1);
     }
 

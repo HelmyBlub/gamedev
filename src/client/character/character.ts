@@ -1,4 +1,4 @@
-import { levelingCharacterAndClassXpGain } from "./playerCharacters/levelingCharacter.js";
+import { findCharacterClassById, levelingCharacterAndClassXpGain } from "./playerCharacters/levelingCharacter.js";
 import { calculateMovePosition, chunkXYToMapKey, determineMapKeysInDistance, GameMap, getChunksTouchingLine, MapChunk, mapKeyToChunkXY, positionToMapKey } from "../map/map.js";
 import { Character, CHARACTER_TYPE_FUNCTIONS, PLAYER_CHARACTER_TYPE } from "./characterModel.js";
 import { getNextWaypoint, getPathingCache, PathingCache } from "./pathing.js";
@@ -111,53 +111,51 @@ export function playerCharactersAddBossSkillPoints(bossLevel: number | undefined
     if (bossLevel === undefined) return;
     const playerCharacters: Character[] = getPlayerCharacters(game.state.players);
     for (let character of playerCharacters) {
-        if (!character.isDead && !character.isPet) {
-            let gotSkillPoint = false;
-            if (!character.characterClasses) continue;
-            for (let charClass of character.characterClasses) {
-                if (charClass.capped) continue;
-                for (let ability of character.abilities) {
-                    if (charClass.id !== ability.classIdRef) continue;
-                    if (ability.bossSkillPoints !== undefined) {
-                        if (ability.bossSkillPoints.used + ability.bossSkillPoints.available < bossLevel) {
-                            const legendaryAbilitySkillPointCapReached = ability.legendary && ability.legendary.skillPointCap <= ability.bossSkillPoints.used + ability.bossSkillPoints.available;
-                            if (legendaryAbilitySkillPointCapReached) {
-                                continue;
-                            }
-                            ability.bossSkillPoints.available++;
-                            gotSkillPoint = true;
+        let gotSkillPoint = false;
+        if (!character.characterClasses) continue;
+        for (let charClass of character.characterClasses) {
+            if (charClass.capped) continue;
+            for (let ability of character.abilities) {
+                if (charClass.id !== ability.classIdRef) continue;
+                if (ability.bossSkillPoints !== undefined) {
+                    if (ability.bossSkillPoints.used + ability.bossSkillPoints.available < bossLevel) {
+                        const legendaryAbilitySkillPointCapReached = ability.legendary && ability.legendary.skillPointCap <= ability.bossSkillPoints.used + ability.bossSkillPoints.available;
+                        if (legendaryAbilitySkillPointCapReached) {
+                            continue;
                         }
+                        ability.bossSkillPoints.available++;
+                        gotSkillPoint = true;
                     }
                 }
-                if (character.pets) {
-                    for (let pet of character.pets) {
-                        if (charClass.id !== pet.classIdRef) continue;
-                        if (pet.bossSkillPoints !== undefined) {
-                            if (pet.bossSkillPoints.used + pet.bossSkillPoints.available < bossLevel) {
-                                const legendaryAbilitySkillPointCapReached = pet.legendary && pet.legendary.skillPointCap <= pet.bossSkillPoints.used + pet.bossSkillPoints.available;
-                                if (!legendaryAbilitySkillPointCapReached) {
-                                    pet.bossSkillPoints.available++;
-                                    gotSkillPoint = true;
-                                }
+            }
+            if (character.pets) {
+                for (let pet of character.pets) {
+                    if (charClass.id !== pet.classIdRef) continue;
+                    if (pet.bossSkillPoints !== undefined) {
+                        if (pet.bossSkillPoints.used + pet.bossSkillPoints.available < bossLevel) {
+                            const legendaryAbilitySkillPointCapReached = pet.legendary && pet.legendary.skillPointCap <= pet.bossSkillPoints.used + pet.bossSkillPoints.available;
+                            if (!legendaryAbilitySkillPointCapReached) {
+                                pet.bossSkillPoints.available++;
+                                gotSkillPoint = true;
                             }
                         }
-                        for (let ability of pet.abilities) {
-                            if (ability.bossSkillPoints !== undefined) {
-                                if (ability.bossSkillPoints.used + ability.bossSkillPoints.available < bossLevel) {
-                                    const legendaryAbilitySkillPointCapReached = ability.legendary && ability.legendary.skillPointCap <= ability.bossSkillPoints.used + ability.bossSkillPoints.available;
-                                    if (legendaryAbilitySkillPointCapReached) {
-                                        continue;
-                                    }
-                                    ability.bossSkillPoints.available++;
-                                    gotSkillPoint = true;
+                    }
+                    for (let ability of pet.abilities) {
+                        if (ability.bossSkillPoints !== undefined) {
+                            if (ability.bossSkillPoints.used + ability.bossSkillPoints.available < bossLevel) {
+                                const legendaryAbilitySkillPointCapReached = ability.legendary && ability.legendary.skillPointCap <= ability.bossSkillPoints.used + ability.bossSkillPoints.available;
+                                if (legendaryAbilitySkillPointCapReached) {
+                                    continue;
                                 }
+                                ability.bossSkillPoints.available++;
+                                gotSkillPoint = true;
                             }
                         }
                     }
                 }
             }
-            fillRandomUpgradeOptionChoices(character, game);
         }
+        fillRandomUpgradeOptionChoices(character, game);
     }
 }
 
@@ -567,6 +565,15 @@ export function getCharacterMoveSpeed(character: Character): number {
     return character.baseMoveSpeed * character.moveSpeedFactor;
 }
 
+export function cappCharacter(character: Character) {
+    if (character.characterClasses) {
+        for (let charClass of character.characterClasses) {
+            if (charClass.legendary) continue;
+            charClass.capped = true;
+        }
+    }
+}
+
 export function experienceForEveryPlayersLeveling(experience: number, game: Game) {
     const playerCharacters = getPlayerCharacters(game.state.players);
     for (let character of playerCharacters) {
@@ -631,7 +638,6 @@ function killCharacter(character: Character, game: Game, abilityIdRef: number | 
             endGame(game, false, true);
         }
     } else if (character.type === PLAYER_CHARACTER_TYPE) {
-        cappCharacterOnDeath(character, game);
         if (character.willTurnToPetOnDeath) turnCharacterToPet(character, game);
         if (game.state.bossStuff.godFightStarted || game.state.bossStuff.kingFightStarted) {
             const countAlive = countAlivePlayerCharacters(game.state.players);
@@ -645,22 +651,18 @@ function killCharacter(character: Character, game: Game, abilityIdRef: number | 
         if (ability) {
             const owner = findAbilityOwnerByAbilityIdInPlayers(ability.id, game);
             if (owner) {
-                levelingAbilityXpGain(ability, owner, character.experienceWorth, game);
-                experienceForCharacter(owner, character.experienceWorth);
+                const playerChar = owner.petOwner ? owner.petOwner : owner.abilityOwner;
+                const classRefId = owner.petOwner ? (owner.abilityOwner as TamerPetCharacter).classIdRef : ability.classIdRef;
+                const charClass = findCharacterClassById(playerChar, classRefId);
+                if (charClass && !charClass.capped) {
+                    levelingAbilityXpGain(ability, owner.abilityOwner, character.experienceWorth, game);
+                    experienceForCharacter(owner.abilityOwner, character.experienceWorth);
+                }
             }
         }
     }
     removeCharacterDebuffs(character, game);
     game.state.killCounter++;
-}
-
-function cappCharacterOnDeath(character: Character, game: Game) {
-    if (character.characterClasses) {
-        for (let charClass of character.characterClasses) {
-            if (charClass.legendary) continue;
-            charClass.capped = true;
-        }
-    }
 }
 
 function tickCharacterPets(character: Character, game: Game, pathingCache: PathingCache | null) {

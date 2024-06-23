@@ -34,7 +34,7 @@ import { addAbilityLightningStrikes } from "./abilityLightningStrikes.js"
 import { addAbilitySnipeReload } from "./snipe/abilitySnipeReload.js"
 import { playerInputBindingToDisplayValue } from "../playerInput.js"
 import { addAbilityUnleashPet } from "./petTamer/abilityUnleashPet.js"
-import { Leveling } from "../character/playerCharacters/levelingCharacter.js"
+import { Leveling, findCharacterClassById } from "../character/playerCharacters/levelingCharacter.js"
 import { CharacterClass } from "../character/playerCharacters/playerCharacters.js"
 import { MoreInfoPart, paintMoreInfosPart } from "../moreInfo.js"
 import { AbilityDamageBreakdown, addDamageBreakDownToDamageMeter } from "../combatlog.js"
@@ -267,14 +267,14 @@ export function levelingAbilityXpGain(ability: Ability, owner: Character, experi
     }
 }
 
-export function findAbilityOwnerByAbilityIdInPlayers(abilityId: number, game: Game): Character | undefined {
+export function findAbilityOwnerByAbilityIdInPlayers(abilityId: number, game: Game): { abilityOwner: Character, petOwner?: Character } | undefined {
     for (let player of game.state.players) {
         const ability = player.character.abilities.find(a => a.id === abilityId);
-        if (ability) return player.character;
+        if (ability) return { abilityOwner: player.character };
         if (player.character.pets) {
             for (let pet of player.character.pets) {
                 const abilityPet = pet.abilities.find(a => a.id === abilityId);
-                if (abilityPet) return pet;
+                if (abilityPet) return { abilityOwner: pet, petOwner: player.character };
             }
         }
     }
