@@ -49,7 +49,9 @@ export function saveReplayDataToLocalStorage(replayResult: ReplayResult) {
     if (fileResults.length > 1) {
         const newTime = replayResult.time;
         const lastTime = fileResults[fileResults.length - 2].time;
-        timeChangeToLastRun = (newTime - lastTime) / lastTime;
+        const lastVersion = fileResults[fileResults.length - 2].replayVersionNumber;
+        const isSameReplayVersion = lastVersion === replayResult.replayVersionNumber;
+        if (isSameReplayVersion) timeChangeToLastRun = (newTime - lastTime) / lastTime;
         while (fileResults.length > pastReplayData.maxKeep) {
             fileResults.shift();
         }
@@ -58,7 +60,7 @@ export function saveReplayDataToLocalStorage(replayResult: ReplayResult) {
     console.log(
         `Filename: ${replayResult.fileName}`,
         replayResult.success ? `` : `success: ${replayResult.success}`,
-        timeChangeToLastRun ? `${(timeChangeToLastRun * 100).toFixed(2)}%` : ``,
+        timeChangeToLastRun ? `${(timeChangeToLastRun * 100).toFixed(2)}%` : `New Replay`,
         fileResults
     );
 }
