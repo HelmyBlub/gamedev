@@ -1,10 +1,10 @@
-next test run: musician, tamer, ball,
+next test run: tamer, ball,
 increase version
 
 current tasks:
 - legendary pets get no skill points and no xp. Class ref id is wrong?
-- replay stats: don't compare time for new runs
 - create new short king replay
+- replay stats: don't compare time for new runs
 - think about how make introduction to game more understandable
     - better notice what abilities you can on choosing class
     - when pressing of cooldown ability: show colldown message

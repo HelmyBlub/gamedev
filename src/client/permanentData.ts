@@ -223,6 +223,7 @@ function changeBuildingIds(building: Building, idCounter: IdCounter, game: Game)
         for (let pet of classBuilding.pets) {
             changeCharacterId(pet, idCounter);
             if (pet.legendary) pet.legendary.buildingIdRef = building.id;
+            if (classBuilding.characterClass) pet.classIdRef = classBuilding.characterClass.id;
         }
         if (game.state.bossStuff.nextKings) {
             const keys = Object.keys(game.state.bossStuff.nextKings);
