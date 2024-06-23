@@ -16,7 +16,7 @@ import { ABILITY_NAME_PET_DASH } from "../../../ability/petTamer/abilityPetDash.
 import { AbilityUpgradeOption, PetAbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../upgrade.js";
 import { addTraitToTamerPet, getAvailableTamerPetTraits, getMoreInfoTextForTamerPetTrait } from "./petTrait.js";
 import { changeCharacterAndAbilityIds, deepCopy, getNextId } from "../../../game.js";
-import { CHARACTER_TYPE_BOSS_ENEMY } from "../../enemy/bossEnemy.js";
+import { CHARACTER_TYPE_BOSS_ENEMY, calculateBossEnemyExperienceWorth } from "../../enemy/bossEnemy.js";
 import { AbilityUpgrade } from "../../../ability/abilityUpgrade.js";
 import { ABILITY_NAME_UNLEASH_PET } from "../../../ability/petTamer/abilityUnleashPet.js";
 import { characterCreateAndAddUpgradeBonusHp } from "../../upgrades/characterUpgradeBonusHealth.js";
@@ -110,7 +110,7 @@ function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: 
     const color = "black";
     const moveSpeed = Math.min(6, 1.5 + level * 0.5);
     const hp = 1000 * Math.pow(level, 4);
-    const experienceWorth = Math.pow(level, 2) * 100;
+    const experienceWorth = calculateBossEnemyExperienceWorth(level);
 
     const bossCharacter = createCharacter(getNextId(idCounter), spawn.x, spawn.y, bossSize, bossSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_BOSS_ENEMY, experienceWorth);
     addAbilityToCharacter(bossCharacter, createAbility(ABILITY_NAME_FEED_PET, idCounter, false, false, "ability1"));

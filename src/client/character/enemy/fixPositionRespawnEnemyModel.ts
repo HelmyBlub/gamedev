@@ -58,7 +58,7 @@ export function createEnemyWithLevel(idCounter: IdCounter, enemyPos: Position, l
     const autoAggroRange = Math.min(750, 50 + level * 50);
     const alertEnemyRange = Math.min(500, 50 + level * 25);
     const respawnTime = Math.max(1000, 30000 - level * 1000);
-    let experienceWorth = 1 * enemyType.xpFactor * Math.pow(level, 2);
+    let experienceWorth = enemyType.xpFactor * Math.pow(level, 2);
     const meleeDamage = (2 + level * 2) * enemyType.damageFactor;
 
     const enemy = createEnemy(idCounter, enemyPos.x, enemyPos.y, size, moveSpeed, hp, color, autoAggroRange, alertEnemyRange, respawnTime, experienceWorth, level, enemyTypeKey);
