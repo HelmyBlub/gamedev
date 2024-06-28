@@ -20,6 +20,7 @@ import { getCelestialDirection } from "./bossEnemy.js";
 import { legendaryAbilityGiveBlessing, classBuildingPutLegendaryCharacterStuffBackIntoBuilding } from "../../map/buildings/classBuilding.js";
 import { MoreInfosPartContainer, createCharacterMoreInfosPartContainer } from "../../moreInfo.js";
 import { doDamageMeterSplit } from "../../combatlog.js";
+import { KingCrownEnemyCharacter } from "./kingCrown.js";
 
 export type KingEnemyCharacter = Character;
 export const CHARACTER_TYPE_KING_ENEMY = "KingEnemyCharacter";
@@ -72,10 +73,13 @@ export function kingCreateMoreInfos(game: Game, celestialDirection: CelestialDir
 export function setPlayerAsKing(game: Game) {
     if (game.testing.replay) return;
     let kingBaseCharacter: Character | undefined = undefined;
-    for (let player of game.state.players) {
-        if (!player.character.isDead && !player.character.isPet) {
-            kingBaseCharacter = player.character;
-            break;
+    const crown: KingCrownEnemyCharacter = game.state.bossStuff.bosses[game.state.bossStuff.bosses.length - 1];
+    if (crown.targetCharacterId !== undefined) {
+        for (let player of game.state.players) {
+            if (player.character.id === crown.targetCharacterId) {
+                kingBaseCharacter = player.character;
+                break;
+            }
         }
     }
     const boss: Character = deepCopy(kingBaseCharacter);

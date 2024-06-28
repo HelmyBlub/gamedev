@@ -199,9 +199,6 @@ function addCharacterClassMoreInfosTextLines(characterClasses: CharacterClass[],
         } else {
             const avgLevel = getAverageLevelOfAbilitiesPetsCharClassId(charClass.id, abilities, pets);
             let levelCapText = "";
-            if (charClass.legendary) {
-
-            }
             textLines.push(`Level: ${avgLevel.toFixed()}${levelCapText}`);
         }
         if (charClass.availableSkillPoints) textLines.push(`SkillPoints: ${charClass.availableSkillPoints.available}`);
