@@ -3,7 +3,7 @@ import { createBossWithLevel } from "./character/enemy/bossEnemy.js";
 import { levelingCharacterAndClassXpGain } from "./character/playerCharacters/levelingCharacter.js";
 import { findClientInfo } from "./game.js";
 import { Game } from "./gameModel.js";
-export type Cheat = "closeKingArea" | "closeGodArea" | "lowKingHp" | "allowCheats";
+export type CheatCheckboxes = "closeKingArea" | "closeGodArea" | "lowKingHp" | "allowCheats";
 export const CHEAT_ACTIONS = [
     "allowCheats",
     "closeKingArea",
@@ -15,7 +15,7 @@ export const CHEAT_ACTIONS = [
     "next boss spawn",
     "give Money"
 ];
-export type ActiveCheats = Cheat[];
+export type ActiveCheats = CheatCheckboxes[];
 
 export function executeCheatAction(action: string, activate: boolean, clientId: number, game: Game) {
     if (CHEAT_ACTIONS.indexOf(action) === -1) {
@@ -78,6 +78,10 @@ export function executeCheatAction(action: string, activate: boolean, clientId: 
             }
             break;
 
+    }
+    if (action === "closeKingArea" || action === "closeGodArea" || action === "lowKingHp") {
+        const settingsElement: HTMLInputElement | null = document.getElementById(action) as HTMLInputElement;
+        if (settingsElement) settingsElement.checked = activate;
     }
 }
 

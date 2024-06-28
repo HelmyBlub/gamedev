@@ -4,9 +4,6 @@ increase version
 current tasks:
 - multiplayer:
     - cheat checkboxes set in ui if for all if one checks one
-    - check king takeover. currenlty just takes player 0?
-        - better take "strongest" or living character or combine king
-        - don't take very weak character, if player level difference is big
     - on game restart sometime roken game state message is displayed
 - think about how make introduction to game more understandable
     - make "player character died" more obvious

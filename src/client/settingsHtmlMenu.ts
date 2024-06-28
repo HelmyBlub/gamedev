@@ -1,6 +1,6 @@
 import { createDefaultAchivements } from "./achievements/achievements.js";
 import { findAndSetNewCameraCharacterId } from "./character/character.js";
-import { Cheat, toggleCheats } from "./cheat.js";
+import { CheatCheckboxes, toggleCheats } from "./cheat.js";
 import { handleCommand } from "./commands.js";
 import { deepCopy, getGameVersionString } from "./game.js";
 import { Debugging, Game } from "./gameModel.js";
@@ -82,7 +82,7 @@ function setVersionNumberToSettingButton() {
     settingsButtonElement.innerHTML = `Version: ${getGameVersionString(GAME_VERSION)}`;
 }
 
-function addCheatCheckbox(checkboxName: Cheat, game: Game) {
+function addCheatCheckbox(checkboxName: CheatCheckboxes, game: Game) {
     const tabCategory = "debug";
     const settingsElement = document.getElementById(tabCategory);
     if (!settingsElement) return;
