@@ -1,18 +1,20 @@
-next test run: tamer, ball,
+next test run: builder, tamer, musician, ball,
 increase version
 
 current tasks:
-- check boss xp gain. Maybe increase?
 - multiplayer:
-    - check: take class after death. Is past character capped?
+    - allow debug settings to affect multiplayer, if choosen before
+        - setting changes need to be synced over multiplayer
     - check king takeover. currenlty just takes player 0?
         - better take "strongest" or living character or combine king
+        - don't take very weak character, if player level difference is big
 - think about how make introduction to game more understandable
     - make "player character died" more obvious
         - short death animation
     - better notice what abilities you can on choosing class
     - when pressing of cooldown ability: show colldown message
 - moreinfo show what building upgrades where bought
+- bug: pause game -> than join multiplayer -> game can not be unpaused
 
 
 next feature ideas:

@@ -18,6 +18,7 @@ import { createDamageMeter, DamageMeter } from "./combatlog.js";
 import { createSound, Sound } from "./sound.js";
 import { Achievements, createDefaultAchivements } from "./achievements/achievements.js";
 import { PlayerCharacterLevelUI } from "./character/playerCharacters/playerCharacters.js";
+import { ActiveCheats } from "./cheat.js";
 
 export type Position = {
     x: number,
@@ -117,10 +118,7 @@ export type Debugging = {
     paintTileXYNumbers?: boolean,
     takeTimeMeasures?: boolean,
     activateSaveStates?: boolean,
-    lowKingHp?: boolean,
     disableDamageNumbers?: boolean,
-    closeKingArea?: boolean,
-    closeGodArea?: boolean,
     timeMeasuresData?: { name: string, timeMeasures: number[], tempTime: number }[],
 }
 
@@ -152,6 +150,7 @@ export type ClientInfo = {
     id: number,
     name: string,
     lastMousePosition: Position,
+    allowCheats?: boolean,
 }
 
 export type GameState = {
@@ -178,6 +177,7 @@ export type GameState = {
     enemyTypeDirectionSeed: number,
     gameVersion: GameVersion,
     achievements: Achievements,
+    activeCheats?: ActiveCheats,
 }
 
 export type PastPlayerCharacters = {

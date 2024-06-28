@@ -1,7 +1,7 @@
 import { createDefaultAchivements } from "./achievements/achievements.js";
-import { experienceForEveryPlayersLeveling, findAndSetNewCameraCharacterId, playerCharactersAddBossSkillPoints } from "./character/character.js";
-import { createBossWithLevel } from "./character/enemy/bossEnemy.js";
-import { levelingCharacterAndClassXpGain } from "./character/playerCharacters/levelingCharacter.js";
+import { findAndSetNewCameraCharacterId } from "./character/character.js";
+import { Cheat, toggleCheats } from "./cheat.js";
+import { handleCommand } from "./commands.js";
 import { deepCopy, getGameVersionString } from "./game.js";
 import { Debugging, Game } from "./gameModel.js";
 import { GAME_VERSION } from "./main.js";
@@ -24,6 +24,7 @@ export function addHTMLDebugMenusToSettings(game: Game) {
     addSettings(game);
     addDebug(game);
     addTest(game);
+    toggleCheats(false, game);
 }
 
 function saveSettingsInLocalStorage(settingsLocalStorage: SettingsLocalStorage) {
@@ -54,14 +55,15 @@ function addDebug(game: Game) {
     addSettingCheckbox("takeTimeMeasures", game);
     addSettingCheckbox("paintTileXYNumbers", game);
     addSettingCheckbox("paintMarkActiveChunks", game);
-    addSettingCheckbox("lowKingHp", game);
-    addSettingCheckbox("closeKingArea", game);
-    addSettingCheckbox("closeGodArea", game);
-    addBossSkillPointButton(game);
-    addXpButton(game);
-    addTankyButton(game);
-    addSpawnBossButton(game);
-    addGiveMoneyButton(game);
+    addCheatCheckbox("allowCheats", game);
+    addCheatCheckbox("lowKingHp", game);
+    addCheatCheckbox("closeKingArea", game);
+    addCheatCheckbox("closeGodArea", game);
+    addCheatButton("addBossSkillPoint", game);
+    addCheatButton("add alot experience", game);
+    addCheatButton("Very Tanky", game);
+    addCheatButton("next boss spawn", game);
+    addCheatButton("give Money", game);
 }
 
 function addTest(game: Game) {
@@ -78,6 +80,31 @@ function setVersionNumberToSettingButton() {
     const settingsButtonElement = document.getElementById("settingButton");
     if (!settingsButtonElement) return;
     settingsButtonElement.innerHTML = `Version: ${getGameVersionString(GAME_VERSION)}`;
+}
+
+function addCheatCheckbox(checkboxName: Cheat, game: Game) {
+    const tabCategory = "debug";
+    const settingsElement = document.getElementById(tabCategory);
+    if (!settingsElement) return;
+    const debug: any = game.debug;
+    let checkbox: HTMLInputElement = document.getElementById(checkboxName) as HTMLInputElement;
+    if (!checkbox) {
+        let canvasHTML = `
+            <input type="checkbox" id="${checkboxName}" name="${checkboxName}">
+            <label id="${checkboxName}_label" for="${checkboxName}">${checkboxName}</label><br>
+        `;
+        settingsElement.insertAdjacentHTML("beforeend", canvasHTML);
+        checkbox = document.getElementById(checkboxName) as HTMLInputElement;
+    }
+    if (checkbox) {
+        checkbox.addEventListener('change', () => {
+            handleCommand(game, {
+                command: "playerInput",
+                clientId: game.multiplayer.myClientId,
+                data: { action: checkboxName, isKeydown: checkbox.checked },
+            });
+        });
+    }
 }
 
 function addSettingCheckbox(checkboxName: keyof Debugging, game: Game, tabCategory: string = "debug", settings: SettingsLocalStorage | undefined = undefined) {
@@ -201,34 +228,6 @@ function addClearLocalStorageButton(game: Game) {
     }
 }
 
-function addSpawnBossButton(game: Game) {
-    const buttonName = "next boss spawn";
-    addButtonToTab(buttonName, "debug");
-    const button = document.getElementById(buttonName) as HTMLButtonElement;
-    if (button) {
-        button.addEventListener('click', () => {
-            if (!game.multiplayer.websocket) {
-                game.state.bossStuff.bosses.push(createBossWithLevel(game.state.idCounter, game.state.bossStuff.bossLevelCounter, game));
-                game.state.bossStuff.bossLevelCounter++;
-            }
-        });
-    }
-}
-
-function addTankyButton(game: Game) {
-    const buttonName = "Very Tanky";
-    addButtonToTab(buttonName, "debug");
-    const button = document.getElementById(buttonName) as HTMLButtonElement;
-    if (button) {
-        button.addEventListener('click', () => {
-            if (!game.multiplayer.websocket) {
-                game.state.players[0].character.maxHp = 10000000;
-                game.state.players[0].character.hp = game.state.players[0].character.maxHp;
-            }
-        });
-    }
-}
-
 function addTestButton(game: Game) {
     const buttonName = "Run Test Replays";
     addButtonToTab(buttonName, "test");
@@ -313,43 +312,16 @@ function addLoadTestStateButton(game: Game) {
     }
 }
 
-function addXpButton(game: Game) {
-    const buttonName = "add alot experience";
+function addCheatButton(buttonName: string, game: Game) {
     addButtonToTab(buttonName, "debug");
     const button = document.getElementById(buttonName) as HTMLButtonElement;
     if (button) {
         button.addEventListener('click', () => {
-            if (!game.multiplayer.websocket) {
-                const xp = 5000000;
-                levelingCharacterAndClassXpGain(game.state, xp, game);
-                experienceForEveryPlayersLeveling(xp, game);
-            }
-        });
-    }
-}
-
-function addBossSkillPointButton(game: Game) {
-    const buttonName = "addBossSkillPoint";
-    addButtonToTab(buttonName, "debug");
-    const button = document.getElementById(buttonName) as HTMLButtonElement;
-    if (button) {
-        button.addEventListener('click', () => {
-            if (!game.multiplayer.websocket) playerCharactersAddBossSkillPoints(50, game);
-        });
-    }
-}
-
-function addGiveMoneyButton(game: Game) {
-    const buttonName = "give Money";
-    addButtonToTab(buttonName, "debug");
-    const button = document.getElementById(buttonName) as HTMLButtonElement;
-    if (button) {
-        button.addEventListener('click', () => {
-            if (!game.multiplayer.websocket) {
-                if (game.state.players[0]) {
-                    game.state.players[0].permanentData.money += 1000;
-                }
-            }
+            handleCommand(game, {
+                command: "playerInput",
+                clientId: game.multiplayer.myClientId,
+                data: { action: buttonName, isKeydown: true },
+            });
         });
     }
 }

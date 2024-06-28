@@ -12,6 +12,7 @@ import { findNearesInteractableMapChunkObject, interactWithMapObject } from "./m
 import { localStorageLoad } from "./permanentData.js";
 import { createRequiredMoreInfos, moreInfosHandleMouseClick } from "./moreInfo.js";
 import { mousePositionToMapPosition } from "./map/map.js";
+import { CHEAT_ACTIONS, executeCheatAction } from "./cheat.js";
 
 export const MOVE_ACTIONS = ["left", "down", "right", "up"];
 export const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3", "upgrade4", "upgrade5"];
@@ -390,6 +391,8 @@ function playerAction(clientId: number, data: any, game: Game) {
             if (client) {
                 client.lastMousePosition = data.mousePosition;
             }
+        } else if (CHEAT_ACTIONS.indexOf(action) !== -1) {
+            executeCheatAction(action, isKeydown, clientId, game);
         }
     }
 }

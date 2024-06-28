@@ -85,12 +85,12 @@ export function closeGame(game: Game) {
 }
 
 export function gameInit(game: Game) {
-    if (!game.multiplayer.websocket && game.debug.closeKingArea) {
+    if (game.state.activeCheats && game.state.activeCheats.indexOf("closeKingArea") !== -1) {
         initKingArea(game.state.map, 1000);
     } else {
         initKingArea(game.state.map, 20000);
     }
-    if (!game.multiplayer.websocket && game.debug.closeGodArea) {
+    if (game.state.activeCheats && game.state.activeCheats.indexOf("closeGodArea") !== -1) {
         initGodArea(game.state.map, 5000);
     } else {
         initGodArea(game.state.map, 40000);

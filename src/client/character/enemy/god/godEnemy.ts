@@ -125,7 +125,7 @@ function createGodEnemy(idCounter: IdCounter, spawnPosition: Position, game: Gam
     godCharacter.abilities.push(createAbility(ABILITY_NAME_TILE_EXPLOSION, game.state.idCounter));
     godCharacter.abilities.push(createAbility(ABILITY_NAME_GOD_IMMUNITY, game.state.idCounter));
     godCharacter.paint.image = IMAGE_SLIME;
-    if (game.debug.lowKingHp) {
+    if (game.state.activeCheats && game.state.activeCheats.indexOf("lowKingHp") !== -1) {
         godCharacter.hp = 50000;
         godCharacter.maxHp = 50000;
     }
