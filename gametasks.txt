@@ -2,8 +2,6 @@ next test run: tamer, musician, ball,
 increase version
 
 current tasks:
-- multiplayer:
-    - bug: on game restart sometimes broken game state message is displayed
 - bug: pause game -> than join multiplayer -> game can not be unpaused
 - moreinfo show what building upgrades where bought
 - think about how make introduction to game more understandable

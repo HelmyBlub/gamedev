@@ -20,6 +20,7 @@ export function websocketConnect(game: Game, clientName: string, lobbyCode: stri
 
     socket.onopen = function (e) {
         console.log("websocket open");
+        game.state.paused = false;
         game.multiplayer.disableLocalStorage = true;
         document.getElementById('stringInput')?.classList.add('hide');
         displayTextAtCameraPosition(`Multiplayer Connected`, game);
