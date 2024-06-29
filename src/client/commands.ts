@@ -35,6 +35,7 @@ type PlayerJoined = {
 export type StateCompareHash = {
     time: number,
     hash: number,
+    restartCounter: number,
     playersJson?: string,
 }
 
@@ -130,8 +131,11 @@ function compareStateHash(game: Game, data: StateCompareHash) {
     const compare = game.multiplayer.gameStateCompare;
     if (!compare) return;
     let timeAndHash = compare.timeAndHash.find(e => e.time === data.time);
+    if (game.state.restartCounter !== data.restartCounter && game.state.time < 30000) {
+        return;
+    }
     if (timeAndHash === undefined) {
-        compare.timeAndHash.push({ hash: data.hash, time: data.time, playersJson: data.playersJson });
+        compare.timeAndHash.push({ hash: data.hash, time: data.time, playersJson: data.playersJson, restartCounter: data.restartCounter });
         if (compare.timeAndHash.length > compare.maxKeep) {
             compare.timeAndHash.shift();
         }

@@ -154,6 +154,7 @@ export type ClientInfo = {
 }
 
 export type GameState = {
+    restartCounter: number,
     idCounter: IdCounter,
     abilityObjects: AbilityObject[],
     players: Player[],
@@ -298,6 +299,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
         canvasElement: c,
         ctx: ctx,
         state: {
+            restartCounter: 0,
             idCounter: { nextId: 0 },
             abilityObjects: [],
             killCounter: 0,
@@ -359,7 +361,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
                 nextTime: 0,
             },
             gameStateCompare: {
-                compareInterval: 3000,
+                compareInterval: 250,
                 maxKeep: 10,
                 timeAndHash: [],
                 stateTainted: false,

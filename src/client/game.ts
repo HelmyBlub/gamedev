@@ -85,6 +85,7 @@ export function closeGame(game: Game) {
 }
 
 export function gameInit(game: Game) {
+    game.state.restartCounter++;
     if (game.state.activeCheats && game.state.activeCheats.indexOf("closeKingArea") !== -1) {
         initKingArea(game.state.map, 1000);
     } else {
@@ -782,11 +783,11 @@ function autoSendGamePlayerHashInMultiplayer(game: Game) {
             compare.stateCompareSend = true;
         } else {
             const hash = createGamePlayerHash(game.state);
-            const playersJson = JSON.stringify(game.state.players) + "," + JSON.stringify(game.state.idCounter);
+            const playersJson = JSON.stringify(game.state.players) + ", idCounter: " + JSON.stringify(game.state.idCounter);
             handleCommand(game, {
                 command: COMMAND_COMPARE_STATE_HASH,
                 clientId: game.multiplayer.myClientId,
-                data: { hash: hash, time: game.state.time, playersJson: playersJson },
+                data: { hash: hash, time: game.state.time, playersJson: playersJson, restartCounter: game.state.restartCounter },
             });
         }
         compare.nextCompareTime += compare.compareInterval;
