@@ -114,7 +114,7 @@ function tickAbilitySingleTarget(abilityOwner: AbilityOwner, ability: Ability, g
             }
         }
         if (target) {
-            if (!target.isDead) {
+            if (target.state === "alive") {
                 const damage = abilitySingleTarget.damage * (1 + abilitySingleTarget.sameTargetAttackCounter * abilitySingleTarget.damageIncreaseFactorPerAttack);
                 if (abilitySingleTarget.sameTargetAttackCounter < MAX_SAME_TARGET_ATTACK_COUNTER) abilitySingleTarget.sameTargetAttackCounter++;
                 characterTakeDamage(target, damage, game, ability.id, ability.name);

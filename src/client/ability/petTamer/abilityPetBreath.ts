@@ -194,7 +194,7 @@ function detectPetBreathToCharactersHit(abilityOwner: TamerPetCharacter, ability
     const damage = getPetAbilityBreathDamage(abilityOwner, ability);
     for (let charIt = targetCharacters.length - 1; charIt >= 0; charIt--) {
         const targetCharacter = targetCharacters[charIt];
-        if (targetCharacter.isDead || targetCharacter.faction === abilityOwner.faction) continue;
+        if (targetCharacter.state === "dead" || targetCharacter.faction === abilityOwner.faction) continue;
         const isHit = detectPetBreathToCharacterHit(abilityOwner, ability, targetCharacter, targetCharacter.width);
         if (isHit) {
             abilityPetBreathUpgradeExplodeApplyExplode(ability, abilityOwner, targetCharacter, game);

@@ -170,7 +170,7 @@ function detectSquareToCharacterHit(petPainter: AbilityObjectPetPainterSquare, g
     const characters = determineCharactersInDistance(petPainter, game.state.map, [], game.state.bossStuff.bosses, petPainter.size + petPainter.range + maxEnemySizeEstimate);
     for (let charIt = characters.length - 1; charIt >= 0; charIt--) {
         const c = characters[charIt];
-        if (c.isDead || c.faction === petPainter.faction) continue;
+        if (c.state === "dead" || c.faction === petPainter.faction) continue;
         let getHit = false;
         if (c.x >= petPainter.x - petPainter.range && c.x <= petPainter.x + petPainter.size + petPainter.range
             && c.y >= petPainter.y && c.y <= petPainter.y + petPainter.size) {

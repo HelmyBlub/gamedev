@@ -2,12 +2,15 @@ next test run: tamer, musician, ball,
 increase version
 
 current tasks:
-- moreinfo character show what building upgrades where bought
 - think about how make introduction to game more understandable
     - make "player character died" more obvious
+        - display text "you DIED"
         - short death animation
+        - than display end screen
+            - mutliplayer become pet
     - better notice what abilities you can on choosing class
     - when pressing of cooldown ability: show colldown message
+- new short king replay
 
 
 next feature ideas:

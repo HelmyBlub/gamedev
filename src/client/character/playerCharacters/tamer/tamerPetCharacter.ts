@@ -166,7 +166,7 @@ function tickTamerPetCharacter(character: Character, petOwner: Character, game: 
         console.log("needs pathing cache");
         return;
     }
-    if (character.isDead) return;
+    if (character.state === "dead") return;
     cleanUpVisualizations(pet, game);
     moveTick(pet, petOwner, game, pathingCache);
     foodIntakeLevelTick(pet, game);

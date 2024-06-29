@@ -57,7 +57,7 @@ export function findCharacterByIdInCompleteMap(id: number, game: Game) {
 }
 
 export function characterTakeDamage(character: Character, damage: number, game: Game, abilityIdRef: number | undefined, abilityName: string, abilityObject: AbilityObject | undefined = undefined) {
-    if (character.isDead || character.isPet || character.isDamageImmune) return;
+    if (character.state !== "alive" || character.isDamageImmune) return;
     if (game.state.bossStuff.fightWipe) return;
     let sourceDamageFactor = findSourceDamageFactor(abilityIdRef, game);
     if (abilityIdRef) {
@@ -100,7 +100,7 @@ function findSourceDamageFactor(abilityIdRef: number | undefined, game: Game): n
 }
 
 export function characterAddShield(character: Character, shieldValue: number) {
-    if (character.isDead) return;
+    if (character.state === "dead") return;
     character.shield += shieldValue;
     if (character.shield > character.maxShieldFactor * character.maxHp) {
         character.shield = character.maxShieldFactor * character.maxHp
@@ -280,7 +280,7 @@ export function tickCharacters(characters: (Character | undefined)[], game: Game
         } else {
             tickDefaultCharacter(char, game, pathingCache);
         }
-        if (!char.isDead) {
+        if (char.state === "alive" || char.state === "petPlayer") {
             for (let ability of char.abilities) {
                 if (ability.disabled) continue;
                 const tickAbility = ABILITIES_FUNCTIONS[ability.name].tickAbility;
@@ -288,6 +288,13 @@ export function tickCharacters(characters: (Character | undefined)[], game: Game
             }
             tickCharacterDebuffs(char, game);
             tickCharacterPets(char, game, pathingCache);
+        }
+        if (char.state === "dying") {
+            if (char.deathAnimationStartTimer !== undefined
+                && char.deathAnimationStartTimer + char.deathAnimationDuration! < game.state.time
+            ) {
+                if (char.willTurnToPetOnDeath) turnCharacterToPet(char, game);
+            }
         }
     }
 }
@@ -304,7 +311,7 @@ export function getRandomAlivePlayerCharacter(players: Player[], randomSeed: Ran
     const random = Math.floor(nextRandom(randomSeed) * players.length);
     for (let i = 0; i < players.length; i++) {
         const player = players[(random + i) % players.length];
-        if (!player.character.isPet && !player.character.isDead) {
+        if (player.character.state === "alive") {
             return player.character;
         }
     }
@@ -326,8 +333,7 @@ export function determineClosestCharacter(position: Position, characters: Charac
     let minDistanceCharacter: Character | null = null;
 
     for (let i = 0; i < characters.length; i++) {
-        if (characters[i].isDead) continue;
-        if (characters[i].isPet) continue;
+        if (characters[i].state !== "alive") continue;
         if (excludeKingArea && map) {
             const mapKey = positionToMapKey(characters[i], map);
             const mapChunk = map.chunks[mapKey];
@@ -347,8 +353,7 @@ export function resetCharacter(character: Character, game: Game) {
     if (typeFunctions && typeFunctions.reset) {
         typeFunctions.reset(character);
     }
-    if (character.isDead) character.isDead = false;
-    if (character.isPet) character.isPet = false;
+    character.state = "alive";
     character.shield = 0;
     character.isMoving = false;
     if (character.pets) {
@@ -375,7 +380,7 @@ export function determineCharactersInDistance(position: Position, map: GameMap |
                 if (chunk === undefined) continue;
                 const characters: Character[] = chunk.characters;
                 for (let j = 0; j < characters.length; j++) {
-                    if (onlyAlive && characters[j].isDead) continue;
+                    if (onlyAlive && characters[j].state === "dead") continue;
                     const distance = calculateDistance(position, characters[j]);
                     if (maxDistance >= distance) {
                         result.push(characters[j]);
@@ -385,7 +390,7 @@ export function determineCharactersInDistance(position: Position, map: GameMap |
         }
         if (bosses) {
             for (let boss of bosses) {
-                if (onlyAlive && boss.isDead) continue;
+                if (onlyAlive && boss.state === "dead") continue;
                 const distance = calculateDistance(position, boss);
                 if (maxDistance >= distance) {
                     result.push(boss);
@@ -397,7 +402,7 @@ export function determineCharactersInDistance(position: Position, map: GameMap |
     if (notFaction === undefined || FACTION_PLAYER !== notFaction) {
         for (let player of players) {
             if (player.character.faction === notFaction) continue;
-            if (onlyAlive && player.character.isDead) continue;
+            if (onlyAlive && player.character.state === "dead") continue;
             const distance = calculateDistance(position, player.character);
             if (maxDistance >= distance) {
                 result.push(player.character);
@@ -454,7 +459,7 @@ export function countCharacters(map: GameMap): number {
 export function findAndSetNewCameraCharacterId(camera: Camera, players: Player[], myClientId?: number) {
     let newCameraCharacterId = undefined;
     for (let i = 0; i < players.length; i++) {
-        if (!players[i].character.isDead) {
+        if (players[i].character.state === "alive") {
             if (players[i].character.id === camera.characterId
                 || newCameraCharacterId === undefined
                 || myClientId === players[i].clientId) {
@@ -467,11 +472,11 @@ export function findAndSetNewCameraCharacterId(camera: Camera, players: Player[]
     }
 }
 
-export function countAlivePlayerCharacters(players: Player[]) {
+export function countAlivePlayerCharacters(players: Player[], gameTime: number) {
     let counter = 0;
     for (let i = players.length - 1; i >= 0; i--) {
-        if (!players[i].character.isDead) {
-            if (players[i].character.isPet) continue;
+        const player = players[i];
+        if (player.character.state === "alive" || player.character.state === "dying") {
             counter++;
         }
     }
@@ -494,32 +499,27 @@ export function calculateAndSetMoveDirectionToPositionWithPathing(character: Cha
 }
 
 export function turnCharacterToPet(character: Character, game: Game) {
-    character.isDead = false;
+    character.state = "petPlayer";
     character.hp = character.maxHp;
-    if (character.isPet) {
-        console.log("character already a pet, should not happen");
-        debugger;
-    } else {
-        character.isPet = true;
-        let newPlayerOwnerId: number | undefined = undefined;
-        const possibleOwnerCharacters: Character[] = [];
-        for (let player of game.state.players) {
-            if (!player.character.isPet && !player.character.isDead) {
-                possibleOwnerCharacters.push(player.character);
-            }
+    let newPlayerOwnerId: number | undefined = undefined;
+    const possibleOwnerCharacters: Character[] = [];
+    for (let player of game.state.players) {
+        if (player.character.state === "alive") {
+            possibleOwnerCharacters.push(player.character);
         }
-        if (possibleOwnerCharacters.length > 0) {
-            const randomOwnerIndex = Math.floor(nextRandom(game.state.randomSeed) * possibleOwnerCharacters.length);
-            newPlayerOwnerId = possibleOwnerCharacters[randomOwnerIndex].id;
-            character.x = possibleOwnerCharacters[randomOwnerIndex].x;
-            character.y = possibleOwnerCharacters[randomOwnerIndex].y;
-            character.abilities.push(createAbilityLeash(game.state.idCounter, undefined, 100, newPlayerOwnerId));
-        }
+    }
+    if (possibleOwnerCharacters.length > 0) {
+        const randomOwnerIndex = Math.floor(nextRandom(game.state.randomSeed) * possibleOwnerCharacters.length);
+        newPlayerOwnerId = possibleOwnerCharacters[randomOwnerIndex].id;
+        character.x = possibleOwnerCharacters[randomOwnerIndex].x;
+        character.y = possibleOwnerCharacters[randomOwnerIndex].y;
+        character.abilities.push(createAbilityLeash(game.state.idCounter, undefined, 100, newPlayerOwnerId));
     }
 }
 
 export function moveCharacterTick(character: Character, map: GameMap, idCounter: IdCounter, game: Game) {
     if (character.isRooted && !character.isRootImmune) return;
+    if (character.state === "dying") return;
     if (character.isMoveTickDisabled) return;
     const newPosition = calculateCharacterMovePosition(character, map, idCounter, game);
     if (newPosition) {
@@ -614,7 +614,7 @@ function experienceForCharacter(character: Character, experienceWorth: number) {
 }
 
 function killCharacter(character: Character, game: Game, abilityIdRef: number | undefined = undefined) {
-    character.isDead = true;
+    character.state = "dead";
 
     if (game.state.timeFirstKill === undefined) game.state.timeFirstKill = game.state.time;
     levelingCharacterAndClassXpGain(game.state, character.experienceWorth, game);
@@ -638,9 +638,11 @@ function killCharacter(character: Character, game: Game, abilityIdRef: number | 
             endGame(game, false, true);
         }
     } else if (character.type === PLAYER_CHARACTER_TYPE) {
-        if (character.willTurnToPetOnDeath) turnCharacterToPet(character, game);
+        character.state = "dying";
+        character.deathAnimationStartTimer = game.state.time;
+        character.deathAnimationDuration = 2000;
         if (game.state.bossStuff.godFightStarted || game.state.bossStuff.kingFightStarted) {
-            const countAlive = countAlivePlayerCharacters(game.state.players);
+            const countAlive = countAlivePlayerCharacters(game.state.players, game.state.time);
             if (countAlive === 0) {
                 game.state.bossStuff.fightWipe = true;
             }

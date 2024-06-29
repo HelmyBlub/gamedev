@@ -14,7 +14,7 @@ export function tickFixPositionRespawnEnemyCharacter(character: Character, game:
         return;
     }
     const enemy = character as FixPositionRespawnEnemyCharacter;
-    if (enemy.isDead) {
+    if (enemy.state === "dead") {
         if (enemy.wasHitRecently && !enemy.isAggroed) {
             alertCloseEnemies(enemy, game);
             delete enemy.wasHitRecently;
@@ -109,7 +109,7 @@ function determineClosestCharacterToEnemySpawn(character: FixPositionRespawnEnem
 
 function resetEnemy(enemy: FixPositionRespawnEnemyCharacter, map: GameMap) {
     enemy.hp = enemy.maxHp;
-    enemy.isDead = false;
+    enemy.state = "alive";
     enemy.isAggroed = false;
     if (enemy.wasHitRecently) delete enemy.wasHitRecently;
 

@@ -542,8 +542,7 @@ export function retryFight(game: Game) {
     }
     const bossEnemy = game.state.bossStuff.bosses[0];
     for (let player of game.state.players) {
-        player.character.isPet = false;
-        player.character.isDead = false;
+        player.character.state = "alive";
         player.character.hp = player.character.maxHp;
         player.character.x = bossEnemy.x - playerOffsetX;
         player.character.y = bossEnemy.y;
@@ -657,7 +656,7 @@ function determineRunnerTimeout(game: Game): number {
 }
 
 function gameEndedCheck(game: Game) {
-    const alivePlayersCount = countAlivePlayerCharacters(game.state.players);
+    const alivePlayersCount = countAlivePlayerCharacters(game.state.players, game.state.time);
     if (alivePlayersCount === 0) {
         if (game.state.bossStuff.godFightStarted || game.state.bossStuff.kingFightStarted) {
             for (let player of game.state.players) {
@@ -849,7 +848,7 @@ function determineActiveChunks(characters: Character[], map: GameMap, game: Game
     takeTimeMeasure(game.debug, "", "determineActiveChunks");
     const keySet: Set<string> = new Set();
     for (let i = 0; i < characters.length; i++) {
-        if (characters[i].isDead) continue;
+        if (characters[i].state === "dead") continue;
         const nearMapKeys = determineMapKeysInDistance(characters[i], map, map.activeChunkRange, false);
         for (let mapKey of nearMapKeys) {
             keySet.add(mapKey);

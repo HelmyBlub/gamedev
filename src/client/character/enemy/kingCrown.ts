@@ -35,11 +35,11 @@ export function createKingCrownCharacter(idCounter: IdCounter, spawn: Position):
 }
 
 function tickCrown(enemy: Character, game: Game, pathingCache: PathingCache | null) {
-    if (enemy.isDead) return;
+    if (enemy.state === "dead") return;
     let targetCharacter: Character | undefined = undefined;
     let targetCharacterStrengthIndicator = -1;
     for (let player of game.state.players) {
-        if (!player.character.isDead && !player.character.isPet) {
+        if (player.character.state === "alive") {
             if (!targetCharacter) {
                 targetCharacterStrengthIndicator = calculateStrengthIndicator(player.character);
                 targetCharacter = player.character;

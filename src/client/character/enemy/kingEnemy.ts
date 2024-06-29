@@ -129,7 +129,7 @@ export function startKingFight(kingAreaPosition: Position, game: Game) {
 }
 
 function tickKingEnemyCharacter(enemy: KingEnemyCharacter, game: Game, pathingCache: PathingCache | null) {
-    if (enemy.isDead) return;
+    if (enemy.state === "dead") return;
     const playerCharacters = getPlayerCharacters(game.state.players);
     const closest = determineClosestCharacter(enemy, playerCharacters);
 
@@ -208,7 +208,7 @@ function changeKingAbilityLevelBasedOnHp(enemy: KingEnemyCharacter) {
 }
 
 function paintKing(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
-    if (character.isDead) return;
+    if (character.state === "dead") return;
     paintCharatersPets(ctx, [character], cameraPosition, game);
     paintCharacterWithAbilitiesDefault(ctx, character, cameraPosition, game);
     const crownImage = getImage(IMAGE_CROWN);

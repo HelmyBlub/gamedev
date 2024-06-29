@@ -209,7 +209,7 @@ function detectSwordToCharactersHit(abilityOwner: AbilityOwner, ability: Ability
     const targetCharacters = determineCharactersInDistance(abilityOwner, map, players, bosses, ability.swordLength + maxEnemySizeEstimate);
     for (let charIt = targetCharacters.length - 1; charIt >= 0; charIt--) {
         const targetCharacter = targetCharacters[charIt];
-        if (targetCharacter.isDead || targetCharacter.faction === abilityOwner.faction) continue;
+        if (targetCharacter.state === "dead" || targetCharacter.faction === abilityOwner.faction) continue;
         for (let swordIndex = 0; swordIndex < ability.swordCount; swordIndex++) {
             const isHit = detectSwordToCharacterHit(abilityOwner, ability, targetCharacter, targetCharacter.width, swordIndex);
             if (isHit) {

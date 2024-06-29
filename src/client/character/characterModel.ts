@@ -102,7 +102,9 @@ export type Character = Position & {
     experienceWorth: number,
     type: string,
     characterClasses?: CharacterClass[],
-    isDead: boolean,
+    state: "alive" | "dying" | "dead" | "petPlayer",
+    deathAnimationStartTimer?: number,
+    deathAnimationDuration?: number,
     abilities: Ability[],
     debuffs: Debuff[],
     wasHitRecently?: boolean,
@@ -112,7 +114,6 @@ export type Character = Position & {
         randomizedCharacterImage?: RandomizedCharacterImage,
         preventDefaultCharacterPaint?: boolean,
     }
-    isPet?: boolean,
     isDamageImmune?: boolean,
     isRootImmune?: boolean,
     isDebuffImmune?: boolean,
@@ -167,7 +168,7 @@ export function createCharacter(
         faction: faction,
         experienceWorth: experienceWorth,
         type: type,
-        isDead: false,
+        state: "alive",
         abilities: [],
         debuffs: [],
         upgradeChoices: [],
@@ -182,7 +183,6 @@ export function createPlayerCharacter(idCounter: IdCounter, pos: Position, seed:
     const playerCharacter = createCharacter(getNextId(idCounter), pos.x, pos.y, 20, 40, undefined, 2, PLAYER_BASE_HP, FACTION_PLAYER, PLAYER_CHARACTER_TYPE, 1);
     playerCharacter.paint.randomizedCharacterImage = createRandomizedCharacterImageData(GAME_IMAGES[IMAGE_PLAYER_PARTS], seed);
     playerCharacter.willTurnToPetOnDeath = true;
-    playerCharacter.isPet = false;
     playerCharacter.combatlog = createDefaultCombatLog();
     initPlayerCharacterChoiceOptions(playerCharacter, game);
     return playerCharacter;

@@ -21,7 +21,7 @@ import { onDomLoadSetAchievementsFunctions } from "./achievements/achievements.j
 var gameCount: number = 0;
 export const GAME_VERSION: GameVersion = {
     major: 0,
-    minor: 3,
+    minor: 4,
     patch: 260,
 }
 

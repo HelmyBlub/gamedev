@@ -32,7 +32,7 @@ export function paintCharacterHpBarAboveCharacter(ctx: CanvasRenderingContext2D,
         || paintPos.y < -character.height || paintPos.y > ctx.canvas.height) return;
 
     let heightFactor = 1;
-    if (character.isPet) heightFactor = 0.5;
+    if (character.state === "petPlayer") heightFactor = 0.5;
     const hpBarX = Math.floor(paintPos.x - character.width / 2);
     const hpBarY = Math.floor(paintPos.y - character.height / 2 * heightFactor);
     paintCharacterHpBar(ctx, character, { x: hpBarX, y: hpBarY + offsetY });
@@ -40,7 +40,7 @@ export function paintCharacterHpBarAboveCharacter(ctx: CanvasRenderingContext2D,
 
 
 export function paintCharacterHpBar(ctx: CanvasRenderingContext2D, character: Character, topLeftPaint: Position) {
-    if (character.isPet) return;
+    if (character.state === "petPlayer") return;
     const fillAmount = Math.max(0, character.hp / character.maxHp);
     const bossWidth = character.width;
     const hpBarHeight = 6;
@@ -116,13 +116,13 @@ export function createCharacterClassMoreInfos(ctx: CanvasRenderingContext2D, cha
 
 export function paintCharatersPets(ctx: CanvasRenderingContext2D, characters: (Character | undefined)[], cameraPosition: Position, game: Game) {
     for (let character of characters) {
-        if (!character || character.isDead) continue;
+        if (!character || character.state === "dead") continue;
         paintCharacterPets(ctx, character, cameraPosition, game);
     }
 }
 
 export function paintCharacterWithAbilitiesDefault(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game, preventDefaultCharacterPaint: boolean | undefined = undefined) {
-    if (character.isDead) return;
+    if (character.state === "dead") return;
     paintCharacterDefault(ctx, character, cameraPosition, game, preventDefaultCharacterPaint);
     paintCharacterAbilties(ctx, character, cameraPosition, game);
 }
@@ -257,6 +257,11 @@ function paintCharacterColoredCircle(ctx: CanvasRenderingContext2D, character: C
 }
 
 function randomizedCharacterImagePaint(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
+    let rotation = 0;
+    if (character.state === "dying") {
+        const dyingTimePerCent = Math.max((character.deathAnimationStartTimer! + character.deathAnimationDuration! - game.state.time) / character.deathAnimationDuration!, 0);
+        rotation = (Math.PI / 2) * Math.min(((1 - dyingTimePerCent) * 2), 1);
+    }
     const characterImage = GAME_IMAGES[IMAGE_PLAYER_PARTS];
     loadImage(characterImage, character.paint.color, character.paint.randomizedCharacterImage);
     if (characterImage.properties?.canvases
@@ -269,15 +274,19 @@ function randomizedCharacterImagePaint(ctx: CanvasRenderingContext2D, character:
         const spriteHeight = 40;
         const widthIndex = moveDirectionToSpriteIndex(character);
         let animationY = 0;
-        if (character.isMoving) {
+        if (character.isMoving && (character.state === "alive" || character.state === "petPlayer")) {
             animationY = Math.floor(game.state.time / 150) % 4;
             if (animationY === 2) animationY = 0;
             if (animationY === 3) animationY = 2;
         }
         let heightFactor = 1;
-        if (character.isPet) heightFactor = 0.5;
+        if (character.state === "petPlayer") heightFactor = 0.5;
         const characterPaintX = Math.floor(paintPos.x - character.width / 2);
         const characterPaintY = Math.floor(paintPos.y - character.height / 2 * heightFactor);
+        ctx.translate(characterPaintX, characterPaintY + Math.floor(character.height / 2));
+        ctx.rotate(rotation);
+        ctx.translate(-characterPaintX, -characterPaintY - Math.floor(character.height / 2));
+
         ctx.drawImage(
             characterImage.properties.canvases[randomizedCharacterImageToKey(character.paint.randomizedCharacterImage!)],
             widthIndex * spriteWidth,
@@ -289,6 +298,7 @@ function randomizedCharacterImagePaint(ctx: CanvasRenderingContext2D, character:
             character.width,
             character.height * heightFactor
         );
+        ctx.resetTransform();
     }
 }
 
@@ -327,7 +337,7 @@ function paintPlayerNameOverCharacter(ctx: CanvasRenderingContext2D, character: 
         || paintPos.y < -character.height || paintPos.y > ctx.canvas.height) return;
 
     let heightFactor = 1;
-    if (character.isPet) heightFactor = 0.5;
+    if (character.state === "petPlayer") heightFactor = 0.5;
     const nameX = Math.floor(paintPos.x - character.width / 2);
     const nameY = Math.floor(paintPos.y - character.height / 2 * heightFactor) - offsetY;
     paintPlayerName(ctx, character, { x: nameX, y: nameY }, game);
@@ -354,5 +364,6 @@ function paintPlayerName(ctx: CanvasRenderingContext2D, character: Character, pa
 }
 
 function moveDirectionToSpriteIndex(character: Character): number {
+    if (character.state === "dead" || character.state === "dying") return 1;
     return (Math.floor(character.moveDirection / Math.PI / 2 * 4) + 3) % 4;
 }

@@ -108,12 +108,12 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
             characters = determineCharactersInDistance(abilityOwner, game.state.map, game.state.players, game.state.bossStuff.bosses, abilityLightning.spawnRadius * 2, abilityOwner.faction);
         }
         for (let i = 0; i < abilityLightning.numberStrikes; i++) {
-            let randomPos: Position | undefined= undefined;
-            if(characters.length > characterIndex){
-                for(let j = characterIndex; j < characters.length; j++){
+            let randomPos: Position | undefined = undefined;
+            if (characters.length > characterIndex) {
+                for (let j = characterIndex; j < characters.length; j++) {
                     characterIndex++;
                     const character = characters[j];
-                    if(!character.isDead){
+                    if (character.state === "alive") {
                         randomPos = {
                             x: character.x,
                             y: character.y,
@@ -123,7 +123,7 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
                 }
             }
 
-            if(!randomPos){
+            if (!randomPos) {
                 randomPos = {
                     x: abilityOwner.x + nextRandom(game.state.randomSeed) * abilityLightning.spawnRadius * 2 - abilityLightning.spawnRadius,
                     y: abilityOwner.y + nextRandom(game.state.randomSeed) * abilityLightning.spawnRadius * 2 - abilityLightning.spawnRadius,

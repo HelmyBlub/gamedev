@@ -378,7 +378,7 @@ export function detectCircleCharacterHit(map: GameMap, circleCenter: Position, c
     const characters = determineCharactersInDistance(circleCenter, map, game.state.players, game.state.bossStuff.bosses, circleRadius * 2 + maxEnemySizeEstimate, faction);
     for (let charIt = characters.length - 1; charIt >= 0; charIt--) {
         const c = characters[charIt];
-        if (c.isDead || c.faction === faction) continue;
+        if (c.state === "dead" || c.faction === faction) continue;
         const distance = calculateDistance(c, circleCenter);
         if (distance < circleRadius + c.width / 2) {
             let abilityName = "Unknown";
@@ -429,7 +429,7 @@ export function detectSomethingToCharacterHit(
     const characters = determineCharactersInDistance(position, map, players, bosses, size + maxEnemySizeEstimate);
     for (let charIt = characters.length - 1; charIt >= 0; charIt--) {
         const c = characters[charIt];
-        if (c.isDead || c.faction === faction) continue;
+        if (c.state === "dead" || c.faction === faction) continue;
         const distance = calculateDistance(c, position);
         if (distance < size / 2 + c.width / 2) {
             characterTakeDamage(c, damage, game, abilityIdRef, abilityName, abilityObject);

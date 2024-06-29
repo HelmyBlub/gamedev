@@ -371,6 +371,7 @@ function playerAction(clientId: number, data: any, game: Game) {
                 game.UI.moreInfos = createRequiredMoreInfos(game);
             }
         } else if (ABILITY_ACTIONS.indexOf(action) !== -1) {
+            if (character.state === "dying" || character.state === "dead") return;
             for (let ability of character.abilities) {
                 if (ability.playerInputBinding && ability.playerInputBinding === action) {
                     const functions = ABILITIES_FUNCTIONS[ability.name];

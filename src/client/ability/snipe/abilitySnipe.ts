@@ -478,7 +478,7 @@ function tickAbilityObjectSnipe(abilityObject: AbilityObject, game: Game) {
         const characters: Character[] = getCharactersTouchingLine(game, abilityObjectSnipe, endPos, abilityObject.faction, abilityObjectSnipe.size);
         const abilitySnipe = findAbilityById(abilityObject.abilityIdRef!, game) as AbilitySnipe | undefined;
         for (let char of characters) {
-            if (char.isDead) continue;
+            if (char.state === "dead") continue;
             abilityObjectSnipe.hitSomething = true;
             if (abilitySnipe) {
                 executeUpgradeExplodeOnDeath(abilitySnipe, abilityObject.faction, char, abilityObjectSnipe.triggeredByPlayer, game);

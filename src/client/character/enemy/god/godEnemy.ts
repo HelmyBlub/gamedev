@@ -73,7 +73,7 @@ export function godEnemyActivateHardMode(game: Game) {
     }
     god.maxHp *= 100;
     god.hp = 1;
-    god.isDead = false;
+    god.state = "alive";
     god.isDamageImmune = true;
     god.hardModeActivated = true;
     god.firstAttackedTime = game.state.time;
@@ -136,7 +136,7 @@ function createGodEnemy(idCounter: IdCounter, spawnPosition: Position, game: Gam
 
 function tickGodCharacter(character: Character, game: Game, pathingCache: PathingCache | null) {
     const god = character as GodEnemyCharacter;
-    if (god.isDead) return;
+    if (god.state === "dead") return;
     if (god.firstAttackedTime === undefined) {
         if (god.hp < god.maxHp) {
             god.firstAttackedTime = game.state.time;
@@ -257,7 +257,7 @@ function getAbilityToPickUp(enemy: GodEnemyCharacter): GodAbility | undefined {
 }
 
 function paint(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
-    if (character.isDead) return;
+    if (character.state === "dead") return;
     const god = character as GodEnemyCharacter;
     const animation = god.animationState;
     const paintPos = getPointPaintPosition(ctx, character, cameraPosition);

@@ -1,5 +1,5 @@
 import { Ability, paintAbilityObjects, paintUiForAbilities } from "./ability/ability.js";
-import { canCharacterTradeAbilityOrPets } from "./character/character.js";
+import { canCharacterTradeAbilityOrPets, findMyCharacter } from "./character/character.js";
 import { Character } from "./character/characterModel.js";
 import { paintPlayerCharacters } from "./character/characterPaint.js";
 import { paintBossCharacters, paintBossCrown } from "./character/enemy/bossEnemy.js";
@@ -44,6 +44,16 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
     paintMultiplayer(ctx, game);
     paintPausedText(ctx, game);
     paintUiForAbilities(ctx, game);
+    paintYouDied(ctx, game);
+}
+
+function paintYouDied(ctx: CanvasRenderingContext2D, game: Game) {
+    const myChar = findMyCharacter(game);
+    if (myChar === undefined || myChar.state !== "dying") return;
+    const dyingTimePerCent = Math.max((myChar.deathAnimationStartTimer! + myChar.deathAnimationDuration! - game.state.time) / myChar.deathAnimationDuration!, 0);
+    const textSizeFactor = Math.min(((1 - dyingTimePerCent) * 2), 1);
+    ctx.font = `${120 * textSizeFactor}px Arial`;
+    paintTextWithOutline(ctx, "white", "black", "YOU DIED", Math.floor(ctx.canvas.width / 2), Math.floor((ctx.canvas.height - 20) / 2), true, 3);
 }
 
 export function paintTextWithOutline(ctx: CanvasRenderingContext2D, outlineColor: string, textColor: string, text: string, x: number, y: number, centered: boolean = false, lineWidth: number = 1, withBackgroundColor: string | undefined = undefined) {
@@ -180,7 +190,7 @@ function paintOtherPlayerIndicator(ctx: CanvasRenderingContext2D, game: Game) {
     const alpha = 0.75;
     ctx.globalAlpha *= alpha;
     for (let player of game.state.players) {
-        if (player.character.isDead) continue;
+        if (player.character.state === "dead") continue;
         const playerCharacter = player.character;
         if (playerCharacter.x < cameraPosition.x - ctx.canvas.width / 2 - bufferSpace
             || playerCharacter.y < cameraPosition.y - ctx.canvas.height / 2 - bufferSpace

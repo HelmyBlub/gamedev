@@ -134,7 +134,7 @@ function createDefaultBossWithLevel(idCounter: IdCounter, level: number, spawn: 
 }
 
 function tickBossEnemyCharacter(enemy: BossEnemyCharacter, game: Game, pathingCache: PathingCache | null) {
-    if (enemy.isDead) return;
+    if (enemy.state === "dead") return;
     const playerCharacters = getPlayerCharacters(game.state.players);
     let closest = determineClosestCharacter(enemy, playerCharacters);
     if (closest.minDistance > 1200) {
@@ -217,7 +217,7 @@ function getBossSpawnPosition(game: Game): Position {
 }
 
 function paintBossEnemyCharacter(ctx: CanvasRenderingContext2D, character: BossEnemyCharacter, cameraPosition: Position, game: Game) {
-    if (character.isDead) return;
+    if (character.state === "dead") return;
     paintCharatersPets(ctx, [character], cameraPosition, game);
     paintCharacterWithAbilitiesDefault(ctx, character, cameraPosition, game);
     const paintPos = getPointPaintPosition(ctx, character, cameraPosition);

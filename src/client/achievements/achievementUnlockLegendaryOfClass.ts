@@ -49,7 +49,7 @@ function onGameEndCheck(achievement: Achievement, game: Game) {
     const legendaryClass = achievement as AchievementLegendaryClass;
     let playerAlive = false;
     for (let player of game.state.players) {
-        if (!player.character.isDead && !player.character.isPet) {
+        if (player.character.state === "alive") {
             playerAlive = true;
             break;
         }
