@@ -258,7 +258,7 @@ export function paintMoreInfos(ctx: CanvasRenderingContext2D, moreInfos: MoreInf
 
 export function createCharacterMoreInfosPartContainer(ctx: CanvasRenderingContext2D, character: Character, moreInfos: MoreInfos, game: Game, heading: string = "Character"): MoreInfosPartContainer {
     const characterContainer = createDefaultMoreInfosContainer(ctx, heading, moreInfos.headingFontSize);
-    characterContainer.moreInfoParts.push(createCharacterMoreInfos(ctx, character));
+    characterContainer.moreInfoParts.push(createCharacterMoreInfos(ctx, character, game));
 
     let subHeadingPaintX = moreInfos.paintStartX;
     let hasMoreThanOneCharacterClass = false;

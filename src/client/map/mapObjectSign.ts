@@ -1,15 +1,13 @@
-import { createMoreInfosAbilities } from "../ability/ability.js";
 import { resetCharacter } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
-import { createCharacterMoreInfos, paintCharacters } from "../character/characterPaint.js";
+import { paintCharacters } from "../character/characterPaint.js";
 import { CHARACTER_TYPE_KING_ENEMY, kingCreateMoreInfos, modifyCharacterToKing } from "../character/enemy/kingEnemy.js";
-import { createTamerPetsCharacterMoreInfos } from "../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { deepCopy, getCameraPosition } from "../game.js";
 import { CelestialDirection, Game, Position } from "../gameModel.js";
 import { getPointPaintPosition, paintTextLinesWithKeys } from "../gamePaint.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
 import { playerInputBindingToDisplayValue } from "../playerInput.js";
-import { MoreInfoPart, MoreInfosPartContainer, createCharacterMoreInfosPartContainer } from "../moreInfo.js";
+import { MoreInfosPartContainer } from "../moreInfo.js";
 import { mapKeyAndTileXYToPosition } from "./map.js";
 import { MAP_OBJECTS_FUNCTIONS, MapTileObject, findMapKeyForMapObject } from "./mapObjects.js";
 

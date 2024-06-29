@@ -2,8 +2,7 @@ next test run: tamer, musician, ball,
 increase version
 
 current tasks:
-- bug: pause game -> than join multiplayer -> game can not be unpaused
-- moreinfo show what building upgrades where bought
+- moreinfo character show what building upgrades where bought
 - think about how make introduction to game more understandable
     - make "player character died" more obvious
         - short death animation

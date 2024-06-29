@@ -8,8 +8,10 @@ import { getCharacterMoveSpeed, getPlayerCharacters } from "./character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_PLAYER_PARTS, IMAGE_SLIME } from "./characterModel.js";
 import { CHARACTER_TYPE_KING_ENEMY } from "./enemy/kingEnemy.js";
 import { CharacterClass, getAverageLevelOfAbilitiesPetsCharClassId, playerCharacterClassGetAverageLevel } from "./playerCharacters/playerCharacters.js";
-import { pushCharacterClassUpgradesUiTexts } from "./upgrades/characterUpgrades.js";
+import { characterUpgradeGetStatsDisplayText, pushCharacterClassUpgradesUiTexts } from "./upgrades/characterUpgrades.js";
 import { TamerPetCharacter } from "./playerCharacters/tamer/tamerPetCharacter.js";
+import { findPlayerByCharacterId } from "../player.js";
+import { text } from "stream/consumers";
 
 export function paintCharacters(ctx: CanvasRenderingContext2D, characters: (Character | undefined)[], cameraPosition: Position, game: Game) {
     for (let i = 0; i < characters.length; i++) {
@@ -66,7 +68,7 @@ export function paintCharacterHpBar(ctx: CanvasRenderingContext2D, character: Ch
     ctx.stroke();
 }
 
-export function createCharacterMoreInfos(ctx: CanvasRenderingContext2D, character: Character): MoreInfoPart {
+export function createCharacterMoreInfos(ctx: CanvasRenderingContext2D, character: Character, game: Game): MoreInfoPart {
     const textLines: string[] = [
         `Character Stats:`,
         `HP: ${Math.ceil(character.hp).toLocaleString()}/${Math.ceil(character.maxHp).toLocaleString()}`,
@@ -79,11 +81,31 @@ export function createCharacterMoreInfos(ctx: CanvasRenderingContext2D, characte
     if (character.shield > 0) {
         textLines.splice(2, 0, `Shield: ${character.shield.toFixed(0)}/${(character.maxHp * character.maxShieldFactor).toFixed(0)}`);
     }
+    const buildingUpgradesLines = moreInfosPlayerMoneyAndBuildingUpgrades(ctx, character, game);
+    textLines.push(...buildingUpgradesLines);
+
     if (character.characterClasses) {
         textLines.push(``);
         addCharacterClassMoreInfosTextLines(character.characterClasses, character.abilities, character.pets, textLines);
     }
     return createMoreInfosPart(ctx, textLines);
+}
+
+function moreInfosPlayerMoneyAndBuildingUpgrades(ctx: CanvasRenderingContext2D, character: Character, game: Game): string[] {
+    const textLines: string[] = [];
+    const player = findPlayerByCharacterId(game.state.players, character.id);
+    if (player) {
+        textLines.push(`Money: $${player.permanentData.money.toFixed()}`);
+        const upKeys = Object.keys(player.permanentData.upgrades);
+        if (upKeys.length > 0) textLines.push(`Building Upgrades:`);
+        for (let upKey of upKeys) {
+            const up = player.permanentData.upgrades[upKey];
+            if (!up.investedMoney || up.investedMoney <= 0) continue;
+            const text = characterUpgradeGetStatsDisplayText(upKey, up);
+            textLines.push(`  ${text}`);
+        }
+    }
+    return textLines;
 }
 
 export function createCharacterClassMoreInfos(ctx: CanvasRenderingContext2D, characterClasses: CharacterClass[], abilities: Ability[] | undefined, pets: TamerPetCharacter[] | undefined): MoreInfoPart {
