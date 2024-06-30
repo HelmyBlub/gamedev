@@ -40,6 +40,7 @@ import { MoreInfoPart, paintMoreInfosPart } from "../moreInfo.js"
 import { AbilityDamageBreakdown, addDamageBreakDownToDamageMeter } from "../combatlog.js"
 import { addAbilityMusicSheet } from "./musician/abilityMusicSheet.js"
 import { addAbilityCircleAround } from "./abilityCircleAround.js"
+import { GAME_IMAGES, loadImage } from "../imageLoad.js"
 
 export type Ability = {
     id: number,
@@ -534,7 +535,27 @@ export function paintAbilityUiKeyBind(ctx: CanvasRenderingContext2D, playerInput
     ctx.fillStyle = "black";
     const fontSize = keyBind.length > 4 ? 10 : 12;
     ctx.font = `bold ${fontSize}px Arial`;
-    paintTextWithOutline(ctx, "white", "black", keyBind, drawStartX + 1, drawStartY + fontSize - 1, false, 2);
+    if (keyBind === "Mouse Left") {
+        const keyImageSize = 15;
+        const mouse0Image = GAME_IMAGES["mouse0Key"];
+        loadImage(mouse0Image);
+        if (mouse0Image.imageRef?.complete) {
+            ctx.drawImage(
+                mouse0Image.imageRef,
+                0,
+                0,
+                20,
+                20,
+                drawStartX - 2,
+                drawStartY - 2,
+                keyImageSize,
+                keyImageSize
+            );
+        }
+    } else {
+        paintTextWithOutline(ctx, "white", "black", keyBind, drawStartX + 1, drawStartY + fontSize - 1, false, 2);
+    }
+
 }
 
 function paintAbilityMoreInfosIfMouseHovered(ctx: CanvasRenderingContext2D, ability: Ability, startX: number, startY: number, size: number, game: Game) {

@@ -2,9 +2,6 @@ next test run: tamer, ball,
 increase version
 
 current tasks:
-- think about how make introduction to game more understandable
-    - when pressing of cooldown ability: show colldown message
-    - mouse 0 -> left mouse button icon?
 - new short king replay
 
 

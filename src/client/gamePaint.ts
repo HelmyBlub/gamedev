@@ -21,6 +21,13 @@ GAME_IMAGES["blankKey"] = {
     spriteRowWidths: [],
 };
 
+GAME_IMAGES["mouse0Key"] = {
+    imagePath: "/images/leftMouse.png",
+    spriteRowHeights: [],
+    spriteRowWidths: [],
+};
+
+
 export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) {
     if (!ctx) return;
     if (game.performance.mapChunkPaintCache === undefined) game.performance.mapChunkPaintCache = {};
