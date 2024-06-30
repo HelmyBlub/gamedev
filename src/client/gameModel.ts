@@ -362,7 +362,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
                 nextTime: 0,
             },
             gameStateCompare: {
-                compareInterval: 250,
+                compareInterval: 3000,
                 maxKeep: 10,
                 timeAndHash: [],
                 stateTainted: false,
