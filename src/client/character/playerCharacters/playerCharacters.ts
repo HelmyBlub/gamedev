@@ -46,6 +46,12 @@ export type PlayerCharacterLevelUI = {
     levelUI: LevelUI[],
 }
 
+export type PlayerCharacterAbilityUI = {
+    charClassRefId: number,
+    abilityVisualizedCounter: number,
+    abilityVisualizeStartTime?: number,
+}
+
 export type LevelUI = {
     idRef: number,
     lastPaintedLevel: number,

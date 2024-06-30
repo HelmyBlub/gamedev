@@ -7,7 +7,7 @@ import { getNextId } from "../../game.js";
 import { Game, IdCounter, Position } from "../../gameModel.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, getAbilityNameUiText } from "../ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, getAbilityNameUiText, paintAbilityUiKeyBind } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
 import { ABILITY_SPEED_BOOST_UPGRADE_ADD_CHARGE, AbilitySpeedBoostUpgradeAddCharge, addAbilitySpeedBoostUpgradeAddCharge, tickAbilitySpeedBoostUpgradeAddCharge } from "./abilitySpeedBoostUpgradeAddCharge.js";
 import { addAbilitySpeedBoostUpgradeDuration } from "./abilitySpeedBoostUpgradeDuration.js";
@@ -124,10 +124,7 @@ function paintAbilitySpeedBoostUI(ctx: CanvasRenderingContext2D, ability: Abilit
 
 
     if (abilitySpeedBoost.playerInputBinding) {
-        let keyBind = playerInputBindingToDisplayValue(abilitySpeedBoost.playerInputBinding, game);
-        ctx.fillStyle = "black";
-        ctx.font = "10px Arial";
-        ctx.fillText(keyBind, drawStartX + 1, drawStartY + 8);
+        paintAbilityUiKeyBind(ctx, abilitySpeedBoost.playerInputBinding, drawStartX, drawStartY, game);
     }
 }
 

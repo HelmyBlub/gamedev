@@ -10,7 +10,7 @@ import { getPointPaintPosition } from "../../gamePaint.js";
 import { calculateBounceAngle, calculateMovePosition, isMoveFromToBlocking, moveByDirectionAndDistance } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectSomethingToCharacterHit, getAbilityNameUiText } from "../ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectSomethingToCharacterHit, getAbilityNameUiText, paintAbilityUiKeyBind } from "../ability.js";
 import { AbilityUpgradesFunctions, getAbilityUpgradesDamageFactor, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
 import { ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_DAMAGE, abilityBounceBallUpgradeBounceBonusDamageAddBounce, abilityBounceBallUpgradeBounceBonusDamagePaintStacks, abilityBounceBallUpgradeBounceBonusDamageTick, addAbilityBounceBallUpgradeBounceBonusDamage } from "./abilityBounceBallUpgradeBounceBonusDamage.js";
 import { addAbilityBounceBallUpgradeBounceShield, bounceBallUpgradeBounceShieldExecute } from "./abilityBounceBallUpgradeBounceShield.js";
@@ -241,10 +241,7 @@ function paintAbilityUI(ctx: CanvasRenderingContext2D, ability: Ability, drawSta
     ctx.fillText("" + bounceBall.currentCharges, drawStartX, drawStartY + rectSize - (rectSize - fontSize * 0.9));
 
     if (bounceBall.playerInputBinding) {
-        const keyBind = playerInputBindingToDisplayValue(bounceBall.playerInputBinding, game);
-        ctx.fillStyle = "black";
-        ctx.font = "10px Arial";
-        ctx.fillText(keyBind, drawStartX + 1, drawStartY + 8);
+        paintAbilityUiKeyBind(ctx, bounceBall.playerInputBinding, drawStartX, drawStartY, game);
     }
 }
 

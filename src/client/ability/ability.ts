@@ -27,7 +27,7 @@ import { addAbilityPetBreath } from "./petTamer/abilityPetBreath.js"
 import { addAbilityPetPainter } from "./petTamer/abilityPetPainter.js"
 import { addAbilityPetDash } from "./petTamer/abilityPetDash.js"
 import { UpgradeOption, UpgradeOptionAndProbability } from "../character/upgrade.js"
-import { getPointPaintPosition } from "../gamePaint.js"
+import { getPointPaintPosition, paintTextWithOutline } from "../gamePaint.js"
 import { addAbilityBounceBall } from "./ball/abilityBounceBall.js"
 import { addAbilityLightningBall } from "./ball/abilityLightningBall.js"
 import { addAbilityLightningStrikes } from "./abilityLightningStrikes.js"
@@ -473,6 +473,27 @@ export function paintUiForAbilities(ctx: CanvasRenderingContext2D, game: Game) {
     const player = findPlayerByCharacterId(game.state.players, game.camera.characterId);
     if (!player) return;
 
+    if (!game.UI.playerCharacterAbilityUI || game.UI.playerCharacterAbilityUI.charClassRefId !== player.character.id) {
+        game.UI.playerCharacterAbilityUI = {
+            abilityVisualizedCounter: player.character.abilities.length,
+            charClassRefId: player.character.id,
+        }
+    }
+    const shouldAnimate = game.UI.playerCharacterAbilityUI.abilityVisualizedCounter < player.character.abilities.length;
+    let abilityUiPaintCounter = player.character.abilities.length;
+    let animateIndex = player.character.abilities.length + 1;
+    let animationPerCent = 0;
+    if (shouldAnimate) {
+        animateIndex = game.UI.playerCharacterAbilityUI.abilityVisualizedCounter;
+        if (game.UI.playerCharacterAbilityUI.abilityVisualizeStartTime === undefined) game.UI.playerCharacterAbilityUI.abilityVisualizeStartTime = game.state.time;
+        const animationTime = 1000;
+        animationPerCent = (game.state.time - game.UI.playerCharacterAbilityUI.abilityVisualizeStartTime) / animationTime;
+        if (animationPerCent >= 1) {
+            game.UI.playerCharacterAbilityUI.abilityVisualizeStartTime = undefined;
+            game.UI.playerCharacterAbilityUI.abilityVisualizedCounter++;
+        }
+    }
+
     const size = 40;
     const spacing = 2;
     let numberUiElements = 0;
@@ -485,18 +506,35 @@ export function paintUiForAbilities(ctx: CanvasRenderingContext2D, game: Game) {
     const uiElementsWidth = (numberUiElements * (size + spacing) - spacing);
     let startX = ctx.canvas.width / 2 - uiElementsWidth / 2;
     const startY = ctx.canvas.height - size - 2;
-    for (let ability of player.character.abilities) {
+    for (let i = 0; i < abilityUiPaintCounter; i++) {
+        const ability = player.character.abilities[i];
+        let yOffset = 0;
+        if (animateIndex === i) {
+            yOffset = (1 - animationPerCent) * 300;
+        } else if (i > animateIndex) break;
         let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
         if (abilityFunctions?.paintAbilityUI !== undefined) {
-            abilityFunctions.paintAbilityUI(ctx, ability, startX, startY, size, game);
+            abilityFunctions.paintAbilityUI(ctx, ability, startX, startY - yOffset, size, game);
         } else if (ability.playerInputBinding) {
-            paintKeyBindingUI(ctx, ability, startX, startY, size, game);
+            paintKeyBindingUI(ctx, ability, startX, startY - yOffset, size, game);
         } else {
+            if (animateIndex === i) {
+                game.UI.playerCharacterAbilityUI.abilityVisualizeStartTime = undefined;
+                game.UI.playerCharacterAbilityUI.abilityVisualizedCounter++;
+            }
             continue;
         }
         paintAbilityMoreInfosIfMouseHovered(ctx, ability, startX, startY, size, game);
         startX += size + spacing;
     }
+}
+
+export function paintAbilityUiKeyBind(ctx: CanvasRenderingContext2D, playerInputBinding: string, drawStartX: number, drawStartY: number, game: Game) {
+    let keyBind = playerInputBindingToDisplayValue(playerInputBinding, game);
+    ctx.fillStyle = "black";
+    const fontSize = keyBind.length > 4 ? 10 : 12;
+    ctx.font = `bold ${fontSize}px Arial`;
+    paintTextWithOutline(ctx, "white", "black", keyBind, drawStartX + 1, drawStartY + fontSize - 1, false, 2);
 }
 
 function paintAbilityMoreInfosIfMouseHovered(ctx: CanvasRenderingContext2D, ability: Ability, startX: number, startY: number, size: number, game: Game) {
@@ -523,11 +561,7 @@ function paintKeyBindingUI(ctx: CanvasRenderingContext2D, ability: Ability, draw
     ctx.beginPath();
     ctx.rect(drawStartX, drawStartY, rectSize, rectSize);
     ctx.stroke();
-
-    let keyBind = playerInputBindingToDisplayValue(ability.playerInputBinding, game);
-    ctx.fillStyle = "black";
-    ctx.font = "10px Arial";
-    ctx.fillText(keyBind, drawStartX + 1, drawStartY + 8);
+    paintAbilityUiKeyBind(ctx, ability.playerInputBinding, drawStartX, drawStartY, game);
 }
 
 function paintAbilityObjectsForFaction(ctx: CanvasRenderingContext2D, abilityObjects: AbilityObject[], game: Game, paintOrder: PaintOrderAbility, faction: string) {

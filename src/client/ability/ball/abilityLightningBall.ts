@@ -10,7 +10,7 @@ import { calculateMovePosition, getFirstBlockingGameMapTilePositionTouchingLine,
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { fixedRandom } from "../../randomNumberGenerator.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectSomethingToCharacterHit, getAbilityNameUiText } from "../ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectSomethingToCharacterHit, getAbilityNameUiText, paintAbilityUiKeyBind } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
 import { ABILITY_LIGHTNING_BALL_UPGRADE_BOUNCE_BONUS, addAbilityLightningBallUpgradeBounceBonus, lightningBallUpgradeBounceBonusGetBonusDamageFactor, lightningBallUpgradeBounceBonusSetBonusDamageFactor } from "./abilityLightningBallUpgradeBounceBonus.js";
 import { addAbilityLightningBallUpgradeHpLeach, lightningBallUpgradeHpLeachExecute } from "./abilityLightningBallUpgradeHpLeach.js";
@@ -236,10 +236,7 @@ function paintAbilityUI(ctx: CanvasRenderingContext2D, ability: Ability, drawSta
     ctx.fillText("" + lightningBall.currentCharges, drawStartX, drawStartY + rectSize - (rectSize - fontSize * 0.9));
 
     if (lightningBall.playerInputBinding) {
-        const keyBind = playerInputBindingToDisplayValue(lightningBall.playerInputBinding, game);
-        ctx.fillStyle = "black";
-        ctx.font = "10px Arial";
-        ctx.fillText(keyBind, drawStartX + 1, drawStartY + 8);
+        paintAbilityUiKeyBind(ctx, lightningBall.playerInputBinding, drawStartX, drawStartY, game);
     }
 }
 

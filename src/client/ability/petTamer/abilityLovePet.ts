@@ -8,7 +8,7 @@ import { GAME_IMAGES, getImage } from "../../imageLoad.js";
 import { moveByDirectionAndDistance } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
-import { ABILITIES_FUNCTIONS, ABILITY_DEFAULT_SMALL_GROUP, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, findAbilityOwnerById, getAbilityNameUiText } from "../ability.js";
+import { ABILITIES_FUNCTIONS, ABILITY_DEFAULT_SMALL_GROUP, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, findAbilityOwnerById, getAbilityNameUiText, paintAbilityUiKeyBind } from "../ability.js";
 
 export type AbilityLovePet = Ability & {
     loveValue: number,
@@ -147,10 +147,7 @@ function paintAbilityLovePetUI(ctx: CanvasRenderingContext2D, ability: Ability, 
     }
 
     if (lovePet.playerInputBinding) {
-        const keyBind = playerInputBindingToDisplayValue(lovePet.playerInputBinding, game);
-        ctx.fillStyle = "black";
-        ctx.font = "10px Arial";
-        ctx.fillText(keyBind, drawStartX + 1, drawStartY + 8);
+        paintAbilityUiKeyBind(ctx, lovePet.playerInputBinding, drawStartX, drawStartY, game);
     }
 }
 
@@ -190,12 +187,14 @@ function castLovePet(abilityOwner: AbilityOwner, ability: Ability, castPosition:
 }
 
 function createAbilityMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability, game: Game): MoreInfoPart {
-    const feed = ability as AbilityLovePet;
+    const love = ability as AbilityLovePet;
     const textLines: string[] = getAbilityNameUiText(ability);
+    const key = playerInputBindingToDisplayValue(love.playerInputBinding!, game);
     textLines.push(
-        `Key: ${playerInputBindingToDisplayValue(feed.playerInputBinding!, game)}`,
-        "Love targeted pet.",
-        `Range: ${feed.range}`,
+        `Key: ${key}`,
+        `Hover with mouse over pet`,
+        `and press key ${key} to love it.`,
+        `Range: ${love.range}`,
     );
     return createMoreInfosPart(ctx, textLines, ABILITY_DEFAULT_SMALL_GROUP);
 }

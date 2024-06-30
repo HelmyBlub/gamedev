@@ -4,7 +4,7 @@ import { calculateDistance, displayTextAtCameraPosition, getCameraPosition, getN
 import { Position, Game, IdCounter, FACTION_PLAYER } from "../../gameModel.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, findAbilityById, getAbilityNameUiText } from "../ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, findAbilityById, getAbilityNameUiText, paintAbilityUiKeyBind } from "../ability.js";
 import { AbilityUpgrade, AbilityUpgradeFunctions, AbilityUpgradesFunctions, getAbilityUpgradeOptionDefault, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
 import { AbilityDamageBreakdown } from "../../combatlog.js";
 import { MusicNote, MusicSheet, Note, playMusicNote } from "../../sound.js";
@@ -665,10 +665,7 @@ function paintAbilityUI(ctx: CanvasRenderingContext2D, ability: Ability, drawSta
     ctx.stroke();
 
     if (musicSheet.playerInputBinding) {
-        const keyBind = playerInputBindingToDisplayValue(musicSheet.playerInputBinding, game);
-        ctx.fillStyle = "black";
-        ctx.font = "10px Arial";
-        ctx.fillText(keyBind, drawStartX + 1, drawStartY + 8);
+        paintAbilityUiKeyBind(ctx, musicSheet.playerInputBinding, drawStartX, drawStartY, game);
     }
 }
 

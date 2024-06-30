@@ -1,14 +1,9 @@
-next test run: tamer, musician, ball,
+next test run: tamer, ball,
 increase version
 
 current tasks:
 - think about how make introduction to game more understandable
-    - make "player character died" more obvious
-        - display text "you DIED"
-        - short death animation
-        - than display end screen
-            - mutliplayer become pet
-    - better notice what abilities you can on choosing class
+    - mouse 0 -> left mouse button icon?
     - when pressing of cooldown ability: show colldown message
 - new short king replay
 

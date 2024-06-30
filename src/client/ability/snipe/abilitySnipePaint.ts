@@ -4,7 +4,7 @@ import { getPointPaintPosition } from "../../gamePaint.js";
 import { GAME_IMAGES, loadImage } from "../../imageLoad.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
-import { Ability, AbilityObject, AbilityOwner, PaintOrderAbility, getAbilityNameUiText } from "../ability.js";
+import { Ability, AbilityObject, AbilityOwner, PaintOrderAbility, getAbilityNameUiText, paintAbilityUiKeyBind } from "../ability.js";
 import { pushAbilityUpgradesUiTexts } from "../abilityUpgrade.js";
 import { ABILITY_NAME_SNIPE, ABILITY_SNIPE_PAINT_FADE_DURATION, ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe, getAbilitySnipeRange, getAbilitySnipeShotFrequency, getSniperRiflePosition } from "./abilitySnipe.js";
 import { paintVisualizationAfterImage } from "./abilitySnipeUpgradeAfterImage.js";
@@ -107,10 +107,7 @@ export function paintAbilitySnipeUI(ctx: CanvasRenderingContext2D, ability: Abil
     ctx.fillText("" + snipe.currentCharges, drawStartX, drawStartY + rectSize - (rectSize - fontSize * 0.9));
 
     if (snipe.playerInputBinding) {
-        let keyBind = playerInputBindingToDisplayValue(snipe.playerInputBinding, game);
-        ctx.fillStyle = "black";
-        ctx.font = "10px Arial";
-        ctx.fillText(keyBind, drawStartX + 1, drawStartY + 8);
+        paintAbilityUiKeyBind(ctx, snipe.playerInputBinding, drawStartX, drawStartY, game);
     }
 }
 

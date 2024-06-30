@@ -8,7 +8,7 @@ import { GAME_IMAGES, getImage } from "../../imageLoad.js";
 import { moveByDirectionAndDistance } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
-import { ABILITIES_FUNCTIONS, ABILITY_DEFAULT_SMALL_GROUP, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, findAbilityOwnerById, getAbilityNameUiText } from "../ability.js";
+import { ABILITIES_FUNCTIONS, ABILITY_DEFAULT_SMALL_GROUP, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, findAbilityOwnerById, getAbilityNameUiText, paintAbilityUiKeyBind } from "../ability.js";
 
 export type AbilityFeedPet = Ability & {
     feedValue: number,
@@ -146,10 +146,7 @@ function paintAbilityFeedPetUI(ctx: CanvasRenderingContext2D, ability: Ability, 
     }
 
     if (feedPet.playerInputBinding) {
-        const keyBind = playerInputBindingToDisplayValue(feedPet.playerInputBinding, game);
-        ctx.fillStyle = "black";
-        ctx.font = "10px Arial";
-        ctx.fillText(keyBind, drawStartX + 1, drawStartY + 8);
+        paintAbilityUiKeyBind(ctx, feedPet.playerInputBinding, drawStartX, drawStartY, game);
     }
 }
 
@@ -191,9 +188,11 @@ function castFeedPet(abilityOwner: AbilityOwner, ability: Ability, castPosition:
 function createAbilityMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability, game: Game): MoreInfoPart {
     const feed = ability as AbilityFeedPet;
     const textLines: string[] = getAbilityNameUiText(ability);
+    const key = playerInputBindingToDisplayValue(feed.playerInputBinding!, game);
     textLines.push(
-        `Key: ${playerInputBindingToDisplayValue(feed.playerInputBinding!, game)}`,
-        "Feed targeted pet.",
+        `Key: ${key}`,
+        `Hover with mouse over pet`,
+        `and press key ${key} to feed it.`,
         `Range: ${feed.range}`,
     );
     return createMoreInfosPart(ctx, textLines, ABILITY_DEFAULT_SMALL_GROUP);

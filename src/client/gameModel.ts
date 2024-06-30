@@ -17,7 +17,7 @@ import { GAME_VERSION } from "./main.js";
 import { createDamageMeter, DamageMeter } from "./combatlog.js";
 import { createSound, Sound } from "./sound.js";
 import { Achievements, createDefaultAchivements } from "./achievements/achievements.js";
-import { PlayerCharacterLevelUI } from "./character/playerCharacters/playerCharacters.js";
+import { PlayerCharacterAbilityUI, PlayerCharacterLevelUI } from "./character/playerCharacters/playerCharacters.js";
 import { ActiveCheats } from "./cheat.js";
 
 export type Position = {
@@ -287,6 +287,7 @@ export type Game = {
         lastHighscoreText?: string;
         lastMouseDownWasUIClick: boolean,
         playerCharacterLevelUI?: PlayerCharacterLevelUI,
+        playerCharacterAbilityUI?: PlayerCharacterAbilityUI,
     }
 }
 

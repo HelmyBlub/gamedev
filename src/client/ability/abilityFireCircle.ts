@@ -3,7 +3,7 @@ import { FACTION_ENEMY, FACTION_PLAYER, Game, IdCounter, Position } from "../gam
 import { getPointPaintPosition } from "../gamePaint.js";
 import { playerInputBindingToDisplayValue } from "../playerInput.js";
 import { nextRandom } from "../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectAbilityObjectCircleToCharacterHit, PaintOrderAbility, AbilityObjectCircle } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectAbilityObjectCircleToCharacterHit, PaintOrderAbility, AbilityObjectCircle, paintAbilityUiKeyBind } from "./ability.js";
 
 export const ABILITY_NAME_FIRE_CIRCLE = "FireCircle";
 export type AbilityFireCircle = Ability & {
@@ -227,10 +227,7 @@ function paintAbilityFireCircleUI(ctx: CanvasRenderingContext2D, ability: Abilit
     ctx.fillText("" + fireCircle.currentCharges, drawStartX, drawStartY + rectSize - (rectSize - fontSize * 0.9));
 
     if (fireCircle.playerInputBinding) {
-        let keyBind = playerInputBindingToDisplayValue(fireCircle.playerInputBinding, game);
-        ctx.fillStyle = "black";
-        ctx.font = "10px Arial";
-        ctx.fillText(keyBind, drawStartX + 1, drawStartY + 8);
+        paintAbilityUiKeyBind(ctx, fireCircle.playerInputBinding, drawStartX, drawStartY, game);
     }
 }
 
