@@ -35,12 +35,16 @@ export function addMapObjectClassBuilding() {
 }
 
 export function mapObjectPlaceClassBuilding(game: Game) {
-    let spawnChunk = game.state.map.chunks[chunkXYToMapKey(0, 0)];
     const classToMakeLegendary = classBuildingFindCharacterClassToMakeLegendary(game.state.bossStuff.bosses[game.state.bossStuff.bosses.length - 2]);
     if (classToMakeLegendary) {
         classBuildingPlacePlayerClassStuffInBuilding(classToMakeLegendary, game);
         return;
     }
+    createEmptyClassBuilding(game);
+}
+
+export function createEmptyClassBuilding(game: Game) {
+    let spawnChunk = game.state.map.chunks[chunkXYToMapKey(0, 0)];
     let freeChunkTile: Position = { x: 0, y: 0 };
     let foundFreeTile = false;
     main: while (!foundFreeTile) {

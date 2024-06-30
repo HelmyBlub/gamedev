@@ -6,6 +6,7 @@ import { Position, IdCounter, Game, FACTION_PLAYER, SkillPoints, Legendary } fro
 import { GAME_IMAGES } from "../imageLoad.js";
 import { createRandomizedCharacterImageData, RandomizedCharacterImage } from "../randomizedCharacterImage.js";
 import { RandomSeed } from "../randomNumberGenerator.js";
+import { experienceForEveryPlayersLeveling } from "./character.js";
 import { tickFixPositionRespawnEnemyCharacter } from "./enemy/fixPositionRespawnEnemy.js";
 import { PathingCache } from "./pathing.js";
 import { Leveling } from "./playerCharacters/levelingCharacter.js";

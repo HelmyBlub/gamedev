@@ -1,8 +1,17 @@
 import { experienceForEveryPlayersLeveling, playerCharactersAddBossSkillPoints } from "./character/character.js";
+import { Character, createPlayerCharacter } from "./character/characterModel.js";
 import { createBossWithLevel } from "./character/enemy/bossEnemy.js";
 import { levelingCharacterAndClassXpGain } from "./character/playerCharacters/levelingCharacter.js";
-import { findClientInfo } from "./game.js";
+import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./character/playerCharacters/playerCharacters.js";
+import { executeUpgradeOptionChoice } from "./character/upgrade.js";
+import { findClientInfo, saveCharacterAsPastCharacter } from "./game.js";
 import { Game } from "./gameModel.js";
+import { classBuildingPlacePlayerClassStuffInBuilding } from "./map/buildings/classBuilding.js";
+import { UPGRADE_BUILDINGS_FUNCTIONS, upgradeBuildingBuyUpgrade } from "./map/buildings/upgradeBuilding.js";
+import { createEmptyClassBuilding } from "./map/mapObjectClassBuilding.js";
+import { mapObjectPlaceUpgradeBuilding } from "./map/mapObjectUpgradeBuilding.js";
+import { addMoneyAmountToPlayer } from "./player.js";
+import { nextRandom } from "./randomNumberGenerator.js";
 export type CheatCheckboxes = "closeKingArea" | "closeGodArea" | "lowKingHp" | "allowCheats";
 export const CHEAT_ACTIONS = [
     "allowCheats",
@@ -13,7 +22,8 @@ export const CHEAT_ACTIONS = [
     "add alot experience",
     "Very Tanky",
     "next boss spawn",
-    "give Money"
+    "give Money",
+    "create end game state"
 ];
 export type ActiveCheats = CheatCheckboxes[];
 
@@ -77,7 +87,8 @@ export function executeCheatAction(action: string, activate: boolean, clientId: 
                 player.permanentData.money += 1000;
             }
             break;
-
+        case "create end game state":
+            createEndGameState(game);
     }
     if (action === "closeKingArea" || action === "closeGodArea" || action === "lowKingHp") {
         const settingsElement: HTMLInputElement | null = document.getElementById(action) as HTMLInputElement;
@@ -112,4 +123,50 @@ export function toggleCheats(activate: boolean, game: Game) {
             }
         }
     }
+}
+
+function createEndGameState(game: Game) {
+    const classKeys = Object.keys(PLAYER_CHARACTER_CLASSES_FUNCTIONS);
+    for (let key of classKeys) {
+        createEmptyClassBuilding(game);
+        classBuildingPlacePlayerClassStuffInBuilding(key, game);
+    }
+    for (let i = 0; i < game.state.pastPlayerCharacters.maxNumber; i++) {
+        const char = createRandomLeveldCharacter(game);
+        saveCharacterAsPastCharacter(char, game);
+    }
+    const upgradeBuildingKeys = Object.keys(UPGRADE_BUILDINGS_FUNCTIONS);
+    for (let i = 0; i < upgradeBuildingKeys.length; i++) {
+        mapObjectPlaceUpgradeBuilding(game);
+    }
+    // get randomized upgrade levels for buildings
+    for (let i = 0; i < upgradeBuildingKeys.length; i++) {
+        addMoneyAmountToPlayer(100, game.state.players, game);
+        for (let j = 0; j < game.state.players.length; j++) {
+            upgradeBuildingBuyUpgrade(game.state.players[j], upgradeBuildingKeys[i], game);
+        }
+    }
+}
+
+function createRandomLeveldCharacter(game: Game): Character {
+    const character = createPlayerCharacter(game.state.idCounter, { x: 0, y: 0 }, game.state.randomSeed, game);
+    const randomClassChoiceIndex = Math.floor(nextRandom(game.state.randomSeed) * character.upgradeChoices.length);
+    const option = character.upgradeChoices[randomClassChoiceIndex];
+    const xp = 1000000;
+    const upgrades = 20;
+    executeUpgradeOptionChoice(character, option, game);
+    experienceForEveryPlayersLeveling(xp, game, [character]);
+    levelingCharacterAndClassXpGain(game.state, xp, game, [character]);
+    if (character.upgradeChoices.length === 0) {
+        for (let i = 0; i < upgrades; i++) {
+            playerCharactersAddBossSkillPoints(upgrades, game, [character]);
+        }
+    }
+    while (character.upgradeChoices.length) {
+        const randomUpgradeChoiceIndex = Math.floor(nextRandom(game.state.randomSeed) * character.upgradeChoices.length);
+        const upOption = character.upgradeChoices[randomUpgradeChoiceIndex];
+        executeUpgradeOptionChoice(character, upOption, game);
+    }
+
+    return character;
 }

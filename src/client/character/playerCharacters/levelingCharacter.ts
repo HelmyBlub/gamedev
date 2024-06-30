@@ -18,8 +18,8 @@ export type Leveling = {
     }
 }
 
-export function levelingCharacterAndClassXpGain(state: GameState, experience: number, game: Game) {
-    let playerCharacters = getPlayerCharacters(state.players);
+export function levelingCharacterAndClassXpGain(state: GameState, experience: number, game: Game, characters: Character[] | undefined = undefined) {
+    let playerCharacters = characters ?? getPlayerCharacters(state.players);
     for (let character of playerCharacters) {
         if (character.level?.leveling !== undefined) {
             character.level.leveling.experience += experience * (character.experienceGainFactor ?? 1);

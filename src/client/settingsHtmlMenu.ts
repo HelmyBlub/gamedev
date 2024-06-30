@@ -64,6 +64,7 @@ function addDebug(game: Game) {
     addCheatButton("Very Tanky", game);
     addCheatButton("next boss spawn", game);
     addCheatButton("give Money", game);
+    addCheatButton("create end game state", game);
 }
 
 function addTest(game: Game) {

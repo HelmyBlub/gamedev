@@ -2,6 +2,8 @@ next test run: tamer, ball,
 increase version
 
 current tasks:
+- easier testing
+    - button to create end game state with code. To be then able to easily test everything
 - new short king replay
 
 

@@ -107,9 +107,9 @@ export function characterAddShield(character: Character, shieldValue: number) {
     }
 }
 
-export function playerCharactersAddBossSkillPoints(bossLevel: number | undefined, game: Game) {
+export function playerCharactersAddBossSkillPoints(bossLevel: number | undefined, game: Game, characters: Character[] | undefined = undefined) {
     if (bossLevel === undefined) return;
-    const playerCharacters: Character[] = getPlayerCharacters(game.state.players);
+    const playerCharacters: Character[] = characters ?? getPlayerCharacters(game.state.players);
     for (let character of playerCharacters) {
         let gotSkillPoint = false;
         if (!character.characterClasses) continue;
@@ -574,8 +574,8 @@ export function cappCharacter(character: Character) {
     }
 }
 
-export function experienceForEveryPlayersLeveling(experience: number, game: Game) {
-    const playerCharacters = getPlayerCharacters(game.state.players);
+export function experienceForEveryPlayersLeveling(experience: number, game: Game, characters: Character[] | undefined = undefined) {
+    const playerCharacters = characters ?? getPlayerCharacters(game.state.players);
     for (let character of playerCharacters) {
         if (!character.characterClasses) continue;
         for (let charClass of character.characterClasses) {
