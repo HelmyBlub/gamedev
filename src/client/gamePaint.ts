@@ -152,6 +152,20 @@ export function paintTextWithKeys(ctx: CanvasRenderingContext2D, textWithKeys: s
     }
 }
 
+export function paintFloatingTextInfoForMyself(text: string, position: Position, characterId: number, game: Game) {
+    const myChar = findMyCharacter(game);
+    if (myChar && myChar.id === characterId) {
+        game.UI.displayTextData.push({
+            color: "black",
+            fontSize: "20",
+            paintPosition: { x: position.x, y: position.y },
+            removeTime: game.state.time + 1500,
+            text: text
+        });
+    }
+
+}
+
 export function paintKey(ctx: CanvasRenderingContext2D, key: string, paintPosition: Position) {
     const blankKeyImageString = "blankKey";
     const blankKeyImage = GAME_IMAGES[blankKeyImageString];

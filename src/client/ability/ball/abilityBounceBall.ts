@@ -1,4 +1,4 @@
-import { getCharacterMoveSpeed, getRandomAlivePlayerCharacter, setCharacterPosition } from "../../character/character.js";
+import { findMyCharacter, getCharacterMoveSpeed, getRandomAlivePlayerCharacter, setCharacterPosition } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
 import { paintCharacterDefault } from "../../character/characterPaint.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
@@ -6,7 +6,7 @@ import { BUFF_NAME_BALL_PHYSICS, BuffBallPhysics, createBuffBallPhysics, findBal
 import { applyDebuff, removeCharacterDebuff } from "../../debuff/debuff.js";
 import { calculateDirection, findClientInfoByCharacterId, getNextId, modulo } from "../../game.js";
 import { Position, Game, IdCounter, FACTION_ENEMY, ClientInfo, FACTION_PLAYER } from "../../gameModel.js";
-import { getPointPaintPosition } from "../../gamePaint.js";
+import { getPointPaintPosition, paintFloatingTextInfoForMyself } from "../../gamePaint.js";
 import { calculateBounceAngle, calculateMovePosition, isMoveFromToBlocking, moveByDirectionAndDistance } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
@@ -166,7 +166,11 @@ function resetAbility(ability: Ability) {
 function castBounceBall(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, castPositionRelativeToCharacter: Position | undefined, isKeydown: boolean, game: Game) {
     if (!isKeydown) return;
     const abilityBounceBall = ability as AbilityBounceBall;
-    if (abilityBounceBall.currentCharges <= 0) return;
+    if (abilityBounceBall.currentCharges <= 0) {
+        const timeUntil = ((abilityBounceBall.nextRechargeTime! - game.state.time) / 1000);
+        paintFloatingTextInfoForMyself(`on cooldown (${timeUntil.toFixed(1)}s)`, abilityOwner, abilityOwner.id, game);
+        return;
+    }
     const buffBallPhyscis = createBuffBallPhysics(ability.id, ability.name);
     let keepCurrentSpeed = false;
     if (abilityOwner.debuffs) {

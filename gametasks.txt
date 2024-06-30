@@ -3,8 +3,8 @@ increase version
 
 current tasks:
 - think about how make introduction to game more understandable
-    - mouse 0 -> left mouse button icon?
     - when pressing of cooldown ability: show colldown message
+    - mouse 0 -> left mouse button icon?
 - new short king replay
 
 

@@ -5,7 +5,7 @@ import { BUFF_NAME_BALL_PHYSICS, BuffBallPhysics, createBuffBallPhysics, findBal
 import { applyDebuff, removeCharacterDebuff } from "../../debuff/debuff.js";
 import { calcNewPositionMovedInDirection, calculateDirection, findClientInfoByCharacterId, getNextId } from "../../game.js";
 import { Position, Game, IdCounter, FACTION_ENEMY, ClientInfo, FACTION_PLAYER } from "../../gameModel.js";
-import { getPointPaintPosition } from "../../gamePaint.js";
+import { getPointPaintPosition, paintFloatingTextInfoForMyself } from "../../gamePaint.js";
 import { calculateMovePosition, getFirstBlockingGameMapTilePositionTouchingLine, isMoveFromToBlocking } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { fixedRandom } from "../../randomNumberGenerator.js";
@@ -166,7 +166,12 @@ function resetAbility(ability: Ability) {
 function castLightningBall(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, castPositionRelativeToCharacter: Position | undefined, isKeydown: boolean, game: Game) {
     if (!isKeydown) return;
     const abilityLightningBall = ability as AbilityLightningBall;
-    if (abilityLightningBall.currentCharges <= 0) return;
+    if (abilityLightningBall.currentCharges <= 0) {
+        const timeUntil = ((abilityLightningBall.nextRechargeTime! - game.state.time) / 1000);
+        paintFloatingTextInfoForMyself(`on cooldown (${timeUntil.toFixed(1)}s)`, abilityOwner, abilityOwner.id, game);
+        return;
+    }
+
     const buffBallPhyscis = createBuffBallPhysics(ability.id, ability.name);
     applyDebuff(buffBallPhyscis, abilityOwner as any, game);
     abilityLightningBall.moveDirection = calculateDirection(abilityOwner, castPosition);
