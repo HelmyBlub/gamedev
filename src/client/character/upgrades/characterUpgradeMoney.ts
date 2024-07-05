@@ -19,7 +19,7 @@ export function addCharacterUpgradeBonusMoney() {
 
 function getStatsDisplayText(characterUpgrade: CharacterUpgrade): string {
     const up: CharacterUpgradeBonusMoney = characterUpgrade as CharacterUpgradeBonusMoney;
-    return `${CHARACTER_UPGRADE_BONUS_MONEY}: ${(up.bonusMoneyFactor) * 100}%`;
+    return `${CHARACTER_UPGRADE_BONUS_MONEY}: ${(up.bonusMoneyFactor * 100).toFixed()}%`;
 }
 
 function addUpgrade(characterUpgrade: CharacterUpgrade, character: Character, game: Game, charClass: CharacterClass | undefined) {

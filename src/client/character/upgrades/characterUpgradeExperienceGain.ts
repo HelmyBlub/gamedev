@@ -18,7 +18,7 @@ export function addCharacterUpgradeBonusExperience() {
 
 function getStatsDisplayText(characterUpgrade: CharacterUpgrade): string {
     const up: CharacterUpgradeBonusExperience = characterUpgrade as CharacterUpgradeBonusExperience;
-    return `${CHARACTER_UPGRADE_BONUS_EXPERIENCE}: ${(up.bonusExperienceFactor) * 100}%`;
+    return `${CHARACTER_UPGRADE_BONUS_EXPERIENCE}: ${((up.bonusExperienceFactor) * 100).toFixed()}%`;
 }
 
 function addUpgrade(characterUpgrade: CharacterUpgrade, character: Character, game: Game, charClass: CharacterClass | undefined) {

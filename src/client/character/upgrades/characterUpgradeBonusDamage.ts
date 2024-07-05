@@ -18,7 +18,7 @@ export function addCharacterUpgradeBonusDamage() {
 
 function getStatsDisplayText(characterUpgrade: CharacterUpgrade): string {
     const up: CharacterUpgradeBonusDamage = characterUpgrade as CharacterUpgradeBonusDamage;
-    return `${CHARACTER_UPGRADE_BONUS_DAMAGE}: ${(up.bonusDamageFactor) * 100}%`;
+    return `${CHARACTER_UPGRADE_BONUS_DAMAGE}: ${(up.bonusDamageFactor * 100).toFixed()}%`;
 }
 
 function addUpgrade(characterUpgrade: CharacterUpgrade, character: Character, game: Game, charClass: CharacterClass | undefined) {

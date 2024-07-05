@@ -1,11 +1,9 @@
-next test run: tamer, ball,
+next test run: ball,
 increase version
 
 current tasks:
-- easier testing
-    - button to create end game state with code. To be then able to easily test everything
-- new short king replay
-
+- building upgrades moreInfo not fixed length text
+- achievement text legendary off
 
 next feature ideas:
 - think about next bigger feature 

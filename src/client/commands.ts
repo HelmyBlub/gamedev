@@ -1,6 +1,6 @@
 import { findAndSetNewCameraCharacterId } from "./character/character.js";
 import { damageMeterChangeClientId } from "./combatlog.js";
-import { createPaintTextData, deepCopy, displayTextAtCameraPosition, getCameraPosition } from "./game.js";
+import { deepCopy, displayTextAtCameraPosition } from "./game.js";
 import { Game, GameState, RecordDataMultiplayer } from "./gameModel.js";
 import { sendMultiplayer } from "./multiplayerConenction.js";
 import { createDefaultKeyBindings1, createDefaultUiKeyBindings, findPlayerByCliendId } from "./player.js";
