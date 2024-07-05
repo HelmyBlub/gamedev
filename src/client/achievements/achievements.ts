@@ -70,6 +70,7 @@ function achievementCheck<K extends keyof AchievementFunctions>(achievements: Ac
     for (let i = achievements.open.length - 1; i >= 0; i--) {
         const achievement = achievements.open[i];
         const functions = ACHIEVEMENTS_FUNCTIONS[achievement.name];
+        if (!functions) continue;
         const func = functions[functionName];
         if (func) {
             let finished = func(achievement, game as any);
@@ -122,10 +123,12 @@ export function createAchievementsMoreInfo(ctx: CanvasRenderingContext2D, moreIn
 
     for (let entry of achievements.open) {
         const openAchievementsPart = getAchievementMoreInfoPart(entry, ctx);
+        if (!openAchievementsPart) continue;
         openAchievementsSubContainer.moreInfoParts.push(openAchievementsPart);
     }
     for (let entry of achievements.finished) {
         const finishedAchievementsPart = getAchievementMoreInfoPart(entry, ctx);
+        if (!finishedAchievementsPart) continue;
         finishedAchievementsSubContainer.moreInfoParts.push(finishedAchievementsPart);
     }
     return moreInfosContainer;
@@ -144,8 +147,9 @@ function finishAchievement(achievement: Achievement, achievements: Achievements,
     localStorageSaveAchievements(game);
 }
 
-function getAchievementMoreInfoPart(achievement: Achievement, ctx: CanvasRenderingContext2D): MoreInfoPart {
+function getAchievementMoreInfoPart(achievement: Achievement, ctx: CanvasRenderingContext2D): MoreInfoPart | undefined {
     const functions = ACHIEVEMENTS_FUNCTIONS[achievement.name];
+    if (!functions) return undefined;
     if (functions.createMoreInfoPart) {
         return functions.createMoreInfoPart(achievement, ctx);
     } else {

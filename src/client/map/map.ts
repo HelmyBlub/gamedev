@@ -475,7 +475,6 @@ export function getChunksTouchingLine2(map: GameMap, lineStart: Position, lineEn
             err += dx;
             y += sy;
         } else {
-            debugger;
             console.log(lineStart, lineEnd);
             throw new Error("would cause infinite loop, but should not be able to happen?");
         }

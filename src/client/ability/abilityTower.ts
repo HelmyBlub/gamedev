@@ -252,7 +252,6 @@ function deleteOldesTowerOfOwnerAndReturnDeletedId(abilityObjects: AbilityObject
     if (oldestTowerIndex !== undefined) {
         return (abilityObjects.splice(oldestTowerIndex, 1)[0] as AbilityObjectTower).id;
     }
-    debugger;
     throw new Error("id does not exist " + ownerId);
 }
 

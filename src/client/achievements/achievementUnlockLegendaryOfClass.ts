@@ -5,7 +5,7 @@ import { MoreInfoPart, createMoreInfosPart } from "../moreInfo.js";
 import { addMoneyAmountToPlayer, addMoneyUiMoreInfo } from "../player.js";
 import { ACHIEVEMENTS_FUNCTIONS, Achievement } from "./achievements.js";
 
-export const ACHIEVEMENT_NAME_UNLOCK_LEGENDARY_OF_CLASS = "Unlock Legendary of Class";
+export const ACHIEVEMENT_NAME_UNLOCK_LEGENDARY_OF_CLASS = "Unlock Legendary of specific Class";
 const REWARD_MONEY_AMOUNT = 200;
 
 export type AchievementLegendaryClass = Achievement & {
@@ -39,7 +39,7 @@ function createMoreInfoPart(achievement: Achievement, ctx: CanvasRenderingContex
 function getDescription(achievement: Achievement) {
     const legendaryClass = achievement as AchievementLegendaryClass;
     return [
-        `Unlock Legendary Ability of Class ${legendaryClass.legendaryClass}`,
+        `Unlock Legendary of Class ${legendaryClass.legendaryClass}`,
         `Reward: $${REWARD_MONEY_AMOUNT}.`,
     ];
 }

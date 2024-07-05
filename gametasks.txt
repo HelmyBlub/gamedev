@@ -2,7 +2,6 @@ next test run: ball,
 increase version
 
 current tasks:
-- building upgrades moreInfo not fixed length text
 - achievement text legendary off
 
 next feature ideas:

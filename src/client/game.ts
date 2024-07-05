@@ -214,7 +214,6 @@ export async function runner(game: Game) {
         }
     } catch (e) {
         console.log(game);
-        debugger;
         throw e;
     }
 }

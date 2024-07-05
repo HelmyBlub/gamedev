@@ -26,7 +26,7 @@ function createMoreInfoPart(achievement: Achievement, ctx: CanvasRenderingContex
 
 function getDescription() {
     return [
-        "Unlock A Legendary Ability",
+        "Unlock A Legendary Class",
         `Reward: $${REWARD_MONEY_AMOUNT}.`,
     ];
 }
