@@ -609,7 +609,8 @@ function paintAbilityMoreInfosIfMouseHovered(ctx: CanvasRenderingContext2D, abil
         const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
         if (abilityFunctions.createAbilityMoreInfos) {
             const statUI = abilityFunctions.createAbilityMoreInfos(ctx, ability, game);
-            paintMoreInfosPart(ctx, statUI);
+            const spacing = 5;
+            paintMoreInfosPart(ctx, statUI, startX, startY - statUI.height - spacing);
         }
     }
 }
