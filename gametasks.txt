@@ -1,17 +1,13 @@
-next test run: ,
+next test run: 
 increase version
 
 current tasks:
-
-
-next feature ideas:
+- ability UI icons
+- move ability UI info closer to icon
 - zoom+- game based and not browser based
     - can keep the ui size
-- WebGPU
-    - try it out and find out performance differences
-    - is it worth it to change?
-    - will take a lot of time
-    - expect a high performance improvement for painting
+
+next feature ideas:
 - think about next bigger feature 
     - extends existings classes for more upgrade choice?
         - more run variation

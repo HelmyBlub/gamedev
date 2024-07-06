@@ -58,12 +58,30 @@ export type AbilitySnipe = Ability & {
 }
 
 export const ABILITY_NAME_SNIPE = "Snipe";
+export const IMAGE_NAME_SNIPE_AIM = "snipe aim";
+export const IMAGE_NAME_RUN_SPEED = "run speed";
+export const IMAGE_NAME_RELOAD = "reload";
 export const ABILITY_SNIPE_PAINT_FADE_DURATION = 500;
 export const ABILITY_SNIPE_UPGRADE_FUNCTIONS: AbilityUpgradesFunctions = {};
 const EMEMY_SNIPE_DAMAGE_DELAY = 750;
 
 GAME_IMAGES[ABILITY_NAME_SNIPE] = {
     imagePath: "/images/sniperRifle.png",
+    spriteRowHeights: [40],
+    spriteRowWidths: [40],
+};
+GAME_IMAGES[IMAGE_NAME_SNIPE_AIM] = {
+    imagePath: "/images/aim.png",
+    spriteRowHeights: [40],
+    spriteRowWidths: [40],
+};
+GAME_IMAGES[IMAGE_NAME_RUN_SPEED] = {
+    imagePath: "/images/runspeed.png",
+    spriteRowHeights: [40],
+    spriteRowWidths: [40],
+};
+GAME_IMAGES[IMAGE_NAME_RELOAD] = {
+    imagePath: "/images/reload.png",
     spriteRowHeights: [40],
     spriteRowWidths: [40],
 };

@@ -7,13 +7,14 @@ import { getNextId } from "../../game.js";
 import { Game, IdCounter, Position } from "../../gameModel.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, getAbilityNameUiText, paintAbilityUiKeyBind } from "../ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, getAbilityNameUiText, paintAbilityUiDefault, paintAbilityUiKeyBind } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
 import { ABILITY_SPEED_BOOST_UPGRADE_ADD_CHARGE, AbilitySpeedBoostUpgradeAddCharge, addAbilitySpeedBoostUpgradeAddCharge, tickAbilitySpeedBoostUpgradeAddCharge } from "./abilitySpeedBoostUpgradeAddCharge.js";
 import { addAbilitySpeedBoostUpgradeDuration } from "./abilitySpeedBoostUpgradeDuration.js";
 import { addAbilitySpeedBoostUpgradeSlowTrail, executeAbilitySpeedBoostUpgradeSlowTrail } from "./abilitySpeedBoostUpgradeSlowTrail.js";
 import { addAbilitySpeedBoostUpgradeSpeed } from "./abilitySpeedBoostUpgradeSpeed.js";
 import { addAbilitySpeedBoostUpgradeCooldown } from "./abilitySpeedBoostUpradeCooldown.js";
+import { IMAGE_NAME_RUN_SPEED } from "../snipe/abilitySnipe.js";
 
 export type AbilitySpeedBoost = Ability & {
     speedFactor: number,
@@ -97,35 +98,18 @@ function castSpeedBoost(abilityOwner: AbilityOwner, ability: Ability, castPositi
 
 function paintAbilitySpeedBoostUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
     const abilitySpeedBoost = ability as AbilitySpeedBoost;
-    const fontSize = Math.floor(size * 0.8);
-    const rectSize = size;
-    ctx.strokeStyle = "black";
-    ctx.fillStyle = "white";
-    ctx.lineWidth = 1;
-    ctx.fillRect(drawStartX, drawStartY, rectSize, rectSize);
-    ctx.beginPath();
-    ctx.rect(drawStartX, drawStartY, rectSize, rectSize);
-    ctx.stroke();
     const upgrade: AbilitySpeedBoostUpgradeAddCharge = ability.upgrades[ABILITY_SPEED_BOOST_UPGRADE_ADD_CHARGE];
+    let heightFactor = 0;
+    let displayNumber: number | undefined = undefined;
     if (upgrade || game.state.time < abilitySpeedBoost.cooldownFinishTime) {
-        ctx.fillStyle = "gray";
-        const heightFactor = Math.max((abilitySpeedBoost.cooldownFinishTime - game.state.time) / abilitySpeedBoost.cooldown, 0);
-        ctx.fillRect(drawStartX, drawStartY, rectSize, rectSize * heightFactor);
-
-        ctx.fillStyle = "black";
-        ctx.font = fontSize + "px Arial";
+        heightFactor = Math.max((abilitySpeedBoost.cooldownFinishTime - game.state.time) / abilitySpeedBoost.cooldown, 0);
         const cooldownSeconds = Math.ceil((abilitySpeedBoost.cooldownFinishTime - game.state.time) / 1000);
-        let displayNumber = cooldownSeconds;
+        displayNumber = cooldownSeconds;
         if (upgrade) {
             displayNumber = upgrade.currentCharges;
         }
-        ctx.fillText("" + displayNumber, drawStartX, drawStartY + rectSize - (rectSize - fontSize * 0.9));
     }
-
-
-    if (abilitySpeedBoost.playerInputBinding) {
-        paintAbilityUiKeyBind(ctx, abilitySpeedBoost.playerInputBinding, drawStartX, drawStartY, game);
-    }
+    paintAbilityUiDefault(ctx, ability, drawStartX, drawStartY, size, game, IMAGE_NAME_RUN_SPEED, heightFactor, displayNumber);
 }
 
 function createAbilitySpeedBoostMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability, game: Game): MoreInfoPart {

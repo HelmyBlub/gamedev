@@ -34,13 +34,13 @@ import { addAbilityLightningStrikes } from "./abilityLightningStrikes.js"
 import { addAbilitySnipeReload } from "./snipe/abilitySnipeReload.js"
 import { playerInputBindingToDisplayValue } from "../playerInput.js"
 import { addAbilityUnleashPet } from "./petTamer/abilityUnleashPet.js"
-import { Leveling, findCharacterClassById } from "../character/playerCharacters/levelingCharacter.js"
+import { Leveling } from "../character/playerCharacters/levelingCharacter.js"
 import { CharacterClass } from "../character/playerCharacters/playerCharacters.js"
 import { MoreInfoPart, paintMoreInfosPart } from "../moreInfo.js"
 import { AbilityDamageBreakdown, addDamageBreakDownToDamageMeter } from "../combatlog.js"
 import { addAbilityMusicSheet } from "./musician/abilityMusicSheet.js"
 import { addAbilityCircleAround } from "./abilityCircleAround.js"
-import { GAME_IMAGES, loadImage } from "../imageLoad.js"
+import { GAME_IMAGES, getImage, loadImage } from "../imageLoad.js"
 
 export type Ability = {
     id: number,
@@ -555,7 +555,49 @@ export function paintAbilityUiKeyBind(ctx: CanvasRenderingContext2D, playerInput
     } else {
         paintTextWithOutline(ctx, "white", "black", keyBind, drawStartX + 1, drawStartY + fontSize - 1, false, 2);
     }
+}
 
+export function paintAbilityUiDefault(
+    ctx: CanvasRenderingContext2D,
+    ability: Ability,
+    drawStartX: number,
+    drawStartY: number,
+    size: number,
+    game: Game,
+    imageName: string | undefined = undefined,
+    grayFillPercent: number = 0,
+    counter: number | undefined = undefined,
+) {
+    const rectSize = size;
+
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = "black";
+    ctx.fillStyle = "white";
+    ctx.fillRect(drawStartX, drawStartY, rectSize, rectSize);
+    ctx.beginPath();
+    ctx.rect(drawStartX, drawStartY, rectSize, rectSize);
+    ctx.stroke();
+
+    if (grayFillPercent > 0 && grayFillPercent <= 1) {
+        ctx.fillStyle = "gray";
+        ctx.fillRect(drawStartX, drawStartY, rectSize, rectSize * grayFillPercent);
+    }
+    if (imageName) {
+        const image = getImage(imageName);
+        if (image) {
+            ctx.drawImage(image, drawStartX, drawStartY);
+        }
+    }
+
+    if (counter !== undefined) {
+        const fontSize = size - 4;
+        ctx.font = fontSize + "px Arial";
+        paintTextWithOutline(ctx, "white", "black", counter.toFixed(), Math.floor(drawStartX + size / 2), drawStartY + rectSize - (rectSize - fontSize), true);
+    }
+
+    if (ability.playerInputBinding) {
+        paintAbilityUiKeyBind(ctx, ability.playerInputBinding, drawStartX, drawStartY, game);
+    }
 }
 
 function paintAbilityMoreInfosIfMouseHovered(ctx: CanvasRenderingContext2D, ability: Ability, startX: number, startY: number, size: number, game: Game) {

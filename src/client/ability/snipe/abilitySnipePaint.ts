@@ -4,9 +4,9 @@ import { getPointPaintPosition } from "../../gamePaint.js";
 import { GAME_IMAGES, loadImage } from "../../imageLoad.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
-import { Ability, AbilityObject, AbilityOwner, PaintOrderAbility, getAbilityNameUiText, paintAbilityUiKeyBind } from "../ability.js";
+import { Ability, AbilityObject, AbilityOwner, PaintOrderAbility, getAbilityNameUiText, paintAbilityUiDefault, paintAbilityUiKeyBind } from "../ability.js";
 import { pushAbilityUpgradesUiTexts } from "../abilityUpgrade.js";
-import { ABILITY_NAME_SNIPE, ABILITY_SNIPE_PAINT_FADE_DURATION, ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe, getAbilitySnipeRange, getAbilitySnipeShotFrequency, getSniperRiflePosition } from "./abilitySnipe.js";
+import { ABILITY_NAME_SNIPE, ABILITY_SNIPE_PAINT_FADE_DURATION, ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe, getAbilitySnipeRange, getAbilitySnipeShotFrequency, getSniperRiflePosition, IMAGE_NAME_SNIPE_AIM } from "./abilitySnipe.js";
 import { paintVisualizationAfterImage } from "./abilitySnipeUpgradeAfterImage.js";
 import { paintVisualizationMoreRifles } from "./abilitySnipeUpgradeMoreRifle.js";
 import { paintVisualizationStayStill } from "./abilitySnipeUpgradeStayStill.js";
@@ -82,33 +82,16 @@ export function paintSniperRifle(ctx: CanvasRenderingContext2D, abilitySnipe: Ab
 
 export function paintAbilitySnipeUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
     const snipe = ability as AbilitySnipe;
-    const fontSize = size;
-    const rectSize = size;
-    ctx.strokeStyle = "black";
-    ctx.fillStyle = "white";
-    ctx.lineWidth = 1;
-    ctx.fillRect(drawStartX, drawStartY, rectSize, rectSize);
-    ctx.beginPath();
-    ctx.rect(drawStartX, drawStartY, rectSize, rectSize);
-    ctx.stroke();
+    let heightFactor: number = 0;
     if (snipe.currentCharges < snipe.maxCharges) {
         ctx.fillStyle = "gray";
-        let heightFactor: number;
         if (snipe.currentCharges === 0) {
             heightFactor = Math.max((snipe.reloadTime - game.state.time) / snipe.baseRechargeTime, 0);
         } else {
             heightFactor = Math.max((snipe.nextAllowedShotTime - game.state.time) / (snipe.maxShootFrequency / snipe.shotFrequencyTimeDecreaseFaktor), 0);
         }
-        ctx.fillRect(drawStartX, drawStartY, rectSize, rectSize * heightFactor);
     }
-
-    ctx.fillStyle = "black";
-    ctx.font = fontSize + "px Arial";
-    ctx.fillText("" + snipe.currentCharges, drawStartX, drawStartY + rectSize - (rectSize - fontSize * 0.9));
-
-    if (snipe.playerInputBinding) {
-        paintAbilityUiKeyBind(ctx, snipe.playerInputBinding, drawStartX, drawStartY, game);
-    }
+    paintAbilityUiDefault(ctx, ability, drawStartX, drawStartY, size, game, IMAGE_NAME_SNIPE_AIM, heightFactor, snipe.currentCharges);
 }
 
 export function createAbilitySnipeMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability, game: Game): MoreInfoPart {
