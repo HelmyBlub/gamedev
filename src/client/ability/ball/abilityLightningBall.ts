@@ -45,6 +45,7 @@ GAME_IMAGES[IMAGE_NAME_LIGHTNING] = {
     spriteRowWidths: [40],
 };
 
+const ABILITY_LIGHTNING_BALL_DAMAGE_PER_LEVEL = 100;
 const ENEMY_JUMP_DELAY = 1500;
 
 export function addAbilityLightningBall() {
@@ -52,11 +53,11 @@ export function addAbilityLightningBall() {
         activeAbilityCast: castLightningBall,
         createAbility: createAbilityLightningBall,
         createAbilityBossUpgradeOptions: createAbilityBossSpeedBoostUpgradeOptions,
+        createAbilityMoreInfos: createAbilityMoreInfos,
         createDamageBreakDown: createDamageBreakDown,
         executeUpgradeOption: executeAbilityUpgradeOption,
         paintAbility: paintAbility,
         paintAbilityUI: paintAbilityUI,
-        createAbilityMoreInfos: createAbilityMoreInfos,
         paintAbilityAccessoire: paintAbilityAccessoire,
         resetAbility: resetAbility,
         setAbilityToLevel: setAbilityToLevel,
@@ -210,7 +211,7 @@ function executeAbilityUpgradeOption(ability: Ability, character: Character, upg
 
 function setAbilityToLevel(ability: Ability, level: number) {
     const abilityBall = ability as AbilityLightningBall;
-    abilityBall.damage = level * 100;
+    abilityBall.damage = level * ABILITY_LIGHTNING_BALL_DAMAGE_PER_LEVEL;
 }
 
 function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: number) {
@@ -369,10 +370,23 @@ function createAbilityMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability,
         `Move with lightning speed.`,
         `Immune to damage.`,
         `Ends if it hits a wall.`,
+        "",
         "Ability stats:",
-        `Level: ${abilityLightningBall.level?.level}`,
-        `Damage: ${abilityLightningBall.damage}`,
     );
+
+    if (ability.level) {
+        textLines.push(`Level: ${ability.level?.level}`);
+        if (ability.level.leveling) {
+            textLines.push(
+                `  XP: ${ability.level.leveling.experience.toFixed(0)}/${ability.level.leveling.experienceForLevelUp}`,
+                `  on level up you gain:`,
+                `    +${ABILITY_LIGHTNING_BALL_DAMAGE_PER_LEVEL} damage`,
+            );
+        }
+    }
+    textLines.push(`Damage: ${abilityLightningBall.damage}`);
+
+
     pushAbilityUpgradesUiTexts(ABILITY_LIGHTNING_BALL_UPGRADE_FUNCTIONS, textLines, ability);
 
     return createMoreInfosPart(ctx, textLines);

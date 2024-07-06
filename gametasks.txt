@@ -3,6 +3,9 @@ increase version
 
 current tasks:
 - somewhere tell what a level up gives the player
+    - musician
+    - tamer
+    - tower (skill point every 2 level)
 - zoom+- game based and not browser based
     - can keep the ui size
 

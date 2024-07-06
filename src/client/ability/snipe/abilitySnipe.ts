@@ -62,6 +62,10 @@ export const IMAGE_NAME_SNIPE_AIM = "snipe aim";
 export const IMAGE_NAME_RUN_SPEED = "run speed";
 export const IMAGE_NAME_RELOAD = "reload";
 export const ABILITY_SNIPE_PAINT_FADE_DURATION = 500;
+export const ABILITY_SNIPE_DAMAGE_PER_LEVEL = 100;
+export const ABILITY_SNIPE_MAGAZIN_SIZE_PER_LEVEL = 1;
+export const ABILITY_SNIPE_SNIPE_FREQUENCY_PER_LEVEL = 0.15;
+export const ABILITY_SNIPE_RANGE_PER_LEVEL = 10;
 export const ABILITY_SNIPE_UPGRADE_FUNCTIONS: AbilityUpgradesFunctions = {};
 const EMEMY_SNIPE_DAMAGE_DELAY = 750;
 
@@ -389,10 +393,10 @@ function getAbilityUpgradeOptionSynergy(abilityName: string, upgradeName: string
 
 function setAbilitySnipeToLevel(ability: Ability, level: number) {
     const abilitySnipe = ability as AbilitySnipe;
-    abilitySnipe.baseDamage = level * 100;
-    abilitySnipe.maxCharges = Math.min(2 + level, abilitySnipe.maxMagazineSize);
-    abilitySnipe.baseRange = 800 + level * 10;
-    abilitySnipe.shotFrequencyTimeDecreaseFaktor = 0.5 + level * 0.15;
+    abilitySnipe.baseDamage = level * ABILITY_SNIPE_DAMAGE_PER_LEVEL;
+    abilitySnipe.maxCharges = Math.min(2 + level * ABILITY_SNIPE_MAGAZIN_SIZE_PER_LEVEL, abilitySnipe.maxMagazineSize);
+    abilitySnipe.baseRange = 800 + level * ABILITY_SNIPE_RANGE_PER_LEVEL;
+    abilitySnipe.shotFrequencyTimeDecreaseFaktor = 0.5 + level * ABILITY_SNIPE_SNIPE_FREQUENCY_PER_LEVEL;
 }
 
 function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: number) {

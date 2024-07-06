@@ -49,6 +49,7 @@ GAME_IMAGES[ABILITY_NAME_BOUNCE_BALL] = {
     spriteRowHeights: [40],
     spriteRowWidths: [40],
 };
+const ABILITY_BOUNCE_BALL_DAMAGE_PER_LEVEL = 100;
 
 export function addAbilityBounceBall() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_BOUNCE_BALL] = {
@@ -213,7 +214,7 @@ function executeAbilityUpgradeOption(ability: Ability, character: Character, upg
 
 function setAbilityToLevel(ability: Ability, level: number) {
     const abilityBall = ability as AbilityBounceBall;
-    abilityBall.damage = level * 100;
+    abilityBall.damage = level * ABILITY_BOUNCE_BALL_DAMAGE_PER_LEVEL;
 }
 
 function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: number) {
@@ -415,12 +416,26 @@ function createAbilityMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability,
         `Click to become a ball and roll towards click direction.`,
         `Bounces of terrain. Each bounce increases speed.`,
         `Speed decreases over time.`,
+        "",
         "Ability stats:",
-        `Level: ${abilityBounceBall.level?.level}`,
+    );
+
+    if (abilityBounceBall.level) {
+        textLines.push(`Level: ${abilityBounceBall.level?.level}`);
+        if (abilityBounceBall.level.leveling) {
+            textLines.push(
+                `  XP: ${abilityBounceBall.level.leveling.experience.toFixed(0)}/${abilityBounceBall.level.leveling.experienceForLevelUp}`,
+                `  on level up you gain:`,
+                `    +${ABILITY_BOUNCE_BALL_DAMAGE_PER_LEVEL} damage`,
+            );
+        }
+    }
+    textLines.push(
         `Base Damage: ${abilityBounceBall.damage}`,
         `Bounce Bonus Speed: ${abilityBounceBall.bounceBonusSpeed}`,
         `Angle Change per Second: ${(abilityBounceBall.maxAngleChangePetTick * 60 / Math.PI / 2 * 360).toFixed(0)}°`,
     );
+
     pushAbilityUpgradesUiTexts(ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS, textLines, ability);
 
     return createMoreInfosPart(ctx, textLines);

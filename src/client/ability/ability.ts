@@ -487,7 +487,7 @@ export function paintUiForAbilities(ctx: CanvasRenderingContext2D, game: Game) {
     if (shouldAnimate) {
         animateIndex = game.UI.playerCharacterAbilityUI.abilityVisualizedCounter;
         if (game.UI.playerCharacterAbilityUI.abilityVisualizeStartTime === undefined) game.UI.playerCharacterAbilityUI.abilityVisualizeStartTime = game.state.time;
-        const animationTime = 1000;
+        const animationTime = 500;
         animationPerCent = (game.state.time - game.UI.playerCharacterAbilityUI.abilityVisualizeStartTime) / animationTime;
         if (animationPerCent >= 1) {
             game.UI.playerCharacterAbilityUI.abilityVisualizeStartTime = undefined;

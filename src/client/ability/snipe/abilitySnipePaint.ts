@@ -6,7 +6,7 @@ import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
 import { Ability, AbilityObject, AbilityOwner, PaintOrderAbility, getAbilityNameUiText, paintAbilityUiDefault, paintAbilityUiKeyBind } from "../ability.js";
 import { pushAbilityUpgradesUiTexts } from "../abilityUpgrade.js";
-import { ABILITY_NAME_SNIPE, ABILITY_SNIPE_PAINT_FADE_DURATION, ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe, getAbilitySnipeRange, getAbilitySnipeShotFrequency, getSniperRiflePosition, IMAGE_NAME_SNIPE_AIM } from "./abilitySnipe.js";
+import { ABILITY_NAME_SNIPE, ABILITY_SNIPE_DAMAGE_PER_LEVEL, ABILITY_SNIPE_MAGAZIN_SIZE_PER_LEVEL, ABILITY_SNIPE_PAINT_FADE_DURATION, ABILITY_SNIPE_RANGE_PER_LEVEL, ABILITY_SNIPE_SNIPE_FREQUENCY_PER_LEVEL, ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe, getAbilitySnipeRange, getAbilitySnipeShotFrequency, getSniperRiflePosition, IMAGE_NAME_SNIPE_AIM } from "./abilitySnipe.js";
 import { paintVisualizationAfterImage } from "./abilitySnipeUpgradeAfterImage.js";
 import { paintVisualizationMoreRifles } from "./abilitySnipeUpgradeMoreRifle.js";
 import { paintVisualizationStayStill } from "./abilitySnipeUpgradeStayStill.js";
@@ -100,7 +100,6 @@ export function createAbilitySnipeMoreInfos(ctx: CanvasRenderingContext2D, abili
     textLines.push(
         `Key: ${playerInputBindingToDisplayValue(abilitySnipe.playerInputBinding!, game)}`,
         "Snipe in direction of click. Enemies hit by line take damage",
-        "Gets XP for killing enemies. More XP more Damage",
         `Ability stats:`,
         `Base Damage: ${Math.round(abilitySnipe.baseDamage)}`,
         `Range: ${getAbilitySnipeRange(abilitySnipe)}`,
@@ -110,8 +109,12 @@ export function createAbilitySnipeMoreInfos(ctx: CanvasRenderingContext2D, abili
         textLines.push(`Level: ${abilitySnipe.level.level}`);
         if (abilitySnipe.level.leveling) {
             textLines.push(
-                `Current XP: ${abilitySnipe.level.leveling.experience.toFixed(0)}`,
-                `XP required for Level Up: ${abilitySnipe.level.leveling.experienceForLevelUp}`,
+                `  XP: ${abilitySnipe.level.leveling.experience.toFixed(0)}/${abilitySnipe.level.leveling.experienceForLevelUp}`,
+                `  on level up you gain:`,
+                `    +${ABILITY_SNIPE_RANGE_PER_LEVEL} range`,
+                `    +${ABILITY_SNIPE_DAMAGE_PER_LEVEL} damage`,
+                `    +${ABILITY_SNIPE_MAGAZIN_SIZE_PER_LEVEL} magazin size (capped at ${abilitySnipe.maxMagazineSize})`,
+                `    +${(ABILITY_SNIPE_SNIPE_FREQUENCY_PER_LEVEL * 100).toFixed()}% snipe frequency (capped at ${(1000 / abilitySnipe.minimumShotFrequency).toFixed()} snipes per second)`,
             );
         }
     }
