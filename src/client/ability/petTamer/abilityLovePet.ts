@@ -8,7 +8,7 @@ import { GAME_IMAGES, getImage } from "../../imageLoad.js";
 import { moveByDirectionAndDistance } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
-import { ABILITIES_FUNCTIONS, ABILITY_DEFAULT_SMALL_GROUP, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, findAbilityOwnerById, getAbilityNameUiText, paintAbilityUiKeyBind } from "../ability.js";
+import { ABILITIES_FUNCTIONS, ABILITY_DEFAULT_SMALL_GROUP, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, findAbilityOwnerById, getAbilityNameUiText, paintAbilityUiDefault, paintAbilityUiKeyBind } from "../ability.js";
 
 export type AbilityLovePet = Ability & {
     loveValue: number,
@@ -121,34 +121,11 @@ function paintAbilityObjectLovePet(ctx: CanvasRenderingContext2D, abilityObject:
 
 function paintAbilityLovePetUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
     const lovePet = ability as AbilityLovePet;
-    const fontSize = 12;
-    const rectSize = size;
-
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = "black";
-    ctx.fillStyle = "white";
-    ctx.fillRect(drawStartX, drawStartY, rectSize, rectSize);
-    ctx.beginPath();
-    ctx.rect(drawStartX, drawStartY, rectSize, rectSize);
-    ctx.stroke();
-
-    ctx.fillStyle = "black";
-    ctx.font = fontSize + "px Arial";
-
+    let heightFactor = 0;
     if (lovePet.nextRechargeTime !== undefined && game.state.time < lovePet.nextRechargeTime) {
-        ctx.fillStyle = "gray";
-        const heightFactor = Math.max((lovePet.nextRechargeTime - game.state.time) / lovePet.baseRechargeTime, 0);
-        ctx.fillRect(drawStartX, drawStartY, rectSize, rectSize * heightFactor);
+        heightFactor = Math.max((lovePet.nextRechargeTime - game.state.time) / lovePet.baseRechargeTime, 0);
     }
-
-    const meatImage = getImage(ABILITY_NAME_LOVE_PET);
-    if (meatImage) {
-        ctx.drawImage(meatImage, drawStartX, drawStartY);
-    }
-
-    if (lovePet.playerInputBinding) {
-        paintAbilityUiKeyBind(ctx, lovePet.playerInputBinding, drawStartX, drawStartY, game);
-    }
+    paintAbilityUiDefault(ctx, ability, drawStartX, drawStartY, size, game, ABILITY_NAME_LOVE_PET, heightFactor);
 }
 
 function castLovePet(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, castPositionRelativeToCharacter: Position | undefined, isInputdown: boolean, game: Game) {

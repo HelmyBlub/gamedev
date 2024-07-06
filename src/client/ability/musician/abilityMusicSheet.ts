@@ -664,6 +664,8 @@ function paintAbilityUI(ctx: CanvasRenderingContext2D, ability: Ability, drawSta
     ctx.rect(drawStartX, drawStartY, rectSize, rectSize);
     ctx.stroke();
 
+    paintAbilityAccessoire(ctx, ability, { x: Math.floor(drawStartX + size / 2), y: Math.floor(drawStartY + size / 2) }, game);
+
     if (musicSheet.playerInputBinding) {
         paintAbilityUiKeyBind(ctx, musicSheet.playerInputBinding, drawStartX, drawStartY, game);
     }

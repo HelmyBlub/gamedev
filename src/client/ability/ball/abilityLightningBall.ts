@@ -10,7 +10,7 @@ import { calculateMovePosition, getFirstBlockingGameMapTilePositionTouchingLine,
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { fixedRandom } from "../../randomNumberGenerator.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectSomethingToCharacterHit, getAbilityNameUiText, paintAbilityUiKeyBind } from "../ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectSomethingToCharacterHit, getAbilityNameUiText, paintAbilityUiDefault, paintAbilityUiKeyBind } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
 import { ABILITY_LIGHTNING_BALL_UPGRADE_BOUNCE_BONUS, addAbilityLightningBallUpgradeBounceBonus, lightningBallUpgradeBounceBonusGetBonusDamageFactor, lightningBallUpgradeBounceBonusSetBonusDamageFactor } from "./abilityLightningBallUpgradeBounceBonus.js";
 import { addAbilityLightningBallUpgradeHpLeach, lightningBallUpgradeHpLeachExecute } from "./abilityLightningBallUpgradeHpLeach.js";
@@ -19,6 +19,7 @@ import { ABILITY_LIGHTNING_BALL_UPGRADE_LIGHTNING_STRIKES, addAbilityLightningBa
 import { AbilityDamageBreakdown } from "../../combatlog.js";
 import { ABILITY_NAME_ICE_AURA } from "../abilityIceAura.js";
 import { ABILITY_NAME_EXPLODE } from "../abilityExplode.js";
+import { GAME_IMAGES } from "../../imageLoad.js";
 
 export type AbilityLightningBall = Ability & {
     baseRechargeTime: number,
@@ -36,7 +37,14 @@ export type AbilityLightningBall = Ability & {
 }
 
 export const ABILITY_NAME_LIGHTNING_BALL = "Lighning Ball";
+export const IMAGE_NAME_LIGHTNING = "lightning";
 export const ABILITY_LIGHTNING_BALL_UPGRADE_FUNCTIONS: AbilityUpgradesFunctions = {};
+GAME_IMAGES[IMAGE_NAME_LIGHTNING] = {
+    imagePath: "/images/lightning.png",
+    spriteRowHeights: [40],
+    spriteRowWidths: [40],
+};
+
 const ENEMY_JUMP_DELAY = 1500;
 
 export function addAbilityLightningBall() {
@@ -219,30 +227,11 @@ function setAbilityToBossLevel(ability: Ability, level: number) {
 
 function paintAbilityUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
     const lightningBall = ability as AbilityLightningBall;
-    const rectSize = size;
-
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = "black";
-    ctx.fillStyle = "white";
-    ctx.fillRect(drawStartX, drawStartY, rectSize, rectSize);
-    ctx.beginPath();
-    ctx.rect(drawStartX, drawStartY, rectSize, rectSize);
-    ctx.stroke();
-
+    let heightFactor = 0;
     if (lightningBall.nextRechargeTime !== undefined && game.state.time < lightningBall.nextRechargeTime) {
-        ctx.fillStyle = "gray";
-        const heightFactor = Math.max((lightningBall.nextRechargeTime - game.state.time) / lightningBall.baseRechargeTime, 0);
-        ctx.fillRect(drawStartX, drawStartY, rectSize, rectSize * heightFactor);
+        heightFactor = Math.max((lightningBall.nextRechargeTime - game.state.time) / lightningBall.baseRechargeTime, 0);
     }
-
-    const fontSize = Math.floor(size * 0.8);
-    ctx.fillStyle = "black";
-    ctx.font = fontSize + "px Arial";
-    ctx.fillText("" + lightningBall.currentCharges, drawStartX, drawStartY + rectSize - (rectSize - fontSize * 0.9));
-
-    if (lightningBall.playerInputBinding) {
-        paintAbilityUiKeyBind(ctx, lightningBall.playerInputBinding, drawStartX, drawStartY, game);
-    }
+    paintAbilityUiDefault(ctx, ability, drawStartX, drawStartY, size, game, IMAGE_NAME_LIGHTNING, heightFactor, lightningBall.currentCharges);
 }
 
 function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {

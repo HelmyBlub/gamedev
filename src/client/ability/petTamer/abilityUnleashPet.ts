@@ -3,8 +3,9 @@ import { calculateDistance, getNextId } from "../../game.js";
 import { IdCounter, Position, Game } from "../../gameModel.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
-import { ABILITIES_FUNCTIONS, ABILITY_DEFAULT_SMALL_GROUP, Ability, AbilityOwner, getAbilityNameUiText, paintAbilityUiKeyBind } from "../ability.js";
+import { ABILITIES_FUNCTIONS, ABILITY_DEFAULT_SMALL_GROUP, Ability, AbilityOwner, getAbilityNameUiText, paintAbilityUiDefault, paintAbilityUiKeyBind } from "../ability.js";
 import { ABILITY_NAME_LEASH, AbilityLeash } from "../abilityLeash.js";
+import { GAME_IMAGES } from "../../imageLoad.js";
 
 export type AbilityUnleashPet = Ability & {
     range: number,
@@ -13,6 +14,12 @@ export type AbilityUnleashPet = Ability & {
 }
 
 export const ABILITY_NAME_UNLEASH_PET = "Unleash Pet";
+export const IMAGE_NAME_LEASH = "leash";
+GAME_IMAGES[IMAGE_NAME_LEASH] = {
+    imagePath: "/images/leash.png",
+    spriteRowHeights: [40],
+    spriteRowWidths: [40],
+};
 
 export function addAbilityUnleashPet() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_UNLEASH_PET] = {
@@ -50,29 +57,11 @@ function resetAbility(ability: Ability) {
 
 function paintAbilityUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
     const unleashPet = ability as AbilityUnleashPet;
-    const fontSize = 12;
-    const rectSize = size;
-
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = "black";
-    ctx.fillStyle = "white";
-    ctx.fillRect(drawStartX, drawStartY, rectSize, rectSize);
-    ctx.beginPath();
-    ctx.rect(drawStartX, drawStartY, rectSize, rectSize);
-    ctx.stroke();
-
-    ctx.fillStyle = "black";
-    ctx.font = fontSize + "px Arial";
-
+    let heightFactor = 0;
     if (unleashPet.nextRechargeTime !== undefined && game.state.time < unleashPet.nextRechargeTime) {
-        ctx.fillStyle = "gray";
-        const heightFactor = Math.max((unleashPet.nextRechargeTime - game.state.time) / unleashPet.baseRechargeTime, 0);
-        ctx.fillRect(drawStartX, drawStartY, rectSize, rectSize * heightFactor);
+        heightFactor = Math.max((unleashPet.nextRechargeTime - game.state.time) / unleashPet.baseRechargeTime, 0);
     }
-
-    if (unleashPet.playerInputBinding) {
-        paintAbilityUiKeyBind(ctx, unleashPet.playerInputBinding, drawStartX, drawStartY, game);
-    }
+    paintAbilityUiDefault(ctx, ability, drawStartX, drawStartY, size, game, IMAGE_NAME_LEASH, heightFactor);
 }
 
 function castFeedPet(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, castPositionRelativeToCharacter: Position | undefined, isInputdown: boolean, game: Game) {

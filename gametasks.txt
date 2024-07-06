@@ -3,6 +3,12 @@ increase version
 
 current tasks:
 - ability UI icons
+    - musician
+        - switch note
+        - delete note
+    - tamer
+        - unleash pet icon
+
 - move ability UI info closer to icon
 - zoom+- game based and not browser based
     - can keep the ui size

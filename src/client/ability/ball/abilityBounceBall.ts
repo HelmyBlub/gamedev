@@ -1,4 +1,4 @@
-import { findMyCharacter, getCharacterMoveSpeed, getRandomAlivePlayerCharacter, setCharacterPosition } from "../../character/character.js";
+import { getCharacterMoveSpeed, getRandomAlivePlayerCharacter, setCharacterPosition } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
 import { paintCharacterDefault } from "../../character/characterPaint.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
@@ -10,13 +10,14 @@ import { getPointPaintPosition, paintFloatingTextInfoForMyself } from "../../gam
 import { calculateBounceAngle, calculateMovePosition, isMoveFromToBlocking, moveByDirectionAndDistance } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectSomethingToCharacterHit, getAbilityNameUiText, paintAbilityUiKeyBind } from "../ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectSomethingToCharacterHit, getAbilityNameUiText, paintAbilityUiDefault, paintAbilityUiKeyBind } from "../ability.js";
 import { AbilityUpgradesFunctions, getAbilityUpgradesDamageFactor, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
 import { ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_DAMAGE, abilityBounceBallUpgradeBounceBonusDamageAddBounce, abilityBounceBallUpgradeBounceBonusDamagePaintStacks, abilityBounceBallUpgradeBounceBonusDamageTick, addAbilityBounceBallUpgradeBounceBonusDamage } from "./abilityBounceBallUpgradeBounceBonusDamage.js";
 import { addAbilityBounceBallUpgradeBounceShield, bounceBallUpgradeBounceShieldExecute } from "./abilityBounceBallUpgradeBounceShield.js";
 import { ABILITY_BOUNCE_BALL_UPGRADE_FIRE_LINE, abilityBounceBallUpgradeFireLinePlace, abilityBounceBallUpgradeFireLineStart, addAbilityBounceBallUpgradeFireLine } from "./abilityBounceBallUpgradeFireLine.js";
 import { AbilityDamageBreakdown } from "../../combatlog.js";
 import { ABILITY_NAME_FIRE_LINE } from "../abilityFireLine.js";
+import { GAME_IMAGES } from "../../imageLoad.js";
 
 export type AbilityBounceBall = Ability & {
     baseRechargeTime: number,
@@ -43,6 +44,11 @@ export type AbilityBounceBall = Ability & {
 
 export const ABILITY_NAME_BOUNCE_BALL = "Bounce Ball";
 export const ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS: AbilityUpgradesFunctions = {};
+GAME_IMAGES[ABILITY_NAME_BOUNCE_BALL] = {
+    imagePath: "/images/bounceBall.png",
+    spriteRowHeights: [40],
+    spriteRowWidths: [40],
+};
 
 export function addAbilityBounceBall() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_BOUNCE_BALL] = {
@@ -223,30 +229,11 @@ function setAbilityToBossLevel(ability: Ability, level: number) {
 
 function paintAbilityUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
     const bounceBall = ability as AbilityBounceBall;
-    const rectSize = size;
-
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = "black";
-    ctx.fillStyle = "white";
-    ctx.fillRect(drawStartX, drawStartY, rectSize, rectSize);
-    ctx.beginPath();
-    ctx.rect(drawStartX, drawStartY, rectSize, rectSize);
-    ctx.stroke();
-
+    let heightFactor = 0;
     if (bounceBall.nextRechargeTime !== undefined && game.state.time < bounceBall.nextRechargeTime) {
-        ctx.fillStyle = "gray";
-        const heightFactor = Math.max((bounceBall.nextRechargeTime - game.state.time) / bounceBall.baseRechargeTime, 0);
-        ctx.fillRect(drawStartX, drawStartY, rectSize, rectSize * heightFactor);
+        heightFactor = Math.max((bounceBall.nextRechargeTime - game.state.time) / bounceBall.baseRechargeTime, 0);
     }
-
-    const fontSize = Math.floor(size * 0.8);
-    ctx.fillStyle = "black";
-    ctx.font = fontSize + "px Arial";
-    ctx.fillText("" + bounceBall.currentCharges, drawStartX, drawStartY + rectSize - (rectSize - fontSize * 0.9));
-
-    if (bounceBall.playerInputBinding) {
-        paintAbilityUiKeyBind(ctx, bounceBall.playerInputBinding, drawStartX, drawStartY, game);
-    }
+    paintAbilityUiDefault(ctx, ability, drawStartX, drawStartY, size, game, ABILITY_NAME_BOUNCE_BALL, heightFactor, bounceBall.currentCharges);
 }
 
 function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
