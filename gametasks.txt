@@ -1,13 +1,25 @@
-next test run: ball,
+next test run: ,
 increase version
 
 current tasks:
-- achievement text legendary off
+
 
 next feature ideas:
+- zoom+- game based and not browser based
+    - can keep the ui size
+- WebGPU
+    - try it out and find out performance differences
+    - is it worth it to change?
+    - will take a lot of time
+    - expect a high performance improvement for painting
 - think about next bigger feature 
     - extends existings classes for more upgrade choice?
         - more run variation
+
+interests me:
+- WebGPU
+    - can no do it with my Virtual Machine setup
+        - GPU not available in VM. I only have one for host operating system
 
 
 refactor possibilities:
