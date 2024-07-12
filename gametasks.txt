@@ -1,8 +1,9 @@
-next test run: 
+next test run: musician, allShortKing
 increase version
 
 current tasks:
-- damage done log
+- damage done combatlog tamer class
+- improve performance painter with high level
 
 
 
