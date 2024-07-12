@@ -6,7 +6,7 @@ import { calculateDirection, calculateDistance, calculateDistancePointToLine, ch
 import { Position, Game, IdCounter, Camera, FACTION_ENEMY, FACTION_PLAYER } from "../gameModel.js";
 import { addMoneyAmountToPlayer, addMoneyUiMoreInfo, findPlayerById, Player } from "../player.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, doAbilityDamageBreakDownForAbilityId, findAbilityById, findAbilityOwnerByAbilityIdInPlayers, findAbilityOwnerById, levelingAbilityXpGain, resetAllCharacterAbilities } from "../ability/ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, doAbilityDamageBreakDownForAbilityId, findAbilityById, findAbilityOwnerByAbilityIdInPlayers, findAbilityOwnerById, levelingAbilityXpGain, resetAllCharacterAbilities } from "../ability/ability.js";
 import { BossEnemyCharacter, CHARACTER_TYPE_BOSS_ENEMY } from "./enemy/bossEnemy.js";
 import { removeCharacterDebuffs, tickCharacterDebuffs } from "../debuff/debuff.js";
 import { ABILITY_NAME_LEASH, AbilityLeash, createAbilityLeash } from "../ability/abilityLeash.js";
@@ -16,7 +16,7 @@ import { CHARACTER_TYPE_KING_ENEMY } from "./enemy/kingEnemy.js";
 import { createKingCrownCharacter } from "./enemy/kingCrown.js";
 import { TamerPetCharacter, tradePets } from "./playerCharacters/tamer/tamerPetCharacter.js";
 import { ENEMY_FIX_RESPAWN_POSITION } from "./enemy/fixPositionRespawnEnemyModel.js";
-import { addCombatlogDamageTakenEntry, doDamageMeterSplit } from "../combatlog.js";
+import { addCombatlogDamageDoneEntry, addCombatlogDamageTakenEntry, doDamageMeterSplit } from "../combatlog.js";
 import { executeAbilityLevelingCharacterUpgradeOption } from "./playerCharacters/abilityLevelingCharacter.js";
 import { addCharacterUpgrades, CHARACTER_UPGRADE_FUNCTIONS } from "./upgrades/characterUpgrades.js";
 import { CHARACTER_TYPE_GOD_ENEMY, godEnemyActivateHardMode, godEnemyHardModeConditionFullfiled } from "./enemy/god/godEnemy.js";
@@ -59,6 +59,10 @@ export function findCharacterByIdInCompleteMap(id: number, game: Game) {
 export function characterTakeDamage(character: Character, damage: number, game: Game, abilityIdRef: number | undefined, abilityName: string, abilityObject: AbilityObject | undefined = undefined) {
     if (character.state !== "alive" || character.isDamageImmune) return;
     if (game.state.bossStuff.fightWipe) return;
+    let sourceChar: AbilityOwner | undefined = undefined;
+    if (abilityIdRef !== undefined) {
+        sourceChar = findAbilityOwnerById(abilityIdRef, game);
+    }
     let sourceDamageFactor = findSourceDamageFactor(abilityIdRef, game);
     if (abilityIdRef) {
         doAbilityDamageBreakDownForAbilityId(damage, abilityIdRef, abilityObject, abilityName, game);
@@ -78,6 +82,7 @@ export function characterTakeDamage(character: Character, damage: number, game: 
         character.hp -= modifiedDamage;
     }
     addCombatlogDamageTakenEntry(character, modifiedDamage, abilityName, abilityIdRef, game);
+    addCombatlogDamageDoneEntry(sourceChar as Character, character, modifiedDamage, abilityName, abilityIdRef, game);
     if (character.hp <= 0) {
         killCharacter(character, game, abilityIdRef);
     }

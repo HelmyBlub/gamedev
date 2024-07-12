@@ -2,7 +2,6 @@ next test run:
 increase version
 
 current tasks:
-- damage meter display skill legendary or gifted
 - damage done log
 
 

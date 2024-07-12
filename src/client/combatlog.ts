@@ -6,7 +6,8 @@ import { Game } from "./gameModel.js"
 import { MoreInfoPart, MoreInfos, MoreInfosPartContainer, createDefaultMoreInfosContainer, createMoreInfosPart } from "./moreInfo.js"
 
 export type Combatlog = {
-    log: CombatlogEntry[],
+    damageTakenLog: CombatlogEntry[],
+    damageDoneLog: CombatlogEntry[],
     maxLogEntries: number,
 }
 
@@ -41,7 +42,8 @@ export type AbilityDamageBreakdown = {
 
 export function createDefaultCombatLog(): Combatlog {
     return {
-        log: [],
+        damageTakenLog: [],
+        damageDoneLog: [],
         maxLogEntries: 30,
     }
 }
@@ -101,29 +103,35 @@ export function addDamageBreakDownToDamageMeter(damageMeter: DamageMeter, abilit
 
 export function createCombatLogMoreInfo(ctx: CanvasRenderingContext2D, moreInfos: MoreInfos, combatlog: Combatlog | undefined): MoreInfosPartContainer | undefined {
     if (combatlog === undefined) return;
-    if (combatlog.log.length === 0) return;
+    if (combatlog.damageTakenLog.length === 0 && combatlog.damageDoneLog.length === 0) return;
     const moreInfosContainer = createDefaultMoreInfosContainer(ctx, "Combatlog", moreInfos.headingFontSize);
-    const textLines: string[] = [`Damage Taken Log:`, `<time>:<ability> <damage>, <your Hp>`];
-    for (let entry of combatlog.log) {
+    const textLines: string[] = [`Damage Taken Log:`, `<time>:<ability> <damage>, <your Hp>, <sourceId>`];
+    for (let entry of combatlog.damageTakenLog) {
         textLines.push(`${(entry.timestamp / 1000).toFixed(2)}s: ${entry.message}`);
     }
-    const combatlogPart = createMoreInfosPart(ctx, textLines);
-    moreInfosContainer.moreInfoParts.push(combatlogPart);
+    const combatlogDamageTakenPart = createMoreInfosPart(ctx, textLines);
+    moreInfosContainer.moreInfoParts.push(combatlogDamageTakenPart);
+
+    const textLines2: string[] = [`Damage Done Log:`, `<time>:<ability> <damage>, <target Hp>, <targetId>`];
+    for (let entry of combatlog.damageDoneLog) {
+        textLines2.push(`${(entry.timestamp / 1000).toFixed(2)}s: ${entry.message}`);
+    }
+    const combatlogDamageDonePart = createMoreInfosPart(ctx, textLines2);
+    moreInfosContainer.moreInfoParts.push(combatlogDamageDonePart);
+
     return moreInfosContainer;
 }
 
 export function addCombatlogDamageTakenEntry(character: Character, damage: number, abilityName: string, abilityId: number | undefined, game: Game) {
     if (!character.combatlog) return;
     const combatlog = character.combatlog;
-    const shieldText = character.shield > 0 ? `, shield: ${character.shield.toFixed()}` : ``;
-    const logMessage = `${abilityName} ${damage.toFixed(0)}, hp: ${character.hp.toFixed()}${shieldText}, id: ${abilityId}`;
-    combatlog.log.push({
-        message: logMessage,
-        timestamp: getTimeSinceFirstKill(game.state),
-    });
-    if (combatlog.log.length > combatlog.maxLogEntries) {
-        combatlog.log.shift();
-    }
+    addLog(combatlog.damageTakenLog, character, damage, abilityName, character.id, combatlog.maxLogEntries, game);
+}
+
+export function addCombatlogDamageDoneEntry(sourceCharacter: Character, targetCharacter: Character, damage: number, abilityName: string, abilityId: number | undefined, game: Game) {
+    if (!sourceCharacter.combatlog) return;
+    const combatlog = sourceCharacter.combatlog;
+    addLog(combatlog.damageDoneLog, targetCharacter, damage, abilityName, targetCharacter.id, combatlog.maxLogEntries, game);
 }
 
 export function damageMeterChangeClientId(damageMeter: DamageMeter, fromId: number, toId: number) {
@@ -200,6 +208,18 @@ function findPlayerCharacterOwnerByAbilityIdInPlayers(abilityId: number, game: G
         }
     }
     return undefined;
+}
+
+function addLog(combatlogEntries: CombatlogEntry[], character: Character, damage: number, abilityName: string, someId: number | undefined, maxLogEntries: number, game: Game) {
+    const shieldText = character.shield > 0 ? `, shield: ${character.shield.toFixed()}` : ``;
+    const logMessage = `${abilityName} ${damage.toFixed(0)}, hp: ${character.hp.toFixed()}/${character.maxHp.toFixed()}${shieldText}, id: ${someId}`;
+    combatlogEntries.push({
+        message: logMessage,
+        timestamp: getTimeSinceFirstKill(game.state),
+    });
+    if (combatlogEntries.length > maxLogEntries) {
+        combatlogEntries.shift();
+    }
 }
 
 function createDamageMeterPartForPlayers(ctx: CanvasRenderingContext2D, abilitiesData: AbilityDamageData[], game: Game): MoreInfoPart {
