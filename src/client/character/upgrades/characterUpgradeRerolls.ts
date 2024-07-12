@@ -22,8 +22,8 @@ function addUpgrade(characterUpgrade: CharacterUpgrade, character: Character, ga
         if (!charClass.characterClassUpgrades) charClass.characterClassUpgrades = {};
         charClass.characterClassUpgrades[CHARACTER_UPGRADE_REROLLS] = characterUpgrade;
     }
-    if (character.upgradeChoiceRerools === undefined) character.upgradeChoiceRerools = 0;
-    character.upgradeChoiceRerools += rerolls.amount;
+    if (character.upgradeChoices.rerools === undefined) character.upgradeChoices.rerools = 0;
+    character.upgradeChoices.rerools += rerolls.amount;
 }
 
 function getStatsDisplayText(characterUpgrade: CharacterUpgrade): string {

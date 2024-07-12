@@ -4,6 +4,12 @@ import { executeDefaultCharacterUpgradeOption } from "./character.js";
 import { Character } from "./characterModel.js";
 import { CharacterClass, PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters/playerCharacters.js";
 
+export type UpgradeChoices = {
+    choices: UpgradeOption[],
+    rerools: number,
+    displayText: string,
+}
+
 export type UpgradeOption = {
     type: "Character" | "Ability" | "Pet" | "PetAbility" | "ChooseClass" | "Reroll",
     characterClass?: string,
@@ -30,7 +36,8 @@ export type PetAbilityUpgradeOption = UpgradeOption & {
 export type UpgradeOptionAndProbability = { option: UpgradeOption, probability: number };
 
 export function fillRandomUpgradeOptionChoices(character: Character, game: Game) {
-    if (character.upgradeChoices.length > 0) return;
+    if (character.upgradeChoices.choices.length > 0) return;
+    character.upgradeChoices.displayText = "";
     const upgradeOptionsAndProbabilities: UpgradeOptionAndProbability[] = getCharacterUpgradeOptions(character, game);
     if (upgradeOptionsAndProbabilities.length === 0) return;
     setUpgradeOptionOrderValues(upgradeOptionsAndProbabilities);
@@ -44,17 +51,17 @@ export function fillRandomUpgradeOptionChoices(character: Character, game: Game)
             const upgradeOptionAndProbability = upgradeOptionsAndProbabilities[j];
             currentProb += upgradeOptionAndProbability.probability;
             if (currentProb >= random) {
-                character.upgradeChoices.push(upgradeOptionAndProbability.option);
+                character.upgradeChoices.choices.push(upgradeOptionAndProbability.option);
                 upgradeOptionsAndProbabilities.splice(j, 1);
                 totalProbability -= upgradeOptionAndProbability.probability;
                 break;
             }
         }
     }
-    if (character.upgradeChoiceRerools && character.upgradeChoiceRerools > 0) {
-        character.upgradeChoices.push(createRerollUpgradeOption(character.upgradeChoiceRerools));
+    if (character.upgradeChoices.rerools && character.upgradeChoices.rerools > 0) {
+        character.upgradeChoices.choices.push(createRerollUpgradeOption(character.upgradeChoices.rerools));
     }
-    character.upgradeChoices.sort((a, b) => a.order! - b.order!);
+    character.upgradeChoices.choices.sort((a, b) => a.order! - b.order!);
 }
 
 export function executeUpgradeOptionChoice(character: Character, upgradeChoice: UpgradeOption, game: Game) {
@@ -66,14 +73,14 @@ export function executeUpgradeOptionChoice(character: Character, upgradeChoice: 
     } else {
         executeDefaultCharacterUpgradeOption(character, upgradeChoice, game);
     }
-    character.upgradeChoices = [];
+    character.upgradeChoices.choices = [];
     fillRandomUpgradeOptionChoices(character, game);
 }
 
 export function executeRerollUpgradeOption(character: Character, game: Game) {
-    if (character.upgradeChoiceRerools === undefined) return;
-    if (character.upgradeChoices.length > 0) character.upgradeChoices = [];
-    character.upgradeChoiceRerools--;
+    if (character.upgradeChoices.rerools === undefined) return;
+    if (character.upgradeChoices.choices.length > 0) character.upgradeChoices.choices = [];
+    character.upgradeChoices.rerools--;
     fillRandomUpgradeOptionChoices(character, game);
 }
 

@@ -150,21 +150,21 @@ function createEndGameState(game: Game) {
 
 function createRandomLeveldCharacter(game: Game): Character {
     const character = createPlayerCharacter(game.state.idCounter, { x: 0, y: 0 }, game.state.randomSeed, game);
-    const randomClassChoiceIndex = Math.floor(nextRandom(game.state.randomSeed) * character.upgradeChoices.length);
-    const option = character.upgradeChoices[randomClassChoiceIndex];
+    const randomClassChoiceIndex = Math.floor(nextRandom(game.state.randomSeed) * character.upgradeChoices.choices.length);
+    const option = character.upgradeChoices.choices[randomClassChoiceIndex];
     const xp = 1000000;
     const upgrades = 20;
     executeUpgradeOptionChoice(character, option, game);
     experienceForEveryPlayersLeveling(xp, game, [character]);
     levelingCharacterAndClassXpGain(game.state, xp, game, [character]);
-    if (character.upgradeChoices.length === 0) {
+    if (character.upgradeChoices.choices.length === 0) {
         for (let i = 0; i < upgrades; i++) {
             playerCharactersAddBossSkillPoints(upgrades, game, [character]);
         }
     }
-    while (character.upgradeChoices.length) {
-        const randomUpgradeChoiceIndex = Math.floor(nextRandom(game.state.randomSeed) * character.upgradeChoices.length);
-        const upOption = character.upgradeChoices[randomUpgradeChoiceIndex];
+    while (character.upgradeChoices.choices.length) {
+        const randomUpgradeChoiceIndex = Math.floor(nextRandom(game.state.randomSeed) * character.upgradeChoices.choices.length);
+        const upOption = character.upgradeChoices.choices[randomUpgradeChoiceIndex];
         executeUpgradeOptionChoice(character, upOption, game);
     }
 

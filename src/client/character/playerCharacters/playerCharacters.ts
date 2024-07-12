@@ -163,16 +163,17 @@ export function paintPlayerPetLevelUI(ctx: CanvasRenderingContext2D, pet: TamerP
     paintPlayerLevelUI(ctx, pet.level, pet.classIdRef, pet.id, topLeft, width, height, text, game);
 }
 
-export function initPlayerCharacterChoiceOptions(character: Character, game: Game) {
-    const options: UpgradeOption[] = createCharacterChooseUpgradeOptions(game);
+export function initPlayerCharacterChoiceOptions(character: Character) {
+    const options: UpgradeOption[] = createCharacterChooseUpgradeOptions();
     for (let i = 0; i < 5; i++) {
         if (options.length > i) {
-            character.upgradeChoices.push(options[i]);
+            character.upgradeChoices.choices.push(options[i]);
         }
     }
+    character.upgradeChoices.displayText = "Choose Main Class:";
 }
 
-export function createCharacterChooseUpgradeOptions(game: Game): UpgradeOption[] {
+export function createCharacterChooseUpgradeOptions(): UpgradeOption[] {
     const upgradeOptions: UpgradeOption[] = [];
     const keys = Object.keys(PLAYER_CHARACTER_CLASSES_FUNCTIONS);
 
@@ -219,7 +220,7 @@ export function findMainCharacterClass(character: Character): CharacterClass | u
 }
 
 export function hasPlayerChoosenStartClassUpgrade(character: Character): boolean {
-    if (character.upgradeChoices.length > 0 && character.upgradeChoices[0].type === "ChooseClass") {
+    if (character.upgradeChoices.choices.length > 0 && character.upgradeChoices.choices[0].type === "ChooseClass") {
         return false;
     }
     return true;

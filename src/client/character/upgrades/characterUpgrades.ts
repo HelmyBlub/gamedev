@@ -76,7 +76,7 @@ export function upgradeCharacter(character: Character, upgradeOption: UpgradeOpt
             charClass.availableSkillPoints.used++;
         }
     }
-    character.upgradeChoices = [];
+    character.upgradeChoices.choices = [];
 }
 
 export function pushCharacterClassUpgradesUiTexts(texts: string[], charClass: CharacterClass) {

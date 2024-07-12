@@ -12,7 +12,7 @@ import { PathingCache } from "./pathing.js";
 import { Leveling } from "./playerCharacters/levelingCharacter.js";
 import { CharacterClass, initPlayerCharacterChoiceOptions } from "./playerCharacters/playerCharacters.js";
 import { TamerPetCharacter } from "./playerCharacters/tamer/tamerPetCharacter.js";
-import { UpgradeOption, UpgradeOptionAndProbability } from "./upgrade.js";
+import { UpgradeChoices, UpgradeOption, UpgradeOptionAndProbability } from "./upgrade.js";
 
 export type CHARACTER_TYPE_FUNCTIONS = {
     [key: string]: {
@@ -121,8 +121,7 @@ export type Character = Position & {
     isUnMoveAble?: boolean,
     becameKing?: boolean,
     willTurnToPetOnDeath?: boolean,
-    upgradeChoices: UpgradeOption[],
-    upgradeChoiceRerools?: number,
+    upgradeChoices: UpgradeChoices,
     fightRetries?: number,
     pets?: TamerPetCharacter[],
     weight: number,
@@ -172,7 +171,11 @@ export function createCharacter(
         state: "alive",
         abilities: [],
         debuffs: [],
-        upgradeChoices: [],
+        upgradeChoices: {
+            choices: [],
+            rerools: 0,
+            displayText: "",
+        },
         weight: width * height,
         isRooted: false,
         damageTakenModifierFactor: 1,
@@ -185,6 +188,6 @@ export function createPlayerCharacter(idCounter: IdCounter, pos: Position, seed:
     playerCharacter.paint.randomizedCharacterImage = createRandomizedCharacterImageData(GAME_IMAGES[IMAGE_PLAYER_PARTS], seed);
     playerCharacter.willTurnToPetOnDeath = true;
     playerCharacter.combatlog = createDefaultCombatLog();
-    initPlayerCharacterChoiceOptions(playerCharacter, game);
+    initPlayerCharacterChoiceOptions(playerCharacter);
     return playerCharacter;
 }

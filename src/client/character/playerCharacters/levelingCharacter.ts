@@ -106,6 +106,7 @@ export function executeLevelingCharacterUpgradeOption(character: Character, upgr
 export function createCharacterUpgradeOptions(character: Character, characterClass: CharacterClass, game: Game): UpgradeOptionAndProbability[] {
     const upgradeOptions: UpgradeOptionAndProbability[] = [];
     if (characterClass.availableSkillPoints === undefined || characterClass.availableSkillPoints.available <= 0) return upgradeOptions;
+    character.upgradeChoices.displayText = `Choose Upgrade:`;
     upgradeOptions.push(...CHARACTER_UPGRADE_FUNCTIONS[CHARACTER_UPGRADE_BONUS_HP].getOptions!(character, characterClass, game));
     upgradeOptions.push(...CHARACTER_UPGRADE_FUNCTIONS[CHARACTER_UPGRADE_BONUS_MOVE_SPEED].getOptions!(character, characterClass, game));
 

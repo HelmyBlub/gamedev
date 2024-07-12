@@ -543,6 +543,7 @@ function createAbilityBossUpgradeOptions(ability: Ability, character: Character,
     const upgradeFunctionkeys = Object.keys(ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS);
     const upgradeOptionsFuncitons: AbilityUpgradesFunctions = {};
     if (musicSheets.nextUpgradeAddInstrument) {
+        character.upgradeChoices.displayText = `Choose Instrument for ${ability.name}:`;
         for (let upFuncKey of upgradeFunctionkeys) {
             const functions = ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS[upFuncKey];
             if (functions.executeNoteDamage) {

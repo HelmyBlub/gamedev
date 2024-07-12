@@ -17,6 +17,7 @@ export function createBossUpgradeOptionsAbilityLeveling(character: Character, ga
             && ability.bossSkillPoints.available > 0
             && functions.createAbilityBossUpgradeOptions
         ) {
+            character.upgradeChoices.displayText = `Choose Upgrade for ${ability.name}:`;
             const upgradeOptions = functions.createAbilityBossUpgradeOptions(ability, character, game);
             if (ability.classIdRef !== undefined) {
                 for (let option of upgradeOptions) {

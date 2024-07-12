@@ -202,10 +202,10 @@ export function characterTradeAbilityAndPets(fromCharacter: Character, toCharact
             fromCharacter.characterClasses.splice(i, 1);
             const classFunctions = PLAYER_CHARACTER_CLASSES_FUNCTIONS[newClass];
             if (classFunctions && classFunctions.preventMultiple) {
-                if (toCharacter.upgradeChoices.length && toCharacter.upgradeChoices[0].type === "ChooseClass") {
-                    const index = toCharacter.upgradeChoices.findIndex(c => c.displayText === newClass);
+                if (toCharacter.upgradeChoices.choices.length && toCharacter.upgradeChoices.choices[0].type === "ChooseClass") {
+                    const index = toCharacter.upgradeChoices.choices.findIndex(c => c.displayText === newClass);
                     if (index > -1) {
-                        toCharacter.upgradeChoices.splice(index, 1);
+                        toCharacter.upgradeChoices.choices.splice(index, 1);
                     }
                 }
             }

@@ -233,10 +233,12 @@ function createTamerBossUpgradeOptions(character: Character, game: Game): Upgrad
                         options.push(option);
                     }
                 }
+                character.upgradeChoices.displayText = `Choose new Ability for ${pet.paint.color} Pet:`;
                 return options;
             } else {
                 for (let ability of pet.abilities) {
                     const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+                    character.upgradeChoices.displayText = `Choose Upgrade for ${pet.paint.color} Pet:`;
                     if (abilityFunctions && abilityFunctions.createAbilityBossUpgradeOptions) {
                         while (options.length < numberChoices) {
                             const abilityOptionsAndProbability = abilityFunctions.createAbilityBossUpgradeOptions(ability, pet, game);

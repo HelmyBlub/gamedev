@@ -332,7 +332,7 @@ function playerInputChangeEvent(game: Game, inputCode: string, isInputDown: bool
     } else {
         if (action.action.indexOf("upgrade") > -1) {
             const character = findPlayerById(game.state.players, clientId)?.character;
-            if (!character || character.upgradeChoices.length === 0) {
+            if (!character || character.upgradeChoices.choices.length === 0) {
                 return;
             }
             if (game.state.paused) {
@@ -364,7 +364,7 @@ function playerAction(clientId: number, data: any, game: Game) {
             }
         } else if (UPGRADE_ACTIONS.indexOf(action) !== -1) {
             if (isKeydown) {
-                const option = character.upgradeChoices[UPGRADE_ACTIONS.indexOf(action)];
+                const option = character.upgradeChoices.choices[UPGRADE_ACTIONS.indexOf(action)];
                 if (option) {
                     executeUpgradeOptionChoice(character, option, game);
                 }

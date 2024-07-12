@@ -153,10 +153,10 @@ export function createRequiredMoreInfos(game: Game): MoreInfos {
             if (lastSelectedContainer === undefined) moreInfos.containers.selected = moreInfos.containers.containers.length - 1;
             const selectedSub = moreInfos.containers.containers[moreInfos.containers.containers.length - 1];
             if (selectedSub.subContainer.containers.length > 0
-                && player.character.upgradeChoices.length > 0
+                && player.character.upgradeChoices.choices.length > 0
                 && player.character.characterClasses
             ) {
-                const charClassId = player.character.upgradeChoices[0].classIdRef;
+                const charClassId = player.character.upgradeChoices.choices[0].classIdRef;
                 for (let i = 0; i < player.character.characterClasses.length; i++) {
                     if (charClassId === player.character.characterClasses[i].id) {
                         if (i < selectedSub.subContainer.containers.length) {

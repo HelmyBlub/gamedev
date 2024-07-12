@@ -51,7 +51,7 @@ function createUBMoreInfos(ctx: CanvasRenderingContext2D, characterUpgrades: Cha
 function refund(player: Player, game: Game) {
     let up: CharacterUpgradeRerolls | undefined = player.permanentData.upgrades[CHARACTER_UPGRADE] as CharacterUpgradeRerolls;
     if (!up) return;
-    player.character.upgradeChoiceRerools! -= up.amount;
+    player.character.upgradeChoices.rerools! -= up.amount;
     player.permanentData.money += up.investedMoney!;
     up.amount = 0;
     up.investedMoney = 0;
@@ -99,7 +99,7 @@ function buyUpgrade(player: Player, game: Game) {
             investedMoney: 0,
         }
         player.permanentData.upgrades[CHARACTER_UPGRADE] = rerollUpgrade;
-        if (player.character.upgradeChoiceRerools === undefined) player.character.upgradeChoiceRerools = 0;
+        if (player.character.upgradeChoices.rerools === undefined) player.character.upgradeChoices.rerools = 0;
     }
 
     const rerollsAmount = getAmount(player.permanentData.upgrades, game);
@@ -107,7 +107,7 @@ function buyUpgrade(player: Player, game: Game) {
     if (player.permanentData.money >= upgradeCosts) {
         rerollUpgrade.amount += rerollsAmount;
         rerollUpgrade.investedMoney! += upgradeCosts;
-        player.character.upgradeChoiceRerools! += rerollsAmount;
+        player.character.upgradeChoices.rerools! += rerollsAmount;
         player.permanentData.money -= upgradeCosts;
     }
 }

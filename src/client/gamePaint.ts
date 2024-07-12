@@ -523,12 +523,12 @@ function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Charact
     const addFontSize = 14;
     const startY = (ctx.canvas.height * 0.75);
     const optionSpacer = 50;
-    if (character.upgradeChoices.length > 0) {
+    if (character.upgradeChoices.choices.length > 0) {
         const maxWidthes: number[] = [];
         let totalWidthEsitmate = 0;
         let displayKeyHint = false;
         const keyDisplayWidth = 40;
-        for (let choice of character.upgradeChoices) {
+        for (let choice of character.upgradeChoices.choices) {
             ctx.font = firstFontSize + "px Arial";
             let maxWidth = ctx.measureText(choice.displayText).width + keyDisplayWidth;
 
@@ -546,17 +546,27 @@ function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Charact
             totalWidthEsitmate += maxWidth;
         }
 
-        totalWidthEsitmate += optionSpacer * (character.upgradeChoices.length - 1);
+        totalWidthEsitmate += optionSpacer * (character.upgradeChoices.choices.length - 1);
         let currentX = Math.max(5, ctx.canvas.width / 2 - totalWidthEsitmate / 2);
         if (displayKeyHint) {
-            const hintX = ctx.canvas.width / 2;
-            const hintY = startY;
-            paintKey(ctx, "TAB", { x: hintX - 70, y: hintY - 60 });
-            ctx.font = firstFontSize + "px Arial";
-            ctx.fillText("More Info", hintX - 30, hintY - 40);
+            const hintPos = {
+                x: ctx.canvas.width / 2,
+                y: startY - 10 - firstFontSize,
+            }
+            if (character.upgradeChoices.displayText !== "") {
+                hintPos.y -= firstFontSize + 15;
+            }
+            paintTextLinesWithKeys(ctx, ["<TAB> MoreInfo"], hintPos, firstFontSize, true, true);
         }
-        for (let i = 0; i < character.upgradeChoices.length; i++) {
-            const choice = character.upgradeChoices[i];
+        if (character.upgradeChoices.displayText !== "") {
+            const hintPos = {
+                x: ctx.canvas.width / 2,
+                y: startY - 10 - firstFontSize,
+            }
+            paintTextLinesWithKeys(ctx, [character.upgradeChoices.displayText], hintPos, firstFontSize, true, true);
+        }
+        for (let i = 0; i < character.upgradeChoices.choices.length; i++) {
+            const choice = character.upgradeChoices.choices[i];
             const upgradeText: string[] = [choice.displayText];
             if (game.UI.displayMoreInfos && choice.displayMoreInfoText) upgradeText.push(...choice.displayMoreInfoText);
             ctx.globalAlpha = game.UI.displayMoreInfos ? 0.75 : 0.4;

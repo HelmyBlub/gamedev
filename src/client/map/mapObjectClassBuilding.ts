@@ -157,8 +157,8 @@ function interactBurrow(interacter: Character, mapObject: MapTileObject, game: G
     classBuilding.stuffBorrowed!.burrowed = true;
     classBuilding.stuffBorrowed!.by = interacter.faction;
     characterAddExistingCharacterClass(interacter, deepCopy(classBuilding.characterClass), game);
-    if (interacter.upgradeChoices.length > 0 && interacter.upgradeChoices[0].type === "ChooseClass") {
-        interacter.upgradeChoices = [];
+    if (interacter.upgradeChoices.choices.length > 0 && interacter.upgradeChoices.choices[0].type === "ChooseClass") {
+        interacter.upgradeChoices.choices = [];
     }
     resetCharacter(interacter, game);
     fillRandomUpgradeOptionChoices(interacter, game);

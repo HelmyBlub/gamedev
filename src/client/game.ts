@@ -797,8 +797,8 @@ function checkForAutoSkill(game: Game) {
 
     const character: Character | undefined = findMyCharacter(game);
     if (character && hasPlayerChoosenStartClassUpgrade(character)) {
-        if (character.upgradeChoices.length > 0) {
-            let randomChoice = Math.floor(Math.random() * character.upgradeChoices.length);
+        if (character.upgradeChoices.choices.length > 0) {
+            let randomChoice = Math.floor(Math.random() * character.upgradeChoices.choices.length);
             handleCommand(game, {
                 command: "playerInput",
                 clientId: game.multiplayer.myClientId,

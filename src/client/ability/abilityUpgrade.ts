@@ -32,7 +32,7 @@ export function upgradeAbility(ability: Ability, character: Character, upgradeOp
             ability.bossSkillPoints.used++;
         }
     }
-    character.upgradeChoices = [];
+    character.upgradeChoices.choices = [];
 }
 
 export function pushAbilityUpgradesUiTexts(upgradeFunctions: AbilityUpgradesFunctions, texts: string[], ability: Ability) {
