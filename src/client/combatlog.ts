@@ -81,6 +81,8 @@ export function addDamageBreakDownToDamageMeter(damageMeter: DamageMeter, abilit
             damageBreakDown: [],
             petName: petName,
         };
+        if (ability.gifted) abilityDamageData.abilityName += "[g]";
+        if (ability.legendary) abilityDamageData.abilityName += "[L]";
         damageMeter.splits[0].damageData.push(abilityDamageData);
     }
     for (let entry of breakDowns) {

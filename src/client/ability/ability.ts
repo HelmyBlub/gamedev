@@ -41,6 +41,7 @@ import { AbilityDamageBreakdown, addDamageBreakDownToDamageMeter } from "../comb
 import { addAbilityMusicSheet } from "./musician/abilityMusicSheet.js"
 import { addAbilityCircleAround } from "./abilityCircleAround.js"
 import { GAME_IMAGES, getImage, loadImage } from "../imageLoad.js"
+import { TamerPetCharacter } from "../character/playerCharacters/tamer/tamerPetCharacter.js"
 
 export type Ability = {
     id: number,
@@ -164,7 +165,12 @@ export function doAbilityDamageBreakDownForAbilityId(damage: number, abilityId: 
         if (result) {
             ability = result.ability;
             clientId = player.clientId;
-            if (result.owner.paint?.color) petName = result.owner.paint.color;
+            if (result.owner.paint?.color) {
+                const pet = result.owner as TamerPetCharacter;
+                petName = pet.paint.color;
+                if (pet.gifted) petName += "[g]";
+                if (pet.legendary) petName += "[L]";
+            }
             break;
         }
     }

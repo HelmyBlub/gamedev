@@ -2,7 +2,6 @@ next test run:
 increase version
 
 current tasks:
-- one display text over upgrade choices
 - damage meter display skill legendary or gifted
 - damage done log
 
