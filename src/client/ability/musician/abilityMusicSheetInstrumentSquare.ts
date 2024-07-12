@@ -109,13 +109,14 @@ function executeMusicNotesDamage(notes: MusicNote[], abilityOwner: AbilityOwner,
     if (!upgrade) return;
 
     if (notes.length === 0) return;
-    let damage = 0;
-    if (upgrade.lastPlayedNoteTime === undefined) {
-        damage = abilityMusicSheets.damagePerSecond;
-    } else {
+    let damage = abilityMusicSheets.damagePerSecond;
+    let timeAreaFactor = 1;
+    if (upgrade.lastPlayedNoteTime !== undefined) {
         const passedTime = (game.state.time - upgrade.lastPlayedNoteTime) / 1000;
         damage = abilityMusicSheets.damagePerSecond * passedTime;
+        timeAreaFactor *= Math.max(passedTime / notes.length * 4, 0.1);
     }
+
     let characters: Character[] = [];
     let bosses: Character[] = [];
     const baseSpawnRadius = 200;
@@ -129,9 +130,9 @@ function executeMusicNotesDamage(notes: MusicNote[], abilityOwner: AbilityOwner,
     }
     upgrade.lastSpawns = [];
     const damagePerNote = damage / notes.length * upgrade.level;
-    const areaFactor = getAbilityMusicSheetsUpgradeAreaFactor(abilityMusicSheets);
+    const upgradeAreaFactor = getAbilityMusicSheetsUpgradeAreaFactor(abilityMusicSheets);
     const defaultRadius = 50;
-    const area = (defaultRadius * defaultRadius) * Math.PI * areaFactor;
+    const area = (defaultRadius * defaultRadius) * Math.PI * upgradeAreaFactor * timeAreaFactor;
     const explodeRadius = Math.sqrt(area / Math.PI);
     const multiply = getAbilityMusicSheetsUpgradeMultiplyAmount(abilityMusicSheets);
     for (let note of notes) {
