@@ -424,7 +424,7 @@ function createAbilityMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability,
         textLines.push(`Level: ${abilityBounceBall.level?.level}`);
         if (abilityBounceBall.level.leveling) {
             textLines.push(
-                `  XP: ${abilityBounceBall.level.leveling.experience.toFixed(0)}/${abilityBounceBall.level.leveling.experienceForLevelUp}`,
+                `  XP: ${abilityBounceBall.level.leveling.experience.toFixed(0)}/${abilityBounceBall.level.leveling.experienceForLevelUp.toFixed(0)}`,
                 `  on level up you gain:`,
                 `    +${ABILITY_BOUNCE_BALL_DAMAGE_PER_LEVEL} damage`,
             );

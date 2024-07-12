@@ -12,6 +12,7 @@ import { characterUpgradeGetStatsDisplayText, pushCharacterClassUpgradesUiTexts 
 import { TamerPetCharacter } from "./playerCharacters/tamer/tamerPetCharacter.js";
 import { findPlayerByCharacterId } from "../player.js";
 import { text } from "stream/consumers";
+import { LEVELING_CLASS_SKILL_POINT_GAIN_EVERY_X_LEVELS } from "./playerCharacters/levelingCharacter.js";
 
 export function paintCharacters(ctx: CanvasRenderingContext2D, characters: (Character | undefined)[], cameraPosition: Position, game: Game) {
     for (let i = 0; i < characters.length; i++) {
@@ -215,8 +216,14 @@ function addCharacterClassMoreInfosTextLines(characterClasses: CharacterClass[],
             }
             textLines.push(`Level: ${charClass.level.level}${levelCap}`);
             if (charClass.level.leveling && !charClass.gifted) {
-                textLines.push(`XP: ${Math.floor(charClass.level.leveling.experience)}/${Math.floor(charClass.level.leveling.experienceForLevelUp)}`);
-                textLines.push(`Gains XP for every enemy killed by anyone.`);
+                textLines.push(
+                    `   XP: ${Math.floor(charClass.level.leveling.experience)}/${Math.floor(charClass.level.leveling.experienceForLevelUp)}`,
+                    `  Gains XP for every enemy killed by anyone.`,
+                    `  on every ${LEVELING_CLASS_SKILL_POINT_GAIN_EVERY_X_LEVELS} level ups you gain:`,
+                    `    +Random Upgrade Choice`,
+                );
+                textLines.push();
+
             }
         } else {
             const avgLevel = getAverageLevelOfAbilitiesPetsCharClassId(charClass.id, abilities, pets);

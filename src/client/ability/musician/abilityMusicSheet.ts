@@ -83,6 +83,7 @@ const LINE_COUNT = 5;
 const TREBLE_OCTAVE = 5;
 const NOTE_PAINT_OFFSETX = 20;
 const CLEF_WIDTH = 30;
+const DAMAGE_PER_SECOND_PER_LEVEL = 200;
 export const ABILITY_NAME_MUSIC_SHEET = "Music Sheet";
 export const ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS: AbilityUpgradesFunctionsMusicSheets = {};
 export const IMAGE_TREBLE_CLEF = "treble";
@@ -577,7 +578,7 @@ function executeAbilityUpgradeOption(ability: Ability, character: Character, upg
 
 function setAbilityToLevel(ability: Ability, level: number) {
     const musicSheet = ability as AbilityMusicSheets;
-    musicSheet.damagePerSecond = 200 * level;
+    musicSheet.damagePerSecond = DAMAGE_PER_SECOND_PER_LEVEL * level;
 }
 
 function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: number) {
@@ -1035,6 +1036,8 @@ function createAbilityMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability,
         if (abilityMusicSheet.level.leveling) {
             textLines.push(
                 `XP: ${abilityMusicSheet.level.leveling.experience.toFixed(0)}/${abilityMusicSheet.level.leveling.experienceForLevelUp}`,
+                `  on level up you gain:`,
+                `    +${DAMAGE_PER_SECOND_PER_LEVEL} damage per second`,
             );
         }
     }

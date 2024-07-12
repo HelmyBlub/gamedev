@@ -3,11 +3,12 @@ increase version
 
 current tasks:
 - somewhere tell what a level up gives the player
-    - musician
-    - tamer
     - tower (skill point every 2 level)
-- zoom+- game based and not browser based
-    - can keep the ui size
+- musician size of note damage based on frequency
+- one display text over upgrade choices
+- damage meter display skill legendary or gifted
+
+
 
 next feature ideas:
 - think about next bigger feature 

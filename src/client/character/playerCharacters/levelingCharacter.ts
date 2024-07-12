@@ -10,6 +10,8 @@ import { CHARACTER_UPGRADE_BONUS_HP } from "../upgrades/characterUpgradeBonusHea
 import { CHARACTER_UPGRADE_BONUS_MOVE_SPEED } from "../upgrades/characterUpgradeMoveSpeed.js";
 import { levelUpIncreaseExperienceRequirement } from "../../game.js";
 
+export const LEVELING_CLASS_SKILL_POINT_GAIN_EVERY_X_LEVELS = 3;
+
 export type Leveling = {
     level: number,
     leveling?: {
@@ -69,7 +71,7 @@ function levelingCharacterLevelUp(character: Character, game: Game) {
 function levelingClassLevelUp(character: Character, charClass: CharacterClass, game: Game) {
     if (!charClass.level?.leveling || charClass.availableSkillPoints === undefined) return;
     charClass.level.level++;
-    if (charClass.level.level % 3 === 0) {
+    if (charClass.level.level % LEVELING_CLASS_SKILL_POINT_GAIN_EVERY_X_LEVELS === 0) {
         charClass.availableSkillPoints.available += 1;
     }
     charClass.level.leveling.experience -= charClass.level.leveling.experienceForLevelUp;

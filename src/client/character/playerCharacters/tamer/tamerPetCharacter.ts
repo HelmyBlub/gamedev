@@ -334,9 +334,18 @@ function createTamerPetCharacterMoreInfos(ctx: CanvasRenderingContext2D, pet: Ta
         `food: ${petFoodIntakeToDisplayText(pet.foodIntakeLevel)}`,
         `Happiness: ${petHappinessToDisplayText(pet.happines, game.state.time)}`,
         `Movement Speed: ${getCharacterMoveSpeed(pet).toFixed(2)}`,
-        `Level: ${pet.level!.level.toFixed(0)}${levelLimitText}`,
-        `XP: ${pet.level!.leveling!.experience.toFixed(0)}/${pet.level!.leveling!.experienceForLevelUp.toFixed(0)}`,
     );
+
+    if (pet.level) {
+        textLines.push(`Level: ${pet.level.level}${levelLimitText}`);
+        if (pet.level.leveling) {
+            textLines.push(
+                `  XP: ${pet.level.leveling.experience.toFixed(0)}/${pet.level.leveling.experienceForLevelUp.toFixed(0)}`,
+                `  on level up you gain:`,
+                `    +ability damage`,
+            );
+        }
+    }
 
     if (pet.abilities.length > 0) {
         textLines.push("");
