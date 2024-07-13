@@ -6,7 +6,7 @@ import { getPointPaintPosition } from "../../gamePaint.js";
 import { isPositionBlocking, moveByDirectionAndDistance } from "../../map/map.js";
 import { RandomSeed, nextRandom } from "../../randomNumberGenerator.js";
 import { AbilityOwner, PaintOrderAbility, detectCircleCharacterHit } from "../ability.js";
-import { ABILITY_NAME_PET_PAINTER, ABILITY_PET_PAINTER_SHAPES_FUNCTIONS, AbilityObjectPetPainter, AbilityPetPainter, createShapeAbilityPetPainter } from "./abilityPetPainter.js";
+import { ABILITY_NAME_PET_PAINTER, ABILITY_PET_PAINTER_SHAPES_FUNCTIONS, AbilityObjectPetPainter, AbilityPetPainter, abilityPetPainterGetLimitedShapeBonusDamage, abilityPetPainterGetLimitedShapeCount, createShapeAbilityPetPainter } from "./abilityPetPainter.js";
 import { ABILITY_PET_PAINTER_UPGRADE_FACTORY, AbilityPetPainterUpgradeFactory } from "./abilityPetPainterUpgradeFactory.js";
 import { AbilityPetPainterUpgradeSplit } from "./abilityPetPainterUpgradeSplit.js";
 
@@ -22,7 +22,7 @@ export type AbilityObjectPetPainterTriangle = AbilityObjectPetPainter & {
 }
 
 const TRIANGLESIZE = 30;
-const DURATION = 10000;
+const DURATION = 6000;
 const TRIANGLE_DAMAGE_FACTOR = 1;
 const PET_PAINTER_TRIANGLE = "Triangle";
 
@@ -120,10 +120,14 @@ function createSplitShape(abilityObject: AbilityObjectPetPainter, upgrade: Abili
 }
 
 function createShapeTriangle(pet: TamerPetCharacter, abilityPetPainter: AbilityPetPainter, game: Game): AbilityObjectPetPainter {
-    const damage = abilityPetPainter.baseDamage * pet.sizeFactor * TRIANGLE_DAMAGE_FACTOR;
+    const shapeLimitDamageFactor = abilityPetPainterGetLimitedShapeBonusDamage(abilityPetPainter);
+    const damage = abilityPetPainter.baseDamage * pet.sizeFactor * TRIANGLE_DAMAGE_FACTOR * shapeLimitDamageFactor;
     const factoryUpgrade = abilityPetPainter.upgrades[ABILITY_PET_PAINTER_UPGRADE_FACTORY] as AbilityPetPainterUpgradeFactory;
     if (factoryUpgrade) {
-        return createAbilityObjectPetPainterTriangleFactory(abilityPetPainter.paintPoints![0], damage, TRIANGLESIZE, abilityPetPainter.id, pet.faction, factoryUpgrade.duration, factoryUpgrade.spawnInterval, game.state.time);
+        let limitDuration = factoryUpgrade.duration;
+        let modifiedCounter = abilityPetPainterGetLimitedShapeCount(ABILITY_PET_PAINTER_UPGRADE_FACTORY, abilityPetPainter);
+        if (modifiedCounter < factoryUpgrade.level) limitDuration = modifiedCounter * factoryUpgrade.spawnInterval;
+        return createAbilityObjectPetPainterTriangleFactory(abilityPetPainter.paintPoints![0], damage, TRIANGLESIZE, abilityPetPainter.id, pet.faction, limitDuration, factoryUpgrade.spawnInterval, game.state.time);
     } else {
         return createAbilityObjectPetPainterTriangle(abilityPetPainter.paintPoints![0], damage, TRIANGLESIZE, abilityPetPainter.id, pet.faction, game.state.randomSeed, game.state.time);
     }

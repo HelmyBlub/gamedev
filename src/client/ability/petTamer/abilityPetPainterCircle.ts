@@ -6,7 +6,7 @@ import { getPointPaintPosition } from "../../gamePaint.js";
 import { calculateBounceAngle, calculateMovePosition, isPositionBlocking } from "../../map/map.js";
 import { RandomSeed, nextRandom } from "../../randomNumberGenerator.js";
 import { AbilityObject, AbilityObjectCircle, AbilityOwner, PaintOrderAbility, detectAbilityObjectCircleToCharacterHit } from "../ability.js";
-import { ABILITY_NAME_PET_PAINTER, ABILITY_PET_PAINTER_SHAPES_FUNCTIONS, AbilityObjectPetPainter, AbilityPetPainter, abilityPetPainterTeleportIfOwnerUnreachableOrToFarAway, createShapeAbilityPetPainter } from "./abilityPetPainter.js";
+import { ABILITY_NAME_PET_PAINTER, ABILITY_PET_PAINTER_SHAPES_FUNCTIONS, AbilityObjectPetPainter, AbilityPetPainter, abilityPetPainterGetLimitedShapeBonusDamage, abilityPetPainterGetLimitedShapeCount, abilityPetPainterTeleportIfOwnerUnreachableOrToFarAway, createShapeAbilityPetPainter } from "./abilityPetPainter.js";
 import { ABILITY_PET_PAINTER_UPGRADE_FACTORY, AbilityPetPainterUpgradeFactory } from "./abilityPetPainterUpgradeFactory.js";
 import { AbilityPetPainterUpgradeSplit } from "./abilityPetPainterUpgradeSplit.js";
 
@@ -19,7 +19,7 @@ export type AbilityObjectPetPainterCircle = AbilityObjectPetPainter & AbilityObj
 
 const PET_PAINTER_CIRCLE = "Circle";
 const CIRCLE_DAMAGE_FACTOR = 1;
-const DURATION = 7000;
+const DURATION = 6000;
 const CIRCLERADIUS = 15;
 
 export function addAbilityPetPainterCircle() {
@@ -110,10 +110,14 @@ function createSplitShape(abilityObject: AbilityObjectPetPainter, upgrade: Abili
 }
 
 function createShapeCircle(pet: TamerPetCharacter, abilityPetPainter: AbilityPetPainter, game: Game): AbilityObject {
-    const damage = abilityPetPainter.baseDamage * pet.sizeFactor * CIRCLE_DAMAGE_FACTOR;
+    const shapeLimitDamageFactor = abilityPetPainterGetLimitedShapeBonusDamage(abilityPetPainter);
+    const damage = abilityPetPainter.baseDamage * pet.sizeFactor * CIRCLE_DAMAGE_FACTOR * shapeLimitDamageFactor;
     const factoryUpgrade = abilityPetPainter.upgrades[ABILITY_PET_PAINTER_UPGRADE_FACTORY] as AbilityPetPainterUpgradeFactory;
     if (factoryUpgrade) {
-        return createAbilityObjectPetPainterCircleFactory(abilityPetPainter.paintCircle!.middle, damage, abilityPetPainter.id, pet.faction, CIRCLERADIUS, factoryUpgrade.duration, factoryUpgrade.spawnInterval, game.state.time);
+        let limitDuration = factoryUpgrade.duration;
+        let modifiedCounter = abilityPetPainterGetLimitedShapeCount(ABILITY_PET_PAINTER_UPGRADE_FACTORY, abilityPetPainter);
+        if (modifiedCounter < factoryUpgrade.level) limitDuration = modifiedCounter * factoryUpgrade.spawnInterval;
+        return createAbilityObjectPetPainterCircleFactory(abilityPetPainter.paintCircle!.middle, damage, abilityPetPainter.id, pet.faction, CIRCLERADIUS, limitDuration, factoryUpgrade.spawnInterval, game.state.time);
     } else {
         return createAbilityObjectPetPainterCircle(abilityPetPainter.paintCircle!.middle, damage, abilityPetPainter.id, pet.faction, CIRCLERADIUS, game.state.randomSeed, game.state.time);
     }

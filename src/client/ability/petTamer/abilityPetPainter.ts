@@ -13,13 +13,14 @@ import { addAbilityPetPainterCircle } from "./abilityPetPainterCircle.js";
 import { addAbilityPetPainterSquare } from "./abilityPetPainterSquare.js";
 import { addAbilityPetPainterTriangle } from "./abilityPetPainterTriangle.js";
 import { ABILITY_PET_PAINTER_UPGRADE_DUPLICATE, AbilityPetPainterUpgradeDuplicate, addAbilityPetPainterUpgradeDuplicate } from "./abilityPetPainterUpgradeDuplicate.js";
-import { addAbilityPetPainterUpgradeFactory } from "./abilityPetPainterUpgradeFactory.js";
-import { AbilityPetPainterUpgradeSplit, abilityPetPainerUpgradeSplitCheckForSplit, addAbilityPetPainterUpgradeSplit } from "./abilityPetPainterUpgradeSplit.js";
+import { ABILITY_PET_PAINTER_UPGRADE_FACTORY, AbilityPetPainterUpgradeFactory, addAbilityPetPainterUpgradeFactory } from "./abilityPetPainterUpgradeFactory.js";
+import { ABILITY_PET_PAINTER_UPGRADE_SPLIT, AbilityPetPainterUpgradeSplit, abilityPetPainerUpgradeSplitCheckForSplit, addAbilityPetPainterUpgradeSplit } from "./abilityPetPainterUpgradeSplit.js";
 
 export type AbilityPetPainter = Ability & {
     baseDamage: number,
     currentlyPainting?: string,
     paintPoints?: Position[],
+    shapesPerPaintLimiter: number,
     paintCircle?: {
         middle: Position,
         currentAngle: number,
@@ -86,7 +87,7 @@ export function createShapeAbilityPetPainter(shape: string, abilityOwner: Abilit
         let numberShapes = 1;
         const duplicateUpgrade = abilityPetPainter.upgrades[ABILITY_PET_PAINTER_UPGRADE_DUPLICATE] as AbilityPetPainterUpgradeDuplicate;
         if (duplicateUpgrade) {
-            numberShapes += duplicateUpgrade.level;
+            numberShapes = abilityPetPainterGetLimitedShapeCount(ABILITY_PET_PAINTER_UPGRADE_DUPLICATE, abilityPetPainter);
         }
         for (let i = 0; i < numberShapes; i++) {
             const shape = shapeFunction.createShape(pet, abilityPetPainter, game);
@@ -95,6 +96,56 @@ export function createShapeAbilityPetPainter(shape: string, abilityOwner: Abilit
     } else {
         throw Error("missing implementation");
     }
+}
+
+export function abilityPetPainterGetLimitedShapeBonusDamage(ability: AbilityPetPainter) {
+    let totalShapesPerPaint = 1;
+    const duplicateUpgrade = ability.upgrades[ABILITY_PET_PAINTER_UPGRADE_DUPLICATE] as AbilityPetPainterUpgradeDuplicate;
+    if (duplicateUpgrade) {
+        totalShapesPerPaint *= (duplicateUpgrade.level + 1);
+    }
+    const factoryUpgrade = ability.upgrades[ABILITY_PET_PAINTER_UPGRADE_FACTORY] as AbilityPetPainterUpgradeFactory;
+    if (factoryUpgrade) {
+        totalShapesPerPaint *= (factoryUpgrade.level + 1);
+    }
+    const splitUpgrade = ability.upgrades[ABILITY_PET_PAINTER_UPGRADE_SPLIT] as AbilityPetPainterUpgradeSplit;
+    if (splitUpgrade) {
+        totalShapesPerPaint *= (splitUpgrade.level + 1);
+    }
+    if (ability.shapesPerPaintLimiter >= totalShapesPerPaint) {
+        return 1;
+    }
+    const factor = totalShapesPerPaint / ability.shapesPerPaintLimiter;
+    return factor;
+}
+
+export function abilityPetPainterGetLimitedShapeCount(upgradeName: string, ability: AbilityPetPainter): number {
+    let totalShapesPerPaint = 1;
+    let differentUpgradeCount = 0;
+    const duplicateUpgrade = ability.upgrades[ABILITY_PET_PAINTER_UPGRADE_DUPLICATE] as AbilityPetPainterUpgradeDuplicate;
+    if (duplicateUpgrade) {
+        totalShapesPerPaint *= (duplicateUpgrade.level + 1);
+        differentUpgradeCount++;
+    }
+    const factoryUpgrade = ability.upgrades[ABILITY_PET_PAINTER_UPGRADE_FACTORY] as AbilityPetPainterUpgradeFactory;
+    if (factoryUpgrade) {
+        totalShapesPerPaint *= (factoryUpgrade.level + 1);
+        differentUpgradeCount++;
+    }
+    const splitUpgrade = ability.upgrades[ABILITY_PET_PAINTER_UPGRADE_SPLIT] as AbilityPetPainterUpgradeSplit;
+    if (splitUpgrade) {
+        totalShapesPerPaint *= (splitUpgrade.level + 1);
+        differentUpgradeCount++;
+    }
+    if (ability.shapesPerPaintLimiter >= totalShapesPerPaint) {
+        return ability.upgrades[upgradeName].level;
+    }
+    if (differentUpgradeCount <= 0) return 1;
+    const factor = ability.shapesPerPaintLimiter / totalShapesPerPaint;
+    const singleMultiplier = Math.pow(factor, 1 / differentUpgradeCount);
+    const currentCount = ability.upgrades[upgradeName].level + 1;
+    const result = Math.max(Math.floor(currentCount * singleMultiplier), 1);
+    return result;
 }
 
 export function abilityPetPainterTeleportIfOwnerUnreachableOrToFarAway(pet: TamerPetCharacter, petOwner: Character, game: Game) {
@@ -117,6 +168,7 @@ function createAbilityPetPainter(idCounter: IdCounter): AbilityPetPainter {
         baseDamage: 200,
         passive: true,
         upgrades: {},
+        shapesPerPaintLimiter: 64,
     }
 }
 

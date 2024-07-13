@@ -2,7 +2,7 @@ import { AbilityUpgradeOption, UpgradeOptionAndProbability } from "../../charact
 import { Game } from "../../gameModel.js";
 import { Ability, findAbilityById } from "../ability.js";
 import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrade.js";
-import { ABILITY_PET_PAINTER_SHAPES_FUNCTIONS, ABILITY_PET_PAINTER_UPGRADE_FUNCTIONS, AbilityObjectPetPainter, AbilityPetPainter } from "./abilityPetPainter.js";
+import { ABILITY_PET_PAINTER_SHAPES_FUNCTIONS, ABILITY_PET_PAINTER_UPGRADE_FUNCTIONS, AbilityObjectPetPainter, AbilityPetPainter, abilityPetPainterGetLimitedShapeCount } from "./abilityPetPainter.js";
 
 export type AbilityPetPainterUpgradeSplit = AbilityUpgrade & {
     count: number,
@@ -21,12 +21,13 @@ export function addAbilityPetPainterUpgradeSplit() {
 }
 
 export function abilityPetPainerUpgradeSplitCheckForSplit(abilityObjectPetPainter: AbilityObjectPetPainter, game: Game) {
-    const abilityPetPainter = findAbilityById(abilityObjectPetPainter.abilityIdRef!, game);
-    if (!abilityPetPainter) return;
+    const abilityPetPainter = findAbilityById(abilityObjectPetPainter.abilityIdRef!, game) as AbilityPetPainter;
+    if (!abilityPetPainter || abilityObjectPetPainter.isFactory) return;
     const splitUpgrade = abilityPetPainter.upgrades[ABILITY_PET_PAINTER_UPGRADE_SPLIT] as AbilityPetPainterUpgradeSplit;
     if (splitUpgrade) {
         const shapeFunctions = ABILITY_PET_PAINTER_SHAPES_FUNCTIONS[abilityObjectPetPainter.subType];
-        for (let i = 0; i < splitUpgrade.count; i++) {
+        const limitedSplitCount = abilityPetPainterGetLimitedShapeCount(ABILITY_PET_PAINTER_UPGRADE_SPLIT, abilityPetPainter);
+        for (let i = 0; i < limitedSplitCount; i++) {
             const shape = shapeFunctions.createSplitShape(abilityObjectPetPainter, splitUpgrade, game);
             shape.isSplit = true;
             game.state.abilityObjects.push(shape);
