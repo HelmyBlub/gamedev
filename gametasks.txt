@@ -2,7 +2,8 @@ next test run: musician, allShortKing
 increase version
 
 current tasks:
-- improve performance painter with high level
+- problem: mouse hard too see sometimes
+    - option to paint bigger mouse, or some sprite at mouse position
 
 next feature ideas:
 - maybe:

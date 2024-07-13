@@ -94,7 +94,7 @@ function testPlayerClasses(game: Game) {
 
     replay.testInputFileQueue.push("/data/testReplayMultiplayer.json");
 
-    replay.testInputFileQueue.push("/data/testInputLongTamer.json");
+    replay.testInputFileQueue.push("/data/testReplayLongTamer.json");
     replay.testInputFileQueue.push("/data/testInputLongBall.json");
     replay.testInputFileQueue.push("/data/testInputLongSniper.json");
     replay.testInputFileQueue.push("/data/testInputLongBuilder.json");
