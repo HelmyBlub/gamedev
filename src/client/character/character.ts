@@ -59,19 +59,17 @@ export function findCharacterByIdInCompleteMap(id: number, game: Game) {
 export function characterTakeDamage(character: Character, damage: number, game: Game, abilityIdRef: number | undefined, abilityName: string, abilityObject: AbilityObject | undefined = undefined) {
     if (character.state !== "alive" || character.isDamageImmune) return;
     if (game.state.bossStuff.fightWipe) return;
-    let sourceChar: AbilityOwner | undefined = undefined;
-    if (abilityIdRef !== undefined) {
-        sourceChar = findAbilityOwnerById(abilityIdRef, game);
-    }
-    let sourceDamageFactor = findSourceDamageFactor(abilityIdRef, game);
+    const sourceDamageFactor = findSourceDamageFactor(abilityIdRef, game);
+    const modifiedDamage = damage * character.damageTakenModifierFactor * sourceDamageFactor;
     if (abilityIdRef) {
+        addCombatlogDamageDoneEntry(character, modifiedDamage, abilityName, abilityIdRef, game);
+
         doAbilityDamageBreakDownForAbilityId(damage, abilityIdRef, abilityObject, abilityName, game);
         const damageTakenDebuff = character.debuffs.find(d => d.name === DEBUFF_NAME_DAMAGE_TAKEN);
         if (damageTakenDebuff && damageTakenDebuff.abilityIdRef !== undefined) {
             doAbilityDamageBreakDownForAbilityId(damage, damageTakenDebuff.abilityIdRef, undefined, DEBUFF_NAME_DAMAGE_TAKEN, game);
         }
     }
-    let modifiedDamage = damage * character.damageTakenModifierFactor * sourceDamageFactor;
     if (character.shield > 0) {
         character.shield -= modifiedDamage;
         if (character.shield < 0) {
@@ -82,7 +80,6 @@ export function characterTakeDamage(character: Character, damage: number, game: 
         character.hp -= modifiedDamage;
     }
     addCombatlogDamageTakenEntry(character, modifiedDamage, abilityName, abilityIdRef, game);
-    addCombatlogDamageDoneEntry(sourceChar as Character, character, modifiedDamage, abilityName, abilityIdRef, game);
     if (character.hp <= 0) {
         killCharacter(character, game, abilityIdRef);
     }

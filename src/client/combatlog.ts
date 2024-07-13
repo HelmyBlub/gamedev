@@ -1,4 +1,5 @@
-import { Ability } from "./ability/ability.js"
+import { Ability, findAbilityAndOwnerInCharacterById, findAbilityOwnerById } from "./ability/ability.js"
+import { getPlayerCharacters } from "./character/character.js"
 import { Character } from "./character/characterModel.js"
 import { TamerPetCharacter } from "./character/playerCharacters/tamer/tamerPetCharacter.js"
 import { getTimeSinceFirstKill } from "./game.js"
@@ -128,10 +129,18 @@ export function addCombatlogDamageTakenEntry(character: Character, damage: numbe
     addLog(combatlog.damageTakenLog, character, damage, abilityName, character.id, combatlog.maxLogEntries, game);
 }
 
-export function addCombatlogDamageDoneEntry(sourceCharacter: Character, targetCharacter: Character, damage: number, abilityName: string, abilityId: number | undefined, game: Game) {
-    if (!sourceCharacter.combatlog) return;
-    const combatlog = sourceCharacter.combatlog;
-    addLog(combatlog.damageDoneLog, targetCharacter, damage, abilityName, targetCharacter.id, combatlog.maxLogEntries, game);
+export function addCombatlogDamageDoneEntry(targetCharacter: Character, damage: number, abilityName: string, abilityId: number, game: Game) {
+    for (let char of getPlayerCharacters(game.state.players)) {
+        if (!char.combatlog) continue;
+        const abOwn = findAbilityAndOwnerInCharacterById(char, abilityId);
+        if (!abOwn) continue;
+        const combatlog = char.combatlog;
+        if (abOwn.owner !== char) {
+            abilityName = `${abOwn.owner.paint?.color}${abilityName}`;
+        }
+        addLog(combatlog.damageDoneLog, targetCharacter, damage, abilityName, targetCharacter.id, combatlog.maxLogEntries, game);
+        break;
+    }
 }
 
 export function damageMeterChangeClientId(damageMeter: DamageMeter, fromId: number, toId: number) {

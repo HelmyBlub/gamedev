@@ -2,12 +2,12 @@ next test run: musician, allShortKing
 increase version
 
 current tasks:
-- damage done combatlog tamer class
 - improve performance painter with high level
 
-
-
 next feature ideas:
+- maybe:
+    - imporve path finding
+    - enemy collision / prevent enemy stacking
 - think about next bigger feature 
     - extends existings classes for more upgrade choice?
         - more run variation
