@@ -2,9 +2,10 @@ next test run:
 increase version
 
 current tasks:
-- problem: mouse hard too see sometimes
-    - option to paint bigger mouse, or some sprite at mouse position
 - enemy collision / prevent enemy stacking
+    - currently deactivate in "tickMapCharacters"
+    - not performant enough yet    
+        - only check chunks adjacent to players?
 - test replay allShortKing
 
 next feature ideas:

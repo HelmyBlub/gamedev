@@ -701,6 +701,7 @@ function tick(gameTimePassed: number, game: Game) {
         addReplayInputs(game);
         generateMissingChunks(game.state.map, getPlayerCharacters(game.state.players), game.state.idCounter, game);
         determineActiveChunks(getPlayerCharacters(game.state.players), game.state.map, game);
+        determineActiveCollisionCheckChunks(getPlayerCharacters(game.state.players), game.state.map, game);
         tickPlayerInputs(game.state.playerInputs, game.state.time, game);
         tickMapCharacters(game.state.map, game);
         tickBossCharacters(game.state.bossStuff, game);
@@ -856,6 +857,21 @@ function determineActiveChunks(characters: Character[], map: GameMap, game: Game
     map.activeChunkKeys = [...keySet];
     takeTimeMeasure(game.debug, "determineActiveChunks", "");
 }
+
+function determineActiveCollisionCheckChunks(characters: Character[], map: GameMap, game: Game) {
+    takeTimeMeasure(game.debug, "", "determineActiveCollisionCheckChunks");
+    const keySet: Set<string> = new Set();
+    for (let i = 0; i < characters.length; i++) {
+        if (characters[i].state === "dead") continue;
+        const nearMapKeys = determineMapKeysInDistance(characters[i], map, 400, false);
+        for (let mapKey of nearMapKeys) {
+            keySet.add(mapKey);
+        }
+    }
+    map.activeCollisionCheckChunkKeys = [...keySet];
+    takeTimeMeasure(game.debug, "determineActiveCollisionCheckChunks", "");
+}
+
 
 function setReplaySeeds(game: Game) {
     game.state.randomSeed.seed = 0;

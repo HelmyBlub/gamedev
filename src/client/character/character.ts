@@ -1,8 +1,8 @@
 import { findCharacterClassById, levelingCharacterAndClassXpGain } from "./playerCharacters/levelingCharacter.js";
-import { calculateMovePosition, chunkXYToMapKey, determineMapKeysInDistance, GameMap, getChunksTouchingLine, MapChunk, mapKeyToChunkXY, positionToMapKey } from "../map/map.js";
+import { calculateMovePosition, chunkXYToMapKey, determineMapKeysInDistance, GameMap, getChunksTouchingLine, MapChunk, mapKeyToChunkXY, moveByDirectionAndDistance, positionToMapKey } from "../map/map.js";
 import { Character, CHARACTER_TYPE_FUNCTIONS, PLAYER_CHARACTER_TYPE } from "./characterModel.js";
 import { getNextWaypoint, getPathingCache, PathingCache } from "./pathing.js";
-import { calculateDirection, calculateDistance, calculateDistancePointToLine, changeCharacterAndAbilityIds, createPaintTextData, endGame, getNextId, levelUpIncreaseExperienceRequirement, takeTimeMeasure } from "../game.js";
+import { calculateDirection, calculateDistance, calculateDistancePointToLine, changeCharacterAndAbilityIds, createPaintTextData, endGame, getNextId, levelUpIncreaseExperienceRequirement, modulo, takeTimeMeasure } from "../game.js";
 import { Position, Game, IdCounter, Camera, FACTION_ENEMY, FACTION_PLAYER } from "../gameModel.js";
 import { addMoneyAmountToPlayer, addMoneyUiMoreInfo, findPlayerById, Player } from "../player.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
@@ -260,12 +260,13 @@ export function setCharacterAbilityLevel(ability: Ability, character: Character)
 export function tickMapCharacters(map: GameMap, game: Game) {
     takeTimeMeasure(game.debug, "", "tickMapCharacters");
     const pathingCache = getPathingCache(game);
-    const allCharacters: Character[] = [];
+    const allMapCharacters: Character[] = [];
     for (let i = 0; i < map.activeChunkKeys.length; i++) {
         const chunk = map.chunks[map.activeChunkKeys[i]];
-        allCharacters.push(...chunk.characters);
+        allMapCharacters.push(...chunk.characters);
     }
-    tickCharacters(allCharacters, game, pathingCache);
+    tickCharacters(allMapCharacters, game, pathingCache);
+    //collisionDetectionTick(game);
     takeTimeMeasure(game.debug, "tickMapCharacters", "");
 }
 
@@ -673,4 +674,48 @@ function tickCharacterPets(character: Character, game: Game, pathingCache: Pathi
     if (character.pets !== undefined) {
         tickCharacters(character.pets, game, pathingCache, character);
     }
+}
+
+function collisionDetectionTick(game: Game) {
+    takeTimeMeasure(game.debug, "", "tickMapCharacters Collision");
+    for (let i = 0; i < game.state.map.activeCollisionCheckChunkKeys.length; i++) {
+        const chunkKey = game.state.map.activeCollisionCheckChunkKeys[i];
+        const currentChunk = game.state.map.chunks[chunkKey];
+        const chunkSize = game.state.map.tileSize * game.state.map.chunkLength;
+        const tileEnemies: Character[][][] = [];
+        for (let character of currentChunk.characters) {
+            const tileX = Math.floor(modulo(character.x, chunkSize) / game.state.map.tileSize);
+            const tileY = Math.floor(modulo(character.y, chunkSize) / game.state.map.tileSize);
+            if (!tileEnemies[tileX]) tileEnemies[tileX] = [];
+            if (!tileEnemies[tileX][tileY]) tileEnemies[tileX][tileY] = [];
+            tileEnemies[tileX][tileY].push(character);
+        }
+        for (let i = 0; i < tileEnemies.length; i++) {
+            if (!tileEnemies[i]) continue;
+            for (let j = 0; j < tileEnemies[i].length; j++) {
+                if (!tileEnemies[i][j]) continue;
+                if (tileEnemies[i][j].length <= 1) continue;
+                const enemies = tileEnemies[i][j];
+                for (let enemyIndex1 = 0; enemyIndex1 < tileEnemies[i][j].length; enemyIndex1++) {
+                    const enemy1 = tileEnemies[i][j][enemyIndex1];
+                    for (let enemyIndex2 = enemyIndex1 + 1; enemyIndex2 < tileEnemies[i][j].length; enemyIndex2++) {
+                        const enemy2 = tileEnemies[i][j][enemyIndex2];
+                        const distance = calculateDistance(enemy1, enemy2);
+                        const collistionRadius = (enemy1.width / 2 + enemy2.width / 2) / 2;
+                        if (distance < collistionRadius) {
+                            const moveDirection = calculateDirection(enemy1, enemy2);
+                            const collisionMoveDistance = distance / 4;
+                            const enemy1Pos = { x: enemy1.x, y: enemy1.y };
+                            const enemy2Pos = { x: enemy2.x, y: enemy2.y };
+                            moveByDirectionAndDistance(enemy1Pos, moveDirection + Math.PI, collisionMoveDistance, true, game.state.map, game.state.idCounter, game);
+                            moveByDirectionAndDistance(enemy2Pos, moveDirection, collisionMoveDistance, true, game.state.map, game.state.idCounter, game);
+                            setCharacterPosition(enemy1, enemy1Pos, game.state.map);
+                            setCharacterPosition(enemy2, enemy2Pos, game.state.map);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    takeTimeMeasure(game.debug, "tickMapCharacters Collision", "");
 }

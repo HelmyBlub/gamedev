@@ -52,6 +52,7 @@ export type GameMap = {
     tileSize: number,
     chunkLength: number,
     activeChunkKeys: string[],
+    activeCollisionCheckChunkKeys: string[],
     activeChunkRange: number,
     chunks: { [key: string]: MapChunk },
     kingArea?: GameMapKingArea,
@@ -74,6 +75,7 @@ export function createMap(): GameMap {
         tileSize: 40,
         chunkLength: 8,
         activeChunkKeys: [],
+        activeCollisionCheckChunkKeys: [],
         activeChunkRange: 1000,
         chunks: {},
     }
