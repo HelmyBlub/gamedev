@@ -8,12 +8,13 @@ import { TamerPetCharacter } from "./character/playerCharacters/tamer/tamerPetCh
 import { calculateDirection, calculateDistance, calculateFightRetryCounter, findClientInfo, findClosestInteractable, getCameraPosition } from "./game.js";
 import { Game, Position, Debugging, PaintTextData } from "./gameModel.js";
 import { Highscores } from "./highscores.js";
-import { GAME_IMAGES, loadImage } from "./imageLoad.js";
+import { GAME_IMAGES, getImage, loadImage } from "./imageLoad.js";
 import { MAP_OBJECTS_FUNCTIONS } from "./map/mapObjects.js";
 import { paintMap, paintMapCharacters } from "./map/mapPaint.js";
 import { Player, findPlayerById, isAutoSkillActive } from "./player.js";
 import { playerInputBindingToDisplayValue } from "./playerInput.js";
 import { createEndScreenMoreInfos, paintMoreInfos, paintMoreInfosPart } from "./moreInfo.js";
+import { IMAGE_NAME_SNIPE_AIM } from "./ability/snipe/abilitySnipe.js";
 
 GAME_IMAGES["blankKey"] = {
     imagePath: "/images/singleBlankKey.png",
@@ -52,15 +53,6 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
     paintPausedText(ctx, game);
     paintUiForAbilities(ctx, game);
     paintYouDied(ctx, game);
-}
-
-function paintYouDied(ctx: CanvasRenderingContext2D, game: Game) {
-    const myChar = findMyCharacter(game);
-    if (myChar === undefined || myChar.state !== "dying") return;
-    const dyingTimePerCent = Math.max((myChar.deathAnimationStartTimer! + myChar.deathAnimationDuration! - game.state.time) / myChar.deathAnimationDuration!, 0);
-    const textSizeFactor = Math.min(((1 - dyingTimePerCent) * 2), 1);
-    ctx.font = `${120 * textSizeFactor}px Arial`;
-    paintTextWithOutline(ctx, "white", "black", "YOU DIED", Math.floor(ctx.canvas.width / 2), Math.floor((ctx.canvas.height - 20) / 2), true, 3);
 }
 
 export function paintTextWithOutline(ctx: CanvasRenderingContext2D, outlineColor: string, textColor: string, text: string, x: number, y: number, centered: boolean = false, lineWidth: number = 1, withBackgroundColor: string | undefined = undefined) {
@@ -203,6 +195,15 @@ function paintMultiplayer(ctx: CanvasRenderingContext2D, game: Game) {
         ctx.fillText("Multiplayer Synchronization Broken", 10, 80);
     }
     paintOtherPlayerIndicator(ctx, game);
+}
+
+function paintYouDied(ctx: CanvasRenderingContext2D, game: Game) {
+    const myChar = findMyCharacter(game);
+    if (myChar === undefined || myChar.state !== "dying") return;
+    const dyingTimePerCent = Math.max((myChar.deathAnimationStartTimer! + myChar.deathAnimationDuration! - game.state.time) / myChar.deathAnimationDuration!, 0);
+    const textSizeFactor = Math.min(((1 - dyingTimePerCent) * 2), 1);
+    ctx.font = `${120 * textSizeFactor}px Arial`;
+    paintTextWithOutline(ctx, "white", "black", "YOU DIED", Math.floor(ctx.canvas.width / 2), Math.floor((ctx.canvas.height - 20) / 2), true, 3);
 }
 
 function paintOtherPlayerIndicator(ctx: CanvasRenderingContext2D, game: Game) {

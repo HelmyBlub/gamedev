@@ -14,6 +14,7 @@ type SettingsLocalStorage = {
     soundDelay: number,
     playerAlpha: number,
     disableDamageNumbers: boolean,
+    aimCursor: boolean,
 }
 const LOCALSTORAGE_SETTINGS = "settings";
 
@@ -36,6 +37,7 @@ function getSettingsFromLocalStorage(): SettingsLocalStorage {
     if (settings) return JSON.parse(settings) as SettingsLocalStorage;
     return {
         disableDamageNumbers: false,
+        aimCursor: false,
         playerAlpha: 100,
         sliderVolume: 10,
         soundDelay: 0,
@@ -48,6 +50,7 @@ function addSettings(game: Game) {
     addSettingInputBoxSoundDelay(game, settings);
     addSettingInputBoxPlayerPaintAlpha(game, settings);
     addSettingCheckbox("disableDamageNumbers", game, "settings", settings);
+    addSettingCheckbox("aimCursor", game, "settings", settings);
     addClearLocalStorageButton(game);
 }
 
@@ -122,10 +125,12 @@ function addSettingCheckbox(checkboxName: keyof Debugging, game: Game, tabCatego
         checkbox = document.getElementById(checkboxName) as HTMLInputElement;
     }
     if (checkbox) {
-        let settingExists = settings && (settings as any)[checkboxName] !== undefined;
-        if (settingExists) {
+        if (settings) {
+            const settingExists = (settings as any)[checkboxName] !== undefined;
+            if (!settingExists) (settings as any)[checkboxName] = false;
             checkbox.checked = (settings as any)[checkboxName];
             debug[checkboxName] = checkbox.checked;
+            executeOnCheckboxEventChange(checkbox, game);
         }
         checkbox.addEventListener('change', () => {
             if (checkbox.checked) {
@@ -135,11 +140,27 @@ function addSettingCheckbox(checkboxName: keyof Debugging, game: Game, tabCatego
                 debug[checkboxName] = false;
                 game.performance = {};
             }
-            if (settings && settingExists) {
+            if (settings) {
                 (settings as any)[checkboxName] = checkbox.checked;
+                executeOnCheckboxEventChange(checkbox, game);
                 saveSettingsInLocalStorage(settings);
             }
         });
+    }
+}
+
+function executeOnCheckboxEventChange(checkbox: HTMLInputElement, game: Game) {
+    if (checkbox.id === "aimCursor") setMouseAimCursorClass(checkbox.checked, game);
+}
+
+function setMouseAimCursorClass(add: boolean, game: Game) {
+    if (!game.canvasElement) return;
+    const aimCursorCssClass = "mouseAimCursor";
+    if (add && !game.canvasElement.classList.contains(aimCursorCssClass)) {
+        game.canvasElement.classList.add(aimCursorCssClass);
+    }
+    if (!add && game.canvasElement.classList.contains(aimCursorCssClass)) {
+        game.canvasElement.classList.remove(aimCursorCssClass);
     }
 }
 

@@ -1,21 +1,22 @@
-next test run: musician, allShortKing
+next test run: 
 increase version
 
 current tasks:
 - problem: mouse hard too see sometimes
     - option to paint bigger mouse, or some sprite at mouse position
+- enemy collision / prevent enemy stacking
+- test replay allShortKing
 
 next feature ideas:
 - maybe:
-    - imporve path finding
-    - enemy collision / prevent enemy stacking
+    - improve path finding perfromance
 - think about next bigger feature 
     - extends existings classes for more upgrade choice?
         - more run variation
 
 interests me:
 - WebGPU
-    - can no do it with my Virtual Machine setup
+    - can not do it with my Virtual Machine setup
         - GPU not available in VM. I only have one for host operating system
 
 

@@ -85,3 +85,7 @@
 
     opacity: 1;
 }
+
+.mouseAimCursor {
+    cursor: url('/images/aim.png') 20 20, auto;
+}
