@@ -2,13 +2,10 @@ next test run: sniper, musician, ball
 increase version
 
 current tasks:
-- enemy collision / prevent enemy stacking
-    - new test replays
-    
-- test replay allShortKing
+- mouse position update active for wrong class?
 - sniper upgrade chain visualization
 - sniper speed cooldown text visualization
-- mouse position update active for wrong class?
+- test replay allShortKing
 
 next feature ideas:
 - maybe:

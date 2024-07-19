@@ -129,6 +129,7 @@ export function gameInit(game: Game) {
     createFixPositionRespawnEnemiesOnInit(game);
     gameInitPlayers(game);
     game.multiplayer.autosendMousePosition.nextTime = 0;
+    game.multiplayer.autosendMousePosition.sendForOwners = [];
     if (game.multiplayer.websocket !== null) {
         game.multiplayer.maxServerGameTime = 0;
         if (game.multiplayer.gameStateCompare) {
