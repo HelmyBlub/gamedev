@@ -15,6 +15,7 @@ import { addAbilitySpeedBoostUpgradeSlowTrail, executeAbilitySpeedBoostUpgradeSl
 import { addAbilitySpeedBoostUpgradeSpeed } from "./abilitySpeedBoostUpgradeSpeed.js";
 import { addAbilitySpeedBoostUpgradeCooldown } from "./abilitySpeedBoostUpradeCooldown.js";
 import { IMAGE_NAME_RUN_SPEED } from "../snipe/abilitySnipe.js";
+import { paintFloatingTextInfoForMyself } from "../../gamePaint.js";
 
 export type AbilitySpeedBoost = Ability & {
     speedFactor: number,
@@ -93,6 +94,9 @@ function castSpeedBoost(abilityOwner: AbilityOwner, ability: Ability, castPositi
             chargeUpgrade.currentCharges--;
         }
         executeAbilitySpeedBoostUpgradeSlowTrail(abilitySpeedBoost, character, game);
+    } else {
+        const timeUntil = ((abilitySpeedBoost.cooldownFinishTime - game.state.time) / 1000);
+        paintFloatingTextInfoForMyself(`on cooldown (${timeUntil.toFixed(1)}s)`, abilityOwner, abilityOwner.id, game);
     }
 }
 

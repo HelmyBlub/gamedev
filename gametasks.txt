@@ -2,9 +2,8 @@ next test run: sniper, musician, ball
 increase version
 
 current tasks:
-- mouse position update active for wrong class?
 - sniper upgrade chain visualization
-- sniper speed cooldown text visualization
+- how to cooldown information text when multi classing?
 - test replay allShortKing
 
 next feature ideas:
