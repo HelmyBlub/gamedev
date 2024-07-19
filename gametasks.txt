@@ -1,12 +1,14 @@
-next test run: 
+next test run: sniper, musician, ball
 increase version
 
 current tasks:
 - enemy collision / prevent enemy stacking
-    - currently deactivate in "tickMapCharacters"
-    - not performant enough yet    
-        - only check chunks adjacent to players?
+    - new test replays
+    
 - test replay allShortKing
+- sniper upgrade chain visualization
+- sniper speed cooldown text visualization
+- mouse position update active for wrong class?
 
 next feature ideas:
 - maybe:

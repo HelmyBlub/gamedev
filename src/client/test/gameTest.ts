@@ -87,17 +87,19 @@ function testPlayerClasses(game: Game) {
     const replay = game.testing.replay;
     replay.testInputFileQueue = [];
     //    replay.testInputFileQueue.push("/data/testInputError.json");    
-    replay.testInputFileQueue.push("/data/testInputShortBuilder.json");
-    replay.testInputFileQueue.push("/data/testInputShortSniper.json");
-    replay.testInputFileQueue.push("/data/testInputShortTamer.json");
+    replay.testInputFileQueue.push("/data/testReplayShortSniper.json");
+    replay.testInputFileQueue.push("/data/testReplayShortBuilder.json");
+    replay.testInputFileQueue.push("/data/testReplayShortTamer.json");
+    replay.testInputFileQueue.push("/data/testReplayShortBall.json");
+    replay.testInputFileQueue.push("/data/testReplayShortMusician.json");
     //    replay.testInputFileQueue.push("/data/testReplayShortKing.json");
 
-    replay.testInputFileQueue.push("/data/testReplayMultiplayer.json");
+    // replay.testInputFileQueue.push("/data/testReplayMultiplayer.json");
 
     replay.testInputFileQueue.push("/data/testReplayLongTamer.json");
+    replay.testInputFileQueue.push("/data/testReplayLongSniper.json");
+    replay.testInputFileQueue.push("/data/testReplayLongBuilder.json");
     replay.testInputFileQueue.push("/data/testInputLongBall.json");
-    replay.testInputFileQueue.push("/data/testInputLongSniper.json");
-    replay.testInputFileQueue.push("/data/testInputLongBuilder.json");
     replay.testInputFileQueue.push("/data/testReplayLongMusician.json");
     replay.testInputFileQueue.push("/data/testReplayMultiplayerLong.json");
     //replay.testInputFileQueue.push("/data/testReplayLongAll.json");

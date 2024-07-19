@@ -266,7 +266,7 @@ export function tickMapCharacters(map: GameMap, game: Game) {
         allMapCharacters.push(...chunk.characters);
     }
     tickCharacters(allMapCharacters, game, pathingCache);
-    //collisionDetectionTick(game);
+    collisionDetectionTick(game);
     takeTimeMeasure(game.debug, "tickMapCharacters", "");
 }
 
@@ -683,7 +683,11 @@ function collisionDetectionTick(game: Game) {
         const currentChunk = game.state.map.chunks[chunkKey];
         const chunkSize = game.state.map.tileSize * game.state.map.chunkLength;
         const tileEnemies: Character[][][] = [];
-        for (let character of currentChunk.characters) {
+        const maxIterateCharacters = 500;
+        const maxIterateCollisionChecksPetTile = 30;
+        const iteratorCap = Math.min(currentChunk.characters.length, maxIterateCharacters);
+        for (let i = 0; i < iteratorCap; i++) {
+            const character = currentChunk.characters[i];
             const tileX = Math.floor(modulo(character.x, chunkSize) / game.state.map.tileSize);
             const tileY = Math.floor(modulo(character.y, chunkSize) / game.state.map.tileSize);
             if (!tileEnemies[tileX]) tileEnemies[tileX] = [];
@@ -696,21 +700,23 @@ function collisionDetectionTick(game: Game) {
                 if (!tileEnemies[i][j]) continue;
                 if (tileEnemies[i][j].length <= 1) continue;
                 const enemies = tileEnemies[i][j];
-                for (let enemyIndex1 = 0; enemyIndex1 < tileEnemies[i][j].length; enemyIndex1++) {
+                const checkIteratorCap = Math.min(enemies.length, maxIterateCollisionChecksPetTile);
+                for (let enemyIndex1 = 0; enemyIndex1 < checkIteratorCap; enemyIndex1++) {
                     const enemy1 = tileEnemies[i][j][enemyIndex1];
-                    for (let enemyIndex2 = enemyIndex1 + 1; enemyIndex2 < tileEnemies[i][j].length; enemyIndex2++) {
+                    for (let enemyIndex2 = enemyIndex1 + 1; enemyIndex2 < checkIteratorCap; enemyIndex2++) {
                         const enemy2 = tileEnemies[i][j][enemyIndex2];
                         const distance = calculateDistance(enemy1, enemy2);
-                        const collistionRadius = (enemy1.width / 2 + enemy2.width / 2) / 2;
+                        const collistionRadius = (enemy1.width / 2 + enemy2.width / 2) * 0.75;
                         if (distance < collistionRadius) {
                             const moveDirection = calculateDirection(enemy1, enemy2);
-                            const collisionMoveDistance = distance / 4;
+                            const collisionMoveDistance = (collistionRadius - distance) / 2;
                             const enemy1Pos = { x: enemy1.x, y: enemy1.y };
                             const enemy2Pos = { x: enemy2.x, y: enemy2.y };
                             moveByDirectionAndDistance(enemy1Pos, moveDirection + Math.PI, collisionMoveDistance, true, game.state.map, game.state.idCounter, game);
                             moveByDirectionAndDistance(enemy2Pos, moveDirection, collisionMoveDistance, true, game.state.map, game.state.idCounter, game);
                             setCharacterPosition(enemy1, enemy1Pos, game.state.map);
                             setCharacterPosition(enemy2, enemy2Pos, game.state.map);
+                            break;
                         }
                     }
                 }
