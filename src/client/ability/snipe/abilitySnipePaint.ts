@@ -10,6 +10,7 @@ import { ABILITY_NAME_SNIPE, ABILITY_SNIPE_DAMAGE_PER_LEVEL, ABILITY_SNIPE_MAGAZ
 import { paintVisualizationAfterImage } from "./abilitySnipeUpgradeAfterImage.js";
 import { paintVisualizationMoreRifles } from "./abilitySnipeUpgradeMoreRifle.js";
 import { paintVisualizationStayStill } from "./abilitySnipeUpgradeStayStill.js";
+import { abilitySnipeUpgradeNoMissChainPaintStacks } from "./abilitySnipeUpgradeNoMissChain.js";
 
 export function paintAbilityObjectSnipe(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
     if (paintOrder !== "beforeCharacterPaint" && abilityObject.faction === FACTION_PLAYER) return;
@@ -47,6 +48,7 @@ export function paintAbilitySnipe(ctx: CanvasRenderingContext2D, abilityOwner: A
     paintSniperRifle(ctx, abilitySnipe, paintPos.x, paintPos.y, direction, distance, true, game);
     paintVisualizationMoreRifles(ctx, abilityOwner, abilitySnipe, cameraPosition, undefined, game);
     paintVisualizationAfterImage(ctx, abilityOwner, abilitySnipe, cameraPosition, game);
+    abilitySnipeUpgradeNoMissChainPaintStacks(ctx, abilitySnipe, abilityOwner, cameraPosition, game);
 }
 
 export function paintAbilitySnipeAccessoire(ctx: CanvasRenderingContext2D, ability: Ability, paintPosition: Position, game: Game) {

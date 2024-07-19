@@ -1,5 +1,8 @@
+import { findMyCharacter } from "../../character/character.js";
 import { AbilityUpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
-import { Ability } from "../ability.js";
+import { Game, Position } from "../../gameModel.js";
+import { getPointPaintPosition, paintTextWithOutline } from "../../gamePaint.js";
+import { Ability, AbilityOwner } from "../ability.js";
 import { AbilityUpgrade } from "../abilityUpgrade.js";
 import { ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe, getOptionsSnipeUpgrade } from "./abilitySnipe.js";
 
@@ -40,6 +43,16 @@ export function abilityUpgradeNoMissChainOnObjectSnipeDamageDone(abilitySnipe: A
             if (upgrades.noMissChainCounter < 0) upgrades.noMissChainCounter = 0;
         }
     }
+}
+
+export function abilitySnipeUpgradeNoMissChainPaintStacks(ctx: CanvasRenderingContext2D, ability: AbilitySnipe, abiltiyOwner: AbilityOwner, cameraPosition: Position, game: Game) {
+    const char = findMyCharacter(game);
+    if (!char || char.id !== abiltiyOwner.id) return;
+    const up: AbilityUpgradeNoMissChain = ability.upgrades[ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN];
+    if (!up) return;
+    ctx.font = "bold 16px arial";
+    const paintPos = getPointPaintPosition(ctx, abiltiyOwner, cameraPosition);
+    paintTextWithOutline(ctx, "white", "black", up.noMissChainCounter.toFixed(), paintPos.x, paintPos.y + 20, true, 3);
 }
 
 function reset(ability: Ability) {
