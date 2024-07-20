@@ -1,6 +1,6 @@
 import { Character } from "../../character/characterModel.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
-import { calculateDistance, displayTextAtCameraPosition, getCameraPosition, getNextId } from "../../game.js";
+import { calculateDistance, getCameraPosition, getNextId } from "../../game.js";
 import { Position, Game, IdCounter, FACTION_PLAYER } from "../../gameModel.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
@@ -27,6 +27,7 @@ import { nextRandom } from "../../randomNumberGenerator.js";
 import { GAME_IMAGES, getImage } from "../../imageLoad.js";
 import { addAbilityMusicSheetDeleteNote } from "./abilityMusicSheetDeleteNote.js";
 import { addAbilityMusicSheetChangeInstrument } from "./abilityMusicSheetChangeInstrument.js";
+import { displayTextAtCameraPosition } from "../../floatingText.js";
 
 export type AbilityMusicSheets = Ability & {
     nextUpgradeAddInstrument: boolean,

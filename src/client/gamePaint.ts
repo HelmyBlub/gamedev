@@ -6,15 +6,15 @@ import { paintBossCharacters, paintBossCrown } from "./character/enemy/bossEnemy
 import { CharacterClass, findMainCharacterClass, hasPlayerChoosenStartClassUpgrade, paintPlayerCharacterUI, playerCharacterGetLevelClassText, shareCharactersTradeablePreventedMultipleClass } from "./character/playerCharacters/playerCharacters.js";
 import { TamerPetCharacter } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
 import { calculateDirection, calculateDistance, calculateFightRetryCounter, findClientInfo, findClosestInteractable, getCameraPosition } from "./game.js";
-import { Game, Position, Debugging, PaintTextData } from "./gameModel.js";
+import { Game, Position, Debugging } from "./gameModel.js";
 import { Highscores } from "./highscores.js";
-import { GAME_IMAGES, getImage, loadImage } from "./imageLoad.js";
+import { GAME_IMAGES, loadImage } from "./imageLoad.js";
 import { MAP_OBJECTS_FUNCTIONS } from "./map/mapObjects.js";
 import { paintMap, paintMapCharacters } from "./map/mapPaint.js";
 import { Player, findPlayerById, isAutoSkillActive } from "./player.js";
 import { playerInputBindingToDisplayValue } from "./playerInput.js";
 import { createEndScreenMoreInfos, paintMoreInfos, paintMoreInfosPart } from "./moreInfo.js";
-import { IMAGE_NAME_SNIPE_AIM } from "./ability/snipe/abilitySnipe.js";
+import { paintDamageNumbers, paintStackTextData, pushStackPaintTextData } from "./floatingText.js";
 
 GAME_IMAGES["blankKey"] = {
     imagePath: "/images/singleBlankKey.png",
@@ -42,6 +42,7 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
     paintBossCrown(ctx, cameraPosition, game);
     paintAbilityObjects(ctx, game.state.abilityObjects, game, "afterCharacterPaint");
     paintDamageNumbers(ctx, game.UI.displayTextData, cameraPosition, game.state.time);
+    paintStackTextData(ctx, game.UI.stackTextsData, game.state.time);
     paintClosestInteractable(ctx, cameraPosition, game);
     paintKeyInfo(ctx, game);
     paintFightWipeUI(ctx, game);
@@ -149,20 +150,6 @@ export function paintTextWithKeys(ctx: CanvasRenderingContext2D, textWithKeys: s
         x += width[i];
         even = !even;
     }
-}
-
-export function paintFloatingTextInfoForMyself(text: string, position: Position, characterId: number, game: Game) {
-    const myChar = findMyCharacter(game);
-    if (myChar && myChar.id === characterId) {
-        game.UI.displayTextData.push({
-            color: "black",
-            fontSize: "20",
-            paintPosition: { x: position.x, y: position.y },
-            removeTime: game.state.time + 1500,
-            text: text
-        });
-    }
-
 }
 
 export function paintKey(ctx: CanvasRenderingContext2D, key: string, paintPosition: Position) {
@@ -389,26 +376,6 @@ function paintWasdKeys(ctx: CanvasRenderingContext2D, paintX: number, paintY: nu
     paintKey(ctx, "A", { x: paintX, y: paintY + 30 });
     paintKey(ctx, "S", { x: paintX + 40, y: paintY + 30 });
     paintKey(ctx, "D", { x: paintX + 80, y: paintY + 30 });
-}
-
-function paintDamageNumbers(ctx: CanvasRenderingContext2D, damageNumbersData: PaintTextData[] | undefined, cameraPosition: Position, time: number) {
-    if (damageNumbersData === undefined) return;
-    const centerX = ctx.canvas.width / 2;
-    const centerY = ctx.canvas.height / 2;
-    for (let i = damageNumbersData.length - 1; i >= 0; i--) {
-        const data = damageNumbersData[i];
-        if (data.removeTime <= time) {
-            damageNumbersData.splice(i, 1)
-        } else {
-            const paintX = data.paintPosition.x - cameraPosition.x + centerX;
-            const paintY = data.paintPosition.y - cameraPosition.y + centerY;
-            const timeLeft = Math.floor((data.removeTime - time) / 100);
-
-            ctx.fillStyle = data.color;
-            ctx.font = data.fontSize + "px Arial";
-            ctx.fillText(data.text, paintX, paintY + timeLeft);
-        }
-    }
 }
 
 function paintTimeMeasures(ctx: CanvasRenderingContext2D, debug: Debugging | undefined) {

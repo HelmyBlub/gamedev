@@ -5,7 +5,7 @@ import { BUFF_NAME_BALL_PHYSICS, BuffBallPhysics, createBuffBallPhysics, findBal
 import { applyDebuff, removeCharacterDebuff } from "../../debuff/debuff.js";
 import { calcNewPositionMovedInDirection, calculateDirection, findClientInfoByCharacterId, getNextId } from "../../game.js";
 import { Position, Game, IdCounter, FACTION_ENEMY, ClientInfo, FACTION_PLAYER } from "../../gameModel.js";
-import { getPointPaintPosition, paintFloatingTextInfoForMyself } from "../../gamePaint.js";
+import { getPointPaintPosition } from "../../gamePaint.js";
 import { calculateMovePosition, getFirstBlockingGameMapTilePositionTouchingLine, isMoveFromToBlocking } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { fixedRandom } from "../../randomNumberGenerator.js";
@@ -20,6 +20,7 @@ import { AbilityDamageBreakdown } from "../../combatlog.js";
 import { ABILITY_NAME_ICE_AURA } from "../abilityIceAura.js";
 import { ABILITY_NAME_EXPLODE } from "../abilityExplode.js";
 import { GAME_IMAGES } from "../../imageLoad.js";
+import { addPaintFloatingTextInfoForMyself } from "../../floatingText.js";
 
 export type AbilityLightningBall = Ability & {
     baseRechargeTime: number,
@@ -176,8 +177,8 @@ function castLightningBall(abilityOwner: AbilityOwner, ability: Ability, castPos
     if (!isKeydown) return;
     const abilityLightningBall = ability as AbilityLightningBall;
     if (abilityLightningBall.currentCharges <= 0) {
-        const timeUntil = ((abilityLightningBall.nextRechargeTime! - game.state.time) / 1000);
-        paintFloatingTextInfoForMyself(`on cooldown (${timeUntil.toFixed(1)}s)`, abilityOwner, abilityOwner.id, game);
+        const timeUntil = abilityLightningBall.nextRechargeTime! - game.state.time;
+        addPaintFloatingTextInfoForMyself(`on cooldown`, game, timeUntil, abilityOwner.id, abilityLightningBall.id, IMAGE_NAME_LIGHTNING);
         return;
     }
 

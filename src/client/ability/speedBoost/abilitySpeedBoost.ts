@@ -14,8 +14,8 @@ import { addAbilitySpeedBoostUpgradeDuration } from "./abilitySpeedBoostUpgradeD
 import { addAbilitySpeedBoostUpgradeSlowTrail, executeAbilitySpeedBoostUpgradeSlowTrail } from "./abilitySpeedBoostUpgradeSlowTrail.js";
 import { addAbilitySpeedBoostUpgradeSpeed } from "./abilitySpeedBoostUpgradeSpeed.js";
 import { addAbilitySpeedBoostUpgradeCooldown } from "./abilitySpeedBoostUpradeCooldown.js";
-import { IMAGE_NAME_RUN_SPEED } from "../snipe/abilitySnipe.js";
-import { paintFloatingTextInfoForMyself } from "../../gamePaint.js";
+import { GAME_IMAGES } from "../../imageLoad.js";
+import { addPaintFloatingTextInfoForMyself } from "../../floatingText.js";
 
 export type AbilitySpeedBoost = Ability & {
     speedFactor: number,
@@ -24,8 +24,14 @@ export type AbilitySpeedBoost = Ability & {
     cooldownFinishTime: number,
 }
 
+export const IMAGE_NAME_RUN_SPEED = "run speed";
 export const ABILITY_NAME_SPEED_BOOST = "SpeedBoost";
 export const ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS: AbilityUpgradesFunctions = {};
+GAME_IMAGES[IMAGE_NAME_RUN_SPEED] = {
+    imagePath: "/images/runspeed.png",
+    spriteRowHeights: [40],
+    spriteRowWidths: [40],
+};
 
 export function addAbilitySpeedBoost() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_SPEED_BOOST] = {
@@ -95,8 +101,8 @@ function castSpeedBoost(abilityOwner: AbilityOwner, ability: Ability, castPositi
         }
         executeAbilitySpeedBoostUpgradeSlowTrail(abilitySpeedBoost, character, game);
     } else {
-        const timeUntil = ((abilitySpeedBoost.cooldownFinishTime - game.state.time) / 1000);
-        paintFloatingTextInfoForMyself(`on cooldown (${timeUntil.toFixed(1)}s)`, abilityOwner, abilityOwner.id, game);
+        const timeUntil = abilitySpeedBoost.cooldownFinishTime - game.state.time;
+        addPaintFloatingTextInfoForMyself(`on cooldown`, game, timeUntil, abilityOwner.id, abilitySpeedBoost.id, IMAGE_NAME_RUN_SPEED);
     }
 }
 

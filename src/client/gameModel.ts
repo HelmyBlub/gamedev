@@ -19,6 +19,7 @@ import { createSound, Sound } from "./sound.js";
 import { Achievements, createDefaultAchivements } from "./achievements/achievements.js";
 import { PlayerCharacterAbilityUI, PlayerCharacterLevelUI } from "./character/playerCharacters/playerCharacters.js";
 import { ActiveCheats } from "./cheat.js";
+import { createDefaultStackTextsData, PaintStackTextsData, PaintTextData } from "./floatingText.js";
 
 export type Position = {
     x: number,
@@ -192,14 +193,6 @@ export type Camera = {
     characterId?: number,
 }
 
-export type PaintTextData = {
-    text: string,
-    paintPosition: Position,
-    color: string,
-    fontSize: string,
-    removeTime: number,
-}
-
 export type KeyCodeToAction = Map<string, {
     action: string,
     uiDisplayInputValue: string,
@@ -252,6 +245,24 @@ export type Multiplayer = {
     }
 }
 
+export type UI = {
+    damageMeter: DamageMeter,
+    displayMovementKeyHint: boolean,
+    movementKeyPressed: boolean,
+    displayTextData: PaintTextData[],
+    stackTextsData: PaintStackTextsData,
+    moreInfos: MoreInfos,
+    displayMoreInfos: boolean,
+    displayMorePressTimer?: number,
+    playerGlobalAlphaMultiplier: number,
+    paintClosesInteractableMoreInfo: boolean,
+    moneyGainedThisRun: MoneyGainedThisRun,
+    lastHighscoreText?: string;
+    lastMouseDownWasUIClick: boolean,
+    playerCharacterLevelUI?: PlayerCharacterLevelUI,
+    playerCharacterAbilityUI?: PlayerCharacterAbilityUI,
+}
+
 export type Game = {
     canvasElement?: HTMLCanvasElement,
     ctx?: CanvasRenderingContext2D,
@@ -274,22 +285,7 @@ export type Game = {
     debug: Debugging,
     closeGame?: boolean,
     sound?: Sound,
-    UI: {
-        damageMeter: DamageMeter,
-        displayMovementKeyHint: boolean,
-        movementKeyPressed: boolean,
-        displayTextData: PaintTextData[],
-        moreInfos: MoreInfos,
-        displayMoreInfos: boolean,
-        displayMorePressTimer?: number,
-        playerGlobalAlphaMultiplier: number,
-        paintClosesInteractableMoreInfo: boolean,
-        moneyGainedThisRun: MoneyGainedThisRun,
-        lastHighscoreText?: string;
-        lastMouseDownWasUIClick: boolean,
-        playerCharacterLevelUI?: PlayerCharacterLevelUI,
-        playerCharacterAbilityUI?: PlayerCharacterAbilityUI,
-    }
+    UI: UI,
 }
 
 export const FACTION_ENEMY = "enemy";
@@ -400,6 +396,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             displayMovementKeyHint: false,
             movementKeyPressed: false,
             displayTextData: [],
+            stackTextsData: createDefaultStackTextsData(),
             moreInfos: createDefaultEmptyMoreInfos(),
             displayMoreInfos: false,
             playerGlobalAlphaMultiplier: 1,

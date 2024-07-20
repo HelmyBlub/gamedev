@@ -2,7 +2,7 @@ import { findCharacterClassById, levelingCharacterAndClassXpGain } from "./playe
 import { calculateMovePosition, chunkXYToMapKey, determineMapKeysInDistance, GameMap, getChunksTouchingLine, MapChunk, mapKeyToChunkXY, moveByDirectionAndDistance, positionToMapKey } from "../map/map.js";
 import { Character, CHARACTER_TYPE_FUNCTIONS, PLAYER_CHARACTER_TYPE } from "./characterModel.js";
 import { getNextWaypoint, getPathingCache, PathingCache } from "./pathing.js";
-import { calculateDirection, calculateDistance, calculateDistancePointToLine, changeCharacterAndAbilityIds, createPaintTextData, endGame, getNextId, levelUpIncreaseExperienceRequirement, modulo, takeTimeMeasure } from "../game.js";
+import { calculateDirection, calculateDistance, calculateDistancePointToLine, changeCharacterAndAbilityIds, endGame, getNextId, levelUpIncreaseExperienceRequirement, modulo, takeTimeMeasure } from "../game.js";
 import { Position, Game, IdCounter, Camera, FACTION_ENEMY, FACTION_PLAYER } from "../gameModel.js";
 import { addMoneyAmountToPlayer, addMoneyUiMoreInfo, findPlayerById, Player } from "../player.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
@@ -22,6 +22,7 @@ import { addCharacterUpgrades, CHARACTER_UPGRADE_FUNCTIONS } from "./upgrades/ch
 import { CHARACTER_TYPE_GOD_ENEMY, godEnemyActivateHardMode, godEnemyHardModeConditionFullfiled } from "./enemy/god/godEnemy.js";
 import { DEBUFF_NAME_DAMAGE_TAKEN } from "../debuff/debuffDamageTaken.js";
 import { achievementCheckOnBossKill } from "../achievements/achievements.js";
+import { createPaintTextData } from "../floatingText.js";
 
 export function findCharacterById(characters: Character[], id: number): Character | null {
     for (let i = 0; i < characters.length; i++) {

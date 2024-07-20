@@ -6,7 +6,7 @@ import { BUFF_NAME_BALL_PHYSICS, BuffBallPhysics, createBuffBallPhysics, findBal
 import { applyDebuff, removeCharacterDebuff } from "../../debuff/debuff.js";
 import { calculateDirection, findClientInfoByCharacterId, getNextId, modulo } from "../../game.js";
 import { Position, Game, IdCounter, FACTION_ENEMY, ClientInfo, FACTION_PLAYER } from "../../gameModel.js";
-import { getPointPaintPosition, paintFloatingTextInfoForMyself } from "../../gamePaint.js";
+import { getPointPaintPosition } from "../../gamePaint.js";
 import { calculateBounceAngle, calculateMovePosition, isMoveFromToBlocking, moveByDirectionAndDistance } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
@@ -18,6 +18,7 @@ import { ABILITY_BOUNCE_BALL_UPGRADE_FIRE_LINE, abilityBounceBallUpgradeFireLine
 import { AbilityDamageBreakdown } from "../../combatlog.js";
 import { ABILITY_NAME_FIRE_LINE } from "../abilityFireLine.js";
 import { GAME_IMAGES } from "../../imageLoad.js";
+import { addPaintFloatingTextInfoForMyself } from "../../floatingText.js";
 
 export type AbilityBounceBall = Ability & {
     baseRechargeTime: number,
@@ -174,8 +175,8 @@ function castBounceBall(abilityOwner: AbilityOwner, ability: Ability, castPositi
     if (!isKeydown) return;
     const abilityBounceBall = ability as AbilityBounceBall;
     if (abilityBounceBall.currentCharges <= 0) {
-        const timeUntil = ((abilityBounceBall.nextRechargeTime! - game.state.time) / 1000);
-        paintFloatingTextInfoForMyself(`on cooldown (${timeUntil.toFixed(1)}s)`, abilityOwner, abilityOwner.id, game);
+        const timeUntil = abilityBounceBall.nextRechargeTime! - game.state.time;
+        addPaintFloatingTextInfoForMyself(`on cooldown`, game, timeUntil, abilityOwner.id, abilityBounceBall.id, ABILITY_NAME_BOUNCE_BALL);
         return;
     }
     const buffBallPhyscis = createBuffBallPhysics(ability.id, ability.name);

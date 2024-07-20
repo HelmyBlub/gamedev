@@ -1,5 +1,6 @@
 import { executeCommand } from "./commands.js";
-import { createPaintTextData, displayTextAtCameraPosition, getCameraPosition } from "./game.js";
+import { pushStackPaintTextData } from "./floatingText.js";
+import { getCameraPosition } from "./game.js";
 import { Game } from "./gameModel.js";
 import { PlayerInput } from "./playerInput.js";
 import { decompressString } from "./stringCompress.js";
@@ -23,7 +24,7 @@ export function websocketConnect(game: Game, clientName: string, lobbyCode: stri
         game.state.paused = false;
         game.multiplayer.disableLocalStorage = true;
         document.getElementById('stringInput')?.classList.add('hide');
-        displayTextAtCameraPosition(`Multiplayer Connected`, game);
+        pushStackPaintTextData(game.UI.stackTextsData, `Multiplayer Connected`, game.state.time);
 
         game.multiplayer.connectMenuOpen = false;
         game.multiplayer.lastSendTime = [];
@@ -48,7 +49,7 @@ export function websocketConnect(game: Game, clientName: string, lobbyCode: stri
         console.log("onclose");
         const textPosition1 = getCameraPosition(game);
         if (game.multiplayer.intentionalDisconnect) {
-            game.UI.displayTextData.push(createPaintTextData(textPosition1, `Multiplayer Disconnected`, "black", "24", game.state.time, 5000));
+            pushStackPaintTextData(game.UI.stackTextsData, `Multiplayer Disconnected`, game.state.time);
 
             game.multiplayer.awaitingGameState.waiting = false;
             game.multiplayer.websocket = null;
@@ -63,7 +64,7 @@ export function websocketConnect(game: Game, clientName: string, lobbyCode: stri
         } else {
             //reconenct
             setTimeout(() => {
-                game.UI.displayTextData.push(createPaintTextData(textPosition1, `Disconnected, reconnecting...`, "black", "24", game.state.time, 5000));
+                pushStackPaintTextData(game.UI.stackTextsData, `Disconnected, reconnecting...`, game.state.time);
                 websocketConnect(game, clientName, lobbyCode);
             }, 500);
         }

@@ -2,7 +2,7 @@ import { cappCharacter, changeCharacterId, countAlivePlayerCharacters, findAndSe
 import { paintAll } from "./gamePaint.js";
 import { addPlayerMoney, createDefaultKeyBindings1, createDefaultUiKeyBindings, createPlayerWithPlayerCharacter, findNearesPastPlayerCharacter, findPlayerByCharacterId, gameInitPlayers, isAutoSkillActive } from "./player.js";
 import { MOUSE_ACTION, UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.js";
-import { Position, GameState, Game, IdCounter, Debugging, PaintTextData, ClientInfo, GameVersion } from "./gameModel.js";
+import { Position, GameState, Game, IdCounter, Debugging, ClientInfo, GameVersion } from "./gameModel.js";
 import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap, initGodArea, initKingArea, mousePositionToMapPosition } from "./map/map.js";
 import { Character } from "./character/characterModel.js";
 import { generateMissingChunks, pastCharactersMapTilePositions } from "./map/mapGeneration.js";
@@ -121,6 +121,7 @@ export function gameInit(game: Game) {
     game.performance = {};
     game.UI.displayTextData = [];
     game.UI.moneyGainedThisRun = [];
+    game.UI.stackTextsData.textStack = [];
     game.UI.displayMoreInfos = false;
     if (game.UI.playerCharacterLevelUI) game.UI.playerCharacterLevelUI.levelUI = [];
     game.testing.saveStates.autoSaves.nextSaveStateTime = 10000;
@@ -232,22 +233,6 @@ export function getRelativeMousePoistion(event: MouseEvent): Position {
 
 export function setRelativeMousePosition(event: MouseEvent, game: Game) {
     game.mouseRelativeCanvasPosition = getRelativeMousePoistion(event);
-}
-
-export function displayTextAtCameraPosition(text: string, game: Game) {
-    let textPosition1 = getCameraPosition(game);
-    textPosition1.y += 24;
-    game.UI.displayTextData.push(createPaintTextData(textPosition1, text, "black", "24", game.state.time, 5000));
-}
-
-export function createPaintTextData(position: Position, text: string, color: string, fontSize: string, currentTime: number, duration: number = 1000): PaintTextData {
-    return {
-        text: text,
-        paintPosition: { x: position.x, y: position.y },
-        color: color,
-        fontSize: fontSize,
-        removeTime: currentTime + duration,
-    }
 }
 
 export function findClientInfo(clientId: number, game: Game): ClientInfo | undefined {
