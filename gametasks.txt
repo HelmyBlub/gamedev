@@ -1,15 +1,7 @@
-next test run: musician, sniper, ball
+next test run: sniper, ball
 increase version
 
 current tasks:
-- how to cooldown information text when multi classing?
-    - displayTextCamera
-    - array
-    - stack multiple messages
-    - on cooldown text with ability name or icon
-    - each abilty only one cooldown message
-    - timer in text reduces
-    - also for other information text which can overlap
 - test replay allShortKing
 
 next feature ideas:
