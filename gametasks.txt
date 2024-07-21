@@ -1,8 +1,8 @@
-next test run: sniper, ball
+next test run: ball
 increase version
 
 current tasks:
-- test replay allShortKing
+- think about what to do next
 
 next feature ideas:
 - maybe:
