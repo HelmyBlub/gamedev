@@ -111,7 +111,7 @@ export function gameInit(game: Game) {
     }
     game.state.bossStuff.bosses = [];
     game.state.bossStuff.bossLevelCounter = 1;
-    game.state.bossStuff.kingFightStarted = false;
+    game.state.bossStuff.kingFightStartedTime = undefined;
     game.state.bossStuff.godFightStarted = false;
     game.state.bossStuff.fightWipe = undefined;
     game.state.bossStuff.normalModeMoneyAwarded = undefined;
@@ -504,7 +504,7 @@ export function getGameVersionString(gameVersion: GameVersion | undefined) {
 }
 
 export function retryFight(game: Game) {
-    if (!game.state.bossStuff.kingFightStarted && !game.state.bossStuff.godFightStarted) return;
+    if (!game.state.bossStuff.kingFightStartedTime !== undefined && !game.state.bossStuff.godFightStarted) return;
     if (!game.state.bossStuff.fightWipe) return;
     let hasRetry = false;
     for (let player of game.state.players) {
@@ -518,7 +518,7 @@ export function retryFight(game: Game) {
     game.state.bossStuff.bosses = [];
     game.state.bossStuff.fightWipe = false;
     let playerOffsetX = 0;
-    if (game.state.bossStuff.kingFightStarted) {
+    if (game.state.bossStuff.kingFightStartedTime !== undefined) {
         startKingFight(game.state.players[0].character, game);
         playerOffsetX = (game.state.map.kingArea!.size * game.state.map.chunkLength * game.state.map.tileSize) / 2 - game.state.map.tileSize * 2;
     } else if (game.state.bossStuff.godFightStarted) {
@@ -643,7 +643,7 @@ function determineRunnerTimeout(game: Game): number {
 function gameEndedCheck(game: Game) {
     const alivePlayersCount = countAlivePlayerCharacters(game.state.players, game.state.time);
     if (alivePlayersCount === 0) {
-        if (game.state.bossStuff.godFightStarted || game.state.bossStuff.kingFightStarted) {
+        if (game.state.bossStuff.godFightStarted || game.state.bossStuff.kingFightStartedTime !== undefined) {
             for (let player of game.state.players) {
                 if (player.character.fightRetries !== undefined && player.character.fightRetries > 0) {
                     return false;

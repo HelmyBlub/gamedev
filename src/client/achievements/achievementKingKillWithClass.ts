@@ -45,7 +45,7 @@ function getDescription(achievement: Achievement) {
 
 function onGameEndCheck(achievement: Achievement, game: Game) {
     const kingClass = achievement as AchievementClassKingKill;
-    if (!game.state.bossStuff.kingFightStarted) return false;
+    if (game.state.bossStuff.kingFightStartedTime === undefined) return false;
     let playerAlive = false;
     for (let player of game.state.players) {
         if (player.character.state === "alive") {

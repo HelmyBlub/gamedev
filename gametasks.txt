@@ -2,7 +2,19 @@ next test run: ball
 increase version
 
 current tasks:
-- think about what to do next
+- change king highscore to damage per second ranking 
+
+- each stream spend time on thinking whats next
+    - what makes most sense to work on?
+            - some off time between streams. Good for getting ideas
+        - what would make the game more fun to play for me?
+            - finding out how to min/max something?
+                - difficult to create when i am the one developing it
+                - 
+
+- god kill should bless legendary for higher cap
+- musician upgrades: less dependant on note frequency (shield, dot)
+
 
 next feature ideas:
 - maybe:
@@ -10,6 +22,23 @@ next feature ideas:
 - think about next bigger feature 
     - extends existings classes for more upgrade choice?
         - more run variation
+    - unlock more upgrade choices. Don't overwhelm player at start, but give choice for future
+        - with money?
+        - over achievements?
+    - randomize upgarde with rariety        
+        - common, rare, epic, legendary
+    - more classes
+    - graphics:
+        - random weather effects
+        - more variation 
+            - north: becomes snowy (each new run? each time king killed?)
+                - icy ground, more difficult to move
+            - east: becomes rainy
+                - 
+            - west: becomes dark
+                - more difficult to see, fog of war. Blocking tiles block view
+            - south: becomes desert
+                - nothing special
 
 interests me:
 - WebGPU

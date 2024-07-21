@@ -56,7 +56,7 @@ export function createDefaultNextKing(idCounter: IdCounter, game: Game): KingEne
 export function kingCreateMoreInfos(game: Game, celestialDirection: CelestialDirection, heading: string): MoreInfosPartContainer | undefined {
     if (!game.ctx) return;
     let kingChar: Character | undefined = undefined;
-    if (!game.state.bossStuff.kingFightStarted) {
+    if (game.state.bossStuff.kingFightStartedTime === undefined) {
         const king = game.state.bossStuff.nextKings[celestialDirection];
         if (!king) return;
         kingChar = deepCopy(king) as Character;
@@ -118,7 +118,7 @@ export function startKingFight(kingAreaPosition: Position, game: Game) {
         }
         game.state.bossStuff.bosses.push(king);
         game.state.bossStuff.closedOfKingAreaEntrance = entrance;
-        game.state.bossStuff.kingFightStarted = true;
+        game.state.bossStuff.kingFightStartedTime = game.state.time;
         if (game.UI.playerGlobalAlphaMultiplier > 0.25) {
             game.UI.playerGlobalAlphaMultiplier = 0.25;
         }
@@ -218,7 +218,7 @@ function paintKing(ctx: CanvasRenderingContext2D, character: Character, cameraPo
         const crownY = Math.floor(paintPos.y - character.height / 2 - crownImage.height);
         ctx.drawImage(crownImage, crownX, crownY);
     }
-    if (game.state.bossStuff.kingFightStarted) paintKingHpBar(ctx, character);
+    if (game.state.bossStuff.kingFightStartedTime !== undefined) paintKingHpBar(ctx, character);
 }
 
 function createKingAbilities(level: number, game: Game): Ability[] {

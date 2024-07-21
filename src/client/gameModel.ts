@@ -139,7 +139,7 @@ export type NextKings = {
 export type BossStuff = {
     bossLevelCounter: number,
     bossSpawnEachXMilliSecond: number,
-    kingFightStarted?: boolean,
+    kingFightStartedTime?: number,
     godFightStarted?: boolean,
     fightWipe?: boolean,
     nextKings: NextKings,
@@ -317,7 +317,6 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             bossStuff: {
                 bossSpawnEachXMilliSecond: 60000,
                 bossLevelCounter: 1,
-                kingFightStarted: false,
                 bosses: [],
                 nextKings: {},
             },

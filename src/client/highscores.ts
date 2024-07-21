@@ -1,6 +1,5 @@
 import { Character } from "./character/characterModel.js";
-import { CHARACTER_TYPE_GOD_ENEMY, GodEnemyCharacter } from "./character/enemy/god/godEnemy.js";
-import { CHARACTER_TYPE_KING_ENEMY } from "./character/enemy/kingEnemy.js";
+import { GodEnemyCharacter } from "./character/enemy/god/godEnemy.js";
 import { calculateDistance, getTimeSinceFirstKill } from "./game.js";
 import { Game } from "./gameModel.js";
 import { getMapMidlePosition } from "./map/map.js";
@@ -28,10 +27,15 @@ export type HighscoreBoard = {
     description: string[],
     scoreType?: string,
 }
-
+const TO_LOCAL_NO_DECIAMLS = {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+}
 const HIGHSCORE_DISTANCE = "Distance";
 const HIGHSCORE_KING_TIME = "KingTime";
 const HIGHSCORE_GOD_TIME = "GodTime";
+const SCORE_PRIO_KING_HP_PER_CENT = 7;
+const SCORE_PRIO_KING_KILL_DPS = 6;
 
 export function createHighscoreBoards(): Highscores {
     const highscores: Highscores = {
@@ -50,7 +54,7 @@ export function createHighscoreBoards(): Highscores {
     highscores.scoreBoards[HIGHSCORE_KING_TIME] = {
         scores: [],
         description: [
-            "Highscore number based on time",
+            "Highscore number based on damage per second",
             "or HP% of King kill."
         ]
     }
@@ -79,7 +83,7 @@ export function calculateHighscoreOnGameEnd(game: Game): number {
         }
     }
 
-    if (game.state.bossStuff.kingFightStarted) {
+    if (game.state.bossStuff.kingFightStartedTime !== undefined) {
         newScore = createAndPushKingScore(playerClass, game);
     } else if (game.state.bossStuff.godFightStarted) {
         newScore = createAndPushGodScore(playerClass, game);
@@ -181,14 +185,14 @@ function createAndPushKingScore(playerClass: string, game: Game): number {
     const bosses = game.state.bossStuff.bosses;
     let enemy: Character | undefined = bosses[bosses.length - 2];
     if (enemy === undefined) enemy = bosses[bosses.length - 1];;
-    if (enemy === undefined) throw Error("should not be possible?");
+    if (enemy === undefined || game.state.bossStuff.kingFightStartedTime === undefined) throw Error("should not be possible?");
     if (enemy.hp <= 0) {
-        newScore = getTimeSinceFirstKill(game.state) / 1000;
-        board.scores.push({ score: newScore, playerClass: playerClass, scoreTypePrio: 1, scoreSuffix: "s" });
-        game.UI.lastHighscoreText = `New Score (King Kill Time): ${(newScore).toFixed(2)}s`;
+        newScore = enemy.maxHp / ((game.state.time - game.state.bossStuff.kingFightStartedTime) / 1000);
+        board.scores.push({ score: newScore, playerClass: playerClass, scoreTypePrio: SCORE_PRIO_KING_KILL_DPS, scoreSuffix: "DPS" });
+        game.UI.lastHighscoreText = `New Score (King Kill DPS): ${(newScore).toFixed(0)} DPS`;
     } else {
         newScore = enemy.hp / enemy.maxHp * 100;
-        board.scores.push({ score: newScore, playerClass: playerClass, scoreTypePrio: 2, scoreSuffix: "%" });
+        board.scores.push({ score: newScore, playerClass: playerClass, scoreTypePrio: SCORE_PRIO_KING_HP_PER_CENT, scoreSuffix: "%" });
         game.UI.lastHighscoreText = `New Score (King HP %): ${(newScore).toFixed(2)}%`;
     }
     board.scores.sort(highscoreSort);
@@ -202,7 +206,11 @@ function createAndPushKingScore(playerClass: string, game: Game): number {
 
 function highscoreSort(entryA: HighscoreEntry, entryB: HighscoreEntry): number {
     if (entryA.scoreTypePrio === entryB.scoreTypePrio) {
-        return entryA.score - entryB.score;
+        if (entryA.scoreTypePrio === SCORE_PRIO_KING_KILL_DPS) {
+            return entryB.score - entryA.score;
+        } else {
+            return entryA.score - entryB.score;
+        }
     } else if (entryA.scoreTypePrio !== undefined && entryB.scoreTypePrio !== undefined) {
         return entryA.scoreTypePrio - entryB.scoreTypePrio;
     }
@@ -245,7 +253,11 @@ function getHighscoreWidth(ctx: CanvasRenderingContext2D, highscoreBoard: Highsc
 
 function getHighscoreTextLine(index: number, highscoreBoard: HighscoreBoard): string {
     if (highscoreBoard.scores[index].scoreSuffix !== undefined) {
-        return `${(index + 1)}: ${(highscoreBoard.scores[index].score).toFixed(2)}${highscoreBoard.scores[index].scoreSuffix} (${highscoreBoard.scores[index].playerClass})`;
+        if (highscoreBoard.scores[index].scoreSuffix === "DPS") {
+            return `${(index + 1)}: ${(highscoreBoard.scores[index].score).toLocaleString(undefined, TO_LOCAL_NO_DECIAMLS)} ${highscoreBoard.scores[index].scoreSuffix} (${highscoreBoard.scores[index].playerClass})`;
+        } else {
+            return `${(index + 1)}: ${(highscoreBoard.scores[index].score).toFixed(2)}${highscoreBoard.scores[index].scoreSuffix} (${highscoreBoard.scores[index].playerClass})`;
+        }
     } else {
         return `${(index + 1)}: ${highscoreBoard.scores[index].score} (${highscoreBoard.scores[index].playerClass})`;
     }

@@ -275,7 +275,7 @@ export function tickCharacters(characters: (Character | undefined)[], game: Game
     for (let j = characters.length - 1; j >= 0; j--) {
         const char = characters[j];
         if (!char) continue;
-        if ((game.state.bossStuff.kingFightStarted || game.state.bossStuff.godFightStarted) && char.type === ENEMY_FIX_RESPAWN_POSITION) continue;
+        if ((game.state.bossStuff.kingFightStartedTime !== undefined || game.state.bossStuff.godFightStarted) && char.type === ENEMY_FIX_RESPAWN_POSITION) continue;
         const functions = CHARACTER_TYPE_FUNCTIONS[char.type];
         if (functions?.tickFunction) {
             functions.tickFunction(char, game, pathingCache);
@@ -645,7 +645,7 @@ function killCharacter(character: Character, game: Game, abilityIdRef: number | 
         character.state = "dying";
         character.deathAnimationStartTimer = game.state.time;
         character.deathAnimationDuration = 2000;
-        if (game.state.bossStuff.godFightStarted || game.state.bossStuff.kingFightStarted) {
+        if (game.state.bossStuff.godFightStarted || game.state.bossStuff.kingFightStartedTime !== undefined) {
             const countAlive = countAlivePlayerCharacters(game.state.players, game.state.time);
             if (countAlive === 0) {
                 game.state.bossStuff.fightWipe = true;
