@@ -19,10 +19,11 @@ import { ENEMY_FIX_RESPAWN_POSITION } from "./enemy/fixPositionRespawnEnemyModel
 import { addCombatlogDamageDoneEntry, addCombatlogDamageTakenEntry, doDamageMeterSplit } from "../combatlog.js";
 import { executeAbilityLevelingCharacterUpgradeOption } from "./playerCharacters/abilityLevelingCharacter.js";
 import { addCharacterUpgrades, CHARACTER_UPGRADE_FUNCTIONS } from "./upgrades/characterUpgrades.js";
-import { CHARACTER_TYPE_GOD_ENEMY, godEnemyActivateHardMode, godEnemyHardModeConditionFullfiled } from "./enemy/god/godEnemy.js";
+import { CHARACTER_TYPE_GOD_ENEMY, godEnemyActivateHardMode, godEnemyHardModeConditionFullfiled, isGodHardModeActive } from "./enemy/god/godEnemy.js";
 import { DEBUFF_NAME_DAMAGE_TAKEN } from "../debuff/debuffDamageTaken.js";
 import { achievementCheckOnBossKill } from "../achievements/achievements.js";
 import { createPaintTextData } from "../floatingText.js";
+import { legendaryAbilityGiveBlessing } from "../map/buildings/classBuilding.js";
 
 export function findCharacterById(characters: Character[], id: number): Character | null {
     for (let i = 0; i < characters.length; i++) {
@@ -639,6 +640,8 @@ function killCharacter(character: Character, game: Game, abilityIdRef: number | 
         if (godEnemyHardModeConditionFullfiled(game)) {
             godEnemyActivateHardMode(game);
         } else {
+            legendaryAbilityGiveBlessing("God", getPlayerCharacters(game.state.players));
+            if (isGodHardModeActive(game)) legendaryAbilityGiveBlessing("God Hard Mode", getPlayerCharacters(game.state.players));
             endGame(game, false, true);
         }
     } else if (character.type === PLAYER_CHARACTER_TYPE) {

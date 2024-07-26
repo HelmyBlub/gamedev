@@ -2,7 +2,8 @@ next test run:
 increase version
 
 current tasks:
-- change god highscore to damage per second ranking 
+- god kill should bless legendary for higher cap
+
 - each stream spend time on thinking whats next
     - what makes most sense to work on?
             - some off time between streams. Good for getting ideas
@@ -31,7 +32,6 @@ current tasks:
                     - what does the player gain doing it?
 
 
-- god kill should bless legendary for higher cap
 - musician upgrades: less dependant on note frequency (shield, dot)
 
 

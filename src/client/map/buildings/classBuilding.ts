@@ -53,34 +53,36 @@ export function classBuildingCheckAllPlayerForLegendaryAbilitiesAndMoveBackToBui
     }
 }
 
-export function legendaryAbilityGiveBlessing(celestialDirection: CelestialDirection, character: Character) {
-    if (character.characterClasses) {
-        for (let charClass of character.characterClasses) {
-            if (charClass.legendary && !charClass.legendary.blessings.find(blessing => blessing === celestialDirection)) {
-                charClass.legendary.blessings.push(celestialDirection);
-                charClass.legendary.levelCap += 100;
+export function legendaryAbilityGiveBlessing(blessing: string, characters: Character[]) {
+    for (let character of characters) {
+        if (character.characterClasses) {
+            for (let charClass of character.characterClasses) {
+                if (charClass.legendary && !charClass.legendary.blessings.find(b => b === blessing)) {
+                    charClass.legendary.blessings.push(blessing);
+                    charClass.legendary.levelCap += 100;
+                }
             }
         }
-    }
-    for (let ability of character.abilities) {
-        if (ability.legendary && !ability.legendary.blessings.find(blessing => blessing === celestialDirection)) {
-            ability.legendary.blessings.push(celestialDirection);
-            ability.legendary.skillPointCap += 5;
-            ability.legendary.levelCap += 100;
-        }
-    }
-    if (character.pets) {
-        for (let pet of character.pets) {
-            if (pet.legendary && !pet.legendary.blessings.find(blessing => blessing === celestialDirection)) {
-                pet.legendary.blessings.push(celestialDirection);
-                pet.legendary.skillPointCap += 5;
-                pet.legendary.levelCap += 100;
+        for (let ability of character.abilities) {
+            if (ability.legendary && !ability.legendary.blessings.find(b => b === blessing)) {
+                ability.legendary.blessings.push(blessing);
+                ability.legendary.skillPointCap += 5;
+                ability.legendary.levelCap += 100;
             }
-            for (let ability of pet.abilities) {
-                if (ability.legendary && !ability.legendary.blessings.find(blessing => blessing === celestialDirection)) {
-                    ability.legendary.blessings.push(celestialDirection);
-                    ability.legendary.skillPointCap += 5;
-                    ability.legendary.levelCap += 100;
+        }
+        if (character.pets) {
+            for (let pet of character.pets) {
+                if (pet.legendary && !pet.legendary.blessings.find(b => b === blessing)) {
+                    pet.legendary.blessings.push(blessing);
+                    pet.legendary.skillPointCap += 5;
+                    pet.legendary.levelCap += 100;
+                }
+                for (let ability of pet.abilities) {
+                    if (ability.legendary && !ability.legendary.blessings.find(b => b === blessing)) {
+                        ability.legendary.blessings.push(blessing);
+                        ability.legendary.skillPointCap += 5;
+                        ability.legendary.levelCap += 100;
+                    }
                 }
             }
         }

@@ -50,12 +50,18 @@ export function addGodEnemyType() {
 
 export function godEnemyHardModeConditionFullfiled(game: Game): boolean {
     if (game.state.bossStuff.godFightStartedTime === undefined) return false;
-    const god = game.state.bossStuff.bosses.find(b => b.type === CHARACTER_TYPE_GOD_ENEMY);
-    if (!god) return false;
+    const god = game.state.bossStuff.bosses.find(b => b.type === CHARACTER_TYPE_GOD_ENEMY) as GodEnemyCharacter;
+    if (!god || god.hardModeActivated) return false;
     for (let ability of god.abilities) {
         if ((ability as GodAbility).pickedUp === undefined) continue;
         if ((ability as GodAbility).pickedUp === true) return false;
     }
+    return true;
+}
+
+export function isGodHardModeActive(game: Game) {
+    const god = game.state.bossStuff.bosses.find(b => b.type === CHARACTER_TYPE_GOD_ENEMY) as GodEnemyCharacter;
+    if (!god || !god.hardModeActivated) return false;
     return true;
 }
 

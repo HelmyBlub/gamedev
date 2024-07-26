@@ -90,7 +90,7 @@ export function setPlayerAsKing(game: Game) {
     game.state.players[0].character.becameKing = true;
     localStorageSaveNextKings(game);
     if (oldBoss?.characterClasses) {
-        legendaryAbilityGiveBlessing(celestialDirection, oldBoss);
+        legendaryAbilityGiveBlessing(celestialDirection, [oldBoss]);
         classBuildingPutLegendaryCharacterStuffBackIntoBuilding(oldBoss, game);
         saveCharacterAsPastCharacter(oldBoss, game);
     }
