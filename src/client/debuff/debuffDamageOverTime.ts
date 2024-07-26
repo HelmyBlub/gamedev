@@ -21,14 +21,16 @@ export function addDebuffDamageOverTime() {
 
 export function createDebuffDamageOverTime(
     damagePerSecond: number,
+    damagePerSecondCap: number,
     abilityIdRef: number,
 ): DebuffDamageOverTime {
     const baseTickInterval = 250;
     const damagePerTick = damagePerSecond * (baseTickInterval / 1000);
+    const damagePerTickCap = damagePerSecondCap * (baseTickInterval / 1000);
     return {
         name: DEBUFF_NAME_DAMAGE_OVER_TIME,
         abilityIdRef: abilityIdRef,
-        damageCap: damagePerSecond * 10,
+        damageCap: damagePerTickCap,
         tickInterval: baseTickInterval,
         damagePerTick: damagePerTick,
     };

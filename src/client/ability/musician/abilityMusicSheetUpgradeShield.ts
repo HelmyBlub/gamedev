@@ -6,10 +6,12 @@ import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrad
 import { ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS, AbilityMusicSheets } from "./abilityMusicSheet.js";
 
 export type AbilityMusicSheetUpgradeShield = AbilityUpgrade & {
+    lastShieldGainTime?: number,
 }
 
 export const ABILITY_MUSIC_SHEET_UPGRADE_SHIELD = "Shield per Note";
-const SHIELD_GAIN_PER_NOTE = 5;
+const SHIELD_GAIN_AMOUNT_PER_LEVEL = 50;
+const SHIELD_GAIN_INTERVAL = 4000;
 
 export function addAbilityMusicSheetUpgradeShield() {
     ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS[ABILITY_MUSIC_SHEET_UPGRADE_SHIELD] = {
@@ -21,13 +23,20 @@ export function addAbilityMusicSheetUpgradeShield() {
     }
 }
 
-export function executeAbilityMusicSheetsUpgradeShield(ability: AbilityMusicSheets, abilityOwner: AbilityOwner, notesCount: number) {
+export function executeAbilityMusicSheetsUpgradeShield(ability: AbilityMusicSheets, abilityOwner: AbilityOwner, gameTime: number) {
     const up: AbilityMusicSheetUpgradeShield = ability.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_SHIELD];
     if (!up) return 0;
-    characterAddShield(abilityOwner as Character, up.level * SHIELD_GAIN_PER_NOTE * notesCount);
+    if (up.lastShieldGainTime === undefined || up.lastShieldGainTime <= gameTime) {
+        up.lastShieldGainTime = gameTime + SHIELD_GAIN_INTERVAL;
+        characterAddShield(abilityOwner as Character, up.level * SHIELD_GAIN_AMOUNT_PER_LEVEL);
+    }
 }
 
 function reset(ability: Ability) {
+    const up: AbilityMusicSheetUpgradeShield = ability.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_SHIELD];
+    if (!up) return;
+    up.lastShieldGainTime = undefined;
+
 }
 
 function getOptions(ability: Ability): UpgradeOptionAndProbability[] {
@@ -58,12 +67,14 @@ function getAbilityUpgradeUiTextLong(ability: Ability): string[] {
     const upgrade: AbilityMusicSheetUpgradeShield | undefined = ability.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_SHIELD];
     if (upgrade) {
         textLines.push(
-            `Gain shield for every note played.`,
-            `Increase from ${SHIELD_GAIN_PER_NOTE * upgrade.level} to ${SHIELD_GAIN_PER_NOTE * (upgrade.level + 1)}.`,
+            `Gain shield when note played.`,
+            `Cooldown of ${(SHIELD_GAIN_INTERVAL / 1000).toFixed(0)}s.`,
+            `Increase shield amount from ${SHIELD_GAIN_AMOUNT_PER_LEVEL * upgrade.level} to ${SHIELD_GAIN_AMOUNT_PER_LEVEL * (upgrade.level + 1)}.`,
         );
     } else {
         textLines.push(
-            `Gain ${SHIELD_GAIN_PER_NOTE} shield for every note played.`,
+            `Gain ${SHIELD_GAIN_AMOUNT_PER_LEVEL} shield when note played.`,
+            `Cooldown of ${(SHIELD_GAIN_INTERVAL / 1000).toFixed(0)}s.`,
         );
     }
     return textLines;

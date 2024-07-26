@@ -2,7 +2,9 @@ next test run:
 increase version
 
 current tasks:
-- god kill should bless legendary for higher cap
+- musician upgrades: less dependant on note frequency (shield, dot)
+- musician: be able to place notes 1/8 & 1/16 allways
+- limit damage numbers on screen
 
 - each stream spend time on thinking whats next
     - what makes most sense to work on?
@@ -30,9 +32,6 @@ current tasks:
                     - be able to set modifiers on circlular/rectangular map part
                     - be able to set modifiers on celestial direction map part
                     - what does the player gain doing it?
-
-
-- musician upgrades: less dependant on note frequency (shield, dot)
 
 
 next feature ideas:

@@ -240,7 +240,7 @@ function onObjectHit(abilityObject: AbilityObject, targetCharacter: Character, g
     const ability = findAbilityById(abilityObject.abilityIdRef, game) as AbilityMusicSheets;
     if (!ability) return;
     abilityMusicSheetsUpgradeSlowApplySlow(ability, targetCharacter, game);
-    abilityMusicSheetsUpgradeDamageOverTimeApply(ability, targetCharacter, game);
+    abilityMusicSheetsUpgradeDamageOverTimeApply(ability, abilityObject, targetCharacter, game);
 }
 
 function createDamageBreakDown(damage: number, ability: Ability, abilityObject: AbilityObject | undefined, damageAbilityName: string, game: Game): AbilityDamageBreakdown[] {
@@ -1008,7 +1008,7 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
         let upgradeFunctions = ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS[noteType];
         if (upgradeFunctions.executeNoteDamage) {
             upgradeFunctions.executeNoteDamage(notesDamageTicks, abilityOwner, abilityMusicSheets, game);
-            executeAbilityMusicSheetsUpgradeShield(abilityMusicSheets, abilityOwner, notesDamageTicks.length);
+            executeAbilityMusicSheetsUpgradeShield(abilityMusicSheets, abilityOwner, game.state.time);
         }
     }
 
