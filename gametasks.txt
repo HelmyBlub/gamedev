@@ -2,9 +2,8 @@ next test run:
 increase version
 
 current tasks:
-- musician upgrades: less dependant on note frequency (shield, dot)
-- musician: be able to place notes 1/8 & 1/16 allways
 - limit damage numbers on screen
+- musician: be able to place notes 1/8 & 1/16 allways
 
 - each stream spend time on thinking whats next
     - what makes most sense to work on?

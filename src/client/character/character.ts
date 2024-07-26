@@ -90,6 +90,7 @@ export function characterTakeDamage(character: Character, damage: number, game: 
         const fontSize = character.faction === FACTION_PLAYER ? "20" : "12";
         const textColor = character.faction === FACTION_PLAYER ? "blue" : "black";
         game.UI.displayTextData.push(createPaintTextData(textPos, modifiedDamage.toFixed(0), textColor, fontSize, game.state.time));
+        if (game.UI.displayTextData.length > 100) game.UI.displayTextData.splice(0, 1);
     }
     if (character.faction === FACTION_ENEMY) character.wasHitRecently = true;
 }
