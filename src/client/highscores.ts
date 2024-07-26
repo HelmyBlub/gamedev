@@ -34,8 +34,10 @@ const TO_LOCAL_NO_DECIAMLS = {
 const HIGHSCORE_DISTANCE = "Distance";
 const HIGHSCORE_KING_TIME = "KingTime";
 const HIGHSCORE_GOD_TIME = "GodTime";
-const SCORE_PRIO_KING_HP_PER_CENT = 7;
-const SCORE_PRIO_KING_KILL_DPS = 6;
+const SCORE_PRIO_HP_PER_CENT = 4;
+const SCORE_PRIO_KILL_DPS = 3;
+const SCORE_PRIO_HARD_MODE_HP_PER_CENT = 2;
+const SCORE_PRIO_HARD_MODE_KILL_DPS = 1;
 
 export function createHighscoreBoards(): Highscores {
     const highscores: Highscores = {
@@ -85,7 +87,7 @@ export function calculateHighscoreOnGameEnd(game: Game): number {
 
     if (game.state.bossStuff.kingFightStartedTime !== undefined) {
         newScore = createAndPushKingScore(playerClass, game);
-    } else if (game.state.bossStuff.godFightStarted) {
+    } else if (game.state.bossStuff.godFightStartedTime !== undefined) {
         newScore = createAndPushGodScore(playerClass, game);
     } else {
         newScore = getHighestPlayerDistanceFromMapMiddle(game);
@@ -151,20 +153,20 @@ function createAndPushGodScore(playerClass: string, game: Game): number {
     const bosses = game.state.bossStuff.bosses;
     let god: GodEnemyCharacter | undefined;
     god = bosses[bosses.length - 1] as GodEnemyCharacter;
-    if (god === undefined) throw Error("should not be possible?");
+    if (god === undefined || game.state.bossStuff.godFightStartedTime === undefined) throw Error("should not be possible?");
     const hardModeText = god.hardModeActivated ? "Hard Mode " : "";
     if (god.hp <= 0) {
-        newScore = getTimeSinceFirstKill(game.state) / 1000;
-        let scoreTypePrio = 3;
+        newScore = god.maxHp / ((game.state.time - game.state.bossStuff.godFightStartedTime) / 1000);
+        let scoreTypePrio = SCORE_PRIO_KILL_DPS;
         if (god.hardModeActivated) {
-            scoreTypePrio = 1;
+            scoreTypePrio = SCORE_PRIO_HARD_MODE_KILL_DPS;
         }
-        board.scores.push({ score: newScore, playerClass: playerClass, scoreTypePrio: scoreTypePrio, scoreSuffix: "s" });
-        game.UI.lastHighscoreText = `New Score (God ${hardModeText}Kill Time): ${(newScore).toFixed(2)}s`;
+        board.scores.push({ score: newScore, playerClass: playerClass, scoreTypePrio: scoreTypePrio, scoreSuffix: "DPS" });
+        game.UI.lastHighscoreText = `New Score (God ${hardModeText}Kill DPS): ${(newScore).toLocaleString(undefined, { maximumFractionDigits: 0 })} DPS`;
     } else {
-        let scoreTypePrio = 4;
+        let scoreTypePrio = SCORE_PRIO_HP_PER_CENT;
         if (god.hardModeActivated) {
-            scoreTypePrio = 2;
+            scoreTypePrio = SCORE_PRIO_HARD_MODE_HP_PER_CENT;
         }
         newScore = god.hp / god.maxHp * 100;
         board.scores.push({ score: newScore, playerClass: playerClass, scoreTypePrio: scoreTypePrio, scoreSuffix: "%" });
@@ -172,7 +174,7 @@ function createAndPushGodScore(playerClass: string, game: Game): number {
     }
     board.scores.sort(highscoreSort);
     game.state.highscores.lastHighscorePosition = board.scores.findIndex((e) => e.score === newScore);
-    game.state.highscores.lastBoard = HIGHSCORE_KING_TIME;
+    game.state.highscores.lastBoard = HIGHSCORE_GOD_TIME;
     if (board.scores.length > game.state.highscores.maxLength) {
         board.scores.pop();
     }
@@ -188,11 +190,11 @@ function createAndPushKingScore(playerClass: string, game: Game): number {
     if (enemy === undefined || game.state.bossStuff.kingFightStartedTime === undefined) throw Error("should not be possible?");
     if (enemy.hp <= 0) {
         newScore = enemy.maxHp / ((game.state.time - game.state.bossStuff.kingFightStartedTime) / 1000);
-        board.scores.push({ score: newScore, playerClass: playerClass, scoreTypePrio: SCORE_PRIO_KING_KILL_DPS, scoreSuffix: "DPS" });
-        game.UI.lastHighscoreText = `New Score (King Kill DPS): ${(newScore).toFixed(0)} DPS`;
+        board.scores.push({ score: newScore, playerClass: playerClass, scoreTypePrio: SCORE_PRIO_KILL_DPS, scoreSuffix: "DPS" });
+        game.UI.lastHighscoreText = `New Score (King Kill DPS): ${(newScore).toLocaleString(undefined, { maximumFractionDigits: 0 })} DPS`;
     } else {
         newScore = enemy.hp / enemy.maxHp * 100;
-        board.scores.push({ score: newScore, playerClass: playerClass, scoreTypePrio: SCORE_PRIO_KING_HP_PER_CENT, scoreSuffix: "%" });
+        board.scores.push({ score: newScore, playerClass: playerClass, scoreTypePrio: SCORE_PRIO_HP_PER_CENT, scoreSuffix: "%" });
         game.UI.lastHighscoreText = `New Score (King HP %): ${(newScore).toFixed(2)}%`;
     }
     board.scores.sort(highscoreSort);
@@ -206,7 +208,7 @@ function createAndPushKingScore(playerClass: string, game: Game): number {
 
 function highscoreSort(entryA: HighscoreEntry, entryB: HighscoreEntry): number {
     if (entryA.scoreTypePrio === entryB.scoreTypePrio) {
-        if (entryA.scoreTypePrio === SCORE_PRIO_KING_KILL_DPS) {
+        if (entryA.scoreTypePrio === SCORE_PRIO_KILL_DPS) {
             return entryB.score - entryA.score;
         } else {
             return entryA.score - entryB.score;
@@ -221,7 +223,7 @@ function createAndSetGodBoard(highscores: Highscores) {
     highscores.scoreBoards[HIGHSCORE_GOD_TIME] = {
         scores: [],
         description: [
-            "Highscore number based on time",
+            "Highscore number based on damage per second",
             "or HP% of God kill."
         ]
     }
@@ -252,11 +254,13 @@ function getHighscoreWidth(ctx: CanvasRenderingContext2D, highscoreBoard: Highsc
 }
 
 function getHighscoreTextLine(index: number, highscoreBoard: HighscoreBoard): string {
+    const isHardMode = (highscoreBoard.scores[index].scoreTypePrio === SCORE_PRIO_HARD_MODE_HP_PER_CENT || highscoreBoard.scores[index].scoreTypePrio === SCORE_PRIO_HARD_MODE_KILL_DPS);
+    const hardModeText = isHardMode ? "(Hard Mode) " : "";
     if (highscoreBoard.scores[index].scoreSuffix !== undefined) {
         if (highscoreBoard.scores[index].scoreSuffix === "DPS") {
-            return `${(index + 1)}: ${(highscoreBoard.scores[index].score).toLocaleString(undefined, TO_LOCAL_NO_DECIAMLS)} ${highscoreBoard.scores[index].scoreSuffix} (${highscoreBoard.scores[index].playerClass})`;
+            return `${(index + 1)}: ${(highscoreBoard.scores[index].score).toLocaleString(undefined, TO_LOCAL_NO_DECIAMLS)} ${highscoreBoard.scores[index].scoreSuffix} ${hardModeText}(${highscoreBoard.scores[index].playerClass})`;
         } else {
-            return `${(index + 1)}: ${(highscoreBoard.scores[index].score).toFixed(2)}${highscoreBoard.scores[index].scoreSuffix} (${highscoreBoard.scores[index].playerClass})`;
+            return `${(index + 1)}: ${(highscoreBoard.scores[index].score).toFixed(2)}${highscoreBoard.scores[index].scoreSuffix} ${hardModeText}(${highscoreBoard.scores[index].playerClass})`;
         }
     } else {
         return `${(index + 1)}: ${highscoreBoard.scores[index].score} (${highscoreBoard.scores[index].playerClass})`;

@@ -1,9 +1,8 @@
-next test run: ball
+next test run:
 increase version
 
 current tasks:
-- change king highscore to damage per second ranking 
-
+- change god highscore to damage per second ranking 
 - each stream spend time on thinking whats next
     - what makes most sense to work on?
             - some off time between streams. Good for getting ideas
@@ -11,6 +10,26 @@ current tasks:
             - finding out how to min/max something?
                 - difficult to create when i am the one developing it
                 - 
+            - more to explore on map, currently most is the same
+                - manipulate certain part of map with modifier
+                    - dark modifier
+                        - "fog of war". Player can only see whats in line of sight
+                        - blocking tiles block vision
+                        - boss in the middle is "dark" copy of all players
+                        - if boss is defeated, dark modifier dissapears
+                            - and player gets "dark" modifier
+                    - ice modifier
+                        - ice tile patches which makes enemies and players "slide"
+                        - more difficult movement
+                    - enemies in area do not respawn
+                    - can have a boss enemy in the middle
+                    - be able to modify enemies in this area
+                    - be able to spawn different enemies
+                    - be able to change map tile textures
+                    - be able to set modifiers on circlular/rectangular map part
+                    - be able to set modifiers on celestial direction map part
+                    - what does the player gain doing it?
+
 
 - god kill should bless legendary for higher cap
 - musician upgrades: less dependant on note frequency (shield, dot)

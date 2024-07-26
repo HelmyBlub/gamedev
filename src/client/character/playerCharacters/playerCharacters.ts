@@ -74,7 +74,7 @@ export function onDomLoadSetCharacterClasses() {
 }
 
 export function paintPlayerCharacterUI(ctx: CanvasRenderingContext2D, player: Player, topLeft: Position, width: number, height: number, game: Game) {
-    if (game.state.bossStuff.godFightStarted || game.state.bossStuff.kingFightStartedTime !== undefined) return;
+    if (game.state.bossStuff.godFightStartedTime !== undefined || game.state.bossStuff.kingFightStartedTime !== undefined) return;
 
     const aplha = 0.75;
     ctx.globalAlpha *= aplha;

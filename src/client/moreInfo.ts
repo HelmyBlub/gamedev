@@ -189,7 +189,7 @@ export function createRequiredMoreInfos(game: Game): MoreInfos {
     } else {
         if (playerChar) {
             const celestialDirection = getCelestialDirection(playerChar, game.state.map);
-            if (game.state.bossStuff.godFightStarted) {
+            if (game.state.bossStuff.godFightStartedTime !== undefined) {
                 const godMoreInfosContainer = godCreateMoreInfos(game, `God`);
                 if (godMoreInfosContainer) {
                     moreInfos.containers.containers.push(godMoreInfosContainer);

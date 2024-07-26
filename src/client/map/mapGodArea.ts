@@ -24,7 +24,7 @@ export function createAndSetGodAreaOnMap(chunkX: number, chunkY: number, map: Ga
 }
 
 export function checkGodFightStart(game: Game) {
-    if (!game.state.map.godArea || game.state.bossStuff.kingFightStartedTime !== undefined || game.state.bossStuff.godFightStarted) return;
+    if (!game.state.map.godArea || game.state.bossStuff.kingFightStartedTime !== undefined || game.state.bossStuff.godFightStartedTime !== undefined) return;
     const allPlayers = getPlayerCharacters(game.state.players);
     if (allPlayers === undefined || allPlayers.length === 0) return;
     for (let player of allPlayers) {
@@ -46,7 +46,7 @@ export function checkGodFightStart(game: Game) {
 }
 
 export function startGodFight(godArea: GameMapGodArea, map: GameMap, game: Game) {
-    game.state.bossStuff.godFightStarted = true;
+    game.state.bossStuff.godFightStartedTime = game.state.time;
     closeOfGodArea(godArea, map, game);
     spawnGodEnemy(godArea, game);
     if (game.UI.playerGlobalAlphaMultiplier > 0.25) {

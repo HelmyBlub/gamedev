@@ -49,7 +49,7 @@ export function addGodEnemyType() {
 }
 
 export function godEnemyHardModeConditionFullfiled(game: Game): boolean {
-    if (!game.state.bossStuff.godFightStarted) return false;
+    if (game.state.bossStuff.godFightStartedTime === undefined) return false;
     const god = game.state.bossStuff.bosses.find(b => b.type === CHARACTER_TYPE_GOD_ENEMY);
     if (!god) return false;
     for (let ability of god.abilities) {
@@ -97,7 +97,7 @@ export function applyExponentialStackingDamageTakenDebuff(target: Character, gam
 
 export function godCreateMoreInfos(game: Game, heading: string): MoreInfosPartContainer | undefined {
     if (!game.ctx) return;
-    if (!game.state.bossStuff.godFightStarted) return;
+    if (game.state.bossStuff.godFightStartedTime === undefined) return;
     let god = game.state.bossStuff.bosses[game.state.bossStuff.bosses.length - 1];
     return createCharacterMoreInfosPartContainer(game.ctx, god, game.UI.moreInfos, game, heading);
 }

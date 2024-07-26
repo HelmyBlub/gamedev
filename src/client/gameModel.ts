@@ -140,7 +140,7 @@ export type BossStuff = {
     bossLevelCounter: number,
     bossSpawnEachXMilliSecond: number,
     kingFightStartedTime?: number,
-    godFightStarted?: boolean,
+    godFightStartedTime?: number,
     fightWipe?: boolean,
     nextKings: NextKings,
     closedOfKingAreaEntrance?: KingAreaEntranceData,
