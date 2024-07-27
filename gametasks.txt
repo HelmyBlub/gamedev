@@ -1,9 +1,17 @@
-next test run:
+next test run: musician
 increase version
 
 current tasks:
-- limit damage numbers on screen
-- musician: be able to place notes 1/8 & 1/16 allways
+- map modifier
+    - dark modifier, limits line of sight
+        - on paint call map modifer paint
+            - darkness
+                - blocks line of sight. how to do?
+                - iterate over painted chunks?:
+                    - find painted chunks with modifier darkness
+                    - determine "line of sight"
+                    - for every tile, check 
+                    - paint over with black what player can not see
 
 - each stream spend time on thinking whats next
     - what makes most sense to work on?
@@ -23,6 +31,13 @@ current tasks:
                     - ice modifier
                         - ice tile patches which makes enemies and players "slide"
                         - more difficult movement
+                    - wind modifier
+                        - pushes characters, maybe objects?, to a side
+                    - lightning storm
+                        - creates lightning strikes randomly
+                        - damages player and enemie
+                    - rainy weather
+
                     - enemies in area do not respawn
                     - can have a boss enemy in the middle
                     - be able to modify enemies in this area
@@ -31,6 +46,8 @@ current tasks:
                     - be able to set modifiers on circlular/rectangular map part
                     - be able to set modifiers on celestial direction map part
                     - what does the player gain doing it?
+
+- musician: be able to place notes 1/8 & 1/16 allways
 
 
 next feature ideas:

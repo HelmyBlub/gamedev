@@ -15,6 +15,7 @@ import { Player, findPlayerById, isAutoSkillActive } from "./player.js";
 import { playerInputBindingToDisplayValue } from "./playerInput.js";
 import { createEndScreenMoreInfos, paintMoreInfos, paintMoreInfosPart } from "./moreInfo.js";
 import { paintDamageNumbers, paintStackTextData, pushStackPaintTextData } from "./floatingText.js";
+import { paintMapModifierLate } from "./map/modifiers/mapModifier.js";
 
 GAME_IMAGES["blankKey"] = {
     imagePath: "/images/singleBlankKey.png",
@@ -42,6 +43,7 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
     paintBossCrown(ctx, cameraPosition, game);
     paintAbilityObjects(ctx, game.state.abilityObjects, game, "afterCharacterPaint");
     paintDamageNumbers(ctx, game.UI.displayTextData, cameraPosition, game.state.time);
+    paintMapModifierLate(ctx, cameraPosition, game);
     paintStackTextData(ctx, game.UI.stackTextsData, game.state.time);
     paintClosestInteractable(ctx, cameraPosition, game);
     paintKeyInfo(ctx, game);

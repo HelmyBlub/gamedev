@@ -7,6 +7,7 @@ import { GameMap, MapChunk, chunkXYToMapKey } from "./map.js";
 import { mapGenerationKingChunkStuff } from "./mapKingArea.js";
 import { IMAGE_FIRE_ANIMATION, MAP_OBJECT_FIRE_ANIMATION } from "./mapObjectFireAnimation.js";
 import { createAndSetGodAreaOnMap } from "./mapGodArea.js";
+import { GAME_MAP_MODIFIER_FUNCTIONS, mapModifyIsChunkAffected } from "./modifiers/mapModifier.js";
 
 export const pastCharactersMapTilePositions = [
     { x: 3, y: 2, tileId: 5, lookDirection: Math.PI / 2 },
@@ -54,6 +55,14 @@ export function createNewChunk(map: GameMap, chunkX: number, chunkY: number, idC
     if (createAndSetGodAreaOnMap(chunkX, chunkY, map, game)) return map.chunks[chunkXYToMapKey(chunkX, chunkY)];
     map.chunks[chunkXYToMapKey(chunkX, chunkY)] = newChunk;
     createFixPositionRespawnEnemies(newChunk, chunkX, chunkY, map, idCounter, game);
+    for (let modifier of map.mapModifiers) {
+        if (mapModifyIsChunkAffected(modifier, chunkX, chunkY, game)) {
+            const modifierFunctions = GAME_MAP_MODIFIER_FUNCTIONS[modifier.type];
+            if (modifierFunctions && modifierFunctions.onChunkCreateModify) {
+                modifierFunctions.onChunkCreateModify(newChunk, chunkX, chunkY, game);
+            }
+        }
+    }
     return newChunk;
 }
 

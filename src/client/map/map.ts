@@ -5,6 +5,7 @@ import { GameMapGodArea } from "./mapGodArea.js";
 import { GameMapKingArea } from "./mapKingArea.js";
 import { MapTileObject } from "./mapObjects.js";
 import { MapPaintLayer } from "./mapPaint.js";
+import { addMapModifer, GameMapModifier } from "./modifiers/mapModifier.js";
 
 export type MapTiles = {
     [key: number]: MapTile,
@@ -25,6 +26,7 @@ export type MapChunk = {
     characters: Character[],
     isKingAreaChunk?: boolean,
     isGodAreaChunk?: boolean,
+    mapModifiers?: string[],
 }
 
 export const TILE_VALUES: MapTiles = {
@@ -55,6 +57,7 @@ export type GameMap = {
     activeCollisionCheckChunkKeys: string[],
     activeChunkRange: number,
     chunks: { [key: string]: MapChunk },
+    mapModifiers: GameMapModifier[],
     kingArea?: GameMapKingArea,
     godArea?: GameMapGodArea,
 }
@@ -78,8 +81,10 @@ export function createMap(): GameMap {
         activeCollisionCheckChunkKeys: [],
         activeChunkRange: 1000,
         chunks: {},
+        mapModifiers: [],
     }
     initKingArea(map, 20000);
+    //addMapModifer(map);
     return map;
 }
 

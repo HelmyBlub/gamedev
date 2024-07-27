@@ -17,12 +17,13 @@ import { onDomLoadImagesLoad } from "./imageLoad.js";
 import { onDomLoadMapTiles } from "./map/map.js";
 import { addGodEnemyType } from "./character/enemy/god/godEnemy.js";
 import { onDomLoadSetAchievementsFunctions } from "./achievements/achievements.js";
+import { onDomLoadMapModifiers } from "./map/modifiers/mapModifier.js";
 
 var gameCount: number = 0;
 export const GAME_VERSION: GameVersion = {
     major: 0,
     minor: 4,
-    patch: 270,
+    patch: 271,
 }
 
 export function start() {
@@ -88,6 +89,7 @@ document.addEventListener("DOMContentLoaded", function () {
     onDomLoadSetDebuffsFunctions();
     onDomLoadSetCharacterUpgradeFunctions();
     onDomLoadSetAchievementsFunctions();
+    onDomLoadMapModifiers();
 
     onDomLoadImagesLoad(); // should be the last load
     start();
