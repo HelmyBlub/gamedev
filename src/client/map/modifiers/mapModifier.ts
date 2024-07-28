@@ -51,10 +51,10 @@ export function onDomLoadMapModifiers() {
 export function addMapModifer(map: GameMap) {
     const area: GameMapAreaRect = {
         type: "rect",
-        x: 320,
-        y: -500,
-        width: 1000,
-        height: 1000,
+        x: -1000,
+        y: -1000,
+        width: 2000,
+        height: 2000,
     };
     const darkness = createMapModifierDarkness(area);
     map.mapModifiers.push(darkness);

@@ -13,6 +13,13 @@ current tasks:
                     - for every tile, check 
                     - paint over with black what player can not see
 
+
+- musician: be able to place notes 1/8 & 1/16 allways
+
+
+next feature ideas:
+- maybe:
+    - improve path finding perfromance
 - each stream spend time on thinking whats next
     - what makes most sense to work on?
             - some off time between streams. Good for getting ideas
@@ -47,12 +54,6 @@ current tasks:
                     - be able to set modifiers on celestial direction map part
                     - what does the player gain doing it?
 
-- musician: be able to place notes 1/8 & 1/16 allways
-
-
-next feature ideas:
-- maybe:
-    - improve path finding perfromance
 - think about next bigger feature 
     - extends existings classes for more upgrade choice?
         - more run variation
