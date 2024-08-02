@@ -9,7 +9,7 @@ export type AbilityMusicSheetUpgradeShield = AbilityUpgrade & {
     lastShieldGainTime?: number,
 }
 
-export const ABILITY_MUSIC_SHEET_UPGRADE_SHIELD = "Shield per Note";
+export const ABILITY_MUSIC_SHEET_UPGRADE_SHIELD = "Shield Gain";
 const SHIELD_GAIN_AMOUNT_PER_LEVEL = 50;
 const SHIELD_GAIN_INTERVAL = 4000;
 

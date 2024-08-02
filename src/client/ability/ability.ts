@@ -336,7 +336,7 @@ export function resetAllCharacterAbilities(character: Character) {
             const keys = Object.keys(ability.upgrades);
             for (let key of keys) {
                 const functions = upgradesFunctions[key];
-                if (functions.reset) {
+                if (functions && functions.reset) {
                     functions.reset(ability);
                 }
             }

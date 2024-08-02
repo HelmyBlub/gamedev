@@ -2,18 +2,18 @@ next test run: musician
 increase version
 
 current tasks:
+- musician: shield per note renmane?
 - map modifier
     - dark modifier, limits line of sight
         - on paint call map modifer paint
             - darkness
                 - blocks line of sight. how to do?
-                - iterate over painted chunks?:
-                    - find painted chunks with modifier darkness
-                    - determine "line of sight"
-                    - for every tile, check 
-                    - paint over with black what player can not see
+                    - improve. Rectangle one seems confusing
 
 
+
+- musician: play note when placed?
+    - problem: hard to know how it sounds when you have to wait on longer music sheets
 - musician: be able to place notes 1/8 & 1/16 allways
 
 
