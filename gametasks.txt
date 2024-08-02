@@ -2,13 +2,13 @@ next test run: musician
 increase version
 
 current tasks:
-- musician: shield per note renmane?
 - map modifier
     - dark modifier, limits line of sight
         - on paint call map modifer paint
             - darkness
                 - blocks line of sight. how to do?
-                    - improve. Rectangle one seems confusing
+                    - still improve. Seems to be difficult, maybe google a bit first?
+
 
 
 
