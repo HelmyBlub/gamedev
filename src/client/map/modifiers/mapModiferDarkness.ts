@@ -165,11 +165,11 @@ function paintModiferLateV2(ctx: CanvasRenderingContext2D, modifier: GameMapModi
                 const positionOrder: Position[] = [];
                 if (!paintLeft && paintTop) {
                     positionOrder.push({ x: curPos.x, y: curPos.y });
-                    positionOrder.push({ x: curPos.x, y: curPos.y + map.tileSize });
+                    positionOrder.push({ x: curPos.x + map.tileSize, y: curPos.y });
                     if (paintRight) positionOrder.push({ x: curPos.x + map.tileSize, y: curPos.y + map.tileSize });
                     if (paintBottom) positionOrder.push({ x: curPos.x, y: curPos.y + map.tileSize });
                 } else if (!paintTop && paintRight) {
-                    positionOrder.push({ x: curPos.x, y: curPos.y + map.tileSize });
+                    positionOrder.push({ x: curPos.x + map.tileSize, y: curPos.y });
                     positionOrder.push({ x: curPos.x + map.tileSize, y: curPos.y + map.tileSize });
                     if (paintBottom) positionOrder.push({ x: curPos.x, y: curPos.y + map.tileSize });
                     if (paintLeft) positionOrder.push({ x: curPos.x, y: curPos.y });
@@ -177,15 +177,24 @@ function paintModiferLateV2(ctx: CanvasRenderingContext2D, modifier: GameMapModi
                     positionOrder.push({ x: curPos.x + map.tileSize, y: curPos.y + map.tileSize });
                     positionOrder.push({ x: curPos.x, y: curPos.y + map.tileSize });
                     if (paintLeft) positionOrder.push({ x: curPos.x, y: curPos.y });
-                    if (paintTop) positionOrder.push({ x: curPos.x, y: curPos.y + map.tileSize });
+                    if (paintTop) positionOrder.push({ x: curPos.x + map.tileSize, y: curPos.y });
                 } else if (!paintBottom && paintLeft) {
                     positionOrder.push({ x: curPos.x, y: curPos.y + map.tileSize });
                     positionOrder.push({ x: curPos.x, y: curPos.y });
-                    if (paintTop) positionOrder.push({ x: curPos.x, y: curPos.y + map.tileSize });
+                    if (paintTop) positionOrder.push({ x: curPos.x + map.tileSize, y: curPos.y });
                     if (paintRight) positionOrder.push({ x: curPos.x + map.tileSize, y: curPos.y + map.tileSize });
                 }
 
                 if (positionOrder.length === 0) continue;
+                let rectPath = new Path2D();
+                rectPath.lineTo(topLeftPaint.x, topLeftPaint.y);
+                rectPath.lineTo(topLeftPaint.x + rect.width, topLeftPaint.y);
+                rectPath.lineTo(topLeftPaint.x + rect.width, topLeftPaint.y + rect.height);
+                rectPath.lineTo(topLeftPaint.x, topLeftPaint.y + rect.height);
+                rectPath.lineTo(topLeftPaint.x, topLeftPaint.y);
+                ctx.save();
+                ctx.clip(rectPath);
+
                 ctx.beginPath();
                 const startPaint = getPointPaintPosition(ctx, positionOrder[0], cameraPosition);
                 ctx.moveTo(startPaint.x, startPaint.y);
@@ -203,10 +212,11 @@ function paintModiferLateV2(ctx: CanvasRenderingContext2D, modifier: GameMapModi
                 let movedStartPos = { x: startPaint.x, y: startPaint.y };
                 const startDirection = calculateDirection(cameraPosition, positionOrder[0]);
                 moveByDirectionAndDistance(movedStartPos, startDirection, viewDistance, false);
-                ctx.lineTo(movedStartPos.x, movedStartPos.y);
+                ctx.arc(viewPaintMiddle.x, viewPaintMiddle.y, viewDistance + 1, lastDirection, startDirection, true);
 
                 ctx.closePath();
                 ctx.fill();
+                ctx.restore();
 
             }
         }
