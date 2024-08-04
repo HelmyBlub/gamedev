@@ -53,107 +53,92 @@ function rectangleWithCircleCutOut(ctx: CanvasRenderingContext2D, rectTopLeft: P
 }
 
 function paintModiferLate(ctx: CanvasRenderingContext2D, modifier: GameMapModifier, cameraPosition: Position, game: Game) {
-    paintModiferLateV3(ctx, modifier, cameraPosition, game);
+    paintModiferLateV4(ctx, modifier, cameraPosition, game);
 }
 
 function determineVisionWalls(blockingPos: Position, visionCenter: Position, map: GameMap, game: Game): { wall: Position[], endAngle: number } | undefined {
-    const wall: Position[] = [];
+    const wallPoints: Position[] = [];
+    let clockWiseEndReached = false;
+    let counterClockEndReached = false;
     const tileTopLeft = {
-        x: blockingPos.x - modulo(blockingPos.x, map.tileSize),
-        y: blockingPos.y - modulo(blockingPos.y, map.tileSize),
+        x: Math.round(blockingPos.x),
+        y: Math.round(blockingPos.y),
+    };
+    tileTopLeft.x = blockingPos.x - modulo(blockingPos.x, map.tileSize);
+    tileTopLeft.y = blockingPos.y - modulo(blockingPos.y, map.tileSize);
+
+    const firstPoint = {
+        x: visionCenter.x > tileTopLeft.x ? tileTopLeft.x : tileTopLeft.x + map.tileSize,
+        y: visionCenter.y > tileTopLeft.y ? tileTopLeft.y : tileTopLeft.y + map.tileSize,
+    };
+    wallPoints.push(firstPoint);
+
+    while (!counterClockEndReached) {
+        const currentPoint = wallPoints[0];
+        if (visionCenter.y > currentPoint.y) {  //TOP
+            if (visionCenter.x < currentPoint.x) { //RIGHT
+                const nextLeft = { x: currentPoint.x - map.tileSize, y: currentPoint.y };
+                const nextLeftBlocking = isPositionBlocking(nextLeft, map, game.state.idCounter, game);
+                const next2Left = { x: currentPoint.x - map.tileSize * 2, y: currentPoint.y };
+                const next2LeftBlocking = isPositionBlocking(next2Left, map, game.state.idCounter, game);
+                if (next2LeftBlocking) {
+                    wallPoints.unshift(nextLeft);
+                    continue;
+                } else {
+                    const next2Left1Top = { x: currentPoint.x - map.tileSize * 2, y: currentPoint.y - map.tileSize };
+                    const next2Left1TopBlocking = isPositionBlocking(next2Left1Top, map, game.state.idCounter, game);
+                    if (!next2Left1TopBlocking) {
+                        const nextTop = { x: currentPoint.x, y: currentPoint.y - map.tileSize };
+                        wallPoints.unshift(nextTop);
+                        continue;
+                    }
+                }
+            }
+        }
+        counterClockEndReached = true;
+        break;
+    }
+    while (!clockWiseEndReached && false) {
+        const currentPoint = wallPoints[wallPoints.length - 1];
+        if (visionCenter.y > currentPoint.y) {  //TOP
+            if (visionCenter.x < currentPoint.x) { //RIGHT
+                const nextBottom = { x: currentPoint.x, y: currentPoint.y + map.tileSize };
+                const nextBottomBlocking = isPositionBlocking(nextBottom, map, game.state.idCounter, game);
+                const next2Bottom = { x: currentPoint.x, y: currentPoint.y + map.tileSize * 2 };
+                const next2BottomBlocking = isPositionBlocking(next2Bottom, map, game.state.idCounter, game);
+                if (next2BottomBlocking) {
+                    wallPoints.push(nextBottom);
+                    continue;
+                } else {
+                    const next2Bottom1Right = { x: currentPoint.x + map.tileSize, y: currentPoint.y + map.tileSize * 2 };
+                    const next2Bottom1RightBlocking = isPositionBlocking(next2Bottom1Right, map, game.state.idCounter, game);
+                    if (!next2Bottom1RightBlocking) {
+                        const nextRight = { x: currentPoint.x + map.tileSize, y: currentPoint.y };
+                        wallPoints.push(nextRight);
+                        continue;
+                    }
+                }
+            }
+        }
+        clockWiseEndReached = true;
+        break;
     }
 
-    let paintTop = false;
-    let paintRight = false;
-    let paintBottom = false;
-    let paintLeft = false;
 
-    if (visionCenter.y > tileTopLeft.y) {
-        paintTop = true;
-        const cameraBetween = visionCenter.x > tileTopLeft.x && visionCenter.x < tileTopLeft.x + map.tileSize;
-        if (!cameraBetween) {
-            const blockingAbove = isPositionBlocking({ x: tileTopLeft.x, y: tileTopLeft.y - map.tileSize }, map, game.state.idCounter, game);
-            if (blockingAbove) {
-                const side = visionCenter.x < tileTopLeft.x ? -1 : 1;
-                const blockingAboveSide = isPositionBlocking({ x: tileTopLeft.x + map.tileSize * side, y: tileTopLeft.y - map.tileSize }, map, game.state.idCounter, game);
-                if (!blockingAboveSide) {
-                    paintTop = false;
-                }
-            }
-        }
-    }
-    if (visionCenter.x < tileTopLeft.x + map.tileSize) {
-        paintRight = true;
-        const cameraBetween = visionCenter.y > tileTopLeft.y && visionCenter.y < tileTopLeft.y + map.tileSize;
-        if (!cameraBetween) {
-            const blockingRight = isPositionBlocking({ x: tileTopLeft.x + map.tileSize, y: tileTopLeft.y }, map, game.state.idCounter, game);
-            if (blockingRight) {
-                const side = visionCenter.y < tileTopLeft.y ? -1 : 1;
-                const blockingSide = isPositionBlocking({ x: tileTopLeft.x + map.tileSize, y: tileTopLeft.y + map.tileSize * side }, map, game.state.idCounter, game);
-                if (!blockingSide) {
-                    paintRight = false;
-                }
-            }
-        }
-    }
-    if (visionCenter.y < tileTopLeft.y + map.tileSize) {
-        paintBottom = true;
-        const cameraBetween = visionCenter.x > tileTopLeft.x && visionCenter.x < tileTopLeft.x + map.tileSize;
-        if (!cameraBetween) {
-            const blockingBellow = isPositionBlocking({ x: tileTopLeft.x, y: tileTopLeft.y + map.tileSize }, map, game.state.idCounter, game);
-            if (blockingBellow) {
-                const side = visionCenter.x < tileTopLeft.x ? -1 : 1;
-                const blockingAboveSide = isPositionBlocking({ x: tileTopLeft.x + map.tileSize * side, y: tileTopLeft.y + map.tileSize }, map, game.state.idCounter, game);
-                if (!blockingAboveSide) {
-                    paintBottom = false;
-                }
-            }
-        }
-    }
-    if (visionCenter.x > tileTopLeft.x) {
-        paintLeft = true;
-        const cameraBetween = visionCenter.y > tileTopLeft.y && visionCenter.y < tileTopLeft.y + map.tileSize;
-        if (!cameraBetween) {
-            const blockingLeft = isPositionBlocking({ x: tileTopLeft.x - map.tileSize, y: tileTopLeft.y }, map, game.state.idCounter, game);
-            if (blockingLeft) {
-                const side = visionCenter.y < tileTopLeft.y ? -1 : 1;
-                const blockingSide = isPositionBlocking({ x: tileTopLeft.x - map.tileSize, y: tileTopLeft.y + map.tileSize * side }, map, game.state.idCounter, game);
-                if (!blockingSide) {
-                    paintLeft = false;
-                }
-            }
-        }
-    }
-    if (!paintLeft && paintTop) {
-        wall.push({ x: tileTopLeft.x, y: tileTopLeft.y });
-        wall.push({ x: tileTopLeft.x + map.tileSize, y: tileTopLeft.y });
-        if (paintRight) wall.push({ x: tileTopLeft.x + map.tileSize, y: tileTopLeft.y + map.tileSize });
-        if (paintBottom) wall.push({ x: tileTopLeft.x, y: tileTopLeft.y + map.tileSize });
-    } else if (!paintTop && paintRight) {
-        wall.push({ x: tileTopLeft.x + map.tileSize, y: tileTopLeft.y });
-        wall.push({ x: tileTopLeft.x + map.tileSize, y: tileTopLeft.y + map.tileSize });
-        if (paintBottom) wall.push({ x: tileTopLeft.x, y: tileTopLeft.y + map.tileSize });
-        if (paintLeft) wall.push({ x: tileTopLeft.x, y: tileTopLeft.y });
-    } else if (!paintRight && paintBottom) {
-        wall.push({ x: tileTopLeft.x + map.tileSize, y: tileTopLeft.y + map.tileSize });
-        wall.push({ x: tileTopLeft.x, y: tileTopLeft.y + map.tileSize });
-        if (paintLeft) wall.push({ x: tileTopLeft.x, y: tileTopLeft.y });
-        if (paintTop) wall.push({ x: tileTopLeft.x + map.tileSize, y: tileTopLeft.y });
-    } else if (!paintBottom && paintLeft) {
-        wall.push({ x: tileTopLeft.x, y: tileTopLeft.y + map.tileSize });
-        wall.push({ x: tileTopLeft.x, y: tileTopLeft.y });
-        if (paintTop) wall.push({ x: tileTopLeft.x + map.tileSize, y: tileTopLeft.y });
-        if (paintRight) wall.push({ x: tileTopLeft.x + map.tileSize, y: tileTopLeft.y + map.tileSize });
-    }
+    // - - - b b
+    // - b - b b
+    // - - b - -
+    // - - v - -
 
-    if (wall.length === 0) {
+
+    if (wallPoints.length < 2) {
         return undefined;
     }
-    const endAngle = calculateDirection(visionCenter, wall[wall.length - 1]);
-    return { wall: wall, endAngle: endAngle };
+    const endAngle = calculateDirection(visionCenter, wallPoints[wallPoints.length - 1]);
+    return { wall: wallPoints, endAngle: endAngle };
 }
 
-function paintModiferLateV3(ctx: CanvasRenderingContext2D, modifier: GameMapModifier, cameraPosition: Position, game: Game) {
+function paintModiferLateV4(ctx: CanvasRenderingContext2D, modifier: GameMapModifier, cameraPosition: Position, game: Game) {
     const map = game.state.map;
     const rect: GameMapAreaRect = modifier.area as GameMapAreaRect;
     const topLeftPaint = getPointPaintPosition(ctx, rect, cameraPosition);
@@ -202,10 +187,12 @@ function paintModiferLateV3(ctx: CanvasRenderingContext2D, modifier: GameMapModi
         const wallResult = determineVisionWalls(blockingPos, cameraPosition, map, game);
         if (wallResult === undefined) {
             currentDirection = nextDirection;
+            console.log("should not happen");
             continue;
         }
         visionWalls.push(wallResult.wall);
-        currentDirection = currentDirection < wallResult.endAngle ? wallResult.endAngle + 0.1 : nextDirection;
+        break;
+        //currentDirection = currentDirection < wallResult.endAngle ? wallResult.endAngle + 0.1 : nextDirection;
     }
     //connect walls together
     for (let positionOrder of visionWalls) {

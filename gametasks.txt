@@ -1,4 +1,4 @@
-next test run: musician
+next test run:
 increase version
 
 current tasks:
@@ -8,6 +8,8 @@ current tasks:
             - darkness
                 - blocks line of sight. how to do?
                     - still improve. Seems to be difficult, maybe google a bit first?
+                        - workking on v4
+                            - follow wall points
 
 
 
