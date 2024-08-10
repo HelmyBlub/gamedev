@@ -3,13 +3,15 @@ increase version
 
 current tasks:
 - map modifier
-    - dark modifier, limits line of sight
-        - on paint call map modifer paint
-            - darkness
-                - blocks line of sight. how to do?
-                    - still improve. Seems to be difficult, maybe google a bit first?
-                        - workking on v4
-                            - follow wall points
+    - darkness
+        - blocks line of sight. how to do?
+            - still improve. Seems to be difficult
+                - workking on v4
+                    - follow wall points
+                    - strugeling
+                    - depending on view direction logic needs to change
+                    - currenlty using tile-corners for black corners, but unsure how to swicht it based on view direction
+                    
 
 
 

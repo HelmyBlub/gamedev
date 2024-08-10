@@ -56,7 +56,90 @@ function paintModiferLate(ctx: CanvasRenderingContext2D, modifier: GameMapModifi
     paintModiferLateV4(ctx, modifier, cameraPosition, game);
 }
 
-function determineVisionWalls(blockingPos: Position, visionCenter: Position, map: GameMap, game: Game): { wall: Position[], endAngle: number } | undefined {
+function addOneTurnWallPoint(wallPoints: Position[], currentPoint: Position, turnDirection: Position, closerDirection: Position, map: GameMap, game: Game): Position | undefined {
+    // TOP RIGHT
+    // - - - - - - -
+    // - - b b b - -
+    // - - b b b b c 
+    // - - b b - - -
+    // - v - - - - -
+
+    // BOTTOM RIGHT
+    // - - - - - v -
+    // - - - b b - -
+    // c b b b b - - 
+    // - - b b b - -
+    // - - - - - - -
+
+    // TOP LEFT
+    // - - b - - - -
+    // - - b - - - -
+    // - - c - - - - 
+    // - - b b - - -
+    // - - - - - v -
+
+    // TOP LEFT
+    // - - b b - - -
+    // - - c b - - -
+    // - - - b - - - 
+    // - - - - - - -
+    // - - v - - - -
+
+    const next1Turn1Closer = {
+        x: currentPoint.x + turnDirection.x + closerDirection.x,
+        y: currentPoint.y + turnDirection.y + closerDirection.y,
+    };
+    const next1Turn1CloserBlocking = isPositionBlocking(next1Turn1Closer, map, game.state.idCounter, game);
+    if (next1Turn1CloserBlocking) {
+        const nextCloser = { x: currentPoint.x + closerDirection.x, y: currentPoint.y + closerDirection.y };
+        let isDuplicate = wallPoints.find(p => p.x === nextCloser.x && p.y === nextCloser.y);
+        if (!isDuplicate) {
+            return nextCloser;
+        }
+    }
+    const next1Turn = { x: currentPoint.x + turnDirection.x, y: currentPoint.y + turnDirection.y };
+    const next1TurnBlocking = isPositionBlocking(next1Turn, map, game.state.idCounter, game);
+    if (!next1TurnBlocking) {
+        const next1Turn1Away = {
+            x: currentPoint.x + turnDirection.x - closerDirection.x,
+            y: currentPoint.y + turnDirection.y - closerDirection.y
+        };
+        const next1Turn1AwayBlocking = isPositionBlocking(next1Turn1Away, map, game.state.idCounter, game);
+        if (next1Turn1AwayBlocking) {
+            const nextAway = { x: currentPoint.x - closerDirection.x, y: currentPoint.y - closerDirection.y };
+            return nextAway;
+        } else {
+            return undefined;
+        }
+    }
+    const next2Turn1Closer = {
+        x: currentPoint.x + turnDirection.x * 2 + closerDirection.x,
+        y: currentPoint.y + turnDirection.y * 2 + closerDirection.y
+    };
+    const next2Turn1CloserBlocking = isPositionBlocking(next2Turn1Closer, map, game.state.idCounter, game);
+    if (next2Turn1CloserBlocking) {
+        return next1Turn;
+    }
+
+    const next2Turn = { x: currentPoint.x + turnDirection.x * 2, y: currentPoint.y + turnDirection.y * 2 };
+    const next2TurnBlocking = isPositionBlocking(next2Turn, map, game.state.idCounter, game);
+    if (next2TurnBlocking) {
+        return next1Turn;
+    }
+    const next2Turn1Away = {
+        x: currentPoint.x + turnDirection.x * 2 - closerDirection.x,
+        y: currentPoint.y + turnDirection.y * 2 - closerDirection.y
+    };
+    const next2Turn1AwayBlocking = isPositionBlocking(next2Turn1Away, map, game.state.idCounter, game);
+    if (!next2Turn1AwayBlocking) {
+        const nextAway = { x: currentPoint.x - closerDirection.x, y: currentPoint.y - closerDirection.y };
+        return nextAway;
+    }
+
+    return undefined;
+}
+
+function determineVisionWalls(blockingPos: Position, visionCenter: Position, visionRange: number, map: GameMap, game: Game): { wall: Position[], endAngle: number } | undefined {
     const wallPoints: Position[] = [];
     let clockWiseEndReached = false;
     let counterClockEndReached = false;
@@ -69,133 +152,75 @@ function determineVisionWalls(blockingPos: Position, visionCenter: Position, map
         y: blockingRounded.y - modulo(blockingRounded.y, map.tileSize),
     }
 
+    // TODO: move based on view direction
+    //      later steps need to check correct tile based on view direction
     const firstPoint = {
         x: visionCenter.x > blockingTileTopLeft.x ? blockingTileTopLeft.x : blockingTileTopLeft.x + map.tileSize,
         y: visionCenter.y > blockingTileTopLeft.y ? blockingTileTopLeft.y : blockingTileTopLeft.y + map.tileSize,
     };
     wallPoints.push(firstPoint);
-    // - - - - - - -
-    // - - - - b c2-
-    // - b - - b c b s
-    // - - b - - - -
-    // - - v - - - -
 
+    const directionLeft = { x: -map.tileSize, y: 0 };
+    const directionRight = { x: map.tileSize, y: 0 };
+    const directionUp = { x: 0, y: -map.tileSize };
+    const directionDown = { x: 0, y: map.tileSize };
     while (!counterClockEndReached) {
         const currentPoint = wallPoints[0];
+        let nextPoint: Position | undefined = undefined;
         if (visionCenter.y > currentPoint.y) {  //TOP
             if (visionCenter.x < currentPoint.x) { //RIGHT
-                const next1Left1Bottom = { x: currentPoint.x - map.tileSize, y: currentPoint.y + map.tileSize };
-                const next1Left1BottomBlocking = isPositionBlocking(next1Left1Bottom, map, game.state.idCounter, game);
-                if (next1Left1BottomBlocking) {
-                    if (wallPoints.length > 1 && wallPoints[1].y <= currentPoint.y) {
-                        const nextBottom = { x: currentPoint.x, y: currentPoint.y + map.tileSize };
-                        wallPoints.unshift(nextBottom);
-                        continue;
-                    }
-                }
-                const nextLeft = { x: currentPoint.x - map.tileSize, y: currentPoint.y };
-                const nextLeftBlocking = isPositionBlocking(nextLeft, map, game.state.idCounter, game);
-                if (!nextLeftBlocking) {
-                    const next1Left1Top = { x: currentPoint.x - map.tileSize, y: currentPoint.y - map.tileSize };
-                    const next1Left1TopBlocking = isPositionBlocking(next1Left1Top, map, game.state.idCounter, game);
-                    if (next1Left1TopBlocking) {
-                        const nextTop = { x: currentPoint.x, y: currentPoint.y - map.tileSize };
-                        wallPoints.unshift(nextTop);
-                        continue;
-                    } else {
-                        counterClockEndReached = true;
-                        break;
-                    }
-                }
-                const next2Left1Bottom = { x: currentPoint.x - map.tileSize * 2, y: currentPoint.y + map.tileSize };
-                const next2Left1BottmBlocking = isPositionBlocking(next2Left1Bottom, map, game.state.idCounter, game);
-                if (next2Left1BottmBlocking) {
-                    wallPoints.unshift(nextLeft);
-                    continue;
-                }
-
-                const next2Left = { x: currentPoint.x - map.tileSize * 2, y: currentPoint.y };
-                const next2LeftBlocking = isPositionBlocking(next2Left, map, game.state.idCounter, game);
-                if (next2LeftBlocking) {
-                    wallPoints.unshift(nextLeft);
-                    continue;
-                }
-                const next2Left1Top = { x: currentPoint.x - map.tileSize * 2, y: currentPoint.y - map.tileSize };
-                const next2Left1TopBlocking = isPositionBlocking(next2Left1Top, map, game.state.idCounter, game);
-                if (!next2Left1TopBlocking) {
-                    const nextTop = { x: currentPoint.x, y: currentPoint.y - map.tileSize };
-                    wallPoints.unshift(nextTop);
-                    continue;
-                }
+                nextPoint = addOneTurnWallPoint(wallPoints, currentPoint, directionLeft, directionDown, map, game);
             } else { //LEFT
-                const next1Bottom1Right = { x: currentPoint.x + map.tileSize, y: currentPoint.y + map.tileSize };
-                const next1Bottom1RightBlocking = isPositionBlocking(next1Bottom1Right, map, game.state.idCounter, game);
-                if (next1Bottom1RightBlocking) {
-                    if (wallPoints.length > 1 && wallPoints[1].x <= currentPoint.x) {
-                        const nextRight = { x: currentPoint.x + map.tileSize, y: currentPoint.y };
-                        wallPoints.unshift(nextRight);
-                        continue;
-                    }
+                nextPoint = addOneTurnWallPoint(wallPoints, currentPoint, directionDown, directionRight, map, game);
+            }
+        } else {  //Bottom
+            if (visionCenter.x < currentPoint.x) { //RIGHT
+                nextPoint = addOneTurnWallPoint(wallPoints, currentPoint, directionUp, directionLeft, map, game);
+            } else { //LEFT
+                nextPoint = addOneTurnWallPoint(wallPoints, currentPoint, directionRight, directionUp, map, game);
+            }
+        }
+        if (nextPoint) {
+            const isDuplicate = wallPoints.find(p => nextPoint && p.x === nextPoint.x && p.y === nextPoint.y);
+            if (!isDuplicate) {
+                const distance = calculateDistance(nextPoint, visionCenter);
+                if (distance > visionRange) {
+                    counterClockEndReached = true;
+                    break;
                 }
-                const nextBottom = { x: currentPoint.x, y: currentPoint.y + map.tileSize };
-                const nextBottomBlocking = isPositionBlocking(nextBottom, map, game.state.idCounter, game);
-                if (!nextBottomBlocking) {
-                    const next1Bottom1Left = { x: currentPoint.x - map.tileSize, y: currentPoint.y + map.tileSize };
-                    const next1Bottom1LeftBlocking = isPositionBlocking(next1Bottom1Left, map, game.state.idCounter, game);
-                    if (next1Bottom1LeftBlocking) {
-                        const nextLeft = { x: currentPoint.x - map.tileSize, y: currentPoint.y };
-                        wallPoints.unshift(nextLeft);
-                        continue;
-                    } else {
-                        counterClockEndReached = true;
-                        break;
-                    }
-                }
-                const next2Bottom1Right = { x: currentPoint.x + map.tileSize, y: currentPoint.y + map.tileSize * 2 };
-                const next2Bottom1RightBlocking = isPositionBlocking(next2Bottom1Right, map, game.state.idCounter, game);
-                if (next2Bottom1RightBlocking) {
-                    wallPoints.unshift(nextBottom);
-                    continue;
-                }
-
-                const next2Bottom = { x: currentPoint.x, y: currentPoint.y + map.tileSize * 2 };
-                const next2BottomBlocking = isPositionBlocking(next2Bottom, map, game.state.idCounter, game);
-                if (next2BottomBlocking) {
-                    wallPoints.unshift(nextBottom);
-                    continue;
-                }
-                const next2Bottom1Left = { x: currentPoint.x - map.tileSize, y: currentPoint.y + map.tileSize * 2 };
-                const next2Bottom1LeftBlocking = isPositionBlocking(next2Bottom1Left, map, game.state.idCounter, game);
-                if (!next2Bottom1LeftBlocking) {
-                    const nextLeft = { x: currentPoint.x - map.tileSize, y: currentPoint.y };
-                    wallPoints.unshift(nextLeft);
-                    continue;
-                }
+                wallPoints.unshift(nextPoint);
+                continue;
             }
         }
         counterClockEndReached = true;
         break;
     }
-    while (!clockWiseEndReached && false) {
+    while (!clockWiseEndReached) {
         const currentPoint = wallPoints[wallPoints.length - 1];
+        let nextPoint: Position | undefined = undefined;
         if (visionCenter.y > currentPoint.y) {  //TOP
             if (visionCenter.x < currentPoint.x) { //RIGHT
-                const nextBottom = { x: currentPoint.x, y: currentPoint.y + map.tileSize };
-                const nextBottomBlocking = isPositionBlocking(nextBottom, map, game.state.idCounter, game);
-                const next2Bottom = { x: currentPoint.x, y: currentPoint.y + map.tileSize * 2 };
-                const next2BottomBlocking = isPositionBlocking(next2Bottom, map, game.state.idCounter, game);
-                if (next2BottomBlocking) {
-                    wallPoints.push(nextBottom);
-                    continue;
-                } else {
-                    const next2Bottom1Right = { x: currentPoint.x + map.tileSize, y: currentPoint.y + map.tileSize * 2 };
-                    const next2Bottom1RightBlocking = isPositionBlocking(next2Bottom1Right, map, game.state.idCounter, game);
-                    if (!next2Bottom1RightBlocking) {
-                        const nextRight = { x: currentPoint.x + map.tileSize, y: currentPoint.y };
-                        wallPoints.push(nextRight);
-                        continue;
-                    }
+                nextPoint = addOneTurnWallPoint(wallPoints, currentPoint, directionDown, directionLeft, map, game);
+            } else { //LEFT
+                nextPoint = addOneTurnWallPoint(wallPoints, currentPoint, directionRight, directionDown, map, game);
+            }
+        } else {  //Bottom
+            if (visionCenter.x < currentPoint.x) { //RIGHT
+                nextPoint = addOneTurnWallPoint(wallPoints, currentPoint, directionLeft, directionUp, map, game);
+            } else { //LEFT
+                nextPoint = addOneTurnWallPoint(wallPoints, currentPoint, directionUp, directionRight, map, game);
+            }
+        }
+        if (nextPoint) {
+            let isDuplicate = wallPoints.find(p => nextPoint && p.x === nextPoint.x && p.y === nextPoint.y);
+            if (!isDuplicate) {
+                const distance = calculateDistance(nextPoint, visionCenter);
+                if (distance > visionRange) {
+                    clockWiseEndReached = true;
+                    break;
                 }
+                wallPoints.push(nextPoint);
+                continue;
             }
         }
         clockWiseEndReached = true;
@@ -258,7 +283,7 @@ function paintModiferLateV4(ctx: CanvasRenderingContext2D, modifier: GameMapModi
             currentDirection = nextDirection;
             continue;
         }
-        const wallResult = determineVisionWalls(blockingPos, cameraPosition, map, game);
+        const wallResult = determineVisionWalls(blockingPos, cameraPosition, viewDistance, map, game);
         if (wallResult === undefined) {
             currentDirection = nextDirection;
             console.log("should not happen");
@@ -268,11 +293,6 @@ function paintModiferLateV4(ctx: CanvasRenderingContext2D, modifier: GameMapModi
         break;
         //currentDirection = currentDirection < wallResult.endAngle ? wallResult.endAngle + 0.1 : nextDirection;
     }
-    //connect walls together
-    for (let positionOrder of visionWalls) {
-        if (positionOrder.length === 0) continue;
-    }
-
 
     //paint black
     let rectPath = new Path2D();
