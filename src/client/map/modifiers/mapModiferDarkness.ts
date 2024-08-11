@@ -281,8 +281,8 @@ function paintModiferLateV4(ctx: CanvasRenderingContext2D, modifier: GameMapModi
 
     const visionWalls: Position[][] = [];
     const defaultStepSize = Math.PI * 2 / 50;
-    let currentDirection = - Math.PI;
-    while (currentDirection < Math.PI) {
+    let currentDirection = - Math.PI * 3 / 2;
+    while (currentDirection < Math.PI / 2) {
         let nextDirection = currentDirection + defaultStepSize;
         const endPosition = { x: cameraPosition.x, y: cameraPosition.y };
         moveByDirectionAndDistance(endPosition, currentDirection, viewDistance, false);
@@ -294,7 +294,7 @@ function paintModiferLateV4(ctx: CanvasRenderingContext2D, modifier: GameMapModi
         const wallResult = determineVisionWalls(blockingPos, cameraPosition, viewDistance, map, game);
         if (wallResult === undefined) {
             currentDirection = nextDirection;
-            console.log("should not happen");
+            //console.log("should not happen");
             continue;
         }
         visionWalls.push(wallResult);

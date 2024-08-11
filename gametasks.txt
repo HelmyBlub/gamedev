@@ -7,10 +7,10 @@ current tasks:
         - blocks line of sight. how to do?
             - still improve. Seems to be difficult
                 - workking on v4
-                    - follow wall points
-                    - strugeling
-                    - depending on view direction logic needs to change
-                    - currenlty using tile-corners for black corners, but unsure how to swicht it based on view direction
+                    - case: "moving closer" missing
+                        - check if new point in vision
+                        - if not -> need to cast ray where it loses vision
+                        - add two new points
 
 
 
