@@ -11,8 +11,6 @@ current tasks:
                     - strugeling
                     - depending on view direction logic needs to change
                     - currenlty using tile-corners for black corners, but unsure how to swicht it based on view direction
-                    
-
 
 
 

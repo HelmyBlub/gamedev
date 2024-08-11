@@ -56,90 +56,100 @@ function paintModiferLate(ctx: CanvasRenderingContext2D, modifier: GameMapModifi
     paintModiferLateV4(ctx, modifier, cameraPosition, game);
 }
 
-function addOneTurnWallPoint(wallPoints: Position[], currentPoint: Position, turnDirection: Position, closerDirection: Position, map: GameMap, game: Game): Position | undefined {
-    // TOP RIGHT
+function addOneTurnWallPoint(wallPoints: Position[], currentPoint: Position, turnDirection: Position, closerDirection: Position, tileCheckAdd: Position, map: GameMap, game: Game): Position | undefined {
+    // TOP RIGHT Counter Clock
+    // b = blocking tile
+    // v = vision center
+    // l = last visited blocking tiles
+    // c = current tile
+    // n = current tile not blocking
+    // Rule 1.1: is current not blocking, away not blocking => ending
     // - - - - - - -
-    // - - b b b - -
-    // - - b b b b c 
-    // - - b b - - -
+    // - - - n l l - 
+    // - - - - - - -
     // - v - - - - -
 
-    // BOTTOM RIGHT
-    // - - - - - v -
-    // - - - b b - -
-    // c b b b b - - 
-    // - - b b b - -
+    // Rule 1.2: is current not blocking, away is blocking => move up
+    // - - - b - - -
+    // - - - n l l - 
     // - - - - - - -
+    // - v - - - - -
 
-    // TOP LEFT
-    // - - b - - - -
-    // - - b - - - -
-    // - - c - - - - 
-    // - - b b - - -
-    // - - - - - v -
+    //---- for all later => current is blocking because of #1 ----
 
-    // TOP LEFT
-    // - - b b - - -
-    // - - c b - - -
-    // - - - b - - - 
+    // Rule 2: is left blocking => move left 
     // - - - - - - -
-    // - - v - - - -
+    // - - - b c l - 
+    // - - - - - - -
+    // - v - - - - -
 
-    const next1Turn1Closer = {
-        x: currentPoint.x + turnDirection.x + closerDirection.x,
-        y: currentPoint.y + turnDirection.y + closerDirection.y,
-    };
-    const next1Turn1CloserBlocking = isPositionBlocking(next1Turn1Closer, map, game.state.idCounter, game);
-    if (next1Turn1CloserBlocking) {
-        const nextCloser = { x: currentPoint.x + closerDirection.x, y: currentPoint.y + closerDirection.y };
-        let isDuplicate = wallPoints.find(p => p.x === nextCloser.x && p.y === nextCloser.y);
-        if (!isDuplicate) {
-            return nextCloser;
-        }
-    }
-    const next1Turn = { x: currentPoint.x + turnDirection.x, y: currentPoint.y + turnDirection.y };
-    const next1TurnBlocking = isPositionBlocking(next1Turn, map, game.state.idCounter, game);
-    if (!next1TurnBlocking) {
-        const next1Turn1Away = {
-            x: currentPoint.x + turnDirection.x - closerDirection.x,
-            y: currentPoint.y + turnDirection.y - closerDirection.y
-        };
-        const next1Turn1AwayBlocking = isPositionBlocking(next1Turn1Away, map, game.state.idCounter, game);
-        if (next1Turn1AwayBlocking) {
-            const nextAway = { x: currentPoint.x - closerDirection.x, y: currentPoint.y - closerDirection.y };
-            return nextAway;
-        } else {
-            return undefined;
-        }
-    }
-    const next2Turn1Closer = {
-        x: currentPoint.x + turnDirection.x * 2 + closerDirection.x,
-        y: currentPoint.y + turnDirection.y * 2 + closerDirection.y
-    };
-    const next2Turn1CloserBlocking = isPositionBlocking(next2Turn1Closer, map, game.state.idCounter, game);
-    if (next2Turn1CloserBlocking) {
-        return next1Turn;
-    }
+    // Rule 3.1: is top left blocking => move left
+    // - - - b - - -
+    // - - - - c l - 
+    // - - - - - - -
+    // - v - - - - -
 
-    const next2Turn = { x: currentPoint.x + turnDirection.x * 2, y: currentPoint.y + turnDirection.y * 2 };
-    const next2TurnBlocking = isPositionBlocking(next2Turn, map, game.state.idCounter, game);
-    if (next2TurnBlocking) {
-        return next1Turn;
+    // Rule 3.2: is top blocking & top left not blocking => move up
+    // - - - - b - -
+    // - - - - c l - 
+    // - - - - - - -
+    // - v - - - - -
+
+    // Rule 4: => move left
+    // - - - - - - -
+    // - - - - c l - 
+    // - - - - - - -
+    // - v - - - - -
+
+    const currentTile = {
+        x: currentPoint.x + tileCheckAdd.x,
+        y: currentPoint.y + tileCheckAdd.y
     }
-    const next2Turn1Away = {
-        x: currentPoint.x + turnDirection.x * 2 - closerDirection.x,
-        y: currentPoint.y + turnDirection.y * 2 - closerDirection.y
+    //#1
+    const currentTileBlocking = isPositionBlocking(currentTile, map, game.state.idCounter, game);
+    const next1AwayTile = {
+        x: currentTile.x - closerDirection.x,
+        y: currentTile.y - closerDirection.y,
     };
-    const next2Turn1AwayBlocking = isPositionBlocking(next2Turn1Away, map, game.state.idCounter, game);
-    if (!next2Turn1AwayBlocking) {
+    if (!currentTileBlocking) {
+        const next1AwayTileBlocking = isPositionBlocking(next1AwayTile, map, game.state.idCounter, game);
+        if (!next1AwayTileBlocking) return undefined;
         const nextAway = { x: currentPoint.x - closerDirection.x, y: currentPoint.y - closerDirection.y };
         return nextAway;
     }
+    //#2
+    const next1TurnTile = {
+        x: currentTile.x + turnDirection.x,
+        y: currentTile.y + turnDirection.y,
+    };
+    const next1TurnTileBlocking = isPositionBlocking(next1TurnTile, map, game.state.idCounter, game);
+    if (next1TurnTileBlocking) {
+        const nextTurn = { x: currentPoint.x + turnDirection.x, y: currentPoint.y + turnDirection.y };
+        return nextTurn;
+    }
+    //#3.1
+    const next1Turn1AwayTile = {
+        x: currentTile.x + turnDirection.x - closerDirection.x,
+        y: currentTile.y + turnDirection.y - closerDirection.y,
+    };
+    const next1Turn1AwayTileBlocking = isPositionBlocking(next1Turn1AwayTile, map, game.state.idCounter, game);
+    if (next1Turn1AwayTileBlocking) {
+        const nextTurn = { x: currentPoint.x + turnDirection.x, y: currentPoint.y + turnDirection.y };
+        return nextTurn;
+    }
 
-    return undefined;
+    //#3.2
+    const next1AwayTileBlocking = isPositionBlocking(next1AwayTile, map, game.state.idCounter, game);
+    if (next1AwayTileBlocking) {
+        const nextAway = { x: currentPoint.x - closerDirection.x, y: currentPoint.y - closerDirection.y };
+        return nextAway;
+    }
+    //#4
+    const nextTurn = { x: currentPoint.x + turnDirection.x, y: currentPoint.y + turnDirection.y };
+    return nextTurn;
 }
 
-function determineVisionWalls(blockingPos: Position, visionCenter: Position, visionRange: number, map: GameMap, game: Game): { wall: Position[], endAngle: number } | undefined {
+function determineVisionWalls(blockingPos: Position, visionCenter: Position, visionRange: number, map: GameMap, game: Game): Position[] | undefined {
     const wallPoints: Position[] = [];
     let clockWiseEndReached = false;
     let counterClockEndReached = false;
@@ -152,8 +162,6 @@ function determineVisionWalls(blockingPos: Position, visionCenter: Position, vis
         y: blockingRounded.y - modulo(blockingRounded.y, map.tileSize),
     }
 
-    // TODO: move based on view direction
-    //      later steps need to check correct tile based on view direction
     const firstPoint = {
         x: visionCenter.x > blockingTileTopLeft.x ? blockingTileTopLeft.x : blockingTileTopLeft.x + map.tileSize,
         y: visionCenter.y > blockingTileTopLeft.y ? blockingTileTopLeft.y : blockingTileTopLeft.y + map.tileSize,
@@ -164,20 +172,24 @@ function determineVisionWalls(blockingPos: Position, visionCenter: Position, vis
     const directionRight = { x: map.tileSize, y: 0 };
     const directionUp = { x: 0, y: -map.tileSize };
     const directionDown = { x: 0, y: map.tileSize };
+    const tileTopLeft = { x: - map.tileSize / 2, y: - map.tileSize / 2 };
+    const tileTopRight = { x: map.tileSize / 2, y: - map.tileSize / 2 };
+    const tileBottomLeft = { x: - map.tileSize / 2, y: map.tileSize / 2 };
+    const tileBottomRight = { x: map.tileSize / 2, y: map.tileSize / 2 };
     while (!counterClockEndReached) {
         const currentPoint = wallPoints[0];
         let nextPoint: Position | undefined = undefined;
         if (visionCenter.y > currentPoint.y) {  //TOP
             if (visionCenter.x < currentPoint.x) { //RIGHT
-                nextPoint = addOneTurnWallPoint(wallPoints, currentPoint, directionLeft, directionDown, map, game);
+                nextPoint = addOneTurnWallPoint(wallPoints, currentPoint, directionLeft, directionDown, tileBottomLeft, map, game);
             } else { //LEFT
-                nextPoint = addOneTurnWallPoint(wallPoints, currentPoint, directionDown, directionRight, map, game);
+                nextPoint = addOneTurnWallPoint(wallPoints, currentPoint, directionDown, directionRight, tileBottomRight, map, game);
             }
         } else {  //Bottom
             if (visionCenter.x < currentPoint.x) { //RIGHT
-                nextPoint = addOneTurnWallPoint(wallPoints, currentPoint, directionUp, directionLeft, map, game);
+                nextPoint = addOneTurnWallPoint(wallPoints, currentPoint, directionUp, directionLeft, tileTopLeft, map, game);
             } else { //LEFT
-                nextPoint = addOneTurnWallPoint(wallPoints, currentPoint, directionRight, directionUp, map, game);
+                nextPoint = addOneTurnWallPoint(wallPoints, currentPoint, directionRight, directionUp, tileTopRight, map, game);
             }
         }
         if (nextPoint) {
@@ -200,15 +212,15 @@ function determineVisionWalls(blockingPos: Position, visionCenter: Position, vis
         let nextPoint: Position | undefined = undefined;
         if (visionCenter.y > currentPoint.y) {  //TOP
             if (visionCenter.x < currentPoint.x) { //RIGHT
-                nextPoint = addOneTurnWallPoint(wallPoints, currentPoint, directionDown, directionLeft, map, game);
+                nextPoint = addOneTurnWallPoint(wallPoints, currentPoint, directionDown, directionLeft, tileBottomLeft, map, game);
             } else { //LEFT
-                nextPoint = addOneTurnWallPoint(wallPoints, currentPoint, directionRight, directionDown, map, game);
+                nextPoint = addOneTurnWallPoint(wallPoints, currentPoint, directionRight, directionDown, tileBottomRight, map, game);
             }
         } else {  //Bottom
             if (visionCenter.x < currentPoint.x) { //RIGHT
-                nextPoint = addOneTurnWallPoint(wallPoints, currentPoint, directionLeft, directionUp, map, game);
+                nextPoint = addOneTurnWallPoint(wallPoints, currentPoint, directionLeft, directionUp, tileTopLeft, map, game);
             } else { //LEFT
-                nextPoint = addOneTurnWallPoint(wallPoints, currentPoint, directionUp, directionRight, map, game);
+                nextPoint = addOneTurnWallPoint(wallPoints, currentPoint, directionUp, directionRight, tileTopRight, map, game);
             }
         }
         if (nextPoint) {
@@ -227,14 +239,10 @@ function determineVisionWalls(blockingPos: Position, visionCenter: Position, vis
         break;
     }
 
-
-
-
     if (wallPoints.length < 2) {
         return undefined;
     }
-    const endAngle = calculateDirection(visionCenter, wallPoints[wallPoints.length - 1]);
-    return { wall: wallPoints, endAngle: endAngle };
+    return wallPoints;
 }
 
 function paintModiferLateV4(ctx: CanvasRenderingContext2D, modifier: GameMapModifier, cameraPosition: Position, game: Game) {
@@ -273,8 +281,8 @@ function paintModiferLateV4(ctx: CanvasRenderingContext2D, modifier: GameMapModi
 
     const visionWalls: Position[][] = [];
     const defaultStepSize = Math.PI * 2 / 50;
-    let currentDirection = - Math.PI * 2;
-    while (currentDirection < 0) {
+    let currentDirection = - Math.PI;
+    while (currentDirection < Math.PI) {
         let nextDirection = currentDirection + defaultStepSize;
         const endPosition = { x: cameraPosition.x, y: cameraPosition.y };
         moveByDirectionAndDistance(endPosition, currentDirection, viewDistance, false);
@@ -289,9 +297,9 @@ function paintModiferLateV4(ctx: CanvasRenderingContext2D, modifier: GameMapModi
             console.log("should not happen");
             continue;
         }
-        visionWalls.push(wallResult.wall);
-        break;
-        //currentDirection = currentDirection < wallResult.endAngle ? wallResult.endAngle + 0.1 : nextDirection;
+        visionWalls.push(wallResult);
+        const endAngle = calculateDirection(cameraPosition, wallResult[wallResult.length - 1]);
+        currentDirection = currentDirection < endAngle + 0.1 ? endAngle + 0.1 : nextDirection;
     }
 
     //paint black
