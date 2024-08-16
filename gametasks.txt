@@ -6,11 +6,9 @@ current tasks:
     - darkness
         - blocks line of sight. how to do?
             - still improve. Seems to be difficult
-                - workking on v4
-                    - case: "moving closer" missing
-                        - check if new point in vision
-                        - if not -> need to cast ray where it loses vision
-                        - add two new points
+                - workking on v4, 
+                    - working on walls v2
+                        - first try many problems
 
 
 
