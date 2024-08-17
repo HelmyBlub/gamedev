@@ -8,7 +8,8 @@ current tasks:
             - still improve. Seems to be difficult
                 - workking on v4, 
                     - working on walls v2
-                        - first try many problems
+                        - point valid but line not
+                        - false negativ when longer straight wall
 
 
 

@@ -1,4 +1,5 @@
 import { Character } from "../character/characterModel.js";
+import { calculateDistance } from "../game.js";
 import { Game, IdCounter, Position } from "../gameModel.js"
 import { createNewChunk } from "./mapGeneration.js";
 import { GameMapGodArea } from "./mapGodArea.js";
@@ -382,6 +383,7 @@ export function getFirstBlockingGameMapTilePositionTouchingLine(map: GameMap, li
         const xDiff = lineEnd.x - lineStart.x;
         const yDiff = lineEnd.y - lineStart.y;
         const currentPos = { x: lineStart.x, y: lineStart.y };
+        let lastDistance = calculateDistance(currentPos, lineEnd);
         let counter = 1;
         let maxCounter = 200;
         do {
@@ -439,6 +441,10 @@ export function getFirstBlockingGameMapTilePositionTouchingLine(map: GameMap, li
             } else {
                 console.log("should not happen?");
             }
+            const newDistance = calculateDistance(currentPos, lineEnd);
+            if (newDistance > lastDistance) return undefined;
+            lastDistance = newDistance;
+
             const currentTile = getMapTile(currentPos, map, game.state.idCounter, game);
             currentTileXY = positionToGameMapTileXY(map, currentPos);
             if (currentTile.blocking) {

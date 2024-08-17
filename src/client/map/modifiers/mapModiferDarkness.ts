@@ -65,8 +65,8 @@ function isValidVisionPoint(pointInQuestion: Position, visionCenter: Position, m
     let closerDirecitonClock: Position = { x: 0, y: 0 };
     let closerDirectionCounterClock: Position = { x: 0, y: 0 };
     let tileCheckAdd: Position = { x: 0, y: 0 };
-    if (pointInQuestion.x < visionCenter.x) { // Top
-        if (pointInQuestion.y > visionCenter.y) { // Right
+    if (pointInQuestion.y < visionCenter.y) { // Top
+        if (pointInQuestion.x > visionCenter.x) { // Right
             closerDirecitonClock = { x: 0, y: map.tileSize };
             closerDirectionCounterClock = { x: -map.tileSize, y: 0 };
             tileCheckAdd = { x: -map.tileSize / 2, y: map.tileSize / 2 };
@@ -76,7 +76,7 @@ function isValidVisionPoint(pointInQuestion: Position, visionCenter: Position, m
             tileCheckAdd = { x: map.tileSize / 2, y: map.tileSize / 2 };
         }
     } else { //Bottom
-        if (pointInQuestion.y > visionCenter.y) { // Right
+        if (pointInQuestion.x > visionCenter.x) { // Right
             closerDirecitonClock = { x: -map.tileSize, y: 0 };
             closerDirectionCounterClock = { x: 0, y: -map.tileSize };
             tileCheckAdd = { x: -map.tileSize / 2, y: -map.tileSize / 2 };
@@ -112,9 +112,32 @@ function isValidVisionPoint(pointInQuestion: Position, visionCenter: Position, m
     };
     const nextCloserCounterClockTileBlocking = isPositionBlocking(nextCloserCounterClockTile, map, game.state.idCounter, game);
     if (nextCloserClockTileBlocking && nextCloserCounterClockTileBlocking) return false;
+    const currentTileBlocking = isPositionBlocking(currentTile, map, game.state.idCounter, game);
+    const nextAwayDiagonalTile = {
+        x: currentTile.x - closerDirecitonClock.x - closerDirectionCounterClock.x,
+        y: currentTile.y - closerDirecitonClock.y - closerDirectionCounterClock.y,
+    };
+    const nextAwayDiagonalTileBlocking = isPositionBlocking(nextAwayDiagonalTile, map, game.state.idCounter, game);
+    const nextAwayClockTile = {
+        x: currentTile.x - closerDirectionCounterClock.x,
+        y: currentTile.y - closerDirectionCounterClock.y,
+    };
+    const nextAwayClockTileBlocking = isPositionBlocking(nextAwayClockTile, map, game.state.idCounter, game);
+    const nextAwayCounterClockTile = {
+        x: currentTile.x - closerDirecitonClock.x,
+        y: currentTile.y - closerDirecitonClock.y,
+    };
+    const nextAwayCounterClockTileBlocking = isPositionBlocking(nextAwayCounterClockTile, map, game.state.idCounter, game);
 
     // Rule 2: ray cast from vision center to pointInQuestion for blocking tile
-    const rayCastBlockingPos = getFirstBlockingGameMapTilePositionTouchingLine(map, visionCenter, pointInQuestion, game);
+    let rayCastBlockingPos = getFirstBlockingGameMapTilePositionTouchingLine(map, visionCenter, pointInQuestion, game);
+    if (rayCastBlockingPos !== undefined) { //check if not over target position
+        if (Math.sign(-tileCheckAdd.x) * (rayCastBlockingPos.x - pointInQuestion.x) > 0
+            || Math.sign(-tileCheckAdd.y) * (rayCastBlockingPos.y - pointInQuestion.y) > 0
+        ) {
+            rayCastBlockingPos = undefined;
+        }
+    }
     if (rayCastBlockingPos !== undefined) {
         // Rule 2.1 If hit tile is pointInQuestion  => return true
         // - - - - - - -
@@ -126,19 +149,39 @@ function isValidVisionPoint(pointInQuestion: Position, visionCenter: Position, m
         const pointInQuestionTile = positionToGameMapTileXY(map, currentTile);
         if (rayCastBlockingTile.x === pointInQuestionTile.x && rayCastBlockingTile.y === pointInQuestionTile.y) return true;
     } else {
-        // Rule 2.2: If no tile was hit and away1,away2 is not blocking => return true
+        // Rule 2.2: and if no tile was hit 
+        // Rule 2.2.1: and pointInQuestion is not blocking
+        if (!currentTileBlocking) {
+            // Rule 2.2.1.1: and away adjacent are both blocking => return true
+            // - - - - - - -
+            // - - - b x - -
+            // - - - p b - -
+            // - - - - - - -
+            // - v - - - - -
+            if (nextAwayClockTileBlocking && nextAwayCounterClockTileBlocking) return true;
+            // Rule 2.2.1.2: and away diagonal is blocking => return false
+            // - - - - - - -
+            // - - - - b - -
+            // - - - p b - -
+            // - - - - - - -
+            // - v - - - - -
+            if (nextAwayDiagonalTileBlocking) return false;
+            // Rule 2.2.1.3: and away diagonal is not blocking and at least one away side is blocking => return true
+            // - - - - - - -
+            // - - - b - - -
+            // - - - p - - -
+            // - - - - - - -
+            // - v - - - - -
+            return nextAwayClockTileBlocking || nextAwayCounterClockTileBlocking;
+        }
+        // Rule 2.2.2: and away diagonal is not blocking => return true
         // - - - - - - -
         // - - - b - - -
         // - - - p - - -
         // - - - - - - -
         // - v - - - - -
-        const nextAwayDiagonalTile = {
-            x: currentTile.x - closerDirecitonClock.x - closerDirectionCounterClock.x,
-            y: currentTile.y - closerDirecitonClock.y - closerDirectionCounterClock.y,
-        };
-        const nextAwayDiagonalTileBlocking = isPositionBlocking(nextAwayDiagonalTile, map, game.state.idCounter, game);
         if (!nextAwayDiagonalTileBlocking) return true;
-        // Rule 2.3: If no tile was hit and away1,away2 is blocking => return false
+        // Rule 2..2.3: and away1,away2 is blocking => return false
         // - - - - - - -
         // - - - b b - -
         // - - - p - - -
@@ -288,25 +331,25 @@ function determineVisionWallsV2(blockingPos: Position, visionCenter: Position, v
                     }
                 }
             } else { //LEFT
-                const leftPoint = { x: currentPoint.x - map.tileSize, y: currentPoint.y };
-                if (isValidVisionPoint(leftPoint, visionCenter, map, game)) {
-                    nextPoint = leftPoint;
+                const downPoint = { x: currentPoint.x, y: currentPoint.y + map.tileSize };
+                if (isValidVisionPoint(downPoint, visionCenter, map, game)) {
+                    nextPoint = downPoint;
                 } else {
-                    const downPoint = { x: currentPoint.x, y: currentPoint.y + map.tileSize };
-                    if (isValidVisionPoint(downPoint, visionCenter, map, game)) {
-                        nextPoint = downPoint;
+                    const leftPoint = { x: currentPoint.x - map.tileSize, y: currentPoint.y };
+                    if (isValidVisionPoint(leftPoint, visionCenter, map, game)) {
+                        nextPoint = leftPoint;
                     }
                 }
             }
         } else {  //Bottom
             if (visionCenter.x < currentPoint.x) { //RIGHT
-                const rightPoint = { x: currentPoint.x + map.tileSize, y: currentPoint.y };
-                if (isValidVisionPoint(rightPoint, visionCenter, map, game)) {
-                    nextPoint = rightPoint;
+                const topPoint = { x: currentPoint.x, y: currentPoint.y - map.tileSize };
+                if (isValidVisionPoint(topPoint, visionCenter, map, game)) {
+                    nextPoint = topPoint;
                 } else {
-                    const topPoint = { x: currentPoint.x, y: currentPoint.y - map.tileSize };
-                    if (isValidVisionPoint(topPoint, visionCenter, map, game)) {
-                        nextPoint = topPoint;
+                    const rightPoint = { x: currentPoint.x + map.tileSize, y: currentPoint.y };
+                    if (isValidVisionPoint(rightPoint, visionCenter, map, game)) {
+                        nextPoint = rightPoint;
                     }
                 }
             } else { //LEFT
@@ -341,13 +384,13 @@ function determineVisionWallsV2(blockingPos: Position, visionCenter: Position, v
         let nextPoint: Position | undefined = undefined;
         if (visionCenter.y > currentPoint.y) {  //TOP
             if (visionCenter.x < currentPoint.x) { //RIGHT
-                const rightPoint = { x: currentPoint.x + map.tileSize, y: currentPoint.y };
-                if (isValidVisionPoint(rightPoint, visionCenter, map, game)) {
-                    nextPoint = rightPoint;
+                const bottomPoint = { x: currentPoint.x, y: currentPoint.y + map.tileSize };
+                if (isValidVisionPoint(bottomPoint, visionCenter, map, game)) {
+                    nextPoint = bottomPoint;
                 } else {
-                    const bottomPoint = { x: currentPoint.x, y: currentPoint.y + map.tileSize };
-                    if (isValidVisionPoint(bottomPoint, visionCenter, map, game)) {
-                        nextPoint = bottomPoint;
+                    const rightPoint = { x: currentPoint.x + map.tileSize, y: currentPoint.y };
+                    if (isValidVisionPoint(rightPoint, visionCenter, map, game)) {
+                        nextPoint = rightPoint;
                     }
                 }
             } else { //LEFT
@@ -373,13 +416,13 @@ function determineVisionWallsV2(blockingPos: Position, visionCenter: Position, v
                     }
                 }
             } else { //LEFT
-                const leftPoint = { x: currentPoint.x - map.tileSize, y: currentPoint.y };
-                if (isValidVisionPoint(leftPoint, visionCenter, map, game)) {
-                    nextPoint = leftPoint;
+                const topPoint = { x: currentPoint.x, y: currentPoint.y - map.tileSize };
+                if (isValidVisionPoint(topPoint, visionCenter, map, game)) {
+                    nextPoint = topPoint;
                 } else {
-                    const topPoint = { x: currentPoint.x, y: currentPoint.y + map.tileSize };
-                    if (isValidVisionPoint(topPoint, visionCenter, map, game)) {
-                        nextPoint = topPoint;
+                    const leftPoint = { x: currentPoint.x - map.tileSize, y: currentPoint.y };
+                    if (isValidVisionPoint(leftPoint, visionCenter, map, game)) {
+                        nextPoint = leftPoint;
                     }
                 }
             }
