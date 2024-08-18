@@ -189,19 +189,45 @@ function isValidVisionPoint(pointInQuestion: Position, visionCenter: Position, m
         // - v - - - - -
         return false;
     }
-    return false; //TODO do later rules
     // ray cast to pointInQuestion did not hit tile of pointInQuestion
 
-    // Rule 3: hit title is adjacent to pointInQuestion 
+    // Rule 3: hit title is on same x or y as tile of pointInQuestion 
     // 3.1: 
-    // - - - - b c -
-    // - - - - - - -
-    // - v b - - - -
-    // Rule 3.2: hit title is adjacent to pointInQuestion and is pointInQuestion is non blocking  => return 
-    // - - - - b - -
-    // - - - b p b -
-    // - v - - - - -
+    // - - - - - - - - -
+    // - - - b b r b b c
+    // - v - - - - - - -
+    const rayCastBlockingTile = positionToGameMapTileXY(map, rayCastBlockingPos);
+    const pointInQuestionTile = positionToGameMapTileXY(map, currentTile);
+    const stepDirection: Position = { x: 0, y: 0 };
+    const checkDirection: Position = { x: 0, y: 0 };
+    let steps: number = 0;
+    if (rayCastBlockingTile.x === pointInQuestionTile.x) {
+        stepDirection.y = rayCastBlockingPos.y > pointInQuestion.y ? -map.tileSize : map.tileSize;
+        checkDirection.x = rayCastBlockingPos.x > visionCenter.x ? -map.tileSize : map.tileSize;
+        steps = Math.abs(Math.ceil(rayCastBlockingPos.y - pointInQuestion.y) / map.tileSize);
+    } else if (rayCastBlockingTile.y === pointInQuestionTile.y) {
+        stepDirection.x = rayCastBlockingPos.x > pointInQuestion.x ? -map.tileSize : map.tileSize;
+        checkDirection.y = rayCastBlockingPos.y > visionCenter.y ? -map.tileSize : map.tileSize;
+        steps = Math.abs(Math.ceil(rayCastBlockingPos.x - pointInQuestion.x) / map.tileSize);
+    } else {
+        return false; //TODO do later rules
+    }
 
+    const currenStepPosition = { x: rayCastBlockingPos.x, y: rayCastBlockingPos.y };
+    for (let i = 0; i < steps; i++) {
+        const nextCheckDirectionTile = {
+            x: currenStepPosition.x + checkDirection.x,
+            y: currenStepPosition.y + checkDirection.y,
+        };
+        const nextCheckDirectionTileTileBlocking = isPositionBlocking(nextCheckDirectionTile, map, game.state.idCounter, game);
+        if (nextCheckDirectionTileTileBlocking) {
+            return false; //TODO special case
+        }
+        currenStepPosition.x += stepDirection.x;
+        currenStepPosition.y += stepDirection.y;
+    }
+
+    return true;
 }
 
 function addOneTurnWallPoint(wallPoints: Position[], currentPoint: Position, turnDirection: Position, closerDirection: Position, tileCheckAdd: Position, map: GameMap, game: Game): Position | undefined {
@@ -297,23 +323,52 @@ function addOneTurnWallPoint(wallPoints: Position[], currentPoint: Position, tur
     return nextTurn;
 }
 
-function determineVisionWallsV2(blockingPos: Position, visionCenter: Position, visionRange: number, map: GameMap, game: Game): Position[] | undefined {
-    const wallPoints: Position[] = [];
-    let clockWiseEndReached = false;
-    let counterClockEndReached = false;
+function pointToTileCornerPointAwayVision(position: Position, visionCenter: Position, map: GameMap): Position {
     const blockingRounded = {
-        x: Math.floor(blockingPos.x),
-        y: Math.floor(blockingPos.y),
+        x: Math.floor(position.x),
+        y: Math.floor(position.y),
     };
     const blockingTileTopLeft = {
         x: blockingRounded.x - modulo(blockingRounded.x, map.tileSize),
         y: blockingRounded.y - modulo(blockingRounded.y, map.tileSize),
     }
 
-    const firstPoint = {
+    return {
         x: visionCenter.x > blockingTileTopLeft.x ? blockingTileTopLeft.x : blockingTileTopLeft.x + map.tileSize,
         y: visionCenter.y > blockingTileTopLeft.y ? blockingTileTopLeft.y : blockingTileTopLeft.y + map.tileSize,
     };
+}
+
+function getNextTileSidePoint(sidePoint: Position, direction: number, map: GameMap): Position {
+    let nextSidePoint: Position;
+    const stepSizeX = Math.cos(direction);
+    const stepSizeY = Math.sin(direction);
+    const signX = stepSizeX > 0 ? 1 : -1;
+    const signY = stepSizeY > 0 ? 1 : -1;
+    const distanceX = signX === -1 ? modulo(sidePoint.x, map.tileSize) : map.tileSize - modulo(sidePoint.x, map.tileSize);
+    const distanceY = signY === -1 ? modulo(sidePoint.y, map.tileSize) : map.tileSize - modulo(sidePoint.y, map.tileSize);
+    if (stepSizeX === 0) {
+        nextSidePoint = { x: sidePoint.x, y: sidePoint.y + distanceY * signY };
+    } else if (stepSizeY === 0) {
+        nextSidePoint = { x: sidePoint.x + distanceX * signX, y: sidePoint.y };
+    } else {
+        const factorX = Math.abs(distanceX / stepSizeX);
+        const factorY = Math.abs(distanceY / stepSizeY);
+        if (factorX > factorY) {
+            nextSidePoint = { x: sidePoint.x + stepSizeX * factorY, y: sidePoint.y + stepSizeY * factorY };
+        } else {
+            nextSidePoint = { x: sidePoint.x + stepSizeX * factorX, y: sidePoint.y + stepSizeY * factorX };
+        }
+    }
+    return nextSidePoint;
+}
+
+function determineVisionWallsV2(blockingPos: Position, visionCenter: Position, visionRange: number, map: GameMap, game: Game): Position[] | undefined {
+    const wallPoints: Position[] = [];
+    let clockWiseEndReached = false;
+    let counterClockEndReached = false;
+    const firstPoint = pointToTileCornerPointAwayVision(blockingPos, visionCenter, map);
+
     wallPoints.push(firstPoint);
 
     while (!counterClockEndReached) {
@@ -364,6 +419,18 @@ function determineVisionWallsV2(blockingPos: Position, visionCenter: Position, v
                 }
             }
         }
+        let inBetweenPoint: Position | undefined = undefined;
+        if (!nextPoint) {
+            const direction = calculateDirection(visionCenter, currentPoint);
+            const currentEndPosition: Position = { x: visionCenter.x, y: visionCenter.y };
+            moveByDirectionAndDistance(currentEndPosition, direction, visionRange, false);
+            const furtherBlockingPos = getFirstBlockingGameMapTilePositionTouchingLine(map, currentPoint, currentEndPosition, game);
+            if (furtherBlockingPos) {
+                const nextRayCastPoint = pointToTileCornerPointAwayVision(furtherBlockingPos, visionCenter, map);
+                inBetweenPoint = getNextTileSidePoint(furtherBlockingPos, direction, map);
+                nextPoint = nextRayCastPoint;
+            }
+        }
         if (nextPoint) {
             const isDuplicate = wallPoints.find(p => nextPoint && p.x === nextPoint.x && p.y === nextPoint.y);
             if (!isDuplicate) {
@@ -372,6 +439,7 @@ function determineVisionWallsV2(blockingPos: Position, visionCenter: Position, v
                     counterClockEndReached = true;
                     break;
                 }
+                if (inBetweenPoint) wallPoints.unshift(inBetweenPoint);
                 wallPoints.unshift(nextPoint);
                 continue;
             }
@@ -427,6 +495,18 @@ function determineVisionWallsV2(blockingPos: Position, visionCenter: Position, v
                 }
             }
         }
+        let inBetweenPoint: Position | undefined = undefined;
+        if (!nextPoint) {
+            const direction = calculateDirection(visionCenter, currentPoint);
+            const currentEndPosition: Position = { x: visionCenter.x, y: visionCenter.y };
+            moveByDirectionAndDistance(currentEndPosition, direction, visionRange, false);
+            const furtherBlockingPos = getFirstBlockingGameMapTilePositionTouchingLine(map, currentPoint, currentEndPosition, game);
+            if (furtherBlockingPos) {
+                const nextRayCastPoint = pointToTileCornerPointAwayVision(furtherBlockingPos, visionCenter, map);
+                inBetweenPoint = getNextTileSidePoint(furtherBlockingPos, direction, map);
+                nextPoint = nextRayCastPoint;
+            }
+        }
         if (nextPoint) {
             let isDuplicate = wallPoints.find(p => nextPoint && p.x === nextPoint.x && p.y === nextPoint.y);
             if (!isDuplicate) {
@@ -435,6 +515,7 @@ function determineVisionWallsV2(blockingPos: Position, visionCenter: Position, v
                     clockWiseEndReached = true;
                     break;
                 }
+                if (inBetweenPoint) wallPoints.push(inBetweenPoint);
                 wallPoints.push(nextPoint);
                 continue;
             }

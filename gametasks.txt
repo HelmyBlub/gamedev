@@ -9,7 +9,8 @@ current tasks:
                 - workking on v4, 
                     - working on walls v2
                         - point valid but line not
-                        - false negativ when longer straight wall
+                        - further ray cast point invalid
+                        - initial point in question invalid
 
 
 
