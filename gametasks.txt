@@ -8,9 +8,10 @@ current tasks:
             - still improve. Seems to be difficult
                 - workking on v4, 
                     - working on walls v2
-                        - point valid but line not
-                        - further ray cast point invalid
-                        - initial point in question invalid
+                        - further ray cast point invalid, put loop in
+                        - check inBeetween player case
+
+- mobile control mapping
 
 
 
