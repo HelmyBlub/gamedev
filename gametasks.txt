@@ -6,10 +6,7 @@ current tasks:
     - darkness
         - blocks line of sight. how to do?
             - still improve. Seems to be difficult
-                - workking on v4, 
-                    - working on walls v2
-                        - further ray cast point invalid, put loop in
-                        - check inBeetween player case
+                - check same wall not generated multiple times
 
 - mobile control mapping
 
