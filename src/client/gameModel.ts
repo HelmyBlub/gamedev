@@ -268,6 +268,7 @@ export type ClientKeyBindings = {
     moveKeys: string[],
     keyCodeToActionPressed: KeyCodeToAction,
     keyCodeToUiAction: KeyCodeToAction,
+    touchStart?: Position,
 }
 
 export type Game = {

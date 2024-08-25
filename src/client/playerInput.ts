@@ -4,7 +4,7 @@ import { Character } from "./character/characterModel.js";
 import { ClientKeyBindings, Game, Position } from "./gameModel.js";
 import { websocketConnect } from "./multiplayerConenction.js";
 import { ABILITIES_FUNCTIONS } from "./ability/ability.js";
-import { calculateDirection, getCameraPosition, findClientInfo, resetGameNonStateData, takeTimeMeasure, findClosestInteractable, concedePlayerFightRetries, retryFight, calculateFightRetryCounter } from "./game.js";
+import { calculateDirection, getCameraPosition, findClientInfo, resetGameNonStateData, takeTimeMeasure, findClosestInteractable, concedePlayerFightRetries, retryFight, calculateFightRetryCounter, getRelativeMousePoistion } from "./game.js";
 import { executeUpgradeOptionChoice } from "./character/upgrade.js";
 import { canCharacterTradeAbilityOrPets, characterTradeAbilityAndPets } from "./character/character.js";
 import { shareCharactersTradeablePreventedMultipleClass } from "./character/playerCharacters/playerCharacters.js";
@@ -60,6 +60,34 @@ export function mouseUp(event: MouseEvent, game: Game) {
     if (!game.UI.lastMouseDownWasUIClick) playerInputChangeEvent(game, "Mouse" + event.button, false);
 
 }
+
+export function touchStart(event: TouchEvent, game: Game) {
+    event.preventDefault();
+    touchMoveAction(event, game);
+    touchAbilityAction(event, game);
+}
+
+export function touchMove(event: TouchEvent, game: Game) {
+    event.preventDefault();
+    touchMoveAction(event, game);
+}
+export function touchEnd(event: TouchEvent, game: Game) {
+    event.preventDefault();
+    if (!game.clientKeyBindings) return;
+    const clientId = game.clientKeyBindings.clientIdRef;
+    game.clientKeyBindings.touchStart = undefined;
+
+    const moveData: MoveData = {
+        direction: 0,
+        faktor: 0,
+    }
+    handleCommand(game, {
+        command: "playerInput",
+        clientId: clientId,
+        data: { ...moveData, action: MOVE_ACTION },
+    });
+}
+
 
 export function keyDown(event: { code: string, preventDefault?: Function, stopPropagation?: Function, shiftKey?: boolean }, game: Game) {
     if (event.code !== "F12" && !game.multiplayer.connectMenuOpen) {
@@ -149,6 +177,61 @@ export function tickPlayerInputs(playerInputs: PlayerInput[], currentTime: numbe
         }
     }
     takeTimeMeasure(game.debug, "tickPlayerInputs", "");
+}
+
+function touchAbilityAction(event: TouchEvent, game: Game) {
+    if (!game.clientKeyBindings) return;
+    const clientId = game.clientKeyBindings.clientIdRef;
+    const cameraPosition = getCameraPosition(game);
+    const castPosition = mousePositionToMapPosition(game, cameraPosition);
+    const player = findPlayerByCliendId(clientId, game.state.players);
+    if (!player) return;
+    const castPositionRelativeToCharacter: Position = {
+        x: castPosition.x - player.character.x,
+        y: castPosition.y - player.character.y,
+    };
+
+    handleCommand(game, {
+        command: "playerInput",
+        clientId: clientId,
+        data: { action: "ability1", isKeydown: true, castPosition: castPosition, castPositionRelativeToCharacter: castPositionRelativeToCharacter },
+    });
+}
+
+function touchMoveAction(event: TouchEvent, game: Game) {
+    if (!game.clientKeyBindings || !game.canvasElement) return;
+    const clientId = game.clientKeyBindings.clientIdRef;
+    const touchMoveCornerSize = 150;
+    const touchMoveCornerTopLeft: Position = {
+        x: 0,
+        y: game.canvasElement.height - touchMoveCornerSize,
+    }
+    const target = event.touches[0].target as HTMLElement;
+    const relativPosition = { x: event.touches[0].clientX - target.offsetLeft, y: event.touches[0].clientY - target.offsetTop };
+    game.mouseRelativeCanvasPosition = relativPosition;
+    if (!game.clientKeyBindings.touchStart) {
+        if (relativPosition.x < touchMoveCornerTopLeft.x
+            || relativPosition.x > touchMoveCornerTopLeft.x + touchMoveCornerSize
+            || relativPosition.y < touchMoveCornerTopLeft.y
+            || relativPosition.y > touchMoveCornerTopLeft.y + touchMoveCornerSize
+        ) {
+            return;
+        }
+        game.clientKeyBindings.touchStart = relativPosition;
+    }
+    const moveMiddlePosition = game.clientKeyBindings.touchStart;
+
+    const direction = calculateDirection(moveMiddlePosition, relativPosition);
+
+    const moveData: MoveData = {
+        direction: direction,
+        faktor: 1,
+    }
+    handleCommand(game, {
+        command: "playerInput",
+        clientId: clientId,
+        data: { ...moveData, action: MOVE_ACTION },
+    });
 }
 
 function handleSaveStateAction(saveStateNumber: number, isSaveAction: boolean, game: Game) {
@@ -363,7 +446,7 @@ function playerInputChangeEvent(game: Game, inputCode: string, isInputDown: bool
         handleCommand(game, {
             command: "playerInput",
             clientId: clientId,
-            data: { ...moveData, action: MOVE_ACTION, isKeydown: isInputDown },
+            data: { ...moveData, action: MOVE_ACTION },
         });
     }
 }

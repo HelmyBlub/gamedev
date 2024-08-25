@@ -3,8 +3,10 @@ increase version
 
 current tasks:
 - mobile control mapping
-    - check run direction, currenlty only 8 possible -> change to "direction" and "speedFaktor" values
     - check how other do mobile controlls. Probably some analog stick image at bottom left
+        - virtual joystick bottom left side for movement
+        - touch upgrades for choosing class
+        - touch for using ability1
 
     - currently only keyboard mouse
     - add touch and controller
