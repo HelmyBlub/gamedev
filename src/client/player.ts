@@ -5,7 +5,7 @@ import { CHARACTER_TYPE_GOD_ENEMY, GodEnemyCharacter } from "./character/enemy/g
 import { CHARACTER_TYPE_KING_ENEMY, modifyCharacterToKing } from "./character/enemy/kingEnemy.js";
 import { CharacterUpgrades, addCharacterUpgrades } from "./character/upgrades/characterUpgrades.js";
 import { createPaintTextData } from "./floatingText.js";
-import { calculateDistance, deepCopy, findClientInfo, getCameraPosition } from "./game.js";
+import { calculateDistance, deepCopy, findClientInfo, getCameraPosition, setClientDefaultKeyBindings } from "./game.js";
 import { Game, IdCounter, KeyCodeToAction, Position } from "./gameModel.js";
 import { findNearNonBlockingPosition, getMapMidlePosition } from "./map/map.js";
 import { MoreInfoPart, MoreInfos, MoreInfosPartContainer, createDefaultMoreInfosContainer, createMoreInfosPart } from "./moreInfo.js";
@@ -57,12 +57,13 @@ export function findNearesPastPlayerCharacter(character: Character, game: Game, 
     return currentClosest;
 }
 
-export function createDefaultKeyBindings1() {
+export function createDefaultKeyBindings1(): { keymap: KeyCodeToAction, moveKeys: string[] } {
     const keyBindings: KeyCodeToAction = new Map();
     keyBindings.set("KeyA", { action: "left", uiDisplayInputValue: "A", isInputAlreadyDown: false });
     keyBindings.set("KeyS", { action: "down", uiDisplayInputValue: "S", isInputAlreadyDown: false });
     keyBindings.set("KeyD", { action: "right", uiDisplayInputValue: "D", isInputAlreadyDown: false });
     keyBindings.set("KeyW", { action: "up", uiDisplayInputValue: "W", isInputAlreadyDown: false });
+    const moveKeys = ["KeyA", "KeyS", "KeyD", "KeyW"];
 
     keyBindings.set("Digit1", { action: "upgrade1", uiDisplayInputValue: "1", isInputAlreadyDown: false });
     keyBindings.set("Digit2", { action: "upgrade2", uiDisplayInputValue: "2", isInputAlreadyDown: false });
@@ -77,7 +78,7 @@ export function createDefaultKeyBindings1() {
     keyBindings.set("KeyF", { action: "interact1", uiDisplayInputValue: "F", isInputAlreadyDown: false });
     keyBindings.set("KeyK", { action: "interact2", uiDisplayInputValue: "K", isInputAlreadyDown: false });
 
-    return keyBindings;
+    return { keymap: keyBindings, moveKeys };
 }
 
 export function createDefaultUiKeyBindings() {
@@ -131,11 +132,7 @@ export function gameInitPlayers(game: Game) {
             player.actionsPressed = createActionsPressed();
         }
         if (game.multiplayer.myClientId === -1 || game.multiplayer.myClientId === client.id) {
-            game.clientKeyBindings = {
-                clientIdRef: game.multiplayer.myClientId,
-                keyCodeToActionPressed: createDefaultKeyBindings1(),
-                keyCodeToUiAction: createDefaultUiKeyBindings(),
-            };
+            setClientDefaultKeyBindings(game);
             game.camera.characterId = player.character.id;
         }
     }

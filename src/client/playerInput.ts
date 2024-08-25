@@ -1,7 +1,7 @@
 import { CommandRestart, handleCommand } from "./commands.js";
 import { findPlayerByCliendId, findPlayerById } from "./player.js";
 import { Character } from "./character/characterModel.js";
-import { Game, Position } from "./gameModel.js";
+import { ClientKeyBindings, Game, Position } from "./gameModel.js";
 import { websocketConnect } from "./multiplayerConenction.js";
 import { ABILITIES_FUNCTIONS } from "./ability/ability.js";
 import { calculateDirection, getCameraPosition, findClientInfo, resetGameNonStateData, takeTimeMeasure, findClosestInteractable, concedePlayerFightRetries, retryFight, calculateFightRetryCounter } from "./game.js";
@@ -14,7 +14,7 @@ import { createRequiredMoreInfos, moreInfosHandleMouseClick } from "./moreInfo.j
 import { mousePositionToMapPosition } from "./map/map.js";
 import { CHEAT_ACTIONS, executeCheatAction } from "./cheat.js";
 
-export const MOVE_ACTIONS = ["left", "down", "right", "up"];
+export const MOVE_ACTION = "moveAction";
 export const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3", "upgrade4", "upgrade5"];
 export const ABILITY_ACTIONS = ["ability1", "ability2", "ability3"];
 export const SPECIAL_ACTIONS = ["interact1", "interact2"];
@@ -22,6 +22,11 @@ export const MOUSE_ACTION = "mousePositionUpdate";
 
 export type ActionsPressed = {
     [key: string]: boolean;
+}
+
+export type MoveData = {
+    direction: number,
+    faktor: number
 }
 
 export type PlayerInput = {
@@ -33,10 +38,6 @@ export type PlayerInput = {
 
 export function createActionsPressed(): ActionsPressed {
     return {
-        left: false,
-        down: false,
-        right: false,
-        up: false,
         upgrade1: false,
         upgrade2: false,
         upgrade3: false,
@@ -223,20 +224,33 @@ function connectMultiplayer(game: Game) {
     }
 }
 
-function determinePlayerMoveDirection(player: Character, actionsPressed: ActionsPressed) {
+function determinePlayerMoveDirectionKeyboard(clientKeyBindings: ClientKeyBindings): MoveData {
+    let leftPressed = false;
+    let rightPressed = false;
+    let upPressed = false;
+    let downPressed = false;
+    for (let moveKey of clientKeyBindings.moveKeys) {
+        const action = clientKeyBindings.keyCodeToActionPressed.get(moveKey);
+        if (action === undefined) continue;
+        if (action.isInputAlreadyDown) {
+            if (action.action === "left") leftPressed = true;
+            if (action.action === "right") rightPressed = true;
+            if (action.action === "up") upPressed = true;
+            if (action.action === "down") downPressed = true;
+        }
+    }
     let newDirection = 0;
     let left = 0;
-    if (actionsPressed.right) left++;
-    if (actionsPressed.left) left--;
+    if (rightPressed) left++;
+    if (leftPressed) left--;
     let down = 0;
-    if (actionsPressed.down) down++;
-    if (actionsPressed.up) down--;
+    if (downPressed) down++;
+    if (upPressed) down--;
     newDirection = calculateDirection({ x: 0, y: 0 }, { x: left, y: down });
     if (left === 0 && down === 0) {
-        player.isMoving = false;
+        return { direction: newDirection, faktor: 0 };
     } else {
-        player.moveDirection = newDirection;
-        player.isMoving = true;
+        return { direction: newDirection, faktor: 1 };
     }
 }
 
@@ -329,20 +343,27 @@ function playerInputChangeEvent(game: Game, inputCode: string, isInputDown: bool
             clientId: clientId,
             data: { action: action.action, isKeydown: isInputDown, castPosition: castPosition, castPositionRelativeToCharacter: castPositionRelativeToCharacter },
         });
-    } else {
-        if (action.action.indexOf("upgrade") > -1) {
-            const character = findPlayerById(game.state.players, clientId)?.character;
-            if (!character || character.upgradeChoices.choices.length === 0) {
-                return;
-            }
-            if (game.state.paused) {
-                game.state.tickOnceInPaused = true;
-            }
+    } else if (action.action.indexOf("upgrade") > -1) {
+        const character = findPlayerById(game.state.players, clientId)?.character;
+        if (!character || character.upgradeChoices.choices.length === 0) {
+            return;
         }
+        if (game.state.paused) {
+            game.state.tickOnceInPaused = true;
+        }
+
         handleCommand(game, {
             command: "playerInput",
             clientId: clientId,
             data: { action: action.action, isKeydown: isInputDown },
+        });
+    } else if (game.clientKeyBindings.moveKeys.indexOf(inputCode) > -1) {
+        const moveData = determinePlayerMoveDirectionKeyboard(game.clientKeyBindings);
+
+        handleCommand(game, {
+            command: "playerInput",
+            clientId: clientId,
+            data: { ...moveData, action: MOVE_ACTION, isKeydown: isInputDown },
         });
     }
 }
@@ -355,12 +376,13 @@ function playerAction(clientId: number, data: any, game: Game) {
     const character = player.character;
 
     if (action !== undefined) {
-        if (MOVE_ACTIONS.indexOf(action) !== -1) {
-            player.actionsPressed[action] = isKeydown;
+        if (MOVE_ACTION === action) {
             if (character !== null) {
                 game.UI.movementKeyPressed = true;
                 game.UI.displayMovementKeyHint = false;
-                determinePlayerMoveDirection(character, player.actionsPressed);
+                const moveData: MoveData = data;
+                character.moveDirection = moveData.direction;
+                if (moveData.faktor > 0) character.isMoving = true; else character.isMoving = false;
             }
         } else if (UPGRADE_ACTIONS.indexOf(action) !== -1) {
             if (isKeydown) {

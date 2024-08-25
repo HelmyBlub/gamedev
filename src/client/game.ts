@@ -154,14 +154,20 @@ export function resetGameNonStateData(game: Game) {
     game.multiplayer.autosendMousePosition.nextTime = 0;
     for (let i = 0; i < game.state.clientInfos.length; i++) {
         if (game.multiplayer.myClientId === game.state.clientInfos[i].id) {
-            game.clientKeyBindings = {
-                clientIdRef: game.multiplayer.myClientId,
-                keyCodeToActionPressed: createDefaultKeyBindings1(),
-                keyCodeToUiAction: createDefaultUiKeyBindings(),
-            };
+            setClientDefaultKeyBindings(game);
         }
     }
     findAndSetNewCameraCharacterId(game.camera, game.state.players, game.multiplayer.myClientId);
+}
+
+export function setClientDefaultKeyBindings(game: Game) {
+    const defaultKeys = createDefaultKeyBindings1();
+    game.clientKeyBindings = {
+        clientIdRef: game.multiplayer.myClientId,
+        moveKeys: defaultKeys.moveKeys,
+        keyCodeToActionPressed: defaultKeys.keymap,
+        keyCodeToUiAction: createDefaultUiKeyBindings(),
+    };
 }
 
 export function getCameraPosition(game: Game): Position {

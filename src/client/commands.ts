@@ -1,7 +1,7 @@
 import { findAndSetNewCameraCharacterId } from "./character/character.js";
 import { damageMeterChangeClientId } from "./combatlog.js";
 import { pushStackPaintTextData } from "./floatingText.js";
-import { deepCopy } from "./game.js";
+import { deepCopy, setClientDefaultKeyBindings } from "./game.js";
 import { Game, GameState, RecordDataMultiplayer } from "./gameModel.js";
 import { sendMultiplayer } from "./multiplayerConenction.js";
 import { createDefaultKeyBindings1, createDefaultUiKeyBindings, findPlayerByCliendId } from "./player.js";
@@ -191,11 +191,7 @@ function gameState(game: Game, data: GameState) {
     game.performance = {};
     for (let i = 0; i < game.state.clientInfos.length; i++) {
         if (game.multiplayer.myClientId === game.state.clientInfos[i].id) {
-            game.clientKeyBindings = {
-                clientIdRef: game.multiplayer.myClientId,
-                keyCodeToActionPressed: createDefaultKeyBindings1(),
-                keyCodeToUiAction: createDefaultUiKeyBindings(),
-            };
+            setClientDefaultKeyBindings(game);
         }
     }
     findAndSetNewCameraCharacterId(game.camera, game.state.players, game.multiplayer.myClientId);

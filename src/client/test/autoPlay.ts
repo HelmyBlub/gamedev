@@ -1,7 +1,7 @@
 import { handleCommand } from "../commands.js";
 import { getCameraPosition } from "../game.js";
 import { Game, Position } from "../gameModel.js";
-import { ABILITY_ACTIONS, MOVE_ACTIONS } from "../playerInput.js";
+import { ABILITY_ACTIONS, MOVE_ACTION, MoveData } from "../playerInput.js";
 
 export function autoPlay(game: Game) {
     if (!game.testing || !game.testing.autoPlay || !game.testing.autoPlay.autoPlaying) return;
@@ -22,10 +22,14 @@ export function autoPlay(game: Game) {
             });
 
         } else {
+            const moveData: MoveData = {
+                direction: Math.floor(Math.random() * 4) * Math.PI * 2,
+                faktor: 1,
+            }
             handleCommand(game, {
                 command: "playerInput",
                 clientId: game.multiplayer.myClientId,
-                data: { action: MOVE_ACTIONS[Math.floor(Math.random() * 4)], isKeydown: Math.random() > 0.5 },
+                data: { ...moveData, action: MOVE_ACTION, isKeydown: Math.random() > 0.5 },
             });
         }
     }

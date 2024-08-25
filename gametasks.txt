@@ -2,13 +2,31 @@ next test run:
 increase version
 
 current tasks:
+- mobile control mapping
+    - check run direction, currenlty only 8 possible -> change to "direction" and "speedFaktor" values
+    - check how other do mobile controlls. Probably some analog stick image at bottom left
+
+    - currently only keyboard mouse
+    - add touch and controller
+    
+
 - map modifier
     - darkness
-        - blocks line of sight. how to do?
-            - still improve. Seems to be difficult
-                - check same wall not generated multiple times
-
-- mobile control mapping
+        - should be randomly spawn somewhere
+            - should grow over time, so player one day can find it
+        - should be able to be "removed"
+            - in the middle is some switch, which activates boss fight
+            - if boss defeated player removes darkness and gets "curse: Darkness"
+                - stronger if area was bigger
+                - should give some upside and some downside effects
+                    - downside idea: randomly vision limit appears for some time
+                        - stronger curse => more often, longer exists, reduce vision range more
+                    - upside: "shadow clones" gains player duplicate
+                        - stronger curse => multiple "shadow clones"
+        - check same wall not generated multiple times
+            - backwards raycast required?
+            - angle limits need to update correctly
+            - some very precise wall can be missed by raycast?
 
 
 

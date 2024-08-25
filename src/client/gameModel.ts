@@ -263,17 +263,20 @@ export type UI = {
     playerCharacterAbilityUI?: PlayerCharacterAbilityUI,
 }
 
+export type ClientKeyBindings = {
+    clientIdRef: number,
+    moveKeys: string[],
+    keyCodeToActionPressed: KeyCodeToAction,
+    keyCodeToUiAction: KeyCodeToAction,
+}
+
 export type Game = {
     canvasElement?: HTMLCanvasElement,
     ctx?: CanvasRenderingContext2D,
     state: GameState,
     shouldTickTime?: number,
     tickInterval: number,
-    clientKeyBindings?: {
-        clientIdRef: number,
-        keyCodeToActionPressed: KeyCodeToAction,
-        keyCodeToUiAction: KeyCodeToAction,
-    },
+    clientKeyBindings?: ClientKeyBindings,
     multiplayer: Multiplayer,
     mouseRelativeCanvasPosition: Position,
     camera: Camera,
