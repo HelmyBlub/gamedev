@@ -252,9 +252,16 @@ export type TouchUiInfo = {
     touchStart?: Position,
 }
 
+export type UpgradePaintData = {
+    topLeft: Position,
+    height: number,
+    width: number,
+}
+
 export type UI = {
     inputType: InputType,
     touchInfo: TouchUiInfo,
+    upgradePaintData?: UpgradePaintData[],
     damageMeter: DamageMeter,
     displayMovementKeyHint: boolean,
     movementKeyPressed: boolean,

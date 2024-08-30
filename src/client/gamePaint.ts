@@ -6,7 +6,7 @@ import { paintBossCharacters, paintBossCrown } from "./character/enemy/bossEnemy
 import { CharacterClass, findMainCharacterClass, hasPlayerChoosenStartClassUpgrade, paintPlayerCharacterUI, playerCharacterGetLevelClassText, shareCharactersTradeablePreventedMultipleClass } from "./character/playerCharacters/playerCharacters.js";
 import { TamerPetCharacter } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
 import { calculateDirection, calculateDistance, calculateFightRetryCounter, findClientInfo, findClosestInteractable, getCameraPosition } from "./game.js";
-import { Game, Position, Debugging } from "./gameModel.js";
+import { Game, Position, Debugging, UpgradePaintData } from "./gameModel.js";
 import { Highscores } from "./highscores.js";
 import { GAME_IMAGES, loadImage } from "./imageLoad.js";
 import { MAP_OBJECTS_FUNCTIONS } from "./map/mapObjects.js";
@@ -533,38 +533,67 @@ function paintPlayerStats(ctx: CanvasRenderingContext2D, player: Player, game: G
     paintUpgradeOptionsUI(ctx, character, game);
 }
 
+function calculateUpgradePaintData(ctx: CanvasRenderingContext2D, character: Character, startY: number, game: Game): UpgradePaintData[] | undefined {
+    if (character.upgradeChoices.choices.length <= 0) return undefined;
+    const upgradePaintDatas: UpgradePaintData[] = [];
+    const firstFontSize = 20;
+    const addFontSize = 14;
+    const optionSpacer = 50;
+    const maxWidthes: number[] = [];
+    let totalWidthEsitmate = 0;
+    let keyDisplayWidth = 0;
+    if (game.UI.inputType === "keyboard") keyDisplayWidth = 40;
+    for (let choice of character.upgradeChoices.choices) {
+        ctx.font = firstFontSize + "px Arial";
+        let maxWidth = ctx.measureText(choice.displayText).width + keyDisplayWidth;
+
+        if (game.UI.displayMoreInfos && choice.displayMoreInfoText) {
+            for (let textIt = 0; textIt < choice.displayMoreInfoText.length; textIt++) {
+                let text = choice.displayMoreInfoText[textIt];
+                ctx.font = addFontSize + "px Arial";
+
+                let width = ctx.measureText(text).width;
+                if (width > maxWidth) maxWidth = width;
+            }
+        }
+        maxWidthes.push(maxWidth);
+        totalWidthEsitmate += maxWidth;
+    }
+
+    totalWidthEsitmate += optionSpacer * (character.upgradeChoices.choices.length - 1);
+    let currentX = Math.max(5, ctx.canvas.width / 2 - totalWidthEsitmate / 2);
+    for (let i = 0; i < character.upgradeChoices.choices.length; i++) {
+        const choice = character.upgradeChoices.choices[i];
+        const upgradeText: string[] = [choice.displayText];
+        if (game.UI.displayMoreInfos && choice.displayMoreInfoText) upgradeText.push(...choice.displayMoreInfoText);
+        const textWidthEstimate = maxWidthes[i];
+        const rectHeight = firstFontSize + addFontSize * (upgradeText.length - 1) + 6;
+        upgradePaintDatas.push({
+            topLeft: {
+                x: currentX,
+                y: startY - firstFontSize - 2,
+            },
+            height: rectHeight + 3,
+            width: textWidthEstimate,
+        });
+        currentX += textWidthEstimate + optionSpacer;
+    }
+    return upgradePaintDatas;
+}
+
 function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Character, game: Game) {
+    game.UI.upgradePaintData = undefined;
     if (game.state.ended) return;
     if (isAutoUpgradeActive(game) && hasPlayerChoosenStartClassUpgrade(character)) return;
+    if (character.upgradeChoices.choices.length <= 0) return;
     const firstFontSize = 20;
     const addFontSize = 14;
     const startY = (ctx.canvas.height * 0.75);
-    const optionSpacer = 50;
-    if (character.upgradeChoices.choices.length > 0) {
-        const maxWidthes: number[] = [];
-        let totalWidthEsitmate = 0;
-        let displayKeyHint = false;
-        const keyDisplayWidth = 40;
-        for (let choice of character.upgradeChoices.choices) {
-            ctx.font = firstFontSize + "px Arial";
-            let maxWidth = ctx.measureText(choice.displayText).width + keyDisplayWidth;
-
-            if (!game.UI.displayMoreInfos && choice.displayMoreInfoText) displayKeyHint = true;
-            if (game.UI.displayMoreInfos && choice.displayMoreInfoText) {
-                for (let textIt = 0; textIt < choice.displayMoreInfoText.length; textIt++) {
-                    let text = choice.displayMoreInfoText[textIt];
-                    ctx.font = addFontSize + "px Arial";
-
-                    let width = ctx.measureText(text).width;
-                    if (width > maxWidth) maxWidth = width;
-                }
-            }
-            maxWidthes.push(maxWidth);
-            totalWidthEsitmate += maxWidth;
-        }
-
-        totalWidthEsitmate += optionSpacer * (character.upgradeChoices.choices.length - 1);
-        let currentX = Math.max(5, ctx.canvas.width / 2 - totalWidthEsitmate / 2);
+    let displayKeyHint = false;
+    for (let choice of character.upgradeChoices.choices) {
+        if (!game.UI.displayMoreInfos && choice.displayMoreInfoText) displayKeyHint = true;
+    }
+    if (game.UI.inputType === "keyboard") {
         if (displayKeyHint) {
             const hintPos = {
                 x: ctx.canvas.width / 2,
@@ -575,37 +604,43 @@ function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Charact
             }
             paintTextLinesWithKeys(ctx, ["<TAB> MoreInfo"], hintPos, firstFontSize, true, true);
         }
-        if (character.upgradeChoices.displayText !== "") {
-            const hintPos = {
-                x: ctx.canvas.width / 2,
-                y: startY - 10 - firstFontSize,
-            }
-            paintTextLinesWithKeys(ctx, [character.upgradeChoices.displayText], hintPos, firstFontSize, true, true);
+    }
+    if (character.upgradeChoices.displayText !== "") {
+        const hintPos = {
+            x: ctx.canvas.width / 2,
+            y: startY - 10 - firstFontSize,
         }
-        for (let i = 0; i < character.upgradeChoices.choices.length; i++) {
-            const choice = character.upgradeChoices.choices[i];
-            const upgradeText: string[] = [choice.displayText];
-            if (game.UI.displayMoreInfos && choice.displayMoreInfoText) upgradeText.push(...choice.displayMoreInfoText);
-            ctx.globalAlpha = game.UI.displayMoreInfos ? 0.75 : 0.4;
-            ctx.fillStyle = "white";
-            const textWidthEstimate = maxWidthes[i];
-            const rectHeight = firstFontSize + addFontSize * (upgradeText.length - 1) + 6;
-            ctx.fillRect(currentX, startY - firstFontSize - 2, textWidthEstimate, rectHeight);
-            ctx.globalAlpha = 1;
+        paintTextLinesWithKeys(ctx, [character.upgradeChoices.displayText], hintPos, firstFontSize, true, true);
+    }
+    const upgradePaintData = calculateUpgradePaintData(ctx, character, startY, game);
+    game.UI.upgradePaintData = upgradePaintData;
+    if (upgradePaintData === undefined) return;
+    for (let i = 0; i < character.upgradeChoices.choices.length; i++) {
+        const choice = character.upgradeChoices.choices[i];
+        const paintData = upgradePaintData[i];
+        const upgradeText: string[] = [choice.displayText];
+        if (game.UI.displayMoreInfos && choice.displayMoreInfoText) upgradeText.push(...choice.displayMoreInfoText);
+        ctx.globalAlpha = game.UI.displayMoreInfos ? 0.75 : 0.4;
+        ctx.fillStyle = "white";
+        ctx.fillRect(paintData.topLeft.x, paintData.topLeft.y, paintData.width, paintData.height);
+        ctx.globalAlpha = 1;
 
-            paintKey(ctx, (i + 1).toString(), { x: currentX, y: startY - 26 });
+        if (game.UI.inputType === "keyboard") {
+            paintKey(ctx, (i + 1).toString(), { x: paintData.topLeft.x, y: paintData.topLeft.y });
+        }
 
-            ctx.fillStyle = "black";
-            for (let j = 0; j < upgradeText.length; j++) {
-                const fontSize = j === 0 ? firstFontSize : addFontSize;
-                ctx.font = fontSize + "px Arial";
-                const text = upgradeText[j];
-                let textY = startY - 3;
-                textY += j > 0 ? (firstFontSize + addFontSize * (j - 1)) : 0;
-                const textX = currentX + (j === 0 ? 40 : 0);
-                paintTextWithOutline(ctx, "white", "black", text, textX, textY);
+        ctx.fillStyle = "black";
+        for (let j = 0; j < upgradeText.length; j++) {
+            const fontSize = j === 0 ? firstFontSize : addFontSize;
+            ctx.font = fontSize + "px Arial";
+            const text = upgradeText[j];
+            let textY = paintData.topLeft.y + firstFontSize;
+            textY += j > 0 ? (firstFontSize + addFontSize * (j - 1)) : 0;
+            let textX = paintData.topLeft.x;
+            if (game.UI.inputType === "keyboard") {
+                textX = paintData.topLeft.x + (j === 0 ? 40 : 0);
             }
-            currentX += textWidthEstimate + optionSpacer;
+            paintTextWithOutline(ctx, "white", "black", text, textX, textY);
         }
     }
 }
