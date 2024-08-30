@@ -340,6 +340,8 @@ function paintPausedText(ctx: CanvasRenderingContext2D, game: Game) {
 function paintTouchMoveControl(ctx: CanvasRenderingContext2D, game: Game) {
     const touchInfo = game.UI.touchInfo;
     if (!touchInfo.touchMoveCornerTopLeft) return;
+    ctx.font = "20px Arial";
+    paintTextWithOutline(ctx, "white", "black", "Touch Controls Work in Progress", ctx.canvas.width / 2, 80, true, 2, "white");
     ctx.strokeStyle = "black";
     ctx.lineWidth = 2;
     const paintPos: Position = {

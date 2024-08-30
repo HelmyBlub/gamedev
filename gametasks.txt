@@ -3,14 +3,12 @@ increase version
 
 current tasks:
 - mobile control mapping
-    - check how other do mobile controlls. Probably some analog stick image at bottom left
-        - touch for choosing class and upgrades
-            - make upgrade paint data part of game.UI
-            - so i can determine position and if touched
-        - touch for using ability1
+    - restart
+    - multi touch
+    - all abilities
+    - more info
 
-    - currently only keyboard mouse
-    - add touch and controller
+- add controller
     
 
 - map modifier
