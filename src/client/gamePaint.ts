@@ -11,7 +11,7 @@ import { Highscores } from "./highscores.js";
 import { GAME_IMAGES, loadImage } from "./imageLoad.js";
 import { MAP_OBJECTS_FUNCTIONS } from "./map/mapObjects.js";
 import { paintMap, paintMapCharacters } from "./map/mapPaint.js";
-import { Player, findPlayerById, isAutoSkillActive } from "./player.js";
+import { Player, findPlayerById, isAutoUpgradeActive } from "./player.js";
 import { playerInputBindingToDisplayValue } from "./playerInput.js";
 import { createEndScreenMoreInfos, paintMoreInfos, paintMoreInfosPart } from "./moreInfo.js";
 import { paintDamageNumbers, paintStackTextData, pushStackPaintTextData } from "./floatingText.js";
@@ -387,7 +387,7 @@ function paintKeyInfo(ctx: CanvasRenderingContext2D, game: Game) {
     if (game.UI.displayMovementKeyHint) paintMoveKeysHint(ctx);
     if (!game.clientKeyBindings) return;
     const fontSize = 16;
-    const paintX = ctx.canvas.width - 150;
+    const paintX = ctx.canvas.width - 170;
     let paintY = ctx.canvas.height - 5;
 
     ctx.fillStyle = "black";
@@ -535,7 +535,7 @@ function paintPlayerStats(ctx: CanvasRenderingContext2D, player: Player, game: G
 
 function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Character, game: Game) {
     if (game.state.ended) return;
-    if (isAutoSkillActive(game) && hasPlayerChoosenStartClassUpgrade(character)) return;
+    if (isAutoUpgradeActive(game) && hasPlayerChoosenStartClassUpgrade(character)) return;
     const firstFontSize = 20;
     const addFontSize = 14;
     const startY = (ctx.canvas.height * 0.75);

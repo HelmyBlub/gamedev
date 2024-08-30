@@ -401,7 +401,7 @@ function uiAction(game: Game, inputCode: string, isInputDown: boolean) {
                 game.state.paused = game.UI.displayMoreInfos;
             }
             break;
-        case "AutoSkill":
+        case "AutoUpgrade":
             if (!isInputDown) return;
             action.activated = !action.activated;
             break;

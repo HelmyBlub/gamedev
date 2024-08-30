@@ -85,19 +85,19 @@ export function createDefaultUiKeyBindings() {
     const keyBindings: KeyCodeToAction = new Map();
     keyBindings.set("KeyP", { action: "Pause", uiDisplayInputValue: "P", isInputAlreadyDown: false });
     keyBindings.set("KeyO", { action: "Multiplayer", uiDisplayInputValue: "O", isInputAlreadyDown: false });
-    keyBindings.set("KeyG", { action: "AutoSkill", uiDisplayInputValue: "G", isInputAlreadyDown: false, activated: false });
+    keyBindings.set("KeyG", { action: "AutoUpgrade", uiDisplayInputValue: "G", isInputAlreadyDown: false, activated: false });
     keyBindings.set("Tab", { action: "More Info", uiDisplayInputValue: "TAB", isInputAlreadyDown: false });
     keyBindings.set("KeyT", { action: "Restart", uiDisplayInputValue: "T", isInputAlreadyDown: false });
     return keyBindings;
 }
 
-export function isAutoSkillActive(game: Game): boolean {
+export function isAutoUpgradeActive(game: Game): boolean {
     if (!game.clientKeyBindings) return false;
     const keybindMap = game.clientKeyBindings.keyCodeToUiAction;
     const keys = keybindMap.keys();
     for (let key of keys) {
         const keybind = keybindMap.get(key);
-        if (keybind?.action === "AutoSkill") {
+        if (keybind?.action === "AutoUpgrade") {
             return keybind.activated ? keybind.activated : false;
         }
     }

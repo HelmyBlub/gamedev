@@ -1,6 +1,6 @@
 import { cappCharacter, changeCharacterId, countAlivePlayerCharacters, findAndSetNewCameraCharacterId, findCharacterById, findMyCharacter, getPlayerCharacters, resetCharacter, tickCharacters, tickMapCharacters } from "./character/character.js";
 import { paintAll } from "./gamePaint.js";
-import { addPlayerMoney, createDefaultKeyBindings1, createDefaultUiKeyBindings, createPlayerWithPlayerCharacter, findNearesPastPlayerCharacter, findPlayerByCharacterId, gameInitPlayers, isAutoSkillActive } from "./player.js";
+import { addPlayerMoney, createDefaultKeyBindings1, createDefaultUiKeyBindings, createPlayerWithPlayerCharacter, findNearesPastPlayerCharacter, findPlayerByCharacterId, gameInitPlayers, isAutoUpgradeActive } from "./player.js";
 import { MOUSE_ACTION, UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.js";
 import { Position, GameState, Game, IdCounter, Debugging, ClientInfo, GameVersion } from "./gameModel.js";
 import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap, initGodArea, initKingArea, mousePositionToMapPosition } from "./map/map.js";
@@ -735,7 +735,7 @@ function doStuff(game: Game) {
     checkDeathCircleSpawn(game);
     checkForBossSpawn(game);
     checkMovementKeyPressedHint(game);
-    checkForAutoSkill(game);
+    checkForAutoUpgrade(game);
     autoPlay(game);
     autoSendMyMousePosition(game);
     autoSendGamePlayerHashInMultiplayer(game);
@@ -785,8 +785,8 @@ function autoSendGamePlayerHashInMultiplayer(game: Game) {
     }
 }
 
-function checkForAutoSkill(game: Game) {
-    if (!isAutoSkillActive(game)) return;
+function checkForAutoUpgrade(game: Game) {
+    if (!isAutoUpgradeActive(game)) return;
 
     const character: Character | undefined = findMyCharacter(game);
     if (character && hasPlayerChoosenStartClassUpgrade(character)) {
