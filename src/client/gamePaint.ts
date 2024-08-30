@@ -16,6 +16,7 @@ import { playerInputBindingToDisplayValue } from "./playerInput.js";
 import { createEndScreenMoreInfos, paintMoreInfos, paintMoreInfosPart } from "./moreInfo.js";
 import { paintDamageNumbers, paintStackTextData, pushStackPaintTextData } from "./floatingText.js";
 import { paintMapModifierLate } from "./map/modifiers/mapModifier.js";
+import { moveByDirectionAndDistance } from "./map/map.js";
 
 GAME_IMAGES["blankKey"] = {
     imagePath: "/images/singleBlankKey.png",
@@ -46,7 +47,7 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
     paintMapModifierLate(ctx, cameraPosition, game);
     paintStackTextData(ctx, game.UI.stackTextsData, game.state.time);
     paintClosestInteractable(ctx, cameraPosition, game);
-    paintKeyInfo(ctx, game);
+    paintInputTypeInfo(ctx, game);
     paintFightWipeUI(ctx, game);
     paintEndScreen(ctx, game.state.highscores, game);
     paintMyCharacterStats(ctx, game);
@@ -334,6 +335,52 @@ function paintPausedText(ctx: CanvasRenderingContext2D, game: Game) {
     const middleX = ctx.canvas.width / 2;
     ctx.font = "bold 60px Arial";
     paintTextWithOutline(ctx, "white", "black", "PAUSED", middleX, 60, true, 3);
+}
+
+function paintTouchMoveControl(ctx: CanvasRenderingContext2D, game: Game) {
+    const touchInfo = game.UI.touchInfo;
+    if (!touchInfo.touchMoveCornerTopLeft) return;
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = 2;
+    const paintPos: Position = {
+        x: touchInfo.touchMoveCornerTopLeft.x + touchInfo.touchMoveCornerSize / 2,
+        y: touchInfo.touchMoveCornerTopLeft.y + touchInfo.touchMoveCornerSize / 2,
+    }
+    if (touchInfo.touchStart !== undefined) {
+        paintPos.x = touchInfo.touchStart.x;
+        paintPos.y = touchInfo.touchStart.y;
+    }
+    ctx.beginPath();
+    ctx.arc(paintPos.x, paintPos.y, touchInfo.touchMoveCornerSize / 2, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.globalAlpha = 0.75;
+    ctx.beginPath();
+    ctx.fillStyle = "black";
+    ctx.arc(paintPos.x, paintPos.y, 5, 0, Math.PI * 2);
+    const touchLinePos = { x: game.mouseRelativeCanvasPosition.x, y: game.mouseRelativeCanvasPosition.y };
+    ctx.fill();
+    if (touchInfo.touchStart) {
+        const distance = calculateDistance(paintPos, touchLinePos);
+        if (distance > touchInfo.touchMoveCornerSize / 2) {
+            const direction = calculateDirection(paintPos, touchLinePos);
+            touchLinePos.x = paintPos.x;
+            touchLinePos.y = paintPos.y;
+            moveByDirectionAndDistance(touchLinePos, direction, touchInfo.touchMoveCornerSize / 2, false);
+        }
+        ctx.beginPath();
+        ctx.moveTo(paintPos.x, paintPos.y);
+        ctx.lineTo(touchLinePos.x, touchLinePos.y);
+        ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+}
+
+function paintInputTypeInfo(ctx: CanvasRenderingContext2D, game: Game) {
+    if (game.UI.inputType === "keyboard") {
+        paintKeyInfo(ctx, game);
+    } else if (game.UI.inputType === "touch") {
+        paintTouchMoveControl(ctx, game);
+    }
 }
 
 function paintKeyInfo(ctx: CanvasRenderingContext2D, game: Game) {

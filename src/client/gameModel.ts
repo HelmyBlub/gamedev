@@ -245,7 +245,16 @@ export type Multiplayer = {
     }
 }
 
+export type InputType = "keyboard" | "touch";
+export type TouchUiInfo = {
+    touchMoveCornerSize: number,
+    touchMoveCornerTopLeft?: Position,
+    touchStart?: Position,
+}
+
 export type UI = {
+    inputType: InputType,
+    touchInfo: TouchUiInfo,
     damageMeter: DamageMeter,
     displayMovementKeyHint: boolean,
     movementKeyPressed: boolean,
@@ -268,7 +277,6 @@ export type ClientKeyBindings = {
     moveKeys: string[],
     keyCodeToActionPressed: KeyCodeToAction,
     keyCodeToUiAction: KeyCodeToAction,
-    touchStart?: Position,
 }
 
 export type Game = {
@@ -395,6 +403,10 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
         debug: {
         },
         UI: {
+            inputType: "keyboard",
+            touchInfo: {
+                touchMoveCornerSize: 150,
+            },
             damageMeter: createDamageMeter(),
             displayMovementKeyHint: false,
             movementKeyPressed: false,

@@ -63,6 +63,7 @@ export function mouseUp(event: MouseEvent, game: Game) {
 
 export function touchStart(event: TouchEvent, game: Game) {
     event.preventDefault();
+    game.UI.inputType = "touch";
     touchMoveAction(event, game);
     touchAbilityAction(event, game);
 }
@@ -75,7 +76,7 @@ export function touchEnd(event: TouchEvent, game: Game) {
     event.preventDefault();
     if (!game.clientKeyBindings) return;
     const clientId = game.clientKeyBindings.clientIdRef;
-    game.clientKeyBindings.touchStart = undefined;
+    game.UI.touchInfo.touchStart = undefined;
 
     const moveData: MoveData = {
         direction: 0,
@@ -201,15 +202,19 @@ function touchAbilityAction(event: TouchEvent, game: Game) {
 function touchMoveAction(event: TouchEvent, game: Game) {
     if (!game.clientKeyBindings || !game.canvasElement) return;
     const clientId = game.clientKeyBindings.clientIdRef;
-    const touchMoveCornerSize = 150;
-    const touchMoveCornerTopLeft: Position = {
-        x: 0,
-        y: game.canvasElement.height - touchMoveCornerSize,
+    const touchMoveCornerSize = game.UI.touchInfo.touchMoveCornerSize;
+    if (game.UI.touchInfo.touchMoveCornerTopLeft === undefined) {
+        game.UI.touchInfo.touchMoveCornerTopLeft = {
+            x: 0,
+            y: game.canvasElement.height - touchMoveCornerSize,
+        }
     }
+    const touchMoveCornerTopLeft = game.UI.touchInfo.touchMoveCornerTopLeft;
+
     const target = event.touches[0].target as HTMLElement;
     const relativPosition = { x: event.touches[0].clientX - target.offsetLeft, y: event.touches[0].clientY - target.offsetTop };
     game.mouseRelativeCanvasPosition = relativPosition;
-    if (!game.clientKeyBindings.touchStart) {
+    if (!game.UI.touchInfo.touchStart) {
         if (relativPosition.x < touchMoveCornerTopLeft.x
             || relativPosition.x > touchMoveCornerTopLeft.x + touchMoveCornerSize
             || relativPosition.y < touchMoveCornerTopLeft.y
@@ -217,9 +222,15 @@ function touchMoveAction(event: TouchEvent, game: Game) {
         ) {
             return;
         }
-        game.clientKeyBindings.touchStart = relativPosition;
+        if (relativPosition.x < touchMoveCornerSize / 4) {
+            relativPosition.x = touchMoveCornerSize / 4;
+        }
+        if (relativPosition.y > game.canvasElement.height - touchMoveCornerSize / 4) {
+            relativPosition.y = game.canvasElement.height - touchMoveCornerSize / 4;
+        }
+        game.UI.touchInfo.touchStart = relativPosition;
     }
-    const moveMiddlePosition = game.clientKeyBindings.touchStart;
+    const moveMiddlePosition = game.UI.touchInfo.touchStart;
 
     const direction = calculateDirection(moveMiddlePosition, relativPosition);
 
@@ -410,6 +421,7 @@ function playerInputChangeEvent(game: Game, inputCode: string, isInputDown: bool
     if (isInputDown && action.isInputAlreadyDown) {
         return;
     }
+    game.UI.inputType = "keyboard";
     action.isInputAlreadyDown = isInputDown;
     if (action.action.indexOf("ability") > -1) {
         const cameraPosition = getCameraPosition(game);

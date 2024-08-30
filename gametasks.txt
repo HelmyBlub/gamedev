@@ -1,10 +1,11 @@
-next test run:
+next test run: sniper, builder, tamer, ball, musician
 increase version
 
 current tasks:
 - mobile control mapping
     - check how other do mobile controlls. Probably some analog stick image at bottom left
         - virtual joystick bottom left side for movement
+            - paint big circle and dot for middle
         - touch upgrades for choosing class
         - touch for using ability1
 
