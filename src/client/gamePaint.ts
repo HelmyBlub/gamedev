@@ -6,7 +6,7 @@ import { paintBossCharacters, paintBossCrown } from "./character/enemy/bossEnemy
 import { CharacterClass, findMainCharacterClass, hasPlayerChoosenStartClassUpgrade, paintPlayerCharacterUI, playerCharacterGetLevelClassText, shareCharactersTradeablePreventedMultipleClass } from "./character/playerCharacters/playerCharacters.js";
 import { TamerPetCharacter } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
 import { calculateDirection, calculateDistance, calculateFightRetryCounter, findClientInfo, findClosestInteractable, getCameraPosition } from "./game.js";
-import { Game, Position, Debugging, UpgradePaintData } from "./gameModel.js";
+import { Game, Position, Debugging, Rectangle } from "./gameModel.js";
 import { Highscores } from "./highscores.js";
 import { GAME_IMAGES, loadImage } from "./imageLoad.js";
 import { MAP_OBJECTS_FUNCTIONS } from "./map/mapObjects.js";
@@ -90,8 +90,9 @@ export function getPointPaintPosition(ctx: CanvasRenderingContext2D, point: Posi
 
 /**
  * @param textWithKeys add character "<" + key + ">" like "Press buton <A>" to print a key visualization
+ * @returns bounding box
  */
-export function paintTextLinesWithKeys(ctx: CanvasRenderingContext2D, textWithKeys: string[], paintPosition: Position, fontSize: number = 20, centered: boolean = false, bottomUp: boolean = false) {
+export function paintTextLinesWithKeys(ctx: CanvasRenderingContext2D, textWithKeys: string[], paintPosition: Position, fontSize: number = 20, centered: boolean = false, bottomUp: boolean = false): Rectangle {
     let textMaxWidth = 0;
     const tempPaintPos = { x: paintPosition.x, y: paintPosition.y };
     const verticalSpacing = 10;
@@ -105,7 +106,15 @@ export function paintTextLinesWithKeys(ctx: CanvasRenderingContext2D, textWithKe
     }
     ctx.globalAlpha = 0.6;
     ctx.fillStyle = "white";
-    ctx.fillRect(tempPaintPos.x - Math.floor(textMaxWidth / 2) - 1, tempPaintPos.y - 1, textMaxWidth + 2, rectHeight)
+    const boundingBox: Rectangle = {
+        topLeft: {
+            x: tempPaintPos.x - Math.floor(textMaxWidth / 2) - 1,
+            y: tempPaintPos.y - 1,
+        },
+        height: rectHeight,
+        width: textMaxWidth + 2,
+    }
+    ctx.fillRect(boundingBox.topLeft.x, boundingBox.topLeft.y, boundingBox.width, boundingBox.height);
     ctx.globalAlpha = 1;
     ctx.font = `${fontSize}px Arial`;
     ctx.fillStyle = "black";
@@ -115,6 +124,7 @@ export function paintTextLinesWithKeys(ctx: CanvasRenderingContext2D, textWithKe
         paintTextWithKeys(ctx, text, { x: tempPaintPos.x, y: tempPaintPos.y + offsetY }, fontSize, true);
         offsetY += verticalSpacing;
     }
+    return boundingBox;
 }
 
 
@@ -476,7 +486,14 @@ function paintEndScreen(ctx: CanvasRenderingContext2D, highscores: Highscores, g
     }
 
     const restartKey = playerInputBindingToDisplayValue("Restart", game);
-    paintTextLinesWithKeys(ctx, [`Press <${restartKey}> to Restart.`], paintPos, 20, true);
+    const restartText: string[] = [];
+    if (game.UI.inputType === "keyboard") {
+        restartText.push(`Press <${restartKey}> to Restart.`);
+        paintTextLinesWithKeys(ctx, restartText, paintPos, 20, true);
+    } else if (game.UI.inputType === "touch") {
+        restartText.push(`Touch this to Restart.`);
+        game.UI.restartTextRectangle = paintTextLinesWithKeys(ctx, restartText, paintPos, 30, true);
+    }
     if (game.UI.lastHighscoreText) {
         paintPos.y += 50;
         paintTextLinesWithKeys(ctx, [`${game.UI.lastHighscoreText}`], paintPos, 20, true);
@@ -533,9 +550,9 @@ function paintPlayerStats(ctx: CanvasRenderingContext2D, player: Player, game: G
     paintUpgradeOptionsUI(ctx, character, game);
 }
 
-function calculateUpgradePaintData(ctx: CanvasRenderingContext2D, character: Character, startY: number, game: Game): UpgradePaintData[] | undefined {
+function calculateUpgradePaintData(ctx: CanvasRenderingContext2D, character: Character, startY: number, game: Game): Rectangle[] | undefined {
     if (character.upgradeChoices.choices.length <= 0) return undefined;
-    const upgradePaintDatas: UpgradePaintData[] = [];
+    const upgradePaintDatas: Rectangle[] = [];
     const firstFontSize = 20;
     const addFontSize = 14;
     const optionSpacer = 50;
@@ -582,7 +599,7 @@ function calculateUpgradePaintData(ctx: CanvasRenderingContext2D, character: Cha
 }
 
 function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Character, game: Game) {
-    game.UI.upgradePaintData = undefined;
+    game.UI.upgradePaintRectangle = undefined;
     if (game.state.ended) return;
     if (isAutoUpgradeActive(game) && hasPlayerChoosenStartClassUpgrade(character)) return;
     if (character.upgradeChoices.choices.length <= 0) return;
@@ -613,7 +630,7 @@ function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Charact
         paintTextLinesWithKeys(ctx, [character.upgradeChoices.displayText], hintPos, firstFontSize, true, true);
     }
     const upgradePaintData = calculateUpgradePaintData(ctx, character, startY, game);
-    game.UI.upgradePaintData = upgradePaintData;
+    game.UI.upgradePaintRectangle = upgradePaintData;
     if (upgradePaintData === undefined) return;
     for (let i = 0; i < character.upgradeChoices.choices.length; i++) {
         const choice = character.upgradeChoices.choices[i];

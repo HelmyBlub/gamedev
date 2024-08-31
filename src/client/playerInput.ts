@@ -66,7 +66,9 @@ export function touchStart(event: TouchEvent, game: Game) {
     game.UI.inputType = "touch";
     for (let i = 0; i < event.changedTouches.length; i++) {
         const touch = event.changedTouches[i];
-        if (touchStartMove(touch, game)) {
+        if (touchRestart(touch, game)) {
+            return;
+        } else if (touchStartMove(touch, game)) {
             continue;
         } else if (touchUpgrade(touch, true, game)) {
             continue;
@@ -230,7 +232,7 @@ function touchAbilityAction(touch: Touch, game: Game) {
  */
 function touchUpgrade(touch: Touch, touchStart: boolean, game: Game): boolean {
     if (!game.clientKeyBindings || !game.canvasElement) return false;
-    const upgradePaintData = game.UI.upgradePaintData;
+    const upgradePaintData = game.UI.upgradePaintRectangle;
     if (upgradePaintData === undefined || upgradePaintData.length === 0) return false;
     const target = game.canvasElement;
     const clientId = game.clientKeyBindings.clientIdRef;
@@ -274,7 +276,7 @@ function touchMoveActionMove(touch: Touch, game: Game) {
     if (!game.clientKeyBindings || !game.canvasElement) return false;
     if (!game.UI.touchInfo.touchMoveCornerBottomLeft || !game.UI.touchInfo.touchStart) return false;
     if (game.UI.touchInfo.touchIdMove !== touch.identifier) return false;
-    const clientId = game.clientKeyBindings.clientIdRef;
+    const clientId = game.multiplayer.myClientId;
 
     const target = game.canvasElement;
     const relativPosition = { x: touch.clientX - target.offsetLeft, y: touch.clientY - target.offsetTop };
@@ -291,6 +293,23 @@ function touchMoveActionMove(touch: Touch, game: Game) {
         clientId: clientId,
         data: { ...moveData, action: MOVE_ACTION },
     });
+}
+
+/**
+ * @returns true if restart executed
+ */
+function touchRestart(touch: Touch, game: Game): boolean {
+    const rectangle = game.UI.restartTextRectangle;
+    if (!rectangle || !game.canvasElement) return false;
+    const target = game.canvasElement;
+    const relativPosition = { x: touch.clientX - target.offsetLeft, y: touch.clientY - target.offsetTop };
+    if (rectangle.topLeft.x <= relativPosition.x && rectangle.topLeft.x + rectangle.width >= relativPosition.x
+        && rectangle.topLeft.y <= relativPosition.y && rectangle.topLeft.y + rectangle.height >= relativPosition.y
+    ) {
+        executeUiAction("Restart", true, game);
+        return true;
+    }
+    return false;
 }
 
 /**
@@ -433,13 +452,8 @@ function determinePlayerMoveDirectionKeyboard(clientKeyBindings: ClientKeyBindin
     }
 }
 
-function uiAction(game: Game, inputCode: string, isInputDown: boolean) {
-    if (!game.clientKeyBindings) return;
-    const action = game.clientKeyBindings.keyCodeToUiAction.get(inputCode);
-    if (action === undefined) return;
-    if (isInputDown && action.isInputAlreadyDown) return;
-    action.isInputAlreadyDown = isInputDown;
-    switch (action.action) {
+function executeUiAction(action: string, isInputDown: boolean, game: Game,) {
+    switch (action) {
         case "Restart":
             if (!isInputDown) return;
             if (game.state.bossStuff.fightWipe) {
@@ -488,9 +502,25 @@ function uiAction(game: Game, inputCode: string, isInputDown: boolean) {
             break;
         case "AutoUpgrade":
             if (!isInputDown) return;
-            action.activated = !action.activated;
+            if (!game.clientKeyBindings) return;
+            const keys = Object.keys(game.clientKeyBindings.keyCodeToUiAction);
+            for (let key of keys) {
+                const uiAction = game.clientKeyBindings.keyCodeToUiAction.get(key);
+                if (uiAction && uiAction.action === "AutoUpgrade") {
+                    uiAction.activated = !uiAction.activated;
+                }
+            }
             break;
     }
+}
+
+function uiAction(game: Game, inputCode: string, isInputDown: boolean) {
+    if (!game.clientKeyBindings) return;
+    const action = game.clientKeyBindings.keyCodeToUiAction.get(inputCode);
+    if (action === undefined) return;
+    if (isInputDown && action.isInputAlreadyDown) return;
+    action.isInputAlreadyDown = isInputDown;
+    executeUiAction(action.action, isInputDown, game);
 }
 
 function playerInputChangeEvent(game: Game, inputCode: string, isInputDown: boolean) {

@@ -4,7 +4,12 @@ increase version
 current tasks:
 - mobile/touch control mapping
     - restart
+        - retries
     - all abilities
+    - interactables
+        - buildings
+        - sign
+    - pastCharacters
     - more info
 
 - add controller

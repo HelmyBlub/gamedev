@@ -254,7 +254,7 @@ export type TouchUiInfo = {
     touchIdAbility?: number,
 }
 
-export type UpgradePaintData = {
+export type Rectangle = {
     topLeft: Position,
     height: number,
     width: number,
@@ -263,7 +263,8 @@ export type UpgradePaintData = {
 export type UI = {
     inputType: InputType,
     touchInfo: TouchUiInfo,
-    upgradePaintData?: UpgradePaintData[],
+    upgradePaintRectangle?: Rectangle[],
+    restartTextRectangle?: Rectangle,
     damageMeter: DamageMeter,
     displayMovementKeyHint: boolean,
     movementKeyPressed: boolean,
