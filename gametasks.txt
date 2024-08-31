@@ -2,7 +2,8 @@ next test run: sniper, builder, tamer, ball, musician
 increase version
 
 current tasks:
-- mobile control mapping
+- mobile/touch control mapping
+    - reposition move control on window size change
     - restart
     - multi touch
     - all abilities

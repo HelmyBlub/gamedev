@@ -248,7 +248,7 @@ export type Multiplayer = {
 export type InputType = "keyboard" | "touch";
 export type TouchUiInfo = {
     touchMoveCornerSize: number,
-    touchMoveCornerTopLeft?: Position,
+    touchMoveCornerBottomLeft?: Position,
     touchStart?: Position,
 }
 

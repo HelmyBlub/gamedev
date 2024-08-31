@@ -227,13 +227,16 @@ function touchMoveAction(event: TouchEvent, game: Game) {
     if (!game.clientKeyBindings || !game.canvasElement) return;
     const clientId = game.clientKeyBindings.clientIdRef;
     const touchMoveCornerSize = game.UI.touchInfo.touchMoveCornerSize;
-    if (game.UI.touchInfo.touchMoveCornerTopLeft === undefined) {
-        game.UI.touchInfo.touchMoveCornerTopLeft = {
+    if (game.UI.touchInfo.touchMoveCornerBottomLeft === undefined) {
+        game.UI.touchInfo.touchMoveCornerBottomLeft = {
             x: 0,
-            y: game.canvasElement.height - touchMoveCornerSize,
+            y: touchMoveCornerSize,
         }
     }
-    const touchMoveCornerTopLeft = game.UI.touchInfo.touchMoveCornerTopLeft;
+    const touchMoveCornerTopLeft = {
+        x: game.UI.touchInfo.touchMoveCornerBottomLeft.x,
+        y: game.canvasElement.height - game.UI.touchInfo.touchMoveCornerBottomLeft.y,
+    }
 
     const target = event.touches[0].target as HTMLElement;
     const relativPosition = { x: event.touches[0].clientX - target.offsetLeft, y: event.touches[0].clientY - target.offsetTop };
