@@ -340,6 +340,9 @@ function paintPausedText(ctx: CanvasRenderingContext2D, game: Game) {
 function paintTouchMoveControl(ctx: CanvasRenderingContext2D, game: Game) {
     const touchInfo = game.UI.touchInfo;
     if (!touchInfo.touchMoveCornerBottomLeft) return;
+    const myChar = findMyCharacter(game);
+    if (!myChar) return;
+
     ctx.font = "20px Arial";
     paintTextWithOutline(ctx, "white", "black", "Touch Controls Work in Progress", ctx.canvas.width / 2, 80, true, 2, "white");
     ctx.strokeStyle = "black";
@@ -359,16 +362,11 @@ function paintTouchMoveControl(ctx: CanvasRenderingContext2D, game: Game) {
     ctx.beginPath();
     ctx.fillStyle = "black";
     ctx.arc(paintPos.x, paintPos.y, 5, 0, Math.PI * 2);
-    const touchLinePos = { x: game.mouseRelativeCanvasPosition.x, y: game.mouseRelativeCanvasPosition.y };
+    const charDirection = myChar.moveDirection;
     ctx.fill();
     if (touchInfo.touchStart) {
-        const distance = calculateDistance(paintPos, touchLinePos);
-        if (distance > touchInfo.touchMoveCornerSize / 2) {
-            const direction = calculateDirection(paintPos, touchLinePos);
-            touchLinePos.x = paintPos.x;
-            touchLinePos.y = paintPos.y;
-            moveByDirectionAndDistance(touchLinePos, direction, touchInfo.touchMoveCornerSize / 2, false);
-        }
+        const touchLinePos = { x: paintPos.x, y: paintPos.y };
+        moveByDirectionAndDistance(touchLinePos, charDirection, touchInfo.touchMoveCornerSize / 2, false);
         ctx.beginPath();
         ctx.moveTo(paintPos.x, paintPos.y);
         ctx.lineTo(touchLinePos.x, touchLinePos.y);

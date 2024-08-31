@@ -3,9 +3,7 @@ increase version
 
 current tasks:
 - mobile/touch control mapping
-    - reposition move control on window size change
     - restart
-    - multi touch
     - all abilities
     - more info
 

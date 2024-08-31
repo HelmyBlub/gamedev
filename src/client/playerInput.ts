@@ -64,30 +64,34 @@ export function mouseUp(event: MouseEvent, game: Game) {
 export function touchStart(event: TouchEvent, game: Game) {
     event.preventDefault();
     game.UI.inputType = "touch";
-    touchMoveAction(event, game);
-    touchAbilityAction(event, game);
-    touchUpgrade(event, true, game);
+    for (let i = 0; i < event.changedTouches.length; i++) {
+        const touch = event.changedTouches[i];
+        if (touchStartMove(touch, game)) {
+            continue;
+        } else if (touchUpgrade(touch, true, game)) {
+            continue;
+        } else {
+            touchAbilityAction(touch, game);
+        }
+    }
 }
 
 export function touchMove(event: TouchEvent, game: Game) {
     event.preventDefault();
-    touchMoveAction(event, game);
+    for (let i = 0; i < event.changedTouches.length; i++) {
+        const touch = event.changedTouches[i];
+        touchMoveActionMove(touch, game);
+        touchMoveActionAbility(touch, game);
+    }
 }
+
 export function touchEnd(event: TouchEvent, game: Game) {
     event.preventDefault();
-    if (!game.clientKeyBindings) return;
-    const clientId = game.clientKeyBindings.clientIdRef;
-    game.UI.touchInfo.touchStart = undefined;
-
-    const moveData: MoveData = {
-        direction: 0,
-        faktor: 0,
+    for (let i = 0; i < event.changedTouches.length; i++) {
+        const touch = event.changedTouches[i];
+        touchMoveEnd(touch, game);
+        touchEndActionAbility(touch, game);
     }
-    handleCommand(game, {
-        command: "playerInput",
-        clientId: clientId,
-        data: { ...moveData, action: MOVE_ACTION },
-    });
 }
 
 
@@ -181,9 +185,30 @@ export function tickPlayerInputs(playerInputs: PlayerInput[], currentTime: numbe
     takeTimeMeasure(game.debug, "tickPlayerInputs", "");
 }
 
-function touchAbilityAction(event: TouchEvent, game: Game) {
-    if (!game.clientKeyBindings) return;
+function touchMoveActionAbility(touch: Touch, game: Game) {
+    if (game.UI.touchInfo.touchIdAbility !== touch.identifier) return;
+    if (!game.canvasElement) return;
+    const target = game.canvasElement;
+    const relativPosition = { x: touch.clientX - target.offsetLeft, y: touch.clientY - target.offsetTop };
+    game.mouseRelativeCanvasPosition = relativPosition;
+}
+
+function touchEndActionAbility(touch: Touch, game: Game) {
+    if (game.UI.touchInfo.touchIdAbility !== touch.identifier) return;
+    const clientId = game.multiplayer.myClientId;
+    handleCommand(game, {
+        command: "playerInput",
+        clientId: clientId,
+        data: { action: "ability1", isKeydown: false },
+    });
+}
+
+function touchAbilityAction(touch: Touch, game: Game) {
+    if (!game.clientKeyBindings || !game.canvasElement) return;
     const clientId = game.clientKeyBindings.clientIdRef;
+    const target = game.canvasElement;
+    const relativPosition = { x: touch.clientX - target.offsetLeft, y: touch.clientY - target.offsetTop };
+    game.mouseRelativeCanvasPosition = relativPosition;
     const cameraPosition = getCameraPosition(game);
     const castPosition = mousePositionToMapPosition(game, cameraPosition);
     const player = findPlayerByCliendId(clientId, game.state.players);
@@ -192,7 +217,7 @@ function touchAbilityAction(event: TouchEvent, game: Game) {
         x: castPosition.x - player.character.x,
         y: castPosition.y - player.character.y,
     };
-
+    game.UI.touchInfo.touchIdAbility = touch.identifier;
     handleCommand(game, {
         command: "playerInput",
         clientId: clientId,
@@ -200,14 +225,17 @@ function touchAbilityAction(event: TouchEvent, game: Game) {
     });
 }
 
-function touchUpgrade(event: TouchEvent, touchStart: boolean, game: Game) {
-    if (!game.clientKeyBindings || !game.canvasElement) return;
+/**
+ * @returns true if upgrade action executed
+ */
+function touchUpgrade(touch: Touch, touchStart: boolean, game: Game): boolean {
+    if (!game.clientKeyBindings || !game.canvasElement) return false;
     const upgradePaintData = game.UI.upgradePaintData;
-    if (upgradePaintData === undefined || upgradePaintData.length === 0) return;
-    const target = event.touches[0].target as HTMLElement;
+    if (upgradePaintData === undefined || upgradePaintData.length === 0) return false;
+    const target = game.canvasElement;
     const clientId = game.clientKeyBindings.clientIdRef;
-    const relativPosition = { x: event.touches[0].clientX - target.offsetLeft, y: event.touches[0].clientY - target.offsetTop };
-    if (upgradePaintData[0].topLeft.y > relativPosition.y) return;
+    const relativPosition = { x: touch.clientX - target.offsetLeft, y: touch.clientY - target.offsetTop };
+    if (upgradePaintData[0].topLeft.y > relativPosition.y) return false;
     for (let i = 0; i < upgradePaintData.length; i++) {
         const data = upgradePaintData[i];
         if (data.topLeft.x <= relativPosition.x && data.topLeft.x + data.width >= relativPosition.x
@@ -218,45 +246,38 @@ function touchUpgrade(event: TouchEvent, touchStart: boolean, game: Game) {
                 clientId: clientId,
                 data: { action: "upgrade" + (i + 1), isKeydown: touchStart },
             });
-            return;
+            return true;
         }
+    }
+    return false;
+}
+
+function touchMoveEnd(touch: Touch, game: Game) {
+    if (game.UI.touchInfo.touchIdMove === touch.identifier) {
+        const clientId = game.multiplayer.myClientId;
+        game.UI.touchInfo.touchIdMove = undefined;
+        game.UI.touchInfo.touchStart = undefined;
+
+        const moveData: MoveData = {
+            direction: 0,
+            faktor: 0,
+        }
+        handleCommand(game, {
+            command: "playerInput",
+            clientId: clientId,
+            data: { ...moveData, action: MOVE_ACTION },
+        });
     }
 }
 
-function touchMoveAction(event: TouchEvent, game: Game) {
-    if (!game.clientKeyBindings || !game.canvasElement) return;
+function touchMoveActionMove(touch: Touch, game: Game) {
+    if (!game.clientKeyBindings || !game.canvasElement) return false;
+    if (!game.UI.touchInfo.touchMoveCornerBottomLeft || !game.UI.touchInfo.touchStart) return false;
+    if (game.UI.touchInfo.touchIdMove !== touch.identifier) return false;
     const clientId = game.clientKeyBindings.clientIdRef;
-    const touchMoveCornerSize = game.UI.touchInfo.touchMoveCornerSize;
-    if (game.UI.touchInfo.touchMoveCornerBottomLeft === undefined) {
-        game.UI.touchInfo.touchMoveCornerBottomLeft = {
-            x: 0,
-            y: touchMoveCornerSize,
-        }
-    }
-    const touchMoveCornerTopLeft = {
-        x: game.UI.touchInfo.touchMoveCornerBottomLeft.x,
-        y: game.canvasElement.height - game.UI.touchInfo.touchMoveCornerBottomLeft.y,
-    }
 
-    const target = event.touches[0].target as HTMLElement;
-    const relativPosition = { x: event.touches[0].clientX - target.offsetLeft, y: event.touches[0].clientY - target.offsetTop };
-    game.mouseRelativeCanvasPosition = relativPosition;
-    if (!game.UI.touchInfo.touchStart) {
-        if (relativPosition.x < touchMoveCornerTopLeft.x
-            || relativPosition.x > touchMoveCornerTopLeft.x + touchMoveCornerSize
-            || relativPosition.y < touchMoveCornerTopLeft.y
-            || relativPosition.y > touchMoveCornerTopLeft.y + touchMoveCornerSize
-        ) {
-            return;
-        }
-        if (relativPosition.x < touchMoveCornerSize / 4) {
-            relativPosition.x = touchMoveCornerSize / 4;
-        }
-        if (relativPosition.y > game.canvasElement.height - touchMoveCornerSize / 4) {
-            relativPosition.y = game.canvasElement.height - touchMoveCornerSize / 4;
-        }
-        game.UI.touchInfo.touchStart = relativPosition;
-    }
+    const target = game.canvasElement;
+    const relativPosition = { x: touch.clientX - target.offsetLeft, y: touch.clientY - target.offsetTop };
     const moveMiddlePosition = game.UI.touchInfo.touchStart;
 
     const direction = calculateDirection(moveMiddlePosition, relativPosition);
@@ -270,6 +291,43 @@ function touchMoveAction(event: TouchEvent, game: Game) {
         clientId: clientId,
         data: { ...moveData, action: MOVE_ACTION },
     });
+}
+
+/**
+ * @returns true if move action executed
+ */
+function touchStartMove(touch: Touch, game: Game): boolean {
+    if (!game.clientKeyBindings || !game.canvasElement) return false;
+    const touchMoveCornerSize = game.UI.touchInfo.touchMoveCornerSize;
+    if (game.UI.touchInfo.touchMoveCornerBottomLeft === undefined) {
+        game.UI.touchInfo.touchMoveCornerBottomLeft = {
+            x: 0,
+            y: touchMoveCornerSize,
+        }
+    }
+    const touchMoveCornerTopLeft = {
+        x: game.UI.touchInfo.touchMoveCornerBottomLeft.x,
+        y: game.canvasElement.height - game.UI.touchInfo.touchMoveCornerBottomLeft.y,
+    }
+
+    const target = game.canvasElement;
+    const relativPosition = { x: touch.clientX - target.offsetLeft, y: touch.clientY - target.offsetTop };
+    if (relativPosition.x < touchMoveCornerTopLeft.x
+        || relativPosition.x > touchMoveCornerTopLeft.x + touchMoveCornerSize
+        || relativPosition.y < touchMoveCornerTopLeft.y
+        || relativPosition.y > touchMoveCornerTopLeft.y + touchMoveCornerSize
+    ) {
+        return false;
+    }
+    if (relativPosition.x < touchMoveCornerSize / 4) {
+        relativPosition.x = touchMoveCornerSize / 4;
+    }
+    if (relativPosition.y > game.canvasElement.height - touchMoveCornerSize / 4) {
+        relativPosition.y = game.canvasElement.height - touchMoveCornerSize / 4;
+    }
+    game.UI.touchInfo.touchStart = relativPosition;
+    game.UI.touchInfo.touchIdMove = touch.identifier;
+    return true;
 }
 
 function handleSaveStateAction(saveStateNumber: number, isSaveAction: boolean, game: Game) {

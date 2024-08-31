@@ -250,6 +250,8 @@ export type TouchUiInfo = {
     touchMoveCornerSize: number,
     touchMoveCornerBottomLeft?: Position,
     touchStart?: Position,
+    touchIdMove?: number,
+    touchIdAbility?: number,
 }
 
 export type UpgradePaintData = {

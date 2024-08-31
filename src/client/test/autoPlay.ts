@@ -1,10 +1,31 @@
 import { handleCommand } from "../commands.js";
 import { getCameraPosition } from "../game.js";
 import { Game, Position } from "../gameModel.js";
-import { ABILITY_ACTIONS, MOVE_ACTION, MoveData } from "../playerInput.js";
+import { ABILITY_ACTIONS, MOVE_ACTION, MoveData, touchStart } from "../playerInput.js";
 
 export function autoPlay(game: Game) {
+    //autoTouchMove(game);
     if (!game.testing || !game.testing.autoPlay || !game.testing.autoPlay.autoPlaying) return;
+    autoMove(game);
+}
+
+function autoTouchMove(game: Game) {
+    if (!game.canvasElement) return;
+    let touchMoveSize = game.UI.touchInfo.touchMoveCornerSize;
+    let touchMoveLeft = 0 + Math.random() * touchMoveSize;
+    let touchMoveTop = game.canvasElement.height - touchMoveSize + Math.random() * touchMoveSize;
+    const event: any = {
+        preventDefault: () => { },
+        changedTouches: [{
+            identifier: 777,
+            clientX: touchMoveLeft,
+            clientY: touchMoveTop,
+        }]
+    }
+    touchStart(event, game);
+}
+
+function autoMove(game: Game) {
     if (game.testing.autoPlay.nextAutoButtonPressTime <= performance.now()) {
         game.testing.autoPlay.nextAutoButtonPressTime = performance.now() + 100 + Math.random() * 100;
 
