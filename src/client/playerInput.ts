@@ -66,7 +66,7 @@ export function touchStart(event: TouchEvent, game: Game) {
     game.UI.inputType = "touch";
     for (let i = 0; i < event.changedTouches.length; i++) {
         const touch = event.changedTouches[i];
-        if (touchRestart(touch, game)) {
+        if (touchUiRectangles(touch, game)) {
             return;
         } else if (touchStartMove(touch, game)) {
             continue;
@@ -232,7 +232,7 @@ function touchAbilityAction(touch: Touch, game: Game) {
  */
 function touchUpgrade(touch: Touch, touchStart: boolean, game: Game): boolean {
     if (!game.clientKeyBindings || !game.canvasElement) return false;
-    const upgradePaintData = game.UI.upgradePaintRectangle;
+    const upgradePaintData = game.UI.rectangles.upgradePaintRectangle;
     if (upgradePaintData === undefined || upgradePaintData.length === 0) return false;
     const target = game.canvasElement;
     const clientId = game.clientKeyBindings.clientIdRef;
@@ -296,10 +296,22 @@ function touchMoveActionMove(touch: Touch, game: Game) {
 }
 
 /**
+ * @returns true if something executed
+ */
+function touchUiRectangles(touch: Touch, game: Game): boolean {
+    if (touchRestart(touch, game)) {
+        return true;
+    } else if (touchRetryConcede(touch, game)) {
+        return true;
+    }
+    return false;
+}
+
+/**
  * @returns true if restart executed
  */
 function touchRestart(touch: Touch, game: Game): boolean {
-    const rectangle = game.UI.restartTextRectangle;
+    const rectangle = game.UI.rectangles.restartTextRectangle;
     if (!rectangle || !game.canvasElement) return false;
     const target = game.canvasElement;
     const relativPosition = { x: touch.clientX - target.offsetLeft, y: touch.clientY - target.offsetTop };
@@ -309,6 +321,32 @@ function touchRestart(touch: Touch, game: Game): boolean {
         executeUiAction("Restart", true, game);
         return true;
     }
+    return false;
+}
+
+/**
+ * @returns true if retry or concede executed
+ */
+function touchRetryConcede(touch: Touch, game: Game): boolean {
+    const rectangles = game.UI.rectangles.retryTextRectangles;
+    if (rectangles === undefined || rectangles.length !== 2 || !game.canvasElement) return false;
+    const target = game.canvasElement;
+    const relativPosition = { x: touch.clientX - target.offsetLeft, y: touch.clientY - target.offsetTop };
+    const rectangleRetry = rectangles[0];
+    if (rectangleRetry.topLeft.x <= relativPosition.x && rectangleRetry.topLeft.x + rectangleRetry.width >= relativPosition.x
+        && rectangleRetry.topLeft.y <= relativPosition.y && rectangleRetry.topLeft.y + rectangleRetry.height >= relativPosition.y
+    ) {
+        retryFight(game);
+        return true;
+    }
+    const rectangleConcede = rectangles[1];
+    if (rectangleConcede.topLeft.x <= relativPosition.x && rectangleConcede.topLeft.x + rectangleConcede.width >= relativPosition.x
+        && rectangleConcede.topLeft.y <= relativPosition.y && rectangleConcede.topLeft.y + rectangleConcede.height >= relativPosition.y
+    ) {
+        concedePlayerFightRetries(game);
+        return true;
+    }
+
     return false;
 }
 

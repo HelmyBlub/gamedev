@@ -3,7 +3,6 @@ increase version
 
 current tasks:
 - mobile/touch control mapping
-    - retries
     - all abilities
     - interactables
         - buildings
@@ -12,7 +11,7 @@ current tasks:
     - more info
 
 - add controller
-    
+- test run which uses retries
 
 - map modifier
     - darkness

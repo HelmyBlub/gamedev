@@ -468,11 +468,20 @@ function paintFightWipeUI(ctx: CanvasRenderingContext2D, game: Game) {
     }
     let retryCounter = calculateFightRetryCounter(game);
     if (retryCounter === 0) return;
-    const textLines = [
-        `Press <${retryKey}> to use one fight retry. (${retryCounter} retries left).`,
-        `Press <${concedeKey}> to concede.`,
-    ];
-    paintTextLinesWithKeys(ctx, textLines, paintPos, 20, true);
+    const textRetryLines: string[] = [];
+    const textConcedeLines: string[] = [];
+    if (game.UI.inputType === "keyboard") {
+        textRetryLines.push(`Press <${retryKey}> to use one fight retry. (${retryCounter} retries left).`);
+        textConcedeLines.push(`Press <${concedeKey}> to concede.`);
+    } else if (game.UI.inputType === "touch") {
+        textRetryLines.push(`Touch to use one fight retry. (${retryCounter} retries left).`);
+        textConcedeLines.push(`Touch to concede.`);
+    }
+    game.UI.rectangles.retryTextRectangles = [];
+    const retryRec = paintTextLinesWithKeys(ctx, textRetryLines, paintPos, 20, true);
+    game.UI.rectangles.retryTextRectangles.push(retryRec);
+    paintPos.y += retryRec.height + 10;
+    game.UI.rectangles.retryTextRectangles.push(paintTextLinesWithKeys(ctx, textConcedeLines, paintPos, 20, true));
 }
 
 function paintEndScreen(ctx: CanvasRenderingContext2D, highscores: Highscores, game: Game) {
@@ -492,7 +501,7 @@ function paintEndScreen(ctx: CanvasRenderingContext2D, highscores: Highscores, g
         paintTextLinesWithKeys(ctx, restartText, paintPos, 20, true);
     } else if (game.UI.inputType === "touch") {
         restartText.push(`Touch this to Restart.`);
-        game.UI.restartTextRectangle = paintTextLinesWithKeys(ctx, restartText, paintPos, 30, true);
+        game.UI.rectangles.restartTextRectangle = paintTextLinesWithKeys(ctx, restartText, paintPos, 30, true);
     }
     if (game.UI.lastHighscoreText) {
         paintPos.y += 50;
@@ -599,7 +608,7 @@ function calculateUpgradePaintData(ctx: CanvasRenderingContext2D, character: Cha
 }
 
 function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Character, game: Game) {
-    game.UI.upgradePaintRectangle = undefined;
+    game.UI.rectangles.upgradePaintRectangle = undefined;
     if (game.state.ended) return;
     if (isAutoUpgradeActive(game) && hasPlayerChoosenStartClassUpgrade(character)) return;
     if (character.upgradeChoices.choices.length <= 0) return;
@@ -630,7 +639,7 @@ function paintUpgradeOptionsUI(ctx: CanvasRenderingContext2D, character: Charact
         paintTextLinesWithKeys(ctx, [character.upgradeChoices.displayText], hintPos, firstFontSize, true, true);
     }
     const upgradePaintData = calculateUpgradePaintData(ctx, character, startY, game);
-    game.UI.upgradePaintRectangle = upgradePaintData;
+    game.UI.rectangles.upgradePaintRectangle = upgradePaintData;
     if (upgradePaintData === undefined) return;
     for (let i = 0; i < character.upgradeChoices.choices.length; i++) {
         const choice = character.upgradeChoices.choices[i];

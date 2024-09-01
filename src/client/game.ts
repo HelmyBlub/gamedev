@@ -123,7 +123,7 @@ export function gameInit(game: Game) {
     game.UI.moneyGainedThisRun = [];
     game.UI.stackTextsData.textStack = [];
     game.UI.displayMoreInfos = false;
-    game.UI.restartTextRectangle = undefined;
+    game.UI.rectangles = {};
     if (game.UI.playerCharacterLevelUI) game.UI.playerCharacterLevelUI.levelUI = [];
     game.testing.saveStates.autoSaves.nextSaveStateTime = 10000;
     game.state.map.activeChunkKeys = [];

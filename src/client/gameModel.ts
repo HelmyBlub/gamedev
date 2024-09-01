@@ -263,8 +263,11 @@ export type Rectangle = {
 export type UI = {
     inputType: InputType,
     touchInfo: TouchUiInfo,
-    upgradePaintRectangle?: Rectangle[],
-    restartTextRectangle?: Rectangle,
+    rectangles: {
+        upgradePaintRectangle?: Rectangle[],
+        restartTextRectangle?: Rectangle,
+        retryTextRectangles?: Rectangle[],
+    }
     damageMeter: DamageMeter,
     displayMovementKeyHint: boolean,
     movementKeyPressed: boolean,
@@ -417,6 +420,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             touchInfo: {
                 touchMoveCornerSize: 150,
             },
+            rectangles: {},
             damageMeter: createDamageMeter(),
             displayMovementKeyHint: false,
             movementKeyPressed: false,
