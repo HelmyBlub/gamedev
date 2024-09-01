@@ -575,6 +575,12 @@ function playerInputChangeEvent(game: Game, inputCode: string, isInputDown: bool
             clientId: clientId,
             data: { ...moveData, action: MOVE_ACTION },
         });
+    } else {
+        handleCommand(game, {
+            command: "playerInput",
+            clientId: clientId,
+            data: { action: action.action, isKeydown: isInputDown },
+        });
     }
 }
 

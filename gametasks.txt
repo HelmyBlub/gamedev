@@ -1,15 +1,14 @@
-next test run: sniper, builder, tamer, ball, musician
+next test run: ball, musician, sniper, builder
 increase version
 
 current tasks:
 - mobile/touch control mapping
-    - restart
-        - retries
+    - retries
     - all abilities
     - interactables
         - buildings
         - sign
-    - pastCharacters
+        - pastCharacters
     - more info
 
 - add controller
