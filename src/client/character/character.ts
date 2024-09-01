@@ -299,7 +299,17 @@ export function tickCharacters(characters: (Character | undefined)[], game: Game
             if (char.deathAnimationStartTimer !== undefined
                 && char.deathAnimationStartTimer + char.deathAnimationDuration! < game.state.time
             ) {
-                if (char.willTurnToPetOnDeath) turnCharacterToPet(char, game);
+                if (char.willTurnToPetOnDeath) {
+                    turnCharacterToPet(char, game);
+                } else {
+                    char.state = "dead";
+                }
+                if (game.state.bossStuff.godFightStartedTime !== undefined || game.state.bossStuff.kingFightStartedTime !== undefined) {
+                    const countAlive = countAlivePlayerCharacters(game.state.players, game.state.time);
+                    if (countAlive === 0) {
+                        game.state.bossStuff.fightWipe = true;
+                    }
+                }
             }
         }
     }
@@ -649,12 +659,6 @@ function killCharacter(character: Character, game: Game, abilityIdRef: number | 
         character.state = "dying";
         character.deathAnimationStartTimer = game.state.time;
         character.deathAnimationDuration = 2000;
-        if (game.state.bossStuff.godFightStartedTime !== undefined || game.state.bossStuff.kingFightStartedTime !== undefined) {
-            const countAlive = countAlivePlayerCharacters(game.state.players, game.state.time);
-            if (countAlive === 0) {
-                game.state.bossStuff.fightWipe = true;
-            }
-        }
     }
     if (abilityIdRef !== undefined && character.type !== CHARACTER_TYPE_BOSS_ENEMY) {
         const ability = findAbilityById(abilityIdRef, game);

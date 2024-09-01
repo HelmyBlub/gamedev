@@ -511,7 +511,7 @@ export function getGameVersionString(gameVersion: GameVersion | undefined) {
 }
 
 export function retryFight(game: Game) {
-    if (!game.state.bossStuff.kingFightStartedTime !== undefined && game.state.bossStuff.godFightStartedTime === undefined) return;
+    if (game.state.bossStuff.kingFightStartedTime === undefined && game.state.bossStuff.godFightStartedTime === undefined) return;
     if (!game.state.bossStuff.fightWipe) return;
     let hasRetry = false;
     for (let player of game.state.players) {
