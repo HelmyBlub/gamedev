@@ -260,6 +260,11 @@ export type Rectangle = {
     width: number,
 }
 
+export type InteractRectangle = Rectangle & {
+    interactAction: string,
+}
+
+
 export type UI = {
     inputType: InputType,
     touchInfo: TouchUiInfo,
@@ -267,6 +272,7 @@ export type UI = {
         upgradePaintRectangle?: Rectangle[],
         restartTextRectangle?: Rectangle,
         retryTextRectangles?: Rectangle[],
+        interactRectangle?: InteractRectangle[],
     }
     damageMeter: DamageMeter,
     displayMovementKeyHint: boolean,

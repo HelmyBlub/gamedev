@@ -3,11 +3,12 @@ increase version
 
 current tasks:
 - mobile/touch control mapping
-    - all abilities
     - interactables
-        - buildings
+        - upgrade buildings
         - sign
-        - pastCharacters
+    - all abilities
+        - check all classes
+    - zooming
     - more info
 
 - add controller

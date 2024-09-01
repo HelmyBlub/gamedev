@@ -269,6 +269,7 @@ function calculatePositionToSquareEdge(centerX: number, centerY: number, rectWid
 
 function paintClosestInteractable(ctx: CanvasRenderingContext2D, cameraPosition: Position, game: Game) {
     game.UI.paintClosesInteractableMoreInfo = false;
+    game.UI.rectangles.interactRectangle = undefined;
     if (game.state.ended) return;
     const player = findPlayerById(game.state.players, game.multiplayer.myClientId);
     if (player === null) return;
@@ -293,50 +294,51 @@ function paintPastPlayerGiftInfo(ctx: CanvasRenderingContext2D, pastCharacter: C
     paintPos.y -= 40;
     let textsWithKeys: string[] = [];
     textsWithKeys.push(`Past Character:`);
+    let interactAction: string | undefined = undefined;
     if (canTrade) {
         if (!classAlreadyTaken) {
             const charClass = findMainCharacterClass(pastCharacter);
             const classLevelText = playerCharacterGetLevelClassText(pastCharacter, charClass!);
-            const interactKey = playerInputBindingToDisplayValue("interact1", game);
-            const infoKey = playerInputBindingToDisplayValue("More Info", game);
-            textsWithKeys.push(`Press <${interactKey}> to get ${classLevelText} gifted,`);
-            textsWithKeys.push(`one time only.`);
-            textsWithKeys.push(`<${infoKey}> for more info.`);
+            if (game.UI.inputType === "keyboard") {
+                const interactKey = playerInputBindingToDisplayValue("interact1", game);
+                const infoKey = playerInputBindingToDisplayValue("More Info", game);
+                textsWithKeys.push(`Press <${interactKey}> to get ${classLevelText} gifted,`);
+                textsWithKeys.push(`one time only.`);
+                textsWithKeys.push(`<${infoKey}> for more info.`);
+            } else if (game.UI.inputType === "touch") {
+                textsWithKeys.push(`Touch to get ${classLevelText} gifted,`);
+                textsWithKeys.push(`one time only.`);
+                interactAction = "interact1";
+            }
             game.UI.paintClosesInteractableMoreInfo = true;
         } else {
-            const infoKey = playerInputBindingToDisplayValue("More Info", game);
-            textsWithKeys.push(`<${infoKey}> for more info.`);
-            textsWithKeys.push(`Can not gift Abilities as this`);
-            textsWithKeys.push(`Class can only be owned once!`);
-            paintPos.y -= 20;
+            if (game.UI.inputType === "keyboard") {
+                const infoKey = playerInputBindingToDisplayValue("More Info", game);
+                textsWithKeys.push(`<${infoKey}> for more info.`);
+                textsWithKeys.push(`Can not gift Abilities as this`);
+                textsWithKeys.push(`Class can only be owned once!`);
+                paintPos.y -= 20;
+            } else if (game.UI.inputType === "touch") {
+                textsWithKeys.push(`Can not gift Abilities as this`);
+                textsWithKeys.push(`Class can only be owned once!`);
+            }
             game.UI.paintClosesInteractableMoreInfo = true;
-        }
-
-        let pets: TamerPetCharacter[] = [];
-        let abilities: Ability[] = [];
-        let charClasses: CharacterClass[] = [];
-        if (pastCharacter.pets) {
-            for (let pet of pastCharacter.pets) {
-                if (pet.tradable) pets.push(pet);
-            }
-        }
-        for (let ability of pastCharacter.abilities) {
-            if (ability.tradable) abilities.push(ability);
-        }
-        if (pastCharacter.characterClasses) {
-            for (let charClass of pastCharacter.characterClasses) {
-                if (!charClass.gifted) charClasses.push(charClass);
-            }
         }
     } else {
         const interactKey = playerInputBindingToDisplayValue("interact1", game);
         textsWithKeys.push(`No Abilities left to gift.`);
-        textsWithKeys.push(`Kick Out with <${interactKey}>.`);
+        if (game.UI.inputType === "keyboard") {
+            textsWithKeys.push(`Kick Out with <${interactKey}>.`);
+        } else if (game.UI.inputType === "touch") {
+            textsWithKeys.push(`Touch to Kick Out.`);
+            interactAction = "interact1";
+        }
         paintPos.y -= 20;
     }
     ctx.fillStyle = "black";
     ctx.font = "20px Arial";
-    paintTextLinesWithKeys(ctx, textsWithKeys, paintPos, 20, true, true);
+    const rectangle = paintTextLinesWithKeys(ctx, textsWithKeys, paintPos, 20, true, true);
+    if (interactAction !== undefined) game.UI.rectangles.interactRectangle = [{ ...rectangle, interactAction: interactAction }];
 }
 
 function paintPausedText(ctx: CanvasRenderingContext2D, game: Game) {

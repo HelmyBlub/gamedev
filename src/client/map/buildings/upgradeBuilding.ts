@@ -24,7 +24,7 @@ export type UpgradeBuildingFunctions = {
     createUBMoreInfos: (ctx: CanvasRenderingContext2D, characterUpgrades: CharacterUpgrades, game: Game) => MoreInfoPart[],
     getAmount: (characterUpgrades: CharacterUpgrades, game: Game) => number,
     getCosts: (characterUpgrades: CharacterUpgrades, game: Game) => number,
-    getUpgradeText: (characterUpgrades: CharacterUpgrades, game: Game) => string[],
+    getUpgradeText: (characterUpgrades: CharacterUpgrades, game: Game) => string[][],
     paint?: (ctx: CanvasRenderingContext2D, mapObject: MapTileObject, paintTopLeft: Position, game: Game) => void,
     refund: (player: Player, game: Game) => void,
 }
@@ -110,7 +110,7 @@ export function upgradeBuildingRefund(player: Player, upgradeBuildingKey: string
     }
 }
 
-export function upgradeBuildingGetUpgradeText(characterUpgrades: CharacterUpgrades, upgradeBuildingKey: string, game: Game): string[] {
+export function upgradeBuildingGetUpgradeText(characterUpgrades: CharacterUpgrades, upgradeBuildingKey: string, game: Game): string[][] {
     const upgradeBuildingFunctions = UPGRADE_BUILDINGS_FUNCTIONS[upgradeBuildingKey];
     if (upgradeBuildingFunctions) {
         return upgradeBuildingFunctions.getUpgradeText(characterUpgrades, game);

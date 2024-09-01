@@ -58,7 +58,7 @@ function refund(player: Player, game: Game) {
     up.investedMoney = 0;
 }
 
-function getUpgradeText(characterUpgrades: CharacterUpgrades, game: Game): string[] {
+function getUpgradeText(characterUpgrades: CharacterUpgrades, game: Game): string[][] {
     let retryUpgrade: CharacterUpgradeFightRetries | undefined = characterUpgrades[CHARACTER_UPGRADE] as CharacterUpgradeFightRetries;
     const bonusAmount = getAmount(characterUpgrades, game);
     const upgradeCosts = getCosts(characterUpgrades, game);
@@ -74,7 +74,7 @@ function getUpgradeText(characterUpgrades: CharacterUpgrades, game: Game): strin
         const interactRefundKey = playerInputBindingToDisplayValue("interact2", game);
         texts.push(`Press <${interactRefundKey}> to refund.`);
     }
-    return texts;
+    return [texts];
 }
 
 function getCosts(characterUpgrades: CharacterUpgrades, game: Game): number {

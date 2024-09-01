@@ -175,6 +175,7 @@ function paintInteract(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, 
     const topMiddlePos = mapKeyAndTileXYToPosition(key, mapObject.x, mapObject.y, map);
     topMiddlePos.y -= map.tileSize / 2;
     const texts = [];
+    let interactAction: string | undefined = undefined;
     if (classBuilding.characterClass === undefined) {
         texts.push(`Empty Class building:`);
         texts.push(
@@ -187,24 +188,30 @@ function paintInteract(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, 
             const interactDestroyKey = playerInputBindingToDisplayValue("interact2", game);
             if (hasCharacterPreventedMultipleClass(classBuilding.characterClass.className, interacter)) {
                 const infoKey = playerInputBindingToDisplayValue("More Info", game);
-                texts.push(`Press <${infoKey}> more info.`);
+                if (game.UI.inputType === "keyboard") texts.push(`Press <${infoKey}> more info.`);
                 texts.push(`Can't burrow. Class can only be owned once.`);
             } else {
                 const interactBurrowKey = playerInputBindingToDisplayValue("interact1", game);
                 const infoKey = playerInputBindingToDisplayValue("More Info", game);
                 let avgLevel = getAverageLevelOfAbilitiesPetsCharClassId(classBuilding.characterClass.id, classBuilding.abilities, classBuilding.pets);
                 if (classBuilding.characterClass.className === CHARACTER_CLASS_TOWER_BUILDER) avgLevel = classBuilding.characterClass.level!.level;
-                texts.push(`Press <${interactBurrowKey}> to burrow ${classBuilding.characterClass.className} ${avgLevel.toFixed()}.`);
-                texts.push(`Press <${infoKey}> more info.`);
+                if (game.UI.inputType === "keyboard") {
+                    texts.push(`Press <${interactBurrowKey}> to burrow ${classBuilding.characterClass.className} ${avgLevel.toFixed()}.`);
+                    texts.push(`Press <${infoKey}> more info.`);
+                } else if (game.UI.inputType === "touch") {
+                    texts.push(`Touch to burrow ${classBuilding.characterClass.className} ${avgLevel.toFixed()}.`);
+                    interactAction = "interact1";
+                }
             }
-            texts.push(`Press <${interactDestroyKey}> to destroy legendary.`);
+            if (game.UI.inputType === "keyboard") texts.push(`Press <${interactDestroyKey}> to destroy legendary.`);
             game.UI.paintClosesInteractableMoreInfo = true;
         } else if (classBuilding.stuffBorrowed!.burrowed) {
             texts.push(`Currently burrowed by ${classBuilding.stuffBorrowed!.by}`);
         }
     }
     const paintPos = getPointPaintPosition(ctx, topMiddlePos, cameraPosition);
-    paintTextLinesWithKeys(ctx, texts, paintPos, 20, true, true);
+    const rectangle = paintTextLinesWithKeys(ctx, texts, paintPos, 20, true, true);
+    if (interactAction !== undefined) game.UI.rectangles.interactRectangle = [{ ...rectangle, interactAction }];
 }
 
 export function paintClassBuilding(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, paintTopLeft: Position, game: Game) {

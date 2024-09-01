@@ -303,6 +303,8 @@ function touchUiRectangles(touch: Touch, game: Game): boolean {
         return true;
     } else if (touchRetryConcede(touch, game)) {
         return true;
+    } else if (touchInteract(touch, game)) {
+        return true;
     }
     return false;
 }
@@ -324,6 +326,29 @@ function touchRestart(touch: Touch, game: Game): boolean {
     return false;
 }
 
+function touchInteract(touch: Touch, game: Game): boolean {
+    if (game.UI.rectangles.interactRectangle === undefined) return false;
+    if (game.UI.rectangles.interactRectangle.length <= 0) return false;
+    for (let rectangle of game.UI.rectangles.interactRectangle) {
+        if (!rectangle || !game.canvasElement) return false;
+        const target = game.canvasElement;
+        const relativPosition = { x: touch.clientX - target.offsetLeft, y: touch.clientY - target.offsetTop };
+        if (rectangle.topLeft.x <= relativPosition.x && rectangle.topLeft.x + rectangle.width >= relativPosition.x
+            && rectangle.topLeft.y <= relativPosition.y && rectangle.topLeft.y + rectangle.height >= relativPosition.y
+        ) {
+            const clientId = game.multiplayer.myClientId;
+            handleCommand(game, {
+                command: "playerInput",
+                clientId: clientId,
+                data: { action: rectangle.interactAction, isKeydown: true },
+            });
+            return true;
+        }
+    }
+    return false;
+}
+
+
 /**
  * @returns true if retry or concede executed
  */
@@ -336,14 +361,24 @@ function touchRetryConcede(touch: Touch, game: Game): boolean {
     if (rectangleRetry.topLeft.x <= relativPosition.x && rectangleRetry.topLeft.x + rectangleRetry.width >= relativPosition.x
         && rectangleRetry.topLeft.y <= relativPosition.y && rectangleRetry.topLeft.y + rectangleRetry.height >= relativPosition.y
     ) {
-        retryFight(game);
+        const clientId = game.multiplayer.myClientId;
+        handleCommand(game, {
+            command: "playerInput",
+            clientId: clientId,
+            data: { action: "interact1", isKeydown: true },
+        });
         return true;
     }
     const rectangleConcede = rectangles[1];
     if (rectangleConcede.topLeft.x <= relativPosition.x && rectangleConcede.topLeft.x + rectangleConcede.width >= relativPosition.x
         && rectangleConcede.topLeft.y <= relativPosition.y && rectangleConcede.topLeft.y + rectangleConcede.height >= relativPosition.y
     ) {
-        concedePlayerFightRetries(game);
+        const clientId = game.multiplayer.myClientId;
+        handleCommand(game, {
+            command: "playerInput",
+            clientId: clientId,
+            data: { action: "interact2", isKeydown: true },
+        });
         return true;
     }
 

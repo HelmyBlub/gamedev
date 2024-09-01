@@ -5,7 +5,7 @@ import { getCelestialDirection } from "../../character/enemy/bossEnemy.js";
 import { CharacterClass, PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "../../character/playerCharacters/playerCharacters.js";
 import { TamerPetCharacter } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { getNextId } from "../../game.js";
-import { CelestialDirection, FACTION_PLAYER, Game, IdCounter } from "../../gameModel.js";
+import { FACTION_PLAYER, Game, IdCounter } from "../../gameModel.js";
 import { GAME_IMAGES } from "../../imageLoad.js";
 import { localStorageSaveBuildings } from "../../permanentData.js";
 import { Player } from "../../player.js";

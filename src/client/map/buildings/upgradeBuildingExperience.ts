@@ -61,23 +61,36 @@ function refund(player: Player, game: Game) {
     expUpgrade.investedMoney = 0;
 }
 
-function getUpgradeText(characterUpgrades: CharacterUpgrades, game: Game): string[] {
+function getUpgradeText(characterUpgrades: CharacterUpgrades, game: Game): string[][] {
     let experienceUpgrade: CharacterUpgradeBonusExperience | undefined = characterUpgrades[CHARACTER_UPGRADE] as CharacterUpgradeBonusExperience;
     const bonusAmount = getAmount(characterUpgrades, game);
     const upgradeCosts = getCosts(characterUpgrades, game);
+    const textsText = [];
 
-    const texts = [];
+    let texts = [];
     texts.push(`Experience Upgrade Building:`);
     texts.push(`Pay $${upgradeCosts} for ${bonusAmount * 100}% bonus Experience.`);
-    const interactBuyKey = playerInputBindingToDisplayValue("interact1", game);
-    texts.push(`Press <${interactBuyKey}> to buy.`);
+
+    if (game.UI.inputType === "keyboard") {
+        const interactBuyKey = playerInputBindingToDisplayValue("interact1", game);
+        texts.push(`Press <${interactBuyKey}> to buy.`);
+    } else {
+        textsText.push(texts);
+        texts = [];
+    }
 
     if (experienceUpgrade && experienceUpgrade.investedMoney! > 0) {
         texts.push(`Invested $${experienceUpgrade.investedMoney} for ${(experienceUpgrade.bonusExperienceFactor * 100).toFixed()}% bonus experinece gain.`);
-        const interactRefundKey = playerInputBindingToDisplayValue("interact2", game);
-        texts.push(`Press <${interactRefundKey}> to refund.`);
+        if (game.UI.inputType === "keyboard") {
+            const interactRefundKey = playerInputBindingToDisplayValue("interact2", game);
+            texts.push(`Press <${interactRefundKey}> to refund.`);
+        } else if (game.UI.inputType === "touch") {
+            texts.push(`Touch to refund.`);
+        }
     }
-    return texts;
+    textsText.push(texts);
+
+    return textsText;
 }
 
 function getCosts(characterUpgrades: CharacterUpgrades, game: Game): number {

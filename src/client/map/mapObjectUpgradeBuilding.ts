@@ -111,5 +111,13 @@ function paintInteract(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, 
 
     const texts = upgradeBuildingGetUpgradeText(player.permanentData.upgrades, upgradeBuilding.upgradeType, game);
     const paintPos = getPointPaintPosition(ctx, topMiddlePos, cameraPosition);
-    paintTextLinesWithKeys(ctx, texts, paintPos, 20, true, true);
+    if (game.UI.inputType === "touch") game.UI.rectangles.interactRectangle = [];
+    for (let i = 0; i < texts.length; i++) {
+        const text = texts[i];
+        const rec = paintTextLinesWithKeys(ctx, text, paintPos, 20, true, true);
+        if (game.UI.inputType === "touch" && game.UI.rectangles.interactRectangle) {
+            if (i < 2) game.UI.rectangles.interactRectangle.push({ ...rec, interactAction: "interact" + (i + 1) });
+        }
+        paintPos.y += rec.height + 10;
+    }
 }
