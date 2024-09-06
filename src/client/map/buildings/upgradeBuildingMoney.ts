@@ -65,19 +65,34 @@ function getUpgradeText(characterUpgrades: CharacterUpgrades, game: Game): strin
     let moneyUpgrade: CharacterUpgradeBonusMoney | undefined = characterUpgrades[CHARACTER_UPGRADE] as CharacterUpgradeBonusMoney;
     const bonusAmount = getAmount(characterUpgrades, game);
     const upgradeCosts = getCosts(characterUpgrades, game);
+    const textsText = [];
+    const texts: string[] = [];
 
-    const texts = [];
-    texts.push(`Money Upgrade Building:`);
-    texts.push(`Pay $${upgradeCosts} for ${bonusAmount * 100}% bonus money gain.`);
-    const interactBuyKey = playerInputBindingToDisplayValue("interact1", game);
-    texts.push(`Press <${interactBuyKey}> to buy.`);
+    if (game.UI.inputType === "keyboard") {
+        texts.push(`Money Upgrade Building:`);
+        texts.push(`Pay $${upgradeCosts} for ${bonusAmount * 100}% bonus money gain.`);
+        const interactBuyKey = playerInputBindingToDisplayValue("interact1", game);
+        texts.push(`Press <${interactBuyKey}> to buy.`);
 
-    if (moneyUpgrade && moneyUpgrade.investedMoney! > 0) {
-        texts.push(`Invested $${moneyUpgrade.investedMoney} for ${(moneyUpgrade.bonusMoneyFactor * 100).toFixed()}% bonus money gain.`);
-        const interactRefundKey = playerInputBindingToDisplayValue("interact2", game);
-        texts.push(`Press <${interactRefundKey}> to refund.`);
+        if (moneyUpgrade && moneyUpgrade.investedMoney! > 0) {
+            texts.push(`Invested $${moneyUpgrade.investedMoney} for ${(moneyUpgrade.bonusMoneyFactor * 100).toFixed()}% bonus money gain.`);
+            const interactRefundKey = playerInputBindingToDisplayValue("interact2", game);
+            texts.push(`Press <${interactRefundKey}> to refund.`);
+        }
+        textsText.push(texts);
+    } else if (game.UI.inputType === "touch") {
+        texts.push(`Money Upgrade Building:`);
+        texts.push(`Pay $${upgradeCosts} for ${bonusAmount * 100}% bonus money gain.`);
+        textsText.push(texts);
+
+        if (moneyUpgrade && moneyUpgrade.investedMoney! > 0) {
+            const text2: string[] = [];
+            text2.push(`Invested $${moneyUpgrade.investedMoney} for ${(moneyUpgrade.bonusMoneyFactor * 100).toFixed()}% bonus money gain.`);
+            text2.push(`Touch to refund.`);
+            textsText.push(text2);
+        }
     }
-    return [texts];
+    return textsText;
 }
 
 function getCosts(characterUpgrades: CharacterUpgrades, game: Game): number {

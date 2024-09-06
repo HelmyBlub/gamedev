@@ -61,19 +61,34 @@ function getUpgradeText(characterUpgrades: CharacterUpgrades, game: Game): strin
     let hpUpgrade: CharacterUpgradeBonusHP | undefined = characterUpgrades[CHARACTER_UPGRADE] as CharacterUpgradeBonusHP;
     const bonusAmount = getAmount(characterUpgrades, game);
     const upgradeCosts = getCosts(characterUpgrades, game);
+    const textsText = [];
+    const texts: string[] = [];
 
-    const texts = [];
-    texts.push(`HP Upgrade Building:`);
-    texts.push(`Pay $${upgradeCosts} for ${bonusAmount} bonus HP.`);
-    const interactBuyKey = playerInputBindingToDisplayValue("interact1", game);
-    texts.push(`Press <${interactBuyKey}> to buy.`);
+    if (game.UI.inputType === "keyboard") {
+        texts.push(`HP Upgrade Building:`);
+        texts.push(`Pay $${upgradeCosts} for ${bonusAmount} bonus HP.`);
+        const interactBuyKey = playerInputBindingToDisplayValue("interact1", game);
+        texts.push(`Press <${interactBuyKey}> to buy.`);
 
-    if (hpUpgrade && hpUpgrade.investedMoney! > 0) {
-        texts.push(`Invested $${hpUpgrade.investedMoney} for ${hpUpgrade.bonusHp.toFixed()} bonus HP gain.`);
-        const interactRefundKey = playerInputBindingToDisplayValue("interact2", game);
-        texts.push(`Press <${interactRefundKey}> to refund.`);
+        if (hpUpgrade && hpUpgrade.investedMoney! > 0) {
+            texts.push(`Invested $${hpUpgrade.investedMoney} for ${hpUpgrade.bonusHp.toFixed()} bonus HP gain.`);
+            const interactRefundKey = playerInputBindingToDisplayValue("interact2", game);
+            texts.push(`Press <${interactRefundKey}> to refund.`);
+        }
+        textsText.push(texts);
+    } else if (game.UI.inputType === "touch") {
+        texts.push(`HP Upgrade Building:`);
+        texts.push(`Pay $${upgradeCosts} for ${bonusAmount} bonus HP.`);
+        textsText.push(texts);
+
+        if (hpUpgrade && hpUpgrade.investedMoney! > 0) {
+            const text2: string[] = [];
+            text2.push(`Invested $${hpUpgrade.investedMoney} for ${hpUpgrade.bonusHp.toFixed()} bonus HP gain.`);
+            text2.push(`Touch to refund.`);
+            textsText.push(text2);
+        }
     }
-    return [texts];
+    return textsText;
 }
 
 function getCosts(characterUpgrades: CharacterUpgrades, game: Game): number {

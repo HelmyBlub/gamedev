@@ -1,4 +1,4 @@
-next test run: ball, musician, sniper, builder
+next test run: musician, sniper, builder
 increase version
 
 current tasks:
@@ -10,6 +10,7 @@ current tasks:
         - check all classes
     - zooming
     - more info
+    - if class not choosen, don't display pastCharacters or upgrade building
 
 - add controller
 - test run which uses retries

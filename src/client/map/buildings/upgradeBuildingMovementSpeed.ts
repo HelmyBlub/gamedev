@@ -64,19 +64,35 @@ function getUpgradeText(characterUpgrades: CharacterUpgrades, game: Game): strin
     let moveSpeedUpgrade: CharacterUpgradeBonusMoveSpeed | undefined = characterUpgrades[CHARACTER_UPGRADE] as CharacterUpgradeBonusMoveSpeed;
     const bonusAmount = getAmount(characterUpgrades, game);
     const upgradeCosts = getCosts(characterUpgrades, game);
+    const textsText = [];
+    const texts: string[] = [];
 
-    const texts = [];
-    texts.push(`Move Speed Upgrade Building:`);
-    texts.push(`Pay $${upgradeCosts} for ${bonusAmount} bonus move speed.`);
-    const interactBuyKey = playerInputBindingToDisplayValue("interact1", game);
-    texts.push(`Press <${interactBuyKey}> to buy.`);
+    if (game.UI.inputType === "keyboard") {
+        texts.push(`Move Speed Upgrade Building:`);
+        texts.push(`Pay $${upgradeCosts} for ${bonusAmount} bonus move speed.`);
+        const interactBuyKey = playerInputBindingToDisplayValue("interact1", game);
+        texts.push(`Press <${interactBuyKey}> to buy.`);
 
-    if (moveSpeedUpgrade && moveSpeedUpgrade.investedMoney! > 0) {
-        texts.push(`Invested $${moveSpeedUpgrade.investedMoney} for ${moveSpeedUpgrade.bonusMoveSpeed.toFixed(2)} bonus move speed.`);
-        const interactRefundKey = playerInputBindingToDisplayValue("interact2", game);
-        texts.push(`Press <${interactRefundKey}> to refund.`);
+        if (moveSpeedUpgrade && moveSpeedUpgrade.investedMoney! > 0) {
+            texts.push(`Invested $${moveSpeedUpgrade.investedMoney} for ${moveSpeedUpgrade.bonusMoveSpeed.toFixed(2)} bonus move speed.`);
+            const interactRefundKey = playerInputBindingToDisplayValue("interact2", game);
+            texts.push(`Press <${interactRefundKey}> to refund.`);
+        }
+        textsText.push(texts);
+    } else if (game.UI.inputType === "touch") {
+        texts.push(`Move Speed Upgrade Building:`);
+        texts.push(`Pay $${upgradeCosts} for ${bonusAmount} bonus move speed.`);
+        textsText.push(texts);
+
+        if (moveSpeedUpgrade && moveSpeedUpgrade.investedMoney! > 0) {
+            const text2: string[] = [];
+            text2.push(`Invested $${moveSpeedUpgrade.investedMoney} for ${moveSpeedUpgrade.bonusMoveSpeed.toFixed(2)} bonus move speed.`);
+            text2.push(`Touch to refund.`);
+            textsText.push(text2);
+        }
     }
-    return [texts];
+
+    return textsText;
 }
 
 function getCosts(characterUpgrades: CharacterUpgrades, game: Game): number {

@@ -61,19 +61,34 @@ function getUpgradeText(characterUpgrades: CharacterUpgrades, game: Game): strin
     let rerollUpgrade: CharacterUpgradeRerolls | undefined = characterUpgrades[CHARACTER_UPGRADE] as CharacterUpgradeRerolls;
     const bonusAmount = getAmount(characterUpgrades, game);
     const upgradeCosts = getCosts(characterUpgrades, game);
+    const textsText = [];
+    const texts: string[] = [];
 
-    const texts = [];
-    texts.push(`Reroll Upgrade Building:`);
-    texts.push(`Pay $${upgradeCosts} for ${bonusAmount} reroll.`);
-    const interactBuyKey = playerInputBindingToDisplayValue("interact1", game);
-    texts.push(`Press <${interactBuyKey}> to buy.`);
+    if (game.UI.inputType === "keyboard") {
+        texts.push(`Reroll Upgrade Building:`);
+        texts.push(`Pay $${upgradeCosts} for ${bonusAmount} reroll.`);
+        const interactBuyKey = playerInputBindingToDisplayValue("interact1", game);
+        texts.push(`Press <${interactBuyKey}> to buy.`);
 
-    if (rerollUpgrade && rerollUpgrade.investedMoney! > 0) {
-        texts.push(`Invested $${rerollUpgrade.investedMoney} for ${rerollUpgrade.amount} rerolls.`);
-        const interactRefundKey = playerInputBindingToDisplayValue("interact2", game);
-        texts.push(`Press <${interactRefundKey}> to refund.`);
+        if (rerollUpgrade && rerollUpgrade.investedMoney! > 0) {
+            texts.push(`Invested $${rerollUpgrade.investedMoney} for ${rerollUpgrade.amount} rerolls.`);
+            const interactRefundKey = playerInputBindingToDisplayValue("interact2", game);
+            texts.push(`Press <${interactRefundKey}> to refund.`);
+        }
+        textsText.push(texts);
+    } else if (game.UI.inputType === "touch") {
+        texts.push(`Reroll Upgrade Building:`);
+        texts.push(`Pay $${upgradeCosts} for ${bonusAmount} reroll.`);
+        textsText.push(texts);
+
+        if (rerollUpgrade && rerollUpgrade.investedMoney! > 0) {
+            const text2: string[] = [];
+            text2.push(`Invested $${rerollUpgrade.investedMoney} for ${rerollUpgrade.amount} rerolls.`);
+            text2.push(`Touch to refund.`);
+            textsText.push(text2);
+        }
     }
-    return [texts];
+    return textsText;
 }
 
 function getCosts(characterUpgrades: CharacterUpgrades, game: Game): number {
