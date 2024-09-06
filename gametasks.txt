@@ -5,7 +5,8 @@ current tasks:
 - mobile/touch control mapping
     - all abilities
         - use second/third abilities
-            - make abiity selectable, used on touch
+            - fix musician: place note on keyUp, touchEnd.
+                - display hoverNote for touch only on touchStart/touchMove
             - abilities which do not need position, are used directly
             - multi abilities check if one needs position
         - check all classes

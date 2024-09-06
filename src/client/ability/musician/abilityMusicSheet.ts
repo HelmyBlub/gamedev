@@ -315,7 +315,7 @@ function resetAbility(ability: Ability) {
 }
 
 function castAbility(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, castPositionRelativeToCharacter: Position | undefined, isKeydown: boolean, game: Game) {
-    if (!isKeydown || !castPositionRelativeToCharacter) return;
+    if (isKeydown || !castPositionRelativeToCharacter) return;
     const fixedCastPosition = {
         x: abilityOwner.x + castPositionRelativeToCharacter.x,
         y: abilityOwner.y + castPositionRelativeToCharacter.y,
@@ -688,8 +688,14 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
     if (!isMyAbility) {
         ctx.globalAlpha *= 0.5;
     } else {
+        let doHoverNote = true;
+        if (game.UI.inputType === "touch") {
+            if (game.UI.touchInfo.touchIdAbility === undefined) doHoverNote = false;
+        }
         currentMousePosition = mousePositionToMapPosition(game, cameraPosition);
-        hoverNote = positionToHoverNote(abilityOwner, abilityMusicSheets, selectedSheet, currentMousePosition, musicSheetWidth);
+        if (doHoverNote) {
+            hoverNote = positionToHoverNote(abilityOwner, abilityMusicSheets, selectedSheet, currentMousePosition, musicSheetWidth);
+        }
     }
     if (abilityOwner.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
 

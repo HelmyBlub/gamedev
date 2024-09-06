@@ -198,10 +198,25 @@ function touchMoveActionAbility(touch: Touch, game: Game) {
 function touchEndActionAbility(touch: Touch, game: Game) {
     if (game.UI.touchInfo.touchIdAbility !== touch.identifier) return;
     const clientId = game.multiplayer.myClientId;
+    const player = findPlayerByCliendId(clientId, game.state.players);
+    if (!player) return;
+    const abilityUi = game.UI.playerCharacterAbilityUI;
+    if (!abilityUi || abilityUi.rectangles === undefined) return;
+    if (abilityUi.selectedRectangleIndex === undefined) return;
+    const abilityId = abilityUi.rectangles[abilityUi.selectedRectangleIndex].abilityRefId;
+    const ability = player.character.abilities.find((a) => a.id === abilityId);
+    if (!ability) return;
+    const cameraPosition = getCameraPosition(game);
+    const castPosition = mousePositionToMapPosition(game, cameraPosition);
+    const castPositionRelativeToCharacter: Position = {
+        x: castPosition.x - player.character.x,
+        y: castPosition.y - player.character.y,
+    };
+    game.UI.touchInfo.touchIdAbility = undefined;
     handleCommand(game, {
         command: "playerInput",
         clientId: clientId,
-        data: { action: "ability1", isKeydown: false },
+        data: { action: ability.playerInputBinding, isKeydown: false, castPosition: castPosition, castPositionRelativeToCharacter: castPositionRelativeToCharacter },
     });
 }
 
