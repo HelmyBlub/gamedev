@@ -636,7 +636,7 @@ export function paintAbilityUiDefault(
     if (imageName) {
         const image = getImage(imageName);
         if (image) {
-            ctx.drawImage(image, drawStartX, drawStartY);
+            ctx.drawImage(image, 0, 0, 40, 40, drawStartX, drawStartY, rectSize, rectSize);
         }
     }
 
@@ -647,7 +647,23 @@ export function paintAbilityUiDefault(
     }
 
     if (ability.playerInputBinding) {
-        paintAbilityUiKeyBind(ctx, ability.playerInputBinding, drawStartX, drawStartY, game);
+        if (game.UI.inputType === "touch") {
+            const abilityUi = game.UI.playerCharacterAbilityUI;
+            if (abilityUi
+                && abilityUi.selectedRectangleIndex !== undefined
+                && abilityUi.rectangles !== undefined
+            ) {
+                const rectangle = abilityUi.rectangles[abilityUi.selectedRectangleIndex];
+                if (ability.id === rectangle.abilityRefId) {
+                    ctx.globalAlpha = 0.5;
+                    ctx.fillStyle = "green";
+                    ctx.fillRect(drawStartX, drawStartY, rectSize, rectSize);
+                    ctx.globalAlpha = 1;
+                }
+            }
+        } else {
+            paintAbilityUiKeyBind(ctx, ability.playerInputBinding, drawStartX, drawStartY, game);
+        }
     }
 }
 

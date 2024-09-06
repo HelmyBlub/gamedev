@@ -127,6 +127,7 @@ function interactBurrow(interacter: Character, mapObject: MapTileObject, game: G
     if (hasCharacterPreventedMultipleClass(classBuilding.characterClass.className, interacter)) {
         return;
     }
+    let pushIndex = interacter.abilities.length;
     for (let i = classBuilding.abilities.length - 1; i >= 0; i--) {
         const ability = classBuilding.abilities[i];
         if (ability.unique) {
@@ -139,7 +140,7 @@ function interactBurrow(interacter: Character, mapObject: MapTileObject, game: G
                 interacter.abilities.splice(dupAbilityIndex, 1);
             }
         }
-        interacter.abilities.unshift(ability);
+        interacter.abilities.splice(pushIndex, 0, ability);
         classBuilding.abilities.splice(i, 1);
     }
     if (classBuilding.pets.length > 0) {
