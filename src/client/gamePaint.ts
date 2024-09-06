@@ -1,10 +1,9 @@
-import { Ability, paintAbilityObjects, paintUiForAbilities } from "./ability/ability.js";
+import { paintAbilityObjects, paintUiForAbilities } from "./ability/ability.js";
 import { canCharacterTradeAbilityOrPets, findMyCharacter } from "./character/character.js";
 import { Character } from "./character/characterModel.js";
 import { paintPlayerCharacters } from "./character/characterPaint.js";
 import { paintBossCharacters, paintBossCrown } from "./character/enemy/bossEnemy.js";
-import { CharacterClass, findMainCharacterClass, hasPlayerChoosenStartClassUpgrade, paintPlayerCharacterUI, playerCharacterGetLevelClassText, shareCharactersTradeablePreventedMultipleClass } from "./character/playerCharacters/playerCharacters.js";
-import { TamerPetCharacter } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
+import { findMainCharacterClass, hasPlayerChoosenStartClassUpgrade, paintPlayerCharacterUI, playerCharacterGetLevelClassText, shareCharactersTradeablePreventedMultipleClass } from "./character/playerCharacters/playerCharacters.js";
 import { calculateDirection, calculateDistance, calculateFightRetryCounter, findClientInfo, findClosestInteractable, getCameraPosition } from "./game.js";
 import { Game, Position, Debugging, Rectangle } from "./gameModel.js";
 import { Highscores } from "./highscores.js";
@@ -14,7 +13,7 @@ import { paintMap, paintMapCharacters } from "./map/mapPaint.js";
 import { Player, findPlayerById, isAutoUpgradeActive } from "./player.js";
 import { playerInputBindingToDisplayValue } from "./playerInput.js";
 import { createEndScreenMoreInfos, paintMoreInfos, paintMoreInfosPart } from "./moreInfo.js";
-import { paintDamageNumbers, paintStackTextData, pushStackPaintTextData } from "./floatingText.js";
+import { paintDamageNumbers, paintStackTextData } from "./floatingText.js";
 import { paintMapModifierLate } from "./map/modifiers/mapModifier.js";
 import { moveByDirectionAndDistance } from "./map/map.js";
 

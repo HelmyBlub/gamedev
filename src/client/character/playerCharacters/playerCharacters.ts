@@ -1,4 +1,4 @@
-import { Game, IdCounter, Position, SkillPoints } from "../../gameModel.js"
+import { Game, IdCounter, Position, Rectangle, SkillPoints } from "../../gameModel.js"
 import { Character } from "../characterModel.js"
 import { CharacterUpgrades } from "../upgrades/characterUpgrades.js"
 import { UpgradeOption, UpgradeOptionAndProbability } from "../upgrade.js"
@@ -46,10 +46,16 @@ export type PlayerCharacterLevelUI = {
     levelUI: LevelUI[],
 }
 
+export type AbilityUiRectangle = Rectangle & {
+    abilityRefId: number,
+}
+
 export type PlayerCharacterAbilityUI = {
     charClassRefId: number,
     abilityVisualizedCounter: number,
     abilityVisualizeStartTime?: number,
+    selectedRectangleIndex?: number,
+    rectangles?: AbilityUiRectangle[],
 }
 
 export type LevelUI = {

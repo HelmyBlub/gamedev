@@ -35,7 +35,7 @@ import { addAbilitySnipeReload } from "./snipe/abilitySnipeReload.js"
 import { playerInputBindingToDisplayValue } from "../playerInput.js"
 import { addAbilityUnleashPet } from "./petTamer/abilityUnleashPet.js"
 import { Leveling } from "../character/playerCharacters/levelingCharacter.js"
-import { CharacterClass } from "../character/playerCharacters/playerCharacters.js"
+import { AbilityUiRectangle, CharacterClass } from "../character/playerCharacters/playerCharacters.js"
 import { MoreInfoPart, paintMoreInfosPart } from "../moreInfo.js"
 import { AbilityDamageBreakdown, addDamageBreakDownToDamageMeter } from "../combatlog.js"
 import { addAbilityMusicSheet } from "./musician/abilityMusicSheet.js"
@@ -475,19 +475,77 @@ export function findAbilityAndOwnerInCharacterById(character: Character, ability
     return undefined;
 }
 
-export function paintUiForAbilities(ctx: CanvasRenderingContext2D, game: Game) {
-    if (game.camera.characterId === undefined) return;
-    const player = findPlayerByCharacterId(game.state.players, game.camera.characterId);
-    if (!player) return;
 
+function calculateAbilityUiRectangles(ctx: CanvasRenderingContext2D, player: Player, game: Game) {
     if (!game.UI.playerCharacterAbilityUI || game.UI.playerCharacterAbilityUI.charClassRefId !== player.character.id) {
         game.UI.playerCharacterAbilityUI = {
             abilityVisualizedCounter: player.character.abilities.length,
             charClassRefId: player.character.id,
         }
     }
-    const shouldAnimate = game.UI.playerCharacterAbilityUI.abilityVisualizedCounter < player.character.abilities.length;
-    let abilityUiPaintCounter = player.character.abilities.length;
+    const abilityUiRectangles: AbilityUiRectangle[] = [];
+    const usedInputs: string[] = [];
+
+    for (let ability of player.character.abilities) {
+        if (ability.playerInputBinding) {
+            if (game.UI.inputType === "touch") {
+                if (usedInputs.indexOf(ability.playerInputBinding) !== -1) continue;
+                usedInputs.push(ability.playerInputBinding);
+            }
+            abilityUiRectangles.push({
+                abilityRefId: ability.id,
+                height: 0,
+                width: 0,
+                topLeft: { x: 0, y: 0 },
+            });
+        }
+    }
+    if (game.UI.inputType === "touch") {
+        const spacing = 10;
+        const size = 60;
+        const mobileAbilityUiPosition: Position[] = [
+            { x: ctx.canvas.width - (size + spacing) * 2, y: ctx.canvas.height - size - spacing },
+            { x: ctx.canvas.width - (size + spacing), y: ctx.canvas.height - size - spacing },
+            { x: ctx.canvas.width - (size + spacing), y: ctx.canvas.height - (size + spacing) * 2 },
+        ];
+        for (let i = 0; i < abilityUiRectangles.length; i++) {
+            if (i >= mobileAbilityUiPosition.length) break;
+            abilityUiRectangles[i].topLeft.x = mobileAbilityUiPosition[i].x;
+            abilityUiRectangles[i].topLeft.y = mobileAbilityUiPosition[i].y;
+            abilityUiRectangles[i].height = size;
+            abilityUiRectangles[i].width = size;
+        }
+    } else {
+        const spacing = 2;
+        const size = 40;
+        const totalWidth = (abilityUiRectangles.length * (size + spacing) - spacing);
+        let startX = ctx.canvas.width / 2 - totalWidth / 2;
+        const startY = ctx.canvas.height - size - 2;
+        for (let rectangle of abilityUiRectangles) {
+            rectangle.topLeft.x = startX;
+            rectangle.topLeft.y = startY;
+            rectangle.height = size;
+            rectangle.width = size;
+            startX += size + spacing;
+        }
+    }
+    game.UI.playerCharacterAbilityUI.rectangles = abilityUiRectangles;
+}
+
+export function paintUiForAbilities(ctx: CanvasRenderingContext2D, game: Game) {
+    if (game.camera.characterId === undefined) return;
+    const player = findPlayerByCharacterId(game.state.players, game.camera.characterId);
+    if (!player) return;
+    calculateAbilityUiRectangles(ctx, player, game);
+    const abilityUi = game.UI.playerCharacterAbilityUI;
+    if (!abilityUi || !abilityUi.rectangles) return;
+    if (!game.UI.playerCharacterAbilityUI || game.UI.playerCharacterAbilityUI.charClassRefId !== player.character.id) {
+        game.UI.playerCharacterAbilityUI = {
+            abilityVisualizedCounter: player.character.abilities.length,
+            charClassRefId: player.character.id,
+        }
+    }
+    const shouldAnimate = game.UI.playerCharacterAbilityUI.abilityVisualizedCounter < abilityUi.rectangles.length;
     let animateIndex = player.character.abilities.length + 1;
     let animationPerCent = 0;
     if (shouldAnimate) {
@@ -501,38 +559,25 @@ export function paintUiForAbilities(ctx: CanvasRenderingContext2D, game: Game) {
         }
     }
 
-    const size = 40;
-    const spacing = 2;
-    let numberUiElements = 0;
-    for (let ability of player.character.abilities) {
-        let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-        if (abilityFunctions?.paintAbilityUI !== undefined || ability.playerInputBinding) {
-            numberUiElements++;
-        }
-    }
-    const uiElementsWidth = (numberUiElements * (size + spacing) - spacing);
-    let startX = ctx.canvas.width / 2 - uiElementsWidth / 2;
-    const startY = ctx.canvas.height - size - 2;
-    for (let i = 0; i < abilityUiPaintCounter; i++) {
-        const ability = player.character.abilities[i];
+    for (let i = 0; i < abilityUi.rectangles.length; i++) {
+        const rectangle = abilityUi.rectangles[i];
+        const ability = player.character.abilities.find((a) => a.id === rectangle.abilityRefId);
+        if (!ability) continue;
         let yOffset = 0;
         if (animateIndex === i) {
             yOffset = (1 - animationPerCent) * 300;
         } else if (i > animateIndex) break;
+        const paintX = rectangle.topLeft.x;
+        const paintY = rectangle.topLeft.y - yOffset;
         let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
         if (abilityFunctions?.paintAbilityUI !== undefined) {
-            abilityFunctions.paintAbilityUI(ctx, ability, startX, startY - yOffset, size, game);
+            abilityFunctions.paintAbilityUI(ctx, ability, paintX, paintY, rectangle.height, game);
         } else if (ability.playerInputBinding) {
-            paintKeyBindingUI(ctx, ability, startX, startY - yOffset, size, game);
+            paintKeyBindingUI(ctx, ability, paintX, paintY, rectangle.height, game);
         } else {
-            if (animateIndex === i) {
-                game.UI.playerCharacterAbilityUI.abilityVisualizeStartTime = undefined;
-                game.UI.playerCharacterAbilityUI.abilityVisualizedCounter++;
-            }
             continue;
         }
-        paintAbilityMoreInfosIfMouseHovered(ctx, ability, startX, startY, size, game);
-        startX += size + spacing;
+        paintAbilityMoreInfosIfMouseHovered(ctx, ability, paintX, paintY, rectangle.height, game);
     }
 }
 

@@ -4,11 +4,17 @@ increase version
 current tasks:
 - mobile/touch control mapping
     - all abilities
+        - use second/third abilities
+            - ability icons save position in game
+            - change size, position for mobile
+            - make abiity selectable, used on touch
+            - abilities which do not need position, are used directly
+            - multi abilities check if one needs position
         - check all classes
     - zooming
     - more info
     - if class not choosen, don't display pastCharacters or upgrade building
-
+- bug: when taking another class. Order of abilities at bottom incorrect
 - add controller
 - test run which uses retries
 
