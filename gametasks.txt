@@ -5,14 +5,13 @@ current tasks:
 - mobile/touch control mapping
     - all abilities
         - use second/third abilities
-            - fix musician: place note on keyUp, touchEnd.
-                - display hoverNote for touch only on touchStart/touchMove
+            - fix musician: 
+                - sheet width to big for mobile
             - abilities which do not need position, are used directly
-            - multi abilities check if one needs position
         - check all classes
     - zooming
-    - more info
     - if class not choosen, don't display pastCharacters or upgrade building
+    - more info
 - add controller
 - test run which uses retries
 
