@@ -3,9 +3,6 @@ increase version
 
 current tasks:
 - mobile/touch control mapping
-    - interactables
-        - upgrade buildings
-        - sign
     - all abilities
         - check all classes
     - zooming

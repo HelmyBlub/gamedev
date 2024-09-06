@@ -44,8 +44,10 @@ function paintInteractSign(ctx: CanvasRenderingContext2D, mapObject: MapTileObje
     const texts = [
         `King of the ${kingSign.kingDirection}`,
         `Distance = ${map.kingArea!.numberChunksUntil * map.chunkLength * map.tileSize}`,
-        `Press <${infoKey}> for more info.`,
     ]
+    if (game.UI.inputType === "keyboard") {
+        texts.push(`Press <${infoKey}> for more info.`);
+    }
     const king = game.state.bossStuff.nextKings[kingSign.kingDirection];
     let textMaxWidth = king!.width;
     const rectHeight = fontSize * texts.length + 2 + king!.height + 60;
