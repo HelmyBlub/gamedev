@@ -207,14 +207,22 @@ function touchEndActionAbility(touch: Touch, game: Game) {
 
 function touchAbilityAction(touch: Touch, game: Game) {
     if (!game.clientKeyBindings || !game.canvasElement) return;
+    const abilityUi = game.UI.playerCharacterAbilityUI;
+    if (!abilityUi || abilityUi.rectangles === undefined) return;
+    if (abilityUi.selectedRectangleIndex === undefined) abilityUi.selectedRectangleIndex = 0;
     const clientId = game.clientKeyBindings.clientIdRef;
+    const player = findPlayerByCliendId(clientId, game.state.players);
+    if (!player) return;
+
+    const abilityId = abilityUi.rectangles[abilityUi.selectedRectangleIndex].abilityRefId;
+    const ability = player.character.abilities.find((a) => a.id === abilityId);
+    if (!ability) return;
+
     const target = game.canvasElement;
     const relativPosition = { x: touch.clientX - target.offsetLeft, y: touch.clientY - target.offsetTop };
     game.mouseRelativeCanvasPosition = relativPosition;
     const cameraPosition = getCameraPosition(game);
     const castPosition = mousePositionToMapPosition(game, cameraPosition);
-    const player = findPlayerByCliendId(clientId, game.state.players);
-    if (!player) return;
     const castPositionRelativeToCharacter: Position = {
         x: castPosition.x - player.character.x,
         y: castPosition.y - player.character.y,
@@ -223,7 +231,7 @@ function touchAbilityAction(touch: Touch, game: Game) {
     handleCommand(game, {
         command: "playerInput",
         clientId: clientId,
-        data: { action: "ability1", isKeydown: true, castPosition: castPosition, castPositionRelativeToCharacter: castPositionRelativeToCharacter },
+        data: { action: ability.playerInputBinding, isKeydown: true, castPosition: castPosition, castPositionRelativeToCharacter: castPositionRelativeToCharacter },
     });
 }
 
@@ -305,6 +313,8 @@ function touchUiRectangles(touch: Touch, game: Game): boolean {
         return true;
     } else if (touchInteract(touch, game)) {
         return true;
+    } else if (touchAbilitySelect(touch, game)) {
+        return true;
     }
     return false;
 }
@@ -348,6 +358,23 @@ function touchInteract(touch: Touch, game: Game): boolean {
     return false;
 }
 
+function touchAbilitySelect(touch: Touch, game: Game): boolean {
+    const abilityUi = game.UI.playerCharacterAbilityUI;
+    if (!abilityUi || abilityUi.rectangles === undefined) return false;
+    for (let i = 0; i < abilityUi.rectangles.length; i++) {
+        const rectangle = abilityUi.rectangles[i];
+        if (!rectangle || !game.canvasElement) return false;
+        const target = game.canvasElement;
+        const relativPosition = { x: touch.clientX - target.offsetLeft, y: touch.clientY - target.offsetTop };
+        if (rectangle.topLeft.x <= relativPosition.x && rectangle.topLeft.x + rectangle.width >= relativPosition.x
+            && rectangle.topLeft.y <= relativPosition.y && rectangle.topLeft.y + rectangle.height >= relativPosition.y
+        ) {
+            abilityUi.selectedRectangleIndex = i;
+            return true;
+        }
+    }
+    return false;
+}
 
 /**
  * @returns true if retry or concede executed

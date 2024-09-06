@@ -4,7 +4,7 @@ import { calculateDistance, getCameraPosition, getNextId } from "../../game.js";
 import { Position, Game, IdCounter, FACTION_PLAYER } from "../../gameModel.js";
 import { playerInputBindingToDisplayValue } from "../../playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, findAbilityById, getAbilityNameUiText, paintAbilityUiKeyBind } from "../ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, findAbilityById, getAbilityNameUiText, paintAbilityInputBinding, paintAbilityUiKeyBind } from "../ability.js";
 import { AbilityUpgrade, AbilityUpgradeFunctions, AbilityUpgradesFunctions, getAbilityUpgradeOptionDefault, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
 import { AbilityDamageBreakdown } from "../../combatlog.js";
 import { MusicNote, MusicSheet, Note, playMusicNote } from "../../sound.js";
@@ -216,7 +216,6 @@ function paintAbilityAccessoire(ctx: CanvasRenderingContext2D, ability: Ability,
     paintNoteStem(ctx, note, noteX, noteY, abilityMusicSheets, noteRadius, lineNumberForNodeStemDirection);
 
 }
-
 
 function getMusicSheetPaintWidth(ability: AbilityMusicSheets, selectedSheet: AbilityMusicSheet): number {
     let musicSheetWidth = ability.widthPerNote * selectedSheet.maxPlayTicks / selectedSheet.shortestAllowedNote;
@@ -668,10 +667,7 @@ function paintAbilityUI(ctx: CanvasRenderingContext2D, ability: Ability, drawSta
     ctx.stroke();
 
     paintAbilityAccessoire(ctx, ability, { x: Math.floor(drawStartX + size / 2), y: Math.floor(drawStartY + size / 2) }, game);
-
-    if (musicSheet.playerInputBinding) {
-        paintAbilityUiKeyBind(ctx, musicSheet.playerInputBinding, drawStartX, drawStartY, game);
-    }
+    paintAbilityInputBinding(ctx, ability, drawStartX, drawStartY, rectSize, game);
 }
 
 function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {

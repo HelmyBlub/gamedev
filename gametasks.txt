@@ -2,12 +2,9 @@ next test run: musician, sniper, builder
 increase version
 
 current tasks:
-- bug: when taking another class. Order of abilities at bottom incorrect
-- Bug: ability icon size
 - mobile/touch control mapping
     - all abilities
         - use second/third abilities
-            - don't display keyboard key for touch in ability icon
             - make abiity selectable, used on touch
             - abilities which do not need position, are used directly
             - multi abilities check if one needs position

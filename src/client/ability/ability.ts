@@ -645,7 +645,10 @@ export function paintAbilityUiDefault(
         ctx.font = fontSize + "px Arial";
         paintTextWithOutline(ctx, "white", "black", counter.toFixed(), Math.floor(drawStartX + size / 2), drawStartY + rectSize - (rectSize - fontSize), true);
     }
+    paintAbilityInputBinding(ctx, ability, drawStartX, drawStartY, rectSize, game);
+}
 
+export function paintAbilityInputBinding(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, rectSize: number, game: Game) {
     if (ability.playerInputBinding) {
         if (game.UI.inputType === "touch") {
             const abilityUi = game.UI.playerCharacterAbilityUI;
