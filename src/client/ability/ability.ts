@@ -732,7 +732,7 @@ function paintDefault(ctx: CanvasRenderingContext2D, abilityObject: AbilityObjec
     if (paintOrder === "afterCharacterPaint") {
         const circle = abilityObject as AbilityObjectCircle;
         if (!circle.radius) return;
-        const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition);
+        const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition, game.UI.zoom);
         if (abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
         ctx.fillStyle = abilityObject.faction === FACTION_ENEMY ? "black" : abilityObject.color;
         ctx.beginPath();

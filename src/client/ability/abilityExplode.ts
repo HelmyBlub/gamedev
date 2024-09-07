@@ -76,7 +76,7 @@ function paintAbilityObjectExplode(ctx: CanvasRenderingContext2D, abilityObject:
     if (paintOrder !== "beforeCharacterPaint") return;
     const abilityObjectExplode = abilityObject as AbilityObjectExplode;
     const cameraPosition = getCameraPosition(game);
-    const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition);
+    const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition, game.UI.zoom);
     ctx.fillStyle = abilityObject.faction === FACTION_ENEMY ? "black" : abilityObject.color;
     if (abilityObjectExplode.removeTime === undefined) {
         if (abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;

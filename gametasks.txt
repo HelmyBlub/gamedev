@@ -3,10 +3,15 @@ increase version
 
 current tasks:
 - mobile/touch control mapping
-    - all abilities
-        - check all classes
-            - ball rolling influenced by move direction, not only mouse position
     - zooming
+        - not working for mobile
+        - should not scale UI
+        - should have limits
+        - steps:
+            - add zoom factor to game.UI
+            - mouse click position is off
+            - zoom performance loss very high?
+                - not if i use browser zoom, why?
     - if class not choosen, don't display pastCharacters or upgrade building
     - more info
 - Bug: Check ability order

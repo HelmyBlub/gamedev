@@ -7,8 +7,8 @@ export type MapPaintLayer = "Layer1" | "Layer2";
 
 export function paintMap(layer: MapPaintLayer, ctx: CanvasRenderingContext2D, cameraPosition: Position, map: GameMap, mapChunkPaintCache: MapChunkPaintCache, debug: Debugging | undefined, game: Game) {
     const chunkSize = map.tileSize * map.chunkLength;
-    const width = ctx.canvas.width;
-    const height = ctx.canvas.height;
+    const width = ctx.canvas.width / game.UI.zoom.factor;
+    const height = ctx.canvas.height / game.UI.zoom.factor;
     const startX = (cameraPosition.x - width / 2);
     const startY = (cameraPosition.y - height / 2);
     const startChunkX = Math.floor(startX / chunkSize);

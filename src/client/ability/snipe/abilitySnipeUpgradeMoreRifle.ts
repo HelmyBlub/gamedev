@@ -42,7 +42,7 @@ export function castSnipeMoreRifles(position: Position, faction: string, ability
 export function paintVisualizationMoreRifles(ctx: CanvasRenderingContext2D, position: Position, abilitySnipe: AbilitySnipe, cameraPosition: Position, castPosition: Position | undefined, game: Game) {
     const upgradeMoreRifles: AbilityUpgradeMoreRifles = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES];
     if (!upgradeMoreRifles) return;
-    const paintPos = getPointPaintPosition(ctx, position, cameraPosition);
+    const paintPos = getPointPaintPosition(ctx, position, cameraPosition, game.UI.zoom);
 
     for (let i = 0; i < upgradeMoreRifles.numberRifles; i++) {
         let pointDirection = upgradeMoreRifles.lastSniperRiflePaintDirection[i];

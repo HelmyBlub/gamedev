@@ -5,7 +5,7 @@ import { paintPlayerCharacters } from "./character/characterPaint.js";
 import { paintBossCharacters, paintBossCrown } from "./character/enemy/bossEnemy.js";
 import { findMainCharacterClass, hasPlayerChoosenStartClassUpgrade, paintPlayerCharacterUI, playerCharacterGetLevelClassText, shareCharactersTradeablePreventedMultipleClass } from "./character/playerCharacters/playerCharacters.js";
 import { calculateDirection, calculateDistance, calculateFightRetryCounter, findClientInfo, findClosestInteractable, getCameraPosition } from "./game.js";
-import { Game, Position, Debugging, Rectangle } from "./gameModel.js";
+import { Game, Position, Debugging, Rectangle, Zoom } from "./gameModel.js";
 import { Highscores } from "./highscores.js";
 import { GAME_IMAGES, loadImage } from "./imageLoad.js";
 import { MAP_OBJECTS_FUNCTIONS } from "./map/mapObjects.js";
@@ -33,6 +33,7 @@ GAME_IMAGES["mouse0Key"] = {
 export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) {
     if (!ctx) return;
     if (game.performance.mapChunkPaintCache === undefined) game.performance.mapChunkPaintCache = {};
+    ctx.scale(game.UI.zoom.factor, game.UI.zoom.factor);
     const cameraPosition: Position = getCameraPosition(game);
     paintMap("Layer1", ctx, cameraPosition, game.state.map, game.performance.mapChunkPaintCache, game.debug, game);
     paintAbilityObjects(ctx, game.state.abilityObjects, game, "beforeCharacterPaint");
@@ -42,10 +43,12 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
     paintPlayerCharacters(ctx, cameraPosition, game);
     paintBossCrown(ctx, cameraPosition, game);
     paintAbilityObjects(ctx, game.state.abilityObjects, game, "afterCharacterPaint");
-    paintDamageNumbers(ctx, game.UI.displayTextData, cameraPosition, game.state.time);
+    paintDamageNumbers(ctx, game.UI.displayTextData, cameraPosition, game.state.time, game);
     paintMapModifierLate(ctx, cameraPosition, game);
-    paintStackTextData(ctx, game.UI.stackTextsData, game.state.time);
+
     paintClosestInteractable(ctx, cameraPosition, game);
+    ctx.resetTransform();
+    paintStackTextData(ctx, game.UI.stackTextsData, game.state.time);
     paintInputTypeInfo(ctx, game);
     paintFightWipeUI(ctx, game);
     paintEndScreen(ctx, game.state.highscores, game);
@@ -78,9 +81,12 @@ export function paintTextWithOutline(ctx: CanvasRenderingContext2D, outlineColor
     ctx.fillText(text, x, y);
 }
 
-export function getPointPaintPosition(ctx: CanvasRenderingContext2D, point: Position, cameraPosition: Position): Position {
-    const centerX = ctx.canvas.width / 2;
-    const centerY = ctx.canvas.height / 2;
+export function getPointPaintPosition(ctx: CanvasRenderingContext2D, point: Position, cameraPosition: Position, zoom: Zoom): Position {
+    const width = ctx.canvas.width / zoom.factor;
+    const height = ctx.canvas.height / zoom.factor;
+
+    const centerX = width / 2;
+    const centerY = height / 2;
     return {
         x: Math.floor(point.x - cameraPosition.x + centerX),
         y: Math.floor(point.y - cameraPosition.y + centerY),
@@ -223,7 +229,7 @@ function paintOtherPlayerIndicator(ctx: CanvasRenderingContext2D, game: Game) {
             const direction = calculateDirection(cameraPosition, playerCharacter);
             const circleRadius = 40;
             const indicatorPosition = calculatePositionToSquareEdge(cameraPosition.x, cameraPosition.y, ctx.canvas.width, ctx.canvas.height, direction, circleRadius);
-            const paintPos = getPointPaintPosition(ctx, indicatorPosition, cameraPosition);
+            const paintPos = getPointPaintPosition(ctx, indicatorPosition, cameraPosition, game.UI.zoom);
             const playerName = clientInfo.name;
             const playerDistance = Math.floor(calculateDistance(indicatorPosition, playerCharacter));
             const fontSize = 18;
@@ -289,7 +295,7 @@ function paintClosestInteractable(ctx: CanvasRenderingContext2D, cameraPosition:
 function paintPastPlayerGiftInfo(ctx: CanvasRenderingContext2D, pastCharacter: Character, playerCharacter: Character, cameraPosition: Position, game: Game) {
     const canTrade = canCharacterTradeAbilityOrPets(pastCharacter);
     const classAlreadyTaken = shareCharactersTradeablePreventedMultipleClass(pastCharacter, playerCharacter);
-    let paintPos: Position = getPointPaintPosition(ctx, pastCharacter, cameraPosition);
+    let paintPos: Position = getPointPaintPosition(ctx, pastCharacter, cameraPosition, game.UI.zoom);
     paintPos.y -= 40;
     let textsWithKeys: string[] = [];
     textsWithKeys.push(`Past Character:`);

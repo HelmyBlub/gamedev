@@ -386,7 +386,7 @@ function paintTamerPetCharacter(ctx: CanvasRenderingContext2D, character: Charac
         const spriteHappinesOffset = happinesToInt * 2 * (spriteWidth + 1);
         const spriteHeight = characterImage.spriteRowHeights[0];
         const spriteColor = characterImage.properties.colorToSprite!.indexOf(character.paint.color);
-        const paintPos = getPointPaintPosition(ctx, character, cameraPosition);
+        const paintPos = getPointPaintPosition(ctx, character, cameraPosition, game.UI.zoom);
         ctx.drawImage(
             petImage,
             0 + spriteAnimation * (spriteWidth + 1) + spriteHappinesOffset,
@@ -404,7 +404,7 @@ function paintTamerPetCharacter(ctx: CanvasRenderingContext2D, character: Charac
         }
     }
     if (tamerPetCharacter.happines.visualizations.length > 0) {
-        const paintPos = getPointPaintPosition(ctx, character, cameraPosition);
+        const paintPos = getPointPaintPosition(ctx, character, cameraPosition, game.UI.zoom);
         paintPos.y -= Math.floor(character.height / 2);
         const happyImage = getImage("HAPPY");
         const unhappyImage = getImage("UNHAPPY");

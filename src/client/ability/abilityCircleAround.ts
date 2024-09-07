@@ -82,7 +82,7 @@ function paintAbilityObjectCircleAround(ctx: CanvasRenderingContext2D, abilityOb
     if (paintOrder !== "beforeCharacterPaint") return;
     const abilityObjectCircleAround = abilityObject as AbilityObjectCircleAround;
     const cameraPosition = getCameraPosition(game);
-    const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition);
+    const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition, game.UI.zoom);
 
     if (abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
     ctx.fillStyle = abilityObject.faction === FACTION_ENEMY ? "black" : abilityObject.color;

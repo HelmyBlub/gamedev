@@ -264,8 +264,14 @@ export type InteractRectangle = Rectangle & {
     interactAction: string,
 }
 
+export type Zoom = {
+    factor: number,
+    max: number,
+    min: number,
+}
 
 export type UI = {
+    zoom: Zoom,
     inputType: InputType,
     touchInfo: TouchUiInfo,
     rectangles: {
@@ -422,6 +428,11 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
         debug: {
         },
         UI: {
+            zoom: {
+                factor: 1,
+                max: 2,
+                min: 0.5,
+            },
             inputType: "keyboard",
             touchInfo: {
                 touchMoveCornerSize: 150,

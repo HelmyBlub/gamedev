@@ -171,7 +171,7 @@ function paintShapeObjectPetPainterCircle(ctx: CanvasRenderingContext2D, ability
     if (paintOrder !== "beforeCharacterPaint") return;
     const cameraPosition = getCameraPosition(game);
     const circle = abilityObject as AbilityObjectPetPainterCircle;
-    const paintPos = getPointPaintPosition(ctx, circle, cameraPosition);
+    const paintPos = getPointPaintPosition(ctx, circle, cameraPosition, game.UI.zoom);
     if (abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
     ctx.fillStyle = circle.color;
     ctx.strokeStyle = circle.color;
@@ -184,7 +184,7 @@ function paintShapeObjectPetPainterCircle(ctx: CanvasRenderingContext2D, ability
 
 function paintShapeCircle(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: AbilityPetPainter, cameraPosition: Position, game: Game) {
     if (!ability.paintCircle) return;
-    const middle = getPointPaintPosition(ctx, ability.paintCircle.middle, cameraPosition);
+    const middle = getPointPaintPosition(ctx, ability.paintCircle.middle, cameraPosition, game.UI.zoom);
     ctx.fillStyle = "red";
     ctx.strokeStyle = "red";
     ctx.lineWidth = 1;

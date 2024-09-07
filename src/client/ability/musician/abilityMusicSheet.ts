@@ -671,7 +671,7 @@ function paintAbilityUI(ctx: CanvasRenderingContext2D, ability: Ability, drawSta
 }
 
 function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
-    let ownerPaintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
+    let ownerPaintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition, game.UI.zoom);
     paintAbilityAccessoire(ctx, ability, { x: ownerPaintPos.x - 10, y: ownerPaintPos.y }, game);
     if (ability.disabled) return;
     const abilityMusicSheets = ability as AbilityMusicSheets;

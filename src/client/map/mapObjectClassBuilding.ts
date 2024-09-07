@@ -210,7 +210,7 @@ function paintInteract(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, 
             texts.push(`Currently burrowed by ${classBuilding.stuffBorrowed!.by}`);
         }
     }
-    const paintPos = getPointPaintPosition(ctx, topMiddlePos, cameraPosition);
+    const paintPos = getPointPaintPosition(ctx, topMiddlePos, cameraPosition, game.UI.zoom);
     const rectangle = paintTextLinesWithKeys(ctx, texts, paintPos, 20, true, true);
     if (interactAction !== undefined) game.UI.rectangles.interactRectangle = [{ ...rectangle, interactAction }];
 }

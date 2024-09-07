@@ -102,7 +102,6 @@ export function paintMapChunkObjects(ctx: CanvasRenderingContext2D, mapChunk: Ma
     }
 }
 
-
 export function paintMabObjectDefault(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, paintTopLeft: Position, game: Game) {
     const tileSize = game.state.map.tileSize;
     const image = GAME_IMAGES[mapObject.image];
@@ -118,7 +117,5 @@ export function paintMabObjectDefault(ctx: CanvasRenderingContext2D, mapObject: 
             Math.floor(paintY),
             spriteWidth, spriteHeight
         );
-        ctx.resetTransform();
-        ctx.restore();
     }
 }

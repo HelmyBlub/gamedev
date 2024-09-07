@@ -31,9 +31,9 @@ export function paintAbilityObjectSnipe(ctx: CanvasRenderingContext2D, abilityOb
     }
     if (abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
     ctx.beginPath();
-    let paintPos = getPointPaintPosition(ctx, snipe, cameraPosition);
+    let paintPos = getPointPaintPosition(ctx, snipe, cameraPosition, game.UI.zoom);
     ctx.moveTo(paintPos.x, paintPos.y);
-    paintPos = getPointPaintPosition(ctx, endPos, cameraPosition);
+    paintPos = getPointPaintPosition(ctx, endPos, cameraPosition, game.UI.zoom);
     ctx.lineTo(paintPos.x, paintPos.y);
     ctx.stroke();
     ctx.globalAlpha = 1;
@@ -42,7 +42,7 @@ export function paintAbilityObjectSnipe(ctx: CanvasRenderingContext2D, abilityOb
 export function paintAbilitySnipe(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
     const abilitySnipe = ability as AbilitySnipe;
     const riflePos = getSniperRiflePosition(abilitySnipe, abilityOwner);
-    const paintPos = getPointPaintPosition(ctx, riflePos, cameraPosition);
+    const paintPos = getPointPaintPosition(ctx, riflePos, cameraPosition, game.UI.zoom);
     const direction = abilitySnipe.lastSniperRiflePaintDirection;
     const distance = 20;
     paintSniperRifle(ctx, abilitySnipe, paintPos.x, paintPos.y, direction, distance, true, game);
@@ -61,6 +61,7 @@ export function paintSniperRifle(ctx: CanvasRenderingContext2D, abilitySnipe: Ab
     loadImage(sniperRifleImageRef);
     if (sniperRifleImageRef.imageRef?.complete) {
         const sniperRifleImage: HTMLImageElement = sniperRifleImageRef.imageRef;
+        ctx.save();
         ctx.translate(paintX, paintY);
         ctx.rotate(pointDirection + Math.PI);
         ctx.translate(-paintX, -paintY);
@@ -78,7 +79,7 @@ export function paintSniperRifle(ctx: CanvasRenderingContext2D, abilitySnipe: Ab
             sniperRifleImage.width,
             sniperRifleImage.height
         )
-        ctx.resetTransform();
+        ctx.restore();
     }
 }
 

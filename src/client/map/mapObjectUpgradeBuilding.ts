@@ -110,7 +110,7 @@ function paintInteract(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, 
     topMiddlePos.y -= map.tileSize / 2;
 
     const texts = upgradeBuildingGetUpgradeText(player.permanentData.upgrades, upgradeBuilding.upgradeType, game);
-    const paintPos = getPointPaintPosition(ctx, topMiddlePos, cameraPosition);
+    const paintPos = getPointPaintPosition(ctx, topMiddlePos, cameraPosition, game.UI.zoom);
     if (game.UI.inputType === "touch") game.UI.rectangles.interactRectangle = [];
     for (let i = 0; i < texts.length; i++) {
         const text = texts[i];

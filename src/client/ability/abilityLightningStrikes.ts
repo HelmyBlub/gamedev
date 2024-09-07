@@ -78,7 +78,7 @@ function setAbilityToBossLevel(ability: Ability, level: number) {
 
 function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
     const abilityLightning = ability as AbilityLightningStrikes;
-    const paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
+    const paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition, game.UI.zoom);
     ctx.globalAlpha = 0.30;
     ctx.fillStyle = "white";
     if (abilityOwner.faction === FACTION_ENEMY) {

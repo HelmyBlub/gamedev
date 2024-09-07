@@ -193,7 +193,7 @@ function paintShapeObjectPetPainterSquare(ctx: CanvasRenderingContext2D, ability
     if (paintOrder !== "beforeCharacterPaint") return;
     const cameraPosition = getCameraPosition(game);
     const square = abilityObject as AbilityObjectPetPainterSquare;
-    const paintPos = getPointPaintPosition(ctx, square, cameraPosition);
+    const paintPos = getPointPaintPosition(ctx, square, cameraPosition, game.UI.zoom);
     ctx.fillStyle = abilityObject.color;
     ctx.lineWidth = 1;
     ctx.globalAlpha = (square.deleteTime - game.state.time) / FADETIME;
@@ -211,16 +211,16 @@ function paintShapeObjectPetPainterSquare(ctx: CanvasRenderingContext2D, ability
 
 function paintShapeSquare(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: AbilityPetPainter, cameraPosition: Position, game: Game) {
     if (!ability.paintPoints || ability.paintPoints.length === 0) return;
-    const start = getPointPaintPosition(ctx, ability.paintPoints[0], cameraPosition);
+    const start = getPointPaintPosition(ctx, ability.paintPoints[0], cameraPosition, game.UI.zoom);
     ctx.strokeStyle = "red";
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(start.x, start.y);
     for (let i = 1; i < ability.paintPoints!.length; i++) {
-        const nextPoint = getPointPaintPosition(ctx, ability.paintPoints![i], cameraPosition);
+        const nextPoint = getPointPaintPosition(ctx, ability.paintPoints![i], cameraPosition, game.UI.zoom);
         ctx.lineTo(nextPoint.x, nextPoint.y);
     }
-    const petPoint = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
+    const petPoint = getPointPaintPosition(ctx, abilityOwner, cameraPosition, game.UI.zoom);
     ctx.lineTo(petPoint.x, petPoint.y);
     ctx.stroke();
 }

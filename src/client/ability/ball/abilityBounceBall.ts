@@ -245,7 +245,7 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
         color = "black";
     }
     ctx.lineWidth = 2;
-    const paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
+    const paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition, game.UI.zoom);
     const ballBuff = findBallBuff(abilityOwner, abilityBall);
     if (ballBuff === true) return;
     if (!findBallBuff(abilityOwner, abilityBall)) {
@@ -256,7 +256,9 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
         ctx.rotate(abilityBall.visualizeBallAngle);
         ctx.translate(-paintPos.x, -paintPos.y);
         paintCharacterDefault(ctx, abilityOwner as Character, cameraPosition, game, false);
-        ctx.resetTransform();
+        ctx.translate(paintPos.x, paintPos.y);
+        ctx.rotate(-abilityBall.visualizeBallAngle);
+        ctx.translate(-paintPos.x, -paintPos.y);
     }
     paintBall(ctx, abilityBall, abilityOwner.faction, paintPos);
     abilityBounceBallUpgradeBounceBonusDamagePaintStacks(ctx, abilityBall, abilityOwner, cameraPosition, game);

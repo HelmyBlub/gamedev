@@ -92,9 +92,9 @@ function paintAbilityObjectSlowTrail(ctx: CanvasRenderingContext2D, abilityObjec
     ctx.strokeStyle = "white";
     ctx.lineWidth = abilityObjectSlowTrail.width;
     ctx.beginPath();
-    let paintPos = getPointPaintPosition(ctx, abilityObjectSlowTrail.startPosition, cameraPosition);
+    let paintPos = getPointPaintPosition(ctx, abilityObjectSlowTrail.startPosition, cameraPosition, game.UI.zoom);
     ctx.moveTo(paintPos.x, paintPos.y);
-    paintPos = getPointPaintPosition(ctx, abilityObjectSlowTrail.endPosition, cameraPosition);
+    paintPos = getPointPaintPosition(ctx, abilityObjectSlowTrail.endPosition, cameraPosition, game.UI.zoom);
     ctx.lineTo(paintPos.x, paintPos.y);
     ctx.stroke();
     ctx.globalAlpha = 1;

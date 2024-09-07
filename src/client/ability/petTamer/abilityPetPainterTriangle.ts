@@ -185,7 +185,7 @@ function paintShapeObjectPetPainterTriangle(ctx: CanvasRenderingContext2D, abili
     if (paintOrder !== "beforeCharacterPaint") return;
     const cameraPosition = getCameraPosition(game);
     const triangle = abilityObject as AbilityObjectPetPainterTriangle;
-    const paintPos = getPointPaintPosition(ctx, triangle, cameraPosition);
+    const paintPos = getPointPaintPosition(ctx, triangle, cameraPosition, game.UI.zoom);
     const startPos = { x: paintPos.x, y: paintPos.y };
     if (abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
     ctx.fillStyle = triangle.color;
@@ -204,16 +204,16 @@ function paintShapeObjectPetPainterTriangle(ctx: CanvasRenderingContext2D, abili
 
 function paintShapeTriangle(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: AbilityPetPainter, cameraPosition: Position, game: Game) {
     if (!ability.paintPoints || ability.paintPoints.length === 0) return;
-    const start = getPointPaintPosition(ctx, ability.paintPoints[0], cameraPosition);
+    const start = getPointPaintPosition(ctx, ability.paintPoints[0], cameraPosition, game.UI.zoom);
     ctx.strokeStyle = "red";
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(start.x, start.y);
     for (let i = 1; i < ability.paintPoints!.length; i++) {
-        const nextPoint = getPointPaintPosition(ctx, ability.paintPoints![i], cameraPosition);
+        const nextPoint = getPointPaintPosition(ctx, ability.paintPoints![i], cameraPosition, game.UI.zoom);
         ctx.lineTo(nextPoint.x, nextPoint.y);
     }
-    const petPoint = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
+    const petPoint = getPointPaintPosition(ctx, abilityOwner, cameraPosition, game.UI.zoom);
     ctx.lineTo(petPoint.x, petPoint.y);
     ctx.stroke();
 }

@@ -153,7 +153,7 @@ function paintAbilityPetDash(ctx: CanvasRenderingContext2D, abilityOwner: Abilit
     ctx.lineWidth = 2;
     const lineLength = abilityPetDash.baseSpeed * 6;
     const lineDirection = abilityPetDash.direction! + Math.PI;
-    const startPaintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
+    const startPaintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition, game.UI.zoom);
     const lineSpacer = 4;
     const tempPos = { x: startPaintPos.x, y: startPaintPos.y };
     moveByDirectionAndDistance(tempPos, lineDirection, abilityOwner.width! / 2, false);

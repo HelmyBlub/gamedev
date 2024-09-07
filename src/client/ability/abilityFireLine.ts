@@ -93,9 +93,9 @@ function paintAbilityObjectFireLine(ctx: CanvasRenderingContext2D, abilityObject
     ctx.strokeStyle = color;
     ctx.lineWidth = abilityObjectFireLine.width;
     ctx.beginPath();
-    let paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition);
+    let paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition, game.UI.zoom);
     ctx.moveTo(paintPos.x, paintPos.y);
-    paintPos = getPointPaintPosition(ctx, abilityObjectFireLine.endPosition, cameraPosition);
+    paintPos = getPointPaintPosition(ctx, abilityObjectFireLine.endPosition, cameraPosition, game.UI.zoom);
     ctx.lineTo(paintPos.x, paintPos.y);
     ctx.stroke();
     ctx.globalAlpha = 1;

@@ -64,7 +64,7 @@ export function paintVisualizationAfterImage(ctx: CanvasRenderingContext2D, abil
 
     for (let i = 0; i < upgradeAfterImage.afterImages.length; i++) {
         const afterImage = upgradeAfterImage.afterImages[i];
-        const paintPos = getPointPaintPosition(ctx, afterImage.position, cameraPosition);
+        const paintPos = getPointPaintPosition(ctx, afterImage.position, cameraPosition, game.UI.zoom);
         paintSniperRifle(ctx, abilitySnipe, paintPos.x, paintPos.y, afterImage.direction, 0, false, game);
         if (afterImage.playerTriggered && upgradeMoreRifles && upgradeMoreRifles.upgradeSynergy) {
             paintVisualizationMoreRifles(ctx, afterImage.position, abilitySnipe, cameraPosition, afterImage.castPosition, game);

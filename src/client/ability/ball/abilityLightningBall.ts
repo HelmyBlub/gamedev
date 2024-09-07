@@ -241,12 +241,12 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
     const ballBuff = findBallBuff(abilityOwner, abilityBall);
     if (typeof ballBuff !== "object") {
         if (!ballBuff) {
-            const paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
+            const paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition, game.UI.zoom);
             paintLightningBall(ctx, paintPos, abilityOwner.faction, 10, game);
         }
         return;
     }
-    const paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
+    const paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition, game.UI.zoom);
     paintLightningBall(ctx, paintPos, abilityOwner.faction, abilityBall.radius, game);
     delayedPaint(ctx, abilityOwner, abilityBall, cameraPosition, game);
 }
@@ -295,9 +295,9 @@ function delayedPaint(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
         ctx.strokeStyle = "black";
         ctx.lineWidth = 3;
         ctx.beginPath();
-        let paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
+        let paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition, game.UI.zoom);
         ctx.moveTo(paintPos.x, paintPos.y);
-        paintPos = getPointPaintPosition(ctx, blockingPosistion, cameraPosition);
+        paintPos = getPointPaintPosition(ctx, blockingPosistion, cameraPosition, game.UI.zoom);
         ctx.lineTo(paintPos.x, paintPos.y);
         ctx.stroke();
         ctx.globalAlpha = 1;

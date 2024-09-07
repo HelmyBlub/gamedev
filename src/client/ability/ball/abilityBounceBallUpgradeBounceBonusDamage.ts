@@ -43,7 +43,7 @@ export function abilityBounceBallUpgradeBounceBonusDamagePaintStacks(ctx: Canvas
     const up: AbilityBounceBallUpgradeBounceBonusDamage = ability.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_DAMAGE];
     if (!up) return;
     ctx.font = "bold 16px arial";
-    const paintPos = getPointPaintPosition(ctx, abiltiyOwner, cameraPosition);
+    const paintPos = getPointPaintPosition(ctx, abiltiyOwner, cameraPosition, game.UI.zoom);
     paintTextWithOutline(ctx, "white", "black", up.bounces.toFixed(), paintPos.x, paintPos.y + 20, true, 3);
 }
 

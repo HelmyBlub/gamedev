@@ -220,7 +220,7 @@ function paintBossEnemyCharacter(ctx: CanvasRenderingContext2D, character: BossE
     if (character.state === "dead") return;
     paintCharatersPets(ctx, [character], cameraPosition, game);
     paintCharacterWithAbilitiesDefault(ctx, character, cameraPosition, game);
-    const paintPos = getPointPaintPosition(ctx, character, cameraPosition);
+    const paintPos = getPointPaintPosition(ctx, character, cameraPosition, game.UI.zoom);
     const hpBarPos = {
         x: Math.floor(paintPos.x - character.width / 2),
         y: Math.floor(paintPos.y - character.height / 2)

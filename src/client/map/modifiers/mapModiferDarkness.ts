@@ -500,7 +500,7 @@ function determineVisionWalls(blockingPos: Position, visionCenter: Position, vis
 function paintModiferLate(ctx: CanvasRenderingContext2D, modifier: GameMapModifier, cameraPosition: Position, game: Game) {
     const map = game.state.map;
     const rect: GameMapAreaRect = modifier.area as GameMapAreaRect;
-    const topLeftPaint = getPointPaintPosition(ctx, rect, cameraPosition);
+    const topLeftPaint = getPointPaintPosition(ctx, rect, cameraPosition, game.UI.zoom);
     ctx.fillStyle = "black";
     const viewDistance = 300;
     const viewDistanceBlockLimit = viewDistance + map.tileSize;
@@ -529,7 +529,7 @@ function paintModiferLate(ctx: CanvasRenderingContext2D, modifier: GameMapModifi
         rightView -= Math.floor(blackWidthRightCamera - blackWidthRightCamera % map.tileSize);
     }
 
-    const viewPaintMiddle = getPointPaintPosition(ctx, cameraPosition, cameraPosition);
+    const viewPaintMiddle = getPointPaintPosition(ctx, cameraPosition, cameraPosition, game.UI.zoom);
     rectangleWithCircleCutOut(ctx, topLeftPaint, rect.width, rect.height, viewPaintMiddle, viewDistance);
 
     const visionWalls: Position[][] = [];
@@ -568,11 +568,11 @@ function paintModiferLate(ctx: CanvasRenderingContext2D, modifier: GameMapModifi
     for (let positionOrder of visionWalls) {
         if (positionOrder.length === 0) continue;
         ctx.beginPath();
-        const startPaint = getPointPaintPosition(ctx, positionOrder[0], cameraPosition);
+        const startPaint = getPointPaintPosition(ctx, positionOrder[0], cameraPosition, game.UI.zoom);
         ctx.moveTo(startPaint.x, startPaint.y);
         let curPaintPoint;
         for (let i = 1; i < positionOrder.length; i++) {
-            curPaintPoint = getPointPaintPosition(ctx, positionOrder[i], cameraPosition);
+            curPaintPoint = getPointPaintPosition(ctx, positionOrder[i], cameraPosition, game.UI.zoom);
             ctx.lineTo(curPaintPoint.x, curPaintPoint.y);
         }
         if (!curPaintPoint) continue;

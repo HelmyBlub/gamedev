@@ -145,7 +145,7 @@ function createBiggerSwordImage(newSwordSize: number) {
 
 function paintAbilitySword(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
     const abilitySword = ability as AbilitySword;
-    const paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
+    const paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition, game.UI.zoom);
 
     const swordImage = GAME_IMAGES[ABILITY_NAME_SWORD];
     loadImage(swordImage);
@@ -153,7 +153,8 @@ function paintAbilitySword(ctx: CanvasRenderingContext2D, abilityOwner: AbilityO
     if (abilityOwner.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
     for (let i = 0; i < abilitySword.swordCount; i++) {
         ctx.translate(paintPos.x, paintPos.y);
-        ctx.rotate(abilitySword.currentSwordAngle + Math.PI / 2 + abilitySword.angleChangePerSword * i);
+        const rotation = abilitySword.currentSwordAngle + Math.PI / 2 + abilitySword.angleChangePerSword * i;
+        ctx.rotate(rotation);
         ctx.translate(-paintPos.x, -paintPos.y);
         if (swordImage.imageRef?.complete) {
             let swordSizeImage: HTMLImageElement = swordImage.imageRef;
@@ -174,7 +175,9 @@ function paintAbilitySword(ctx: CanvasRenderingContext2D, abilityOwner: AbilityO
                 abilitySword.swordLength
             );
         }
-        ctx.resetTransform();
+        ctx.translate(paintPos.x, paintPos.y);
+        ctx.rotate(-rotation);
+        ctx.translate(-paintPos.x, -paintPos.y);
     }
     ctx.globalAlpha = 1;
 }

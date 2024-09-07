@@ -306,7 +306,7 @@ function updateTowerObjectAbilityLevels(abilityObjects: AbilityObject[]) {
 
 function paintAbilityTower(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
     const abiltiyTower = ability as AbilityTower;
-    const paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
+    const paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition, game.UI.zoom);
     paintHammer(ctx, abiltiyTower, paintPos.x - 10, paintPos.y, game);
 }
 
@@ -320,8 +320,10 @@ function paintHammer(ctx: CanvasRenderingContext2D, abilityTower: AbilityTower, 
     loadImage(hammerImageRef);
     if (hammerImageRef.imageRef?.complete) {
         const hammerImage: HTMLImageElement = hammerImageRef.imageRef;
+        const rotation = -Math.PI / 4;
+        ctx.save();
         ctx.translate(paintX, paintY);
-        ctx.rotate(-Math.PI / 4);
+        ctx.rotate(rotation);
         ctx.translate(-paintX, -paintY);
         paintX -= Math.floor(hammerImage.width / 2);
         paintY -= Math.floor(hammerImage.height / 2) - 2;
@@ -337,7 +339,7 @@ function paintHammer(ctx: CanvasRenderingContext2D, abilityTower: AbilityTower, 
             hammerImage.width,
             hammerImage.height
         )
-        ctx.resetTransform();
+        ctx.restore();
     }
 }
 
@@ -351,7 +353,7 @@ function paintAbilityObjectTower(ctx: CanvasRenderingContext2D, abilityObject: A
         const owner = findPlayerByCharacterId(game.state.players, tower.ownerId);
         const towerBaseSize = tower.size;
         const towerHeight = towerBaseSize + 5;
-        let paintPos = getPointPaintPosition(ctx, tower, cameraPosition);
+        let paintPos = getPointPaintPosition(ctx, tower, cameraPosition, game.UI.zoom);
         paintPos.x -= towerBaseSize / 2;
         paintPos.y -= towerBaseSize / 2;
         if (owner?.clientId === game.multiplayer.myClientId) {
@@ -416,9 +418,9 @@ function paintEffectConnected(ctx: CanvasRenderingContext2D, abilityObjectTower:
 
         if (abilityObjectTower.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
         ctx.beginPath();
-        let paintPos = getPointPaintPosition(ctx, abilityObjectTower, cameraPosition);
+        let paintPos = getPointPaintPosition(ctx, abilityObjectTower, cameraPosition, game.UI.zoom);
         ctx.moveTo(paintPos.x, paintPos.y);
-        paintPos = getPointPaintPosition(ctx, connectedTower, cameraPosition);
+        paintPos = getPointPaintPosition(ctx, connectedTower, cameraPosition, game.UI.zoom);
         ctx.lineTo(paintPos.x, paintPos.y);
         ctx.stroke();
         ctx.globalAlpha = 1;

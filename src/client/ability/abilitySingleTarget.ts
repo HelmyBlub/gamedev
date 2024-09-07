@@ -82,11 +82,11 @@ function paintAbilitySingleTarget(ctx: CanvasRenderingContext2D, abilityOwner: A
         ctx.strokeStyle = "black";
         ctx.lineWidth = 1;
         ctx.beginPath();
-        let paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
+        let paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition, game.UI.zoom);
         ctx.moveTo(paintPos.x, paintPos.y);
         const target: Character | null = findCharacterByIdAroundPosition(abilityOwner, abilitySingleTarget.maxRange, game, abilitySingleTarget.targetId);
         if (target) {
-            paintPos = getPointPaintPosition(ctx, target, cameraPosition);
+            paintPos = getPointPaintPosition(ctx, target, cameraPosition, game.UI.zoom);
             ctx.lineTo(paintPos.x, paintPos.y);
             ctx.stroke();
         }

@@ -266,7 +266,7 @@ function paint(ctx: CanvasRenderingContext2D, character: Character, cameraPositi
     if (character.state === "dead") return;
     const god = character as GodEnemyCharacter;
     const animation = god.animationState;
-    const paintPos = getPointPaintPosition(ctx, character, cameraPosition);
+    const paintPos = getPointPaintPosition(ctx, character, cameraPosition, game.UI.zoom);
     paintPos.y -= 20;
     const width = 30;
     const height = 80;

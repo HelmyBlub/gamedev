@@ -51,7 +51,7 @@ export function abilitySnipeUpgradeNoMissChainPaintStacks(ctx: CanvasRenderingCo
     const up: AbilityUpgradeNoMissChain = ability.upgrades[ABILITY_SNIPE_UPGRADE_NO_MISS_CHAIN];
     if (!up) return;
     ctx.font = "bold 16px arial";
-    const paintPos = getPointPaintPosition(ctx, abiltiyOwner, cameraPosition);
+    const paintPos = getPointPaintPosition(ctx, abiltiyOwner, cameraPosition, game.UI.zoom);
     paintTextWithOutline(ctx, "white", "black", up.noMissChainCounter.toFixed(), paintPos.x, paintPos.y + 20, true, 3);
 }
 

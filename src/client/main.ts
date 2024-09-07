@@ -9,7 +9,7 @@ import { onDomLoadSetDebuffsFunctions } from "./debuff/debuff.js";
 import { runner, setRelativeMousePosition } from "./game.js";
 import { createDefaultGameData, Game, GameVersion } from "./gameModel.js";
 import { addMapObjectsFunctions } from "./map/mapObjects.js";
-import { keyDown, keyUp, mouseDown, mouseUp, touchEnd, touchMove, touchStart } from "./playerInput.js";
+import { keyDown, keyUp, mouseDown, mouseUp, mouseWheel, touchEnd, touchMove, touchStart } from "./playerInput.js";
 import { addHTMLDebugMenusToSettings } from "./settingsHtmlMenu.js";
 import { localStorageLoad } from "./permanentData.js";
 import { addUpgradeBuildingsFunctions } from "./map/buildings/upgradeBuilding.js";
@@ -51,6 +51,7 @@ export function createGame(canvasElementId: string | undefined, forTesting: bool
         c.addEventListener('mousedown', (e) => mouseDown(e, game));
         c.addEventListener('mousemove', (e) => setRelativeMousePosition(e, game));
         c.addEventListener('mouseup', (e) => mouseUp(e, game));
+        c.addEventListener('wheel', (e) => mouseWheel(e, game));
         c.addEventListener("touchstart", (e) => touchStart(e, game), false);
         c.addEventListener("touchmove", (e) => touchMove(e, game), false);
         c.addEventListener("touchcancel", (e) => touchEnd(e, game), false);

@@ -85,7 +85,7 @@ function setAbilityToBossLevel(ability: Ability, level: number) {
 function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
     const abiltiyTileExplosion = ability as AbilityTileExplosion;
     const position: Position = !abiltiyTileExplosion.pickedUp && abiltiyTileExplosion.pickUpPosition ? abiltiyTileExplosion.pickUpPosition : abilityOwner;
-    const paintPos = getPointPaintPosition(ctx, position, cameraPosition);
+    const paintPos = getPointPaintPosition(ctx, position, cameraPosition, game.UI.zoom);
     if (abiltiyTileExplosion.pickedUp) {
         paintPos.x += 25;
         paintPos.y += 45;
@@ -117,7 +117,7 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
 function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
     const tileExplosions = abilityObject as AbilityObjectTileExplosion;
     const cameraPosition = getCameraPosition(game);
-    const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition);
+    const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition, game.UI.zoom);
 
     if (paintOrder === "beforeCharacterPaint") {
         const fillPerCent = 1 - (tileExplosions.damageTime - game.state.time) / tileExplosions.damageDelay;

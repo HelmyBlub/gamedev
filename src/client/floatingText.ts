@@ -85,10 +85,10 @@ export function displayTextAtCameraPosition(text: string, game: Game) {
     game.UI.displayTextData.push(createPaintTextData(textPosition1, text, "black", "24", game.state.time, 5000));
 }
 
-export function paintDamageNumbers(ctx: CanvasRenderingContext2D, damageNumbersData: PaintTextData[] | undefined, cameraPosition: Position, time: number) {
+export function paintDamageNumbers(ctx: CanvasRenderingContext2D, damageNumbersData: PaintTextData[] | undefined, cameraPosition: Position, time: number, game: Game) {
     if (damageNumbersData === undefined) return;
-    const centerX = ctx.canvas.width / 2;
-    const centerY = ctx.canvas.height / 2;
+    const centerX = ctx.canvas.width / game.UI.zoom.factor / 2;
+    const centerY = ctx.canvas.height / game.UI.zoom.factor / 2;
     for (let i = damageNumbersData.length - 1; i >= 0; i--) {
         const data = damageNumbersData[i];
         if (data.removeTime <= time) {

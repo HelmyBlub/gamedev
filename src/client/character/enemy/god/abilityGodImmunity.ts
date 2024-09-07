@@ -111,7 +111,7 @@ function setAbilityToBossLevel(ability: Ability, level: number) {
 function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
     const abiltiyImmunity = ability as AbilityGodImmunity;
     const position: Position = !abiltiyImmunity.pickedUp && abiltiyImmunity.pickUpPosition ? abiltiyImmunity.pickUpPosition : abilityOwner;
-    const paintPos = getPointPaintPosition(ctx, position, cameraPosition);
+    const paintPos = getPointPaintPosition(ctx, position, cameraPosition, game.UI.zoom);
     const shieldImageRef = GAME_IMAGES[IMAGE_SHIELD];
     loadImage(shieldImageRef);
     const god = abilityOwner as GodEnemyCharacter;
@@ -145,7 +145,7 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
 function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
     const abilityObjectFireCircle = abilityObject as AbilityObjectGodImmunityRemoveGround;
     const cameraPosition = getCameraPosition(game);
-    const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition);
+    const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition, game.UI.zoom);
 
     const shieldImageRef = GAME_IMAGES[IMAGE_SHIELD];
     loadImage(shieldImageRef);

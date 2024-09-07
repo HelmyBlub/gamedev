@@ -52,7 +52,7 @@ function paintInteractSign(ctx: CanvasRenderingContext2D, mapObject: MapTileObje
     let textMaxWidth = king!.width;
     const rectHeight = fontSize * texts.length + 2 + king!.height + 60;
     topMiddlePos.y -= rectHeight + map.tileSize / 2;
-    const paintPos = getPointPaintPosition(ctx, topMiddlePos, cameraPosition);
+    const paintPos = getPointPaintPosition(ctx, topMiddlePos, cameraPosition, game.UI.zoom);
 
     ctx.font = `${fontSize}px Arial`;
     for (let text of texts) {
@@ -105,6 +105,7 @@ function paintKingSign(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, 
         const paintY = paintTopLeft.y + mapObject.y * tileSize;
         const spriteWidth = signImage.spriteRowWidths[0];
         const spriteHeight = signImage.spriteRowHeights[0];
+        ctx.save();
         switch (kingSign.kingDirection) {
             case "north":
                 ctx.translate(paintX + spriteWidth / 2, paintY + spriteHeight / 2);
@@ -129,7 +130,6 @@ function paintKingSign(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, 
             Math.floor(paintY),
             spriteWidth, spriteHeight
         );
-        ctx.resetTransform();
         ctx.restore();
     }
 }

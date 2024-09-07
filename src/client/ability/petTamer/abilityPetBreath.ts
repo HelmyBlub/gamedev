@@ -123,7 +123,7 @@ function setAbilityPetBreathToBossLevel(ability: Ability, level: number) {
 function paintAbilityPetBreath(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
     const abilityPetBreath = ability as AbilityPetBreath;
     if (!abilityPetBreath.active) return;
-    const paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
+    const paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition, game.UI.zoom);
     const startAngle = abilityPetBreath.directionAngle - abilityPetBreath.angleSize / 2;
     ctx.globalAlpha = 0.5;
     if (abilityOwner.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;

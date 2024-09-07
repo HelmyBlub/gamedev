@@ -113,7 +113,7 @@ function createObjectFireCircle(abilityObject: AbilityObjectFireCircleTraveling,
 function paintAbilityObjectFireCircle(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
     const abilityObjectFireCircle = abilityObject as AbilityObjectFireCircle;
     const cameraPosition = getCameraPosition(game);
-    const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition);
+    const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition, game.UI.zoom);
 
     ctx.fillStyle = abilityObject.color;
     if (abilityObject.faction === FACTION_ENEMY) ctx.fillStyle = "black";

@@ -61,6 +61,19 @@ export function mouseUp(event: MouseEvent, game: Game) {
 
 }
 
+export function mouseWheel(event: WheelEvent, game: Game) {
+    event.preventDefault();
+    zoom(event.deltaY < 0, game);
+}
+
+function zoom(zoomIn: boolean, game: Game) {
+    const zoom = game.UI.zoom;
+    const zoomStep = 0.1;
+    zoom.factor *= zoomIn ? 1 + zoomStep : 1 - zoomStep;
+    zoom.factor = Math.min(Math.max(zoom.min, zoom.factor), zoom.max);
+    if (Math.abs(zoom.factor - 1) < zoomStep / 2) zoom.factor = 1;
+}
+
 export function touchStart(event: TouchEvent, game: Game) {
     event.preventDefault();
     game.UI.inputType = "touch";

@@ -115,7 +115,7 @@ function setAbilityToBossLevel(ability: Ability, level: number) {
 function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
     const abiltiySeeker = ability as AbilitySeeker;
     const position: Position = !abiltiySeeker.pickedUp && abiltiySeeker.pickUpPosition ? abiltiySeeker.pickUpPosition : abilityOwner;
-    const paintPos = getPointPaintPosition(ctx, position, cameraPosition);
+    const paintPos = getPointPaintPosition(ctx, position, cameraPosition, game.UI.zoom);
     if (abiltiySeeker.pickedUp) {
         paintPos.x -= 0;
         paintPos.y += 45;
@@ -147,7 +147,7 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
 function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
     const abilityObjectFireCircle = abilityObject as AbilityObjectSeekerGround;
     const cameraPosition = getCameraPosition(game);
-    const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition);
+    const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition, game.UI.zoom);
 
     if (paintOrder === "beforeCharacterPaint" && abilityObjectFireCircle.subType === "SeekerGround") {
         ctx.fillStyle = abilityObject.color;
@@ -191,7 +191,9 @@ function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: Abilit
                 width,
                 height
             )
-            ctx.resetTransform();
+            ctx.translate(paintPos.x, paintPos.y);
+            ctx.rotate(-direction);
+            ctx.translate(-paintPos.x, -paintPos.y);
         }
     }
 }

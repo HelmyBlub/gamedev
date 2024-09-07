@@ -84,7 +84,7 @@ function setAbilityToBossLevel(ability: Ability, level: number) {
 function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
     const abiltiyMovingFire = ability as AbilityMovingFire;
     const position: Position = !abiltiyMovingFire.pickedUp && abiltiyMovingFire.pickUpPosition ? abiltiyMovingFire.pickUpPosition : abilityOwner;
-    const paintPos = getPointPaintPosition(ctx, position, cameraPosition);
+    const paintPos = getPointPaintPosition(ctx, position, cameraPosition, game.UI.zoom);
     if (abiltiyMovingFire.pickedUp) {
         paintPos.x -= 5;
         paintPos.y += 25;
@@ -116,7 +116,7 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
 
 function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
     const cameraPosition = getCameraPosition(game);
-    const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition);
+    const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition, game.UI.zoom);
 
     if (paintOrder === "beforeCharacterPaint") {
         const groundFireAnimation = GAME_IMAGES[IMAGE_GROUND_FIRE_ANIMATION];

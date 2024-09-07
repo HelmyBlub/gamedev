@@ -85,7 +85,7 @@ function paintAbilityObjectDeathCircle(ctx: CanvasRenderingContext2D, abilityObj
     if (paintOrder === "beforeCharacterPaint") {
         const abilityObjectDeathCircle = abilityObject as AbilityObjectDeathCircle;
         const cameraPosition = getCameraPosition(game);
-        const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition);
+        const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition, game.UI.zoom);
 
         ctx.fillStyle = abilityObject.color;
         ctx.globalAlpha = 0.65;

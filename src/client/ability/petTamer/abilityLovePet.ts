@@ -111,7 +111,7 @@ function tickAbilityObjectLovePet(abilityObject: AbilityObject, game: Game) {
 function paintAbilityObjectLovePet(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
     if (paintOrder !== "afterCharacterPaint") return;
     const cameraPosition = getCameraPosition(game);
-    const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition);
+    const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition, game.UI.zoom);
 
     const meatImage = getImage(ABILITY_NAME_LOVE_PET);
     if (meatImage) {

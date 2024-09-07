@@ -54,7 +54,7 @@ function setAbilityToBossLevel(ability: Ability, level: number) {
 function paintAbilityLeash(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
     const abilityLeash = ability as AbilityLeash;
     if (abilityLeash.leashedToOwnerId !== undefined) {
-        let paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition);
+        let paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition, game.UI.zoom);
         const connectedOwner: Position | null = findLeashOwner(abilityOwner, abilityLeash, game);
         if (!connectedOwner) {
             return;
@@ -65,10 +65,10 @@ function paintAbilityLeash(ctx: CanvasRenderingContext2D, abilityOwner: AbilityO
         ctx.beginPath();
         ctx.moveTo(paintPos.x, paintPos.y);
         for (let pos of abilityLeash.leashBendPoints) {
-            paintPos = getPointPaintPosition(ctx, pos, cameraPosition);
+            paintPos = getPointPaintPosition(ctx, pos, cameraPosition, game.UI.zoom);
             ctx.lineTo(paintPos.x, paintPos.y);
         }
-        paintPos = getPointPaintPosition(ctx, connectedOwner, cameraPosition);
+        paintPos = getPointPaintPosition(ctx, connectedOwner, cameraPosition, game.UI.zoom);
         ctx.lineTo(paintPos.x, paintPos.y);
         ctx.stroke();
     }

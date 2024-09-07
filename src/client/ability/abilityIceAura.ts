@@ -122,7 +122,7 @@ function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: Abilit
 }
 
 function paintIceAura(ctx: CanvasRenderingContext2D, ice: IceBaseProperties, position: Position, faction: string, cameraPosition: Position, game: Game) {
-    const paintPos = getPointPaintPosition(ctx, position, cameraPosition);
+    const paintPos = getPointPaintPosition(ctx, position, cameraPosition, game.UI.zoom);
     ctx.globalAlpha = 0.30;
     ctx.fillStyle = "white";
     if (faction === FACTION_ENEMY) {

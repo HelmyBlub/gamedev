@@ -213,7 +213,7 @@ function paintKing(ctx: CanvasRenderingContext2D, character: Character, cameraPo
     paintCharacterWithAbilitiesDefault(ctx, character, cameraPosition, game);
     const crownImage = getImage(IMAGE_CROWN);
     if (crownImage) {
-        const paintPos = getPointPaintPosition(ctx, character, cameraPosition);
+        const paintPos = getPointPaintPosition(ctx, character, cameraPosition, game.UI.zoom);
         const crownX = Math.floor(paintPos.x - Math.floor(crownImage.width / 2));
         const crownY = Math.floor(paintPos.y - character.height / 2 - crownImage.height);
         ctx.drawImage(crownImage, crownX, crownY);
