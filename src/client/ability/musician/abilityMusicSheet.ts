@@ -175,7 +175,7 @@ export function createAbilityMusicSheet(
         damagePerSecond: 200,
         buttonWidth: 20,
         nextUpgradeAddInstrument: true,
-        maxPaintWidth: 800,
+        maxPaintWidth: 500,
         selectedInstrument: undefined,
     };
 }
