@@ -377,20 +377,24 @@ function speedDrecreaseTick(abilityBounceBall: AbilityBounceBall, abilityOwner: 
 function rollDirectionInfluenceTick(abilityBounceBall: AbilityBounceBall, abilityOwner: AbilityOwner, game: Game) {
     const clientInfo: ClientInfo | undefined = findClientInfoByCharacterId(abilityOwner.id, game);
 
-    let mapTurnToMousPosition = { x: 0, y: 0 };
+    let influenceDirection: number = 0;
     if (clientInfo) {
-        mapTurnToMousPosition = clientInfo.lastMousePosition;
+        if (abilityOwner.isMoving && abilityOwner.moveDirection !== undefined) {
+            influenceDirection = abilityOwner.moveDirection;
+        } else {
+            influenceDirection = calculateDirection(abilityOwner, clientInfo.lastMousePosition);
+        }
     } else {
         const target = getRandomAlivePlayerCharacter(game.state.players, game.state.randomSeed);
         if (target) {
-            mapTurnToMousPosition = { x: target.x, y: target.y };
+            const enemyTarget = { x: target.x, y: target.y };
+            influenceDirection = calculateDirection(abilityOwner, enemyTarget);
         }
     }
 
-    const mouseDirection = calculateDirection(abilityOwner, mapTurnToMousPosition);
-    const angleDiff = modulo((mouseDirection - abilityBounceBall.moveDirection + Math.PI), (Math.PI * 2)) - Math.PI;
+    const angleDiff = modulo((influenceDirection - abilityBounceBall.moveDirection + Math.PI), (Math.PI * 2)) - Math.PI;
     if (Math.abs(angleDiff) < abilityBounceBall.maxAngleChangePetTick) {
-        abilityBounceBall.moveDirection = mouseDirection;
+        abilityBounceBall.moveDirection = influenceDirection;
     } else if (angleDiff < 0) {
         abilityBounceBall.moveDirection = abilityBounceBall.moveDirection - abilityBounceBall.maxAngleChangePetTick;
     } else if (angleDiff > 0) {

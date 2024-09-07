@@ -4,16 +4,13 @@ increase version
 current tasks:
 - mobile/touch control mapping
     - all abilities
-        - use second/third abilities
-            - abilities which do not need position, are used directly
-                - when having multiple abilities:
-                    - show main class abilities which need position first
-                    - second abilities which need position
-                    - third main abilities which don't need position
         - check all classes
+            - ball rolling influenced by move direction, not only mouse position
     - zooming
     - if class not choosen, don't display pastCharacters or upgrade building
     - more info
+- Bug: Check ability order
+    - on touch changing position of abilities bad, as i can not see all
 - add controller
 - test run which uses retries
 
