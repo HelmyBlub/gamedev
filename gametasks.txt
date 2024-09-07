@@ -5,9 +5,11 @@ current tasks:
 - mobile/touch control mapping
     - all abilities
         - use second/third abilities
-            - fix musician: 
-                - sheet width to big for mobile
             - abilities which do not need position, are used directly
+                - when having multiple abilities:
+                    - show main class abilities which need position first
+                    - second abilities which need position
+                    - third main abilities which don't need position
         - check all classes
     - zooming
     - if class not choosen, don't display pastCharacters or upgrade building

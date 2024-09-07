@@ -223,7 +223,7 @@ function touchEndActionAbility(touch: Touch, game: Game) {
 function touchAbilityAction(touch: Touch, game: Game) {
     if (!game.clientKeyBindings || !game.canvasElement) return;
     const abilityUi = game.UI.playerCharacterAbilityUI;
-    if (!abilityUi || abilityUi.rectangles === undefined) return;
+    if (!abilityUi || abilityUi.rectangles === undefined || abilityUi.rectangles.length === 0) return;
     if (abilityUi.selectedRectangleIndex === undefined) abilityUi.selectedRectangleIndex = 0;
     const clientId = game.clientKeyBindings.clientIdRef;
     const player = findPlayerByCliendId(clientId, game.state.players);
@@ -384,6 +384,22 @@ function touchAbilitySelect(touch: Touch, game: Game): boolean {
         if (rectangle.topLeft.x <= relativPosition.x && rectangle.topLeft.x + rectangle.width >= relativPosition.x
             && rectangle.topLeft.y <= relativPosition.y && rectangle.topLeft.y + rectangle.height >= relativPosition.y
         ) {
+            const clientId = game.multiplayer.myClientId;
+            const player = findPlayerByCliendId(clientId, game.state.players);
+            const abilityId = abilityUi.rectangles[i].abilityRefId;
+
+            if (player) {
+                const ability = player.character.abilities.find((a) => a.id === abilityId);
+                if (ability && rectangle.positionNotRequired) {
+                    handleCommand(game, {
+                        command: "playerInput",
+                        clientId: clientId,
+                        data: { action: ability.playerInputBinding, isKeydown: true },
+                    });
+                    return true;
+                }
+            }
+
             abilityUi.selectedRectangleIndex = i;
             return true;
         }
@@ -729,7 +745,9 @@ function playerAction(clientId: number, data: any, game: Game) {
                 if (ability.playerInputBinding && ability.playerInputBinding === action) {
                     const functions = ABILITIES_FUNCTIONS[ability.name];
                     if (functions.activeAbilityCast !== undefined) {
-                        functions.activeAbilityCast(character, ability, data.castPosition, data.castPositionRelativeToCharacter, isKeydown, game);
+                        if (functions.positionNotRquired || (data.castPosition && data.castPositionRelativeToCharacter)) {
+                            functions.activeAbilityCast(character, ability, data.castPosition, data.castPositionRelativeToCharacter, isKeydown, game);
+                        }
                     } else {
                         console.log("missing activeAbilityCast function for", action, ability);
                     }

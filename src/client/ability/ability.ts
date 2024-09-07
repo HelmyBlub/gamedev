@@ -108,6 +108,7 @@ export type AbilityFunctions = {
     tickAbilityObject?: (abilityObject: AbilityObject, game: Game) => void,
     abilityUpgradeFunctions?: AbilityUpgradesFunctions,
     canBeUsedByBosses?: boolean,
+    positionNotRquired?: boolean,
 }
 
 export type AbilitiesFunctions = {
@@ -488,12 +489,28 @@ function calculateAbilityUiRectangles(ctx: CanvasRenderingContext2D, player: Pla
 
     for (let ability of player.character.abilities) {
         if (ability.playerInputBinding) {
+            const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
             if (game.UI.inputType === "touch") {
-                if (usedInputs.indexOf(ability.playerInputBinding) !== -1) continue;
+                const usedInputIndex = usedInputs.indexOf(ability.playerInputBinding);
+                if (usedInputIndex !== -1) {
+                    if (abilityUiRectangles[usedInputIndex].positionNotRequired
+                        && !abilityFunctions.positionNotRquired
+                    ) {
+                        abilityUiRectangles.splice(usedInputIndex, 1, {
+                            abilityRefId: ability.id,
+                            positionNotRequired: abilityFunctions.positionNotRquired,
+                            height: 0,
+                            width: 0,
+                            topLeft: { x: 0, y: 0 },
+                        });
+                    }
+                    continue;
+                }
                 usedInputs.push(ability.playerInputBinding);
             }
             abilityUiRectangles.push({
                 abilityRefId: ability.id,
+                positionNotRequired: abilityFunctions.positionNotRquired,
                 height: 0,
                 width: 0,
                 topLeft: { x: 0, y: 0 },

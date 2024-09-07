@@ -48,6 +48,7 @@ export type PlayerCharacterLevelUI = {
 
 export type AbilityUiRectangle = Rectangle & {
     abilityRefId: number,
+    positionNotRequired?: boolean,
 }
 
 export type PlayerCharacterAbilityUI = {
