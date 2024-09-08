@@ -825,6 +825,8 @@ function interactKeys(character: Character, specialAction: string, game: Game) {
             if (closestInteractable.mapObject) {
                 interactWithMapObject(character, closestInteractable.mapObject, specialAction, game);
             } else if (closestInteractable.pastCharacter) {
+                const classChoosen = character.characterClasses !== undefined && character.characterClasses.length > 0;
+                if (!classChoosen) return;
                 if (canCharacterTradeAbilityOrPets(closestInteractable.pastCharacter)) {
                     if (!shareCharactersTradeablePreventedMultipleClass(closestInteractable.pastCharacter, character)) {
                         characterTradeAbilityAndPets(closestInteractable.pastCharacter, character, game);

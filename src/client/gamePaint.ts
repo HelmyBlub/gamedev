@@ -293,6 +293,8 @@ function paintClosestInteractable(ctx: CanvasRenderingContext2D, cameraPosition:
 }
 
 function paintPastPlayerGiftInfo(ctx: CanvasRenderingContext2D, pastCharacter: Character, playerCharacter: Character, cameraPosition: Position, game: Game) {
+    const classChoosen = playerCharacter.characterClasses !== undefined && playerCharacter.characterClasses.length > 0;
+    if (!classChoosen) return;
     const canTrade = canCharacterTradeAbilityOrPets(pastCharacter);
     const classAlreadyTaken = shareCharactersTradeablePreventedMultipleClass(pastCharacter, playerCharacter);
     let paintPos: Position = getPointPaintPosition(ctx, pastCharacter, cameraPosition, game.UI.zoom);
@@ -360,8 +362,6 @@ function paintTouchMoveControl(ctx: CanvasRenderingContext2D, game: Game) {
     const myChar = findMyCharacter(game);
     if (!myChar) return;
 
-    ctx.font = "20px Arial";
-    paintTextWithOutline(ctx, "white", "black", "Touch Controls Work in Progress", ctx.canvas.width / 2, 80, true, 2, "white");
     ctx.strokeStyle = "black";
     ctx.lineWidth = 2;
     const paintPos: Position = {
