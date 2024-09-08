@@ -1,20 +1,15 @@
-next test run: musician, sniper, builder
+next test run: ball, musician, sniper, builder
 increase version
 
 current tasks:
 - mobile/touch control mapping
     - zooming
         - not working for mobile
-        - should not scale UI
-        - should have limits
-        - steps:
-            - add zoom factor to game.UI
-            - mouse click position is off
-            - zoom performance loss very high?
-                - not if i use browser zoom, why?
+            - some test button to try pinch zoom
     - if class not choosen, don't display pastCharacters or upgrade building
     - more info
 - Bug: Check ability order
+- Check: zoom performance loss very high? next day no longer?
     - on touch changing position of abilities bad, as i can not see all
 - add controller
 - test run which uses retries

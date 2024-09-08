@@ -249,9 +249,13 @@ export type InputType = "keyboard" | "touch";
 export type TouchUiInfo = {
     touchMoveCornerSize: number,
     touchMoveCornerBottomLeft?: Position,
-    touchStart?: Position,
+    touchStartMove?: Position,
     touchIdMove?: number,
     touchIdAbility?: number,
+    touchStartPinch?: {
+        idRef: number,
+        startPosition: Position,
+    }[],
 }
 
 export type Rectangle = {

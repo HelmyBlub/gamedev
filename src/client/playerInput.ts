@@ -4,7 +4,7 @@ import { Character } from "./character/characterModel.js";
 import { ClientKeyBindings, Game, Position } from "./gameModel.js";
 import { websocketConnect } from "./multiplayerConenction.js";
 import { ABILITIES_FUNCTIONS } from "./ability/ability.js";
-import { calculateDirection, getCameraPosition, findClientInfo, resetGameNonStateData, takeTimeMeasure, findClosestInteractable, concedePlayerFightRetries, retryFight, calculateFightRetryCounter, getRelativeMousePoistion } from "./game.js";
+import { calculateDirection, getCameraPosition, findClientInfo, resetGameNonStateData, takeTimeMeasure, findClosestInteractable, concedePlayerFightRetries, retryFight, calculateFightRetryCounter, getRelativeMousePoistion, calculateDistance } from "./game.js";
 import { executeUpgradeOptionChoice } from "./character/upgrade.js";
 import { canCharacterTradeAbilityOrPets, characterTradeAbilityAndPets } from "./character/character.js";
 import { shareCharactersTradeablePreventedMultipleClass } from "./character/playerCharacters/playerCharacters.js";
@@ -66,14 +66,6 @@ export function mouseWheel(event: WheelEvent, game: Game) {
     zoom(event.deltaY < 0, game);
 }
 
-function zoom(zoomIn: boolean, game: Game) {
-    const zoom = game.UI.zoom;
-    const zoomStep = 0.1;
-    zoom.factor *= zoomIn ? 1 + zoomStep : 1 - zoomStep;
-    zoom.factor = Math.min(Math.max(zoom.min, zoom.factor), zoom.max);
-    if (Math.abs(zoom.factor - 1) < zoomStep / 2) zoom.factor = 1;
-}
-
 export function touchStart(event: TouchEvent, game: Game) {
     event.preventDefault();
     game.UI.inputType = "touch";
@@ -87,6 +79,7 @@ export function touchStart(event: TouchEvent, game: Game) {
             continue;
         } else {
             touchAbilityAction(touch, game);
+            cacheTouchStarts(touch, game);
         }
     }
 }
@@ -98,6 +91,25 @@ export function touchMove(event: TouchEvent, game: Game) {
         touchMoveActionMove(touch, game);
         touchMoveActionAbility(touch, game);
     }
+    touchPinchZoom(event, game);
+}
+
+function touchPinchZoom(event: TouchEvent, game: Game) {
+    const pinchTouches: Touch[] = [];
+    const touchLastPositions = game.UI.touchInfo.touchStartPinch;
+    if (touchLastPositions === undefined) return;
+    for (let i = 0; i < event.touches.length; i++) {
+        const touch = event.touches[i];
+        if (touchLastPositions.find((t) => t.idRef === touch.identifier)) {
+            pinchTouches.push(touch);
+        }
+    }
+    if (pinchTouches.length < 2 || touchLastPositions.length < 2) return;
+    const originalDistance = calculateDistance(touchLastPositions[0].startPosition, touchLastPositions[1].startPosition);
+    touchLastPositions[0].startPosition = { x: pinchTouches[0].clientX, y: pinchTouches[0].clientY };
+    touchLastPositions[1].startPosition = { x: pinchTouches[1].clientX, y: pinchTouches[1].clientY };
+    const newDistance = calculateDistance(touchLastPositions[0].startPosition, touchLastPositions[1].startPosition)
+    zoom(newDistance < originalDistance, game, 0.025);
 }
 
 export function touchEnd(event: TouchEvent, game: Game) {
@@ -200,6 +212,19 @@ export function tickPlayerInputs(playerInputs: PlayerInput[], currentTime: numbe
     takeTimeMeasure(game.debug, "tickPlayerInputs", "");
 }
 
+function cacheTouchStarts(touch: Touch, game: Game) {
+    if (game.UI.touchInfo.touchIdMove === touch.identifier) return;
+    if (game.UI.touchInfo.touchStartPinch === undefined) game.UI.touchInfo.touchStartPinch = [];
+    game.UI.touchInfo.touchStartPinch.push({
+        idRef: touch.identifier,
+        startPosition: {
+            x: touch.clientX,
+            y: touch.clientY,
+        }
+    });
+    if (game.UI.touchInfo.touchStartPinch.length > 2) game.UI.touchInfo.touchStartPinch.shift();
+}
+
 function touchMoveActionAbility(touch: Touch, game: Game) {
     if (game.UI.touchInfo.touchIdAbility !== touch.identifier) return;
     if (!game.canvasElement) return;
@@ -263,6 +288,13 @@ function touchAbilityAction(touch: Touch, game: Game) {
     });
 }
 
+function zoom(zoomIn: boolean, game: Game, zoomStep = 0.1) {
+    const zoom = game.UI.zoom;
+    zoom.factor *= zoomIn ? 1 + zoomStep : 1 - zoomStep;
+    zoom.factor = Math.min(Math.max(zoom.min, zoom.factor), zoom.max);
+    if (Math.abs(zoom.factor - 1) < zoomStep / 2) zoom.factor = 1;
+}
+
 /**
  * @returns true if upgrade action executed
  */
@@ -294,7 +326,7 @@ function touchMoveEnd(touch: Touch, game: Game) {
     if (game.UI.touchInfo.touchIdMove === touch.identifier) {
         const clientId = game.multiplayer.myClientId;
         game.UI.touchInfo.touchIdMove = undefined;
-        game.UI.touchInfo.touchStart = undefined;
+        game.UI.touchInfo.touchStartMove = undefined;
 
         const moveData: MoveData = {
             direction: 0,
@@ -310,13 +342,13 @@ function touchMoveEnd(touch: Touch, game: Game) {
 
 function touchMoveActionMove(touch: Touch, game: Game) {
     if (!game.clientKeyBindings || !game.canvasElement) return false;
-    if (!game.UI.touchInfo.touchMoveCornerBottomLeft || !game.UI.touchInfo.touchStart) return false;
+    if (!game.UI.touchInfo.touchMoveCornerBottomLeft || !game.UI.touchInfo.touchStartMove) return false;
     if (game.UI.touchInfo.touchIdMove !== touch.identifier) return false;
     const clientId = game.multiplayer.myClientId;
 
     const target = game.canvasElement;
     const relativPosition = { x: touch.clientX - target.offsetLeft, y: touch.clientY - target.offsetTop };
-    const moveMiddlePosition = game.UI.touchInfo.touchStart;
+    const moveMiddlePosition = game.UI.touchInfo.touchStartMove;
 
     const direction = calculateDirection(moveMiddlePosition, relativPosition);
 
@@ -488,7 +520,7 @@ function touchStartMove(touch: Touch, game: Game): boolean {
     if (relativPosition.y > game.canvasElement.height - touchMoveCornerSize / 4) {
         relativPosition.y = game.canvasElement.height - touchMoveCornerSize / 4;
     }
-    game.UI.touchInfo.touchStart = relativPosition;
+    game.UI.touchInfo.touchStartMove = relativPosition;
     game.UI.touchInfo.touchIdMove = touch.identifier;
     return true;
 }

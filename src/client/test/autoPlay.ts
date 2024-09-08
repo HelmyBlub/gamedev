@@ -1,28 +1,48 @@
 import { handleCommand } from "../commands.js";
 import { getCameraPosition } from "../game.js";
 import { Game, Position } from "../gameModel.js";
-import { ABILITY_ACTIONS, MOVE_ACTION, MoveData, touchStart } from "../playerInput.js";
+import { ABILITY_ACTIONS, MOVE_ACTION, MoveData, touchMove, touchStart } from "../playerInput.js";
 
 export function autoPlay(game: Game) {
-    //autoTouchMove(game);
+    //autoTouch(game);
     if (!game.testing || !game.testing.autoPlay || !game.testing.autoPlay.autoPlaying) return;
     autoMove(game);
 }
 
-function autoTouchMove(game: Game) {
+function autoTouch(game: Game) {
     if (!game.canvasElement) return;
     let touchMoveSize = game.UI.touchInfo.touchMoveCornerSize;
-    let touchMoveLeft = 0 + Math.random() * touchMoveSize;
-    let touchMoveTop = game.canvasElement.height - touchMoveSize + Math.random() * touchMoveSize;
-    const event: any = {
-        preventDefault: () => { },
-        changedTouches: [{
-            identifier: 777,
-            clientX: touchMoveLeft,
-            clientY: touchMoveTop,
-        }]
+    if (game.UI.touchInfo.touchStartPinch === undefined || game.UI.touchInfo.touchStartPinch.length < 2) {
+        let touchMoveLeft = game.canvasElement.width / 2 - touchMoveSize + Math.random() * touchMoveSize;
+        let touchMoveTop = game.canvasElement.height / 2 - touchMoveSize + Math.random() * touchMoveSize;
+        const identifier = Math.floor(Math.random() * 10000);
+        const event: any = {
+            preventDefault: () => { },
+            changedTouches: [{
+                identifier: identifier,
+                clientX: touchMoveLeft,
+                clientY: touchMoveTop,
+            }]
+        }
+        touchStart(event, game);
+    } else {
+        const event: any = {
+            preventDefault: () => { },
+            changedTouches: [],
+            touches: [],
+        }
+        for (let i = 0; i < 2; i++) {
+            const identifier = game.UI.touchInfo.touchStartPinch[i].idRef;
+            let touchMoveLeft = game.canvasElement.width / 2 - touchMoveSize + Math.random() * touchMoveSize;
+            let touchMoveTop = game.canvasElement.height / 2 - touchMoveSize + Math.random() * touchMoveSize;
+            event.touches.push({
+                identifier: identifier,
+                clientX: touchMoveLeft,
+                clientY: touchMoveTop,
+            });
+        }
+        touchMove(event, game);
     }
-    touchStart(event, game);
 }
 
 function autoMove(game: Game) {

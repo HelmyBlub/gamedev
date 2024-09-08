@@ -368,9 +368,9 @@ function paintTouchMoveControl(ctx: CanvasRenderingContext2D, game: Game) {
         x: touchInfo.touchMoveCornerBottomLeft.x + touchInfo.touchMoveCornerSize / 2,
         y: ctx.canvas.height - touchInfo.touchMoveCornerBottomLeft.y + touchInfo.touchMoveCornerSize / 2,
     }
-    if (touchInfo.touchStart !== undefined) {
-        paintPos.x = touchInfo.touchStart.x;
-        paintPos.y = touchInfo.touchStart.y;
+    if (touchInfo.touchStartMove !== undefined) {
+        paintPos.x = touchInfo.touchStartMove.x;
+        paintPos.y = touchInfo.touchStartMove.y;
     }
     ctx.beginPath();
     ctx.arc(paintPos.x, paintPos.y, touchInfo.touchMoveCornerSize / 2, 0, Math.PI * 2);
@@ -381,7 +381,7 @@ function paintTouchMoveControl(ctx: CanvasRenderingContext2D, game: Game) {
     ctx.arc(paintPos.x, paintPos.y, 5, 0, Math.PI * 2);
     const charDirection = myChar.moveDirection;
     ctx.fill();
-    if (touchInfo.touchStart) {
+    if (touchInfo.touchStartMove) {
         const touchLinePos = { x: paintPos.x, y: paintPos.y };
         moveByDirectionAndDistance(touchLinePos, charDirection, touchInfo.touchMoveCornerSize / 2, false);
         ctx.beginPath();
