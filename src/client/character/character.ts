@@ -177,6 +177,7 @@ export function canCharacterTradeAbilityOrPets(character: Character): boolean {
 }
 
 export function characterTradeAbilityAndPets(fromCharacter: Character, toCharacter: Character, game: Game) {
+    const indexSplicePosition = toCharacter.abilities.length;
     for (let i = fromCharacter.abilities.length - 1; i >= 0; i--) {
         const ability = fromCharacter.abilities[i];
         if (ability.tradable) {
@@ -192,7 +193,7 @@ export function characterTradeAbilityAndPets(fromCharacter: Character, toCharact
             ability.disabled = false;
             if (ability.bossSkillPoints != undefined) delete ability.bossSkillPoints;
             if (ability.level) delete ability.level.leveling;
-            toCharacter.abilities.push(ability);
+            toCharacter.abilities.splice(indexSplicePosition, 0, ability);
         }
     }
     tradePets(fromCharacter, toCharacter, game);

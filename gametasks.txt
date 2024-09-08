@@ -2,8 +2,6 @@ next test run: ball, musician, sniper, builder
 increase version
 
 current tasks:
-- mobile/touch control mapping
-    - if class not choosen, don't display pastCharacters or upgrade building
 - Bug: Check ability order
 - Check: zoom performance loss very high? next day no longer?
     - on touch changing position of abilities bad, as i can not see all
