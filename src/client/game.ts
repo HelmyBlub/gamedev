@@ -1,7 +1,7 @@
 import { cappCharacter, changeCharacterId, countAlivePlayerCharacters, findAndSetNewCameraCharacterId, findCharacterById, findMyCharacter, getPlayerCharacters, resetCharacter, tickCharacters, tickMapCharacters } from "./character/character.js";
 import { paintAll } from "./gamePaint.js";
 import { addPlayerMoney, createDefaultKeyBindings1, createDefaultUiKeyBindings, createPlayerWithPlayerCharacter, findNearesPastPlayerCharacter, findPlayerByCharacterId, gameInitPlayers, isAutoUpgradeActive } from "./player.js";
-import { MOUSE_ACTION, UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.js";
+import { MOUSE_ACTION, MOVE_ACTION, MoveData, UPGRADE_ACTIONS, tickPlayerInputs } from "./playerInput.js";
 import { Position, GameState, Game, IdCounter, Debugging, ClientInfo, GameVersion } from "./gameModel.js";
 import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap, initGodArea, initKingArea, mousePositionToMapPosition } from "./map/map.js";
 import { Character } from "./character/characterModel.js";
@@ -740,6 +740,30 @@ function doStuff(game: Game) {
     autoPlay(game);
     autoSendMyMousePosition(game);
     autoSendGamePlayerHashInMultiplayer(game);
+    testController(game);
+}
+
+function testController(game: Game) {
+    for (const gamepad of navigator.getGamepads()) {
+        if (!gamepad) continue;
+        const x = gamepad.axes[0];
+        const y = gamepad.axes[1];
+        let moveFactor = 1;
+        if (Math.abs(x) < 0.1 && Math.abs(y) < 0.1) moveFactor = 0;
+        const direction = calculateDirection({ x: 0, y: 0 }, { x, y });
+
+        const moveData: MoveData = {
+            direction: direction,
+            faktor: moveFactor,
+        }
+        const clientId = game.multiplayer.myClientId;
+
+        handleCommand(game, {
+            command: "playerInput",
+            clientId: clientId,
+            data: { ...moveData, action: MOVE_ACTION },
+        });
+    }
 }
 
 function autoSendMyMousePosition(game: Game) {

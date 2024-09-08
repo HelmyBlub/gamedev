@@ -2,9 +2,6 @@ next test run: ball, musician, sniper, builder
 increase version
 
 current tasks:
-- Bug: Check ability order
-- Check: zoom performance loss very high? next day no longer?
-    - on touch changing position of abilities bad, as i can not see all
 - add controller
 - test run which uses retries
 

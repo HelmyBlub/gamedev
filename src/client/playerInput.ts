@@ -94,24 +94,6 @@ export function touchMove(event: TouchEvent, game: Game) {
     touchPinchZoom(event, game);
 }
 
-function touchPinchZoom(event: TouchEvent, game: Game) {
-    const pinchTouches: Touch[] = [];
-    const touchLastPositions = game.UI.touchInfo.touchStartPinch;
-    if (touchLastPositions === undefined) return;
-    for (let i = 0; i < event.touches.length; i++) {
-        const touch = event.touches[i];
-        if (touchLastPositions.find((t) => t.idRef === touch.identifier)) {
-            pinchTouches.push(touch);
-        }
-    }
-    if (pinchTouches.length < 2 || touchLastPositions.length < 2) return;
-    const originalDistance = calculateDistance(touchLastPositions[0].startPosition, touchLastPositions[1].startPosition);
-    touchLastPositions[0].startPosition = { x: pinchTouches[0].clientX, y: pinchTouches[0].clientY };
-    touchLastPositions[1].startPosition = { x: pinchTouches[1].clientX, y: pinchTouches[1].clientY };
-    const newDistance = calculateDistance(touchLastPositions[0].startPosition, touchLastPositions[1].startPosition)
-    zoom(newDistance < originalDistance, game, 0.025);
-}
-
 export function touchEnd(event: TouchEvent, game: Game) {
     event.preventDefault();
     for (let i = 0; i < event.changedTouches.length; i++) {
@@ -320,6 +302,24 @@ function touchUpgrade(touch: Touch, touchStart: boolean, game: Game): boolean {
         }
     }
     return false;
+}
+
+function touchPinchZoom(event: TouchEvent, game: Game) {
+    const pinchTouches: Touch[] = [];
+    const touchLastPositions = game.UI.touchInfo.touchStartPinch;
+    if (touchLastPositions === undefined) return;
+    for (let i = 0; i < event.touches.length; i++) {
+        const touch = event.touches[i];
+        if (touchLastPositions.find((t) => t.idRef === touch.identifier)) {
+            pinchTouches.push(touch);
+        }
+    }
+    if (pinchTouches.length < 2 || touchLastPositions.length < 2) return;
+    const originalDistance = calculateDistance(touchLastPositions[0].startPosition, touchLastPositions[1].startPosition);
+    touchLastPositions[0].startPosition = { x: pinchTouches[0].clientX, y: pinchTouches[0].clientY };
+    touchLastPositions[1].startPosition = { x: pinchTouches[1].clientX, y: pinchTouches[1].clientY };
+    const newDistance = calculateDistance(touchLastPositions[0].startPosition, touchLastPositions[1].startPosition)
+    zoom(newDistance < originalDistance, game, 0.025);
 }
 
 function touchMoveEnd(touch: Touch, game: Game) {
