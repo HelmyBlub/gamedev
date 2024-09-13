@@ -1,8 +1,13 @@
-next test run: ball, musician, sniper, builder
+next test run: musician, sniper, builder
 increase version
 
 current tasks:
+- Bug: touch input past characters not displayed
+- Bug: touch input interactable UI not clickable when zoomed
 - add controller
+    - testController in game, continue
+    - maybe split playerInput file into, touch, keyboard and controller
+    - make very simple button bindings
 - test run which uses retries
 
 - map modifier

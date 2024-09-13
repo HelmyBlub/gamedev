@@ -273,8 +273,8 @@ function randomizedCharacterImagePaint(ctx: CanvasRenderingContext2D, character:
     if (characterImage.properties?.canvases
         && characterImage.properties?.canvases[randomizedCharacterImageToKey(character.paint.randomizedCharacterImage!)]) {
         const paintPos = getPointPaintPosition(ctx, character, cameraPosition, game.UI.zoom);
-        if (paintPos.x < -character.width || paintPos.x > ctx.canvas.width
-            || paintPos.y < -character.height || paintPos.y > ctx.canvas.height) return;
+        if (paintPos.x < -character.width || paintPos.x > (ctx.canvas.width + character.width) / game.UI.zoom.factor
+            || paintPos.y < -character.height || paintPos.y > (ctx.canvas.height + character.height) / game.UI.zoom.factor) return;
 
         const spriteWidth = characterImage.spriteRowWidths[0];
         const spriteHeight = 40;
