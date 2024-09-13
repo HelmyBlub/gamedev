@@ -6,7 +6,7 @@ import { deepCopy, getCameraPosition } from "../game.js";
 import { CelestialDirection, Game, Position } from "../gameModel.js";
 import { getPointPaintPosition, paintTextLinesWithKeys } from "../gamePaint.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
-import { playerInputBindingToDisplayValue } from "../playerInput.js";
+import { playerInputBindingToDisplayValue } from "../input/playerInput.js";
 import { MoreInfosPartContainer } from "../moreInfo.js";
 import { mapKeyAndTileXYToPosition } from "./map.js";
 import { MAP_OBJECTS_FUNCTIONS, MapTileObject, findMapKeyForMapObject } from "./mapObjects.js";

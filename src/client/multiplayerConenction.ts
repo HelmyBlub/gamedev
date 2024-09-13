@@ -2,7 +2,7 @@ import { executeCommand } from "./commands.js";
 import { pushStackPaintTextData } from "./floatingText.js";
 import { getCameraPosition } from "./game.js";
 import { Game } from "./gameModel.js";
-import { PlayerInput } from "./playerInput.js";
+import { PlayerInput } from "./input/playerInput.js";
 import { decompressString } from "./stringCompress.js";
 
 export function websocketConnect(game: Game, clientName: string, lobbyCode: string = "") {

@@ -10,7 +10,7 @@ import { Game, IdCounter, KeyCodeToAction, Position } from "./gameModel.js";
 import { findNearNonBlockingPosition, getMapMidlePosition } from "./map/map.js";
 import { MoreInfoPart, MoreInfos, MoreInfosPartContainer, createDefaultMoreInfosContainer, createMoreInfosPart } from "./moreInfo.js";
 import { localStorageSavePermanentPlayerData } from "./permanentData.js";
-import { ActionsPressed, createActionsPressed } from "./playerInput.js";
+import { ActionsPressed, createActionsPressed } from "./input/playerInput.js";
 import { RandomSeed } from "./randomNumberGenerator.js";
 
 export type PermanentPlayerData = {

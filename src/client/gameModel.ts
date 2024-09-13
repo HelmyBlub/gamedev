@@ -9,7 +9,7 @@ import { KingAreaEntranceData } from "./map/mapKingArea.js";
 import { generateMissingChunks } from "./map/mapGeneration.js";
 import { PermanentDataParts } from "./permanentData.js";
 import { createPlayerWithPlayerCharacter, MoneyGainedThisRun, PermanentPlayerData, Player } from "./player.js";
-import { PlayerInput } from "./playerInput.js";
+import { PlayerInput } from "./input/playerInput.js";
 import { nextRandom, RandomSeed } from "./randomNumberGenerator.js";
 import { MoreInfos, createDefaultEmptyMoreInfos } from "./moreInfo.js";
 import { Building } from "./map/buildings/building.js";
@@ -20,6 +20,7 @@ import { Achievements, createDefaultAchivements } from "./achievements/achieveme
 import { PlayerCharacterAbilityUI, PlayerCharacterLevelUI } from "./character/playerCharacters/playerCharacters.js";
 import { ActiveCheats } from "./cheat.js";
 import { createDefaultStackTextsData, PaintStackTextsData, PaintTextData } from "./floatingText.js";
+import { TouchUiInfo } from "./input/touchInput.js";
 
 export type Position = {
     x: number,
@@ -246,17 +247,6 @@ export type Multiplayer = {
 }
 
 export type InputType = "keyboard" | "touch";
-export type TouchUiInfo = {
-    touchMoveCornerSize: number,
-    touchMoveCornerBottomLeft?: Position,
-    touchStartMove?: Position,
-    touchIdMove?: number,
-    touchIdAbility?: number,
-    touchStartPinch?: {
-        idRef: number,
-        startPosition: Position,
-    }[],
-}
 
 export type Rectangle = {
     topLeft: Position,

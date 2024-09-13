@@ -1,7 +1,7 @@
 import { calculateDirection, calculateDistance, getCameraPosition, getNextId } from "../game.js";
 import { FACTION_ENEMY, FACTION_PLAYER, Game, IdCounter, Position } from "../gameModel.js";
 import { getPointPaintPosition } from "../gamePaint.js";
-import { playerInputBindingToDisplayValue } from "../playerInput.js";
+import { playerInputBindingToDisplayValue } from "../input/playerInput.js";
 import { nextRandom } from "../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectAbilityObjectCircleToCharacterHit, PaintOrderAbility, AbilityObjectCircle, paintAbilityUiKeyBind } from "./ability.js";
 

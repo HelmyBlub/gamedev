@@ -10,7 +10,7 @@ import { getPointPaintPosition } from "../gamePaint.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
 import { positionToMapKey } from "../map/map.js";
 import { findPlayerByCharacterId } from "../player.js";
-import { playerInputBindingToDisplayValue } from "../playerInput.js";
+import { playerInputBindingToDisplayValue } from "../input/playerInput.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, getAbilityNameUiText, paintAbilityUiKeyBind } from "./ability.js";
 import { ABILITY_NAME_FIRE_CIRCLE } from "./abilityFireCircle.js";

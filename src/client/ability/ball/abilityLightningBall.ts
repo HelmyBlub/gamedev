@@ -7,7 +7,7 @@ import { calcNewPositionMovedInDirection, calculateDirection, findClientInfoByCh
 import { Position, Game, IdCounter, FACTION_ENEMY, ClientInfo, FACTION_PLAYER } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { calculateMovePosition, getFirstBlockingGameMapTilePositionTouchingLine, isMoveFromToBlocking } from "../../map/map.js";
-import { playerInputBindingToDisplayValue } from "../../playerInput.js";
+import { playerInputBindingToDisplayValue } from "../../input/playerInput.js";
 import { fixedRandom } from "../../randomNumberGenerator.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectSomethingToCharacterHit, getAbilityNameUiText, paintAbilityUiDefault, paintAbilityUiKeyBind } from "../ability.js";

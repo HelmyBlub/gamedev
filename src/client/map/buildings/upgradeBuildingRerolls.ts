@@ -2,7 +2,7 @@ import { CharacterUpgrade, CharacterUpgrades } from "../../character/upgrades/ch
 import { Game, Position } from "../../gameModel.js";
 import { paintTextWithOutline } from "../../gamePaint.js";
 import { Player } from "../../player.js";
-import { playerInputBindingToDisplayValue } from "../../playerInput.js";
+import { playerInputBindingToDisplayValue } from "../../input/playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
 import { MapTileObject } from "../mapObjects.js";
 import { UPGRADE_BUILDINGS_FUNCTIONS } from "./upgradeBuilding.js";

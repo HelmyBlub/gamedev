@@ -11,7 +11,7 @@ import { GAME_IMAGES, loadImage } from "./imageLoad.js";
 import { MAP_OBJECTS_FUNCTIONS } from "./map/mapObjects.js";
 import { paintMap, paintMapCharacters } from "./map/mapPaint.js";
 import { Player, findPlayerById, isAutoUpgradeActive } from "./player.js";
-import { playerInputBindingToDisplayValue } from "./playerInput.js";
+import { playerInputBindingToDisplayValue } from "./input/playerInput.js";
 import { createEndScreenMoreInfos, paintMoreInfos, paintMoreInfosPart } from "./moreInfo.js";
 import { paintDamageNumbers, paintStackTextData } from "./floatingText.js";
 import { paintMapModifierLate } from "./map/modifiers/mapModifier.js";

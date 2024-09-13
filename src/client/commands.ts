@@ -5,7 +5,7 @@ import { deepCopy, setClientDefaultKeyBindings } from "./game.js";
 import { Game, GameState, RecordDataMultiplayer } from "./gameModel.js";
 import { sendMultiplayer } from "./multiplayerConenction.js";
 import { createDefaultKeyBindings1, createDefaultUiKeyBindings, findPlayerByCliendId } from "./player.js";
-import { PlayerInput } from "./playerInput.js";
+import { PlayerInput } from "./input/playerInput.js";
 import { compressString } from "./stringCompress.js";
 
 type Command = { command: string };

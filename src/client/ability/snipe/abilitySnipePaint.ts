@@ -2,7 +2,7 @@ import { calcNewPositionMovedInDirection, getCameraPosition } from "../../game.j
 import { FACTION_ENEMY, FACTION_PLAYER, Game, Position } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { GAME_IMAGES, loadImage } from "../../imageLoad.js";
-import { playerInputBindingToDisplayValue } from "../../playerInput.js";
+import { playerInputBindingToDisplayValue } from "../../input/playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
 import { Ability, AbilityObject, AbilityOwner, PaintOrderAbility, getAbilityNameUiText, paintAbilityUiDefault, paintAbilityUiKeyBind } from "../ability.js";
 import { pushAbilityUpgradesUiTexts } from "../abilityUpgrade.js";

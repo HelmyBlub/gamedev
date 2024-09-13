@@ -1,6 +1,6 @@
 import { getNextId } from "../../game.js";
 import { IdCounter, Game, Position } from "../../gameModel.js";
-import { playerInputBindingToDisplayValue } from "../../playerInput.js";
+import { playerInputBindingToDisplayValue } from "../../input/playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
 import { ABILITIES_FUNCTIONS, ABILITY_DEFAULT_SMALL_GROUP, Ability, AbilityOwner, getAbilityNameUiText, paintAbilityUiDefault } from "../ability.js";
 import { ABILITY_NAME_SNIPE, AbilitySnipe, abilitySnipeReload, IMAGE_NAME_RELOAD } from "./abilitySnipe.js";

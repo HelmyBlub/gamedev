@@ -1,7 +1,8 @@
 import { handleCommand } from "../commands.js";
 import { getCameraPosition } from "../game.js";
 import { Game, Position } from "../gameModel.js";
-import { ABILITY_ACTIONS, MOVE_ACTION, MoveData, touchMove, touchStart } from "../playerInput.js";
+import { ABILITY_ACTIONS, MOVE_ACTION, MoveData } from "../input/playerInput.js";
+import { touchMove, touchStart } from "../input/touchInput.js";
 
 export function autoPlay(game: Game) {
     //autoTouch(game);

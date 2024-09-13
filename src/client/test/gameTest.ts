@@ -6,7 +6,7 @@ import { GAME_VERSION, createGame } from "../main.js";
 import { addEnemyToMap, chunkXYToMapKey, createMap, GameMap } from "../map/map.js";
 import { createNewChunkTiles } from "../map/mapGeneration.js";
 import { websocketConnect } from "../multiplayerConenction.js";
-import { PlayerInput } from "../playerInput.js";
+import { PlayerInput } from "../input/playerInput.js";
 import { createProjectile, Projectile } from "../ability/projectile.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
 import { detectAbilityObjectCircleToCharacterHit } from "../ability/ability.js";

@@ -1,7 +1,7 @@
 import { TamerPetCharacter } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { calculateDistance, getNextId } from "../../game.js";
 import { IdCounter, Position, Game } from "../../gameModel.js";
-import { playerInputBindingToDisplayValue } from "../../playerInput.js";
+import { playerInputBindingToDisplayValue } from "../../input/playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
 import { ABILITIES_FUNCTIONS, ABILITY_DEFAULT_SMALL_GROUP, Ability, AbilityOwner, getAbilityNameUiText, paintAbilityUiDefault, paintAbilityUiKeyBind } from "../ability.js";
 import { ABILITY_NAME_LEASH, AbilityLeash } from "../abilityLeash.js";

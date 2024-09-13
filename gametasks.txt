@@ -2,11 +2,9 @@ next test run: musician, sniper, builder
 increase version
 
 current tasks:
-- Bug: touch input interactable UI not clickable when zoomed
-    - UI should not be influence by zoom
 - add controller
-    - testController in game, continue
     - maybe split playerInput file into, touch, keyboard and controller
+    - testController in game, continue
     - make very simple button bindings
 - test run which uses retries
 

@@ -9,7 +9,7 @@ import { onDomLoadSetDebuffsFunctions } from "./debuff/debuff.js";
 import { runner, setRelativeMousePosition } from "./game.js";
 import { createDefaultGameData, Game, GameVersion } from "./gameModel.js";
 import { addMapObjectsFunctions } from "./map/mapObjects.js";
-import { keyDown, keyUp, mouseDown, mouseUp, mouseWheel, touchEnd, touchMove, touchStart } from "./playerInput.js";
+import { keyDown, keyUp, mouseDown, mouseUp, mouseWheel } from "./input/playerInput.js";
 import { addHTMLDebugMenusToSettings } from "./settingsHtmlMenu.js";
 import { localStorageLoad } from "./permanentData.js";
 import { addUpgradeBuildingsFunctions } from "./map/buildings/upgradeBuilding.js";
@@ -18,6 +18,7 @@ import { onDomLoadMapTiles } from "./map/map.js";
 import { addGodEnemyType } from "./character/enemy/god/godEnemy.js";
 import { onDomLoadSetAchievementsFunctions } from "./achievements/achievements.js";
 import { onDomLoadMapModifiers } from "./map/modifiers/mapModifier.js";
+import { touchStart, touchMove, touchEnd } from "./input/touchInput.js";
 
 var gameCount: number = 0;
 export const GAME_VERSION: GameVersion = {
