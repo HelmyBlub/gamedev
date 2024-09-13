@@ -46,8 +46,8 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
     paintDamageNumbers(ctx, game.UI.displayTextData, cameraPosition, game.state.time, game);
     paintMapModifierLate(ctx, cameraPosition, game);
 
-    paintClosestInteractable(ctx, cameraPosition, game);
     ctx.resetTransform();
+    paintClosestInteractable(ctx, cameraPosition, game);
     paintStackTextData(ctx, game.UI.stackTextsData, game.state.time);
     paintInputTypeInfo(ctx, game);
     paintFightWipeUI(ctx, game);
@@ -81,16 +81,21 @@ export function paintTextWithOutline(ctx: CanvasRenderingContext2D, outlineColor
     ctx.fillText(text, x, y);
 }
 
-export function getPointPaintPosition(ctx: CanvasRenderingContext2D, point: Position, cameraPosition: Position, zoom: Zoom): Position {
+export function getPointPaintPosition(ctx: CanvasRenderingContext2D, point: Position, cameraPosition: Position, zoom: Zoom, zoomedCtx: boolean = true): Position {
     const width = ctx.canvas.width / zoom.factor;
     const height = ctx.canvas.height / zoom.factor;
 
     const centerX = width / 2;
     const centerY = height / 2;
-    return {
+    let position: Position = {
         x: Math.floor(point.x - cameraPosition.x + centerX),
         y: Math.floor(point.y - cameraPosition.y + centerY),
     }
+    if (!zoomedCtx) {
+        position.x *= zoom.factor;
+        position.y *= zoom.factor;
+    }
+    return position;
 }
 
 /**
@@ -297,9 +302,10 @@ function paintPastPlayerGiftInfo(ctx: CanvasRenderingContext2D, pastCharacter: C
     if (!classChoosen) return;
     const canTrade = canCharacterTradeAbilityOrPets(pastCharacter);
     const classAlreadyTaken = shareCharactersTradeablePreventedMultipleClass(pastCharacter, playerCharacter);
-    let paintPos: Position = getPointPaintPosition(ctx, pastCharacter, cameraPosition, game.UI.zoom);
-    paintPos.y -= 40;
-    let textsWithKeys: string[] = [];
+
+    const uiPosition = { x: pastCharacter.x, y: pastCharacter.y - 40 };
+    const paintPos: Position = getPointPaintPosition(ctx, uiPosition, cameraPosition, game.UI.zoom, false);
+    const textsWithKeys: string[] = [];
     textsWithKeys.push(`Past Character:`);
     let interactAction: string | undefined = undefined;
     if (canTrade) {
