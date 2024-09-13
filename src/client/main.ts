@@ -51,9 +51,9 @@ export function createGame(canvasElementId: string | undefined, forTesting: bool
         c.addEventListener('mousedown', (e) => mouseDown(e, game));
         c.addEventListener('mousemove', (e) => setRelativeMousePosition(e, game));
         c.addEventListener('mouseup', (e) => mouseUp(e, game));
-        c.addEventListener('wheel', (e) => mouseWheel(e, game));
-        c.addEventListener("touchstart", (e) => touchStart(e, game), false);
-        c.addEventListener("touchmove", (e) => touchMove(e, game), false);
+        c.addEventListener('wheel', (e) => mouseWheel(e, game), { passive: false });
+        c.addEventListener("touchstart", (e) => touchStart(e, game), { passive: false });
+        c.addEventListener("touchmove", (e) => touchMove(e, game), { passive: false });
         c.addEventListener("touchcancel", (e) => touchEnd(e, game), false);
         c.addEventListener("touchend", (e) => touchEnd(e, game), false);
 
