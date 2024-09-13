@@ -38,7 +38,8 @@ function paintInteractSign(ctx: CanvasRenderingContext2D, mapObject: MapTileObje
     const kingSign = mapObject as MapTileObjectNextKingSign;
     const map = game.state.map;
     const cameraPosition = getCameraPosition(game);
-    const topMiddlePos = mapKeyAndTileXYToPosition(key, mapObject.x, mapObject.y, map);
+    const signMiddlePosition = mapKeyAndTileXYToPosition(key, mapObject.x, mapObject.y, map);
+    const signTopMiddlePosition = { x: signMiddlePosition.x, y: signMiddlePosition.y - map.tileSize / 2 };
     const fontSize = 20;
     const infoKey = playerInputBindingToDisplayValue("More Info", game);
     const texts = [
@@ -48,11 +49,11 @@ function paintInteractSign(ctx: CanvasRenderingContext2D, mapObject: MapTileObje
     if (game.UI.inputType === "keyboard") {
         texts.push(`Press <${infoKey}> for more info.`);
     }
+    const paintPos = getPointPaintPosition(ctx, signTopMiddlePosition, cameraPosition, game.UI.zoom, false);
     const king = game.state.bossStuff.nextKings[kingSign.kingDirection];
     let textMaxWidth = king!.width;
     const rectHeight = fontSize * texts.length + 2 + king!.height + 60;
-    topMiddlePos.y -= rectHeight + map.tileSize / 2;
-    const paintPos = getPointPaintPosition(ctx, topMiddlePos, cameraPosition, game.UI.zoom);
+    paintPos.y -= rectHeight;
 
     ctx.font = `${fontSize}px Arial`;
     for (let text of texts) {
@@ -66,23 +67,28 @@ function paintInteractSign(ctx: CanvasRenderingContext2D, mapObject: MapTileObje
     ctx.font = `${fontSize}px Arial`;
     ctx.fillStyle = "black";
     paintTextLinesWithKeys(ctx, texts, paintPos);
-    topMiddlePos.y += (fontSize + 10) * texts.length;
+
+    const paintPosSignZoomed = getPointPaintPosition(ctx, signTopMiddlePosition, cameraPosition, game.UI.zoom);
+    paintPosSignZoomed.y -= (king!.height + 60) / 2 / game.UI.zoom.factor;
+    const kingPositionToFitForPaint: Position = {
+        x: signTopMiddlePosition.x - (paintPos.x) / game.UI.zoom.factor + paintPosSignZoomed.x * game.UI.zoom.factor,
+        y: signTopMiddlePosition.y - (paintPos.y + rectHeight) / game.UI.zoom.factor + paintPosSignZoomed.y * game.UI.zoom.factor,
+    }
 
     if (king) {
         const kingCopy: Character = deepCopy(king);
         modifyCharacterToKing(kingCopy, game);
-        topMiddlePos.y += kingCopy!.height / 2 + 20;
-        kingCopy.x = topMiddlePos.x;
-        kingCopy.y = topMiddlePos.y;
+        kingCopy.x = kingPositionToFitForPaint.x;
+        kingCopy.y = kingPositionToFitForPaint.y;
         kingCopy.moveDirection = Math.PI / 2;
         kingCopy.type = CHARACTER_TYPE_KING_ENEMY;
         resetCharacter(kingCopy, game);
-        topMiddlePos.y += 20;
+        kingPositionToFitForPaint.y += 20;
         if (kingCopy.pets) {
             let offsetX = -kingCopy.pets.length * 10;
             for (let pet of kingCopy.pets) {
-                pet.x = topMiddlePos.x + offsetX;
-                pet.y = topMiddlePos.y;
+                pet.x = kingPositionToFitForPaint.x + offsetX;
+                pet.y = kingPositionToFitForPaint.y;
                 offsetX += 20;
             }
         }
