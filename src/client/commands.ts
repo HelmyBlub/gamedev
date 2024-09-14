@@ -174,7 +174,6 @@ function connectInfo(game: Game, data: ConnectInfo) {
                 game.state.players[replaceOtherClientId].clientId = oldId;
             }
         }
-        game.clientKeyBindings!.clientIdRef = data.clientId;
         damageMeterChangeClientId(game.UI.damageMeter, oldId, data.clientId);
     }
     if (data.randomIdentifier) {

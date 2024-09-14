@@ -21,6 +21,7 @@ import { PlayerCharacterAbilityUI, PlayerCharacterLevelUI } from "./character/pl
 import { ActiveCheats } from "./cheat.js";
 import { createDefaultStackTextsData, PaintStackTextsData, PaintTextData } from "./floatingText.js";
 import { TouchUiInfo } from "./input/inputTouch.js";
+import { ControllerButtonsPressed } from "./input/inputController.js";
 
 export type Position = {
     x: number,
@@ -292,7 +293,6 @@ export type UI = {
 }
 
 export type ClientKeyBindings = {
-    clientIdRef: number,
     moveKeys: string[],
     keyCodeToActionPressed: KeyCodeToAction,
     keyCodeToUiAction: KeyCodeToAction,
@@ -305,6 +305,7 @@ export type Game = {
     shouldTickTime?: number,
     tickInterval: number,
     clientKeyBindings?: ClientKeyBindings,
+    controllersButtons: ControllerButtonsPressed[],
     multiplayer: Multiplayer,
     mouseRelativeCanvasPosition: Position,
     camera: Camera,
@@ -327,6 +328,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
     const game: Game = {
         canvasElement: c,
         ctx: ctx,
+        controllersButtons: [],
         state: {
             restartCounter: 0,
             idCounter: { nextId: 0 },

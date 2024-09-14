@@ -346,7 +346,7 @@ function playerInputChangeEvent(game: Game, inputCode: string, isInputDown: bool
         game.testing.replay = undefined;
         localStorageLoad(game);
     }
-    const clientId = game.clientKeyBindings.clientIdRef;
+    const clientId = game.multiplayer.myClientId;
     if (isInputDown && action.isInputAlreadyDown) {
         return;
     }

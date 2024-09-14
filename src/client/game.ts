@@ -165,7 +165,6 @@ export function resetGameNonStateData(game: Game) {
 export function setClientDefaultKeyBindings(game: Game) {
     const defaultKeys = createDefaultKeyBindings1();
     game.clientKeyBindings = {
-        clientIdRef: game.multiplayer.myClientId,
         moveKeys: defaultKeys.moveKeys,
         keyCodeToActionPressed: defaultKeys.keymap,
         keyCodeToUiAction: createDefaultUiKeyBindings(),
@@ -746,6 +745,7 @@ function doStuff(game: Game) {
 
 function autoSendMyMousePosition(game: Game) {
     if (game.testing.replay) return;
+    if (game.UI.inputType !== "keyboard") return;
     if (game.multiplayer.autosendMousePosition.sendForOwners.length === 0) return;
     if (game.multiplayer.autosendMousePosition.nextTime <= game.state.time) {
         const cameraPosition = getCameraPosition(game);

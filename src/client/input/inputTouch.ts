@@ -224,7 +224,7 @@ function touchUpgrade(touch: Touch, touchStart: boolean, game: Game): boolean {
     const upgradePaintData = game.UI.rectangles.upgradePaintRectangle;
     if (upgradePaintData === undefined || upgradePaintData.length === 0) return false;
     const target = game.canvasElement;
-    const clientId = game.clientKeyBindings.clientIdRef;
+    const clientId = game.multiplayer.myClientId;
     const relativPosition = { x: touch.clientX - target.offsetLeft, y: touch.clientY - target.offsetTop };
     if (upgradePaintData[0].topLeft.y > relativPosition.y) return false;
     for (let i = 0; i < upgradePaintData.length; i++) {
@@ -353,7 +353,7 @@ function touchAbilityAction(touch: Touch, game: Game) {
     const abilityUi = game.UI.playerCharacterAbilityUI;
     if (!abilityUi || abilityUi.rectangles === undefined || abilityUi.rectangles.length === 0) return;
     if (abilityUi.selectedRectangleIndex === undefined) abilityUi.selectedRectangleIndex = 0;
-    const clientId = game.clientKeyBindings.clientIdRef;
+    const clientId = game.multiplayer.myClientId;
     const player = findPlayerByCliendId(clientId, game.state.players);
     if (!player) return;
 

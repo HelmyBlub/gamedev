@@ -2,22 +2,21 @@ import { findMyCharacter } from "../character/character.js";
 import { handleCommand } from "../commands.js";
 import { calculateDirection } from "../game.js";
 import { Game, Position } from "../gameModel.js";
-import { MOVE_ACTION, MoveData } from "./playerInput.js";
+import { executeUiAction, MOUSE_ACTION, MOVE_ACTION, MoveData } from "./playerInput.js";
+
+export type ControllerButtonsPressed = boolean[];
 
 export function controllerInput(game: Game) {
     for (const gamepad of navigator.getGamepads()) {
         if (!gamepad) continue;
+        if (game.controllersButtons.length <= gamepad.index) {
+            game.controllersButtons.push(createDefaultControllerButtonsPressed(gamepad));
+        }
+        autoSendAimStickPosition(gamepad, game);
         moveInput(gamepad, game);
         upgradeInput(gamepad, game);
         abilityInput(gamepad, game);
-        // testStuff(gamepad, game);
-    }
-}
-
-function testStuff(gamepad: Gamepad, game: Game) {
-    for (let i = 0; i < gamepad.buttons.length; i++) {
-        let button = gamepad.buttons[i];
-        if (button.pressed) console.log(i);
+        restartInput(gamepad, game);
     }
 }
 
@@ -28,48 +27,103 @@ function axesToOffsetPosition(gamepad: Gamepad): Position {
     return { x: x * 300, y: y * 300 };
 }
 
+function restartInput(gamepad: Gamepad, game: Game) {
+    const restartButtonIndex = 8;
+    const controllerButtonsDown = game.controllersButtons[gamepad.index];
+    if (gamepad.buttons[restartButtonIndex].pressed) {
+        if (!controllerButtonsDown[restartButtonIndex]) {
+            controllerButtonsDown[restartButtonIndex] = true;
+            executeUiAction("Restart", true, game);
+        }
+    } else if (controllerButtonsDown[restartButtonIndex]) {
+        controllerButtonsDown[restartButtonIndex] = false;
+    }
+}
+
 function abilityInput(gamepad: Gamepad, game: Game) {
+    const character = findMyCharacter(game);
+    if (!character) return;
     const abilityButtonsMapping = [
         { buttonIndex: 6, actionMapping: "ability1" },
         { buttonIndex: 7, actionMapping: "ability2" },
         { buttonIndex: 5, actionMapping: "ability3" },
     ];
-    const character = findMyCharacter(game);
-    if (!character) return;
+    const controllerButtonsDown = game.controllersButtons[gamepad.index];
     const offset = axesToOffsetPosition(gamepad);
     const castPosition = { x: character.x + offset.x, y: character.y + offset.y };
     let action: string | undefined = undefined;
     for (let mapping of abilityButtonsMapping) {
         const button = gamepad.buttons[mapping.buttonIndex];
         if (button.pressed) {
+            if (controllerButtonsDown[mapping.buttonIndex]) continue;
+            controllerButtonsDown[mapping.buttonIndex] = true;
             action = mapping.actionMapping;
             handleCommand(game, {
                 command: "playerInput",
                 clientId: game.multiplayer.myClientId,
                 data: { action: action, isKeydown: true, castPosition: castPosition, castPositionRelativeToCharacter: offset },
             });
+        } else if (controllerButtonsDown[mapping.buttonIndex]) {
+            controllerButtonsDown[mapping.buttonIndex] = false;
+            action = mapping.actionMapping;
+            handleCommand(game, {
+                command: "playerInput",
+                clientId: game.multiplayer.myClientId,
+                data: { action: action, isKeydown: false, castPosition: castPosition, castPositionRelativeToCharacter: offset },
+            });
         }
+    }
+}
+
+function autoSendAimStickPosition(gamepad: Gamepad, game: Game) {
+    if (game.testing.replay) return;
+    if (game.UI.inputType !== "controller") return;
+    if (game.multiplayer.autosendMousePosition.sendForOwners.length === 0) return;
+    const character = findMyCharacter(game);
+    if (!character) return;
+    if (game.multiplayer.autosendMousePosition.nextTime <= game.state.time) {
+        const offset = axesToOffsetPosition(gamepad);
+        const castPosition = { x: character.x + offset.x, y: character.y + offset.y };
+
+        handleCommand(game, {
+            command: "playerInput",
+            clientId: game.multiplayer.myClientId,
+            data: { action: MOUSE_ACTION, mousePosition: castPosition },
+        });
+        game.multiplayer.autosendMousePosition.nextTime = game.state.time + game.multiplayer.autosendMousePosition.interval;
     }
 }
 
 function upgradeInput(gamepad: Gamepad, game: Game) {
     const character = findMyCharacter(game);
     if (!character || character.upgradeChoices.choices.length <= 0) return;
+    const controllerButtonsDown = game.controllersButtons[gamepad.index];
 
-    let currentButton: number | undefined = undefined;
-    for (let i = 0; i < 5; i++) {
-        const button = gamepad.buttons[i];
+    const upgradeButtonsMapping = [
+        { buttonIndex: 0, actionMapping: "upgrade1" },
+        { buttonIndex: 1, actionMapping: "upgrade2" },
+        { buttonIndex: 2, actionMapping: "upgrade3" },
+        { buttonIndex: 3, actionMapping: "upgrade4" },
+        { buttonIndex: 4, actionMapping: "upgrade5" },
+    ];
+    let action: string | undefined = undefined;
+    for (let mapping of upgradeButtonsMapping) {
+        const button = gamepad.buttons[mapping.buttonIndex];
         if (button.pressed) {
-            currentButton = i;
+            if (controllerButtonsDown[mapping.buttonIndex]) continue;
+            action = mapping.actionMapping;
+            controllerButtonsDown[mapping.buttonIndex] = true;
             break;
+        } else if (controllerButtonsDown[mapping.buttonIndex]) {
+            controllerButtonsDown[mapping.buttonIndex] = false;
         }
     }
-    if (currentButton === undefined || character.upgradeChoices.choices.length <= currentButton) return;
+    if (action === undefined) return;
 
     handleCommand(game, {
         command: "playerInput",
         clientId: game.multiplayer.myClientId,
-        data: { action: "upgrade" + (currentButton + 1), isKeydown: true },
+        data: { action: action, isKeydown: true },
     });
 
 }
@@ -97,4 +151,12 @@ function moveInput(gamepad: Gamepad, game: Game) {
         clientId: clientId,
         data: { ...moveData, action: MOVE_ACTION },
     });
+}
+
+function createDefaultControllerButtonsPressed(gamepad: Gamepad): ControllerButtonsPressed {
+    const controllerButtonsPressed: boolean[] = [];
+    for (let i = 0; i < gamepad.buttons.length; i++) {
+        controllerButtonsPressed.push(false);
+    }
+    return controllerButtonsPressed;
 }
