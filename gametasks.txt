@@ -2,9 +2,6 @@ next test run: sniper, builder, musician
 increase version
 
 current tasks:
-- add bad minimal controller support
-    - know when button up or button down, so i do not multi skill
-    - restart button
 - test run which uses retries
 
 - map modifier
