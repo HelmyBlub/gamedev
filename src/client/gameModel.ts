@@ -20,7 +20,7 @@ import { Achievements, createDefaultAchivements } from "./achievements/achieveme
 import { PlayerCharacterAbilityUI, PlayerCharacterLevelUI } from "./character/playerCharacters/playerCharacters.js";
 import { ActiveCheats } from "./cheat.js";
 import { createDefaultStackTextsData, PaintStackTextsData, PaintTextData } from "./floatingText.js";
-import { TouchUiInfo } from "./input/touchInput.js";
+import { TouchUiInfo } from "./input/inputTouch.js";
 
 export type Position = {
     x: number,
@@ -246,7 +246,7 @@ export type Multiplayer = {
     }
 }
 
-export type InputType = "keyboard" | "touch";
+export type InputType = "keyboard" | "touch" | "controller";
 
 export type Rectangle = {
     topLeft: Position,

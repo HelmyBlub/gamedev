@@ -1,9 +1,8 @@
-next test run: musician, sniper, builder
+next test run: sniper, builder, musician
 increase version
 
 current tasks:
 - add controller
-    - maybe split playerInput file into, touch, keyboard and controller
     - testController in game, continue
     - make very simple button bindings
 - test run which uses retries

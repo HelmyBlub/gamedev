@@ -18,13 +18,13 @@ import { onDomLoadMapTiles } from "./map/map.js";
 import { addGodEnemyType } from "./character/enemy/god/godEnemy.js";
 import { onDomLoadSetAchievementsFunctions } from "./achievements/achievements.js";
 import { onDomLoadMapModifiers } from "./map/modifiers/mapModifier.js";
-import { touchStart, touchMove, touchEnd } from "./input/touchInput.js";
+import { touchStart, touchMove, touchEnd } from "./input/inputTouch.js";
 
 var gameCount: number = 0;
 export const GAME_VERSION: GameVersion = {
     major: 0,
     minor: 4,
-    patch: 291,
+    patch: 292,
 }
 
 export function start() {

@@ -31,6 +31,7 @@ import { checkGodFightStart, startGodFight } from "./map/mapGodArea.js";
 import { ABILITY_NAME_LEASH } from "./ability/abilityLeash.js";
 import { doDamageMeterSplit } from "./combatlog.js";
 import { achievementCheckOnGameEnd, achievementCheckOnGameTick } from "./achievements/achievements.js";
+import { controllerInput } from "./input/inputController.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -740,30 +741,7 @@ function doStuff(game: Game) {
     autoPlay(game);
     autoSendMyMousePosition(game);
     autoSendGamePlayerHashInMultiplayer(game);
-    testController(game);
-}
-
-function testController(game: Game) {
-    for (const gamepad of navigator.getGamepads()) {
-        if (!gamepad) continue;
-        const x = gamepad.axes[0];
-        const y = gamepad.axes[1];
-        let moveFactor = 1;
-        if (Math.abs(x) < 0.1 && Math.abs(y) < 0.1) moveFactor = 0;
-        const direction = calculateDirection({ x: 0, y: 0 }, { x, y });
-
-        const moveData: MoveData = {
-            direction: direction,
-            faktor: moveFactor,
-        }
-        const clientId = game.multiplayer.myClientId;
-
-        handleCommand(game, {
-            command: "playerInput",
-            clientId: clientId,
-            data: { ...moveData, action: MOVE_ACTION },
-        });
-    }
+    controllerInput(game);
 }
 
 function autoSendMyMousePosition(game: Game) {
