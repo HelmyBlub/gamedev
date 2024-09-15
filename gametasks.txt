@@ -4,13 +4,15 @@ increase version
 current tasks:
 - map modifier
     - darkness
-        - should spawn somewhere
-            - should grow over time, so player one day can find it
-                - grows each time boss spawns
-        - should be able to be "removed"
-            - in the middle is a boss fight
+        - in the middle is a boss fight
+            - dev steps:
+                - new boss type: area boss
+                - becomes active once a player is in range
                 - boss can not leave darkness area
                 - no player in darkness area resets boss
+                - start with abilities from default boss
+                    - be able to change to different boss in the future
+        - should be able to be "removed"
             - if boss defeated player removes darkness and gets "curse: Darkness"
                 - the longer player stands in dead boss, the more darkness is consumed
                 - curse stronger the more darkness is removed,

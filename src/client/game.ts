@@ -1,7 +1,7 @@
 import { cappCharacter, changeCharacterId, countAlivePlayerCharacters, findAndSetNewCameraCharacterId, findCharacterById, findMyCharacter, getPlayerCharacters, resetCharacter, tickCharacters, tickMapCharacters } from "./character/character.js";
 import { paintAll } from "./gamePaint.js";
 import { addPlayerMoney, createDefaultKeyBindings1, createDefaultUiKeyBindings, createPlayerWithPlayerCharacter, findNearesPastPlayerCharacter, findPlayerByCharacterId, gameInitPlayers, isAutoUpgradeActive } from "./player.js";
-import { MOUSE_ACTION, MOVE_ACTION, MoveData, UPGRADE_ACTIONS, tickPlayerInputs } from "./input/playerInput.js";
+import { MOUSE_ACTION, UPGRADE_ACTIONS, tickPlayerInputs } from "./input/playerInput.js";
 import { Position, GameState, Game, IdCounter, Debugging, ClientInfo, GameVersion } from "./gameModel.js";
 import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap, initGodArea, initKingArea, mousePositionToMapPosition } from "./map/map.js";
 import { Character } from "./character/characterModel.js";
@@ -32,6 +32,7 @@ import { ABILITY_NAME_LEASH } from "./ability/abilityLeash.js";
 import { doDamageMeterSplit } from "./combatlog.js";
 import { achievementCheckOnGameEnd, achievementCheckOnGameTick } from "./achievements/achievements.js";
 import { controllerInput } from "./input/inputController.js";
+import { mapModifierOnGameInit } from "./map/modifiers/mapModifier.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -147,6 +148,7 @@ export function gameInit(game: Game) {
         game.UI.playerGlobalAlphaMultiplier = parseInt(playerAlphaInput.value) / 100;
     }
     resetPastCharacters(game);
+    mapModifierOnGameInit(game);
     doDamageMeterSplit("1", game);
 }
 

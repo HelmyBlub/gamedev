@@ -85,7 +85,6 @@ export function createMap(): GameMap {
         mapModifiers: [],
     }
     initKingArea(map, 20000);
-    //addMapModifer(map);
     return map;
 }
 

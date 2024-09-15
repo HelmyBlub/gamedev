@@ -7,23 +7,32 @@ import { Position, Game, IdCounter, Camera, FACTION_ENEMY, FACTION_PLAYER } from
 import { addMoneyAmountToPlayer, addMoneyUiMoreInfo, findPlayerById, Player } from "../player.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, doAbilityDamageBreakDownForAbilityId, findAbilityById, findAbilityOwnerByAbilityIdInPlayers, findAbilityOwnerById, levelingAbilityXpGain, resetAllCharacterAbilities } from "../ability/ability.js";
-import { BossEnemyCharacter, CHARACTER_TYPE_BOSS_ENEMY } from "./enemy/bossEnemy.js";
+import { addBossType, BossEnemyCharacter, CHARACTER_TYPE_BOSS_ENEMY } from "./enemy/bossEnemy.js";
 import { removeCharacterDebuffs, tickCharacterDebuffs } from "../debuff/debuff.js";
 import { ABILITY_NAME_LEASH, AbilityLeash, createAbilityLeash } from "../ability/abilityLeash.js";
 import { executeRerollUpgradeOption, fillRandomUpgradeOptionChoices, UpgradeOption } from "./upgrade.js";
 import { CharacterClass, PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters/playerCharacters.js";
-import { CHARACTER_TYPE_KING_ENEMY } from "./enemy/kingEnemy.js";
-import { createKingCrownCharacter } from "./enemy/kingCrown.js";
+import { addKingType, CHARACTER_TYPE_KING_ENEMY } from "./enemy/kingEnemy.js";
+import { addKingCrownType, createKingCrownCharacter } from "./enemy/kingCrown.js";
 import { TamerPetCharacter, tradePets } from "./playerCharacters/tamer/tamerPetCharacter.js";
 import { ENEMY_FIX_RESPAWN_POSITION } from "./enemy/fixPositionRespawnEnemyModel.js";
 import { addCombatlogDamageDoneEntry, addCombatlogDamageTakenEntry, doDamageMeterSplit } from "../combatlog.js";
 import { executeAbilityLevelingCharacterUpgradeOption } from "./playerCharacters/abilityLevelingCharacter.js";
 import { addCharacterUpgrades, CHARACTER_UPGRADE_FUNCTIONS } from "./upgrades/characterUpgrades.js";
-import { CHARACTER_TYPE_GOD_ENEMY, godEnemyActivateHardMode, godEnemyHardModeConditionFullfiled, isGodHardModeActive } from "./enemy/god/godEnemy.js";
+import { addGodEnemyType, CHARACTER_TYPE_GOD_ENEMY, godEnemyActivateHardMode, godEnemyHardModeConditionFullfiled, isGodHardModeActive } from "./enemy/god/godEnemy.js";
 import { DEBUFF_NAME_DAMAGE_TAKEN } from "../debuff/debuffDamageTaken.js";
 import { achievementCheckOnBossKill } from "../achievements/achievements.js";
 import { createPaintTextData } from "../floatingText.js";
 import { legendaryAbilityGiveBlessing } from "../map/buildings/classBuilding.js";
+import { addAreaBossType } from "./enemy/areaBossEnemy.js";
+
+export function onDomLoadSetCharactersFunctions() {
+    addAreaBossType();
+    addBossType();
+    addKingType();
+    addGodEnemyType();
+    addKingCrownType();
+}
 
 export function findCharacterById(characters: Character[], id: number): Character | null {
     for (let i = 0; i < characters.length; i++) {

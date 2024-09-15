@@ -1,5 +1,6 @@
-import { calculateDirection, calculateDistance, modulo } from "../../game.js";
-import { Game, Position } from "../../gameModel.js";
+import { createDefaultAreaBossWithLevel } from "../../character/enemy/areaBossEnemy.js";
+import { calculateDirection, calculateDistance, getNextId, modulo } from "../../game.js";
+import { Game, IdCounter, Position } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { GameMap, getFirstBlockingGameMapTilePositionTouchingLine, isPositionBlocking, MapChunk, moveByDirectionAndDistance, positionToGameMapTileXY } from "../map.js";
 import { GAME_MAP_MODIFIER_FUNCTIONS, GameMapArea, GameMapAreaRect, GameMapModifier } from "./mapModifier.js";
@@ -13,6 +14,7 @@ export type MapModifierDarkness = GameMapModifier & {
 export function addMapModifierDarkness() {
     GAME_MAP_MODIFIER_FUNCTIONS[MODIFIER_NAME_DARKNESS] = {
         onChunkCreateModify: onChunkCreateModify,
+        onGameInit: onGameInit,
         paintModiferLate: paintModiferLate,
         growArea: growArea,
     };
@@ -20,13 +22,29 @@ export function addMapModifierDarkness() {
 
 export function createMapModifierDarkness(
     area: GameMapArea,
+    idCounter: IdCounter,
 ): MapModifierDarkness {
     return {
+        id: getNextId(idCounter),
         type: MODIFIER_NAME_DARKNESS,
         area: area,
         areaPerLevel: 1000000,
         level: 1,
     };
+}
+
+function onGameInit(modifier: GameMapModifier, game: Game) {
+    let spawn: Position | undefined = undefined;
+    if (modifier.area.type === "rect") {
+        const area = modifier.area as GameMapAreaRect;
+        spawn = {
+            x: area.x + area.width / 2,
+            y: area.y + area.height / 2,
+        }
+    }
+    if (spawn === undefined) return;
+    const areaBoss = createDefaultAreaBossWithLevel(game.state.idCounter, spawn, modifier.id, game);
+    game.state.bossStuff.bosses.push(areaBoss);
 }
 
 function growArea(modifier: GameMapModifier) {

@@ -1,10 +1,11 @@
 import { getCelestialDirection } from "../../character/enemy/bossEnemy.js"
 import { calculateDistance } from "../../game.js"
-import { CelestialDirection, Game, Position } from "../../gameModel.js"
+import { CelestialDirection, Game, IdCounter, Position } from "../../gameModel.js"
 import { GameMap, MapChunk } from "../map.js"
 import { addMapModifierDarkness, createMapModifierDarkness } from "./mapModiferDarkness.js"
 
 export type GameMapModifier = {
+    id: number,
     type: string,
     area: GameMapArea,
 }
@@ -35,6 +36,7 @@ export type GameMapAreaCelestialDirection = GameMapArea & {
 
 export type GameMapModifyFunctions = {
     growArea?: (modifier: GameMapModifier) => void,
+    onGameInit?: (modifier: GameMapModifier, game: Game) => void,
     onChunkCreateModify?: (mapChunk: MapChunk, chunkX: number, chunkY: number, game: Game) => void,
     paintModiferLate?: (ctx: CanvasRenderingContext2D, modifier: GameMapModifier, cameraPosition: Position, game: Game) => void,
 }
@@ -49,15 +51,15 @@ export function onDomLoadMapModifiers() {
     addMapModifierDarkness();
 }
 
-export function addMapModifer(map: GameMap) {
+export function addMapModifer(map: GameMap, idCounter: IdCounter) {
     const area: GameMapAreaRect = {
         type: "rect",
-        x: -3000,
-        y: -400,
+        x: -4000,
+        y: -4000,
         width: 1000,
         height: 1000,
     };
-    const darkness = createMapModifierDarkness(area);
+    const darkness = createMapModifierDarkness(area, idCounter);
     map.mapModifiers.push(darkness);
 }
 
@@ -67,6 +69,20 @@ export function paintMapModifierLate(ctx: CanvasRenderingContext2D, cameraPositi
         const modFunctions = GAME_MAP_MODIFIER_FUNCTIONS[modifier.type];
         if (modFunctions && modFunctions.paintModiferLate) {
             modFunctions.paintModiferLate(ctx, modifier, cameraPosition, game);
+        }
+    }
+}
+
+export function findMapModifierById(id: number, game: Game): undefined | GameMapModifier {
+    return game.state.map.mapModifiers.find((m) => m.id === id);
+}
+
+export function mapModifierOnGameInit(game: Game) {
+    const modifiers = game.state.map.mapModifiers;
+    for (let modifier of modifiers) {
+        const modFunctions = GAME_MAP_MODIFIER_FUNCTIONS[modifier.type];
+        if (modFunctions && modFunctions.onGameInit) {
+            modFunctions.onGameInit(modifier, game);
         }
     }
 }

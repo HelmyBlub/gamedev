@@ -1,8 +1,5 @@
 import { onDomLoadSetAbilitiesFunctions } from "./ability/ability.js";
 import { onDomLoadSetCharacterUpgradeFunctions } from "./character/upgrades/characterUpgrades.js";
-import { addBossType } from "./character/enemy/bossEnemy.js";
-import { addKingCrownType } from "./character/enemy/kingCrown.js";
-import { addKingType } from "./character/enemy/kingEnemy.js";
 import { onDomLoadSetCharacterClasses } from "./character/playerCharacters/playerCharacters.js";
 import { handleCommand } from "./commands.js";
 import { onDomLoadSetDebuffsFunctions } from "./debuff/debuff.js";
@@ -15,10 +12,10 @@ import { localStorageLoad } from "./permanentData.js";
 import { addUpgradeBuildingsFunctions } from "./map/buildings/upgradeBuilding.js";
 import { onDomLoadImagesLoad } from "./imageLoad.js";
 import { onDomLoadMapTiles } from "./map/map.js";
-import { addGodEnemyType } from "./character/enemy/god/godEnemy.js";
 import { onDomLoadSetAchievementsFunctions } from "./achievements/achievements.js";
 import { onDomLoadMapModifiers } from "./map/modifiers/mapModifier.js";
 import { touchStart, touchMove, touchEnd } from "./input/inputTouch.js";
+import { onDomLoadSetCharactersFunctions } from "./character/character.js";
 
 var gameCount: number = 0;
 export const GAME_VERSION: GameVersion = {
@@ -86,10 +83,7 @@ export function createGame(canvasElementId: string | undefined, forTesting: bool
 document.addEventListener("DOMContentLoaded", function () {
     onDomLoadMapTiles();
     onDomLoadSetCharacterClasses();
-    addBossType();
-    addKingType();
-    addGodEnemyType();
-    addKingCrownType();
+    onDomLoadSetCharactersFunctions();
     addMapObjectsFunctions();
     addUpgradeBuildingsFunctions();
     onDomLoadSetAbilitiesFunctions();

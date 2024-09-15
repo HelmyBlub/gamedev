@@ -22,6 +22,7 @@ import { ActiveCheats } from "./cheat.js";
 import { createDefaultStackTextsData, PaintStackTextsData, PaintTextData } from "./floatingText.js";
 import { TouchUiInfo } from "./input/inputTouch.js";
 import { ControllerButtonsPressed } from "./input/inputController.js";
+import { addMapModifer } from "./map/modifiers/mapModifier.js";
 
 export type Position = {
     x: number,
@@ -448,7 +449,7 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
         },
         sound: createSound(),
     }
-
+    //addMapModifer(game.state.map, game.state.idCounter);
     if (game.state.map.kingArea) {
         setDefaultNextKings(game);
     }
