@@ -6,6 +6,7 @@ import { calculateDirection, deepCopy, getNextId, getTimeSinceFirstKill } from "
 import { IdCounter, Game, Position, BossStuff, FACTION_ENEMY, CelestialDirection } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { GameMap, findNearNonBlockingPosition, getMapMidlePosition, moveByDirectionAndDistance } from "../../map/map.js";
+import { mapModifierGrowArea } from "../../map/modifiers/mapModifier.js";
 import { getPlayerFurthestAwayFromSpawn } from "../../player.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
 import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick, tickCharacters, setCharacterPosition } from "../character.js";
@@ -86,6 +87,7 @@ export function checkForBossSpawn(game: Game) {
     if (getTimeSinceFirstKill(game.state) >= nextBossSpawnTime) {
         bossStuff.bosses.push(createBossWithLevel(game.state.idCounter, bossStuff.bossLevelCounter, game));
         bossStuff.bossLevelCounter++;
+        mapModifierGrowArea(game);
     }
 }
 

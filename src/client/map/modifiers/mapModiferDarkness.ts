@@ -1,17 +1,20 @@
 import { calculateDirection, calculateDistance, modulo } from "../../game.js";
 import { Game, Position } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
-import { GameMap, getFirstBlockingGameMapTilePositionTouchingLine, getMapTile, isPositionBlocking, MapChunk, moveByDirectionAndDistance, positionToGameMapTileXY } from "../map.js";
-import { GAME_MAP_MODIFIER_FUNCTIONS, GameMapArea, GameMapAreaCircle, GameMapAreaRect, GameMapModifier } from "./mapModifier.js";
+import { GameMap, getFirstBlockingGameMapTilePositionTouchingLine, isPositionBlocking, MapChunk, moveByDirectionAndDistance, positionToGameMapTileXY } from "../map.js";
+import { GAME_MAP_MODIFIER_FUNCTIONS, GameMapArea, GameMapAreaRect, GameMapModifier } from "./mapModifier.js";
 
 export const MODIFIER_NAME_DARKNESS = "Darkness";
 export type MapModifierDarkness = GameMapModifier & {
+    level: number,
+    areaPerLevel?: number,
 }
 
 export function addMapModifierDarkness() {
     GAME_MAP_MODIFIER_FUNCTIONS[MODIFIER_NAME_DARKNESS] = {
         onChunkCreateModify: onChunkCreateModify,
         paintModiferLate: paintModiferLate,
+        growArea: growArea,
     };
 }
 
@@ -21,7 +24,24 @@ export function createMapModifierDarkness(
     return {
         type: MODIFIER_NAME_DARKNESS,
         area: area,
+        areaPerLevel: 1000000,
+        level: 1,
     };
+}
+
+function growArea(modifier: GameMapModifier) {
+    const modifierDarkness = modifier as MapModifierDarkness;
+    modifierDarkness.level++;
+    if (modifierDarkness.area.type === "rect") {
+        if (modifierDarkness.areaPerLevel === undefined) return;
+        const area = modifierDarkness.area as GameMapAreaRect;
+        const squareSize = Math.sqrt(modifierDarkness.level * modifierDarkness.areaPerLevel);
+        const sizeDiff = squareSize - area.height;
+        area.height = squareSize;
+        area.width = squareSize;
+        area.x -= sizeDiff / 2;
+        area.y -= sizeDiff / 2;
+    }
 }
 
 function onChunkCreateModify(mapChunk: MapChunk, chunkX: number, chunkY: number, game: Game) {

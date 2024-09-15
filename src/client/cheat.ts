@@ -10,6 +10,7 @@ import { classBuildingPlacePlayerClassStuffInBuilding } from "./map/buildings/cl
 import { UPGRADE_BUILDINGS_FUNCTIONS, upgradeBuildingBuyUpgrade } from "./map/buildings/upgradeBuilding.js";
 import { createEmptyClassBuilding } from "./map/mapObjectClassBuilding.js";
 import { mapObjectPlaceUpgradeBuilding } from "./map/mapObjectUpgradeBuilding.js";
+import { mapModifierGrowArea } from "./map/modifiers/mapModifier.js";
 import { addMoneyAmountToPlayer } from "./player.js";
 import { nextRandom } from "./randomNumberGenerator.js";
 export type CheatCheckboxes = "closeKingArea" | "closeGodArea" | "lowKingHp" | "allowCheats";
@@ -81,6 +82,7 @@ export function executeCheatAction(action: string, activate: boolean, clientId: 
         case "next boss spawn":
             game.state.bossStuff.bosses.push(createBossWithLevel(game.state.idCounter, game.state.bossStuff.bossLevelCounter, game));
             game.state.bossStuff.bossLevelCounter++;
+            mapModifierGrowArea(game);
             break;
         case "give Money":
             for (let player of game.state.players) {

@@ -34,6 +34,7 @@ export type GameMapAreaCelestialDirection = GameMapArea & {
 }
 
 export type GameMapModifyFunctions = {
+    growArea?: (modifier: GameMapModifier) => void,
     onChunkCreateModify?: (mapChunk: MapChunk, chunkX: number, chunkY: number, game: Game) => void,
     paintModiferLate?: (ctx: CanvasRenderingContext2D, modifier: GameMapModifier, cameraPosition: Position, game: Game) => void,
 }
@@ -51,10 +52,10 @@ export function onDomLoadMapModifiers() {
 export function addMapModifer(map: GameMap) {
     const area: GameMapAreaRect = {
         type: "rect",
-        x: -1000,
-        y: -1000,
-        width: 2000,
-        height: 2000,
+        x: -3000,
+        y: -400,
+        width: 1000,
+        height: 1000,
     };
     const darkness = createMapModifierDarkness(area);
     map.mapModifiers.push(darkness);
@@ -66,6 +67,16 @@ export function paintMapModifierLate(ctx: CanvasRenderingContext2D, cameraPositi
         const modFunctions = GAME_MAP_MODIFIER_FUNCTIONS[modifier.type];
         if (modFunctions && modFunctions.paintModiferLate) {
             modFunctions.paintModiferLate(ctx, modifier, cameraPosition, game);
+        }
+    }
+}
+
+export function mapModifierGrowArea(game: Game) {
+    const modifiers = game.state.map.mapModifiers;
+    for (let modifier of modifiers) {
+        const modFunctions = GAME_MAP_MODIFIER_FUNCTIONS[modifier.type];
+        if (modFunctions && modFunctions.growArea) {
+            modFunctions.growArea(modifier);
         }
     }
 }
