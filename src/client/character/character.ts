@@ -24,7 +24,7 @@ import { DEBUFF_NAME_DAMAGE_TAKEN } from "../debuff/debuffDamageTaken.js";
 import { achievementCheckOnBossKill } from "../achievements/achievements.js";
 import { createPaintTextData } from "../floatingText.js";
 import { legendaryAbilityGiveBlessing } from "../map/buildings/classBuilding.js";
-import { addAreaBossType } from "./enemy/areaBossEnemy.js";
+import { addAreaBossType } from "./enemy/areaBoss/areaBossEnemy.js";
 
 export function onDomLoadSetCharactersFunctions() {
     addAreaBossType();

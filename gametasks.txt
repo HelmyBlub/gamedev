@@ -4,21 +4,18 @@ increase version
 current tasks:
 - map modifier
     - darkness
-        - should be able to be "removed"
-            - if player defeats areaBoss -> remove darkness area
-                - spawn new area somewhere random
-            - if player defeats areaBoss -> spawn abilityObject "curse: Darkness"
-                - abilityObject "curse: Darkness"
-                    - circle area, if player stands in it, player will get cursed
-                    - the bigger the area was, the higher curse is possible
-                        - circle shrinks when cursing the player
-                        - the longer the player stands in area, the more the curse will grow
-                - should give some upside and some downside effects
-                    - upside: "shadow clones" gains player duplicate
-                        - stronger curse => multiple "shadow clones"
-                    - downside idea: shadow clones turn to enemy after time
-                    - downside idea: randomly vision limit appears for some time
-                        - stronger curse => more often, longer exists, reduce vision range more
+        - if player defeats areaBoss -> spawn abilityObject "curse: Darkness"
+            - abilityObject "curse: Darkness"
+                - circle area, if player stands in it, player will get cursed
+                - the bigger the area was, the higher curse is possible
+                    - circle shrinks when cursing the player
+                    - the longer the player stands in area, the more the curse will grow
+            - should give some upside and some downside effects
+                - upside: "shadow clones" gains player duplicate
+                    - stronger curse => multiple "shadow clones"
+                - downside idea: shadow clones turn to enemy after time
+                - downside idea: randomly vision limit appears for some time
+                    - stronger curse => more often, longer exists, reduce vision range more
         - save in permanent storage
         - check same wall not generated multiple times
             - backwards raycast required?

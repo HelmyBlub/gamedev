@@ -1,15 +1,16 @@
-import { ABILITIES_FUNCTIONS, Ability, setAbilityToBossLevel } from "../../ability/ability.js";
-import { createAbilityMelee } from "../../ability/abilityMelee.js";
-import { createAbilityShoot } from "../../ability/abilityShoot.js";
-import { tickCharacterDebuffs } from "../../debuff/debuff.js";
-import { getNextId } from "../../game.js";
-import { IdCounter, Game, Position, FACTION_ENEMY } from "../../gameModel.js";
-import { getPointPaintPosition } from "../../gamePaint.js";
-import { addMapModifer, findMapModifierById, GameMapAreaRect, removeMapModifier } from "../../map/modifiers/mapModifier.js";
-import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick, resetCharacter } from "../character.js";
-import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, createCharacter } from "../characterModel.js";
-import { paintCharacterWithAbilitiesDefault, paintCharacterHpBar, paintCharatersPets } from "../characterPaint.js";
-import { PathingCache } from "../pathing.js";
+import { ABILITIES_FUNCTIONS, Ability, setAbilityToBossLevel } from "../../../ability/ability.js";
+import { createAbilityMelee } from "../../../ability/abilityMelee.js";
+import { createAbilityShoot } from "../../../ability/abilityShoot.js";
+import { tickCharacterDebuffs } from "../../../debuff/debuff.js";
+import { getNextId } from "../../../game.js";
+import { IdCounter, Game, Position, FACTION_ENEMY } from "../../../gameModel.js";
+import { getPointPaintPosition } from "../../../gamePaint.js";
+import { findMapModifierById, GameMapAreaRect, removeMapModifier } from "../../../map/modifiers/mapModifier.js";
+import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick, resetCharacter } from "../../character.js";
+import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, createCharacter } from "../../characterModel.js";
+import { paintCharacterWithAbilitiesDefault, paintCharacterHpBar, paintCharatersPets } from "../../characterPaint.js";
+import { PathingCache } from "../../pathing.js";
+import { addAbilityCurseDarkness, createObjectCurseDarkness } from "./abilityCurseDarkness.js";
 
 export type AreaBossEnemyCharacter = Character & {
     mapModifierIdRef: number,
@@ -22,7 +23,8 @@ export function addAreaBossType() {
         onCharacterKill: onCharacterKill,
         paintCharacterType: paintAreaBossEnemyCharacter,
         tickFunction: tickAreaBossEnemyCharacter,
-    }
+    };
+    addAbilityCurseDarkness();
 }
 
 export function createDefaultAreaBossWithLevel(idCounter: IdCounter, spawn: Position, mapModifierIdRef: number, game: Game): AreaBossEnemyCharacter {
@@ -43,6 +45,8 @@ export function createDefaultAreaBossWithLevel(idCounter: IdCounter, spawn: Posi
 
 function onCharacterKill(character: Character, game: Game) {
     const areaBoss = character as AreaBossEnemyCharacter;
+    const curse = createObjectCurseDarkness(areaBoss, game);
+    if (curse) game.state.abilityObjects.push(curse);
     removeMapModifier(areaBoss.mapModifierIdRef, game);
 }
 
