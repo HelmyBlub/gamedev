@@ -449,7 +449,6 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
         },
         sound: createSound(),
     }
-    //addMapModifer(game.state.map, game.state.idCounter);
     if (game.state.map.kingArea) {
         setDefaultNextKings(game);
     }

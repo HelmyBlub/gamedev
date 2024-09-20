@@ -2,9 +2,6 @@ next test run: sniper, builder, musician
 increase version
 
 current tasks:
-- refactor: onCharacterKill
-    - move code to its fitting files, not everything in killCharacter
-    - onCharaterKill for areaBoss
 - map modifier
     - darkness
         - should be able to be "removed"

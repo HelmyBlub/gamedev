@@ -5,7 +5,7 @@ import { tickCharacterDebuffs } from "../../debuff/debuff.js";
 import { getNextId } from "../../game.js";
 import { IdCounter, Game, Position, FACTION_ENEMY } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
-import { findMapModifierById, GameMapAreaRect } from "../../map/modifiers/mapModifier.js";
+import { addMapModifer, findMapModifierById, GameMapAreaRect, removeMapModifier } from "../../map/modifiers/mapModifier.js";
 import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick, resetCharacter } from "../character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, createCharacter } from "../characterModel.js";
 import { paintCharacterWithAbilitiesDefault, paintCharacterHpBar, paintCharatersPets } from "../characterPaint.js";
@@ -19,8 +19,9 @@ export const CHARACTER_TYPE_AREA_BOSS_ENEMY = "AreaBossEnemyCharacter";
 
 export function addAreaBossType() {
     CHARACTER_TYPE_FUNCTIONS[CHARACTER_TYPE_AREA_BOSS_ENEMY] = {
-        tickFunction: tickAreaBossEnemyCharacter,
+        onCharacterKill: onCharacterKill,
         paintCharacterType: paintAreaBossEnemyCharacter,
+        tickFunction: tickAreaBossEnemyCharacter,
     }
 }
 
@@ -38,6 +39,11 @@ export function createDefaultAreaBossWithLevel(idCounter: IdCounter, spawn: Posi
     bossCharacter.abilities = abilities;
     const areaBoss: AreaBossEnemyCharacter = { ...bossCharacter, mapModifierIdRef: mapModifierIdRef };
     return areaBoss;
+}
+
+function onCharacterKill(character: Character, game: Game) {
+    const areaBoss = character as AreaBossEnemyCharacter;
+    removeMapModifier(areaBoss.mapModifierIdRef, game);
 }
 
 function tickAreaBossEnemyCharacter(enemy: Character, game: Game, pathingCache: PathingCache | null) {

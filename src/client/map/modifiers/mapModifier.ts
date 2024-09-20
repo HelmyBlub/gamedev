@@ -84,6 +84,10 @@ export function findMapModifierById(id: number, game: Game): undefined | GameMap
 
 export function mapModifierOnGameInit(game: Game) {
     const modifiers = game.state.map.mapModifiers;
+    if (modifiers.length === 0) {
+        addMapModifer(game.state.map, game.state.idCounter);
+    }
+
     for (let modifier of modifiers) {
         const modFunctions = GAME_MAP_MODIFIER_FUNCTIONS[modifier.type];
         if (modFunctions && modFunctions.onGameInit) {
