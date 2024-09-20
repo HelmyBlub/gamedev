@@ -20,7 +20,7 @@ import { getCelestialDirection } from "./bossEnemy.js";
 import { legendaryAbilityGiveBlessing, classBuildingPutLegendaryCharacterStuffBackIntoBuilding } from "../../map/buildings/classBuilding.js";
 import { MoreInfosPartContainer, createCharacterMoreInfosPartContainer } from "../../moreInfo.js";
 import { doDamageMeterSplit } from "../../combatlog.js";
-import { KingCrownEnemyCharacter } from "./kingCrown.js";
+import { createKingCrownCharacter, KingCrownEnemyCharacter } from "./kingCrown.js";
 
 export type KingEnemyCharacter = Character;
 export const CHARACTER_TYPE_KING_ENEMY = "KingEnemyCharacter";
@@ -35,8 +35,9 @@ GAME_IMAGES[IMAGE_CROWN] = {
 
 export function addKingType() {
     CHARACTER_TYPE_FUNCTIONS[CHARACTER_TYPE_KING_ENEMY] = {
-        tickFunction: tickKingEnemyCharacter,
+        onCharacterKill: onCharacterKill,
         paintCharacterType: paintKing,
+        tickFunction: tickKingEnemyCharacter,
     }
 }
 
@@ -187,6 +188,10 @@ export function paintKingHpBar(ctx: CanvasRenderingContext2D, boss: Character) {
     ctx.font = "bold " + fontSize + "px Arial";
     const textWidth = ctx.measureText(hpBarText).width;
     ctx.fillText(hpBarText, Math.floor(ctx.canvas.width / 2 - textWidth / 2), top + fontSize + 1);
+}
+
+function onCharacterKill(character: Character, game: Game) {
+    game.state.bossStuff.bosses.push(createKingCrownCharacter(game.state.idCounter, character));
 }
 
 function changeKingAbilityLevelBasedOnHp(enemy: KingEnemyCharacter) {

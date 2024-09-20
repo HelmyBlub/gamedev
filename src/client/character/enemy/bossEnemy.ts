@@ -1,15 +1,17 @@
 import { ABILITIES_FUNCTIONS, Ability, setAbilityToBossLevel } from "../../ability/ability.js";
 import { ABILITY_NAME_LEASH, AbilityLeash } from "../../ability/abilityLeash.js";
 import { createAbilityMelee } from "../../ability/abilityMelee.js";
+import { achievementCheckOnBossKill } from "../../achievements/achievements.js";
+import { doDamageMeterSplit } from "../../combatlog.js";
 import { tickCharacterDebuffs } from "../../debuff/debuff.js";
 import { calculateDirection, deepCopy, getNextId, getTimeSinceFirstKill } from "../../game.js";
 import { IdCounter, Game, Position, BossStuff, FACTION_ENEMY, CelestialDirection } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { GameMap, findNearNonBlockingPosition, getMapMidlePosition, moveByDirectionAndDistance } from "../../map/map.js";
 import { mapModifierGrowArea } from "../../map/modifiers/mapModifier.js";
-import { getPlayerFurthestAwayFromSpawn } from "../../player.js";
+import { addMoneyAmountToPlayer, addMoneyUiMoreInfo, getPlayerFurthestAwayFromSpawn } from "../../player.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
-import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick, tickCharacters, setCharacterPosition } from "../character.js";
+import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick, tickCharacters, setCharacterPosition, playerCharactersAddBossSkillPoints, experienceForEveryPlayersLeveling } from "../character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, createCharacter } from "../characterModel.js";
 import { paintCharacterWithAbilitiesDefault, paintCharacterHpBar, paintCharacters, paintCharatersPets } from "../characterPaint.js";
 import { getPathingCache, PathingCache } from "../pathing.js";
@@ -22,6 +24,7 @@ export const CHARACTER_TYPE_BOSS_ENEMY = "BossEnemyCharacter";
 
 export function addBossType() {
     CHARACTER_TYPE_FUNCTIONS[CHARACTER_TYPE_BOSS_ENEMY] = {
+        onCharacterKill: onCharacterKill,
         tickFunction: tickBossEnemyCharacter,
         paintCharacterType: paintBossEnemyCharacter,
     }
@@ -103,6 +106,18 @@ export function setAbilityToEnemyLevel(ability: Ability, level: number, damageFa
     } else {
         throw new Error("function setAbilityToBossLevel missing for" + ability.name);
     }
+}
+
+function onCharacterKill(character: Character, game: Game) {
+    playerCharactersAddBossSkillPoints(character.level?.level, game);
+    experienceForEveryPlayersLeveling(character.experienceWorth, game);
+    doDamageMeterSplit(game.state.bossStuff.bossLevelCounter.toFixed(), game);
+    if (character.level?.level) {
+        const moneyAmount = character.level.level;
+        addMoneyUiMoreInfo(moneyAmount, `for Boss kills`, game);
+        addMoneyAmountToPlayer(moneyAmount, game.state.players, game);
+    }
+    achievementCheckOnBossKill(game.state.achievements, game);
 }
 
 function findBossClassBasedOnKing(boss: Character): string | undefined {

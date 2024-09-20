@@ -1,6 +1,6 @@
 import { findCharacterClassById, levelingCharacterAndClassXpGain } from "./playerCharacters/levelingCharacter.js";
 import { calculateMovePosition, chunkXYToMapKey, determineMapKeysInDistance, GameMap, getChunksTouchingLine, MapChunk, mapKeyToChunkXY, moveByDirectionAndDistance, positionToMapKey } from "../map/map.js";
-import { Character, CHARACTER_TYPE_FUNCTIONS, PLAYER_CHARACTER_TYPE } from "./characterModel.js";
+import { Character, CHARACTER_TYPE_FUNCTIONS } from "./characterModel.js";
 import { getNextWaypoint, getPathingCache, PathingCache } from "./pathing.js";
 import { calculateDirection, calculateDistance, calculateDistancePointToLine, changeCharacterAndAbilityIds, endGame, getNextId, levelUpIncreaseExperienceRequirement, modulo, takeTimeMeasure } from "../game.js";
 import { Position, Game, IdCounter, Camera, FACTION_ENEMY, FACTION_PLAYER } from "../gameModel.js";
@@ -11,7 +11,7 @@ import { addBossType, BossEnemyCharacter, CHARACTER_TYPE_BOSS_ENEMY } from "./en
 import { removeCharacterDebuffs, tickCharacterDebuffs } from "../debuff/debuff.js";
 import { ABILITY_NAME_LEASH, AbilityLeash, createAbilityLeash } from "../ability/abilityLeash.js";
 import { executeRerollUpgradeOption, fillRandomUpgradeOptionChoices, UpgradeOption } from "./upgrade.js";
-import { CharacterClass, PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters/playerCharacters.js";
+import { addPlayerCharacterType, CharacterClass, PLAYER_CHARACTER_CLASSES_FUNCTIONS, PLAYER_CHARACTER_TYPE } from "./playerCharacters/playerCharacters.js";
 import { addKingType, CHARACTER_TYPE_KING_ENEMY } from "./enemy/kingEnemy.js";
 import { addKingCrownType, createKingCrownCharacter } from "./enemy/kingCrown.js";
 import { TamerPetCharacter, tradePets } from "./playerCharacters/tamer/tamerPetCharacter.js";
@@ -32,6 +32,7 @@ export function onDomLoadSetCharactersFunctions() {
     addKingType();
     addGodEnemyType();
     addKingCrownType();
+    addPlayerCharacterType();
 }
 
 export function findCharacterById(characters: Character[], id: number): Character | null {
@@ -639,37 +640,18 @@ function experienceForCharacter(character: Character, experienceWorth: number) {
 
 }
 
+function onCharacterTypeKill(character: Character, game: Game) {
+    const characterTypeFuntions = CHARACTER_TYPE_FUNCTIONS[character.type];
+    if (!characterTypeFuntions) return;
+    if (characterTypeFuntions.onCharacterKill) characterTypeFuntions.onCharacterKill(character, game);
+}
+
 function killCharacter(character: Character, game: Game, abilityIdRef: number | undefined = undefined) {
     character.state = "dead";
 
     if (game.state.timeFirstKill === undefined) game.state.timeFirstKill = game.state.time;
     levelingCharacterAndClassXpGain(game.state, character.experienceWorth, game);
-    if (character.type === CHARACTER_TYPE_BOSS_ENEMY) {
-        playerCharactersAddBossSkillPoints(character.level?.level, game);
-        experienceForEveryPlayersLeveling(character.experienceWorth, game);
-        doDamageMeterSplit(game.state.bossStuff.bossLevelCounter.toFixed(), game);
-        if (character.level?.level) {
-            const moneyAmount = character.level.level;
-            addMoneyUiMoreInfo(moneyAmount, `for Boss kills`, game);
-            addMoneyAmountToPlayer(moneyAmount, game.state.players, game);
-        }
-        achievementCheckOnBossKill(game.state.achievements, game);
-    }
-    if (character.type === CHARACTER_TYPE_KING_ENEMY) {
-        game.state.bossStuff.bosses.push(createKingCrownCharacter(game.state.idCounter, character));
-    } else if (character.type === CHARACTER_TYPE_GOD_ENEMY) {
-        if (godEnemyHardModeConditionFullfiled(game)) {
-            godEnemyActivateHardMode(game);
-        } else {
-            legendaryAbilityGiveBlessing("God", getPlayerCharacters(game.state.players));
-            if (isGodHardModeActive(game)) legendaryAbilityGiveBlessing("God Hard Mode", getPlayerCharacters(game.state.players));
-            endGame(game, false, true);
-        }
-    } else if (character.type === PLAYER_CHARACTER_TYPE) {
-        character.state = "dying";
-        character.deathAnimationStartTimer = game.state.time;
-        character.deathAnimationDuration = 2000;
-    }
+    onCharacterTypeKill(character, game);
     if (abilityIdRef !== undefined && character.type !== CHARACTER_TYPE_BOSS_ENEMY) {
         const ability = findAbilityById(abilityIdRef, game);
         if (ability) {

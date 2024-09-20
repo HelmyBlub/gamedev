@@ -51,6 +51,11 @@ export function onDomLoadMapModifiers() {
     addMapModifierDarkness();
 }
 
+export function removeMapModifier(id: number, game: Game) {
+    const index = game.state.map.mapModifiers.findIndex((m) => m.id === id);
+    game.state.map.mapModifiers.splice(index, 1);
+}
+
 export function addMapModifer(map: GameMap, idCounter: IdCounter) {
     const area: GameMapAreaRect = {
         type: "rect",

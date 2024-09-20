@@ -1,5 +1,5 @@
 import { Game, IdCounter, Position, Rectangle, SkillPoints } from "../../gameModel.js"
-import { Character } from "../characterModel.js"
+import { Character, CHARACTER_TYPE_FUNCTIONS } from "../characterModel.js"
 import { CharacterUpgrades } from "../upgrades/characterUpgrades.js"
 import { UpgradeOption, UpgradeOptionAndProbability } from "../upgrade.js"
 import { addBallClass } from "./characterClassBall.js"
@@ -26,6 +26,13 @@ export type PlayerCharacterClassFunctions = {
     paintLevelUI: (ctx: CanvasRenderingContext2D, character: Character, charClass: CharacterClass, topLeft: Position, width: number, height: number, game: Game) => void,
     preventMultiple?: boolean,
 }
+
+export function addPlayerCharacterType() {
+    CHARACTER_TYPE_FUNCTIONS[PLAYER_CHARACTER_TYPE] = {
+        onCharacterKill: onCharacterKill,
+    }
+}
+
 
 export type CharacterClass = {
     id: number,
@@ -70,6 +77,7 @@ export type PlayerCharacterClassesFunctions = {
     [key: string]: PlayerCharacterClassFunctions,
 }
 
+export const PLAYER_CHARACTER_TYPE = "PlayerCharacter";
 export const PLAYER_CHARACTER_CLASSES_FUNCTIONS: PlayerCharacterClassesFunctions = {};
 
 export function onDomLoadSetCharacterClasses() {
@@ -294,6 +302,12 @@ export function paintPlayerLevelUI(ctx: CanvasRenderingContext2D, leveling: Leve
     lastDisplayed.lastPaintedLevel = displayedLevel;
     lastDisplayed.lastPaintedPerCent = displayLevelPerCent;
     lastDisplayed.lastPaintedTime = game.state.time;
+}
+
+function onCharacterKill(character: Character, game: Game) {
+    character.state = "dying";
+    character.deathAnimationStartTimer = game.state.time;
+    character.deathAnimationDuration = 2000;
 }
 
 function paintCharacterClassLevels(ctx: CanvasRenderingContext2D, character: Character, topLeft: Position, width: number, height: number, game: Game) {

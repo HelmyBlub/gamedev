@@ -1,6 +1,6 @@
 import { ABILITIES_FUNCTIONS, createAbility, setAbilityToBossLevel } from "../../../ability/ability.js";
 import { applyDebuff, removeCharacterDebuffs, tickCharacterDebuffs } from "../../../debuff/debuff.js";
-import { calculateDirection, calculateDistance, getNextId } from "../../../game.js";
+import { calculateDirection, calculateDistance, endGame, getNextId } from "../../../game.js";
 import { IdCounter, Game, Position, FACTION_ENEMY } from "../../../gameModel.js";
 import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick } from "../../character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, createCharacter } from "../../characterModel.js";
@@ -20,6 +20,7 @@ import { MoreInfosPartContainer, createCharacterMoreInfosPartContainer } from ".
 import { doDamageMeterSplit } from "../../../combatlog.js";
 import { addMoneyAmountToPlayer, calculateMoneyForKingMaxHp } from "../../../player.js";
 import { calculateMovePosition } from "../../../map/map.js";
+import { legendaryAbilityGiveBlessing } from "../../../map/buildings/classBuilding.js";
 
 
 const FIRST_PICK_UP_DELAY = 3000;
@@ -39,8 +40,9 @@ export const CHARACTER_TYPE_GOD_ENEMY = "GodEnemyCharacter";
 
 export function addGodEnemyType() {
     CHARACTER_TYPE_FUNCTIONS[CHARACTER_TYPE_GOD_ENEMY] = {
-        tickFunction: tickGodCharacter,
+        onCharacterKill: onCharacterKill,
         paintCharacterType: paint,
+        tickFunction: tickGodCharacter,
     }
     addGodAbilityGodImmunity();
     addGodAbilitySeeker();
@@ -106,6 +108,16 @@ export function godCreateMoreInfos(game: Game, heading: string): MoreInfosPartCo
     if (game.state.bossStuff.godFightStartedTime === undefined) return;
     let god = game.state.bossStuff.bosses[game.state.bossStuff.bosses.length - 1];
     return createCharacterMoreInfosPartContainer(game.ctx, god, game.UI.moreInfos, game, heading);
+}
+
+function onCharacterKill(character: Character, game: Game) {
+    if (godEnemyHardModeConditionFullfiled(game)) {
+        godEnemyActivateHardMode(game);
+    } else {
+        legendaryAbilityGiveBlessing("God", getPlayerCharacters(game.state.players));
+        if (isGodHardModeActive(game)) legendaryAbilityGiveBlessing("God Hard Mode", getPlayerCharacters(game.state.players));
+        endGame(game, false, true);
+    }
 }
 
 function createGodEnemy(idCounter: IdCounter, spawnPosition: Position, game: Game): GodEnemyCharacter {

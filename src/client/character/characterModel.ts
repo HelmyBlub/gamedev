@@ -6,16 +6,16 @@ import { Position, IdCounter, Game, FACTION_PLAYER, SkillPoints, Legendary } fro
 import { GAME_IMAGES } from "../imageLoad.js";
 import { createRandomizedCharacterImageData, RandomizedCharacterImage } from "../randomizedCharacterImage.js";
 import { RandomSeed } from "../randomNumberGenerator.js";
-import { experienceForEveryPlayersLeveling } from "./character.js";
 import { tickFixPositionRespawnEnemyCharacter } from "./enemy/fixPositionRespawnEnemy.js";
 import { PathingCache } from "./pathing.js";
 import { Leveling } from "./playerCharacters/levelingCharacter.js";
-import { CharacterClass, initPlayerCharacterChoiceOptions } from "./playerCharacters/playerCharacters.js";
+import { CharacterClass, initPlayerCharacterChoiceOptions, PLAYER_CHARACTER_TYPE } from "./playerCharacters/playerCharacters.js";
 import { TamerPetCharacter } from "./playerCharacters/tamer/tamerPetCharacter.js";
-import { UpgradeChoices, UpgradeOption, UpgradeOptionAndProbability } from "./upgrade.js";
+import { UpgradeChoices } from "./upgrade.js";
 
 export type CHARACTER_TYPE_FUNCTIONS = {
     [key: string]: {
+        onCharacterKill?: (character: Character, game: Game) => void,
         tickFunction?: (character: Character, game: Game, pathingCache: PathingCache | null) => void,
         tickPetFunction?: (character: Character, petOwner: Character, game: Game, pathingCache: PathingCache | null) => void,
         paintCharacterType?: (ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) => void,
@@ -46,7 +46,6 @@ export type CharacterImageLoadProperties = {
     canvases?: { [key: string]: HTMLCanvasElement },
 }
 
-export const PLAYER_CHARACTER_TYPE = "PlayerCharacter";
 export const IMAGE_SLIME = "slime";
 export const IMAGE_PLAYER_PARTS = "playerParts";
 export const PLAYER_BASE_HP = 200;
