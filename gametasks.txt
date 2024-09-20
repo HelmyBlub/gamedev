@@ -5,11 +5,23 @@ current tasks:
 - map modifier
     - darkness
         - if player defeats areaBoss -> spawn abilityObject "curse: Darkness"
+            - new file curse
+            - create type curse
+                - type
+                - level
+            - create type curseDarkness
+            - add character.curses
+                - object []:Curse 
+            - abilityObjectCurseDarkness should apply curseDarkness
+            - add to game ticks
+            - implement curseDarkness
+                - spawn dark Clone
+                - after x sec -> turn clone to enemy
+
             - abilityObject "curse: Darkness"
                 - circle area, if player stands in it, player will get cursed
-                - the bigger the area was, the higher curse is possible
-                    - circle shrinks when cursing the player
-                    - the longer the player stands in area, the more the curse will grow
+                - the longer the player stands in area, the more the curse will grow
+                - delay, when boss killed, take a second for players to be able to run out of curse area
             - should give some upside and some downside effects
                 - upside: "shadow clones" gains player duplicate
                     - stronger curse => multiple "shadow clones"

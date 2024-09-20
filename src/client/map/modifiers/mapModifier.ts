@@ -59,8 +59,8 @@ export function removeMapModifier(id: number, game: Game) {
 export function addMapModifer(map: GameMap, idCounter: IdCounter) {
     const area: GameMapAreaRect = {
         type: "rect",
-        x: -4000,
-        y: -4000,
+        x: -1500,
+        y: -1500,
         width: 1000,
         height: 1000,
     };

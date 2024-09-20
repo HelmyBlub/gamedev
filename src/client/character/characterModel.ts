@@ -1,5 +1,6 @@
 import { Ability } from "../ability/ability.js";
 import { Combatlog, createDefaultCombatLog } from "../combatlog.js";
+import { Curse } from "../curse/curse.js";
 import { Debuff } from "../debuff/debuff.js";
 import { getNextId } from "../game.js";
 import { Position, IdCounter, Game, FACTION_PLAYER, SkillPoints, Legendary } from "../gameModel.js";
@@ -132,6 +133,7 @@ export type Character = Position & {
     legendary?: Legendary,
     experienceGainFactor?: number,
     bonusMoneyFactor?: number,
+    curses?: Curse[],
 }
 
 export function createCharacter(

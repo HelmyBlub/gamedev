@@ -148,7 +148,7 @@ export function gameInit(game: Game) {
         game.UI.playerGlobalAlphaMultiplier = parseInt(playerAlphaInput.value) / 100;
     }
     resetPastCharacters(game);
-    mapModifierOnGameInit(game);
+    //mapModifierOnGameInit(game);
     doDamageMeterSplit("1", game);
 }
 

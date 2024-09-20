@@ -1,9 +1,11 @@
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityObjectCircle, PaintOrderAbility } from "../../../ability/ability.js";
+import { applyCurse, createCurseDarkness, Curse, CURSE_DARKNESS } from "../../../curse/curse.js";
 import { calculateDistance, getCameraPosition, getNextId } from "../../../game.js";
 import { FACTION_ENEMY, Game, IdCounter, Rectangle } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
 import { findMapModifierById, GameMapAreaRect } from "../../../map/modifiers/mapModifier.js";
 import { getPlayerCharacters } from "../../character.js";
+import { Character } from "../../characterModel.js";
 import { AreaBossEnemyCharacter } from "./areaBossEnemy.js";
 
 export type AbilityCurseDarkness = Ability & {
@@ -75,13 +77,32 @@ function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
         const distance = calculateDistance(playerCharacter, abilityObject);
         if (distance < curse.radius) {
             playerHit = true;
-            //curse player
+            curseIncreaseCharacter(playerCharacter, game);
         }
     }
     if (playerHit) {
         curse.strength -= 25;
         curse.radius = getRadius(curse.strength);
     }
+}
+
+function curseIncreaseCharacter(character: Character, game: Game) {
+    let apply = false;
+    let curse: Curse | undefined = undefined;
+    if (!character.curses) {
+        apply = true;
+    }
+    if (!apply) {
+        curse = character.curses!.find(c => c.type === CURSE_DARKNESS);
+        if (!curse) apply = true;
+    }
+    if (apply) {
+        curse = createCurseDarkness();
+        applyCurse(curse, character, game);
+    } else {
+        curse!.level += 0.1;
+    }
+    console.log("player cursed", curse!.level);
 }
 
 function paintAbilityObjectDeathCircle(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
