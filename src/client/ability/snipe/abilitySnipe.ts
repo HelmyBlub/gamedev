@@ -1,8 +1,8 @@
-import { characterTakeDamage, getCharactersTouchingLine, getRandomAlivePlayerCharacter } from "../../character/character.js";
+import { characterTakeDamage, determineCharactersInDistance, getCharactersTouchingLine, getRandomAlivePlayerCharacter } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
 import { UpgradeOptionAndProbability, UpgradeOption, AbilityUpgradeOption } from "../../character/upgrade.js";
 import { autoSendMousePositionHandler, calcNewPositionMovedInDirection, calculateDirection, findClientInfoByCharacterId, getNextId } from "../../game.js";
-import { Position, Game, IdCounter, ClientInfo, FACTION_ENEMY } from "../../gameModel.js";
+import { Position, Game, IdCounter, ClientInfo, FACTION_ENEMY, FACTION_PLAYER } from "../../gameModel.js";
 import { GAME_IMAGES } from "../../imageLoad.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, findAbilityById } from "../ability.js";
 import { AbilityUpgrade, AbilityUpgradesFunctions, getAbilityUpgradeOptionDefault, getAbilityUpgradesDamageFactor, pushAbilityUpgradesOptions, upgradeAbility } from "../abilityUpgrade.js";
@@ -20,6 +20,7 @@ import { ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE, AbilityUpgradeTerrainBounce, addA
 import { AbilityDamageBreakdown } from "../../combatlog.js";
 import { ABILITY_NAME_EXPLODE } from "../abilityExplode.js";
 import { ABILITY_NAME_FIRE_LINE } from "../abilityFireLine.js";
+import { nextRandom } from "../../randomNumberGenerator.js";
 
 export type AbilityObjectSnipe = AbilityObject & {
     damage: number,
@@ -103,7 +104,8 @@ export function addAbilitySnipe() {
         setAbilityToEnemyLevel: setAbilityToEnemyLevel,
         tickAbility: tickAbilitySnipe,
         tickAbilityObject: tickAbilityObjectSnipe,
-        tickBossAI: tickBossAI,
+        tickAI: tickAI,
+        tickBossAI: tickAI,
         abilityUpgradeFunctions: ABILITY_SNIPE_UPGRADE_FUNCTIONS,
         canBeUsedByBosses: true,
     };
@@ -437,7 +439,7 @@ function createAbilityObjectSnipeInitialPlayerTriggered(abilityOwner: AbilityOwn
     abilitySnipe.nextAllowedShotTime = game.state.time + getAbilitySnipeShotFrequency(abilitySnipe);
 
 }
-function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
+function tickAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     const abilitySnipe = ability as AbilitySnipe;
     abilitySnipe.shotNextAllowedTime = true;
 }
@@ -459,9 +461,23 @@ function tickAbilitySnipe(abilityOwner: AbilityOwner, ability: Ability, game: Ga
         if (clientInfo) {
             castPosition = clientInfo.lastMousePosition;
         } else {
-            const target = getRandomAlivePlayerCharacter(game.state.players, game.state.randomSeed);
-            if (target) {
-                castPosition = { x: target.x, y: target.y };
+            if (abilityOwner.faction === FACTION_ENEMY) {
+                const target = getRandomAlivePlayerCharacter(game.state.players, game.state.randomSeed);
+                if (target) {
+                    castPosition = { x: target.x, y: target.y };
+                }
+            } else {
+                const targets = determineCharactersInDistance(abilityOwner, game.state.map, [], game.state.bossStuff.bosses, 320, FACTION_PLAYER, true);
+                if (targets.length > 0) {
+                    const randomTargetIndex = Math.floor(nextRandom(game.state.randomSeed) * targets.length);
+                    const target = targets[randomTargetIndex];
+                    castPosition = {
+                        x: target.x,
+                        y: target.y,
+                    }
+                } else {
+                    castPosition = { x: 0, y: 0 };
+                }
             }
         }
         createAbilityObjectSnipeInitialPlayerTriggered(abilityOwner, abilitySnipe, castPosition, game);

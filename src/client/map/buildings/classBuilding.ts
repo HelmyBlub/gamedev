@@ -3,7 +3,7 @@ import { resetCharacter } from "../../character/character.js";
 import { Character, createCharacter } from "../../character/characterModel.js";
 import { getCelestialDirection } from "../../character/enemy/bossEnemy.js";
 import { CharacterClass, PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "../../character/playerCharacters/playerCharacters.js";
-import { TamerPetCharacter } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
+import { TAMER_PET_CHARACTER, TamerPetCharacter } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { getNextId } from "../../game.js";
 import { FACTION_PLAYER, Game, IdCounter } from "../../gameModel.js";
 import { GAME_IMAGES } from "../../imageLoad.js";
@@ -109,13 +109,15 @@ export function classBuildingPutLegendaryCharacterStuffBackIntoBuilding(characte
         let petCounterPerBuilding: Map<number, number> = new Map();
         for (let i = character.pets.length - 1; i >= 0; i--) {
             const pet = character.pets[i];
+            if (pet.type !== TAMER_PET_CHARACTER) continue;
+            const tamerPet = pet as TamerPetCharacter;
             if (pet.legendary) {
                 const classBuilding = classBuildingFindById(pet.legendary.buildingIdRef, game);
                 if (classBuilding) {
                     if (petCounterPerBuilding.get(classBuilding.id) === undefined) petCounterPerBuilding.set(classBuilding.id, 0);
                     let counter: number = petCounterPerBuilding.get(classBuilding.id) as number;
                     character.pets.splice(i, 1);
-                    classBuilding.pets.push(pet);
+                    classBuilding.pets.push(tamerPet);
                     classBuilding.stuffBorrowed!.burrowed = false;
                     classBuilding.stuffBorrowed!.by = undefined;
                     const buildingPos = getBuildingPosition(classBuilding, game.state.map);
@@ -190,7 +192,9 @@ export function classBuildingPlacePlayerClassStuffInBuilding(playerClass: string
             if (tempCharacter.pets) {
                 let counter = 0;
                 for (let pet of tempCharacter.pets) {
-                    freeBuilding.pets.push(pet);
+                    if (pet.type !== TAMER_PET_CHARACTER) continue;
+                    const tamerPet = pet as TamerPetCharacter;
+                    freeBuilding.pets.push(tamerPet);
                     pet.legendary = {
                         buildingIdRef: freeBuilding.id,
                         blessings: [],

@@ -97,11 +97,13 @@ export function tradePets(fromCharacter: Character, toCharacter: Character, game
     if (fromCharacter.pets) {
         for (let i = fromCharacter.pets.length - 1; i >= 0; i--) {
             const pet = fromCharacter.pets[i];
-            if (pet.tradable) {
+            if (pet.type !== TAMER_PET_CHARACTER) continue;
+            const tamerPet = pet as TamerPetCharacter;
+            if (tamerPet.tradable) {
                 if (!toCharacter.pets) toCharacter.pets = [];
                 fromCharacter.pets.splice(i, 1);
-                pet.tradable = false;
-                pet.gifted = true;
+                tamerPet.tradable = false;
+                tamerPet.gifted = true;
                 reset(pet);
                 toCharacter.pets.push(pet);
                 for (let ability of pet.abilities) {
@@ -619,10 +621,12 @@ function determineTargetsInDistance(pet: TamerPetCharacter, center: Position, ga
 function collisionWithOtherPets(pet: TamerPetCharacter, petOwner: Character, newMovePosition: Position, game: Game): TamerPetCharacter | undefined {
     for (let petIt of petOwner.pets!) {
         if (petIt === pet) continue;
+        if (pet.type !== TAMER_PET_CHARACTER) continue;
+        const tamerPet = petIt as TamerPetCharacter;
         const distanceBefore = calculateDistance(petIt, pet);
         const distanceAfter = calculateDistance(petIt, newMovePosition);
         if (distanceBefore > distanceAfter && distanceAfter < (pet.width + petIt.width) / 2.5) {
-            return petIt;
+            return tamerPet;
         }
     }
     return undefined;

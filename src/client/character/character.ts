@@ -2,29 +2,29 @@ import { findCharacterClassById, levelingCharacterAndClassXpGain } from "./playe
 import { calculateMovePosition, chunkXYToMapKey, determineMapKeysInDistance, GameMap, getChunksTouchingLine, MapChunk, mapKeyToChunkXY, moveByDirectionAndDistance, positionToMapKey } from "../map/map.js";
 import { Character, CHARACTER_TYPE_FUNCTIONS } from "./characterModel.js";
 import { getNextWaypoint, getPathingCache, PathingCache } from "./pathing.js";
-import { calculateDirection, calculateDistance, calculateDistancePointToLine, changeCharacterAndAbilityIds, endGame, getNextId, levelUpIncreaseExperienceRequirement, modulo, takeTimeMeasure } from "../game.js";
+import { calculateDirection, calculateDistance, calculateDistancePointToLine, changeCharacterAndAbilityIds, getNextId, levelUpIncreaseExperienceRequirement, modulo, takeTimeMeasure } from "../game.js";
 import { Position, Game, IdCounter, Camera, FACTION_ENEMY, FACTION_PLAYER } from "../gameModel.js";
-import { addMoneyAmountToPlayer, addMoneyUiMoreInfo, findPlayerById, Player } from "../player.js";
+import { findPlayerById, Player } from "../player.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, doAbilityDamageBreakDownForAbilityId, findAbilityById, findAbilityOwnerByAbilityIdInPlayers, findAbilityOwnerById, levelingAbilityXpGain, resetAllCharacterAbilities } from "../ability/ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, doAbilityDamageBreakDownForAbilityId, findAbilityById, findAbilityOwnerByAbilityIdInPlayers, findAbilityOwnerById, levelingAbilityXpGain, resetAllCharacterAbilities } from "../ability/ability.js";
 import { addBossType, BossEnemyCharacter, CHARACTER_TYPE_BOSS_ENEMY } from "./enemy/bossEnemy.js";
 import { removeCharacterDebuffs, tickCharacterDebuffs } from "../debuff/debuff.js";
 import { ABILITY_NAME_LEASH, AbilityLeash, createAbilityLeash } from "../ability/abilityLeash.js";
 import { executeRerollUpgradeOption, fillRandomUpgradeOptionChoices, UpgradeOption } from "./upgrade.js";
-import { addPlayerCharacterType, CharacterClass, PLAYER_CHARACTER_CLASSES_FUNCTIONS, PLAYER_CHARACTER_TYPE } from "./playerCharacters/playerCharacters.js";
-import { addKingType, CHARACTER_TYPE_KING_ENEMY } from "./enemy/kingEnemy.js";
-import { addKingCrownType, createKingCrownCharacter } from "./enemy/kingCrown.js";
-import { TamerPetCharacter, tradePets } from "./playerCharacters/tamer/tamerPetCharacter.js";
+import { addPlayerCharacterType, CharacterClass, PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./playerCharacters/playerCharacters.js";
+import { addKingType } from "./enemy/kingEnemy.js";
+import { addKingCrownType } from "./enemy/kingCrown.js";
+import { TAMER_PET_CHARACTER, TamerPetCharacter, tradePets } from "./playerCharacters/tamer/tamerPetCharacter.js";
 import { ENEMY_FIX_RESPAWN_POSITION } from "./enemy/fixPositionRespawnEnemyModel.js";
-import { addCombatlogDamageDoneEntry, addCombatlogDamageTakenEntry, doDamageMeterSplit } from "../combatlog.js";
+import { addCombatlogDamageDoneEntry, addCombatlogDamageTakenEntry } from "../combatlog.js";
 import { executeAbilityLevelingCharacterUpgradeOption } from "./playerCharacters/abilityLevelingCharacter.js";
-import { addCharacterUpgrades, CHARACTER_UPGRADE_FUNCTIONS } from "./upgrades/characterUpgrades.js";
-import { addGodEnemyType, CHARACTER_TYPE_GOD_ENEMY, godEnemyActivateHardMode, godEnemyHardModeConditionFullfiled, isGodHardModeActive } from "./enemy/god/godEnemy.js";
+import { addCharacterUpgrades } from "./upgrades/characterUpgrades.js";
+import { addGodEnemyType } from "./enemy/god/godEnemy.js";
 import { DEBUFF_NAME_DAMAGE_TAKEN } from "../debuff/debuffDamageTaken.js";
-import { achievementCheckOnBossKill } from "../achievements/achievements.js";
 import { createPaintTextData } from "../floatingText.js";
-import { legendaryAbilityGiveBlessing } from "../map/buildings/classBuilding.js";
 import { addAreaBossType } from "./enemy/areaBoss/areaBossEnemy.js";
+import { tickCurses } from "../curse/curse.js";
+import { addPetTypeFollowAttackFunctions } from "./playerCharacters/characterPetTypeAttackFollow.js";
 
 export function onDomLoadSetCharactersFunctions() {
     addAreaBossType();
@@ -33,6 +33,7 @@ export function onDomLoadSetCharactersFunctions() {
     addGodEnemyType();
     addKingCrownType();
     addPlayerCharacterType();
+    addPetTypeFollowAttackFunctions();
 }
 
 export function findCharacterById(characters: Character[], id: number): Character | null {
@@ -145,7 +146,9 @@ export function playerCharactersAddBossSkillPoints(bossLevel: number | undefined
             }
             if (character.pets) {
                 for (let pet of character.pets) {
-                    if (charClass.id !== pet.classIdRef) continue;
+                    if (pet.type !== TAMER_PET_CHARACTER) continue;
+                    const tamerPet = pet as TamerPetCharacter;
+                    if (charClass.id !== tamerPet.classIdRef) continue;
                     if (pet.bossSkillPoints !== undefined) {
                         if (pet.bossSkillPoints.used + pet.bossSkillPoints.available < bossLevel) {
                             const legendaryAbilitySkillPointCapReached = pet.legendary && pet.legendary.skillPointCap <= pet.bossSkillPoints.used + pet.bossSkillPoints.available;
@@ -180,7 +183,7 @@ export function canCharacterTradeAbilityOrPets(character: Character): boolean {
     }
     if (character.pets) {
         for (let pet of character.pets) {
-            if (pet.tradable) return true;
+            if ((pet as any).tradable) return true;
         }
     }
     return false;
@@ -305,6 +308,7 @@ export function tickCharacters(characters: (Character | undefined)[], game: Game
             }
             tickCharacterDebuffs(char, game);
             tickCharacterPets(char, game, pathingCache);
+            tickCurses(char, game);
         }
         if (char.state === "dying") {
             if (char.deathAnimationStartTimer !== undefined
@@ -613,7 +617,9 @@ export function experienceForEveryPlayersLeveling(experience: number, game: Game
             }
             if (character.pets) {
                 for (let pet of character.pets) {
-                    if (pet.classIdRef !== charClass.id) continue;
+                    if (pet.type !== TAMER_PET_CHARACTER) continue;
+                    const tamerPet = pet as TamerPetCharacter;
+                    if (tamerPet.classIdRef !== charClass.id) continue;
                     experienceForCharacter(pet, experience);
                     for (let ability of pet.abilities) {
                         levelingAbilityXpGain(ability, character, experience, game);

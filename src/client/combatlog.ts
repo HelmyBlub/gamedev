@@ -205,7 +205,7 @@ export function createDamageMeterMoreInfo(ctx: CanvasRenderingContext2D, moreInf
     return moreInfosDamageMeter;
 }
 
-function findPlayerCharacterOwnerByAbilityIdInPlayers(abilityId: number, game: Game): { character: Character, pet: TamerPetCharacter | undefined } | undefined {
+function findPlayerCharacterOwnerByAbilityIdInPlayers(abilityId: number, game: Game): { character: Character, pet: Character | undefined } | undefined {
     for (let player of game.state.players) {
         const ability = player.character.abilities.find(a => a.id === abilityId);
         if (ability) return { character: player.character, pet: undefined };

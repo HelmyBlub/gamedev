@@ -7,7 +7,7 @@ import { getCelestialDirection } from "./character/enemy/bossEnemy.js";
 import { fixPositionRespawnEnemyCreateMoreInfos } from "./character/enemy/fixPositionRespawnEnemy.js";
 import { godCreateMoreInfos } from "./character/enemy/god/godEnemy.js";
 import { kingCreateMoreInfos } from "./character/enemy/kingEnemy.js";
-import { TamerPetCharacter, createTamerPetsCharacterMoreInfos } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
+import { TAMER_PET_CHARACTER, TamerPetCharacter, createTamerPetsCharacterMoreInfos } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
 import { createCombatLogMoreInfo, createDamageMeterMoreInfo } from "./combatlog.js";
 import { findClosestInteractable, getRelativeMousePoistion } from "./game.js";
 import { Game, Position } from "./gameModel.js";
@@ -272,7 +272,9 @@ export function createCharacterMoreInfosPartContainer(ctx: CanvasRenderingContex
             if (character.pets) {
                 const charClassPets: TamerPetCharacter[] = [];
                 for (let pet of character.pets) {
-                    if (pet.classIdRef === charClass.id) charClassPets.push(pet);
+                    if (pet.type !== TAMER_PET_CHARACTER) continue;
+                    const tamerPet = pet as TamerPetCharacter;
+                    if (tamerPet.classIdRef === charClass.id) charClassPets.push(tamerPet);
                 }
                 subContainer.moreInfoParts.push(...createTamerPetsCharacterMoreInfos(ctx, charClassPets, game));
             }
@@ -286,7 +288,9 @@ export function createCharacterMoreInfosPartContainer(ctx: CanvasRenderingContex
     if (character.pets) {
         const classlessPets: TamerPetCharacter[] = [];
         for (let pet of character.pets) {
-            if (pet.classIdRef === undefined || !hasMoreThanOneCharacterClass) classlessPets.push(pet);
+            if (pet.type !== TAMER_PET_CHARACTER) continue;
+            const tamerPet = pet as TamerPetCharacter;
+            if (tamerPet.classIdRef === undefined || !hasMoreThanOneCharacterClass) classlessPets.push(tamerPet);
         }
         characterContainer.moreInfoParts.push(...createTamerPetsCharacterMoreInfos(ctx, classlessPets, game));
     }
@@ -375,7 +379,9 @@ function createPastCharacterMoreInfos(ctx: CanvasRenderingContext2D, pastCharact
     if (pastCharacter.pets) {
         let pets: TamerPetCharacter[] = [];
         for (let pet of pastCharacter.pets) {
-            if (pet.tradable) pets.push(pet);
+            if (pet.type !== TAMER_PET_CHARACTER) continue;
+            const tamerPet = pet as TamerPetCharacter;
+            if (tamerPet.tradable) pets.push(tamerPet);
         }
         moreInfosPartContainer.moreInfoParts.push(...createTamerPetsCharacterMoreInfos(ctx, pets, game));
     }

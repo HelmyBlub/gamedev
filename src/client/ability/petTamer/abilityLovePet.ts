@@ -1,6 +1,6 @@
 import { findCharacterById } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
-import { PetHappines, TamerPetCharacter, changeTamerPetHappines, petHappinessToDisplayText } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
+import { PetHappines, TAMER_PET_CHARACTER, TamerPetCharacter, changeTamerPetHappines, petHappinessToDisplayText } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { calculateDirection, calculateDistance, getCameraPosition, getNextId } from "../../game.js";
 import { IdCounter, Position, Game, FACTION_PLAYER } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
@@ -73,7 +73,9 @@ function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     const abilityLovePet = ability as AbilityLovePet;
     if (abilityOwner.pets) {
         for (let pet of abilityOwner.pets) {
-            const happines: PetHappines = petHappinessToDisplayText(pet.happines, game.state.time);
+            if (pet.type !== TAMER_PET_CHARACTER) continue;
+            const tamerPet = pet as TamerPetCharacter;
+            const happines: PetHappines = petHappinessToDisplayText(tamerPet.happines, game.state.time);
             if ((happines === "unhappy" || happines === "very unhappy") && (!abilityLovePet.nextRechargeTime || abilityLovePet.nextRechargeTime + 500 <= game.state.time)) {
                 castLovePet(abilityOwner, ability, pet, undefined, true, game);
                 break;

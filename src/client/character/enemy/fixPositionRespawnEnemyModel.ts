@@ -8,7 +8,7 @@ import { MapChunk, GameMap, isPositionBlocking, mapKeyToChunkXY, chunkXYToMapKey
 import { fixedRandom } from "../../randomNumberGenerator.js"
 import { Character, IMAGE_SLIME, createCharacter } from "../characterModel.js"
 import { createPetsBasedOnLevelAndCharacter } from "../playerCharacters/tamer/characterClassTamer.js"
-import { TamerPetCharacter } from "../playerCharacters/tamer/tamerPetCharacter.js"
+import { TAMER_PET_CHARACTER, TamerPetCharacter } from "../playerCharacters/tamer/tamerPetCharacter.js"
 import { getCelestialDirection, setAbilityToEnemyLevel } from "./bossEnemy.js"
 
 export type FixPositionRespawnEnemyCharacter = Character & {
@@ -223,7 +223,8 @@ function randomWhatToAdd(nextKing: Character, charPosition: Position, game: Game
     }
     if (nextKing.pets) {
         for (let pet of nextKing.pets) {
-            possiblePets.push(pet);
+            if (pet.type !== TAMER_PET_CHARACTER) continue;
+            possiblePets.push(pet as TamerPetCharacter);
         }
     }
     let maxRandom = possibleAbilities.length + possiblePets.length;

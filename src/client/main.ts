@@ -16,12 +16,13 @@ import { onDomLoadSetAchievementsFunctions } from "./achievements/achievements.j
 import { onDomLoadMapModifiers } from "./map/modifiers/mapModifier.js";
 import { touchStart, touchMove, touchEnd } from "./input/inputTouch.js";
 import { onDomLoadSetCharactersFunctions } from "./character/character.js";
+import { onDomLoadCurses } from "./curse/curse.js";
 
 var gameCount: number = 0;
 export const GAME_VERSION: GameVersion = {
     major: 0,
     minor: 4,
-    patch: 293,
+    patch: 295,
 }
 
 export function start() {
@@ -91,6 +92,7 @@ document.addEventListener("DOMContentLoaded", function () {
     onDomLoadSetCharacterUpgradeFunctions();
     onDomLoadSetAchievementsFunctions();
     onDomLoadMapModifiers();
+    onDomLoadCurses();
 
     onDomLoadImagesLoad(); // should be the last load
     start();

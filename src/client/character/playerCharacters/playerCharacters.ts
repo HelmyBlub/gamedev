@@ -13,7 +13,7 @@ import { paintTextWithOutline } from "../../gamePaint.js"
 import { calculateDistance, getTimeSinceFirstKill } from "../../game.js"
 import { getMapMidlePosition } from "../../map/map.js"
 import { Ability } from "../../ability/ability.js"
-import { TamerPetCharacter } from "./tamer/tamerPetCharacter.js"
+import { TAMER_PET_CHARACTER, TamerPetCharacter } from "./tamer/tamerPetCharacter.js"
 import { getNextBossSpawnTime } from "../enemy/bossEnemy.js"
 
 export type PlayerCharacterClassFunctions = {
@@ -120,7 +120,7 @@ export function playerCharacterGetLevelClassText(character: Character, charClass
     return `${charClass.className} level ${Math.floor(playerCharacterClassGetAverageLevel(character, charClass))}`;
 }
 
-export function getAverageLevelOfAbilitiesPetsCharClassId(charClassId: number, abilities: Ability[] | undefined, pets: TamerPetCharacter[] | undefined): number {
+export function getAverageLevelOfAbilitiesPetsCharClassId(charClassId: number, abilities: Ability[] | undefined, pets: Character[] | undefined): number {
     let averageLevel = 0;
     let counter = 0;
     if (abilities) {
@@ -133,7 +133,9 @@ export function getAverageLevelOfAbilitiesPetsCharClassId(charClassId: number, a
     }
     if (pets) {
         for (let pet of pets) {
-            if (pet.classIdRef === charClassId && pet.level) {
+            if (pet.type !== TAMER_PET_CHARACTER) continue;
+            const tamerPet = pet as TamerPetCharacter;
+            if (tamerPet.classIdRef === charClassId && pet.level) {
                 counter++;
                 averageLevel += (pet.level.level - averageLevel) / counter;
             }
@@ -157,7 +159,9 @@ export function playerCharacterClassGetAverageLevel(character: Character, charCl
     }
     if (character.pets) {
         for (let pet of character.pets) {
-            if (pet.classIdRef === charClass.id && pet.level) {
+            if (pet.type !== TAMER_PET_CHARACTER) continue;
+            const tamerPet = pet as TamerPetCharacter;
+            if (tamerPet.classIdRef === charClass.id && pet.level) {
                 counter++;
                 averageLevel += (pet.level.level - averageLevel) / counter;
             }

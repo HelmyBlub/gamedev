@@ -108,7 +108,7 @@ function moreInfosPlayerMoneyAndBuildingUpgrades(ctx: CanvasRenderingContext2D, 
     return textLines;
 }
 
-export function createCharacterClassMoreInfos(ctx: CanvasRenderingContext2D, characterClasses: CharacterClass[], abilities: Ability[] | undefined, pets: TamerPetCharacter[] | undefined): MoreInfoPart {
+export function createCharacterClassMoreInfos(ctx: CanvasRenderingContext2D, characterClasses: CharacterClass[], abilities: Ability[] | undefined, pets: Character[] | undefined): MoreInfoPart {
     const textLines: string[] = [];
     addCharacterClassMoreInfosTextLines(characterClasses, abilities, pets, textLines);
     return createMoreInfosPart(ctx, textLines);
@@ -174,7 +174,7 @@ export function paintPlayerCharacters(ctx: CanvasRenderingContext2D, cameraPosit
     paintCharacters(ctx, game.state.pastPlayerCharacters.characters, cameraPosition, game);
 }
 
-function addCharacterClassMoreInfosTextLines(characterClasses: CharacterClass[], abilities: Ability[] | undefined, pets: TamerPetCharacter[] | undefined, textLines: string[]) {
+function addCharacterClassMoreInfosTextLines(characterClasses: CharacterClass[], abilities: Ability[] | undefined, pets: Character[] | undefined, textLines: string[]) {
     let first: boolean = true;
     let hasLegendary = false;
     for (let charClass of characterClasses) {

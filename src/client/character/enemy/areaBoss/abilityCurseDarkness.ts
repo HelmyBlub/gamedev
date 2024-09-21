@@ -1,5 +1,6 @@
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityObjectCircle, PaintOrderAbility } from "../../../ability/ability.js";
-import { applyCurse, createCurseDarkness, Curse, CURSE_DARKNESS } from "../../../curse/curse.js";
+import { applyCurse, Curse } from "../../../curse/curse.js";
+import { createCurseDarkness, CURSE_DARKNESS } from "../../../curse/curseDarkness.js";
 import { calculateDistance, getCameraPosition, getNextId } from "../../../game.js";
 import { FACTION_ENEMY, Game, IdCounter, Rectangle } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";

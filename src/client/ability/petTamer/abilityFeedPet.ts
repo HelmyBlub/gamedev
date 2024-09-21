@@ -1,6 +1,6 @@
 import { findCharacterById } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
-import { PetHunger, TamerPetCharacter, petFoodIntakeToDisplayText, tamerPetFeed } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
+import { PetHunger, TAMER_PET_CHARACTER, TamerPetCharacter, petFoodIntakeToDisplayText, tamerPetFeed } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { calculateDirection, calculateDistance, getCameraPosition, getNextId } from "../../game.js";
 import { IdCounter, Position, Game, FACTION_PLAYER } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
@@ -78,7 +78,9 @@ function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     const abilityFeedPet = ability as AbilityFeedPet;
     if (abilityOwner.pets) {
         for (let pet of abilityOwner.pets) {
-            const hunger: PetHunger = petFoodIntakeToDisplayText(pet.foodIntakeLevel);
+            if (pet.type !== TAMER_PET_CHARACTER) continue;
+            const tamerPet = pet as TamerPetCharacter;
+            const hunger: PetHunger = petFoodIntakeToDisplayText(tamerPet.foodIntakeLevel);
             if (hunger === "hungry" && (!abilityFeedPet.nextRechargeTime || abilityFeedPet.nextRechargeTime + 500 <= game.state.time)) {
                 castFeedPet(abilityOwner, ability, pet, undefined, true, game);
                 break;
