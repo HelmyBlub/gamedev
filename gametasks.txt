@@ -4,24 +4,16 @@ increase version
 current tasks:
 - map modifier
     - darkness
-        - all abilities need to have tickAI, check if tickBossAI can be removed when tickAI considers faction
-            - check musician clones. Sync note object plays?
-        - if player defeats areaBoss -> spawn abilityObject "curse: Darkness"
-            - add character.curses to game ticks
-            - implement curseDarkness
-                - spawn "dark" Clone
-                - after x sec -> turn clone to enemy
+        - implement curseDarkness
+            - after x sec -> turn clone to enemy
+            - spawn random and debug option for spawn close
+            - clones should have pets
 
-            - abilityObject "curse: Darkness"
-                - circle area, if player stands in it, player will get cursed
-                - the longer the player stands in area, the more the curse will grow
-                - delay, when boss killed, take a second for players to be able to run out of curse area
-            - should give some upside and some downside effects
-                - upside: "shadow clones" gains player duplicate
-                    - stronger curse => multiple "shadow clones"
-                - downside idea: shadow clones turn to enemy after time
-                - downside idea: randomly vision limit appears for some time
-                    - stronger curse => more often, longer exists, reduce vision range more
+        - abilityObject "curse: Darkness"
+            - delay, when boss killed, take a second for players to be able to run out of curse area
+            - make clones dark
+            - clones should teleport if to far away
+            - clones should have pathfinding?
         - save in permanent storage
         - check same wall not generated multiple times
             - backwards raycast required?

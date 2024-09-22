@@ -3,6 +3,7 @@ import { ABILITY_NAME_LEASH, AbilityLeash } from "../../ability/abilityLeash.js"
 import { createAbilityMelee } from "../../ability/abilityMelee.js";
 import { achievementCheckOnBossKill } from "../../achievements/achievements.js";
 import { doDamageMeterSplit } from "../../combatlog.js";
+import { curseDarknessCloneKillCheck } from "../../curse/curseDarkness.js";
 import { tickCharacterDebuffs } from "../../debuff/debuff.js";
 import { calculateDirection, deepCopy, getNextId, getTimeSinceFirstKill } from "../../game.js";
 import { IdCounter, Game, Position, BossStuff, FACTION_ENEMY, CelestialDirection } from "../../gameModel.js";
@@ -21,10 +22,16 @@ import { CHARACTER_TYPE_END_BOSS_CROWN_ENEMY } from "./kingCrown.js";
 
 export type BossEnemyCharacter = Character;
 export const CHARACTER_TYPE_BOSS_ENEMY = "BossEnemyCharacter";
+export const CHARACTER_TYPE_BOSS_CLONE_ENEMY = "BossCloneEnemyCharacter";
 
 export function addBossType() {
     CHARACTER_TYPE_FUNCTIONS[CHARACTER_TYPE_BOSS_ENEMY] = {
-        onCharacterKill: onCharacterKill,
+        onCharacterKill: onBossKill,
+        tickFunction: tickBossEnemyCharacter,
+        paintCharacterType: paintBossEnemyCharacter,
+    }
+    CHARACTER_TYPE_FUNCTIONS[CHARACTER_TYPE_BOSS_CLONE_ENEMY] = {
+        onCharacterKill: onCloneBossKill,
         tickFunction: tickBossEnemyCharacter,
         paintCharacterType: paintBossEnemyCharacter,
     }
@@ -108,7 +115,25 @@ export function setAbilityToEnemyLevel(ability: Ability, level: number, damageFa
     }
 }
 
-function onCharacterKill(character: Character, game: Game) {
+export function setCharacterToBossLevel(character: Character, level: number) {
+    character.hp = 1000 * Math.pow(level, 4);
+    character.maxHp = character.hp;
+    character.experienceWorth = calculateBossEnemyExperienceWorth(level);
+    character.level = { level: level };
+    for (let ability of character.abilities) {
+        setAbilityToBossLevel(ability, level);
+    }
+}
+
+export function calculateBossEnemyExperienceWorth(level: number): number {
+    return Math.pow(level, 3) * 500;
+}
+
+function onCloneBossKill(character: Character, game: Game) {
+    curseDarknessCloneKillCheck(character, game);
+}
+
+function onBossKill(character: Character, game: Game) {
     playerCharactersAddBossSkillPoints(character.level?.level, game);
     experienceForEveryPlayersLeveling(character.experienceWorth, game);
     doDamageMeterSplit(game.state.bossStuff.bossLevelCounter.toFixed(), game);
@@ -127,10 +152,6 @@ function findBossClassBasedOnKing(boss: Character): string | undefined {
         }
     }
     return undefined;
-}
-
-export function calculateBossEnemyExperienceWorth(level: number): number {
-    return Math.pow(level, 3) * 500;
 }
 
 function createDefaultBossWithLevel(idCounter: IdCounter, level: number, spawn: Position, nextKing: Character, game: Game): Character {
