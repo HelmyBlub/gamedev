@@ -1,14 +1,14 @@
-next test run: sniper, musician
+next test run: sniper, musician, 
 increase version
 
 current tasks:
 - map modifier
+    - check how map modifiers influence replays. After activating they broke
     - darkness
         - implement curseDarkness
-            - spawn random and debug option for spawn close
-            - clones should have pets
             - clone spawn animation
             - clone turn evil animation
+            - clones should have pets
 
         - abilityObject "curse: Darkness"
             - delay, when boss killed, take a second for players to be able to run out of curse area

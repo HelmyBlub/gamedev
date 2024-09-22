@@ -1,6 +1,6 @@
-import { findCharacterById, getPlayerCharacters, resetCharacter } from "../character/character.js";
+import { getPlayerCharacters, resetCharacter } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
-import { CHARACTER_TYPE_BOSS_CLONE_ENEMY, CHARACTER_TYPE_BOSS_ENEMY, setCharacterToBossLevel } from "../character/enemy/bossEnemy.js";
+import { CHARACTER_TYPE_BOSS_CLONE_ENEMY, setCharacterToBossLevel } from "../character/enemy/bossEnemy.js";
 import { CHARACTER_PET_TYPE_FOLLOW_ATTACK } from "../character/playerCharacters/characterPetTypeAttackFollow.js";
 import { TAMER_PET_CHARACTER } from "../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { changeCharacterAndAbilityIds, deepCopy } from "../game.js";
