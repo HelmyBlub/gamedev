@@ -39,7 +39,7 @@ export function addAbilityFeedPet() {
         paintAbilityObject: paintAbilityObjectFeedPet,
         paintAbilityUI: paintAbilityFeedPetUI,
         tickAbilityObject: tickAbilityObjectFeedPet,
-        tickBossAI: tickBossAI,
+        tickAI: tickAI,
         resetAbility: resetAbility,
     };
 }
@@ -74,7 +74,7 @@ function deleteAbilityObjectFeedPet(abilityObject: AbilityObject, game: Game): b
     return abilityObjectFeedPet.reachedTarget;
 }
 
-function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
+function tickAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     const abilityFeedPet = ability as AbilityFeedPet;
     if (abilityOwner.pets) {
         for (let pet of abilityOwner.pets) {
@@ -137,6 +137,7 @@ function castFeedPet(abilityOwner: AbilityOwner, ability: Ability, castPosition:
         let distance: number = 40;
         let closetPet: TamerPetCharacter | undefined = undefined;
         for (let pet of abilityOwner.pets!) {
+            if (pet.type !== TAMER_PET_CHARACTER) continue;
             const tempRangeToClick = calculateDistance(pet, castPosition);
             const tempRangeToOwner = calculateDistance(pet, abilityOwner);
             if (tempRangeToOwner <= abilityFeedPet.range && tempRangeToClick < distance) {

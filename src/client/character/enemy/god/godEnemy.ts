@@ -213,7 +213,7 @@ function tickGodCharacter(character: Character, game: Game, pathingCache: Pathin
     for (let ability of god.abilities) {
         const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
         if (abilityFunctions) {
-            if (abilityFunctions.tickBossAI) abilityFunctions.tickBossAI(god, ability, game);
+            if (abilityFunctions.tickAI) abilityFunctions.tickAI(god, ability, game);
         }
     }
     tickCharacterDebuffs(god, game);

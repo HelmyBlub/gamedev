@@ -75,7 +75,7 @@ export function addAbilityTower() {
         setAbilityToEnemyLevel: setAbilityToEnemyLevel,
         tickAbility: tickAbilityTower,
         tickAbilityObject: tickAbilityObjectTower,
-        tickBossAI: tickBossAI,
+        tickAI: tickAI,
         canBeUsedByBosses: true,
     };
 }
@@ -166,7 +166,7 @@ function setAbilityTowerToBossLevel(ability: Ability, level: number) {
     abilityTower.maxConnectRange = 800;
 }
 
-function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
+function tickAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     const abilityTower = ability as AbilityTower;
     const buildFrequency = 1000;
     if (abilityTower.lastBuildTime === undefined || abilityTower.lastBuildTime + buildFrequency <= game.state.time) {

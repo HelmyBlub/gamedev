@@ -5,6 +5,7 @@ current tasks:
 - map modifier
     - darkness
         - all abilities need to have tickAI, check if tickBossAI can be removed when tickAI considers faction
+            - check musician clones. Sync note object plays?
         - if player defeats areaBoss -> spawn abilityObject "curse: Darkness"
             - add character.curses to game ticks
             - implement curseDarkness

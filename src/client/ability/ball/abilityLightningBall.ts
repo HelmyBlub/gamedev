@@ -65,7 +65,7 @@ export function addAbilityLightningBall() {
         setAbilityToBossLevel: setAbilityToBossLevel,
         setAbilityToEnemyLevel: setAbilityToEnemyLevel,
         tickAbility: tickAbility,
-        tickBossAI: tickBossAI,
+        tickAI: tickAI,
         abilityUpgradeFunctions: ABILITY_LIGHTNING_BALL_UPGRADE_FUNCTIONS,
         canBeUsedByBosses: true,
     };
@@ -150,7 +150,7 @@ function paintAbilityAccessoire(ctx: CanvasRenderingContext2D, ability: Ability,
     paintLightningBall(ctx, paintPosition, FACTION_PLAYER, 10, game);
 }
 
-function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
+function tickAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     const abilityBall = ability as AbilityLightningBall;
     if (abilityOwner.debuffs) {
         const ballPhysics: BuffBallPhysics | undefined = abilityOwner.debuffs.find((d) => d.name === BUFF_NAME_BALL_PHYSICS) as any;

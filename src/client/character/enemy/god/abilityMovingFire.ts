@@ -39,7 +39,7 @@ export function addGodAbilityMovingFire() {
         paintAbility: paintAbility,
         setAbilityToBossLevel: setAbilityToBossLevel,
         tickAbilityObject: tickAbilityObject,
-        tickBossAI: tickBossAI,
+        tickAI: tickBossAI,
     };
 }
 

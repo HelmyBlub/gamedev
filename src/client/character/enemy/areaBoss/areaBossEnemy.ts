@@ -65,7 +65,7 @@ function tickAreaBossEnemyCharacter(enemy: Character, game: Game, pathingCache: 
     for (let ability of enemy.abilities) {
         const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
         if (abilityFunctions) {
-            if (abilityFunctions.tickBossAI) abilityFunctions.tickBossAI(enemy, ability, game);
+            if (abilityFunctions.tickAI) abilityFunctions.tickAI(enemy, ability, game);
         }
     }
     tickCharacterDebuffs(enemy, game);

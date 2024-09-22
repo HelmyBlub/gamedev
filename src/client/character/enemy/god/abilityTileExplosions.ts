@@ -39,7 +39,7 @@ export function addGodAbilityTileExplosion() {
         paintAbilityObject: paintAbilityObject,
         setAbilityToBossLevel: setAbilityToBossLevel,
         tickAbilityObject: tickAbilityObject,
-        tickBossAI: tickBossAI,
+        tickAI: tickAI,
     };
 }
 
@@ -182,7 +182,7 @@ function paintExplosionSquare(ctx: CanvasRenderingContext2D, paintPos: Position,
     ctx.fillRect(paintPos.x, paintPos.y, size * fillPerCent, size);
 }
 
-function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
+function tickAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     const tileExplosion = ability as AbilityTileExplosion;
     if (!tileExplosion.pickedUp) return;
     if (tileExplosion.cooldownFinishedTime === undefined) tileExplosion.cooldownFinishedTime = game.state.time;

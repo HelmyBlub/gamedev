@@ -148,7 +148,7 @@ export function gameInit(game: Game) {
         game.UI.playerGlobalAlphaMultiplier = parseInt(playerAlphaInput.value) / 100;
     }
     resetPastCharacters(game);
-    //mapModifierOnGameInit(game);
+    mapModifierOnGameInit(game);
     doDamageMeterSplit("1", game);
 }
 
@@ -615,7 +615,7 @@ function tickPastCharacters(game: Game) {
             for (let ability of character.abilities) {
                 if (ability.name === ABILITY_NAME_FEED_PET || ability.name === ABILITY_NAME_LOVE_PET) {
                     const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-                    if (abilityFunctions.tickBossAI) abilityFunctions.tickBossAI(character, ability, game);
+                    if (abilityFunctions.tickAI) abilityFunctions.tickAI(character, ability, game);
                 }
             }
         }

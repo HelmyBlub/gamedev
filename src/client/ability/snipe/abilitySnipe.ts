@@ -105,7 +105,6 @@ export function addAbilitySnipe() {
         tickAbility: tickAbilitySnipe,
         tickAbilityObject: tickAbilityObjectSnipe,
         tickAI: tickAI,
-        tickBossAI: tickAI,
         abilityUpgradeFunctions: ABILITY_SNIPE_UPGRADE_FUNCTIONS,
         canBeUsedByBosses: true,
     };

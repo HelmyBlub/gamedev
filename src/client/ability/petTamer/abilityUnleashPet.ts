@@ -1,4 +1,4 @@
-import { TamerPetCharacter } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
+import { TAMER_PET_CHARACTER, TamerPetCharacter } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { calculateDistance, getNextId } from "../../game.js";
 import { IdCounter, Position, Game } from "../../gameModel.js";
 import { playerInputBindingToDisplayValue } from "../../input/playerInput.js";
@@ -23,7 +23,7 @@ GAME_IMAGES[IMAGE_NAME_LEASH] = {
 
 export function addAbilityUnleashPet() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_UNLEASH_PET] = {
-        activeAbilityCast: castFeedPet,
+        activeAbilityCast: castUnLeashPet,
         createAbility: createAbilityUnleashPet,
         paintAbilityUI: paintAbilityUI,
         createAbilityMoreInfos: createAbilityMoreInfos,
@@ -64,23 +64,24 @@ function paintAbilityUI(ctx: CanvasRenderingContext2D, ability: Ability, drawSta
     paintAbilityUiDefault(ctx, ability, drawStartX, drawStartY, size, game, IMAGE_NAME_LEASH, heightFactor);
 }
 
-function castFeedPet(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, castPositionRelativeToCharacter: Position | undefined, isInputdown: boolean, game: Game) {
+function castUnLeashPet(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, castPositionRelativeToCharacter: Position | undefined, isInputdown: boolean, game: Game) {
     if (!isInputdown || abilityOwner.pets === undefined) return;
-    const abilityFeedPet = ability as AbilityUnleashPet;
+    const abilityUnleash = ability as AbilityUnleashPet;
 
-    if (abilityFeedPet.nextRechargeTime === undefined || game.state.time >= abilityFeedPet.nextRechargeTime) {
+    if (abilityUnleash.nextRechargeTime === undefined || game.state.time >= abilityUnleash.nextRechargeTime) {
         let distance: number = 40;
         let closestPet: TamerPetCharacter | undefined = undefined;
         for (let pet of abilityOwner.pets!) {
+            if (pet.type !== TAMER_PET_CHARACTER) continue;
             const tempRangeToClick = calculateDistance(pet, castPosition);
             const tempRangeToOwner = calculateDistance(pet, abilityOwner);
-            if (tempRangeToOwner <= abilityFeedPet.range && tempRangeToClick < distance) {
+            if (tempRangeToOwner <= abilityUnleash.range && tempRangeToClick < distance) {
                 closestPet = pet as TamerPetCharacter;
                 distance = tempRangeToClick;
             }
         }
         if (closestPet) {
-            abilityFeedPet.nextRechargeTime = game.state.time + abilityFeedPet.baseRechargeTime;
+            abilityUnleash.nextRechargeTime = game.state.time + abilityUnleash.baseRechargeTime;
             const petLeash: AbilityLeash = closestPet.abilities.find((a) => a.name === ABILITY_NAME_LEASH) as AbilityLeash;
             if (!petLeash) return;
             petLeash.leashedToOwnerId = petLeash.leashedToOwnerId ? undefined : abilityOwner.id;

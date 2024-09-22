@@ -28,6 +28,7 @@ import { GAME_IMAGES, getImage } from "../../imageLoad.js";
 import { addAbilityMusicSheetDeleteNote } from "./abilityMusicSheetDeleteNote.js";
 import { addAbilityMusicSheetChangeInstrument } from "./abilityMusicSheetChangeInstrument.js";
 import { displayTextAtCameraPosition } from "../../floatingText.js";
+import { CHARACTER_PET_TYPE_FOLLOW_ATTACK } from "../../character/playerCharacters/characterPetTypeAttackFollow.js";
 
 export type AbilityMusicSheets = Ability & {
     nextUpgradeAddInstrument: boolean,
@@ -120,7 +121,7 @@ export function addAbilityMusicSheet() {
         setUpAbilityForEnemy: setUpAbilityForEnemy,
         tickAbility: tickAbility,
         tickAbilityObject: tickAbilityObject,
-        tickBossAI: tickBossAI,
+        tickAI: tickAI,
         abilityUpgradeFunctions: ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS,
         canBeUsedByBosses: true,
     };
@@ -270,7 +271,7 @@ function createDamageBreakDown(damage: number, ability: Ability, abilityObject: 
     return damageBreakDown;
 }
 
-function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
+function tickAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     const abilityMusicSheets = ability as AbilityMusicSheets;
     let activeSheet: undefined | AbilityMusicSheet = undefined;
     for (let sheet of abilityMusicSheets.musicSheets) {
@@ -671,6 +672,7 @@ function paintAbilityUI(ctx: CanvasRenderingContext2D, ability: Ability, drawSta
 }
 
 function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
+    if (abilityOwner.type === CHARACTER_PET_TYPE_FOLLOW_ATTACK) return;
     let ownerPaintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition, game.UI.zoom);
     paintAbilityAccessoire(ctx, ability, { x: ownerPaintPos.x - 10, y: ownerPaintPos.y }, game);
     if (ability.disabled) return;
@@ -985,7 +987,9 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
                 || (lastTick > currentTick && delayedNoteTick <= currentTick)
             ) {
                 //warning: playing sound is client specific delayed. other things should not.
-                if (!game.testing.replay) playMusicNote(selectedMusicSheet.musicSheet, note, distanceToCamera, game.sound);
+                if (!game.testing.replay && abilityOwner.type !== CHARACTER_PET_TYPE_FOLLOW_ATTACK) {
+                    playMusicNote(selectedMusicSheet.musicSheet, note, distanceToCamera, game.sound);
+                }
             }
             const noteTick = note.tick % selectedMusicSheet.maxPlayTicks;
             if ((lastTick < noteTick && noteTick <= currentTick)

@@ -104,7 +104,6 @@ export type AbilityFunctions = {
     setAbilityToBossLevel?: (ability: Ability, level: number) => void,
     setUpAbilityForEnemy?: (abilityOwner: AbilityOwner, ability: Ability, game: Game) => void,
     tickAbility?: (abilityOwner: AbilityOwner, ability: Ability, game: Game) => void,
-    tickBossAI?: (abilityOwner: AbilityOwner, ability: Ability, game: Game) => void,
     tickAI?: (abilityOwner: AbilityOwner, ability: Ability, game: Game) => void,
     tickAbilityObject?: (abilityObject: AbilityObject, game: Game) => void,
     abilityUpgradeFunctions?: AbilityUpgradesFunctions,

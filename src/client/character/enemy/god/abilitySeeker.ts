@@ -48,7 +48,7 @@ export function addGodAbilitySeeker() {
         paintAbilityObject: paintAbilityObject,
         setAbilityToBossLevel: setAbilityToBossLevel,
         tickAbilityObject: tickAbilityObject,
-        tickBossAI: tickBossAI,
+        tickAI: tickBossAI,
     };
 }
 

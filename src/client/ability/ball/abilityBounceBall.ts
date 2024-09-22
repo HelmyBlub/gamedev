@@ -68,7 +68,7 @@ export function addAbilityBounceBall() {
         setAbilityToBossLevel: setAbilityToBossLevel,
         setAbilityToEnemyLevel: setAbilityToEnemyLevel,
         tickAbility: tickAbility,
-        tickBossAI: tickBossAI,
+        tickAI: tickAI,
         abilityUpgradeFunctions: ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS,
         canBeUsedByBosses: true,
     };
@@ -149,7 +149,7 @@ function paintAbilityAccessoire(ctx: CanvasRenderingContext2D, ability: Ability,
     paintBall(ctx, abilityBall, FACTION_PLAYER, paintPosition);
 }
 
-function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
+function tickAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     if (abilityOwner.debuffs) {
         const ballPhysics: BuffBallPhysics | undefined = abilityOwner.debuffs.find((d) => d.name === BUFF_NAME_BALL_PHYSICS) as any;
         if (ballPhysics) return;

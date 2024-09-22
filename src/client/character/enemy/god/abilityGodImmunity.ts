@@ -47,7 +47,7 @@ export function addGodAbilityGodImmunity() {
         paintAbilityObject: paintAbilityObject,
         setAbilityToBossLevel: setAbilityToBossLevel,
         tickAbilityObject: tickAbilityObject,
-        tickBossAI: tickBossAI,
+        tickAI: tickBossAI,
     };
 }
 
