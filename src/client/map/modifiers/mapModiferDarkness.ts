@@ -35,8 +35,14 @@ export function createMapModifierDarkness(
 
 function onGameInit(modifier: GameMapModifier, game: Game) {
     let spawn: Position | undefined = undefined;
+
     if (modifier.area.type === "rect") {
         const area = modifier.area as GameMapAreaRect;
+        if (game.state.activeCheats && game.state.activeCheats.indexOf("closeCurseDarkness") !== -1) {
+            area.x = -1000;
+            area.y = -1000;
+        }
+
         spawn = {
             x: area.x + area.width / 2,
             y: area.y + area.height / 2,

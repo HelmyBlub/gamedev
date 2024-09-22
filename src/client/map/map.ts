@@ -6,7 +6,7 @@ import { GameMapGodArea } from "./mapGodArea.js";
 import { GameMapKingArea } from "./mapKingArea.js";
 import { MapTileObject } from "./mapObjects.js";
 import { MapPaintLayer } from "./mapPaint.js";
-import { addMapModifer, GameMapModifier } from "./modifiers/mapModifier.js";
+import { GameMapModifier } from "./modifiers/mapModifier.js";
 
 export type MapTiles = {
     [key: number]: MapTile,

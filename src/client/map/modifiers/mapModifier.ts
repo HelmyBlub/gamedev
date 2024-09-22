@@ -1,6 +1,7 @@
 import { getCelestialDirection } from "../../character/enemy/bossEnemy.js"
 import { calculateDistance } from "../../game.js"
 import { CelestialDirection, Game, IdCounter, Position } from "../../gameModel.js"
+import { nextRandom } from "../../randomNumberGenerator.js"
 import { GameMap, MapChunk } from "../map.js"
 import { addMapModifierDarkness, createMapModifierDarkness } from "./mapModiferDarkness.js"
 
@@ -56,15 +57,20 @@ export function removeMapModifier(id: number, game: Game) {
     game.state.map.mapModifiers.splice(index, 1);
 }
 
-export function addMapModifer(map: GameMap, idCounter: IdCounter) {
+export function addMapModifer(map: GameMap, game: Game) {
+    const axisOffset = 7500;
+    const initialSize = 1000;
+    const signX = nextRandom(game.state.randomSeed) < 0.5 ? 1 : -1;
+    const signY = nextRandom(game.state.randomSeed) < 0.5 ? 1 : -1;
     const area: GameMapAreaRect = {
         type: "rect",
-        x: -1500,
-        y: -1500,
-        width: 1000,
-        height: 1000,
+        x: axisOffset * signX,
+        y: axisOffset * signY,
+        width: initialSize,
+        height: initialSize,
     };
-    const darkness = createMapModifierDarkness(area, idCounter);
+    console.log(area);
+    const darkness = createMapModifierDarkness(area, game.state.idCounter);
     map.mapModifiers.push(darkness);
 }
 
@@ -85,7 +91,7 @@ export function findMapModifierById(id: number, game: Game): undefined | GameMap
 export function mapModifierOnGameInit(game: Game) {
     const modifiers = game.state.map.mapModifiers;
     if (modifiers.length === 0) {
-        addMapModifer(game.state.map, game.state.idCounter);
+        addMapModifer(game.state.map, game);
     }
 
     for (let modifier of modifiers) {
