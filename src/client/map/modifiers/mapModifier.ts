@@ -69,7 +69,6 @@ export function addMapModifer(map: GameMap, game: Game) {
         width: initialSize,
         height: initialSize,
     };
-    console.log(area);
     const darkness = createMapModifierDarkness(area, game.state.idCounter);
     map.mapModifiers.push(darkness);
 }
