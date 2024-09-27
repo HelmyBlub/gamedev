@@ -79,9 +79,9 @@ export function loadImage(gameImage: GameImage, color: string = "", randomizedCh
     }
 }
 
-export function replaceColorInImageArea(imageCtx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, newColorRGB: RgbColor, toChangeColor: RgbColor) {
+export function replaceColorInImageArea(imageCtx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, newColorRGB: RgbColor, toChangeColor: RgbColor, changeExistingNewColor: boolean) {
     const imageData = imageCtx.getImageData(x, y, width, height);
-    replaceColor(imageData, newColorRGB, toChangeColor);
+    replaceColor(imageData, newColorRGB, toChangeColor, changeExistingNewColor);
     imageCtx.putImageData(imageData, x, y);
 }
 
@@ -103,12 +103,12 @@ function createColorVariants(gameImage: GameImage, color: string) {
             imageCtx.drawImage(gameImage.imageRef!, 0, paintY);
             const newColorRGB = COLOR_CONVERSION[color];
             const toChangeColor = COLOR_CONVERSION[gameImage.properties.baseColor!];
-            replaceColorInImageArea(imageCtx, 0, paintY, gameImage.properties.canvas.width, gameImage.imageRef!.height, newColorRGB, toChangeColor);
+            replaceColorInImageArea(imageCtx, 0, paintY, gameImage.properties.canvas.width, gameImage.imageRef!.height, newColorRGB, toChangeColor, true);
         }
     }
 }
 
-function replaceColor(imageData: ImageData, newColorRGB: RgbColor, toChangeColor: RgbColor) {
+function replaceColor(imageData: ImageData, newColorRGB: RgbColor, toChangeColor: RgbColor, changeExistingNewColor: boolean) {
     const data = imageData.data;
     for (let pixelStart = 0; pixelStart < data.length; pixelStart += 4) {
         if (data[pixelStart] === toChangeColor.r
@@ -118,7 +118,8 @@ function replaceColor(imageData: ImageData, newColorRGB: RgbColor, toChangeColor
             data[pixelStart] = newColorRGB.r;
             data[pixelStart + 1] = newColorRGB.g;
             data[pixelStart + 2] = newColorRGB.b;
-        } else if (data[pixelStart] === newColorRGB.r
+        } else if (changeExistingNewColor
+            && data[pixelStart] === newColorRGB.r
             && data[pixelStart + 1] === newColorRGB.g
             && data[pixelStart + 2] === newColorRGB.b
         ) {

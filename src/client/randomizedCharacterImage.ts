@@ -87,11 +87,13 @@ export function createRandomizedCharacter(gameImage: GameImage, randomizedCharac
     }
     replaceColorInImageArea(imageCtx, 0, 0, canvas.width, canvas.height,
         COLOR_CONVERSION[randomizedCharacterImage.skinColor],
-        COLOR_CONVERSION[properties.skinColor]
+        COLOR_CONVERSION[properties.skinColor],
+        false
     );
     replaceColorInImageArea(imageCtx, 0, 0, canvas.width, canvas.height,
         COLOR_CONVERSION[randomizedCharacterImage.clothColor],
-        COLOR_CONVERSION[properties.clothColor]
+        COLOR_CONVERSION[properties.clothColor],
+        false
     );
 
     return canvas;

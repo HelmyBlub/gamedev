@@ -28,7 +28,7 @@ import { GAME_IMAGES, getImage } from "../../imageLoad.js";
 import { addAbilityMusicSheetDeleteNote } from "./abilityMusicSheetDeleteNote.js";
 import { addAbilityMusicSheetChangeInstrument } from "./abilityMusicSheetChangeInstrument.js";
 import { displayTextAtCameraPosition } from "../../floatingText.js";
-import { CHARACTER_PET_TYPE_FOLLOW_ATTACK } from "../../character/playerCharacters/characterPetTypeAttackFollow.js";
+import { CHARACTER_PET_TYPE_CLONE } from "../../character/playerCharacters/characterPetTypeClone.js";
 
 export type AbilityMusicSheets = Ability & {
     nextUpgradeAddInstrument: boolean,
@@ -672,7 +672,7 @@ function paintAbilityUI(ctx: CanvasRenderingContext2D, ability: Ability, drawSta
 }
 
 function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
-    if (abilityOwner.type === CHARACTER_PET_TYPE_FOLLOW_ATTACK) return;
+    if (abilityOwner.type === CHARACTER_PET_TYPE_CLONE) return;
     let ownerPaintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition, game.UI.zoom);
     paintAbilityAccessoire(ctx, ability, { x: ownerPaintPos.x - 10, y: ownerPaintPos.y }, game);
     if (ability.disabled) return;
@@ -987,7 +987,7 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
                 || (lastTick > currentTick && delayedNoteTick <= currentTick)
             ) {
                 //warning: playing sound is client specific delayed. other things should not.
-                if (!game.testing.replay && abilityOwner.type !== CHARACTER_PET_TYPE_FOLLOW_ATTACK) {
+                if (!game.testing.replay && abilityOwner.type !== CHARACTER_PET_TYPE_CLONE) {
                     playMusicNote(selectedMusicSheet.musicSheet, note, distanceToCamera, game.sound);
                 }
             }

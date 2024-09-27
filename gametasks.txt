@@ -1,14 +1,22 @@
-next test run: sniper, musician, 
+next test run: wait for curses to be in permanent data
 increase version
 
 current tasks:
 - map modifier
-    - check how map modifiers influence replays. After activating they broke
     - darkness
         - implement curseDarkness
             - clone spawn animation
             - clone turn evil animation
+            - clones start weaker, more curse more damages
+                - smaller character when weak
+                - grows to player size. Then next clones spawn
+            - clones shoult turn evil together
+            - clones should not snipe all the time, not snipe when turning evil
             - clones should have pets
+            - clones should not stack
+            - clean up boss data
+            - darkness boss not spawn on blocking tile
+            - check game end logic finding crown/king if clones are bosses
 
         - abilityObject "curse: Darkness"
             - delay, when boss killed, take a second for players to be able to run out of curse area

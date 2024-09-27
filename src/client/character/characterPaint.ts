@@ -9,7 +9,6 @@ import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_PLAYER_PARTS, IMAGE_SLIME } 
 import { CHARACTER_TYPE_KING_ENEMY } from "./enemy/kingEnemy.js";
 import { CharacterClass, getAverageLevelOfAbilitiesPetsCharClassId } from "./playerCharacters/playerCharacters.js";
 import { characterUpgradeGetStatsDisplayText, pushCharacterClassUpgradesUiTexts } from "./upgrades/characterUpgrades.js";
-import { TamerPetCharacter } from "./playerCharacters/tamer/tamerPetCharacter.js";
 import { findPlayerByCharacterId } from "../player.js";
 import { LEVELING_CLASS_SKILL_POINT_GAIN_EVERY_X_LEVELS } from "./playerCharacters/levelingCharacter.js";
 

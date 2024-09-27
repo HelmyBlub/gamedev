@@ -24,7 +24,7 @@ import { DEBUFF_NAME_DAMAGE_TAKEN } from "../debuff/debuffDamageTaken.js";
 import { createPaintTextData } from "../floatingText.js";
 import { addAreaBossType } from "./enemy/areaBoss/areaBossEnemy.js";
 import { tickCurses } from "../curse/curse.js";
-import { addPetTypeFollowAttackFunctions } from "./playerCharacters/characterPetTypeAttackFollow.js";
+import { addPetTypeFollowAttackFunctions } from "./playerCharacters/characterPetTypeClone.js";
 
 export function onDomLoadSetCharactersFunctions() {
     addAreaBossType();
