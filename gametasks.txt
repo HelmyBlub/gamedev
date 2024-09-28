@@ -5,10 +5,9 @@ current tasks:
 - map modifier
     - darkness
         - implement curseDarkness
-            - clones should not stack. change movement
             - clean up boss data
+                - check game end logic finding crown/king if clones are bosses
             - darkness boss not spawn on blocking tile
-            - check game end logic finding crown/king if clones are bosses
             - check past characters
             - darkness area after restart incorrect middle
             - check clone pet behaviour

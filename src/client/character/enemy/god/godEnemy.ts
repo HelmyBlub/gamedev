@@ -106,7 +106,13 @@ export function applyExponentialStackingDamageTakenDebuff(target: Character, gam
 export function godCreateMoreInfos(game: Game, heading: string): MoreInfosPartContainer | undefined {
     if (!game.ctx) return;
     if (game.state.bossStuff.godFightStartedTime === undefined) return;
-    let god = game.state.bossStuff.bosses[game.state.bossStuff.bosses.length - 1];
+    let god: Character | undefined;
+    for (let boss of game.state.bossStuff.bosses) {
+        if (boss.type === CHARACTER_TYPE_GOD_ENEMY) {
+            god = boss;
+        }
+    }
+    if (!god) return;
     return createCharacterMoreInfosPartContainer(game.ctx, god, game.UI.moreInfos, game, heading);
 }
 

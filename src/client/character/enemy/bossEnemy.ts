@@ -19,6 +19,7 @@ import { getPathingCache, PathingCache } from "../pathing.js";
 import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "../playerCharacters/playerCharacters.js";
 import { TamerPetCharacter } from "../playerCharacters/tamer/tamerPetCharacter.js";
 import { CHARACTER_TYPE_END_BOSS_CROWN_ENEMY } from "./kingCrown.js";
+import { CHARACTER_TYPE_KING_ENEMY } from "./kingEnemy.js";
 
 export type BossEnemyCharacter = Character;
 export const CHARACTER_TYPE_BOSS_ENEMY = "BossEnemyCharacter";
@@ -55,6 +56,7 @@ export function tickBossCharacters(bossStuff: BossStuff, game: Game) {
     const pathingCache = getPathingCache(game);
     const bosses = bossStuff.bosses;
     tickCharacters(bosses, game, pathingCache);
+    deleteDeadBosses(bossStuff);
 }
 
 export function getCelestialDirection(position: Position, map: GameMap): CelestialDirection {
@@ -134,6 +136,15 @@ export function setCharacterToBossLevel(character: Character, level: number) {
 
 export function calculateBossEnemyExperienceWorth(level: number): number {
     return Math.pow(level, 3) * 500;
+}
+
+function deleteDeadBosses(bossStuff: BossStuff) {
+    for (let i = bossStuff.bosses.length - 1; i >= 0; i--) {
+        const boss = bossStuff.bosses[i];
+        if (boss.state === "dead" && boss.type !== CHARACTER_TYPE_KING_ENEMY) {
+            bossStuff.bosses.splice(i, 1);
+        }
+    }
 }
 
 function onCloneBossKill(character: Character, game: Game) {

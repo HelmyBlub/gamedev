@@ -16,6 +16,7 @@ import { MoreInfosPartContainer, createDefaultMoreInfosContainer, createMoreInfo
 import { IMAGE_BUILDING1, createBuildingClassBuilding, classBuildingFindCharacterClassToMakeLegendary, classBuildingPlacePlayerClassStuffInBuilding, classBuildingFindById, BUILDING_CLASS_BUILDING } from "./buildings/classBuilding.js";
 import { fillRandomUpgradeOptionChoices } from "../character/upgrade.js";
 import { CHARACTER_CLASS_TOWER_BUILDER } from "../character/playerCharacters/characterClassTower.js";
+import { CHARACTER_TYPE_KING_ENEMY } from "../character/enemy/kingEnemy.js";
 
 export type MapTileObjectBuilding = MapTileObject & {
     buildingId: number,
@@ -35,7 +36,14 @@ export function addMapObjectClassBuilding() {
 }
 
 export function mapObjectPlaceClassBuilding(game: Game) {
-    const classToMakeLegendary = classBuildingFindCharacterClassToMakeLegendary(game.state.bossStuff.bosses[game.state.bossStuff.bosses.length - 2]);
+    let king: Character | undefined;
+    for (let boss of game.state.bossStuff.bosses) {
+        if (boss.type === CHARACTER_TYPE_KING_ENEMY) {
+            king = boss;
+        }
+    }
+    if (!king) throw "where is king?";
+    const classToMakeLegendary = classBuildingFindCharacterClassToMakeLegendary(king);
     if (classToMakeLegendary) {
         classBuildingPlacePlayerClassStuffInBuilding(classToMakeLegendary, game);
         return;

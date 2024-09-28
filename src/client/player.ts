@@ -183,22 +183,31 @@ export function addPlayerMoney(game: Game, isKingKill: boolean = false, isGodKil
         amount: moneyGain,
         text: `for distance of ${highestPlayerDistance}`,
     });
-    if (isKingKill && game.state.bossStuff.bosses.length >= 2) {
-        const boss = game.state.bossStuff.bosses[game.state.bossStuff.bosses.length - 2];
-        if (boss) {
-            const kingMoney = calculateMoneyForKingMaxHp(boss.maxHp);
+    if (isKingKill) {
+        let king: Character | undefined;
+        for (let boss of game.state.bossStuff.bosses) {
+            if (boss.type === CHARACTER_TYPE_KING_ENEMY) {
+                king = boss;
+            }
+        }
+        if (king) {
+            const kingMoney = calculateMoneyForKingMaxHp(king.maxHp);
             game.UI.moneyGainedThisRun.push({
                 amount: kingMoney,
-                text: `for King kill of ${boss.maxHp} HP`,
+                text: `for King kill of ${king.maxHp} HP`,
             });
             moneyGain += kingMoney;
         };
     } else if (isGodKill) {
-        const boss = game.state.bossStuff.bosses[game.state.bossStuff.bosses.length - 1];
-        if (boss && boss.type === CHARACTER_TYPE_GOD_ENEMY) {
-            const god = boss as GodEnemyCharacter;
+        let god: GodEnemyCharacter | undefined;
+        for (let boss of game.state.bossStuff.bosses) {
+            if (boss.type === CHARACTER_TYPE_GOD_ENEMY) {
+                god = boss as GodEnemyCharacter;
+            }
+        }
+        if (god) {
             if (god.hardModeActivated || !game.state.bossStuff.normalModeMoneyAwarded) {
-                const godMoney = calculateMoneyForKingMaxHp(boss.maxHp) * 2;
+                const godMoney = calculateMoneyForKingMaxHp(god.maxHp) * 2;
                 const hardModeText = god.hardModeActivated ? "hard mode " : "";
                 game.UI.moneyGainedThisRun.push({
                     amount: godMoney,

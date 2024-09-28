@@ -65,7 +65,7 @@ function paintCurse(ctx: CanvasRenderingContext2D, curse: Curse, target: Charact
         const cameraPosition = getCameraPosition(game);
         const paintPos = getPointPaintPosition(ctx, target, cameraPosition, game.UI.zoom);
         ctx.font = "30px Arial";
-        paintTextWithOutline(ctx, "white", "black", `Curse ${Math.floor(curse.level)}`, paintPos.x, paintPos.y - 30, true, 3);
+        paintTextWithOutline(ctx, "white", "black", `Curse Darkness Level ${Math.floor(curse.level)}`, paintPos.x, paintPos.y - 30, true, 3);
     }
 }
 

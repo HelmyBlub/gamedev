@@ -20,7 +20,7 @@ import { getCelestialDirection } from "./bossEnemy.js";
 import { legendaryAbilityGiveBlessing, classBuildingPutLegendaryCharacterStuffBackIntoBuilding } from "../../map/buildings/classBuilding.js";
 import { MoreInfosPartContainer, createCharacterMoreInfosPartContainer } from "../../moreInfo.js";
 import { doDamageMeterSplit } from "../../combatlog.js";
-import { createKingCrownCharacter, KingCrownEnemyCharacter } from "./kingCrown.js";
+import { CHARACTER_TYPE_END_BOSS_CROWN_ENEMY, createKingCrownCharacter, KingCrownEnemyCharacter } from "./kingCrown.js";
 
 export type KingEnemyCharacter = Character;
 export const CHARACTER_TYPE_KING_ENEMY = "KingEnemyCharacter";
@@ -65,16 +65,26 @@ export function kingCreateMoreInfos(game: Game, celestialDirection: CelestialDir
         kingChar.type = CHARACTER_TYPE_KING_ENEMY;
         resetCharacter(kingChar, game);
     } else {
-        kingChar = game.state.bossStuff.bosses[game.state.bossStuff.bosses.length - 1];
+        for (let boss of game.state.bossStuff.bosses) {
+            if (boss.type === CHARACTER_TYPE_KING_ENEMY) {
+                kingChar = boss;
+            }
+        }
     }
-
+    if (!kingChar) return;
     return createCharacterMoreInfosPartContainer(game.ctx, kingChar, game.UI.moreInfos, game, heading);
 }
 
 export function setPlayerAsKing(game: Game) {
     if (game.testing.replay) return;
     let kingBaseCharacter: Character | undefined = undefined;
-    const crown: KingCrownEnemyCharacter = game.state.bossStuff.bosses[game.state.bossStuff.bosses.length - 1];
+    let crown: KingCrownEnemyCharacter | undefined;
+    for (let boss of game.state.bossStuff.bosses) {
+        if (boss.type === CHARACTER_TYPE_END_BOSS_CROWN_ENEMY) {
+            crown = boss;
+        }
+    }
+    if (!crown) throw "where is the crown?";
     if (crown.targetCharacterId !== undefined) {
         for (let player of game.state.players) {
             if (player.character.id === crown.targetCharacterId) {
