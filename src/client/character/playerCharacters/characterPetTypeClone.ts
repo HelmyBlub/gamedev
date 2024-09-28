@@ -1,5 +1,5 @@
 import { ABILITIES_FUNCTIONS } from "../../ability/ability.js";
-import { calculateDirection } from "../../game.js";
+import { calculateDirection, calculateDistance } from "../../game.js";
 import { Game, Position } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { RandomizedCharacterImage } from "../../randomizedCharacterImage.js";
@@ -17,6 +17,7 @@ export type CharacterPetClone = Character & {
     turnEvilStartedTime?: number,
     turnEvilDuration?: number,
     tempDarkCharacterImage?: RandomizedCharacterImage,
+    forcedMovePosition?: Position,
 }
 
 export const CHARACTER_PET_TYPE_CLONE = "CharacterPetTypeClone";
@@ -82,13 +83,24 @@ function tick(character: Character, petOwner: Character, game: Game, pathingCach
         clone.height = clone.originalHeight! * sizeFaktor;
         return;
     }
-    const moveTargetPos: Position = {
-        x: petOwner.x + nextRandom(game.state.randomSeed) * 100 - 50,
-        y: petOwner.y + nextRandom(game.state.randomSeed) * 100 - 50,
+    if (clone.forcedMovePosition) {
+        const distance = calculateDistance(clone.forcedMovePosition, petOwner);
+        if (distance > 160) clone.forcedMovePosition = undefined;
     }
-    character.moveDirection = calculateDirection(character, moveTargetPos);
-    character.isMoving = true;
-    moveCharacterTick(character, game.state.map, game.state.idCounter, game);
+    if (!clone.forcedMovePosition) {
+        clone.forcedMovePosition = {
+            x: petOwner.x + nextRandom(game.state.randomSeed) * 160 - 80,
+            y: petOwner.y + nextRandom(game.state.randomSeed) * 160 - 80,
+        }
+    }
+    const distance = calculateDistance(clone.forcedMovePosition, clone);
+    if (distance > character.baseMoveSpeed * 5) {
+        character.moveDirection = calculateDirection(character, clone.forcedMovePosition);
+        character.isMoving = true;
+        moveCharacterTick(character, game.state.map, game.state.idCounter, game);
+    } else {
+        character.isMoving = false;
+    }
 
     for (let ability of character.abilities) {
         let functions = ABILITIES_FUNCTIONS[ability.name];
