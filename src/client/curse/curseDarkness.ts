@@ -9,7 +9,7 @@ import { getPointPaintPosition, paintTextWithOutline } from "../gamePaint.js";
 import { Curse, CURSES_FUNCTIONS } from "./curse.js";
 
 export const CURSE_DARKNESS = "Darkness";
-const TIME_TO_TURN_EVIL = 15000;
+const TIME_TO_TURN_EVIL = 60000;
 const CLONE_SPAWN_INTERVAL = 1000;
 const EVIL_TRANSFORM_TIME = 3000;
 

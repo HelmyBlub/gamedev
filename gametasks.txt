@@ -5,12 +5,14 @@ current tasks:
 - map modifier
     - darkness
         - implement curseDarkness
-            - clean up boss data
-                - check game end logic finding crown/king if clones are bosses
             - darkness boss not spawn on blocking tile
             - check past characters
             - darkness area after restart incorrect middle
-            - check clone pet behaviour
+            - check boss clones not messing up king/god logics
+                - money
+                - legendaries
+                - achievements
+                - moreInfo
 
         - abilityObject "curse: Darkness"
             - delay, when boss killed, take a second for players to be able to run out of curse area
