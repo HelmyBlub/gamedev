@@ -3,8 +3,9 @@ import { Character } from "../character/characterModel.js";
 import { CHARACTER_TYPE_BOSS_CLONE_ENEMY, setCharacterToBossLevel } from "../character/enemy/bossEnemy.js";
 import { CHARACTER_PET_TYPE_CLONE, CharacterPetClone } from "../character/playerCharacters/characterPetTypeClone.js";
 import { TAMER_PET_CHARACTER } from "../character/playerCharacters/tamer/tamerPetCharacter.js";
-import { changeCharacterAndAbilityIds, deepCopy } from "../game.js";
+import { changeCharacterAndAbilityIds, deepCopy, getCameraPosition } from "../game.js";
 import { FACTION_ENEMY, Game } from "../gameModel.js";
+import { getPointPaintPosition, paintTextWithOutline } from "../gamePaint.js";
 import { Curse, CURSES_FUNCTIONS } from "./curse.js";
 
 export const CURSE_DARKNESS = "Darkness";
@@ -17,11 +18,14 @@ export type CurseDarkness = Curse & {
     turnEvilTime?: number,
     evilIdRefs: number[],
     nextCloneSpawnTime?: number,
+    visualizeFadeTimer?: number,
 }
 
 export function addCurseDarkness() {
     CURSES_FUNCTIONS[CURSE_DARKNESS] = {
         tick: tickDarkness,
+        paint: paintCurse,
+        reset: reset,
     };
 }
 
@@ -48,6 +52,23 @@ export function curseDarknessCloneKillCheck(clone: Character, game: Game) {
     }
 }
 
+function reset(curse: Curse) {
+    const darkness = curse as CurseDarkness;
+    darkness.visualizeFadeTimer = undefined;
+    darkness.turnEvilTime = undefined;
+    darkness.nextCloneSpawnTime = undefined;
+}
+
+function paintCurse(ctx: CanvasRenderingContext2D, curse: Curse, target: Character, game: Game) {
+    const darkness = curse as CurseDarkness;
+    if (darkness.visualizeFadeTimer !== undefined && darkness.visualizeFadeTimer > game.state.time) {
+        const cameraPosition = getCameraPosition(game);
+        const paintPos = getPointPaintPosition(ctx, target, cameraPosition, game.UI.zoom);
+        ctx.font = "30px Arial";
+        paintTextWithOutline(ctx, "white", "black", `Curse ${Math.floor(curse.level)}`, paintPos.x, paintPos.y - 30, true, 3);
+    }
+}
+
 function createClone(original: Character, game: Game): Character {
     const clone: Character = deepCopy(original);
     if (clone.pets) {
@@ -65,11 +86,21 @@ function createClone(original: Character, game: Game): Character {
 }
 
 function spawnClone(darkness: CurseDarkness, target: Character, game: Game) {
-    if (darkness.evilIdRefs.length > 0 || Math.floor(darkness.level) <= darkness.cloneCounter) return;
+    const maxClones = Math.ceil(darkness.level / 10);
+    if (darkness.evilIdRefs.length > 0 || maxClones <= darkness.cloneCounter) return;
     if (darkness.nextCloneSpawnTime !== undefined && darkness.nextCloneSpawnTime > game.state.time) return;
     darkness.nextCloneSpawnTime = game.state.time + CLONE_SPAWN_INTERVAL;
     const clone = createClone(target, game);
     if (!target.pets) target.pets = [];
+    let cloneDamageFactor = 1;
+    let cloneSizeFactor = 1;
+    if (maxClones - 1 === darkness.cloneCounter) {
+        cloneDamageFactor = 1 - (maxClones - (darkness.level / 10));
+        cloneSizeFactor = 0.5 + (cloneDamageFactor / 2);
+    }
+    clone.damageDoneFactor *= cloneDamageFactor;
+    clone.width *= cloneSizeFactor;
+    clone.height *= cloneSizeFactor;
     target.pets.push(clone);
     darkness.cloneCounter++;
     if (darkness.turnEvilTime === undefined) darkness.turnEvilTime = game.state.time + TIME_TO_TURN_EVIL;
@@ -111,7 +142,7 @@ function turnEvil(darkness: CurseDarkness, target: Character, game: Game) {
         const clone = target.pets.splice(i, 1)[0] as CharacterPetClone;
         clone.faction = FACTION_ENEMY;
         clone.type = CHARACTER_TYPE_BOSS_CLONE_ENEMY;
-        const level = game.state.bossStuff.bossLevelCounter + Math.floor(darkness.level);
+        const level = game.state.bossStuff.bossLevelCounter + Math.floor(darkness.level / 5);
         clone.paint.randomizedCharacterImage = clone.tempDarkCharacterImage;
         clone.tempDarkCharacterImage = undefined;
         setCharacterToBossLevel(clone, level);

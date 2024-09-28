@@ -23,7 +23,7 @@ import { addGodEnemyType } from "./enemy/god/godEnemy.js";
 import { DEBUFF_NAME_DAMAGE_TAKEN } from "../debuff/debuffDamageTaken.js";
 import { createPaintTextData } from "../floatingText.js";
 import { addAreaBossType } from "./enemy/areaBoss/areaBossEnemy.js";
-import { tickCurses } from "../curse/curse.js";
+import { resetCurses, tickCurses } from "../curse/curse.js";
 import { addPetTypeFollowAttackFunctions } from "./playerCharacters/characterPetTypeClone.js";
 
 export function onDomLoadSetCharactersFunctions() {
@@ -399,6 +399,7 @@ export function resetCharacter(character: Character, game: Game) {
     }
     removeCharacterDebuffs(character, game);
     resetAllCharacterAbilities(character);
+    resetCurses(character);
 }
 
 export function determineCharactersInDistance(position: Position, map: GameMap | undefined, players: Player[], bosses: BossEnemyCharacter[] | undefined, maxDistance: number, notFaction: string | undefined = undefined, onlyAlive: boolean = false): Character[] {

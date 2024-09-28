@@ -11,6 +11,7 @@ import { CharacterClass, getAverageLevelOfAbilitiesPetsCharClassId } from "./pla
 import { characterUpgradeGetStatsDisplayText, pushCharacterClassUpgradesUiTexts } from "./upgrades/characterUpgrades.js";
 import { findPlayerByCharacterId } from "../player.js";
 import { LEVELING_CLASS_SKILL_POINT_GAIN_EVERY_X_LEVELS } from "./playerCharacters/levelingCharacter.js";
+import { paintCurses } from "../curse/curse.js";
 
 export function paintCharacters(ctx: CanvasRenderingContext2D, characters: (Character | undefined)[], cameraPosition: Position, game: Game) {
     for (let i = 0; i < characters.length; i++) {
@@ -169,6 +170,7 @@ export function paintPlayerCharacters(ctx: CanvasRenderingContext2D, cameraPosit
         } else {
             paintPlayerNameOverCharacter(ctx, playerChar, cameraPosition, game);
         }
+        paintCurses(ctx, playerChar, game);
     }
     paintCharacters(ctx, game.state.pastPlayerCharacters.characters, cameraPosition, game);
 }

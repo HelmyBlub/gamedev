@@ -1,9 +1,9 @@
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityObjectCircle, PaintOrderAbility } from "../../../ability/ability.js";
 import { applyCurse, Curse } from "../../../curse/curse.js";
-import { createCurseDarkness, CURSE_DARKNESS } from "../../../curse/curseDarkness.js";
+import { createCurseDarkness, CURSE_DARKNESS, CurseDarkness } from "../../../curse/curseDarkness.js";
 import { calculateDistance, getCameraPosition, getNextId } from "../../../game.js";
 import { FACTION_ENEMY, Game, IdCounter, Rectangle } from "../../../gameModel.js";
-import { getPointPaintPosition } from "../../../gamePaint.js";
+import { getPointPaintPosition, paintTextWithOutline } from "../../../gamePaint.js";
 import { findMapModifierById, GameMapAreaRect } from "../../../map/modifiers/mapModifier.js";
 import { getPlayerCharacters } from "../../character.js";
 import { Character } from "../../characterModel.js";
@@ -25,7 +25,7 @@ export function addAbilityCurseDarkness() {
         tickAbilityObject: tickAbilityObject,
         deleteAbilityObject: deleteObject,
         createAbility: createAbilityCurseDarkness,
-        paintAbilityObject: paintAbilityObjectDeathCircle,
+        paintAbilityObject: paintAbilityObject,
     };
 }
 
@@ -88,27 +88,23 @@ function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
 }
 
 function curseIncreaseCharacter(character: Character, game: Game) {
-    let apply = false;
-    let curse: Curse | undefined = undefined;
-    if (!character.curses) {
-        apply = true;
+    let curse: CurseDarkness | undefined = undefined;
+    if (character.curses) {
+        curse = character.curses!.find(c => c.type === CURSE_DARKNESS) as CurseDarkness;
     }
-    if (!apply) {
-        curse = character.curses!.find(c => c.type === CURSE_DARKNESS);
-        if (!curse) apply = true;
-    }
-    if (apply) {
+    if (!curse) {
         curse = createCurseDarkness();
         applyCurse(curse, character, game);
     } else {
-        curse!.level += 0.1;
+        curse.level += 0.2;
     }
-    console.log("player cursed", curse!.level);
+    curse.visualizeFadeTimer = game.state.time + 2000;
 }
 
-function paintAbilityObjectDeathCircle(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
-    if (paintOrder !== "beforeCharacterPaint") return;
-
+function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
+    if (paintOrder !== "beforeCharacterPaint") {
+        return;
+    }
     const curse = abilityObject as AbilityObjectCurseDarkness;
     const cameraPosition = getCameraPosition(game);
     const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition, game.UI.zoom);

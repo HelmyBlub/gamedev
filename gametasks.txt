@@ -1,10 +1,12 @@
-next test run: wait for curses to be in permanent data
+next test run: tamer, ball, musician
 increase version
 
 current tasks:
 - map modifier
     - darkness
         - implement curseDarkness
+            - visualize curse level
+                - over character write "curse x"
             - clones start weaker, more curse more damages
                 - smaller character when weak
                 - grows to player size. Then next clones spawn
@@ -14,6 +16,8 @@ current tasks:
             - clean up boss data
             - darkness boss not spawn on blocking tile
             - check game end logic finding crown/king if clones are bosses
+            - check past characters
+            - darkness area after restart incorrect middle
 
         - abilityObject "curse: Darkness"
             - delay, when boss killed, take a second for players to be able to run out of curse area
