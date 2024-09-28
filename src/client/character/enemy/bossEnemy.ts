@@ -123,6 +123,13 @@ export function setCharacterToBossLevel(character: Character, level: number) {
     for (let ability of character.abilities) {
         setAbilityToBossLevel(ability, level);
     }
+
+    if (character.pets) {
+        for (let pet of character.pets) {
+            pet.faction = FACTION_ENEMY;
+            setCharacterToBossLevel(pet, level);
+        }
+    }
 }
 
 export function calculateBossEnemyExperienceWorth(level: number): number {

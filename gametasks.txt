@@ -5,14 +5,13 @@ current tasks:
 - map modifier
     - darkness
         - implement curseDarkness
-            - clones should not snipe all the time, not snipe when turning evil
-            - clones should have pets
-            - clones should not stack
+            - clones should not stack. change movement
             - clean up boss data
             - darkness boss not spawn on blocking tile
             - check game end logic finding crown/king if clones are bosses
             - check past characters
             - darkness area after restart incorrect middle
+            - check clone pet behaviour
 
         - abilityObject "curse: Darkness"
             - delay, when boss killed, take a second for players to be able to run out of curse area

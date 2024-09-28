@@ -337,6 +337,11 @@ function slimePaint(ctx: CanvasRenderingContext2D, character: Character, cameraP
 function paintCharacterPets(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
     if (character.pets !== undefined) {
         paintCharacters(ctx, character.pets, cameraPosition, game);
+        for (let pet of character.pets) {
+            if (pet.pets !== undefined) {
+                paintCharacters(ctx, pet.pets, cameraPosition, game);
+            }
+        }
     }
 }
 
