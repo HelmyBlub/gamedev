@@ -21,6 +21,7 @@ import { AbilityDamageBreakdown } from "../../combatlog.js";
 import { ABILITY_NAME_EXPLODE } from "../abilityExplode.js";
 import { ABILITY_NAME_FIRE_LINE } from "../abilityFireLine.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
+import { PLAYER_CHARACTER_TYPE } from "../../character/playerCharacters/playerCharacters.js";
 
 export type AbilityObjectSnipe = AbilityObject & {
     damage: number,
@@ -475,7 +476,8 @@ function tickAbilitySnipe(abilityOwner: AbilityOwner, ability: Ability, game: Ga
                         y: target.y,
                     }
                 } else {
-                    castPosition = { x: 0, y: 0 };
+                    abilitySnipe.shotNextAllowedTime = false;
+                    return;
                 }
             }
         }
@@ -492,7 +494,7 @@ function tickAbilitySnipe(abilityOwner: AbilityOwner, ability: Ability, game: Ga
     }
     tickAbilityUpgradeMoreRifles(abilitySnipe, abilityOwner, game);
     tickAbilityUpgradeAfterImage(abilitySnipe, abilityOwner, game);
-    if (abilityOwner.faction === FACTION_ENEMY) {
+    if (abilityOwner.type !== PLAYER_CHARACTER_TYPE) {
         abilitySnipe.shotNextAllowedTime = false;
     }
 }
