@@ -36,6 +36,7 @@ export function castSnipeMoreRifles(position: Position, faction: string, ability
         const newPosition = getMoreRiflesPosition(position, upgradeMoreRifles, i);
         createAbilityObjectSnipeInitial(newPosition, faction, abilitySnipe, castPosition, false, false, game, ABILITY_SNIPE_UPGRADE_MORE_RIFLES);
         if (playerTriggered) castSnipeAfterImage(newPosition, abilitySnipe, castPosition, false, game);
+        upgradeMoreRifles.lastSniperRiflePaintDirection[i] = calculateDirection(newPosition, castPosition);
     }
 }
 
@@ -59,16 +60,6 @@ export function tickAbilityUpgradeMoreRifles(abilitySnipe: AbilitySnipe, ability
     const upgrade: AbilityUpgradeMoreRifles | undefined = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES];
     if (!upgrade) return;
     upgrade.rotationDirection += 0.02;
-
-    if (abilitySnipe.shotNextAllowedTime) {
-        const clientInfo: ClientInfo | undefined = findClientInfoByCharacterId(abilityOwner.id, game);
-        if (clientInfo) {
-            for (let i = 0; i < upgrade.numberRifles; i++) {
-                const position = getMoreRiflesPosition(abilityOwner, upgrade, i);
-                upgrade.lastSniperRiflePaintDirection[i] = calculateDirection(position, clientInfo.lastMousePosition);
-            }
-        }
-    }
 }
 
 function getOptionsMoreRifles(ability: Ability): UpgradeOptionAndProbability[] {

@@ -457,7 +457,7 @@ function tickAbilitySnipe(abilityOwner: AbilityOwner, ability: Ability, game: Ga
     }
     if (abilitySnipe.currentCharges > 0 && abilitySnipe.shotNextAllowedTime && game.state.time >= abilitySnipe.nextAllowedShotTime) {
         const clientInfo: ClientInfo | undefined = findClientInfoByCharacterId(abilityOwner.id, game);
-        let castPosition = { x: 0, y: 0 };
+        let castPosition: Position | undefined = { x: 0, y: 0 };
         if (clientInfo) {
             castPosition = clientInfo.lastMousePosition;
         } else {
@@ -477,11 +477,11 @@ function tickAbilitySnipe(abilityOwner: AbilityOwner, ability: Ability, game: Ga
                     }
                 } else {
                     abilitySnipe.shotNextAllowedTime = false;
-                    return;
+                    castPosition = undefined;
                 }
             }
         }
-        createAbilityObjectSnipeInitialPlayerTriggered(abilityOwner, abilitySnipe, castPosition, game);
+        if (castPosition) createAbilityObjectSnipeInitialPlayerTriggered(abilityOwner, abilitySnipe, castPosition, game);
     }
     if (abilitySnipe?.upgrades[ABILITY_SNIPE_UPGRADE_STAY_STILL]) {
         tickAbilityUpgradeStayStill(abilitySnipe, abilityOwner, game);

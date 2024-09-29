@@ -5,8 +5,6 @@ current tasks:
 - map modifier
     - darkness
         - implement curseDarkness
-            - check past characters
-            - darkness area after restart incorrect middle
             - clone sniper moreRifles upgrade not moving
             - check boss clones not messing up king/god logics
                 - money
