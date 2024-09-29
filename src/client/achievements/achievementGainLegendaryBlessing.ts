@@ -1,3 +1,4 @@
+import { CHARACTER_TYPE_KING_ENEMY } from "../character/enemy/kingEnemy.js";
 import { Game } from "../gameModel.js";
 import { MoreInfoPart, createMoreInfosPart } from "../moreInfo.js";
 import { addMoneyAmountToPlayer, addMoneyUiMoreInfo } from "../player.js";
@@ -41,6 +42,7 @@ function onGameEndCheck(achievement: Achievement, game: Game) {
     }
     if (!playerAlive) return false;
     for (let boss of game.state.bossStuff.bosses) {
+        if (boss.type !== CHARACTER_TYPE_KING_ENEMY) continue;
         if (boss.characterClasses) {
             for (let charClass of boss.characterClasses) {
                 if (charClass.legendary) {

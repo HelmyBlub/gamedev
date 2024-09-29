@@ -1,5 +1,6 @@
 import { Character } from "./character/characterModel.js";
-import { GodEnemyCharacter } from "./character/enemy/god/godEnemy.js";
+import { CHARACTER_TYPE_GOD_ENEMY, GodEnemyCharacter } from "./character/enemy/god/godEnemy.js";
+import { CHARACTER_TYPE_KING_ENEMY } from "./character/enemy/kingEnemy.js";
 import { calculateDistance, getTimeSinceFirstKill } from "./game.js";
 import { Game } from "./gameModel.js";
 import { getMapMidlePosition } from "./map/map.js";
@@ -152,7 +153,12 @@ function createAndPushGodScore(playerClass: string, game: Game): number {
     const board = game.state.highscores.scoreBoards[HIGHSCORE_GOD_TIME];
     const bosses = game.state.bossStuff.bosses;
     let god: GodEnemyCharacter | undefined;
-    god = bosses[bosses.length - 1] as GodEnemyCharacter;
+    for (let boss of bosses) {
+        if (boss.type !== CHARACTER_TYPE_GOD_ENEMY) continue;
+        god = boss as GodEnemyCharacter;
+        break;
+    }
+
     if (god === undefined || game.state.bossStuff.godFightStartedTime === undefined) throw Error("should not be possible?");
     const hardModeText = god.hardModeActivated ? "Hard Mode " : "";
     if (god.hp <= 0) {
@@ -185,15 +191,19 @@ function createAndPushKingScore(playerClass: string, game: Game): number {
     let newScore = 0;
     const board = game.state.highscores.scoreBoards[HIGHSCORE_KING_TIME];
     const bosses = game.state.bossStuff.bosses;
-    let enemy: Character | undefined = bosses[bosses.length - 2];
-    if (enemy === undefined) enemy = bosses[bosses.length - 1];;
-    if (enemy === undefined || game.state.bossStuff.kingFightStartedTime === undefined) throw Error("should not be possible?");
-    if (enemy.hp <= 0) {
-        newScore = enemy.maxHp / ((game.state.time - game.state.bossStuff.kingFightStartedTime) / 1000);
+    let king: Character | undefined;
+    for (let boss of bosses) {
+        if (boss.type !== CHARACTER_TYPE_KING_ENEMY) continue;
+        king = boss as GodEnemyCharacter;
+        break;
+    }
+    if (king === undefined || game.state.bossStuff.kingFightStartedTime === undefined) throw Error("should not be possible?");
+    if (king.hp <= 0) {
+        newScore = king.maxHp / ((game.state.time - game.state.bossStuff.kingFightStartedTime) / 1000);
         board.scores.push({ score: newScore, playerClass: playerClass, scoreTypePrio: SCORE_PRIO_KILL_DPS, scoreSuffix: "DPS" });
         game.UI.lastHighscoreText = `New Score (King Kill DPS): ${(newScore).toLocaleString(undefined, { maximumFractionDigits: 0 })} DPS`;
     } else {
-        newScore = enemy.hp / enemy.maxHp * 100;
+        newScore = king.hp / king.maxHp * 100;
         board.scores.push({ score: newScore, playerClass: playerClass, scoreTypePrio: SCORE_PRIO_HP_PER_CENT, scoreSuffix: "%" });
         game.UI.lastHighscoreText = `New Score (King HP %): ${(newScore).toFixed(2)}%`;
     }

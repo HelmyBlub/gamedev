@@ -18,6 +18,7 @@ import { paintCharacterWithAbilitiesDefault, paintCharacterHpBar, paintCharacter
 import { getPathingCache, PathingCache } from "../pathing.js";
 import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "../playerCharacters/playerCharacters.js";
 import { TamerPetCharacter } from "../playerCharacters/tamer/tamerPetCharacter.js";
+import { CHARACTER_TYPE_GOD_ENEMY } from "./god/godEnemy.js";
 import { CHARACTER_TYPE_END_BOSS_CROWN_ENEMY } from "./kingCrown.js";
 import { CHARACTER_TYPE_KING_ENEMY } from "./kingEnemy.js";
 
@@ -141,7 +142,7 @@ export function calculateBossEnemyExperienceWorth(level: number): number {
 function deleteDeadBosses(bossStuff: BossStuff) {
     for (let i = bossStuff.bosses.length - 1; i >= 0; i--) {
         const boss = bossStuff.bosses[i];
-        if (boss.state === "dead" && boss.type !== CHARACTER_TYPE_KING_ENEMY) {
+        if (boss.state === "dead" && boss.type !== CHARACTER_TYPE_KING_ENEMY && boss.type !== CHARACTER_TYPE_GOD_ENEMY) {
             bossStuff.bosses.splice(i, 1);
         }
     }

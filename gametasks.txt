@@ -5,14 +5,7 @@ current tasks:
 - map modifier
     - darkness
         - implement curseDarkness
-            - king clones not respawn, turn evil
-                - make clones "evil" after spawn?
-                - check clone counter
             - check boss clones not messing up king/god logics
-                - money
-                - legendaries
-                - achievements
-                - moreInfo
 
         - curse apply to legendary permanently
             - visualize if cursed

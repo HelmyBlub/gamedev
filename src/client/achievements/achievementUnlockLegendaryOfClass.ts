@@ -1,4 +1,4 @@
-import { KingEnemyCharacter } from "../character/enemy/kingEnemy.js";
+import { CHARACTER_TYPE_KING_ENEMY, KingEnemyCharacter } from "../character/enemy/kingEnemy.js";
 import { Game } from "../gameModel.js";
 import { BUILDING_CLASS_BUILDING, ClassBuilding } from "../map/buildings/classBuilding.js";
 import { MoreInfoPart, createMoreInfosPart } from "../moreInfo.js";
@@ -66,8 +66,9 @@ function onGameEndCheck(achievement: Achievement, game: Game) {
         }
     }
     if (!emptyBuilding) return false;
-    for (let bosses of game.state.bossStuff.bosses) {
-        if (bosses.characterClasses && bosses.characterClasses.findIndex(c => c.className === legendaryClass.legendaryClass) !== -1) {
+    for (let boss of game.state.bossStuff.bosses) {
+        if (boss.type !== CHARACTER_TYPE_KING_ENEMY) continue;
+        if (boss.characterClasses && boss.characterClasses.findIndex(c => c.className === legendaryClass.legendaryClass) !== -1) {
             return true;
         }
     }
