@@ -5,19 +5,20 @@ current tasks:
 - map modifier
     - darkness
         - implement curseDarkness
-            - clone sniper moreRifles upgrade not moving
+            - king clones not respawn, turn evil
+                - make clones "evil" after spawn?
+                - check clone counter
             - check boss clones not messing up king/god logics
                 - money
                 - legendaries
                 - achievements
                 - moreInfo
 
-        - abilityObject "curse: Darkness"
-            - delay, when boss killed, take a second for players to be able to run out of curse area
-            - make clones dark
-            - clones should teleport if to far away
-            - clones should have pathfinding?
+        - curse apply to legendary permanently
+            - visualize if cursed
+        - visualize player is cursed
         - save in permanent storage
+
         - check same wall not generated multiple times
             - backwards raycast required?
             - angle limits need to update correctly

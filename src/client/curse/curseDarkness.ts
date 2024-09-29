@@ -4,7 +4,7 @@ import { CHARACTER_TYPE_BOSS_CLONE_ENEMY, setCharacterToBossLevel } from "../cha
 import { CHARACTER_PET_TYPE_CLONE, CharacterPetClone } from "../character/playerCharacters/characterPetTypeClone.js";
 import { TAMER_PET_CHARACTER } from "../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { changeCharacterAndAbilityIds, deepCopy, getCameraPosition } from "../game.js";
-import { FACTION_ENEMY, Game } from "../gameModel.js";
+import { FACTION_ENEMY, FACTION_PLAYER, Game } from "../gameModel.js";
 import { getPointPaintPosition, paintTextWithOutline } from "../gamePaint.js";
 import { Curse, CURSES_FUNCTIONS } from "./curse.js";
 
@@ -41,15 +41,22 @@ export function createCurseDarkness(): CurseDarkness {
 export function curseDarknessCloneKillCheck(clone: Character, game: Game) {
     const playerCharacters = getPlayerCharacters(game.state.players);
     for (let char of playerCharacters) {
-        if (char.curses === undefined) continue;
-        const curse = char.curses.find(c => c.type === CURSE_DARKNESS);
-        if (!curse) continue;
-        const darkness = curse as CurseDarkness;
-        const idIndex = darkness.evilIdRefs.findIndex(id => id === clone.id);
-        if (idIndex === -1) continue;
-        darkness.evilIdRefs.splice(idIndex, 1);
-        return;
+        if (checkForCurseAndDelete(char, clone.id)) return;
     }
+    for (let boss of game.state.bossStuff.bosses) {
+        if (checkForCurseAndDelete(boss, clone.id)) return;
+    }
+}
+
+function checkForCurseAndDelete(character: Character, cloneId: number): boolean {
+    if (character.curses === undefined) return false;
+    const curse = character.curses.find(c => c.type === CURSE_DARKNESS);
+    if (!curse) return false;
+    const darkness = curse as CurseDarkness;
+    const idIndex = darkness.evilIdRefs.findIndex(id => id === cloneId);
+    if (idIndex === -1) return false;
+    darkness.evilIdRefs.splice(idIndex, 1);
+    return true;
 }
 
 function reset(curse: Curse) {
@@ -92,7 +99,7 @@ function spawnClone(darkness: CurseDarkness, target: Character, game: Game) {
     if (darkness.evilIdRefs.length > 0 || maxClones <= darkness.cloneCounter) return;
     if (darkness.nextCloneSpawnTime !== undefined && darkness.nextCloneSpawnTime > game.state.time) return;
     darkness.nextCloneSpawnTime = game.state.time + CLONE_SPAWN_INTERVAL;
-    const clone = createClone(target, game);
+    const clone: CharacterPetClone = createClone(target, game);
     if (!target.pets) target.pets = [];
     let cloneDamageFactor = 1;
     let cloneSizeFactor = 1;
@@ -105,7 +112,8 @@ function spawnClone(darkness: CurseDarkness, target: Character, game: Game) {
     clone.height *= cloneSizeFactor;
     target.pets.push(clone);
     darkness.cloneCounter++;
-    if (darkness.turnEvilTime === undefined) darkness.turnEvilTime = game.state.time + TIME_TO_TURN_EVIL;
+    const timeToTurn = target.faction === FACTION_PLAYER ? TIME_TO_TURN_EVIL : 3000;
+    if (darkness.turnEvilTime === undefined) darkness.turnEvilTime = game.state.time + timeToTurn;
 }
 
 function startTurnEvil(darkness: CurseDarkness, target: Character, game: Game) {
