@@ -5,6 +5,7 @@ import { tickCharacterDebuffs } from "../../../debuff/debuff.js";
 import { getNextId } from "../../../game.js";
 import { IdCounter, Game, Position, FACTION_ENEMY } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
+import { findNearNonBlockingPosition } from "../../../map/map.js";
 import { findMapModifierById, GameMapAreaRect, removeMapModifier } from "../../../map/modifiers/mapModifier.js";
 import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick, resetCharacter } from "../../character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, createCharacter } from "../../characterModel.js";
@@ -34,8 +35,9 @@ export function createDefaultAreaBossWithLevel(idCounter: IdCounter, spawn: Posi
     const moveSpeed = Math.min(6, 1.5 + scaling * 0.5);
     const hp = 1000 * Math.pow(scaling, 4);
     const experienceWorth = Math.pow(scaling, 3) * 500;
+    const nonBlockingSpawn = findNearNonBlockingPosition(spawn, game.state.map, game.state.idCounter, game);
 
-    const bossCharacter = createCharacter(getNextId(idCounter), spawn.x, spawn.y, bossSize, bossSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_AREA_BOSS_ENEMY, experienceWorth);
+    const bossCharacter = createCharacter(getNextId(idCounter), nonBlockingSpawn.x, nonBlockingSpawn.y, bossSize, bossSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_AREA_BOSS_ENEMY, experienceWorth);
     bossCharacter.paint.image = IMAGE_SLIME;
     const abilities: Ability[] = createBossAbilities(scaling, game);
     bossCharacter.abilities = abilities;
@@ -87,8 +89,13 @@ function resetBossIfOutsideModifierArea(areaBoss: AreaBossEnemyCharacter, game: 
 function resetAreaBoss(areaBoss: AreaBossEnemyCharacter, area: GameMapAreaRect, game: Game) {
     resetCharacter(areaBoss, game);
     areaBoss.hp = areaBoss.maxHp;
-    areaBoss.x = area.x + area.width / 2;
-    areaBoss.y = area.y + area.height / 2;
+    const spawn: Position = {
+        x: area.x + area.width / 2,
+        y: area.y + area.height / 2
+    }
+    const nonBlocking = findNearNonBlockingPosition(spawn, game.state.map, game.state.idCounter, game);
+    areaBoss.x = nonBlocking.x;
+    areaBoss.y = nonBlocking.y;
 }
 
 function createBossAbilities(abilityLevel: number, game: Game): Ability[] {

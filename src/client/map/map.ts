@@ -102,20 +102,23 @@ export function isPositionBlocking(pos: Position, map: GameMap, idCounter: IdCou
 
 export function findNearNonBlockingPosition(pos: Position, map: GameMap, idCounter: IdCounter, game: Game): Position {
     const currentPosition: Position = { x: pos.x, y: pos.y };
-    const distance = 1;
+    let distance = 1;
     let counterX = -distance;
     let counterY = -distance;
     while (isPositionBlocking(currentPosition, map, idCounter, game)) {
+        console.log("spawn was blocking");
         currentPosition.x = pos.x + counterX * map.tileSize;
         currentPosition.y = pos.y + counterY * map.tileSize;
-        if (Math.abs(counterY) === distance) {
+        if (counterX < distance) {
             counterX++;
         } else {
-            if (counterX >= distance) {
+            if (counterY < distance) {
                 counterX = -distance;
                 counterY++;
             } else {
-                counterX = distance;
+                distance++;
+                counterX = -distance;
+                counterY = -distance;
             }
         }
     }

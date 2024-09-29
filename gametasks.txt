@@ -1,13 +1,14 @@
-next test run: tamer, ball, musician
+next test run: ball, musician, builder
 increase version
 
 current tasks:
 - map modifier
     - darkness
         - implement curseDarkness
-            - darkness boss not spawn on blocking tile
+            - darkness area boss not spawn on blocking tile
             - check past characters
             - darkness area after restart incorrect middle
+            - clone sniper moreRifles upgrade not moving
             - check boss clones not messing up king/god logics
                 - money
                 - legendaries
