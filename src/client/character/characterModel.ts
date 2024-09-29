@@ -134,6 +134,7 @@ export type Character = Position & {
     experienceGainFactor?: number,
     bonusMoneyFactor?: number,
     curses?: Curse[],
+    deleteOnReset?: boolean,
 }
 
 export function createCharacter(

@@ -367,6 +367,7 @@ export function saveCharacterAsPastCharacter(character: Character, game: Game) {
             newPastCharacter.abilities.splice(i, 1);
         }
     }
+    newPastCharacter.curses = undefined;
     resetCharacter(newPastCharacter, game);
     changeCharacterId(newPastCharacter, game.state.idCounter);
     if (newPastCharacter.pets) {

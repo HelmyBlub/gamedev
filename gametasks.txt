@@ -5,7 +5,6 @@ current tasks:
 - map modifier
     - darkness
         - implement curseDarkness
-            - darkness area boss not spawn on blocking tile
             - check past characters
             - darkness area after restart incorrect middle
             - clone sniper moreRifles upgrade not moving

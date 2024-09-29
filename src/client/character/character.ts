@@ -388,7 +388,12 @@ export function resetCharacter(character: Character, game: Game) {
     character.shield = 0;
     character.isMoving = false;
     if (character.pets) {
-        for (let pet of character.pets) {
+        for (let i = character.pets.length - 1; i >= 0; i--) {
+            const pet = character.pets[i];
+            if (pet.deleteOnReset) {
+                character.pets.splice(i, 1);
+                continue;
+            }
             const petTypeFunctions = CHARACTER_TYPE_FUNCTIONS[pet.type];
             if (petTypeFunctions && petTypeFunctions.reset) {
                 petTypeFunctions.reset(pet);

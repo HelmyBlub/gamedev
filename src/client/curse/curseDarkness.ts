@@ -54,6 +54,7 @@ export function curseDarknessCloneKillCheck(clone: Character, game: Game) {
 
 function reset(curse: Curse) {
     const darkness = curse as CurseDarkness;
+    darkness.cloneCounter = 0;
     darkness.visualizeFadeTimer = undefined;
     darkness.turnEvilTime = undefined;
     darkness.nextCloneSpawnTime = undefined;
@@ -79,6 +80,7 @@ function createClone(original: Character, game: Game): Character {
     }
     if (clone.curses) clone.curses = undefined;
     clone.type = CHARACTER_PET_TYPE_CLONE;
+    clone.deleteOnReset = true;
     resetCharacter(clone, game);
     changeCharacterAndAbilityIds(clone, game.state.idCounter);
 
