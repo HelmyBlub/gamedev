@@ -5,12 +5,14 @@ import { addCurseDarkness } from "./curseDarkness.js";
 export type Curse = {
     type: string,
     level: number,
+    visualizeFadeTimer?: number,
 }
 
 export type CurseFunctions = {
     tick?: (curse: Curse, target: Character, game: Game) => void,
     paint?: (ctx: CanvasRenderingContext2D, curse: Curse, target: Character, game: Game) => void,
     reset?: (curse: Curse) => void,
+    copy: (curse: Curse) => Curse,
 }
 
 export type CursesFunctions = {
@@ -44,6 +46,24 @@ export function tickCurses(target: Character, game: Game) {
     for (let curse of target.curses) {
         const functions = CURSES_FUNCTIONS[curse.type];
         if (functions.tick) functions.tick(curse, target, game);
+    }
+}
+
+export function copyCursesToTarget(sourceCurses: Curse[], targetCurses: Curse[], game: Game) {
+    for (let sourceCurse of sourceCurses) {
+        const index = targetCurses.findIndex(c => c.type === sourceCurse.type);
+        if (index > -1) {
+            const targetCurse = targetCurses[index];
+            if (targetCurse.level < sourceCurse.level) {
+                targetCurse.level = sourceCurse.level;
+                targetCurse.visualizeFadeTimer = game.state.time + 2000;
+            }
+        } else {
+            const functions = CURSES_FUNCTIONS[sourceCurse.type];
+            const curse = functions.copy(sourceCurse);
+            curse.visualizeFadeTimer = game.state.time + 2000;
+            targetCurses.push(curse);
+        }
     }
 }
 

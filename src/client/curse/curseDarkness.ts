@@ -18,7 +18,6 @@ export type CurseDarkness = Curse & {
     turnEvilTime?: number,
     evilIdRefs: number[],
     nextCloneSpawnTime?: number,
-    visualizeFadeTimer?: number,
 }
 
 export function addCurseDarkness() {
@@ -26,6 +25,7 @@ export function addCurseDarkness() {
         tick: tickDarkness,
         paint: paintCurse,
         reset: reset,
+        copy: copy,
     };
 }
 
@@ -46,6 +46,12 @@ export function curseDarknessCloneKillCheck(clone: Character, game: Game) {
     for (let boss of game.state.bossStuff.bosses) {
         if (checkForCurseAndDelete(boss, clone.id)) return;
     }
+}
+
+function copy(curse: Curse): Curse {
+    const copy = createCurseDarkness();
+    copy.level = curse.level;
+    return copy;
 }
 
 function checkForCurseAndDelete(character: Character, cloneId: number): boolean {

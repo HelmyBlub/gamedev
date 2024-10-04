@@ -1,14 +1,15 @@
-next test run: ball, musician, builder
+next test run: musician, builder
 increase version
 
 current tasks:
 - map modifier
     - darkness
-        - implement curseDarkness
-            - check boss clones not messing up king/god logics
-
-        - curse apply to legendary permanently
+        - put curse on one legendary when becoming boss
+            - when picking up legendary curse is applied to player
+            - curse apply to legendary permanently
             - visualize if cursed
+
+        - on king/god fight start teleport clones
         - visualize player is cursed
         - save in permanent storage
 

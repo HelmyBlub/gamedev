@@ -17,6 +17,7 @@ import { IMAGE_BUILDING1, createBuildingClassBuilding, classBuildingFindCharacte
 import { fillRandomUpgradeOptionChoices } from "../character/upgrade.js";
 import { CHARACTER_CLASS_TOWER_BUILDER } from "../character/playerCharacters/characterClassTower.js";
 import { CHARACTER_TYPE_KING_ENEMY } from "../character/enemy/kingEnemy.js";
+import { copyCursesToTarget } from "../curse/curse.js";
 
 export type MapTileObjectBuilding = MapTileObject & {
     buildingId: number,
@@ -170,6 +171,10 @@ function interactBurrow(interacter: Character, mapObject: MapTileObject, game: G
         interacter.upgradeChoices.choices = [];
     }
     resetCharacter(interacter, game);
+    if (classBuilding.characterClass.curses && interacter.characterClasses) {
+        if (interacter.curses === undefined) interacter.curses = [];
+        copyCursesToTarget(classBuilding.characterClass.curses, interacter.curses, game);
+    }
     fillRandomUpgradeOptionChoices(interacter, game);
 }
 

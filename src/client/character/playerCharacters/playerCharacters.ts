@@ -15,6 +15,7 @@ import { getMapMidlePosition } from "../../map/map.js"
 import { Ability } from "../../ability/ability.js"
 import { TAMER_PET_CHARACTER, TamerPetCharacter } from "./tamer/tamerPetCharacter.js"
 import { getNextBossSpawnTime } from "../enemy/bossEnemy.js"
+import { Curse } from "../../curse/curse.js"
 
 export type PlayerCharacterClassFunctions = {
     changeCharacterToThisClass: (character: Character, idCounter: IdCounter, game: Game) => void,
@@ -40,6 +41,7 @@ export type CharacterClass = {
     level?: Leveling,
     gifted?: boolean,
     capped?: boolean,
+    curses?: Curse[],
     legendary?: {
         levelCap: number,
         blessings: string[],

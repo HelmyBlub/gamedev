@@ -21,6 +21,7 @@ import { legendaryAbilityGiveBlessing, classBuildingPutLegendaryCharacterStuffBa
 import { MoreInfosPartContainer, createCharacterMoreInfosPartContainer } from "../../moreInfo.js";
 import { doDamageMeterSplit } from "../../combatlog.js";
 import { CHARACTER_TYPE_END_BOSS_CROWN_ENEMY, createKingCrownCharacter, KingCrownEnemyCharacter } from "./kingCrown.js";
+import { copyCursesToTarget } from "../../curse/curse.js";
 
 export type KingEnemyCharacter = Character;
 export const CHARACTER_TYPE_KING_ENEMY = "KingEnemyCharacter";
@@ -99,6 +100,14 @@ export function setPlayerAsKing(game: Game) {
     const oldBoss = game.state.bossStuff.nextKings[celestialDirection];
     game.state.bossStuff.nextKings[celestialDirection] = boss;
     game.state.players[0].character.becameKing = true;
+    if (boss.curses && boss.characterClasses) {
+        for (let charClass of boss.characterClasses) {
+            if (charClass.legendary) {
+                if (charClass.curses === undefined) charClass.curses = [];
+                copyCursesToTarget(boss.curses, charClass.curses, game);
+            }
+        }
+    }
     localStorageSaveNextKings(game);
     if (oldBoss?.characterClasses) {
         legendaryAbilityGiveBlessing(celestialDirection, [oldBoss]);

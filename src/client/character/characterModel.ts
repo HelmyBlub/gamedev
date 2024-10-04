@@ -11,7 +11,6 @@ import { tickFixPositionRespawnEnemyCharacter } from "./enemy/fixPositionRespawn
 import { PathingCache } from "./pathing.js";
 import { Leveling } from "./playerCharacters/levelingCharacter.js";
 import { CharacterClass, initPlayerCharacterChoiceOptions, PLAYER_CHARACTER_TYPE } from "./playerCharacters/playerCharacters.js";
-import { TamerPetCharacter } from "./playerCharacters/tamer/tamerPetCharacter.js";
 import { UpgradeChoices } from "./upgrade.js";
 
 export type CHARACTER_TYPE_FUNCTIONS = {
