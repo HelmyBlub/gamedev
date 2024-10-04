@@ -14,7 +14,7 @@ export type CharacterPetClone = Character & {
     originalHeight?: number,
     spawnTime?: number,
     spawnDelay?: number,
-    turnEvilStartedTime?: number,
+    turnEvilStartTime?: number,
     turnEvilDuration?: number,
     tempDarkCharacterImage?: RandomizedCharacterImage,
     forcedMovePosition?: Position,
@@ -31,36 +31,39 @@ export function addPetTypeFollowAttackFunctions() {
 
 function paintCharacterType(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
     const clone = character as CharacterPetClone;
-    if (clone.turnEvilStartedTime !== undefined) {
-        paintCharacterDefault(ctx, character, cameraPosition, game);
-        paintDarkCharacterPart(ctx, character, cameraPosition, game);
-    } else if (clone.spawnTime! + clone.spawnDelay! >= game.state.time) {
+    if (clone.spawnTime! + clone.spawnDelay! >= game.state.time) {
         paintCharacterDefault(ctx, character, cameraPosition, game);
     } else {
         paintCharacterWithAbilitiesDefault(ctx, character, cameraPosition, game);
     }
+    paintDarkCharacterPart(ctx, character, cameraPosition, game);
 }
 
 function paintDarkCharacterPart(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
-    const paintPos = getPointPaintPosition(ctx, character, cameraPosition, game.UI.zoom);
-    const leftPaint = Math.floor(paintPos.x - character.width / 2);
-    const topPaint = Math.floor(paintPos.y - character.height / 2);
     const clone = character as CharacterPetClone;
+    if (clone.turnEvilStartTime === undefined || clone.spawnTime === undefined) return;
     if (clone.paint.randomizedCharacterImage === undefined) return;
     if (clone.tempDarkCharacterImage === undefined) return;
-    const faktor = Math.min((game.state.time - clone.turnEvilStartedTime!) / clone.turnEvilDuration!, 1);
-    const height = Math.round(character.height * faktor);
+    const friendlyTimer = clone.turnEvilStartTime - clone.spawnTime + 3000;
+    const paintPos = getPointPaintPosition(ctx, character, cameraPosition, game.UI.zoom);
+    const leftPaint = Math.floor(paintPos.x - character.width / 2);
+    const factor = Math.min(1 - (clone.turnEvilStartTime - game.state.time) / friendlyTimer, 1);
+    const height = Math.round(character.height * factor);
+    const bottomPaint = Math.floor(paintPos.y + character.height / 2);
 
     let rectPath = new Path2D();
-    rectPath.lineTo(leftPaint, topPaint);
-    rectPath.lineTo(leftPaint + character.width, topPaint);
-    rectPath.lineTo(leftPaint + character.width, topPaint + height);
-    rectPath.lineTo(leftPaint, topPaint + height);
-    rectPath.lineTo(leftPaint, topPaint);
+    rectPath.lineTo(leftPaint, bottomPaint);
+    rectPath.lineTo(leftPaint + character.width, bottomPaint);
+    rectPath.lineTo(leftPaint + character.width, bottomPaint - height);
+    rectPath.lineTo(leftPaint, bottomPaint - height);
+    rectPath.lineTo(leftPaint, bottomPaint);
     ctx.save();
     ctx.clip(rectPath);
     const origPaint = character.paint.randomizedCharacterImage;
     character.paint.randomizedCharacterImage = clone.tempDarkCharacterImage;
+    if (clone.turnEvilStartTime < game.state.time) {
+        ctx.translate(Math.floor(Math.random() * 6 - 3), Math.floor(Math.random() * 6 - 3));
+    }
     paintCharacterDefault(ctx, character, cameraPosition, game);
     character.paint.randomizedCharacterImage = origPaint;
     ctx.restore();
@@ -68,7 +71,7 @@ function paintDarkCharacterPart(ctx: CanvasRenderingContext2D, character: Charac
 
 function tick(character: Character, petOwner: Character, game: Game, pathingCache: PathingCache | null) {
     const clone = character as CharacterPetClone;
-    if (clone.turnEvilStartedTime !== undefined) return;
+    if (clone.turnEvilStartTime === undefined || clone.turnEvilStartTime < game.state.time) return;
     if (clone.originalWidth === undefined) {
         clone.originalWidth = clone.width;
         clone.originalHeight = clone.height;

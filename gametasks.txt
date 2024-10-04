@@ -4,10 +4,14 @@ increase version
 current tasks:
 - map modifier
     - darkness
-        - put curse on one legendary when becoming boss
-            - when picking up legendary curse is applied to player
-            - curse apply to legendary permanently
-            - visualize if cursed
+        - visualize if cursed
+            - visualize player cures by turning player darker with higher curse level
+            - visualize clone slowly turning dark
+                - if player dark, slowly turn white?
+                - make clone jitter when turning
+            - visualize legendary curse
+                - dark outline?
+
 
         - on king/god fight start teleport clones
         - visualize player is cursed
