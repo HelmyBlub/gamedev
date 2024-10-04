@@ -17,7 +17,7 @@ import { IMAGE_BUILDING1, createBuildingClassBuilding, classBuildingFindCharacte
 import { fillRandomUpgradeOptionChoices } from "../character/upgrade.js";
 import { CHARACTER_CLASS_TOWER_BUILDER } from "../character/playerCharacters/characterClassTower.js";
 import { CHARACTER_TYPE_KING_ENEMY } from "../character/enemy/kingEnemy.js";
-import { copyCursesToTarget } from "../curse/curse.js";
+import { copyCursesToTarget, paintParticleEffect } from "../curse/curse.js";
 
 export type MapTileObjectBuilding = MapTileObject & {
     buildingId: number,
@@ -233,14 +233,14 @@ export function paintClassBuilding(ctx: CanvasRenderingContext2D, mapObject: Map
     const tileSize = game.state.map.tileSize;
     const mapObjectClassBuilding = mapObject as MapTileObjectClassBuilding;
     const classBuilding = classBuildingFindById(mapObjectClassBuilding.buildingId, game);
+    const paintPos = {
+        x: paintTopLeft.x + mapObject.x * tileSize + 20,
+        y: paintTopLeft.y + mapObject.y * tileSize + 25
+    };
     if (classBuilding?.abilities && classBuilding?.abilities.length > 0) {
         for (let ability of classBuilding.abilities) {
             const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
             if (abilityFunctions.paintAbilityAccessoire) {
-                const paintPos = {
-                    x: paintTopLeft.x + mapObject.x * tileSize + 20,
-                    y: paintTopLeft.y + mapObject.y * tileSize + 25
-                };
                 abilityFunctions.paintAbilityAccessoire(ctx, ability, paintPos, game);
             }
         }
@@ -248,5 +248,8 @@ export function paintClassBuilding(ctx: CanvasRenderingContext2D, mapObject: Map
     if (classBuilding?.pets && classBuilding?.pets.length > 0) {
         const cameraPosition = getCameraPosition(game);
         paintCharacters(ctx, classBuilding.pets, cameraPosition, game);
+    }
+    if (classBuilding?.abilities && classBuilding?.abilities.length > 0 && classBuilding?.characterClass?.curses) {
+        //paintParticleEffect(ctx, classBuilding.characterClass.curses, paintPos, game);
     }
 }

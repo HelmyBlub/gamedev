@@ -68,7 +68,6 @@ function checkForCurseAndDelete(character: Character, cloneId: number): boolean 
 function reset(curse: Curse) {
     const darkness = curse as CurseDarkness;
     darkness.cloneCounter = 0;
-    darkness.visualizeFadeTimer = undefined;
     darkness.turnEvilTime = undefined;
     darkness.nextCloneSpawnTime = undefined;
 }
