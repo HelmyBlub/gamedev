@@ -57,22 +57,6 @@ export function removeMapModifier(id: number, game: Game) {
     game.state.map.mapModifiers.splice(index, 1);
 }
 
-export function addMapModifer(map: GameMap, game: Game) {
-    const axisOffset = 7500;
-    const initialSize = 1000;
-    const signX = nextRandom(game.state.randomSeed) < 0.5 ? 1 : -1;
-    const signY = nextRandom(game.state.randomSeed) < 0.5 ? 1 : -1;
-    const area: GameMapAreaRect = {
-        type: "rect",
-        x: axisOffset * signX,
-        y: axisOffset * signY,
-        width: initialSize,
-        height: initialSize,
-    };
-    const darkness = createMapModifierDarkness(area, game.state.idCounter);
-    map.mapModifiers.push(darkness);
-}
-
 export function paintMapModifierLate(ctx: CanvasRenderingContext2D, cameraPosition: Position, game: Game) {
     const modifiers = game.state.map.mapModifiers;
     for (let modifier of modifiers) {
@@ -137,3 +121,20 @@ export function mapModifyIsChunkAffected(modifier: GameMapModifier, chunkX: numb
     }
     return false;
 }
+
+function addMapModifer(map: GameMap, game: Game) {
+    const axisOffset = 7500;
+    const initialSize = 1000;
+    const signX = nextRandom(game.state.randomSeed) < 0.5 ? 1 : -1;
+    const signY = nextRandom(game.state.randomSeed) < 0.5 ? 1 : -1;
+    const area: GameMapAreaRect = {
+        type: "rect",
+        x: axisOffset * signX,
+        y: axisOffset * signY,
+        width: initialSize,
+        height: initialSize,
+    };
+    const darkness = createMapModifierDarkness(area, game.state.idCounter);
+    map.mapModifiers.push(darkness);
+}
+

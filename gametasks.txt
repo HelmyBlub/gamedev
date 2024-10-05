@@ -1,16 +1,21 @@
-next test run: builder
+next test run: builder, tamer. Reminder: has to be first run or it will break as replay
 increase version
 
 current tasks:
 - map modifier
     - darkness
-        - on king/god fight start teleport clones
-        - save in permanent storage
-            - must be part of replay data
-        - if map modifier big, hard to find center
         - test map modifier as circle
+        - if map modifier big, hard to find center
+            - if far enough in, boss comes? 
+            - change tiles to darker versions the further in?
+        - save in permanent storage
+            - if not fixed, breaks replays, only very first run works can be used as replay
+            - as long as its hard to tell the direction to center for map Modifier it should reset?
+            - must be part of replay data
         - if boss has curse, should entire direction be affected by map modifier?
         - moreInfo curse information
+        - balancing clones
+            - hp
 
         - check same wall not generated multiple times
             - backwards raycast required?
