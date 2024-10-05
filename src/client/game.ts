@@ -1,9 +1,9 @@
-import { cappCharacter, changeCharacterId, countAlivePlayerCharacters, findAndSetNewCameraCharacterId, findCharacterById, findMyCharacter, getPlayerCharacters, resetCharacter, tickCharacters, tickMapCharacters } from "./character/character.js";
+import { cappCharacter, changeCharacterId, countAlivePlayerCharacters, findAndSetNewCameraCharacterId, findCharacterById, findMyCharacter, getPlayerCharacters, resetCharacter, tickCharacters } from "./character/character.js";
 import { paintAll } from "./gamePaint.js";
 import { addPlayerMoney, createDefaultKeyBindings1, createDefaultUiKeyBindings, createPlayerWithPlayerCharacter, findNearesPastPlayerCharacter, findPlayerByCharacterId, gameInitPlayers, isAutoUpgradeActive } from "./player.js";
 import { MOUSE_ACTION, UPGRADE_ACTIONS, tickPlayerInputs } from "./input/playerInput.js";
 import { Position, GameState, Game, IdCounter, Debugging, ClientInfo, GameVersion } from "./gameModel.js";
-import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap, initGodArea, initKingArea, mousePositionToMapPosition } from "./map/map.js";
+import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap, initGodArea, initKingArea, mousePositionToMapPosition, tickActiveMapChunks } from "./map/map.js";
 import { Character } from "./character/characterModel.js";
 import { generateMissingChunks, pastCharactersMapTilePositions } from "./map/mapGeneration.js";
 import { createFixPositionRespawnEnemiesOnInit } from "./character/enemy/fixPositionRespawnEnemyModel.js";
@@ -130,6 +130,7 @@ export function gameInit(game: Game) {
     game.testing.saveStates.autoSaves.nextSaveStateTime = 10000;
     game.state.map.activeChunkKeys = [];
     game.state.map.chunks = {};
+    game.additionalPaints = undefined;
     createFixPositionRespawnEnemiesOnInit(game);
     gameInitPlayers(game);
     game.multiplayer.autosendMousePosition.nextTime = 0;
@@ -699,7 +700,7 @@ function tick(gameTimePassed: number, game: Game) {
         determineActiveChunks(getPlayerCharacters(game.state.players), game.state.map, game);
         determineActiveCollisionCheckChunks(getPlayerCharacters(game.state.players), game.state.map, game);
         tickPlayerInputs(game.state.playerInputs, game.state.time, game);
-        tickMapCharacters(game.state.map, game);
+        tickActiveMapChunks(game);
         tickBossCharacters(game.state.bossStuff, game);
 
         takeTimeMeasure(game.debug, "", "playerTick");

@@ -1,10 +1,11 @@
+import { tickMapCharacters } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
 import { calculateDistance } from "../game.js";
 import { Game, IdCounter, Position } from "../gameModel.js"
 import { createNewChunk } from "./mapGeneration.js";
 import { GameMapGodArea } from "./mapGodArea.js";
 import { GameMapKingArea } from "./mapKingArea.js";
-import { MapTileObject } from "./mapObjects.js";
+import { MapTileObject, tickMapChunkObjects } from "./mapObjects.js";
 import { MapPaintLayer } from "./mapPaint.js";
 import { GameMapModifier } from "./modifiers/mapModifier.js";
 
@@ -86,6 +87,15 @@ export function createMap(): GameMap {
     }
     initKingArea(map, 20000);
     return map;
+}
+
+export function tickActiveMapChunks(game: Game) {
+    const map = game.state.map;
+    for (let i = 0; i < map.activeChunkKeys.length; i++) {
+        const chunk = map.chunks[map.activeChunkKeys[i]];
+        tickMapChunkObjects(chunk, game);
+    }
+    tickMapCharacters(map, game);
 }
 
 export function addEnemyToMap(map: GameMap, character: Character) {

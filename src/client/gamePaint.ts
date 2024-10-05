@@ -16,6 +16,7 @@ import { createEndScreenMoreInfos, paintMoreInfos, paintMoreInfosPart } from "./
 import { paintDamageNumbers, paintStackTextData } from "./floatingText.js";
 import { paintMapModifierLate } from "./map/modifiers/mapModifier.js";
 import { moveByDirectionAndDistance } from "./map/map.js";
+import { paintAdditionalPaints } from "./additionalPaint.js";
 
 GAME_IMAGES["blankKey"] = {
     imagePath: "/images/singleBlankKey.png",
@@ -41,6 +42,7 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
     paintMapCharacters(ctx, cameraPosition, game.state.map, game);
     paintBossCharacters(ctx, cameraPosition, game);
     paintPlayerCharacters(ctx, cameraPosition, game);
+    paintAdditionalPaints(ctx, cameraPosition, game);
     paintBossCrown(ctx, cameraPosition, game);
     paintAbilityObjects(ctx, game.state.abilityObjects, game, "afterCharacterPaint");
     paintDamageNumbers(ctx, game.UI.displayTextData, cameraPosition, game.state.time, game);

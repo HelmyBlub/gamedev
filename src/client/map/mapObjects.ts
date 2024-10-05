@@ -15,6 +15,7 @@ export type MapObjectFunctions = {
     interact2?: (interacter: Character, mapObject: MapTileObject, game: Game) => void,
     paint?: (ctx: CanvasRenderingContext2D, mapObject: MapTileObject, paintTopLeft: Position, game: Game) => void,
     paintInteract?: (ctx: CanvasRenderingContext2D, mapObject: MapTileObject, interacter: Character, game: Game) => void,
+    tick?: (mapObject: MapTileObject, game: Game) => void,
 }
 
 export type MapObjectsFunctions = {
@@ -97,6 +98,17 @@ export function paintMapChunkObjects(ctx: CanvasRenderingContext2D, mapChunk: Ma
                 mapObjectFuntions.paint(ctx, mapObject, paintTopLeft, game);
             } else {
                 paintMabObjectDefault(ctx, mapObject, paintTopLeft, game);
+            }
+        }
+    }
+}
+
+export function tickMapChunkObjects(mapChunk: MapChunk, game: Game) {
+    for (let mapObject of mapChunk.objects) {
+        const mapObjectFuntions = MAP_OBJECTS_FUNCTIONS[mapObject.type];
+        if (mapObjectFuntions) {
+            if (mapObjectFuntions.tick) {
+                mapObjectFuntions.tick(mapObject, game);
             }
         }
     }

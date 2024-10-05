@@ -13,11 +13,11 @@ import { createCharacterClassMoreInfos, paintCharacters } from "../character/cha
 import { ABILITY_NAME_LEASH, AbilityLeash } from "../ability/abilityLeash.js";
 import { playerInputBindingToDisplayValue } from "../input/playerInput.js";
 import { MoreInfosPartContainer, createDefaultMoreInfosContainer, createMoreInfosPart } from "../moreInfo.js";
-import { IMAGE_BUILDING1, createBuildingClassBuilding, classBuildingFindCharacterClassToMakeLegendary, classBuildingPlacePlayerClassStuffInBuilding, classBuildingFindById, BUILDING_CLASS_BUILDING } from "./buildings/classBuilding.js";
+import { IMAGE_BUILDING1, createBuildingClassBuilding, classBuildingFindCharacterClassToMakeLegendary, classBuildingPlacePlayerClassStuffInBuilding, classBuildingFindById, BUILDING_CLASS_BUILDING, ClassBuilding } from "./buildings/classBuilding.js";
 import { fillRandomUpgradeOptionChoices } from "../character/upgrade.js";
 import { CHARACTER_CLASS_TOWER_BUILDER } from "../character/playerCharacters/characterClassTower.js";
 import { CHARACTER_TYPE_KING_ENEMY } from "../character/enemy/kingEnemy.js";
-import { copyCursesToTarget, paintParticleEffect } from "../curse/curse.js";
+import { addCursedParticleEffect, copyCursesToTarget } from "../curse/curse.js";
 
 export type MapTileObjectBuilding = MapTileObject & {
     buildingId: number,
@@ -33,6 +33,7 @@ export function addMapObjectClassBuilding() {
         interact2: interactDestroy,
         paint: paintClassBuilding,
         paintInteract: paintInteract,
+        tick: tick,
     }
 }
 
@@ -81,6 +82,16 @@ export function createEmptyClassBuilding(game: Game) {
     spawnChunk.objects.push(mapObject);
     game.state.buildings.push(classBuilding);
     localStorageSaveBuildings(game);
+}
+
+function tick(mapObject: MapTileObject, game: Game) {
+    const mapObjectClassBuilding = mapObject as MapTileObjectClassBuilding;
+    const classBuilding = classBuildingFindById(mapObjectClassBuilding.buildingId, game);
+    if (!classBuilding) return;
+    if (!classBuilding.stuffBorrowed?.burrowed && classBuilding.characterClass?.curses) {
+        const pos = mapKeyAndTileXYToPosition("0_0", mapObject.x, mapObject.y, game.state.map);
+        addCursedParticleEffect(classBuilding.characterClass.curses, pos, game);
+    }
 }
 
 function createMoreInfosClassBuilding(mapObject: MapTileObject, game: Game): MoreInfosPartContainer | undefined {
@@ -233,11 +244,12 @@ export function paintClassBuilding(ctx: CanvasRenderingContext2D, mapObject: Map
     const tileSize = game.state.map.tileSize;
     const mapObjectClassBuilding = mapObject as MapTileObjectClassBuilding;
     const classBuilding = classBuildingFindById(mapObjectClassBuilding.buildingId, game);
+    if (!classBuilding) return;
     const paintPos = {
         x: paintTopLeft.x + mapObject.x * tileSize + 20,
         y: paintTopLeft.y + mapObject.y * tileSize + 25
     };
-    if (classBuilding?.abilities && classBuilding?.abilities.length > 0) {
+    if (classBuilding.abilities && classBuilding.abilities.length > 0) {
         for (let ability of classBuilding.abilities) {
             const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
             if (abilityFunctions.paintAbilityAccessoire) {
@@ -245,11 +257,8 @@ export function paintClassBuilding(ctx: CanvasRenderingContext2D, mapObject: Map
             }
         }
     }
-    if (classBuilding?.pets && classBuilding?.pets.length > 0) {
+    if (classBuilding.pets && classBuilding.pets.length > 0) {
         const cameraPosition = getCameraPosition(game);
         paintCharacters(ctx, classBuilding.pets, cameraPosition, game);
-    }
-    if (classBuilding?.abilities && classBuilding?.abilities.length > 0 && classBuilding?.characterClass?.curses) {
-        //paintParticleEffect(ctx, classBuilding.characterClass.curses, paintPos, game);
     }
 }

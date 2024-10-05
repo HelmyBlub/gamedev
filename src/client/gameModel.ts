@@ -22,6 +22,7 @@ import { ActiveCheats } from "./cheat.js";
 import { createDefaultStackTextsData, PaintStackTextsData, PaintTextData } from "./floatingText.js";
 import { TouchUiInfo } from "./input/inputTouch.js";
 import { ControllerButtonsPressed } from "./input/inputController.js";
+import { AdditionalPaints } from "./additionalPaint.js";
 
 export type Position = {
     x: number,
@@ -317,6 +318,7 @@ export type Game = {
     debug: Debugging,
     closeGame?: boolean,
     sound?: Sound,
+    additionalPaints?: AdditionalPaints,
     UI: UI,
 }
 

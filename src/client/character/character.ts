@@ -25,6 +25,7 @@ import { createPaintTextData } from "../floatingText.js";
 import { addAreaBossType } from "./enemy/areaBoss/areaBossEnemy.js";
 import { resetCurses, tickCurses } from "../curse/curse.js";
 import { addPetTypeFollowAttackFunctions } from "./playerCharacters/characterPetTypeClone.js";
+import { tickMapChunkObjects } from "../map/mapObjects.js";
 
 export function onDomLoadSetCharactersFunctions() {
     addAreaBossType();

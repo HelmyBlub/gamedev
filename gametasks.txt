@@ -1,4 +1,4 @@
-next test run: musician, builder
+next test run: builder
 increase version
 
 current tasks:
@@ -24,7 +24,7 @@ current tasks:
             - angle limits need to update correctly
             - some very precise wall can be missed by raycast?
 
-
+- musician default enemy projectile sizes too big
 
 - musician: play note when placed?
     - problem: hard to know how it sounds when you have to wait on longer music sheets
