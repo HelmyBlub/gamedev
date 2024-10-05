@@ -4,20 +4,13 @@ increase version
 current tasks:
 - map modifier
     - darkness
-        - visualize if cursed
-            - visualize legendary class curse
-                - particle effects (started in function paintClassBuilding)
-                    - dark circles floating up
-                    - higher curse, more/bigger circles
-            - visualize player cures by turning player darker with higher curse level
-
-
         - on king/god fight start teleport clones
         - save in permanent storage
             - must be part of replay data
         - if map modifier big, hard to find center
         - test map modifier as circle
         - if boss has curse, should entire direction be affected by map modifier?
+        - moreInfo curse information
 
         - check same wall not generated multiple times
             - backwards raycast required?

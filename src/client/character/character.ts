@@ -288,6 +288,16 @@ export function tickMapCharacters(map: GameMap, game: Game) {
     takeTimeMeasure(game.debug, "tickMapCharacters", "");
 }
 
+export function teleportCharacterPetsToOwner(characters: Character[], game: Game) {
+    for (let character of characters) {
+        if (!character.pets) continue;
+        for (let pet of character.pets) {
+            pet.x = character.x;
+            pet.y = character.y;
+        }
+    }
+}
+
 export function tickCharacters(characters: (Character | undefined)[], game: Game, pathingCache: PathingCache | null, petOwner: Character | undefined = undefined) {
     for (let j = characters.length - 1; j >= 0; j--) {
         const char = characters[j];

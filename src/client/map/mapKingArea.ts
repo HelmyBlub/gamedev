@@ -1,4 +1,4 @@
-import { getPlayerCharacters } from "../character/character.js";
+import { getPlayerCharacters, teleportCharacterPetsToOwner } from "../character/character.js";
 import { startKingFight } from "../character/enemy/kingEnemy.js";
 import { Game, Position } from "../gameModel.js";
 import { positionToMapKey, GameMap, MapChunk, positionToChunkXY } from "./map.js";
@@ -45,6 +45,7 @@ export function checkForKingAreaTrigger(game: Game) {
         }
     }
     startKingFight(allPlayers[0], game);
+    teleportCharacterPetsToOwner(allPlayers, game);
 }
 
 export function getKingAreaMiddlePosition(positionInsideBossArea: Position, map: GameMap): Position | undefined {
