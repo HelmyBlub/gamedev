@@ -1,38 +1,15 @@
-import { getCelestialDirection } from "../../character/enemy/bossEnemy.js"
-import { calculateDistance } from "../../game.js"
-import { CelestialDirection, Game, IdCounter, Position } from "../../gameModel.js"
+import { Game, Position } from "../../gameModel.js"
 import { nextRandom } from "../../randomNumberGenerator.js"
 import { GameMap, MapChunk } from "../map.js"
+import { GameMapAreaCircle, MODIFY_SHAPE_NAME_CIRCLE } from "./mapCircle.js"
 import { addMapModifierDarkness, createMapModifierDarkness } from "./mapModiferDarkness.js"
+import { GameMapArea, isPositionInsideShape, onDomLoadMapModifierShapes, setShapeAreaToAmount } from "./mapModifierShapes.js"
+import { GameMapAreaRect, MODIFY_SHAPE_NAME_RECTANGLE } from "./mapRectangle.js"
 
 export type GameMapModifier = {
     id: number,
     type: string,
     area: GameMapArea,
-}
-
-export type GameMapArea = {
-    type: "rect" | "circle" | "celestialDirection",
-}
-
-export type GameMapAreaRect = GameMapArea & {
-    type: "rect",
-    x: number,
-    y: number,
-    width: number,
-    height: number,
-}
-
-export type GameMapAreaCircle = GameMapArea & {
-    type: "circle",
-    x: number,
-    y: number,
-    radius: number,
-}
-
-export type GameMapAreaCelestialDirection = GameMapArea & {
-    type: "celestialDirection",
-    celestialDirection: CelestialDirection,
 }
 
 export type GameMapModifyFunctions = {
@@ -50,6 +27,7 @@ export const GAME_MAP_MODIFIER_FUNCTIONS: GameMapModifierFunctions = {};
 
 export function onDomLoadMapModifiers() {
     addMapModifierDarkness();
+    onDomLoadMapModifierShapes();
 }
 
 export function removeMapModifier(id: number, game: Game) {
@@ -98,43 +76,39 @@ export function mapModifierGrowArea(game: Game) {
 export function mapModifyIsChunkAffected(modifier: GameMapModifier, chunkX: number, chunkY: number, game: Game): boolean {
     const map = game.state.map;
     const chunkWidth = map.tileSize * map.chunkLength;
-    const chunkMiddleX = chunkX * chunkWidth + chunkWidth / 2;
-    const chunkMiddleY = chunkY * chunkWidth + chunkWidth / 2;
-    switch (modifier.area.type) {
-        case "rect":
-            const rectArea: GameMapAreaRect = modifier.area as GameMapAreaRect;
-            const isInRect = chunkMiddleX >= rectArea.x && chunkMiddleX <= rectArea.x + rectArea.width
-                && chunkMiddleY >= rectArea.y && chunkMiddleY <= rectArea.y + rectArea.height;
-            return isInRect;
-        case "circle":
-            const circleArea: GameMapAreaCircle = modifier.area as GameMapAreaCircle;
-            const isInCircle = calculateDistance({ x: chunkMiddleX, y: chunkMiddleY }, circleArea) <= circleArea.radius;
-            return isInCircle;
-        case "celestialDirection":
-            const celestialDirectionArea: GameMapAreaCelestialDirection = modifier.area as GameMapAreaCelestialDirection;
-            const celDel = getCelestialDirection({ x: chunkMiddleX, y: chunkMiddleY }, map);
-            const isInCelestialDirection = celDel === celestialDirectionArea.celestialDirection;
-            return isInCelestialDirection;
-        default:
-            console.log("missing mapModify area type");
-            break;
+    const chunkMiddle: Position = {
+        x: chunkX * chunkWidth + chunkWidth / 2,
+        y: chunkY * chunkWidth + chunkWidth / 2
     }
+    return isPositionInsideShape(modifier.area, chunkMiddle);
+    // switch (modifier.area.type) {
+    //     case "celestialDirection":
+    //         const celestialDirectionArea: GameMapAreaCelestialDirection = modifier.area as GameMapAreaCelestialDirection;
+    //         const celDel = getCelestialDirection({ x: chunkMiddleX, y: chunkMiddleY }, map);
+    //         const isInCelestialDirection = celDel === celestialDirectionArea.celestialDirection;
+    //         return isInCelestialDirection;
     return false;
 }
 
 function addMapModifer(map: GameMap, game: Game) {
     const axisOffset = 7500;
-    const initialSize = 1000;
     const signX = nextRandom(game.state.randomSeed) < 0.5 ? 1 : -1;
     const signY = nextRandom(game.state.randomSeed) < 0.5 ? 1 : -1;
     const area: GameMapAreaRect = {
-        type: "rect",
+        type: MODIFY_SHAPE_NAME_RECTANGLE,
         x: axisOffset * signX,
         y: axisOffset * signY,
-        width: initialSize,
-        height: initialSize,
+        width: 1000,
+        height: 1000,
     };
-    const darkness = createMapModifierDarkness(area, game.state.idCounter);
+    const areaCircle: GameMapAreaCircle = {
+        type: MODIFY_SHAPE_NAME_CIRCLE,
+        x: axisOffset * signX,
+        y: axisOffset * signY,
+        radius: 0,
+    };
+    const darkness = createMapModifierDarkness(areaCircle, game.state.idCounter);
+    if (darkness.areaPerLevel) setShapeAreaToAmount(areaCircle, darkness.areaPerLevel);
     map.mapModifiers.push(darkness);
 }
 

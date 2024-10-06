@@ -1,10 +1,12 @@
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityObjectCircle, PaintOrderAbility } from "../../../ability/ability.js";
-import { applyCurse, Curse } from "../../../curse/curse.js";
+import { applyCurse } from "../../../curse/curse.js";
 import { createCurseDarkness, CURSE_DARKNESS, CurseDarkness } from "../../../curse/curseDarkness.js";
 import { calculateDistance, getCameraPosition, getNextId } from "../../../game.js";
-import { FACTION_ENEMY, Game, IdCounter, Rectangle } from "../../../gameModel.js";
-import { getPointPaintPosition, paintTextWithOutline } from "../../../gamePaint.js";
-import { findMapModifierById, GameMapAreaRect } from "../../../map/modifiers/mapModifier.js";
+import { FACTION_ENEMY, Game, IdCounter } from "../../../gameModel.js";
+import { getPointPaintPosition } from "../../../gamePaint.js";
+import { findMapModifierById } from "../../../map/modifiers/mapModifier.js";
+import { getShapeArea } from "../../../map/modifiers/mapModifierShapes.js";
+import { GameMapAreaRect } from "../../../map/modifiers/mapRectangle.js";
 import { getPlayerCharacters } from "../../character.js";
 import { Character } from "../../characterModel.js";
 import { AreaBossEnemyCharacter } from "./areaBossEnemy.js";
@@ -41,12 +43,11 @@ export function createAbilityCurseDarkness(idCounter: IdCounter): AbilityCurseDa
 export function createObjectCurseDarkness(areaBoss: AreaBossEnemyCharacter, game: Game): AbilityObjectCurseDarkness | undefined {
     const modifier = findMapModifierById(areaBoss.mapModifierIdRef, game);
     if (!modifier) return;
-    if (modifier.area.type !== "rect") return;
-    const area = modifier.area as GameMapAreaRect;
+    const curseStrength = getShapeArea(modifier.area) / 1000;
     const curse: AbilityObjectCurseDarkness = {
         type: ABILITY_NAME_CURSE_DARKNESS,
-        strength: area.width,
-        radius: getRadius(area.width),
+        strength: curseStrength,
+        radius: getRadius(curseStrength),
         color: "black",
         damage: 0,
         faction: FACTION_ENEMY,

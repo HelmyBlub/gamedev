@@ -1,4 +1,4 @@
-next test run: builder, tamer. Reminder: has to be first run or it will break as replay
+next test run: tamer. Reminder: has to be first run or it will break as replay
 increase version
 
 current tasks:

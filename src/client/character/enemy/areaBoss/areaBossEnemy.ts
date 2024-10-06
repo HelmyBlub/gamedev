@@ -6,7 +6,9 @@ import { getNextId } from "../../../game.js";
 import { IdCounter, Game, Position, FACTION_ENEMY } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
 import { findNearNonBlockingPosition } from "../../../map/map.js";
-import { findMapModifierById, GameMapAreaRect, removeMapModifier } from "../../../map/modifiers/mapModifier.js";
+import { findMapModifierById, removeMapModifier } from "../../../map/modifiers/mapModifier.js";
+import { GameMapArea, getShapeMiddle, isPositionInsideShape } from "../../../map/modifiers/mapModifierShapes.js";
+import { GameMapAreaRect } from "../../../map/modifiers/mapRectangle.js";
 import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick, resetCharacter } from "../../character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, createCharacter } from "../../characterModel.js";
 import { paintCharacterWithAbilitiesDefault, paintCharacterHpBar, paintCharatersPets } from "../../characterPaint.js";
@@ -76,23 +78,17 @@ function tickAreaBossEnemyCharacter(enemy: Character, game: Game, pathingCache: 
 function resetBossIfOutsideModifierArea(areaBoss: AreaBossEnemyCharacter, game: Game) {
     const modifier = findMapModifierById(areaBoss.mapModifierIdRef, game);
     if (modifier === undefined) return;
-    if (modifier.area.type !== "rect") return;
-    const area = modifier.area as GameMapAreaRect;
-    if (areaBoss.x < area.x || areaBoss.x > area.x + area.width
-        || areaBoss.y < area.y || areaBoss.y > area.y + area.height
-    ) {
-        resetAreaBoss(areaBoss, area, game);
+    const isInside = isPositionInsideShape(modifier.area, areaBoss);
+    if (!isInside) {
+        resetAreaBoss(areaBoss, modifier.area, game);
         return;
     }
 }
 
-function resetAreaBoss(areaBoss: AreaBossEnemyCharacter, area: GameMapAreaRect, game: Game) {
+function resetAreaBoss(areaBoss: AreaBossEnemyCharacter, area: GameMapArea, game: Game) {
     resetCharacter(areaBoss, game);
     areaBoss.hp = areaBoss.maxHp;
-    const spawn: Position = {
-        x: area.x + area.width / 2,
-        y: area.y + area.height / 2
-    }
+    const spawn = getShapeMiddle(area);
     const nonBlocking = findNearNonBlockingPosition(spawn, game.state.map, game.state.idCounter, game);
     areaBoss.x = nonBlocking.x;
     areaBoss.y = nonBlocking.y;
