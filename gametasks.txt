@@ -4,10 +4,9 @@ increase version
 current tasks:
 - map modifier
     - darkness
-        - test map modifier as circle
         - if map modifier big, hard to find center
-            - if far enough in, boss comes? 
             - change tiles to darker versions the further in?
+            - if far enough in, boss comes? 
         - save in permanent storage
             - if not fixed, breaks replays, only very first run works can be used as replay
             - as long as its hard to tell the direction to center for map Modifier it should reset?
@@ -16,11 +15,12 @@ current tasks:
         - moreInfo curse information
         - balancing clones
             - hp
-
         - check same wall not generated multiple times
             - backwards raycast required?
             - angle limits need to update correctly
             - some very precise wall can be missed by raycast?
+        - make darkness specific boss
+
 
 - musician default enemy projectile sizes too big
 

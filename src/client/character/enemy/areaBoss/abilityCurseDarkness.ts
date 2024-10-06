@@ -43,7 +43,7 @@ export function createAbilityCurseDarkness(idCounter: IdCounter): AbilityCurseDa
 export function createObjectCurseDarkness(areaBoss: AreaBossEnemyCharacter, game: Game): AbilityObjectCurseDarkness | undefined {
     const modifier = findMapModifierById(areaBoss.mapModifierIdRef, game);
     if (!modifier) return;
-    const curseStrength = getShapeArea(modifier.area) / 1000;
+    const curseStrength = Math.max(getShapeArea(modifier.area) / 10000, 500);
     const curse: AbilityObjectCurseDarkness = {
         type: ABILITY_NAME_CURSE_DARKNESS,
         strength: curseStrength,
