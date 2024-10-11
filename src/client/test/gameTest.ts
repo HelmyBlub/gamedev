@@ -70,8 +70,8 @@ export function testGame(game: Game) {
     console.log("start test");
     //testPathing(game.ctx);
     //runGameWithPlayerInputs(game, testMultiplayerInputs);
-    testPlayerClasses(game);
-    //testOne(game);
+    //testPlayerClasses(game);
+    testOne(game);
 }
 
 export function initReplay(): Replay {
@@ -88,7 +88,7 @@ function testOne(game: Game) {
 
     const replay = game.testing.replay;
     replay.testInputFileQueue = [];
-    replay.testInputFileQueue.push("/data/testReplayShortKing.json");
+    replay.testInputFileQueue.push("/data/testReplayLongTamer.json");
     replayNextInReplayQueue(game);
 }
 

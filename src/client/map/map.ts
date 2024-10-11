@@ -139,6 +139,7 @@ export function changeTileIdOfMapChunk(chunkX: number, chunkY: number, tileX: nu
     const chunkKey = chunkXYToMapKey(chunkX, chunkY);
     game.state.map.chunks[chunkKey].tiles[tileX][tileY] = newTileId;
     deletePaintCacheForMapChunk(chunkX, chunkY, game);
+    game.performance.pathingCache = {};
 }
 
 export function deletePaintCacheForMapChunk(chunkX: number, chunkY: number, game: Game) {

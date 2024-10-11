@@ -2,8 +2,6 @@ next test run: tamer. Reminder: has to be first run or it will break as replay
 increase version
 
 current tasks:
-- replay times much slower with last stream, check out start of next stream if reason in code
-    - add screen size to replay data
 - pets teleport reset
 - map modifier
     - darkness

@@ -45,7 +45,7 @@ export function getNextWaypoint(
     time: number,
     game: Game,
 ): Position | null {
-    if (isPositionBlocking(sourcePos, map, idCounter, game)) {
+    if (isPositionBlocking(sourcePos, map, idCounter, game) || isPositionBlocking(targetPos, map, idCounter, game)) {
         console.log("can't find way to a blocking position");
         return null;
     }
