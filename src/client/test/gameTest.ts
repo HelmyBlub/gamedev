@@ -24,6 +24,7 @@ export type ReplayResult = {
     replayVersionNumber: string,
     success: boolean,
     replayAssertData: ReplayAssertResult[] | undefined,
+    screenSize: string,
 }
 export type ReplayAssertResult = {
     type: string,
@@ -70,6 +71,7 @@ export function testGame(game: Game) {
     //testPathing(game.ctx);
     //runGameWithPlayerInputs(game, testMultiplayerInputs);
     testPlayerClasses(game);
+    //testOne(game);
 }
 
 export function initReplay(): Replay {
@@ -78,6 +80,16 @@ export function initReplay(): Replay {
         frameSkipAmount: 60,
         zeroTimeout: true,
     }
+}
+
+function testOne(game: Game) {
+    if (game.state.players.length > 1) return;
+    game.testing.replay = initReplay();
+
+    const replay = game.testing.replay;
+    replay.testInputFileQueue = [];
+    replay.testInputFileQueue.push("/data/testReplayShortKing.json");
+    replayNextInReplayQueue(game);
 }
 
 function testPlayerClasses(game: Game) {
@@ -167,6 +179,8 @@ export function replayGameEndAssert(game: Game, newScore: number) {
             }
         }
     }
+    let screenSize = "";
+    if (game.ctx) screenSize = `${game.ctx.canvas.width}x${game.ctx.canvas.height}`;
     const replayResult: ReplayResult = {
         fileName: replay.currentReplayName ?? "Unknown",
         success,
@@ -174,6 +188,7 @@ export function replayGameEndAssert(game: Game, newScore: number) {
         runOnVersionNumber: getGameVersionString(GAME_VERSION),
         replayVersionNumber: getGameVersionString(replay.data.permanentData.gameVersion),
         replayAssertData: replayAssertResultData,
+        screenSize: screenSize,
     }
     saveReplayDataToLocalStorage(replayResult);
 }
