@@ -1,7 +1,11 @@
 import { paintCharacters } from "../character/characterPaint.js";
+import { calculateDistance } from "../game.js";
 import { Debugging, Game, MapChunkPaintCache, Position } from "../gameModel.js";
-import { chunkXYToMapKey, GameMap, getTileIdForTileName, MapChunk, TILE_VALUES } from "./map.js";
+import { chunkXYToMapKey, GameMap, getTileIdForTileName, MapChunk, mapKeyAndTileXYToPosition, TILE_VALUES } from "./map.js";
 import { paintMapChunkObjects } from "./mapObjects.js";
+import { mapModifierDarknessDarknesChunkPaint, MODIFIER_NAME_DARKNESS } from "./modifiers/mapModiferDarkness.js";
+import { mapModifierGrowArea } from "./modifiers/mapModifier.js";
+import { getShapeArea, getShapeMiddle } from "./modifiers/mapModifierShapes.js";
 
 export type MapPaintLayer = "Layer1" | "Layer2";
 
@@ -65,6 +69,12 @@ function paintChunk(layer: MapPaintLayer, ctx: CanvasRenderingContext2D, paintTo
                 const x = tileX * tileSize;
                 const y = tileY * tileSize;
                 const tileReady = paintTile(layer, cacheCtx, { x, y }, tileSize, chunk.tiles[tileX][tileY]);
+                if (tileReady && chunk.mapModifiers && chunk.mapModifiers.find(m => m === MODIFIER_NAME_DARKNESS)) {
+                    const darkness = game.state.map.mapModifiers.find(m => m.type === MODIFIER_NAME_DARKNESS);
+                    if (darkness) {
+                        mapModifierDarknessDarknesChunkPaint(cacheCtx, darkness, chunkXY, tileX, tileY, x, y, tileSize, game);
+                    }
+                }
                 if (debug?.paintTileXYNumbers && layer === "Layer2") {
                     cacheCtx.fillStyle = "black";
                     cacheCtx.font = "8px Arial";

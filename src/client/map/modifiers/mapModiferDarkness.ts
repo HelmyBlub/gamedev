@@ -2,10 +2,10 @@ import { createDefaultAreaBossWithLevel } from "../../character/enemy/areaBoss/a
 import { calculateDirection, calculateDistance, getNextId, modulo } from "../../game.js";
 import { Game, IdCounter, Position } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
-import { GameMap, getFirstBlockingGameMapTilePositionTouchingLine, isPositionBlocking, MapChunk, moveByDirectionAndDistance, positionToGameMapTileXY } from "../map.js";
+import { chunkXYToMapKey, GameMap, getFirstBlockingGameMapTilePositionTouchingLine, isPositionBlocking, MapChunk, mapKeyAndTileXYToPosition, moveByDirectionAndDistance, positionToGameMapTileXY } from "../map.js";
 import { MODIFY_SHAPE_NAME_CIRCLE } from "./mapCircle.js";
 import { GAME_MAP_MODIFIER_FUNCTIONS, GameMapModifier } from "./mapModifier.js";
-import { GameMapArea, getShapeMiddle, getShapePaintClipPath, paintShapeWithCircleCutOut, setShapeAreaToAmount } from "./mapModifierShapes.js";
+import { GameMapArea, getShapeArea, getShapeMiddle, getShapePaintClipPath, paintShapeWithCircleCutOut, setShapeAreaToAmount } from "./mapModifierShapes.js";
 import { GameMapAreaRect, MODIFY_SHAPE_NAME_RECTANGLE } from "./mapRectangle.js";
 
 export const MODIFIER_NAME_DARKNESS = "Darkness";
@@ -34,6 +34,27 @@ export function createMapModifierDarkness(
         areaPerLevel: 1000000,
         level: 1,
     };
+}
+
+export function mapModifierDarknessDarknesChunkPaint(ctx: CanvasRenderingContext2D, modifier: GameMapModifier, chunkXY: Position, tileX: number, tileY: number, paintX: number, paintY: number, tileSize: number, game: Game) {
+    const area = getShapeArea(modifier.area);
+    const maxDistance = 2000;
+    const darkestSize = 1000;
+    if (area > Math.pow(maxDistance + darkestSize, 2) * Math.PI) {
+        const middle = getShapeMiddle(modifier.area);
+        const chunkKey = chunkXYToMapKey(chunkXY.x, chunkXY.y);
+        const tilePosition = mapKeyAndTileXYToPosition(chunkKey, tileX, tileY, game.state.map)
+        const totalDistance = Math.min(calculateDistance(middle, tilePosition), maxDistance + darkestSize);
+        const distance = Math.max(totalDistance - darkestSize, 0);
+        const maxAlpha = 0.30;
+        const alpha = maxAlpha - (distance / maxDistance * maxAlpha);
+        if (alpha > 0) {
+            ctx.fillStyle = "black";
+            ctx.globalAlpha *= alpha;
+            ctx.fillRect(paintX, paintY, tileSize, tileSize);
+            ctx.globalAlpha /= alpha;
+        }
+    }
 }
 
 function onGameInit(modifier: GameMapModifier, game: Game) {

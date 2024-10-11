@@ -2,7 +2,6 @@ next test run: tamer. Reminder: has to be first run or it will break as replay
 increase version
 
 current tasks:
-- pets teleport reset
 - map modifier
     - darkness
         - if map modifier big, hard to find center
