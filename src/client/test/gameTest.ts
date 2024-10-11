@@ -70,8 +70,8 @@ export function testGame(game: Game) {
     console.log("start test");
     //testPathing(game.ctx);
     //runGameWithPlayerInputs(game, testMultiplayerInputs);
-    //testPlayerClasses(game);
-    testOne(game);
+    testPlayerClasses(game);
+    //testOne(game);
 }
 
 export function initReplay(): Replay {
