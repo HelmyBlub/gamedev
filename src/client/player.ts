@@ -9,9 +9,9 @@ import { calculateDistance, deepCopy, findClientInfo, getCameraPosition, setClie
 import { Game, IdCounter, KeyCodeToAction, Position } from "./gameModel.js";
 import { findNearNonBlockingPosition, getMapMidlePosition } from "./map/map.js";
 import { MoreInfoPart, MoreInfos, MoreInfosPartContainer, createDefaultMoreInfosContainer, createMoreInfosPart } from "./moreInfo.js";
-import { localStorageSavePermanentPlayerData } from "./permanentData.js";
 import { ActionsPressed, createActionsPressed } from "./input/playerInput.js";
 import { RandomSeed } from "./randomNumberGenerator.js";
+import { localStorageSaveMidGame } from "./permanentData.js";
 
 export type PermanentPlayerData = {
     money: number,
@@ -311,7 +311,7 @@ export function addMoneyAmountToPlayer(moneyAmount: number, players: Player[], g
             game.UI.displayTextData.push(createPaintTextData(textPosition, `$${finalMoneyAmount.toFixed(1)}`, "black", "24", game.state.time, 5000));
         }
     }
-    localStorageSavePermanentPlayerData(game);
+    localStorageSaveMidGame(game);
 }
 
 export function addMoneyUiMoreInfo(amount: number, textIdentifier: string, game: Game) {

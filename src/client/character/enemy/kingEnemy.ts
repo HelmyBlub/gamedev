@@ -9,7 +9,6 @@ import { deepCopy, getNextId, saveCharacterAsPastCharacter } from "../../game.js
 import { IdCounter, Game, Position, FACTION_ENEMY, CelestialDirection } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { GAME_IMAGES, getImage } from "../../imageLoad.js";
-import { localStorageSaveNextKings } from "../../permanentData.js";
 import { changeTileIdOfMapChunk } from "../../map/map.js";
 import { getKingAreaMiddlePosition, getEntranceChunkAndTileXYForPosition } from "../../map/mapKingArea.js";
 import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick, resetCharacter } from "../character.js";
@@ -108,7 +107,6 @@ export function setPlayerAsKing(game: Game) {
             }
         }
     }
-    localStorageSaveNextKings(game);
     if (oldBoss?.characterClasses) {
         legendaryAbilityGiveBlessing(celestialDirection, [oldBoss]);
         classBuildingPutLegendaryCharacterStuffBackIntoBuilding(oldBoss, game);

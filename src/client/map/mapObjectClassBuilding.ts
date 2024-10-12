@@ -8,7 +8,6 @@ import { Game, Position } from "../gameModel.js";
 import { getPointPaintPosition, paintTextLinesWithKeys } from "../gamePaint.js";
 import { chunkXYToMapKey, mapKeyAndTileXYToPosition } from "./map.js";
 import { MAP_OBJECTS_FUNCTIONS, MapTileObject, findMapKeyForMapObject, paintMabObjectDefault } from "./mapObjects.js";
-import { localStorageSaveBuildings } from "../permanentData.js";
 import { createCharacterClassMoreInfos, paintCharacters } from "../character/characterPaint.js";
 import { ABILITY_NAME_LEASH, AbilityLeash } from "../ability/abilityLeash.js";
 import { playerInputBindingToDisplayValue } from "../input/playerInput.js";
@@ -81,7 +80,6 @@ export function createEmptyClassBuilding(game: Game) {
     spawnChunk.tiles[mapObject.x][mapObject.y] = 0;
     spawnChunk.objects.push(mapObject);
     game.state.buildings.push(classBuilding);
-    localStorageSaveBuildings(game);
 }
 
 function tick(mapObject: MapTileObject, game: Game) {

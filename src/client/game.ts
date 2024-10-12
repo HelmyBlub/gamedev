@@ -22,7 +22,7 @@ import { ABILITY_NAME_LOVE_PET } from "./ability/petTamer/abilityLovePet.js";
 import { COMMAND_RESTART } from "./globalVars.js";
 import { mapObjectPlaceClassBuilding } from "./map/mapObjectClassBuilding.js";
 import { findMainCharacterClass, hasPlayerChoosenStartClassUpgrade, playerCharacterClassGetAverageLevel } from "./character/playerCharacters/playerCharacters.js";
-import { copyAndSetPermanentDataForReplay, localStorageLoad, localStorageSavePastCharacters, setPermanentDataFromReplayData } from "./permanentData.js";
+import { copyAndSetPermanentDataForReplay, localStorageLoad, localStorageSaveAll, setPermanentDataFromReplayData } from "./permanentData.js";
 import { MapTileObject, findNearesInteractableMapChunkObject } from "./map/mapObjects.js";
 import { classBuildingCheckAllPlayerForLegendaryAbilitiesAndMoveBackToBuilding } from "./map/buildings/classBuilding.js";
 import { mapObjectPlaceUpgradeBuilding } from "./map/mapObjectUpgradeBuilding.js";
@@ -349,6 +349,7 @@ export function endGame(game: Game, isKingKill: boolean = false, isGodKill: bool
             }
         }
     }
+    localStorageSaveAll(game);
 }
 
 export function changeCharacterAndAbilityIds(character: Character, idCounter: IdCounter) {
@@ -442,7 +443,6 @@ export function saveCharacterAsPastCharacter(character: Character, game: Game) {
             }
         }
     }
-    localStorageSavePastCharacters(game);
 }
 
 export function autoSendMousePositionHandler(ownerId: number, identifier: string, activateAutoSend: boolean, castPosition: Position | undefined, game: Game) {

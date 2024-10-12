@@ -4,7 +4,6 @@ import { Game, Position } from "../gameModel.js";
 import { getPointPaintPosition, paintTextLinesWithKeys } from "../gamePaint.js";
 import { chunkXYToMapKey, mapKeyAndTileXYToPosition } from "./map.js";
 import { MAP_OBJECTS_FUNCTIONS, MapTileObject, findMapKeyForMapObject, paintMabObjectDefault } from "./mapObjects.js";
-import { localStorageSaveBuildings } from "../permanentData.js";
 import { MoreInfosPartContainer, createDefaultMoreInfosContainer } from "../moreInfo.js";
 import { UPGRADE_BUILDING, UPGRADE_BUILDINGS_FUNCTIONS, UpgradeBuilding, createBuildingUpgradeBuilding, createUpgradeBuildingMoreInfos, paintUpgradeBuilding, upgradeBuildingBuyUpgrade, upgradeBuildingFindById, upgradeBuildingGetUpgradeText, upgradeBuildingRefund } from "./buildings/upgradeBuilding.js";
 import { findPlayerByCharacterId, findPlayerByCliendId } from "../player.js";
@@ -53,7 +52,6 @@ export function mapObjectPlaceUpgradeBuilding(game: Game) {
     spawnChunk.tiles[mapObject.x][mapObject.y] = 0;
     spawnChunk.objects.push(mapObject);
     game.state.buildings.push(upgradeBuilding);
-    localStorageSaveBuildings(game);
 }
 
 function paint(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, paintTopLeft: Position, game: Game) {

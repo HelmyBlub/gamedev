@@ -1,11 +1,10 @@
 import { Character } from "./character/characterModel.js";
 import { CHARACTER_TYPE_GOD_ENEMY, GodEnemyCharacter } from "./character/enemy/god/godEnemy.js";
 import { CHARACTER_TYPE_KING_ENEMY } from "./character/enemy/kingEnemy.js";
-import { calculateDistance, getTimeSinceFirstKill } from "./game.js";
+import { calculateDistance } from "./game.js";
 import { Game } from "./gameModel.js";
 import { getMapMidlePosition } from "./map/map.js";
 import { MoreInfoPart, createMoreInfosPart } from "./moreInfo.js";
-import { localStorageSaveHighscores } from "./permanentData.js";
 
 export type Highscores = {
     scoreBoards: {
@@ -102,7 +101,6 @@ export function calculateHighscoreOnGameEnd(game: Game): number {
             board.scores.pop();
         }
     }
-    localStorageSaveHighscores(game);
     return newScore;
 }
 

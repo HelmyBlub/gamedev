@@ -6,7 +6,6 @@ current tasks:
     - darkness
         - save in permanent storage
             - if not fixed, breaks replays, only very first run works can be used as replay
-            - as long as its hard to tell the direction to center for map Modifier it should reset?
             - must be part of replay data
         - if boss has curse, should entire direction be affected by map modifier?
         - moreInfo curse information

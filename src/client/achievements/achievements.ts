@@ -5,7 +5,7 @@ import { CHARACTER_CLASS_TOWER_BUILDER } from "../character/playerCharacters/cha
 import { CHARACTER_CLASS_TAMER } from "../character/playerCharacters/tamer/characterClassTamer.js"
 import { Game } from "../gameModel.js"
 import { MoreInfoPart, MoreInfos, MoreInfosPartContainer, createDefaultMoreInfosContainer, createMoreInfosPart } from "../moreInfo.js"
-import { localStorageSaveAchievements } from "../permanentData.js"
+import { localStorageSaveMidGame } from "../permanentData.js"
 import { ACHIEVEMENT_NAME_BOSS_KILL, addAchievementBossKill } from "./achievementBossKill.js"
 import { ACHIEVEMENT_NAME_GAIN_LEGENDARY_BLESSING, addAchievementGainLegendaryBlessing } from "./achievementGainLegendaryBlessing.js"
 import { ACHIEVEMENT_NAME_GOD_HARD_MODE_KILL, addAchievementGodHardModeKill } from "./achievementGodHardModeKill.js"
@@ -144,7 +144,7 @@ function finishAchievement(achievement: Achievement, achievements: Achievements,
     achievements.open.splice(index, 1)[0];
     achievements.finished.push(achievement);
     if (functions.giveReward) functions.giveReward(achievement, game);
-    localStorageSaveAchievements(game);
+    localStorageSaveMidGame(game);
 }
 
 function getAchievementMoreInfoPart(achievement: Achievement, ctx: CanvasRenderingContext2D): MoreInfoPart | undefined {

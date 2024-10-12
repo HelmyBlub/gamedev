@@ -7,7 +7,6 @@ import { TAMER_PET_CHARACTER, TamerPetCharacter } from "../../character/playerCh
 import { getNextId } from "../../game.js";
 import { FACTION_PLAYER, Game, IdCounter } from "../../gameModel.js";
 import { GAME_IMAGES } from "../../imageLoad.js";
-import { localStorageSaveBuildings } from "../../permanentData.js";
 import { Player } from "../../player.js";
 import { Building, findBuildingByIdAndType, getBuildingPosition } from "./building.js";
 
@@ -155,7 +154,6 @@ export function classBuildingPutLegendaryCharacterStuffBackIntoBuilding(characte
             }
         }
     }
-    localStorageSaveBuildings(game);
 }
 
 export function classBuildingFindCharacterClassToMakeLegendary(character: Character): string | undefined {
@@ -207,7 +205,6 @@ export function classBuildingPlacePlayerClassStuffInBuilding(playerClass: string
                     counter++;
                 }
             }
-            localStorageSaveBuildings(game);
         }
     }
 }
@@ -234,7 +231,6 @@ function setBurrowedByKingIfHasLegendary(player: Player, game: Game) {
                 if (classBuilding && classBuilding.stuffBorrowed) {
                     const celelstialDirection = getCelestialDirection(player.character, game.state.map);
                     classBuilding.stuffBorrowed.by = `King of the ${celelstialDirection}`;
-                    localStorageSaveBuildings(game);
                 }
             }
         }

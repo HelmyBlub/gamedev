@@ -8,6 +8,7 @@ import { PermanentPlayerData, createPlayerWithPlayerCharacter } from "./player.j
 import { GAME_VERSION } from "./main.js";
 import { Highscores, createHighscoreBoards } from "./highscores.js";
 import { Achievements, createDefaultAchivements } from "./achievements/achievements.js";
+import { GameMapModifier } from "./map/modifiers/mapModifier.js";
 
 export type PermanentDataParts = {
     pastCharacters?: PastPlayerCharacters,
@@ -17,43 +18,23 @@ export type PermanentDataParts = {
     highscores?: Highscores,
     achievements?: Achievements,
     gameVersion?: GameVersion,
+    mapModifier?: GameMapModifier[],
 }
 
-const LOCALSTORAGE_PASTCHARACTERS = "pastCharacters";
-const LOCALSTORAGE_NEXTKINGS = "nextKings";
-const LOCALSTORAGE_BUILDINGS = "buildings";
-const LOCALSTORAGE_PLAYER_DATA = "playerData";
-const LOCALSTORAGE_GAME_VERSION = "gameVersion";
-const LOCALSTORAGE_HIGHSCORES = "highscores";
-const LOCALSTORAGE_ACHIEVEMENTS = "achievements";
+const LOCALSTORAGE_GAME = "HelmysGame";
 
 export function localStorageLoad(game: Game) {
     if (isDataGameVersionOutdated(GAME_VERSION)) {
         resetPermanentData();
-        localStorageSaveGameVersion(game);
+        localStorageSaveAll(game);
     } else {
-        const localStoragePastCharacters = localStorage.getItem(LOCALSTORAGE_PASTCHARACTERS);
-        loadPastCharacters(jsonParseNullAllowed(localStoragePastCharacters), game);
-        const localStorageNextKings = localStorage.getItem(LOCALSTORAGE_NEXTKINGS);
-        loadNextKings(jsonParseNullAllowed(localStorageNextKings), game);
-        const localStorageBuildings = localStorage.getItem(LOCALSTORAGE_BUILDINGS);
-        loadBuildings(jsonParseNullAllowed(localStorageBuildings), game);
-        const localStoragePlayerData = localStorage.getItem(LOCALSTORAGE_PLAYER_DATA);
-        loadPlayerData(jsonParseNullAllowed(localStoragePlayerData), game);
-        const localStorageHighscores = localStorage.getItem(LOCALSTORAGE_HIGHSCORES);
-        loadHighscores(jsonParseNullAllowed(localStorageHighscores), game);
-        const localStorageAchievements = localStorage.getItem(LOCALSTORAGE_ACHIEVEMENTS);
-        loadAchievements(jsonParseNullAllowed(localStorageAchievements), game);
+        const permanentDataParts: PermanentDataParts | undefined = jsonParseNullAllowed(localStorage.getItem(LOCALSTORAGE_GAME));
+        loadPermanentDataParts(permanentDataParts, game);
     }
 }
 
 export function resetPermanentData() {
-    localStorage.removeItem(LOCALSTORAGE_PASTCHARACTERS);
-    localStorage.removeItem(LOCALSTORAGE_NEXTKINGS);
-    localStorage.removeItem(LOCALSTORAGE_BUILDINGS);
-    localStorage.removeItem(LOCALSTORAGE_PLAYER_DATA);
-    localStorage.removeItem(LOCALSTORAGE_HIGHSCORES);
-    localStorage.removeItem(LOCALSTORAGE_ACHIEVEMENTS);
+    localStorage.removeItem(LOCALSTORAGE_GAME);
 }
 
 export function copyAndSetPermanentDataForReplay(permanentData: PermanentDataParts, game: Game) {
@@ -62,57 +43,40 @@ export function copyAndSetPermanentDataForReplay(permanentData: PermanentDataPar
     permanentData.buildings = deepCopy(game.state.buildings);
     permanentData.gameVersion = deepCopy(game.state.gameVersion);
     permanentData.achievements = deepCopy(game.state.achievements);
+    permanentData.mapModifier = deepCopy(game.state.map.mapModifiers);
     if (game.state.players.length > 0) permanentData.permanentPlayerData = deepCopy(game.state.players[0].permanentData);
 }
 
-export function localStorageSaveNextKings(game: Game) {
+export function localStorageSaveAll(game: Game) {
     if (!game.multiplayer.disableLocalStorage && !game.testing.replay) {
-        localStorage.setItem(LOCALSTORAGE_NEXTKINGS, JSON.stringify(game.state.bossStuff.nextKings));
-        localStorageSaveBuildings(game);
+        const permanentData: PermanentDataParts = {};
+        permanentData.nextKings = game.state.bossStuff.nextKings;
+        permanentData.pastCharacters = game.state.pastPlayerCharacters;
+        permanentData.buildings = game.state.buildings;
+        permanentData.gameVersion = game.state.gameVersion;
+        permanentData.achievements = game.state.achievements;
+        permanentData.highscores = game.state.highscores;
+        permanentData.permanentPlayerData = game.state.players[0].permanentData;
+        permanentData.mapModifier = game.state.map.mapModifiers;
+        localStorage.setItem(LOCALSTORAGE_GAME, JSON.stringify(permanentData));
     }
 }
 
-export function localStorageSaveHighscores(game: Game) {
+export function localStorageSaveMidGame(game: Game) {
     if (!game.multiplayer.disableLocalStorage && !game.testing.replay) {
-        localStorage.setItem(LOCALSTORAGE_HIGHSCORES, JSON.stringify(game.state.highscores));
-    }
-}
-
-export function localStorageSavePastCharacters(game: Game) {
-    if (!game.multiplayer.disableLocalStorage && !game.testing.replay) {
-        localStorage.setItem(LOCALSTORAGE_PASTCHARACTERS, JSON.stringify(game.state.pastPlayerCharacters));
-    }
-}
-
-export function localStorageSaveBuildings(game: Game) {
-    if (!game.multiplayer.disableLocalStorage && !game.testing.replay) {
-        localStorage.setItem(LOCALSTORAGE_BUILDINGS, JSON.stringify(game.state.buildings));
-    }
-}
-
-export function localStorageSavePermanentPlayerData(game: Game) {
-    if (!game.multiplayer.disableLocalStorage && !game.testing.replay) {
-        localStorage.setItem(LOCALSTORAGE_PLAYER_DATA, JSON.stringify(game.state.players[0].permanentData));
-    }
-}
-
-export function localStorageSaveAchievements(game: Game) {
-    if (!game.multiplayer.disableLocalStorage && !game.testing.replay) {
-        localStorage.setItem(LOCALSTORAGE_ACHIEVEMENTS, JSON.stringify(game.state.achievements));
+        const permanentData: PermanentDataParts | undefined = jsonParseNullAllowed(localStorage.getItem(LOCALSTORAGE_GAME));
+        if (!permanentData) return;
+        permanentData.achievements = game.state.achievements;
+        permanentData.permanentPlayerData = game.state.players[0].permanentData;
+        permanentData.mapModifier = game.state.map.mapModifiers;
+        localStorage.setItem(LOCALSTORAGE_GAME, JSON.stringify(permanentData));
     }
 }
 
 export function setPermanentDataFromReplayData(game: Game) {
     const replay = game.testing.replay;
     if (!replay) return;
-
-    if (game.state.map.kingArea) {
-        loadNextKings(replay.data?.permanentData.nextKings, game);
-    }
-    loadPastCharacters(replay.data?.permanentData.pastCharacters, game);
-    loadBuildings(replay.data?.permanentData.buildings, game);
-    loadPlayerData(replay.data?.permanentData.permanentPlayerData, game);
-    loadAchievements(replay.data?.permanentData.achievements, game);
+    loadPermanentDataParts(replay.data?.permanentData, game);
     if (replay.data?.multiplayerData) {
         game.state.clientInfos = [];
         game.state.players = [];
@@ -124,7 +88,29 @@ export function setPermanentDataFromReplayData(game: Game) {
     }
 }
 
-function loadPastCharacters(pastPlayerCharacters: PastPlayerCharacters | undefined, game: Game) {
+function loadPermanentDataParts(permanentDataParts: PermanentDataParts | undefined, game: Game) {
+    if (!permanentDataParts) return;
+    loadPastCharacters(permanentDataParts, game);
+    loadNextKings(permanentDataParts, game);
+    loadBuildings(permanentDataParts, game);
+    loadPlayerData(permanentDataParts, game);
+    loadHighscores(permanentDataParts, game);
+    loadAchievements(permanentDataParts, game);
+    loadMapModifier(permanentDataParts, game);
+}
+
+function loadMapModifier(permanentDataParts: PermanentDataParts, game: Game) {
+    const mapModifier = permanentDataParts.mapModifier;
+    if (!mapModifier) {
+        game.state.map.mapModifiers = [];
+        return;
+    }
+    game.state.map.mapModifiers = mapModifier;
+}
+
+
+function loadPastCharacters(permanentDataParts: PermanentDataParts, game: Game) {
+    const pastPlayerCharacters = permanentDataParts.pastCharacters;
     if (!pastPlayerCharacters) {
         game.state.pastPlayerCharacters.characters = [];
         return;
@@ -137,7 +123,8 @@ function loadPastCharacters(pastPlayerCharacters: PastPlayerCharacters | undefin
     }
 }
 
-function loadNextKings(nextKings: NextKings | undefined, game: Game) {
+function loadNextKings(permanentDataParts: PermanentDataParts, game: Game) {
+    const nextKings = permanentDataParts.nextKings;
     if (!nextKings) {
         setDefaultNextKings(game);
         return;
@@ -150,7 +137,8 @@ function loadNextKings(nextKings: NextKings | undefined, game: Game) {
     }
 }
 
-function loadBuildings(buildings: Building[] | undefined, game: Game) {
+function loadBuildings(permanentDataParts: PermanentDataParts, game: Game) {
+    const buildings = permanentDataParts.buildings;
     if (!buildings) {
         game.state.buildings = [];
         return;
@@ -161,7 +149,8 @@ function loadBuildings(buildings: Building[] | undefined, game: Game) {
     }
 }
 
-function loadPlayerData(playerData: PermanentPlayerData | undefined, game: Game) {
+function loadPlayerData(permanentDataParts: PermanentDataParts, game: Game) {
+    const playerData = permanentDataParts.permanentPlayerData;
     if (game.state.players.length > 0) {
         if (!playerData) {
             game.state.players[0].permanentData = { money: 0, upgrades: {} };
@@ -171,7 +160,8 @@ function loadPlayerData(playerData: PermanentPlayerData | undefined, game: Game)
     }
 }
 
-function loadHighscores(highscores: Highscores | undefined, game: Game) {
+function loadHighscores(permanentDataParts: PermanentDataParts, game: Game) {
+    const highscores = permanentDataParts.highscores;
     if (!highscores) {
         game.state.highscores = createHighscoreBoards();
     } else {
@@ -179,7 +169,8 @@ function loadHighscores(highscores: Highscores | undefined, game: Game) {
     }
 }
 
-function loadAchievements(achievements: Achievements | undefined, game: Game) {
+function loadAchievements(permanentDataParts: PermanentDataParts, game: Game) {
+    const achievements = permanentDataParts.achievements;
     if (!achievements) {
         game.state.achievements = createDefaultAchivements();
     } else {
@@ -188,21 +179,15 @@ function loadAchievements(achievements: Achievements | undefined, game: Game) {
 }
 
 function isDataGameVersionOutdated(gameVersion: GameVersion): boolean {
-    const stringGameVersion = localStorage.getItem(LOCALSTORAGE_GAME_VERSION);
-    if (stringGameVersion === null) return true;
-    const localStorageGameVersion: GameVersion = JSON.parse(stringGameVersion);
+    const permanentDataParts: PermanentDataParts | undefined = jsonParseNullAllowed(localStorage.getItem(LOCALSTORAGE_GAME));
+    if (!permanentDataParts || !permanentDataParts.gameVersion) return true;
+    const localStorageGameVersion: GameVersion = permanentDataParts.gameVersion;
     if (gameVersion.major !== localStorageGameVersion.major
         || gameVersion.minor !== localStorageGameVersion.minor
     ) {
         return true
     }
     return false;
-}
-
-function localStorageSaveGameVersion(game: Game) {
-    if (!game.multiplayer.disableLocalStorage && !game.testing.replay) {
-        localStorage.setItem(LOCALSTORAGE_GAME_VERSION, JSON.stringify(game.state.gameVersion));
-    }
 }
 
 function changeBuildingIds(building: Building, idCounter: IdCounter, game: Game) {
