@@ -1,10 +1,11 @@
 import { Game, Position } from "../../gameModel.js"
 import { nextRandom } from "../../randomNumberGenerator.js"
 import { GameMap, MapChunk } from "../map.js"
-import { GameMapAreaCircle, MODIFY_SHAPE_NAME_CIRCLE } from "./mapCircle.js"
+import { GameMapAreaCircle, MODIFY_SHAPE_NAME_CIRCLE } from "./mapShapeCircle.js"
 import { addMapModifierDarkness, createMapModifierDarkness } from "./mapModiferDarkness.js"
 import { GameMapArea, isPositionInsideShape, onDomLoadMapModifierShapes, setShapeAreaToAmount } from "./mapModifierShapes.js"
-import { GameMapAreaRect, MODIFY_SHAPE_NAME_RECTANGLE } from "./mapRectangle.js"
+import { GameMapAreaRect, MODIFY_SHAPE_NAME_RECTANGLE } from "./mapShapeRectangle.js"
+import { GameMapAreaCelestialDirection, MODIFY_SHAPE_NAME_CELESTIAL_DIRECTION } from "./mapShapeCelestialDirection.js"
 
 export type GameMapModifier = {
     id: number,
@@ -80,33 +81,20 @@ export function mapModifyIsChunkAffected(modifier: GameMapModifier, chunkX: numb
         x: chunkX * chunkWidth + chunkWidth / 2,
         y: chunkY * chunkWidth + chunkWidth / 2
     }
-    return isPositionInsideShape(modifier.area, chunkMiddle);
-    // switch (modifier.area.type) {
-    //     case "celestialDirection":
-    //         const celestialDirectionArea: GameMapAreaCelestialDirection = modifier.area as GameMapAreaCelestialDirection;
-    //         const celDel = getCelestialDirection({ x: chunkMiddleX, y: chunkMiddleY }, map);
-    //         const isInCelestialDirection = celDel === celestialDirectionArea.celestialDirection;
-    //         return isInCelestialDirection;
-    return false;
+    return isPositionInsideShape(modifier.area, chunkMiddle, game);
 }
 
 function addMapModifer(map: GameMap, game: Game) {
     const axisOffset = 7500;
     const signX = nextRandom(game.state.randomSeed) < 0.5 ? 1 : -1;
     const signY = nextRandom(game.state.randomSeed) < 0.5 ? 1 : -1;
-    const area: GameMapAreaRect = {
-        type: MODIFY_SHAPE_NAME_RECTANGLE,
-        x: axisOffset * signX,
-        y: axisOffset * signY,
-        width: 1000,
-        height: 1000,
-    };
     const areaCircle: GameMapAreaCircle = {
         type: MODIFY_SHAPE_NAME_CIRCLE,
         x: axisOffset * signX,
         y: axisOffset * signY,
         radius: 0,
     };
+
     const darkness = createMapModifierDarkness(areaCircle, game.state.idCounter);
     if (darkness.areaPerLevel) setShapeAreaToAmount(areaCircle, darkness.areaPerLevel);
     map.mapModifiers.push(darkness);

@@ -8,7 +8,7 @@ import { getPointPaintPosition } from "../../../gamePaint.js";
 import { findNearNonBlockingPosition } from "../../../map/map.js";
 import { findMapModifierById, removeMapModifier } from "../../../map/modifiers/mapModifier.js";
 import { GameMapArea, getShapeMiddle, isPositionInsideShape } from "../../../map/modifiers/mapModifierShapes.js";
-import { GameMapAreaRect } from "../../../map/modifiers/mapRectangle.js";
+import { GameMapAreaRect } from "../../../map/modifiers/mapShapeRectangle.js";
 import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick, resetCharacter } from "../../character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, createCharacter } from "../../characterModel.js";
 import { paintCharacterWithAbilitiesDefault, paintCharacterHpBar, paintCharatersPets } from "../../characterPaint.js";
@@ -78,7 +78,7 @@ function tickAreaBossEnemyCharacter(enemy: Character, game: Game, pathingCache: 
 function resetBossIfOutsideModifierArea(areaBoss: AreaBossEnemyCharacter, game: Game) {
     const modifier = findMapModifierById(areaBoss.mapModifierIdRef, game);
     if (modifier === undefined) return;
-    const isInside = isPositionInsideShape(modifier.area, areaBoss);
+    const isInside = isPositionInsideShape(modifier.area, areaBoss, game);
     if (!isInside) {
         resetAreaBoss(areaBoss, modifier.area, game);
         return;
@@ -88,7 +88,7 @@ function resetBossIfOutsideModifierArea(areaBoss: AreaBossEnemyCharacter, game: 
 function resetAreaBoss(areaBoss: AreaBossEnemyCharacter, area: GameMapArea, game: Game) {
     resetCharacter(areaBoss, game);
     areaBoss.hp = areaBoss.maxHp;
-    const spawn = getShapeMiddle(area);
+    const spawn = getShapeMiddle(area)!;
     const nonBlocking = findNearNonBlockingPosition(spawn, game.state.map, game.state.idCounter, game);
     areaBoss.x = nonBlocking.x;
     areaBoss.y = nonBlocking.y;
