@@ -1,13 +1,12 @@
-next test run: tamer. Reminder: has to be first run or it will break as replay
+next test run: tamer
 increase version
 
 current tasks:
+- add alot of xp does stop xp animation
 - map modifier
     - darkness
-        - save in permanent storage
-            - if not fixed, breaks replays, only very first run works can be used as replay
-            - must be part of replay data
         - if boss has curse, should entire direction be affected by map modifier?
+            - more than one curse possible
         - moreInfo curse information
         - balancing clones
             - hp

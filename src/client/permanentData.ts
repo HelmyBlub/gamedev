@@ -108,7 +108,6 @@ function loadMapModifier(permanentDataParts: PermanentDataParts, game: Game) {
     game.state.map.mapModifiers = mapModifier;
 }
 
-
 function loadPastCharacters(permanentDataParts: PermanentDataParts, game: Game) {
     const pastPlayerCharacters = permanentDataParts.pastCharacters;
     if (!pastPlayerCharacters) {

@@ -74,6 +74,8 @@ export function executeCheatAction(action: string, activate: boolean, clientId: 
             const xp = 5000000;
             levelingCharacterAndClassXpGain(game.state, xp, game);
             experienceForEveryPlayersLeveling(xp, game);
+            game.UI.playerCharacterLevelUI = undefined;
+            game.UI.playerCharacterAbilityUI = undefined;
             break;
         case "Very Tanky":
             for (let player of game.state.players) {
