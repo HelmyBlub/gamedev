@@ -8,7 +8,6 @@ import { getPointPaintPosition } from "../../../gamePaint.js";
 import { findNearNonBlockingPosition } from "../../../map/map.js";
 import { findMapModifierById, removeMapModifier } from "../../../map/modifiers/mapModifier.js";
 import { GameMapArea, getShapeMiddle, isPositionInsideShape } from "../../../map/modifiers/mapModifierShapes.js";
-import { GameMapAreaRect } from "../../../map/modifiers/mapShapeRectangle.js";
 import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick, resetCharacter } from "../../character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, createCharacter } from "../../characterModel.js";
 import { paintCharacterWithAbilitiesDefault, paintCharacterHpBar, paintCharatersPets } from "../../characterPaint.js";

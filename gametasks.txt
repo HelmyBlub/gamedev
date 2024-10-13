@@ -1,11 +1,12 @@
-next test run: tamer
+next test run: 
 increase version
 
 current tasks:
-- add alot of xp does stop xp animation
 - map modifier
     - darkness
-        - if boss has curse, should entire direction be affected by map modifier?
+        - if boss has curse, should entire direction be affected by map modifier
+            - if king has curse => spawn map area
+            - if king dies, remove
             - more than one curse possible
         - moreInfo curse information
         - balancing clones

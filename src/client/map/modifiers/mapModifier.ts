@@ -1,11 +1,12 @@
-import { Game, Position } from "../../gameModel.js"
+import { CelestialDirection, Game, Position } from "../../gameModel.js"
 import { nextRandom } from "../../randomNumberGenerator.js"
 import { GameMap, MapChunk } from "../map.js"
 import { GameMapAreaCircle, MODIFY_SHAPE_NAME_CIRCLE } from "./mapShapeCircle.js"
-import { addMapModifierDarkness, createMapModifierDarkness } from "./mapModiferDarkness.js"
+import { addMapModifierDarkness, createMapModifierDarkness, MODIFIER_NAME_DARKNESS } from "./mapModiferDarkness.js"
 import { GameMapArea, isPositionInsideShape, onDomLoadMapModifierShapes, setShapeAreaToAmount } from "./mapModifierShapes.js"
 import { GameMapAreaRect, MODIFY_SHAPE_NAME_RECTANGLE } from "./mapShapeRectangle.js"
 import { GameMapAreaCelestialDirection, MODIFY_SHAPE_NAME_CELESTIAL_DIRECTION } from "./mapShapeCelestialDirection.js"
+import { CURSE_DARKNESS } from "../../curse/curseDarkness.js"
 
 export type GameMapModifier = {
     id: number,
@@ -52,10 +53,9 @@ export function findMapModifierById(id: number, game: Game): undefined | GameMap
 
 export function mapModifierOnGameInit(game: Game) {
     const modifiers = game.state.map.mapModifiers;
-    if (modifiers.length === 0) {
-        addMapModifer(game.state.map, game);
-    }
-
+    haveAtLeastOneNoneCelestialModifierOfEachType(game);
+    removeMapModifierCelestialIfNoKingWithCurse(game);
+    addMapModifierIfKingHasCurse(game);
     for (let modifier of modifiers) {
         const modFunctions = GAME_MAP_MODIFIER_FUNCTIONS[modifier.type];
         if (modFunctions && modFunctions.onGameInit) {
@@ -82,6 +82,58 @@ export function mapModifyIsChunkAffected(modifier: GameMapModifier, chunkX: numb
         y: chunkY * chunkWidth + chunkWidth / 2
     }
     return isPositionInsideShape(modifier.area, chunkMiddle, game);
+}
+
+function haveAtLeastOneNoneCelestialModifierOfEachType(game: Game) {
+    const modifiers = game.state.map.mapModifiers;
+    const mod = modifiers.find(m => m.area.type !== MODIFY_SHAPE_NAME_CELESTIAL_DIRECTION);
+    if (mod) return;
+    addMapModifer(game.state.map, game);
+}
+
+function removeMapModifierCelestialIfNoKingWithCurse(game: Game) {
+    for (let i = game.state.map.mapModifiers.length - 1; i >= 0; i--) {
+        const mapModifier = game.state.map.mapModifiers[i];
+        if (mapModifier.area.type === MODIFY_SHAPE_NAME_CELESTIAL_DIRECTION) {
+            const celestialDirection = (mapModifier.area as GameMapAreaCelestialDirection).celestialDirection;
+            const king = game.state.bossStuff.nextKings[celestialDirection];
+            if (king && king.curses) {
+                let kingHasCurse = false;
+                for (let curse of king!.curses!) {
+                    kingHasCurse = true;
+                }
+                if (kingHasCurse) continue;
+            }
+            game.state.map.mapModifiers.splice(i, 1);
+        }
+    }
+}
+
+function addMapModifierIfKingHasCurse(game: Game) {
+    const celestialDirections = Object.keys(game.state.bossStuff.nextKings) as CelestialDirection[];
+    game.state.bossStuff.nextKings.east?.curses
+    for (let celestialDirection of celestialDirections) {
+        const king = game.state.bossStuff.nextKings[celestialDirection];
+        if (!king || !king.curses) continue;
+        for (let curse of king.curses) {
+            if (curse.type === CURSE_DARKNESS) {
+                let alreadyExists = false;
+                for (let mapModifier of game.state.map.mapModifiers) {
+                    if (mapModifier.type === MODIFIER_NAME_DARKNESS
+                        && mapModifier.area.type === MODIFY_SHAPE_NAME_CELESTIAL_DIRECTION
+                        && (mapModifier.area as GameMapAreaCelestialDirection).celestialDirection === celestialDirection
+                    ) alreadyExists = true;
+                }
+                if (alreadyExists) continue;
+                const area: GameMapAreaCelestialDirection = {
+                    type: MODIFY_SHAPE_NAME_CELESTIAL_DIRECTION,
+                    celestialDirection: celestialDirection,
+                };
+                const darkness = createMapModifierDarkness(area, game.state.idCounter);
+                game.state.map.mapModifiers.push(darkness);
+            }
+        }
+    }
 }
 
 function addMapModifer(map: GameMap, game: Game) {

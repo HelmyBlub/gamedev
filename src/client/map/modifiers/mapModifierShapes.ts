@@ -41,7 +41,7 @@ export function setShapeAreaToAmount(shape: GameMapArea, value: number) {
 
 export function getShapeArea(shape: GameMapArea): number | undefined {
     const shapeFunctions = GAME_MAP_MODIFY_SHAPES_FUNCTIONS[shape.type];
-    if (shapeFunctions.getArea) shapeFunctions.getArea(shape);
+    if (shapeFunctions.getArea) return shapeFunctions.getArea(shape);
     return undefined;
 }
 
