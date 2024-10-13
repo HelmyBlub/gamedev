@@ -86,3 +86,14 @@ export function addCursedParticleEffect(curses: Curse[], position: Position, gam
         }, "black", 2000, 20, game);
     }
 }
+
+export function createCursesMoreInfoTextLine(curses: Curse[] | undefined): string | undefined {
+    if (!curses) return undefined;
+    let cursesText = "";
+    let first = true;
+    for (let curse of curses) {
+        if (first) first = false; else cursesText += `, `;
+        cursesText += `${curse.type} ${Math.floor(curse.level)}`;
+    }
+    return `Curses: ${cursesText}`;
+}

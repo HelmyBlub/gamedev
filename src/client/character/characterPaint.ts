@@ -11,7 +11,7 @@ import { CharacterClass, getAverageLevelOfAbilitiesPetsCharClassId } from "./pla
 import { characterUpgradeGetStatsDisplayText, pushCharacterClassUpgradesUiTexts } from "./upgrades/characterUpgrades.js";
 import { findPlayerByCharacterId } from "../player.js";
 import { LEVELING_CLASS_SKILL_POINT_GAIN_EVERY_X_LEVELS } from "./playerCharacters/levelingCharacter.js";
-import { paintCurses } from "../curse/curse.js";
+import { createCursesMoreInfoTextLine, paintCurses } from "../curse/curse.js";
 
 export function paintCharacters(ctx: CanvasRenderingContext2D, characters: (Character | undefined)[], cameraPosition: Position, game: Game) {
     for (let i = 0; i < characters.length; i++) {
@@ -75,6 +75,9 @@ export function createCharacterMoreInfos(ctx: CanvasRenderingContext2D, characte
         `Movement Speed: ${getCharacterMoveSpeed(character).toFixed(2)}`,
         `Type: ${character.type}`,
     ];
+    const curseTextLine = createCursesMoreInfoTextLine(character.curses);
+    if (curseTextLine) textLines.push(curseTextLine);
+
     if (character.type === CHARACTER_TYPE_KING_ENEMY) {
         textLines.push(`  Kings abilities get stronger the lower his HP`);
     }
@@ -231,6 +234,9 @@ function addCharacterClassMoreInfosTextLines(characterClasses: CharacterClass[],
             textLines.push(`Level: ${avgLevel.toFixed()}${levelCapText}`);
         }
         if (charClass.availableSkillPoints) textLines.push(`SkillPoints: ${charClass.availableSkillPoints.available}`);
+        const curseTextLine = createCursesMoreInfoTextLine(charClass.curses);
+        if (curseTextLine) textLines.push(curseTextLine);
+
         pushCharacterClassUpgradesUiTexts(textLines, charClass);
     }
     if (hasLegendary) {

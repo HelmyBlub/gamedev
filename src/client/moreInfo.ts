@@ -370,10 +370,11 @@ function createPastCharacterMoreInfos(ctx: CanvasRenderingContext2D, pastCharact
     ]
     moreInfosPartContainer.moreInfoParts.push(createMoreInfosPart(ctx, pastCharacterDefaultTexts))
     if (pastCharacter.characterClasses) {
-        for (let charClass of pastCharacter.characterClasses)
+        for (let charClass of pastCharacter.characterClasses) {
             if (!charClass.gifted) {
                 moreInfosPartContainer.moreInfoParts.push(createCharacterClassMoreInfos(ctx, [charClass], pastCharacter.abilities, pastCharacter.pets));
             }
+        }
     }
 
     if (pastCharacter.pets) {

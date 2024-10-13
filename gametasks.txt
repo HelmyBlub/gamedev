@@ -4,10 +4,6 @@ increase version
 current tasks:
 - map modifier
     - darkness
-        - if boss has curse, should entire direction be affected by map modifier
-            - if king has curse => spawn map area
-            - if king dies, remove
-            - more than one curse possible
         - moreInfo curse information
         - balancing clones
             - hp
@@ -15,6 +11,7 @@ current tasks:
             - backwards raycast required?
             - angle limits need to update correctly
             - some very precise wall can be missed by raycast?
+            - performance issues becuase of to many wall duplicated calculations
         - make darkness specific boss
 
 
