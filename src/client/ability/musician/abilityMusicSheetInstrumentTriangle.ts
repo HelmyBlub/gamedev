@@ -1,3 +1,4 @@
+import { CHARACTER_TYPE_ENEMY_FIX_RESPAWN_POSITION } from "../../character/enemy/fixPositionRespawnEnemyModel.js";
 import { UpgradeOptionAndProbability, AbilityUpgradeOption } from "../../character/upgrade.js";
 import { getNextId } from "../../game.js";
 import { Game, Position } from "../../gameModel.js";
@@ -127,7 +128,7 @@ function executeMusicNotesDamage(notes: MusicNote[], abilityOwner: AbilityOwner,
     let damage = abilityMusicSheets.damagePerSecond;
     let timeAreaFactor = 1;
     const triangleMultiplier = 10;
-    if (upgrade.lastPlayedNoteTime !== undefined) {
+    if (upgrade.lastPlayedNoteTime !== undefined && abilityOwner.type !== CHARACTER_TYPE_ENEMY_FIX_RESPAWN_POSITION) {
         const passedTime = (game.state.time - upgrade.lastPlayedNoteTime) / 1000;
         damage = abilityMusicSheets.damagePerSecond * passedTime;
         timeAreaFactor *= Math.max(passedTime / notes.length * 4, 0.1);

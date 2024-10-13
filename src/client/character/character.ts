@@ -15,7 +15,7 @@ import { addPlayerCharacterType, CharacterClass, PLAYER_CHARACTER_CLASSES_FUNCTI
 import { addKingType } from "./enemy/kingEnemy.js";
 import { addKingCrownType } from "./enemy/kingCrown.js";
 import { TAMER_PET_CHARACTER, TamerPetCharacter, tradePets } from "./playerCharacters/tamer/tamerPetCharacter.js";
-import { ENEMY_FIX_RESPAWN_POSITION } from "./enemy/fixPositionRespawnEnemyModel.js";
+import { CHARACTER_TYPE_ENEMY_FIX_RESPAWN_POSITION } from "./enemy/fixPositionRespawnEnemyModel.js";
 import { addCombatlogDamageDoneEntry, addCombatlogDamageTakenEntry } from "../combatlog.js";
 import { executeAbilityLevelingCharacterUpgradeOption } from "./playerCharacters/abilityLevelingCharacter.js";
 import { addCharacterUpgrades } from "./upgrades/characterUpgrades.js";
@@ -302,7 +302,7 @@ export function tickCharacters(characters: (Character | undefined)[], game: Game
     for (let j = characters.length - 1; j >= 0; j--) {
         const char = characters[j];
         if (!char) continue;
-        if ((game.state.bossStuff.kingFightStartedTime !== undefined || game.state.bossStuff.godFightStartedTime !== undefined) && char.type === ENEMY_FIX_RESPAWN_POSITION) continue;
+        if ((game.state.bossStuff.kingFightStartedTime !== undefined || game.state.bossStuff.godFightStartedTime !== undefined) && char.type === CHARACTER_TYPE_ENEMY_FIX_RESPAWN_POSITION) continue;
         const functions = CHARACTER_TYPE_FUNCTIONS[char.type];
         if (functions?.tickFunction) {
             functions.tickFunction(char, game, pathingCache);

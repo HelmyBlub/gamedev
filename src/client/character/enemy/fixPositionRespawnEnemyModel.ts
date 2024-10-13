@@ -38,7 +38,7 @@ type EnemyType = {
     maxPathfindBackDistance: number,
 }
 
-export const ENEMY_FIX_RESPAWN_POSITION = "fixPositionRespawnEnemy";
+export const CHARACTER_TYPE_ENEMY_FIX_RESPAWN_POSITION = "fixPositionRespawnEnemy";
 const ENEMY_MIN_SPAWN_DISTANCE_MAP_MIDDLE = 500;
 export const ENEMY_TYPES: EnemyTypes = {
     "big": { hpFactor: 16, sizeFactor: 1.5, spawnAmountFactor: 0.008, xpFactor: 38, damageFactor: 2, hasAbility: true, abilityProbabiltiy: 1, maxPathfindBackDistance: 800 },
@@ -198,7 +198,7 @@ function createEnemy(
     level: number,
     enemyTypeKey: string,
 ): FixPositionRespawnEnemyCharacter {
-    const enemy = createCharacter(getNextId(idCounter), x, y, size, size, color, moveSpeed, hp, FACTION_ENEMY, ENEMY_FIX_RESPAWN_POSITION, experienceWorth);
+    const enemy = createCharacter(getNextId(idCounter), x, y, size, size, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_ENEMY_FIX_RESPAWN_POSITION, experienceWorth);
     enemy.paint.image = IMAGE_SLIME;
     return {
         ...enemy,

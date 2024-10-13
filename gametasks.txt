@@ -2,20 +2,28 @@ next test run:
 increase version
 
 current tasks:
+- bug: musician default enemy projectile sizes too big
 - map modifier
     - darkness
-        - moreInfo curse information
-        - balancing clones
-            - hp
+        - play the game and try out darkness
+            - balancing clones
+                - hp
         - check same wall not generated multiple times
             - backwards raycast required?
             - angle limits need to update correctly
             - some very precise wall can be missed by raycast?
             - performance issues becuase of to many wall duplicated calculations
         - make darkness specific boss
+            - can move over blocking tiles
+            - could be spider like boss
+            - long legs which will be seen first out of darkness
+                - legs have hp and can be broken off
+            - nets which can trap/slow player, but can be destroyed
+        - bigger map area: areaBoss attacks if far enough in and not only in the middle
+            - problem is when area gets really big, should not be to hard to find middle where boss is
+            - area has not to be to hard to remove as it could be anoying
 
 
-- musician default enemy projectile sizes too big
 
 - musician: play note when placed?
     - problem: hard to know how it sounds when you have to wait on longer music sheets
