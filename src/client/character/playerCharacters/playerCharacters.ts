@@ -341,7 +341,7 @@ function paintMoney(ctx: CanvasRenderingContext2D, player: Player, topLeft: Posi
     ctx.fillStyle = "white";
     ctx.lineWidth = 2;
     const margin = 1;
-    const moneyText = "$ " + Math.ceil(player.permanentData.money);
+    const moneyText = "$ " + Math.floor(player.permanentData.money);
     let moneyPaintWidth = ctx.measureText(moneyText).width + margin * 2;
     const maxMoneyWidth = 100;
     if (moneyPaintWidth > maxMoneyWidth) {

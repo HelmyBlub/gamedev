@@ -2,13 +2,10 @@ next test run:
 increase version
 
 current tasks:
+- legendary visualize capped in xp bar
+- bug: money displayed not enough to buy upgrade which displays the same amount
 - map modifier
     - darkness
-        - check same wall not generated multiple times
-            - backwards raycast required?
-            - angle limits need to update correctly
-            - some very precise wall can be missed by raycast?
-            - performance issues becuase of to many wall duplicated calculations
         - play the game and try out darkness
             - balancing clones
                 - hp
