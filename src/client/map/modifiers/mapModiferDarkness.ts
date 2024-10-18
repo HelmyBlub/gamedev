@@ -1,7 +1,7 @@
 import { createDefaultAreaBossWithLevel } from "../../character/enemy/areaBoss/areaBossEnemy.js";
 import { calculateDirection, calculateDistance, getNextId, modulo } from "../../game.js";
 import { Game, IdCounter, Position } from "../../gameModel.js";
-import { getPointPaintPosition } from "../../gamePaint.js";
+import { getPointPaintPosition, paintTextWithOutline } from "../../gamePaint.js";
 import { chunkXYToMapKey, GameMap, getFirstBlockingGameMapTilePositionTouchingLine, isPositionBlocking, MapChunk, mapKeyAndTileXYToPosition, moveByDirectionAndDistance, positionToGameMapTileXY } from "../map.js";
 import { MODIFY_SHAPE_NAME_CIRCLE } from "./mapShapeCircle.js";
 import { GAME_MAP_MODIFIER_FUNCTIONS, GameMapModifier } from "./mapModifier.js";
@@ -545,7 +545,8 @@ function paintModiferLate(ctx: CanvasRenderingContext2D, modifier: GameMapModifi
     const visionWalls: Position[][] = [];
     const defaultStepSize = Math.PI * 2 / 50;
     let currentDirection = - Math.PI * 3 / 2;
-    while (currentDirection < Math.PI / 2) {
+    let maxAngle = Math.PI / 2;
+    while (currentDirection < maxAngle) {
         let nextDirection = currentDirection + defaultStepSize;
         const endPosition = { x: cameraPosition.x, y: cameraPosition.y };
         moveByDirectionAndDistance(endPosition, currentDirection, viewDistance, false);
@@ -562,6 +563,8 @@ function paintModiferLate(ctx: CanvasRenderingContext2D, modifier: GameMapModifi
         }
         visionWalls.push(wallResult);
         const endAngle = calculateDirection(cameraPosition, wallResult[wallResult.length - 1]);
+        const startAngle = calculateDirection(cameraPosition, wallResult[0]);
+        if (startAngle > endAngle && startAngle < maxAngle) maxAngle = startAngle;
         currentDirection = currentDirection < endAngle + 0.1 ? endAngle + 0.1 : nextDirection;
     }
 

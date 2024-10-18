@@ -2,17 +2,16 @@ next test run:
 increase version
 
 current tasks:
-- bug: musician default enemy projectile sizes too big
 - map modifier
     - darkness
-        - play the game and try out darkness
-            - balancing clones
-                - hp
         - check same wall not generated multiple times
             - backwards raycast required?
             - angle limits need to update correctly
             - some very precise wall can be missed by raycast?
             - performance issues becuase of to many wall duplicated calculations
+        - play the game and try out darkness
+            - balancing clones
+                - hp
         - make darkness specific boss
             - can move over blocking tiles
             - could be spider like boss
