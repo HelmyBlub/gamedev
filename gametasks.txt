@@ -3,7 +3,6 @@ increase version
 
 current tasks:
 - legendary visualize capped in xp bar
-- bug: money displayed not enough to buy upgrade which displays the same amount
 - map modifier
     - darkness
         - play the game and try out darkness

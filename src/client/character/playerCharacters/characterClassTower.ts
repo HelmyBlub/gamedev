@@ -26,7 +26,9 @@ export function addTowerClass() {
 
 function paintLevelUI(ctx: CanvasRenderingContext2D, character: Character, charClass: CharacterClass, topLeft: Position, width: number, height: number, game: Game) {
     if (charClass.level?.leveling === undefined) return;
-    paintPlayerLevelUI(ctx, charClass.level, charClass.id, charClass.id, topLeft, width, height, charClass.className + ":", game);
+    let capped: number | undefined = undefined;
+    if (charClass.legendary) capped = charClass.legendary.levelCap;
+    paintPlayerLevelUI(ctx, charClass.level, charClass.id, charClass.id, topLeft, width, height, charClass.className + ":", game, capped);
 }
 
 function changeCharacterToTowerBuilderClass(

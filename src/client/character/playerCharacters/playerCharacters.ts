@@ -175,13 +175,17 @@ export function playerCharacterClassGetAverageLevel(character: Character, charCl
 export function paintPlayerAbilityLevelUI(ctx: CanvasRenderingContext2D, ability: Ability, topLeft: Position, width: number, height: number, game: Game) {
     if (!ability.level || ability.classIdRef === undefined) return;
     const text = ability.name + ": ";
-    paintPlayerLevelUI(ctx, ability.level, ability.classIdRef, ability.id, topLeft, width, height, text, game);
+    let capped: number | undefined = undefined;
+    if (ability.legendary) capped = ability.legendary.levelCap;
+    paintPlayerLevelUI(ctx, ability.level, ability.classIdRef, ability.id, topLeft, width, height, text, game, capped);
 }
 
 export function paintPlayerPetLevelUI(ctx: CanvasRenderingContext2D, pet: TamerPetCharacter, topLeft: Position, width: number, height: number, game: Game) {
     if (!pet.level || pet.classIdRef === undefined) return;
     const text = pet.paint.color ? `${pet.paint.color}:` : "";
-    paintPlayerLevelUI(ctx, pet.level, pet.classIdRef, pet.id, topLeft, width, height, text, game);
+    let capped: number | undefined = undefined;
+    if (pet.legendary) capped = pet.legendary.levelCap;
+    paintPlayerLevelUI(ctx, pet.level, pet.classIdRef, pet.id, topLeft, width, height, text, game, capped);
 }
 
 export function initPlayerCharacterChoiceOptions(character: Character) {
@@ -247,7 +251,7 @@ export function hasPlayerChoosenStartClassUpgrade(character: Character): boolean
     return true;
 }
 
-export function paintPlayerLevelUI(ctx: CanvasRenderingContext2D, leveling: Leveling, classIdRef: number, idRef: number, topLeft: Position, width: number, height: number, text: string, game: Game) {
+export function paintPlayerLevelUI(ctx: CanvasRenderingContext2D, leveling: Leveling, classIdRef: number, idRef: number, topLeft: Position, width: number, height: number, text: string, game: Game, levelCap: number | undefined = undefined) {
     if (leveling.leveling === undefined) return;
     const level = leveling.level;
     const levelXpPerCent = leveling.leveling.experience / leveling.leveling.experienceForLevelUp;
@@ -303,7 +307,9 @@ export function paintPlayerLevelUI(ctx: CanvasRenderingContext2D, leveling: Leve
     ctx.fillRect(topLeft.x, topLeft.y, width * displayLevelPerCent, height);
     const fontSize = height - 2;
     ctx.font = `${fontSize}px Arial`;
-    paintTextWithOutline(ctx, "white", "black", `${text}${displayedLevel.toFixed(0)}`, topLeft.x, topLeft.y + fontSize - 1, false, 2);
+    let displayedText = `${text}${displayedLevel.toFixed(0)}`;
+    if (levelCap && displayedLevel >= levelCap) displayedText += " (capped)";
+    paintTextWithOutline(ctx, "white", "black", displayedText, topLeft.x, topLeft.y + fontSize - 1, false, 2);
 
     lastDisplayed.lastPaintedLevel = displayedLevel;
     lastDisplayed.lastPaintedPerCent = displayLevelPerCent;
