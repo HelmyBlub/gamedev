@@ -4,8 +4,9 @@ increase version
 current tasks:
 - map modifier
     - darkness
-        - make darkness specific boss
-            - spider boss
+        - darkness spider boss
+            - make legs move more realiticly
+                - make legs longer
             - can move over blocking tiles
             - long legs which will be seen first out of darkness
                 - legs have hp and can be broken off
