@@ -7,6 +7,7 @@ import { MODIFY_SHAPE_NAME_CIRCLE } from "./mapShapeCircle.js";
 import { GAME_MAP_MODIFIER_FUNCTIONS, GameMapModifier } from "./mapModifier.js";
 import { GameMapArea, getShapeArea, getShapeMiddle, getShapePaintClipPath, paintShapeWithCircleCutOut, setShapeAreaToAmount } from "./mapModifierShapes.js";
 import { GameMapAreaRect, MODIFY_SHAPE_NAME_RECTANGLE } from "./mapShapeRectangle.js";
+import { createAreaBossDarknessSpiderWithLevel } from "../../character/enemy/areaBoss/areaBossDarknessSpider.js";
 
 export const MODIFIER_NAME_DARKNESS = "Darkness";
 export type MapModifierDarkness = GameMapModifier & {
@@ -71,7 +72,9 @@ function onGameInit(modifier: GameMapModifier, game: Game) {
     }
     spawn = getShapeMiddle(modifier.area);
     if (spawn === undefined) return;
-    const areaBoss = createDefaultAreaBossWithLevel(game.state.idCounter, spawn, modifier.id, game);
+    //const areaBoss = createDefaultAreaBossWithLevel(game.state.idCounter, spawn, modifier.id, game);
+    const areaBoss = createAreaBossDarknessSpiderWithLevel(game.state.idCounter, spawn, modifier.id, game);
+
     game.state.bossStuff.bosses.push(areaBoss);
 }
 

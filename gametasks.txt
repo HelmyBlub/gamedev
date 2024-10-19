@@ -2,14 +2,14 @@ next test run:
 increase version
 
 current tasks:
-- 50% damage reduction on ball boss? take aways? bad for dps ranking
 - map modifier
     - darkness
         - make darkness specific boss
+            - spider boss
             - can move over blocking tiles
-            - could be spider like boss
             - long legs which will be seen first out of darkness
                 - legs have hp and can be broken off
+                - broken off legs turn into dark clone
             - nets which can trap/slow player, but can be destroyed
         - bigger map area: areaBoss attacks if far enough in and not only in the middle
             - problem is when area gets really big, should not be to hard to find middle where boss is

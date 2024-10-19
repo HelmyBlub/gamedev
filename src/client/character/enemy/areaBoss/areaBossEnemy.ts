@@ -22,7 +22,7 @@ export const CHARACTER_TYPE_AREA_BOSS_ENEMY = "AreaBossEnemyCharacter";
 
 export function addAreaBossType() {
     CHARACTER_TYPE_FUNCTIONS[CHARACTER_TYPE_AREA_BOSS_ENEMY] = {
-        onCharacterKill: onCharacterKill,
+        onCharacterKill: areaBossOnCharacterKill,
         paintCharacterType: paintAreaBossEnemyCharacter,
         tickFunction: tickAreaBossEnemyCharacter,
     };
@@ -46,7 +46,7 @@ export function createDefaultAreaBossWithLevel(idCounter: IdCounter, spawn: Posi
     return areaBoss;
 }
 
-function onCharacterKill(character: Character, game: Game) {
+export function areaBossOnCharacterKill(character: Character, game: Game) {
     const areaBoss = character as AreaBossEnemyCharacter;
     const curse = createObjectCurseDarkness(areaBoss, game);
     if (curse) game.state.abilityObjects.push(curse);
@@ -56,7 +56,7 @@ function onCharacterKill(character: Character, game: Game) {
 function tickAreaBossEnemyCharacter(enemy: Character, game: Game, pathingCache: PathingCache | null) {
     if (enemy.state === "dead") return;
     const areaBoss = enemy as AreaBossEnemyCharacter;
-    resetBossIfOutsideModifierArea(areaBoss, game);
+    resetAreaBossIfOutsideModifierArea(areaBoss, game);
     const playerCharacters = getPlayerCharacters(game.state.players);
     let closest = determineClosestCharacter(enemy, playerCharacters);
     if (closest.minDistance > 1200) {
@@ -74,7 +74,7 @@ function tickAreaBossEnemyCharacter(enemy: Character, game: Game, pathingCache: 
     tickCharacterDebuffs(enemy, game);
 }
 
-function resetBossIfOutsideModifierArea(areaBoss: AreaBossEnemyCharacter, game: Game) {
+export function resetAreaBossIfOutsideModifierArea(areaBoss: AreaBossEnemyCharacter, game: Game) {
     const modifier = findMapModifierById(areaBoss.mapModifierIdRef, game);
     if (modifier === undefined) return;
     const isInside = isPositionInsideShape(modifier.area, areaBoss, game);
