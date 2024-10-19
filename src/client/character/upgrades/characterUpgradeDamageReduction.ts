@@ -3,7 +3,7 @@ import { CHARACTER_UPGRADE_FUNCTIONS, CharacterUpgrade } from "./characterUpgrad
 import { CharacterClass } from "../playerCharacters/playerCharacters.js";
 import { Game } from "../../gameModel.js";
 
-type CharacterUpgradeBonusDamageReduction = CharacterUpgrade & {
+export type CharacterUpgradeBonusDamageReduction = CharacterUpgrade & {
     bonusDamageReduction: number,
 }
 

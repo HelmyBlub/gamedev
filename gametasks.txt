@@ -2,12 +2,9 @@ next test run:
 increase version
 
 current tasks:
-- legendary visualize capped in xp bar
+- 50% damage reduction on ball boss? take aways? bad for dps ranking
 - map modifier
     - darkness
-        - play the game and try out darkness
-            - balancing clones
-                - hp
         - make darkness specific boss
             - can move over blocking tiles
             - could be spider like boss
@@ -17,6 +14,7 @@ current tasks:
         - bigger map area: areaBoss attacks if far enough in and not only in the middle
             - problem is when area gets really big, should not be to hard to find middle where boss is
             - area has not to be to hard to remove as it could be anoying
+        - change map modifier spawn position be more random?
 
 
 

@@ -88,7 +88,7 @@ export function pushCharacterClassUpgradesUiTexts(texts: string[], charClass: Ch
             texts.push("Upgrades:");
             first = false;
         }
-        texts.push(CHARACTER_UPGRADE_FUNCTIONS[key].getStatsDisplayText(charClass.characterClassUpgrades[key]));
+        texts.push("  " + CHARACTER_UPGRADE_FUNCTIONS[key].getStatsDisplayText(charClass.characterClassUpgrades[key]));
     }
 }
 

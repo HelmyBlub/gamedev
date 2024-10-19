@@ -21,6 +21,7 @@ import { MoreInfosPartContainer, createCharacterMoreInfosPartContainer } from ".
 import { doDamageMeterSplit } from "../../combatlog.js";
 import { CHARACTER_TYPE_END_BOSS_CROWN_ENEMY, createKingCrownCharacter, KingCrownEnemyCharacter } from "./kingCrown.js";
 import { copyCursesToTarget } from "../../curse/curse.js";
+import { CHARACTER_UPGRADE_BONUS_DAMAGE_REDUCTION, CharacterUpgradeBonusDamageReduction } from "../upgrades/characterUpgradeDamageReduction.js";
 
 export type KingEnemyCharacter = Character;
 export const CHARACTER_TYPE_KING_ENEMY = "KingEnemyCharacter";
@@ -166,10 +167,11 @@ function tickKingEnemyCharacter(enemy: KingEnemyCharacter, game: Game, pathingCa
 
 export function modifyCharacterToKing(boss: Character, game: Game) {
     boss.type = CHARACTER_TYPE_KING_ENEMY;
-    let newHp = KING_BASE_HP
+    let newHp = KING_BASE_HP;
     if (boss.characterClasses) {
         const hpIncreaseFactor = boss.maxHp / PLAYER_BASE_HP;
         newHp *= hpIncreaseFactor;
+        removeDamageReductionUpgrades(boss);
     }
     boss.maxHp = newHp;
     boss.hp = boss.maxHp;
@@ -205,6 +207,17 @@ export function paintKingHpBar(ctx: CanvasRenderingContext2D, boss: Character) {
     ctx.font = "bold " + fontSize + "px Arial";
     const textWidth = ctx.measureText(hpBarText).width;
     ctx.fillText(hpBarText, Math.floor(ctx.canvas.width / 2 - textWidth / 2), top + fontSize + 1);
+}
+
+function removeDamageReductionUpgrades(boss: Character) {
+    if (!boss.characterClasses) return;
+    for (let charClass of boss.characterClasses) {
+        if (!charClass.characterClassUpgrades) continue;
+        const reductionUpgrade = charClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_DAMAGE_REDUCTION] as CharacterUpgradeBonusDamageReduction;
+        if (!reductionUpgrade) continue;
+        delete charClass.characterClassUpgrades[CHARACTER_UPGRADE_BONUS_DAMAGE_REDUCTION];
+        boss.damageTakenModifierFactor = 1;
+    }
 }
 
 function onCharacterKill(character: Character, game: Game) {
