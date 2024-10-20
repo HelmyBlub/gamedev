@@ -3,7 +3,7 @@ import { tickCharacterDebuffs } from "../../../debuff/debuff.js";
 import { calculateDirection, calculateDistance, getNextId } from "../../../game.js";
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
-import { calculateMovePosition, findNearNonBlockingPosition } from "../../../map/map.js";
+import { calculateMovePosition, findNearNonBlockingPosition, moveByDirectionAndDistance } from "../../../map/map.js";
 import { getPlayerCharacters, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, moveCharacterTick } from "../../character.js";
 import { Character, CHARACTER_TYPE_FUNCTIONS, createCharacter } from "../../characterModel.js";
 import { paintCharacterHpBar, paintCharacterWithAbilitiesDefault } from "../../characterPaint.js";
@@ -16,16 +16,16 @@ type AreaBossEnemyDarknessSpider = AreaBossEnemyCharacter & {
 
 type SpiderLegs = {
     positions: Position[],
-    length: number,
     phase: number,
     phaseChangeTime?: number,
     changeInterval: number,
 }
+const SPIDER_LEG_LENGTH = 80;
 const SPIDER_LEGS_OFFSETS: Position[] = [
-    { x: -30, y: -30 }, { x: 30, y: -30 },
-    { x: -30, y: -10 }, { x: 30, y: -10 },
-    { x: -30, y: +10 }, { x: 30, y: +10 },
-    { x: -30, y: +30 }, { x: 30, y: +30 },
+    { x: -SPIDER_LEG_LENGTH, y: -SPIDER_LEG_LENGTH * 3 / 2 }, { x: SPIDER_LEG_LENGTH, y: -SPIDER_LEG_LENGTH * 3 / 2 },
+    { x: -SPIDER_LEG_LENGTH * 3 / 2, y: -SPIDER_LEG_LENGTH / 2 }, { x: SPIDER_LEG_LENGTH * 3 / 2, y: -SPIDER_LEG_LENGTH / 2 },
+    { x: -SPIDER_LEG_LENGTH * 3 / 2, y: +SPIDER_LEG_LENGTH / 2 }, { x: SPIDER_LEG_LENGTH * 3 / 2, y: +SPIDER_LEG_LENGTH / 2 },
+    { x: -SPIDER_LEG_LENGTH, y: +SPIDER_LEG_LENGTH * 3 / 2 }, { x: SPIDER_LEG_LENGTH, y: +SPIDER_LEG_LENGTH * 3 / 2 },
 ]
 export const CHARACTER_TYPE_AREA_BOSS_DARKNESS_SPIDER = "DarknessSpider";
 
@@ -71,9 +71,11 @@ function paintSpider(ctx: CanvasRenderingContext2D, character: Character, camera
     for (let i = 0; i < 8; i++) {
         const legPosition = spider.legs.positions[i];
         const paintPosLeg = getPointPaintPosition(ctx, legPosition, cameraPosition, game.UI.zoom);
+        const pointB = getPointB(paintPos, paintPosLeg);
         ctx.lineWidth = 4;
         ctx.beginPath();
         ctx.moveTo(paintPos.x, paintPos.y);
+        if (pointB) ctx.lineTo(pointB.x, pointB.y);
         ctx.lineTo(paintPosLeg.x, paintPosLeg.y);
         ctx.stroke();
     }
@@ -86,10 +88,21 @@ function paintSpider(ctx: CanvasRenderingContext2D, character: Character, camera
     paintCharacterHpBar(ctx, character, hpBarPos);
 }
 
+function getPointB(pointA: Position, pointC: Position) {
+    const totalLegLength = SPIDER_LEG_LENGTH * 2;
+    const length = calculateDistance(pointA, pointC);
+    const missingLength = totalLegLength - length;
+    if (missingLength <= 0) return;
+    const pointB: Position = {
+        x: Math.floor(pointC.x - (pointC.x - pointA.x) / 2),
+        y: Math.floor(pointC.y - (pointC.y - pointA.y) / 2 - missingLength),
+    };
+    return pointB;
+}
+
 function getInitialSpiderLegs(bodyCenter: Position): SpiderLegs {
     const legs: SpiderLegs = {
         changeInterval: 300,
-        length: 40,
         phase: 0,
         positions: [],
     };
@@ -116,8 +129,10 @@ function tickAreaBossEnemyCharacter(enemy: Character, game: Game, pathingCache: 
     if (closest.minDistance > 1200) {
         return;
     }
-    calculateAndSetMoveDirectionToPositionWithPathing(enemy, closest.minDistanceCharacter, game.state.map, pathingCache, game.state.idCounter, game.state.time, game);
-    moveCharacterTick(enemy, game.state.map, game.state.idCounter, game);
+    if (closest.minDistance > spider.baseMoveSpeed * 2) {
+        calculateAndSetMoveDirectionToPositionWithPathing(enemy, closest.minDistanceCharacter, game.state.map, pathingCache, game.state.idCounter, game.state.time, game);
+        moveCharacterTick(enemy, game.state.map, game.state.idCounter, game);
+    }
     tickSpiderLegPosition(spider, game);
 
     for (let ability of enemy.abilities) {
