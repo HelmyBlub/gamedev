@@ -26,6 +26,7 @@ type SpiderLeg = {
     breakOfTime?: number,
 }
 
+const SPIDER_ALL_LEGS_LOST_HP_PER_CENT = 0.2;
 const SPIDER_LEG_LENGTH = 80;
 const SPIDER_LEGS_OFFSETS: Position[] = [
     { x: -SPIDER_LEG_LENGTH, y: -SPIDER_LEG_LENGTH * 3 / 2 }, { x: SPIDER_LEG_LENGTH, y: -SPIDER_LEG_LENGTH * 3 / 2 },
@@ -144,10 +145,16 @@ function tickAreaBossEnemyCharacter(enemy: Character, game: Game, pathingCache: 
             return;
         }
         if (closest.minDistance > spider.baseMoveSpeed * 2) {
-            enemy.moveDirection = calculateDirection(enemy, closest.minDistanceCharacter);
-            const newPos = calculateMovePosition(enemy, enemy.moveDirection, getCharacterMoveSpeed(enemy), false);
-            enemy.x = newPos.x;
-            enemy.y = newPos.y;
+            if (spider.hp > spider.maxHp * SPIDER_ALL_LEGS_LOST_HP_PER_CENT) {
+                if (spider.hp > spider.maxHp * (SPIDER_ALL_LEGS_LOST_HP_PER_CENT + 0.1) || spider.spiderInfo.phase === 1) {
+                    enemy.moveDirection = calculateDirection(enemy, closest.minDistanceCharacter);
+                    const newPos = calculateMovePosition(enemy, enemy.moveDirection, getCharacterMoveSpeed(enemy), false);
+                    enemy.x = newPos.x;
+                    enemy.y = newPos.y;
+                }
+            } else {
+                //roll moving?
+            }
         }
     }
     tickSpiderLegPosition(spider, game);
@@ -162,12 +169,11 @@ function tickAreaBossEnemyCharacter(enemy: Character, game: Game, pathingCache: 
 }
 
 function checkLegLoss(spider: AreaBossEnemyDarknessSpider, game: Game) {
-    const allLegsLostOnPerCent = 0.2;
     if (spider.maxHp - spider.hp < 1) return;
     const countLostLegs = spider.spiderInfo.legs.reduce((count, leg) => leg.breakOfPosition !== undefined ? count += 1 : count, 0);
     const hpPerCent = spider.hp / spider.maxHp;
     const spiderLegCount = 8;
-    const legsLeftCounter = Math.max(Math.ceil((hpPerCent - allLegsLostOnPerCent) / (1 - allLegsLostOnPerCent) * 8), 0);
+    const legsLeftCounter = Math.max(Math.ceil((hpPerCent - SPIDER_ALL_LEGS_LOST_HP_PER_CENT) / (1 - SPIDER_ALL_LEGS_LOST_HP_PER_CENT) * 8), 0);
     const legsShouldBeLostCounter = spiderLegCount - legsLeftCounter;
     if (countLostLegs >= legsShouldBeLostCounter) return;
     for (let i = countLostLegs; i < legsShouldBeLostCounter; i++) {

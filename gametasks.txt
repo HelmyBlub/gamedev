@@ -5,12 +5,11 @@ current tasks:
 - map modifier
     - darkness
         - darkness spider boss
-            - can move over blocking tiles
             - long legs which will be seen first out of darkness
-                - legs brake off if enough damage taken
-                - less legs => slower boss?
                 - one leg left => only move in phase
+                - no leg left => rolls around?
                 - broken off legs turn into dark clone
+                - spider dies after all dark clones are defeated and hp is zero
             - nets which can trap/slow player, but can be destroyed
         - bigger map area: areaBoss attacks if far enough in and not only in the middle
             - problem is when area gets really big, should not be to hard to find middle where boss is
