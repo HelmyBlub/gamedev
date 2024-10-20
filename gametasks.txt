@@ -5,11 +5,11 @@ current tasks:
 - map modifier
     - darkness
         - darkness spider boss
-            - make legs move more realiticly
-                - make legs longer
             - can move over blocking tiles
             - long legs which will be seen first out of darkness
-                - legs have hp and can be broken off
+                - legs brake off if enough damage taken
+                - less legs => slower boss?
+                - one leg left => only move in phase
                 - broken off legs turn into dark clone
             - nets which can trap/slow player, but can be destroyed
         - bigger map area: areaBoss attacks if far enough in and not only in the middle
