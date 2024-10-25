@@ -5,7 +5,7 @@ import { tickCharacterDebuffs } from "../../../debuff/debuff.js";
 import { calculateDirection, calculateDistance, getNextId } from "../../../game.js";
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
-import { calculateMovePosition, findNearNonBlockingPosition, moveByDirectionAndDistance } from "../../../map/map.js";
+import { calculateMovePosition, findNearNonBlockingPosition, isPositionBlocking, moveByDirectionAndDistance } from "../../../map/map.js";
 import { nextRandom } from "../../../randomNumberGenerator.js";
 import { getPlayerCharacters, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, moveCharacterTick, getCharacterMoveSpeed, resetCharacter } from "../../character.js";
 import { Character, CHARACTER_TYPE_FUNCTIONS, createCharacter } from "../../characterModel.js";
@@ -26,6 +26,8 @@ type Spider = {
 type SpiderLeg = {
     position: Position,
     breakOfPosition?: Position,
+    legMiddlePosition?: Position,
+    coconPosition?: Position,
     breakOfTime?: number,
 }
 
@@ -90,17 +92,31 @@ function paintSpider(ctx: CanvasRenderingContext2D, character: Character, camera
         }
         const legPosition = leg.position;
         const paintPosLeg = getPointPaintPosition(ctx, legPosition, cameraPosition, game.UI.zoom);
-        const spiderLegMiddle = getSpiderLegMiddle(spiderLegStartPaintPos, paintPosLeg);
-        if (leg.breakOfPosition && !game.state.paused) {
+        let spiderLegMiddle: Position | undefined;
+        if (leg.legMiddlePosition) {
+            spiderLegMiddle = getPointPaintPosition(ctx, leg.legMiddlePosition, cameraPosition, game.UI.zoom);
+        } else {
+            spiderLegMiddle = getSpiderLegMiddle(spiderLegStartPaintPos, paintPosLeg);
+        }
+        if (leg.breakOfTime && !game.state.paused) {
             //shake dead leg
-            paintPosLeg.x += Math.random() * 10 - 5;
-            paintPosLeg.y += Math.random() * 10 - 5;
+            paintPosLeg.x += Math.round(Math.random() * 10 - 5);
+            paintPosLeg.y += Math.round(Math.random() * 10 - 5);
             if (spiderLegMiddle) {
-                spiderLegMiddle.x += Math.random() * 10 - 5;
-                spiderLegMiddle.y += Math.random() * 10 - 5;
+                spiderLegMiddle.x += Math.round(Math.random() * 2 - 1);
+                spiderLegMiddle.y += Math.round(Math.random() * 2 - 1);
             }
-            spiderLegStartPaintPos.x += Math.random() * 10 - 5;
-            spiderLegStartPaintPos.y += Math.random() * 10 - 5;
+            spiderLegStartPaintPos.x += Math.round(Math.random() * 10 - 5);
+            spiderLegStartPaintPos.y += Math.round(Math.random() * 10 - 5);
+            //cocon/clone spawn spot
+            let factor = ((game.state.time - leg.breakOfTime) / SPIDER_LEG_TO_CLONE_TIMER);
+            let spotRadius = 20 * factor;
+            if (leg.coconPosition && factor > 0.1) {
+                const coconPaintPos = getPointPaintPosition(ctx, leg.coconPosition, cameraPosition, game.UI.zoom);
+                ctx.beginPath();
+                ctx.arc(coconPaintPos.x, coconPaintPos.y, spotRadius, 0, Math.PI * 2);
+                ctx.fill();
+            }
         }
         ctx.lineWidth = 4;
         ctx.beginPath();
@@ -123,11 +139,11 @@ function getSpiderLegMiddle(pointA: Position, pointC: Position) {
     const length = calculateDistance(pointA, pointC);
     const missingLength = totalLegLength - length;
     if (missingLength <= 0) return;
-    const pointB: Position = {
+    const legMiddle: Position = {
         x: Math.floor(pointC.x - (pointC.x - pointA.x) / 2),
         y: Math.floor(pointC.y - (pointC.y - pointA.y) / 2 - missingLength),
     };
-    return pointB;
+    return legMiddle;
 }
 
 function getInitialSpiderLegs(bodyCenter: Position): Spider {
@@ -146,7 +162,7 @@ function getInitialSpiderLegs(bodyCenter: Position): Spider {
 function resetLegPosition(spiderLegs: Spider, bodyCenter: Position) {
     for (let i = 0; i < 8; i++) {
         const leg = spiderLegs.legs[i];
-        if (leg === undefined) continue;
+        if (leg === undefined || leg.breakOfPosition) continue;
         leg.position.x = bodyCenter.x + SPIDER_LEGS_OFFSETS[i].x;
         leg.position.y = bodyCenter.y + SPIDER_LEGS_OFFSETS[i].y;
     }
@@ -194,10 +210,10 @@ function checkTurnLegToClone(spider: AreaBossEnemyDarknessSpider, game: Game) {
         if (leg !== undefined && leg.breakOfTime !== undefined && leg.breakOfTime + SPIDER_LEG_TO_CLONE_TIMER <= game.state.time) {
             spider.spiderInfo.legs[i] = undefined;
             const randomPlayerChar = getRandomAlivePlayerCharacter(game);
-            if (!randomPlayerChar) continue;
+            if (!randomPlayerChar || !leg.coconPosition) continue;
             const darkClone = createDarkClone(randomPlayerChar, game.state.bossStuff.bossLevelCounter, game);
-            darkClone.x = leg.position.x;
-            darkClone.y = leg.position.y;
+            darkClone.x = leg.coconPosition.x;
+            darkClone.y = leg.coconPosition.y;
             resetCharacter(darkClone, game);
             game.state.bossStuff.bosses.push(darkClone);
         }
@@ -234,7 +250,20 @@ function checkLegLoss(spider: AreaBossEnemyDarknessSpider, game: Game) {
         const leg = spider.spiderInfo.legs[i];
         if (!leg) continue;
         leg.breakOfPosition = { x: spider.x, y: spider.y };
+        leg.legMiddlePosition = getSpiderLegMiddle(leg.position, leg.breakOfPosition);
+        if (!leg.legMiddlePosition) {
+            leg.legMiddlePosition = {
+                x: leg.position.x + (leg.breakOfPosition.x - leg.position.x) / 2,
+                y: leg.position.y + (leg.breakOfPosition.y - leg.position.y) / 2,
+            }
+        }
         leg.breakOfTime = game.state.time;
+        const isMiddleBlocking = isPositionBlocking(leg.legMiddlePosition, game.state.map, game.state.idCounter, game);
+        if (isMiddleBlocking) {
+            leg.coconPosition = findNearNonBlockingPosition(leg.legMiddlePosition, game.state.map, game.state.idCounter, game);
+        } else {
+            leg.coconPosition = { x: leg.legMiddlePosition.x, y: leg.legMiddlePosition.y };
+        }
     }
 }
 
@@ -262,6 +291,27 @@ function tickSpiderLegPosition(spider: AreaBossEnemyDarknessSpider, game: Game) 
         } else {
             const direction = calculateDirection(spiderLegPos, targetPosition);
             spiderLeg.position = calculateMovePosition(spiderLegPos, direction, spider.baseMoveSpeed * 2, false);
+        }
+    }
+
+    //fallen off legs
+    for (let leg of spider.spiderInfo.legs) {
+        if (!leg || !leg.breakOfPosition) continue;
+        const moveFactor = ((game.state.time - leg.breakOfTime!) / SPIDER_LEG_TO_CLONE_TIMER) / 50;
+        const distanceMiddle = calculateDistance(leg.coconPosition!, leg.legMiddlePosition!);
+        if (distanceMiddle > 5) {
+            const direction = calculateDirection(leg.legMiddlePosition!, leg.coconPosition!)
+            moveByDirectionAndDistance(leg.legMiddlePosition!, direction, distanceMiddle * moveFactor * 20, false);
+        }
+        const distancePos = calculateDistance(leg.coconPosition!, leg.position);
+        if (distancePos > 5) {
+            const direction = calculateDirection(leg.position, leg.coconPosition!)
+            moveByDirectionAndDistance(leg.position, direction, distancePos * moveFactor, false);
+        }
+        const distanceBreakOffPos = calculateDistance(leg.coconPosition!, leg.breakOfPosition);
+        if (distanceBreakOffPos > 5) {
+            const direction = calculateDirection(leg.breakOfPosition, leg.coconPosition!)
+            moveByDirectionAndDistance(leg.breakOfPosition, direction, distanceBreakOffPos * moveFactor, false);
         }
     }
 }

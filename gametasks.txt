@@ -2,15 +2,14 @@ next test run:
 increase version
 
 current tasks:
+- update libaries
 - map modifier
     - darkness
         - darkness spider boss
             - broken off legs turn into dark clone
-                - animate
-            - give spider melee ability
+                - animate: cocon which grows from borken off leg
             - long legs which will be seen first out of darkness
-            - no leg left => rolls around?
-            - spider dies after all dark clones are defeated and hp is zero
+            - no leg left should not be on blocking tiles, let it fall towards player
             - check spider does not spawn curse on blocking tiles
             - spider images? Body and legs?
             - spider does show its legs first when going into dark area?
