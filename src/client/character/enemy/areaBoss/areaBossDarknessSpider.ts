@@ -1,4 +1,5 @@
 import { ABILITIES_FUNCTIONS, Ability } from "../../../ability/ability.js";
+import { createAbilityMelee } from "../../../ability/abilityMelee.js";
 import { createDarkClone } from "../../../curse/curseDarkness.js";
 import { tickCharacterDebuffs } from "../../../debuff/debuff.js";
 import { calculateDirection, calculateDistance, getNextId } from "../../../game.js";
@@ -60,6 +61,7 @@ export function createAreaBossDarknessSpiderWithLevel(idCounter: IdCounter, spaw
 
     const baseCharacter = createCharacter(getNextId(idCounter), nonBlockingSpawn.x, nonBlockingSpawn.y, bossSize, bossSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_AREA_BOSS_DARKNESS_SPIDER, experienceWorth);
     const abilities: Ability[] = [];
+    abilities.push(createAbilityMelee(game.state.idCounter));
     baseCharacter.abilities = abilities;
     const spiderLegs = getInitialSpiderLegs(baseCharacter);
     const areaBoss: AreaBossEnemyDarknessSpider = { ...baseCharacter, mapModifierIdRef: mapModifierIdRef, spiderInfo: spiderLegs };
