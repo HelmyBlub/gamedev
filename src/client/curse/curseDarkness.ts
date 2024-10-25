@@ -6,6 +6,7 @@ import { TAMER_PET_CHARACTER } from "../character/playerCharacters/tamer/tamerPe
 import { changeCharacterAndAbilityIds, deepCopy, getCameraPosition } from "../game.js";
 import { FACTION_ENEMY, FACTION_PLAYER, Game } from "../gameModel.js";
 import { getPointPaintPosition, paintTextWithOutline } from "../gamePaint.js";
+import { RandomizedCharacterImage } from "../randomizedCharacterImage.js";
 import { Curse, CURSES_FUNCTIONS } from "./curse.js";
 
 export const CURSE_DARKNESS = "Darkness";
@@ -46,6 +47,12 @@ export function curseDarknessCloneKillCheck(clone: Character, game: Game) {
     for (let boss of game.state.bossStuff.bosses) {
         if (checkForCurseAndDelete(boss, clone.id)) return;
     }
+}
+
+export function createDarkClone(toCloneCharacter: Character, level: number, game: Game): Character {
+    const clone = createClone(toCloneCharacter, game);
+    turnEvil(clone, level);
+    return clone;
 }
 
 function copy(curse: Curse): Curse {
@@ -120,7 +127,7 @@ function spawnClone(darkness: CurseDarkness, target: Character, game: Game) {
     clone.damageDoneFactor *= cloneDamageFactor;
     clone.width *= cloneSizeFactor;
     clone.height *= cloneSizeFactor;
-    createDarkCharacterPaint(clone);
+    clone.tempDarkCharacterImage = createDarkCharacterPaint(clone);
     target.pets.push(clone);
     darkness.cloneCounter++;
     const timeToTurn = target.faction === FACTION_PLAYER ? TIME_TO_TURN_EVIL : 3000;
@@ -141,10 +148,10 @@ function startTurnEvil(darkness: CurseDarkness, target: Character, game: Game) {
     }
 }
 
-function createDarkCharacterPaint(clone: CharacterPetClone) {
+function createDarkCharacterPaint(clone: CharacterPetClone): RandomizedCharacterImage | undefined {
     if (clone.paint.randomizedCharacterImage) {
         const orig = clone.paint.randomizedCharacterImage;
-        clone.tempDarkCharacterImage = {
+        return {
             chestIndex: orig.chestIndex,
             clothColor: "black",
             headIndex: orig.headIndex,
@@ -154,19 +161,15 @@ function createDarkCharacterPaint(clone: CharacterPetClone) {
     }
 }
 
-function turnEvil(darkness: CurseDarkness, target: Character, game: Game) {
+function checkTurnEvil(darkness: CurseDarkness, target: Character, game: Game) {
     if (darkness.turnEvilTime === undefined || !target.pets) return;
     if (darkness.turnEvilTime + EVIL_TRANSFORM_TIME > game.state.time) return;
     for (let i = target.pets.length - 1; i >= 0; i--) {
         const pet = target.pets[i];
         if (pet.type !== CHARACTER_PET_TYPE_CLONE) continue;
         const clone = target.pets.splice(i, 1)[0] as CharacterPetClone;
-        clone.faction = FACTION_ENEMY;
-        clone.type = CHARACTER_TYPE_BOSS_CLONE_ENEMY;
         const level = game.state.bossStuff.bossLevelCounter + Math.floor(darkness.level / 5);
-        clone.paint.randomizedCharacterImage = clone.tempDarkCharacterImage;
-        clone.tempDarkCharacterImage = undefined;
-        setCharacterToBossLevel(clone, level);
+        turnEvil(clone, level);
         game.state.bossStuff.bosses.push(clone);
         darkness.evilIdRefs.push(clone.id);
     }
@@ -174,10 +177,23 @@ function turnEvil(darkness: CurseDarkness, target: Character, game: Game) {
     darkness.cloneCounter = 0;
 }
 
+function turnEvil(character: Character, level: number) {
+    character.faction = FACTION_ENEMY;
+    const clone = character as CharacterPetClone;
+    if (character.type === CHARACTER_PET_TYPE_CLONE && clone.tempDarkCharacterImage) {
+        clone.paint.randomizedCharacterImage = clone.tempDarkCharacterImage;
+        clone.tempDarkCharacterImage = undefined;
+    } else {
+        character.paint.randomizedCharacterImage = createDarkCharacterPaint(character);
+    }
+    character.type = CHARACTER_TYPE_BOSS_CLONE_ENEMY;
+    setCharacterToBossLevel(character, level);
+}
+
 function tickDarkness(curse: Curse, target: Character, game: Game) {
     const darkness = curse as CurseDarkness;
     spawnClone(darkness, target, game);
     startTurnEvil(darkness, target, game);
-    turnEvil(darkness, target, game);
+    checkTurnEvil(darkness, target, game);
 }
 

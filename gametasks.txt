@@ -5,10 +5,11 @@ current tasks:
 - map modifier
     - darkness
         - darkness spider boss
-            - long legs which will be seen first out of darkness
-            - no leg left => rolls around?
             - broken off legs turn into dark clone
                 - animate
+            - give spider melee ability
+            - long legs which will be seen first out of darkness
+            - no leg left => rolls around?
             - spider dies after all dark clones are defeated and hp is zero
             - check spider does not spawn curse on blocking tiles
             - spider images? Body and legs?
