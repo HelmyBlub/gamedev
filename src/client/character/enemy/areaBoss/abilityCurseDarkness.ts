@@ -4,6 +4,7 @@ import { createCurseDarkness, CURSE_DARKNESS, CurseDarkness } from "../../../cur
 import { calculateDistance, getCameraPosition, getNextId } from "../../../game.js";
 import { FACTION_ENEMY, Game, IdCounter } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
+import { findNearNonBlockingPosition } from "../../../map/map.js";
 import { findMapModifierById } from "../../../map/modifiers/mapModifier.js";
 import { getShapeArea } from "../../../map/modifiers/mapModifierShapes.js";
 import { GameMapAreaRect } from "../../../map/modifiers/mapShapeRectangle.js";
@@ -44,6 +45,7 @@ export function createObjectCurseDarkness(areaBoss: AreaBossEnemyCharacter, game
     const modifier = findMapModifierById(areaBoss.mapModifierIdRef, game);
     if (!modifier) return;
     const curseStrength = Math.max(getShapeArea(modifier.area)! / 10000, 500);
+    const spawn = findNearNonBlockingPosition(areaBoss, game.state.map, game.state.idCounter, game);
     const curse: AbilityObjectCurseDarkness = {
         type: ABILITY_NAME_CURSE_DARKNESS,
         strength: curseStrength,
@@ -51,8 +53,8 @@ export function createObjectCurseDarkness(areaBoss: AreaBossEnemyCharacter, game
         color: "black",
         damage: 0,
         faction: FACTION_ENEMY,
-        x: areaBoss.x,
-        y: areaBoss.y,
+        x: spawn.x,
+        y: spawn.y,
         tickInterval: 100,
     }
     return curse;
