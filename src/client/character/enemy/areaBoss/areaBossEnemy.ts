@@ -3,7 +3,7 @@ import { createAbilityMelee } from "../../../ability/abilityMelee.js";
 import { createAbilityShoot } from "../../../ability/abilityShoot.js";
 import { tickCharacterDebuffs } from "../../../debuff/debuff.js";
 import { getNextId } from "../../../game.js";
-import { IdCounter, Game, Position, FACTION_ENEMY } from "../../../gameModel.js";
+import { IdCounter, Game, Position, FACTION_ENEMY, BossStuff } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
 import { findNearNonBlockingPosition } from "../../../map/map.js";
 import { findMapModifierById, removeMapModifier } from "../../../map/modifiers/mapModifier.js";
@@ -13,6 +13,7 @@ import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, createCharacter } fro
 import { paintCharacterWithAbilitiesDefault, paintCharacterHpBar, paintCharatersPets } from "../../characterPaint.js";
 import { PathingCache } from "../../pathing.js";
 import { addAbilityCurseDarkness, createObjectCurseDarkness } from "./abilityCurseDarkness.js";
+import { CHARACTER_TYPE_AREA_BOSS_DARKNESS_SPIDER } from "./areaBossDarknessSpider.js";
 
 export type AreaBossEnemyCharacter = Character & {
     mapModifierIdRef: number,
@@ -29,20 +30,31 @@ export function addAreaBossType() {
     addAbilityCurseDarkness();
 }
 
+export function scaleAreaBossHp(level: number, bosses: Character[]) {
+    const levelModifier = Math.max(3, level);
+    for (let boss of bosses) {
+        if (boss.type === CHARACTER_TYPE_AREA_BOSS_DARKNESS_SPIDER || boss.type === CHARACTER_TYPE_AREA_BOSS_ENEMY) {
+            const currentHpPerCent = boss.hp / boss.maxHp;
+            boss.maxHp = 1000 * Math.pow(levelModifier, 4);
+            boss.hp = boss.maxHp * currentHpPerCent;
+            boss.baseMoveSpeed = Math.min(6, 1.25 + levelModifier * 0.25);
+            boss.experienceWorth = Math.pow(levelModifier, 3) * 500;
+        }
+    }
+}
+
 export function createDefaultAreaBossWithLevel(idCounter: IdCounter, spawn: Position, mapModifierIdRef: number, game: Game): AreaBossEnemyCharacter {
     const scaling = 2;
     const bossSize = 60;
     const color = "black";
-    const moveSpeed = Math.min(6, 1.5 + scaling * 0.5);
-    const hp = 1000 * Math.pow(scaling, 4);
-    const experienceWorth = Math.pow(scaling, 3) * 500;
     const nonBlockingSpawn = findNearNonBlockingPosition(spawn, game.state.map, game.state.idCounter, game);
-
-    const bossCharacter = createCharacter(getNextId(idCounter), nonBlockingSpawn.x, nonBlockingSpawn.y, bossSize, bossSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_AREA_BOSS_ENEMY, experienceWorth);
+    const dummyValue = 1;
+    const bossCharacter = createCharacter(getNextId(idCounter), nonBlockingSpawn.x, nonBlockingSpawn.y, bossSize, bossSize, color, dummyValue, dummyValue, FACTION_ENEMY, CHARACTER_TYPE_AREA_BOSS_ENEMY, dummyValue);
     bossCharacter.paint.image = IMAGE_SLIME;
     const abilities: Ability[] = createBossAbilities(scaling, game);
     bossCharacter.abilities = abilities;
     const areaBoss: AreaBossEnemyCharacter = { ...bossCharacter, mapModifierIdRef: mapModifierIdRef };
+    scaleAreaBossHp(scaling, [areaBoss]);
     return areaBoss;
 }
 

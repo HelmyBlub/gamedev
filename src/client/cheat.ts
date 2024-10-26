@@ -1,6 +1,6 @@
 import { experienceForEveryPlayersLeveling, playerCharactersAddBossSkillPoints } from "./character/character.js";
 import { Character, createPlayerCharacter } from "./character/characterModel.js";
-import { createBossWithLevel } from "./character/enemy/bossEnemy.js";
+import { createBossWithLevel, spawnBoss } from "./character/enemy/bossEnemy.js";
 import { levelingCharacterAndClassXpGain } from "./character/playerCharacters/levelingCharacter.js";
 import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./character/playerCharacters/playerCharacters.js";
 import { executeUpgradeOptionChoice } from "./character/upgrade.js";
@@ -84,9 +84,7 @@ export function executeCheatAction(action: string, activate: boolean, clientId: 
             }
             break;
         case "next boss spawn":
-            game.state.bossStuff.bosses.push(createBossWithLevel(game.state.idCounter, game.state.bossStuff.bossLevelCounter, game));
-            game.state.bossStuff.bossLevelCounter++;
-            mapModifierGrowArea(game);
+            spawnBoss(game.state.bossStuff, game);
             break;
         case "give Money":
             for (let player of game.state.players) {

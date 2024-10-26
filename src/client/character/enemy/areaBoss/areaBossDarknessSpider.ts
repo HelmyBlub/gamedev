@@ -11,7 +11,7 @@ import { getPlayerCharacters, determineClosestCharacter, calculateAndSetMoveDire
 import { Character, CHARACTER_TYPE_FUNCTIONS, createCharacter } from "../../characterModel.js";
 import { paintCharacterHpBar, paintCharacterWithAbilitiesDefault } from "../../characterPaint.js";
 import { PathingCache } from "../../pathing.js";
-import { AreaBossEnemyCharacter, areaBossOnCharacterKill, resetAreaBossIfOutsideModifierArea } from "./areaBossEnemy.js";
+import { AreaBossEnemyCharacter, areaBossOnCharacterKill, resetAreaBossIfOutsideModifierArea, scaleAreaBossHp } from "./areaBossEnemy.js";
 
 type AreaBossEnemyDarknessSpider = AreaBossEnemyCharacter & {
     spiderInfo: Spider,
@@ -56,17 +56,16 @@ export function createAreaBossDarknessSpiderWithLevel(idCounter: IdCounter, spaw
     const scaling = 2;
     const bossSize = 40;
     const color = "black";
-    const moveSpeed = Math.min(6, 1.5 + scaling * 0.5);
-    const hp = 1000 * Math.pow(scaling, 4);
-    const experienceWorth = Math.pow(scaling, 3) * 500;
+    const dummyValue = 1;
     const nonBlockingSpawn = findNearNonBlockingPosition(spawn, game.state.map, game.state.idCounter, game);
 
-    const baseCharacter = createCharacter(getNextId(idCounter), nonBlockingSpawn.x, nonBlockingSpawn.y, bossSize, bossSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_AREA_BOSS_DARKNESS_SPIDER, experienceWorth);
+    const baseCharacter = createCharacter(getNextId(idCounter), nonBlockingSpawn.x, nonBlockingSpawn.y, bossSize, bossSize, color, dummyValue, dummyValue, FACTION_ENEMY, CHARACTER_TYPE_AREA_BOSS_DARKNESS_SPIDER, dummyValue);
     const abilities: Ability[] = [];
     abilities.push(createAbilityMelee(game.state.idCounter));
     baseCharacter.abilities = abilities;
     const spiderLegs = getInitialSpiderLegs(baseCharacter);
     const areaBoss: AreaBossEnemyDarknessSpider = { ...baseCharacter, mapModifierIdRef: mapModifierIdRef, spiderInfo: spiderLegs };
+    scaleAreaBossHp(scaling, [areaBoss]);
     return areaBoss;
 }
 
@@ -211,7 +210,8 @@ function checkTurnLegToClone(spider: AreaBossEnemyDarknessSpider, game: Game) {
             spider.spiderInfo.legs[i] = undefined;
             const randomPlayerChar = getRandomAlivePlayerCharacter(game);
             if (!randomPlayerChar || !leg.coconPosition) continue;
-            const darkClone = createDarkClone(randomPlayerChar, game.state.bossStuff.bossLevelCounter, game);
+            const cloneLevel = Math.max(game.state.bossStuff.bossLevelCounter, 3) - 2;
+            const darkClone = createDarkClone(randomPlayerChar, cloneLevel, game);
             darkClone.x = leg.coconPosition.x;
             darkClone.y = leg.coconPosition.y;
             resetCharacter(darkClone, game);

@@ -5,12 +5,13 @@ current tasks:
 - map modifier
     - darkness
         - darkness spider boss
-            - check spider does not spawn curse on blocking tiles
+            - find decent spider HP, currently low
+                - grow with boss level
             - spider does show its legs first when going into dark area?
                 - spider AI more aggressive the closer to the middle?
                     - spider shows its legs when in the outer area of map area?
             - spider images? Body, legs, cocon?
-            - spider can not die beore all legs are turned to clones
+            - spider can not die before all legs are turned to clones
         - bigger map area: areaBoss attacks if far enough in and not only in the middle
             - problem is when area gets really big, should not be to hard to find middle where boss is
             - area has not to be to hard to remove as it could be anoying
