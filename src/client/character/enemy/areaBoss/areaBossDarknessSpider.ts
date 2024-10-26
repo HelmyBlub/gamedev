@@ -6,6 +6,8 @@ import { calculateDirection, calculateDistance, getNextId } from "../../../game.
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
 import { calculateMovePosition, findNearNonBlockingPosition, isPositionBlocking, moveByDirectionAndDistance } from "../../../map/map.js";
+import { findMapModifierById, GameMapModifier } from "../../../map/modifiers/mapModifier.js";
+import { getShapeMiddle, isPositionInsideShape } from "../../../map/modifiers/mapModifierShapes.js";
 import { nextRandom } from "../../../randomNumberGenerator.js";
 import { getPlayerCharacters, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, moveCharacterTick, getCharacterMoveSpeed, resetCharacter } from "../../character.js";
 import { Character, CHARACTER_TYPE_FUNCTIONS, createCharacter } from "../../characterModel.js";
@@ -170,38 +172,100 @@ function resetLegPosition(spiderLegs: Spider, bodyCenter: Position) {
 function tickSpider(enemy: Character, game: Game, pathingCache: PathingCache | null) {
     if (enemy.state === "dead") return;
     const spider = enemy as AreaBossEnemyDarknessSpider;
-    resetAreaBossIfOutsideModifierArea(spider, game);
-    checkLegLoss(spider, game);
-    const playerCharacters = getPlayerCharacters(game.state.players);
-    let closest = determineClosestCharacter(enemy, playerCharacters);
-    if (closest.minDistanceCharacter) {
-        if (closest.minDistance > 1200) {
-            return;
+    const modifier = findMapModifierById(spider.mapModifierIdRef, game);
+    if (!modifier) return;
+    const closestInfo = findNearesPlayerToSpiderInModifiedArea(spider, modifier, game);
+    let aiBehaviour: "moveBack" | "scarePlayer" | "attackPlayer" = "moveBack";
+    if (closestInfo) {
+        const hpPerCent = spider.hp / spider.maxHp;
+        if (closestInfo.distanceToModifierMiddle < 2500) {
+            aiBehaviour = "attackPlayer";
+        } else if (hpPerCent > 0.89) {
+            aiBehaviour = "scarePlayer";
+        } else {
+            aiBehaviour = "attackPlayer";
         }
-        if (closest.minDistance > spider.baseMoveSpeed * 2) {
-            if (spider.hp > spider.maxHp * SPIDER_ALL_LEGS_LOST_HP_PER_CENT) {
-                if (spider.hp > spider.maxHp * (SPIDER_ALL_LEGS_LOST_HP_PER_CENT + 0.1) || spider.spiderInfo.phase === 1) {
-                    enemy.moveDirection = calculateDirection(enemy, closest.minDistanceCharacter);
-                    const newPos = calculateMovePosition(enemy, enemy.moveDirection, getCharacterMoveSpeed(enemy), false);
-                    enemy.x = newPos.x;
-                    enemy.y = newPos.y;
-                }
-            } else {
-                //roll moving?
+        checkLegLoss(spider, game);
+
+        for (let ability of enemy.abilities) {
+            const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+            if (abilityFunctions) {
+                if (abilityFunctions.tickAI) abilityFunctions.tickAI(enemy, ability, game);
             }
+        }
+        tickCharacterDebuffs(enemy, game);
+    }
+    if (canMove(spider)) {
+        let newPos;
+        enemy.isMoving = true;
+        const middle = getShapeMiddle(modifier.area);
+        switch (aiBehaviour) {
+            case "moveBack":
+                enemy.moveDirection = calculateDirection(spider, middle!);
+                break;
+            case "attackPlayer":
+                if (closestInfo && closestInfo.distanceCharToSpider > spider.baseMoveSpeed * 2) {
+                    enemy.moveDirection = calculateDirection(enemy, closestInfo.playerCharacter);
+                }
+                break;
+            case "scarePlayer":
+                if (closestInfo && closestInfo.distanceCharToSpider > 350) {
+                    enemy.moveDirection = calculateDirection(enemy, closestInfo.playerCharacter);
+                } else if (closestInfo && closestInfo.distanceCharToSpider < 350 - 10) {
+                    enemy.moveDirection = calculateDirection(enemy, middle!);
+                } else {
+                    enemy.isMoving = false;
+                }
+                break;
+        }
+        if (enemy.isMoving) {
+            newPos = calculateMovePosition(enemy, enemy.moveDirection, getCharacterMoveSpeed(enemy), false);
+            enemy.x = newPos.x;
+            enemy.y = newPos.y;
         }
     }
     tickSpiderLegPosition(spider, game);
     checkTurnLegToClone(spider, game);
+}
 
-    for (let ability of enemy.abilities) {
-        const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-        if (abilityFunctions) {
-            if (abilityFunctions.tickAI) abilityFunctions.tickAI(enemy, ability, game);
+function canMove(spider: AreaBossEnemyDarknessSpider): boolean {
+    if (spider.hp > spider.maxHp * SPIDER_ALL_LEGS_LOST_HP_PER_CENT) {
+        if (spider.hp > spider.maxHp * (SPIDER_ALL_LEGS_LOST_HP_PER_CENT + 0.1) || spider.spiderInfo.phase === 1) {
+            return true;
         }
     }
-    tickCharacterDebuffs(enemy, game);
+    return false;
 }
+
+function findNearesPlayerToSpiderInModifiedArea(areaBoss: AreaBossEnemyCharacter, modifier: GameMapModifier, game: Game): { playerCharacter: Character, distanceToModifierMiddle: number, distanceCharToSpider: number } | undefined {
+    const middle = getShapeMiddle(modifier.area);
+    if (!middle) return;
+    let closestPlayer: Character | undefined;
+    let closestPlayerDistance = 0;
+    let distanceToModifierMiddle = 0;
+    const playerChars = getPlayerCharacters(game.state.players);
+    for (let char of playerChars) {
+        const isInside = isPositionInsideShape(modifier.area, char, game);
+        if (!isInside) continue;
+        if (!closestPlayer) {
+            closestPlayer = char;
+            closestPlayerDistance = calculateDistance(char, areaBoss);
+            distanceToModifierMiddle = calculateDistance(char, middle);
+        } else {
+            const tempDistance = calculateDistance(char, areaBoss);
+            if (tempDistance < closestPlayerDistance) {
+                closestPlayer = char;
+                closestPlayerDistance = tempDistance;
+                distanceToModifierMiddle = calculateDistance(char, middle);
+            }
+        }
+    }
+    if (closestPlayer) {
+        return { playerCharacter: closestPlayer, distanceToModifierMiddle: distanceToModifierMiddle, distanceCharToSpider: closestPlayerDistance };
+    }
+    return undefined;
+}
+
 
 function checkTurnLegToClone(spider: AreaBossEnemyDarknessSpider, game: Game) {
     for (let i = spider.spiderInfo.legs.length - 1; i >= 0; i--) {

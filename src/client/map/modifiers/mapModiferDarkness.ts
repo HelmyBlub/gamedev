@@ -66,8 +66,8 @@ function onGameInit(modifier: GameMapModifier, game: Game) {
     if (modifier.area.type === MODIFY_SHAPE_NAME_RECTANGLE || modifier.area.type === MODIFY_SHAPE_NAME_CIRCLE) {
         const area = modifier.area as GameMapAreaRect;
         if (game.state.activeCheats && game.state.activeCheats.indexOf("closeCurseDarkness") !== -1) {
-            area.x = -1000;
-            area.y = -1000;
+            area.x = -2000;
+            area.y = -2000;
         }
     }
     spawn = getShapeMiddle(modifier.area);
