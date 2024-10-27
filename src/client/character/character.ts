@@ -22,14 +22,11 @@ import { addCharacterUpgrades } from "./upgrades/characterUpgrades.js";
 import { addGodEnemyType } from "./enemy/god/godEnemy.js";
 import { DEBUFF_NAME_DAMAGE_TAKEN } from "../debuff/debuffDamageTaken.js";
 import { createPaintTextData } from "../floatingText.js";
-import { addAreaBossType } from "./enemy/areaBoss/areaBossEnemy.js";
 import { resetCurses, tickCurses } from "../curse/curse.js";
 import { addPetTypeFollowAttackFunctions } from "./playerCharacters/characterPetTypeClone.js";
-import { tickMapChunkObjects } from "../map/mapObjects.js";
 import { addAreaBossTypeDarknessSpider } from "./enemy/areaBoss/areaBossDarknessSpider.js";
 
 export function onDomLoadSetCharactersFunctions() {
-    addAreaBossType();
     addAreaBossTypeDarknessSpider();
     addBossType();
     addKingType();

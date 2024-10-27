@@ -1,4 +1,3 @@
-import { createDefaultAreaBossWithLevel } from "../../character/enemy/areaBoss/areaBossEnemy.js";
 import { calculateDirection, calculateDistance, getNextId, modulo } from "../../game.js";
 import { Game, IdCounter, Position } from "../../gameModel.js";
 import { getPointPaintPosition, paintTextWithOutline } from "../../gamePaint.js";

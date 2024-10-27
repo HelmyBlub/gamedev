@@ -7,10 +7,9 @@ import { getPointPaintPosition } from "../../../gamePaint.js";
 import { findNearNonBlockingPosition } from "../../../map/map.js";
 import { findMapModifierById } from "../../../map/modifiers/mapModifier.js";
 import { getShapeArea } from "../../../map/modifiers/mapModifierShapes.js";
-import { GameMapAreaRect } from "../../../map/modifiers/mapShapeRectangle.js";
 import { getPlayerCharacters } from "../../character.js";
 import { Character } from "../../characterModel.js";
-import { AreaBossEnemyCharacter } from "./areaBossEnemy.js";
+import { AreaBossEnemyDarknessSpider } from "./areaBossDarknessSpider.js";
 
 export type AbilityCurseDarkness = Ability & {
 }
@@ -41,7 +40,7 @@ export function createAbilityCurseDarkness(idCounter: IdCounter): AbilityCurseDa
     }
 }
 
-export function createObjectCurseDarkness(areaBoss: AreaBossEnemyCharacter, game: Game): AbilityObjectCurseDarkness | undefined {
+export function createObjectCurseDarkness(areaBoss: AreaBossEnemyDarknessSpider, game: Game): AbilityObjectCurseDarkness | undefined {
     const modifier = findMapModifierById(areaBoss.mapModifierIdRef, game);
     if (!modifier) return;
     const curseStrength = Math.max(getShapeArea(modifier.area)! / 10000, 500);

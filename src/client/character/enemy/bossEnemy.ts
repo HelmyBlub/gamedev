@@ -18,7 +18,7 @@ import { paintCharacterWithAbilitiesDefault, paintCharacterHpBar, paintCharacter
 import { getPathingCache, PathingCache } from "../pathing.js";
 import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "../playerCharacters/playerCharacters.js";
 import { TamerPetCharacter } from "../playerCharacters/tamer/tamerPetCharacter.js";
-import { scaleAreaBossHp } from "./areaBoss/areaBossEnemy.js";
+import { scaleAreaBossHp } from "./areaBoss/areaBossDarknessSpider.js";
 import { CHARACTER_TYPE_GOD_ENEMY } from "./god/godEnemy.js";
 import { CHARACTER_TYPE_END_BOSS_CROWN_ENEMY } from "./kingCrown.js";
 import { CHARACTER_TYPE_KING_ENEMY } from "./kingEnemy.js";
