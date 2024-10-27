@@ -1,16 +1,13 @@
-next test run: builder, tamer, ball, musician, sniper
+next test run: builder, tamer,  musician,
 increase version
 
 current tasks:
-- map modifier
-    - darkness
-        - player darkness clones start always white turn black
-
-
-
+- new test replays
 - musician: play note when placed?
     - problem: hard to know how it sounds when you have to wait on longer music sheets
 - musician: be able to place notes 1/8 & 1/16 allways
+- map modifier
+    - another modifier?
 
 
 next feature ideas:
