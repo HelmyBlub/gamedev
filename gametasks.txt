@@ -2,7 +2,10 @@ next test run: builder, tamer,  musician,
 increase version
 
 current tasks:
-- new test replays
+- curse ability. Looks like not something to step into
+    - encourage player curiosity to step into it
+    - currently looks like default damage area
+    - somehow animate differently?
 - musician: play note when placed?
     - problem: hard to know how it sounds when you have to wait on longer music sheets
 - musician: be able to place notes 1/8 & 1/16 allways
