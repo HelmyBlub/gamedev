@@ -121,8 +121,8 @@ function spawnClone(darkness: CurseDarkness, target: Character, game: Game) {
     }
     if (clone.paint.randomizedCharacterImage) {
         const paintStuff = clone.paint.randomizedCharacterImage;
-        if (paintStuff.clothColor === "black") paintStuff.clothColor = "white";
-        if (paintStuff.skinColor === "black") paintStuff.skinColor = "white";
+        paintStuff.clothColor = "white";
+        paintStuff.skinColor = "white";
     }
     clone.damageDoneFactor *= cloneDamageFactor;
     clone.width *= cloneSizeFactor;

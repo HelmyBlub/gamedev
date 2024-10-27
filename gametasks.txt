@@ -2,15 +2,8 @@ next test run: builder, tamer, ball, musician, sniper
 increase version
 
 current tasks:
-- short replays
 - map modifier
     - darkness
-        - darkness spider boss
-            - refactor spider
-        - bigger map area: areaBoss attacks if far enough in and not only in the middle
-            - problem is when area gets really big, should not be to hard to find middle where boss is
-            - area has not to be to hard to remove as it could be anoying
-        - change map modifier spawn position be more random?
         - player darkness clones start always white turn black
 
 
