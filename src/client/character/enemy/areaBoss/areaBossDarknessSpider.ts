@@ -46,13 +46,24 @@ export const CHARACTER_TYPE_AREA_BOSS_DARKNESS_SPIDER = "DarknessSpider";
 
 export function addAreaBossTypeDarknessSpider() {
     CHARACTER_TYPE_FUNCTIONS[CHARACTER_TYPE_AREA_BOSS_DARKNESS_SPIDER] = {
-        onCharacterKill: areaBossOnCharacterKill,
+        onCharacterKill: onSpiderKill,
         paintCharacterType: paintSpider,
         tickFunction: tickSpider,
     };
     //addAbilityCurseDarkness(); //TODO
 }
 
+function onSpiderKill(character: Character, game: Game) {
+    const spider = character as AreaBossEnemyDarknessSpider;
+    for (let leg of spider.spiderInfo.legs) {
+        if (leg) {
+            spider.hp = 1;
+            spider.state = "alive";
+            return;
+        }
+    }
+    areaBossOnCharacterKill(character, game);
+}
 
 export function createAreaBossDarknessSpiderWithLevel(idCounter: IdCounter, spawn: Position, mapModifierIdRef: number, game: Game): AreaBossEnemyCharacter {
     const scaling = 2;
