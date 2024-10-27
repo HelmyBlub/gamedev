@@ -1,16 +1,12 @@
-next test run: 
+next test run: sniper, builder, tamer, ball, musician
 increase version
 
 current tasks:
+- short replays
 - map modifier
     - darkness
         - darkness spider boss
-            - spider does show its legs first when going into dark area?
-                - spider AI more aggressive the closer to the middle?
-                    - spider shows its legs when in the outer area of map area?
-                - if player in mapmodifer area -> show yourself but run away
-                - if player x Units in -> attack until loose one leg
-                - if player close to middle -> attack until dead
+            - check spider ai behavior
             - spider images? Body, legs, cocon?
             - spider can not die before all legs are turned to clones
             - check what happens on spider reset, should not reset once to low hp?

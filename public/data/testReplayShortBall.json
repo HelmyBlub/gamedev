@@ -5,56 +5,10 @@
             "clientId": -1,
             "recordInputs": true,
             "replay": false,
-            "testMapSeed": 0.6392488452519918,
-            "testRandomStartSeed": 6.223855953321253,
+            "testMapSeed": 0.6968512626330113,
+            "testRandomStartSeed": 6.7294497377702704,
             "testEnemyTypeDirectionSeed": 0,
             "executeTime": 1
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "upgrade4",
-                "isKeydown": true
-            },
-            "executeTime": 513
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "direction": -1.5707963267948966,
-                "faktor": 1,
-                "action": "moveAction"
-            },
-            "executeTime": 817
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "direction": -2.356194490192345,
-                "faktor": 1,
-                "action": "moveAction"
-            },
-            "executeTime": 1057
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "ability1",
-                "isKeydown": true,
-                "castPosition": {
-                    "x": -255.2695526217004,
-                    "y": -55.7695526217004
-                },
-                "castPositionRelativeToCharacter": {
-                    "x": -318.5,
-                    "y": -89
-                }
-            },
-            "executeTime": 1473
         },
         {
             "command": "playerInput",
@@ -64,19 +18,16 @@
                 "faktor": 1,
                 "action": "moveAction"
             },
-            "executeTime": 1473
+            "executeTime": 529
         },
         {
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -261.0524532206797,
-                    "y": -57.32332373171798
-                }
+                "action": "upgrade4",
+                "isKeydown": true
             },
-            "executeTime": 1505
+            "executeTime": 801
         },
         {
             "command": "playerInput",
@@ -86,264 +37,7 @@
                 "faktor": 0,
                 "action": "moveAction"
             },
-            "executeTime": 1505
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "ability1",
-                "isKeydown": false,
-                "castPosition": {
-                    "x": -284.0503489106821,
-                    "y": -63.567257149731525
-                },
-                "castPositionRelativeToCharacter": {
-                    "x": -318.5,
-                    "y": -89
-                }
-            },
-            "executeTime": 1553
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -301.13862410162255,
-                    "y": -68.35286922777362
-                }
-            },
-            "executeTime": 1617
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -340.60148486960077,
-                    "y": -79.38329237829603
-                }
-            },
-            "executeTime": 1729
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -376.4750831846856,
-                    "y": -84.24587459214099
-                }
-            },
-            "executeTime": 1841
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -394.8793305291631,
-                    "y": -71.45912295210363
-                }
-            },
-            "executeTime": 1953
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -410.9758095437943,
-                    "y": -70.25737617785283
-                }
-            },
-            "executeTime": 2065
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -441.79474834585164,
-                    "y": -76.27756144543238
-                }
-            },
-            "executeTime": 2177
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -442.9886250974797,
-                    "y": -81.10915586628482
-                }
-            },
-            "executeTime": 2289
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -459.4243840756635,
-                    "y": -88.40113436430013
-                }
-            },
-            "executeTime": 2401
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -475.06794613379884,
-                    "y": -84.23884354715553
-                }
-            },
-            "executeTime": 2513
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -490.21663365407994,
-                    "y": -77.15450383842807
-                }
-            },
-            "executeTime": 2625
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -499.97312807045813,
-                    "y": -79.37039204415687
-                }
-            },
-            "executeTime": 2737
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -460.19006717502424,
-                    "y": -98.57438777763204
-                }
-            },
-            "executeTime": 2849
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -389.5799320568099,
-                    "y": -124.73104667871786
-                }
-            },
-            "executeTime": 2961
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -352.8598262183432,
-                    "y": -142.05882802357203
-                }
-            },
-            "executeTime": 3073
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -326.890876606426,
-                    "y": -160.42786984102486
-                }
-            },
-            "executeTime": 3185
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -338.5475985115721,
-                    "y": -171.69986294534658
-                }
-            },
-            "executeTime": 3297
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -370.7183368931484,
-                    "y": -178.72937276938075
-                }
-            },
-            "executeTime": 3409
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -429.3055794830093,
-                    "y": -191.36517312259792
-                }
-            },
-            "executeTime": 3521
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -484.2261432582916,
-                    "y": -207.45157955321892
-                }
-            },
-            "executeTime": 3633
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -508.41123704725953,
-                    "y": -224.82977041255424
-                }
-            },
-            "executeTime": 3745
+            "executeTime": 1233
         },
         {
             "command": "playerInput",
@@ -352,12 +46,291 @@
                 "action": "ability2",
                 "isKeydown": true,
                 "castPosition": {
-                    "x": -527.8064041374132,
-                    "y": -261.3390842488669
+                    "x": -420,
+                    "y": 89.5
                 },
                 "castPositionRelativeToCharacter": {
-                    "x": 111.5,
-                    "y": -82.99999999999997
+                    "x": -432,
+                    "y": -10.5
+                }
+            },
+            "executeTime": 1265
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -479.9822850476521,
+                    "y": 88.04209723842516
+                }
+            },
+            "executeTime": 1297
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability2",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -719.9114252382606,
+                    "y": 82.21048619212579
+                },
+                "castPositionRelativeToCharacter": {
+                    "x": -431.99999999999994,
+                    "y": -10.5
+                }
+            },
+            "executeTime": 1345
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -899.8582803812174,
+                    "y": 77.83677790740126
+                }
+            },
+            "executeTime": 1409
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": -524.7732486099479,
+                    "y": -85.16115534815799
+                },
+                "castPositionRelativeToCharacter": {
+                    "x": 231,
+                    "y": -166.5
+                }
+            },
+            "executeTime": 2017
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -524.7732486099479,
+                    "y": -85.16115534815799
+                }
+            },
+            "executeTime": 2049
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -525.8142847182218,
+                    "y": -61.46885984716236
+                },
+                "castPositionRelativeToCharacter": {
+                    "x": 207,
+                    "y": -158.5
+                }
+            },
+            "executeTime": 2097
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -749.3190490921874,
+                    "y": 35.610976493753896
+                }
+            },
+            "executeTime": 2161
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -757.7024558317725,
+                    "y": 110.14270342730325
+                }
+            },
+            "executeTime": 2273
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -735.4744770991715,
+                    "y": 180.90437366819657
+                }
+            },
+            "executeTime": 2385
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -745.54968402949,
+                    "y": 279.09878657890545
+                }
+            },
+            "executeTime": 2497
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -727.0724086812417,
+                    "y": 334.5104611123296
+                }
+            },
+            "executeTime": 2609
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -695.1670517142475,
+                    "y": 366.9158564305117
+                }
+            },
+            "executeTime": 2721
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -726.4049989190504,
+                    "y": 339.8158849269457
+                }
+            },
+            "executeTime": 2833
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -790.6419727266623,
+                    "y": 329.0943345558767
+                }
+            },
+            "executeTime": 2945
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -854.3476906491452,
+                    "y": 320.18351049644815
+                }
+            },
+            "executeTime": 3057
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -909.2071195632395,
+                    "y": 305.1204102023396
+                }
+            },
+            "executeTime": 3169
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -958.9082257241985,
+                    "y": 286.91585596126674
+                }
+            },
+            "executeTime": 3281
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -948.1405478857838,
+                    "y": 278.20116824925753
+                }
+            },
+            "executeTime": 3393
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -887.833228279035,
+                    "y": 304.0135249878697
+                }
+            },
+            "executeTime": 3505
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -849.6612244864925,
+                    "y": 337.37340638827857
+                }
+            },
+            "executeTime": 3617
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -807.8230409459502,
+                    "y": 368.96956086107633
+                }
+            },
+            "executeTime": 3729
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -783.3859545961736,
+                    "y": 395.73828487888704
                 }
             },
             "executeTime": 3841
@@ -368,131 +341,145 @@
             "data": {
                 "action": "mousePositionUpdate",
                 "mousePosition": {
-                    "x": -527.8064041374132,
-                    "y": -262.3390842488669
+                    "x": -840.2099651890283,
+                    "y": 435.90344395592615
                 }
             },
-            "executeTime": 3857
+            "executeTime": 3953
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -892.5092358250282,
+                    "y": 475.6299321702238
+                }
+            },
+            "executeTime": 4065
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -857.6671801729215,
+                    "y": 464.39849265640936
+                }
+            },
+            "executeTime": 4177
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -909.4764613637799,
+                    "y": 502.7392519920857
+                }
+            },
+            "executeTime": 4289
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -957.472546189505,
+                    "y": 540.9708002468512
+                }
+            },
+            "executeTime": 4401
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -1000.723280586807,
+                    "y": 568.7909689051598
+                }
+            },
+            "executeTime": 4513
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -978.6267027436456,
+                    "y": 595.6881158587205
+                }
+            },
+            "executeTime": 4625
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -1002.5531367274887,
+                    "y": 629.366898609147
+                }
+            },
+            "executeTime": 4737
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -948.6090576219384,
+                    "y": 559.3952178720899
+                }
+            },
+            "executeTime": 4849
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -893.5719436071163,
+                    "y": 293.7716249711711
+                }
+            },
+            "executeTime": 4961
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "mousePositionUpdate",
+                "mousePosition": {
+                    "x": -856.5255704399052,
+                    "y": 226.7854853359936
+                }
+            },
+            "executeTime": 5073
         },
         {
             "command": "playerInput",
             "clientId": -1,
             "data": {
                 "action": "ability2",
-                "isKeydown": false,
-                "castPosition": {
-                    "x": -287.16047901155787,
-                    "y": -442.47461595690294
-                },
-                "castPositionRelativeToCharacter": {
-                    "x": 111.5,
-                    "y": -85
-                }
-            },
-            "executeTime": 3921
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -190.90210896121573,
-                    "y": -514.1288286401173
-                }
-            },
-            "executeTime": 3969
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": 146.00218621498263,
-                    "y": -764.9185730313677
-                }
-            },
-            "executeTime": 4081
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "ability1",
                 "isKeydown": true,
                 "castPosition": {
-                    "x": 11.008882255256566,
-                    "y": -800.2419431779392
+                    "x": -856.688269308525,
+                    "y": 156.84868689695173
                 },
                 "castPositionRelativeToCharacter": {
-                    "x": -100.5,
-                    "y": -63
-                }
-            },
-            "executeTime": 4753
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": 5.9353271697981,
-                    "y": -803.4223806941968
-                }
-            },
-            "executeTime": 4785
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "ability1",
-                "isKeydown": false,
-                "castPosition": {
-                    "x": -14.256614681820295,
-                    "y": -816.0800158847635
-                },
-                "castPositionRelativeToCharacter": {
-                    "x": -100.5,
-                    "y": -63
-                }
-            },
-            "executeTime": 4833
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -19.292349716979317,
-                    "y": -845.5054020262064
-                }
-            },
-            "executeTime": 4897
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -16.337012999643903,
-                    "y": -890.2930547351053
-                }
-            },
-            "executeTime": 5009
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -23.220556748212353,
-                    "y": -930.0304845974179
+                    "x": -117,
+                    "y": -228.5
                 }
             },
             "executeTime": 5121
@@ -503,8 +490,25 @@
             "data": {
                 "action": "mousePositionUpdate",
                 "mousePosition": {
-                    "x": -23.83163589136478,
-                    "y": -966.5219333505746
+                    "x": -942.7256037296174,
+                    "y": -12.369526053642232
+                }
+            },
+            "executeTime": 5185
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability2",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": -1080.108716291074,
+                    "y": -212.99380998776766
+                },
+                "castPositionRelativeToCharacter": {
+                    "x": -149,
+                    "y": -224.5
                 }
             },
             "executeTime": 5233
@@ -515,11 +519,11 @@
             "data": {
                 "action": "mousePositionUpdate",
                 "mousePosition": {
-                    "x": 8.923357735219604,
-                    "y": -1000.565838229339
+                    "x": -1219.1460507121665,
+                    "y": -330.21202293836177
                 }
             },
-            "executeTime": 5345
+            "executeTime": 5297
         },
         {
             "command": "playerInput",
@@ -527,75 +531,41 @@
             "data": {
                 "action": "mousePositionUpdate",
                 "mousePosition": {
-                    "x": 12.120089980410768,
-                    "y": -1027.9564567781254
+                    "x": -1412.5664976947114,
+                    "y": -697.0545198230811
                 }
             },
-            "executeTime": 5457
+            "executeTime": 5409
         },
         {
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "action": "ability2",
-                "isKeydown": true,
-                "castPosition": {
-                    "x": 2.25251601154892,
-                    "y": -1040.9131262945252
-                },
-                "castPositionRelativeToCharacter": {
-                    "x": 88.5,
-                    "y": -134
-                }
-            },
-            "executeTime": 5489
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "ability2",
-                "isKeydown": false,
-                "castPosition": {
-                    "x": 35.318662484310764,
-                    "y": -1090.9793819707975
-                },
-                "castPositionRelativeToCharacter": {
-                    "x": 88.5,
-                    "y": -134
-                }
-            },
-            "executeTime": 5585
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "direction": 0,
+                "direction": -4.71238898038469,
                 "faktor": 1,
                 "action": "moveAction"
             },
-            "executeTime": 5985
+            "executeTime": 6097
         },
         {
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "direction": -0.7853981633974483,
+                "direction": -3.9269908169872414,
                 "faktor": 1,
                 "action": "moveAction"
             },
-            "executeTime": 6177
+            "executeTime": 6257
         },
         {
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "direction": -1.5707963267948966,
+                "direction": -4.71238898038469,
                 "faktor": 1,
                 "action": "moveAction"
             },
-            "executeTime": 6305
+            "executeTime": 6657
         },
         {
             "command": "playerInput",
@@ -605,22 +575,25 @@
                 "faktor": 0,
                 "action": "moveAction"
             },
-            "executeTime": 7057
+            "executeTime": 6721
         },
         {
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "action": "ability2",
-                "isKeydown": true,
-                "castPosition": {
-                    "x": -18.36762901670447,
-                    "y": -1175.2930904697823
-                },
-                "castPositionRelativeToCharacter": {
-                    "x": -0.5,
-                    "y": -113
-                }
+                "direction": -3.141592653589793,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 7105
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -3.9269908169872414,
+                "faktor": 1,
+                "action": "moveAction"
             },
             "executeTime": 7121
         },
@@ -628,16 +601,9 @@
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "action": "ability2",
-                "isKeydown": false,
-                "castPosition": {
-                    "x": -18.36762901670447,
-                    "y": -1175.2930904697823
-                },
-                "castPositionRelativeToCharacter": {
-                    "x": -0.5,
-                    "y": -113
-                }
+                "direction": -4.71238898038469,
+                "faktor": 1,
+                "action": "moveAction"
             },
             "executeTime": 7201
         },
@@ -645,45 +611,89 @@
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "action": "ability1",
-                "isKeydown": true,
-                "castPosition": {
-                    "x": -18.36762901670447,
-                    "y": -1175.2930904697823
-                },
-                "castPositionRelativeToCharacter": {
-                    "x": -0.5,
-                    "y": -113
-                }
+                "direction": 0,
+                "faktor": 0,
+                "action": "moveAction"
             },
-            "executeTime": 7489
+            "executeTime": 7201
         },
         {
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -18.394124332555492,
-                    "y": -1181.2810318521138
-                }
+                "direction": -3.141592653589793,
+                "faktor": 1,
+                "action": "moveAction"
             },
-            "executeTime": 7521
+            "executeTime": 7297
         },
         {
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "action": "ability1",
-                "isKeydown": false,
-                "castPosition": {
-                    "x": -18.499571473267043,
-                    "y": -1205.1120856529244
-                },
-                "castPositionRelativeToCharacter": {
-                    "x": -0.5,
-                    "y": -113
-                }
+                "direction": -3.9269908169872414,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 7297
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -4.71238898038469,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 7377
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": 0,
+                "faktor": 0,
+                "action": "moveAction"
+            },
+            "executeTime": 7393
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -3.141592653589793,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 7457
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -3.9269908169872414,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 7457
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -4.71238898038469,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 7553
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": 0,
+                "faktor": 0,
+                "action": "moveAction"
             },
             "executeTime": 7569
         },
@@ -691,35 +701,69 @@
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -18.57809167105708,
-                    "y": -1222.857650353473
-                }
+                "direction": -3.141592653589793,
+                "faktor": 1,
+                "action": "moveAction"
             },
-            "executeTime": 7633
+            "executeTime": 7649
         },
         {
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -18.759397206940797,
-                    "y": -1263.8327014631943
-                }
+                "direction": -3.9269908169872414,
+                "faktor": 1,
+                "action": "moveAction"
             },
-            "executeTime": 7745
+            "executeTime": 7649
         },
         {
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -18.93799173871793,
-                    "y": -1304.1950656448273
-                }
+                "direction": -4.71238898038469,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 7713
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": 0,
+                "faktor": 0,
+                "action": "moveAction"
+            },
+            "executeTime": 7713
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -3.141592653589793,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 7809
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -3.9269908169872414,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 7809
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -3.141592653589793,
+                "faktor": 1,
+                "action": "moveAction"
             },
             "executeTime": 7857
         },
@@ -727,35 +771,79 @@
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -19.113829436292608,
-                    "y": -1343.9343852967063
-                }
+                "direction": 0,
+                "faktor": 0,
+                "action": "moveAction"
             },
-            "executeTime": 7969
+            "executeTime": 7873
         },
         {
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -19.286867857002427,
-                    "y": -1383.0410683771258
-                }
+                "direction": -3.141592653589793,
+                "faktor": 1,
+                "action": "moveAction"
             },
-            "executeTime": 8081
+            "executeTime": 7937
         },
         {
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -94.4570679548206,
-                    "y": -1395.5062904840336
-                }
+                "direction": -3.9269908169872414,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 7937
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -4.71238898038469,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 8033
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": 0,
+                "faktor": 0,
+                "action": "moveAction"
+            },
+            "executeTime": 8033
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -3.141592653589793,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 8113
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -3.9269908169872414,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 8113
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -4.71238898038469,
+                "faktor": 1,
+                "action": "moveAction"
             },
             "executeTime": 8193
         },
@@ -763,35 +851,79 @@
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -133.75462893659915,
-                    "y": -1421.292530811615
-                }
+                "direction": 0,
+                "faktor": 0,
+                "action": "moveAction"
             },
-            "executeTime": 8305
+            "executeTime": 8193
         },
         {
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -158.5950120969709,
-                    "y": -1397.9957094852498
-                }
+                "direction": -3.141592653589793,
+                "faktor": 1,
+                "action": "moveAction"
             },
-            "executeTime": 8417
+            "executeTime": 8273
         },
         {
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -175.11269531989097,
-                    "y": -1356.307762074921
-                }
+                "direction": -3.9269908169872414,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 8273
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -4.71238898038469,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 8369
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": 0,
+                "faktor": 0,
+                "action": "moveAction"
+            },
+            "executeTime": 8385
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -3.141592653589793,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 8449
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -3.9269908169872414,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 8449
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -4.71238898038469,
+                "faktor": 1,
+                "action": "moveAction"
             },
             "executeTime": 8529
         },
@@ -799,16 +931,19 @@
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "action": "ability2",
-                "isKeydown": true,
-                "castPosition": {
-                    "x": -171.77100359357323,
-                    "y": -1381.8264490587944
-                },
-                "castPositionRelativeToCharacter": {
-                    "x": -131.5,
-                    "y": -128
-                }
+                "direction": 0,
+                "faktor": 0,
+                "action": "moveAction"
+            },
+            "executeTime": 8529
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -4.71238898038469,
+                "faktor": 1,
+                "action": "moveAction"
             },
             "executeTime": 8609
         },
@@ -816,28 +951,19 @@
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -208.76572515540659,
-                    "y": -1433.6768244193627
-                }
+                "direction": -3.9269908169872414,
+                "faktor": 1,
+                "action": "moveAction"
             },
-            "executeTime": 8641
+            "executeTime": 8625
         },
         {
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "action": "ability2",
-                "isKeydown": false,
-                "castPosition": {
-                    "x": -372.74461140274013,
-                    "y": -1618.0783258616357
-                },
-                "castPositionRelativeToCharacter": {
-                    "x": -117.49999999999997,
-                    "y": -155
-                }
+                "direction": -4.71238898038469,
+                "faktor": 1,
+                "action": "moveAction"
             },
             "executeTime": 8689
         },
@@ -845,23 +971,39 @@
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -495.72877608824,
-                    "y": -1745.6294519433404
-                }
+                "direction": 0,
+                "faktor": 0,
+                "action": "moveAction"
             },
-            "executeTime": 8753
+            "executeTime": 8705
         },
         {
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -789.6918270210741,
-                    "y": -2040.5820794673182
-                }
+                "direction": -4.71238898038469,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 8785
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -3.9269908169872414,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 8801
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -4.71238898038469,
+                "faktor": 1,
+                "action": "moveAction"
             },
             "executeTime": 8865
         },
@@ -869,23 +1011,41 @@
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "action": "mousePositionUpdate",
-                "mousePosition": {
-                    "x": -1090.654877953909,
-                    "y": -2333.534706991296
-                }
+                "direction": 0,
+                "faktor": 0,
+                "action": "moveAction"
             },
-            "executeTime": 8977
+            "executeTime": 8881
         },
         {
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "direction": 0,
+                "direction": -3.141592653589793,
                 "faktor": 1,
                 "action": "moveAction"
             },
-            "executeTime": 10065
+            "executeTime": 8961
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -3.9269908169872414,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 8961
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -4.71238898038469,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 9041
         },
         {
             "command": "playerInput",
@@ -895,17 +1055,37 @@
                 "faktor": 0,
                 "action": "moveAction"
             },
-            "executeTime": 10369
+            "executeTime": 9041
         },
         {
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "direction": 0,
+                "direction": -3.141592653589793,
                 "faktor": 1,
                 "action": "moveAction"
             },
-            "executeTime": 10609
+            "executeTime": 9121
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -3.9269908169872414,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 9121
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -4.71238898038469,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 9201
         },
         {
             "command": "playerInput",
@@ -915,17 +1095,37 @@
                 "faktor": 0,
                 "action": "moveAction"
             },
-            "executeTime": 10721
+            "executeTime": 9217
         },
         {
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "direction": 0,
+                "direction": -4.71238898038469,
                 "faktor": 1,
                 "action": "moveAction"
             },
-            "executeTime": 10817
+            "executeTime": 9281
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -3.9269908169872414,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 9297
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -4.71238898038469,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 9377
         },
         {
             "command": "playerInput",
@@ -935,17 +1135,37 @@
                 "faktor": 0,
                 "action": "moveAction"
             },
-            "executeTime": 10897
+            "executeTime": 9393
         },
         {
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "direction": 0,
+                "direction": -4.71238898038469,
                 "faktor": 1,
                 "action": "moveAction"
             },
-            "executeTime": 10993
+            "executeTime": 9473
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -3.9269908169872414,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 9489
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -4.71238898038469,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 9553
         },
         {
             "command": "playerInput",
@@ -955,17 +1175,37 @@
                 "faktor": 0,
                 "action": "moveAction"
             },
-            "executeTime": 11073
+            "executeTime": 9569
         },
         {
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "direction": 0,
+                "direction": -4.71238898038469,
                 "faktor": 1,
                 "action": "moveAction"
             },
-            "executeTime": 11217
+            "executeTime": 9633
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -3.9269908169872414,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 9649
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -4.71238898038469,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 9713
         },
         {
             "command": "playerInput",
@@ -975,17 +1215,37 @@
                 "faktor": 0,
                 "action": "moveAction"
             },
-            "executeTime": 11265
+            "executeTime": 9713
         },
         {
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "direction": 0,
+                "direction": -4.71238898038469,
                 "faktor": 1,
                 "action": "moveAction"
             },
-            "executeTime": 11553
+            "executeTime": 9809
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -3.9269908169872414,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 9825
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -4.71238898038469,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 9889
         },
         {
             "command": "playerInput",
@@ -995,17 +1255,37 @@
                 "faktor": 0,
                 "action": "moveAction"
             },
-            "executeTime": 11649
+            "executeTime": 9889
         },
         {
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "direction": 0,
+                "direction": -4.71238898038469,
                 "faktor": 1,
                 "action": "moveAction"
             },
-            "executeTime": 11761
+            "executeTime": 9969
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -3.9269908169872414,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 9985
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -4.71238898038469,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 10033
         },
         {
             "command": "playerInput",
@@ -1015,17 +1295,37 @@
                 "faktor": 0,
                 "action": "moveAction"
             },
-            "executeTime": 11857
+            "executeTime": 10049
         },
         {
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "direction": 0,
+                "direction": -4.71238898038469,
                 "faktor": 1,
                 "action": "moveAction"
             },
-            "executeTime": 11937
+            "executeTime": 10113
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -3.9269908169872414,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 10129
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -4.71238898038469,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 10161
         },
         {
             "command": "playerInput",
@@ -1035,17 +1335,37 @@
                 "faktor": 0,
                 "action": "moveAction"
             },
-            "executeTime": 12033
+            "executeTime": 10161
         },
         {
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "direction": 0,
+                "direction": -4.71238898038469,
                 "faktor": 1,
                 "action": "moveAction"
             },
-            "executeTime": 12113
+            "executeTime": 10225
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -3.9269908169872414,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 10225
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -4.71238898038469,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 10305
         },
         {
             "command": "playerInput",
@@ -1055,17 +1375,37 @@
                 "faktor": 0,
                 "action": "moveAction"
             },
-            "executeTime": 12209
+            "executeTime": 10305
         },
         {
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "direction": 0,
+                "direction": -3.141592653589793,
                 "faktor": 1,
                 "action": "moveAction"
             },
-            "executeTime": 12289
+            "executeTime": 10385
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -3.9269908169872414,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 10385
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -4.71238898038469,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 10433
         },
         {
             "command": "playerInput",
@@ -1075,13 +1415,13 @@
                 "faktor": 0,
                 "action": "moveAction"
             },
-            "executeTime": 12353
+            "executeTime": 10433
         }
     ],
     "permanentData": {
         "nextKings": {
             "north": {
-                "id": 5188,
+                "id": 0,
                 "x": 0,
                 "y": 0,
                 "width": 60,
@@ -1104,7 +1444,7 @@
                 "state": "alive",
                 "abilities": [
                     {
-                        "id": 5189,
+                        "id": 1,
                         "name": "Melee",
                         "damage": 10,
                         "passive": true,
@@ -1112,7 +1452,7 @@
                         "upgrades": {}
                     },
                     {
-                        "id": 5190,
+                        "id": 2,
                         "name": "Shoot",
                         "baseFrequency": 1000,
                         "frequencyIncrease": 1.2,
@@ -1128,7 +1468,7 @@
                         "shootRandom": true
                     },
                     {
-                        "id": 5191,
+                        "id": 3,
                         "name": "Sword",
                         "damage": 25,
                         "swordLength": 55,
@@ -1141,7 +1481,7 @@
                         "upgrades": {}
                     },
                     {
-                        "id": 5192,
+                        "id": 4,
                         "name": "FireCircle",
                         "objectDuration": 5000,
                         "damage": 10,
@@ -1156,7 +1496,7 @@
                         "upgrades": {}
                     },
                     {
-                        "id": 5193,
+                        "id": 5,
                         "name": "Ice Aura",
                         "damage": 10,
                         "radius": 72,
@@ -1178,7 +1518,7 @@
                 "damageDoneFactor": 1
             },
             "west": {
-                "id": 5194,
+                "id": 6,
                 "x": 0,
                 "y": 0,
                 "width": 60,
@@ -1201,7 +1541,7 @@
                 "state": "alive",
                 "abilities": [
                     {
-                        "id": 5195,
+                        "id": 7,
                         "name": "Melee",
                         "damage": 10,
                         "passive": true,
@@ -1209,7 +1549,7 @@
                         "upgrades": {}
                     },
                     {
-                        "id": 5196,
+                        "id": 8,
                         "name": "Shoot",
                         "baseFrequency": 1000,
                         "frequencyIncrease": 1.2,
@@ -1225,7 +1565,7 @@
                         "shootRandom": true
                     },
                     {
-                        "id": 5197,
+                        "id": 9,
                         "name": "Sword",
                         "damage": 25,
                         "swordLength": 55,
@@ -1238,7 +1578,7 @@
                         "upgrades": {}
                     },
                     {
-                        "id": 5198,
+                        "id": 10,
                         "name": "FireCircle",
                         "objectDuration": 5000,
                         "damage": 10,
@@ -1253,7 +1593,7 @@
                         "upgrades": {}
                     },
                     {
-                        "id": 5199,
+                        "id": 11,
                         "name": "Ice Aura",
                         "damage": 10,
                         "radius": 72,
@@ -1275,7 +1615,7 @@
                 "damageDoneFactor": 1
             },
             "south": {
-                "id": 5200,
+                "id": 12,
                 "x": 0,
                 "y": 0,
                 "width": 60,
@@ -1298,7 +1638,7 @@
                 "state": "alive",
                 "abilities": [
                     {
-                        "id": 5201,
+                        "id": 13,
                         "name": "Melee",
                         "damage": 10,
                         "passive": true,
@@ -1306,7 +1646,7 @@
                         "upgrades": {}
                     },
                     {
-                        "id": 5202,
+                        "id": 14,
                         "name": "Shoot",
                         "baseFrequency": 1000,
                         "frequencyIncrease": 1.2,
@@ -1322,7 +1662,7 @@
                         "shootRandom": true
                     },
                     {
-                        "id": 5203,
+                        "id": 15,
                         "name": "Sword",
                         "damage": 25,
                         "swordLength": 55,
@@ -1335,7 +1675,7 @@
                         "upgrades": {}
                     },
                     {
-                        "id": 5204,
+                        "id": 16,
                         "name": "FireCircle",
                         "objectDuration": 5000,
                         "damage": 10,
@@ -1350,7 +1690,7 @@
                         "upgrades": {}
                     },
                     {
-                        "id": 5205,
+                        "id": 17,
                         "name": "Ice Aura",
                         "damage": 10,
                         "radius": 72,
@@ -1372,7 +1712,7 @@
                 "damageDoneFactor": 1
             },
             "east": {
-                "id": 5206,
+                "id": 18,
                 "x": 0,
                 "y": 0,
                 "width": 60,
@@ -1395,7 +1735,7 @@
                 "state": "alive",
                 "abilities": [
                     {
-                        "id": 5207,
+                        "id": 19,
                         "name": "Melee",
                         "damage": 10,
                         "passive": true,
@@ -1403,7 +1743,7 @@
                         "upgrades": {}
                     },
                     {
-                        "id": 5208,
+                        "id": 20,
                         "name": "Shoot",
                         "baseFrequency": 1000,
                         "frequencyIncrease": 1.2,
@@ -1419,7 +1759,7 @@
                         "shootRandom": true
                     },
                     {
-                        "id": 5209,
+                        "id": 21,
                         "name": "Sword",
                         "damage": 25,
                         "swordLength": 55,
@@ -1432,7 +1772,7 @@
                         "upgrades": {}
                     },
                     {
-                        "id": 5210,
+                        "id": 22,
                         "name": "FireCircle",
                         "objectDuration": 5000,
                         "damage": 10,
@@ -1447,7 +1787,7 @@
                         "upgrades": {}
                     },
                     {
-                        "id": 5211,
+                        "id": 23,
                         "name": "Ice Aura",
                         "damage": 10,
                         "radius": 72,
@@ -1477,7 +1817,7 @@
         "gameVersion": {
             "major": 0,
             "minor": 4,
-            "patch": 292
+            "patch": 311
         },
         "achievements": {
             "open": [
@@ -1582,6 +1922,7 @@
             ],
             "finished": []
         },
+        "mapModifier": [],
         "permanentPlayerData": {
             "money": 0,
             "upgrades": {}
@@ -1590,11 +1931,11 @@
     "gameEndAsserts": [
         {
             "type": "score",
-            "data": 2738
+            "data": 1771
         },
         {
             "type": "killCounter",
-            "data": 167
+            "data": 118
         }
     ]
 }
