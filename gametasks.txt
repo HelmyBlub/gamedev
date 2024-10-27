@@ -6,8 +6,6 @@ current tasks:
 - map modifier
     - darkness
         - darkness spider boss
-            - spider can not die before all legs are turned to clones
-            - spider images? Body, legs, cocon?
             - refactor spider
         - bigger map area: areaBoss attacks if far enough in and not only in the middle
             - problem is when area gets really big, should not be to hard to find middle where boss is

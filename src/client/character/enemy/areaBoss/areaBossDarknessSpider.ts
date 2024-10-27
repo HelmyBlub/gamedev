@@ -5,6 +5,7 @@ import { tickCharacterDebuffs } from "../../../debuff/debuff.js";
 import { calculateDirection, calculateDistance, getNextId } from "../../../game.js";
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
+import { GAME_IMAGES, getImage } from "../../../imageLoad.js";
 import { calculateMovePosition, findNearNonBlockingPosition, isPositionBlocking, moveByDirectionAndDistance } from "../../../map/map.js";
 import { findMapModifierById, GameMapModifier } from "../../../map/modifiers/mapModifier.js";
 import { getShapeMiddle, isPositionInsideShape } from "../../../map/modifiers/mapModifierShapes.js";
@@ -32,6 +33,13 @@ type SpiderLeg = {
     coconPosition?: Position,
     breakOfTime?: number,
 }
+
+const IMAGE_SPIDER_COCON = "Spider Cocon";
+GAME_IMAGES[IMAGE_SPIDER_COCON] = {
+    imagePath: "/images/spiderCocon.png",
+    spriteRowHeights: [40],
+    spriteRowWidths: [40],
+};
 
 const SPIDER_ALL_LEGS_LOST_HP_PER_CENT = 0.2;
 const SPIDER_LEG_LENGTH = 80;
@@ -120,15 +128,6 @@ function paintSpider(ctx: CanvasRenderingContext2D, character: Character, camera
             }
             spiderLegStartPaintPos.x += Math.round(Math.random() * 10 - 5);
             spiderLegStartPaintPos.y += Math.round(Math.random() * 10 - 5);
-            //cocon/clone spawn spot
-            let factor = ((game.state.time - leg.breakOfTime) / SPIDER_LEG_TO_CLONE_TIMER);
-            let spotRadius = 20 * factor;
-            if (leg.coconPosition && factor > 0.1) {
-                const coconPaintPos = getPointPaintPosition(ctx, leg.coconPosition, cameraPosition, game.UI.zoom);
-                ctx.beginPath();
-                ctx.arc(coconPaintPos.x, coconPaintPos.y, spotRadius, 0, Math.PI * 2);
-                ctx.fill();
-            }
         }
         ctx.lineWidth = 4;
         ctx.beginPath();
@@ -136,6 +135,20 @@ function paintSpider(ctx: CanvasRenderingContext2D, character: Character, camera
         if (spiderLegMiddle) ctx.lineTo(spiderLegMiddle.x, spiderLegMiddle.y);
         ctx.lineTo(paintPosLeg.x, paintPosLeg.y);
         ctx.stroke();
+        if (leg.breakOfTime) {
+            //cocon/clone spawn spot
+            let factor = ((game.state.time - leg.breakOfTime) / SPIDER_LEG_TO_CLONE_TIMER);
+            let spotSize = Math.round(40 * factor);
+            const image = getImage(IMAGE_SPIDER_COCON);
+            if (leg.coconPosition && factor > 0.1) {
+                const coconPaintPos = getPointPaintPosition(ctx, leg.coconPosition, cameraPosition, game.UI.zoom);
+                coconPaintPos.x -= Math.floor(spotSize / 2);
+                coconPaintPos.y -= spotSize - 10;
+                if (image) {
+                    ctx.drawImage(image, 0, 0, 40, 40, coconPaintPos.x, coconPaintPos.y, spotSize, spotSize);
+                }
+            }
+        }
     }
 
     const hpBarPos = {

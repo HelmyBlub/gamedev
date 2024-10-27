@@ -72,7 +72,6 @@ function onGameInit(modifier: GameMapModifier, game: Game) {
     }
     spawn = getShapeMiddle(modifier.area);
     if (spawn === undefined) return;
-    //const areaBoss = createDefaultAreaBossWithLevel(game.state.idCounter, spawn, modifier.id, game);
     const areaBoss = createAreaBossDarknessSpiderWithLevel(game.state.idCounter, spawn, modifier.id, game);
 
     game.state.bossStuff.bosses.push(areaBoss);
