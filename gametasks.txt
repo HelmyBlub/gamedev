@@ -2,9 +2,6 @@ next test run: tamer, musician
 increase version
 
 current tasks:
-- musician: play note when placed or changed?
-    - problem: hard to know how it sounds when you have to wait on longer music sheets
-- musician: be able to place notes 1/8 & 1/16 allways
 - map modifier
     - another modifier?
 

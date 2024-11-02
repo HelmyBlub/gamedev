@@ -530,7 +530,7 @@ function modifyNoteClick(note: MusicNote, unroundedTick: number, tick: number): 
         if (note.durationFactor < 4) {
             note.durationFactor *= 2;
         } else {
-            return true;
+            note.durationFactor = NOTE_LENGTH_1_16;
         }
     }
     return false;
