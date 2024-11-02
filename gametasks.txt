@@ -2,10 +2,7 @@ next test run: tamer, musician
 increase version
 
 current tasks:
-- curse ability. Looks like not something to step into
-    - encourage player curiosity to step into it
-    - currently looks like default damage area
-    - somehow animate differently?
+- curse increase should buff existing clone, not only when it respawns
 - musician: play note when placed?
     - problem: hard to know how it sounds when you have to wait on longer music sheets
 - musician: be able to place notes 1/8 & 1/16 allways

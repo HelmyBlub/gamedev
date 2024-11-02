@@ -1,6 +1,6 @@
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityObjectCircle, PaintOrderAbility } from "../../../ability/ability.js";
 import { applyCurse } from "../../../curse/curse.js";
-import { createCurseDarkness, CURSE_DARKNESS, CurseDarkness } from "../../../curse/curseDarkness.js";
+import { createCurseDarkness, CURSE_DARKNESS, CurseDarkness, increaseCurseDarkness } from "../../../curse/curseDarkness.js";
 import { calculateDistance, getCameraPosition, getNextId } from "../../../game.js";
 import { FACTION_ENEMY, Game, IdCounter } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
@@ -98,7 +98,7 @@ function curseIncreaseCharacter(character: Character, game: Game) {
         curse = createCurseDarkness();
         applyCurse(curse, character, game);
     } else {
-        curse.level += 0.2;
+        increaseCurseDarkness(character, curse, 0.2, game);
     }
     curse.visualizeFadeTimer = game.state.time + 2000;
 }
@@ -119,6 +119,7 @@ function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: Abilit
         paintPos.y,
         curse.radius, 0, 2 * Math.PI
     );
+    ctx.lineWidth = 5;
     ctx.fill();
     const radius = curse.radius * (1 - (game.state.time % 2048) / 2048);
     ctx.strokeStyle = "black";

@@ -13,6 +13,7 @@ export const CURSE_DARKNESS = "Darkness";
 const TIME_TO_TURN_EVIL = 60000;
 const CLONE_SPAWN_INTERVAL = 1000;
 const EVIL_TRANSFORM_TIME = 3000;
+const AMOUNT_CURSE_PER_CLONE = 10;
 
 export type CurseDarkness = Curse & {
     cloneCounter: number,
@@ -46,6 +47,19 @@ export function curseDarknessCloneKillCheck(clone: Character, game: Game) {
     }
     for (let boss of game.state.bossStuff.bosses) {
         if (checkForCurseAndDelete(boss, clone.id)) return;
+    }
+}
+
+export function increaseCurseDarkness(curseTarget: Character, darkness: CurseDarkness, amount: number, game: Game) {
+    darkness.level += amount;
+    if (!curseTarget.pets) return;
+    const maxClones = Math.ceil(darkness.level / AMOUNT_CURSE_PER_CLONE);
+    if (maxClones > darkness.cloneCounter) return;
+    for (let i = curseTarget.pets.length - 1; i >= 0; i--) {
+        if (curseTarget.pets[i].type !== CHARACTER_PET_TYPE_CLONE) continue;
+        const clone = curseTarget.pets[i];
+        scaleCloneWithCurseLevelForLastClone(clone, darkness, curseTarget, game);
+        break;
     }
 }
 
@@ -107,32 +121,41 @@ function createClone(original: Character, game: Game): Character {
 }
 
 function spawnClone(darkness: CurseDarkness, target: Character, game: Game) {
-    const maxClones = Math.ceil(darkness.level / 10);
+    const maxClones = Math.ceil(darkness.level / AMOUNT_CURSE_PER_CLONE);
     if (darkness.evilIdRefs.length > 0 || maxClones <= darkness.cloneCounter) return;
     if (darkness.nextCloneSpawnTime !== undefined && darkness.nextCloneSpawnTime > game.state.time) return;
     darkness.nextCloneSpawnTime = game.state.time + CLONE_SPAWN_INTERVAL;
     const clone: CharacterPetClone = createClone(target, game);
     if (!target.pets) target.pets = [];
-    let cloneDamageFactor = 1;
-    let cloneSizeFactor = 1;
     if (maxClones - 1 === darkness.cloneCounter) {
-        cloneDamageFactor = 1 - (maxClones - (darkness.level / 10));
-        cloneSizeFactor = 0.5 + (cloneDamageFactor / 2);
+        scaleCloneWithCurseLevelForLastClone(clone, darkness, target, game);
     }
     if (clone.paint.randomizedCharacterImage) {
         const paintStuff = clone.paint.randomizedCharacterImage;
         paintStuff.clothColor = "white";
         paintStuff.skinColor = "white";
     }
-    clone.damageDoneFactor *= cloneDamageFactor;
-    clone.width *= cloneSizeFactor;
-    clone.height *= cloneSizeFactor;
     clone.tempDarkCharacterImage = createDarkCharacterPaint(clone);
     target.pets.push(clone);
     darkness.cloneCounter++;
     const timeToTurn = target.faction === FACTION_PLAYER ? TIME_TO_TURN_EVIL : 3000;
     if (darkness.turnEvilTime === undefined) darkness.turnEvilTime = game.state.time + timeToTurn;
     clone.turnEvilStartTime = darkness.turnEvilTime;
+}
+
+function scaleCloneWithCurseLevelForLastClone(clone: CharacterPetClone, darkness: CurseDarkness, original: Character, game: Game) {
+    let cloneDamageFactor = 1;
+    let cloneSizeFactor = 1;
+    cloneDamageFactor = (darkness.level % AMOUNT_CURSE_PER_CLONE) / AMOUNT_CURSE_PER_CLONE;
+    cloneSizeFactor = 0.5 + (cloneDamageFactor / 2);
+    clone.damageDoneFactor = original.damageDoneFactor * cloneDamageFactor;
+    if (clone.spawnTime && clone.spawnTime + clone.spawnDelay! >= game.state.time) {
+        clone.originalWidth = original.width * cloneSizeFactor;
+        clone.originalHeight = original.height * cloneSizeFactor;
+    } else {
+        clone.width = original.width * cloneSizeFactor;
+        clone.height = original.height * cloneSizeFactor;
+    }
 }
 
 function startTurnEvil(darkness: CurseDarkness, target: Character, game: Game) {
