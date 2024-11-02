@@ -2,7 +2,6 @@ next test run: tamer, musician
 increase version
 
 current tasks:
-- Bug: god fight has "king" displayed
 - Bug: close god spawn fails because of spider area spawn
 - Bug: god ticks when asking for retries. spawning more and more fires if ability picked up
 - curse ability. Looks like not something to step into

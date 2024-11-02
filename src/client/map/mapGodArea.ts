@@ -203,7 +203,7 @@ function checkCreateGodArea(chunkX: number, chunkY: number, map: GameMap): boole
     if (!map.godArea || map.godArea.spawnTopLeftChunk) return false;
     const chunkLength = map.chunkLength * map.tileSize;
     const distance = calculateDistance({ x: chunkX * chunkLength, y: chunkY * chunkLength }, getMapMidlePosition(map));
-    if (distance >= map.godArea.autoSpawnOnDistance) return true;
+    if (distance >= map.godArea.autoSpawnOnDistance && distance <= map.godArea.autoSpawnOnDistance * 1.1) return true;
     return false;
 }
 
