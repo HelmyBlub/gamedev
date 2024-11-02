@@ -2,8 +2,6 @@ next test run: tamer, musician
 increase version
 
 current tasks:
-- Bug: god ticks when asking for retries. spawning more and more fires if ability picked up
-    - fires don't move so can also not despawn
 - curse ability. Looks like not something to step into
     - encourage player curiosity to step into it
     - currently looks like default damage area

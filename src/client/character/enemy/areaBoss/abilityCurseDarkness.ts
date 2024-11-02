@@ -49,7 +49,7 @@ export function createObjectCurseDarkness(areaBoss: AreaBossEnemyDarknessSpider,
         type: ABILITY_NAME_CURSE_DARKNESS,
         strength: curseStrength,
         radius: getRadius(curseStrength),
-        color: "black",
+        color: "darkblue",
         damage: 0,
         faction: FACTION_ENEMY,
         x: spawn.x,
@@ -120,5 +120,21 @@ function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: Abilit
         curse.radius, 0, 2 * Math.PI
     );
     ctx.fill();
+    const radius = curse.radius * (1 - (game.state.time % 2048) / 2048);
+    ctx.strokeStyle = "black";
+    ctx.beginPath();
+    ctx.arc(
+        paintPos.x,
+        paintPos.y,
+        radius, 0, 2 * Math.PI
+    );
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(
+        paintPos.x,
+        paintPos.y,
+        (curse.radius / 2 + radius) % curse.radius, 0, 2 * Math.PI
+    );
+    ctx.stroke();
     ctx.globalAlpha = 1;
 }
