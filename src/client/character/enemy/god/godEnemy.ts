@@ -344,5 +344,5 @@ function paint(ctx: CanvasRenderingContext2D, character: Character, cameraPositi
     }
 
     paintCharacterAbilties(ctx, character, cameraPosition, game);
-    paintKingHpBar(ctx, character);
+    paintKingHpBar(ctx, character, "God");
 }

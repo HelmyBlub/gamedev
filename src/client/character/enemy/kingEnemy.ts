@@ -186,11 +186,11 @@ export function modifyCharacterToKing(boss: Character, game: Game) {
     changeKingAbilityLevelBasedOnHp(boss);
 }
 
-export function paintKingHpBar(ctx: CanvasRenderingContext2D, boss: Character) {
+export function paintKingHpBar(ctx: CanvasRenderingContext2D, boss: Character, displayName: string = "King") {
     const fillAmount = Math.max(0, boss.hp / boss.maxHp);
     if (fillAmount <= 0) return
     const hpBarWidth = Math.floor(ctx.canvas.width / 2);
-    const hpBarText = `King HP: ${(boss.hp / boss.maxHp * 100).toFixed(2)}%`;
+    const hpBarText = `${displayName} HP: ${(boss.hp / boss.maxHp * 100).toFixed(2)}%`;
     const hpBarLeft = Math.floor(ctx.canvas.width / 4);
     const hpBarHeight = 20;
     const fontSize = hpBarHeight - 2;
