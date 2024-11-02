@@ -161,6 +161,7 @@ function createGodEnemy(idCounter: IdCounter, spawnPosition: Position, game: Gam
 function tickGodCharacter(character: Character, game: Game, pathingCache: PathingCache | null) {
     const god = character as GodEnemyCharacter;
     if (god.state === "dead") return;
+    if (game.state.bossStuff.fightWipe) return;
     if (god.firstAttackedTime === undefined) {
         if (god.hp < god.maxHp) {
             god.firstAttackedTime = game.state.time;
