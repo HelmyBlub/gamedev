@@ -3,7 +3,15 @@ increase version
 
 current tasks:
 - map modifier
-    - another modifier?
+    - lightning storm
+        - paint circle do indicate area start
+        - lightning strikes strike down in area when player around
+        - closer to areaboss, more?
+        - start again with default areaboss
+            - boss runs to player if area entered
+            - curse is player does lightning strikes, but they damage enmies and players, so player have to avoid too
+                - higher curse values, more strikes in shorter time? more strikes at the same time?
+- be able to cleanse bad part of curses
 
 next feature ideas:
 - maybe:
@@ -17,12 +25,6 @@ next feature ideas:
                 - 
             - more to explore on map, currently most is the same
                 - manipulate certain part of map with modifier
-                    - dark modifier
-                        - "fog of war". Player can only see whats in line of sight
-                        - blocking tiles block vision
-                        - boss in the middle is "dark" copy of all players
-                        - if boss is defeated, dark modifier dissapears
-                            - and player gets "dark" modifier
                     - ice modifier
                         - ice tile patches which makes enemies and players "slide"
                         - more difficult movement
@@ -30,7 +32,7 @@ next feature ideas:
                         - pushes characters, maybe objects?, to a side
                     - lightning storm
                         - creates lightning strikes randomly
-                        - damages player and enemie
+                        - damages player and enemies
                     - rainy weather
 
                     - can have a boss enemy in the middle
