@@ -188,10 +188,10 @@ export function getMusicSheetUpgradeChainPosition(musicSheets: AbilityMusicSheet
     return functions.getChainPosition(abilityOwner, musicSheets, game);
 }
 
-export function abilityMusicSheetsDeleteNoteClick(abilityOwner: AbilityOwner, musicSheets: AbilityMusicSheets, castPosition: Position) {
+export function abilityMusicSheetsDeleteNoteClick(abilityOwner: AbilityOwner, musicSheets: AbilityMusicSheets, castPosition: Position, game: Game) {
     const selectedSheet = musicSheets.musicSheets[musicSheets.selectedMusicSheetIndex];
     const musicSheetWidth = getMusicSheetPaintWidth(musicSheets, selectedSheet);
-    castNote(abilityOwner, musicSheets, selectedSheet, castPosition, musicSheetWidth, true);
+    castNote(abilityOwner, musicSheets, selectedSheet, castPosition, musicSheetWidth, game, true);
 }
 
 function paintAbilityAccessoire(ctx: CanvasRenderingContext2D, ability: Ability, paintPosition: Position, game: Game) {
@@ -330,7 +330,7 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, castPosition:
         executeButtonClick(clickedButton, abilityMusicSheets, selectedMusicSheet, abilityOwner, game);
         return;
     }
-    const didCastNote = castNote(abilityOwner, abilityMusicSheets, selectedMusicSheet, fixedCastPosition, musicSheetWidth);
+    const didCastNote = castNote(abilityOwner, abilityMusicSheets, selectedMusicSheet, fixedCastPosition, musicSheetWidth, game);
     if (didCastNote) return;
     const clefClick = determineCleffClick(abilityOwner, abilityMusicSheets, fixedCastPosition, musicSheetWidth);
     if (clefClick) {
@@ -464,7 +464,7 @@ function determineClickedButton(abilityMusicSheets: AbilityMusicSheets, abilityO
 }
 
 /** returns true if clicked inside music sheet for note placing */
-function castNote(abilityOwner: AbilityOwner, musicSheets: AbilityMusicSheets, selectedSheet: AbilityMusicSheet, castPosition: Position, musicSheetWidth: number, deleteClick: boolean = false): boolean {
+function castNote(abilityOwner: AbilityOwner, musicSheets: AbilityMusicSheets, selectedSheet: AbilityMusicSheet, castPosition: Position, musicSheetWidth: number, game: Game, deleteClick: boolean = false): boolean {
     const unroundedTick = calculateUnroundedTick(abilityOwner, musicSheets, selectedSheet, castPosition, musicSheetWidth);
     const musicNote = positionToMusicNote(abilityOwner, musicSheets, selectedSheet, castPosition, musicSheetWidth);
     if (!musicNote) return false;
@@ -476,13 +476,29 @@ function castNote(abilityOwner: AbilityOwner, musicSheets: AbilityMusicSheets, s
         } else {
             const dupNote = selectedSheet.musicSheet.notes[duplicateNoteIndex];
             const modifyDelete = modifyNoteClick(dupNote, unroundedTick, musicNote.tick);
-            if (modifyDelete) selectedSheet.musicSheet.notes.splice(duplicateNoteIndex, 1);
+            if (modifyDelete) {
+                selectedSheet.musicSheet.notes.splice(duplicateNoteIndex, 1);
+            } else {
+                playMyMusicNotesOnChange(selectedSheet.musicSheet, dupNote, abilityOwner, game);
+            }
         }
     } else {
         selectedSheet.musicSheet.notes.push(musicNote);
+        playMyMusicNotesOnChange(selectedSheet.musicSheet, musicNote, abilityOwner, game);
     }
     abilityMusicSheetsUpgradeSpeedSetSpeed(musicSheets, abilityOwner);
     return true;
+}
+
+function playMyMusicNotesOnChange(musicSheet: MusicSheet, musicNote: MusicNote, abilityOwner: AbilityOwner, game: Game) {
+    if (findMyCharacter(game) === abilityOwner) {
+        for (let note of musicSheet.notes) {
+            if (note.tick === musicNote.tick) {
+                playMusicSheetNote(musicSheet, note, abilityOwner, 0, game);
+            }
+        }
+    }
+
 }
 
 function calculateUnroundedTick(abilityOwner: AbilityOwner, musicSheets: AbilityMusicSheets, selectedSheet: AbilityMusicSheet, castPosition: Position, musicSheetWidth: number) {
@@ -987,9 +1003,7 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
                 || (lastTick > currentTick && delayedNoteTick <= currentTick)
             ) {
                 //warning: playing sound is client specific delayed. other things should not.
-                if (!game.testing.replay && abilityOwner.type !== CHARACTER_PET_TYPE_CLONE) {
-                    playMusicNote(selectedMusicSheet.musicSheet, note, distanceToCamera, game.sound);
-                }
+                playMusicSheetNote(selectedMusicSheet.musicSheet, note, abilityOwner, distanceToCamera, game);
             }
             const noteTick = note.tick % selectedMusicSheet.maxPlayTicks;
             if ((lastTick < noteTick && noteTick <= currentTick)
@@ -1028,6 +1042,12 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
         }
     }
     if (noteDeleted) abilityMusicSheetsUpgradeSpeedSetSpeed(abilityMusicSheets, abilityOwner);
+}
+
+function playMusicSheetNote(musicSheet: MusicSheet, note: MusicNote, abilityOwner: AbilityOwner, distanceToCamera: number, game: Game) {
+    if (!game.testing.replay && abilityOwner.type !== CHARACTER_PET_TYPE_CLONE) {
+        playMusicNote(musicSheet, note, distanceToCamera, game.sound);
+    }
 }
 
 function createAbilityMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability, game: Game): MoreInfoPart {

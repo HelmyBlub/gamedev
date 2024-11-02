@@ -50,7 +50,7 @@ function castDeleteNote(abilityOwner: AbilityOwner, ability: Ability, castPositi
         x: abilityOwner.x + castPositionRelativeToCharacter.x,
         y: abilityOwner.y + castPositionRelativeToCharacter.y,
     }
-    abilityMusicSheetsDeleteNoteClick(abilityOwner, abilityMusicSheets, fixedCastPosition);
+    abilityMusicSheetsDeleteNoteClick(abilityOwner, abilityMusicSheets, fixedCastPosition, game);
 
 }
 
