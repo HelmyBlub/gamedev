@@ -1,17 +1,19 @@
-import { CelestialDirection, Game, Position } from "../../gameModel.js"
+import { CelestialDirection, Game, IdCounter, Position } from "../../gameModel.js"
 import { nextRandom } from "../../randomNumberGenerator.js"
 import { GameMap, MapChunk } from "../map.js"
 import { GameMapAreaCircle, MODIFY_SHAPE_NAME_CIRCLE } from "./mapShapeCircle.js"
-import { addMapModifierDarkness, createMapModifierDarkness, MODIFIER_NAME_DARKNESS } from "./mapModiferDarkness.js"
+import { addMapModifierDarkness, MODIFIER_NAME_DARKNESS } from "./mapModifierDarkness.js"
 import { GameMapArea, isPositionInsideShape, onDomLoadMapModifierShapes, setShapeAreaToAmount } from "./mapModifierShapes.js"
-import { GameMapAreaRect, MODIFY_SHAPE_NAME_RECTANGLE } from "./mapShapeRectangle.js"
 import { GameMapAreaCelestialDirection, MODIFY_SHAPE_NAME_CELESTIAL_DIRECTION } from "./mapShapeCelestialDirection.js"
 import { CURSE_DARKNESS } from "../../curse/curseDarkness.js"
+import { addMapModifierLightning } from "./mapModifierLightning.js"
 
 export type GameMapModifier = {
     id: number,
     type: string,
+    level: number,
     area: GameMapArea,
+    areaPerLevel?: number,
 }
 
 export type GameMapModifyFunctions = {
@@ -19,6 +21,7 @@ export type GameMapModifyFunctions = {
     onGameInit?: (modifier: GameMapModifier, game: Game) => void,
     onChunkCreateModify?: (mapChunk: MapChunk, chunkX: number, chunkY: number, game: Game) => void,
     paintModiferLate?: (ctx: CanvasRenderingContext2D, modifier: GameMapModifier, cameraPosition: Position, game: Game) => void,
+    create: (area: GameMapArea, idCounter: IdCounter) => GameMapModifier,
 }
 
 export type GameMapModifierFunctions = {
@@ -29,6 +32,7 @@ export const GAME_MAP_MODIFIER_FUNCTIONS: GameMapModifierFunctions = {};
 
 export function onDomLoadMapModifiers() {
     addMapModifierDarkness();
+    //addMapModifierLightning();
     onDomLoadMapModifierShapes();
 }
 
@@ -86,9 +90,22 @@ export function mapModifyIsChunkAffected(modifier: GameMapModifier, chunkX: numb
 
 function haveAtLeastOneNoneCelestialModifierOfEachType(game: Game) {
     const modifiers = game.state.map.mapModifiers;
-    const mod = modifiers.find(m => m.area.type !== MODIFY_SHAPE_NAME_CELESTIAL_DIRECTION);
-    if (mod) return;
-    addMapModifer(game.state.map, game);
+    const modifierTypes = Object.keys(GAME_MAP_MODIFIER_FUNCTIONS);
+    const typeExists: boolean[] = [];
+    for (let i = 0; i < modifierTypes.length; i++) {
+        typeExists.push(false);
+    }
+
+    for (let modifier of modifiers) {
+        if (modifier.type === MODIFY_SHAPE_NAME_CELESTIAL_DIRECTION) continue;
+        for (let i = 0; i < modifierTypes.length; i++) {
+            if (modifierTypes[i] !== modifier.type) continue;
+            typeExists[i] = true;
+        }
+    }
+    for (let i = 0; i < modifierTypes.length; i++) {
+        if (!typeExists[i]) addMapModifer(modifierTypes[i], game.state.map, game);
+    }
 }
 
 function removeMapModifierCelestialIfNoKingWithCurse(game: Game) {
@@ -129,14 +146,14 @@ function addMapModifierIfKingHasCurse(game: Game) {
                     type: MODIFY_SHAPE_NAME_CELESTIAL_DIRECTION,
                     celestialDirection: celestialDirection,
                 };
-                const darkness = createMapModifierDarkness(area, game.state.idCounter);
-                game.state.map.mapModifiers.push(darkness);
+                const darkness = createMapModifier(MODIFIER_NAME_DARKNESS, area, game.state.idCounter);
+                if (darkness) game.state.map.mapModifiers.push(darkness);
             }
         }
     }
 }
 
-function addMapModifer(map: GameMap, game: Game) {
+function addMapModifer(modifierType: string, map: GameMap, game: Game) {
     const axisOffset = 7500;
     const signX = nextRandom(game.state.randomSeed) < 0.5 ? 1 : -1;
     const signY = nextRandom(game.state.randomSeed) < 0.5 ? 1 : -1;
@@ -147,8 +164,15 @@ function addMapModifer(map: GameMap, game: Game) {
         radius: 0,
     };
 
-    const darkness = createMapModifierDarkness(areaCircle, game.state.idCounter);
-    if (darkness.areaPerLevel) setShapeAreaToAmount(areaCircle, darkness.areaPerLevel);
-    map.mapModifiers.push(darkness);
+    const modifier = createMapModifier(modifierType, areaCircle, game.state.idCounter);
+    if (!modifier) return;
+    if (modifier.areaPerLevel) setShapeAreaToAmount(areaCircle, modifier.areaPerLevel);
+    map.mapModifiers.push(modifier);
+}
+
+function createMapModifier(type: string, area: GameMapArea, idCounter: IdCounter): GameMapModifier | undefined {
+    const functions = GAME_MAP_MODIFIER_FUNCTIONS[type];
+    if (!functions) return undefined;
+    return functions.create(area, idCounter);
 }
 

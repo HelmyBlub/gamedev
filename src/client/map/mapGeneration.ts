@@ -118,7 +118,7 @@ function createSpawnChunk(mapChunk: MapChunk, chunkLength: number, game: Game) {
     addExistingBuildingsToSpawnChunk(mapChunk, game);
 }
 
-function perlin_get(x: number, y: number, seed: number) {
+export function perlin_get(x: number, y: number, seed: number) {
     const x0 = Math.floor(x);
     const x1 = x0 + 1;
     const y0 = Math.floor(y);

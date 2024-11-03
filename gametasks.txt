@@ -1,17 +1,26 @@
-next test run: tamer, musician
+next test run: musician, tamer
 increase version
 
 current tasks:
 - map modifier
     - lightning storm
+        - dev steps
+            - figure out how can i have clouds move from the center of a circle to the outside with perline noise
+                - continue trying around
         - paint circle do indicate area start
         - lightning strikes strike down in area when player around
-        - closer to areaboss, more?
+            - have clouds
+            - clouds move slowly
+            - cloud machine (the area boss) + middle has a permanent big cloud 
+            - clouds start in middle big, smaller when closer to edge, disapper if outside
+            - clouds size makes bigger or more frequent lightning strikes
         - start again with default areaboss
-            - boss runs to player if area entered
-            - curse is player does lightning strikes, but they damage enmies and players, so player have to avoid too
-                - higher curse values, more strikes in shorter time? more strikes at the same time?
+        - curse is player does lightning strikes, but they damage enmies and players, so player have to avoid too
+            - higher curse values, more strikes in shorter time? more strikes at the same time?
+- change cheat closeCurseDarkness to closeCurses
+- check chunks mapModifiers flags purpose?
 - be able to cleanse bad part of curses
+- I don't want to drop below 60 updates per second if i still have more than 30 frames per seconds. Numbers configurable.
 
 next feature ideas:
 - maybe:

@@ -10,8 +10,6 @@ import { createAreaBossDarknessSpiderWithLevel } from "../../character/enemy/are
 
 export const MODIFIER_NAME_DARKNESS = "Darkness";
 export type MapModifierDarkness = GameMapModifier & {
-    level: number,
-    areaPerLevel?: number,
 }
 
 export function addMapModifierDarkness() {
@@ -20,19 +18,7 @@ export function addMapModifierDarkness() {
         onGameInit: onGameInit,
         paintModiferLate: paintModiferLate,
         growArea: growArea,
-    };
-}
-
-export function createMapModifierDarkness(
-    area: GameMapArea,
-    idCounter: IdCounter,
-): MapModifierDarkness {
-    return {
-        id: getNextId(idCounter),
-        type: MODIFIER_NAME_DARKNESS,
-        area: area,
-        areaPerLevel: 1000000,
-        level: 1,
+        create: createMapModifierDarkness,
     };
 }
 
@@ -57,6 +43,19 @@ export function mapModifierDarknessDarknesChunkPaint(ctx: CanvasRenderingContext
             ctx.globalAlpha /= alpha;
         }
     }
+}
+
+function createMapModifierDarkness(
+    area: GameMapArea,
+    idCounter: IdCounter,
+): MapModifierDarkness {
+    return {
+        id: getNextId(idCounter),
+        type: MODIFIER_NAME_DARKNESS,
+        area: area,
+        areaPerLevel: 1000000,
+        level: 1,
+    };
 }
 
 function onGameInit(modifier: GameMapModifier, game: Game) {

@@ -7,7 +7,6 @@ import { FACTION_ENEMY, Game, IdCounter, Position } from "../../../gameModel.js"
 import { getPointPaintPosition } from "../../../gamePaint.js";
 import { GAME_IMAGES, getImage } from "../../../imageLoad.js";
 import { calculateMovePosition, findNearNonBlockingPosition, GameMap, isPositionBlocking, moveByDirectionAndDistance } from "../../../map/map.js";
-import { MapModifierDarkness } from "../../../map/modifiers/mapModiferDarkness.js";
 import { findMapModifierById, GameMapModifier, removeMapModifier } from "../../../map/modifiers/mapModifier.js";
 import { getShapeMiddle, isPositionInsideShape } from "../../../map/modifiers/mapModifierShapes.js";
 import { nextRandom } from "../../../randomNumberGenerator.js";
