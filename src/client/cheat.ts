@@ -1,4 +1,4 @@
-import { experienceForEveryPlayersLeveling, playerCharactersAddBossSkillPoints } from "./character/character.js";
+import { experienceForEveryPlayersLeveling, getPlayerCharacters, playerCharactersAddBossSkillPoints } from "./character/character.js";
 import { Character, createPlayerCharacter } from "./character/characterModel.js";
 import { createBossWithLevel, spawnBoss } from "./character/enemy/bossEnemy.js";
 import { levelingCharacterAndClassXpGain } from "./character/playerCharacters/levelingCharacter.js";
@@ -13,12 +13,13 @@ import { mapObjectPlaceUpgradeBuilding } from "./map/mapObjectUpgradeBuilding.js
 import { mapModifierGrowArea } from "./map/modifiers/mapModifier.js";
 import { addMoneyAmountToPlayer } from "./player.js";
 import { nextRandom } from "./randomNumberGenerator.js";
-export type CheatCheckboxes = "closeKingArea" | "closeGodArea" | "lowKingHp" | "allowCheats" | "closeCurseDarkness";
+export type CheatCheckboxes = "closeKingArea" | "closeGodArea" | "lowKingHp" | "allowCheats" | "closeCurseDarkness" | "Immune&Fast&Ignored";
 export const CHEAT_ACTIONS = [
     "allowCheats",
     "closeKingArea",
     "closeGodArea",
     "closeCurseDarkness",
+    "Immune&Fast&Ignored",
     "lowKingHp",
     "addBossSkillPoint",
     "add alot experience",
@@ -55,6 +56,24 @@ export function executeCheatAction(action: string, activate: boolean, clientId: 
         case "closeKingArea":
         case "closeGodArea":
         case "closeCurseDarkness":
+        case "Immune&Fast&Ignored":
+            if (activate) {
+                for (let player of game.state.players) {
+                    player.ignoredByEnemies = true;
+                    player.character.isDamageImmune = true;
+                    player.character.isDebuffImmune = true;
+                    player.character.isRootImmune = true;
+                    player.character.baseMoveSpeed += 20;
+                }
+            } else {
+                for (let player of game.state.players) {
+                    player.ignoredByEnemies = true;
+                    player.character.isDamageImmune = false;
+                    player.character.isDebuffImmune = false;
+                    player.character.isRootImmune = false;
+                    player.character.baseMoveSpeed -= 20;
+                }
+            }
         case "lowKingHp":
             if (activate) {
                 if (game.state.activeCheats.findIndex(a => a === action) === -1) {
@@ -94,7 +113,7 @@ export function executeCheatAction(action: string, activate: boolean, clientId: 
         case "create end game state":
             createEndGameState(game);
     }
-    if (action === "closeKingArea" || action === "closeGodArea" || action === "lowKingHp" || action === "closeCurseDarkness") {
+    if (action === "closeKingArea" || action === "closeGodArea" || action === "lowKingHp" || action === "closeCurseDarkness" || action === "Immune&Fast&Ignored") {
         const settingsElement: HTMLInputElement | null = document.getElementById(action) as HTMLInputElement;
         if (settingsElement) settingsElement.checked = activate;
     }

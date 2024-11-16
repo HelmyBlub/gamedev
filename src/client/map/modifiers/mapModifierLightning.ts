@@ -48,16 +48,20 @@ function paintModiferLate(ctx: CanvasRenderingContext2D, modifier: GameMapModifi
 function renderClouds(ctx: CanvasRenderingContext2D, areaMiddle: Position, cameraPosition: Position, viewWidth: number, viewHeight: number, game: Game) {
     const paintPos = getPointPaintPosition(ctx, areaMiddle, cameraPosition, game.UI.zoom, true);
     ctx.globalAlpha = 0.5;
-    const stepSize = 50;
-    for (let x = areaMiddle.x - viewWidth / 2; x < areaMiddle.x + viewWidth / 2; x += stepSize) {
-        for (let y = areaMiddle.y - viewHeight / 2; y < areaMiddle.y + viewHeight / 2; y += stepSize) {
-            const time = Math.floor(game.state.time / 1000) / 5;
+    const stepSize = 40;
+    const roundedToTileCamera = {
+        x: Math.round(cameraPosition.x / stepSize) * stepSize,
+        y: Math.round(cameraPosition.y / stepSize) * stepSize,
+    }
+    for (let x = roundedToTileCamera.x - viewWidth / 2; x < roundedToTileCamera.x + viewWidth / 2; x += stepSize) {
+        for (let y = roundedToTileCamera.y - viewHeight / 2; y < roundedToTileCamera.y + viewHeight / 2; y += stepSize) {
+            const time = Math.floor(game.state.time / 2000) / 5;
             const direction = calculateDirection(areaMiddle, { x, y });
             const distance = calculateDistance(areaMiddle, { x, y });
             const density = perlin_get(distance * 0.005 - time, direction * 0.5, 0);
             let paintPosCloud = { x, y };
             const moveFactor = (game.state.time % 1000) / 1000 * stepSize;
-            paintPosCloud = calculateMovePosition(paintPosCloud, direction, moveFactor, false);
+            //paintPosCloud = calculateMovePosition(paintPosCloud, direction, moveFactor, false);
             if (density > 0.3) {
                 ctx.fillStyle = "black";
                 ctx.fillRect(paintPos.x + paintPosCloud.x, paintPos.y + paintPosCloud.y, stepSize, stepSize);

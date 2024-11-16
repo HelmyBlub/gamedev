@@ -22,7 +22,7 @@ export function tickFixPositionRespawnEnemyCharacter(character: Character, game:
         respawnLogic(enemy, game);
     } else {
         if (enemy.nextTickTime == undefined || game.state.time >= enemy.nextTickTime || enemy.wasHitRecently) {
-            const playerCharacters = getPlayerCharacters(game.state.players);
+            const playerCharacters = getPlayerCharacters(game.state.players, true);
             const closest = determineClosestCharacter(enemy, playerCharacters, true, game.state.map);
             const aggroed = closest.minDistance <= enemy.autoAggroRange
                 || (enemy.isAggroed && closest.minDistance <= enemy.maxAggroRange)

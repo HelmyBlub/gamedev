@@ -340,9 +340,10 @@ export function tickCharacters(characters: (Character | undefined)[], game: Game
     }
 }
 
-export function getPlayerCharacters(players: Player[]) {
+export function getPlayerCharacters(players: Player[], filterForEnemies: boolean = false) {
     const playerCharacters = [];
     for (let i = 0; i < players.length; i++) {
+        if (filterForEnemies && players[i].ignoredByEnemies) continue;
         playerCharacters.push(players[i].character);
     }
     return playerCharacters;

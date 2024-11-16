@@ -23,6 +23,7 @@ export type Player = {
     clientId: number,
     actionsPressed: ActionsPressed,
     permanentData: PermanentPlayerData,
+    ignoredByEnemies?: boolean,
 }
 
 export type MoneyGainedThisRun = {
