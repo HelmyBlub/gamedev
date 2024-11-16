@@ -56,6 +56,18 @@ export function executeCheatAction(action: string, activate: boolean, clientId: 
         case "closeKingArea":
         case "closeGodArea":
         case "closeCurseDarkness":
+        case "lowKingHp":
+            if (activate) {
+                if (game.state.activeCheats.findIndex(a => a === action) === -1) {
+                    game.state.activeCheats.push(action);
+                }
+            } else {
+                const index = game.state.activeCheats.findIndex(a => a === action);
+                if (index !== -1) {
+                    game.state.activeCheats.splice(index, 1);
+                }
+            }
+            break;
         case "Immune&Fast&Ignored":
             if (activate) {
                 for (let player of game.state.players) {
@@ -76,17 +88,6 @@ export function executeCheatAction(action: string, activate: boolean, clientId: 
                         player.character.isRootImmune = false;
                         player.character.baseMoveSpeed -= 20;
                     }
-                }
-            }
-        case "lowKingHp":
-            if (activate) {
-                if (game.state.activeCheats.findIndex(a => a === action) === -1) {
-                    game.state.activeCheats.push(action);
-                }
-            } else {
-                const index = game.state.activeCheats.findIndex(a => a === action);
-                if (index !== -1) {
-                    game.state.activeCheats.splice(index, 1);
                 }
             }
             break;
