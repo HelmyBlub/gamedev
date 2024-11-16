@@ -1,18 +1,23 @@
-import { calculateDirection, calculateDistance, getNextId, modulo } from "../../game.js";
+import { getNextId } from "../../game.js";
 import { Game, IdCounter, Position } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
-import { calculateMovePosition, chunkXYToMapKey, GameMap, getFirstBlockingGameMapTilePositionTouchingLine, isPositionBlocking, MapChunk, mapKeyAndTileXYToPosition, moveByDirectionAndDistance, positionToGameMapTileXY } from "../map.js";
+import { MapChunk } from "../map.js";
 import { MODIFY_SHAPE_NAME_CIRCLE } from "./mapShapeCircle.js";
 import { GAME_MAP_MODIFIER_FUNCTIONS, GameMapModifier } from "./mapModifier.js";
-import { GameMapArea, getShapeArea, getShapeMiddle, getShapePaintClipPath, paintShapeWithCircleCutOut, setShapeAreaToAmount } from "./mapModifierShapes.js";
+import { GameMapArea, getShapeMiddle, setShapeAreaToAmount } from "./mapModifierShapes.js";
 import { GameMapAreaRect, MODIFY_SHAPE_NAME_RECTANGLE } from "./mapShapeRectangle.js";
-import { createAreaBossDarknessSpiderWithLevel } from "../../character/enemy/areaBoss/areaBossDarknessSpider.js";
-import { perlin_get } from "../mapGeneration.js";
+import { nextRandom } from "../../randomNumberGenerator.js";
 
 export const MODIFIER_NAME_LIGHTNING = "Lightning";
 export type MapModifierLightning = GameMapModifier & {
     level: number,
     areaPerLevel?: number,
+    clouds: Cloud[],
+}
+
+type Cloud = {
+    tiles: Position[],
+    position: Position,
 }
 
 export function addMapModifierLightning() {
@@ -35,40 +40,59 @@ export function create(
         area: area,
         areaPerLevel: 1000000,
         level: 1,
+        clouds: [],
     };
 }
 
 function paintModiferLate(ctx: CanvasRenderingContext2D, modifier: GameMapModifier, cameraPosition: Position, game: Game) {
     const map = game.state.map;
     const middle = getShapeMiddle(modifier.area);
+    const lightning = modifier as MapModifierLightning;
     if (!middle) return;
-    renderClouds(ctx, middle, cameraPosition, 800, 800, game);
-}
-
-function renderClouds(ctx: CanvasRenderingContext2D, areaMiddle: Position, cameraPosition: Position, viewWidth: number, viewHeight: number, game: Game) {
-    const paintPos = getPointPaintPosition(ctx, areaMiddle, cameraPosition, game.UI.zoom, true);
-    ctx.globalAlpha = 0.5;
-    const stepSize = 40;
-    const roundedToTileCamera = {
-        x: Math.round(cameraPosition.x / stepSize) * stepSize,
-        y: Math.round(cameraPosition.y / stepSize) * stepSize,
-    }
-    for (let x = roundedToTileCamera.x - viewWidth / 2; x < roundedToTileCamera.x + viewWidth / 2; x += stepSize) {
-        for (let y = roundedToTileCamera.y - viewHeight / 2; y < roundedToTileCamera.y + viewHeight / 2; y += stepSize) {
-            const time = Math.floor(game.state.time / 2000) / 5;
-            const direction = calculateDirection(areaMiddle, { x, y });
-            const distance = calculateDistance(areaMiddle, { x, y });
-            const density = perlin_get(distance * 0.005 - time, direction * 0.5, 0);
-            let paintPosCloud = { x, y };
-            const moveFactor = (game.state.time % 1000) / 1000 * stepSize;
-            //paintPosCloud = calculateMovePosition(paintPosCloud, direction, moveFactor, false);
-            if (density > 0.3) {
-                ctx.fillStyle = "black";
-                ctx.fillRect(paintPos.x + paintPosCloud.x, paintPos.y + paintPosCloud.y, stepSize, stepSize);
-            }
+    const paintPos = getPointPaintPosition(ctx, middle, cameraPosition, game.UI.zoom, true);
+    const cloudTileSize = 40;
+    if (lightning.clouds.length === 0) {
+        const cloud: Cloud = {
+            tiles: generateCloud(20, game),
+            position: { x: 0, y: 0 },
         }
+        lightning.clouds.push(cloud);
+    }
+
+    ctx.globalAlpha = 0.5;
+    for (let cloud of lightning.clouds) {
+        for (let tile of cloud.tiles) {
+            ctx.fillStyle = "white";
+            ctx.fillRect(paintPos.x + tile.x * cloudTileSize + cloud.position.x, paintPos.y + tile.y * cloudTileSize + cloud.position.y, cloudTileSize, cloudTileSize);
+        }
+        cloud.position.x += 1;
     }
     ctx.globalAlpha = 1;
+}
+
+function generateCloud(size: number, game: Game): Position[] {
+    const cloudTiles: Position[] = [];
+    cloudTiles.push({ x: 0, y: 0 });
+    while (cloudTiles.length < size) {
+        const randomTileIndex = Math.floor(nextRandom(game.state.randomSeed) * cloudTiles.length);
+        const randomTile = cloudTiles[randomTileIndex];
+        let sideOptions = [
+            { x: randomTile.x - 1, y: randomTile.y },
+            { x: randomTile.x + 1, y: randomTile.y },
+            { x: randomTile.x, y: randomTile.y - 1 },
+            { x: randomTile.x, y: randomTile.y + 1 },
+        ]
+        for (let tile of cloudTiles) {
+            for (let i = sideOptions.length - 1; i >= 0; i--) {
+                if (tile.x === sideOptions[i].x && tile.y === sideOptions[i].y) sideOptions.splice(i, 1);
+            }
+        }
+        if (sideOptions.length > 0) {
+            const randomSideIndex = Math.floor(nextRandom(game.state.randomSeed) * sideOptions.length);
+            cloudTiles.push(sideOptions[randomSideIndex]);
+        }
+    }
+    return cloudTiles;
 }
 
 function onGameInit(modifier: GameMapModifier, game: Game) {

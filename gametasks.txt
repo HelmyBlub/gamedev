@@ -2,12 +2,15 @@ next test run: tamer, musician
 increase version
 
 current tasks:
-- test mode cheat. Immune to damage, cant do damage, very fast
 - map modifier
     - lightning storm
         - dev steps
-            - figure out how can i have clouds move from the center of a circle to the outside with perline noise
-                - continue trying around, activate again in mapModifier onDomLoadMapModifier
+            - generate cloud only where player is, when player move to far away from cloud, it is deleted -> no consistency, but easier
+            - map modifier needs "tick"
+            - generate clouds in tick if player near area
+            - make clouds move away from middle
+            - make clouds thow lightning strikes
+                - more frequently in middle
         - paint circle do indicate area start
         - lightning strikes strike down in area when player around
             - have clouds
