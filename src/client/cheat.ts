@@ -59,19 +59,23 @@ export function executeCheatAction(action: string, activate: boolean, clientId: 
         case "Immune&Fast&Ignored":
             if (activate) {
                 for (let player of game.state.players) {
-                    player.ignoredByEnemies = true;
-                    player.character.isDamageImmune = true;
-                    player.character.isDebuffImmune = true;
-                    player.character.isRootImmune = true;
-                    player.character.baseMoveSpeed += 20;
+                    if (!player.ignoredByEnemies) {
+                        player.ignoredByEnemies = true;
+                        player.character.isDamageImmune = true;
+                        player.character.isDebuffImmune = true;
+                        player.character.isRootImmune = true;
+                        player.character.baseMoveSpeed += 20;
+                    }
                 }
             } else {
                 for (let player of game.state.players) {
-                    player.ignoredByEnemies = true;
-                    player.character.isDamageImmune = false;
-                    player.character.isDebuffImmune = false;
-                    player.character.isRootImmune = false;
-                    player.character.baseMoveSpeed -= 20;
+                    if (player.ignoredByEnemies) {
+                        player.ignoredByEnemies = false;
+                        player.character.isDamageImmune = false;
+                        player.character.isDebuffImmune = false;
+                        player.character.isRootImmune = false;
+                        player.character.baseMoveSpeed -= 20;
+                    }
                 }
             }
         case "lowKingHp":
