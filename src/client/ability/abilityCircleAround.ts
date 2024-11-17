@@ -1,9 +1,8 @@
-import { Character } from "../character/characterModel.js";
 import { calculateDirection, getCameraPosition, getNextId } from "../game.js";
 import { FACTION_ENEMY, FACTION_PLAYER, Game, IdCounter, Position } from "../gameModel.js";
 import { getPointPaintPosition } from "../gamePaint.js";
 import { nextRandom } from "../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, PaintOrderAbility, detectAbilityObjectCircleToCharacterHit, AbilityObjectCircle, findAbilityById } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, PaintOrderAbility, detectAbilityObjectCircleToCharacterHit, AbilityObjectCircle } from "./ability.js";
 
 export type AbilityCircleAround = Ability & {
 }

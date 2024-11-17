@@ -5,9 +5,10 @@ current tasks:
 - map modifier
     - lightning storm
         - dev steps
-            - generate cloud only where player is, when player move to far away from cloud, it is deleted -> no consistency, but easier
-            - map modifier needs "tick"
+            - create cloud object
+            - map modifier needs tick
             - generate clouds in tick if player near area
+                
             - make clouds move away from middle
             - make clouds thow lightning strikes
                 - more frequently in middle

@@ -1,32 +1,28 @@
-import { getNextId } from "../../game.js";
-import { Game, IdCounter, Position } from "../../gameModel.js";
-import { getPointPaintPosition } from "../../gamePaint.js";
-import { MapChunk } from "../map.js";
+import { calculateDirection, calculateDistance, getNextId } from "../../game.js";
+import { FACTION_ENEMY, Game, IdCounter, Position } from "../../gameModel.js";
+import { MapChunk, moveByDirectionAndDistance } from "../map.js";
 import { MODIFY_SHAPE_NAME_CIRCLE } from "./mapShapeCircle.js";
 import { GAME_MAP_MODIFIER_FUNCTIONS, GameMapModifier } from "./mapModifier.js";
-import { GameMapArea, getShapeMiddle, setShapeAreaToAmount } from "./mapModifierShapes.js";
+import { GameMapArea, getShapeMiddle, isPositionInsideShape, setShapeAreaToAmount } from "./mapModifierShapes.js";
 import { GameMapAreaRect, MODIFY_SHAPE_NAME_RECTANGLE } from "./mapShapeRectangle.js";
-import { nextRandom } from "../../randomNumberGenerator.js";
+import { createAbilityObjectCloud } from "../../ability/abilityCloud.js";
+import { getPlayerCharacters } from "../../character/character.js";
+import { Character } from "../../character/characterModel.js";
 
 export const MODIFIER_NAME_LIGHTNING = "Lightning";
 export type MapModifierLightning = GameMapModifier & {
-    level: number,
-    areaPerLevel?: number,
-    clouds: Cloud[],
-}
-
-type Cloud = {
-    tiles: Position[],
-    position: Position,
+    spawnInterval: number,
+    nextSpawnTimeCheck?: number,
+    centerRadius: number,
 }
 
 export function addMapModifierLightning() {
     GAME_MAP_MODIFIER_FUNCTIONS[MODIFIER_NAME_LIGHTNING] = {
-        paintModiferLate: paintModiferLate,
+        create: create,
         onChunkCreateModify: onChunkCreateModify,
         onGameInit: onGameInit,
         growArea: growArea,
-        create: create,
+        tick: tick,
     };
 }
 
@@ -39,60 +35,52 @@ export function create(
         type: MODIFIER_NAME_LIGHTNING,
         area: area,
         areaPerLevel: 1000000,
+        spawnInterval: 3000,
+        centerRadius: 500,
         level: 1,
-        clouds: [],
     };
 }
 
-function paintModiferLate(ctx: CanvasRenderingContext2D, modifier: GameMapModifier, cameraPosition: Position, game: Game) {
-    const map = game.state.map;
-    const middle = getShapeMiddle(modifier.area);
+function tick(modifier: GameMapModifier, game: Game) {
     const lightning = modifier as MapModifierLightning;
-    if (!middle) return;
-    const paintPos = getPointPaintPosition(ctx, middle, cameraPosition, game.UI.zoom, true);
-    const cloudTileSize = 40;
-    if (lightning.clouds.length === 0) {
-        const cloud: Cloud = {
-            tiles: generateCloud(20, game),
-            position: { x: 0, y: 0 },
-        }
-        lightning.clouds.push(cloud);
-    }
+    if (lightning.nextSpawnTimeCheck === undefined) lightning.nextSpawnTimeCheck = 0;
 
-    ctx.globalAlpha = 0.5;
-    for (let cloud of lightning.clouds) {
-        for (let tile of cloud.tiles) {
-            ctx.fillStyle = "white";
-            ctx.fillRect(paintPos.x + tile.x * cloudTileSize + cloud.position.x, paintPos.y + tile.y * cloudTileSize + cloud.position.y, cloudTileSize, cloudTileSize);
-        }
-        cloud.position.x += 1;
-    }
-    ctx.globalAlpha = 1;
-}
-
-function generateCloud(size: number, game: Game): Position[] {
-    const cloudTiles: Position[] = [];
-    cloudTiles.push({ x: 0, y: 0 });
-    while (cloudTiles.length < size) {
-        const randomTileIndex = Math.floor(nextRandom(game.state.randomSeed) * cloudTiles.length);
-        const randomTile = cloudTiles[randomTileIndex];
-        let sideOptions = [
-            { x: randomTile.x - 1, y: randomTile.y },
-            { x: randomTile.x + 1, y: randomTile.y },
-            { x: randomTile.x, y: randomTile.y - 1 },
-            { x: randomTile.x, y: randomTile.y + 1 },
-        ]
-        for (let tile of cloudTiles) {
-            for (let i = sideOptions.length - 1; i >= 0; i--) {
-                if (tile.x === sideOptions[i].x && tile.y === sideOptions[i].y) sideOptions.splice(i, 1);
+    if (game.state.time >= lightning.nextSpawnTimeCheck) {
+        lightning.nextSpawnTimeCheck = game.state.time + lightning.spawnInterval;
+        let playerInside: Character | undefined = undefined;
+        for (let playerChar of getPlayerCharacters(game.state.players)) {
+            if (isPositionInsideShape(modifier.area, playerChar, game)) {
+                playerInside = playerChar;
+                break;
             }
         }
-        if (sideOptions.length > 0) {
-            const randomSideIndex = Math.floor(nextRandom(game.state.randomSeed) * sideOptions.length);
-            cloudTiles.push(sideOptions[randomSideIndex]);
+        if (playerInside) {
+            const middle = getShapeMiddle(modifier.area);
+            if (middle) {
+                const cloudSpawn = getCloudSpawnPosition(playerInside, middle, lightning.centerRadius, game);
+                const direction = calculateDirection(middle, cloudSpawn);
+                game.state.abilityObjects.push(createAbilityObjectCloud(cloudSpawn, FACTION_ENEMY, 40, direction, game));
+            }
         }
     }
-    return cloudTiles;
+}
+
+function getCloudSpawnPosition(playerPosition: Position, middle: Position, radius: number, game: Game): Position {
+    const distanceFromPlayer = 1000;
+    let position = { x: playerPosition.x, y: playerPosition.y };
+    const distance = calculateDistance(position, middle);
+    if (distance < radius * 2) {
+        position = { x: middle.x, y: middle.y };
+        const direction = calculateDirection(middle, playerPosition);
+        moveByDirectionAndDistance(position, direction, radius, false);
+    } else {
+        const direction = calculateDirection(position, middle);
+        moveByDirectionAndDistance(position, direction, distanceFromPlayer, false);
+        if (distance < radius) {
+            moveByDirectionAndDistance(position, direction + Math.PI, radius - distance, false);
+        };
+    }
+    return position;
 }
 
 function onGameInit(modifier: GameMapModifier, game: Game) {
@@ -105,6 +93,8 @@ function onGameInit(modifier: GameMapModifier, game: Game) {
             area.y = 0;
         }
     }
+    const lightning = modifier as MapModifierLightning;
+    lightning.nextSpawnTimeCheck = undefined;
     spawn = getShapeMiddle(modifier.area);
     if (spawn === undefined) return;
     //const areaBoss = createAreaBossDarknessSpiderWithLevel(game.state.idCounter, spawn, modifier.id, game); //TODO new boss

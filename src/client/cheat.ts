@@ -70,26 +70,16 @@ export function executeCheatAction(action: string, activate: boolean, clientId: 
             break;
         case "Immune&Fast&Ignored":
             if (activate) {
-                for (let player of game.state.players) {
-                    if (!player.ignoredByEnemies) {
-                        player.ignoredByEnemies = true;
-                        player.character.isDamageImmune = true;
-                        player.character.isDebuffImmune = true;
-                        player.character.isRootImmune = true;
-                        player.character.baseMoveSpeed += 20;
-                    }
+                if (game.state.activeCheats.findIndex(a => a === action) === -1) {
+                    game.state.activeCheats.push(action);
                 }
             } else {
-                for (let player of game.state.players) {
-                    if (player.ignoredByEnemies) {
-                        player.ignoredByEnemies = false;
-                        player.character.isDamageImmune = false;
-                        player.character.isDebuffImmune = false;
-                        player.character.isRootImmune = false;
-                        player.character.baseMoveSpeed -= 20;
-                    }
+                const index = game.state.activeCheats.findIndex(a => a === action);
+                if (index !== -1) {
+                    game.state.activeCheats.splice(index, 1);
                 }
             }
+            toggleCheatImmuneFastIgnored(activate, game);
             break;
         case "addBossSkillPoint":
             playerCharactersAddBossSkillPoints(50, game);
@@ -121,6 +111,30 @@ export function executeCheatAction(action: string, activate: boolean, clientId: 
     if (action === "closeKingArea" || action === "closeGodArea" || action === "lowKingHp" || action === "closeCurseDarkness" || action === "Immune&Fast&Ignored") {
         const settingsElement: HTMLInputElement | null = document.getElementById(action) as HTMLInputElement;
         if (settingsElement) settingsElement.checked = activate;
+    }
+}
+
+export function toggleCheatImmuneFastIgnored(activate: boolean, game: Game) {
+    if (activate) {
+        for (let player of game.state.players) {
+            if (!player.ignoredByEnemies) {
+                player.ignoredByEnemies = true;
+                player.character.isDamageImmune = true;
+                player.character.isDebuffImmune = true;
+                player.character.isRootImmune = true;
+                player.character.baseMoveSpeed += 20;
+            }
+        }
+    } else {
+        for (let player of game.state.players) {
+            if (player.ignoredByEnemies) {
+                player.ignoredByEnemies = false;
+                player.character.isDamageImmune = false;
+                player.character.isDebuffImmune = false;
+                player.character.isRootImmune = false;
+                player.character.baseMoveSpeed -= 20;
+            }
+        }
     }
 }
 

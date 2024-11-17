@@ -17,11 +17,12 @@ export type GameMapModifier = {
 }
 
 export type GameMapModifyFunctions = {
+    create: (area: GameMapArea, idCounter: IdCounter) => GameMapModifier,
     growArea?: (modifier: GameMapModifier) => void,
     onGameInit?: (modifier: GameMapModifier, game: Game) => void,
     onChunkCreateModify?: (mapChunk: MapChunk, chunkX: number, chunkY: number, game: Game) => void,
     paintModiferLate?: (ctx: CanvasRenderingContext2D, modifier: GameMapModifier, cameraPosition: Position, game: Game) => void,
-    create: (area: GameMapArea, idCounter: IdCounter) => GameMapModifier,
+    tick?: (modifier: GameMapModifier, game: Game) => void,
 }
 
 export type GameMapModifierFunctions = {
@@ -47,6 +48,16 @@ export function paintMapModifierLate(ctx: CanvasRenderingContext2D, cameraPositi
         const modFunctions = GAME_MAP_MODIFIER_FUNCTIONS[modifier.type];
         if (modFunctions && modFunctions.paintModiferLate) {
             modFunctions.paintModiferLate(ctx, modifier, cameraPosition, game);
+        }
+    }
+}
+
+export function tickMapModifier(game: Game) {
+    const modifiers = game.state.map.mapModifiers;
+    for (let modifier of modifiers) {
+        const modFunctions = GAME_MAP_MODIFIER_FUNCTIONS[modifier.type];
+        if (modFunctions && modFunctions.tick) {
+            modFunctions.tick(modifier, game);
         }
     }
 }

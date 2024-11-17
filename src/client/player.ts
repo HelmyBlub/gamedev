@@ -12,6 +12,7 @@ import { MoreInfoPart, MoreInfos, MoreInfosPartContainer, createDefaultMoreInfos
 import { ActionsPressed, createActionsPressed } from "./input/playerInput.js";
 import { RandomSeed } from "./randomNumberGenerator.js";
 import { localStorageSaveMidGame } from "./permanentData.js";
+import { toggleCheatImmuneFastIgnored } from "./cheat.js";
 
 export type PermanentPlayerData = {
     money: number,
@@ -138,6 +139,11 @@ export function gameInitPlayers(game: Game) {
         }
     }
     deletePlayersWhichLeft(game);
+    for (let player of game.state.players) {
+        player.ignoredByEnemies = undefined;
+    }
+    const cheatActiveImmuneFastIgnored = game.state.activeCheats ? game.state.activeCheats.findIndex(a => a === "Immune&Fast&Ignored") !== -1 : false;
+    if (cheatActiveImmuneFastIgnored) toggleCheatImmuneFastIgnored(cheatActiveImmuneFastIgnored, game);
 }
 
 export function findPlayerById(players: Player[], clientId: number): Player | null {

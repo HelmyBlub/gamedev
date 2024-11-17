@@ -32,7 +32,7 @@ import { ABILITY_NAME_LEASH } from "./ability/abilityLeash.js";
 import { doDamageMeterSplit } from "./combatlog.js";
 import { achievementCheckOnGameEnd, achievementCheckOnGameTick } from "./achievements/achievements.js";
 import { controllerInput } from "./input/inputController.js";
-import { mapModifierOnGameInit } from "./map/modifiers/mapModifier.js";
+import { mapModifierOnGameInit, tickMapModifier } from "./map/modifiers/mapModifier.js";
 
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
@@ -701,6 +701,7 @@ function tick(gameTimePassed: number, game: Game) {
         determineActiveCollisionCheckChunks(getPlayerCharacters(game.state.players), game.state.map, game);
         tickPlayerInputs(game.state.playerInputs, game.state.time, game);
         tickActiveMapChunks(game);
+        tickMapModifier(game);
         tickBossCharacters(game.state.bossStuff, game);
 
         takeTimeMeasure(game.debug, "", "playerTick");

@@ -42,6 +42,7 @@ import { addAbilityMusicSheet } from "./musician/abilityMusicSheet.js"
 import { addAbilityCircleAround } from "./abilityCircleAround.js"
 import { GAME_IMAGES, getImage, loadImage } from "../imageLoad.js"
 import { TamerPetCharacter } from "../character/playerCharacters/tamer/tamerPetCharacter.js"
+import { addAbilityCloud } from "./abilityCloud.js"
 
 export type Ability = {
     id: number,
@@ -146,6 +147,7 @@ export function onDomLoadSetAbilitiesFunctions() {
     addAbilityUnleashPet();
     addAbilityMusicSheet();
     addAbilityCircleAround();
+    addAbilityCloud();
 }
 
 export function doAbilityDamageBreakDown(damage: number, ability: Ability | undefined, abilityObject: AbilityObject | undefined, damageAbilityName: string, clientId: number, petName: string | undefined, game: Game) {
