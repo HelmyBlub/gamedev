@@ -1,21 +1,14 @@
-next test run: tamer, musician
+next test run: musician
 increase version
 
 current tasks:
 - map modifier
     - lightning storm
         - dev steps
-            - create cloud object
-            - map modifier needs tick
-            - generate clouds in tick if player near area
-                
-            - make clouds move away from middle
             - make clouds thow lightning strikes
                 - more frequently in middle
         - paint circle do indicate area start
         - lightning strikes strike down in area when player around
-            - have clouds
-            - clouds move slowly
             - cloud machine (the area boss) + middle has a permanent big cloud 
             - clouds start in middle average size, grow bigger further away, thiner when closer to edge, disapper if outside
             - clouds size makes bigger or more frequent lightning strikes
