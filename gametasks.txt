@@ -2,18 +2,18 @@ next test run:
 increase version
 
 current tasks:
-- don't play sound on note placing if music playing
 - map modifier
     - lightning storm
         - dev steps
-            - make clouds thow lightning strikes
+            - make clouds throw lightning strikes
                 - more frequently in middle
-        - paint circle do indicate area start
         - lightning strikes strike down in area when player around
-            - cloud machine (the area boss) + middle has a permanent big cloud 
             - clouds start in middle average size, grow bigger further away, thiner when closer to edge, disapper if outside
             - clouds size makes bigger or more frequent lightning strikes
-        - start again with default areaboss
+        - area boss: cloud machine
+            - stationary
+            - has a big permanent cloud 
+            - "big cloud" area where lightning strikes happen all the time
         - curse is player does lightning strikes, but they damage enmies and players, so player have to avoid too
             - higher curse values, more strikes in shorter time? more strikes at the same time?
 - change cheat closeCurseDarkness to closeCurses

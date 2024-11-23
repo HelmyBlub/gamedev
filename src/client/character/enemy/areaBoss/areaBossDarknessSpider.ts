@@ -11,12 +11,12 @@ import { findMapModifierById, GameMapModifier, removeMapModifier } from "../../.
 import { getShapeMiddle, isPositionInsideShape } from "../../../map/modifiers/mapModifierShapes.js";
 import { nextRandom } from "../../../randomNumberGenerator.js";
 import { getPlayerCharacters, getCharacterMoveSpeed, resetCharacter } from "../../character.js";
-import { Character, CHARACTER_TYPE_FUNCTIONS, createCharacter } from "../../characterModel.js";
+import { Character, createCharacter } from "../../characterModel.js";
 import { paintCharacterHpBar } from "../../characterPaint.js";
-import { PathingCache } from "../../pathing.js";
 import { addAbilityCurseDarkness, createObjectCurseDarkness } from "./abilityCurseDarkness.js";
+import { AREA_BOSS_FUNCTIONS, AreaBossEnemy, CHARACTER_TYPE_AREA_BOSS, scaleAreaBossHp } from "./areaBoss.js";
 
-export type AreaBossEnemyDarknessSpider = Character & {
+export type AreaBossEnemyDarknessSpider = AreaBossEnemy & {
     mapModifierIdRef: number,
     spiderInfo: Spider,
 };
@@ -51,28 +51,15 @@ const SPIDER_LEGS_OFFSETS: Position[] = [
     { x: -SPIDER_LEG_LENGTH * 3 / 2, y: +SPIDER_LEG_LENGTH / 2 }, { x: SPIDER_LEG_LENGTH * 3 / 2, y: +SPIDER_LEG_LENGTH / 2 },
     { x: -SPIDER_LEG_LENGTH, y: +SPIDER_LEG_LENGTH * 3 / 2 }, { x: SPIDER_LEG_LENGTH, y: +SPIDER_LEG_LENGTH * 3 / 2 },
 ]
-export const CHARACTER_TYPE_AREA_BOSS_DARKNESS_SPIDER = "DarknessSpider";
+export const AREA_BOSS_TYPE_DARKNESS_SPIDER = "DarknessSpider";
 
 export function addAreaBossTypeDarknessSpider() {
-    CHARACTER_TYPE_FUNCTIONS[CHARACTER_TYPE_AREA_BOSS_DARKNESS_SPIDER] = {
-        onCharacterKill: onSpiderKill,
-        paintCharacterType: paintSpider,
-        tickFunction: tickSpider,
+    AREA_BOSS_FUNCTIONS[AREA_BOSS_TYPE_DARKNESS_SPIDER] = {
+        onDeath: onSpiderKill,
+        paint: paintSpider,
+        tick: tickSpider,
     };
     addAbilityCurseDarkness();
-}
-
-export function scaleAreaBossHp(level: number, bosses: Character[]) {
-    const levelModifier = Math.max(3, level);
-    for (let boss of bosses) {
-        if (boss.type === CHARACTER_TYPE_AREA_BOSS_DARKNESS_SPIDER) {
-            const currentHpPerCent = boss.hp / boss.maxHp;
-            boss.maxHp = 1000 * Math.pow(levelModifier, 4);
-            boss.hp = boss.maxHp * currentHpPerCent;
-            boss.baseMoveSpeed = Math.min(6, 1.25 + levelModifier * 0.25);
-            boss.experienceWorth = Math.pow(levelModifier, 3) * 500;
-        }
-    }
 }
 
 export function createAreaBossDarknessSpiderWithLevel(idCounter: IdCounter, spawn: Position, mapModifierIdRef: number, game: Game): AreaBossEnemyDarknessSpider {
@@ -82,12 +69,12 @@ export function createAreaBossDarknessSpiderWithLevel(idCounter: IdCounter, spaw
     const dummyValue = 1;
     const nonBlockingSpawn = findNearNonBlockingPosition(spawn, game.state.map, game.state.idCounter, game);
 
-    const baseCharacter = createCharacter(getNextId(idCounter), nonBlockingSpawn.x, nonBlockingSpawn.y, bossSize, bossSize, color, dummyValue, dummyValue, FACTION_ENEMY, CHARACTER_TYPE_AREA_BOSS_DARKNESS_SPIDER, dummyValue);
+    const baseCharacter = createCharacter(getNextId(idCounter), nonBlockingSpawn.x, nonBlockingSpawn.y, bossSize, bossSize, color, dummyValue, dummyValue, FACTION_ENEMY, CHARACTER_TYPE_AREA_BOSS, dummyValue);
     const abilities: Ability[] = [];
     abilities.push(createAbilityMelee(game.state.idCounter));
     baseCharacter.abilities = abilities;
     const spiderLegs = getInitialSpiderLegs(baseCharacter);
-    const areaBoss: AreaBossEnemyDarknessSpider = { ...baseCharacter, mapModifierIdRef: mapModifierIdRef, spiderInfo: spiderLegs };
+    const areaBoss: AreaBossEnemyDarknessSpider = { ...baseCharacter, mapModifierIdRef: mapModifierIdRef, spiderInfo: spiderLegs, areaBossType: AREA_BOSS_TYPE_DARKNESS_SPIDER };
     scaleAreaBossHp(scaling, [areaBoss]);
     return areaBoss;
 }
@@ -214,7 +201,7 @@ function resetLegPosition(spiderLegs: Spider, bodyCenter: Position) {
     }
 }
 
-function tickSpider(enemy: Character, game: Game, pathingCache: PathingCache | null) {
+function tickSpider(enemy: Character, game: Game) {
     if (enemy.state === "dead") return;
     const spider = enemy as AreaBossEnemyDarknessSpider;
     const modifier = findMapModifierById(spider.mapModifierIdRef, game);

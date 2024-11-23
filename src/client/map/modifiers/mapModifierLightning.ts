@@ -8,6 +8,7 @@ import { GameMapAreaRect, MODIFY_SHAPE_NAME_RECTANGLE } from "./mapShapeRectangl
 import { createAbilityObjectCloud } from "../../ability/abilityCloud.js";
 import { getPlayerCharacters } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
+import { nextRandom } from "../../randomNumberGenerator.js";
 
 export const MODIFIER_NAME_LIGHTNING = "Lightning";
 export type MapModifierLightning = GameMapModifier & {
@@ -59,26 +60,26 @@ function tick(modifier: GameMapModifier, game: Game) {
             if (middle) {
                 const cloudSpawn = getCloudSpawnPosition(playerInside, middle, lightning.centerRadius, game);
                 const direction = calculateDirection(middle, cloudSpawn);
-                game.state.abilityObjects.push(createAbilityObjectCloud(cloudSpawn, FACTION_ENEMY, 40, direction, game));
+                const strength = Math.min(Math.max(10000 / calculateDistance(middle, cloudSpawn), 1), 10);
+                game.state.abilityObjects.push(createAbilityObjectCloud(cloudSpawn, FACTION_ENEMY, direction, strength, game));
             }
         }
     }
 }
 
 function getCloudSpawnPosition(playerPosition: Position, middle: Position, radius: number, game: Game): Position {
-    const distanceFromPlayer = 1000;
+    const distanceFromPlayer = 1500;
     let position = { x: playerPosition.x, y: playerPosition.y };
     const distance = calculateDistance(position, middle);
     if (distance < radius * 2) {
         position = { x: middle.x, y: middle.y };
-        const direction = calculateDirection(middle, playerPosition);
+        let direction = calculateDirection(middle, playerPosition);
+        direction += nextRandom(game.state.randomSeed) - 0.5;
         moveByDirectionAndDistance(position, direction, radius, false);
     } else {
-        const direction = calculateDirection(position, middle);
+        let direction = calculateDirection(position, middle);
+        direction += nextRandom(game.state.randomSeed) - 0.5;
         moveByDirectionAndDistance(position, direction, distanceFromPlayer, false);
-        if (distance < radius) {
-            moveByDirectionAndDistance(position, direction + Math.PI, radius - distance, false);
-        };
     }
     return position;
 }

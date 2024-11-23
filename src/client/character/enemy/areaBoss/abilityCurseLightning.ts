@@ -13,35 +13,35 @@ import { createObjectCurse, deleteObjectCurse, paintAbilityObjectCurse, tickAbil
 import { AreaBossEnemy } from "./areaBoss.js";
 import { AreaBossEnemyDarknessSpider } from "./areaBossDarknessSpider.js";
 
-export type AbilityCurseDarkness = Ability & {
+export type AbilityCurseLightning = Ability & {
 }
 
-export type AbilityObjectCurseDarkness = AbilityObjectCircle & {
+export type AbilityObjectCurseLightning = AbilityObjectCircle & {
     strength: number,
     tickInterval: number,
     nextTickTime?: number,
 }
 
-const ABILITY_NAME_CURSE_DARKNESS = "Curse Darkness";
+const ABILITY_NAME_CURSE_LIGHTNING = "Curse Lightning";
 
-export function addAbilityCurseDarkness() {
-    ABILITIES_FUNCTIONS[ABILITY_NAME_CURSE_DARKNESS] = {
+export function addAbilityCurseLightning() {
+    ABILITIES_FUNCTIONS[ABILITY_NAME_CURSE_LIGHTNING] = {
         tickAbilityObject: tickAbilityObjectCurse,
         deleteAbilityObject: deleteObjectCurse,
-        createAbility: createAbilityCurseDarkness,
+        createAbility: createAbilityCurseLightning,
         paintAbilityObject: paintAbilityObjectCurse,
     };
 }
 
-export function createAbilityCurseDarkness(idCounter: IdCounter): AbilityCurseDarkness {
+export function createAbilityCurseLightning(idCounter: IdCounter): AbilityCurseLightning {
     return {
         id: getNextId(idCounter),
-        name: ABILITY_NAME_CURSE_DARKNESS,
+        name: ABILITY_NAME_CURSE_LIGHTNING,
         passive: true,
         upgrades: {},
     }
 }
 
-export function createObjectCurseDarkness(areaBoss: AreaBossEnemy, game: Game): AbilityObjectCurseDarkness | undefined {
-    return createObjectCurse(areaBoss, ABILITY_NAME_CURSE_DARKNESS, game);
+export function createObjectCurseLightning(areaBoss: AreaBossEnemy, game: Game): AbilityObjectCurseLightning | undefined {
+    return createObjectCurse(areaBoss, ABILITY_NAME_CURSE_LIGHTNING, game);
 }

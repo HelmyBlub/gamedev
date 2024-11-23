@@ -33,7 +33,7 @@ export function createAbilityObjectExplode(
     damage: number,
     radius: number,
     faction: string,
-    abilityIdRef: number,
+    abilityIdRef: number | undefined,
     explodeDelay: number,
     game: Game
 ): AbilityObjectExplode {

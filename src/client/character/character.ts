@@ -24,10 +24,10 @@ import { DEBUFF_NAME_DAMAGE_TAKEN } from "../debuff/debuffDamageTaken.js";
 import { createPaintTextData } from "../floatingText.js";
 import { resetCurses, tickCurses } from "../curse/curse.js";
 import { addPetTypeFollowAttackFunctions } from "./playerCharacters/characterPetTypeClone.js";
-import { addAreaBossTypeDarknessSpider } from "./enemy/areaBoss/areaBossDarknessSpider.js";
+import { addAreaBossType } from "./enemy/areaBoss/areaBoss.js";
 
 export function onDomLoadSetCharactersFunctions() {
-    addAreaBossTypeDarknessSpider();
+    addAreaBossType();
     addBossType();
     addKingType();
     addGodEnemyType();
