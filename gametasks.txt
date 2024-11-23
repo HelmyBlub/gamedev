@@ -1,7 +1,8 @@
-next test run: musician
+next test run:
 increase version
 
 current tasks:
+- don't play sound on note placing if music playing
 - map modifier
     - lightning storm
         - dev steps

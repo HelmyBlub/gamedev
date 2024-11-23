@@ -479,22 +479,22 @@ function castNote(abilityOwner: AbilityOwner, musicSheets: AbilityMusicSheets, s
             if (modifyDelete) {
                 selectedSheet.musicSheet.notes.splice(duplicateNoteIndex, 1);
             } else {
-                playMyMusicNotesOnChange(selectedSheet.musicSheet, dupNote, abilityOwner, game);
+                playMyMusicNotesOnChange(selectedSheet, dupNote, abilityOwner, game);
             }
         }
     } else {
         selectedSheet.musicSheet.notes.push(musicNote);
-        playMyMusicNotesOnChange(selectedSheet.musicSheet, musicNote, abilityOwner, game);
+        playMyMusicNotesOnChange(selectedSheet, musicNote, abilityOwner, game);
     }
     abilityMusicSheetsUpgradeSpeedSetSpeed(musicSheets, abilityOwner);
     return true;
 }
 
-function playMyMusicNotesOnChange(musicSheet: MusicSheet, musicNote: MusicNote, abilityOwner: AbilityOwner, game: Game) {
-    if (findMyCharacter(game) === abilityOwner) {
-        for (let note of musicSheet.notes) {
+function playMyMusicNotesOnChange(musicSheet: AbilityMusicSheet, musicNote: MusicNote, abilityOwner: AbilityOwner, game: Game) {
+    if (findMyCharacter(game) === abilityOwner && musicSheet.stopped) {
+        for (let note of musicSheet.musicSheet.notes) {
             if (note.tick === musicNote.tick) {
-                playMusicSheetNote(musicSheet, note, abilityOwner, 0, game);
+                playMusicSheetNote(musicSheet.musicSheet, note, abilityOwner, 0, game);
             }
         }
     }
