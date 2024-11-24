@@ -2,6 +2,7 @@ import { addParticleEffect } from "../additionalPaint.js";
 import { Character } from "../character/characterModel.js";
 import { Game, Position } from "../gameModel.js";
 import { addCurseDarkness } from "./curseDarkness.js";
+import { addCurseLightning } from "./curseLightning.js";
 
 export type Curse = {
     type: string,
@@ -10,10 +11,12 @@ export type Curse = {
 }
 
 export type CurseFunctions = {
-    tick?: (curse: Curse, target: Character, game: Game) => void,
+    copy: (curse: Curse) => Curse,
+    create: () => Curse,
+    onCurseIncreased?: (curse: Curse, target: Character, game: Game) => void,
     paint?: (ctx: CanvasRenderingContext2D, curse: Curse, target: Character, game: Game) => void,
     reset?: (curse: Curse) => void,
-    copy: (curse: Curse) => Curse,
+    tick?: (curse: Curse, target: Character, game: Game) => void,
 }
 
 export type CursesFunctions = {
@@ -24,6 +27,12 @@ export const CURSES_FUNCTIONS: CursesFunctions = {};
 
 export function onDomLoadCurses() {
     addCurseDarkness();
+    addCurseLightning();
+}
+
+export function createCurse(curesType: string): Curse {
+    const functions = CURSES_FUNCTIONS[curesType];
+    return functions.create();
 }
 
 export function resetCurses(target: Character) {
@@ -96,4 +105,10 @@ export function createCursesMoreInfoTextLine(curses: Curse[] | undefined): strin
         cursesText += `${curse.type} ${Math.floor(curse.level)}`;
     }
     return `Curses: ${cursesText}`;
+}
+
+export function increaseCurseLevel(curseTarget: Character, curse: Curse, amount: number, game: Game) {
+    curse.level += amount;
+    const functions = CURSES_FUNCTIONS[curse.type];
+    if (functions.onCurseIncreased) functions.onCurseIncreased(curse, curseTarget, game);
 }

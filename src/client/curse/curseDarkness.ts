@@ -24,14 +24,16 @@ export type CurseDarkness = Curse & {
 
 export function addCurseDarkness() {
     CURSES_FUNCTIONS[CURSE_DARKNESS] = {
-        tick: tickDarkness,
+        copy: copy,
+        create: create,
+        onCurseIncreased: onCurseDarknessIncrease,
         paint: paintCurse,
         reset: reset,
-        copy: copy,
+        tick: tickDarkness,
     };
 }
 
-export function createCurseDarkness(): CurseDarkness {
+function create(): CurseDarkness {
     return {
         level: 1,
         type: CURSE_DARKNESS,
@@ -50,8 +52,14 @@ export function curseDarknessCloneKillCheck(clone: Character, game: Game) {
     }
 }
 
-export function increaseCurseDarkness(curseTarget: Character, darkness: CurseDarkness, amount: number, game: Game) {
-    darkness.level += amount;
+export function createDarkClone(toCloneCharacter: Character, level: number, game: Game): Character {
+    const clone = createClone(toCloneCharacter, game);
+    turnEvil(clone, level);
+    return clone;
+}
+
+function onCurseDarknessIncrease(curse: Curse, curseTarget: Character, game: Game) {
+    const darkness = curse as CurseDarkness;
     if (!curseTarget.pets) return;
     const maxClones = Math.ceil(darkness.level / AMOUNT_CURSE_PER_CLONE);
     if (maxClones > darkness.cloneCounter) return;
@@ -63,14 +71,8 @@ export function increaseCurseDarkness(curseTarget: Character, darkness: CurseDar
     }
 }
 
-export function createDarkClone(toCloneCharacter: Character, level: number, game: Game): Character {
-    const clone = createClone(toCloneCharacter, game);
-    turnEvil(clone, level);
-    return clone;
-}
-
 function copy(curse: Curse): Curse {
-    const copy = createCurseDarkness();
+    const copy = create();
     copy.level = curse.level;
     return copy;
 }

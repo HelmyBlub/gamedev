@@ -4,12 +4,8 @@ increase version
 current tasks:
 - map modifier
     - lightning storm
-        - dev steps
-            - make clouds throw lightning strikes
-                - more frequently in middle
-        - lightning strikes strike down in area when player around
-            - clouds start in middle average size, grow bigger further away, thiner when closer to edge, disapper if outside
-            - clouds size makes bigger or more frequent lightning strikes
+        - check areaBoss code rework, 
+        - curse rework for more types
         - area boss: cloud machine
             - stationary
             - has a big permanent cloud 

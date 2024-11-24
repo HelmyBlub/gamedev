@@ -1,22 +1,15 @@
 import { ABILITIES_FUNCTIONS, Ability } from "../../../ability/ability.js";
 import { createAbilityMelee } from "../../../ability/abilityMelee.js";
-import { createDarkClone } from "../../../curse/curseDarkness.js";
 import { tickCharacterDebuffs } from "../../../debuff/debuff.js";
-import { calculateDirection, calculateDistance, getNextId } from "../../../game.js";
+import { getNextId } from "../../../game.js";
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
-import { GAME_IMAGES, getImage } from "../../../imageLoad.js";
-import { calculateMovePosition, findNearNonBlockingPosition, GameMap, isPositionBlocking, moveByDirectionAndDistance } from "../../../map/map.js";
-import { findMapModifierById, GameMapModifier, removeMapModifier } from "../../../map/modifiers/mapModifier.js";
-import { getShapeMiddle, isPositionInsideShape } from "../../../map/modifiers/mapModifierShapes.js";
-import { nextRandom } from "../../../randomNumberGenerator.js";
-import { getPlayerCharacters, getCharacterMoveSpeed, resetCharacter } from "../../character.js";
-import { Character, CHARACTER_TYPE_FUNCTIONS, createCharacter } from "../../characterModel.js";
+import { findNearNonBlockingPosition } from "../../../map/map.js";
+import { findMapModifierById, removeMapModifier } from "../../../map/modifiers/mapModifier.js";
+import { Character, createCharacter } from "../../characterModel.js";
 import { paintCharacterHpBar } from "../../characterPaint.js";
-import { PathingCache } from "../../pathing.js";
-import { addAbilityCurseDarkness, createObjectCurseDarkness } from "./abilityCurseDarkness.js";
-import { createObjectCurseLightning } from "./abilityCurseLightning.js";
-import { AreaBossEnemy, CHARACTER_TYPE_AREA_BOSS, scaleAreaBossHp } from "./areaBoss.js";
+import { addAbilityCurseLightning, createObjectCurseLightning } from "./abilityCurseLightning.js";
+import { AREA_BOSS_FUNCTIONS, AreaBossEnemy, CHARACTER_TYPE_AREA_BOSS, scaleAreaBossHp } from "./areaBoss.js";
 
 export type AreaBossEnemyLightningCloudMachine = AreaBossEnemy & {
 };
@@ -24,11 +17,12 @@ export type AreaBossEnemyLightningCloudMachine = AreaBossEnemy & {
 export const AREA_BOSS_TYPE_LIGHTNING_CLOUD_MACHINE = "CloudMachine";
 
 export function addAreaBossTypeLighntingCloudMachine() {
-    CHARACTER_TYPE_FUNCTIONS[AREA_BOSS_TYPE_LIGHTNING_CLOUD_MACHINE] = {
-        onCharacterKill: onDeath,
-        paintCharacterType: paint,
-        tickFunction: tick,
+    AREA_BOSS_FUNCTIONS[AREA_BOSS_TYPE_LIGHTNING_CLOUD_MACHINE] = {
+        onDeath: onDeath,
+        paint: paint,
+        tick: tick,
     };
+    addAbilityCurseLightning();
 }
 
 
@@ -72,7 +66,7 @@ function paint(ctx: CanvasRenderingContext2D, character: Character, cameraPositi
     paintCharacterHpBar(ctx, character, hpBarPos);
 }
 
-function tick(enemy: Character, game: Game, pathingCache: PathingCache | null) {
+function tick(enemy: Character, game: Game) {
     if (enemy.state === "dead") return;
     const spider = enemy as AreaBossEnemyLightningCloudMachine;
     const modifier = findMapModifierById(spider.mapModifierIdRef, game);

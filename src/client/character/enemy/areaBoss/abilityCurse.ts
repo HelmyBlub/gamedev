@@ -1,6 +1,5 @@
 import { AbilityObject, AbilityObjectCircle, PaintOrderAbility } from "../../../ability/ability.js";
-import { applyCurse } from "../../../curse/curse.js";
-import { createCurseDarkness, CURSE_DARKNESS, CurseDarkness, increaseCurseDarkness } from "../../../curse/curseDarkness.js";
+import { applyCurse, createCurse, Curse, increaseCurseLevel } from "../../../curse/curse.js";
 import { calculateDistance, getCameraPosition } from "../../../game.js";
 import { FACTION_ENEMY, Game } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
@@ -12,18 +11,20 @@ import { Character } from "../../characterModel.js";
 import { AreaBossEnemy } from "./areaBoss.js";
 
 export type AbilityObjectCurse = AbilityObjectCircle & {
+    curseType: string,
     strength: number,
     tickInterval: number,
     nextTickTime?: number,
 }
 
-export function createObjectCurse(areaBoss: AreaBossEnemy, objectCurseType: string, game: Game): AbilityObjectCurse | undefined {
+export function createObjectCurse(areaBoss: AreaBossEnemy, objectCurseType: string, curseType: string, game: Game): AbilityObjectCurse | undefined {
     const modifier = findMapModifierById(areaBoss.mapModifierIdRef, game);
     if (!modifier) return;
     const curseStrength = Math.max(getShapeArea(modifier.area)! / 10000, 500);
     const spawn = findNearNonBlockingPosition(areaBoss, game.state.map, game.state.idCounter, game);
     const curse: AbilityObjectCurse = {
         type: objectCurseType,
+        curseType: curseType,
         strength: curseStrength,
         radius: getRadius(curseStrength),
         color: "darkblue",
@@ -48,7 +49,7 @@ export function tickAbilityObjectCurse(abilityObject: AbilityObject, game: Game)
         const distance = calculateDistance(playerCharacter, abilityObject);
         if (distance < curse.radius) {
             playerHit = true;
-            curseIncreaseCharacter(playerCharacter, game);
+            curseIncreaseCharacter(playerCharacter, curse.curseType, game);
         }
     }
     if (playerHit) {
@@ -99,16 +100,16 @@ export function paintAbilityObjectCurse(ctx: CanvasRenderingContext2D, abilityOb
     ctx.globalAlpha = 1;
 }
 
-function curseIncreaseCharacter(character: Character, game: Game) {
-    let curse: CurseDarkness | undefined = undefined;
+function curseIncreaseCharacter(character: Character, curseType: string, game: Game) {
+    let curse: Curse | undefined = undefined;
     if (character.curses) {
-        curse = character.curses!.find(c => c.type === CURSE_DARKNESS) as CurseDarkness;
+        curse = character.curses!.find(c => c.type === curseType) as Curse;
     }
     if (!curse) {
-        curse = createCurseDarkness();
+        curse = createCurse(curseType);
         applyCurse(curse, character, game);
     } else {
-        increaseCurseDarkness(character, curse, 0.2, game);
+        increaseCurseLevel(character, curse, 0.2, game);
     }
     curse.visualizeFadeTimer = game.state.time + 2000;
 }

@@ -33,7 +33,7 @@ export const GAME_MAP_MODIFIER_FUNCTIONS: GameMapModifierFunctions = {};
 
 export function onDomLoadMapModifiers() {
     addMapModifierDarkness();
-    //addMapModifierLightning();
+    addMapModifierLightning();
     onDomLoadMapModifierShapes();
 }
 

@@ -9,6 +9,7 @@ import { createAbilityObjectCloud } from "../../ability/abilityCloud.js";
 import { getPlayerCharacters } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
+import { createAreaBossLighntingCloudMachine } from "../../character/enemy/areaBoss/areaBossCloudMachine.js";
 
 export const MODIFIER_NAME_LIGHTNING = "Lightning";
 export type MapModifierLightning = GameMapModifier & {
@@ -98,8 +99,8 @@ function onGameInit(modifier: GameMapModifier, game: Game) {
     lightning.nextSpawnTimeCheck = undefined;
     spawn = getShapeMiddle(modifier.area);
     if (spawn === undefined) return;
-    //const areaBoss = createAreaBossDarknessSpiderWithLevel(game.state.idCounter, spawn, modifier.id, game); //TODO new boss
-    //game.state.bossStuff.bosses.push(areaBoss);
+    const areaBoss = createAreaBossLighntingCloudMachine(game.state.idCounter, spawn, modifier.id, game);
+    game.state.bossStuff.bosses.push(areaBoss);
 }
 
 function growArea(modifier: GameMapModifier) {
