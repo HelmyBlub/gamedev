@@ -4,8 +4,6 @@ increase version
 current tasks:
 - map modifier
     - lightning storm
-        - check areaBoss code rework, 
-        - curse rework for more types
         - area boss: cloud machine
             - stationary
             - has a big permanent cloud 

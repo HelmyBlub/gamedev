@@ -8,6 +8,7 @@ import { findNearNonBlockingPosition } from "../../../map/map.js";
 import { findMapModifierById, removeMapModifier } from "../../../map/modifiers/mapModifier.js";
 import { Character, createCharacter } from "../../characterModel.js";
 import { paintCharacterHpBar } from "../../characterPaint.js";
+import { addAbilityCloudMachineBossCloud, createAbilityCloudMachineBossCloud } from "./abilityCloudMachineBossCloud.js";
 import { addAbilityCurseLightning, createObjectCurseLightning } from "./abilityCurseLightning.js";
 import { AREA_BOSS_FUNCTIONS, AreaBossEnemy, CHARACTER_TYPE_AREA_BOSS, scaleAreaBossHp } from "./areaBoss.js";
 
@@ -23,6 +24,7 @@ export function addAreaBossTypeLighntingCloudMachine() {
         tick: tick,
     };
     addAbilityCurseLightning();
+    addAbilityCloudMachineBossCloud();
 }
 
 
@@ -36,6 +38,7 @@ export function createAreaBossLighntingCloudMachine(idCounter: IdCounter, spawn:
     const baseCharacter = createCharacter(getNextId(idCounter), nonBlockingSpawn.x, nonBlockingSpawn.y, bossSize, bossSize, color, dummyValue, dummyValue, FACTION_ENEMY, CHARACTER_TYPE_AREA_BOSS, dummyValue);
     const abilities: Ability[] = [];
     abilities.push(createAbilityMelee(game.state.idCounter));
+    abilities.push(createAbilityCloudMachineBossCloud(game.state.idCounter));
     baseCharacter.abilities = abilities;
     const areaBoss: AreaBossEnemyLightningCloudMachine = { ...baseCharacter, mapModifierIdRef: mapModifierIdRef, areaBossType: AREA_BOSS_TYPE_LIGHTNING_CLOUD_MACHINE };
     scaleAreaBossHp(scaling, [areaBoss]);
@@ -76,6 +79,7 @@ function tick(enemy: Character, game: Game) {
         const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
         if (abilityFunctions) {
             if (abilityFunctions.tickAI) abilityFunctions.tickAI(enemy, ability, game);
+            if (abilityFunctions.tickAbility) abilityFunctions.tickAbility(enemy, ability, game);
         }
     }
     tickCharacterDebuffs(enemy, game);

@@ -38,7 +38,7 @@ export function create(
         area: area,
         areaPerLevel: 1000000,
         spawnInterval: 3000,
-        centerRadius: 500,
+        centerRadius: 800,
         level: 1,
     };
 }

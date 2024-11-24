@@ -1,5 +1,6 @@
 import { Game, Position } from "../../../gameModel.js";
 import { Character, CHARACTER_TYPE_FUNCTIONS } from "../../characterModel.js";
+import { paintCharacterAbilties } from "../../characterPaint.js";
 import { addAreaBossTypeLighntingCloudMachine } from "./areaBossCloudMachine.js";
 import { addAreaBossTypeDarknessSpider } from "./areaBossDarknessSpider.js";
 
@@ -51,6 +52,7 @@ function paint(ctx: CanvasRenderingContext2D, character: Character, cameraPositi
     const areaBoss = character as AreaBossEnemy;
     const functions = AREA_BOSS_FUNCTIONS[areaBoss.areaBossType];
     functions.paint(ctx, areaBoss, cameraPosition, game);
+    paintCharacterAbilties(ctx, character, cameraPosition, game);
 }
 
 function onDeath(character: Character, game: Game) {
