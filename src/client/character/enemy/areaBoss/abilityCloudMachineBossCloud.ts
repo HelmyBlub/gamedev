@@ -3,6 +3,8 @@ import { createAbilityObjectExplode } from "../../../ability/abilityExplode.js";
 import { getNextId } from "../../../game.js";
 import { IdCounter, Game, Position } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
+import { nextRandom } from "../../../randomNumberGenerator.js";
+import { determineClosestCharacter, getPlayerCharacters } from "../../character.js";
 
 type AbilityCloudMachineBossCloud = Ability & {
     damage: number,
@@ -74,15 +76,16 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     const cloud = ability as AbilityCloudMachineBossCloud;
     if (cloud.lastTickTime === undefined) cloud.lastTickTime = game.state.time;
     if (cloud.lastTickTime + cloud.tickInterval < game.state.time) {
+        const closest = determineClosestCharacter(abilityOwner, getPlayerCharacters(game.state.players));
+        if (closest.minDistance > 2000) return;
         cloud.lastTickTime = game.state.time;
         const strikeDelay = 3000;
         const randomPos: Position = {
-            x: abilityOwner.x + Math.random() * cloud.radius * 2 - cloud.radius,
-            y: abilityOwner.y + Math.random() * cloud.radius * 2 - cloud.radius,
+            x: abilityOwner.x + nextRandom(game.state.randomSeed) * cloud.radius * 2 - cloud.radius,
+            y: abilityOwner.y + nextRandom(game.state.randomSeed) * cloud.radius * 2 - cloud.radius,
         };
         const explosionRadius = 100;
         const strikeObject = createAbilityObjectExplode(randomPos, cloud.damage, explosionRadius, abilityOwner.faction, ability.id, strikeDelay, game);
         game.state.abilityObjects.push(strikeObject);
     }
-
 }

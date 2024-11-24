@@ -1,15 +1,15 @@
-next test run:
+next test run: sniper, builder, tamer, ball, musician
 increase version
 
 current tasks:
 - map modifier
     - lightning storm
-        - area boss: cloud machine
-            - stationary
-            - has a big permanent cloud 
-            - "big cloud" area where lightning strikes happen all the time
-        - curse is player does lightning strikes, but they damage enmies and players, so player have to avoid too
-            - higher curse values, more strikes in shorter time? more strikes at the same time?
+        - check spawn of cloudMachine, should not be atop of blocking tile
+        - check lightning curse on king
+        - check lightning curse on legendary
+        - check cloud  machine damage values
+        - check other stuff i might have forgot
+- improve cloud machine boss
 - change cheat closeCurseDarkness to closeCurses
 - check chunks mapModifiers flags purpose?
 - be able to cleanse bad part of curses

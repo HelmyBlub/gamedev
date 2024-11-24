@@ -71,6 +71,7 @@ export type AbilityObject = Position & {
     abilityIdRef?: number,
     id?: number,
     abilityRefTypeDoOnHit?: string,
+    specificDamageForFactionPlayer?: number,
 }
 
 export type AbilityObjectCircle = AbilityObject & {
@@ -203,8 +204,8 @@ export function addAbilityToCharacter(character: Character, ability: Ability, ch
 }
 
 export function paintAbilityObjects(ctx: CanvasRenderingContext2D, abilityObjects: AbilityObject[], game: Game, paintOrder: PaintOrderAbility) {
-    paintAbilityObjectsForFaction(ctx, abilityObjects, game, paintOrder, FACTION_PLAYER);
-    paintAbilityObjectsForFaction(ctx, abilityObjects, game, paintOrder, FACTION_ENEMY);
+    paintAbilityObjectsFaction(ctx, abilityObjects, game, paintOrder, true);
+    paintAbilityObjectsFaction(ctx, abilityObjects, game, paintOrder, false);
 }
 
 export function setAbilityToBossLevel(ability: Ability, level: number) {
@@ -379,10 +380,10 @@ export function getAbilityNameUiText(ability: Ability): string[] {
 }
 
 export function detectAbilityObjectCircleToCharacterHit(map: GameMap, abilityObject: AbilityObjectCircle, game: Game) {
-    detectCircleCharacterHit(map, abilityObject, abilityObject.radius, abilityObject.faction, abilityObject.abilityIdRef!, abilityObject.damage, game, abilityObject);
+    detectCircleCharacterHit(map, abilityObject, abilityObject.radius, abilityObject.faction, abilityObject.abilityIdRef!, abilityObject.damage, game, abilityObject, undefined, abilityObject.specificDamageForFactionPlayer);
 }
 
-export function detectCircleCharacterHit(map: GameMap, circleCenter: Position, circleRadius: number, faction: string, abilityId: number, damage: number, game: Game, abilityObject: AbilityObject | undefined = undefined, ability: Ability | undefined = undefined) {
+export function detectCircleCharacterHit(map: GameMap, circleCenter: Position, circleRadius: number, faction: string, abilityId: number, damage: number, game: Game, abilityObject: AbilityObject | undefined = undefined, ability: Ability | undefined = undefined, specificDamageForFactionPlayer: number | undefined = undefined) {
     const maxEnemySizeEstimate = 40;
 
     const characters = determineCharactersInDistance(circleCenter, map, game.state.players, game.state.bossStuff.bosses, circleRadius * 2 + maxEnemySizeEstimate, faction);
@@ -397,7 +398,9 @@ export function detectCircleCharacterHit(map: GameMap, circleCenter: Position, c
             } else if (ability) {
                 abilityName = ability.name;
             }
-            characterTakeDamage(c, damage, game, abilityId, abilityName, abilityObject);
+            let takeDamage = damage;
+            if (specificDamageForFactionPlayer !== undefined && c.faction === FACTION_PLAYER) takeDamage = specificDamageForFactionPlayer;
+            characterTakeDamage(c, takeDamage, game, abilityId, abilityName, abilityObject);
             if (abilityObject) {
                 let abilityFunction = ABILITIES_FUNCTIONS[abilityObject.type];
                 if (abilityObject.abilityRefTypeDoOnHit) {
@@ -717,9 +720,9 @@ function paintKeyBindingUI(ctx: CanvasRenderingContext2D, ability: Ability, draw
     paintAbilityUiKeyBind(ctx, ability.playerInputBinding, drawStartX, drawStartY, game);
 }
 
-function paintAbilityObjectsForFaction(ctx: CanvasRenderingContext2D, abilityObjects: AbilityObject[], game: Game, paintOrder: PaintOrderAbility, faction: string) {
+function paintAbilityObjectsFaction(ctx: CanvasRenderingContext2D, abilityObjects: AbilityObject[], game: Game, paintOrder: PaintOrderAbility, ifIsPlayerFaction: boolean) {
     for (let abilityObject of abilityObjects) {
-        if (abilityObject.faction === faction) {
+        if (ifIsPlayerFaction && abilityObject.faction === FACTION_PLAYER || !ifIsPlayerFaction && abilityObject.faction !== FACTION_PLAYER) {
             let abilityFunctions = ABILITIES_FUNCTIONS[abilityObject.type];
             if (abilityFunctions?.paintAbilityObject !== undefined) {
                 abilityFunctions.paintAbilityObject(ctx, abilityObject, paintOrder, game);
