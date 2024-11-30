@@ -16,6 +16,7 @@ export const AREA_BOSS_FUNCTIONS: {
         onDeath: (areaBoss: AreaBossEnemy, game: Game) => void,
         paint: (ctx: CanvasRenderingContext2D, areaBoss: AreaBossEnemy, cameraPosition: Position, game: Game) => void,
         reset?: (areaBoss: AreaBossEnemy) => void,
+        scaleWithBossLevel?: (areaBoss: AreaBossEnemy, level: number) => void,
     }
 } = {};
 
@@ -33,11 +34,14 @@ export function scaleAreaBossHp(level: number, bosses: Character[]) {
     const levelModifier = Math.max(3, level);
     for (let boss of bosses) {
         if (boss.type === CHARACTER_TYPE_AREA_BOSS) {
+            const areaBoss = boss as AreaBossEnemy;
             const currentHpPerCent = boss.hp / boss.maxHp;
             boss.maxHp = 1000 * Math.pow(levelModifier, 4);
             boss.hp = boss.maxHp * currentHpPerCent;
             boss.baseMoveSpeed = Math.min(6, 1.25 + levelModifier * 0.25);
             boss.experienceWorth = Math.pow(levelModifier, 3) * 500;
+            const areaBossFunctions = AREA_BOSS_FUNCTIONS[areaBoss.areaBossType];
+            if (areaBossFunctions.scaleWithBossLevel) areaBossFunctions.scaleWithBossLevel(areaBoss, level);
         }
     }
 }

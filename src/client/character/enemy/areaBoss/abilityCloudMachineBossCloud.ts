@@ -11,6 +11,7 @@ type AbilityCloudMachineBossCloud = Ability & {
     radius: number,
     tickInterval: number,
     lastTickTime?: number,
+    explosionRadius: number,
 };
 
 export const ABILITY_NAME_CLOUD_MACHINE_BOSS_CLOUD = "AreaBossCloud";
@@ -39,6 +40,7 @@ export function createAbilityCloudMachineBossCloud(
         passive: true,
         tickInterval: 250,
         upgrades: {},
+        explosionRadius: 100,
     };
 }
 
@@ -54,7 +56,9 @@ function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: n
 
 function setAbilityToBossLevel(ability: Ability, level: number) {
     const cloud = ability as AbilityCloudMachineBossCloud;
-    cloud.damage = level * 10;
+    cloud.damage = level * 20;
+    cloud.tickInterval = 500 / level;
+    cloud.explosionRadius = 70 + 10 * level;
 }
 
 function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
@@ -84,8 +88,7 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
             x: abilityOwner.x + nextRandom(game.state.randomSeed) * cloud.radius * 2 - cloud.radius,
             y: abilityOwner.y + nextRandom(game.state.randomSeed) * cloud.radius * 2 - cloud.radius,
         };
-        const explosionRadius = 100;
-        const strikeObject = createAbilityObjectExplode(randomPos, cloud.damage, explosionRadius, abilityOwner.faction, ability.id, strikeDelay, game);
+        const strikeObject = createAbilityObjectExplode(randomPos, cloud.damage, cloud.explosionRadius, abilityOwner.faction, ability.id, strikeDelay, game);
         game.state.abilityObjects.push(strikeObject);
     }
 }

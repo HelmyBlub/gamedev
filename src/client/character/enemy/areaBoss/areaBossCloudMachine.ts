@@ -22,11 +22,11 @@ export function addAreaBossTypeLighntingCloudMachine() {
         onDeath: onDeath,
         paint: paint,
         tick: tick,
+        scaleWithBossLevel: scaleWithBossLevel,
     };
     addAbilityCurseLightning();
     addAbilityCloudMachineBossCloud();
 }
-
 
 export function createAreaBossLighntingCloudMachine(idCounter: IdCounter, spawn: Position, mapModifierIdRef: number, game: Game): AreaBossEnemyLightningCloudMachine {
     const scaling = 2;
@@ -43,6 +43,14 @@ export function createAreaBossLighntingCloudMachine(idCounter: IdCounter, spawn:
     const areaBoss: AreaBossEnemyLightningCloudMachine = { ...baseCharacter, mapModifierIdRef: mapModifierIdRef, areaBossType: AREA_BOSS_TYPE_LIGHTNING_CLOUD_MACHINE };
     scaleAreaBossHp(scaling, [areaBoss]);
     return areaBoss;
+}
+
+function scaleWithBossLevel(areaBoss: AreaBossEnemy, level: number) {
+    for (let ability of areaBoss.abilities) {
+        const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+        if (!abilityFunctions) continue;
+        if (abilityFunctions.setAbilityToBossLevel) abilityFunctions.setAbilityToBossLevel(ability, level);
+    }
 }
 
 function onDeath(character: Character, game: Game) {

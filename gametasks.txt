@@ -4,9 +4,7 @@ increase version
 current tasks:
 - map modifier
     - lightning storm
-        - check lightning curse on king
-            - clouds missing
-        - check cloud  machine damage values
+        - check cloud machine damage values
         - check lightnung curse giving xp?
         - check damage meter
         - check combat log
