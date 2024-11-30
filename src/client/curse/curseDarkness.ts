@@ -6,6 +6,7 @@ import { TAMER_PET_CHARACTER } from "../character/playerCharacters/tamer/tamerPe
 import { changeCharacterAndAbilityIds, deepCopy, getCameraPosition } from "../game.js";
 import { FACTION_ENEMY, FACTION_PLAYER, Game } from "../gameModel.js";
 import { getPointPaintPosition, paintTextWithOutline } from "../gamePaint.js";
+import { MODIFIER_NAME_DARKNESS } from "../map/modifiers/mapModifierDarkness.js";
 import { RandomizedCharacterImage } from "../randomizedCharacterImage.js";
 import { Curse, CURSES_FUNCTIONS } from "./curse.js";
 
@@ -30,6 +31,7 @@ export function addCurseDarkness() {
         paint: paintCurse,
         reset: reset,
         tick: tickDarkness,
+        mapMidifierName: MODIFIER_NAME_DARKNESS,
     };
 }
 

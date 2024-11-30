@@ -15,7 +15,41 @@ export function addMapModifyShapeCelestialDirection() {
         isPositionInside: isPositionInside,
         getPaintClipPath: getPaintClipPath,
         paintShapeWithCircleCutOut: paintShapeWithCircleCutOut,
+        getMiddle: getMiddle,
     };
+}
+
+function getMiddle(shape: GameMapArea, game: Game): Position {
+    const celestialDirection = shape as GameMapAreaCelestialDirection;
+    const kingArea = game.state.map.kingArea;
+    if (kingArea === undefined) {
+        throw "should not happen?";
+    }
+    const numberChunks = kingArea.numberChunksUntil;
+    const chunkSize = game.state.map.chunkLength * game.state.map.tileSize;
+    const distance = (numberChunks + kingArea.size / 2) * chunkSize;
+    switch (celestialDirection.celestialDirection) {
+        case "north":
+            return {
+                x: 0,
+                y: -distance,
+            }
+        case "east":
+            return {
+                x: distance,
+                y: 0,
+            }
+        case "south":
+            return {
+                x: 0,
+                y: distance,
+            }
+        case "west":
+            return {
+                x: -distance,
+                y: 0,
+            }
+    }
 }
 
 function paintShapeWithCircleCutOut(ctx: CanvasRenderingContext2D, shape: GameMapArea, circlePos: Position, circleRadius: number, game: Game) {

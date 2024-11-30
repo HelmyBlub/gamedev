@@ -10,6 +10,7 @@ import { getPlayerCharacters } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
 import { createAreaBossLighntingCloudMachine } from "../../character/enemy/areaBoss/areaBossCloudMachine.js";
+import { MODIFY_SHAPE_NAME_CELESTIAL_DIRECTION } from "./mapShapeCelestialDirection.js";
 
 export const MODIFIER_NAME_LIGHTNING = "Lightning";
 export type MapModifierLightning = GameMapModifier & {
@@ -57,7 +58,7 @@ function tick(modifier: GameMapModifier, game: Game) {
             }
         }
         if (playerInside) {
-            const middle = getShapeMiddle(modifier.area);
+            const middle = getShapeMiddle(modifier.area, game);
             if (middle) {
                 const cloudSpawn = getCloudSpawnPosition(playerInside, middle, lightning.centerRadius, game);
                 const direction = calculateDirection(middle, cloudSpawn);
@@ -97,7 +98,10 @@ function onGameInit(modifier: GameMapModifier, game: Game) {
     }
     const lightning = modifier as MapModifierLightning;
     lightning.nextSpawnTimeCheck = undefined;
-    spawn = getShapeMiddle(modifier.area);
+    if (lightning.area.type === MODIFY_SHAPE_NAME_CELESTIAL_DIRECTION) {
+        return;
+    }
+    spawn = getShapeMiddle(modifier.area, game);
     if (spawn === undefined) return;
     const areaBoss = createAreaBossLighntingCloudMachine(game.state.idCounter, spawn, modifier.id, game);
     game.state.bossStuff.bosses.push(areaBoss);

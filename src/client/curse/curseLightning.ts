@@ -3,6 +3,7 @@ import { Character } from "../character/characterModel.js";
 import { getCameraPosition } from "../game.js";
 import { Game, Position } from "../gameModel.js";
 import { getPointPaintPosition, paintTextWithOutline } from "../gamePaint.js";
+import { MODIFIER_NAME_LIGHTNING } from "../map/modifiers/mapModifierLightning.js";
 import { nextRandom } from "../randomNumberGenerator.js";
 import { Curse, CURSES_FUNCTIONS } from "./curse.js";
 
@@ -20,6 +21,7 @@ export function addCurseLightning() {
         paint: paint,
         reset: reset,
         tick: tick,
+        mapMidifierName: MODIFIER_NAME_LIGHTNING,
     };
 }
 

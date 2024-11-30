@@ -1,11 +1,8 @@
 import { paintCharacters } from "../character/characterPaint.js";
-import { calculateDistance } from "../game.js";
 import { Debugging, Game, MapChunkPaintCache, Position } from "../gameModel.js";
-import { chunkXYToMapKey, GameMap, getTileIdForTileName, MapChunk, mapKeyAndTileXYToPosition, TILE_VALUES } from "./map.js";
+import { chunkXYToMapKey, GameMap, getTileIdForTileName, MapChunk, TILE_VALUES } from "./map.js";
 import { paintMapChunkObjects } from "./mapObjects.js";
 import { mapModifierDarknessDarknesChunkPaint, MODIFIER_NAME_DARKNESS } from "./modifiers/mapModifierDarkness.js";
-import { mapModifierGrowArea } from "./modifiers/mapModifier.js";
-import { getShapeArea, getShapeMiddle } from "./modifiers/mapModifierShapes.js";
 
 export type MapPaintLayer = "Layer1" | "Layer2";
 

@@ -7,6 +7,7 @@ import { GameMapArea, isPositionInsideShape, onDomLoadMapModifierShapes, setShap
 import { GameMapAreaCelestialDirection, MODIFY_SHAPE_NAME_CELESTIAL_DIRECTION } from "./mapShapeCelestialDirection.js"
 import { CURSE_DARKNESS } from "../../curse/curseDarkness.js"
 import { addMapModifierLightning } from "./mapModifierLightning.js"
+import { CURSES_FUNCTIONS } from "../../curse/curse.js"
 
 export type GameMapModifier = {
     id: number,
@@ -139,27 +140,26 @@ function removeMapModifierCelestialIfNoKingWithCurse(game: Game) {
 
 function addMapModifierIfKingHasCurse(game: Game) {
     const celestialDirections = Object.keys(game.state.bossStuff.nextKings) as CelestialDirection[];
-    game.state.bossStuff.nextKings.east?.curses
     for (let celestialDirection of celestialDirections) {
         const king = game.state.bossStuff.nextKings[celestialDirection];
         if (!king || !king.curses) continue;
         for (let curse of king.curses) {
-            if (curse.type === CURSE_DARKNESS) {
-                let alreadyExists = false;
-                for (let mapModifier of game.state.map.mapModifiers) {
-                    if (mapModifier.type === MODIFIER_NAME_DARKNESS
-                        && mapModifier.area.type === MODIFY_SHAPE_NAME_CELESTIAL_DIRECTION
-                        && (mapModifier.area as GameMapAreaCelestialDirection).celestialDirection === celestialDirection
-                    ) alreadyExists = true;
-                }
-                if (alreadyExists) continue;
-                const area: GameMapAreaCelestialDirection = {
-                    type: MODIFY_SHAPE_NAME_CELESTIAL_DIRECTION,
-                    celestialDirection: celestialDirection,
-                };
-                const darkness = createMapModifier(MODIFIER_NAME_DARKNESS, area, game.state.idCounter);
-                if (darkness) game.state.map.mapModifiers.push(darkness);
+            let alreadyExists = false;
+            for (let mapModifier of game.state.map.mapModifiers) {
+                if (mapModifier.type === curse.type
+                    && mapModifier.area.type === MODIFY_SHAPE_NAME_CELESTIAL_DIRECTION
+                    && (mapModifier.area as GameMapAreaCelestialDirection).celestialDirection === celestialDirection
+                ) alreadyExists = true;
             }
+            if (alreadyExists) continue;
+            const area: GameMapAreaCelestialDirection = {
+                type: MODIFY_SHAPE_NAME_CELESTIAL_DIRECTION,
+                celestialDirection: celestialDirection,
+            };
+            const curseFunctions = CURSES_FUNCTIONS[curse.type];
+            if (!curseFunctions) return;
+            const mapModifier = createMapModifier(curseFunctions.mapMidifierName, area, game.state.idCounter);
+            if (mapModifier) game.state.map.mapModifiers.push(mapModifier);
         }
     }
 }

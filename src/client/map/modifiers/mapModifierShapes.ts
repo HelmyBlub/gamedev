@@ -4,7 +4,7 @@ import { addMapModifyShapeCircle } from "./mapShapeCircle.js";
 import { addMapModifyShapeRectangle } from "./mapShapeRectangle.js";
 
 export type GameMapModifyShapeFunctions = {
-    getMiddle?: (shape: GameMapArea) => Position,
+    getMiddle?: (shape: GameMapArea, game: Game) => Position,
     setAreaToAmount?: (shape: GameMapArea, value: number) => void,
     getArea?: (shape: GameMapArea) => number,
     isPositionInside: (shape: GameMapArea, position: Position, game: Game) => boolean
@@ -28,9 +28,9 @@ export function onDomLoadMapModifierShapes() {
     addMapModifyShapeCelestialDirection();
 }
 
-export function getShapeMiddle(shape: GameMapArea): Position | undefined {
+export function getShapeMiddle(shape: GameMapArea, game: Game): Position | undefined {
     const shapeFunctions = GAME_MAP_MODIFY_SHAPES_FUNCTIONS[shape.type];
-    if (shapeFunctions.getMiddle) return shapeFunctions.getMiddle(shape);
+    if (shapeFunctions.getMiddle) return shapeFunctions.getMiddle(shape, game);
     return undefined;
 }
 

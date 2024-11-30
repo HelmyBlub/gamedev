@@ -17,6 +17,7 @@ export type CurseFunctions = {
     paint?: (ctx: CanvasRenderingContext2D, curse: Curse, target: Character, game: Game) => void,
     reset?: (curse: Curse) => void,
     tick?: (curse: Curse, target: Character, game: Game) => void,
+    mapMidifierName: string,
 }
 
 export type CursesFunctions = {

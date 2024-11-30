@@ -1,13 +1,15 @@
-next test run: sniper, builder, tamer, ball, musician
+next test run: builder, tamer, ball, musician
 increase version
 
 current tasks:
 - map modifier
     - lightning storm
-        - check spawn of cloudMachine, should not be atop of blocking tile
         - check lightning curse on king
-        - check lightning curse on legendary
+            - clouds missing
         - check cloud  machine damage values
+        - check lightnung curse giving xp?
+        - check damage meter
+        - check combat log
         - check other stuff i might have forgot
 - improve cloud machine boss
 - change cheat closeCurseDarkness to closeCurses

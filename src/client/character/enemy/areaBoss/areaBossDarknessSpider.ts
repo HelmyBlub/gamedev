@@ -236,7 +236,7 @@ function tickMoveBehavior(spider: AreaBossEnemyDarknessSpider, modifier: GameMap
     }
     let newPos;
     spider.isMoving = true;
-    const middle = getShapeMiddle(modifier.area);
+    const middle = getShapeMiddle(modifier.area, game);
     switch (aiBehaviour) {
         case "moveBack":
             spider.moveDirection = calculateDirection(spider, middle!);
@@ -273,7 +273,7 @@ function canMove(spider: AreaBossEnemyDarknessSpider): boolean {
 }
 
 function findNearesPlayerToSpiderInModifiedArea(areaBoss: AreaBossEnemyDarknessSpider, modifier: GameMapModifier, game: Game): { playerCharacter: Character, distanceToModifierMiddle: number, distanceCharToSpider: number } | undefined {
-    const middle = getShapeMiddle(modifier.area);
+    const middle = getShapeMiddle(modifier.area, game);
     if (!middle) return;
     let closestPlayer: Character | undefined;
     let closestPlayerDistance = 0;

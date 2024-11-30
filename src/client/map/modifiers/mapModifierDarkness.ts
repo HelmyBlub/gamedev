@@ -7,6 +7,7 @@ import { GAME_MAP_MODIFIER_FUNCTIONS, GameMapModifier } from "./mapModifier.js";
 import { GameMapArea, getShapeArea, getShapeMiddle, getShapePaintClipPath, paintShapeWithCircleCutOut, setShapeAreaToAmount } from "./mapModifierShapes.js";
 import { GameMapAreaRect, MODIFY_SHAPE_NAME_RECTANGLE } from "./mapShapeRectangle.js";
 import { createAreaBossDarknessSpiderWithLevel } from "../../character/enemy/areaBoss/areaBossDarknessSpider.js";
+import { MODIFY_SHAPE_NAME_CELESTIAL_DIRECTION } from "./mapShapeCelestialDirection.js";
 
 export const MODIFIER_NAME_DARKNESS = "Darkness";
 export type MapModifierDarkness = GameMapModifier & {
@@ -28,7 +29,7 @@ export function mapModifierDarknessDarknesChunkPaint(ctx: CanvasRenderingContext
     const maxDistance = 2000;
     const darkestSize = 1000;
     if (area > Math.pow(maxDistance + darkestSize, 2) * Math.PI) {
-        const middle = getShapeMiddle(modifier.area);
+        const middle = getShapeMiddle(modifier.area, game);
         if (middle === undefined) return;
         const chunkKey = chunkXYToMapKey(chunkXY.x, chunkXY.y);
         const tilePosition = mapKeyAndTileXYToPosition(chunkKey, tileX, tileY, game.state.map)
@@ -68,7 +69,10 @@ function onGameInit(modifier: GameMapModifier, game: Game) {
             area.y = -2000;
         }
     }
-    spawn = getShapeMiddle(modifier.area);
+    if (modifier.area.type === MODIFY_SHAPE_NAME_CELESTIAL_DIRECTION) {
+        return;
+    }
+    spawn = getShapeMiddle(modifier.area, game);
     if (spawn === undefined) return;
     const areaBoss = createAreaBossDarknessSpiderWithLevel(game.state.idCounter, spawn, modifier.id, game);
 
