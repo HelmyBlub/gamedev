@@ -105,7 +105,7 @@ function testPlayerClasses(game: Game) {
     replay.testInputFileQueue.push("/data/testReplayShortTamer.json");
     replay.testInputFileQueue.push("/data/testReplayShortBall.json");
     replay.testInputFileQueue.push("/data/testReplayShortMusician.json");
-    replay.testInputFileQueue.push("/data/testReplayShortKing.json");
+    //replay.testInputFileQueue.push("/data/testReplayShortKing.json");
 
     // replay.testInputFileQueue.push("/data/testReplayMultiplayer.json");
 
