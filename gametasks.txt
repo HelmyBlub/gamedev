@@ -1,10 +1,7 @@
-next test run: builder, tamer, ball, musician
+next test run: sniper, builder, tamer, ball, musician // because of different tickInterval, all previous broken
 increase version
 
 current tasks:
-- I don't want to drop below 60 updates per second if i still have more than 30 frames per seconds. Numbers configurable.
-    - configure minimal FPS before reducing "updates per second"
-        - minimal FPS = 30. if sleep
 - map modifier
     - lightning storm
         - check damage meter
