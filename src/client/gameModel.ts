@@ -303,8 +303,13 @@ export type Game = {
     canvasElement?: HTMLCanvasElement,
     ctx?: CanvasRenderingContext2D,
     state: GameState,
-    shouldTickTime?: number,
-    tickInterval: number,
+    gameSpeedSettings: {
+        desiredUpdatesPerSecond: number,
+        minimalFramesPerSecondBeforeReducingUpdatesPerSecond: number,
+        maxTicksPerPaint: number,
+        ticksPerPaint: number[],
+        shouldTickTime?: number,
+    }
     clientKeyBindings?: ClientKeyBindings,
     controllersButtons: ControllerButtonsPressed[],
     multiplayer: Multiplayer,
@@ -365,7 +370,12 @@ export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: Can
             gameVersion: GAME_VERSION,
             achievements: createDefaultAchivements(),
         },
-        tickInterval: 16,
+        gameSpeedSettings: {
+            desiredUpdatesPerSecond: 60,
+            maxTicksPerPaint: 10,
+            minimalFramesPerSecondBeforeReducingUpdatesPerSecond: 30,
+            ticksPerPaint: [0],
+        },
         multiplayer: {
             myClientId: -1,
             websocket: null,

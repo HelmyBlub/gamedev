@@ -55,7 +55,7 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
     paintFightWipeUI(ctx, game);
     paintEndScreen(ctx, game.state.highscores, game);
     paintMyCharacterStats(ctx, game);
-    paintTimeMeasures(ctx, game.debug);
+    paintTimeMeasures(ctx, game.debug, game);
     paintMoreInfos(ctx, game.UI.moreInfos, game);
     paintMultiplayer(ctx, game);
     paintPausedText(ctx, game);
@@ -452,7 +452,7 @@ function paintWasdKeys(ctx: CanvasRenderingContext2D, paintX: number, paintY: nu
     paintKey(ctx, "D", { x: paintX + 80, y: paintY + 30 });
 }
 
-function paintTimeMeasures(ctx: CanvasRenderingContext2D, debug: Debugging | undefined) {
+function paintTimeMeasures(ctx: CanvasRenderingContext2D, debug: Debugging | undefined, game: Game) {
     if (debug === undefined || debug.takeTimeMeasures !== true) return;
     const fontSize = 12;
     const startX = 0;
@@ -462,14 +462,21 @@ function paintTimeMeasures(ctx: CanvasRenderingContext2D, debug: Debugging | und
 
     ctx.fillStyle = "black";
     ctx.font = fontSize + "px Arial";
+    let totalTicks = 0;
+    for (let i = 1; i < game.gameSpeedSettings.ticksPerPaint.length; i++) {
+        totalTicks += game.gameSpeedSettings.ticksPerPaint[i];
+    }
+    const avgTickPerPaint = totalTicks / (game.gameSpeedSettings.ticksPerPaint.length - 1);
+
     for (let i = 0; i < debug.timeMeasuresData!.length; i++) {
         const data = debug.timeMeasuresData![i];
         const sum = data.timeMeasures.reduce((a, b) => a + b, 0);
         const avg = (sum / data.timeMeasures.length) || 0;
         if (i === 0) {
             ctx.fillText((1000 / avg).toFixed(1) + " FPS", startX, startY + i * fontSize);
+            ctx.fillText((1000 / avg * avgTickPerPaint).toFixed(1) + " UPS", startX, startY + (i + 1) * fontSize);
         }
-        ctx.fillText(avg.toFixed(2) + " " + data.name, startX, startY + (i + 1) * fontSize);
+        ctx.fillText(avg.toFixed(2) + " " + data.name, startX, startY + (i + 2) * fontSize);
     }
 }
 

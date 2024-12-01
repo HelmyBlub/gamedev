@@ -554,20 +554,48 @@ export function retryFight(game: Game) {
     game.state.abilityObjects = [];
 }
 
+function shouldTickCatchUpSinglePlayer(game: Game, shouldTickTime: number): boolean {
+    if (game.gameSpeedSettings.ticksPerPaint[0] === 0) return true;
+    const now = performance.now();
+    if (shouldTickTime < now) {
+        const maxTicksPerPaint = game.gameSpeedSettings.desiredUpdatesPerSecond / game.gameSpeedSettings.minimalFramesPerSecondBeforeReducingUpdatesPerSecond;
+        let totalTicks = 0;
+        for (let i = 0; i < game.gameSpeedSettings.ticksPerPaint.length; i++) {
+            totalTicks += game.gameSpeedSettings.ticksPerPaint[i];
+        }
+        const avgTickPerPaint = totalTicks / game.gameSpeedSettings.ticksPerPaint.length;
+        if (maxTicksPerPaint >= avgTickPerPaint) {
+            return true;
+        } else {
+            game.gameSpeedSettings.shouldTickTime = now;
+            return false;
+        }
+    }
+    return false;
+}
+
 function tickAndPaint(game: Game) {
+    const tickInterval = 1000 / game.gameSpeedSettings.desiredUpdatesPerSecond;
+    if (game.gameSpeedSettings.shouldTickTime === undefined) game.gameSpeedSettings.shouldTickTime = performance.now();
     takeTimeMeasure(game.debug, "total", "");
     takeTimeMeasure(game.debug, "", "total");
     takeTimeMeasure(game.debug, "?timeout?", "");
     takeTimeMeasure(game.debug, "", "runner");
-    takeTimeMeasure(game.debug, "", "tick");
     if (game.multiplayer.websocket === null) {
         if (game.testing.replay && game.testing.replay.frameSkipAmount && game.testing.replay.frameSkipAmount > 0) {
             for (let i = 0; i < game.testing.replay.frameSkipAmount; i++) {
-                tick(game.tickInterval, game);
-                if (i < game.testing.replay.frameSkipAmount - 1) takeTimeMeasure(game.debug, "tick", "tick");
+                takeTimeMeasure(game.debug, "", "tick");
+                tick(tickInterval, game);
+                takeTimeMeasure(game.debug, "tick", "");
             }
         } else {
-            tick(game.tickInterval, game);
+            while (shouldTickCatchUpSinglePlayer(game, game.gameSpeedSettings.shouldTickTime)) {
+                takeTimeMeasure(game.debug, "", "tick");
+                tick(tickInterval, game);
+                game.gameSpeedSettings.ticksPerPaint[0]++;
+                game.gameSpeedSettings.shouldTickTime += tickInterval;
+                takeTimeMeasure(game.debug, "tick", "");
+            }
         }
     } else {
         const timeNow = performance.now();
@@ -576,28 +604,31 @@ function tickAndPaint(game: Game) {
         const realTimePassed = timeNow - game.multiplayer.worstCaseGameStartTime;
         while (!game.state.ended
             && (
-                (game.multiplayer.maxServerGameTime >= game.state.time + game.tickInterval
-                    && realTimePassed > game.state.time + game.tickInterval)
+                (game.multiplayer.maxServerGameTime >= game.state.time + tickInterval
+                    && realTimePassed > game.state.time + tickInterval)
                 || game.state.triggerRestart
             )
             && counter < maxCounter
         ) {
             counter++;
-            tick(game.tickInterval, game);
+            takeTimeMeasure(game.debug, "", "tick");
+            tick(tickInterval, game);
+            takeTimeMeasure(game.debug, "tick", "");
         }
         if (counter >= 50) {
             console.log("game can not keep up");
         }
     }
-    takeTimeMeasure(game.debug, "tick", "paint");
-
+    takeTimeMeasure(game.debug, "", "paint");
     paintAll(game.ctx, game);
+    game.gameSpeedSettings.ticksPerPaint.unshift(0);
+    if (game.gameSpeedSettings.maxTicksPerPaint < game.gameSpeedSettings.ticksPerPaint.length) game.gameSpeedSettings.ticksPerPaint.pop();
     takeTimeMeasure(game.debug, "paint", "");
     if (game.state.ended && game.state.triggerRestart) {
         gameRestart(game);
     }
 
-    const timeoutSleep = determineRunnerTimeout(game);
+    const timeoutSleep = determineRunnerTimeout(game, tickInterval);
     takeTimeMeasure(game.debug, "runner", "");
     takeTimeMeasure(game.debug, "", "?timeout?", timeoutSleep);
     return timeoutSleep;
@@ -624,27 +655,13 @@ function tickPastCharacters(game: Game) {
     }
 }
 
-function determineRunnerTimeout(game: Game): number {
+function determineRunnerTimeout(game: Game, tickInterval: number): number {
     if (game.testing.replay?.zeroTimeout) {
         return 0;
     } else {
         if (game.multiplayer.websocket === null) {
-            if (game.shouldTickTime === undefined) {
-                game.shouldTickTime = performance.now();
-                return game.tickInterval;
-            } else {
-                game.shouldTickTime += game.tickInterval;
-                const timeEnd = performance.now();
-                let timeoutSleep = game.shouldTickTime - timeEnd;
-                if (timeoutSleep < 0) {
-                    game.shouldTickTime = timeEnd;
-                    timeoutSleep = 0;
-                    if (game.state.time > 1000) {
-                        console.log("game slow down, can not keep up");
-                    }
-                }
-                return timeoutSleep;
-            }
+            const timeRemaining = game.gameSpeedSettings.shouldTickTime! - performance.now();
+            return Math.max(Math.min(timeRemaining, tickInterval), 0);
         } else {
             return 5;
         }
