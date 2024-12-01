@@ -2,18 +2,24 @@ next test run: builder, tamer, ball, musician
 increase version
 
 current tasks:
+- check if replays still work
+    - because sniper replay failed
+- I don't want to drop below 60 updates per second if i still have more than 30 frames per seconds. Numbers configurable.
+    - configure minimal FPS before reducing "updates per second"
+        - minimal FPS = 30. if sleep
 - map modifier
     - lightning storm
-        - check cloud machine damage values
-        - check lightnung curse giving xp?
         - check damage meter
         - check combat log
+        - image for cloud boss
+            - currently a black circle not good enough
         - check other stuff i might have forgot
-- improve cloud machine boss
 - change cheat closeCurseDarkness to closeCurses
 - check chunks mapModifiers flags purpose?
 - be able to cleanse bad part of curses
-- I don't want to drop below 60 updates per second if i still have more than 30 frames per seconds. Numbers configurable.
+- bug: tower builder combatlog
+    - single target damage missing
+    - tower line missing
 
 next feature ideas:
 - maybe:
