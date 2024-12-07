@@ -106,7 +106,7 @@ function curseIncreaseCharacter(character: Character, curseType: string, game: G
         curse = character.curses!.find(c => c.type === curseType) as Curse;
     }
     if (!curse) {
-        curse = createCurse(curseType);
+        curse = createCurse(curseType, game.state.idCounter);
         applyCurse(curse, character, game);
     } else {
         increaseCurseLevel(character, curse, 0.2, game);

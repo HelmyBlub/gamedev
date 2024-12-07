@@ -182,7 +182,7 @@ function interactBurrow(interacter: Character, mapObject: MapTileObject, game: G
     resetCharacter(interacter, game);
     if (classBuilding.characterClass.curses && interacter.characterClasses) {
         if (interacter.curses === undefined) interacter.curses = [];
-        copyCursesToTarget(classBuilding.characterClass.curses, interacter.curses, game);
+        copyCursesToTarget(classBuilding.characterClass.curses, interacter.curses, game, interacter.faction);
     }
     fillRandomUpgradeOptionChoices(interacter, game);
 }

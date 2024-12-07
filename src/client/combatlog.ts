@@ -1,7 +1,7 @@
-import { Ability, findAbilityAndOwnerInCharacterById, findAbilityOwnerById } from "./ability/ability.js"
+import { Ability, findAbilityAndOwnerInCharacterById, findAbilityOrCurseInCharacterById, findAbilityOwnerById } from "./ability/ability.js"
 import { getPlayerCharacters } from "./character/character.js"
 import { Character } from "./character/characterModel.js"
-import { TamerPetCharacter } from "./character/playerCharacters/tamer/tamerPetCharacter.js"
+import { Curse } from "./curse/curse.js"
 import { getTimeSinceFirstKill } from "./game.js"
 import { Game } from "./gameModel.js"
 import { MoreInfoPart, MoreInfos, MoreInfosPartContainer, createDefaultMoreInfosContainer, createMoreInfosPart } from "./moreInfo.js"
@@ -102,6 +102,28 @@ export function addDamageBreakDownToDamageMeter(damageMeter: DamageMeter, abilit
     }
 }
 
+export function addCurseDamageBreakDownToDamageMeter(damageMeter: DamageMeter, curse: Curse, breakDowns: AbilityDamageBreakdown[], clientId: number) {
+    if (damageMeter.splits.length === 0) damageMeter.splits.push({
+        title: "",
+        damageData: []
+    });
+    let curseDamageData = damageMeter.splits[0].damageData.find(data => data.abilityRefId === curse.id);
+    if (!curseDamageData) {
+        curseDamageData = {
+            abilityName: curse.type,
+            abilityRefId: curse.id,
+            clientId: clientId,
+            totalDamage: 0,
+            damageBreakDown: [],
+        };
+        damageMeter.splits[0].damageData.push(curseDamageData);
+    }
+    for (let entry of breakDowns) {
+        curseDamageData.totalDamage += entry.damage;
+    }
+}
+
+
 export function createCombatLogMoreInfo(ctx: CanvasRenderingContext2D, moreInfos: MoreInfos, combatlog: Combatlog | undefined): MoreInfosPartContainer | undefined {
     if (combatlog === undefined) return;
     if (combatlog.damageTakenLog.length === 0 && combatlog.damageDoneLog.length === 0) return;
@@ -129,10 +151,10 @@ export function addCombatlogDamageTakenEntry(character: Character, damage: numbe
     addLog(combatlog.damageTakenLog, character, damage, abilityName, character.id, combatlog.maxLogEntries, game);
 }
 
-export function addCombatlogDamageDoneEntry(targetCharacter: Character, damage: number, abilityName: string, abilityId: number, game: Game) {
+export function addCombatlogDamageDoneEntry(targetCharacter: Character, damage: number, abilityName: string, damageSourceId: number, game: Game) {
     for (let char of getPlayerCharacters(game.state.players)) {
         if (!char.combatlog) continue;
-        const abOwn = findAbilityAndOwnerInCharacterById(char, abilityId);
+        const abOwn = findAbilityOrCurseInCharacterById(char, damageSourceId);
         if (!abOwn) continue;
         const combatlog = char.combatlog;
         if (abOwn.owner !== char) {

@@ -1,23 +1,27 @@
+import { AbilityObject } from "../ability/ability.js";
 import { addParticleEffect } from "../additionalPaint.js";
 import { Character } from "../character/characterModel.js";
-import { Game, Position } from "../gameModel.js";
+import { AbilityDamageBreakdown, addCurseDamageBreakDownToDamageMeter, addDamageBreakDownToDamageMeter } from "../combatlog.js";
+import { FACTION_PLAYER, Game, IdCounter, Position } from "../gameModel.js";
 import { addCurseDarkness } from "./curseDarkness.js";
 import { addCurseLightning } from "./curseLightning.js";
 
 export type Curse = {
+    id: number,
     type: string,
     level: number,
     visualizeFadeTimer?: number,
+    doDamageBreakDown?: boolean,
 }
 
 export type CurseFunctions = {
-    copy: (curse: Curse) => Curse,
-    create: () => Curse,
+    copy: (curse: Curse, idCounter: IdCounter) => Curse,
+    create: (idCounter: IdCounter) => Curse,
     onCurseIncreased?: (curse: Curse, target: Character, game: Game) => void,
     paint?: (ctx: CanvasRenderingContext2D, curse: Curse, target: Character, game: Game) => void,
     reset?: (curse: Curse) => void,
     tick?: (curse: Curse, target: Character, game: Game) => void,
-    mapMidifierName: string,
+    mapModifierName: string,
 }
 
 export type CursesFunctions = {
@@ -31,9 +35,9 @@ export function onDomLoadCurses() {
     addCurseLightning();
 }
 
-export function createCurse(curesType: string): Curse {
+export function createCurse(curesType: string, idCounter: IdCounter): Curse {
     const functions = CURSES_FUNCTIONS[curesType];
-    return functions.create();
+    return functions.create(idCounter);
 }
 
 export function resetCurses(target: Character) {
@@ -61,7 +65,7 @@ export function tickCurses(target: Character, game: Game) {
     }
 }
 
-export function copyCursesToTarget(sourceCurses: Curse[], targetCurses: Curse[], game: Game) {
+export function copyCursesToTarget(sourceCurses: Curse[], targetCurses: Curse[], game: Game, targetFaction: string | undefined = undefined) {
     for (let sourceCurse of sourceCurses) {
         const index = targetCurses.findIndex(c => c.type === sourceCurse.type);
         if (index > -1) {
@@ -72,17 +76,29 @@ export function copyCursesToTarget(sourceCurses: Curse[], targetCurses: Curse[],
             }
         } else {
             const functions = CURSES_FUNCTIONS[sourceCurse.type];
-            const curse = functions.copy(sourceCurse);
+            const curse = functions.copy(sourceCurse, game.state.idCounter);
             curse.visualizeFadeTimer = game.state.time + 2000;
+            if (targetFaction === FACTION_PLAYER) curse.doDamageBreakDown = true;
             targetCurses.push(curse);
         }
     }
+}
+
+export function doCurseDamageBreakDown(damage: number, curse: Curse, clientId: number, game: Game) {
+    if (!curse.doDamageBreakDown) return;
+    const damageBreakDown: AbilityDamageBreakdown[] = [];
+    damageBreakDown.push({
+        damage: damage,
+        name: curse.type,
+    });
+    addCurseDamageBreakDownToDamageMeter(game.UI.damageMeter, curse, damageBreakDown, clientId);
 }
 
 export function applyCurse(curse: Curse, character: Character, game: Game) {
     if (!character.curses) character.curses = [];
     if (character.curses.find(c => c.type === curse.type)) return;
     character.curses.push(curse);
+    if (character.faction === FACTION_PLAYER) curse.doDamageBreakDown = true;
 }
 
 export function addCursedParticleEffect(curses: Curse[], position: Position, game: Game) {

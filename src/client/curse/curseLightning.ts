@@ -1,13 +1,13 @@
 import { createAbilityObjectExplode } from "../ability/abilityExplode.js";
 import { Character } from "../character/characterModel.js";
-import { getCameraPosition } from "../game.js";
-import { Game, Position } from "../gameModel.js";
+import { getCameraPosition, getNextId } from "../game.js";
+import { Game, IdCounter, Position } from "../gameModel.js";
 import { getPointPaintPosition, paintTextWithOutline } from "../gamePaint.js";
 import { MODIFIER_NAME_LIGHTNING } from "../map/modifiers/mapModifierLightning.js";
 import { nextRandom } from "../randomNumberGenerator.js";
 import { Curse, CURSES_FUNCTIONS } from "./curse.js";
 
-export const CURSE_LIGHTNING = "Lightning";
+export const CURSE_LIGHTNING = "Curse Lightning";
 
 export type CurseLightning = Curse & {
     tickInterval: number
@@ -21,12 +21,13 @@ export function addCurseLightning() {
         paint: paint,
         reset: reset,
         tick: tick,
-        mapMidifierName: MODIFIER_NAME_LIGHTNING,
+        mapModifierName: MODIFIER_NAME_LIGHTNING,
     };
 }
 
-function create(): CurseLightning {
+function create(idCounter: IdCounter): CurseLightning {
     return {
+        id: getNextId(idCounter),
         level: 1,
         type: CURSE_LIGHTNING,
         tickInterval: 1000,
@@ -38,8 +39,8 @@ function reset(curse: Curse) {
     lightning.lastTickTime = undefined;
 }
 
-function copy(curse: Curse): Curse {
-    const copy = create();
+function copy(curse: Curse, idCounter: IdCounter): Curse {
+    const copy = create(idCounter);
     copy.level = curse.level;
     return copy;
 }
@@ -69,7 +70,7 @@ function tick(curse: Curse, target: Character, game: Game) {
                 x: target.x + nextRandom(game.state.randomSeed) * spawnAreaRadius * 2 - spawnAreaRadius,
                 y: target.y + nextRandom(game.state.randomSeed) * spawnAreaRadius * 2 - spawnAreaRadius,
             };
-            const strikeObject = createAbilityObjectExplode(randomPos, damage, explosionRadius, "", undefined, strikeDelay, game);
+            const strikeObject = createAbilityObjectExplode(randomPos, damage, explosionRadius, "", curse.id, strikeDelay, game);
             strikeObject.specificDamageForFactionPlayer = lightning.level * 10;
             game.state.abilityObjects.push(strikeObject);
         }

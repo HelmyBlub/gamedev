@@ -3,14 +3,14 @@ import { Character } from "../character/characterModel.js";
 import { CHARACTER_TYPE_BOSS_CLONE_ENEMY, setCharacterToBossLevel } from "../character/enemy/bossEnemy.js";
 import { CHARACTER_PET_TYPE_CLONE, CharacterPetClone } from "../character/playerCharacters/characterPetTypeClone.js";
 import { TAMER_PET_CHARACTER } from "../character/playerCharacters/tamer/tamerPetCharacter.js";
-import { changeCharacterAndAbilityIds, deepCopy, getCameraPosition } from "../game.js";
-import { FACTION_ENEMY, FACTION_PLAYER, Game } from "../gameModel.js";
+import { changeCharacterAndAbilityIds, deepCopy, getCameraPosition, getNextId } from "../game.js";
+import { FACTION_ENEMY, FACTION_PLAYER, Game, IdCounter } from "../gameModel.js";
 import { getPointPaintPosition, paintTextWithOutline } from "../gamePaint.js";
 import { MODIFIER_NAME_DARKNESS } from "../map/modifiers/mapModifierDarkness.js";
 import { RandomizedCharacterImage } from "../randomizedCharacterImage.js";
 import { Curse, CURSES_FUNCTIONS } from "./curse.js";
 
-export const CURSE_DARKNESS = "Darkness";
+export const CURSE_DARKNESS = "Curse Darkness";
 const TIME_TO_TURN_EVIL = 60000;
 const CLONE_SPAWN_INTERVAL = 1000;
 const EVIL_TRANSFORM_TIME = 3000;
@@ -31,12 +31,13 @@ export function addCurseDarkness() {
         paint: paintCurse,
         reset: reset,
         tick: tickDarkness,
-        mapMidifierName: MODIFIER_NAME_DARKNESS,
+        mapModifierName: MODIFIER_NAME_DARKNESS,
     };
 }
 
-function create(): CurseDarkness {
+function create(idCounter: IdCounter): CurseDarkness {
     return {
+        id: getNextId(idCounter),
         level: 1,
         type: CURSE_DARKNESS,
         cloneCounter: 0,
@@ -73,8 +74,8 @@ function onCurseDarknessIncrease(curse: Curse, curseTarget: Character, game: Gam
     }
 }
 
-function copy(curse: Curse): Curse {
-    const copy = create();
+function copy(curse: Curse, idCounter: IdCounter): Curse {
+    const copy = create(idCounter);
     copy.level = curse.level;
     return copy;
 }

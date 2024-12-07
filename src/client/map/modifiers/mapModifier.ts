@@ -158,7 +158,7 @@ function addMapModifierIfKingHasCurse(game: Game) {
             };
             const curseFunctions = CURSES_FUNCTIONS[curse.type];
             if (!curseFunctions) return;
-            const mapModifier = createMapModifier(curseFunctions.mapMidifierName, area, game.state.idCounter);
+            const mapModifier = createMapModifier(curseFunctions.mapModifierName, area, game.state.idCounter);
             if (mapModifier) game.state.map.mapModifiers.push(mapModifier);
         }
     }

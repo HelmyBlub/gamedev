@@ -43,6 +43,7 @@ import { addAbilityCircleAround } from "./abilityCircleAround.js"
 import { GAME_IMAGES, getImage, loadImage } from "../imageLoad.js"
 import { TamerPetCharacter } from "../character/playerCharacters/tamer/tamerPetCharacter.js"
 import { addAbilityCloud } from "./abilityCloud.js"
+import { Curse, doCurseDamageBreakDown } from "../curse/curse.js"
 
 export type Ability = {
     id: number,
@@ -165,21 +166,26 @@ export function doAbilityDamageBreakDownForAbilityId(damage: number, abilityId: 
     let clientId = -1;
     let petName: string | undefined = undefined;
     for (let player of game.state.players) {
-        const result = findAbilityAndOwnerInCharacterById(player.character, abilityId);
+        const result = findAbilityOrCurseInCharacterById(player.character, abilityId);
         if (result) {
-            ability = result.ability;
-            clientId = player.clientId;
-            if (result.owner.paint?.color) {
-                const pet = result.owner as TamerPetCharacter;
-                petName = pet.paint.color;
-                if (pet.gifted) petName += "[g]";
-                if (pet.legendary) petName += "[L]";
+            if (result.ability) {
+                ability = result.ability;
+                clientId = player.clientId;
+                if (result.owner.paint?.color) {
+                    const pet = result.owner as TamerPetCharacter;
+                    petName = pet.paint.color;
+                    if (pet.gifted) petName += "[g]";
+                    if (pet.legendary) petName += "[L]";
+                }
+                if (!ability) return;
+                doAbilityDamageBreakDown(damage, ability, abilityObject, damageAbilityName, clientId, petName, game);
+                return;
             }
-            break;
+            if (result.curse) {
+                doCurseDamageBreakDown(damage, result.curse, clientId, game);
+            }
         }
     }
-    if (!ability) return;
-    doAbilityDamageBreakDown(damage, ability, abilityObject, damageAbilityName, clientId, petName, game);
 }
 
 export function addAbilityToCharacter(character: Character, ability: Ability, charClass: CharacterClass | undefined = undefined) {
@@ -467,6 +473,26 @@ export function createMoreInfosAbilities(ctx: CanvasRenderingContext2D, abilitie
     return result;
 }
 
+export function findAbilityOrCurseInCharacterById(character: Character, sourceId: number): { ability?: Ability, curse?: Curse, owner: AbilityOwner } | undefined {
+    for (let ability of character.abilities) {
+        if (ability.id === sourceId) return { ability: ability, owner: character };
+    }
+    if (character.curses) {
+        for (let curse of character.curses) {
+            if (curse.id === sourceId) return { curse: curse, owner: character };
+        }
+    }
+    if (character.pets) {
+        for (let pet of character.pets) {
+            for (let ability of pet.abilities) {
+                if (ability.id === sourceId) return { ability: ability, owner: pet };
+            }
+        }
+    }
+    return undefined;
+}
+
+
 export function findAbilityAndOwnerInCharacterById(character: Character, abilityId: number): { ability: Ability, owner: AbilityOwner } | undefined {
     for (let ability of character.abilities) {
         if (ability.id === abilityId) return { ability: ability, owner: character };
@@ -480,7 +506,6 @@ export function findAbilityAndOwnerInCharacterById(character: Character, ability
     }
     return undefined;
 }
-
 
 function calculateAbilityUiRectangles(ctx: CanvasRenderingContext2D, player: Player, game: Game) {
     if (!game.UI.playerCharacterAbilityUI || game.UI.playerCharacterAbilityUI.charClassRefId !== player.character.id) {
