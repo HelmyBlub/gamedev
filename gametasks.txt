@@ -1,4 +1,4 @@
-next test run: sniper, builder, tamer, ball, musician // because of different tickInterval, all previous broken
+next test run: builder, tamer, ball, musician // because of different tickInterval, all previous broken
 increase version
 
 current tasks:
