@@ -4,6 +4,7 @@ import { tickCharacterDebuffs } from "../../../debuff/debuff.js";
 import { getNextId } from "../../../game.js";
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
+import { GAME_IMAGES, loadImage } from "../../../imageLoad.js";
 import { findNearNonBlockingPosition } from "../../../map/map.js";
 import { findMapModifierById, removeMapModifier } from "../../../map/modifiers/mapModifier.js";
 import { Character, createCharacter } from "../../characterModel.js";
@@ -16,6 +17,13 @@ export type AreaBossEnemyLightningCloudMachine = AreaBossEnemy & {
 };
 
 export const AREA_BOSS_TYPE_LIGHTNING_CLOUD_MACHINE = "CloudMachine";
+export const IMAGE_AREA_BOSS_TYPE_LIGHTNING_CLOUD_MACHINE = "CloudMachine";
+
+GAME_IMAGES[IMAGE_AREA_BOSS_TYPE_LIGHTNING_CLOUD_MACHINE] = {
+    imagePath: "/images/cloudMachineBoss.png",
+    spriteRowHeights: [100],
+    spriteRowWidths: [100],
+};
 
 export function addAreaBossTypeLighntingCloudMachine() {
     AREA_BOSS_FUNCTIONS[AREA_BOSS_TYPE_LIGHTNING_CLOUD_MACHINE] = {
@@ -30,7 +38,7 @@ export function addAreaBossTypeLighntingCloudMachine() {
 
 export function createAreaBossLighntingCloudMachine(idCounter: IdCounter, spawn: Position, mapModifierIdRef: number, game: Game): AreaBossEnemyLightningCloudMachine {
     const scaling = 2;
-    const bossSize = 40;
+    const bossSize = 80;
     const color = "black";
     const dummyValue = 1;
     const nonBlockingSpawn = findNearNonBlockingPosition(spawn, game.state.map, game.state.idCounter, game);
@@ -66,9 +74,26 @@ function paint(ctx: CanvasRenderingContext2D, character: Character, cameraPositi
     const areaBossPaintPos = getPointPaintPosition(ctx, character, cameraPosition, game.UI.zoom);
     ctx.strokeStyle = "black";
     ctx.fillStyle = "black";
-    ctx.beginPath();
-    ctx.arc(areaBossPaintPos.x, areaBossPaintPos.y, character.width / 2, 0, Math.PI * 2);
-    ctx.fill();
+
+    const characterImage = GAME_IMAGES[IMAGE_AREA_BOSS_TYPE_LIGHTNING_CLOUD_MACHINE];
+    loadImage(characterImage, character.paint.color, undefined);
+    if (characterImage.imageRef) {
+        const paintPos = getPointPaintPosition(ctx, character, cameraPosition, game.UI.zoom);
+        if (paintPos.x < -character.width || paintPos.x > ctx.canvas.width / game.UI.zoom.factor
+            || paintPos.y < -character.height || paintPos.y > ctx.canvas.height / game.UI.zoom.factor) return;
+        const spriteAnimation = Math.floor(game.state.time / 250) % 3;
+        const spriteWidth = characterImage.spriteRowWidths[0];
+        const spriteHeight = characterImage.spriteRowHeights[0];
+        ctx.drawImage(
+            characterImage.imageRef,
+            0 + spriteAnimation * (spriteWidth + 1),
+            0,
+            spriteWidth, spriteHeight,
+            Math.floor(paintPos.x - character.width / 2),
+            Math.floor(paintPos.y - character.height / 2),
+            character.width, character.height
+        );
+    }
 
     const hpBarPos = {
         x: Math.floor(areaBossPaintPos.x - character.width / 2),

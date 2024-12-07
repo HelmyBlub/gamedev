@@ -4,11 +4,6 @@ increase version
 current tasks:
 - map modifier
     - lightning storm
-        - check combat log
-            - combatlog only assumes that abilities can do damage
-            - curse is not an ability but does damage
-            - need to redesign code?
-        - check damage meter
         - image for cloud boss
             - currently a black circle not good enough
         - check different modifier spawn at different locations
