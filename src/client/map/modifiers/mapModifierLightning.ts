@@ -22,7 +22,6 @@ export type MapModifierLightning = GameMapModifier & {
 export function addMapModifierLightning() {
     GAME_MAP_MODIFIER_FUNCTIONS[MODIFIER_NAME_LIGHTNING] = {
         create: create,
-        onChunkCreateModify: onChunkCreateModify,
         onGameInit: onGameInit,
         growArea: growArea,
         tick: tick,
@@ -113,10 +112,4 @@ function growArea(modifier: GameMapModifier) {
     if (lightning.areaPerLevel === undefined) return;
     const areaAmount = lightning.level * lightning.areaPerLevel;
     setShapeAreaToAmount(lightning.area, areaAmount);
-}
-
-function onChunkCreateModify(mapChunk: MapChunk, chunkX: number, chunkY: number, game: Game) {
-    if (mapChunk.mapModifiers === undefined) mapChunk.mapModifiers = [];
-    if (mapChunk.mapModifiers.find(m => m === MODIFIER_NAME_LIGHTNING)) return;
-    mapChunk.mapModifiers.push(MODIFIER_NAME_LIGHTNING);
 }

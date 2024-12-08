@@ -2,7 +2,6 @@ next test run: tamer, ball, musician
 increase version
 
 current tasks:
-- change cheat closeCurseDarkness to closeCurses
 - check chunks mapModifiers flags purpose?
 - play test
 - next map modifier:
