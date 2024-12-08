@@ -4,9 +4,7 @@ increase version
 current tasks:
 - map modifier
     - lightning storm
-        - check different modifier spawn at different locations
         - check other stuff i might have forgot
-        - check if should grow faster than darkness
 - change cheat closeCurseDarkness to closeCurses
 - check chunks mapModifiers flags purpose?
 - be able to cleanse bad part of curses

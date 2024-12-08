@@ -37,7 +37,7 @@ export function create(
         id: getNextId(idCounter),
         type: MODIFIER_NAME_LIGHTNING,
         area: area,
-        areaPerLevel: 1000000,
+        areaPerLevel: 2000000,
         spawnInterval: 3000,
         centerRadius: 800,
         level: 1,
