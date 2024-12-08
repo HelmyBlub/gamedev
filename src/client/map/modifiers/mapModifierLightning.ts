@@ -91,9 +91,9 @@ function onGameInit(modifier: GameMapModifier, game: Game) {
 
     if (modifier.area.type === MODIFY_SHAPE_NAME_RECTANGLE || modifier.area.type === MODIFY_SHAPE_NAME_CIRCLE) {
         const area = modifier.area as GameMapAreaRect;
-        if (game.state.activeCheats && game.state.activeCheats.indexOf("closeCurseDarkness") !== -1) {
-            area.x = 0;
-            area.y = 0;
+        if (game.state.activeCheats && game.state.activeCheats.indexOf("closeCurses") !== -1) {
+            area.x = 1500;
+            area.y = -1500;
         }
     }
     const lightning = modifier as MapModifierLightning;

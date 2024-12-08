@@ -2,11 +2,12 @@ next test run: tamer, ball, musician
 increase version
 
 current tasks:
-- map modifier
-    - lightning storm
-        - check other stuff i might have forgot
 - change cheat closeCurseDarkness to closeCurses
 - check chunks mapModifiers flags purpose?
+- play test
+- next map modifier:
+    - ?
+
 - be able to cleanse bad part of curses
 - bug: tower builder combatlog
     - single target damage missing
@@ -29,9 +30,6 @@ next feature ideas:
                         - more difficult movement
                     - wind modifier
                         - pushes characters, maybe objects?, to a side
-                    - lightning storm
-                        - creates lightning strikes randomly
-                        - damages player and enemies
                     - rainy weather
 
                     - can have a boss enemy in the middle

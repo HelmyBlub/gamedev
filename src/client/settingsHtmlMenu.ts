@@ -62,7 +62,7 @@ function addDebug(game: Game) {
     addCheatCheckbox("lowKingHp", game);
     addCheatCheckbox("closeKingArea", game);
     addCheatCheckbox("closeGodArea", game);
-    addCheatCheckbox("closeCurseDarkness", game);
+    addCheatCheckbox("closeCurses", game);
     addCheatCheckbox("Immune&Fast&Ignored", game);
     addCheatButton("addBossSkillPoint", game);
     addCheatButton("add alot experience", game);
