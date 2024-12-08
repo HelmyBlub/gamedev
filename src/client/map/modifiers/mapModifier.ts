@@ -3,9 +3,8 @@ import { nextRandom } from "../../randomNumberGenerator.js"
 import { GameMap, MapChunk } from "../map.js"
 import { GameMapAreaCircle, MODIFY_SHAPE_NAME_CIRCLE } from "./mapShapeCircle.js"
 import { addMapModifierDarkness, MODIFIER_NAME_DARKNESS } from "./mapModifierDarkness.js"
-import { GameMapArea, isPositionInsideShape, onDomLoadMapModifierShapes, setShapeAreaToAmount } from "./mapModifierShapes.js"
+import { GameMapArea, getShapeMiddle, isPositionInsideShape, onDomLoadMapModifierShapes, setShapeAreaToAmount } from "./mapModifierShapes.js"
 import { GameMapAreaCelestialDirection, MODIFY_SHAPE_NAME_CELESTIAL_DIRECTION } from "./mapShapeCelestialDirection.js"
-import { CURSE_DARKNESS } from "../../curse/curseDarkness.js"
 import { addMapModifierLightning } from "./mapModifierLightning.js"
 import { CURSES_FUNCTIONS } from "../../curse/curse.js"
 
@@ -165,13 +164,25 @@ function addMapModifierIfKingHasCurse(game: Game) {
 }
 
 function addMapModifer(modifierType: string, map: GameMap, game: Game) {
+    let freeCorners = [{ x: -1, y: -1 }, { x: 1, y: -1 }, { x: 1, y: 1 }, { x: -1, y: 1 }];
+    for (let mod of map.mapModifiers) {
+        if (mod.area.type === MODIFY_SHAPE_NAME_CELESTIAL_DIRECTION) continue;
+        const middle = getShapeMiddle(mod.area, game);
+        if (middle === undefined) continue;
+        const x = middle.x < 0 ? -1 : 1;
+        const y = middle.y < 0 ? -1 : 1;
+        const index = freeCorners.findIndex(e => e.x === x && e.y === y);
+        if (index === -1) continue;
+        freeCorners.splice(index, 1);
+    }
+    if (freeCorners.length === 0) return;
+    const randomCornerIndex = Math.floor(nextRandom(game.state.randomSeed) * freeCorners.length);
+    const randomCorner = freeCorners[randomCornerIndex];
     const axisOffset = 7500;
-    const signX = nextRandom(game.state.randomSeed) < 0.5 ? 1 : -1;
-    const signY = nextRandom(game.state.randomSeed) < 0.5 ? 1 : -1;
     const areaCircle: GameMapAreaCircle = {
         type: MODIFY_SHAPE_NAME_CIRCLE,
-        x: axisOffset * signX,
-        y: axisOffset * signY,
+        x: axisOffset * randomCorner.x,
+        y: axisOffset * randomCorner.y,
         radius: 0,
     };
 
