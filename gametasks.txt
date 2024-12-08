@@ -2,8 +2,8 @@ next test run: tamer, ball, musician
 increase version
 
 current tasks:
-- check chunks mapModifiers flags purpose?
 - play test
+- check FPS can go very low for a very few frames. Because calculated over many?
 - next map modifier:
     - ?
 
@@ -27,6 +27,9 @@ next feature ideas:
                     - ice modifier
                         - ice tile patches which makes enemies and players "slide"
                         - more difficult movement
+                        - player curse effect?
+                            - negative: nearby tiles become ice tiles
+                            - positive: permanent ice aura around player?
                     - wind modifier
                         - pushes characters, maybe objects?, to a side
                     - rainy weather

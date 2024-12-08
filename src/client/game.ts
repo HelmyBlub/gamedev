@@ -493,6 +493,10 @@ export function levelUpIncreaseExperienceRequirement(leveling: Leveling) {
     }
 }
 
+export function getTickInterval(game: Game): number {
+    return 1000 / game.gameSpeedSettings.desiredUpdatesPerSecond;
+}
+
 export function concedePlayerFightRetries(game: Game) {
     for (let player of game.state.players) {
         if (player.character.fightRetries !== undefined && player.character.fightRetries > 0) {
@@ -575,7 +579,7 @@ function shouldTickCatchUpSinglePlayer(game: Game, shouldTickTime: number): bool
 }
 
 function tickAndPaint(game: Game) {
-    const tickInterval = 1000 / game.gameSpeedSettings.desiredUpdatesPerSecond;
+    const tickInterval = getTickInterval(game);
     if (game.gameSpeedSettings.shouldTickTime === undefined) game.gameSpeedSettings.shouldTickTime = performance.now();
     takeTimeMeasure(game.debug, "total", "");
     takeTimeMeasure(game.debug, "", "total");

@@ -1,6 +1,6 @@
 import { Character } from "../../character/characterModel.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
-import { calculateDistance, getCameraPosition, getNextId } from "../../game.js";
+import { calculateDistance, getCameraPosition, getNextId, getTickInterval } from "../../game.js";
 import { Position, Game, IdCounter, FACTION_PLAYER } from "../../gameModel.js";
 import { playerInputBindingToDisplayValue } from "../../input/playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
@@ -1035,7 +1035,7 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     if (abilityMusicSheets.musicSheets.length > 0 && abilityMusicSheets.musicSheets[0].lastPlayTick !== undefined) {
         const interval = abilityMusicSheets.musicSheets[0].musicSheet.speed * 4;
         const gameTimeInterval = game.state.time % interval;
-        if (gameTimeInterval < 16) {
+        if (gameTimeInterval < getTickInterval(game)) {
             delete abilityMusicSheets.chainOrder;
         } else if (notesDamageTypeTicks.length > 0 && notesDamageTypeTicks[0].length > 0 && notesDamageTypeTicks[0][0].type) {
             abilityMusicSheets.chainOrder = notesDamageTypeTicks[0][0].type;
