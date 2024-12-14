@@ -568,7 +568,7 @@ function shouldTickCatchUpSinglePlayer(game: Game, shouldTickTime: number): bool
             totalTicks += game.gameSpeedSettings.ticksPerPaint[i];
         }
         const avgTickPerPaint = totalTicks / game.gameSpeedSettings.ticksPerPaint.length;
-        if (maxTicksPerPaint >= avgTickPerPaint) {
+        if (maxTicksPerPaint >= avgTickPerPaint && Math.ceil(maxTicksPerPaint) >= game.gameSpeedSettings.ticksPerPaint[0]) {
             return true;
         } else {
             game.gameSpeedSettings.shouldTickTime = now;
