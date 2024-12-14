@@ -10,6 +10,7 @@ export type Curse = {
     id: number,
     type: string,
     level: number,
+    color: string,
     visualizeFadeTimer?: number,
     doDamageBreakDown?: boolean,
 }
@@ -109,7 +110,7 @@ export function addCursedParticleEffect(curses: Curse[], position: Position, gam
         addParticleEffect({
             x: position.x + Math.floor(Math.random() * 20 - 10),
             y: position.y + 5,
-        }, "black", 2000, 20, game);
+        }, curse.color, 2000, 20, game);
     }
 }
 

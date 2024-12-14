@@ -42,6 +42,7 @@ function create(idCounter: IdCounter): CurseDarkness {
         type: CURSE_DARKNESS,
         cloneCounter: 0,
         evilIdRefs: [],
+        color: "black",
     };
 }
 

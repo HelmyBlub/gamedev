@@ -31,6 +31,7 @@ function create(idCounter: IdCounter): CurseLightning {
         level: 1,
         type: CURSE_LIGHTNING,
         tickInterval: 1000,
+        color: "white",
     };
 }
 

@@ -1,4 +1,3 @@
-import { getCameraPosition } from "./game.js";
 import { Game, Position } from "./gameModel.js";
 import { getPointPaintPosition } from "./gamePaint.js";
 import { calculateMovePosition } from "./map/map.js";

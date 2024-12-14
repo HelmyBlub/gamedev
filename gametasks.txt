@@ -2,8 +2,6 @@ next test run:
 increase version
 
 current tasks:
-- bug: no sound after replays
-- check: different cursed legendary particle effect color/shape, so i can see judge curse based on particle
 - check FPS can go very low for a very few frames. Because calculated over many?
 - check: lightning curse explosion color should be black?
 - next map modifier:
