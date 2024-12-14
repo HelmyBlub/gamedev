@@ -3,7 +3,7 @@ import { createFixPositionRespawnEnemies } from "../character/enemy/fixPositionR
 import { takeTimeMeasure } from "../game.js";
 import { Game, IdCounter, Position } from "../gameModel.js";
 import { fixedRandom } from "../randomNumberGenerator.js";
-import { GameMap, MapChunk, chunkXYToMapKey } from "./map.js";
+import { GameMap, MapChunk, TILE_ID_FIREPIT, TILE_ID_GRASS, TILE_ID_ROCK, TILE_ID_TREE, chunkXYToMapKey } from "./map.js";
 import { mapGenerationKingChunkStuff } from "./mapKingArea.js";
 import { IMAGE_FIRE_ANIMATION, MAP_OBJECT_FIRE_ANIMATION } from "./mapObjectFireAnimation.js";
 import { createAndSetGodAreaOnMap } from "./mapGodArea.js";
@@ -83,11 +83,11 @@ export function createNewChunkTiles(map: GameMap, chunkX: number, chunkY: number
                 const isStone = perlin_get(px + 1024, py + 1024, seed);
                 let randomTileId: number;
                 if (isStone >= 0.35) {
-                    randomTileId = 2;
+                    randomTileId = TILE_ID_ROCK;
                 } else if (isTree >= 0.25) {
-                    randomTileId = 1;
+                    randomTileId = TILE_ID_TREE;
                 } else {
-                    randomTileId = 0;
+                    randomTileId = TILE_ID_GRASS;
                 }
                 tiles[tileX].push(randomTileId);
             }
@@ -108,13 +108,13 @@ function createSpawnChunk(mapChunk: MapChunk, chunkLength: number, game: Game) {
     for (let i = 0; i < chunkLength; i++) {
         chunk.push([]);
         for (let j = 0; j < chunkLength; j++) {
-            chunk[i].push(0);
+            chunk[i].push(TILE_ID_GRASS);
         }
     }
     for (let iter of pastCharactersMapTilePositions) {
         chunk[iter.x][iter.y] = iter.tileId;
     }
-    chunk[4][4] = 7;
+    chunk[4][4] = TILE_ID_FIREPIT;
     addExistingBuildingsToSpawnChunk(mapChunk, game);
 }
 

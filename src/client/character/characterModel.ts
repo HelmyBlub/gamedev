@@ -118,6 +118,7 @@ export type Character = Position & {
     isRootImmune?: boolean,
     isDebuffImmune?: boolean,
     isUnMoveAble?: boolean,
+    slideDirection?: number,
     becameKing?: boolean,
     willTurnToPetOnDeath?: boolean,
     upgradeChoices: UpgradeChoices,

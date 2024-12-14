@@ -2,9 +2,16 @@ next test run:
 increase version
 
 current tasks:
-- check: lightning curse explosion color should be black?
 - next map modifier:
-    - ?
+    - ice modifier
+        - add new map modifier ice
+            - activate map modifier ice again in function onDomLoadMapModifiers
+            - change tiles to ice tiles around area randomized
+            - few ice tiles far away. all to ice close to center
+        - add areaboss snowman
+            - create algorithm to create sliding maze?
+        - add new curse ice
+            - change tiles to ice tiles around player
 
 - be able to cleanse bad part of curses
 - bug: tower builder combatlog
@@ -29,6 +36,11 @@ next feature ideas:
                         - player curse effect?
                             - negative: nearby tiles become ice tiles
                             - positive: permanent ice aura around player?
+                        - boss idea:
+                            - snow man
+                                - puzzle boss?
+                                - you have to find a way to slide to him
+                                - protected by some barrier from damage, get close to him to remove
                     - wind modifier
                         - pushes characters, maybe objects?, to a side
                     - rainy weather

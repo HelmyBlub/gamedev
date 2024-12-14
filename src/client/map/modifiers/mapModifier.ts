@@ -7,6 +7,7 @@ import { GameMapArea, getShapeMiddle, isPositionInsideShape, onDomLoadMapModifie
 import { GameMapAreaCelestialDirection, MODIFY_SHAPE_NAME_CELESTIAL_DIRECTION } from "./mapShapeCelestialDirection.js"
 import { addMapModifierLightning } from "./mapModifierLightning.js"
 import { CURSES_FUNCTIONS } from "../../curse/curse.js"
+import { addMapModifierIce } from "./mapModifierIce.js"
 
 export type GameMapModifier = {
     id: number,
@@ -34,6 +35,7 @@ export const GAME_MAP_MODIFIER_FUNCTIONS: GameMapModifierFunctions = {};
 export function onDomLoadMapModifiers() {
     addMapModifierDarkness();
     addMapModifierLightning();
+    //addMapModifierIce();
     onDomLoadMapModifierShapes();
 }
 

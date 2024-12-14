@@ -1,5 +1,5 @@
 import { findCharacterClassById, levelingCharacterAndClassXpGain } from "./playerCharacters/levelingCharacter.js";
-import { calculateMovePosition, chunkXYToMapKey, determineMapKeysInDistance, GameMap, getChunksTouchingLine, MapChunk, mapKeyToChunkXY, moveByDirectionAndDistance, positionToMapKey } from "../map/map.js";
+import { calculateMovePosition, chunkXYToMapKey, determineMapKeysInDistance, GameMap, getChunksTouchingLine, getMapTile, MapChunk, mapKeyToChunkXY, moveByDirectionAndDistance, positionToMapKey } from "../map/map.js";
 import { Character, CHARACTER_TYPE_FUNCTIONS } from "./characterModel.js";
 import { getNextWaypoint, getPathingCache, PathingCache } from "./pathing.js";
 import { calculateDirection, calculateDistance, calculateDistancePointToLine, changeCharacterAndAbilityIds, getNextId, levelUpIncreaseExperienceRequirement, modulo, takeTimeMeasure } from "../game.js";
@@ -582,10 +582,18 @@ export function setCharacterPosition(character: Character, position: Position, m
 }
 
 export function calculateCharacterMovePosition(character: Character, map: GameMap, idCounter: IdCounter, game: Game) {
-    if (character.isMoving) {
-        return calculateMovePosition(character, character.moveDirection, getCharacterMoveSpeed(character), true, map, idCounter, game);
+    let newPos: Position | undefined = undefined;
+    if (character.slideDirection !== undefined) {
+        newPos = calculateMovePosition(character, character.slideDirection, getCharacterMoveSpeed(character), true, map, idCounter, game);
+        const tile = getMapTile(newPos, game.state.map, game.state.idCounter, game);
+        if (!tile.slide) character.slideDirection = undefined;
+        if (calculateDistance(newPos, character) < character.baseMoveSpeed / 10) character.slideDirection = undefined;
+    } else if (character.isMoving) {
+        newPos = calculateMovePosition(character, character.moveDirection, getCharacterMoveSpeed(character), true, map, idCounter, game);
+        const tile = getMapTile(newPos, game.state.map, game.state.idCounter, game);
+        if (tile.slide) character.slideDirection = character.moveDirection;
     }
-    return undefined;
+    return newPos;
 }
 
 export function mapCharacterCheckAndDoChunkChange(character: Character, map: GameMap, newX: number, newY: number) {

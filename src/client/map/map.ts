@@ -20,6 +20,7 @@ export type MapTile = {
     imageRef?: HTMLImageElement,
     blocking: boolean,
     layer: MapPaintLayer,
+    slide?: boolean,
 }
 
 export type MapChunk = {
@@ -32,14 +33,6 @@ export type MapChunk = {
 }
 
 export const TILE_VALUES: MapTiles = {
-    0: { name: "grass", imagePath: "/images/grass.png", blocking: false, layer: "Layer1" },
-    1: { name: "tree", imagePath: "/images/tree.png", blocking: true, layer: "Layer2" },
-    2: { name: "rock", imagePath: "/images/rock.png", blocking: true, layer: "Layer2" },
-    3: { name: "path1", imagePath: "/images/path1.png", blocking: false, layer: "Layer1" },
-    4: { name: "path2", imagePath: "/images/path2.png", blocking: false, layer: "Layer1" },
-    5: { name: "logHorizontal", imagePath: "/images/log_Horizontal.png", blocking: false, layer: "Layer2" },
-    6: { name: "logVertical", imagePath: "/images/log_Vertical.png", blocking: false, layer: "Layer2" },
-    7: { name: "firepit", imagePath: "/images/firepit.png", blocking: false, layer: "Layer2" },
 }
 
 export const TILE_ID_GRASS = 0;
@@ -50,6 +43,7 @@ export const TILE_ID_PATH2_VERTICAL = 4;
 export const TILE_ID_LOG_HORIZONTAL = 5;
 export const TILE_ID_LOG_VERTICAL = 6;
 export const TILE_ID_FIREPIT = 7;
+export const TILE_ID_ICE = 8;
 
 export type GameMap = {
     seed?: number,
@@ -73,6 +67,7 @@ export function onDomLoadMapTiles() {
     TILE_VALUES[TILE_ID_LOG_HORIZONTAL] = { name: "logHorizontal", imagePath: "/images/log_Horizontal.png", blocking: false, layer: "Layer2" };
     TILE_VALUES[TILE_ID_LOG_VERTICAL] = { name: "logVertical", imagePath: "/images/log_Vertical.png", blocking: false, layer: "Layer2" };
     TILE_VALUES[TILE_ID_FIREPIT] = { name: "firepit", imagePath: "/images/firepit.png", blocking: false, layer: "Layer2" };
+    TILE_VALUES[TILE_ID_ICE] = { name: "ice", color: "lightblue", blocking: false, slide: true, layer: "Layer1" };
 }
 
 export function createMap(): GameMap {
@@ -517,16 +512,6 @@ export function getChunksTouchingLine2(map: GameMap, lineStart: Position, lineEn
 export function getMapMidlePosition(map: GameMap) {
     const offset = map.tileSize * map.chunkLength / 2;
     return { x: offset, y: offset };
-}
-
-export function getTileIdForTileName(tileName: string): number {
-    const keys: any = Object.keys(TILE_VALUES);
-    for (let key of keys) {
-        if (TILE_VALUES[key].name === tileName) {
-            return key;
-        }
-    }
-    throw new Error("TileName not found");
 }
 
 export function calculateDistanceToMapChunk(chunkX: number, chunkY: number, position: Position, map: GameMap): number {

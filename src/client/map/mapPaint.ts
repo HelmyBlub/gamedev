@@ -1,6 +1,6 @@
 import { paintCharacters } from "../character/characterPaint.js";
 import { Debugging, Game, MapChunkPaintCache, Position } from "../gameModel.js";
-import { chunkXYToMapKey, GameMap, getTileIdForTileName, MapChunk, TILE_VALUES } from "./map.js";
+import { chunkXYToMapKey, GameMap, MapChunk, TILE_ID_GRASS, TILE_VALUES } from "./map.js";
 import { paintMapChunkObjects } from "./mapObjects.js";
 import { mapModifierDarknessDarknesChunkPaint, MODIFIER_NAME_DARKNESS } from "./modifiers/mapModifierDarkness.js";
 
@@ -103,17 +103,21 @@ function paintTile(layer: MapPaintLayer, ctx: CanvasRenderingContext2D, paintPos
                 if (!TILE_VALUES[tileId].imageRef!.complete) {
                     imageReady = false;
                 } else {
-                    const grassid = getTileIdForTileName("grass");
                     if (TILE_VALUES[tileId].layer !== "Layer1" && layer === "Layer1") {
-                        ctx.drawImage(TILE_VALUES[grassid].imageRef!, paintPosition.x, paintPosition.y);
+                        ctx.drawImage(TILE_VALUES[TILE_ID_GRASS].imageRef!, paintPosition.x, paintPosition.y);
                     } else if (TILE_VALUES[tileId].layer === layer) {
                         ctx.drawImage(TILE_VALUES[tileId].imageRef!, paintPosition.x, paintPosition.y);
                     }
                 }
             }
         } else if (TILE_VALUES[tileId].color !== undefined) {
-            ctx.fillStyle = TILE_VALUES[tileId].color!;
-            ctx.fillRect(paintPosition.x, paintPosition.y, tileSize, tileSize);
+            if (TILE_VALUES[tileId].layer !== "Layer1" && layer === "Layer1") {
+                ctx.fillStyle = TILE_VALUES[tileId].color!;
+                ctx.fillRect(paintPosition.x, paintPosition.y, tileSize, tileSize);
+            } else if (TILE_VALUES[tileId].layer === layer) {
+                ctx.fillStyle = TILE_VALUES[tileId].color!;
+                ctx.fillRect(paintPosition.x, paintPosition.y, tileSize, tileSize);
+            }
         } else {
             console.log("missing tile color or image path", tileId);
         }
