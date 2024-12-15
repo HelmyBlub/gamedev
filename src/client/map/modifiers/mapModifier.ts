@@ -35,7 +35,7 @@ export const GAME_MAP_MODIFIER_FUNCTIONS: GameMapModifierFunctions = {};
 export function onDomLoadMapModifiers() {
     addMapModifierDarkness();
     addMapModifierLightning();
-    addMapModifierIce();
+    //addMapModifierIce();
     onDomLoadMapModifierShapes();
 }
 
@@ -190,7 +190,7 @@ function addMapModifer(modifierType: string, map: GameMap, game: Game) {
 
     const modifier = createMapModifier(modifierType, areaCircle, game.state.idCounter);
     if (!modifier) return;
-    if (modifier.areaPerLevel) setShapeAreaToAmount(areaCircle, modifier.areaPerLevel);
+    if (modifier.areaPerLevel) setShapeAreaToAmount(areaCircle, modifier.areaPerLevel * modifier.level);
     map.mapModifiers.push(modifier);
 }
 

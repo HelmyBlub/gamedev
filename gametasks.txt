@@ -4,13 +4,22 @@ increase version
 current tasks:
 - next map modifier:
     - ice modifier
-        - add new map modifier ice
-            - change tiles to ice tiles around area randomized
-            - few ice tiles far away. all to ice close to center
+        - enable in mapModifier.ts
+            - continue with generating maze
         - add areaboss snowman
+            - snowman has no health bar.
+            - snowman dies by "sliding over"
             - create algorithm to create sliding maze?
+                - maze middle need to reached. Tile where snowman stands.
+                    - if reached snowman will die.  Middle tiles will turn back to grass.
+                - middle should only be reachable through certain path
+                - set size: by tiles
+                - all tiles in maze size will become ice tiles
+                - certain tiles will be changed to blocking tiles to reach middle
+                
         - add new curse ice
             - change tiles to ice tiles around player
+        - check ice curse on king.
 - check: cloud machine boss on higher level to many explosions?
 - be able to cleanse bad part of curses
 - bug: tower builder combatlog
