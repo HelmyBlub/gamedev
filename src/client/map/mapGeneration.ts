@@ -59,7 +59,7 @@ export function createNewChunk(map: GameMap, chunkX: number, chunkY: number, idC
         if (mapModifyIsChunkAffected(modifier, chunkX, chunkY, game)) {
             const modifierFunctions = GAME_MAP_MODIFIER_FUNCTIONS[modifier.type];
             if (modifierFunctions && modifierFunctions.onChunkCreateModify) {
-                modifierFunctions.onChunkCreateModify(newChunk, chunkX, chunkY, game);
+                modifierFunctions.onChunkCreateModify(modifier, newChunk, chunkX, chunkY, game);
             }
         }
     }

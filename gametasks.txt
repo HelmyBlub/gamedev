@@ -5,14 +5,13 @@ current tasks:
 - next map modifier:
     - ice modifier
         - add new map modifier ice
-            - activate map modifier ice again in function onDomLoadMapModifiers
             - change tiles to ice tiles around area randomized
             - few ice tiles far away. all to ice close to center
         - add areaboss snowman
             - create algorithm to create sliding maze?
         - add new curse ice
             - change tiles to ice tiles around player
-
+- check: cloud machine boss on higher level to many explosions?
 - be able to cleanse bad part of curses
 - bug: tower builder combatlog
     - single target damage missing

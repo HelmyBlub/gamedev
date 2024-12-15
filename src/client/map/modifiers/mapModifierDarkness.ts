@@ -87,7 +87,7 @@ function growArea(modifier: GameMapModifier) {
     setShapeAreaToAmount(modifierDarkness.area, areaAmount);
 }
 
-function onChunkCreateModify(mapChunk: MapChunk, chunkX: number, chunkY: number, game: Game) {
+function onChunkCreateModify(modifier: GameMapModifier, mapChunk: MapChunk, chunkX: number, chunkY: number, game: Game) {
     if (mapChunk.mapModifiers === undefined) mapChunk.mapModifiers = [];
     if (mapChunk.mapModifiers.find(m => m === MODIFIER_NAME_DARKNESS)) return;
     mapChunk.mapModifiers.push(MODIFIER_NAME_DARKNESS);

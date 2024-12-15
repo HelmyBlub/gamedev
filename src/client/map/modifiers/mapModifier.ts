@@ -21,7 +21,7 @@ export type GameMapModifyFunctions = {
     create: (area: GameMapArea, idCounter: IdCounter) => GameMapModifier,
     growArea?: (modifier: GameMapModifier) => void,
     onGameInit?: (modifier: GameMapModifier, game: Game) => void,
-    onChunkCreateModify?: (mapChunk: MapChunk, chunkX: number, chunkY: number, game: Game) => void,
+    onChunkCreateModify?: (modifier: GameMapModifier, mapChunk: MapChunk, chunkX: number, chunkY: number, game: Game) => void,
     paintModiferLate?: (ctx: CanvasRenderingContext2D, modifier: GameMapModifier, cameraPosition: Position, game: Game) => void,
     tick?: (modifier: GameMapModifier, game: Game) => void,
 }
@@ -35,7 +35,7 @@ export const GAME_MAP_MODIFIER_FUNCTIONS: GameMapModifierFunctions = {};
 export function onDomLoadMapModifiers() {
     addMapModifierDarkness();
     addMapModifierLightning();
-    //addMapModifierIce();
+    addMapModifierIce();
     onDomLoadMapModifierShapes();
 }
 
