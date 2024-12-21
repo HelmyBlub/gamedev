@@ -9,12 +9,21 @@ import { MapChunk, positionToGameMapTileXY, TILE_ID_GRASS, TILE_ID_ICE, TILE_ID_
 import { perlin_get } from "../mapGeneration.js";
 
 export const MODIFIER_NAME_ICE = "Ice";
+type Maze = {
+    radiusTiles: number,
+    goalTile: Position,
+    entranceTile: Position,
+}
+
+type MazeSolveLoop = {
+    tiles: Position[],
+    choiceTiles: {
+        tile: Position,
+        connectingLoop?: MazeSolveLoop,
+    }[],
+}
 export type MapModifierIce = GameMapModifier & {
-    maze?: {
-        radiusTiles: number,
-        goalTile: Position,
-        entranceTile: Position,
-    }
+    maze?: Maze,
 }
 
 export function addMapModifierIce() {
@@ -87,6 +96,125 @@ function maze(mapChunk: MapChunk, x: number, y: number, distance: number, iceMod
     mapChunk.tiles[x][y] = TILE_ID_ICE;
 }
 
+function testSolveMaze() {
+    const mazeTileIsBlocking: number[][] = [];
+    const middle: Position = { x: 10, y: 10 };
+    const maze: Maze = {
+        entranceTile: { x: 13, y: 3 },
+        goalTile: { x: 0, y: 0 },
+        radiusTiles: 10,
+    }
+    //generate empty maze
+    for (let x = -maze.radiusTiles + middle.x; x < maze.radiusTiles + middle.x; x++) {
+        mazeTileIsBlocking[x] = [];
+        for (let y = -maze.radiusTiles + middle.y; y < maze.radiusTiles + middle.y; y++) {
+            const distance = calculateDistance(middle, { x, y });
+            if (distance > maze.radiusTiles - 1.5) {
+                mazeTileIsBlocking[x][y] = 1;
+                continue;
+            }
+            if (distance >= maze.radiusTiles - 3) {
+                mazeTileIsBlocking[x][y] = 1;
+                continue;
+            }
+            mazeTileIsBlocking[x][y] = 0;
+        }
+    }
+    mazeTileIsBlocking[maze.entranceTile.x][maze.entranceTile.y] = 2;
+    console.log(mazeTileIsBlocking);
+    //solve it. get data to determine if it is a solveable maze and escapeable
+    const loops: MazeSolveLoop[] = [];
+    const initLoopSolve = checkLoop(maze, maze.entranceTile, mazeTileIsBlocking);
+    const checkChoicesInLoop: MazeSolveLoop[] = [];
+    loops.push(initLoopSolve);
+    checkChoicesInLoop.push(initLoopSolve);
+    while (checkChoicesInLoop.length > 0) {
+        const currentChoiceCheckLoop = checkChoicesInLoop.shift()!;
+        if (currentChoiceCheckLoop.choiceTiles.length > 0) {
+            for (let tileData of currentChoiceCheckLoop.choiceTiles) {
+                const tile = tileData.tile;
+                let beforeBlockingTile;
+                if (mazeTileIsBlocking[tile.x - 1][tile.y] !== 1 && mazeTileIsBlocking[tile.x + 1][tile.y] !== 1) {
+                    beforeBlockingTile = nextTileBeforeBlockingTile(mazeTileIsBlocking, tile, { x: -1, y: 0 });
+                } else {
+                    beforeBlockingTile = nextTileBeforeBlockingTile(mazeTileIsBlocking, tile, { x: 0, y: -1 });
+                }
+                let isNewLoop = true;
+                for (let loop of loops) {
+                    const exists = loop.tiles.findIndex(t => t.x === beforeBlockingTile.x && t.y === beforeBlockingTile.y);
+                    if (exists > -1) {
+                        tileData.connectingLoop = loop;
+                        isNewLoop = false;
+                        break;
+                    }
+                }
+                if (!isNewLoop) continue;
+                const newLoop = checkLoop(maze, beforeBlockingTile, mazeTileIsBlocking);
+                tileData.connectingLoop = newLoop;
+                loops.push(newLoop);
+                checkChoicesInLoop.push(newLoop);
+            }
+        }
+    }
+
+    console.log(loops);
+
+    //if not solveable and escapeable place "random tiles"* until possible
+    //    *not to random as it could make the maze impossible
+}
+
+function checkLoop(maze: Maze, initialLoopTile: Position, mazeTileIsBlocking: number[][]): MazeSolveLoop {
+    const solve: MazeSolveLoop = {
+        tiles: [],
+        choiceTiles: [],
+    }
+
+    const openTiles: Position[] = [initialLoopTile];
+    while (openTiles.length > 0) {
+        const currentTile = openTiles.shift()!;
+        solve.tiles.push(currentTile);
+        if (mazeTileIsBlocking[currentTile.x][currentTile.y] === 1) throw "should not happen";
+        if (mazeTileIsBlocking[currentTile.x - 1][currentTile.y] === 1 && mazeTileIsBlocking[currentTile.x + 1][currentTile.y] !== 1) {
+            const tile = nextTileBeforeBlockingTile(mazeTileIsBlocking, currentTile, { x: 1, y: 0 });
+            const exists = solve.tiles.findIndex(t => t.x === tile.x && t.y === tile.y);
+            if (exists === -1) openTiles.push(tile);
+        }
+        if (mazeTileIsBlocking[currentTile.x + 1][currentTile.y] === 1 && mazeTileIsBlocking[currentTile.x - 1][currentTile.y] !== 1) {
+            const tile = nextTileBeforeBlockingTile(mazeTileIsBlocking, currentTile, { x: -1, y: 0 });
+            const exists = solve.tiles.findIndex(t => t.x === tile.x && t.y === tile.y);
+            if (exists === -1) openTiles.push(tile);
+        }
+        if (mazeTileIsBlocking[currentTile.x][currentTile.y - 1] === 1 && mazeTileIsBlocking[currentTile.x][currentTile.y + 1] !== 1) {
+            const tile = nextTileBeforeBlockingTile(mazeTileIsBlocking, currentTile, { x: 0, y: 1 });
+            const exists = solve.tiles.findIndex(t => t.x === tile.x && t.y === tile.y);
+            if (exists === -1) openTiles.push(tile);
+        }
+        if (mazeTileIsBlocking[currentTile.x][currentTile.y + 1] === 1 && mazeTileIsBlocking[currentTile.x][currentTile.y - 1] !== 1) {
+            const tile = nextTileBeforeBlockingTile(mazeTileIsBlocking, currentTile, { x: 0, y: -1 });
+            const exists = solve.tiles.findIndex(t => t.x === tile.x && t.y === tile.y);
+            if (exists === -1) openTiles.push(tile);
+        }
+        if ((mazeTileIsBlocking[currentTile.x - 1][currentTile.y] !== 1 && mazeTileIsBlocking[currentTile.x + 1][currentTile.y] !== 1)
+            || (mazeTileIsBlocking[currentTile.x][currentTile.y - 1] !== 1 && mazeTileIsBlocking[currentTile.x][currentTile.y + 1] !== 1)) {
+            solve.choiceTiles.push({ tile: currentTile });
+        }
+    }
+
+    return solve;
+}
+
+function nextTileBeforeBlockingTile(mazeTileIsBlocking: number[][], initialTile: Position, direction: Position): Position {
+    let counter = 0;
+    while (true) {
+        counter++;
+        if (mazeTileIsBlocking[initialTile.x + direction.x * counter][initialTile.y + direction.y * counter] === 1) {
+            counter--;
+            break;
+        }
+    }
+    return { x: initialTile.x + direction.x * counter, y: initialTile.y + direction.y * counter };
+}
+
 function isMazeTile(iceMod: MapModifierIce, distance: number, tileSize: number): boolean {
     if (iceMod.maze && distance < iceMod.maze.radiusTiles * tileSize) {
         return true;
@@ -128,6 +256,7 @@ function onGameInit(modifier: GameMapModifier, game: Game) {
     }
     spawn = getShapeMiddle(modifier.area, game);
     initMaze(modifier, game);
+    testSolveMaze();
     if (spawn === undefined) return;
     // const areaBoss = createAreaBossLighntingCloudMachine(game.state.idCounter, spawn, modifier.id, game);
     // game.state.bossStuff.bosses.push(areaBoss);
