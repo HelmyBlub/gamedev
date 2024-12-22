@@ -4,7 +4,9 @@ increase version
 current tasks:
 - next map modifier:
     - ice modifier
-        - continue with solve algorithm in mapModifierIce.ts
+        - next: maze generation work in progress. 
+            - Maze copied to map. So i can see it
+            - maze placing blocking tiles not creating solveable mazes
         - add areaboss snowman
             - snowman has no health bar.
             - snowman dies by "sliding over"
