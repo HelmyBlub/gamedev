@@ -5,8 +5,14 @@ current tasks:
 - next map modifier:
     - ice modifier
         - next: maze generation work in progress. 
-            - Maze copied to map. So i can see it
+            - solve maze backwards to better know where to place next tree
+                - continue in function "solveMazeBackwards"
             - maze placing blocking tiles not creating solveable mazes
+                - resturcture code 
+                - solve maze based on goal tile backwards
+                    - only backwards for goal tile
+                - check is escapeable&solveable
+                    - if not -> put tile on loop which is not part of goal reaching loop
         - add areaboss snowman
             - snowman has no health bar.
             - snowman dies by "sliding over"
