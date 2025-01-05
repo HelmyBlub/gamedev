@@ -25,6 +25,7 @@ type MazeSolveLoop = {
         connectingLoop?: MazeSolveLoop,
     }[],
     isGoalTileOnLoop?: boolean,
+    connectingGoalLoopId?: number,
 }
 export type MapModifierIce = GameMapModifier & {
     mazeOffset?: Position,
@@ -134,64 +135,61 @@ function createMaze(randomSeed: RandomSeed): Maze {
         }
     }
     mazeTileIsBlocking[maze.entranceTile.x][maze.entranceTile.y] = 2;
-    mazeTileIsBlocking[maze.entranceTile.x - 2][maze.entranceTile.y + 3] = MAZE_BLOCKING;
+    //mazeTileIsBlocking[maze.entranceTile.x - 2][maze.entranceTile.y + 1] = MAZE_BLOCKING;
+    //mazeTileIsBlocking[maze.entranceTile.x - 2][maze.entranceTile.y + 13] = MAZE_BLOCKING;
     console.log(mazeTileIsBlocking);
 
     let isSolveableResult;
     let solve: MazeSolveLoop[];
+    let counter = 0;
     do {
+        counter++;
         solve = solveMazeBackwards(maze, mazeTileIsBlocking);
-        isSolveableResult = isSolveableAndEscapeable(solve, maze, mazeTileIsBlocking);
-        break;
-        // if (typeof isSolveableResult === "object") {
-        //     if (isSolveableResult.failingLoopId !== undefined) {
-        //         //TODO: needs rework as i can no take loop corner and next index corner as they are not always ordered
-        //         let loop = solve[isSolveableResult.failingLoopId];
-        //         let distance = 0;
-        //         let tile1;
-        //         let tile2;
-        //         let findCounter = 0;
-        //         do {
-        //             findCounter++;
-        //             if (findCounter % 10 === 0) {
-        //                 if (findCounter > 100) break;
-        //                 if (loop.choiceTiles.length > 0 && loop.choiceTiles[0].connectingLoop) {
-        //                     loop = loop.choiceTiles[0].connectingLoop;
-        //                 } else {
-        //                     break;
-        //                 }
-        //             }
-        //             const randomTileIndex = Math.floor((loop.tiles.length - 1) * nextRandom(randomSeed));
-        //             tile1 = loop.tiles[randomTileIndex];
-        //             let counter = 0;
-        //             do {
-        //                 counter++;
-        //                 tile2 = loop.tiles[(randomTileIndex + counter) % loop.tiles.length];
-        //             } while (tile1.x !== tile2.x && tile1.y !== tile2.y);
-        //             distance = calculateDistance(tile1, tile2);
-        //         } while (distance < 3);
-        //         if (distance >= 3 && tile2 && tile1) {
-        //             const randomDistance = Math.floor(distance * nextRandom(randomSeed));
-        //             const signX = Math.sign(tile2.x - tile1.x);
-        //             const signY = Math.sign(tile2.y - tile1.y);
-        //             const randomTile = {
-        //                 x: tile1.x + signX * randomDistance,
-        //                 y: tile1.y + signY * randomDistance,
-        //             }
-        //             mazeTileIsBlocking[randomTile.x][randomTile.y] = MAZE_BLOCKING;
-        //         } else {
-        //             break;
-        //         }
-        //     } else if (isSolveableResult.goalNotReachable === true) {
-        //         // place blocking tile
-        //         break;
-        //     }
-
-        //}
-    } while (typeof isSolveableResult !== "boolean" || isSolveableResult !== true);
+        isSolveableResult = isSolveable(solve, maze, mazeTileIsBlocking);
+        if (!isSolveableResult) {
+            if (counter > 100) {
+                console.log("maze generation max loops reached. Maze is broken");
+                break;
+            }
+            const randomLoopIndex = Math.floor(solve.length * nextRandom(randomSeed));
+            const randomLoop = solve[randomLoopIndex];
+            const listOfPathIndexesWithEnoughDistance = [];
+            const minDistance = 2;
+            for (let i = 0; i < randomLoop.tiles.length - 1; i++) {
+                const distance = calculateDistance(randomLoop.tiles[i], randomLoop.tiles[i + 1]);
+                if (distance >= minDistance) {
+                    listOfPathIndexesWithEnoughDistance.push(i);
+                }
+            }
+            if (listOfPathIndexesWithEnoughDistance.length === 0) continue;
+            const randomPathIndex = Math.floor(listOfPathIndexesWithEnoughDistance.length * nextRandom(randomSeed));
+            const randomPathStartPos = randomLoop.tiles[randomPathIndex];
+            const distance = calculateDistance(randomPathStartPos, randomLoop.tiles[randomPathIndex + 1]);
+            const randomDistance = 1 + Math.floor((distance - minDistance) * nextRandom(randomSeed));
+            const sign = {
+                x: Math.sign(randomLoop.tiles[randomPathIndex + 1].x - randomPathStartPos.x),
+                y: Math.sign(randomLoop.tiles[randomPathIndex + 1].y - randomPathStartPos.y)
+            };
+            const randomTileOnPath: Position = {
+                x: randomPathStartPos.x + randomDistance * sign.x,
+                y: randomPathStartPos.y + randomDistance * sign.y,
+            };
+            const randomAdjacentTile: Position = {
+                x: randomTileOnPath.x + sign.y,
+                y: randomTileOnPath.y + sign.x,
+            };
+            mazeTileIsBlocking[randomAdjacentTile.x][randomAdjacentTile.y] = MAZE_BLOCKING;
+        }
+    } while (!isSolveableResult);
     console.log(solve);
     console.log(isSolveableResult);
     return maze;
+}
+
+function isSolveable(backwardsSolve: MazeSolveLoop[], maze: Maze, mazeTileIsBlocking: number[][]): boolean {
+    //isSolveable
+    const isReachable = isTileReacheable(maze.entranceTile, backwardsSolve, mazeTileIsBlocking);
+    return isReachable;
 }
 
 function isSolveableAndEscapeable(solve: MazeSolveLoop[], maze: Maze, mazeTileIsBlocking: number[][]): { failingLoopId?: number, goalNotReachable?: boolean } | boolean {
@@ -256,14 +254,61 @@ function solveMazeBackwards(maze: Maze, mazeTileIsBlocking: number[][]): MazeSol
     const initialTiles = getInitialLoopTilesForBeginningTile(maze, maze.goalTile, mazeTileIsBlocking);
     const checkLoopsBackwards: MazeSolveLoop[] = [];
     for (let tile of initialTiles) {
-        const initLoopSolve = checkLoopBackwards(maze, tile, mazeTileIsBlocking, idCounter++);
+        const initLoopSolve = checkLoop(maze, tile, mazeTileIsBlocking, idCounter++);
+        initLoopSolve.isGoalTileOnLoop = true;
         loops.push(initLoopSolve);
         checkLoopsBackwards.push(initLoopSolve);
     }
     while (checkLoopsBackwards.length > 0) {
         const currentChoiceCheckLoop = checkLoopsBackwards.shift()!;
-        //TODO continue here
-        // check backwards. Find if there is a tile, which is part of another loop, which can reach this loop
+        for (let i = 0; i < currentChoiceCheckLoop.tiles.length - 1; i++) {
+            const currentTile = currentChoiceCheckLoop.tiles[i];
+            const moveDirectionSign: Position = {
+                x: Math.sign(currentChoiceCheckLoop.tiles[i + 1].x - currentTile.x),
+                y: Math.sign(currentChoiceCheckLoop.tiles[i + 1].y - currentTile.y)
+            };
+            if (Math.abs(moveDirectionSign.x + moveDirectionSign.y) !== 1) {
+                console.log("should not happen");
+                continue;
+            }
+            const distance = Math.abs(currentChoiceCheckLoop.tiles[i + 1].x - currentTile.x + currentChoiceCheckLoop.tiles[i + 1].y - currentTile.y);
+            for (let j = 1; j < distance; j++) {
+                const nextLoopPathTilePos = {
+                    x: currentTile.x + j * moveDirectionSign.x,
+                    y: currentTile.y + j * moveDirectionSign.y,
+                }
+                if (mazeTileIsBlocking[nextLoopPathTilePos.x][nextLoopPathTilePos.y] !== MAZE_BLOCKING) {
+                    const adjacentLoopPathTile1 = mazeTileIsBlocking[nextLoopPathTilePos.x + moveDirectionSign.y][nextLoopPathTilePos.y + moveDirectionSign.x];
+                    const adjacentLoopPathTile2 = mazeTileIsBlocking[nextLoopPathTilePos.x - moveDirectionSign.y][nextLoopPathTilePos.y - moveDirectionSign.x];
+                    if ((adjacentLoopPathTile1 === MAZE_BLOCKING && adjacentLoopPathTile2 !== MAZE_BLOCKING)
+                        || (adjacentLoopPathTile2 === MAZE_BLOCKING && adjacentLoopPathTile1 !== MAZE_BLOCKING)
+                    ) {
+                        let exists = false;
+                        for (let loop of loops) {
+                            for (let choiceTile of loop.choiceTiles) {
+                                if (choiceTile.tile.x === nextLoopPathTilePos.x && choiceTile.tile.y === nextLoopPathTilePos.y) {
+                                    exists = true;
+                                    choiceTile.connectingLoop = currentChoiceCheckLoop;
+                                    break;
+                                }
+                            }
+                            if (exists) break;
+                        }
+                        if (!exists) {
+                            const loopSolve = checkLoop(maze, nextLoopPathTilePos, mazeTileIsBlocking, idCounter++);
+                            loops.push(loopSolve);
+                            loopSolve.connectingGoalLoopId = currentChoiceCheckLoop.id;
+                            checkLoopsBackwards.push(loopSolve);
+                            const choiceTile = loopSolve.choiceTiles.find(ct => ct.tile.x === nextLoopPathTilePos.x && ct.tile.y === nextLoopPathTilePos.y);
+                            choiceTile!.connectingLoop = currentChoiceCheckLoop;
+
+                        }
+                    }
+                } else {
+                    console.log("should not happen");
+                }
+            }
+        }
     }
 
     return loops;
@@ -365,36 +410,64 @@ function checkLoop(maze: Maze, initialLoopTile: Position, mazeTileIsBlocking: nu
         choiceTiles: [],
     }
 
-    const openTiles: Position[] = [initialLoopTile];
+    const openTiles: { pos: Position, doUnshift?: boolean }[] = [{ pos: initialLoopTile }];
     while (openTiles.length > 0) {
         const currentTile = openTiles.shift()!;
-        const exists = solve.tiles.findIndex(t => t.x === currentTile.x && t.y === currentTile.y);
+        const exists = solve.tiles.findIndex(t => t.x === currentTile.pos.x && t.y === currentTile.pos.y);
         if (exists > -1) continue;
-        solve.tiles.push(currentTile);
-        if (mazeTileIsBlocking[currentTile.x][currentTile.y] === 1) throw "should not happen";
-        if (mazeTileIsBlocking[currentTile.x - 1][currentTile.y] === MAZE_BLOCKING && mazeTileIsBlocking[currentTile.x + 1][currentTile.y] !== MAZE_BLOCKING) {
-            const tile = nextTileBeforeBlockingTile(mazeTileIsBlocking, currentTile, { x: 1, y: 0 });
+        if (!currentTile.doUnshift) solve.tiles.push(currentTile.pos); else solve.tiles.unshift(currentTile.pos);
+        if (mazeTileIsBlocking[currentTile.pos.x][currentTile.pos.y] === 1) throw "should not happen";
+        if (mazeTileIsBlocking[currentTile.pos.x - 1][currentTile.pos.y] === MAZE_BLOCKING && mazeTileIsBlocking[currentTile.pos.x + 1][currentTile.pos.y] !== MAZE_BLOCKING) {
+            const tile = nextTileBeforeBlockingTile(mazeTileIsBlocking, currentTile.pos, { x: 1, y: 0 });
             const exists = solve.tiles.findIndex(t => t.x === tile.x && t.y === tile.y);
-            if (exists === -1) openTiles.push(tile);
+            if (exists === -1) {
+                if (!currentTile.doUnshift) {
+                    openTiles.push({ pos: tile, doUnshift: currentTile.doUnshift });
+                    currentTile.doUnshift = true;
+                } else {
+                    openTiles.unshift({ pos: tile, doUnshift: currentTile.doUnshift });
+                }
+            }
         }
-        if (mazeTileIsBlocking[currentTile.x + 1][currentTile.y] === MAZE_BLOCKING && mazeTileIsBlocking[currentTile.x - 1][currentTile.y] !== MAZE_BLOCKING) {
-            const tile = nextTileBeforeBlockingTile(mazeTileIsBlocking, currentTile, { x: -1, y: 0 });
+        if (mazeTileIsBlocking[currentTile.pos.x + 1][currentTile.pos.y] === MAZE_BLOCKING && mazeTileIsBlocking[currentTile.pos.x - 1][currentTile.pos.y] !== MAZE_BLOCKING) {
+            const tile = nextTileBeforeBlockingTile(mazeTileIsBlocking, currentTile.pos, { x: -1, y: 0 });
             const exists = solve.tiles.findIndex(t => t.x === tile.x && t.y === tile.y);
-            if (exists === -1) openTiles.push(tile);
+            if (exists === -1) {
+                if (!currentTile.doUnshift) {
+                    openTiles.push({ pos: tile, doUnshift: currentTile.doUnshift });
+                    currentTile.doUnshift = true;
+                } else {
+                    openTiles.unshift({ pos: tile, doUnshift: currentTile.doUnshift });
+                }
+            }
         }
-        if (mazeTileIsBlocking[currentTile.x][currentTile.y - 1] === MAZE_BLOCKING && mazeTileIsBlocking[currentTile.x][currentTile.y + 1] !== MAZE_BLOCKING) {
-            const tile = nextTileBeforeBlockingTile(mazeTileIsBlocking, currentTile, { x: 0, y: 1 });
+        if (mazeTileIsBlocking[currentTile.pos.x][currentTile.pos.y - 1] === MAZE_BLOCKING && mazeTileIsBlocking[currentTile.pos.x][currentTile.pos.y + 1] !== MAZE_BLOCKING) {
+            const tile = nextTileBeforeBlockingTile(mazeTileIsBlocking, currentTile.pos, { x: 0, y: 1 });
             const exists = solve.tiles.findIndex(t => t.x === tile.x && t.y === tile.y);
-            if (exists === -1) openTiles.push(tile);
+            if (exists === -1) {
+                if (!currentTile.doUnshift) {
+                    openTiles.push({ pos: tile, doUnshift: currentTile.doUnshift });
+                    currentTile.doUnshift = true;
+                } else {
+                    openTiles.unshift({ pos: tile, doUnshift: currentTile.doUnshift });
+                }
+            }
         }
-        if (mazeTileIsBlocking[currentTile.x][currentTile.y + 1] === MAZE_BLOCKING && mazeTileIsBlocking[currentTile.x][currentTile.y - 1] !== MAZE_BLOCKING) {
-            const tile = nextTileBeforeBlockingTile(mazeTileIsBlocking, currentTile, { x: 0, y: -1 });
+        if (mazeTileIsBlocking[currentTile.pos.x][currentTile.pos.y + 1] === MAZE_BLOCKING && mazeTileIsBlocking[currentTile.pos.x][currentTile.pos.y - 1] !== MAZE_BLOCKING) {
+            const tile = nextTileBeforeBlockingTile(mazeTileIsBlocking, currentTile.pos, { x: 0, y: -1 });
             const exists = solve.tiles.findIndex(t => t.x === tile.x && t.y === tile.y);
-            if (exists === -1) openTiles.push(tile);
+            if (exists === -1) {
+                if (!currentTile.doUnshift) {
+                    openTiles.push({ pos: tile, doUnshift: currentTile.doUnshift });
+                    currentTile.doUnshift = true;
+                } else {
+                    openTiles.unshift({ pos: tile, doUnshift: currentTile.doUnshift });
+                }
+            }
         }
-        if ((mazeTileIsBlocking[currentTile.x - 1][currentTile.y] !== MAZE_BLOCKING && mazeTileIsBlocking[currentTile.x + 1][currentTile.y] !== MAZE_BLOCKING)
-            || (mazeTileIsBlocking[currentTile.x][currentTile.y - 1] !== MAZE_BLOCKING && mazeTileIsBlocking[currentTile.x][currentTile.y + 1] !== MAZE_BLOCKING)) {
-            solve.choiceTiles.push({ tile: currentTile });
+        if ((mazeTileIsBlocking[currentTile.pos.x - 1][currentTile.pos.y] !== MAZE_BLOCKING && mazeTileIsBlocking[currentTile.pos.x + 1][currentTile.pos.y] !== MAZE_BLOCKING)
+            || (mazeTileIsBlocking[currentTile.pos.x][currentTile.pos.y - 1] !== MAZE_BLOCKING && mazeTileIsBlocking[currentTile.pos.x][currentTile.pos.y + 1] !== MAZE_BLOCKING)) {
+            solve.choiceTiles.push({ tile: currentTile.pos });
         }
     }
 
