@@ -5,13 +5,9 @@ current tasks:
 - next map modifier:
     - ice modifier
         - next: maze generation work in progress. 
-            - continue with:
-                - maze generation look like something
-                - difficulty should be more consinstent
-                - try different maze sizes
-                - check escapeability
-            - solve maze backwards to better know where to place next tree
-                - todo: does not check loops last tile with first tile path
+            - remove enemies on tiles changed to blocking tiles        
+            - only allow straight sliding in maze 
+                - maybe put character not to close to blocking tiles
         - add areaboss snowman
             - snowman has no health bar.
             - snowman dies by "sliding over"
@@ -31,7 +27,6 @@ current tasks:
                         - to know if solution exists
                         - might help to better understand how to generate later    
                     - algorithm do generate blocking tiles for maze
-        - remove enemies on tiles changed to blocking tiles        
         - add new curse ice
             - change tiles to ice tiles around player
         - check ice curse on king.

@@ -32,6 +32,8 @@ export type MapModifierIce = GameMapModifier & {
     maze?: Maze,
 }
 
+const MAZE_BLOCKING = 1;
+
 export function addMapModifierIce() {
     GAME_MAP_MODIFIER_FUNCTIONS[MODIFIER_NAME_ICE] = {
         create: create,
@@ -72,6 +74,7 @@ function onChunkCreateModify(modifier: GameMapModifier, mapChunk: MapChunk, chun
             const distance = calculateDistance(middle, { x: tileX, y: tileY });
             if (isMazeTile(iceMod, distance, tileSize)) {
                 maze(mapChunk, x, y, distance, iceMod, tileSize, chunkX, chunkY, game);
+                mapChunk.characters = [];
             } else {
                 if (mapChunk.tiles[x][y] === TILE_ID_GRASS) {
                     const convertedDistance = mapPositiveNumberToNumberBetweenZeroAndOne(distance / (1 + modifier.level / 10));
@@ -108,7 +111,6 @@ function maze(mapChunk: MapChunk, x: number, y: number, distance: number, iceMod
     }
 }
 
-const MAZE_BLOCKING = 1; //TODO delete after testing
 function createMaze(randomSeed: RandomSeed): Maze {
     const minDifficulty = 5;
     let mazeCandidate;
