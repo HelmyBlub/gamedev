@@ -110,18 +110,28 @@ function maze(mapChunk: MapChunk, x: number, y: number, distance: number, iceMod
 
 const MAZE_BLOCKING = 1; //TODO delete after testing
 function createMaze(randomSeed: RandomSeed): Maze {
-    const middle: Position = { x: 10, y: 10 };
+    const minDifficulty = 5;
+    let mazeCandidate;
+    do {
+        mazeCandidate = tryGenerateSomeMaze(randomSeed, 15);
+    } while (mazeCandidate === undefined || mazeCandidate.difficulty < minDifficulty);
+    console.log("mazeDifficulty", mazeCandidate.difficulty);
+    return mazeCandidate.maze;
+}
+
+function tryGenerateSomeMaze(randomSeed: RandomSeed, radius: number): { maze: Maze, difficulty: number } | undefined {
     const maze: Maze = {
-        entranceTile: { x: 13, y: 3 },
-        goalTile: { x: 10, y: 10 },
-        radiusTiles: 10,
+        entranceTile: { x: radius + 3, y: 3 },
+        goalTile: { x: radius, y: radius },
+        radiusTiles: radius,
         mazeTiles: [],
     }
+    const middle: Position = { x: maze.radiusTiles, y: maze.radiusTiles };
     const mazeTileIsBlocking: number[][] = maze.mazeTiles;
     //generate empty maze
-    for (let x = -maze.radiusTiles + middle.x; x < maze.radiusTiles + middle.x; x++) {
+    for (let x = 0; x < maze.radiusTiles * 2; x++) {
         mazeTileIsBlocking[x] = [];
-        for (let y = -maze.radiusTiles + middle.y; y < maze.radiusTiles + middle.y; y++) {
+        for (let y = 0; y < maze.radiusTiles * 2; y++) {
             const distance = calculateDistance(middle, { x, y });
             if (distance > maze.radiusTiles - 1.5) {
                 mazeTileIsBlocking[x][y] = MAZE_BLOCKING;
@@ -135,9 +145,6 @@ function createMaze(randomSeed: RandomSeed): Maze {
         }
     }
     mazeTileIsBlocking[maze.entranceTile.x][maze.entranceTile.y] = 2;
-    //mazeTileIsBlocking[maze.entranceTile.x - 2][maze.entranceTile.y + 1] = MAZE_BLOCKING;
-    //mazeTileIsBlocking[maze.entranceTile.x - 2][maze.entranceTile.y + 13] = MAZE_BLOCKING;
-    console.log(mazeTileIsBlocking);
 
     let isSolveableResult;
     let solve: MazeSolveLoop[];
@@ -178,18 +185,26 @@ function createMaze(randomSeed: RandomSeed): Maze {
                 x: randomTileOnPath.x + sign.y,
                 y: randomTileOnPath.y + sign.x,
             };
+            if (randomAdjacentTile.x === maze.goalTile.x && randomAdjacentTile.y === maze.goalTile.y) continue;
             mazeTileIsBlocking[randomAdjacentTile.x][randomAdjacentTile.y] = MAZE_BLOCKING;
         }
     } while (!isSolveableResult);
-    console.log(solve);
-    console.log(isSolveableResult);
-    return maze;
+    let difficulty = 0;
+    if (isSolveableResult) {
+        const entranceLoopId = getLoopIdForTileOnSolvePath(maze.entranceTile, solve, mazeTileIsBlocking)!;
+        let currentLoopId = entranceLoopId;
+        while (!solve[currentLoopId].isGoalTileOnLoop) {
+            difficulty++;
+            currentLoopId = solve[currentLoopId].connectingGoalLoopId!;
+        }
+    }
+    return { maze, difficulty };
 }
 
 function isSolveable(backwardsSolve: MazeSolveLoop[], maze: Maze, mazeTileIsBlocking: number[][]): boolean {
     //isSolveable
-    const isReachable = isTileReacheable(maze.entranceTile, backwardsSolve, mazeTileIsBlocking);
-    return isReachable;
+    const isReachable = getLoopIdForTileOnSolvePath(maze.entranceTile, backwardsSolve, mazeTileIsBlocking);
+    return isReachable !== undefined;
 }
 
 function isSolveableAndEscapeable(solve: MazeSolveLoop[], maze: Maze, mazeTileIsBlocking: number[][]): { failingLoopId?: number, goalNotReachable?: boolean } | boolean {
@@ -219,32 +234,41 @@ function isSolveableAndEscapeable(solve: MazeSolveLoop[], maze: Maze, mazeTileIs
     }
 
     //isSolveable
-    const isReachable = isTileReacheable(maze.goalTile, solve, mazeTileIsBlocking);
+    const isReachable = getLoopIdForTileOnSolvePath(maze.goalTile, solve, mazeTileIsBlocking);
     return isReachable && failingLoopId === undefined ? true : { goalNotReachable: true, failingLoopId: failingLoopId };
 }
 
-function isTileReacheable(checkTile: Position, solve: MazeSolveLoop[], mazeTileIsBlocking: number[][]): boolean {
-    if (isTileInSolve(checkTile, solve)) return true;
+function getLoopIdForTileOnSolvePath(checkTile: Position, solve: MazeSolveLoop[], mazeTileIsBlocking: number[][]): number | undefined {
+    const checkTileLoopId = getLoopIdForTileInSolve(checkTile, solve);
+    if (checkTileLoopId !== undefined) return checkTileLoopId;
+
     const tileRight = nextTileBeforeBlockingTile(mazeTileIsBlocking, checkTile, { x: 1, y: 0 });
-    if (isTileInSolve(tileRight, solve)) return true;
+    const tileRightLoopId = getLoopIdForTileInSolve(tileRight, solve);
+    if (tileRightLoopId !== undefined) return tileRightLoopId;
+
     const tileLeft = nextTileBeforeBlockingTile(mazeTileIsBlocking, checkTile, { x: -1, y: 0 });
-    if (isTileInSolve(tileLeft, solve)) return true;
+    const tileLeftLoopId = getLoopIdForTileInSolve(tileLeft, solve);
+    if (tileLeftLoopId) return tileLeftLoopId;
+
     const tileTop = nextTileBeforeBlockingTile(mazeTileIsBlocking, checkTile, { x: 0, y: -1 });
-    if (isTileInSolve(tileTop, solve)) return true;
+    const tileTopLoopId = getLoopIdForTileInSolve(tileTop, solve);
+    if (tileTopLoopId) return tileTopLoopId;
+
     const tileBottom = nextTileBeforeBlockingTile(mazeTileIsBlocking, checkTile, { x: 0, y: 1 });
-    if (isTileInSolve(tileTop, solve)) return true;
-    return false;
+    const tileBottomLoopId = getLoopIdForTileInSolve(tileBottom, solve);
+    if (tileBottomLoopId) return tileBottomLoopId;
+    return undefined;
 }
 
-function isTileInSolve(checkTile: Position, solve: MazeSolveLoop[]): boolean {
+function getLoopIdForTileInSolve(checkTile: Position, solve: MazeSolveLoop[]): number | undefined {
     for (let loop of solve) {
         for (let tile of loop.tiles) {
             if (tile.x === checkTile.x && tile.y === checkTile.y) {
-                return true;
+                return loop.id;
             }
         }
     }
-    return false;
+    return undefined;
 }
 
 
