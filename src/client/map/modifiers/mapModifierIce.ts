@@ -8,6 +8,7 @@ import { MODIFY_SHAPE_NAME_CELESTIAL_DIRECTION } from "./mapShapeCelestialDirect
 import { MapChunk, positionToGameMapTileXY, TILE_ID_GRASS, TILE_ID_ICE, TILE_ID_TREE } from "../map.js";
 import { perlin_get } from "../mapGeneration.js";
 import { nextRandom, RandomSeed } from "../../randomNumberGenerator.js";
+import { createAreaBossIceSnowman } from "../../character/enemy/areaBoss/areaBossSnowman.js";
 
 export const MODIFIER_NAME_ICE = "Ice";
 type Maze = {
@@ -554,8 +555,8 @@ function onGameInit(modifier: GameMapModifier, game: Game) {
     spawn = getShapeMiddle(modifier.area, game);
     initMaze(modifier, game);
     if (spawn === undefined) return;
-    // const areaBoss = createAreaBossLighntingCloudMachine(game.state.idCounter, spawn, modifier.id, game);
-    // game.state.bossStuff.bosses.push(areaBoss);
+    const areaBoss = createAreaBossIceSnowman(game.state.idCounter, spawn, modifier.id, game);
+    game.state.bossStuff.bosses.push(areaBoss);
 }
 
 //TODO make it a general version every modifier uses

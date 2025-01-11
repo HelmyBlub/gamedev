@@ -104,8 +104,8 @@ function paint(ctx: CanvasRenderingContext2D, character: Character, cameraPositi
 
 function tick(enemy: Character, game: Game) {
     if (enemy.state === "dead") return;
-    const spider = enemy as AreaBossEnemyLightningCloudMachine;
-    const modifier = findMapModifierById(spider.mapModifierIdRef, game);
+    const cloudMachine = enemy as AreaBossEnemyLightningCloudMachine;
+    const modifier = findMapModifierById(cloudMachine.mapModifierIdRef, game);
     if (!modifier) return;
 
     for (let ability of enemy.abilities) {

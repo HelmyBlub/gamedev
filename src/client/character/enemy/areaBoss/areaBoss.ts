@@ -3,6 +3,7 @@ import { Character, CHARACTER_TYPE_FUNCTIONS } from "../../characterModel.js";
 import { paintCharacterAbilties } from "../../characterPaint.js";
 import { addAreaBossTypeLighntingCloudMachine } from "./areaBossCloudMachine.js";
 import { addAreaBossTypeDarknessSpider } from "./areaBossDarknessSpider.js";
+import { addAreaBossTypeSnowman } from "./areaBossSnowman.js";
 
 export type AreaBossEnemy = Character & {
     mapModifierIdRef: number,
@@ -28,6 +29,7 @@ export function addAreaBossType() {
     };
     addAreaBossTypeDarknessSpider();
     addAreaBossTypeLighntingCloudMachine();
+    addAreaBossTypeSnowman();
 }
 
 export function scaleAreaBossHp(level: number, bosses: Character[]) {
