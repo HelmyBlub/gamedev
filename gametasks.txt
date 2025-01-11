@@ -1,14 +1,15 @@
-next test run:
+next test run: think about enabling iceCurse and do new runs
 increase version
 
 current tasks:
 - next map modifier:
     - ice modifier
         - add areaboss snowman
-            - snowman has no health bar.
-            - snowman dies by "sliding over"
+            - remove ice tiles when snowman dies
         - add new curse ice
-            - change tiles to ice tiles around player
+            - ice curse changes tiles around player to ice over time
+                - stronger curse faster and more tiles and more range
+            - permanent ice aura. Damage and slow around player.
         - check ice curse on king.
 - check: cloud machine boss on higher level to many explosions?
 - be able to cleanse bad part of curses
