@@ -7,7 +7,6 @@ current tasks:
         - add new curse ice
             - ice curse changes tiles around player to ice over time
                 - stronger curse faster and more tiles and more range
-            - permanent ice aura. Damage and slow around player.
         - check ice curse on king.
 - check: cloud machine boss on higher level to many explosions?
 - be able to cleanse bad part of curses
