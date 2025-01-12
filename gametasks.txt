@@ -1,13 +1,13 @@
-next test run: think about enabling iceCurse and do new runs
+next test run: sniper, builder, tamer, ball, musician
 increase version
 
 current tasks:
 - next map modifier:
     - ice modifier
-        - add new curse ice
-            - ice curse changes tiles around player to ice over time
-                - stronger curse faster and more tiles and more range
-        - check ice curse on king.
+        - check ice curse on king
+        - as iceAura is added as ability. Does this create duplicate ice auras in some cases?
+        - what happens if i get cursed and than pick up a legendary with this curse?
+        - think about other cases?
 - check: cloud machine boss on higher level to many explosions?
 - be able to cleanse bad part of curses
 - bug: tower builder combatlog

@@ -118,7 +118,6 @@ function createMaze(randomSeed: RandomSeed): Maze {
     do {
         mazeCandidate = tryGenerateSomeMaze(randomSeed, 15);
     } while (mazeCandidate === undefined || mazeCandidate.difficulty < minDifficulty);
-    console.log("mazeDifficulty", mazeCandidate.difficulty);
     return mazeCandidate.maze;
 }
 
