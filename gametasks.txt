@@ -4,8 +4,6 @@ increase version
 current tasks:
 - next map modifier:
     - ice modifier
-        - add areaboss snowman
-            - remove ice tiles when snowman dies
         - add new curse ice
             - ice curse changes tiles around player to ice over time
                 - stronger curse faster and more tiles and more range

@@ -14,15 +14,15 @@ type IceBaseProperties = {
     nextTickTime?: number,
 }
 
-type AbilityIce = Ability & IceBaseProperties;
+export type AbilityIceAura = Ability & IceBaseProperties;
 
-type AbilityObjectIce = AbilityObject & IceBaseProperties & { deleteTime: number };
+type AbilityObjectIceAura = AbilityObject & IceBaseProperties & { deleteTime: number };
 
 export const ABILITY_NAME_ICE_AURA = "Ice Aura";
 
 export function addAbilityIceAura() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_ICE_AURA] = {
-        createAbility: createAbilityIce,
+        createAbility: createAbilityIceAura,
         deleteAbilityObject: deleteAbilityObject,
         paintAbility: paintAbility,
         paintAbilityObject: paintAbilityObject,
@@ -35,13 +35,13 @@ export function addAbilityIceAura() {
     };
 }
 
-export function createAbilityIce(
+export function createAbilityIceAura(
     idCounter: IdCounter,
     playerInputBinding?: string,
     damage: number = 50,
     radius: number = 30,
     slowFactor: number = 1.5
-): AbilityIce {
+): AbilityIceAura {
     return {
         id: getNextId(idCounter),
         name: ABILITY_NAME_ICE_AURA,
@@ -63,7 +63,7 @@ export function createAbilityObjectIceAura(
     y: number,
     deleteTime: number,
     abilityIdRef: number,
-): AbilityObjectIce {
+): AbilityObjectIceAura {
     return {
         type: ABILITY_NAME_ICE_AURA,
         damage: damage,
@@ -80,7 +80,7 @@ export function createAbilityObjectIceAura(
 }
 
 function deleteAbilityObject(ability: AbilityObject, game: Game) {
-    const ice = ability as AbilityObjectIce;
+    const ice = ability as AbilityObjectIceAura;
     if (ice.deleteTime < game.state.time) {
         return true;
     }
@@ -88,33 +88,33 @@ function deleteAbilityObject(ability: AbilityObject, game: Game) {
 }
 
 function setAbilityIceToLevel(ability: Ability, level: number) {
-    const abilityIce = ability as AbilityIce;
+    const abilityIce = ability as AbilityIceAura;
     abilityIce.damage = level * 100;
     abilityIce.radius = 30 + level * 10;
     abilityIce.slowFactor = 1 + 0.25 * level;
 }
 
 function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: number) {
-    const abilityIce = ability as AbilityIce;
+    const abilityIce = ability as AbilityIceAura;
     abilityIce.damage = level / 2 * damageFactor;
     abilityIce.radius = 30 + level * 3;
     abilityIce.slowFactor = 2;
 }
 
 function setAbilityIceToBossLevel(ability: Ability, level: number) {
-    const abilityIce = ability as AbilityIce;
+    const abilityIce = ability as AbilityIceAura;
     abilityIce.damage = level * 10;
     abilityIce.radius = 60 + level * 12;
     abilityIce.slowFactor = 2;
 }
 
 function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
-    const ice = ability as AbilityIce as IceBaseProperties;
+    const ice = ability as AbilityIceAura as IceBaseProperties;
     paintIceAura(ctx, ice, abilityOwner, abilityOwner.faction, cameraPosition, game);
 }
 
 function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
-    const ice = abilityObject as AbilityObjectIce as IceBaseProperties;
+    const ice = abilityObject as AbilityObjectIceAura as IceBaseProperties;
     if (paintOrder === "beforeCharacterPaint") {
         const cameraPosition = getCameraPosition(game);
         paintIceAura(ctx, ice, abilityObject, abilityObject.faction, cameraPosition, game);
@@ -148,12 +148,12 @@ function onHitEffect(target: Character, iceProperties: IceBaseProperties, game: 
 }
 
 function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
-    const ice = ability as AbilityIce as IceBaseProperties;
+    const ice = ability as AbilityIceAura as IceBaseProperties;
     tickIceAura(abilityOwner, abilityOwner.faction, ice, ability.id, game);
 }
 
 function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
-    const ice = abilityObject as AbilityObjectIce as IceBaseProperties;
+    const ice = abilityObject as AbilityObjectIceAura as IceBaseProperties;
     tickIceAura(abilityObject, abilityObject.faction, ice, abilityObject.abilityIdRef!, game, abilityObject);
 }
 

@@ -4,6 +4,7 @@ import { Character } from "../character/characterModel.js";
 import { AbilityDamageBreakdown, addCurseDamageBreakDownToDamageMeter, addDamageBreakDownToDamageMeter } from "../combatlog.js";
 import { FACTION_PLAYER, Game, IdCounter, Position } from "../gameModel.js";
 import { addCurseDarkness } from "./curseDarkness.js";
+import { addCurseIce } from "./curseIce.js";
 import { addCurseLightning } from "./curseLightning.js";
 
 export type Curse = {
@@ -34,6 +35,7 @@ export const CURSES_FUNCTIONS: CursesFunctions = {};
 export function onDomLoadCurses() {
     addCurseDarkness();
     addCurseLightning();
+    addCurseIce();
 }
 
 export function createCurse(curesType: string, idCounter: IdCounter): Curse {

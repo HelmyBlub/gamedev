@@ -214,6 +214,13 @@ export function paintAbilityObjects(ctx: CanvasRenderingContext2D, abilityObject
     paintAbilityObjectsFaction(ctx, abilityObjects, game, paintOrder, false);
 }
 
+export function setAbilityToLevel(ability: Ability, level: number) {
+    const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+    if (abilityFunctions && abilityFunctions.setAbilityToLevel) {
+        abilityFunctions.setAbilityToLevel(ability, level);
+    }
+}
+
 export function setAbilityToBossLevel(ability: Ability, level: number) {
     const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
     if (abilityFunctions.setAbilityToBossLevel) {

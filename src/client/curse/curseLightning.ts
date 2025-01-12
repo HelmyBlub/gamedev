@@ -47,8 +47,8 @@ function copy(curse: Curse, idCounter: IdCounter): Curse {
 }
 
 function paint(ctx: CanvasRenderingContext2D, curse: Curse, target: Character, game: Game) {
-    const darkness = curse as CurseLightning;
-    if (darkness.visualizeFadeTimer !== undefined && darkness.visualizeFadeTimer > game.state.time) {
+    const lightning = curse as CurseLightning;
+    if (lightning.visualizeFadeTimer !== undefined && lightning.visualizeFadeTimer > game.state.time) {
         const cameraPosition = getCameraPosition(game);
         const paintPos = getPointPaintPosition(ctx, target, cameraPosition, game.UI.zoom);
         ctx.font = "30px Arial";

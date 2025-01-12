@@ -4,14 +4,14 @@ import { calculateDistance, getNextId } from "../../../game.js";
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
 import { GAME_IMAGES, loadImage } from "../../../imageLoad.js";
-import { changeTileIdOfMapChunk, findNearNonBlockingPosition, getMapTile, getMapTileId, positionToChunkXY, positionToGameMapTileXY, TILE_ID_GRASS, TILE_ID_ICE } from "../../../map/map.js";
+import { changeTileIdOfMapChunk, findNearNonBlockingPosition, getMapTileId, positionToChunkXY, positionToGameMapTileXY, TILE_ID_GRASS, TILE_ID_ICE } from "../../../map/map.js";
 import { findMapModifierById, removeMapModifier } from "../../../map/modifiers/mapModifier.js";
 import { determineClosestCharacter, getPlayerCharacters } from "../../character.js";
 import { Character, createCharacter } from "../../characterModel.js";
 import { paintCharacterHpBar } from "../../characterPaint.js";
 import { calculatePosToChunkTileXY } from "../../../map/map.js";
-import { createObjectCurseLightning } from "./abilityCurseLightning.js";
 import { AREA_BOSS_FUNCTIONS, AreaBossEnemy, CHARACTER_TYPE_AREA_BOSS } from "./areaBoss.js";
+import { addAbilityCurseIce, createObjectCurseIce } from "./abilityCurseIce.js";
 
 export type AreaBossEnemySnowman = AreaBossEnemy & {
 };
@@ -31,6 +31,7 @@ export function addAreaBossTypeSnowman() {
         paint: paint,
         tick: tick,
     };
+    addAbilityCurseIce();
 }
 
 export function createAreaBossIceSnowman(idCounter: IdCounter, spawn: Position, mapModifierIdRef: number, game: Game): AreaBossEnemySnowman {
@@ -51,7 +52,7 @@ export function createAreaBossIceSnowman(idCounter: IdCounter, spawn: Position, 
 
 function onDeath(character: Character, game: Game) {
     const areaBoss = character as AreaBossEnemySnowman;
-    const curse = createObjectCurseLightning(areaBoss, game);
+    const curse = createObjectCurseIce(areaBoss, game);
     if (curse) game.state.abilityObjects.push(curse);
     removeMapModifier(areaBoss.mapModifierIdRef, game);
     const tileRadius = 5;
