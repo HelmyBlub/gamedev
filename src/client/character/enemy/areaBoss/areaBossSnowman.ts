@@ -1,14 +1,15 @@
 import { Ability } from "../../../ability/ability.js";
 import { tickCharacterDebuffs } from "../../../debuff/debuff.js";
-import { getNextId } from "../../../game.js";
+import { calculateDistance, getNextId } from "../../../game.js";
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
 import { GAME_IMAGES, loadImage } from "../../../imageLoad.js";
-import { findNearNonBlockingPosition, positionToGameMapTileXY } from "../../../map/map.js";
+import { changeTileIdOfMapChunk, findNearNonBlockingPosition, getMapTile, getMapTileId, positionToChunkXY, positionToGameMapTileXY, TILE_ID_GRASS, TILE_ID_ICE } from "../../../map/map.js";
 import { findMapModifierById, removeMapModifier } from "../../../map/modifiers/mapModifier.js";
 import { determineClosestCharacter, getPlayerCharacters } from "../../character.js";
 import { Character, createCharacter } from "../../characterModel.js";
 import { paintCharacterHpBar } from "../../characterPaint.js";
+import { calculatePosToChunkTileXY } from "../../../map/map.js";
 import { createObjectCurseLightning } from "./abilityCurseLightning.js";
 import { AREA_BOSS_FUNCTIONS, AreaBossEnemy, CHARACTER_TYPE_AREA_BOSS } from "./areaBoss.js";
 
@@ -53,7 +54,22 @@ function onDeath(character: Character, game: Game) {
     const curse = createObjectCurseLightning(areaBoss, game);
     if (curse) game.state.abilityObjects.push(curse);
     removeMapModifier(areaBoss.mapModifierIdRef, game);
-    //TODO remove ice from area
+    const tileRadius = 5;
+    for (let i = -tileRadius; i <= tileRadius; i++) {
+        for (let j = -tileRadius; j <= tileRadius; j++) {
+            if (calculateDistance({ x: i, y: j }, { x: 0, y: 0 }) <= tileRadius) {
+                const position = {
+                    x: character.x + i * game.state.map.tileSize,
+                    y: character.y + j * game.state.map.tileSize,
+                };
+                if (getMapTileId(position, game.state.map, game.state.idCounter, game) === TILE_ID_ICE) {
+                    const chunkXY = positionToChunkXY(position, game.state.map);
+                    const tileXY = calculatePosToChunkTileXY(position, game.state.map);
+                    changeTileIdOfMapChunk(chunkXY.x, chunkXY.y, tileXY.x, tileXY.y, TILE_ID_GRASS, game);
+                }
+            }
+        }
+    }
 }
 
 function paint(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {

@@ -532,7 +532,7 @@ export function mousePositionToMapPosition(game: Game, cameraPosition: Position)
     }
 }
 
-export function getMapTile(pos: Position, map: GameMap, idCounter: IdCounter, game: Game): MapTile {
+export function getMapTileId(pos: Position, map: GameMap, idCounter: IdCounter, game: Game): number | undefined {
     const chunkSize = map.tileSize * map.chunkLength;
     const chunkX = Math.floor(pos.x / chunkSize);
     const chunkY = Math.floor(pos.y / chunkSize);
@@ -548,12 +548,22 @@ export function getMapTile(pos: Position, map: GameMap, idCounter: IdCounter, ga
         let x = Math.floor((pos.x / map.tileSize) % map.chunkLength);
         if (x < 0) x += map.chunkLength;
         if (y >= 0 && x >= 0 && chunk.tiles.length > x && chunk.tiles[x].length > y) {
-            return TILE_VALUES[chunk.tiles[x][y]];
+            return chunk.tiles[x][y];
         } else {
             console.log("invalid chunk", x, y, chunk);
         }
     }
 
+    return undefined;
+}
+
+
+export function getMapTile(pos: Position, map: GameMap, idCounter: IdCounter, game: Game): MapTile {
+    const tileId = getMapTileId(pos, map, idCounter, game);
+    if (tileId !== undefined) {
+        return TILE_VALUES[tileId];
+    }
+    //shoud not happen
     return TILE_VALUES[0];
 }
 
@@ -570,6 +580,19 @@ export function initGodArea(map: GameMap, distance: number) {
         autoSpawnOnDistance: distance,
         pathChunkGenerationLength: 3,
     }
+}
+
+export function calculatePosToChunkTileXY(pos: Position, map: GameMap): Position {
+    const chunkSize = map.tileSize * map.chunkLength;
+    let tileY = Math.floor((pos.y / map.tileSize) % map.chunkLength);
+    if (tileY < 0) tileY += map.chunkLength;
+    let tileX = Math.floor((pos.x / map.tileSize) % map.chunkLength);
+    if (tileX < 0) tileX += map.chunkLength;
+
+    return {
+        x: tileX,
+        y: tileY,
+    };
 }
 
 function moveStepWithCollision(position: Position, moveDirection: number, distance: number, map: GameMap, idCounter: IdCounter, game: Game): Position {

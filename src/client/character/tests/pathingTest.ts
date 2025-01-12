@@ -1,8 +1,8 @@
 import { Game, IdCounter, Position } from "../../gameModel.js";
 import { createGame } from "../../main.js";
-import { createMap, findNearNonBlockingPosition, GameMap } from "../../map/map.js";
+import { createMap, findNearNonBlockingPosition, GameMap, positionToGameMapTileXY } from "../../map/map.js";
 import { nextRandom, RandomSeed } from "../../randomNumberGenerator.js";
-import { calculatePosToTotalTileXY, getNextWaypoint, PathingCache, PathingCacheXY, tileXyToPathingCacheKey } from "../pathing.js";
+import { getNextWaypoint, PathingCache, PathingCacheXY, tileXyToPathingCacheKey } from "../pathing.js";
 
 export function testPathing(ctx: CanvasRenderingContext2D | undefined = undefined) {
     console.log("started test");
@@ -66,8 +66,8 @@ function testPathingPerformanceCacheNotChangingResults(ctx: CanvasRenderingConte
         if (i % 234 === 0) pathingCache = {};
         let result: Position | null;
         let tempCache: PathingCache;
-        const tempSourceTile = calculatePosToTotalTileXY(sourcePositions[i % numberEnemies], map);
-        const tempTargtTile = calculatePosToTotalTileXY(targetPositions[i % numberPlayers], map);
+        const tempSourceTile = positionToGameMapTileXY(map, sourcePositions[i % numberEnemies]);
+        const tempTargtTile = positionToGameMapTileXY(map, targetPositions[i % numberPlayers]);
         let key = `${tempSourceTile.x}_${tempSourceTile.y}|${tempTargtTile.x}_${tempTargtTile.y}`;
         if (i % 3 === 0) {
             tempCache = {};

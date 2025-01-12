@@ -1,6 +1,6 @@
 import { calculateDistance, takeTimeMeasure } from "../game.js";
 import { Game, IdCounter, Position } from "../gameModel.js";
-import { GameMap, isPositionBlocking } from "../map/map.js";
+import { GameMap, isPositionBlocking, positionToGameMapTileXY } from "../map/map.js";
 
 export type PathingCacheXY = {
     cameFromCache: Map<string, Position | null>,
@@ -49,8 +49,8 @@ export function getNextWaypoint(
         console.log("can't find way to a blocking position");
         return null;
     }
-    const targetXY: Position = calculatePosToTotalTileXY(sourcePos, map);
-    const startXY: Position = calculatePosToTotalTileXY(targetPos, map);
+    const targetXY: Position = positionToGameMapTileXY(map, sourcePos);
+    const startXY: Position = positionToGameMapTileXY(map, targetPos);
     const maxTileDistance = 50;
     const tileDistance = calculateDistance(startXY, targetXY);
     if (tileDistance > maxTileDistance) {
@@ -138,21 +138,6 @@ export function garbageCollectPathingCache(pathingCache: PathingCache | undefine
         }
     }
     takeTimeMeasure(game.debug, "garbageCollectPathingCache", "");
-}
-
-export function calculatePosToTotalTileXY(pos: Position, map: GameMap): Position {
-    const chunkSize = map.tileSize * map.chunkLength;
-    const startChunkY = Math.floor(pos.y / chunkSize);
-    const startChunkX = Math.floor(pos.x / chunkSize);
-    let tileY = Math.floor((pos.y / map.tileSize) % map.chunkLength);
-    if (tileY < 0) tileY += map.chunkLength;
-    let tileX = Math.floor((pos.x / map.tileSize) % map.chunkLength);
-    if (tileX < 0) tileX += map.chunkLength;
-
-    return {
-        x: startChunkX * map.chunkLength + tileX,
-        y: startChunkY * map.chunkLength + tileY,
-    };
 }
 
 function getPathNeighborsXY(pos: Position, map: GameMap, idCounter: IdCounter, game: Game): Position[] {
