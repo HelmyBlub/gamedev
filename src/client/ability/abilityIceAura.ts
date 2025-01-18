@@ -31,6 +31,7 @@ export function addAbilityIceAura() {
         setAbilityToEnemyLevel: setAbilityToEnemyLevel,
         tickAbility: tickAbility,
         tickAbilityObject: tickAbilityObject,
+        resetAbility: resetAbility,
         canBeUsedByBosses: true,
     };
 }
@@ -77,6 +78,11 @@ export function createAbilityObjectIceAura(
         abilityIdRef: abilityIdRef,
         deleteTime: deleteTime,
     };
+}
+
+function resetAbility(ability: Ability) {
+    const ice = ability as AbilityIceAura;
+    ice.nextTickTime = undefined;
 }
 
 function deleteAbilityObject(ability: AbilityObject, game: Game) {

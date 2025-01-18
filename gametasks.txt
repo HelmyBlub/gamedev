@@ -2,10 +2,11 @@ next test run: builder, tamer, ball, musician
 increase version
 
 current tasks:
-- new short test replays
 - next map modifier:
     - ice modifier
         - check ice curse on king
+            - size of ice aura seems of
+        - check ice curse on legendary
         - as iceAura is added as ability. Does this create duplicate ice auras in some cases?
         - what happens if i get cursed and than pick up a legendary with this curse?
         - think about other cases?

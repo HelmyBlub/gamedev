@@ -129,8 +129,13 @@ function removeMapModifierCelestialIfNoKingWithCurse(game: Game) {
             const king = game.state.bossStuff.nextKings[celestialDirection];
             if (king && king.curses) {
                 let kingHasCurse = false;
-                for (let curse of king!.curses!) {
-                    kingHasCurse = true;
+                for (let curse of king.curses) {
+                    const curseFunctions = CURSES_FUNCTIONS[curse.type];
+                    if (!curseFunctions) continue;
+                    if (mapModifier.type === curseFunctions.mapModifierName) {
+                        kingHasCurse = true;
+                        break;
+                    }
                 }
                 if (kingHasCurse) continue;
             }
@@ -146,21 +151,28 @@ function addMapModifierIfKingHasCurse(game: Game) {
         if (!king || !king.curses) continue;
         for (let curse of king.curses) {
             let alreadyExists = false;
+            const curseFunctions = CURSES_FUNCTIONS[curse.type];
+            if (!curseFunctions) continue;
             for (let mapModifier of game.state.map.mapModifiers) {
-                if (mapModifier.type === curse.type
+                if (mapModifier.type === curseFunctions.mapModifierName
                     && mapModifier.area.type === MODIFY_SHAPE_NAME_CELESTIAL_DIRECTION
                     && (mapModifier.area as GameMapAreaCelestialDirection).celestialDirection === celestialDirection
-                ) alreadyExists = true;
+                ) {
+                    if (mapModifier.level !== curse.level) mapModifier.level = curse.level;
+                    alreadyExists = true;
+                    break;
+                }
             }
             if (alreadyExists) continue;
             const area: GameMapAreaCelestialDirection = {
                 type: MODIFY_SHAPE_NAME_CELESTIAL_DIRECTION,
                 celestialDirection: celestialDirection,
             };
-            const curseFunctions = CURSES_FUNCTIONS[curse.type];
-            if (!curseFunctions) return;
             const mapModifier = createMapModifier(curseFunctions.mapModifierName, area, game.state.idCounter);
-            if (mapModifier) game.state.map.mapModifiers.push(mapModifier);
+            if (mapModifier) {
+                mapModifier.level = curse.level;
+                game.state.map.mapModifiers.push(mapModifier);
+            }
         }
     }
 }

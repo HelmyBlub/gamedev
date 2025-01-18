@@ -209,37 +209,6 @@ function isSolveable(backwardsSolve: MazeSolveLoop[], maze: Maze, mazeTileIsBloc
     return isReachable !== undefined;
 }
 
-function isSolveableAndEscapeable(solve: MazeSolveLoop[], maze: Maze, mazeTileIsBlocking: number[][]): { failingLoopId?: number, goalNotReachable?: boolean } | boolean {
-    //isEscapeable
-    const escapeableLoops: boolean[] = [];
-    escapeableLoops[0] = true;
-    for (let i = 1; i < solve.length; i++) {
-        escapeableLoops[solve[i].id] = false;
-    }
-    for (let i = 1; i < solve.length; i++) {
-        const loop = solve[i];
-        if (escapeableLoops[loop.id]) continue;
-        for (let choice of loop.choiceTiles) {
-            if (!choice.connectingLoop) continue;
-            if (escapeableLoops[choice.connectingLoop.id]) {
-                escapeableLoops[loop.id] = true;
-                i = 1;
-                break;
-            }
-        }
-    }
-    let failingLoopId: number | undefined = undefined;
-    for (let i = 1; i < escapeableLoops.length; i++) {
-        if (!escapeableLoops[i]) {
-            failingLoopId = i;
-        }
-    }
-
-    //isSolveable
-    const isReachable = getLoopIdForTileOnSolvePath(maze.goalTile, solve, mazeTileIsBlocking);
-    return isReachable && failingLoopId === undefined ? true : { goalNotReachable: true, failingLoopId: failingLoopId };
-}
-
 function getLoopIdForTileOnSolvePath(checkTile: Position, solve: MazeSolveLoop[], mazeTileIsBlocking: number[][]): number | undefined {
     const checkTileLoopId = getLoopIdForTileInSolve(checkTile, solve);
     if (checkTileLoopId !== undefined) return checkTileLoopId;
@@ -349,85 +318,6 @@ function getInitialLoopTilesForBeginningTile(maze: Maze, beginningTile: Position
 
     return initialLoopCornerTiles;
 }
-
-function solveMaze(maze: Maze, mazeTileIsBlocking: number[][]): MazeSolveLoop[] {
-    const loops: MazeSolveLoop[] = [];
-    let idCounter = 0;
-    const initLoopSolve = checkLoop(maze, maze.entranceTile, mazeTileIsBlocking, idCounter++);
-    const checkChoicesInLoop: MazeSolveLoop[] = [];
-    loops.push(initLoopSolve);
-    checkChoicesInLoop.push(initLoopSolve);
-    while (checkChoicesInLoop.length > 0) {
-        const currentChoiceCheckLoop = checkChoicesInLoop.shift()!;
-        if (currentChoiceCheckLoop.choiceTiles.length > 0) {
-            for (let tileData of currentChoiceCheckLoop.choiceTiles) {
-                const tile = tileData.tile;
-                let beforeBlockingTile;
-                if (mazeTileIsBlocking[tile.x - 1][tile.y] !== 1 && mazeTileIsBlocking[tile.x + 1][tile.y] !== 1) {
-                    beforeBlockingTile = nextTileBeforeBlockingTile(mazeTileIsBlocking, tile, { x: -1, y: 0 });
-                } else {
-                    beforeBlockingTile = nextTileBeforeBlockingTile(mazeTileIsBlocking, tile, { x: 0, y: -1 });
-                }
-                let isNewLoop = true;
-                for (let loop of loops) {
-                    const exists = loop.tiles.findIndex(t => t.x === beforeBlockingTile.x && t.y === beforeBlockingTile.y);
-                    if (exists > -1) {
-                        tileData.connectingLoop = loop;
-                        isNewLoop = false;
-                        break;
-                    }
-                }
-                if (!isNewLoop) continue;
-                const newLoop = checkLoop(maze, beforeBlockingTile, mazeTileIsBlocking, idCounter++);
-                if (newLoop) {
-                    tileData.connectingLoop = newLoop;
-                    loops.push(newLoop);
-                    checkChoicesInLoop.push(newLoop);
-                }
-            }
-        }
-    }
-    return loops;
-}
-
-function checkLoopBackwards(maze: Maze, initialLoopTile: Position, mazeTileIsBlocking: number[][], id: number): MazeSolveLoop {
-    const solve: MazeSolveLoop = {
-        id: id,
-        tiles: [],
-        choiceTiles: [],
-    }
-    const openTiles: Position[] = [initialLoopTile];
-    while (openTiles.length > 0) {
-        const currentTile = openTiles.shift()!;
-        const exists = solve.tiles.findIndex(t => t.x === currentTile.x && t.y === currentTile.y);
-        if (exists > -1) continue;
-        solve.tiles.push(currentTile);
-        if (mazeTileIsBlocking[currentTile.x][currentTile.y] === 1) throw "should not happen";
-        if (mazeTileIsBlocking[currentTile.x - 1][currentTile.y] === MAZE_BLOCKING && mazeTileIsBlocking[currentTile.x + 1][currentTile.y] !== MAZE_BLOCKING) {
-            const tile = nextTileBeforeBlockingTile(mazeTileIsBlocking, currentTile, { x: 1, y: 0 });
-            const exists = solve.tiles.findIndex(t => t.x === tile.x && t.y === tile.y);
-            if (exists === -1) openTiles.push(tile);
-        }
-        if (mazeTileIsBlocking[currentTile.x + 1][currentTile.y] === MAZE_BLOCKING && mazeTileIsBlocking[currentTile.x - 1][currentTile.y] !== MAZE_BLOCKING) {
-            const tile = nextTileBeforeBlockingTile(mazeTileIsBlocking, currentTile, { x: -1, y: 0 });
-            const exists = solve.tiles.findIndex(t => t.x === tile.x && t.y === tile.y);
-            if (exists === -1) openTiles.push(tile);
-        }
-        if (mazeTileIsBlocking[currentTile.x][currentTile.y - 1] === MAZE_BLOCKING && mazeTileIsBlocking[currentTile.x][currentTile.y + 1] !== MAZE_BLOCKING) {
-            const tile = nextTileBeforeBlockingTile(mazeTileIsBlocking, currentTile, { x: 0, y: 1 });
-            const exists = solve.tiles.findIndex(t => t.x === tile.x && t.y === tile.y);
-            if (exists === -1) openTiles.push(tile);
-        }
-        if (mazeTileIsBlocking[currentTile.x][currentTile.y + 1] === MAZE_BLOCKING && mazeTileIsBlocking[currentTile.x][currentTile.y - 1] !== MAZE_BLOCKING) {
-            const tile = nextTileBeforeBlockingTile(mazeTileIsBlocking, currentTile, { x: 0, y: -1 });
-            const exists = solve.tiles.findIndex(t => t.x === tile.x && t.y === tile.y);
-            if (exists === -1) openTiles.push(tile);
-        }
-    }
-
-    return solve;
-}
-
 
 function checkLoop(maze: Maze, initialLoopTile: Position, mazeTileIsBlocking: number[][], id: number): MazeSolveLoop {
     const solve: MazeSolveLoop = {
@@ -560,9 +450,9 @@ function onGameInit(modifier: GameMapModifier, game: Game) {
 
 //TODO make it a general version every modifier uses
 function growArea(modifier: GameMapModifier) {
-    const lightning = modifier as MapModifierIce;
-    lightning.level++;
-    if (lightning.areaPerLevel === undefined) return;
-    const areaAmount = lightning.level * lightning.areaPerLevel;
-    setShapeAreaToAmount(lightning.area, areaAmount);
+    const ice = modifier as MapModifierIce;
+    ice.level++;
+    if (ice.areaPerLevel === undefined) return;
+    const areaAmount = ice.level * ice.areaPerLevel;
+    setShapeAreaToAmount(ice.area, areaAmount);
 }

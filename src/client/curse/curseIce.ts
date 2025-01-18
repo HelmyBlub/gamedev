@@ -5,7 +5,7 @@ import { calculateDistance, getCameraPosition, getNextId } from "../game.js";
 import { FACTION_PLAYER, Game, IdCounter, Position } from "../gameModel.js";
 import { getPointPaintPosition, paintTextWithOutline } from "../gamePaint.js";
 import { calculatePosToChunkTileXY, changeTileIdOfMapChunk, getMapTileId, positionToChunkXY, TILE_ID_GRASS, TILE_ID_ICE } from "../map/map.js";
-import { MODIFIER_NAME_LIGHTNING } from "../map/modifiers/mapModifierLightning.js";
+import { MODIFIER_NAME_ICE } from "../map/modifiers/mapModifierIce.js";
 import { nextRandom } from "../randomNumberGenerator.js";
 import { Curse, CURSES_FUNCTIONS } from "./curse.js";
 
@@ -26,7 +26,7 @@ export function addCurseIce() {
         reset: reset,
         tick: tick,
         onCurseIncreased: onCurseIncreased,
-        mapModifierName: MODIFIER_NAME_LIGHTNING,
+        mapModifierName: MODIFIER_NAME_ICE,
     };
 }
 
@@ -102,8 +102,8 @@ function tick(curse: Curse, target: Character, game: Game) {
 function changeRandomTilesToIce(centerPosition: Position, radius: number, counter: number, game: Game) {
     const tileRadius = Math.floor(radius / game.state.map.tileSize);
     for (let i = 0; i < counter; i++) {
-        const x = Math.floor(nextRandom(game.state.randomSeed) * tileRadius);
-        const y = Math.floor(nextRandom(game.state.randomSeed) * tileRadius);
+        const x = Math.floor(nextRandom(game.state.randomSeed) * tileRadius * 2 - tileRadius);
+        const y = Math.floor(nextRandom(game.state.randomSeed) * tileRadius * 2 - tileRadius);
         if (calculateDistance({ x: x, y: y }, { x: 0, y: 0 }) <= tileRadius) {
             const position = {
                 x: centerPosition.x + x * game.state.map.tileSize,
