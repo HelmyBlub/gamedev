@@ -5,10 +5,64 @@
             "clientId": -1,
             "recordInputs": true,
             "replay": false,
-            "testMapSeed": 0.33495610715195445,
-            "executeTime": 784.3333333333329,
-            "testRandomStartSeed": 19951.058651354866,
-            "testEnemyTypeDirectionSeed": 5
+            "testMapSeed": 0.6579267932177107,
+            "testRandomStartSeed": 6.805781102304214,
+            "testEnemyTypeDirectionSeed": 0,
+            "executeTime": 1
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": 377,
+                    "y": 80
+                },
+                "castPositionRelativeToCharacter": {
+                    "x": 277,
+                    "y": -20
+                }
+            },
+            "executeTime": 800.9999999999995
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": 377,
+                    "y": 80
+                },
+                "castPositionRelativeToCharacter": {
+                    "x": 277,
+                    "y": -20
+                }
+            },
+            "executeTime": 867.6666666666661
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": 0,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 934.3333333333326
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": 0,
+                "faktor": 0,
+                "action": "moveAction"
+            },
+            "executeTime": 1117.666666666666
         },
         {
             "command": "playerInput",
@@ -17,7 +71,7 @@
                 "action": "upgrade5",
                 "isKeydown": true
             },
-            "executeTime": 1384.333333333334
+            "executeTime": 1351.0000000000005
         },
         {
             "command": "playerInput",
@@ -26,13 +80,13 @@
                 "action": "upgrade5",
                 "isKeydown": false
             },
-            "executeTime": 1484.3333333333344
+            "executeTime": 1401.0000000000007
         },
         {
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "direction": -1.5707963267948966,
+                "direction": 0,
                 "faktor": 1,
                 "action": "moveAction"
             },
@@ -42,514 +96,10 @@
             "command": "playerInput",
             "clientId": -1,
             "data": {
-                "direction": -0.7853981633974483,
-                "faktor": 1,
-                "action": "moveAction"
-            },
-            "executeTime": 1767.666666666669
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
                 "action": "upgrade1",
                 "isKeydown": true
             },
-            "executeTime": 2750.9999999999973
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "ability1",
-                "isKeydown": true,
-                "castPosition": {
-                    "x": 213.06096654410015,
-                    "y": -10.560966544098534
-                },
-                "castPositionRelativeToCharacter": {
-                    "x": -92,
-                    "y": 104.5
-                }
-            },
-            "executeTime": 4184.33333333332
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "ability1",
-                "isKeydown": false,
-                "castPosition": {
-                    "x": 218.71782079359258,
-                    "y": -16.217820793590903
-                },
-                "castPositionRelativeToCharacter": {
-                    "x": -92,
-                    "y": 104.5
-                }
-            },
-            "executeTime": 4250.999999999988
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "ability1",
-                "isKeydown": true,
-                "castPosition": {
-                    "x": 302.2152954766513,
-                    "y": -93.71529547664954
-                },
-                "castPositionRelativeToCharacter": {
-                    "x": -58,
-                    "y": 76.5
-                }
-            },
-            "executeTime": 4834.333333333332
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "ability1",
-                "isKeydown": false,
-                "castPosition": {
-                    "x": 307.87214972614373,
-                    "y": -99.37214972614197
-                },
-                "castPositionRelativeToCharacter": {
-                    "x": -58,
-                    "y": 76.5
-                }
-            },
-            "executeTime": 4901
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "ability1",
-                "isKeydown": true,
-                "castPosition": {
-                    "x": 397.19805153394867,
-                    "y": -124.69805153394691
-                },
-                "castPositionRelativeToCharacter": {
-                    "x": -21,
-                    "y": 103.5
-                }
-            },
-            "executeTime": 5517.666666666678
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "ability1",
-                "isKeydown": false,
-                "castPosition": {
-                    "x": 401.440692221068,
-                    "y": -128.94069222106623
-                },
-                "castPositionRelativeToCharacter": {
-                    "x": -21,
-                    "y": 103.5
-                }
-            },
-            "executeTime": 5567.666666666679
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "ability1",
-                "isKeydown": true,
-                "castPosition": {
-                    "x": 521.6244584051419,
-                    "y": -197.1244584051401
-                },
-                "castPositionRelativeToCharacter": {
-                    "x": 61.00000000000006,
-                    "y": 73.5
-                }
-            },
-            "executeTime": 6017.666666666687
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "ability1",
-                "isKeydown": false,
-                "castPosition": {
-                    "x": 528.6955262170075,
-                    "y": -204.19552621700564
-                },
-                "castPositionRelativeToCharacter": {
-                    "x": 61.00000000000006,
-                    "y": 73.5
-                }
-            },
-            "executeTime": 6101.000000000022
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "direction": -1.5707963267948966,
-                "faktor": 1,
-                "action": "moveAction"
-            },
-            "executeTime": 7367.6666666667115
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "direction": -2.356194490192345,
-                "faktor": 1,
-                "action": "moveAction"
-            },
-            "executeTime": 8067.666666666724
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "direction": -3.141592653589793,
-                "faktor": 1,
-                "action": "moveAction"
-            },
-            "executeTime": 8467.666666666717
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "direction": -3.9269908169872414,
-                "faktor": 1,
-                "action": "moveAction"
-            },
-            "executeTime": 11167.666666666619
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "direction": -4.71238898038469,
-                "faktor": 1,
-                "action": "moveAction"
-            },
-            "executeTime": 11567.666666666604
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "direction": 0,
-                "faktor": 0,
-                "action": "moveAction"
-            },
-            "executeTime": 11767.666666666597
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "direction": -3.141592653589793,
-                "faktor": 1,
-                "action": "moveAction"
-            },
-            "executeTime": 12234.333333333247
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "direction": -3.9269908169872414,
-                "faktor": 1,
-                "action": "moveAction"
-            },
-            "executeTime": 13634.333333333196
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "direction": -4.71238898038469,
-                "faktor": 1,
-                "action": "moveAction"
-            },
-            "executeTime": 13850.999999999854
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "direction": 0,
-                "faktor": 0,
-                "action": "moveAction"
-            },
-            "executeTime": 13884.333333333187
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "direction": -3.141592653589793,
-                "faktor": 1,
-                "action": "moveAction"
-            },
-            "executeTime": 14500.99999999983
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "direction": -2.356194490192345,
-                "faktor": 1,
-                "action": "moveAction"
-            },
-            "executeTime": 14534.333333333163
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "direction": -1.5707963267948966,
-                "faktor": 1,
-                "action": "moveAction"
-            },
-            "executeTime": 14800.99999999982
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "direction": -0.7853981633974483,
-                "faktor": 1,
-                "action": "moveAction"
-            },
-            "executeTime": 15984.33333333311
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "direction": 0,
-                "faktor": 1,
-                "action": "moveAction"
-            },
-            "executeTime": 16384.333333333096
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "ability1",
-                "isKeydown": true,
-                "castPosition": {
-                    "x": 95.22243815158885,
-                    "y": -518.8595231414356
-                },
-                "castPositionRelativeToCharacter": {
-                    "x": 81,
-                    "y": 102.5
-                }
-            },
-            "executeTime": 16467.666666666435
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "ability1",
-                "isKeydown": false,
-                "castPosition": {
-                    "x": 107.22243815158885,
-                    "y": -518.8595231414356
-                },
-                "castPositionRelativeToCharacter": {
-                    "x": 81,
-                    "y": 102.5
-                }
-            },
-            "executeTime": 16567.666666666442
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "ability1",
-                "isKeydown": true,
-                "castPosition": {
-                    "x": 125.22243815158885,
-                    "y": -518.8595231414356
-                },
-                "castPositionRelativeToCharacter": {
-                    "x": 81,
-                    "y": 102.5
-                }
-            },
-            "executeTime": 16717.666666666453
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "action": "ability1",
-                "isKeydown": false,
-                "castPosition": {
-                    "x": 131.22243815158885,
-                    "y": -518.8595231414356
-                },
-                "castPositionRelativeToCharacter": {
-                    "x": 81,
-                    "y": 102.5
-                }
-            },
-            "executeTime": 16767.666666666457
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "direction": 0,
-                "faktor": 0,
-                "action": "moveAction"
-            },
-            "executeTime": 16884.333333333132
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "direction": -3.141592653589793,
-                "faktor": 1,
-                "action": "moveAction"
-            },
-            "executeTime": 17034.333333333143
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "direction": 0,
-                "faktor": 0,
-                "action": "moveAction"
-            },
-            "executeTime": 17884.333333333205
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "direction": -3.141592653589793,
-                "faktor": 1,
-                "action": "moveAction"
-            },
-            "executeTime": 18800.999999999938
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "direction": -3.9269908169872414,
-                "faktor": 1,
-                "action": "moveAction"
-            },
-            "executeTime": 18934.33333333328
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "direction": -3.141592653589793,
-                "faktor": 1,
-                "action": "moveAction"
-            },
-            "executeTime": 19434.333333333318
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "direction": 0,
-                "faktor": 0,
-                "action": "moveAction"
-            },
-            "executeTime": 19467.666666666653
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "direction": -3.141592653589793,
-                "faktor": 1,
-                "action": "moveAction"
-            },
-            "executeTime": 21484.333333333467
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "direction": -3.9269908169872414,
-                "faktor": 1,
-                "action": "moveAction"
-            },
-            "executeTime": 21501.000000000135
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "direction": -3.141592653589793,
-                "faktor": 1,
-                "action": "moveAction"
-            },
-            "executeTime": 21867.666666666828
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "direction": -3.9269908169872414,
-                "faktor": 1,
-                "action": "moveAction"
-            },
-            "executeTime": 21951.000000000167
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "direction": -3.141592653589793,
-                "faktor": 1,
-                "action": "moveAction"
-            },
-            "executeTime": 22284.333333333525
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "direction": 0,
-                "faktor": 0,
-                "action": "moveAction"
-            },
-            "executeTime": 25251.000000000407
-        },
-        {
-            "command": "playerInput",
-            "clientId": -1,
-            "data": {
-                "direction": -4.71238898038469,
-                "faktor": 1,
-                "action": "moveAction"
-            },
-            "executeTime": 25251.000000000407
+            "executeTime": 2267.6666666666683
         },
         {
             "command": "playerInput",
@@ -559,7 +109,41 @@
                 "faktor": 1,
                 "action": "moveAction"
             },
-            "executeTime": 25251.000000000407
+            "executeTime": 2950.9999999999955
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": 220.76955262170077,
+                    "y": 235.76955262170048
+                },
+                "castPositionRelativeToCharacter": {
+                    "x": -90,
+                    "y": 99
+                }
+            },
+            "executeTime": 3384.333333333325
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": 226.4264068711932,
+                    "y": 241.4264068711929
+                },
+                "castPositionRelativeToCharacter": {
+                    "x": -90,
+                    "y": 99
+                }
+            },
+            "executeTime": 3450.999999999991
         },
         {
             "command": "playerInput",
@@ -569,7 +153,177 @@
                 "faktor": 1,
                 "action": "moveAction"
             },
-            "executeTime": 25384.33333333375
+            "executeTime": 3484.333333333324
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": 291.2548339959394,
+                    "y": 224.25483399593912
+                },
+                "castPositionRelativeToCharacter": {
+                    "x": -54,
+                    "y": 79
+                }
+            },
+            "executeTime": 3700.9999999999886
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": 302.2548339959394,
+                    "y": 224.25483399593912
+                },
+                "castPositionRelativeToCharacter": {
+                    "x": -53,
+                    "y": 79
+                }
+            },
+            "executeTime": 3784.333333333321
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": 359.2548339959394,
+                    "y": 253.25483399593912
+                },
+                "castPositionRelativeToCharacter": {
+                    "x": -22,
+                    "y": 108
+                }
+            },
+            "executeTime": 4000.999999999986
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": 366.2548339959394,
+                    "y": 254.25483399593912
+                },
+                "castPositionRelativeToCharacter": {
+                    "x": -21,
+                    "y": 109
+                }
+            },
+            "executeTime": 4050.9999999999854
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": 451.2548339959394,
+                    "y": 258.2548339959391
+                },
+                "castPositionRelativeToCharacter": {
+                    "x": 34,
+                    "y": 113
+                }
+            },
+            "executeTime": 4300.999999999989
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": 459.2548339959394,
+                    "y": 258.2548339959391
+                },
+                "castPositionRelativeToCharacter": {
+                    "x": 34,
+                    "y": 113
+                }
+            },
+            "executeTime": 4367.666666666657
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": 524.2548339959394,
+                    "y": 240.25483399593912
+                },
+                "castPositionRelativeToCharacter": {
+                    "x": 73,
+                    "y": 95
+                }
+            },
+            "executeTime": 4584.333333333328
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": 532.2548339959394,
+                    "y": 240.25483399593912
+                },
+                "castPositionRelativeToCharacter": {
+                    "x": 73,
+                    "y": 95
+                }
+            },
+            "executeTime": 4650.999999999995
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": true,
+                "castPosition": {
+                    "x": 606.2548339959394,
+                    "y": 216.25483399593912
+                },
+                "castPositionRelativeToCharacter": {
+                    "x": 107,
+                    "y": 71
+                }
+            },
+            "executeTime": 4984.333333333335
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "action": "ability1",
+                "isKeydown": false,
+                "castPosition": {
+                    "x": 616.2548339959394,
+                    "y": 216.25483399593912
+                },
+                "castPositionRelativeToCharacter": {
+                    "x": 107,
+                    "y": 71
+                }
+            },
+            "executeTime": 5067.66666666667
         },
         {
             "command": "playerInput",
@@ -579,13 +333,293 @@
                 "faktor": 0,
                 "action": "moveAction"
             },
-            "executeTime": 25534.33333333376
+            "executeTime": 5934.333333333352
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -4.71238898038469,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 5951.000000000019
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": 0.7853981633974483,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 6034.333333333354
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": 0,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 6251.000000000025
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -0.7853981633974483,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 6517.666666666696
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -1.5707963267948966,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 6834.3333333333685
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -0.7853981633974483,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 8701.000000000042
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -1.5707963267948966,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 9001.000000000031
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -2.356194490192345,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 9334.333333333352
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -1.5707963267948966,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 9567.666666666677
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -0.7853981633974483,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 11234.333333333283
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -1.5707963267948966,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 11484.333333333274
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -2.356194490192345,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 11967.66666666659
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -3.141592653589793,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 13767.666666666524
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -2.356194490192345,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 14400.999999999834
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -1.5707963267948966,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 15250.999999999804
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": 0,
+                "faktor": 0,
+                "action": "moveAction"
+            },
+            "executeTime": 15267.66666666647
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -4.71238898038469,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 15534.333333333127
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": 0.7853981633974483,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 15550.999999999793
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": 0,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 15767.666666666451
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": 0,
+                "faktor": 0,
+                "action": "moveAction"
+            },
+            "executeTime": 15784.333333333117
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -1.5707963267948966,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 18067.66666666655
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -0.7853981633974483,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 18234.33333333323
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -1.5707963267948966,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 18467.66666666658
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -0.7853981633974483,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 19234.333333333303
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": 0,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 19801.00000000001
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -0.7853981633974483,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 21101.000000000106
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": -1.5707963267948966,
+                "faktor": 1,
+                "action": "moveAction"
+            },
+            "executeTime": 21417.666666666795
+        },
+        {
+            "command": "playerInput",
+            "clientId": -1,
+            "data": {
+                "direction": 0,
+                "faktor": 0,
+                "action": "moveAction"
+            },
+            "executeTime": 21434.333333333463
         }
     ],
     "permanentData": {
         "nextKings": {
             "north": {
-                "id": 144045,
+                "id": 0,
                 "x": 0,
                 "y": 0,
                 "width": 60,
@@ -608,7 +642,7 @@
                 "state": "alive",
                 "abilities": [
                     {
-                        "id": 144046,
+                        "id": 1,
                         "name": "Melee",
                         "damage": 10,
                         "passive": true,
@@ -616,7 +650,7 @@
                         "upgrades": {}
                     },
                     {
-                        "id": 144047,
+                        "id": 2,
                         "name": "Shoot",
                         "baseFrequency": 1000,
                         "frequencyIncrease": 1.2,
@@ -632,7 +666,7 @@
                         "shootRandom": true
                     },
                     {
-                        "id": 144048,
+                        "id": 3,
                         "name": "Sword",
                         "damage": 25,
                         "swordLength": 55,
@@ -645,7 +679,7 @@
                         "upgrades": {}
                     },
                     {
-                        "id": 144049,
+                        "id": 4,
                         "name": "FireCircle",
                         "objectDuration": 5000,
                         "damage": 10,
@@ -660,7 +694,7 @@
                         "upgrades": {}
                     },
                     {
-                        "id": 144050,
+                        "id": 5,
                         "name": "Ice Aura",
                         "damage": 10,
                         "radius": 72,
@@ -682,7 +716,7 @@
                 "damageDoneFactor": 1
             },
             "west": {
-                "id": 144051,
+                "id": 6,
                 "x": 0,
                 "y": 0,
                 "width": 60,
@@ -705,7 +739,7 @@
                 "state": "alive",
                 "abilities": [
                     {
-                        "id": 144052,
+                        "id": 7,
                         "name": "Melee",
                         "damage": 10,
                         "passive": true,
@@ -713,7 +747,7 @@
                         "upgrades": {}
                     },
                     {
-                        "id": 144053,
+                        "id": 8,
                         "name": "Shoot",
                         "baseFrequency": 1000,
                         "frequencyIncrease": 1.2,
@@ -729,7 +763,7 @@
                         "shootRandom": true
                     },
                     {
-                        "id": 144054,
+                        "id": 9,
                         "name": "Sword",
                         "damage": 25,
                         "swordLength": 55,
@@ -742,7 +776,7 @@
                         "upgrades": {}
                     },
                     {
-                        "id": 144055,
+                        "id": 10,
                         "name": "FireCircle",
                         "objectDuration": 5000,
                         "damage": 10,
@@ -757,7 +791,7 @@
                         "upgrades": {}
                     },
                     {
-                        "id": 144056,
+                        "id": 11,
                         "name": "Ice Aura",
                         "damage": 10,
                         "radius": 72,
@@ -779,7 +813,7 @@
                 "damageDoneFactor": 1
             },
             "south": {
-                "id": 144057,
+                "id": 12,
                 "x": 0,
                 "y": 0,
                 "width": 60,
@@ -802,7 +836,7 @@
                 "state": "alive",
                 "abilities": [
                     {
-                        "id": 144058,
+                        "id": 13,
                         "name": "Melee",
                         "damage": 10,
                         "passive": true,
@@ -810,7 +844,7 @@
                         "upgrades": {}
                     },
                     {
-                        "id": 144059,
+                        "id": 14,
                         "name": "Shoot",
                         "baseFrequency": 1000,
                         "frequencyIncrease": 1.2,
@@ -826,7 +860,7 @@
                         "shootRandom": true
                     },
                     {
-                        "id": 144060,
+                        "id": 15,
                         "name": "Sword",
                         "damage": 25,
                         "swordLength": 55,
@@ -839,7 +873,7 @@
                         "upgrades": {}
                     },
                     {
-                        "id": 144061,
+                        "id": 16,
                         "name": "FireCircle",
                         "objectDuration": 5000,
                         "damage": 10,
@@ -854,7 +888,7 @@
                         "upgrades": {}
                     },
                     {
-                        "id": 144062,
+                        "id": 17,
                         "name": "Ice Aura",
                         "damage": 10,
                         "radius": 72,
@@ -876,157 +910,89 @@
                 "damageDoneFactor": 1
             },
             "east": {
-                "id": 144063,
-                "x": 20266.145453154062,
-                "y": 488.1076477383259,
-                "width": 20,
-                "height": 40,
+                "id": 18,
+                "x": 0,
+                "y": 0,
+                "width": 60,
+                "height": 60,
                 "paint": {
-                    "randomizedCharacterImage": {
-                        "headIndex": 1,
-                        "chestIndex": 1,
-                        "legsIndex": 1,
-                        "skinColor": "blue",
-                        "clothColor": "black"
-                    }
+                    "color": "black",
+                    "image": "slime"
                 },
-                "baseMoveSpeed": 2,
+                "baseMoveSpeed": 1,
                 "moveSpeedFactor": 1,
-                "moveDirection": -0.7853981633974483,
+                "moveDirection": 0,
                 "isMoving": false,
-                "hp": 200,
-                "maxHp": 200,
+                "hp": 50000000,
+                "maxHp": 50000000,
                 "shield": 0,
                 "maxShieldFactor": 3,
-                "faction": "player",
-                "experienceWorth": 1,
-                "type": "PlayerCharacter",
+                "faction": "enemy",
+                "experienceWorth": 0,
+                "type": "KingEnemyCharacter",
                 "state": "alive",
                 "abilities": [
                     {
-                        "id": 144064,
-                        "name": "Snipe",
-                        "baseDamage": 14600,
-                        "passive": false,
-                        "playerInputBinding": "ability1",
-                        "baseRechargeTime": 1000,
-                        "currentCharges": 28,
-                        "maxCharges": 99,
-                        "reloadTime": -1,
-                        "baseRange": 2260,
-                        "shotFrequencyTimeDecreaseFaktor": 22.4,
-                        "size": 5,
-                        "paintFadeDuration": 500,
-                        "upgrades": {
-                            "No Miss Chain": {
-                                "level": 1,
-                                "noMissChainCounter": 0,
-                                "noMissBonusDamageFactorAdd": 0.04,
-                                "noMissCounterCap": 50,
-                                "upgradeSynergy": true
-                            },
-                            "Fire Line": {
-                                "level": 1,
-                                "duration": 4000,
-                                "damagePerSecondFactor": 1,
-                                "tickInterval": 200,
-                                "range": 150,
-                                "upgradeSynergy": false
-                            },
-                            "Split Shot": {
-                                "level": 2,
-                                "shotSplitsPerHit": 2,
-                                "upgradeSynergy": true
-                            },
-                            "More Rifles": {
-                                "level": 1,
-                                "rotationDirection": 261.24000000005236,
-                                "rotationDistance": 80,
-                                "lastSniperRiflePaintDirection": [
-                                    -0.921932002911499,
-                                    0
-                                ],
-                                "numberRifles": 1,
-                                "upgradeSynergy": false
-                            },
-                            "+Damage and -Range": {
-                                "level": 1,
-                                "damageMultiplier": 3,
-                                "rangeMultiplier": 0.5
-                            }
-                        },
-                        "maxShootFrequency": 1000,
-                        "shotNextAllowedTime": false,
-                        "nextAllowedShotTime": 0,
-                        "lastSniperRiflePaintDirection": -0.8012196279390219,
-                        "maxMagazineSize": 99,
-                        "minimumShotFrequency": 100,
-                        "tradable": true,
-                        "level": {
-                            "level": 146,
-                            "leveling": {
-                                "experience": 38399,
-                                "experienceForLevelUp": 75581
-                            }
-                        },
-                        "bossSkillPoints": {
-                            "available": 0,
-                            "used": 8
-                        },
-                        "doDamageBreakDown": true,
-                        "classIdRef": 11567
-                    },
-                    {
-                        "id": 144065,
-                        "name": "HP Regen",
-                        "amount": 2,
-                        "tickInterval": 500,
+                        "id": 19,
+                        "name": "Melee",
+                        "damage": 10,
                         "passive": true,
-                        "upgrades": {},
-                        "tradable": true,
-                        "classIdRef": 11567
+                        "tickInterval": 250,
+                        "upgrades": {}
                     },
                     {
-                        "name": "SpeedBoost",
-                        "speedFactor": 2.5,
-                        "cooldown": 11054.25,
-                        "cooldownFinishTime": 0,
-                        "duration": 3000,
-                        "playerInputBinding": "ability2",
-                        "id": 144066,
-                        "passive": false,
-                        "upgrades": {
-                            "Additional Charge": {
-                                "level": 2,
-                                "maxCharges": 3,
-                                "currentCharges": 3
-                            },
-                            "Slow Trail": {
-                                "level": 1
-                            },
-                            "Speed Boost +Speed": {
-                                "level": 2
-                            },
-                            "Speed Boost -Cooldown": {
-                                "level": 3
-                            }
-                        },
-                        "tradable": true,
-                        "bossSkillPoints": {
-                            "available": 0,
-                            "used": 8
-                        },
-                        "classIdRef": 11567
+                        "id": 20,
+                        "name": "Shoot",
+                        "baseFrequency": 1000,
+                        "frequencyIncrease": 1.2,
+                        "damage": 50,
+                        "nextShotTime": -1,
+                        "pierceCount": 0,
+                        "multiShot": 0,
+                        "timeToLive": 3000,
+                        "passive": true,
+                        "moveSpeed": 2.7,
+                        "bulletSize": 8,
+                        "upgrades": {},
+                        "shootRandom": true
                     },
                     {
-                        "id": 144067,
-                        "name": "Reload",
-                        "playerInputBinding": "ability3",
-                        "passive": false,
-                        "upgrades": {},
-                        "unique": true,
-                        "tradable": true,
-                        "classIdRef": 11567
+                        "id": 21,
+                        "name": "Sword",
+                        "damage": 25,
+                        "swordLength": 55,
+                        "swordCount": 1,
+                        "angleChangePerTick": 0.0075,
+                        "currentSwordAngle": 0,
+                        "angleChangePerSword": 6.283185307179586,
+                        "passive": true,
+                        "tickInterval": 100,
+                        "upgrades": {}
+                    },
+                    {
+                        "id": 22,
+                        "name": "FireCircle",
+                        "objectDuration": 5000,
+                        "damage": 10,
+                        "radius": 20,
+                        "baseRechargeTime": 2000,
+                        "rechargeTimeDecreaseFaktor": 1.5,
+                        "maxCharges": 3,
+                        "currentCharges": 0,
+                        "nextRechargeTime": -1,
+                        "passive": true,
+                        "moveSpeed": 2,
+                        "upgrades": {}
+                    },
+                    {
+                        "id": 23,
+                        "name": "Ice Aura",
+                        "damage": 10,
+                        "radius": 72,
+                        "slowFactor": 2,
+                        "passive": true,
+                        "tickInterval": 250,
+                        "upgrades": {}
                     }
                 ],
                 "debuffs": [],
@@ -1035,301 +1001,39 @@
                     "rerools": 0,
                     "displayText": ""
                 },
-                "weight": 800,
+                "weight": 3600,
                 "isRooted": false,
                 "damageTakenModifierFactor": 1,
-                "damageDoneFactor": 1,
-                "willTurnToPetOnDeath": true,
-                "combatlog": {
-                    "damageTakenLog": [
-                        {
-                            "message": "Melee 2, hp: 198/200, id: 4259",
-                            "timestamp": 0
-                        },
-                        {
-                            "message": "Melee 2, hp: 196/200, id: 4259",
-                            "timestamp": 0
-                        },
-                        {
-                            "message": "Melee 2, hp: 194/200, id: 4259",
-                            "timestamp": 0
-                        },
-                        {
-                            "message": "Melee 2, hp: 194/200, id: 4259",
-                            "timestamp": 0
-                        },
-                        {
-                            "message": "Melee 2, hp: 192/200, id: 4259",
-                            "timestamp": 0
-                        },
-                        {
-                            "message": "Melee 2, hp: 190/200, id: 4259",
-                            "timestamp": 0
-                        },
-                        {
-                            "message": "Melee 2, hp: 188/200, id: 4259",
-                            "timestamp": 0
-                        },
-                        {
-                            "message": "Melee 2, hp: 186/200, id: 4259",
-                            "timestamp": 0
-                        },
-                        {
-                            "message": "Melee 2, hp: 184/200, id: 4259",
-                            "timestamp": 0
-                        },
-                        {
-                            "message": "Melee 2, hp: 182/200, id: 4259",
-                            "timestamp": 0
-                        },
-                        {
-                            "message": "Melee 2, hp: 180/200, id: 4259",
-                            "timestamp": 0
-                        },
-                        {
-                            "message": "Melee 2, hp: 180/200, id: 4259",
-                            "timestamp": 0
-                        },
-                        {
-                            "message": "Melee 2, hp: 178/200, id: 4259",
-                            "timestamp": 0
-                        },
-                        {
-                            "message": "Melee 2, hp: 176/200, id: 4259",
-                            "timestamp": 0
-                        },
-                        {
-                            "message": "Melee 2, hp: 174/200, id: 4259",
-                            "timestamp": 0
-                        },
-                        {
-                            "message": "Melee 2, hp: 172/200, id: 4259",
-                            "timestamp": 0
-                        },
-                        {
-                            "message": "Melee 2, hp: 170/200, id: 4259",
-                            "timestamp": 0
-                        },
-                        {
-                            "message": "Melee 8, hp: 162/200, id: 4259",
-                            "timestamp": 0
-                        },
-                        {
-                            "message": "Melee 2, hp: 160/200, id: 4259",
-                            "timestamp": 0
-                        },
-                        {
-                            "message": "Melee 2, hp: 158/200, id: 4259",
-                            "timestamp": 0
-                        },
-                        {
-                            "message": "Melee 2, hp: 156/200, id: 4259",
-                            "timestamp": 0
-                        },
-                        {
-                            "message": "Melee 2, hp: 154/200, id: 4259",
-                            "timestamp": 0
-                        },
-                        {
-                            "message": "Melee 2, hp: 152/200, id: 4259",
-                            "timestamp": 0
-                        },
-                        {
-                            "message": "Melee 2, hp: 150/200, id: 4259",
-                            "timestamp": 0
-                        },
-                        {
-                            "message": "Melee 2, hp: 148/200, id: 4259",
-                            "timestamp": 0
-                        },
-                        {
-                            "message": "Melee 8, hp: 142/200, id: 4259",
-                            "timestamp": 0
-                        },
-                        {
-                            "message": "Melee 2, hp: 140/200, id: 4259",
-                            "timestamp": 0
-                        },
-                        {
-                            "message": "Melee 2, hp: 138/200, id: 4259",
-                            "timestamp": 0
-                        },
-                        {
-                            "message": "Sword 108, hp: 92/200, id: 4259",
-                            "timestamp": 407500.00000012177
-                        },
-                        {
-                            "message": "Shoot 50, hp: 150/200, id: 4259",
-                            "timestamp": 501116.6666668974
-                        }
-                    ],
-                    "damageDoneLog": [
-                        {
-                            "message": "Snipe 131400, hp: 3369834/50000000, id: 18",
-                            "timestamp": 519516.6666668949
-                        },
-                        {
-                            "message": "Snipe 131400, hp: 3238434/50000000, id: 18",
-                            "timestamp": 519516.6666668949
-                        },
-                        {
-                            "message": "Snipe 131400, hp: 3107034/50000000, id: 18",
-                            "timestamp": 519516.6666668949
-                        },
-                        {
-                            "message": "Snipe 131400, hp: 2975634/50000000, id: 18",
-                            "timestamp": 519616.6666668947
-                        },
-                        {
-                            "message": "Snipe 131400, hp: 2844234/50000000, id: 18",
-                            "timestamp": 519616.6666668947
-                        },
-                        {
-                            "message": "Snipe 131400, hp: 2712834/50000000, id: 18",
-                            "timestamp": 519633.3333335613
-                        },
-                        {
-                            "message": "Snipe 131400, hp: 609480/740880, id: 13762",
-                            "timestamp": 519633.3333335613
-                        },
-                        {
-                            "message": "Snipe 131400, hp: 2581434/50000000, id: 18",
-                            "timestamp": 519633.3333335613
-                        },
-                        {
-                            "message": "Snipe 131400, hp: 2450034/50000000, id: 18",
-                            "timestamp": 519633.3333335613
-                        },
-                        {
-                            "message": "Snipe 131400, hp: 2318634/50000000, id: 18",
-                            "timestamp": 519633.3333335613
-                        },
-                        {
-                            "message": "Snipe 131400, hp: 2187234/50000000, id: 18",
-                            "timestamp": 519733.3333335611
-                        },
-                        {
-                            "message": "Snipe 131400, hp: 2055834/50000000, id: 18",
-                            "timestamp": 519733.3333335611
-                        },
-                        {
-                            "message": "Snipe 131400, hp: 1924434/50000000, id: 18",
-                            "timestamp": 519750.0000002277
-                        },
-                        {
-                            "message": "Snipe 131400, hp: 478080/740880, id: 13762",
-                            "timestamp": 519750.0000002277
-                        },
-                        {
-                            "message": "Snipe 131400, hp: 1793034/50000000, id: 18",
-                            "timestamp": 519750.0000002277
-                        },
-                        {
-                            "message": "Snipe 131400, hp: 1661634/50000000, id: 18",
-                            "timestamp": 519750.0000002277
-                        },
-                        {
-                            "message": "Snipe 131400, hp: 1530234/50000000, id: 18",
-                            "timestamp": 519750.0000002277
-                        },
-                        {
-                            "message": "Snipe 131400, hp: 1398834/50000000, id: 18",
-                            "timestamp": 519850.0000002275
-                        },
-                        {
-                            "message": "Snipe 131400, hp: 1267434/50000000, id: 18",
-                            "timestamp": 519850.0000002275
-                        },
-                        {
-                            "message": "Snipe 131400, hp: 1136034/50000000, id: 18",
-                            "timestamp": 519866.6666668941
-                        },
-                        {
-                            "message": "Snipe 131400, hp: 1004634/50000000, id: 18",
-                            "timestamp": 519866.6666668941
-                        },
-                        {
-                            "message": "Snipe 131400, hp: 873234/50000000, id: 18",
-                            "timestamp": 519866.6666668941
-                        },
-                        {
-                            "message": "Snipe 131400, hp: 741834/50000000, id: 18",
-                            "timestamp": 519866.6666668941
-                        },
-                        {
-                            "message": "Snipe 131400, hp: 610434/50000000, id: 18",
-                            "timestamp": 519966.66666689387
-                        },
-                        {
-                            "message": "Snipe 131400, hp: 479034/50000000, id: 18",
-                            "timestamp": 519966.66666689387
-                        },
-                        {
-                            "message": "Snipe 131400, hp: 347634/50000000, id: 18",
-                            "timestamp": 519983.3333335605
-                        },
-                        {
-                            "message": "Snipe 131400, hp: 216234/50000000, id: 18",
-                            "timestamp": 519983.3333335605
-                        },
-                        {
-                            "message": "Snipe 131400, hp: 84834/50000000, id: 18",
-                            "timestamp": 519983.3333335605
-                        },
-                        {
-                            "message": "Snipe 131400, hp: 346680/740880, id: 13762",
-                            "timestamp": 520216.6666668933
-                        },
-                        {
-                            "message": "Snipe 131400, hp: 740880/740880, id: 13765",
-                            "timestamp": 520566.6666668925
-                        }
-                    ],
-                    "maxLogEntries": 30
-                },
-                "characterClasses": [
-                    {
-                        "className": "Sniper",
-                        "id": 11567
-                    }
-                ]
+                "damageDoneFactor": 1
             }
         },
         "pastCharacters": {
             "characters": [],
             "maxNumber": 12
         },
-        "buildings": [
-            {
-                "type": "Class Building",
-                "id": 144068,
-                "abilities": [],
-                "pets": [],
-                "tileX": 0,
-                "tileY": 0,
-                "image": "Building1"
-            },
-            {
-                "type": "Upgrade Building",
-                "id": 144069,
-                "tileX": 0,
-                "tileY": 7,
-                "image": "Building1",
-                "upgradeType": "Upgrade HP"
-            }
-        ],
+        "buildings": [],
         "gameVersion": {
             "major": 0,
             "minor": 4,
-            "patch": 322
+            "patch": 330
         },
         "achievements": {
             "open": [
+                {
+                    "name": "Boss Kill"
+                },
+                {
+                    "name": "King Kill"
+                },
                 {
                     "name": "God Kill"
                 },
                 {
                     "name": "God Hard Mode Kill"
+                },
+                {
+                    "name": "Play Class",
+                    "className": "Sniper"
                 },
                 {
                     "name": "Play Class",
@@ -1346,6 +1050,16 @@
                 {
                     "name": "Play Class",
                     "className": "Tamer"
+                },
+                {
+                    "name": "Reach Distance",
+                    "distance": 2000,
+                    "rewardMoney": 2
+                },
+                {
+                    "name": "Reach Distance",
+                    "distance": 10000,
+                    "rewardMoney": 20
                 },
                 {
                     "name": "Reach Distance",
@@ -1404,71 +1118,22 @@
                     "name": "Gain a Legendary Blessing"
                 }
             ],
-            "finished": [
-                {
-                    "name": "Reach Distance",
-                    "distance": 2000,
-                    "rewardMoney": 2
-                },
-                {
-                    "name": "Boss Kill"
-                },
-                {
-                    "name": "Reach Distance",
-                    "distance": 10000,
-                    "rewardMoney": 20
-                },
-                {
-                    "name": "Play Class",
-                    "className": "Sniper"
-                },
-                {
-                    "name": "King Kill"
-                }
-            ]
+            "finished": []
         },
-        "mapModifier": [
-            {
-                "id": 4260,
-                "type": "Darkness",
-                "area": {
-                    "type": "Circle",
-                    "x": -7500,
-                    "y": 7500,
-                    "radius": 1692.568750643269
-                },
-                "areaPerLevel": 1000000,
-                "level": 9
-            },
-            {
-                "id": 4261,
-                "type": "Lightning",
-                "area": {
-                    "type": "Circle",
-                    "x": 7500,
-                    "y": 7500,
-                    "radius": 2393.653682408596
-                },
-                "areaPerLevel": 2000000,
-                "spawnInterval": 3000,
-                "centerRadius": 800,
-                "level": 9,
-                "nextSpawnTimeCheck": 3016.6666666666665
-            }
-        ],
+        "mapModifier": [],
         "permanentPlayerData": {
-            "money": 168.36438670313373,
+            "money": 0,
             "upgrades": {}
         }
     },
     "gameEndAsserts": [
         {
             "type": "score",
-            "data": 938
+            "data": 1120
         },
         {
             "type": "killCounter",
-            "data": 474
+            "data": 534
         }
     ]
 }

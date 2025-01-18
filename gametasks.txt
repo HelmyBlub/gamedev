@@ -1,7 +1,8 @@
-next test run: sniper, builder, tamer, ball, musician
+next test run: builder, tamer, ball, musician
 increase version
 
 current tasks:
+- new short test replays
 - next map modifier:
     - ice modifier
         - check ice curse on king
@@ -13,6 +14,8 @@ current tasks:
 - bug: tower builder combatlog
     - single target damage missing
     - tower line missing
+- play test myself
+- bug: short king recording not always resulting in working replay
 
 next feature ideas:
 - maybe:
@@ -23,29 +26,11 @@ next feature ideas:
         - what would make the game more fun to play for me?
             - finding out how to min/max something?
                 - difficult to create when i am the one developing it
-                - 
             - more to explore on map, currently most is the same
                 - manipulate certain part of map with modifier
-                    - ice modifier
-                        - ice tile patches which makes enemies and players "slide"
-                        - more difficult movement
-                        - player curse effect?
-                            - negative: nearby tiles become ice tiles
-                            - positive: permanent ice aura around player?
-                        - boss idea:
-                            - snow man
-                                - puzzle boss?
-                                - you have to find a way to slide to him
-                                - protected by some barrier from damage, get close to him to remove
                     - wind modifier
                         - pushes characters, maybe objects?, to a side
                     - rainy weather
-
-                    - can have a boss enemy in the middle
-                    - be able to modify enemies in this area
-                    - be able to spawn different enemies
-                    - be able to change map tile textures
-                    - what does the player gain doing it?
 
 - think about next bigger feature 
     - extends existings classes for more upgrade choice?
