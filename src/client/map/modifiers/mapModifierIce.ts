@@ -78,7 +78,10 @@ function onChunkCreateModify(modifier: GameMapModifier, mapChunk: MapChunk, chun
                 mapChunk.characters = [];
             } else {
                 if (mapChunk.tiles[x][y] === TILE_ID_GRASS) {
-                    const convertedDistance = mapPositiveNumberToNumberBetweenZeroAndOne(distance / (1 + modifier.level / 10));
+                    let convertedDistance = mapPositiveNumberToNumberBetweenZeroAndOne(distance / (1 + modifier.level / 10));
+                    if (iceMod.area.type === MODIFY_SHAPE_NAME_CELESTIAL_DIRECTION) {
+                        convertedDistance = Math.min(0.4, convertedDistance);
+                    }
                     const perlin = perlin_get(tileX / chunkSize + 512, tileY / chunkSize, game.state.map.seed!);
                     if (convertedDistance < perlin) mapChunk.tiles[x][y] = TILE_ID_ICE;
                 }
