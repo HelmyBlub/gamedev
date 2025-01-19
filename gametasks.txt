@@ -2,10 +2,8 @@ next test run: tamer, ball, musician
 increase version
 
 current tasks:
-- check: cloud machine boss on higher level to many explosions?
-- bug: tower builder combatlog
-    - single target damage missing
-    - tower line missing
+- fix multiplayer 
+    - function "hrtime" in server for some reason not doing anything for ever
 - play test myself
 - bug: short king recording not always resulting in working replay
 - think about one more curse
@@ -38,13 +36,9 @@ next feature ideas:
     - graphics:
         - random weather effects
         - more variation 
-            - north: becomes snowy (each new run? each time king killed?)
-                - icy ground, more difficult to move
-            - east: becomes rainy
+            - becomes rainy
                 - 
-            - west: becomes dark
-                - more difficult to see, fog of war. Blocking tiles block view
-            - south: becomes desert
+            - becomes desert
                 - nothing special
 
 interests me:
