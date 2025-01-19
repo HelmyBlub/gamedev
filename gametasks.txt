@@ -3,9 +3,6 @@ increase version
 
 current tasks:
 - bug: legendary missing displays
-- next map modifier:
-    - ice modifier
-        - cursed king celestial direction always little ice
 - check: cloud machine boss on higher level to many explosions?
 - be able to cleanse bad part of curses
 - bug: tower builder combatlog

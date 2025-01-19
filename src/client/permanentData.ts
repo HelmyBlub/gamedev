@@ -217,6 +217,7 @@ function changeBuildingIds(building: Building, idCounter: IdCounter, game: Game)
                 for (let ability of king.abilities) {
                     if (ability.legendary && ability.legendary.buildingIdRef === oldBuildingId) {
                         ability.legendary.buildingIdRef = building.id;
+                        if (ability.classIdRef) ability.classIdRef = classBuilding.characterClass!.id;
                     }
                 }
                 if (king.pets) {
