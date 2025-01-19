@@ -56,8 +56,8 @@ function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: n
 
 function setAbilityToBossLevel(ability: Ability, level: number) {
     const cloud = ability as AbilityCloudMachineBossCloud;
-    cloud.damage = level * 20;
-    cloud.tickInterval = 500 / level;
+    cloud.damage = level * 25;
+    cloud.tickInterval = Math.max(1000 / level, 90);
     cloud.explosionRadius = 70 + 10 * level;
 }
 
@@ -81,8 +81,8 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     if (cloud.lastTickTime === undefined) cloud.lastTickTime = game.state.time;
     if (cloud.lastTickTime + cloud.tickInterval < game.state.time) {
         const closest = determineClosestCharacter(abilityOwner, getPlayerCharacters(game.state.players));
-        if (closest.minDistance > 2000) return;
         cloud.lastTickTime = game.state.time;
+        if (closest.minDistance > 2000) return;
         const strikeDelay = 3000;
         const randomPos: Position = {
             x: abilityOwner.x + nextRandom(game.state.randomSeed) * cloud.radius * 2 - cloud.radius,

@@ -2,14 +2,14 @@ next test run: tamer, ball, musician
 increase version
 
 current tasks:
-- bug: legendary missing displays
 - check: cloud machine boss on higher level to many explosions?
-- be able to cleanse bad part of curses
 - bug: tower builder combatlog
     - single target damage missing
     - tower line missing
 - play test myself
 - bug: short king recording not always resulting in working replay
+- think about one more curse
+- be able to cleanse bad part of curses
 
 next feature ideas:
 - maybe:
