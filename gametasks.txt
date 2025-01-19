@@ -1,4 +1,4 @@
-next test run: builder, tamer, ball, musician
+next test run: tamer, ball, musician
 increase version
 
 current tasks:
