@@ -4,6 +4,7 @@ increase version
 current tasks:
 - fix multiplayer 
     - function "hrtime" in server for some reason not doing anything for ever
+    - bug: player indicator + zoom incorrect
 - play test myself
 - bug: short king recording not always resulting in working replay
 - think about one more curse

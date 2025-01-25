@@ -222,21 +222,26 @@ function paintOtherPlayerIndicator(ctx: CanvasRenderingContext2D, game: Game) {
     const cameraPosition = getCameraPosition(game);
     const bufferSpace = 10;
     const alpha = 0.75;
+    const displayWidth = ctx.canvas.width / game.UI.zoom.factor;
+    const displayHeight = ctx.canvas.height / game.UI.zoom.factor;
     ctx.globalAlpha *= alpha;
     for (let player of game.state.players) {
         if (player.character.state === "dead") continue;
         const playerCharacter = player.character;
-        if (playerCharacter.x < cameraPosition.x - ctx.canvas.width / 2 - bufferSpace
-            || playerCharacter.y < cameraPosition.y - ctx.canvas.height / 2 - bufferSpace
-            || playerCharacter.x > cameraPosition.x + ctx.canvas.width / 2 + bufferSpace
-            || playerCharacter.y > cameraPosition.y + ctx.canvas.height / 2 + bufferSpace
+        if (playerCharacter.x < cameraPosition.x - displayWidth / 2 - bufferSpace
+            || playerCharacter.y < cameraPosition.y - displayHeight / 2 - bufferSpace
+            || playerCharacter.x > cameraPosition.x + displayWidth / 2 + bufferSpace
+            || playerCharacter.y > cameraPosition.y + displayHeight / 2 + bufferSpace
         ) {
             const clientInfo = findClientInfo(player.clientId, game);
             if (!clientInfo) continue;
             const direction = calculateDirection(cameraPosition, playerCharacter);
             const circleRadius = 40;
-            const indicatorPosition = calculatePositionToSquareEdge(cameraPosition.x, cameraPosition.y, ctx.canvas.width, ctx.canvas.height, direction, circleRadius);
-            const paintPos = getPointPaintPosition(ctx, indicatorPosition, cameraPosition, game.UI.zoom);
+            const paintPos = calculatePositionToSquareEdge(ctx.canvas.width / 2, ctx.canvas.height / 2, ctx.canvas.width, ctx.canvas.height, direction, circleRadius);
+            const indicatorPosition = {
+                x: cameraPosition.x + (paintPos.x - ctx.canvas.width / 2) / game.UI.zoom.factor,
+                y: cameraPosition.y + (paintPos.y - ctx.canvas.height / 2) / game.UI.zoom.factor,
+            };
             const playerName = clientInfo.name;
             const playerDistance = Math.floor(calculateDistance(indicatorPosition, playerCharacter));
             const fontSize = 18;

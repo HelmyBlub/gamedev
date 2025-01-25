@@ -10,7 +10,7 @@ export function websocketConnect(game: Game, clientName: string, lobbyCode: stri
 
     let url = `${protocol}://${window.location.host}/ws`;
     url += "?clientName=" + clientName;
-    url += "&myGameTime=" + game.state.time;
+    url += "&myGameTime=" + Math.floor(game.state.time);
     if (lobbyCode.length > 0) url += "&lobbyCode=" + lobbyCode;
     const lastIdentifier = getMyClientIdentifier(game);
     if (lastIdentifier) {

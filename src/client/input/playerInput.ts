@@ -4,7 +4,7 @@ import { Character } from "../character/characterModel.js";
 import { ClientKeyBindings, Game, Position } from "../gameModel.js";
 import { websocketConnect } from "../multiplayerConenction.js";
 import { ABILITIES_FUNCTIONS } from "../ability/ability.js";
-import { calculateDirection, getCameraPosition, findClientInfo, resetGameNonStateData, takeTimeMeasure, findClosestInteractable, concedePlayerFightRetries, retryFight, calculateFightRetryCounter, getRelativeMousePoistion, calculateDistance } from "../game.js";
+import { calculateDirection, getCameraPosition, findClientInfo, resetGameNonStateData, takeTimeMeasure, findClosestInteractable, concedePlayerFightRetries, retryFight, calculateFightRetryCounter, getRelativeMousePoistion, calculateDistance, getTickInterval } from "../game.js";
 import { executeUpgradeOptionChoice } from "../character/upgrade.js";
 import { canCharacterTradeAbilityOrPets, characterTradeAbilityAndPets } from "../character/character.js";
 import { shareCharactersTradeablePreventedMultipleClass } from "../character/playerCharacters/playerCharacters.js";
@@ -139,7 +139,7 @@ export function tickPlayerInputs(playerInputs: PlayerInput[], currentTime: numbe
     takeTimeMeasure(game.debug, "", "tickPlayerInputs");
     while (playerInputs.length > 0 && playerInputs[0].executeTime <= currentTime) {
         if (playerInputs[0].command === "playerInput") {
-            if (playerInputs[0].executeTime <= currentTime - 16) {
+            if (playerInputs[0].executeTime <= currentTime - getTickInterval(game)) {
                 console.log("playerAction to late", currentTime - playerInputs[0].executeTime, playerInputs[0]);
             }
             playerAction(playerInputs[0].clientId, playerInputs[0].data, game);

@@ -57,7 +57,9 @@ app.ws('/ws', function (ws: any, req: any) {
         }
     } else {
         const clientGameTime = req.query.myGameTime;
+        console.log("set time");
         setCurrentMsBasedOnClientGameTime(clientGameTime, currentLobby);
+        console.log("time set");
     }
 
     currentLobby.connections.push(connection);
