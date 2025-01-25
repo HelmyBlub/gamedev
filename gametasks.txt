@@ -3,8 +3,14 @@ increase version
 
 current tasks:
 - fix multiplayer 
-    - function "hrtime" in server for some reason not doing anything for ever
-    - bug: player indicator + zoom incorrect
+    - chunk enemy ids different
+        - noticed because of comabatlog ids don't match
+        - but total number of ids matches
+        - found out:    
+            - chunk generation order different in clients
+            - did not find any reason for it yet
+            - "createMissingChunk" printing out chunkX and chunkY resulted in different orders for my two client
+            - analysed "generateMissingChunks" but did not notice anything yet
 - play test myself
 - bug: short king recording not always resulting in working replay
 - think about one more curse

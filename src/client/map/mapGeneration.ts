@@ -28,7 +28,6 @@ export function generateMissingChunks(map: GameMap, positions: Position[], idCou
 
     const chunkSize = map.tileSize * map.chunkLength;
     const generationRadius = 1500;
-
     for (const position of positions) {
         const startX = (position.x - generationRadius);
         const startY = (position.y - generationRadius);
