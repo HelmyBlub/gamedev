@@ -35,6 +35,7 @@ export function createBuffLightningStrikes(
 ): BuffLightningStrikes {
     return {
         name: BUFF_NAME_LIGHTNING_STRIKES,
+        isBuff: true,
         removeTime: duration + gameTime,
         damage: damage,
         spawnRadius: spawnRadius,

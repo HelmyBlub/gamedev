@@ -219,14 +219,9 @@ export function takeTimeMeasure(debug: Debugging | undefined, endName: string, s
 }
 
 export async function runner(game: Game) {
-    try {
-        while (!game.closeGame) {
-            const sleepTime = tickAndPaint(game);
-            await sleep(sleepTime);
-        }
-    } catch (e) {
-        console.log(game);
-        throw e;
+    while (!game.closeGame) {
+        const sleepTime = tickAndPaint(game);
+        await sleep(sleepTime);
     }
 }
 

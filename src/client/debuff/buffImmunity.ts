@@ -20,7 +20,8 @@ export function createBuffImmunity(
 ): BuffImmunity {
     return {
         name: BUFF_NAME_IMMUNITY,
-        removeTime: (duration && gameTime)? duration + gameTime : undefined,
+        isBuff: true,
+        removeTime: (duration && gameTime) ? duration + gameTime : undefined,
     };
 }
 

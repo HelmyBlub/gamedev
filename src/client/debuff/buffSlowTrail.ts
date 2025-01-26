@@ -23,6 +23,7 @@ export function createBuffSlowTrail(
 ): BuffSlowTrail {
     return {
         name: BUFF_NAME_SLOW_TRAIL,
+        isBuff: true,
         removeTime: duration + gameTime,
     };
 }

@@ -13,6 +13,7 @@ import { addDebuffSlow } from "./debuffSlow.js";
 
 export type Debuff = {
     name: string,
+    isBuff?: boolean,
     removeTime?: number,
     abilityIdRef?: number,
 }
@@ -45,7 +46,7 @@ export function onDomLoadSetDebuffsFunctions() {
 }
 
 export function applyDebuff(debuff: Debuff, character: Character, game: Game) {
-    if (character.isDebuffImmune || character.state === "dead") return;
+    if ((character.isDebuffImmune && !debuff.isBuff) || character.state === "dead") return;
     const debuffFunctions: DebuffFunctions | undefined = DEBUFFS_FUNCTIONS[debuff.name];
     let currentDebuff: Debuff | undefined;
     if (debuffFunctions.allowMultiple) {

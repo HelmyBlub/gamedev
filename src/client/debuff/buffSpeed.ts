@@ -22,6 +22,7 @@ export function createBuffSpeed(
 ): BuffSpeed {
     return {
         name: BUFF_NAME_SPEED,
+        isBuff: true,
         removeTime: duration + gameTime,
         speedFactor: speedFactor
     };
