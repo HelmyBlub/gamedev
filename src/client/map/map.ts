@@ -381,7 +381,7 @@ export function positionToGameMapTileXY(map: GameMap, position: Position): Posit
     }
 }
 
-export function getFirstBlockingGameMapTilePositionTouchingLine(map: GameMap, lineStart: Position, lineEnd: Position, game: Game): Position | undefined {
+export function getFirstBlockingGameMapTilePositionTouchingLine(map: GameMap, lineStart: Position, lineEnd: Position, game: Game, preventTileGeneration?: boolean): Position | undefined {
     const tileSize = map.tileSize;
     if (isNaN(lineEnd.x) || isNaN(lineEnd.y)) return;
     let currentTileXY = positionToGameMapTileXY(map, lineStart);
@@ -452,7 +452,7 @@ export function getFirstBlockingGameMapTilePositionTouchingLine(map: GameMap, li
             if (newDistance > lastDistance) return undefined;
             lastDistance = newDistance;
 
-            const currentTile = getMapTile(currentPos, map, game.state.idCounter, game);
+            const currentTile = getMapTile(currentPos, map, game.state.idCounter, game, preventTileGeneration);
             currentTileXY = positionToGameMapTileXY(map, currentPos);
             if (currentTile.blocking) {
                 return currentPos;
@@ -532,13 +532,14 @@ export function mousePositionToMapPosition(game: Game, cameraPosition: Position)
     }
 }
 
-export function getMapTileId(pos: Position, map: GameMap, idCounter: IdCounter, game: Game): number | undefined {
+export function getMapTileId(pos: Position, map: GameMap, idCounter: IdCounter, game: Game, preventTileGeneration?: boolean): number | undefined {
     const chunkSize = map.tileSize * map.chunkLength;
     const chunkX = Math.floor(pos.x / chunkSize);
     const chunkY = Math.floor(pos.y / chunkSize);
     const key = positionToMapKey(pos, map);
     let chunk = map.chunks[key];
     if (chunk === undefined) {
+        if (preventTileGeneration) return undefined;
         chunk = createNewChunk(map, chunkX, chunkY, idCounter, game);
     }
 
@@ -558,12 +559,11 @@ export function getMapTileId(pos: Position, map: GameMap, idCounter: IdCounter, 
 }
 
 
-export function getMapTile(pos: Position, map: GameMap, idCounter: IdCounter, game: Game): MapTile {
-    const tileId = getMapTileId(pos, map, idCounter, game);
+export function getMapTile(pos: Position, map: GameMap, idCounter: IdCounter, game: Game, preventTileGeneration?: boolean): MapTile {
+    const tileId = getMapTileId(pos, map, idCounter, game, preventTileGeneration);
     if (tileId !== undefined) {
         return TILE_VALUES[tileId];
     }
-    //shoud not happen
     return TILE_VALUES[0];
 }
 

@@ -162,7 +162,7 @@ function isValidVisionPoint(pointInQuestion: Position, visionCenter: Position, m
     const nextAwayCounterClockTileBlocking = isPositionBlocking(nextAwayCounterClockTile, map, game.state.idCounter, game);
 
     // Rule 2: ray cast from vision center to pointInQuestion for blocking tile
-    let rayCastBlockingPos = getFirstBlockingGameMapTilePositionTouchingLine(map, visionCenter, pointInQuestion, game);
+    let rayCastBlockingPos = getFirstBlockingGameMapTilePositionTouchingLine(map, visionCenter, pointInQuestion, game, true);
     if (rayCastBlockingPos !== undefined) { //check if not over target position
         if (Math.sign(-tileCheckAdd.x) * (rayCastBlockingPos.x - pointInQuestion.x) > 0
             || Math.sign(-tileCheckAdd.y) * (rayCastBlockingPos.y - pointInQuestion.y) > 0
@@ -342,7 +342,7 @@ function validatePointAndPushIntoWalls(firstCheckPoint: Position, secondCheckPoi
         const direction = calculateDirection(visionCenter, currentPoint);
         const currentEndPosition: Position = { x: visionCenter.x, y: visionCenter.y };
         moveByDirectionAndDistance(currentEndPosition, direction, visionRange, false);
-        const furtherBlockingPos = getFirstBlockingGameMapTilePositionTouchingLine(map, currentPoint, currentEndPosition, game);
+        const furtherBlockingPos = getFirstBlockingGameMapTilePositionTouchingLine(map, currentPoint, currentEndPosition, game, true);
         if (furtherBlockingPos) {
             let nextRayCastPoint: Position;
             inBetweenPoint = furtherBlockingPos;
@@ -554,7 +554,7 @@ function paintModiferLate(ctx: CanvasRenderingContext2D, modifier: GameMapModifi
         let nextDirection = currentDirection + defaultStepSize;
         const endPosition = { x: cameraPosition.x, y: cameraPosition.y };
         moveByDirectionAndDistance(endPosition, currentDirection, viewDistance, false);
-        const blockingPos = getFirstBlockingGameMapTilePositionTouchingLine(map, cameraPosition, endPosition, game);
+        const blockingPos = getFirstBlockingGameMapTilePositionTouchingLine(map, cameraPosition, endPosition, game, true);
         if (!blockingPos) {
             currentDirection = nextDirection;
             continue;
