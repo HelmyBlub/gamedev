@@ -1,4 +1,4 @@
-next test run: musician
+next test run:
 increase version
 
 current tasks:
@@ -6,6 +6,7 @@ current tasks:
 - bug: short king recording not always resulting in working replay
 - think about one more curse
 - be able to cleanse bad part of curses
+- damagemeter/combatlog for curses?
 
 next feature ideas:
 - maybe:
@@ -18,6 +19,9 @@ next feature ideas:
                 - difficult to create when i am the one developing it
             - more to explore on map, currently most is the same
                 - manipulate certain part of map with modifier
+                    - bonus life + life leach through curse, but loose life over time
+                        - what would be the map modifier?
+                        - damage over time ground/poison area?
                     - wind modifier
                         - pushes characters, maybe objects?, to a side
                     - rainy weather
