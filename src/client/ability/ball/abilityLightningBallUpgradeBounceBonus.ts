@@ -3,7 +3,7 @@ import { AbilityUpgradeOption, UpgradeOptionAndProbability } from "../../charact
 import { Game } from "../../gameModel.js";
 import { Ability, AbilityOwner } from "../ability.js";
 import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrade.js";
-import { ABILITY_NAME_BOUNCE_BALL } from "./abilityBounceBall.js";
+import { ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS, ABILITY_NAME_BOUNCE_BALL } from "./abilityBounceBall.js";
 import { ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_DAMAGE, AbilityBounceBallUpgradeBounceBonusDamage } from "./abilityBounceBallUpgradeBounceBonusDamage.js";
 import { ABILITY_LIGHTNING_BALL_UPGRADE_FUNCTIONS, AbilityLightningBall } from "./abilityLightningBall.js";
 
@@ -30,7 +30,10 @@ export function lightningBallUpgradeBounceBonusSetBonusDamageFactor(ability: Abi
         if (bounceBall) {
             const bounceBallBounceUpgrade: AbilityBounceBallUpgradeBounceBonusDamage = bounceBall.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_DAMAGE];
             if (bounceBallBounceUpgrade) {
-                up.bonusFactor = bounceBallBounceUpgrade.bounces * bounceBallBounceUpgrade.level;
+                const bounceBallUpgradeFunction = ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS[ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_DAMAGE];
+                if (bounceBallUpgradeFunction.getDamageFactor) {
+                    up.bonusFactor = bounceBallUpgradeFunction.getDamageFactor(bounceBall, false);
+                }
             }
         }
     }
@@ -41,7 +44,7 @@ export function lightningBallUpgradeBounceBonusGetBonusDamageFactor(ability: Abi
     if (up) {
         return up.bonusFactor;
     }
-    return 0;
+    return 1;
 }
 
 function getOptions(ability: Ability, character: Character, game: Game): UpgradeOptionAndProbability[] {
@@ -60,7 +63,7 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption) {
     const as = ability as AbilityLightningBall;
     let up: AbilityLightningBallUpgradeBounceBonus;
     if (as.upgrades[ABILITY_LIGHTNING_BALL_UPGRADE_BOUNCE_BONUS] === undefined) {
-        up = { level: 1, bonusFactor: 0 };
+        up = { level: 1, bonusFactor: 1 };
         as.upgrades[ABILITY_LIGHTNING_BALL_UPGRADE_BOUNCE_BONUS] = up;
     }
 }

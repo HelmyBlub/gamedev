@@ -101,7 +101,7 @@ export function createAbilityLightningBall(
 
 export function getDamageAbilityLightningBall(abilityLightningBall: AbilityLightningBall, abilityOwner: AbilityOwner) {
     let damageFactor = 1;
-    damageFactor += lightningBallUpgradeBounceBonusGetBonusDamageFactor(abilityLightningBall, abilityOwner);
+    damageFactor *= lightningBallUpgradeBounceBonusGetBonusDamageFactor(abilityLightningBall, abilityOwner);
     return abilityLightningBall.damage * damageFactor;
 }
 
