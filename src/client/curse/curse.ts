@@ -106,13 +106,14 @@ export function applyCurse(curse: Curse, character: Character, game: Game) {
 
 export function addCursedParticleEffect(curses: Curse[], position: Position, game: Game) {
     if (curses.length === 0) return;
-    const curse = curses[0];
-    const random = Math.random();
-    if (random < 0.002 * curse.level) {
-        addParticleEffect({
-            x: position.x + Math.floor(Math.random() * 20 - 10),
-            y: position.y + 5,
-        }, curse.color, 2000, 20, game);
+    for (let curse of curses) {
+        const random = Math.random();
+        if (random < 0.002 * curse.level) {
+            addParticleEffect({
+                x: position.x + Math.floor(Math.random() * 20 - 10),
+                y: position.y + 5,
+            }, curse.color, 2000, 20, game);
+        }
     }
 }
 

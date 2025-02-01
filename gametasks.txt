@@ -2,8 +2,12 @@ next test run:
 increase version
 
 current tasks:
-- play test myself
+- balance: bounce ball bonus reduce for enemies
+- bug: legendary with 3 curses. Display of curses on pickup overlayed. Not readable
 - bug: short king recording not always resulting in working replay
+- bug: damage log "undefined ice aura". Why undefined if "ice aura" already correct?
+- bug: music sheet should be painted after darkness
+    - problem: can not see music sheet in darkness
 - think about one more curse
 - be able to cleanse bad part of curses
 - damagemeter/combatlog for curses?
@@ -21,7 +25,9 @@ next feature ideas:
                 - manipulate certain part of map with modifier
                     - bonus life + life leach through curse, but loose life over time
                         - what would be the map modifier?
-                        - damage over time ground/poison area?
+                        - damage over time ground/poison area? loose life % current
+                    - "poison path" leave behind a poison path which does % damage over time?
+                    - loosing life increases damge per second based on life lost + life leach + loose life % current
                     - wind modifier
                         - pushes characters, maybe objects?, to a side
                     - rainy weather
