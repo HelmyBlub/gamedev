@@ -1,4 +1,4 @@
-next test run: ball
+next test run:
 increase version
 
 current tasks:
