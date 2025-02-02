@@ -857,6 +857,15 @@ function addReplayInputs(game: Game) {
             handleCommand(game, data);
             replay.replayInputCounter++;
         }
+        if (replay.data!.replayPlayerInputs.length <= replay.replayInputCounter
+            && replay.data!.replayPlayerInputs[replay.replayInputCounter - 1].executeTime + 60000 < game.state.time
+        ) {
+            console.log("replay seem to be stuck. End it by killing players.");
+            for (let player of game.state.players) {
+                player.character.hp = 0;
+                player.character.state = "dead";
+            }
+        }
     }
 }
 

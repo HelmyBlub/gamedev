@@ -2,7 +2,6 @@ next test run:
 increase version
 
 current tasks:
-- balance: bounce ball bonus reduce for enemies
 - bug: replay stuck in king retry
     - new test run: short king
 - bug: legendary with 3 curses. Display of curses on pickup overlayed. Not readable
