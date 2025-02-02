@@ -228,10 +228,10 @@ export function createAbilityObjectSnipe(
     return abilityObjectSnipe;
 }
 
-export function getAbilitySnipeDamage(abilitySnipe: AbilitySnipe | undefined, baseDamage: number, playerTriggered: boolean, bounceCounter: number = 0) {
+export function getAbilitySnipeDamage(abilitySnipe: AbilitySnipe | undefined, baseDamage: number, playerTriggered: boolean, bounceCounter: number = 0, faction: string) {
     let damage = baseDamage;
     if (abilitySnipe) {
-        damage *= getAbilityUpgradesDamageFactor(ABILITY_SNIPE_UPGRADE_FUNCTIONS, abilitySnipe, playerTriggered);
+        damage *= getAbilityUpgradesDamageFactor(ABILITY_SNIPE_UPGRADE_FUNCTIONS, abilitySnipe, playerTriggered, faction);
         damage *= getAbilityUpgradeTerrainBounceDamageFactor(abilitySnipe, bounceCounter);
     }
     return damage;
@@ -516,7 +516,7 @@ function tickAbilityObjectSnipe(abilityObject: AbilityObject, game: Game) {
             if (abilitySnipe) {
                 executeUpgradeExplodeOnDeath(abilitySnipe, abilityObject.faction, char, abilityObjectSnipe.triggeredByPlayer, game);
             }
-            const damage = getAbilitySnipeDamage(abilitySnipe, abilityObjectSnipe.damage, abilityObjectSnipe.triggeredByPlayer, abilityObjectSnipe.bounceCounter);
+            const damage = getAbilitySnipeDamage(abilitySnipe, abilityObjectSnipe.damage, abilityObjectSnipe.triggeredByPlayer, abilityObjectSnipe.bounceCounter, abilityObjectSnipe.faction);
             characterTakeDamage(char, damage, game, abilityObject.abilityIdRef, abilityObject.type, abilityObjectSnipe);
             if (abilityObjectSnipe.canSplitOnHit) abilityUpgradeSplitShotOnSnipeHit(char, abilitySnipe, abilityObjectSnipe, game);
         }
@@ -529,7 +529,7 @@ function tickAbilityObjectSnipe(abilityObject: AbilityObject, game: Game) {
     }
 }
 
-function createDamageBreakDown(damage: number, ability: Ability, abilityObject: AbilityObject | undefined, damageAbilityName: string, game: Game): AbilityDamageBreakdown[] {
+function createDamageBreakDown(damage: number, ability: Ability, abilityObject: AbilityObject | undefined, damageAbilityName: string, game: Game, faction: string): AbilityDamageBreakdown[] {
     const snipe = ability as AbilitySnipe;
     let triggeredByPlayer = false;
     let bounceCounter = 0;
@@ -578,7 +578,7 @@ function createDamageBreakDown(damage: number, ability: Ability, abilityObject: 
         });
         openDamage -= damagePerTick;
     }
-    const damageFactors = createDamageFactorBreakDown(snipe, triggeredByPlayer, bounceCounter);
+    const damageFactors = createDamageFactorBreakDown(snipe, triggeredByPlayer, bounceCounter, faction);
     let totalFactor = 0;
     for (let damageFactor of damageFactors) {
         totalFactor += damageFactor.factor;
@@ -593,14 +593,14 @@ function createDamageBreakDown(damage: number, ability: Ability, abilityObject: 
     return damageBreakDown;
 }
 
-function createDamageFactorBreakDown(snipe: AbilitySnipe, playerTriggered: boolean, bounceCouter: number): { name: string, factor: number }[] {
+function createDamageFactorBreakDown(snipe: AbilitySnipe, playerTriggered: boolean, bounceCouter: number, faction: string): { name: string, factor: number }[] {
     const keys = Object.keys(ABILITY_SNIPE_UPGRADE_FUNCTIONS);
     let damageFactors: { name: string, factor: number }[] = [];
     for (let key of keys) {
         if (snipe.upgrades && snipe.upgrades[key]) {
             let functions = ABILITY_SNIPE_UPGRADE_FUNCTIONS[key];
             if (functions.getDamageFactor) {
-                const factor = functions.getDamageFactor(snipe, playerTriggered);
+                const factor = functions.getDamageFactor(snipe, playerTriggered, faction);
                 damageFactors.push({ factor: factor, name: key });
             }
         }

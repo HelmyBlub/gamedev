@@ -91,7 +91,7 @@ export type AbilityFunctions = {
     createAbilityUpgradeOptions?: (ability: Ability) => UpgradeOptionAndProbability[],
     createAbilityBossUpgradeOptions?: (ability: Ability, character: Character, game: Game) => UpgradeOptionAndProbability[],
     createAbilityMoreInfos?: (ctx: CanvasRenderingContext2D, ability: Ability, game: Game) => MoreInfoPart,
-    createDamageBreakDown?: (damage: number, ability: Ability, abilityObject: AbilityObject | undefined, damageAbilityName: string, game: Game) => AbilityDamageBreakdown[],
+    createDamageBreakDown?: (damage: number, ability: Ability, abilityObject: AbilityObject | undefined, damageAbilityName: string, game: Game, faction: string) => AbilityDamageBreakdown[],
     deleteAbilityObject?: (abilityObject: AbilityObject, game: Game) => boolean,
     executeUpgradeOption?: (ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game) => void,
     getMoreInfosText?: () => string[],
@@ -152,11 +152,11 @@ export function onDomLoadSetAbilitiesFunctions() {
     addAbilityCloud();
 }
 
-export function doAbilityDamageBreakDown(damage: number, ability: Ability | undefined, abilityObject: AbilityObject | undefined, damageAbilityName: string, clientId: number, petName: string | undefined, game: Game) {
+export function doAbilityDamageBreakDown(damage: number, ability: Ability | undefined, abilityObject: AbilityObject | undefined, damageAbilityName: string, clientId: number, petName: string | undefined, game: Game, faction: string) {
     if (!ability || !ability.doDamageBreakDown) return;
     let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
     if (abilityFunctions && abilityFunctions.createDamageBreakDown) {
-        const breakdowns = abilityFunctions.createDamageBreakDown(damage, ability, abilityObject, damageAbilityName, game);
+        const breakdowns = abilityFunctions.createDamageBreakDown(damage, ability, abilityObject, damageAbilityName, game, faction);
         addDamageBreakDownToDamageMeter(game.UI.damageMeter, ability, breakdowns, clientId, petName);
     }
 }
@@ -178,7 +178,7 @@ export function doAbilityDamageBreakDownForAbilityId(damage: number, abilityId: 
                     if (pet.legendary) petName += "[L]";
                 }
                 if (!ability) return;
-                doAbilityDamageBreakDown(damage, ability, abilityObject, damageAbilityName, clientId, petName, game);
+                doAbilityDamageBreakDown(damage, ability, abilityObject, damageAbilityName, clientId, petName, game, player.character.faction);
                 return;
             }
             if (result.curse) {

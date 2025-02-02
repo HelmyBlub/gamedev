@@ -32,7 +32,7 @@ export function lightningBallUpgradeBounceBonusSetBonusDamageFactor(ability: Abi
             if (bounceBallBounceUpgrade) {
                 const bounceBallUpgradeFunction = ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS[ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_DAMAGE];
                 if (bounceBallUpgradeFunction.getDamageFactor) {
-                    up.bonusFactor = bounceBallUpgradeFunction.getDamageFactor(bounceBall, false);
+                    up.bonusFactor = bounceBallUpgradeFunction.getDamageFactor(bounceBall, false, owner.faction);
                 }
             }
         }

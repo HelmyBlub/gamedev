@@ -37,7 +37,7 @@ export function executeUpgradeExplodeOnDeath(ability: AbilitySnipe, faction: str
     if (!upgrade) return;
     if (!playerTriggered && !upgrade.upgradeSynergy) return;
 
-    const damage = upgrade.damageFactor * getAbilitySnipeDamage(ability, ability.baseDamage, false, 0);
+    const damage = upgrade.damageFactor * getAbilitySnipeDamage(ability, ability.baseDamage, false, 0, faction);
     const explodeOnDeath = createDebuffExplodeOnDeath(damage, faction, upgrade.radius, ability.id);
     applyDebuff(explodeOnDeath, targetCharacter, game);
 }

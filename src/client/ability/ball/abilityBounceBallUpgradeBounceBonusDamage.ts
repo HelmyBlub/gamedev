@@ -1,6 +1,6 @@
 import { findMyCharacter } from "../../character/character.js";
 import { AbilityUpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
-import { Game, Position } from "../../gameModel.js";
+import { FACTION_ENEMY, Game, Position } from "../../gameModel.js";
 import { getPointPaintPosition, paintTextWithOutline } from "../../gamePaint.js";
 import { Ability, AbilityOwner } from "../ability.js";
 import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrade.js";
@@ -65,10 +65,12 @@ function reset(ability: Ability) {
     upgrade.stackLossTime = undefined;
 }
 
-function getDamageFactor(ability: Ability): number {
+function getDamageFactor(ability: Ability, playerTriggered: boolean, faction: string): number {
     const up: AbilityBounceBallUpgradeBounceBonusDamage = ability.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_DAMAGE];
     if (!up) return 1;
-    return 1 + up.level * up.bounces * BONUS_DAMAGE_PER_LEVEL;
+    let factor = up.level * up.bounces * BONUS_DAMAGE_PER_LEVEL;
+    if (faction === FACTION_ENEMY) factor *= 0.1;
+    return 1 + factor;
 }
 
 function getOptions(ability: Ability): UpgradeOptionAndProbability[] {

@@ -111,9 +111,9 @@ export function createAbilityBounceBall(
     };
 }
 
-export function getAbilityBounceBallDamage(abilityBounceBall: AbilityBounceBall) {
+export function getAbilityBounceBallDamage(abilityBounceBall: AbilityBounceBall, faction: string) {
     let damage = abilityBounceBall.damage;
-    damage *= getAbilityUpgradesDamageFactor(ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS, abilityBounceBall, true);
+    damage *= getAbilityUpgradesDamageFactor(ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS, abilityBounceBall, true, faction);
     return damage;
 }
 
@@ -325,7 +325,7 @@ function damageTick(abilityBounceBall: AbilityBounceBall, abilityOwner: AbilityO
     if (abilityBounceBall.nextTickTime <= game.state.time
         || abilityBounceBall.rolledDistanceAfterLastDamageTick > abilityBounceBall.radius * 1.5) {
         abilityBounceBall.rolledDistanceAfterLastDamageTick = 0;
-        const damage = getAbilityBounceBallDamage(abilityBounceBall);
+        const damage = getAbilityBounceBallDamage(abilityBounceBall, abilityOwner.faction);
         detectSomethingToCharacterHit(
             game.state.map,
             abilityOwner,

@@ -13,7 +13,7 @@ export type AbilityUpgradeFunctions = {
     executeOption: (ability: Ability, option: AbilityUpgradeOption, character: Character) => void,
     getStatsDisplayText: (ability: Ability) => string,
     getMoreInfoText?: (ability: Ability, option: AbilityUpgradeOption) => string[],
-    getDamageFactor?: (ability: Ability, playerTriggered: boolean) => number,
+    getDamageFactor?: (ability: Ability, playerTriggered: boolean, faction: string) => number,
     reset?: (ability: Ability) => void,
     setUpgradeToBossLevel?: (ability: Ability, level: number) => void,
 }
@@ -62,14 +62,14 @@ export function pushAbilityUpgradesOptions(upgradeFunctions: AbilityUpgradesFunc
     }
 }
 
-export function getAbilityUpgradesDamageFactor(upgradeFunctions: AbilityUpgradesFunctions, ability: Ability, playerTriggered: boolean): number {
+export function getAbilityUpgradesDamageFactor(upgradeFunctions: AbilityUpgradesFunctions, ability: Ability, playerTriggered: boolean, faction: string): number {
     const keys = Object.keys(upgradeFunctions);
     let damageFactor = 1;
     for (let key of keys) {
         if (ability.upgrades && ability.upgrades[key]) {
             let functions = upgradeFunctions[key];
             if (functions.getDamageFactor) {
-                damageFactor *= functions.getDamageFactor(ability, playerTriggered);
+                damageFactor *= functions.getDamageFactor(ability, playerTriggered, faction);
             }
         }
     }

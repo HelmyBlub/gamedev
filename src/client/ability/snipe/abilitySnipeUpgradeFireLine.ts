@@ -36,7 +36,7 @@ export function castSnipeFireLine(startPosition: Position, faction: string, abil
     if (!upgradeFireLine || (!playerTriggered && !upgradeFireLine.upgradeSynergy)) return;
     const direction = calculateDirection(startPosition, castPosition);
     const endPosition = calcNewPositionMovedInDirection(startPosition, direction, upgradeFireLine.range);
-    const dps = upgradeFireLine.damagePerSecondFactor * getAbilitySnipeDamage(abilitySnipe, abilitySnipe.baseDamage, false, 0);
+    const dps = upgradeFireLine.damagePerSecondFactor * getAbilitySnipeDamage(abilitySnipe, abilitySnipe.baseDamage, false, 0, faction);
     const damagePerTick = dps * (upgradeFireLine.tickInterval / 1000);
     const width = 10;
     const color = "red";
