@@ -2,7 +2,9 @@ import { AbilityObject } from "../ability/ability.js";
 import { addParticleEffect } from "../additionalPaint.js";
 import { Character } from "../character/characterModel.js";
 import { AbilityDamageBreakdown, addCurseDamageBreakDownToDamageMeter, addDamageBreakDownToDamageMeter } from "../combatlog.js";
+import { getCameraPosition } from "../game.js";
 import { FACTION_PLAYER, Game, IdCounter, Position } from "../gameModel.js";
+import { getPointPaintPosition, paintTextWithOutline } from "../gamePaint.js";
 import { addCurseDarkness } from "./curseDarkness.js";
 import { addCurseIce } from "./curseIce.js";
 import { addCurseLightning } from "./curseLightning.js";
@@ -58,6 +60,7 @@ export function paintCurses(ctx: CanvasRenderingContext2D, target: Character, ga
         const functions = CURSES_FUNCTIONS[curse.type];
         if (functions.paint) functions.paint(ctx, curse, target, game);
     }
+    paintCurseTexts(ctx, target, game);
 }
 
 export function tickCurses(target: Character, game: Game) {
@@ -132,4 +135,20 @@ export function increaseCurseLevel(curseTarget: Character, curse: Curse, amount:
     curse.level += amount;
     const functions = CURSES_FUNCTIONS[curse.type];
     if (functions.onCurseIncreased) functions.onCurseIncreased(curse, curseTarget, game);
+}
+
+
+function paintCurseTexts(ctx: CanvasRenderingContext2D, target: Character, game: Game) {
+    if (!target.curses) return;
+    let offsetY = 0;
+    const fontSize = 30;
+    ctx.font = `${fontSize}px Arial`;
+    for (let curse of target.curses) {
+        if (curse.visualizeFadeTimer !== undefined && curse.visualizeFadeTimer > game.state.time) {
+            const cameraPosition = getCameraPosition(game);
+            const paintPos = getPointPaintPosition(ctx, target, cameraPosition, game.UI.zoom);
+            paintTextWithOutline(ctx, "white", "black", `Curse ${curse.type} Level ${Math.floor(curse.level)}`, paintPos.x, paintPos.y - 30 + offsetY, true, 3);
+            offsetY += fontSize + 2;
+        }
+    }
 }

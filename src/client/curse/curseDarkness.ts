@@ -3,9 +3,8 @@ import { Character } from "../character/characterModel.js";
 import { CHARACTER_TYPE_BOSS_CLONE_ENEMY, setCharacterToBossLevel } from "../character/enemy/bossEnemy.js";
 import { CHARACTER_PET_TYPE_CLONE, CharacterPetClone } from "../character/playerCharacters/characterPetTypeClone.js";
 import { TAMER_PET_CHARACTER } from "../character/playerCharacters/tamer/tamerPetCharacter.js";
-import { changeCharacterAndAbilityIds, deepCopy, getCameraPosition, getNextId } from "../game.js";
+import { changeCharacterAndAbilityIds, deepCopy, getNextId } from "../game.js";
 import { FACTION_ENEMY, FACTION_PLAYER, Game, IdCounter } from "../gameModel.js";
-import { getPointPaintPosition, paintTextWithOutline } from "../gamePaint.js";
 import { MODIFIER_NAME_DARKNESS } from "../map/modifiers/mapModifierDarkness.js";
 import { RandomizedCharacterImage } from "../randomizedCharacterImage.js";
 import { Curse, CURSES_FUNCTIONS } from "./curse.js";
@@ -28,7 +27,6 @@ export function addCurseDarkness() {
         copy: copy,
         create: create,
         onCurseIncreased: onCurseDarknessIncrease,
-        paint: paintCurse,
         reset: reset,
         tick: tickDarkness,
         mapModifierName: MODIFIER_NAME_DARKNESS,
@@ -97,16 +95,6 @@ function reset(curse: Curse) {
     darkness.cloneCounter = 0;
     darkness.turnEvilTime = undefined;
     darkness.nextCloneSpawnTime = undefined;
-}
-
-function paintCurse(ctx: CanvasRenderingContext2D, curse: Curse, target: Character, game: Game) {
-    const darkness = curse as CurseDarkness;
-    if (darkness.visualizeFadeTimer !== undefined && darkness.visualizeFadeTimer > game.state.time) {
-        const cameraPosition = getCameraPosition(game);
-        const paintPos = getPointPaintPosition(ctx, target, cameraPosition, game.UI.zoom);
-        ctx.font = "30px Arial";
-        paintTextWithOutline(ctx, "white", "black", `Curse Darkness Level ${Math.floor(curse.level)}`, paintPos.x, paintPos.y - 30, true, 3);
-    }
 }
 
 function createClone(original: Character, game: Game): Character {

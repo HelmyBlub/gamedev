@@ -110,7 +110,7 @@ function haveAtLeastOneNoneCelestialModifierOfEachType(game: Game) {
     }
 
     for (let modifier of modifiers) {
-        if (modifier.type === MODIFY_SHAPE_NAME_CELESTIAL_DIRECTION) continue;
+        if (modifier.area.type === MODIFY_SHAPE_NAME_CELESTIAL_DIRECTION) continue;
         for (let i = 0; i < modifierTypes.length; i++) {
             if (modifierTypes[i] !== modifier.type) continue;
             typeExists[i] = true;

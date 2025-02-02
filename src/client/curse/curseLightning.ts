@@ -1,8 +1,7 @@
 import { createAbilityObjectExplode } from "../ability/abilityExplode.js";
 import { Character } from "../character/characterModel.js";
-import { getCameraPosition, getNextId } from "../game.js";
+import { getNextId } from "../game.js";
 import { Game, IdCounter, Position } from "../gameModel.js";
-import { getPointPaintPosition, paintTextWithOutline } from "../gamePaint.js";
 import { MODIFIER_NAME_LIGHTNING } from "../map/modifiers/mapModifierLightning.js";
 import { nextRandom } from "../randomNumberGenerator.js";
 import { Curse, CURSES_FUNCTIONS } from "./curse.js";
@@ -18,7 +17,6 @@ export function addCurseLightning() {
     CURSES_FUNCTIONS[CURSE_LIGHTNING] = {
         copy: copy,
         create: create,
-        paint: paint,
         reset: reset,
         tick: tick,
         mapModifierName: MODIFIER_NAME_LIGHTNING,
@@ -44,16 +42,6 @@ function copy(curse: Curse, idCounter: IdCounter): Curse {
     const copy = create(idCounter);
     copy.level = curse.level;
     return copy;
-}
-
-function paint(ctx: CanvasRenderingContext2D, curse: Curse, target: Character, game: Game) {
-    const lightning = curse as CurseLightning;
-    if (lightning.visualizeFadeTimer !== undefined && lightning.visualizeFadeTimer > game.state.time) {
-        const cameraPosition = getCameraPosition(game);
-        const paintPos = getPointPaintPosition(ctx, target, cameraPosition, game.UI.zoom);
-        ctx.font = "30px Arial";
-        paintTextWithOutline(ctx, "white", "black", `Curse ${CURSE_LIGHTNING} Level ${Math.floor(curse.level)}`, paintPos.x, paintPos.y - 30, true, 3);
-    }
 }
 
 function tick(curse: Curse, target: Character, game: Game) {

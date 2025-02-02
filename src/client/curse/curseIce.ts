@@ -1,9 +1,8 @@
 import { createAbility, findAbilityAndOwnerInCharacterById } from "../ability/ability.js";
 import { ABILITY_NAME_ICE_AURA, AbilityIceAura } from "../ability/abilityIceAura.js";
 import { Character } from "../character/characterModel.js";
-import { calculateDistance, getCameraPosition, getNextId } from "../game.js";
+import { calculateDistance, getNextId } from "../game.js";
 import { FACTION_PLAYER, Game, IdCounter, Position } from "../gameModel.js";
-import { getPointPaintPosition, paintTextWithOutline } from "../gamePaint.js";
 import { calculatePosToChunkTileXY, changeTileIdOfMapChunk, getMapTileId, positionToChunkXY, TILE_ID_GRASS, TILE_ID_ICE } from "../map/map.js";
 import { MODIFIER_NAME_ICE } from "../map/modifiers/mapModifierIce.js";
 import { nextRandom } from "../randomNumberGenerator.js";
@@ -22,7 +21,6 @@ export function addCurseIce() {
     CURSES_FUNCTIONS[CURSE_ICE] = {
         copy: copy,
         create: create,
-        paint: paint,
         reset: reset,
         tick: tick,
         onCurseIncreased: onCurseIncreased,
@@ -71,16 +69,6 @@ function scaleAbilityIceAuraForCurseLevel(iceAura: AbilityIceAura, level: number
     const areaSize = 2000 + level * 2000;
     iceAura.radius = Math.sqrt(areaSize / Math.PI);
     curse.radius = iceAura.radius;
-}
-
-function paint(ctx: CanvasRenderingContext2D, curse: Curse, target: Character, game: Game) {
-    const ice = curse as CurseIce;
-    if (ice.visualizeFadeTimer !== undefined && ice.visualizeFadeTimer > game.state.time) {
-        const cameraPosition = getCameraPosition(game);
-        const paintPos = getPointPaintPosition(ctx, target, cameraPosition, game.UI.zoom);
-        ctx.font = "30px Arial";
-        paintTextWithOutline(ctx, "white", "black", `Curse ${CURSE_ICE} Level ${Math.floor(curse.level)}`, paintPos.x, paintPos.y - 30, true, 3);
-    }
 }
 
 function tick(curse: Curse, target: Character, game: Game) {
