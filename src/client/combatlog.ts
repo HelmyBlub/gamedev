@@ -157,7 +157,7 @@ export function addCombatlogDamageDoneEntry(targetCharacter: Character, damage: 
         const abOwn = findAbilityOrCurseInCharacterById(char, damageSourceId);
         if (!abOwn) continue;
         const combatlog = char.combatlog;
-        if (abOwn.owner !== char) {
+        if (abOwn.owner !== char && abOwn.owner.paint?.color) {
             abilityName = `${abOwn.owner.paint?.color}${abilityName}`;
         }
         addLog(combatlog.damageDoneLog, targetCharacter, damage, abilityName, targetCharacter.id, combatlog.maxLogEntries, game);

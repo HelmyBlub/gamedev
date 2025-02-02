@@ -2,9 +2,9 @@ next test run:
 increase version
 
 current tasks:
-- bug: legendary with 3 curses. Display of curses on pickup overlayed. Not readable
-- bug: short king recording not always resulting in working replay
 - bug: damage log "undefined ice aura". Why undefined if "ice aura" already correct?
+- bug: short king recording not always resulting in working replay
+    - could be a cause for multiplayer breaking
 - bug: music sheet should be painted after darkness
     - problem: can not see music sheet in darkness
 - think about one more curse
@@ -15,21 +15,25 @@ next feature ideas:
 - maybe:
     - improve path finding perfromance
 - each stream spend time on thinking whats next
+    - mapModifier:
+        - "poison tiles" change walked over tiles to poison tiles which do % damage over time?
+            - destroys ice tiles
+            - ability for all enemies in this area, or the closer to the middle the more enemies have the ability
+            - area boss ideas:
+                - poison plant
+                - plant shrinks the more poison it spreads
+                - regenerates poison over time
+                - can not be damaged
+                - defeated if survided long enough 
+                - player has to trigger poison usage to shrink it faster than i can regenerate
+        - wind modifier
+            - pushes characters, maybe objects?, to a side
+        - rainy weather
+
     - what makes most sense to work on?
-            - some off time between streams. Good for getting ideas
         - what would make the game more fun to play for me?
             - finding out how to min/max something?
                 - difficult to create when i am the one developing it
-            - more to explore on map, currently most is the same
-                - manipulate certain part of map with modifier
-                    - bonus life + life leach through curse, but loose life over time
-                        - what would be the map modifier?
-                        - damage over time ground/poison area? loose life % current
-                    - "poison path" leave behind a poison path which does % damage over time?
-                    - loosing life increases damge per second based on life lost + life leach + loose life % current
-                    - wind modifier
-                        - pushes characters, maybe objects?, to a side
-                    - rainy weather
 
 - think about next bigger feature 
     - extends existings classes for more upgrade choice?
