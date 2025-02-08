@@ -112,6 +112,7 @@ export type AbilityFunctions = {
     abilityUpgradeFunctions?: AbilityUpgradesFunctions,
     canBeUsedByBosses?: boolean,
     positionNotRquired?: boolean,
+    selfLatePaint?: boolean, // e.g.: used for paint after darkness map modifier for music sheet
 }
 
 export type AbilitiesFunctions = {

@@ -4,7 +4,7 @@ import { getPointPaintPosition } from "../gamePaint.js";
 import { GAME_IMAGES, getImage, loadImage } from "../imageLoad.js";
 import { randomizedCharacterImageToKey } from "../randomizedCharacterImage.js";
 import { MoreInfoPart, createMoreInfosPart } from "../moreInfo.js";
-import { getCharacterMoveSpeed, getPlayerCharacters } from "./character.js";
+import { findMyCharacter, getCharacterMoveSpeed, getPlayerCharacters } from "./character.js";
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_PLAYER_PARTS, IMAGE_SLIME } from "./characterModel.js";
 import { CHARACTER_TYPE_KING_ENEMY } from "./enemy/kingEnemy.js";
 import { CharacterClass, getAverageLevelOfAbilitiesPetsCharClassId } from "./playerCharacters/playerCharacters.js";
@@ -131,10 +131,22 @@ export function paintCharacterWithAbilitiesDefault(ctx: CanvasRenderingContext2D
 }
 
 export function paintCharacterAbilties(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
+    const isSelf = findMyCharacter(game) === character;
     for (let ability of character.abilities) {
         const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-        if (abilityFunctions.paintAbility !== undefined) {
+        if (abilityFunctions.paintAbility !== undefined && (!isSelf || abilityFunctions.selfLatePaint === undefined)) {
             abilityFunctions.paintAbility(ctx, character, ability, cameraPosition, game);
+        }
+    }
+}
+
+export function paintMyCharacterAbilitiesLate(ctx: CanvasRenderingContext2D, cameraPosition: Position, game: Game) {
+    const myChar = findMyCharacter(game);
+    if (!myChar) return;
+    for (let ability of myChar.abilities) {
+        const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+        if (abilityFunctions.paintAbility !== undefined && abilityFunctions.selfLatePaint === true) {
+            abilityFunctions.paintAbility(ctx, myChar, ability, cameraPosition, game);
         }
     }
 }

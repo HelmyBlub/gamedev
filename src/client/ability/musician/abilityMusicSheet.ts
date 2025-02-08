@@ -124,6 +124,7 @@ export function addAbilityMusicSheet() {
         tickAI: tickAI,
         abilityUpgradeFunctions: ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS,
         canBeUsedByBosses: true,
+        selfLatePaint: true,
     };
     addAbilityMusicSheetUpgradeInstrumentSine();
     addAbilityMusicSheetUpgradeInstrumentSquare();

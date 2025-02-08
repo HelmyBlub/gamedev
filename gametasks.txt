@@ -2,12 +2,11 @@ next test run:
 increase version
 
 current tasks:
-- bug: damage log "undefined ice aura". Why undefined if "ice aura" already correct?
-- bug: short king recording not always resulting in working replay
-    - could be a cause for multiplayer breaking
 - bug: music sheet should be painted after darkness
     - problem: can not see music sheet in darkness
 - think about one more curse
+- bug: short king recording not always resulting in working replay
+    - could be a cause for multiplayer breaking
 - be able to cleanse bad part of curses
 - damagemeter/combatlog for curses?
 
@@ -24,6 +23,7 @@ next feature ideas:
                 - plant shrinks the more poison it spreads
                 - regenerates poison over time
                 - can not be damaged
+                - can not move? maybe blink?
                 - defeated if survided long enough 
                 - player has to trigger poison usage to shrink it faster than i can regenerate
         - wind modifier

@@ -1,7 +1,7 @@
 import { paintAbilityObjects, paintUiForAbilities } from "./ability/ability.js";
 import { canCharacterTradeAbilityOrPets, findMyCharacter } from "./character/character.js";
 import { Character } from "./character/characterModel.js";
-import { paintPlayerCharacters } from "./character/characterPaint.js";
+import { paintMyCharacterAbilitiesLate, paintPlayerCharacters } from "./character/characterPaint.js";
 import { paintBossCharacters, paintBossCrown } from "./character/enemy/bossEnemy.js";
 import { findMainCharacterClass, hasPlayerChoosenStartClassUpgrade, paintPlayerCharacterUI, playerCharacterGetLevelClassText, shareCharactersTradeablePreventedMultipleClass } from "./character/playerCharacters/playerCharacters.js";
 import { calculateDirection, calculateDistance, calculateFightRetryCounter, findClientInfo, findClosestInteractable, getCameraPosition } from "./game.js";
@@ -47,8 +47,9 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
     paintAbilityObjects(ctx, game.state.abilityObjects, game, "afterCharacterPaint");
     paintDamageNumbers(ctx, game.UI.displayTextData, cameraPosition, game.state.time, game);
     paintMapModifierLate(ctx, cameraPosition, game);
-
+    paintMyCharacterAbilitiesLate(ctx, cameraPosition, game);
     ctx.resetTransform();
+
     paintClosestInteractable(ctx, cameraPosition, game);
     paintStackTextData(ctx, game.UI.stackTextsData, game.state.time);
     paintInputTypeInfo(ctx, game);
