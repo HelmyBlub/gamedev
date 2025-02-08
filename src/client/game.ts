@@ -845,20 +845,25 @@ function addReplayInputs(game: Game) {
     if (game.testing.replay) {
         const replay = game.testing.replay;
         if (replay.replayInputCounter === undefined) replay.replayInputCounter = 0;
-        while (replay.data!.replayPlayerInputs[replay.replayInputCounter]
-            && replay.data!.replayPlayerInputs[replay.replayInputCounter].executeTime < game.state.time + 1000
+        const replayData = replay.data!;
+        while (replayData.replayPlayerInputs[replay.replayInputCounter]
+            && replayData.replayPlayerInputs[replay.replayInputCounter].executeTime < game.state.time + 1000
         ) {
-            const original = replay.data!.replayPlayerInputs[replay.replayInputCounter]
+            const original = replayData.replayPlayerInputs[replay.replayInputCounter]
             const data = { ...original };
             if (game.state.players.length === 1
                 || (data.clientId === -1 && game.state.players[0].clientId === game.multiplayer.myClientId)) {
                 data.clientId = game.multiplayer.myClientId;
             }
+            if (replayData.extendendInputData) {
+                const exteneded = replayData.extendendInputData[replay.replayInputCounter];
+                if (exteneded) data.replayExtended = exteneded;
+            }
             handleCommand(game, data);
             replay.replayInputCounter++;
         }
-        if (replay.data!.replayPlayerInputs.length <= replay.replayInputCounter
-            && replay.data!.replayPlayerInputs[replay.replayInputCounter - 1].executeTime + 60000 < game.state.time
+        if (replayData.replayPlayerInputs.length <= replay.replayInputCounter
+            && replayData.replayPlayerInputs[replay.replayInputCounter - 1].executeTime + 60000 < game.state.time
         ) {
             console.log("replay seem to be stuck. End it by killing players.");
             for (let player of game.state.players) {

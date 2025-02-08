@@ -38,14 +38,16 @@ export type RecordDataMultiplayer = {
     playerCharacterPermanentUpgrades: PermanentPlayerData,
 }
 
+export type RecordExtendendInformation = {
+    randomSeedOnInputExecute: number,
+}
+
 export type RecordData = {
     replayPlayerInputs: Omit<PlayerInput, "executeTime">[],
+    extendendInputData?: RecordExtendendInformation[],
     permanentData: PermanentDataParts,
     multiplayerData?: RecordDataMultiplayer[],
-    gameEndAsserts?: {
-        type: string,
-        data: any,
-    }[],
+    gameEndAsserts?: ReplayAssert[],
 }
 
 export type Legendary = {
@@ -55,11 +57,8 @@ export type Legendary = {
     blessings: string[],
 }
 
-export type ReplayData = {
+export type ReplayData = RecordData & {
     replayPlayerInputs: PlayerInput[],
-    permanentData: PermanentDataParts,
-    multiplayerData?: RecordDataMultiplayer[],
-    gameEndAsserts?: ReplayAssert[],
 }
 
 export type ReplayAssert = {

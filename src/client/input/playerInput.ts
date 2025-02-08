@@ -1,7 +1,7 @@
 import { CommandRestart, handleCommand } from "../commands.js";
 import { findPlayerByCliendId, findPlayerById } from "../player.js";
 import { Character } from "../character/characterModel.js";
-import { ClientKeyBindings, Game, Position } from "../gameModel.js";
+import { ClientKeyBindings, Game, Position, RecordExtendendInformation } from "../gameModel.js";
 import { websocketConnect } from "../multiplayerConenction.js";
 import { ABILITIES_FUNCTIONS } from "../ability/ability.js";
 import { calculateDirection, getCameraPosition, findClientInfo, resetGameNonStateData, takeTimeMeasure, findClosestInteractable, concedePlayerFightRetries, retryFight, calculateFightRetryCounter, getRelativeMousePoistion, calculateDistance, getTickInterval } from "../game.js";
@@ -33,7 +33,8 @@ export type PlayerInput = {
     executeTime: number,
     command: string,
     clientId: number,
-    data?: any
+    data?: any,
+    replayExtended?: RecordExtendendInformation,
 }
 
 export function createActionsPressed(): ActionsPressed {
@@ -142,6 +143,20 @@ export function tickPlayerInputs(playerInputs: PlayerInput[], currentTime: numbe
             if (playerInputs[0].executeTime <= currentTime - getTickInterval(game)) {
                 console.log("playerAction to late", currentTime - playerInputs[0].executeTime, playerInputs[0]);
             }
+
+            if (game.testing.record && playerInputs[0].replayExtended) {
+                const extendendData = playerInputs[0].replayExtended;
+                if (extendendData.randomSeedOnInputExecute !== game.state.randomSeed.seed) {
+                    console.log("random seed is off");
+                    debugger;
+                }
+            }
+            if (game.testing.record !== undefined && game.testing.record.data.extendendInputData) {
+                game.testing.record.data.extendendInputData.push({
+                    randomSeedOnInputExecute: game.state.randomSeed.seed,
+                });
+            }
+
             playerAction(playerInputs[0].clientId, playerInputs[0].data, game);
             playerInputs.shift();
         } else if (playerInputs[0].command === "restart") {

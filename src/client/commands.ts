@@ -242,7 +242,9 @@ function restart(game: Game, data: CommandRestart) {
 }
 
 function playerInput(game: Game, data: PlayerInput) {
-    if (game.testing.record !== undefined) game.testing.record.data.replayPlayerInputs.push(data);
+    if (game.testing.record !== undefined) {
+        game.testing.record.data.replayPlayerInputs.push(data);
+    }
     if (game.state.triggerRestart) {
         game.multiplayer.cachePlayerInputs!.push(data);
     } else {
