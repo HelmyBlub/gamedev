@@ -3,10 +3,12 @@ increase version
 
 current tasks:
 - bug: short king recording not always resulting in working replay
+    - next idea: check code from setting and saving random seed for starting replay to restarting game
+        - maybe i save seed incorrectly in some cases?
     - could be a cause for multiplayer breaking
     - only replay which consistenly fails
     - some combination of classes required?
-    - randomSeed is of by some low(2 and 3) value indicating something is generating randomNumbers inconsistently on game init
+    - randomSeed is of by some low(2, 3, 5) value indicating something is generating randomNumbers inconsistently on game init
         - always incorrect randomNumber from gamestart
     - could not be reproduced with same steps
 - think about one more curse

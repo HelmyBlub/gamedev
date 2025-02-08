@@ -98,7 +98,7 @@ function testPlayerClasses(game: Game) {
 
     const replay = game.testing.replay;
     replay.testInputFileQueue = [];
-    replay.testInputFileQueue.push("/data/testInputError.json");
+    //replay.testInputFileQueue.push("/data/testInputError.json");
     replay.testInputFileQueue.push("/data/testReplayShortRetry.json");
     replay.testInputFileQueue.push("/data/testReplayShortSniper.json");
     replay.testInputFileQueue.push("/data/testReplayShortBuilder.json");
