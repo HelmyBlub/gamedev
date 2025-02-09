@@ -2,16 +2,35 @@ next test run:
 increase version
 
 current tasks:
-- bug: short king recording not always resulting in working replay
-    - next idea: check code from setting and saving random seed for starting replay to restarting game
-        - maybe i save seed incorrectly in some cases?
-    - could be a cause for multiplayer breaking
-    - only replay which consistenly fails
-    - some combination of classes required?
-    - randomSeed is of by some low(2, 3, 5) value indicating something is generating randomNumbers inconsistently on game init
-        - always incorrect randomNumber from gamestart
-    - could not be reproduced with same steps
-- think about one more curse
+- mapModifier: poison   
+    - ability poison tiles
+    - buff? poison tile immunity
+    - create mapModifier
+        - give every enemy in area "poison tile immunity"
+        - give random amount ability poison tiles
+            - closer to center more likely to have ability
+            - should have some visualization
+    - create area boss: poison plant
+        - can not be damaged
+        - all damage also % based
+        - will shrink/loose hp when using poison abilities
+        - first ability
+            - shoot poison area to player position (like fireCircle)
+                - poison area slowly moves around
+            - only shoots when close enough to area boss
+        - second ability
+            - when player stands still for x amount
+                - shoot poison beam
+                    - slow charge up
+                    - will shoot once charge up full or when player moves again
+                        - stronger dependant on charge up but uses more poison
+                    - can slowly turn, will fire for some amount of time
+                    - does a lot of damage
+        - third ability
+            - when player very close
+            - melee aoe damage poison area, which grows for some time than disappers
+
+
 - be able to cleanse bad part of curses
 - damagemeter/combatlog for curses?
 
@@ -30,7 +49,7 @@ next feature ideas:
                 - can not be damaged
                 - can not move? maybe blink?
                 - defeated if survided long enough 
-                - player has to trigger poison usage to shrink it faster than i can regenerate
+                - player has to trigger poison usage to shrink it faster than it can regenerate
         - wind modifier
             - pushes characters, maybe objects?, to a side
         - rainy weather
