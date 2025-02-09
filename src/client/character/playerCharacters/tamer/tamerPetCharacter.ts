@@ -469,6 +469,7 @@ function reset(character: Character) {
     pet.nextMovementUpdateTime = undefined;
     pet.forcedMovePosition = undefined;
     pet.foodIntakeLevel.current = 50;
+    pet.petNoTargetBehavior = "following";
     pet.sizeFactor = 1;
     pet.width = pet.defaultSize * pet.sizeFactor;
     pet.height = pet.width;
