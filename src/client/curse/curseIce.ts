@@ -3,7 +3,7 @@ import { ABILITY_NAME_ICE_AURA, AbilityIceAura } from "../ability/abilityIceAura
 import { Character } from "../character/characterModel.js";
 import { calculateDistance, getNextId } from "../game.js";
 import { FACTION_PLAYER, Game, IdCounter, Position } from "../gameModel.js";
-import { calculatePosToChunkTileXY, changeTileIdOfMapChunk, getMapTileId, positionToChunkXY, TILE_ID_GRASS, TILE_ID_ICE } from "../map/map.js";
+import { calculatePosToChunkTileXY, changeTileIdOfMapChunk, changeTileIdOfPosition, getMapTileId, positionToChunkXY, TILE_ID_GRASS, TILE_ID_ICE } from "../map/map.js";
 import { MODIFIER_NAME_ICE } from "../map/modifiers/mapModifierIce.js";
 import { nextRandom } from "../randomNumberGenerator.js";
 import { Curse, CURSES_FUNCTIONS } from "./curse.js";
@@ -98,9 +98,7 @@ function changeRandomTilesToIce(centerPosition: Position, radius: number, counte
                 y: centerPosition.y + y * game.state.map.tileSize,
             };
             if (getMapTileId(position, game.state.map, game.state.idCounter, game) === TILE_ID_GRASS) {
-                const chunkXY = positionToChunkXY(position, game.state.map);
-                const tileXY = calculatePosToChunkTileXY(position, game.state.map);
-                changeTileIdOfMapChunk(chunkXY.x, chunkXY.y, tileXY.x, tileXY.y, TILE_ID_ICE, game);
+                changeTileIdOfPosition(position, TILE_ID_ICE, game);
             }
         }
     }

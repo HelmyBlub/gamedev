@@ -1,5 +1,7 @@
 import { tickMapCharacters } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
+import { applyDebuff } from "../debuff/debuff.js";
+import { createDebuffPoisonTile } from "../debuff/debuffPoisonTile.js";
 import { calculateDistance } from "../game.js";
 import { Game, IdCounter, Position } from "../gameModel.js"
 import { createNewChunk } from "./mapGeneration.js";
@@ -21,6 +23,7 @@ export type MapTile = {
     blocking: boolean,
     layer: MapPaintLayer,
     slide?: boolean,
+    tickCharacter?: (character: Character, game: Game) => void,
 }
 
 export type MapChunk = {
@@ -44,6 +47,7 @@ export const TILE_ID_LOG_HORIZONTAL = 5;
 export const TILE_ID_LOG_VERTICAL = 6;
 export const TILE_ID_FIREPIT = 7;
 export const TILE_ID_ICE = 8;
+export const TILE_ID_POISON = 9;
 
 export type GameMap = {
     seed?: number,
@@ -68,6 +72,7 @@ export function onDomLoadMapTiles() {
     TILE_VALUES[TILE_ID_LOG_VERTICAL] = { name: "logVertical", imagePath: "/images/log_Vertical.png", blocking: false, layer: "Layer2" };
     TILE_VALUES[TILE_ID_FIREPIT] = { name: "firepit", imagePath: "/images/firepit.png", blocking: false, layer: "Layer2" };
     TILE_VALUES[TILE_ID_ICE] = { name: "ice", color: "lightblue", blocking: false, slide: true, layer: "Layer1" };
+    TILE_VALUES[TILE_ID_POISON] = { name: "poison", color: "purple", blocking: false, layer: "Layer1", tickCharacter: tickPoisonTile };
 }
 
 export function createMap(): GameMap {
@@ -82,6 +87,11 @@ export function createMap(): GameMap {
     }
     initKingArea(map, 20000);
     return map;
+}
+
+export function tickTileCharacterOn(character: Character, game: Game) {
+    const tile = getMapTile(character, game.state.map, game.state.idCounter, game);
+    if (tile.tickCharacter) tile.tickCharacter(character, game);
 }
 
 export function tickActiveMapChunks(game: Game) {
@@ -128,6 +138,12 @@ export function findNearNonBlockingPosition(pos: Position, map: GameMap, idCount
     }
 
     return currentPosition;
+}
+
+export function changeTileIdOfPosition(position: Position, newTileId: number, game: Game) {
+    const chunkXY = positionToChunkXY(position, game.state.map);
+    const tileXY = calculatePosToChunkTileXY(position, game.state.map);
+    changeTileIdOfMapChunk(chunkXY.x, chunkXY.y, tileXY.x, tileXY.y, newTileId, game);
 }
 
 export function changeTileIdOfMapChunk(chunkX: number, chunkY: number, tileX: number, tileY: number, newTileId: number, game: Game) {
@@ -621,4 +637,9 @@ function moveStepWithCollision(position: Position, moveDirection: number, distan
         }
     }
     return { x: position.x, y: position.y };
+}
+
+function tickPoisonTile(character: Character, game: Game) {
+    const debuff = createDebuffPoisonTile(game.state.time);
+    applyDebuff(debuff, character, game);
 }

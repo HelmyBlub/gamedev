@@ -4,6 +4,10 @@ increase version
 current tasks:
 - mapModifier: poison   
     - ability poison tiles
+        - change tile under character to "poison tile"
+        - make poison tile do % damage
+        - some code for "tile ticking" which could work also for ice?
+        - test with own character
     - buff? poison tile immunity
     - create mapModifier
         - give every enemy in area "poison tile immunity"
@@ -33,6 +37,9 @@ current tasks:
 
 - be able to cleanse bad part of curses
 - damagemeter/combatlog for curses?
+- think about changing alot of type casts as they are not required
+    - "ability as AbilitySomething" could be replaced by giving the type to function property directly
+    - type | undefined change to ?
 
 next feature ideas:
 - maybe:

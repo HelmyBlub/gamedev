@@ -44,6 +44,7 @@ import { GAME_IMAGES, getImage, loadImage } from "../imageLoad.js"
 import { TamerPetCharacter } from "../character/playerCharacters/tamer/tamerPetCharacter.js"
 import { addAbilityCloud } from "./abilityCloud.js"
 import { Curse, doCurseDamageBreakDown } from "../curse/curse.js"
+import { addAbilityPoisonTile } from "./abilityPoisonTile.js"
 
 export type Ability = {
     id: number,
@@ -151,6 +152,7 @@ export function onDomLoadSetAbilitiesFunctions() {
     addAbilityMusicSheet();
     addAbilityCircleAround();
     addAbilityCloud();
+    addAbilityPoisonTile();
 }
 
 export function doAbilityDamageBreakDown(damage: number, ability: Ability | undefined, abilityObject: AbilityObject | undefined, damageAbilityName: string, clientId: number, petName: string | undefined, game: Game, faction: string) {

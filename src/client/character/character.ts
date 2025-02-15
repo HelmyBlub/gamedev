@@ -1,5 +1,5 @@
 import { findCharacterClassById, levelingCharacterAndClassXpGain } from "./playerCharacters/levelingCharacter.js";
-import { calculateMovePosition, chunkXYToMapKey, determineMapKeysInDistance, GameMap, getChunksTouchingLine, getMapTile, MapChunk, mapKeyToChunkXY, moveByDirectionAndDistance, positionToMapKey } from "../map/map.js";
+import { calculateMovePosition, chunkXYToMapKey, determineMapKeysInDistance, GameMap, getChunksTouchingLine, getMapTile, MapChunk, mapKeyToChunkXY, moveByDirectionAndDistance, positionToMapKey, tickTileCharacterOn } from "../map/map.js";
 import { Character, CHARACTER_TYPE_FUNCTIONS } from "./characterModel.js";
 import { getNextWaypoint, getPathingCache, PathingCache } from "./pathing.js";
 import { calculateDirection, calculateDistance, calculateDistancePointToLine, changeCharacterAndAbilityIds, getNextId, levelUpIncreaseExperienceRequirement, modulo, takeTimeMeasure } from "../game.js";
@@ -319,6 +319,7 @@ export function tickCharacters(characters: (Character | undefined)[], game: Game
             tickCharacterDebuffs(char, game);
             tickCharacterPets(char, game, pathingCache);
             tickCurses(char, game);
+            tickTileCharacterOn(char, game);
         }
         if (char.state === "dying") {
             if (char.deathAnimationStartTimer !== undefined

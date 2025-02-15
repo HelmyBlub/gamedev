@@ -2,12 +2,14 @@ import { Character } from "../character/characterModel.js";
 import { Game } from "../gameModel.js"
 import { addBuffBallPhysics } from "./buffBallPhysics.js";
 import { addBuffImmunity } from "./buffImmunity.js";
+import { addBuffPoisonTileImmunity } from "./buffImmunityPoisonTile.js";
 import { addBuffLightningStrikes } from "./buffLightningStrikes.js";
 import { addBuffSlowTrail } from "./buffSlowTrail.js";
 import { addBuffSpeed } from "./buffSpeed.js";
 import { addDebuffDamageOverTime } from "./debuffDamageOverTime.js";
 import { addDebuffDamageTaken } from "./debuffDamageTaken.js";
 import { addDebuffExplodeOnDeath } from "./debuffExplodeOnDeath.js";
+import { addDebuffPoisonTile } from "./debuffPoisonTile.js";
 import { addDebuffRoot } from "./debuffRoot.js";
 import { addDebuffSlow } from "./debuffSlow.js";
 
@@ -43,6 +45,8 @@ export function onDomLoadSetDebuffsFunctions() {
     addBuffImmunity();
     addDebuffDamageTaken();
     addDebuffDamageOverTime();
+    addDebuffPoisonTile();
+    addBuffPoisonTileImmunity();
 }
 
 export function applyDebuff(debuff: Debuff, character: Character, game: Game) {
