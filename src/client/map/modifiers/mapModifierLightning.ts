@@ -1,9 +1,9 @@
 import { calculateDirection, calculateDistance, getNextId } from "../../game.js";
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../gameModel.js";
-import { MapChunk, moveByDirectionAndDistance } from "../map.js";
+import { moveByDirectionAndDistance } from "../map.js";
 import { MODIFY_SHAPE_NAME_CIRCLE } from "./mapShapeCircle.js";
 import { GAME_MAP_MODIFIER_FUNCTIONS, GameMapModifier } from "./mapModifier.js";
-import { GameMapArea, getShapeMiddle, isPositionInsideShape, setShapeAreaToAmount } from "./mapModifierShapes.js";
+import { GameMapArea, getShapeMiddle, isPositionInsideShape } from "./mapModifierShapes.js";
 import { GameMapAreaRect, MODIFY_SHAPE_NAME_RECTANGLE } from "./mapShapeRectangle.js";
 import { createAbilityObjectCloud } from "../../ability/abilityCloud.js";
 import { getPlayerCharacters } from "../../character/character.js";
@@ -23,7 +23,6 @@ export function addMapModifierLightning() {
     GAME_MAP_MODIFIER_FUNCTIONS[MODIFIER_NAME_LIGHTNING] = {
         create: create,
         onGameInit: onGameInit,
-        growArea: growArea,
         tick: tick,
     };
 }
@@ -104,12 +103,4 @@ function onGameInit(modifier: GameMapModifier, game: Game) {
     if (spawn === undefined) return;
     const areaBoss = createAreaBossLighntingCloudMachine(game.state.idCounter, spawn, modifier.id, game);
     game.state.bossStuff.bosses.push(areaBoss);
-}
-
-function growArea(modifier: GameMapModifier) {
-    const lightning = modifier as MapModifierLightning;
-    lightning.level++;
-    if (lightning.areaPerLevel === undefined) return;
-    const areaAmount = lightning.level * lightning.areaPerLevel;
-    setShapeAreaToAmount(lightning.area, areaAmount);
 }

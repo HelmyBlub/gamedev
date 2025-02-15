@@ -12,8 +12,8 @@ export function addBuffPoisonTileImmunity() {
 }
 
 export function createBuffPoisonTileImmunity(
-    duration: number | undefined,
-    gameTime: number | undefined,
+    duration?: number,
+    gameTime?: number,
 ): BuffImmunity {
     return {
         name: BUFF_NAME_POISON_TILE_IMMUNITY,

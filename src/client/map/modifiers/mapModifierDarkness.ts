@@ -18,7 +18,6 @@ export function addMapModifierDarkness() {
         onChunkCreateModify: onChunkCreateModify,
         onGameInit: onGameInit,
         paintModiferLate: paintModiferLate,
-        growArea: growArea,
         create: createMapModifierDarkness,
     };
 }
@@ -77,14 +76,6 @@ function onGameInit(modifier: GameMapModifier, game: Game) {
     const areaBoss = createAreaBossDarknessSpiderWithLevel(game.state.idCounter, spawn, modifier.id, game);
 
     game.state.bossStuff.bosses.push(areaBoss);
-}
-
-function growArea(modifier: GameMapModifier) {
-    const modifierDarkness = modifier as MapModifierDarkness;
-    modifierDarkness.level++;
-    if (modifierDarkness.areaPerLevel === undefined) return;
-    const areaAmount = modifierDarkness.level * modifierDarkness.areaPerLevel;
-    setShapeAreaToAmount(modifierDarkness.area, areaAmount);
 }
 
 function onChunkCreateModify(modifier: GameMapModifier, mapChunk: MapChunk, chunkX: number, chunkY: number, game: Game) {

@@ -8,6 +8,7 @@ import { GameMapAreaCelestialDirection, MODIFY_SHAPE_NAME_CELESTIAL_DIRECTION } 
 import { addMapModifierLightning } from "./mapModifierLightning.js"
 import { CURSES_FUNCTIONS } from "../../curse/curse.js"
 import { addMapModifierIce } from "./mapModifierIce.js"
+import { addMapModifierPoison } from "./mapModifierPoison.js"
 
 export type GameMapModifier = {
     id: number,
@@ -36,6 +37,7 @@ export function onDomLoadMapModifiers() {
     addMapModifierDarkness();
     addMapModifierLightning();
     addMapModifierIce();
+    //    addMapModifierPoison();
     onDomLoadMapModifierShapes();
 }
 
@@ -87,6 +89,8 @@ export function mapModifierGrowArea(game: Game) {
         const modFunctions = GAME_MAP_MODIFIER_FUNCTIONS[modifier.type];
         if (modFunctions && modFunctions.growArea) {
             modFunctions.growArea(modifier);
+        } else {
+            mapModifierDefaultGrowArea(modifier);
         }
     }
 }
@@ -99,6 +103,13 @@ export function mapModifyIsChunkAffected(modifier: GameMapModifier, chunkX: numb
         y: chunkY * chunkWidth + chunkWidth / 2
     }
     return isPositionInsideShape(modifier.area, chunkMiddle, game);
+}
+
+function mapModifierDefaultGrowArea(modifier: GameMapModifier) {
+    modifier.level++;
+    if (modifier.areaPerLevel === undefined) return;
+    const areaAmount = modifier.level * modifier.areaPerLevel;
+    setShapeAreaToAmount(modifier.area, areaAmount);
 }
 
 function haveAtLeastOneNoneCelestialModifierOfEachType(game: Game) {

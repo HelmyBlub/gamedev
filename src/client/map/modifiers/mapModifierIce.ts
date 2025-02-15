@@ -2,7 +2,7 @@ import { calculateDistance, getNextId } from "../../game.js";
 import { Game, IdCounter, Position } from "../../gameModel.js";
 import { MODIFY_SHAPE_NAME_CIRCLE } from "./mapShapeCircle.js";
 import { GAME_MAP_MODIFIER_FUNCTIONS, GameMapModifier } from "./mapModifier.js";
-import { GameMapArea, getShapeMiddle, setShapeAreaToAmount } from "./mapModifierShapes.js";
+import { GameMapArea, getShapeMiddle } from "./mapModifierShapes.js";
 import { GameMapAreaRect, MODIFY_SHAPE_NAME_RECTANGLE } from "./mapShapeRectangle.js";
 import { MODIFY_SHAPE_NAME_CELESTIAL_DIRECTION } from "./mapShapeCelestialDirection.js";
 import { MapChunk, positionToGameMapTileXY, TILE_ID_GRASS, TILE_ID_ICE, TILE_ID_TREE } from "../map.js";
@@ -39,7 +39,6 @@ export function addMapModifierIce() {
     GAME_MAP_MODIFIER_FUNCTIONS[MODIFIER_NAME_ICE] = {
         create: create,
         onGameInit: onGameInit,
-        growArea: growArea,
         onChunkCreateModify: onChunkCreateModify,
     };
 }
@@ -449,13 +448,4 @@ function onGameInit(modifier: GameMapModifier, game: Game) {
     if (spawn === undefined) return;
     const areaBoss = createAreaBossIceSnowman(game.state.idCounter, spawn, modifier.id, game);
     game.state.bossStuff.bosses.push(areaBoss);
-}
-
-//TODO make it a general version every modifier uses
-function growArea(modifier: GameMapModifier) {
-    const ice = modifier as MapModifierIce;
-    ice.level++;
-    if (ice.areaPerLevel === undefined) return;
-    const areaAmount = ice.level * ice.areaPerLevel;
-    setShapeAreaToAmount(ice.area, areaAmount);
 }

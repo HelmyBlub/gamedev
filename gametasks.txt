@@ -2,13 +2,9 @@ next test run:
 increase version
 
 current tasks:
+- check performance of tile ticking
+    - last performance run had very high variation in changes
 - mapModifier: poison   
-    - ability poison tiles
-        - change tile under character to "poison tile"
-        - make poison tile do % damage
-        - some code for "tile ticking" which could work also for ice?
-        - test with own character
-    - buff? poison tile immunity
     - create mapModifier
         - give every enemy in area "poison tile immunity"
         - give random amount ability poison tiles
