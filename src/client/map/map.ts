@@ -174,11 +174,15 @@ export function positionToMapKey(pos: Position, map: GameMap): string {
 }
 
 export function mapKeyAndTileXYToPosition(mapKey: string, tileX: number, tileY: number, map: GameMap): Position {
-    const chunkSize = map.tileSize * map.chunkLength;
     const chunkXY = mapKeyToChunkXY(mapKey);
+    return mapChunkXYAndTileXYToPosition(chunkXY.chunkX, chunkXY.chunkY, tileX, tileY, map);
+}
+
+export function mapChunkXYAndTileXYToPosition(chunkX: number, chunkY: number, tileX: number, tileY: number, map: GameMap): Position {
+    const chunkSize = map.tileSize * map.chunkLength;
     return {
-        x: chunkXY.chunkX * chunkSize + tileX * map.tileSize + map.tileSize / 2,
-        y: chunkXY.chunkY * chunkSize + tileY * map.tileSize + map.tileSize / 2,
+        x: chunkX * chunkSize + tileX * map.tileSize + map.tileSize / 2,
+        y: chunkY * chunkSize + tileY * map.tileSize + map.tileSize / 2,
     }
 }
 

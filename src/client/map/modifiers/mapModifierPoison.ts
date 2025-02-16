@@ -1,14 +1,15 @@
-import { getNextId } from "../../game.js";
+import { calculateDistance, getNextId } from "../../game.js";
 import { Game, IdCounter, Position } from "../../gameModel.js";
 import { MODIFY_SHAPE_NAME_CIRCLE } from "./mapShapeCircle.js";
 import { GAME_MAP_MODIFIER_FUNCTIONS, GameMapModifier } from "./mapModifier.js";
 import { GameMapArea, getShapeMiddle } from "./mapModifierShapes.js";
 import { GameMapAreaRect, MODIFY_SHAPE_NAME_RECTANGLE } from "./mapShapeRectangle.js";
 import { MODIFY_SHAPE_NAME_CELESTIAL_DIRECTION } from "./mapShapeCelestialDirection.js";
-import { MapChunk } from "../map.js";
+import { MapChunk, mapChunkXYAndTileXYToPosition } from "../map.js";
 import { createAbilityPoisonTile } from "../../ability/abilityPoisonTile.js";
 import { createBuffPoisonTileImmunity } from "../../debuff/buffImmunityPoisonTile.js";
 import { applyDebuff } from "../../debuff/debuff.js";
+import { nextRandom } from "../../randomNumberGenerator.js";
 
 export const MODIFIER_NAME_POISON = "Poison";
 export type MapModifierPoison = GameMapModifier & {
@@ -56,11 +57,25 @@ function onGameInit(modifier: GameMapModifier, game: Game) {
 
 function onChunkCreateModify(modifier: GameMapModifier, mapChunk: MapChunk, chunkX: number, chunkY: number, game: Game) {
     const middle = getShapeMiddle(modifier.area, game);
+    const chunkPos = mapChunkXYAndTileXYToPosition(chunkX, chunkY, 3, 3, game.state.map);
+    if (!middle) {
+        console.log("does this happen?");
+        return;
+    }
+    const distance = calculateDistance(middle, chunkPos);
+    const distanceProbabilityFactor = 0.05 + Math.exp(-distance / 1000) * 0.95;
+    let giveAbilityProbability = distanceProbabilityFactor;
+    if (mapChunk.characters.length > 30) {
+        giveAbilityProbability *= 0.2;
+    } else if (mapChunk.characters.length > 4) {
+        giveAbilityProbability *= 0.4;
+    }
     for (let enemy of mapChunk.characters) {
-        console.log(enemy);
-        const poison = createAbilityPoisonTile(game.state.idCounter);
-        enemy.abilities.push(poison);
-        const poisonImmunity = createBuffPoisonTileImmunity();
-        applyDebuff(poisonImmunity, enemy, game);
+        if (giveAbilityProbability === 1 || nextRandom(game.state.randomSeed) < giveAbilityProbability) {
+            const poison = createAbilityPoisonTile(game.state.idCounter);
+            enemy.abilities.push(poison);
+            const poisonImmunity = createBuffPoisonTileImmunity();
+            applyDebuff(poisonImmunity, enemy, game);
+        }
     }
 }

@@ -2,8 +2,6 @@ next test run:
 increase version
 
 current tasks:
-- check performance of tile ticking
-    - last performance run had very high variation in changes
 - mapModifier: poison   
     - create mapModifier
         - give every enemy in area "poison tile immunity"
