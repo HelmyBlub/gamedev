@@ -216,7 +216,6 @@ function tickSpider(enemy: Character, game: Game) {
         }
     }
     checkLegLoss(spider, game);
-    tickCharacterDebuffs(enemy, game);
     tickSpiderLegPosition(spider, game);
     checkTurnLegToClone(spider, game);
 }

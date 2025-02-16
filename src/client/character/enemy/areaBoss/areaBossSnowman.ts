@@ -133,5 +133,4 @@ function tick(enemy: Character, game: Game) {
             }
         }
     }
-    tickCharacterDebuffs(enemy, game);
 }

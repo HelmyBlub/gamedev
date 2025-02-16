@@ -19,14 +19,14 @@ export type AbilityFireCircle = Ability & {
 }
 
 export type AbilityObjectFireCircle = AbilityObjectCircle & {
-    subType: "FireCircel",
+    subType: "FireCircle",
     deleteTime: number,
     tickInterval: number,
     nextTickTime?: number,
 }
 
 export type AbilityObjectFireCircleTraveling = AbilityObjectCircle & {
-    subType: "FireCircelTraveling",
+    subType: "FireCircleTraveling",
     targetPosition: Position,
     duration: number,
     moveSpeed: number,
@@ -86,7 +86,7 @@ function createObjectFireCircleTraveling(x: number, y: number, damage: number, f
         damage: damage,
         faction: faction,
         duration: duration,
-        subType: "FireCircelTraveling",
+        subType: "FireCircleTraveling",
         moveSpeed: moveSpeed,
         targetPosition: { x, y },
         toDelete: false,
@@ -104,7 +104,7 @@ function createObjectFireCircle(abilityObject: AbilityObjectFireCircleTraveling,
         damage: abilityObject.damage,
         faction: abilityObject.faction,
         deleteTime: gameTime + abilityObject.duration,
-        subType: "FireCircel",
+        subType: "FireCircle",
         tickInterval: 250,
         abilityIdRef: abilityObject.abilityIdRef,
     }
@@ -117,7 +117,7 @@ function paintAbilityObjectFireCircle(ctx: CanvasRenderingContext2D, abilityObje
 
     ctx.fillStyle = abilityObject.color;
     if (abilityObject.faction === FACTION_ENEMY) ctx.fillStyle = "black";
-    if (abilityObjectFireCircle.subType === "FireCircel") {
+    if (abilityObjectFireCircle.subType === "FireCircle") {
         if (paintOrder === "beforeCharacterPaint") {
             ctx.globalAlpha = abilityObject.faction === FACTION_ENEMY ? 0.9 : 0.65;
             if (abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
@@ -130,7 +130,7 @@ function paintAbilityObjectFireCircle(ctx: CanvasRenderingContext2D, abilityObje
             ctx.fill();
             ctx.globalAlpha = 1;
         }
-    } else if (abilityObjectFireCircle.subType === "FireCircelTraveling") {
+    } else if (abilityObjectFireCircle.subType === "FireCircleTraveling") {
         if (paintOrder === "afterCharacterPaint") {
             if (abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
             ctx.beginPath();
@@ -233,13 +233,13 @@ function paintAbilityFireCircleUI(ctx: CanvasRenderingContext2D, ability: Abilit
 
 function tickAbilityObjectFireCircle(abilityObject: AbilityObject, game: Game) {
     const abilityObjectFireCircle = abilityObject as AbilityObjectFireCircle;
-    if (abilityObjectFireCircle.subType === "FireCircel") {
+    if (abilityObjectFireCircle.subType === "FireCircle") {
         if (abilityObjectFireCircle.nextTickTime === undefined) abilityObjectFireCircle.nextTickTime = game.state.time + abilityObjectFireCircle.tickInterval;
         if (abilityObjectFireCircle.nextTickTime <= game.state.time) {
             detectAbilityObjectCircleToCharacterHit(game.state.map, abilityObjectFireCircle, game);
             abilityObjectFireCircle.nextTickTime += abilityObjectFireCircle.tickInterval;
         }
-    } else if (abilityObjectFireCircle.subType === "FireCircelTraveling") {
+    } else if (abilityObjectFireCircle.subType === "FireCircleTraveling") {
         const travelingObject = abilityObject as AbilityObjectFireCircleTraveling;
         if (travelingObject.toDelete) return;
         const distance = calculateDistance(travelingObject, travelingObject.targetPosition);
@@ -257,7 +257,7 @@ function tickAbilityObjectFireCircle(abilityObject: AbilityObject, game: Game) {
 
 function deleteObjectFireCircle(abilityObject: AbilityObject, game: Game): boolean {
     const abilityObjectFireCircle = abilityObject as AbilityObjectFireCircle;
-    if (abilityObjectFireCircle.subType === "FireCircel") {
+    if (abilityObjectFireCircle.subType === "FireCircle") {
         return abilityObjectFireCircle.deleteTime <= game.state.time;
     } else {
         const abilityObjectFireCircleTraveling = abilityObject as AbilityObjectFireCircleTraveling;

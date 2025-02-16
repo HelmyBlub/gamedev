@@ -115,5 +115,4 @@ function tick(enemy: Character, game: Game) {
             if (abilityFunctions.tickAbility) abilityFunctions.tickAbility(enemy, ability, game);
         }
     }
-    tickCharacterDebuffs(enemy, game);
 }

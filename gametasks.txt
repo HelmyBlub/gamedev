@@ -11,11 +11,11 @@ current tasks:
     - create area boss: poison plant
         - can not be damaged
         - all damage also % based
-        - will shrink/loose hp when using poison abilities
         - first ability
             - shoot poison area to player position (like fireCircle)
                 - poison area slowly moves around
             - only shoots when close enough to area boss
+        - will shrink/loose hp when using poison abilities
         - second ability
             - when player stands still for x amount
                 - shoot poison beam
