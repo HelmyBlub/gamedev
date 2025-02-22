@@ -12,6 +12,7 @@ import { addAbilityCurseIce, createObjectCurseIce } from "./abilityCurseIce.js";
 import { IMAGE_AREA_BOSS_TYPE_SNOWMAN } from "./areaBossSnowman.js";
 import { addAbilityPoisonCloud, createAbilityPoisonCloud } from "./abilityPoisonCloud.js";
 import { createAbilityPoisonTile } from "../../../ability/abilityPoisonTile.js";
+import { addAbilityPoisonBeam, createAbilityPoisonBeam } from "./abilityPoisonBeam.js";
 
 export type AreaBossEnemyPoisonPlant = AreaBossEnemy & {
 };
@@ -30,6 +31,7 @@ export function addAreaBossTypePoisonPlant() {
         tick: tick,
     };
     addAbilityPoisonCloud();
+    addAbilityPoisonBeam();
 }
 
 export function createAreaBossPoisonPlant(idCounter: IdCounter, spawn: Position, mapModifierIdRef: number, game: Game): AreaBossEnemyPoisonPlant {
@@ -42,6 +44,7 @@ export function createAreaBossPoisonPlant(idCounter: IdCounter, spawn: Position,
     const baseCharacter = createCharacter(getNextId(idCounter), nonBlockingSpawn.x, nonBlockingSpawn.y, bossSize, bossSize, color, dummyValue, hp, FACTION_ENEMY, CHARACTER_TYPE_AREA_BOSS, dummyValue);
     const abilities: Ability[] = [];
     abilities.push(createAbilityPoisonCloud(game.state.idCounter));
+    abilities.push(createAbilityPoisonBeam(game.state.idCounter));
     baseCharacter.abilities = abilities;
     const areaBoss: AreaBossEnemyPoisonPlant = { ...baseCharacter, mapModifierIdRef: mapModifierIdRef, areaBossType: AREA_BOSS_TYPE_POISON_PLANT };
     areaBoss.isUnMoveAble = true;

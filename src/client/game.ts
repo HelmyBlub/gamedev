@@ -34,6 +34,7 @@ import { achievementCheckOnGameEnd, achievementCheckOnGameTick } from "./achieve
 import { controllerInput } from "./input/inputController.js";
 import { mapModifierOnGameInit, tickMapModifier } from "./map/modifiers/mapModifier.js";
 
+/** values between - Math.PI * 1.5 to Math.PI*0.5 */
 export function calculateDirection(startPos: Position, targetPos: Position): number {
     let direction = 0;
 

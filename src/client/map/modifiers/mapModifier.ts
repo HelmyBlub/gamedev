@@ -37,7 +37,7 @@ export function onDomLoadMapModifiers() {
     addMapModifierDarkness();
     addMapModifierLightning();
     addMapModifierIce();
-    addMapModifierPoison();
+    //addMapModifierPoison();
     onDomLoadMapModifierShapes();
 }
 

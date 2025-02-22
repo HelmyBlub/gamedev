@@ -9,7 +9,6 @@ import { Character } from "../../characterModel.js";
 
 export const ABILITY_NAME_POISON_CLOUD = "PoisonCloud";
 export type AbilityPoisonCloud = Ability & {
-    moveSpeed: number,
     cooldown: number,
     lastCastTime?: number,
 }
@@ -57,7 +56,6 @@ export function createAbilityPoisonCloud(
         name: ABILITY_NAME_POISON_CLOUD,
         cooldown: COOLDOWN,
         passive: true,
-        moveSpeed: 4,
         upgrades: {},
     };
 }
@@ -132,8 +130,18 @@ function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: Abilit
 
 function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     const poisonCloud = ability as AbilityPoisonCloud;
-
-    cast(abilityOwner, poisonCloud, game);
+    if (poisonCloud.lastCastTime === undefined || poisonCloud.lastCastTime + poisonCloud.cooldown < game.state.time) {
+        poisonCloud.lastCastTime = game.state.time;
+        //TODO find target position
+        const closest = determineClosestCharacter(abilityOwner, getPlayerCharacters(game.state.players));
+        if (!closest.minDistanceCharacter || closest.minDistance > MAX_DINSTANCE) return;
+        const targetPos = { x: closest.minDistanceCharacter.x, y: closest.minDistanceCharacter.y };
+        game.state.abilityObjects.push(createObjectPoisonCloudTraveling(targetPos.x, targetPos.y, ability.id, abilityOwner));
+        const owner = abilityOwner as Character;
+        owner.isDamageImmune = false;
+        characterTakeDamage(owner, HP_COST, game, undefined, ability.name);
+        owner.isDamageImmune = true;
+    }
 }
 
 function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
@@ -191,17 +199,3 @@ function deleteObject(abilityObject: AbilityObject, game: Game): boolean {
     }
 }
 
-function cast(abilityOwner: AbilityOwner, ability: AbilityPoisonCloud, game: Game) {
-    if (ability.lastCastTime === undefined || ability.lastCastTime + ability.cooldown < game.state.time) {
-        ability.lastCastTime = game.state.time;
-        //TODO find target position
-        const closest = determineClosestCharacter(abilityOwner, getPlayerCharacters(game.state.players));
-        if (!closest.minDistanceCharacter || closest.minDistance > MAX_DINSTANCE) return;
-        const targetPos = { x: closest.minDistanceCharacter.x, y: closest.minDistanceCharacter.y };
-        game.state.abilityObjects.push(createObjectPoisonCloudTraveling(targetPos.x, targetPos.y, ability.id, abilityOwner));
-        const owner = abilityOwner as Character;
-        owner.isDamageImmune = false;
-        characterTakeDamage(owner, HP_COST, game, undefined, ability.name);
-        owner.isDamageImmune = true;
-    }
-}

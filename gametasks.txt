@@ -3,15 +3,10 @@ increase version
 
 current tasks:
 - mapModifier: poison   
-    - continue with area boss poison plant first ability
     - create area boss: poison plant
         - can not be damaged
         - all damage also % based
-        - first ability
-            - shoot poison area to player position (like fireCircle)
-                - poison area slowly moves around
-            - only shoots when close enough to area boss
-        - will shrink/loose hp when using poison abilities
+        - shrinks based on hp
         - second ability
             - when player stands still for x amount
                 - shoot poison beam
