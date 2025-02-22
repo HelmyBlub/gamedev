@@ -3,11 +3,7 @@ increase version
 
 current tasks:
 - mapModifier: poison   
-    - create mapModifier
-        - give every enemy in area "poison tile immunity"
-        - give random amount ability poison tiles
-            - closer to center more likely to have ability
-            - should have some visualization
+    - continue with area boss poison plant first ability
     - create area boss: poison plant
         - can not be damaged
         - all damage also % based

@@ -36,9 +36,10 @@ export function createAreaBossPoisonPlant(idCounter: IdCounter, spawn: Position,
     const bossSize = 40;
     const color = "black";
     const dummyValue = 1;
+    const hp = 100;
     const nonBlockingSpawn = findNearNonBlockingPosition(spawn, game.state.map, game.state.idCounter, game);
 
-    const baseCharacter = createCharacter(getNextId(idCounter), nonBlockingSpawn.x, nonBlockingSpawn.y, bossSize, bossSize, color, dummyValue, dummyValue, FACTION_ENEMY, CHARACTER_TYPE_AREA_BOSS, dummyValue);
+    const baseCharacter = createCharacter(getNextId(idCounter), nonBlockingSpawn.x, nonBlockingSpawn.y, bossSize, bossSize, color, dummyValue, hp, FACTION_ENEMY, CHARACTER_TYPE_AREA_BOSS, dummyValue);
     const abilities: Ability[] = [];
     abilities.push(createAbilityPoisonCloud(game.state.idCounter));
     baseCharacter.abilities = abilities;
