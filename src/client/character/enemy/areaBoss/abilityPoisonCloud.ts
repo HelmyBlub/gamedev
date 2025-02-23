@@ -132,7 +132,6 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     const poisonCloud = ability as AbilityPoisonCloud;
     if (poisonCloud.lastCastTime === undefined || poisonCloud.lastCastTime + poisonCloud.cooldown < game.state.time) {
         poisonCloud.lastCastTime = game.state.time;
-        //TODO find target position
         const closest = determineClosestCharacter(abilityOwner, getPlayerCharacters(game.state.players));
         if (!closest.minDistanceCharacter || closest.minDistance > MAX_DINSTANCE) return;
         const targetPos = { x: closest.minDistanceCharacter.x, y: closest.minDistanceCharacter.y };

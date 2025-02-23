@@ -13,6 +13,8 @@ import { IMAGE_AREA_BOSS_TYPE_SNOWMAN } from "./areaBossSnowman.js";
 import { addAbilityPoisonCloud, createAbilityPoisonCloud } from "./abilityPoisonCloud.js";
 import { createAbilityPoisonTile } from "../../../ability/abilityPoisonTile.js";
 import { addAbilityPoisonBeam, createAbilityPoisonBeam } from "./abilityPoisonBeam.js";
+import { addAbilityPoisonAura, createAbilityPoisonAura } from "./abilityPoisonAura.js";
+import { createAbilityHpRegen } from "../../../ability/abilityHpRegen.js";
 
 export type AreaBossEnemyPoisonPlant = AreaBossEnemy & {
 };
@@ -29,9 +31,11 @@ export function addAreaBossTypePoisonPlant() {
         onDeath: onDeath,
         paint: paint,
         tick: tick,
+        scaleWithBossLevel: scaleWithBossLevel,
     };
     addAbilityPoisonCloud();
     addAbilityPoisonBeam();
+    addAbilityPoisonAura();
 }
 
 export function createAreaBossPoisonPlant(idCounter: IdCounter, spawn: Position, mapModifierIdRef: number, game: Game): AreaBossEnemyPoisonPlant {
@@ -45,12 +49,18 @@ export function createAreaBossPoisonPlant(idCounter: IdCounter, spawn: Position,
     const abilities: Ability[] = [];
     abilities.push(createAbilityPoisonCloud(game.state.idCounter));
     abilities.push(createAbilityPoisonBeam(game.state.idCounter));
+    abilities.push(createAbilityPoisonAura(game.state.idCounter));
+    abilities.push(createAbilityHpRegen(game.state.idCounter, undefined, 1));
     baseCharacter.abilities = abilities;
     const areaBoss: AreaBossEnemyPoisonPlant = { ...baseCharacter, mapModifierIdRef: mapModifierIdRef, areaBossType: AREA_BOSS_TYPE_POISON_PLANT };
     areaBoss.isUnMoveAble = true;
     areaBoss.isDamageImmune = true;
     areaBoss.isDebuffImmune = true;
     return areaBoss;
+}
+
+function scaleWithBossLevel() {
+    //prevent default scale by just overwriting
 }
 
 function onDeath(character: Character, game: Game) {

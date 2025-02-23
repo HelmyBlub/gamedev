@@ -11,7 +11,7 @@ import { Character, createCharacter } from "../../characterModel.js";
 import { paintCharacterHpBar } from "../../characterPaint.js";
 import { addAbilityCloudMachineBossCloud, createAbilityCloudMachineBossCloud } from "./abilityCloudMachineBossCloud.js";
 import { addAbilityCurseLightning, createObjectCurseLightning } from "./abilityCurseLightning.js";
-import { AREA_BOSS_FUNCTIONS, AreaBossEnemy, CHARACTER_TYPE_AREA_BOSS, scaleAreaBossHp } from "./areaBoss.js";
+import { AREA_BOSS_FUNCTIONS, AreaBossEnemy, areaBossScaleHp, CHARACTER_TYPE_AREA_BOSS, scaleAreaBossHp } from "./areaBoss.js";
 
 export type AreaBossEnemyLightningCloudMachine = AreaBossEnemy & {
 };
@@ -54,6 +54,7 @@ export function createAreaBossLighntingCloudMachine(idCounter: IdCounter, spawn:
 }
 
 function scaleWithBossLevel(areaBoss: AreaBossEnemy, level: number) {
+    areaBossScaleHp(areaBoss, level);
     for (let ability of areaBoss.abilities) {
         const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
         if (!abilityFunctions) continue;

@@ -39,15 +39,23 @@ export function scaleAreaBossHp(level: number, bosses: Character[]) {
     for (let boss of bosses) {
         if (boss.type === CHARACTER_TYPE_AREA_BOSS) {
             const areaBoss = boss as AreaBossEnemy;
-            const currentHpPerCent = boss.hp / boss.maxHp;
-            boss.maxHp = 1000 * Math.pow(levelModifier, 4);
-            boss.hp = boss.maxHp * currentHpPerCent;
-            boss.baseMoveSpeed = Math.min(6, 1.25 + levelModifier * 0.25);
-            boss.experienceWorth = Math.pow(levelModifier, 3) * 500;
             const areaBossFunctions = AREA_BOSS_FUNCTIONS[areaBoss.areaBossType];
-            if (areaBossFunctions.scaleWithBossLevel) areaBossFunctions.scaleWithBossLevel(areaBoss, level);
+            if (areaBossFunctions.scaleWithBossLevel) {
+                areaBossFunctions.scaleWithBossLevel(areaBoss, level);
+            } else {
+                areaBossScaleHp(areaBoss, level);
+            }
         }
     }
+}
+
+export function areaBossScaleHp(areaBoss: AreaBossEnemy, level: number) {
+    const levelModifier = Math.max(3, level);
+    const currentHpPerCent = areaBoss.hp / areaBoss.maxHp;
+    areaBoss.maxHp = 1000 * Math.pow(levelModifier, 4);
+    areaBoss.hp = areaBoss.maxHp * currentHpPerCent;
+    areaBoss.baseMoveSpeed = Math.min(6, 1.25 + levelModifier * 0.25);
+    areaBoss.experienceWorth = Math.pow(levelModifier, 3) * 500;
 }
 
 function tick(character: Character, game: Game) {
