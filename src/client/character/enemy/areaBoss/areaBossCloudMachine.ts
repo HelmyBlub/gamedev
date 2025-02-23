@@ -1,6 +1,5 @@
 import { ABILITIES_FUNCTIONS, Ability } from "../../../ability/ability.js";
 import { createAbilityMelee } from "../../../ability/abilityMelee.js";
-import { tickCharacterDebuffs } from "../../../debuff/debuff.js";
 import { getNextId } from "../../../game.js";
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";

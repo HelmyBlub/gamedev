@@ -3,7 +3,7 @@ import { ABILITY_NAME_ICE_AURA, AbilityIceAura } from "../ability/abilityIceAura
 import { Character } from "../character/characterModel.js";
 import { calculateDistance, getNextId } from "../game.js";
 import { FACTION_PLAYER, Game, IdCounter, Position } from "../gameModel.js";
-import { calculatePosToChunkTileXY, changeTileIdOfMapChunk, changeTileIdOfPosition, getMapTileId, positionToChunkXY, TILE_ID_GRASS, TILE_ID_ICE } from "../map/map.js";
+import { changeTileIdOfPosition, getMapTileId, TILE_ID_GRASS, TILE_ID_ICE } from "../map/map.js";
 import { MODIFIER_NAME_ICE } from "../map/modifiers/mapModifierIce.js";
 import { nextRandom } from "../randomNumberGenerator.js";
 import { Curse, CURSES_FUNCTIONS } from "./curse.js";

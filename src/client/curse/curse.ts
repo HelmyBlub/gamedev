@@ -8,6 +8,7 @@ import { getPointPaintPosition, paintTextWithOutline } from "../gamePaint.js";
 import { addCurseDarkness } from "./curseDarkness.js";
 import { addCurseIce } from "./curseIce.js";
 import { addCurseLightning } from "./curseLightning.js";
+import { addCursePoison } from "./cursePoison.js";
 
 export type Curse = {
     id: number,
@@ -38,6 +39,7 @@ export function onDomLoadCurses() {
     addCurseDarkness();
     addCurseLightning();
     addCurseIce();
+    addCursePoison();
 }
 
 export function createCurse(curesType: string, idCounter: IdCounter): Curse {

@@ -3,9 +3,6 @@ increase version
 
 current tasks:
 - mapModifier: poison   
-    - create area boss: poison plant
-        - poison plant image
-        - shrinks based on hp
     - curse poison
         - higher poison  curse -> higher radius
             - high radius lower tick interval required?

@@ -13,6 +13,7 @@ import { addAbilityPoisonCloud, createAbilityPoisonCloud } from "./abilityPoison
 import { addAbilityPoisonBeam, createAbilityPoisonBeam } from "./abilityPoisonBeam.js";
 import { addAbilityPoisonAura, createAbilityPoisonAura } from "./abilityPoisonAura.js";
 import { createAbilityHpRegen } from "../../../ability/abilityHpRegen.js";
+import { addAbilityCursePoison, createObjectCursePoison } from "./abilityCursePoison.js";
 
 export type AreaBossEnemyPoisonPlant = AreaBossEnemy & {
 };
@@ -32,6 +33,7 @@ export function addAreaBossTypePoisonPlant() {
         tick: tick,
         scaleWithBossLevel: scaleWithBossLevel,
     };
+    addAbilityCursePoison();
     addAbilityPoisonCloud();
     addAbilityPoisonBeam();
     addAbilityPoisonAura();
@@ -64,7 +66,7 @@ function scaleWithBossLevel() {
 
 function onDeath(character: Character, game: Game) {
     const areaBoss = character as AreaBossEnemyPoisonPlant;
-    const curse = createObjectCurseIce(areaBoss, game); //TODO change
+    const curse = createObjectCursePoison(areaBoss, game);
     if (curse) game.state.abilityObjects.push(curse);
     removeMapModifier(areaBoss.mapModifierIdRef, game);
 }
