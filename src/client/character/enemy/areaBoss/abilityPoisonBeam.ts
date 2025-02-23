@@ -130,7 +130,8 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
             const currentDirection = calculateDirection(abilityOwner, target);
             let directionDifference = currentDirection - poisonBeam.beamDirection!;
 
-            if (currentDirection - poisonBeam.beamDirection! < 0 && Math.abs(directionDifference) < Math.PI) {
+            if ((currentDirection - poisonBeam.beamDirection! < 0 && Math.abs(directionDifference) < Math.PI) ||
+                currentDirection - poisonBeam.beamDirection! > 0 && Math.abs(directionDifference) > Math.PI) {
                 poisonBeam.beamDirection! -= TURN_SPEED * poisonBeam.chargePerCent;
                 if (poisonBeam.beamDirection! < -Math.PI * 3 / 2) {
                     poisonBeam.beamDirection! += Math.PI * 2;
