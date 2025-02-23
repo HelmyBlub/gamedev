@@ -8,10 +8,8 @@ import { findMapModifierById, removeMapModifier } from "../../../map/modifiers/m
 import { Character, createCharacter } from "../../characterModel.js";
 import { paintCharacterHpBar } from "../../characterPaint.js";
 import { AREA_BOSS_FUNCTIONS, AreaBossEnemy, CHARACTER_TYPE_AREA_BOSS } from "./areaBoss.js";
-import { addAbilityCurseIce, createObjectCurseIce } from "./abilityCurseIce.js";
-import { IMAGE_AREA_BOSS_TYPE_SNOWMAN } from "./areaBossSnowman.js";
+import { createObjectCurseIce } from "./abilityCurseIce.js";
 import { addAbilityPoisonCloud, createAbilityPoisonCloud } from "./abilityPoisonCloud.js";
-import { createAbilityPoisonTile } from "../../../ability/abilityPoisonTile.js";
 import { addAbilityPoisonBeam, createAbilityPoisonBeam } from "./abilityPoisonBeam.js";
 import { addAbilityPoisonAura, createAbilityPoisonAura } from "./abilityPoisonAura.js";
 import { createAbilityHpRegen } from "../../../ability/abilityHpRegen.js";
@@ -20,10 +18,11 @@ export type AreaBossEnemyPoisonPlant = AreaBossEnemy & {
 };
 
 export const AREA_BOSS_TYPE_POISON_PLANT = "Poison Plant";
-GAME_IMAGES[IMAGE_AREA_BOSS_TYPE_SNOWMAN] = {
-    imagePath: "/images/snowman.png",
-    spriteRowHeights: [40],
-    spriteRowWidths: [40],
+export const IMAGE_AREA_BOSS_TYPE_POISON_PLANT = "PoisonPlant";
+GAME_IMAGES[IMAGE_AREA_BOSS_TYPE_POISON_PLANT] = {
+    imagePath: "/images/poisonPlant.png",
+    spriteRowHeights: [80],
+    spriteRowWidths: [80],
 };
 
 export function addAreaBossTypePoisonPlant() {
@@ -76,7 +75,7 @@ function paint(ctx: CanvasRenderingContext2D, character: Character, cameraPositi
     ctx.strokeStyle = "black";
     ctx.fillStyle = "black";
 
-    const characterImage = GAME_IMAGES[IMAGE_AREA_BOSS_TYPE_SNOWMAN];
+    const characterImage = GAME_IMAGES[IMAGE_AREA_BOSS_TYPE_POISON_PLANT];
     loadImage(characterImage, character.paint.color, undefined);
     if (characterImage.imageRef) {
         const paintPos = getPointPaintPosition(ctx, character, cameraPosition, game.UI.zoom);
@@ -104,6 +103,6 @@ function paint(ctx: CanvasRenderingContext2D, character: Character, cameraPositi
 function tick(enemy: Character, game: Game) {
     if (enemy.state === "dead") return;
     const plant = enemy as AreaBossEnemyPoisonPlant;
-    const modifier = findMapModifierById(plant.mapModifierIdRef, game);
-    if (!modifier) return;
+    plant.width = 20 + 60 * (plant.hp / plant.maxHp);
+    plant.height = plant.width;
 }

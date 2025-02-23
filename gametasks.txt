@@ -4,12 +4,11 @@ increase version
 current tasks:
 - mapModifier: poison   
     - create area boss: poison plant
-        - can not be damaged
-        - all damage also % based
+        - poison plant image
         - shrinks based on hp
-        - third ability
-            - when player very close
-            - melee aoe damage poison area, which grows for some time than disappers
+    - curse poison
+        - higher poison  curse -> higher radius
+            - high radius lower tick interval required?
 
 
 - be able to cleanse bad part of curses
