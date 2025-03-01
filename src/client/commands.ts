@@ -213,6 +213,7 @@ function restart(game: Game, data: CommandRestart) {
     game.multiplayer.cachePlayerInputs = [];
     if (data.recordInputs) {
         game.testing.record = { data: { replayPlayerInputs: [], permanentData: {} } };
+        if (game.debug.extendedReplayDebugData) game.testing.record.data.extendendInputData = [];
         if (game.multiplayer.websocket && game.state.clientInfos.length > 1) {
             game.testing.record.data.multiplayerData = [];
             for (let client of game.state.clientInfos) {

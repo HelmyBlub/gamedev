@@ -122,6 +122,7 @@ export type Debugging = {
     takeTimeMeasures?: boolean,
     activateSaveStates?: boolean,
     disableDamageNumbers?: boolean,
+    extendedReplayDebugData?: boolean,
     aimCursor?: boolean,
     timeMeasuresData?: { name: string, timeMeasures: number[], tempTime: number }[],
 }

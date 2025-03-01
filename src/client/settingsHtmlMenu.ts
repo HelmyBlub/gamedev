@@ -74,6 +74,7 @@ function addDebug(game: Game) {
 
 function addTest(game: Game) {
     addSettingCheckbox("activateSaveStates", game, "test");
+    addSettingCheckbox("extendedReplayDebugData", game, "test");
     addTestButton(game);
     addReplayLastRunButton(game);
     addCopyLastReplayButton(game);
