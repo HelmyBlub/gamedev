@@ -967,7 +967,7 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
         if (selectedMusicSheet.stopped && !selectedMusicSheet.stopping) {
             const interval = selectedMusicSheet.musicSheet.speed * 4;
             const gameTimeInterval = game.state.time % interval;
-            if (gameTimeInterval < 16) {
+            if (gameTimeInterval < getTickInterval(game)) {
                 selectedMusicSheet.lastPlayTick = -0.5;
                 selectedMusicSheet.stopped = false;
                 selectedMusicSheet.lastPlayGameTime = game.state.time;

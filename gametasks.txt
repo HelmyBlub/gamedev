@@ -1,11 +1,12 @@
-next test run:
+next test run: tamer
 increase version
 
 current tasks:
+- check for bugs, because replays failed:
+    - sniper vs musician king + big enemies
+    - musician vs ball king + big enemies
 - mapModifier: poison   
-    - curse poison
-        - higher poison  curse -> higher radius
-            - high radius lower tick interval required?
+    - check balance
 
 
 - be able to cleanse bad part of curses
