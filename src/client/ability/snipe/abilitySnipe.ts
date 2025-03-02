@@ -469,6 +469,7 @@ function tickAbilitySnipe(abilityOwner: AbilityOwner, ability: Ability, game: Ga
             } else {
                 const targets = determineCharactersInDistance(abilityOwner, game.state.map, [], game.state.bossStuff.bosses, 320, FACTION_PLAYER, true);
                 if (targets.length > 0) {
+                    console.log("random snipe?");
                     const randomTargetIndex = Math.floor(nextRandom(game.state.randomSeed) * targets.length);
                     const target = targets[randomTargetIndex];
                     castPosition = {

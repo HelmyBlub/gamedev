@@ -4,9 +4,25 @@ increase version
 current tasks:
 - check for bugs, because replays failed:
     - sniper vs musician king + big enemies
+        - replay not the same as record play. But replay consistently fails the same way
+        - could reproduce 3xtimes in 5 tries, but takes longer run?
+        - random number seed beginns being different mid game. All number generations where done by muscian ability when it started to be different
+        - assumption: 
+            - has to do with big enemies and order of creation?
+            - order of enmies creating different
+                ->  Results in enemies with swapped abilities
+                ->  Results in aggroed enemies having different abilities
+                ->  Results in different amount of random numbers generated.
+            - verify musician enemies use random seed on generation? what is with ball enemies?
+                - they do
+            - why should chunk generation differ between normal run and replay?
+            - checked replay/record stuff, but nothing special mid run. Only start and end happens alot.
+            - chunk seems unlikely but i do not have any other idea
+        - verify what could cause differences in code behaviour between record and replay stuff?
     - musician vs ball king + big enemies
 - mapModifier: poison   
     - check balance
+- balance check: damage over time for musician king
 
 
 - be able to cleanse bad part of curses
