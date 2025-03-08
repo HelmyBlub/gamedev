@@ -23,7 +23,7 @@ import { abilityMusicSheetsUpgradeDamageOverTimeApply, addAbilityMusicSheetUpgra
 import { ABILITY_NAME_EXPLODE } from "../abilityExplode.js";
 import { ABILITY_NAME_CIRCLE_AROUND } from "../abilityCircleAround.js";
 import { mousePositionToMapPosition } from "../../map/map.js";
-import { nextRandom } from "../../randomNumberGenerator.js";
+import { fixedRandom, nextRandom, RandomSeed } from "../../randomNumberGenerator.js";
 import { GAME_IMAGES, getImage } from "../../imageLoad.js";
 import { addAbilityMusicSheetDeleteNote } from "./abilityMusicSheetDeleteNote.js";
 import { addAbilityMusicSheetChangeInstrument } from "./abilityMusicSheetChangeInstrument.js";
@@ -303,7 +303,7 @@ function tickAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
 
     const waitTime = 5000;
     if (tempInstrument && allInstrumentsLastPlayedNoteTime >= 0 && allInstrumentsLastPlayedNoteTime + waitTime < game.state.time) {
-        addRandomNote(abilityMusicSheets, activeSheet, game);
+        addRandomNote(abilityMusicSheets, activeSheet, game.state.randomSeed);
         tempInstrument.lastPlayedNoteTime = game.state.time - waitTime * 0.9;
     }
 }
@@ -609,14 +609,14 @@ function setUpAbilityForEnemy(abilityOwner: AbilityOwner, ability: Ability, game
     const musicSheets = ability as AbilityMusicSheets;
     musicSheets.musicSheets[0].maxPlayTicks = 4;
     if (Object.keys(musicSheets.upgrades).length > 0) return;
-    addRandomInstrument(musicSheets, abilityOwner as Character, game);
-    addRandomNote(musicSheets, musicSheets.musicSheets[0], game);
+    addRandomInstrument(musicSheets, abilityOwner as Character, { seed: fixedRandom(abilityOwner.x, abilityOwner.y, game.state.map.seed!) });
+    addRandomNote(musicSheets, musicSheets.musicSheets[0], { seed: fixedRandom(abilityOwner.x, abilityOwner.y, game.state.map.seed!) });
 }
 
-function addRandomNote(ability: AbilityMusicSheets, musicSheet: AbilityMusicSheet, game: Game) {
+function addRandomNote(ability: AbilityMusicSheets, musicSheet: AbilityMusicSheet, randomSeed: RandomSeed) {
     const indexToNote = ["B", "A", "G", "F", "E", "D", "C"];
-    const randomTick = Math.floor(nextRandom(game.state.randomSeed) * musicSheet.maxPlayTicks);
-    const randomNoteIndex = Math.floor(nextRandom(game.state.randomSeed) * indexToNote.length);
+    const randomTick = Math.floor(nextRandom(randomSeed) * musicSheet.maxPlayTicks);
+    const randomNoteIndex = Math.floor(nextRandom(randomSeed) * indexToNote.length);
     const randomNote = indexToNote[randomNoteIndex] as Note;
     const octave = TREBLE_OCTAVE;
     const instrumentKeys = getInstrumentKeys();
@@ -626,7 +626,7 @@ function addRandomNote(ability: AbilityMusicSheets, musicSheet: AbilityMusicShee
             availableInstrumentKeys.push(instrumentKey);
         }
     }
-    const randomNoteTypeIndex = Math.floor(nextRandom(game.state.randomSeed) * availableInstrumentKeys.length);
+    const randomNoteTypeIndex = Math.floor(nextRandom(randomSeed) * availableInstrumentKeys.length);
     const randomNoteType = availableInstrumentKeys[randomNoteTypeIndex];
     const randomMusicNote: MusicNote = {
         durationFactor: 1,
@@ -650,9 +650,9 @@ function getInstrumentKeys(): string[] {
     return instrumentKeys;
 }
 
-function addRandomInstrument(ability: AbilityMusicSheets, abilityOwner: Character, game: Game) {
+function addRandomInstrument(ability: AbilityMusicSheets, abilityOwner: Character, randomSeed: RandomSeed) {
     const instrumentKeys = getInstrumentKeys();
-    const randomInstrumentKeyIndex = Math.floor(nextRandom(game.state.randomSeed) * instrumentKeys.length);
+    const randomInstrumentKeyIndex = Math.floor(nextRandom(randomSeed) * instrumentKeys.length);
     const randomInstrumentKey = instrumentKeys[randomInstrumentKeyIndex];
     const functions = ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS[randomInstrumentKey];
     const option = getAbilityUpgradeOptionDefault(ability, randomInstrumentKey)[0].option as AbilityUpgradeOption;
