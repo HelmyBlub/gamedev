@@ -30,7 +30,7 @@ function getStatsDisplayText(characterUpgrade: CharacterUpgrade): string {
     return `${CHARACTER_UPGRADE_BONUS_DAMAGE_REDUCTION}: ${(1 - up.bonusDamageReduction) * 100}%`;
 }
 
-function addUpgrade(characterUpgrade: CharacterUpgrade, character: Character, game: Game, charClass: CharacterClass | undefined) {
+function addUpgrade(characterUpgrade: CharacterUpgrade, character: Character, game: Game, charClass?: CharacterClass) {
     const damageReduction = characterUpgrade as CharacterUpgradeBonusDamageReduction;
     if (charClass) {
         if (!charClass.characterClassUpgrades) charClass.characterClassUpgrades = {};

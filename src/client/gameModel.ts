@@ -331,7 +331,7 @@ export const FACTION_ENEMY = "enemy";
 export const FACTION_PLAYER = "player";
 export const ANIMATION_END_BOSS_CROWN_OVERTAKE = "End Boss Crown Overtake";
 
-export function createDefaultGameData(c: HTMLCanvasElement | undefined, ctx: CanvasRenderingContext2D | undefined): Game {
+export function createDefaultGameData(c?: HTMLCanvasElement, ctx?: CanvasRenderingContext2D): Game {
     const game: Game = {
         canvasElement: c,
         ctx: ctx,

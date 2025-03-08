@@ -22,7 +22,7 @@ export type CharacterUpgrades = {
 }
 
 export type CharacterUpgradeFunctions = {
-    addUpgrade: (characterUpgrade: CharacterUpgrade, character: Character, game: Game, characterClass: CharacterClass | undefined) => void,
+    addUpgrade: (characterUpgrade: CharacterUpgrade, character: Character, game: Game, characterClass?: CharacterClass) => void,
     executeOption?: (option: UpgradeOption, character: Character) => void,
     getOptions?: (character: Character, characterClass: CharacterClass, game: Game) => UpgradeOptionAndProbability[],
     getStatsDisplayText: (characterUpgrade: CharacterUpgrade) => string,
@@ -45,7 +45,7 @@ export function onDomLoadSetCharacterUpgradeFunctions() {
     addCharacterUpgradeFightRetries();
 }
 
-export function addCharacterUpgrades(characterUpgrades: CharacterUpgrades, character: Character, game: Game, characterClass: CharacterClass | undefined) {
+export function addCharacterUpgrades(characterUpgrades: CharacterUpgrades, character: Character, game: Game, characterClass?: CharacterClass) {
     const keys = Object.keys(characterUpgrades);
     if (keys.length > 0) {
         for (let key of keys) {

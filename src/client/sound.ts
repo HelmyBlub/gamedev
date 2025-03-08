@@ -50,13 +50,13 @@ export function createSound(): Sound {
     return sound;
 }
 
-export function playMusicNote(musicSheet: MusicSheet, note: MusicNote, distanceFromSource: number, sound: Sound | undefined) {
+export function playMusicNote(musicSheet: MusicSheet, note: MusicNote, distanceFromSource: number, sound?: Sound) {
     const volumeModify = Math.min(1 - distanceFromSource / 1000, 1);
     if (volumeModify <= 0) return;
     generateNote(musicSheet.speed * 0.9 * note.durationFactor, note, volumeModify, sound);
 }
 
-export function generateNote(duration: number, note: MusicNote, volumeModify: number, sound: Sound | undefined) {
+export function generateNote(duration: number, note: MusicNote, volumeModify: number, sound?: Sound) {
     if (sound === undefined) return;
 
     const gainNode = sound.audioContext.createGain();

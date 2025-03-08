@@ -69,7 +69,7 @@ export function doDamageMeterSplit(splitTitle: string, game: Game) {
     }
 }
 
-export function addDamageBreakDownToDamageMeter(damageMeter: DamageMeter, ability: Ability, breakDowns: AbilityDamageBreakdown[], clientId: number, petName: string | undefined) {
+export function addDamageBreakDownToDamageMeter(damageMeter: DamageMeter, ability: Ability, breakDowns: AbilityDamageBreakdown[], clientId: number, petName?: string) {
     if (damageMeter.splits.length === 0) damageMeter.splits.push({
         title: "",
         damageData: []
@@ -124,7 +124,7 @@ export function addCurseDamageBreakDownToDamageMeter(damageMeter: DamageMeter, c
 }
 
 
-export function createCombatLogMoreInfo(ctx: CanvasRenderingContext2D, moreInfos: MoreInfos, combatlog: Combatlog | undefined): MoreInfosPartContainer | undefined {
+export function createCombatLogMoreInfo(ctx: CanvasRenderingContext2D, moreInfos: MoreInfos, combatlog?: Combatlog): MoreInfosPartContainer | undefined {
     if (combatlog === undefined) return;
     if (combatlog.damageTakenLog.length === 0 && combatlog.damageDoneLog.length === 0) return;
     const moreInfosContainer = createDefaultMoreInfosContainer(ctx, "Combatlog", moreInfos.headingFontSize);
@@ -227,7 +227,7 @@ export function createDamageMeterMoreInfo(ctx: CanvasRenderingContext2D, moreInf
     return moreInfosDamageMeter;
 }
 
-function findPlayerCharacterOwnerByAbilityIdInPlayers(abilityId: number, game: Game): { character: Character, pet: Character | undefined } | undefined {
+function findPlayerCharacterOwnerByAbilityIdInPlayers(abilityId: number, game: Game): { character: Character, pet?: Character } | undefined {
     for (let player of game.state.players) {
         const ability = player.character.abilities.find(a => a.id === abilityId);
         if (ability) return { character: player.character, pet: undefined };

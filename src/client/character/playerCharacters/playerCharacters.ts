@@ -122,7 +122,7 @@ export function playerCharacterGetLevelClassText(character: Character, charClass
     return `${charClass.className} level ${Math.floor(playerCharacterClassGetAverageLevel(character, charClass))}`;
 }
 
-export function getAverageLevelOfAbilitiesPetsCharClassId(charClassId: number, abilities: Ability[] | undefined, pets: Character[] | undefined): number {
+export function getAverageLevelOfAbilitiesPetsCharClassId(charClassId: number, abilities?: Ability[], pets?: Character[]): number {
     let averageLevel = 0;
     let counter = 0;
     if (abilities) {

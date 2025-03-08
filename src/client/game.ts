@@ -509,7 +509,7 @@ export function calculateFightRetryCounter(game: Game) {
     return retryCounter;
 }
 
-export function getGameVersionString(gameVersion: GameVersion | undefined) {
+export function getGameVersionString(gameVersion?: GameVersion) {
     if (!gameVersion) return "Unknown";
     return `${gameVersion.major}.${gameVersion.minor}.${gameVersion.patch}`;
 }

@@ -21,7 +21,7 @@ function getStatsDisplayText(characterUpgrade: CharacterUpgrade): string {
     return `${CHARACTER_UPGRADE_BONUS_EXPERIENCE}: ${((up.bonusExperienceFactor) * 100).toFixed()}%`;
 }
 
-function addUpgrade(characterUpgrade: CharacterUpgrade, character: Character, game: Game, charClass: CharacterClass | undefined) {
+function addUpgrade(characterUpgrade: CharacterUpgrade, character: Character, game: Game, charClass?: CharacterClass) {
     const experienceUp = characterUpgrade as CharacterUpgradeBonusExperience;
     if (charClass) {
         if (!charClass.characterClassUpgrades) charClass.characterClassUpgrades = {};

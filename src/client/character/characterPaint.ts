@@ -111,7 +111,7 @@ function moreInfosPlayerMoneyAndBuildingUpgrades(ctx: CanvasRenderingContext2D, 
     return textLines;
 }
 
-export function createCharacterClassMoreInfos(ctx: CanvasRenderingContext2D, characterClasses: CharacterClass[], abilities: Ability[] | undefined, pets: Character[] | undefined): MoreInfoPart {
+export function createCharacterClassMoreInfos(ctx: CanvasRenderingContext2D, characterClasses: CharacterClass[], abilities?: Ability[], pets?: Character[]): MoreInfoPart {
     const textLines: string[] = [];
     addCharacterClassMoreInfosTextLines(characterClasses, abilities, pets, textLines);
     return createMoreInfosPart(ctx, textLines);

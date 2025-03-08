@@ -297,7 +297,7 @@ export function teleportCharacterPetsToOwner(characters: Character[], game: Game
     }
 }
 
-export function tickCharacters(characters: (Character | undefined)[], game: Game, pathingCache: PathingCache | null, petOwner: Character | undefined = undefined) {
+export function tickCharacters(characters: (Character | undefined)[], game: Game, pathingCache: PathingCache | null, petOwner?: Character) {
     for (let j = characters.length - 1; j >= 0; j--) {
         const char = characters[j];
         if (!char) continue;

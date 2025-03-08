@@ -37,14 +37,14 @@ export function createDefaultStackTextsData(): PaintStackTextsData {
     }
 }
 
-export function addPaintFloatingTextInfoForMyself(text: string, game: Game, timer: number | undefined, characterId: number, idRef: number | undefined = undefined, image: string | undefined = undefined) {
+export function addPaintFloatingTextInfoForMyself(text: string, game: Game, timer: number | undefined, characterId: number, idRef?: number, image?: string) {
     const myChar = findMyCharacter(game);
     if (myChar && myChar.id === characterId) {
         pushStackPaintTextData(game.UI.stackTextsData, text, game.state.time, timer, false, idRef, image);
     }
 }
 
-export function pushStackPaintTextData(paintStackTextsData: PaintStackTextsData, text: string, currentTime: number, timer: number | undefined = undefined, isRealRemoveTime: boolean | undefined = undefined, idRef: number | undefined = undefined, image: string | undefined = undefined) {
+export function pushStackPaintTextData(paintStackTextsData: PaintStackTextsData, text: string, currentTime: number, timer?: number, isRealRemoveTime?: boolean, idRef?: number, image?: string) {
     const removeTime = currentTime + 1500;
     if (idRef !== undefined) {
         let found = paintStackTextsData.textStack.find((d) => d.idRef === idRef);
@@ -58,7 +58,7 @@ export function pushStackPaintTextData(paintStackTextsData: PaintStackTextsData,
     paintStackTextsData.textStack.push(createStackPaintTextData(text, removeTime, countDownEndTime, isRealRemoveTime, idRef, image));
 }
 
-function createStackPaintTextData(text: string, removeTime: number, countDownEndTime: number | undefined = undefined, isRealRemoveTime: boolean | undefined, idRef: number | undefined, image: string | undefined): PaintStackTextData {
+function createStackPaintTextData(text: string, removeTime: number, countDownEndTime?: number, isRealRemoveTime?: boolean, idRef?: number, image?: string): PaintStackTextData {
     return {
         text: text,
         removeTime: removeTime,

@@ -124,7 +124,7 @@ export function createCharacterUpgradeOptions(character: Character, characterCla
     return upgradeOptions;
 }
 
-export function findCharacterClassById(character: Character, classId: number | undefined): CharacterClass | undefined {
+export function findCharacterClassById(character: Character, classId?: number): CharacterClass | undefined {
     if (classId === undefined) return undefined;
     if (character.characterClasses) {
         for (let charClass of character.characterClasses) {

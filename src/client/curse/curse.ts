@@ -122,7 +122,7 @@ export function addCursedParticleEffect(curses: Curse[], position: Position, gam
     }
 }
 
-export function createCursesMoreInfoTextLine(curses: Curse[] | undefined): string | undefined {
+export function createCursesMoreInfoTextLine(curses?: Curse[]): string | undefined {
     if (!curses) return undefined;
     let cursesText = "";
     let first = true;

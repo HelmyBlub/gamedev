@@ -437,7 +437,7 @@ function getTowerById(abilityObjects: AbilityObject[], id: number): AbilityObjec
     return undefined;
 }
 
-function getNearestTower(abilityObjects: AbilityObject[], tower: AbilityObjectTower, randomSeed: RandomSeed, maxDistance: number | undefined): AbilityObjectTower | undefined {
+function getNearestTower(abilityObjects: AbilityObject[], tower: AbilityObjectTower, randomSeed: RandomSeed, maxDistance?: number): AbilityObjectTower | undefined {
     let currentDistance: number;
     let lowestDistance: number = 0;
     let nearest: AbilityObjectTower[] | undefined = undefined;

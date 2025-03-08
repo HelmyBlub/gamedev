@@ -845,7 +845,7 @@ function paintMusicSheetLines(ctx: CanvasRenderingContext2D, topLeftMusicSheet: 
     }
 }
 
-function paintNotes(ctx: CanvasRenderingContext2D, abilityMusicSheets: AbilityMusicSheets, topLeftMusicSheet: Position, selectedSheet: AbilityMusicSheet, hoverNote: { note: MusicNote, delete?: boolean } | undefined) {
+function paintNotes(ctx: CanvasRenderingContext2D, abilityMusicSheets: AbilityMusicSheets, topLeftMusicSheet: Position, selectedSheet: AbilityMusicSheet, hoverNote?: { note: MusicNote, delete?: boolean }) {
     for (let note of selectedSheet.musicSheet.notes) {
         let globalAlphaModifier = undefined;
         if (hoverNote && note.note === hoverNote.note.note && note.tick === hoverNote.note.tick && note.octave === hoverNote.note.octave) {

@@ -36,7 +36,7 @@ export function characterCreateAndAddUpgradeBonusHp(charClass: CharacterClass, c
     character.maxHp += bonusHp;
 }
 
-function addUpgrade(characterUpgrade: CharacterUpgrade, character: Character, game: Game, charClass: CharacterClass | undefined) {
+function addUpgrade(characterUpgrade: CharacterUpgrade, character: Character, game: Game, charClass?: CharacterClass) {
     const bonusHp = characterUpgrade as CharacterUpgradeBonusHP;
     if (charClass) {
         if (!charClass.characterClassUpgrades) charClass.characterClassUpgrades = {};

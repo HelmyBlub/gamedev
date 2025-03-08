@@ -16,7 +16,7 @@ export function addCharacterUpgradeRerolls() {
     }
 }
 
-function addUpgrade(characterUpgrade: CharacterUpgrade, character: Character, game: Game, charClass: CharacterClass | undefined) {
+function addUpgrade(characterUpgrade: CharacterUpgrade, character: Character, game: Game, charClass?: CharacterClass) {
     const rerolls = characterUpgrade as CharacterUpgradeRerolls;
     if (charClass) {
         if (!charClass.characterClassUpgrades) charClass.characterClassUpgrades = {};

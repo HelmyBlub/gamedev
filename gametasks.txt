@@ -4,13 +4,10 @@ increase version
 current tasks:
 - mapModifier: poison   
     - check balance
-- balance check: damage over time for musician king
-
 
 - be able to cleanse bad part of curses
 - damagemeter/combatlog for curses?
 - think about changing alot of type casts as they are not required
-    - "ability as AbilitySomething" could be replaced by giving the type to function property directly
     - type | undefined change to ?
 
 next feature ideas:

@@ -52,7 +52,7 @@ export function paintMapCharacters(ctx: CanvasRenderingContext2D, cameraPosition
     }
 }
 
-function paintChunk(layer: MapPaintLayer, ctx: CanvasRenderingContext2D, paintTopLeftPosition: Position, chunk: MapChunk, tileSize: number, chunkXY: Position, mapChunkPaintCache: MapChunkPaintCache, game: Game, debug: Debugging | undefined) {
+function paintChunk(layer: MapPaintLayer, ctx: CanvasRenderingContext2D, paintTopLeftPosition: Position, chunk: MapChunk, tileSize: number, chunkXY: Position, mapChunkPaintCache: MapChunkPaintCache, game: Game, debug?: Debugging) {
     const chunkSize = tileSize * chunk.tiles.length;
     const chunkLayerKey = `${chunkXY.x}_${chunkXY.y}_${layer}`;
     let readyForCache = true;
