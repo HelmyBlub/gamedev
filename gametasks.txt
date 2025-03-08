@@ -2,7 +2,6 @@ next test run:
 increase version
 
 current tasks:
-- test replay: short musician
 - mapModifier: poison   
     - check balance
 - balance check: damage over time for musician king

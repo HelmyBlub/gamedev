@@ -2,7 +2,7 @@ import { Character } from "../../character/characterModel.js";
 import { UpgradeOptionAndProbability, AbilityUpgradeOption } from "../../character/upgrade.js";
 import { applyDebuff } from "../../debuff/debuff.js";
 import { createDebuffDamageOverTime } from "../../debuff/debuffDamageOverTime.js";
-import { FACTION_PLAYER, Game } from "../../gameModel.js";
+import { FACTION_ENEMY, FACTION_PLAYER, Game } from "../../gameModel.js";
 import { Ability, AbilityObject } from "../ability.js";
 import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrade.js";
 import { ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS, AbilityMusicSheets } from "./abilityMusicSheet.js";
@@ -24,7 +24,13 @@ export function addAbilityMusicSheetUpgradeDamageOverTime() {
 export function abilityMusicSheetsUpgradeDamageOverTimeApply(ability: AbilityMusicSheets, abilityObject: AbilityObject, target: Character, game: Game) {
     const up = ability.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_DAMAGE_OVER_TIME] as AbilityMusicSheetUpgradeDamageOverTime;
     if (up === undefined) return;
-    const debuffDamageOverTime = createDebuffDamageOverTime(abilityObject.damage * up.level, ability.damagePerSecond * up.level * 40, ability.id);
+    let damage = abilityObject.damage;
+    if (abilityObject.faction === FACTION_PLAYER) {
+        damage *= up.level;
+    } else {
+        damage *= 1 + up.level / 5;
+    }
+    const debuffDamageOverTime = createDebuffDamageOverTime(damage, ability.damagePerSecond * up.level * 40, ability.id);
     if (target.faction === FACTION_PLAYER) debuffDamageOverTime.removeTime = game.state.time + 2000;
     applyDebuff(debuffDamageOverTime, target, game);
 }
