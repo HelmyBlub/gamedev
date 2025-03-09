@@ -39,14 +39,14 @@ export function paintCharacterHpBarAboveCharacter(ctx: CanvasRenderingContext2D,
 }
 
 
-export function paintCharacterHpBar(ctx: CanvasRenderingContext2D, character: Character, topLeftPaint: Position) {
+export function paintCharacterHpBar(ctx: CanvasRenderingContext2D, character: Character, topLeftPaint: Position, strokeStyle: string = "black", fillStyle: string = "black") {
     if (character.state === "petPlayer") return;
     const fillAmount = Math.max(0, character.hp / character.maxHp);
     const bossWidth = character.width;
     const hpBarHeight = 6;
     ctx.lineWidth = 1;
-    ctx.strokeStyle = "black";
-    ctx.fillStyle = "black";
+    ctx.strokeStyle = strokeStyle;
+    ctx.fillStyle = fillStyle;
     ctx.fillRect(topLeftPaint.x, topLeftPaint.y - hpBarHeight, Math.ceil(bossWidth * fillAmount), hpBarHeight);
     if (character.shield > 0) {
         let shieldStackCounter = Math.floor(character.shield / character.maxHp);

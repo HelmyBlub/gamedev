@@ -98,7 +98,7 @@ function paint(ctx: CanvasRenderingContext2D, character: Character, cameraPositi
             x: Math.floor(areaBossPaintPos.x - character.width / 2),
             y: Math.floor(areaBossPaintPos.y - character.height / 2)
         };
-        paintCharacterHpBar(ctx, character, hpBarPos);
+        paintCharacterHpBar(ctx, character, hpBarPos, "white", "purple");
     }
 }
 

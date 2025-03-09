@@ -6,7 +6,6 @@ current tasks:
     - check balance
         - hard to get and not that strong
     - hard to see hp bar
-    - poison curse on king makes ice tiles
 
 - be able to cleanse bad part of curses
     - on 80_000 distance make a new closed of area with some fountain
