@@ -3,7 +3,7 @@ import { ABILITY_NAME_POISON_TILE, AbilityPoisonTile } from "../ability/abilityP
 import { Character } from "../character/characterModel.js";
 import { getNextId } from "../game.js";
 import { Game, IdCounter } from "../gameModel.js";
-import { MODIFIER_NAME_ICE } from "../map/modifiers/mapModifierIce.js";
+import { MODIFIER_NAME_POISON } from "../map/modifiers/mapModifierPoison.js";
 import { Curse, CURSES_FUNCTIONS } from "./curse.js";
 
 export const CURSE_POISON = "Curse Poison";
@@ -19,7 +19,7 @@ export function addCursePoison() {
         reset: reset,
         tick: tick,
         onCurseIncreased: onCurseIncreased,
-        mapModifierName: MODIFIER_NAME_ICE,
+        mapModifierName: MODIFIER_NAME_POISON,
     };
 }
 
@@ -33,7 +33,7 @@ function create(idCounter: IdCounter): CursePoison {
 }
 
 function reset(curse: Curse) {
-    const ice = curse as CursePoison;
+    const poison = curse as CursePoison;
 }
 
 function copy(curse: Curse, idCounter: IdCounter): Curse {

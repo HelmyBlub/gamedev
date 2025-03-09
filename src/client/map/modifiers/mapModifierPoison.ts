@@ -65,6 +65,8 @@ function onChunkCreateModify(modifier: GameMapModifier, mapChunk: MapChunk, chun
     }
     const distance = calculateDistance(middle, chunkPos);
     onChunkCreateAddAbilityToEnemies(mapChunk, distance, game);
+
+    if (modifier.area.type === MODIFY_SHAPE_NAME_CELESTIAL_DIRECTION) return;
     onChunkCreateRemoveBlockingTilesAroundAreaBoss(mapChunk, middle, chunkX, chunkY, game);
 }
 

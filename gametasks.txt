@@ -4,32 +4,31 @@ increase version
 current tasks:
 - mapModifier: poison   
     - check balance
+        - hard to get and not that strong
+    - hard to see hp bar
+    - poison curse on king makes ice tiles
 
 - be able to cleanse bad part of curses
+    - on 80_000 distance make a new closed of area with some fountain
+    - fountain is an interactable which asks: clean curses form legendary?
+    - when started for each curse currently on player legendary create a more difficult challenge
+        - ideas:
+            - poison curse ->change tiles to poison tiles in area
+            - darkness -> limit view distance, create clones
+            - ice curse -> change tiles to ice tiles in area
+            - lightning -> lightning strikes while fighting
+            - what type of boss?
+    - when challenge survived
+        - poison curse cleanse -> immun to poison tile damage
+        - darkness curse cleanse -> clones no longer turn evil
+        - ice curse -> no longer affected by ice tile sliding
+        - lightning curse -> immune to lightning strike  damage
 - damagemeter/combatlog for curses?
-- think about changing alot of type casts as they are not required
-    - type | undefined change to ?
 
 next feature ideas:
 - maybe:
     - improve path finding perfromance
 - each stream spend time on thinking whats next
-    - mapModifier:
-        - "poison tiles" change walked over tiles to poison tiles which do % damage over time?
-            - destroys ice tiles
-            - ability for all enemies in this area, or the closer to the middle the more enemies have the ability
-            - area boss ideas:
-                - poison plant
-                - plant shrinks the more poison it spreads
-                - regenerates poison over time
-                - can not be damaged
-                - can not move? maybe blink?
-                - defeated if survided long enough 
-                - player has to trigger poison usage to shrink it faster than it can regenerate
-        - wind modifier
-            - pushes characters, maybe objects?, to a side
-        - rainy weather
-
     - what makes most sense to work on?
         - what would make the game more fun to play for me?
             - finding out how to min/max something?

@@ -14,6 +14,7 @@ export function addAbilityPoisonTile() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_POISON_TILE] = {
         tickAbility: tickAbility,
         createAbility: createAbilityPoisonTile,
+        resetAbility: resetAbility,
     };
 }
 
@@ -27,6 +28,11 @@ export function createAbilityPoisonTile(
         passive: true,
         upgrades: {},
     };
+}
+
+function resetAbility(ability: Ability) {
+    const poisonTile = ability as AbilityPoisonTile;
+    poisonTile.nextTickTime = undefined;
 }
 
 function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {

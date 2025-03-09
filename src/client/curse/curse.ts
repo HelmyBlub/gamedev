@@ -1,7 +1,6 @@
-import { AbilityObject } from "../ability/ability.js";
 import { addParticleEffect } from "../additionalPaint.js";
 import { Character } from "../character/characterModel.js";
-import { AbilityDamageBreakdown, addCurseDamageBreakDownToDamageMeter, addDamageBreakDownToDamageMeter } from "../combatlog.js";
+import { AbilityDamageBreakdown, addCurseDamageBreakDownToDamageMeter } from "../combatlog.js";
 import { getCameraPosition } from "../game.js";
 import { FACTION_PLAYER, Game, IdCounter, Position } from "../gameModel.js";
 import { getPointPaintPosition, paintTextWithOutline } from "../gamePaint.js";
