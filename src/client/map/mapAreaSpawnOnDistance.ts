@@ -58,7 +58,7 @@ export function areaSpawnOnDistanceRetry(game: Game): number {
 
 export function areaSpawnOnDistanceCreateAndSetOnMap(chunkX: number, chunkY: number, map: GameMap, game: Game): boolean {
     for (let area of game.state.map.areaSpawnOnDistance) {
-        if (!checkCreateArea(area, chunkX, chunkY, map)) return false;
+        if (!checkCreateArea(area, chunkX, chunkY, map)) continue;
 
         area.spawnTopLeftChunk = calculateSpawnTopLeft(chunkX, chunkY, area);
         createAndSetChunks(area, map);
