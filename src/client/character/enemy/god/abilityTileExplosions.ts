@@ -18,6 +18,7 @@ export type AbilityTileExplosion = GodAbility & {
 }
 
 export type AbilityObjectTileExplosion = AbilityObject & {
+    areaIdRef: number,
     damageDelay: number,
     damageTime: number,
     growCount: number,
@@ -33,7 +34,7 @@ GAME_IMAGES[IMAGE_EXPLOSION] = {
 
 export function addGodAbilityTileExplosion() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_TILE_EXPLOSION] = {
-        createAbility: createAbility,
+        createAbility: godCreateAbilityTileExplosion,
         deleteAbilityObject: deleteObject,
         paintAbility: paintAbility,
         paintAbilityObject: paintAbilityObject,
@@ -43,9 +44,10 @@ export function addGodAbilityTileExplosion() {
     };
 }
 
-function createAbility(
+export function godCreateAbilityTileExplosion(
     idCounter: IdCounter,
     playerInputBinding?: string,
+    areaIdRef?: number,
 ): AbilityTileExplosion {
     return {
         id: getNextId(idCounter),
@@ -57,10 +59,11 @@ function createAbility(
         playerInputBinding: playerInputBinding,
         upgrades: {},
         level: { level: 1 },
+        areaIdRef: areaIdRef,
     };
 }
 
-function createAbilityObject(position: Position, gameTime: number): AbilityObjectTileExplosion {
+function createAbilityObject(areaIdRef: number, position: Position, gameTime: number): AbilityObjectTileExplosion {
     const damageDelay = 1500;
     return {
         type: ABILITY_NAME_TILE_EXPLOSION,
@@ -73,6 +76,7 @@ function createAbilityObject(position: Position, gameTime: number): AbilityObjec
         color: "black",
         damage: 25,
         faction: FACTION_ENEMY,
+        areaIdRef: areaIdRef,
     }
 }
 
@@ -124,7 +128,7 @@ function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: Abilit
         if (tileExplosions.growCount === 0) {
             paintExplosionSquare(ctx, paintPos, tileExplosions.size, fillPerCent, abilityObject.color);
         } else {
-            const godArea = game.state.map.godArea;
+            const godArea = game.state.map.areaSpawnOnDistance.find(a => a.id === tileExplosions.areaIdRef);
             if (!godArea || !godArea.spawnTopLeftChunk) return;
             const topLeftPos = {
                 x: godArea.spawnTopLeftChunk.x * game.state.map.chunkLength * game.state.map.tileSize,
@@ -189,7 +193,7 @@ function tickAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     if (tileExplosion.cooldownFinishedTime < game.state.time) {
         tileExplosion.cooldownFinishedTime = game.state.time + tileExplosion.cooldown;
         const map = game.state.map;
-        const godArea = map.godArea;
+        const godArea = map.areaSpawnOnDistance.find(a => a.id === tileExplosion.areaIdRef);
         if (!godArea || godArea.spawnTopLeftChunk === undefined) return;
         for (let i = 0; i < tileExplosion.spawnCount; i++) {
             const spawnTile = {
@@ -203,7 +207,7 @@ function tickAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
                 x: spawnTile.x * map.tileSize,
                 y: spawnTile.y * map.tileSize,
             }
-            const tileExplosionObject = createAbilityObject(spawnPosition, game.state.time);
+            const tileExplosionObject = createAbilityObject(godArea.id, spawnPosition, game.state.time);
             game.state.abilityObjects.push(tileExplosionObject);
         }
     }
@@ -214,7 +218,7 @@ function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
     if (tileExplosions.damageTime <= game.state.time) {
         tileExplosions.damageTime += tileExplosions.damageDelay;
         const playerCharacters = getPlayerCharacters(game.state.players);
-        const godArea = game.state.map.godArea;
+        const godArea = game.state.map.areaSpawnOnDistance.find(a => a.id === tileExplosions.areaIdRef);
         if (!godArea || !godArea.spawnTopLeftChunk) return;
         const topLeftPos = {
             x: godArea.spawnTopLeftChunk.x * game.state.map.chunkLength * game.state.map.tileSize,

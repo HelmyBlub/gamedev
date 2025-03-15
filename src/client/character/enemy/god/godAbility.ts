@@ -1,19 +1,19 @@
 import { Ability } from "../../../ability/ability.js";
 import { Game, Position } from "../../../gameModel.js";
-import { getGodAreaMiddlePosition } from "../../../map/mapGodArea.js";
+import { areaSpawnOnDistanceGetAreaMiddlePosition, GameMapAreaSpawnOnDistance } from "../../../map/mapAreaSpawnOnDistance.js";
 import { Leveling } from "../../playerCharacters/levelingCharacter.js";
 import { GodEnemyCharacter } from "./godEnemy.js";
 
 export type GodAbility = Ability & {
+    areaIdRef?: number,
     pickUpPosition?: Position,
     pickedUp: boolean,
     level: Leveling,
 }
 
-export function setGodAbilityPickUpPosition(god: GodEnemyCharacter, game: Game) {
-    const godArea = game.state.map.godArea;
+export function setGodAbilityPickUpPosition(godArea: GameMapAreaSpawnOnDistance, god: GodEnemyCharacter, game: Game) {
     if (!godArea) return;
-    const godAreaCenter = getGodAreaMiddlePosition(godArea, game.state.map);
+    const godAreaCenter = areaSpawnOnDistanceGetAreaMiddlePosition(godArea, game.state.map);
     if (godAreaCenter === undefined) return;
 
     const godAbilities: GodAbility[] = [];

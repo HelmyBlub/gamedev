@@ -17,12 +17,13 @@ import { onDomLoadMapModifiers } from "./map/modifiers/mapModifier.js";
 import { touchStart, touchMove, touchEnd } from "./input/inputTouch.js";
 import { onDomLoadSetCharactersFunctions } from "./character/character.js";
 import { onDomLoadCurses } from "./curse/curse.js";
+import { addMapAreaSpawnOnDistanceFunctions } from "./map/mapAreaSpawnOnDistance.js";
 
 var gameCount: number = 0;
 export const GAME_VERSION: GameVersion = {
     major: 0,
     minor: 4,
-    patch: 345,
+    patch: 346,
 }
 
 export function start() {
@@ -86,6 +87,7 @@ document.addEventListener("DOMContentLoaded", function () {
     onDomLoadSetCharacterClasses();
     onDomLoadSetCharactersFunctions();
     addMapObjectsFunctions();
+    addMapAreaSpawnOnDistanceFunctions();
     addUpgradeBuildingsFunctions();
     onDomLoadSetAbilitiesFunctions();
     onDomLoadSetDebuffsFunctions();

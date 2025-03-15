@@ -27,12 +27,12 @@ import { MapTileObject, findNearesInteractableMapChunkObject } from "./map/mapOb
 import { classBuildingCheckAllPlayerForLegendaryAbilitiesAndMoveBackToBuilding } from "./map/buildings/classBuilding.js";
 import { mapObjectPlaceUpgradeBuilding } from "./map/mapObjectUpgradeBuilding.js";
 import { Leveling } from "./character/playerCharacters/levelingCharacter.js";
-import { checkGodFightStart, startGodFight } from "./map/mapGodArea.js";
 import { ABILITY_NAME_LEASH } from "./ability/abilityLeash.js";
 import { doDamageMeterSplit } from "./combatlog.js";
 import { achievementCheckOnGameEnd, achievementCheckOnGameTick } from "./achievements/achievements.js";
 import { controllerInput } from "./input/inputController.js";
 import { mapModifierOnGameInit, tickMapModifier } from "./map/modifiers/mapModifier.js";
+import { areaSpawnOnDistanceCheckFightStart, areaSpawnOnDistanceRetry } from "./map/mapAreaSpawnOnDistance.js";
 
 /** values between - Math.PI * 1.5 to Math.PI*0.5 */
 export function calculateDirection(startPos: Position, targetPos: Position): number {
@@ -89,15 +89,16 @@ export function closeGame(game: Game) {
 
 export function gameInit(game: Game) {
     game.state.restartCounter++;
+    game.state.map.areaSpawnOnDistance = [];
     if (game.state.activeCheats && game.state.activeCheats.indexOf("closeKingArea") !== -1) {
         initKingArea(game.state.map, 1000);
     } else {
         initKingArea(game.state.map, 20000);
     }
     if (game.state.activeCheats && game.state.activeCheats.indexOf("closeGodArea") !== -1) {
-        initGodArea(game.state.map, 5000);
+        initGodArea(game.state.map, 5000, game.state.idCounter);
     } else {
-        initGodArea(game.state.map, 40000);
+        initGodArea(game.state.map, 40000, game.state.idCounter);
     }
     game.state.abilityObjects = [];
     game.state.killCounter = 0;
@@ -115,7 +116,7 @@ export function gameInit(game: Game) {
     game.state.bossStuff.bosses = [];
     game.state.bossStuff.bossLevelCounter = 1;
     game.state.bossStuff.kingFightStartedTime = undefined;
-    game.state.bossStuff.godFightStartedTime = undefined;
+    game.state.bossStuff.areaSpawnFightStartedTime = undefined;
     game.state.bossStuff.fightWipe = undefined;
     game.state.bossStuff.normalModeMoneyAwarded = undefined;
     game.state.deathCircleCreated = false;
@@ -515,7 +516,7 @@ export function getGameVersionString(gameVersion?: GameVersion) {
 }
 
 export function retryFight(game: Game) {
-    if (game.state.bossStuff.kingFightStartedTime === undefined && game.state.bossStuff.godFightStartedTime === undefined) return;
+    if (game.state.bossStuff.kingFightStartedTime === undefined && game.state.bossStuff.areaSpawnFightStartedTime === undefined) return;
     if (!game.state.bossStuff.fightWipe) return;
     let hasRetry = false;
     for (let player of game.state.players) {
@@ -532,9 +533,8 @@ export function retryFight(game: Game) {
     if (game.state.bossStuff.kingFightStartedTime !== undefined) {
         startKingFight(game.state.players[0].character, game);
         playerOffsetX = (game.state.map.kingArea!.size * game.state.map.chunkLength * game.state.map.tileSize) / 2 - game.state.map.tileSize * 2;
-    } else if (game.state.bossStuff.godFightStartedTime !== undefined) {
-        startGodFight(game.state.map.godArea!, game.state.map, game);
-        playerOffsetX = (game.state.map.godArea!.size * game.state.map.chunkLength * game.state.map.tileSize) / 2 - game.state.map.tileSize * 2;
+    } else if (game.state.bossStuff.areaSpawnFightStartedTime !== undefined) {
+        playerOffsetX = areaSpawnOnDistanceRetry(game);
     }
     const bossEnemy = game.state.bossStuff.bosses[0];
     for (let player of game.state.players) {
@@ -671,7 +671,7 @@ function determineRunnerTimeout(game: Game, tickInterval: number): number {
 function gameEndedCheck(game: Game) {
     const alivePlayersCount = countAlivePlayerCharacters(game.state.players, game.state.time);
     if (alivePlayersCount === 0) {
-        if (game.state.bossStuff.godFightStartedTime !== undefined || game.state.bossStuff.kingFightStartedTime !== undefined) {
+        if (game.state.bossStuff.areaSpawnFightStartedTime !== undefined || game.state.bossStuff.kingFightStartedTime !== undefined) {
             for (let player of game.state.players) {
                 if (player.character.fightRetries !== undefined && player.character.fightRetries > 0) {
                     return false;
@@ -754,7 +754,7 @@ function saveStates(game: Game) {
 function doStuff(game: Game) {
     achievementCheckOnGameTick(game.state.achievements, game);
     checkForKingAreaTrigger(game);
-    checkGodFightStart(game);
+    areaSpawnOnDistanceCheckFightStart(game);
     checkDeathCircleSpawn(game);
     checkForBossSpawn(game);
     checkMovementKeyPressedHint(game);

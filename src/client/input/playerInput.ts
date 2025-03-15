@@ -469,7 +469,7 @@ function playerAction(clientId: number, data: any, game: Game) {
 
 function interactKeys(character: Character, specialAction: string, game: Game) {
     if (specialAction === "interact1") {
-        if (game.state.bossStuff.godFightStartedTime !== undefined || game.state.bossStuff.kingFightStartedTime !== undefined) {
+        if (game.state.bossStuff.areaSpawnFightStartedTime !== undefined || game.state.bossStuff.kingFightStartedTime !== undefined) {
             retryFight(game);
             return;
         }
@@ -496,7 +496,7 @@ function interactKeys(character: Character, specialAction: string, game: Game) {
             }
         }
     } else {
-        if (game.state.bossStuff.godFightStartedTime !== undefined || game.state.bossStuff.kingFightStartedTime !== undefined) {
+        if (game.state.bossStuff.areaSpawnFightStartedTime !== undefined || game.state.bossStuff.kingFightStartedTime !== undefined) {
             concedePlayerFightRetries(game);
             return;
         }

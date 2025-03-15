@@ -18,6 +18,7 @@ export type AbilityMovingFire = GodAbility & {
 }
 
 export type AbilityObjectMovingFire = AbilityObject & {
+    areaIdRef: number,
     tickInterval: number,
     nextTickTime?: number,
     moveSpeed: number,
@@ -33,7 +34,7 @@ GAME_IMAGES[IMAGE_GROUND_FIRE_ANIMATION] = {
 
 export function addGodAbilityMovingFire() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_MOVING_FIRE] = {
-        createAbility: createAbility,
+        createAbility: godCreateAbilityMovingFire,
         deleteAbilityObject: deleteObject,
         paintAbilityObject: paintAbilityObject,
         paintAbility: paintAbility,
@@ -43,9 +44,10 @@ export function addGodAbilityMovingFire() {
     };
 }
 
-function createAbility(
+export function godCreateAbilityMovingFire(
     idCounter: IdCounter,
     playerInputBinding?: string,
+    areaIdRef?: number
 ): AbilityMovingFire {
     return {
         id: getNextId(idCounter),
@@ -58,10 +60,11 @@ function createAbility(
         upgrades: {},
         pickedUp: false,
         level: { level: 1 },
+        areaIdRef: areaIdRef,
     };
 }
 
-function createAbilityObject(position: Position, randomSeed: RandomSeed): AbilityObjectMovingFire {
+function createAbilityObject(areaIdRef: number, position: Position, randomSeed: RandomSeed): AbilityObjectMovingFire {
     return {
         type: ABILITY_NAME_MOVING_FIRE,
         x: position.x,
@@ -72,6 +75,7 @@ function createAbilityObject(position: Position, randomSeed: RandomSeed): Abilit
         damage: 10,
         faction: FACTION_ENEMY,
         tickInterval: 100,
+        areaIdRef: areaIdRef,
     }
 }
 
@@ -146,7 +150,7 @@ function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     if (movingFire.cooldownFinishedTime < game.state.time) {
         movingFire.cooldownFinishedTime = game.state.time + movingFire.cooldown;
         const map = game.state.map;
-        const godArea = map.godArea;
+        const godArea = map.areaSpawnOnDistance.find(a => a.id === movingFire.areaIdRef);
         if (!godArea || godArea.spawnTopLeftChunk === undefined) return;
         for (let i = 0; i < movingFire.fireSpawnCount; i++) {
             const spawnPosition = {
@@ -164,7 +168,7 @@ function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
                 }
                 spawnPosition.x += nextRandom(game.state.randomSeed) * (godArea.size * map.chunkLength * map.tileSize - map.tileSize);
             }
-            const seekerFollow = createAbilityObject(spawnPosition, game.state.randomSeed);
+            const seekerFollow = createAbilityObject(godArea.id, spawnPosition, game.state.randomSeed);
             game.state.abilityObjects.push(seekerFollow);
         }
     }
@@ -195,7 +199,7 @@ function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
 
 function deleteObject(abilityObject: AbilityObject, game: Game): boolean {
     const movingFire = abilityObject as AbilityObjectMovingFire;
-    const godArea = game.state.map.godArea;
+    const godArea = game.state.map.areaSpawnOnDistance.find(a => a.id === movingFire.areaIdRef);
     if (!godArea || godArea.spawnTopLeftChunk === undefined) return true;
     const godAreaLength = godArea.size * game.state.map.chunkLength * game.state.map.tileSize;
     const godAreaTopLeftPosition = {

@@ -2,17 +2,22 @@ next test run:
 increase version
 
 current tasks:
-- mapModifier: poison   
-    - check balance
-        - hard to get and not that strong
-    - hard to see hp bar
-
+- check: king and god area created on first play on page load? something looked of with the code
+- check: retry on king and god. Code makes it look like it should not work since map area bosses exist
 - be able to cleanse bad part of curses
+    - dev steps:
+        - create area similar to god area
+            - look into "mapGodArea.ts"
+                - probably split into reusable stuff for cleanse area and godArea only stuff
+        - spawn cleanse fountain in new area
+        - create dummy boss on fountain usage
+        - on dummy boss defeat cleanse curses
+        - think about how to create boss?
     - on 80_000 distance make a new closed of area with some fountain
-    - fountain is an interactable which asks: clean curses form legendary?
+    - fountain is an interactable which asks: clean curses from legendary?
     - when started for each curse currently on player legendary create a more difficult challenge
         - ideas:
-            - poison curse ->change tiles to poison tiles in area
+            - poison curse -> change tiles to poison tiles in area
             - darkness -> limit view distance, create clones
             - ice curse -> change tiles to ice tiles in area
             - lightning -> lightning strikes while fighting
@@ -22,7 +27,10 @@ current tasks:
         - darkness curse cleanse -> clones no longer turn evil
         - ice curse -> no longer affected by ice tile sliding
         - lightning curse -> immune to lightning strike  damage
+    - cleansed legendaries curse will not increase until broken
+        - staying in curse ground effect for to long will remove the cleansed effect
 - damagemeter/combatlog for curses?
+- achievements for curses?
 
 next feature ideas:
 - maybe:

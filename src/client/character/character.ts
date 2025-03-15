@@ -301,7 +301,7 @@ export function tickCharacters(characters: (Character | undefined)[], game: Game
     for (let j = characters.length - 1; j >= 0; j--) {
         const char = characters[j];
         if (!char) continue;
-        if ((game.state.bossStuff.kingFightStartedTime !== undefined || game.state.bossStuff.godFightStartedTime !== undefined) && char.type === CHARACTER_TYPE_ENEMY_FIX_RESPAWN_POSITION) continue;
+        if ((game.state.bossStuff.kingFightStartedTime !== undefined || game.state.bossStuff.areaSpawnFightStartedTime !== undefined) && char.type === CHARACTER_TYPE_ENEMY_FIX_RESPAWN_POSITION) continue;
         const functions = CHARACTER_TYPE_FUNCTIONS[char.type];
         if (functions?.tickFunction) {
             functions.tickFunction(char, game, pathingCache);
@@ -330,7 +330,7 @@ export function tickCharacters(characters: (Character | undefined)[], game: Game
                 } else {
                     char.state = "dead";
                 }
-                if (game.state.bossStuff.godFightStartedTime !== undefined || game.state.bossStuff.kingFightStartedTime !== undefined) {
+                if (game.state.bossStuff.areaSpawnFightStartedTime !== undefined || game.state.bossStuff.kingFightStartedTime !== undefined) {
                     const countAlive = countAlivePlayerCharacters(game.state.players, game.state.time);
                     if (countAlive === 0) {
                         game.state.bossStuff.fightWipe = true;

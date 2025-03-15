@@ -2,10 +2,11 @@ import { tickMapCharacters } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
 import { applyDebuff } from "../debuff/debuff.js";
 import { createDebuffPoisonTile } from "../debuff/debuffPoisonTile.js";
-import { calculateDistance } from "../game.js";
+import { calculateDistance, getNextId } from "../game.js";
 import { Game, IdCounter, Position } from "../gameModel.js"
+import { GameMapAreaSpawnOnDistance } from "./mapAreaSpawnOnDistance.js";
 import { createNewChunk } from "./mapGeneration.js";
-import { GameMapGodArea } from "./mapGodArea.js";
+import { MAP_AREA_SPAWN_ON_DISTANCE_GOD } from "./mapGodArea.js";
 import { GameMapKingArea } from "./mapKingArea.js";
 import { MapTileObject, tickMapChunkObjects } from "./mapObjects.js";
 import { MapPaintLayer } from "./mapPaint.js";
@@ -59,7 +60,7 @@ export type GameMap = {
     chunks: { [key: string]: MapChunk },
     mapModifiers: GameMapModifier[],
     kingArea?: GameMapKingArea,
-    godArea?: GameMapGodArea,
+    areaSpawnOnDistance: GameMapAreaSpawnOnDistance[],
 }
 
 export function onDomLoadMapTiles() {
@@ -84,6 +85,7 @@ export function createMap(): GameMap {
         activeChunkRange: 1000,
         chunks: {},
         mapModifiers: [],
+        areaSpawnOnDistance: [],
     }
     initKingArea(map, 20000);
     return map;
@@ -594,12 +596,14 @@ export function initKingArea(map: GameMap, bossAreaDistance: number) {
     }
 }
 
-export function initGodArea(map: GameMap, distance: number) {
-    map.godArea = {
+export function initGodArea(map: GameMap, distance: number, idCounter: IdCounter) {
+    map.areaSpawnOnDistance.push({
+        id: getNextId(idCounter),
+        type: MAP_AREA_SPAWN_ON_DISTANCE_GOD,
         size: 5,
         autoSpawnOnDistance: distance,
         pathChunkGenerationLength: 3,
-    }
+    });
 }
 
 export function calculatePosToChunkTileXY(pos: Position, map: GameMap): Position {

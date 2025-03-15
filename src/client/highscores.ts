@@ -87,7 +87,7 @@ export function calculateHighscoreOnGameEnd(game: Game): number {
 
     if (game.state.bossStuff.kingFightStartedTime !== undefined) {
         newScore = createAndPushKingScore(playerClass, game);
-    } else if (game.state.bossStuff.godFightStartedTime !== undefined) {
+    } else if (game.state.bossStuff.areaSpawnFightStartedTime !== undefined) {
         newScore = createAndPushGodScore(playerClass, game);
     } else {
         newScore = getHighestPlayerDistanceFromMapMiddle(game);
@@ -157,10 +157,10 @@ function createAndPushGodScore(playerClass: string, game: Game): number {
         break;
     }
 
-    if (god === undefined || game.state.bossStuff.godFightStartedTime === undefined) throw Error("should not be possible?");
+    if (god === undefined || game.state.bossStuff.areaSpawnFightStartedTime === undefined) throw Error("should not be possible?");
     const hardModeText = god.hardModeActivated ? "Hard Mode " : "";
     if (god.hp <= 0) {
-        newScore = god.maxHp / ((game.state.time - game.state.bossStuff.godFightStartedTime) / 1000);
+        newScore = god.maxHp / ((game.state.time - game.state.bossStuff.areaSpawnFightStartedTime) / 1000);
         let scoreTypePrio = SCORE_PRIO_KILL_DPS;
         if (god.hardModeActivated) {
             scoreTypePrio = SCORE_PRIO_HARD_MODE_KILL_DPS;

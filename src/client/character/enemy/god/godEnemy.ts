@@ -7,20 +7,20 @@ import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, createCharacter } fro
 import { paintCharacterAbilties } from "../../characterPaint.js";
 import { PathingCache } from "../../pathing.js";
 import { paintKingHpBar } from "../kingEnemy.js";
-import { GameMapGodArea, getGodAreaMiddlePosition } from "../../../map/mapGodArea.js";
 import { ABILITY_NAME_SEEKER, addGodAbilitySeeker } from "./abilitySeeker.js";
-import { ABILITY_NAME_MOVING_FIRE, addGodAbilityMovingFire } from "./abilityMovingFire.js";
-import { ABILITY_NAME_TILE_EXPLOSION, addGodAbilityTileExplosion } from "./abilityTileExplosions.js";
+import { ABILITY_NAME_MOVING_FIRE, addGodAbilityMovingFire, godCreateAbilityMovingFire } from "./abilityMovingFire.js";
+import { ABILITY_NAME_TILE_EXPLOSION, addGodAbilityTileExplosion, godCreateAbilityTileExplosion } from "./abilityTileExplosions.js";
 import { ABILITY_NAME_MELEE, AbilityMelee } from "../../../ability/abilityMelee.js";
 import { GodAbility, setGodAbilityPickUpPosition } from "./godAbility.js";
 import { createDebuffDamageTaken } from "../../../debuff/debuffDamageTaken.js";
-import { ABILITY_NAME_GOD_IMMUNITY, addGodAbilityGodImmunity } from "./abilityGodImmunity.js";
+import { ABILITY_NAME_GOD_IMMUNITY, addGodAbilityGodImmunity, godCreateAbilityImmunity } from "./abilityGodImmunity.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
 import { MoreInfosPartContainer, createCharacterMoreInfosPartContainer } from "../../../moreInfo.js";
 import { doDamageMeterSplit } from "../../../combatlog.js";
 import { addMoneyAmountToPlayer, calculateMoneyForKingMaxHp } from "../../../player.js";
 import { calculateMovePosition } from "../../../map/map.js";
 import { legendaryAbilityGiveBlessing } from "../../../map/buildings/classBuilding.js";
+import { areaSpawnOnDistanceGetAreaMiddlePosition, GameMapAreaSpawnOnDistance } from "../../../map/mapAreaSpawnOnDistance.js";
 
 
 const FIRST_PICK_UP_DELAY = 3000;
@@ -51,7 +51,7 @@ export function addGodEnemyType() {
 }
 
 export function godEnemyHardModeConditionFullfiled(game: Game): boolean {
-    if (game.state.bossStuff.godFightStartedTime === undefined) return false;
+    if (game.state.bossStuff.areaSpawnFightStartedTime === undefined) return false;
     const god = game.state.bossStuff.bosses.find(b => b.type === CHARACTER_TYPE_GOD_ENEMY) as GodEnemyCharacter;
     if (!god || god.hardModeActivated) return false;
     for (let ability of god.abilities) {
@@ -89,9 +89,9 @@ export function godEnemyActivateHardMode(game: Game) {
     god.animationState.state = "hardModeActivation";
 }
 
-export function spawnGodEnemy(godArea: GameMapGodArea, game: Game) {
-    const spawn: Position = getGodAreaMiddlePosition(godArea, game.state.map)!;
-    const king = createGodEnemy(game.state.idCounter, spawn, game);
+export function spawnGodEnemy(godArea: GameMapAreaSpawnOnDistance, game: Game) {
+    const spawn: Position = areaSpawnOnDistanceGetAreaMiddlePosition(godArea, game.state.map)!;
+    const king = createGodEnemy(godArea, game.state.idCounter, spawn, game);
     game.state.bossStuff.bosses.push(king);
     doDamageMeterSplit("God Fight", game);
 }
@@ -105,7 +105,7 @@ export function applyExponentialStackingDamageTakenDebuff(target: Character, gam
 
 export function godCreateMoreInfos(game: Game, heading: string): MoreInfosPartContainer | undefined {
     if (!game.ctx) return;
-    if (game.state.bossStuff.godFightStartedTime === undefined) return;
+    if (game.state.bossStuff.areaSpawnFightStartedTime === undefined) return;
     let god: Character | undefined;
     for (let boss of game.state.bossStuff.bosses) {
         if (boss.type === CHARACTER_TYPE_GOD_ENEMY) {
@@ -126,7 +126,7 @@ function onCharacterKill(character: Character, game: Game) {
     }
 }
 
-function createGodEnemy(idCounter: IdCounter, spawnPosition: Position, game: Game): GodEnemyCharacter {
+function createGodEnemy(godArea: GameMapAreaSpawnOnDistance, idCounter: IdCounter, spawnPosition: Position, game: Game): GodEnemyCharacter {
     const bossSize = 60;
     const color = "black";
     const moveSpeed = 1;
@@ -145,16 +145,16 @@ function createGodEnemy(idCounter: IdCounter, spawnPosition: Position, game: Gam
     abilityMelee.damage = 50;
     godCharacter.abilities.push(abilityMelee);
     godCharacter.abilities.push(createAbility(ABILITY_NAME_SEEKER, game.state.idCounter));
-    godCharacter.abilities.push(createAbility(ABILITY_NAME_MOVING_FIRE, game.state.idCounter));
-    godCharacter.abilities.push(createAbility(ABILITY_NAME_TILE_EXPLOSION, game.state.idCounter));
-    godCharacter.abilities.push(createAbility(ABILITY_NAME_GOD_IMMUNITY, game.state.idCounter));
+    godCharacter.abilities.push(godCreateAbilityMovingFire(game.state.idCounter, undefined, godArea.id));
+    godCharacter.abilities.push(godCreateAbilityTileExplosion(game.state.idCounter, undefined, godArea.id));
+    godCharacter.abilities.push(godCreateAbilityImmunity(game.state.idCounter, undefined, godArea.id));
     godCharacter.paint.image = IMAGE_SLIME;
     if (game.state.activeCheats && game.state.activeCheats.indexOf("lowKingHp") !== -1) {
         godCharacter.hp = 50000;
         godCharacter.maxHp = 50000;
     }
     godCharacter.isRootImmune = true;
-    setGodAbilityPickUpPosition(godCharacter, game);
+    setGodAbilityPickUpPosition(godArea, godCharacter, game);
     return godCharacter;
 }
 

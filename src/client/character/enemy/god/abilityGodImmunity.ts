@@ -41,7 +41,7 @@ export type AbilityObjectGodImmunityFlying = AbilityObjectCircle & {
 
 export function addGodAbilityGodImmunity() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_GOD_IMMUNITY] = {
-        createAbility: createAbility,
+        createAbility: godCreateAbilityImmunity,
         deleteAbilityObject: deleteObject,
         paintAbility: paintAbility,
         paintAbilityObject: paintAbilityObject,
@@ -51,9 +51,10 @@ export function addGodAbilityGodImmunity() {
     };
 }
 
-function createAbility(
+export function godCreateAbilityImmunity(
     idCounter: IdCounter,
     playerInputBinding?: string,
+    areaIdRef?: number,
 ): AbilityGodImmunity {
     return {
         id: getNextId(idCounter),
@@ -67,6 +68,7 @@ function createAbility(
         upgrades: {},
         level: { level: 1 },
         firstActivation: true,
+        areaIdRef: areaIdRef,
     };
 }
 
@@ -192,7 +194,7 @@ function tickBossAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     if (!immunity.pickedUp) return;
     if (immunity.cooldownFinishedTime < game.state.time) {
         immunity.cooldownFinishedTime = game.state.time + immunity.cooldown;
-        const godArea = game.state.map.godArea;
+        const godArea = game.state.map.areaSpawnOnDistance.find(a => a.id === immunity.areaIdRef);
         if (!godArea || !godArea.spawnTopLeftChunk) return;
         const chunkSize = game.state.map.chunkLength * game.state.map.tileSize;
         const allowedAreaPadding = chunkSize;
