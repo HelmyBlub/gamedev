@@ -3,7 +3,7 @@ import { paintAll } from "./gamePaint.js";
 import { addPlayerMoney, createDefaultKeyBindings1, createDefaultUiKeyBindings, createPlayerWithPlayerCharacter, findNearesPastPlayerCharacter, findPlayerByCharacterId, gameInitPlayers, isAutoUpgradeActive } from "./player.js";
 import { MOUSE_ACTION, UPGRADE_ACTIONS, tickPlayerInputs } from "./input/playerInput.js";
 import { Position, GameState, Game, IdCounter, Debugging, ClientInfo, GameVersion } from "./gameModel.js";
-import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap, initGodArea, initKingArea, mousePositionToMapPosition, tickActiveMapChunks } from "./map/map.js";
+import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap, initKingArea, mousePositionToMapPosition, tickActiveMapChunks } from "./map/map.js";
 import { Character } from "./character/characterModel.js";
 import { generateMissingChunks, pastCharactersMapTilePositions } from "./map/mapGeneration.js";
 import { createFixPositionRespawnEnemiesOnInit } from "./character/enemy/fixPositionRespawnEnemyModel.js";
@@ -32,7 +32,9 @@ import { doDamageMeterSplit } from "./combatlog.js";
 import { achievementCheckOnGameEnd, achievementCheckOnGameTick } from "./achievements/achievements.js";
 import { controllerInput } from "./input/inputController.js";
 import { mapModifierOnGameInit, tickMapModifier } from "./map/modifiers/mapModifier.js";
-import { areaSpawnOnDistanceCheckFightStart, areaSpawnOnDistanceRetry } from "./map/mapAreaSpawnOnDistance.js";
+import { areaSpawnOnDistanceCheckFightStart, areaSpawnOnDistanceRetry, createAreaSpawnOnDistance } from "./map/mapAreaSpawnOnDistance.js";
+import { MAP_AREA_SPAWN_ON_DISTANCE_GOD } from "./map/mapGodArea.js";
+import { MAP_AREA_SPAWN_ON_DISTANCE_CURSE_CLEANSE } from "./map/mapCurseCleanseArea.js";
 
 /** values between - Math.PI * 1.5 to Math.PI*0.5 */
 export function calculateDirection(startPos: Position, targetPos: Position): number {
@@ -96,9 +98,10 @@ export function gameInit(game: Game) {
         initKingArea(game.state.map, 20000);
     }
     if (game.state.activeCheats && game.state.activeCheats.indexOf("closeGodArea") !== -1) {
-        initGodArea(game.state.map, 5000, game.state.idCounter);
+        createAreaSpawnOnDistance(MAP_AREA_SPAWN_ON_DISTANCE_GOD, game.state.map, 5000, game.state.idCounter);
     } else {
-        initGodArea(game.state.map, 40000, game.state.idCounter);
+        //        createAreaSpawnOnDistance(MAP_AREA_SPAWN_ON_DISTANCE_CURSE_CLEANSE, game.state.map, 4000, game.state.idCounter);
+        createAreaSpawnOnDistance(MAP_AREA_SPAWN_ON_DISTANCE_GOD, game.state.map, 40000, game.state.idCounter);
     }
     game.state.abilityObjects = [];
     game.state.killCounter = 0;

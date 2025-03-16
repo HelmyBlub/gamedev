@@ -1,12 +1,14 @@
-import { calculateDistance } from "../game.js";
-import { Game, Position } from "../gameModel.js";
+import { calculateDistance, getNextId } from "../game.js";
+import { Game, IdCounter, Position } from "../gameModel.js";
 import { changeTileIdOfMapChunk, chunkXYToMapKey, deletePaintCacheForMapChunk, GameMap, getMapMidlePosition, MapChunk, TILE_ID_GRASS, TILE_ID_PATH1_HORIZONTAL, TILE_ID_PATH2_VERTICAL, TILE_ID_ROCK, TILE_ID_TREE } from "./map.js";
+import { addMapAreaSpawnOnDistanceCurseCleanse } from "./mapCurseCleanseArea.js";
 import { createNewChunk } from "./mapGeneration.js";
 import { addMapAreaSpawnOnDistanceGod } from "./mapGodArea.js";
 
 export type MapAreaSpawnOnDistanceFunctions = {
     checkFightStart?: (areaSpanOnDistance: GameMapAreaSpawnOnDistance, game: Game) => boolean,
     startFight: (areaSpanOnDistance: GameMapAreaSpawnOnDistance, game: Game) => void,
+    modifyChunkGeneration?: (areaSpanOnDistance: GameMapAreaSpawnOnDistance, chunk: MapChunk, chunkX: number, chunkY: number, map: GameMap) => void,
 }
 
 export type MapAreaSpawnOnDistanceTypesFunctions = {
@@ -25,22 +27,38 @@ export type GameMapAreaSpawnOnDistance = {
 
 export function addMapAreaSpawnOnDistanceFunctions() {
     addMapAreaSpawnOnDistanceGod();
+    addMapAreaSpawnOnDistanceCurseCleanse();
+}
+
+export function createAreaSpawnOnDistance(type: string, map: GameMap, distance: number, idCounter: IdCounter) {
+    map.areaSpawnOnDistance.push({
+        id: getNextId(idCounter),
+        type: type,
+        size: 5,
+        autoSpawnOnDistance: distance,
+        pathChunkGenerationLength: 3,
+    });
 }
 
 export function areaSpawnOnDistanceCheckFightStart(game: Game) {
     if (game.state.bossStuff.areaSpawnFightStartedTime != undefined) return;
     for (let area of game.state.map.areaSpawnOnDistance) {
         const areaFunctions = MAP_AREA_SPAWN_ON_DISTANCE_TYPES_FUNCTIONS[area.type];
-        if (areaFunctions.checkFightStart && areaFunctions.checkFightStart(area, game)) {
-            areaSpawnOnDistanceCloseOfArea(area, game.state.map, game);
-            game.state.bossStuff.areaSpawnFightStartedTime = game.state.time;
-            game.state.bossStuff.areaSpawnIdFightStart = area.id;
-            if (game.UI.playerGlobalAlphaMultiplier > 0.25) {
-                game.UI.playerGlobalAlphaMultiplier = 0.25;
-            }
-            areaFunctions.startFight(area, game);
+        if (areaFunctions.checkFightStart && area.spawnTopLeftChunk && areaFunctions.checkFightStart(area, game)) {
+            areaSpawnOnDistanceFightStart(area, game);
         }
     }
+}
+
+export function areaSpawnOnDistanceFightStart(area: GameMapAreaSpawnOnDistance, game: Game) {
+    areaSpawnOnDistanceCloseOfArea(area, game.state.map, game);
+    game.state.bossStuff.areaSpawnFightStartedTime = game.state.time;
+    game.state.bossStuff.areaSpawnIdFightStart = area.id;
+    if (game.UI.playerGlobalAlphaMultiplier > 0.25) {
+        game.UI.playerGlobalAlphaMultiplier = 0.25;
+    }
+    const areaFunctions = MAP_AREA_SPAWN_ON_DISTANCE_TYPES_FUNCTIONS[area.type];
+    areaFunctions.startFight(area, game);
 }
 
 /**
@@ -167,6 +185,7 @@ function createPathesAndEntryToArea(areaSpanOnDistance: GameMapAreaSpawnOnDistan
 
 function createAndSetChunks(area: GameMapAreaSpawnOnDistance, map: GameMap) {
     if (!area.spawnTopLeftChunk) return;
+    const areafunctions = MAP_AREA_SPAWN_ON_DISTANCE_TYPES_FUNCTIONS[area.type];
     for (let areaChunkX = 0; areaChunkX < area.size; areaChunkX++) {
         for (let areaChunkY = 0; areaChunkY < area.size; areaChunkY++) {
             const tiles: number[][] = [];
@@ -185,7 +204,10 @@ function createAndSetChunks(area: GameMapAreaSpawnOnDistance, map: GameMap) {
                     }
                 }
             }
-            map.chunks[chunkXYToMapKey(area.spawnTopLeftChunk.x + areaChunkX, area.spawnTopLeftChunk.y + areaChunkY)] = mapChunk;
+            const chunkX = areaChunkX + area.spawnTopLeftChunk.x;
+            const chunkY = areaChunkY + area.spawnTopLeftChunk.y;
+            if (areafunctions.modifyChunkGeneration) areafunctions.modifyChunkGeneration(area, mapChunk, chunkX, chunkY, map);
+            map.chunks[chunkXYToMapKey(chunkX, chunkY)] = mapChunk;
         }
     }
 }

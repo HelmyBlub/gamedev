@@ -2,13 +2,12 @@ next test run:
 increase version
 
 current tasks:
+- king hp bar not correctly placed when scaled
 - check: king and god area created on first play on page load? something looked of with the code
 - check: retry on king and god. Code makes it look like it should not work since map area bosses exist
+- check: touch controls for cleanse fountain
 - be able to cleanse bad part of curses
     - dev steps:
-        - create area similar to god area
-            - look into "mapGodArea.ts"
-                - probably split into reusable stuff for cleanse area and godArea only stuff
         - spawn cleanse fountain in new area
         - create dummy boss on fountain usage
         - on dummy boss defeat cleanse curses
@@ -21,7 +20,9 @@ current tasks:
             - darkness -> limit view distance, create clones
             - ice curse -> change tiles to ice tiles in area
             - lightning -> lightning strikes while fighting
-            - what type of boss?
+            - boss ideas: one boss enemy per curse
+                - each boss enemy has one curse
+                - fight is one when all are dead
     - when challenge survived
         - poison curse cleanse -> immun to poison tile damage
         - darkness curse cleanse -> clones no longer turn evil

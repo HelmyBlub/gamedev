@@ -596,16 +596,6 @@ export function initKingArea(map: GameMap, bossAreaDistance: number) {
     }
 }
 
-export function initGodArea(map: GameMap, distance: number, idCounter: IdCounter) {
-    map.areaSpawnOnDistance.push({
-        id: getNextId(idCounter),
-        type: MAP_AREA_SPAWN_ON_DISTANCE_GOD,
-        size: 5,
-        autoSpawnOnDistance: distance,
-        pathChunkGenerationLength: 3,
-    });
-}
-
 export function calculatePosToChunkTileXY(pos: Position, map: GameMap): Position {
     const chunkSize = map.tileSize * map.chunkLength;
     let tileY = Math.floor((pos.y / map.tileSize) % map.chunkLength);

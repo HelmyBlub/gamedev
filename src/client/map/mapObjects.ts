@@ -5,6 +5,7 @@ import { GAME_IMAGES, loadImage } from "../imageLoad.js";
 import { MoreInfosPartContainer } from "../moreInfo.js";
 import { GameMap, MapChunk, determineMapKeysInDistance, mapKeyAndTileXYToPosition } from "./map.js";
 import { addMapObjectClassBuilding } from "./mapObjectClassBuilding.js";
+import { addMapObjectCleanseFountain } from "./mapObjectCleanseFountain.js";
 import { addMapObjectFireAnimation } from "./mapObjectFireAnimation.js";
 import { addMapObjectKingSign } from "./mapObjectSign.js";
 import { addMapObjectUpgradeBuilding } from "./mapObjectUpgradeBuilding.js";
@@ -37,6 +38,7 @@ export function addMapObjectsFunctions() {
     addMapObjectKingSign();
     addMapObjectClassBuilding();
     addMapObjectUpgradeBuilding();
+    addMapObjectCleanseFountain();
 }
 
 export function createMoreInfosForMabObject(mapTileObject: MapTileObject, game: Game): MoreInfosPartContainer | undefined {
