@@ -16,10 +16,10 @@ export type Curse = {
     color: string,
     visualizeFadeTimer?: number,
     doDamageBreakDown?: boolean,
+    cleansed?: boolean,
 }
 
 export type CurseFunctions = {
-    copy: (curse: Curse, idCounter: IdCounter) => Curse,
     create: (idCounter: IdCounter) => Curse,
     onCurseIncreased?: (curse: Curse, target: Character, game: Game) => void,
     paint?: (ctx: CanvasRenderingContext2D, curse: Curse, target: Character, game: Game) => void,
@@ -41,8 +41,8 @@ export function onDomLoadCurses() {
     addCursePoison();
 }
 
-export function createCurse(curesType: string, idCounter: IdCounter): Curse {
-    const functions = CURSES_FUNCTIONS[curesType];
+export function createCurse(curseType: string, idCounter: IdCounter): Curse {
+    const functions = CURSES_FUNCTIONS[curseType];
     return functions.create(idCounter);
 }
 
@@ -82,8 +82,7 @@ export function copyCursesToTarget(sourceCurses: Curse[], targetCurses: Curse[],
                 targetCurse.visualizeFadeTimer = game.state.time + 2000;
             }
         } else {
-            const functions = CURSES_FUNCTIONS[sourceCurse.type];
-            const curse = functions.copy(sourceCurse, game.state.idCounter);
+            const curse = copyCurse(sourceCurse, game.state.idCounter);
             curse.visualizeFadeTimer = game.state.time + 2000;
             if (targetFaction === FACTION_PLAYER) curse.doDamageBreakDown = true;
             targetCurses.push(curse);
@@ -128,6 +127,7 @@ export function createCursesMoreInfoTextLine(curses?: Curse[]): string | undefin
     for (let curse of curses) {
         if (first) first = false; else cursesText += `, `;
         cursesText += `${curse.type} ${Math.floor(curse.level)}`;
+        if (curse.cleansed) cursesText += `(cleansed)`;
     }
     return `Curses: ${cursesText}`;
 }
@@ -153,3 +153,12 @@ function paintCurseTexts(ctx: CanvasRenderingContext2D, target: Character, game:
         }
     }
 }
+
+function copyCurse(curse: Curse, idCounter: IdCounter): Curse {
+    const functions = CURSES_FUNCTIONS[curse.type];
+    const copy = functions.create(idCounter);
+    copy.level = curse.level;
+    copy.cleansed = curse.cleansed;
+    return copy;
+}
+

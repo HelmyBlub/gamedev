@@ -2,14 +2,11 @@ next test run:
 increase version
 
 current tasks:
-- king hp bar not correctly placed when scaled
-- check: king and god area created on first play on page load? something looked of with the code
-- check: retry on king and god. Code makes it look like it should not work since map area bosses exist
-- check: touch controls for cleanse fountain
+- continue with: curses poison and ice need cleansed version working. Remove negative effects
 - be able to cleanse bad part of curses
     - dev steps:
-        - spawn cleanse fountain in new area
         - create dummy boss on fountain usage
+            - continue: think about what type of boss to spawn. One idea is a fight with multiple bosses, which should be considered now already.
         - on dummy boss defeat cleanse curses
         - think about how to create boss?
     - on 80_000 distance make a new closed of area with some fountain
@@ -30,8 +27,15 @@ current tasks:
         - lightning curse -> immune to lightning strike  damage
     - cleansed legendaries curse will not increase until broken
         - staying in curse ground effect for to long will remove the cleansed effect
+
+- king hp bar not correctly placed when zoomed out or in
+- check: king and god area created on first play on page load? something looked of with the code
+- check: retry on king and god. Code makes it look like it should not work since map area bosses exist
+- check: touch controls for cleanse fountain
+
 - damagemeter/combatlog for curses?
-- achievements for curses?
+- achievements for curses? 
+- money for curse related stuff?
 
 next feature ideas:
 - maybe:

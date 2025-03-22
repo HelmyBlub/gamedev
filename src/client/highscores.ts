@@ -4,6 +4,7 @@ import { CHARACTER_TYPE_KING_ENEMY } from "./character/enemy/kingEnemy.js";
 import { calculateDistance } from "./game.js";
 import { Game } from "./gameModel.js";
 import { getMapMidlePosition } from "./map/map.js";
+import { MAP_AREA_SPAWN_ON_DISTANCE_GOD } from "./map/mapGodArea.js";
 import { MoreInfoPart, createMoreInfosPart } from "./moreInfo.js";
 
 export type Highscores = {
@@ -88,7 +89,8 @@ export function calculateHighscoreOnGameEnd(game: Game): number {
     if (game.state.bossStuff.kingFightStartedTime !== undefined) {
         newScore = createAndPushKingScore(playerClass, game);
     } else if (game.state.bossStuff.areaSpawnFightStartedTime !== undefined) {
-        newScore = createAndPushGodScore(playerClass, game);
+        const spawnArea = game.state.map.areaSpawnOnDistance.find(a => a.id === game.state.bossStuff.areaSpawnFightStartedTime);
+        if (spawnArea && spawnArea.type === MAP_AREA_SPAWN_ON_DISTANCE_GOD) newScore = createAndPushGodScore(playerClass, game);
     } else {
         newScore = getHighestPlayerDistanceFromMapMiddle(game);
         const board = state.highscores.scoreBoards[HIGHSCORE_DISTANCE];

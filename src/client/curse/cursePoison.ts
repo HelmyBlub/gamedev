@@ -14,7 +14,6 @@ export type CursePoison = Curse & {
 
 export function addCursePoison() {
     CURSES_FUNCTIONS[CURSE_POISON] = {
-        copy: copy,
         create: create,
         reset: reset,
         tick: tick,
@@ -34,12 +33,6 @@ function create(idCounter: IdCounter): CursePoison {
 
 function reset(curse: Curse) {
     const poison = curse as CursePoison;
-}
-
-function copy(curse: Curse, idCounter: IdCounter): Curse {
-    const copy = create(idCounter);
-    copy.level = curse.level;
-    return copy;
 }
 
 function onCurseIncreased(curse: Curse, curseTarget: Character, game: Game) {

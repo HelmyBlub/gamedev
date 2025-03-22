@@ -40,6 +40,7 @@ function interactCleanse(interacter: Character, mapObject: MapTileObject, game: 
     const fountain = mapObject as MapTileObjectCleanseFountain;
     const area = game.state.map.areaSpawnOnDistance.find(a => a.id === fountain.areaIfRef);
     if (!area) return;
+    if (interacter.curses === undefined || interacter.curses.length === 0) return;
     fountain.used = true;
     areaSpawnOnDistanceFightStart(area, game);
 }

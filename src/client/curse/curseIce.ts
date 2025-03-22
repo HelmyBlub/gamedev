@@ -19,7 +19,6 @@ export type CurseIce = Curse & {
 
 export function addCurseIce() {
     CURSES_FUNCTIONS[CURSE_ICE] = {
-        copy: copy,
         create: create,
         reset: reset,
         tick: tick,
@@ -42,12 +41,6 @@ function create(idCounter: IdCounter): CurseIce {
 function reset(curse: Curse) {
     const ice = curse as CurseIce;
     ice.lastTickTime = undefined;
-}
-
-function copy(curse: Curse, idCounter: IdCounter): Curse {
-    const copy = create(idCounter);
-    copy.level = curse.level;
-    return copy;
 }
 
 function onCurseIncreased(curse: Curse, curseTarget: Character, game: Game) {

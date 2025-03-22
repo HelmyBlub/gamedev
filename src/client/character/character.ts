@@ -25,6 +25,7 @@ import { createPaintTextData } from "../floatingText.js";
 import { resetCurses, tickCurses } from "../curse/curse.js";
 import { addPetTypeFollowAttackFunctions } from "./playerCharacters/characterPetTypeClone.js";
 import { addAreaBossType } from "./enemy/areaBoss/areaBoss.js";
+import { addCurseFountainBossType } from "./enemy/curseFountainBoss.js";
 
 export function onDomLoadSetCharactersFunctions() {
     addAreaBossType();
@@ -32,6 +33,7 @@ export function onDomLoadSetCharactersFunctions() {
     addKingType();
     addGodEnemyType();
     addKingCrownType();
+    addCurseFountainBossType();
     addPlayerCharacterType();
     addPetTypeFollowAttackFunctions();
 }

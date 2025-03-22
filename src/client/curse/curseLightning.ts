@@ -15,7 +15,6 @@ export type CurseLightning = Curse & {
 
 export function addCurseLightning() {
     CURSES_FUNCTIONS[CURSE_LIGHTNING] = {
-        copy: copy,
         create: create,
         reset: reset,
         tick: tick,
@@ -38,12 +37,6 @@ function reset(curse: Curse) {
     lightning.lastTickTime = undefined;
 }
 
-function copy(curse: Curse, idCounter: IdCounter): Curse {
-    const copy = create(idCounter);
-    copy.level = curse.level;
-    return copy;
-}
-
 function tick(curse: Curse, target: Character, game: Game) {
     const lightning = curse as CurseLightning;
     if (lightning.lastTickTime === undefined) lightning.lastTickTime = game.state.time;
@@ -60,7 +53,11 @@ function tick(curse: Curse, target: Character, game: Game) {
                 y: target.y + nextRandom(game.state.randomSeed) * spawnAreaRadius * 2 - spawnAreaRadius,
             };
             const strikeObject = createAbilityObjectExplode(randomPos, damage, explosionRadius, "", curse.id, strikeDelay, game);
-            strikeObject.specificDamageForFactionPlayer = lightning.level * 10;
+            if (!curse.cleansed) {
+                strikeObject.specificDamageForFactionPlayer = lightning.level * 10;
+            } else {
+                strikeObject.faction = target.faction;
+            }
             game.state.abilityObjects.push(strikeObject);
         }
     }

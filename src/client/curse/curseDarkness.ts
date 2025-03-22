@@ -24,7 +24,6 @@ export type CurseDarkness = Curse & {
 
 export function addCurseDarkness() {
     CURSES_FUNCTIONS[CURSE_DARKNESS] = {
-        copy: copy,
         create: create,
         onCurseIncreased: onCurseDarknessIncrease,
         reset: reset,
@@ -71,12 +70,6 @@ function onCurseDarknessIncrease(curse: Curse, curseTarget: Character, game: Gam
         scaleCloneWithCurseLevelForLastClone(clone, darkness, curseTarget, game);
         break;
     }
-}
-
-function copy(curse: Curse, idCounter: IdCounter): Curse {
-    const copy = create(idCounter);
-    copy.level = curse.level;
-    return copy;
 }
 
 function checkForCurseAndDelete(character: Character, cloneId: number): boolean {
@@ -185,6 +178,7 @@ function checkTurnEvil(darkness: CurseDarkness, target: Character, game: Game) {
         const pet = target.pets[i];
         if (pet.type !== CHARACTER_PET_TYPE_CLONE) continue;
         const clone = target.pets.splice(i, 1)[0] as CharacterPetClone;
+        if (darkness.cleansed && target.faction === FACTION_PLAYER) continue;
         const level = game.state.bossStuff.bossLevelCounter + Math.floor(darkness.level / 5);
         turnEvil(clone, level);
         game.state.bossStuff.bosses.push(clone);
