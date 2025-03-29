@@ -1,6 +1,8 @@
 import { createAbility, findAbilityAndOwnerInCharacterById } from "../ability/ability.js";
 import { ABILITY_NAME_POISON_TILE, AbilityPoisonTile } from "../ability/abilityPoisonTile.js";
 import { Character } from "../character/characterModel.js";
+import { createBuffPoisonTileImmunity } from "../debuff/buffImmunityPoisonTile.js";
+import { applyDebuff } from "../debuff/debuff.js";
 import { getNextId } from "../game.js";
 import { Game, IdCounter } from "../gameModel.js";
 import { MODIFIER_NAME_POISON } from "../map/modifiers/mapModifierPoison.js";
@@ -56,5 +58,9 @@ function tick(curse: Curse, target: Character, game: Game) {
         poison.poisonAbilityIdRef = abilityPoisonTile.id;
         target.abilities.push(abilityPoisonTile);
         scaleAbilityPoisonForCurseLevel(abilityPoisonTile, poison.level, poison);
+        if (poison.cleansed) {
+            const poisonImmunity = createBuffPoisonTileImmunity();
+            applyDebuff(poisonImmunity, target, game);
+        }
     }
 }

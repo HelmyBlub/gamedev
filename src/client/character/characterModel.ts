@@ -1,9 +1,7 @@
 import { Ability } from "../ability/ability.js";
-import { createAbilityPoisonTile } from "../ability/abilityPoisonTile.js";
 import { Combatlog, createDefaultCombatLog } from "../combatlog.js";
 import { Curse } from "../curse/curse.js";
-import { createBuffPoisonTileImmunity } from "../debuff/buffImmunityPoisonTile.js";
-import { applyDebuff, Debuff } from "../debuff/debuff.js";
+import { Debuff } from "../debuff/debuff.js";
 import { getNextId } from "../game.js";
 import { Position, IdCounter, Game, FACTION_PLAYER, SkillPoints, Legendary } from "../gameModel.js";
 import { GAME_IMAGES } from "../imageLoad.js";

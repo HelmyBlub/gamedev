@@ -26,6 +26,7 @@ import { resetCurses, tickCurses } from "../curse/curse.js";
 import { addPetTypeFollowAttackFunctions } from "./playerCharacters/characterPetTypeClone.js";
 import { addAreaBossType } from "./enemy/areaBoss/areaBoss.js";
 import { addCurseFountainBossType } from "./enemy/curseFountainBoss.js";
+import { CURSE_ICE } from "../curse/curseIce.js";
 
 export function onDomLoadSetCharactersFunctions() {
     addAreaBossType();
@@ -594,7 +595,9 @@ export function calculateCharacterMovePosition(character: Character, map: GameMa
     } else if (character.isMoving) {
         newPos = calculateMovePosition(character, character.moveDirection, getCharacterMoveSpeed(character), true, map, idCounter, game);
         const tile = getMapTile(newPos, game.state.map, game.state.idCounter, game);
-        if (tile.slide) character.slideDirection = character.moveDirection;
+        var curseCleansed = false;
+        if (character.curses && character.curses.find(c => c.type === CURSE_ICE && c.cleansed)) curseCleansed = true;
+        if (tile.slide && !curseCleansed) character.slideDirection = character.moveDirection;
     }
     return newPos;
 }

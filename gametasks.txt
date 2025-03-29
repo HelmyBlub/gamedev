@@ -2,13 +2,10 @@ next test run:
 increase version
 
 current tasks:
-- continue with: curses poison and ice need cleansed version working. Remove negative effects
 - be able to cleanse bad part of curses
     - dev steps:
-        - create dummy boss on fountain usage
-            - continue: think about what type of boss to spawn. One idea is a fight with multiple bosses, which should be considered now already.
-        - on dummy boss defeat cleanse curses
         - think about how to create boss?
+            - copy player. once for each curse. Each copy only has one curse. Scale hp up
     - on 80_000 distance make a new closed of area with some fountain
     - fountain is an interactable which asks: clean curses from legendary?
     - when started for each curse currently on player legendary create a more difficult challenge
@@ -20,13 +17,9 @@ current tasks:
             - boss ideas: one boss enemy per curse
                 - each boss enemy has one curse
                 - fight is one when all are dead
-    - when challenge survived
-        - poison curse cleanse -> immun to poison tile damage
-        - darkness curse cleanse -> clones no longer turn evil
-        - ice curse -> no longer affected by ice tile sliding
-        - lightning curse -> immune to lightning strike  damage
     - cleansed legendaries curse will not increase until broken
         - staying in curse ground effect for to long will remove the cleansed effect
+    - fountain image
 
 - king hp bar not correctly placed when zoomed out or in
 - check: king and god area created on first play on page load? something looked of with the code

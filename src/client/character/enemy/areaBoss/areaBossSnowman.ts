@@ -1,5 +1,4 @@
 import { Ability } from "../../../ability/ability.js";
-import { tickCharacterDebuffs } from "../../../debuff/debuff.js";
 import { calculateDistance, getNextId } from "../../../game.js";
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
