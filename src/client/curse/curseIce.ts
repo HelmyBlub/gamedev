@@ -20,9 +20,10 @@ export type CurseIce = Curse & {
 export function addCurseIce() {
     CURSES_FUNCTIONS[CURSE_ICE] = {
         create: create,
+        onCurseIncreased: onCurseIncreased,
+        remove: remove,
         reset: reset,
         tick: tick,
-        onCurseIncreased: onCurseIncreased,
         mapModifierName: MODIFIER_NAME_ICE,
     };
 }
@@ -36,6 +37,14 @@ function create(idCounter: IdCounter): CurseIce {
         color: "blue",
         radius: 0,
     };
+}
+
+function remove(curse: Curse, target: Character, game: Game) {
+    let ice = curse as CurseIce;
+    if (ice.iceAuraIdRef) {
+        const iceIndex = target.abilities.findIndex(a => a.id === ice.iceAuraIdRef);
+        target.abilities.splice(iceIndex, 1);
+    }
 }
 
 function reset(curse: Curse) {

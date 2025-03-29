@@ -35,6 +35,7 @@ import { mapModifierOnGameInit, tickMapModifier } from "./map/modifiers/mapModif
 import { areaSpawnOnDistanceCheckFightStart, areaSpawnOnDistanceRetry, createAreaSpawnOnDistance } from "./map/mapAreaSpawnOnDistance.js";
 import { MAP_AREA_SPAWN_ON_DISTANCE_GOD } from "./map/mapGodArea.js";
 import { MAP_AREA_SPAWN_ON_DISTANCE_CURSE_CLEANSE } from "./map/mapCurseCleanseArea.js";
+import { removeCurses } from "./curse/curse.js";
 
 /** values between - Math.PI * 1.5 to Math.PI*0.5 */
 export function calculateDirection(startPos: Position, targetPos: Position): number {
@@ -362,6 +363,7 @@ export function changeCharacterAndAbilityIds(character: Character, idCounter: Id
 export function saveCharacterAsPastCharacter(character: Character, game: Game) {
     if (game.testing.replay) return;
     const newPastCharacter: Character = deepCopy(character);
+    removeCurses(newPastCharacter, game);
     for (let i = newPastCharacter.abilities.length - 1; i >= 0; i--) {
         const ability = newPastCharacter.abilities[i];
         ability.disabled = true;

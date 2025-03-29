@@ -1,8 +1,8 @@
 import { createAbility, findAbilityAndOwnerInCharacterById } from "../ability/ability.js";
 import { ABILITY_NAME_POISON_TILE, AbilityPoisonTile } from "../ability/abilityPoisonTile.js";
 import { Character } from "../character/characterModel.js";
-import { createBuffPoisonTileImmunity } from "../debuff/buffImmunityPoisonTile.js";
-import { applyDebuff } from "../debuff/debuff.js";
+import { BUFF_NAME_POISON_TILE_IMMUNITY, createBuffPoisonTileImmunity } from "../debuff/buffImmunityPoisonTile.js";
+import { applyDebuff, removeCharacterDebuff } from "../debuff/debuff.js";
 import { getNextId } from "../game.js";
 import { Game, IdCounter } from "../gameModel.js";
 import { MODIFIER_NAME_POISON } from "../map/modifiers/mapModifierPoison.js";
@@ -17,9 +17,10 @@ export type CursePoison = Curse & {
 export function addCursePoison() {
     CURSES_FUNCTIONS[CURSE_POISON] = {
         create: create,
+        onCurseIncreased: onCurseIncreased,
+        remove: remove,
         reset: reset,
         tick: tick,
-        onCurseIncreased: onCurseIncreased,
         mapModifierName: MODIFIER_NAME_POISON,
     };
 }
@@ -31,6 +32,20 @@ function create(idCounter: IdCounter): CursePoison {
         type: CURSE_POISON,
         color: "purple",
     };
+}
+
+function remove(curse: Curse, target: Character, game: Game) {
+    let posion = curse as CursePoison;
+    if (posion.poisonAbilityIdRef) {
+        const poisonIndex = target.abilities.findIndex(a => a.id === posion.poisonAbilityIdRef);
+        target.abilities.splice(poisonIndex, 1);
+    }
+    if (posion.cleansed) {
+        const immunityBuff = target.abilities.find(b => b.name === BUFF_NAME_POISON_TILE_IMMUNITY);
+        if (immunityBuff) {
+            removeCharacterDebuff(immunityBuff, target, game);
+        }
+    }
 }
 
 function reset(curse: Curse) {

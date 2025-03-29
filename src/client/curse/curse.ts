@@ -25,6 +25,7 @@ export type CurseFunctions = {
     paint?: (ctx: CanvasRenderingContext2D, curse: Curse, target: Character, game: Game) => void,
     reset?: (curse: Curse) => void,
     tick?: (curse: Curse, target: Character, game: Game) => void,
+    remove?: (curse: Curse, target: Character, game: Game) => void,
     mapModifierName: string,
 }
 
@@ -44,6 +45,15 @@ export function onDomLoadCurses() {
 export function createCurse(curseType: string, idCounter: IdCounter): Curse {
     const functions = CURSES_FUNCTIONS[curseType];
     return functions.create(idCounter);
+}
+
+export function removeCurses(character: Character, game: Game) {
+    if (!character.curses) return;
+    for (let curse of character.curses) {
+        const functions = CURSES_FUNCTIONS[curse.type];
+        if (functions && functions.remove) functions.remove(curse, character, game);
+    }
+    character.curses = [];
 }
 
 export function resetCurses(target: Character) {

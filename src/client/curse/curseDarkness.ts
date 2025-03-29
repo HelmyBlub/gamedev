@@ -26,6 +26,7 @@ export function addCurseDarkness() {
     CURSES_FUNCTIONS[CURSE_DARKNESS] = {
         create: create,
         onCurseIncreased: onCurseDarknessIncrease,
+        remove: remove,
         reset: reset,
         tick: tickDarkness,
         mapModifierName: MODIFIER_NAME_DARKNESS,
@@ -41,6 +42,16 @@ function create(idCounter: IdCounter): CurseDarkness {
         evilIdRefs: [],
         color: "black",
     };
+}
+
+function remove(curse: Curse, target: Character, game: Game) {
+    if (!target.pets) return;
+    for (let i = target.pets.length - 1; i >= 0; i--) {
+        const pet = target.pets[i];
+        if (pet.type === CHARACTER_PET_TYPE_CLONE) {
+            target.pets.splice(i, 1);
+        }
+    }
 }
 
 export function curseDarknessCloneKillCheck(clone: Character, game: Game) {
