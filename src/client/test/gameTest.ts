@@ -123,7 +123,7 @@ function testPlayerClasses(game: Game) {
 export function replayNextInReplayQueue(game: Game): boolean {
     const replay = game.testing.replay;
     if (!replay || !replay.testInputFileQueue || replay.testInputFileQueue.length === 0) return false;
-    var request = new XMLHttpRequest();
+    let request = new XMLHttpRequest();
     const nextInputFile = replay.testInputFileQueue.shift()!;
     request.open("GET", nextInputFile, false);
     request.send(null)

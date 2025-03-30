@@ -98,7 +98,7 @@ export function spawnGodEnemy(godArea: GameMapAreaSpawnOnDistance, game: Game) {
 
 export function applyExponentialStackingDamageTakenDebuff(target: Character, game: Game) {
     const factor = 2;
-    const duration = 30000;
+    const duration = 30_000;
     const debuffDamageTaken = createDebuffDamageTaken(factor, duration, game.state.time, true);
     applyDebuff(debuffDamageTaken, target, game);
 }
@@ -130,7 +130,7 @@ function createGodEnemy(godArea: GameMapAreaSpawnOnDistance, idCounter: IdCounte
     const bossSize = 60;
     const color = "black";
     const moveSpeed = 1;
-    const hp = 5 * 1000 * 1000 * 1000;
+    const hp = 5 * 1_000_000_000;
     const experienceWorth = 0;
     const character = createCharacter(getNextId(idCounter), spawnPosition.x, spawnPosition.y, bossSize, bossSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_GOD_ENEMY, experienceWorth);
     const godCharacter: GodEnemyCharacter = {
@@ -150,8 +150,8 @@ function createGodEnemy(godArea: GameMapAreaSpawnOnDistance, idCounter: IdCounte
     godCharacter.abilities.push(godCreateAbilityImmunity(game.state.idCounter, undefined, godArea.id));
     godCharacter.paint.image = IMAGE_SLIME;
     if (game.state.activeCheats && game.state.activeCheats.indexOf("lowKingHp") !== -1) {
-        godCharacter.hp = 50000;
-        godCharacter.maxHp = 50000;
+        godCharacter.hp = 50_000;
+        godCharacter.maxHp = 50_000;
     }
     godCharacter.isRootImmune = true;
     setGodAbilityPickUpPosition(godArea, godCharacter, game);

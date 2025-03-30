@@ -56,7 +56,7 @@ function paintBar(ctx: CanvasRenderingContext2D, boss: Character, displayName: s
     if (fillAmount <= 0) return
     const hpBarWidth = Math.floor(ctx.canvas.width / 2) - spacing;
     const hpBarText = `${displayName} HP: ${(boss.hp / boss.maxHp * 100).toFixed(0)}%`;
-    var hpBarLeft = 0;
+    let hpBarLeft = 0;
     if (max === 1) {
         hpBarLeft = Math.floor(ctx.canvas.width / 4) + spacing / 2;
     } else {

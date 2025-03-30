@@ -42,7 +42,8 @@ function startCurseFight(spawnArea: GameMapAreaSpawnOnDistance, game: Game) {
         { x: -spawnDistance, y: spawnDistance },
         { x: spawnDistance, y: spawnDistance },
     ];
-    var bossCounter = 0;
+    let bossCounter = 0;
+    const bossHp = determineBossHp(game);
     for (let player of getPlayerCharacters(game.state.players)) {
         if (player.curses === undefined) continue;
         for (let curse of player.curses) {
@@ -56,7 +57,7 @@ function startCurseFight(spawnArea: GameMapAreaSpawnOnDistance, game: Game) {
                 boss.x = middle!.x - spawnDistance + (bossCounter - spawnOffsets.length + 1) * 50;
                 boss.y = middle!.y - spawnDistance;
             }
-            boss.maxHp = 5_000_000;
+            boss.maxHp = bossHp;
             boss.hp = boss.maxHp;
             const curseLevelCopy = createCurse(curse.type, game.state.idCounter);
             curseLevelCopy.level = curse.level;
@@ -72,6 +73,19 @@ function startCurseFight(spawnArea: GameMapAreaSpawnOnDistance, game: Game) {
         removeCurses(player, game);
     }
     fountainArea.bossCounter = bossCounter;
+}
+
+function determineBossHp(game: Game): number {
+    let curseLevelSum = 0;
+    for (let player of getPlayerCharacters(game.state.players)) {
+        if (player.curses === undefined) continue;
+        for (let curse of player.curses) {
+            curseLevelSum += curse.level;
+        }
+    }
+    const baseHp = 1_000_000_000;
+    const hpFactor = 1 + curseLevelSum * curseLevelSum / 1_000;
+    return baseHp * hpFactor;
 }
 
 function copyCharacterForBoss(character: Character, game: Game): CurseFountainBossEnemy {

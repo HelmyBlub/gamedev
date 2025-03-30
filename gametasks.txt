@@ -5,14 +5,16 @@ current tasks:
 - be able to cleanse bad part of curses
     - dev steps:
         - boss hp scaling. More curse -> more hp
-        - check start conditions fountain use and what for multiplayer
-    - fountain boss hp bars
     - cleansed legendaries curse will not increase until broken
         - staying in curse ground effect for to long will remove the cleansed effect
     - fountain image
     - fountain fight retry
+    - check mulitplayer
+        - start conditions fountain use and what for multiplayer
+        - other
 
 - king hp bar not correctly placed when zoomed out or in
+    - same for fountain boss
 - check: king and god area created on first play on page load? something looked of with the code
 - check: retry on king and god. Code makes it look like it should not work since map area bosses exist
 - check: touch controls for cleanse fountain
