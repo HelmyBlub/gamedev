@@ -41,7 +41,7 @@ function remove(curse: Curse, target: Character, game: Game) {
         target.abilities.splice(poisonIndex, 1);
     }
     if (posion.cleansed) {
-        const immunityBuff = target.abilities.find(b => b.name === BUFF_NAME_POISON_TILE_IMMUNITY);
+        const immunityBuff = target.debuffs.find(b => b.name === BUFF_NAME_POISON_TILE_IMMUNITY);
         if (immunityBuff) {
             removeCharacterDebuff(immunityBuff, target, game);
         }

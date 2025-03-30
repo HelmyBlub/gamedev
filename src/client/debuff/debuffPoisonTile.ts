@@ -1,6 +1,7 @@
 import { characterTakeDamage } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
 import { CHARACTER_TYPE_BOSS_ENEMY } from "../character/enemy/bossEnemy.js";
+import { CHARACTER_TYPE_CURSE_FOUNTAIN_BOSS } from "../character/enemy/curseFountainBoss.js";
 import { CHARACTER_TYPE_GOD_ENEMY } from "../character/enemy/god/godEnemy.js";
 import { CHARACTER_TYPE_KING_ENEMY } from "../character/enemy/kingEnemy.js";
 import { FACTION_ENEMY, Game } from "../gameModel.js";
@@ -47,7 +48,7 @@ function tickDebuff(debuff: Debuff, targetCharacter: Character, game: Game) {
         if (targetCharacter.faction === FACTION_ENEMY) {
             if (targetCharacter.type === CHARACTER_TYPE_KING_ENEMY) {
                 damage = targetCharacter.hp / 500 * DAMAGE_HP_PER_CENT;
-            } else if (targetCharacter.type === CHARACTER_TYPE_GOD_ENEMY) {
+            } else if (targetCharacter.type === CHARACTER_TYPE_GOD_ENEMY || targetCharacter.type === CHARACTER_TYPE_CURSE_FOUNTAIN_BOSS) {
                 damage = targetCharacter.hp / 2000 * DAMAGE_HP_PER_CENT;
             } else if (targetCharacter.type === CHARACTER_TYPE_BOSS_ENEMY) {
                 damage = targetCharacter.hp / 200 * DAMAGE_HP_PER_CENT;

@@ -1,19 +1,15 @@
+import { setAbilityToBossLevel } from "../ability/ability.js";
 import { getPlayerCharacters, resetCharacter } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
-import { createBossWithLevel } from "../character/enemy/bossEnemy.js";
-import { CHARACTER_TYPE_CURSE_FOUNTAIN_BOSS, CurseFountainBossEnemy } from "../character/enemy/curseFountainBoss.js";
-import { CHARACTER_PET_TYPE_CLONE } from "../character/playerCharacters/characterPetTypeClone.js";
+import { BOSS_FOUNTAIN_BEHAVIOR_FOLLOW_PLAYER, BOSS_FOUNTAIN_BEHAVIOR_MOVE_AROUND, CHARACTER_TYPE_CURSE_FOUNTAIN_BOSS, CurseFountainBossEnemy } from "../character/enemy/curseFountainBoss.js";
 import { TAMER_PET_CHARACTER } from "../character/playerCharacters/tamer/tamerPetCharacter.js";
-import { createCurse, Curse, removeCurses } from "../curse/curse.js";
-import { CURSE_DARKNESS, CurseDarkness } from "../curse/curseDarkness.js";
-import { CURSE_ICE, CurseIce } from "../curse/curseIce.js";
-import { CURSE_POISON, CursePoison } from "../curse/cursePoison.js";
+import { createCurse, removeCurses } from "../curse/curse.js";
+import { CURSE_LIGHTNING } from "../curse/curseLightning.js";
 import { changeCharacterAndAbilityIds, deepCopy } from "../game.js";
 import { FACTION_ENEMY, Game, Position } from "../gameModel.js";
-import { chunkXYToMapKey, GameMap, MapChunk } from "./map.js";
+import { GameMap, MapChunk } from "./map.js";
 import { areaSpawnOnDistanceGetAreaMiddlePosition, GameMapAreaSpawnOnDistance, MAP_AREA_SPAWN_ON_DISTANCE_TYPES_FUNCTIONS } from "./mapAreaSpawnOnDistance.js";
 import { mapObjectCreateCleanseFountain } from "./mapObjectCleanseFountain.js";
-import { MODIFIER_NAME_DARKNESS } from "./modifiers/mapModifierDarkness.js";
 
 export const MAP_AREA_SPAWN_ON_DISTANCE_CURSE_CLEANSE = "Curse Cleanse Area";
 
@@ -64,6 +60,11 @@ function startCurseFight(spawnArea: GameMapAreaSpawnOnDistance, game: Game) {
             boss.hp = boss.maxHp;
             const curseLevelCopy = createCurse(curse.type, game.state.idCounter);
             curseLevelCopy.level = curse.level;
+            if (curse.type === CURSE_LIGHTNING) {
+                boss.aiBehavior = BOSS_FOUNTAIN_BEHAVIOR_FOLLOW_PLAYER;
+            } else {
+                boss.aiBehavior = BOSS_FOUNTAIN_BEHAVIOR_MOVE_AROUND;
+            }
             boss.curses = [curseLevelCopy];
             game.state.bossStuff.bosses.push(boss);
             bossCounter++;
@@ -85,6 +86,9 @@ function copyCharacterForBoss(character: Character, game: Game): CurseFountainBo
     boss.type = CHARACTER_TYPE_CURSE_FOUNTAIN_BOSS;
     resetCharacter(boss, game);
     changeCharacterAndAbilityIds(boss, game.state.idCounter);
+    for (let ability of boss.abilities) {
+        setAbilityToBossLevel(ability, 10);
+    }
     boss.faction = FACTION_ENEMY;
     return boss;
 }
