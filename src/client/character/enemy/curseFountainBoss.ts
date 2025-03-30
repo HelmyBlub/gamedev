@@ -7,6 +7,7 @@ import { GameMapAreaSpawnOnDistanceCleanseFountain } from "../../map/mapCurseCle
 import { nextRandom } from "../../randomNumberGenerator.js";
 import { calculateAndSetMoveDirectionToPositionWithPathing, determineClosestCharacter, getPlayerCharacters, moveCharacterTick } from "../character.js";
 import { Character, CHARACTER_TYPE_FUNCTIONS } from "../characterModel.js";
+import { paintCharacterWithAbilitiesDefault, paintCharatersPets } from "../characterPaint.js";
 import { PathingCache } from "../pathing.js";
 
 export const BOSS_FOUNTAIN_BEHAVIOR_FOLLOW_PLAYER = "follow player";
@@ -23,8 +24,59 @@ export const CHARACTER_TYPE_CURSE_FOUNTAIN_BOSS = "CurseFountainBoss";
 export function addCurseFountainBossType() {
     CHARACTER_TYPE_FUNCTIONS[CHARACTER_TYPE_CURSE_FOUNTAIN_BOSS] = {
         onCharacterKill: onDeath,
+        paintCharacterType: paintFountainBoss,
         tickFunction: tickFountainBoss,
     };
+}
+
+function paintFountainBoss(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) {
+    if (character.state === "dead") return;
+    const fountainBoss = character as CurseFountainBossEnemy;
+    paintCharatersPets(ctx, [character], cameraPosition, game);
+    paintCharacterWithAbilitiesDefault(ctx, character, cameraPosition, game);
+    const area = game.state.map.areaSpawnOnDistance.find(a => a.id === fountainBoss.spawnAreaIdRef) as GameMapAreaSpawnOnDistanceCleanseFountain;
+    if (!area) return;
+    const max = area.bossCounter;
+    if (!max) return;
+    let fountainBossIndex = 0;
+    for (let boss of game.state.bossStuff.bosses) {
+        if (boss.type !== CHARACTER_TYPE_CURSE_FOUNTAIN_BOSS || boss.state !== "alive") continue;
+        if (boss === character) {
+            break;
+        }
+        fountainBossIndex++;
+    }
+    paintBar(ctx, character, "temp", max, fountainBossIndex);
+}
+
+function paintBar(ctx: CanvasRenderingContext2D, boss: Character, displayName: string, max: number, index: number) {
+    if (max > 8 && index >= 8) return;
+    const fillAmount = Math.max(0, boss.hp / boss.maxHp);
+    const spacing = 10;
+    if (fillAmount <= 0) return
+    const hpBarWidth = Math.floor(ctx.canvas.width / 2) - spacing;
+    const hpBarText = `${displayName} HP: ${(boss.hp / boss.maxHp * 100).toFixed(0)}%`;
+    var hpBarLeft = 0;
+    if (max === 1) {
+        hpBarLeft = Math.floor(ctx.canvas.width / 4) + spacing / 2;
+    } else {
+        hpBarLeft = index % 2 === 0 ? spacing / 2 : Math.floor(ctx.canvas.width / 2) + spacing / 2;
+    }
+    const hpBarHeight = max > 4 ? 10 : max > 1 ? 20 : 40;
+    const fontSize = hpBarHeight - 2;
+    const top = 22 + Math.floor(index / 2) * (hpBarHeight + spacing / 2);
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = "black";
+    ctx.fillStyle = "red";
+    ctx.fillRect(hpBarLeft, top, Math.ceil(hpBarWidth * fillAmount), hpBarHeight);
+    ctx.beginPath();
+    ctx.rect(hpBarLeft, top, hpBarWidth, hpBarHeight);
+    ctx.stroke();
+
+    ctx.fillStyle = "black";
+    ctx.font = "bold " + fontSize + "px Arial";
+    const textWidth = ctx.measureText(hpBarText).width;
+    ctx.fillText(hpBarText, Math.floor((hpBarLeft + hpBarWidth / 2) - textWidth / 2), top + fontSize);
 }
 
 function tickFountainBoss(enemy: Character, game: Game, pathingCache: PathingCache | null) {
