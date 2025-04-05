@@ -2,12 +2,16 @@ next test run:
 increase version
 
 current tasks:
+- bug terrain bounce upgrade infinite stack size??
+    - calculateBounceAngle can call itself in an infinite loop?
 - be able to cleanse bad part of curses
-    - fountain image
     - fountain fight retry
+        - spawn position off as algorithm guesses boss should always be center, but for fountain it is not
     - check mulitplayer
         - start conditions fountain use and what for multiplayer
         - other
+    - cheats update:
+        - low hp, close, put together with others
 
 - king hp bar not correctly placed when zoomed out or in
     - same for fountain boss

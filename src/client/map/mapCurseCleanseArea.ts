@@ -3,7 +3,7 @@ import { getPlayerCharacters, resetCharacter } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
 import { BOSS_FOUNTAIN_BEHAVIOR_FOLLOW_PLAYER, BOSS_FOUNTAIN_BEHAVIOR_MOVE_AROUND, CHARACTER_TYPE_CURSE_FOUNTAIN_BOSS, CurseFountainBossEnemy } from "../character/enemy/curseFountainBoss.js";
 import { TAMER_PET_CHARACTER } from "../character/playerCharacters/tamer/tamerPetCharacter.js";
-import { createCurse, removeCurses } from "../curse/curse.js";
+import { createCurse, Curse, removeCurses } from "../curse/curse.js";
 import { CURSE_LIGHTNING } from "../curse/curseLightning.js";
 import { changeCharacterAndAbilityIds, deepCopy } from "../game.js";
 import { FACTION_ENEMY, Game, Position } from "../gameModel.js";
@@ -15,7 +15,13 @@ export const MAP_AREA_SPAWN_ON_DISTANCE_CURSE_CLEANSE = "Curse Cleanse Area";
 
 export type GameMapAreaSpawnOnDistanceCleanseFountain = GameMapAreaSpawnOnDistance & {
     bossCounter?: number,
+    retryData?: RetryDataCleanseArea[],
 }
+
+type RetryDataCleanseArea = {
+    playerId: number,
+    curses: Curse[],
+};
 
 export function addMapAreaSpawnOnDistanceCurseCleanse() {
     MAP_AREA_SPAWN_ON_DISTANCE_TYPES_FUNCTIONS[MAP_AREA_SPAWN_ON_DISTANCE_CURSE_CLEANSE] = {
@@ -45,9 +51,24 @@ function startCurseFight(spawnArea: GameMapAreaSpawnOnDistance, game: Game) {
     let bossCounter = 0;
     const bossHp = determineBossHp(game);
     let followPlayerAiSet = false;
-    for (let player of getPlayerCharacters(game.state.players)) {
-        if (player.curses === undefined) continue;
-        for (let curse of player.curses) {
+    let retryDatas: RetryDataCleanseArea[] | undefined = fountainArea.retryData;
+    const playerCharacters = getPlayerCharacters(game.state.players);
+    if (!retryDatas) {
+        retryDatas = [];
+        for (let player of playerCharacters) {
+            if (player.curses === undefined) continue;
+            const retryData: RetryDataCleanseArea = { curses: [], playerId: player.id };
+            retryDatas.push(retryData);
+            for (let curse of player.curses) {
+                retryData.curses.push(curse);
+            }
+        }
+    }
+
+    for (let retryData of retryDatas) {
+        const player = playerCharacters.find(p => p.id === retryData.playerId);
+        if (!player) continue;
+        for (let curse of retryData.curses) {
             const boss = copyCharacterForBoss(player, game);
             boss.spawnAreaIdRef = spawnArea.id;
             const middle = areaSpawnOnDistanceGetAreaMiddlePosition(spawnArea, game.state.map);
@@ -72,6 +93,10 @@ function startCurseFight(spawnArea: GameMapAreaSpawnOnDistance, game: Game) {
             game.state.bossStuff.bosses.push(boss);
             bossCounter++;
         }
+    }
+    if (!fountainArea.retryData) fountainArea.retryData = retryDatas;
+    for (let player of getPlayerCharacters(game.state.players)) {
+        if (player.curses === undefined) continue;
         removeCurses(player, game);
     }
     if (!followPlayerAiSet) {

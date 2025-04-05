@@ -101,7 +101,7 @@ export function gameInit(game: Game) {
     if (game.state.activeCheats && game.state.activeCheats.indexOf("closeGodArea") !== -1) {
         createAreaSpawnOnDistance(MAP_AREA_SPAWN_ON_DISTANCE_GOD, game.state.map, 5000, game.state.idCounter);
     } else {
-        createAreaSpawnOnDistance(MAP_AREA_SPAWN_ON_DISTANCE_CURSE_CLEANSE, game.state.map, 4000, game.state.idCounter);
+        //createAreaSpawnOnDistance(MAP_AREA_SPAWN_ON_DISTANCE_CURSE_CLEANSE, game.state.map, 4000, game.state.idCounter);
         createAreaSpawnOnDistance(MAP_AREA_SPAWN_ON_DISTANCE_GOD, game.state.map, 40000, game.state.idCounter);
     }
     game.state.abilityObjects = [];
