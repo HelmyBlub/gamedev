@@ -109,6 +109,7 @@ function curseIncreaseCharacter(character: Character, curseType: string, game: G
         curse = createCurse(curseType, game.state.idCounter);
         applyCurse(curse, character, game);
     } else {
+        if (curse.cleansed) curse.cleansed = false;
         increaseCurseLevel(character, curse, 0.2, game);
     }
     curse.visualizeFadeTimer = game.state.time + 2000;

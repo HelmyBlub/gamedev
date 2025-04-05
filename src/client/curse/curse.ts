@@ -89,6 +89,7 @@ export function copyCursesToTarget(sourceCurses: Curse[], targetCurses: Curse[],
             const targetCurse = targetCurses[index];
             if (targetCurse.level < sourceCurse.level) {
                 targetCurse.level = sourceCurse.level;
+                if (!sourceCurse.cleansed) targetCurse.cleansed = false;
                 targetCurse.visualizeFadeTimer = game.state.time + 2000;
             }
         } else {

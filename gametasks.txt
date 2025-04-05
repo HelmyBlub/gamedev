@@ -2,9 +2,9 @@ next test run:
 increase version
 
 current tasks:
+- fountain boss running away if just one at start
+- bug: fountain boss gives achivement god kill
 - be able to cleanse bad part of curses
-    - dev steps:
-        - boss hp scaling. More curse -> more hp
     - cleansed legendaries curse will not increase until broken
         - staying in curse ground effect for to long will remove the cleansed effect
     - fountain image
@@ -22,6 +22,7 @@ current tasks:
 - damagemeter/combatlog for curses?
 - achievements for curses? 
 - money for curse related stuff?
+- area boss spider resistant to damage in darkness (always dies offscreen which might be confusing) 
 
 next feature ideas:
 - maybe:
