@@ -2,7 +2,6 @@ next test run:
 increase version
 
 current tasks:
-- fountain boss running away if just one at start
 - bug: fountain boss gives achivement god kill
 - be able to cleanse bad part of curses
     - fountain image
