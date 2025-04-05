@@ -44,6 +44,7 @@ function startCurseFight(spawnArea: GameMapAreaSpawnOnDistance, game: Game) {
     ];
     let bossCounter = 0;
     const bossHp = determineBossHp(game);
+    let followPlayerAiSet = false;
     for (let player of getPlayerCharacters(game.state.players)) {
         if (player.curses === undefined) continue;
         for (let curse of player.curses) {
@@ -63,6 +64,7 @@ function startCurseFight(spawnArea: GameMapAreaSpawnOnDistance, game: Game) {
             curseLevelCopy.level = curse.level;
             if (curse.type === CURSE_LIGHTNING) {
                 boss.aiBehavior = BOSS_FOUNTAIN_BEHAVIOR_FOLLOW_PLAYER;
+                followPlayerAiSet = true;
             } else {
                 boss.aiBehavior = BOSS_FOUNTAIN_BEHAVIOR_MOVE_AROUND;
             }
@@ -71,6 +73,16 @@ function startCurseFight(spawnArea: GameMapAreaSpawnOnDistance, game: Game) {
             bossCounter++;
         }
         removeCurses(player, game);
+    }
+    if (!followPlayerAiSet) {
+        for (let boss of game.state.bossStuff.bosses) {
+            if (boss.type === CHARACTER_TYPE_CURSE_FOUNTAIN_BOSS) {
+                const otherFountainBoss = boss as CurseFountainBossEnemy;
+                otherFountainBoss.aiBehavior = BOSS_FOUNTAIN_BEHAVIOR_FOLLOW_PLAYER;
+                otherFountainBoss.moveTo = undefined;
+                break;
+            }
+        }
     }
     fountainArea.bossCounter = bossCounter;
 }

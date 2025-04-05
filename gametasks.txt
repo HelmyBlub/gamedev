@@ -5,8 +5,6 @@ current tasks:
 - fountain boss running away if just one at start
 - bug: fountain boss gives achivement god kill
 - be able to cleanse bad part of curses
-    - cleansed legendaries curse will not increase until broken
-        - staying in curse ground effect for to long will remove the cleansed effect
     - fountain image
     - fountain fight retry
     - check mulitplayer
