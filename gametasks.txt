@@ -4,11 +4,11 @@ increase version
 current tasks:
 - be able to cleanse bad part of curses
     - check mulitplayer
+        - multiplayer teleport other players over
         - start conditions fountain use and what for multiplayer
         - other
-    - check cursed player but not yet cursed legendary start fight
-    - cheats update:
-        - low hp, close, put together with others
+    
+- rename cheats as they are no longer correctly named: low hp, close, put together with others
 
 - king hp bar not correctly placed when zoomed out or in
     - same for fountain boss

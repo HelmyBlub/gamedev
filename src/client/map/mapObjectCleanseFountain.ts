@@ -9,6 +9,7 @@ import { IMAGE_SIGN } from "./mapObjectSign.js";
 import { playerInputBindingToDisplayValue } from "../input/playerInput.js";
 import { areaSpawnOnDistanceFightStart } from "./mapAreaSpawnOnDistance.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
+import { getPlayerCharacters } from "../character/character.js";
 
 export type MapTileObjectCleanseFountain = MapTileObject & {
     used: boolean,
@@ -83,6 +84,11 @@ function interactCleanse(interacter: Character, mapObject: MapTileObject, game: 
     }
     if (!hasCursedLegendary) return;
     fountain.used = true;
+    for (let player of getPlayerCharacters(game.state.players)) {
+        if (player === interacter) continue;
+        player.x = interacter.x;
+        player.y = interacter.y;
+    }
     areaSpawnOnDistanceFightStart(area, game);
 }
 
