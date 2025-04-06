@@ -98,7 +98,7 @@ export function gameInit(game: Game) {
     } else {
         initKingArea(game.state.map, 20_000);
     }
-    if (game.state.activeCheats && game.state.activeCheats.indexOf("closeGodArea") !== -1) {
+    if (game.state.activeCheats && game.state.activeCheats.indexOf("closeSpawnAreas") !== -1) {
         createAreaSpawnOnDistance(MAP_AREA_SPAWN_ON_DISTANCE_GOD, game.state.map, 4_000, game.state.idCounter);
         createAreaSpawnOnDistance(MAP_AREA_SPAWN_ON_DISTANCE_CURSE_CLEANSE, game.state.map, 7_000, game.state.idCounter);
     } else {

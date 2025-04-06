@@ -4,7 +4,6 @@ increase version
 current tasks:
 - be able to cleanse bad part of curses
     - check mulitplayer
-        - multiplayer teleport other players over
         - start conditions fountain use and what for multiplayer
         - other
     

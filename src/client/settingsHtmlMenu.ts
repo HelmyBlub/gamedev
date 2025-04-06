@@ -59,9 +59,9 @@ function addDebug(game: Game) {
     addSettingCheckbox("paintTileXYNumbers", game);
     addSettingCheckbox("paintMarkActiveChunks", game);
     addCheatCheckbox("allowCheats", game);
-    addCheatCheckbox("lowKingHp", game);
+    addCheatCheckbox("reducedBossHp", game);
     addCheatCheckbox("closeKingArea", game);
-    addCheatCheckbox("closeGodArea", game);
+    addCheatCheckbox("closeSpawnAreas", game);
     addCheatCheckbox("closeCurses", game);
     addCheatCheckbox("Immune&Fast&Ignored", game);
     addCheatButton("addBossSkillPoint", game);

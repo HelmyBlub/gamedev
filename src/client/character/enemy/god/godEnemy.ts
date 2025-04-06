@@ -149,7 +149,7 @@ function createGodEnemy(godArea: GameMapAreaSpawnOnDistance, idCounter: IdCounte
     godCharacter.abilities.push(godCreateAbilityTileExplosion(game.state.idCounter, undefined, godArea.id));
     godCharacter.abilities.push(godCreateAbilityImmunity(game.state.idCounter, undefined, godArea.id));
     godCharacter.paint.image = IMAGE_SLIME;
-    if (game.state.activeCheats && game.state.activeCheats.indexOf("lowKingHp") !== -1) {
+    if (game.state.activeCheats && game.state.activeCheats.indexOf("reducedBossHp") !== -1) {
         godCharacter.hp = 50_000;
         godCharacter.maxHp = 50_000;
     }

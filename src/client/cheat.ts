@@ -13,14 +13,14 @@ import { mapObjectPlaceUpgradeBuilding } from "./map/mapObjectUpgradeBuilding.js
 import { mapModifierGrowArea } from "./map/modifiers/mapModifier.js";
 import { addMoneyAmountToPlayer } from "./player.js";
 import { nextRandom } from "./randomNumberGenerator.js";
-export type CheatCheckboxes = "closeKingArea" | "closeGodArea" | "lowKingHp" | "allowCheats" | "closeCurses" | "Immune&Fast&Ignored";
+export type CheatCheckboxes = "closeKingArea" | "closeSpawnAreas" | "reducedBossHp" | "allowCheats" | "closeCurses" | "Immune&Fast&Ignored";
 export const CHEAT_ACTIONS = [
     "allowCheats",
     "closeKingArea",
-    "closeGodArea",
+    "closeSpawnAreas",
     "closeCurses",
     "Immune&Fast&Ignored",
-    "lowKingHp",
+    "reducedBossHp",
     "addBossSkillPoint",
     "add alot experience",
     "Very Tanky",
@@ -54,9 +54,9 @@ export function executeCheatAction(action: string, activate: boolean, clientId: 
     }
     switch (action) {
         case "closeKingArea":
-        case "closeGodArea":
+        case "closeSpawnAreas":
         case "closeCurses":
-        case "lowKingHp":
+        case "reducedBossHp":
             if (activate) {
                 if (game.state.activeCheats.findIndex(a => a === action) === -1) {
                     game.state.activeCheats.push(action);
@@ -108,7 +108,7 @@ export function executeCheatAction(action: string, activate: boolean, clientId: 
         case "create end game state":
             createEndGameState(game);
     }
-    if (action === "closeKingArea" || action === "closeGodArea" || action === "lowKingHp" || action === "closeCurses" || action === "Immune&Fast&Ignored") {
+    if (action === "closeKingArea" || action === "closeSpawnAreas" || action === "reducedBossHp" || action === "closeCurses" || action === "Immune&Fast&Ignored") {
         const settingsElement: HTMLInputElement | null = document.getElementById(action) as HTMLInputElement;
         if (settingsElement) settingsElement.checked = activate;
     }
