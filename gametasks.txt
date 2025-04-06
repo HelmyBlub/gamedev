@@ -3,11 +3,10 @@ increase version
 
 current tasks:
 - be able to cleanse bad part of curses
-    - fountain fight retry
-        - spawn position off as algorithm guesses boss should always be center, but for fountain it is not
     - check mulitplayer
         - start conditions fountain use and what for multiplayer
         - other
+    - check cursed player but not yet cursed legendary start fight
     - cheats update:
         - low hp, close, put together with others
 

@@ -73,6 +73,15 @@ function interactCleanse(interacter: Character, mapObject: MapTileObject, game: 
     const area = game.state.map.areaSpawnOnDistance.find(a => a.id === fountain.areaIfRef);
     if (!area) return;
     if (interacter.curses === undefined || interacter.curses.length === 0) return;
+    if (!interacter.characterClasses) return;
+    let hasCursedLegendary = false;
+    for (let charClass of interacter.characterClasses) {
+        if (charClass.curses && charClass.curses.length > 0) {
+            hasCursedLegendary = true;
+            break;
+        }
+    }
+    if (!hasCursedLegendary) return;
     fountain.used = true;
     areaSpawnOnDistanceFightStart(area, game);
 }
