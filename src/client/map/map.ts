@@ -277,6 +277,9 @@ export function calculateBounceAngle(position: Position, moveDirection: number, 
             x: position.x + xStep * numberSteps,
             y: position.y + yStep * numberSteps,
         }
+        if (wallDistanceY === 0 && position.y === tempPos.y) {
+            return 1; //return any value to get out of endless loop
+        }
         return calculateBounceAngle(tempPos, moveDirection, game);
     }
 }
