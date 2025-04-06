@@ -32,7 +32,7 @@ import { doDamageMeterSplit } from "./combatlog.js";
 import { achievementCheckOnGameEnd, achievementCheckOnGameTick } from "./achievements/achievements.js";
 import { controllerInput } from "./input/inputController.js";
 import { mapModifierOnGameInit, tickMapModifier } from "./map/modifiers/mapModifier.js";
-import { areaSpawnOnDistanceCheckFightStart, areaSpawnOnDistanceRetry, createAreaSpawnOnDistance } from "./map/mapAreaSpawnOnDistance.js";
+import { areaSpawnOnDistanceCheckFightStart, areaSpawnOnDistanceGetRetrySpawn, areaSpawnOnDistanceRetry, createAreaSpawnOnDistance } from "./map/mapAreaSpawnOnDistance.js";
 import { MAP_AREA_SPAWN_ON_DISTANCE_GOD } from "./map/mapGodArea.js";
 import { MAP_AREA_SPAWN_ON_DISTANCE_CURSE_CLEANSE } from "./map/mapCurseCleanseArea.js";
 import { removeCurses } from "./curse/curse.js";
@@ -94,15 +94,16 @@ export function gameInit(game: Game) {
     game.state.restartCounter++;
     game.state.map.areaSpawnOnDistance = [];
     if (game.state.activeCheats && game.state.activeCheats.indexOf("closeKingArea") !== -1) {
-        initKingArea(game.state.map, 1000);
+        initKingArea(game.state.map, 1_000);
     } else {
-        initKingArea(game.state.map, 20000);
+        initKingArea(game.state.map, 20_000);
     }
     if (game.state.activeCheats && game.state.activeCheats.indexOf("closeGodArea") !== -1) {
-        createAreaSpawnOnDistance(MAP_AREA_SPAWN_ON_DISTANCE_GOD, game.state.map, 5000, game.state.idCounter);
+        createAreaSpawnOnDistance(MAP_AREA_SPAWN_ON_DISTANCE_GOD, game.state.map, 4_000, game.state.idCounter);
+        createAreaSpawnOnDistance(MAP_AREA_SPAWN_ON_DISTANCE_CURSE_CLEANSE, game.state.map, 7_000, game.state.idCounter);
     } else {
-        createAreaSpawnOnDistance(MAP_AREA_SPAWN_ON_DISTANCE_CURSE_CLEANSE, game.state.map, 4000, game.state.idCounter);
-        createAreaSpawnOnDistance(MAP_AREA_SPAWN_ON_DISTANCE_GOD, game.state.map, 40000, game.state.idCounter);
+        createAreaSpawnOnDistance(MAP_AREA_SPAWN_ON_DISTANCE_GOD, game.state.map, 40_000, game.state.idCounter);
+        createAreaSpawnOnDistance(MAP_AREA_SPAWN_ON_DISTANCE_CURSE_CLEANSE, game.state.map, 60_000, game.state.idCounter);
     }
     game.state.abilityObjects = [];
     game.state.killCounter = 0;
@@ -534,19 +535,22 @@ export function retryFight(game: Game) {
     if (!hasRetry) return;
     game.state.bossStuff.bosses = [];
     game.state.bossStuff.fightWipe = false;
-    let playerOffsetX = 0;
+    let playerSpawn: Position = { x: 0, y: 0 };
     if (game.state.bossStuff.kingFightStartedTime !== undefined) {
         startKingFight(game.state.players[0].character, game);
-        playerOffsetX = (game.state.map.kingArea!.size * game.state.map.chunkLength * game.state.map.tileSize) / 2 - game.state.map.tileSize * 2;
+        let bossEnemy = game.state.bossStuff.bosses[0];
+        const playerOffsetX = (game.state.map.kingArea!.size * game.state.map.chunkLength * game.state.map.tileSize) / 2 - game.state.map.tileSize * 2;
+        playerSpawn.x = bossEnemy.x - playerOffsetX;
+        playerSpawn.y = bossEnemy.y;
     } else if (game.state.bossStuff.areaSpawnFightStartedTime !== undefined) {
-        playerOffsetX = areaSpawnOnDistanceRetry(game);
+        areaSpawnOnDistanceRetry(game);
+        playerSpawn = areaSpawnOnDistanceGetRetrySpawn(game);
     }
-    const bossEnemy = game.state.bossStuff.bosses[0];
     for (let player of game.state.players) {
         player.character.state = "alive";
         player.character.hp = player.character.maxHp;
-        player.character.x = bossEnemy.x - playerOffsetX;
-        player.character.y = bossEnemy.y;
+        player.character.x = playerSpawn.x;
+        player.character.y = playerSpawn.y;
         resetCharacter(player.character, game);
         for (let i = player.character.abilities.length - 1; i >= 0; i--) {
             const ability = player.character.abilities[i];

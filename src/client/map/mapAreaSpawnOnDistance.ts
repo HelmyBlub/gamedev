@@ -7,8 +7,9 @@ import { addMapAreaSpawnOnDistanceGod } from "./mapGodArea.js";
 
 export type MapAreaSpawnOnDistanceFunctions = {
     checkFightStart?: (areaSpanOnDistance: GameMapAreaSpawnOnDistance, game: Game) => boolean,
-    startFight: (areaSpanOnDistance: GameMapAreaSpawnOnDistance, game: Game) => void,
+    getPlayerRetrySpawn?: (areaSpanOnDistance: GameMapAreaSpawnOnDistance, game: Game) => Position,
     modifyChunkGeneration?: (areaSpanOnDistance: GameMapAreaSpawnOnDistance, chunk: MapChunk, chunkX: number, chunkY: number, map: GameMap) => void,
+    startFight: (areaSpanOnDistance: GameMapAreaSpawnOnDistance, game: Game) => void,
 }
 
 export type MapAreaSpawnOnDistanceTypesFunctions = {
@@ -61,17 +62,29 @@ export function areaSpawnOnDistanceFightStart(area: GameMapAreaSpawnOnDistance, 
     areaFunctions.startFight(area, game);
 }
 
-/**
- * @return return the player offsetX based on boss position
- */
-export function areaSpawnOnDistanceRetry(game: Game): number {
+export function areaSpawnOnDistanceRetry(game: Game) {
     const areaId = game.state.bossStuff.areaSpawnIdFightStart;
     const area = game.state.map.areaSpawnOnDistance.find(a => a.id === areaId);
     if (area === undefined) throw "should not happen";
     game.state.bossStuff.areaSpawnFightStartedTime = game.state.time;
     const areaFunctions = MAP_AREA_SPAWN_ON_DISTANCE_TYPES_FUNCTIONS[area.type];
     areaFunctions.startFight(area, game);
-    return (area.size * game.state.map.chunkLength * game.state.map.tileSize) / 2 - game.state.map.tileSize * 2;
+}
+
+export function areaSpawnOnDistanceGetRetrySpawn(game: Game): Position {
+    const areaId = game.state.bossStuff.areaSpawnIdFightStart;
+    const area = game.state.map.areaSpawnOnDistance.find(a => a.id === areaId);
+    if (area === undefined) throw "should not happen";
+    const areaFunctions = MAP_AREA_SPAWN_ON_DISTANCE_TYPES_FUNCTIONS[area.type];
+    if (areaFunctions.getPlayerRetrySpawn) {
+        return areaFunctions.getPlayerRetrySpawn(area, game);
+    } else {
+        const bossEnemy = game.state.bossStuff.bosses[0];
+        return {
+            x: bossEnemy.x - ((area.size * game.state.map.chunkLength * game.state.map.tileSize) / 2 - game.state.map.tileSize * 2),
+            y: bossEnemy.y,
+        }
+    }
 }
 
 export function areaSpawnOnDistanceCreateAndSetOnMap(chunkX: number, chunkY: number, map: GameMap, game: Game): boolean {

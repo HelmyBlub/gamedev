@@ -25,10 +25,17 @@ type RetryDataCleanseArea = {
 
 export function addMapAreaSpawnOnDistanceCurseCleanse() {
     MAP_AREA_SPAWN_ON_DISTANCE_TYPES_FUNCTIONS[MAP_AREA_SPAWN_ON_DISTANCE_CURSE_CLEANSE] = {
-        startFight: startCurseFight,
+        getPlayerRetrySpawn: getPlayerRetrySpawn,
         modifyChunkGeneration: modifyChunkGeneration,
+        startFight: startCurseFight,
     }
 }
+
+function getPlayerRetrySpawn(areaSpanOnDistance: GameMapAreaSpawnOnDistance, game: Game): Position {
+    const middle = areaSpawnOnDistanceGetAreaMiddlePosition(areaSpanOnDistance, game.state.map)!;
+    return middle;
+}
+
 
 function modifyChunkGeneration(areaSpanOnDistance: GameMapAreaSpawnOnDistance, chunk: MapChunk, chunkX: number, chunkY: number, map: GameMap) {
     if (!areaSpanOnDistance.spawnTopLeftChunk) return;
