@@ -2,7 +2,6 @@ next test run:
 increase version
 
 current tasks:   
-- area boss spider resistant to damage in darkness (always dies offscreen which might be confusing) 
 - achievements for curses? 
 - money for curse related stuff?
 
