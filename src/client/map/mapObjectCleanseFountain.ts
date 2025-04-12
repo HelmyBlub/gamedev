@@ -107,10 +107,14 @@ function paintInteract(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, 
     const texts = [];
     texts.push(`Cleanse Fountain:`);
     const interact1 = playerInputBindingToDisplayValue("interact1", game);
-    texts.push(`Press <${interact1}> to cleanse curses`);
+    if (game.UI.inputType === "touch") {
+        texts.push(`Touch to cleanse curses`);
+    } else if (game.UI.inputType === "keyboard") {
+        texts.push(`Press <${interact1}> to cleanse curses`);
+    }
     texts.push(`of equipted legendaries.`);
 
     const paintPos = getPointPaintPosition(ctx, topMiddlePos, cameraPosition, game.UI.zoom, false);
-    if (game.UI.inputType === "touch") game.UI.rectangles.interactRectangle = [];
-    paintTextLinesWithKeys(ctx, texts, paintPos, 20, true, true);
+    const rectangle = paintTextLinesWithKeys(ctx, texts, paintPos, 20, true, true);
+    if (game.UI.inputType === "touch") game.UI.rectangles.interactRectangle = [{ ...rectangle, interactAction: "interact1" }];
 }

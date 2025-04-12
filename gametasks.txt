@@ -2,11 +2,6 @@ next test run:
 increase version
 
 current tasks:   
-- "temp" in hp bar?
-- king hp bar not correctly placed when zoomed out or in
-    - same for fountain boss
-- check: king and god area created on first play on page load? something looked of with the code
-- check: retry on king and god. Code makes it look like it should not work since map area bosses exist
 - check: touch controls for cleanse fountain
 - "bug": immune bosses
 
