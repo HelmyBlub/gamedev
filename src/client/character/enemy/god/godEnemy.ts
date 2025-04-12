@@ -8,12 +8,12 @@ import { paintCharacterAbilties } from "../../characterPaint.js";
 import { PathingCache } from "../../pathing.js";
 import { paintKingHpBar } from "../kingEnemy.js";
 import { ABILITY_NAME_SEEKER, addGodAbilitySeeker } from "./abilitySeeker.js";
-import { ABILITY_NAME_MOVING_FIRE, addGodAbilityMovingFire, godCreateAbilityMovingFire } from "./abilityMovingFire.js";
-import { ABILITY_NAME_TILE_EXPLOSION, addGodAbilityTileExplosion, godCreateAbilityTileExplosion } from "./abilityTileExplosions.js";
+import { addGodAbilityMovingFire, godCreateAbilityMovingFire } from "./abilityMovingFire.js";
+import { addGodAbilityTileExplosion, godCreateAbilityTileExplosion } from "./abilityTileExplosions.js";
 import { ABILITY_NAME_MELEE, AbilityMelee } from "../../../ability/abilityMelee.js";
 import { GodAbility, setGodAbilityPickUpPosition } from "./godAbility.js";
 import { createDebuffDamageTaken } from "../../../debuff/debuffDamageTaken.js";
-import { ABILITY_NAME_GOD_IMMUNITY, addGodAbilityGodImmunity, godCreateAbilityImmunity } from "./abilityGodImmunity.js";
+import { addGodAbilityGodImmunity, godCreateAbilityImmunity } from "./abilityGodImmunity.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
 import { MoreInfosPartContainer, createCharacterMoreInfosPartContainer } from "../../../moreInfo.js";
 import { doDamageMeterSplit } from "../../../combatlog.js";
@@ -41,6 +41,7 @@ export const CHARACTER_TYPE_GOD_ENEMY = "GodEnemyCharacter";
 export function addGodEnemyType() {
     CHARACTER_TYPE_FUNCTIONS[CHARACTER_TYPE_GOD_ENEMY] = {
         onCharacterKill: onCharacterKill,
+        paintBigUiHpBarOnSpecialFight: paintGodHpBar,
         paintCharacterType: paint,
         tickFunction: tickGodCharacter,
     }
@@ -345,5 +346,8 @@ function paint(ctx: CanvasRenderingContext2D, character: Character, cameraPositi
     }
 
     paintCharacterAbilties(ctx, character, cameraPosition, game);
-    paintKingHpBar(ctx, character, "God");
+}
+
+function paintGodHpBar(ctx: CanvasRenderingContext2D, boss: Character, game: Game) {
+    paintKingHpBar(ctx, boss, game, "God");
 }

@@ -1,24 +1,21 @@
 next test run:
 increase version
 
-current tasks:
-- be able to cleanse bad part of curses
-    - check mulitplayer
-        - start conditions fountain use and what for multiplayer
-        - other
-    
-- rename cheats as they are no longer correctly named: low hp, close, put together with others
-
+current tasks:   
+- "temp" in hp bar?
 - king hp bar not correctly placed when zoomed out or in
     - same for fountain boss
 - check: king and god area created on first play on page load? something looked of with the code
 - check: retry on king and god. Code makes it look like it should not work since map area bosses exist
 - check: touch controls for cleanse fountain
+- "bug": immune bosses
 
 - damagemeter/combatlog for curses?
 - achievements for curses? 
 - money for curse related stuff?
 - area boss spider resistant to damage in darkness (always dies offscreen which might be confusing) 
+
+- play my game
 
 next feature ideas:
 - maybe:

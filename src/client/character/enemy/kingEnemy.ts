@@ -37,6 +37,7 @@ GAME_IMAGES[IMAGE_CROWN] = {
 export function addKingType() {
     CHARACTER_TYPE_FUNCTIONS[CHARACTER_TYPE_KING_ENEMY] = {
         onCharacterKill: onCharacterKill,
+        paintBigUiHpBarOnSpecialFight: paintKingHpBar,
         paintCharacterType: paintKing,
         tickFunction: tickKingEnemyCharacter,
     }
@@ -186,7 +187,7 @@ export function modifyCharacterToKing(boss: Character, game: Game) {
     changeKingAbilityLevelBasedOnHp(boss);
 }
 
-export function paintKingHpBar(ctx: CanvasRenderingContext2D, boss: Character, displayName: string = "King") {
+export function paintKingHpBar(ctx: CanvasRenderingContext2D, boss: Character, game: Game, displayName: string = "King") {
     const fillAmount = Math.max(0, boss.hp / boss.maxHp);
     if (fillAmount <= 0) return
     const hpBarWidth = Math.floor(ctx.canvas.width / 2);
@@ -253,7 +254,6 @@ function paintKing(ctx: CanvasRenderingContext2D, character: Character, cameraPo
         const crownY = Math.floor(paintPos.y - character.height / 2 - crownImage.height);
         ctx.drawImage(crownImage, crownX, crownY);
     }
-    if (game.state.bossStuff.kingFightStartedTime !== undefined) paintKingHpBar(ctx, character);
 }
 
 function createKingAbilities(level: number, game: Game): Ability[] {

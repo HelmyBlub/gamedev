@@ -16,10 +16,11 @@ import { UpgradeChoices } from "./upgrade.js";
 export type CHARACTER_TYPE_FUNCTIONS = {
     [key: string]: {
         onCharacterKill?: (character: Character, game: Game) => void,
-        tickFunction?: (character: Character, game: Game, pathingCache: PathingCache | null) => void,
-        tickPetFunction?: (character: Character, petOwner: Character, game: Game, pathingCache: PathingCache | null) => void,
+        paintBigUiHpBarOnSpecialFight?: (ctx: CanvasRenderingContext2D, character: Character, game: Game) => void,
         paintCharacterType?: (ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game) => void,
         reset?: (character: Character) => void,
+        tickFunction?: (character: Character, game: Game, pathingCache: PathingCache | null) => void,
+        tickPetFunction?: (character: Character, petOwner: Character, game: Game, pathingCache: PathingCache | null) => void,
     }
 }
 

@@ -91,7 +91,15 @@ export function onDomLoadSetCharacterClasses() {
 }
 
 export function paintPlayerCharacterUI(ctx: CanvasRenderingContext2D, player: Player, topLeft: Position, width: number, height: number, game: Game) {
-    if (game.state.bossStuff.areaSpawnFightStartedTime !== undefined || game.state.bossStuff.kingFightStartedTime !== undefined) return;
+    if (game.state.bossStuff.areaSpawnFightStartedTime !== undefined || game.state.bossStuff.kingFightStartedTime !== undefined) {
+        for (let boss of game.state.bossStuff.bosses) {
+            const charFunctions = CHARACTER_TYPE_FUNCTIONS[boss.type];
+            if (charFunctions && charFunctions.paintBigUiHpBarOnSpecialFight) {
+                charFunctions.paintBigUiHpBarOnSpecialFight(ctx, boss, game);
+            }
+        }
+        return;
+    }
 
     const aplha = 0.75;
     ctx.globalAlpha *= aplha;
