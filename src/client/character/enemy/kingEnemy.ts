@@ -96,6 +96,8 @@ export function setPlayerAsKing(game: Game) {
         }
     }
     const boss: Character = deepCopy(kingBaseCharacter);
+    boss.isDamageImmune = false;
+    boss.isDebuffImmune = false;
     resetCharacter(boss, game);
     const celestialDirection = getCelestialDirection(boss, game.state.map);
     const oldBoss = game.state.bossStuff.nextKings[celestialDirection];

@@ -2,7 +2,6 @@ next test run:
 increase version
 
 current tasks:   
-- check: touch controls for cleanse fountain
 - "bug": immune bosses
 
 - damagemeter/combatlog for curses?
