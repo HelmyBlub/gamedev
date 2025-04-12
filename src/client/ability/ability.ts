@@ -45,6 +45,7 @@ import { TamerPetCharacter } from "../character/playerCharacters/tamer/tamerPetC
 import { addAbilityCloud } from "./abilityCloud.js"
 import { Curse, doCurseDamageBreakDown } from "../curse/curse.js"
 import { addAbilityPoisonTile } from "./abilityPoisonTile.js"
+import { CHARACTER_PET_TYPE_CLONE } from "../character/playerCharacters/characterPetTypeClone.js"
 
 export type Ability = {
     id: number,
@@ -180,6 +181,7 @@ export function doAbilityDamageBreakDownForAbilityId(damage: number, abilityId: 
                     if (pet.gifted) petName += "[g]";
                     if (pet.legendary) petName += "[L]";
                 }
+                if (result.owner.type === CHARACTER_PET_TYPE_CLONE) petName = "Clone";
                 if (!ability) return;
                 doAbilityDamageBreakDown(damage, ability, abilityObject, damageAbilityName, clientId, petName, game, player.character.faction);
                 return;

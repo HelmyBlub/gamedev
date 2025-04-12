@@ -80,6 +80,7 @@ function tick(curse: Curse, target: Character, game: Game) {
         if (ice.iceAuraIdRef === undefined) {
             const abilityIceAura = createAbility(ABILITY_NAME_ICE_AURA, game.state.idCounter) as AbilityIceAura;
             ice.iceAuraIdRef = abilityIceAura.id;
+            if (target.faction === FACTION_PLAYER) abilityIceAura.doDamageBreakDown = true;
             target.abilities.push(abilityIceAura);
             scaleAbilityIceAuraForCurseLevel(abilityIceAura, ice.level, target.faction, ice);
         }

@@ -2,8 +2,6 @@ next test run:
 increase version
 
 current tasks:   
-- "bug": immune bosses
-
 - damagemeter/combatlog for curses?
 - achievements for curses? 
 - money for curse related stuff?

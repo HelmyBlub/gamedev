@@ -1,4 +1,5 @@
 import { Character } from "../character/characterModel.js";
+import { AbilityDamageBreakdown } from "../combatlog.js";
 import { applyDebuff } from "../debuff/debuff.js";
 import { createDebuffSlow } from "../debuff/debuffSlow.js";
 import { getCameraPosition, getNextId } from "../game.js";
@@ -23,6 +24,7 @@ export const ABILITY_NAME_ICE_AURA = "Ice Aura";
 export function addAbilityIceAura() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_ICE_AURA] = {
         createAbility: createAbilityIceAura,
+        createDamageBreakDown: createDamageBreakDown,
         deleteAbilityObject: deleteAbilityObject,
         paintAbility: paintAbility,
         paintAbilityObject: paintAbilityObject,
@@ -78,6 +80,15 @@ export function createAbilityObjectIceAura(
         abilityIdRef: abilityIdRef,
         deleteTime: deleteTime,
     };
+}
+
+function createDamageBreakDown(damage: number, ability: Ability, abilityObject: AbilityObject | undefined, damageAbilityName: string, game: Game): AbilityDamageBreakdown[] {
+    const damageBreakDown: AbilityDamageBreakdown[] = [];
+    damageBreakDown.push({
+        damage: damage,
+        name: ABILITY_NAME_ICE_AURA,
+    });
+    return damageBreakDown;
 }
 
 function resetAbility(ability: Ability) {
