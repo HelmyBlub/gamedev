@@ -56,8 +56,9 @@ function paintHpBar(ctx: CanvasRenderingContext2D, boss: Character, game: Game) 
     const fillAmount = Math.max(0, boss.hp / boss.maxHp);
     const spacing = 10;
     if (fillAmount <= 0) return
+    const curseType = fountainBoss.curses![0].type;
     const hpBarWidth = Math.floor(ctx.canvas.width / 2) - spacing;
-    const hpBarText = `Curse HP: ${(boss.hp / boss.maxHp * 100).toFixed(0)}%`;
+    const hpBarText = `${curseType} HP: ${(boss.hp / boss.maxHp * 100).toFixed(0)}%`;
     let hpBarLeft = 0;
     if (max === 1) {
         hpBarLeft = Math.floor(ctx.canvas.width / 4) + spacing / 2;
