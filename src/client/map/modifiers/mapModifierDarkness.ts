@@ -10,6 +10,7 @@ import { createAreaBossDarknessSpiderWithLevel } from "../../character/enemy/are
 import { MODIFY_SHAPE_NAME_CELESTIAL_DIRECTION } from "./mapShapeCelestialDirection.js";
 
 export const MODIFIER_NAME_DARKNESS = "Darkness";
+export const MODIFIER_DARKNESS_VIEW_DISTANCE = 300;
 export type MapModifierDarkness = GameMapModifier & {
 }
 
@@ -532,7 +533,7 @@ function determineVisionWalls(blockingPos: Position, visionCenter: Position, vis
 function paintModiferLate(ctx: CanvasRenderingContext2D, modifier: GameMapModifier, cameraPosition: Position, game: Game) {
     const map = game.state.map;
     ctx.fillStyle = "black";
-    const viewDistance = 300;
+    const viewDistance = MODIFIER_DARKNESS_VIEW_DISTANCE;
     const viewDistanceBlockLimit = viewDistance + map.tileSize;
     const viewPaintMiddle = getPointPaintPosition(ctx, cameraPosition, cameraPosition, game.UI.zoom);
     paintShapeWithCircleCutOut(ctx, modifier.area, viewPaintMiddle, viewDistance, game);

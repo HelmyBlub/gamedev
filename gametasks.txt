@@ -2,10 +2,9 @@ next test run:
 increase version
 
 current tasks:   
-- damagemeter/combatlog for curses?
+- area boss spider resistant to damage in darkness (always dies offscreen which might be confusing) 
 - achievements for curses? 
 - money for curse related stuff?
-- area boss spider resistant to damage in darkness (always dies offscreen which might be confusing) 
 
 - play my game
 

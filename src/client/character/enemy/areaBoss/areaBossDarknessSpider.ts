@@ -8,6 +8,7 @@ import { getPointPaintPosition } from "../../../gamePaint.js";
 import { GAME_IMAGES, getImage } from "../../../imageLoad.js";
 import { calculateMovePosition, findNearNonBlockingPosition, GameMap, isPositionBlocking, moveByDirectionAndDistance } from "../../../map/map.js";
 import { findMapModifierById, GameMapModifier, removeMapModifier } from "../../../map/modifiers/mapModifier.js";
+import { MODIFIER_DARKNESS_VIEW_DISTANCE } from "../../../map/modifiers/mapModifierDarkness.js";
 import { getShapeMiddle, isPositionInsideShape } from "../../../map/modifiers/mapModifierShapes.js";
 import { nextRandom } from "../../../randomNumberGenerator.js";
 import { getPlayerCharacters, getCharacterMoveSpeed, resetCharacter } from "../../character.js";
@@ -34,6 +35,8 @@ type SpiderLeg = {
     coconPosition?: Position,
     breakOfTime?: number,
 }
+
+type NearesPlayerToSpiderInArea = { playerCharacter: Character, distanceToModifierMiddle: number, distanceCharToSpider: number } | undefined;
 
 const IMAGE_SPIDER_COCON = "Spider Cocon";
 GAME_IMAGES[IMAGE_SPIDER_COCON] = {
@@ -206,8 +209,14 @@ function tickSpider(enemy: Character, game: Game) {
     const spider = enemy as AreaBossEnemyDarknessSpider;
     const modifier = findMapModifierById(spider.mapModifierIdRef, game);
     if (!modifier) return;
+    const closestInfo = findNearesPlayerToSpiderInModifiedArea(spider, modifier, game);
+    if (closestInfo && closestInfo.distanceCharToSpider < MODIFIER_DARKNESS_VIEW_DISTANCE + 25) {
+        spider.damageTakenModifierFactor = 1;
+    } else {
+        spider.damageTakenModifierFactor = 0.01;
+    }
     if (canMove(spider)) {
-        tickMoveBehavior(spider, modifier, game);
+        tickMoveBehavior(spider, modifier, closestInfo, game);
     }
     for (let ability of enemy.abilities) {
         const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
@@ -220,9 +229,8 @@ function tickSpider(enemy: Character, game: Game) {
     checkTurnLegToClone(spider, game);
 }
 
-function tickMoveBehavior(spider: AreaBossEnemyDarknessSpider, modifier: GameMapModifier, game: Game) {
+function tickMoveBehavior(spider: AreaBossEnemyDarknessSpider, modifier: GameMapModifier, closestInfo: NearesPlayerToSpiderInArea, game: Game) {
     let aiBehaviour: "moveBack" | "scarePlayer" | "attackPlayer" = "moveBack";
-    const closestInfo = findNearesPlayerToSpiderInModifiedArea(spider, modifier, game);
     if (closestInfo) {
         const hpPerCent = spider.hp / spider.maxHp;
         if (closestInfo.distanceToModifierMiddle < 2500) {
@@ -271,7 +279,7 @@ function canMove(spider: AreaBossEnemyDarknessSpider): boolean {
     return false;
 }
 
-function findNearesPlayerToSpiderInModifiedArea(areaBoss: AreaBossEnemyDarknessSpider, modifier: GameMapModifier, game: Game): { playerCharacter: Character, distanceToModifierMiddle: number, distanceCharToSpider: number } | undefined {
+function findNearesPlayerToSpiderInModifiedArea(areaBoss: AreaBossEnemyDarknessSpider, modifier: GameMapModifier, game: Game): NearesPlayerToSpiderInArea {
     const middle = getShapeMiddle(modifier.area, game);
     if (!middle) return;
     let closestPlayer: Character | undefined;
