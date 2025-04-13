@@ -165,7 +165,7 @@ function onBossKill(character: Character, game: Game) {
     if (character.level?.level) {
         const moneyAmount = character.level.level;
         addMoneyUiMoreInfo(moneyAmount, `for Boss kills`, game);
-        addMoneyAmountToPlayer(moneyAmount, game.state.players, game);
+        addMoneyAmountToPlayer(moneyAmount, game.state.players, game, 0, `Level ${character.level.level} Boss Kill: `);
     }
     achievementCheckOnBossKill(game.state.achievements, game);
 }

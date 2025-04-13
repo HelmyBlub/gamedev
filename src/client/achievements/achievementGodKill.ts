@@ -50,6 +50,6 @@ function onGameEndCheck(achievement: Achievement, game: Game) {
 }
 
 function giveReward(achievement: Achievement, game: Game) {
-    addMoneyAmountToPlayer(REWARD_MONEY_AMOUNT, game.state.players, game, 20);
+    addMoneyAmountToPlayer(REWARD_MONEY_AMOUNT, game.state.players, game, 20, `${ACHIEVEMENT_NAME_GOD_KILL}: `);
     addMoneyUiMoreInfo(REWARD_MONEY_AMOUNT, `for achievement: ${ACHIEVEMENT_NAME_GOD_KILL}`, game);
 }

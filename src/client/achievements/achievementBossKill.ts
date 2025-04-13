@@ -35,6 +35,6 @@ function onBossKillCheck(achievement: Achievement, game: Game) {
 }
 
 function giveReward(achievement: Achievement, game: Game) {
-    addMoneyAmountToPlayer(REWARD_MONEY_AMOUNT, game.state.players, game, 20);
+    addMoneyAmountToPlayer(REWARD_MONEY_AMOUNT, game.state.players, game, 20, "First Boss Kill: ");
     addMoneyUiMoreInfo(REWARD_MONEY_AMOUNT, `for achievement: ${ACHIEVEMENT_NAME_BOSS_KILL}`, game);
 }

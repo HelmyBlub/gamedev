@@ -51,6 +51,6 @@ function getDescription(achievement: Achievement) {
 
 function giveReward(achievement: Achievement, game: Game) {
     const distance = achievement as AchievementDistance;
-    addMoneyAmountToPlayer(distance.rewardMoney, game.state.players, game);
+    addMoneyAmountToPlayer(distance.rewardMoney, game.state.players, game, 0, `${ACHIEVEMENT_NAME_DISTANCE} of ${distance.distance}: `);
     addMoneyUiMoreInfo(distance.rewardMoney, `for achievement: ${ACHIEVEMENT_NAME_DISTANCE} of ${distance.distance}`, game);
 }

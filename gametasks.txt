@@ -2,15 +2,11 @@ next test run:
 increase version
 
 current tasks:   
-- achievements for curses? 
-    - "get cursed"
-    - "defeat cursed boss"
-    - "defeat cursed boss which has a legendary"
-    - "cleanse cursed legendary"
 - money for achivement popup easy to miss. Change it?
     - money for boss kill easy miss
 
 - play my game
+    - check curse balancing
 
 next feature ideas:
 - maybe:

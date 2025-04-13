@@ -40,6 +40,6 @@ function getDescription(achievement: Achievement) {
 }
 
 function giveReward(achievement: Achievement, game: Game) {
-    addMoneyAmountToPlayer(REWARD_MONEY_AMOUNT, game.state.players, game);
+    addMoneyAmountToPlayer(REWARD_MONEY_AMOUNT, game.state.players, game, 0, `${ACHIEVEMENT_NAME_CURSED}: `);
     addMoneyUiMoreInfo(REWARD_MONEY_AMOUNT, `for achievement: ${ACHIEVEMENT_NAME_CURSED}`, game);
 }

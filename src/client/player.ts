@@ -307,7 +307,7 @@ export function getTextYouGainMoneyWhen(): string[] {
     return texts;
 }
 
-export function addMoneyAmountToPlayer(moneyAmount: number, players: Player[], game: Game, floatingTextOffsetY: number = 0) {
+export function addMoneyAmountToPlayer(moneyAmount: number, players: Player[], game: Game, floatingTextOffsetY: number = 0, reason: string = "") {
     for (let player of players) {
         const moneyFactor = player.character.bonusMoneyFactor !== undefined ? player.character.bonusMoneyFactor : 1;
         const finalMoneyAmount = moneyAmount * moneyFactor;
@@ -315,7 +315,7 @@ export function addMoneyAmountToPlayer(moneyAmount: number, players: Player[], g
         if (finalMoneyAmount > 0 && player.clientId === game.multiplayer.myClientId) {
             const textPosition = getCameraPosition(game);
             textPosition.y += floatingTextOffsetY;
-            game.UI.displayTextData.push(createPaintTextData(textPosition, `$${finalMoneyAmount.toFixed(1)}`, "black", "24", game.state.time, 5000));
+            game.UI.displayTextData.push(createPaintTextData(textPosition, `${reason}$${finalMoneyAmount.toFixed(1)}`, "black", "32", game.state.time, 5000));
         }
     }
     localStorageSaveMidGame(game);
