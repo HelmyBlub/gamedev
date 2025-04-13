@@ -3,7 +3,7 @@ import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from
 import { calculateDistance, getCameraPosition, getNextId, getTickInterval } from "../../game.js";
 import { Position, Game, IdCounter, FACTION_PLAYER } from "../../gameModel.js";
 import { playerInputBindingToDisplayValue } from "../../input/playerInput.js";
-import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
+import { MoreInfoHoverTexts, MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, findAbilityById, getAbilityNameUiText, paintAbilityInputBinding, paintAbilityUiKeyBind } from "../ability.js";
 import { AbilityUpgrade, AbilityUpgradeFunctions, AbilityUpgradesFunctions, getAbilityUpgradeOptionDefault, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
 import { AbilityDamageBreakdown } from "../../combatlog.js";
@@ -1071,8 +1071,9 @@ function createAbilityMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability,
         }
     }
     textLines.push(`damage per second: ${abilityMusicSheet.damagePerSecond}`);
-    pushAbilityUpgradesUiTexts(ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS, textLines, ability);
+    const upgradeHoverLines: MoreInfoHoverTexts = {};
+    pushAbilityUpgradesUiTexts(ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS, textLines, upgradeHoverLines, ability);
 
-    return createMoreInfosPart(ctx, textLines);
+    return createMoreInfosPart(ctx, textLines, undefined, 14, upgradeHoverLines);
 }
 

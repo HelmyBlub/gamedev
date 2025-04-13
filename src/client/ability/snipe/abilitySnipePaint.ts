@@ -3,7 +3,7 @@ import { FACTION_ENEMY, FACTION_PLAYER, Game, Position } from "../../gameModel.j
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { GAME_IMAGES, loadImage } from "../../imageLoad.js";
 import { playerInputBindingToDisplayValue } from "../../input/playerInput.js";
-import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
+import { MoreInfoHoverTexts, MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
 import { Ability, AbilityObject, AbilityOwner, PaintOrderAbility, getAbilityNameUiText, paintAbilityUiDefault, paintAbilityUiKeyBind } from "../ability.js";
 import { pushAbilityUpgradesUiTexts } from "../abilityUpgrade.js";
 import { ABILITY_NAME_SNIPE, ABILITY_SNIPE_DAMAGE_PER_LEVEL, ABILITY_SNIPE_MAGAZIN_SIZE_PER_LEVEL, ABILITY_SNIPE_PAINT_FADE_DURATION, ABILITY_SNIPE_RANGE_PER_LEVEL, ABILITY_SNIPE_SNIPE_FREQUENCY_PER_LEVEL, ABILITY_SNIPE_UPGRADE_FUNCTIONS, AbilityObjectSnipe, AbilitySnipe, getAbilitySnipeRange, getAbilitySnipeShotFrequency, getSniperRiflePosition, IMAGE_NAME_SNIPE_AIM } from "./abilitySnipe.js";
@@ -128,7 +128,8 @@ export function createAbilitySnipeMoreInfos(ctx: CanvasRenderingContext2D, abili
         `Reload Time: ${(abilitySnipe.baseRechargeTime / 1000).toFixed(2)}s`,
     );
 
-    pushAbilityUpgradesUiTexts(ABILITY_SNIPE_UPGRADE_FUNCTIONS, textLines, ability);
+    const upgradeHoverLines: MoreInfoHoverTexts = {};
+    pushAbilityUpgradesUiTexts(ABILITY_SNIPE_UPGRADE_FUNCTIONS, textLines, upgradeHoverLines, ability);
 
-    return createMoreInfosPart(ctx, textLines);
+    return createMoreInfosPart(ctx, textLines, undefined, 14, upgradeHoverLines);
 }

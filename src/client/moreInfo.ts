@@ -1,4 +1,5 @@
 import { Ability, createMoreInfosAbilities } from "./ability/ability.js";
+import { paintAbilityUpgradeMoreInfosIfMouseHovered } from "./ability/abilityUpgrade.js";
 import { createAchievementsMoreInfo } from "./achievements/achievements.js";
 import { findMyCharacter } from "./character/character.js";
 import { Character } from "./character/characterModel.js";
@@ -17,11 +18,16 @@ import { createMoreInfoMoney, createMoreInfoMoneyGainedPart, findPlayerById } fr
 
 export type MoreInfoPart = {
     texts: string[],
+    hoverText?: MoreInfoHoverTexts,
     fontSize: number,
     width: number,
     height: number,
     group?: string,
+    lastPaintedPos?: Position,
 }
+
+
+export type MoreInfoHoverTexts = { [key: number]: string[] };
 
 export type MoreInfosPartContainers = {
     selected?: number,
@@ -44,7 +50,7 @@ export type MoreInfos = {
     containers: MoreInfosPartContainers,
 }
 
-export function createMoreInfosPart(ctx: CanvasRenderingContext2D, texts: string[], group: string | undefined = undefined, fontSize: number = 14): MoreInfoPart {
+export function createMoreInfosPart(ctx: CanvasRenderingContext2D, texts: string[], group: string | undefined = undefined, fontSize: number = 14, hoverTexts: MoreInfoHoverTexts | undefined = undefined): MoreInfoPart {
     ctx.font = fontSize + "px Arial";
     let width = 0;
     for (let text of texts) {
@@ -58,6 +64,7 @@ export function createMoreInfosPart(ctx: CanvasRenderingContext2D, texts: string
         texts: texts,
         width: width,
         group: group,
+        hoverText: hoverTexts,
     }
 }
 
@@ -254,6 +261,7 @@ export function paintMoreInfos(ctx: CanvasRenderingContext2D, moreInfos: MoreInf
     if (moreInfos.containers.containers.length > 0) {
         paintMoreInfosPartsContainer(ctx, moreInfos.containers.containers[moreInfos.containers.selected!], paintX, paintY);
     }
+    //paintAbilityUpgradeMoreInfosIfMouseHovered(ctx, game);
 }
 
 export function createCharacterMoreInfosPartContainer(ctx: CanvasRenderingContext2D, character: Character, moreInfos: MoreInfos, game: Game, heading: string = "Character"): MoreInfosPartContainer {
@@ -410,6 +418,7 @@ export function createDefaultMoreInfosContainer(ctx: CanvasRenderingContext2D, h
 
 export function paintMoreInfosPart(ctx: CanvasRenderingContext2D, moreInfosPart: MoreInfoPart, drawStartX: number = 10, drawStartY: number = 60) {
     const verticalSpacing = 1;
+    moreInfosPart.lastPaintedPos = { x: drawStartX, y: drawStartY };
     ctx.font = moreInfosPart.fontSize + "px Arial";
     ctx.fillStyle = "white";
     ctx.fillRect(drawStartX, drawStartY, moreInfosPart.width, moreInfosPart.height);

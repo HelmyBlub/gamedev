@@ -1,6 +1,8 @@
 import { Character } from "../character/characterModel.js";
 import { AbilityUpgradeOption, UpgradeOptionAndProbability } from "../character/upgrade.js";
 import { Game } from "../gameModel.js";
+import { paintTextLinesWithKeys } from "../gamePaint.js";
+import { MoreInfoHoverTexts } from "../moreInfo.js";
 import { ABILITIES_FUNCTIONS, Ability } from "./ability.js"
 
 export type AbilityUpgrade = {
@@ -35,7 +37,7 @@ export function upgradeAbility(ability: Ability, character: Character, upgradeOp
     character.upgradeChoices.choices = [];
 }
 
-export function pushAbilityUpgradesUiTexts(upgradeFunctions: AbilityUpgradesFunctions, texts: string[], ability: Ability) {
+export function pushAbilityUpgradesUiTexts(upgradeFunctions: AbilityUpgradesFunctions, texts: string[], upgradeHoverLines: MoreInfoHoverTexts | undefined, ability: Ability) {
     const keys = Object.keys(upgradeFunctions);
     let first = true;
     for (let key of keys) {
@@ -45,7 +47,13 @@ export function pushAbilityUpgradesUiTexts(upgradeFunctions: AbilityUpgradesFunc
                 texts.push("Upgrades:");
                 first = false;
             }
-            texts.push(upgradeFunctions[key].getStatsDisplayText(ability));
+            const functions = upgradeFunctions[key];
+            texts.push(functions.getStatsDisplayText(ability));
+            if (upgradeHoverLines && functions.getMoreInfoText) {
+                const hoverLines = functions.getMoreInfoText(ability, ability.upgrades[key]);
+                upgradeHoverLines[texts.length - 1] = hoverLines;
+            }
+
         }
     }
 }
@@ -89,4 +97,25 @@ export function getAbilityUpgradeOptionDefault(ability: Ability, upgradeName: st
         option: option,
         probability: 1,
     }];
+}
+
+export function paintAbilityUpgradeMoreInfosIfMouseHovered(ctx: CanvasRenderingContext2D, game: Game) {
+    if (!game.UI.displayMoreInfos) return;
+    if (game.UI.moreInfos.containers.selected == undefined) return;
+    const mousePos = game.mouseRelativeCanvasPosition;
+    const selectedContainer = game.UI.moreInfos.containers.containers[game.UI.moreInfos.containers.selected];
+
+    for (let moreInfosPart of selectedContainer.moreInfoParts) {
+        if (moreInfosPart.lastPaintedPos === undefined || moreInfosPart.hoverText === undefined) continue;
+        if (moreInfosPart.lastPaintedPos.x < mousePos.x && mousePos.x < moreInfosPart.lastPaintedPos.x + moreInfosPart.width
+            && moreInfosPart.lastPaintedPos.y < mousePos.y && mousePos.y < moreInfosPart.lastPaintedPos.y + moreInfosPart.height
+        ) {
+            const mouseHoverIndex = Math.floor((mousePos.y - moreInfosPart.lastPaintedPos.y) / moreInfosPart.fontSize);
+            const hoverText = moreInfosPart.hoverText[mouseHoverIndex];
+            if (hoverText !== undefined) {
+                paintTextLinesWithKeys(ctx, hoverText, mousePos, 14, false, true);
+            }
+        }
+    }
+    selectedContainer.moreInfoParts
 }

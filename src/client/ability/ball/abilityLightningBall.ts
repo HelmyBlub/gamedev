@@ -9,7 +9,7 @@ import { getPointPaintPosition } from "../../gamePaint.js";
 import { calculateMovePosition, getFirstBlockingGameMapTilePositionTouchingLine, isMoveFromToBlocking } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../input/playerInput.js";
 import { fixedRandom } from "../../randomNumberGenerator.js";
-import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
+import { MoreInfoHoverTexts, MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectSomethingToCharacterHit, getAbilityNameUiText, paintAbilityUiDefault, paintAbilityUiKeyBind } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
 import { ABILITY_LIGHTNING_BALL_UPGRADE_BOUNCE_BONUS, addAbilityLightningBallUpgradeBounceBonus, lightningBallUpgradeBounceBonusGetBonusDamageFactor, lightningBallUpgradeBounceBonusSetBonusDamageFactor } from "./abilityLightningBallUpgradeBounceBonus.js";
@@ -387,9 +387,9 @@ function createAbilityMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability,
     }
     textLines.push(`Damage: ${abilityLightningBall.damage}`);
 
+    const upgradeHoverLines: MoreInfoHoverTexts = {};
+    pushAbilityUpgradesUiTexts(ABILITY_LIGHTNING_BALL_UPGRADE_FUNCTIONS, textLines, upgradeHoverLines, ability);
 
-    pushAbilityUpgradesUiTexts(ABILITY_LIGHTNING_BALL_UPGRADE_FUNCTIONS, textLines, ability);
-
-    return createMoreInfosPart(ctx, textLines);
+    return createMoreInfosPart(ctx, textLines, undefined, 14, upgradeHoverLines);
 }
 

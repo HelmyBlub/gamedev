@@ -2,9 +2,12 @@ next test run:
 increase version
 
 current tasks:   
-- money for achivement popup easy to miss. Change it?
-    - money for boss kill easy miss
-
+- continue: decide if start playing my game or finish UI upgrade change
+- UI Change upgrades:
+    - function "paintAbilityUpgradeMoreInfosIfMouseHovered"
+        - text is not correct
+        - text should be painted differently
+    - if feel it is confusing. Better just display level and show detailed info on hover?
 - play my game
     - check curse balancing
 

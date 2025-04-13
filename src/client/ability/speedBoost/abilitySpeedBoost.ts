@@ -133,7 +133,7 @@ function createAbilitySpeedBoostMoreInfos(ctx: CanvasRenderingContext2D, ability
         `Speed Duration: ${(abilitySpeedBoost.duration / 1000).toFixed(2)}s`,
         `Speed Cooldown: ${(abilitySpeedBoost.cooldown / 1000).toFixed(2)}s`,
     );
-    pushAbilityUpgradesUiTexts(ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS, textLines, ability);
+    pushAbilityUpgradesUiTexts(ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS, textLines, undefined, ability);
 
     return createMoreInfosPart(ctx, textLines);
 }
