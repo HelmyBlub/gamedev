@@ -1,7 +1,8 @@
 import { AbilityObject, AbilityObjectCircle, PaintOrderAbility } from "../../../ability/ability.js";
+import { achivementCursedOnGettingCursed } from "../../../achievements/achievementCursed.js";
 import { applyCurse, createCurse, Curse, increaseCurseLevel } from "../../../curse/curse.js";
 import { calculateDistance, getCameraPosition } from "../../../game.js";
-import { FACTION_ENEMY, Game } from "../../../gameModel.js";
+import { FACTION_ENEMY, FACTION_PLAYER, Game } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
 import { findNearNonBlockingPosition } from "../../../map/map.js";
 import { findMapModifierById } from "../../../map/modifiers/mapModifier.js";
@@ -106,6 +107,7 @@ function curseIncreaseCharacter(character: Character, curseType: string, game: G
         curse = character.curses!.find(c => c.type === curseType) as Curse;
     }
     if (!curse) {
+        if (character.faction === FACTION_PLAYER) achivementCursedOnGettingCursed(game);
         curse = createCurse(curseType, game.state.idCounter);
         applyCurse(curse, character, game);
     } else {

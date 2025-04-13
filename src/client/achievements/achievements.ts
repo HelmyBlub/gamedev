@@ -7,6 +7,10 @@ import { Game } from "../gameModel.js"
 import { MoreInfoPart, MoreInfos, MoreInfosPartContainer, createDefaultMoreInfosContainer, createMoreInfosPart } from "../moreInfo.js"
 import { localStorageSaveMidGame } from "../permanentData.js"
 import { ACHIEVEMENT_NAME_BOSS_KILL, addAchievementBossKill } from "./achievementBossKill.js"
+import { ACHIEVEMENT_NAME_CURSE_CLEANSE_LEGENDARY, addAchievementCurseCleanseLegendary } from "./achievementCurseCleanse.js"
+import { ACHIEVEMENT_NAME_CURSED, addAchievementCursed } from "./achievementCursed.js"
+import { ACHIEVEMENT_NAME_CURSE_KING_KILL, addAchievementCursedKingKill } from "./achievementCursedKingKill.js"
+import { ACHIEVEMENT_NAME_CURSE_KING_KILL_LEGENDARY, addAchievementCursedKingKillLegendary } from "./achievementCursedKingKillLegendary.js"
 import { ACHIEVEMENT_NAME_GAIN_LEGENDARY_BLESSING, addAchievementGainLegendaryBlessing } from "./achievementGainLegendaryBlessing.js"
 import { ACHIEVEMENT_NAME_GOD_HARD_MODE_KILL, addAchievementGodHardModeKill } from "./achievementGodHardModeKill.js"
 import { ACHIEVEMENT_NAME_GOD_KILL, addAchievementGodKill } from "./achievementGodKill.js"
@@ -52,6 +56,10 @@ export function onDomLoadSetAchievementsFunctions() {
     addAchievementUnlockLegendaryOfClass();
     addAchievementGodHardModeKill();
     addAchievementGainLegendaryBlessing();
+    addAchievementCursedKingKill();
+    addAchievementCursedKingKillLegendary();
+    addAchievementCurseCleanseLegendary();
+    addAchievementCursed();
 }
 
 export function achievementCheckOnBossKill(achievements: Achievements, game: Game) {
@@ -111,6 +119,10 @@ export function createDefaultAchivements(): Achievements {
     achievements.open.push(createAchievementUnlockLegendaryOfClass(CHARACTER_CLASS_TOWER_BUILDER));
     achievements.open.push(createAchievementUnlockLegendaryOfClass(CHARACTER_CLASS_TAMER));
     achievements.open.push({ name: ACHIEVEMENT_NAME_GAIN_LEGENDARY_BLESSING });
+    achievements.open.push({ name: ACHIEVEMENT_NAME_CURSED });
+    achievements.open.push({ name: ACHIEVEMENT_NAME_CURSE_KING_KILL });
+    achievements.open.push({ name: ACHIEVEMENT_NAME_CURSE_KING_KILL_LEGENDARY });
+    achievements.open.push({ name: ACHIEVEMENT_NAME_CURSE_CLEANSE_LEGENDARY });
     return achievements;
 }
 
@@ -134,7 +146,7 @@ export function createAchievementsMoreInfo(ctx: CanvasRenderingContext2D, moreIn
     return moreInfosContainer;
 }
 
-function finishAchievement(achievement: Achievement, achievements: Achievements, game: Game) {
+export function finishAchievement(achievement: Achievement, achievements: Achievements, game: Game) {
     const functions = ACHIEVEMENTS_FUNCTIONS[achievement.name];
     const index = achievements.open.findIndex((a) => a === achievement);
     if (index === -1) {
