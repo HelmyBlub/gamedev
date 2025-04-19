@@ -2,7 +2,6 @@ next test run:
 increase version
 
 current tasks:   
-- Improve: popup text for achievemnts outlined to make reading easier
 - Improve: display zoom amount on change
 - play my game
     - check curse balancing

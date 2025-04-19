@@ -13,6 +13,7 @@ import { localStorageLoad } from "../permanentData.js";
 import { createRequiredMoreInfos, moreInfosHandleMouseClick } from "../moreInfo.js";
 import { mousePositionToMapPosition } from "../map/map.js";
 import { CHEAT_ACTIONS, executeCheatAction } from "../cheat.js";
+import { pushStackPaintTextData } from "../floatingText.js";
 
 export const MOVE_ACTION = "moveAction";
 export const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3", "upgrade4", "upgrade5"];
@@ -238,6 +239,8 @@ export function zoomCanvas(zoomIn: boolean, game: Game, zoomStep = 0.1) {
     zoom.factor *= zoomIn ? 1 + zoomStep : 1 - zoomStep;
     zoom.factor = Math.min(Math.max(zoom.min, zoom.factor), zoom.max);
     if (Math.abs(zoom.factor - 1) < zoomStep / 2) zoom.factor = 1;
+    const zoomIdRef = 0.1234;
+    pushStackPaintTextData(game.UI.stackTextsData, `Zoom: ${zoom.factor.toFixed(2)}`, game.state.time, undefined, undefined, zoomIdRef);
 }
 
 function handleSaveStateAction(saveStateNumber: number, isSaveAction: boolean, game: Game) {

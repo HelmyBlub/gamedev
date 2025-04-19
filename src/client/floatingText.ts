@@ -51,6 +51,7 @@ export function pushStackPaintTextData(paintStackTextsData: PaintStackTextsData,
         let found = paintStackTextsData.textStack.find((d) => d.idRef === idRef);
         if (found) {
             found.removeTime = removeTime;
+            found.text = text;
             if (timer) found.countdownTimer = currentTime + timer;
             return;
         }
