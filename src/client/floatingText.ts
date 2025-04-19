@@ -10,6 +10,7 @@ export type PaintTextData = {
     color: string,
     fontSize: string,
     removeTime: number,
+    outlined?: boolean,
 }
 
 export type PaintStackTextsData = {
@@ -69,13 +70,14 @@ function createStackPaintTextData(text: string, removeTime: number, countDownEnd
     }
 }
 
-export function createPaintTextData(position: Position, text: string, color: string, fontSize: string, currentTime: number, duration: number = 1000): PaintTextData {
+export function createPaintTextData(position: Position, text: string, color: string, fontSize: string, currentTime: number, duration: number = 1000, outlined: boolean = false): PaintTextData {
     return {
         text: text,
         paintPosition: { x: position.x, y: position.y },
         color: color,
         fontSize: fontSize,
         removeTime: currentTime + duration,
+        outlined: outlined,
     }
 }
 
@@ -85,7 +87,7 @@ export function displayTextAtCameraPosition(text: string, game: Game) {
     game.UI.displayTextData.push(createPaintTextData(textPosition1, text, "black", "24", game.state.time, 5000));
 }
 
-export function paintDamageNumbers(ctx: CanvasRenderingContext2D, damageNumbersData: PaintTextData[] | undefined, cameraPosition: Position, time: number, game: Game) {
+export function paintTextData(ctx: CanvasRenderingContext2D, damageNumbersData: PaintTextData[] | undefined, cameraPosition: Position, time: number, game: Game) {
     if (damageNumbersData === undefined) return;
     const centerX = ctx.canvas.width / game.UI.zoom.factor / 2;
     const centerY = ctx.canvas.height / game.UI.zoom.factor / 2;
@@ -100,7 +102,11 @@ export function paintDamageNumbers(ctx: CanvasRenderingContext2D, damageNumbersD
 
             ctx.fillStyle = data.color;
             ctx.font = data.fontSize + "px Arial";
-            ctx.fillText(data.text, paintX, paintY + timeLeft);
+            if (data.outlined) {
+                paintTextWithOutline(ctx, "white", data.color, data.text, paintX, paintY + timeLeft);
+            } else {
+                ctx.fillText(data.text, paintX, paintY + timeLeft);
+            }
         }
     }
 }

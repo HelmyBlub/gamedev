@@ -13,7 +13,7 @@ import { paintMap, paintMapCharacters } from "./map/mapPaint.js";
 import { Player, findPlayerById, isAutoUpgradeActive } from "./player.js";
 import { playerInputBindingToDisplayValue } from "./input/playerInput.js";
 import { createEndScreenMoreInfos, paintMoreInfos, paintMoreInfosPart } from "./moreInfo.js";
-import { paintDamageNumbers, paintStackTextData } from "./floatingText.js";
+import { paintTextData, paintStackTextData } from "./floatingText.js";
 import { paintMapModifierLate } from "./map/modifiers/mapModifier.js";
 import { moveByDirectionAndDistance } from "./map/map.js";
 import { paintAdditionalPaints } from "./additionalPaint.js";
@@ -45,7 +45,7 @@ export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) 
     paintAdditionalPaints(ctx, cameraPosition, game);
     paintBossCrown(ctx, cameraPosition, game);
     paintAbilityObjects(ctx, game.state.abilityObjects, game, "afterCharacterPaint");
-    paintDamageNumbers(ctx, game.UI.displayTextData, cameraPosition, game.state.time, game);
+    paintTextData(ctx, game.UI.displayTextData, cameraPosition, game.state.time, game);
     paintMapModifierLate(ctx, cameraPosition, game);
     paintMyCharacterAbilitiesLate(ctx, cameraPosition, game);
     ctx.resetTransform();

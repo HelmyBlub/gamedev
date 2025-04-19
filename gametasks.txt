@@ -2,14 +2,30 @@ next test run:
 increase version
 
 current tasks:   
-- continue: decide if start playing my game or finish UI upgrade change
+- Improve: popup text for achievemnts outlined to make reading easier
+- Improve: display zoom amount on change
+- play my game
+    - check curse balancing
 - UI Change upgrades:
     - function "paintAbilityUpgradeMoreInfosIfMouseHovered"
         - text is not correct
         - text should be painted differently
     - if feel it is confusing. Better just display level and show detailed info on hover?
-- play my game
-    - check curse balancing
+- Improve: restart confirmation question when game not ended and started?
+- Improve: restart information display when in start area?
+    - unclear to new user that "T" is "restart" key
+- Bug: "G" Auto upgrade does not work anymore?
+- Improve: Zoom Key not mentioned
+- Bug: on far away zoom map rendering broken
+- Change: distance high score based on highest reached distance and not the one died on?
+- Bug: settings menu playerGlobalAlphaText below input. Should be on same line
+- Bug: enemies speed seem to fluctuate but it should not?
+- Improve: upgrade building move speed display % base speed increase instead of confusing value?
+- Improve: on end money screen boss hp big number split 
+- Change: think about sniper damage meter upgrade split
+    - % damage upgrade get to much benefits?
+- Bug: past character sniper upgrade more rifles does not rotate weapon
+- Change: ball bounce upgrade to strong? balance differently
 
 next feature ideas:
 - maybe:

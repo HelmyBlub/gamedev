@@ -315,7 +315,7 @@ export function addMoneyAmountToPlayer(moneyAmount: number, players: Player[], g
         if (finalMoneyAmount > 0 && player.clientId === game.multiplayer.myClientId) {
             const textPosition = getCameraPosition(game);
             textPosition.y += floatingTextOffsetY;
-            game.UI.displayTextData.push(createPaintTextData(textPosition, `${reason}$${finalMoneyAmount.toFixed(1)}`, "black", "32", game.state.time, 5000));
+            game.UI.displayTextData.push(createPaintTextData(textPosition, `${reason}$${finalMoneyAmount.toFixed(1)}`, "black", "32", game.state.time, 5000, true));
         }
     }
     localStorageSaveMidGame(game);
