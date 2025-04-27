@@ -21,20 +21,24 @@ export type PermanentDataParts = {
     mapModifier?: GameMapModifier[],
 }
 
-const LOCALSTORAGE_GAME = "HelmysGame";
+export const PERMANENT_DATA_LOCALSTORAGE_GAME = "HelmysGame";
 
 export function localStorageLoad(game: Game) {
     if (isDataGameVersionOutdated(GAME_VERSION)) {
         resetPermanentData();
         localStorageSaveAll(game);
     } else {
-        const permanentDataParts: PermanentDataParts | undefined = jsonParseNullAllowed(localStorage.getItem(LOCALSTORAGE_GAME));
-        loadPermanentDataParts(permanentDataParts, game);
+        permanentStorageLoadByJson(localStorage.getItem(PERMANENT_DATA_LOCALSTORAGE_GAME), game);
     }
 }
 
+export function permanentStorageLoadByJson(data: string | null, game: Game) {
+    const permanentDataParts: PermanentDataParts | undefined = jsonParseNullAllowed(data);
+    loadPermanentDataParts(permanentDataParts, game);
+}
+
 export function resetPermanentData() {
-    localStorage.removeItem(LOCALSTORAGE_GAME);
+    localStorage.removeItem(PERMANENT_DATA_LOCALSTORAGE_GAME);
 }
 
 export function copyAndSetPermanentDataForReplay(permanentData: PermanentDataParts, game: Game) {
@@ -58,18 +62,18 @@ export function localStorageSaveAll(game: Game) {
         permanentData.highscores = game.state.highscores;
         permanentData.permanentPlayerData = game.state.players[0].permanentData;
         permanentData.mapModifier = game.state.map.mapModifiers;
-        localStorage.setItem(LOCALSTORAGE_GAME, JSON.stringify(permanentData));
+        localStorage.setItem(PERMANENT_DATA_LOCALSTORAGE_GAME, JSON.stringify(permanentData));
     }
 }
 
 export function localStorageSaveMidGame(game: Game) {
     if (!game.multiplayer.disableLocalStorage && !game.testing.replay) {
-        const permanentData: PermanentDataParts | undefined = jsonParseNullAllowed(localStorage.getItem(LOCALSTORAGE_GAME));
+        const permanentData: PermanentDataParts | undefined = jsonParseNullAllowed(localStorage.getItem(PERMANENT_DATA_LOCALSTORAGE_GAME));
         if (!permanentData) return;
         permanentData.achievements = game.state.achievements;
         permanentData.permanentPlayerData = game.state.players[0].permanentData;
         permanentData.mapModifier = game.state.map.mapModifiers;
-        localStorage.setItem(LOCALSTORAGE_GAME, JSON.stringify(permanentData));
+        localStorage.setItem(PERMANENT_DATA_LOCALSTORAGE_GAME, JSON.stringify(permanentData));
     }
 }
 
@@ -85,6 +89,16 @@ export function setPermanentDataFromReplayData(game: Game) {
             const player = createPlayerWithPlayerCharacter(game.state.idCounter, replayClient.clientInfo.id, { x: 0, y: 0 }, game.state.randomSeed, game);
             game.state.players.push(player);
         }
+    }
+}
+
+function jsonParseNullAllowed(jsonString: string | null): any {
+    if (!jsonString) return undefined;
+    try {
+        const result = JSON.parse(jsonString);
+        return result;
+    } catch (e) {
+        return undefined;
     }
 }
 
@@ -178,7 +192,7 @@ function loadAchievements(permanentDataParts: PermanentDataParts, game: Game) {
 }
 
 function isDataGameVersionOutdated(gameVersion: GameVersion): boolean {
-    const permanentDataParts: PermanentDataParts | undefined = jsonParseNullAllowed(localStorage.getItem(LOCALSTORAGE_GAME));
+    const permanentDataParts: PermanentDataParts | undefined = jsonParseNullAllowed(localStorage.getItem(PERMANENT_DATA_LOCALSTORAGE_GAME));
     if (!permanentDataParts || !permanentDataParts.gameVersion) return true;
     const localStorageGameVersion: GameVersion = permanentDataParts.gameVersion;
     if (gameVersion.major !== localStorageGameVersion.major
@@ -239,8 +253,3 @@ function changeBuildingIds(building: Building, idCounter: IdCounter, game: Game)
     }
 }
 
-function jsonParseNullAllowed(jsonString: string | null): any {
-    if (jsonString === null) return undefined;
-    const result = JSON.parse(jsonString);
-    return result;
-}

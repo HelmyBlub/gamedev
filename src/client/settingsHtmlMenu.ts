@@ -2,10 +2,10 @@ import { createDefaultAchivements } from "./achievements/achievements.js";
 import { findAndSetNewCameraCharacterId } from "./character/character.js";
 import { CheatCheckboxes, toggleCheats } from "./cheat.js";
 import { handleCommand } from "./commands.js";
-import { deepCopy, getGameVersionString } from "./game.js";
+import { deepCopy, gameRestart, getGameVersionString } from "./game.js";
 import { Debugging, Game } from "./gameModel.js";
 import { GAME_VERSION } from "./main.js";
-import { resetPermanentData } from "./permanentData.js";
+import { PERMANENT_DATA_LOCALSTORAGE_GAME, permanentStorageLoadByJson, resetPermanentData } from "./permanentData.js";
 import { compressString, downloadBlob, loadCompressedStateFromUrl } from "./stringCompress.js";
 import { initReplay, replayReplayData, testGame } from "./test/gameTest.js";
 
@@ -81,6 +81,9 @@ function addTest(game: Game) {
     addCopyCurrentReplayButton(game);
     addCurrentStateToFileButton(game);
     addLoadTestStateButton(game);
+    addCopySaveToClipboardButton(game);
+    addLoadFromClipboardButton(game);
+
 }
 
 function setVersionNumberToSettingButton() {
@@ -289,6 +292,33 @@ function addCopyLastReplayButton(game: Game) {
             if (game.testing.lastReplay) {
                 navigator.clipboard.writeText(JSON.stringify(game.testing.lastReplay, undefined, 2));
             }
+        });
+    }
+}
+
+function addLoadFromClipboardButton(game: Game) {
+    const buttonName = "load from clipboard";
+    addButtonToTab(buttonName, "test");
+    const button = document.getElementById(buttonName) as HTMLButtonElement;
+    if (button) {
+        button.addEventListener('click', () => {
+            if (game.multiplayer.websocket) return;
+            navigator.clipboard.readText().then((data) => {
+                permanentStorageLoadByJson(data, game);
+                gameRestart(game);
+            });
+        });
+    }
+}
+
+function addCopySaveToClipboardButton(game: Game) {
+    const buttonName = "copy save to clipboard";
+    addButtonToTab(buttonName, "test");
+    const button = document.getElementById(buttonName) as HTMLButtonElement;
+    if (button) {
+        button.addEventListener('click', () => {
+            const data = localStorage.getItem(PERMANENT_DATA_LOCALSTORAGE_GAME);
+            if (data) navigator.clipboard.writeText(data);
         });
     }
 }

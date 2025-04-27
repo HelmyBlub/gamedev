@@ -2,12 +2,14 @@ next test run:
 increase version
 
 current tasks:   
+- feature: copy to clipboard/load from clipboard
 - bug: tamer legendary broken
 - play my game
     - check curse balancing
     - check fountain balancing
 - change bosses on distance instead of time? playtest?
 
+- money upgrade building needs more scaling on high values
 - bug: fountain win -> score did not make sense
 - UI Change upgrades:
     - function "paintAbilityUpgradeMoreInfosIfMouseHovered"
@@ -30,6 +32,7 @@ current tasks:
 - Change: ball bounce upgrade to strong? balance differently
 - bug?: ice curse king -> whole area is ice. can the crown reach the player?
 - bug?: curse can spread which is ok. Can cleansed version spread?
+
 
 next feature ideas:
 - maybe:
