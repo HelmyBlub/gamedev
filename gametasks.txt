@@ -2,12 +2,13 @@ next test run:
 increase version
 
 current tasks:   
-- feature: copy to clipboard/load from clipboard
 - bug: tamer legendary broken
+    - reproduce: when king has legendary on game load, when getting it back it can not level
 - play my game
     - check curse balancing
     - check fountain balancing
 - change bosses on distance instead of time? playtest?
+- bug: tamer pets not lised in moreInfo if more than one class
 
 - money upgrade building needs more scaling on high values
 - bug: fountain win -> score did not make sense

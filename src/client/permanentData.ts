@@ -9,6 +9,7 @@ import { GAME_VERSION } from "./main.js";
 import { Highscores, createHighscoreBoards } from "./highscores.js";
 import { Achievements, createDefaultAchivements } from "./achievements/achievements.js";
 import { GameMapModifier } from "./map/modifiers/mapModifier.js";
+import { TamerPetCharacter } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
 
 export type PermanentDataParts = {
     pastCharacters?: PastPlayerCharacters,
@@ -238,6 +239,10 @@ function changeBuildingIds(building: Building, idCounter: IdCounter, game: Game)
                     for (let pet of king.pets) {
                         if (pet.legendary && pet.legendary.buildingIdRef === oldBuildingId) {
                             pet.legendary.buildingIdRef = building.id;
+                            if (classBuilding.characterClass) {
+                                const tamerPet = pet as TamerPetCharacter;
+                                tamerPet.classIdRef = classBuilding.characterClass.id;
+                            }
                         }
                     }
                 }
