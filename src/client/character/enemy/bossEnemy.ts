@@ -8,6 +8,7 @@ import { tickCharacterDebuffs } from "../../debuff/debuff.js";
 import { calculateDirection, deepCopy, getNextId, getTimeSinceFirstKill } from "../../game.js";
 import { IdCounter, Game, Position, BossStuff, FACTION_ENEMY, CelestialDirection } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
+import { getHighestPlayerDistanceFromMapMiddle } from "../../highscores.js";
 import { GameMap, findNearNonBlockingPosition, getMapMidlePosition, moveByDirectionAndDistance } from "../../map/map.js";
 import { mapModifierGrowArea } from "../../map/modifiers/mapModifier.js";
 import { addMoneyAmountToPlayer, addMoneyUiMoreInfo, getPlayerFurthestAwayFromSpawn } from "../../player.js";
@@ -101,6 +102,10 @@ export function checkForBossSpawn(game: Game) {
     if (getTimeSinceFirstKill(game.state) >= nextBossSpawnTime) {
         spawnBoss(bossStuff, game);
     }
+    // const nextBossSpawnDistance = getNextBossSpawnDistance(bossStuff);
+    // if (getHighestPlayerDistanceFromMapMiddle(game) >= nextBossSpawnDistance) {
+    //     spawnBoss(bossStuff, game);
+    // }
 }
 
 export function spawnBoss(bossStuff: BossStuff, game: Game) {
@@ -113,6 +118,12 @@ export function spawnBoss(bossStuff: BossStuff, game: Game) {
 /// relative to timeSinceFirstKill
 export function getNextBossSpawnTime(bossStuff: BossStuff): number {
     return bossStuff.bossSpawnEachXMilliSecond * bossStuff.bossLevelCounter;
+}
+
+export function getNextBossSpawnDistance(bossStuff: BossStuff): number {
+    const bossSpawnFirstDistanace = 2000;
+    const bossSpawnInteral = 3250;
+    return bossSpawnFirstDistanace + bossSpawnInteral * (bossStuff.bossLevelCounter - 1);
 }
 
 export function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: number) {

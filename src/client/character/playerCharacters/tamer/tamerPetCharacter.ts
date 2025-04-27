@@ -478,6 +478,11 @@ function reset(character: Character) {
 }
 
 function moveTick(pet: TamerPetCharacter, petOwner: Character, game: Game, pathingCache: PathingCache) {
+    const distanceToOwner = calculateDistance(pet, petOwner);
+    if (distanceToOwner > 1000) {
+        setCharacterPosition(pet, petOwner, game.state.map);
+        pet.forcedMovePosition = undefined;
+    }
     if (pet.forcedMovePosition) {
         if (petHappinessToDisplayText(pet.happines, game.state.time) === "very unhappy") {
             delete pet.forcedMovePosition;
@@ -526,15 +531,15 @@ function setMovePositonWithPetCollision(pet: TamerPetCharacter, petOwner: Charac
 }
 
 function setMoveDirectionWithNoTarget(pet: TamerPetCharacter, petOwner: Character, game: Game) {
+    const distanceToOwner = calculateDistance(pet, petOwner);
     switch (pet.petNoTargetBehavior) {
         case "stayClose":
             if (pet.nextMovementUpdateTime === undefined || pet.nextMovementUpdateTime <= game.state.time) {
-                const distance = calculateDistance(pet, petOwner);
-                if (30 > distance) {
+                if (30 > distanceToOwner) {
                     pet.isMoving = false;
                 } else {
                     pet.isMoving = true;
-                    if (distance > 800) {
+                    if (distanceToOwner > 800) {
                         setCharacterPosition(pet, petOwner, game.state.map);
                     } else {
                         const nextWayPoint: Position | null = getNextWaypoint(pet, petOwner, game.state.map, game.performance.pathingCache, game.state.idCounter, game.state.time, game);
@@ -553,8 +558,7 @@ function setMoveDirectionWithNoTarget(pet: TamerPetCharacter, petOwner: Characte
         case "following":
             if (pet.nextMovementUpdateTime === undefined || pet.nextMovementUpdateTime <= game.state.time) {
                 const random = nextRandom(game.state.randomSeed);
-                const distance = calculateDistance(pet, petOwner);
-                if (random > Math.max(distance / 100, 0.2)) {
+                if (random > Math.max(distanceToOwner / 100, 0.2)) {
                     pet.isMoving = false;
                 } else {
                     pet.isMoving = true;

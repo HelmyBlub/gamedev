@@ -14,7 +14,7 @@ import { calculateDistance, getTimeSinceFirstKill } from "../../game.js"
 import { getMapMidlePosition } from "../../map/map.js"
 import { Ability } from "../../ability/ability.js"
 import { TAMER_PET_CHARACTER, TamerPetCharacter } from "./tamer/tamerPetCharacter.js"
-import { getNextBossSpawnTime } from "../enemy/bossEnemy.js"
+import { getNextBossSpawnDistance, getNextBossSpawnTime } from "../enemy/bossEnemy.js"
 import { Curse } from "../../curse/curse.js"
 
 export type PlayerCharacterClassFunctions = {
@@ -387,12 +387,15 @@ function paintBossTimer(ctx: CanvasRenderingContext2D, player: Player, topLeft: 
     if (game.state.timeFirstKill !== undefined) {
         const timeUntiLNextBossMS = getNextBossSpawnTime(game.state.bossStuff) - getTimeSinceFirstKill(game.state);
         const timeUntilNextBossSeconds = Math.round(timeUntiLNextBossMS / 1000);
+
+        // const distanceUntiLNextBoss = getNextBossSpawnDistance(game.state.bossStuff);
         ctx.fillRect(topLeft.x, topLeft.y, timerPaintWidth, height);
         ctx.beginPath();
         ctx.rect(topLeft.x, topLeft.y, timerPaintWidth, height);
         ctx.stroke();
         paintTextWithOutline(ctx, "white", "black", timerDisplayText, topLeft.x + margin, topLeft.y + fontSize);
         paintTextWithOutline(ctx, "white", "black", `${timeUntilNextBossSeconds}s`, topLeft.x + Math.floor(timerPaintWidth / 2), topLeft.y + height - 1, true);
+        // paintTextWithOutline(ctx, "white", "black", `${distanceUntiLNextBoss}`, topLeft.x + Math.floor(timerPaintWidth / 2), topLeft.y + height - 1, true);
     }
     return timerPaintWidth;
 }
