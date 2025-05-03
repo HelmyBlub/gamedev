@@ -1,14 +1,15 @@
-next test run: sniper, builder, tamer, ball, musician
+next test run: ball, musician, sniper, tamer
 increase version
 
 current tasks:   
-- increase boss hitbox with player skin
+- bug?: fountain boss builder towernot working?
 - play my game
     - check curse balancing
     - check fountain balancing
 - bug: tamer pets not lised in moreInfo if more than one class
-
+- cleansed tamer legendary ice should also affect pets
 - money upgrade building needs more scaling on high values
+
 - bug: fountain win -> score did not make sense
 - UI Change upgrades:
     - function "paintAbilityUpgradeMoreInfosIfMouseHovered"
