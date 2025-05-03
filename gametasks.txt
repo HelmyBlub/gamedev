@@ -2,11 +2,12 @@ next test run:
 increase version
 
 current tasks:   
+- change bosses on distance instead of time? playtest?
+    - change to both distance and time
+- on king fight start: teleport remaining bosses in
 - play my game
     - check curse balancing
     - check fountain balancing
-- change bosses on distance instead of time? playtest?
-    - change to both distance and time
 - bug: tamer pets not lised in moreInfo if more than one class
 
 - money upgrade building needs more scaling on high values

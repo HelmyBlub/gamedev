@@ -15,7 +15,7 @@ import { determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPa
 import { CHARACTER_TYPE_FUNCTIONS, Character, IMAGE_SLIME, PLAYER_BASE_HP, createCharacter } from "../characterModel.js";
 import { paintCharacterWithAbilitiesDefault, paintCharatersPets } from "../characterPaint.js";
 import { PathingCache } from "../pathing.js";
-import { getCelestialDirection } from "./bossEnemy.js";
+import { CHARACTER_TYPE_BOSS_ENEMY, getCelestialDirection } from "./bossEnemy.js";
 import { legendaryAbilityGiveBlessing, classBuildingPutLegendaryCharacterStuffBackIntoBuilding } from "../../map/buildings/classBuilding.js";
 import { MoreInfosPartContainer, createCharacterMoreInfosPartContainer } from "../../moreInfo.js";
 import { doDamageMeterSplit } from "../../combatlog.js";
@@ -145,6 +145,12 @@ export function startKingFight(kingAreaPosition: Position, game: Game) {
             game.UI.playerGlobalAlphaMultiplier = 0.25;
         }
         doDamageMeterSplit("King Fight", game);
+        for (let boss of game.state.bossStuff.bosses) {
+            if (boss.type === CHARACTER_TYPE_BOSS_ENEMY) {
+                boss.x = spawn.x;
+                boss.y = spawn.y;
+            }
+        }
     } else {
         throw new Error("bossArea entrance not found, should not be able to happen");
     }

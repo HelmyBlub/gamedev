@@ -1,5 +1,4 @@
 import { Game } from "../gameModel.js";
-import { getHighestPlayerDistanceFromMapMiddle } from "../highscores.js";
 import { MoreInfoPart, createMoreInfosPart } from "../moreInfo.js";
 import { addMoneyAmountToPlayer, addMoneyUiMoreInfo } from "../player.js";
 import { ACHIEVEMENTS_FUNCTIONS, Achievement } from "./achievements.js";

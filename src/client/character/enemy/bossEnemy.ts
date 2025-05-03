@@ -102,10 +102,10 @@ export function checkForBossSpawn(game: Game) {
     if (getTimeSinceFirstKill(game.state) >= nextBossSpawnTime) {
         spawnBoss(bossStuff, game);
     }
-    // const nextBossSpawnDistance = getNextBossSpawnDistance(bossStuff);
-    // if (getHighestPlayerDistanceFromMapMiddle(game) >= nextBossSpawnDistance) {
-    //     spawnBoss(bossStuff, game);
-    // }
+    const nextBossSpawnDistance = getNextBossSpawnDistance(bossStuff);
+    if (getHighestPlayerDistanceFromMapMiddle(game) >= nextBossSpawnDistance) {
+        spawnBoss(bossStuff, game);
+    }
 }
 
 export function spawnBoss(bossStuff: BossStuff, game: Game) {

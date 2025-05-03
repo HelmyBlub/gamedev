@@ -376,8 +376,8 @@ function paintMoney(ctx: CanvasRenderingContext2D, player: Player, topLeft: Posi
 
 
 function paintBossTimer(ctx: CanvasRenderingContext2D, player: Player, topLeft: Position, height: number, game: Game): number {
-    const fontSize = Math.floor(height / 2);
-    ctx.font = `${fontSize}px Arial`;
+    const fontSize = Math.floor(height / 3);
+    ctx.font = `bold ${fontSize}px Arial`;
     ctx.strokeStyle = "black";
     ctx.fillStyle = "white";
     ctx.lineWidth = 2;
@@ -388,14 +388,15 @@ function paintBossTimer(ctx: CanvasRenderingContext2D, player: Player, topLeft: 
         const timeUntiLNextBossMS = getNextBossSpawnTime(game.state.bossStuff) - getTimeSinceFirstKill(game.state);
         const timeUntilNextBossSeconds = Math.round(timeUntiLNextBossMS / 1000);
 
-        // const distanceUntiLNextBoss = getNextBossSpawnDistance(game.state.bossStuff);
+        const distanceUntiLNextBoss = getNextBossSpawnDistance(game.state.bossStuff);
         ctx.fillRect(topLeft.x, topLeft.y, timerPaintWidth, height);
         ctx.beginPath();
         ctx.rect(topLeft.x, topLeft.y, timerPaintWidth, height);
         ctx.stroke();
         paintTextWithOutline(ctx, "white", "black", timerDisplayText, topLeft.x + margin, topLeft.y + fontSize);
-        paintTextWithOutline(ctx, "white", "black", `${timeUntilNextBossSeconds}s`, topLeft.x + Math.floor(timerPaintWidth / 2), topLeft.y + height - 1, true);
-        // paintTextWithOutline(ctx, "white", "black", `${distanceUntiLNextBoss}`, topLeft.x + Math.floor(timerPaintWidth / 2), topLeft.y + height - 1, true);
+
+        paintTextWithOutline(ctx, "white", "black", `${distanceUntiLNextBoss}`, topLeft.x + Math.floor(timerPaintWidth / 2), topLeft.y + fontSize * 2 - 1, true);
+        paintTextWithOutline(ctx, "white", "black", `or ${timeUntilNextBossSeconds}s`, topLeft.x + Math.floor(timerPaintWidth / 2), topLeft.y + height - 1, true);
     }
     return timerPaintWidth;
 }
