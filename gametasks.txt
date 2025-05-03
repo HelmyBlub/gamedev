@@ -1,10 +1,8 @@
-next test run:
+next test run: sniper, builder, tamer, ball, musician
 increase version
 
 current tasks:   
-- change bosses on distance instead of time? playtest?
-    - change to both distance and time
-- on king fight start: teleport remaining bosses in
+- increase boss hitbox with player skin
 - play my game
     - check curse balancing
     - check fountain balancing
