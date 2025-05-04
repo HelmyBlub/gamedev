@@ -1,12 +1,12 @@
-next test run: musician, sniper, tamer
+next test run: 
 increase version
 
 current tasks:   
-- bug?: fountain boss builder tower not working?
 - play my game
     - check curse balancing
+        - unsure about poison
     - check fountain balancing
-- bug: tamer pets not lised in moreInfo if more than one class
+- bug: tamer pets not listed in moreInfo if more than one class
 - cleansed tamer legendary ice should also affect pets
 - money upgrade building needs more scaling on high values
 
