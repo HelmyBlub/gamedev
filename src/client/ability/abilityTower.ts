@@ -20,6 +20,8 @@ import { ABILITY_NAME_SINGLETARGET } from "./abilitySingleTarget.js";
 import { ABILITY_NAME_SWORD } from "./abilitySword.js";
 import { MoreInfoPart, createMoreInfosPart } from "../moreInfo.js";
 import { AbilityDamageBreakdown } from "../combatlog.js";
+import { CHARACTER_TYPE_AREA_BOSS } from "../character/enemy/areaBoss/areaBoss.js";
+import { CHARACTER_TYPE_CURSE_FOUNTAIN_BOSS } from "../character/enemy/curseFountainBoss.js";
 
 type AbilityObjectTower = AbilityObject & {
     ownerId: number,
@@ -207,7 +209,7 @@ function castTower(abilityOwner: AbilityOwner, ability: Ability, castPosition: P
     const newTower: AbilityObjectTower = createAbilityObjectTower(game.state.idCounter, abilityOwner.id, abilityOwner.faction, castPosition, nextAbility, abilityTower.damage);
     newTower.abilityIdRef = ability.id;
     if (abilityOwner.faction === FACTION_ENEMY) {
-        if (abilityOwner.type === CHARACTER_TYPE_BOSS_ENEMY || abilityOwner.type === CHARACTER_TYPE_KING_ENEMY) {
+        if (abilityOwner.type === CHARACTER_TYPE_BOSS_ENEMY || abilityOwner.type === CHARACTER_TYPE_KING_ENEMY || abilityOwner.type === CHARACTER_TYPE_CURSE_FOUNTAIN_BOSS) {
             newTower.isBossTower = true;
         } else if (abilityOwner.type === CHARACTER_TYPE_ENEMY_FIX_RESPAWN_POSITION) {
             const enemy: FixPositionRespawnEnemyCharacter = abilityOwner as any;

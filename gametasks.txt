@@ -1,8 +1,8 @@
-next test run: ball, musician, sniper, tamer
+next test run: musician, sniper, tamer
 increase version
 
 current tasks:   
-- bug?: fountain boss builder towernot working?
+- bug?: fountain boss builder tower not working?
 - play my game
     - check curse balancing
     - check fountain balancing
