@@ -2,7 +2,6 @@ next test run:
 increase version
 
 current tasks:
--bug: king lightning curse cleansed hitting to high?
 - play my game
     - check curse balancing
         - unsure about poison
