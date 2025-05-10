@@ -99,6 +99,7 @@ function reset(curse: Curse) {
     darkness.cloneCounter = 0;
     darkness.turnEvilTime = undefined;
     darkness.nextCloneSpawnTime = undefined;
+    darkness.evilIdRefs = [];
 }
 
 function createClone(original: Character, game: Game): Character {

@@ -1,12 +1,15 @@
 next test run: 
 increase version
 
-current tasks:   
+current tasks:
+- clone builder towers not working   
+- bug: does curse darkness reset on fight restart?
 - play my game
     - check curse balancing
         - unsure about poison
     - check fountain balancing
 - bug: tamer pets not listed in moreInfo if more than one class
+- change size of fountain boss like for kings
 - cleansed tamer legendary ice should also affect pets
 - money upgrade building needs more scaling on high values
 
