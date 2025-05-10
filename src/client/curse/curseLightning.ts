@@ -1,7 +1,7 @@
 import { createAbilityObjectExplode } from "../ability/abilityExplode.js";
 import { Character } from "../character/characterModel.js";
 import { getNextId } from "../game.js";
-import { Game, IdCounter, Position } from "../gameModel.js";
+import { FACTION_ENEMY, Game, IdCounter, Position } from "../gameModel.js";
 import { MODIFIER_NAME_LIGHTNING } from "../map/modifiers/mapModifierLightning.js";
 import { nextRandom } from "../randomNumberGenerator.js";
 import { Curse, CURSES_FUNCTIONS } from "./curse.js";
@@ -56,7 +56,11 @@ function tick(curse: Curse, target: Character, game: Game) {
             if (!curse.cleansed) {
                 strikeObject.specificDamageForFactionPlayer = lightning.level * 10;
             } else {
-                strikeObject.faction = target.faction;
+                if (target.faction === FACTION_ENEMY) {
+                    strikeObject.damage = lightning.level * 10;
+                } else {
+                    strikeObject.faction = target.faction;
+                }
             }
             game.state.abilityObjects.push(strikeObject);
         }
