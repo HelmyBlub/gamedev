@@ -94,5 +94,6 @@ function tickAbilityMelee(abilityOwner: AbilityOwner, ability: Ability, game: Ga
         }
 
         abilityMelee.nextTickTime += abilityMelee.tickInterval;
+        if (abilityMelee.nextTickTime < game.state.time) abilityMelee.nextTickTime = game.state.time + abilityMelee.tickInterval;
     }
 }
