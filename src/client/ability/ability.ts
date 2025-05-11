@@ -758,8 +758,18 @@ function paintKeyBindingUI(ctx: CanvasRenderingContext2D, ability: Ability, draw
 }
 
 function paintAbilityObjectsFaction(ctx: CanvasRenderingContext2D, abilityObjects: AbilityObject[], game: Game, paintOrder: PaintOrderAbility, ifIsPlayerFaction: boolean) {
+    var playerObjectCounter = 0;
     for (let abilityObject of abilityObjects) {
-        if (ifIsPlayerFaction && abilityObject.faction === FACTION_PLAYER || !ifIsPlayerFaction && abilityObject.faction !== FACTION_PLAYER) {
+        if (ifIsPlayerFaction && abilityObject.faction === FACTION_PLAYER) {
+            playerObjectCounter++;
+            if (playerObjectCounter > 400) return;
+            let abilityFunctions = ABILITIES_FUNCTIONS[abilityObject.type];
+            if (abilityFunctions?.paintAbilityObject !== undefined) {
+                abilityFunctions.paintAbilityObject(ctx, abilityObject, paintOrder, game);
+            } else {
+                paintDefault(ctx, abilityObject, getCameraPosition(game), paintOrder, game);
+            }
+        } else if (!ifIsPlayerFaction && abilityObject.faction !== FACTION_PLAYER) {
             let abilityFunctions = ABILITIES_FUNCTIONS[abilityObject.type];
             if (abilityFunctions?.paintAbilityObject !== undefined) {
                 abilityFunctions.paintAbilityObject(ctx, abilityObject, paintOrder, game);

@@ -2,6 +2,8 @@ next test run:
 increase version
 
 current tasks:
+- bug: enemy hits every frame with melee
+- bug: cheat change and restart and pause
 - play my game
     - check curse balancing
         - unsure about poison
