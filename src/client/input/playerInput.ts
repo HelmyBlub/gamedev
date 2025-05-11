@@ -416,7 +416,7 @@ function playerInputChangeEvent(game: Game, inputCode: string, isInputDown: bool
     }
 }
 
-function playerAction(clientId: number, data: any, game: Game) {
+export function playerAction(clientId: number, data: any, game: Game) {
     const action: string = data.action;
     const isKeydown: boolean = data.isKeydown;
     const player = findPlayerById(game.state.players, clientId);

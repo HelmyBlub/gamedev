@@ -5,7 +5,7 @@ import { deepCopy, setClientDefaultKeyBindings } from "./game.js";
 import { Game, GameState, RecordDataMultiplayer } from "./gameModel.js";
 import { sendMultiplayer } from "./multiplayerConenction.js";
 import { createDefaultKeyBindings1, createDefaultUiKeyBindings, findPlayerByCliendId } from "./player.js";
-import { PlayerInput } from "./input/playerInput.js";
+import { playerAction, PlayerInput } from "./input/playerInput.js";
 import { compressString } from "./stringCompress.js";
 
 type Command = { command: string };
@@ -67,7 +67,12 @@ export function executeCommand(game: Game, data: any) {
             restart(game, data);
             break;
         case "playerInput":
-            playerInput(game, data);
+            if (game.state.ended) {
+                //cheats can be changed when game ended
+                playerAction(data.clientId, data.data, game);
+            } else {
+                playerInput(game, data);
+            }
             break;
         case "sendGameState":
             playerJoined(game, data);
