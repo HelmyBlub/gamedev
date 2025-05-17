@@ -2,7 +2,6 @@ next test run:
 increase version
 
 current tasks:
-- change size of fountain boss like for kings
 - cleansed tamer legendary ice should also affect pets
 - UI Change upgrades:
     - function "paintAbilityUpgradeMoreInfosIfMouseHovered"

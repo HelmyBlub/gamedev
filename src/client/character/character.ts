@@ -595,9 +595,12 @@ export function calculateCharacterMovePosition(character: Character, map: GameMa
     } else if (character.isMoving) {
         newPos = calculateMovePosition(character, character.moveDirection, getCharacterMoveSpeed(character), true, map, idCounter, game);
         const tile = getMapTile(newPos, game.state.map, game.state.idCounter, game);
-        let curseCleansed = false;
-        if (character.curses && character.curses.find(c => c.type === CURSE_ICE && c.cleansed)) curseCleansed = true;
-        if (tile.slide && !curseCleansed) character.slideDirection = character.moveDirection;
+        let slideImmune = false;
+        if (character.curses && character.curses.find(c => c.type === CURSE_ICE && c.cleansed)) slideImmune = true;
+        if (character.type === TAMER_PET_CHARACTER) {
+            slideImmune = true;
+        }
+        if (tile.slide && !slideImmune) character.slideDirection = character.moveDirection;
     }
     return newPos;
 }
