@@ -3,10 +3,11 @@ increase version
 
 current tasks:
 - UI Change upgrades:
-    - function "paintAbilityUpgradeMoreInfosIfMouseHovered"
-        - text is not correct
-        - text should be painted differently
-    - if feel it is confusing. Better just display level and show detailed info on hover?
+    - hover text for other classes
+        - ball
+        - musician
+        - tamer
+        - builder
 - bug: fountain win -> score did not make sense
     - also check for god kill
 - Improve: restart confirmation question when game not ended and started?
@@ -25,6 +26,8 @@ current tasks:
 - Change: ball bounce upgrade to strong? balance differently
 - bug?: ice curse king -> whole area is ice. can the crown reach the player?
 - bug?: curse can spread which is ok. Can cleansed version spread?
+
+- new test run: short king kill, god kill
 
 
 next feature ideas:
