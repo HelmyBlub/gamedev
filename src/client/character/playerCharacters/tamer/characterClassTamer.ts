@@ -76,9 +76,11 @@ function paintLevelUI(ctx: CanvasRenderingContext2D, character: Character, charC
     const tempTopLeft = { x: topLeft.x, y: topLeft.y };
     const tempWidth = Math.floor(width / 3);
     if (!character.pets) return;
-    for (let pet of character.pets) {
-        if (pet.type !== TAMER_PET_CHARACTER) continue;
-        paintPlayerPetLevelUI(ctx, pet as TamerPetCharacter, tempTopLeft, tempWidth, height, game);
+    for (let petChar of character.pets) {
+        if (petChar.type !== TAMER_PET_CHARACTER) continue;
+        const tamerPet = petChar as TamerPetCharacter;
+        if (tamerPet.classIdRef !== charClass.id) continue;
+        paintPlayerPetLevelUI(ctx, tamerPet, tempTopLeft, tempWidth, height, game);
         tempTopLeft.x += tempWidth;
     }
 }
