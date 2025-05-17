@@ -150,6 +150,7 @@ function copyCharacterForBoss(character: Character, game: Game): CurseFountainBo
     for (let ability of boss.abilities) {
         setAbilityToBossLevel(ability, 10);
     }
+    boss.width = 40;
     boss.faction = FACTION_ENEMY;
     return boss;
 }
