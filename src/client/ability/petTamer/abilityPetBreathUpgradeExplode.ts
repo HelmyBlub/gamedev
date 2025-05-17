@@ -21,7 +21,7 @@ export const ABILITY_PET_BREATH_UPGRADE_EXPLODE = "Breath Explode";
 export function addAbilityPetBreathUpgradeExplode() {
     ABILITY_PET_BREATH_UPGRADE_FUNCTIONS[ABILITY_PET_BREATH_UPGRADE_EXPLODE] = {
         getStatsDisplayText: getAbilityUpgradeExplodeUiText,
-        getMoreInfoText: getAbilityUpgradeExplodeUiTextLong,
+        getMoreInfoIncreaseOneLevelText: getAbilityUpgradeExplodeUiTextLong,
         getOptions: getOptionsExplode,
         executeOption: executeOptionPaintExplode,
     }

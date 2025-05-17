@@ -22,7 +22,7 @@ export const ABILITY_BOUNCE_BALL_UPGRADE_FIRE_LINE = "Fire Line";
 export function addAbilityBounceBallUpgradeFireLine() {
     ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS[ABILITY_BOUNCE_BALL_UPGRADE_FIRE_LINE] = {
         getStatsDisplayText: getAbilityUpgradeUiText,
-        getMoreInfoText: getAbilityUpgradeUiTextLong,
+        getMoreInfoIncreaseOneLevelText: getAbilityUpgradeUiTextLong,
         getOptions: getOptions,
         executeOption: executeOption,
         setUpgradeToBossLevel: setUpgradeToBossLevel,

@@ -11,7 +11,7 @@ export const ABILITY_MUSIC_SHEET_UPGRADE_SIZE = "Effect Size";
 export function addAbilityMusicSheetUpgradeSize() {
     ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS[ABILITY_MUSIC_SHEET_UPGRADE_SIZE] = {
         getStatsDisplayText: getAbilityUpgradeUiText,
-        getMoreInfoText: getAbilityUpgradeUiTextLong,
+        getMoreInfoIncreaseOneLevelText: getAbilityUpgradeUiTextLong,
         getOptions: getOptions,
         executeOption: executeOption,
         reset: reset,

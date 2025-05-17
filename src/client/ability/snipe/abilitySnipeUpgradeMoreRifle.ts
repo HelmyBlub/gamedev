@@ -21,8 +21,8 @@ export type AbilityUpgradeMoreRifles = AbilityUpgrade & {
 export function addAbilitySnipeUpgradeMoreRifles() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_MORE_RIFLES] = {
         addSynergyUpgradeOption: addSynergyUpgradeOption,
-        getStatsDisplayText: getAbilityUpgradeMoreRiflesUiText,
-        getMoreInfoText: getAbilityUpgradeMoreRiflesUiTextLong,
+        getMoreInfoIncreaseOneLevelText: getAbilityUpgradeMoreRiflesUiTextLong,
+        getMoreInfoExplainText: getExplainText,
         getOptions: getOptionsMoreRifles,
         executeOption: executeOptionMoreRifles,
     }
@@ -93,17 +93,23 @@ function executeOptionMoreRifles(ability: Ability, option: AbilityUpgradeOption)
     }
 }
 
-function getAbilityUpgradeMoreRiflesUiText(ability: Ability): string {
-    const abilitySnipe = ability as AbilitySnipe;
-    const upgrade: AbilityUpgradeMoreRifles = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES];
-    return `${ABILITY_SNIPE_UPGRADE_MORE_RIFLES} +${upgrade.numberRifles}` + (upgrade.upgradeSynergy ? " (Synergy)" : "");
-}
-
 function addSynergyUpgradeOption(ability: Ability): boolean {
     if (ability.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE]) {
         return true;
     }
     return false;
+}
+
+function getExplainText(ability: Ability, upgrade: AbilityUpgrade): string[] {
+    const moreRiflesUpgrade = upgrade as AbilityUpgradeMoreRifles;
+    const textLines: string[] = [];
+    textLines.push(`Add ${moreRiflesUpgrade.level}x rifle rotating around.`);
+    textLines.push(`It copies your shooting actions.`);
+    if (moreRiflesUpgrade.upgradeSynergy) {
+        textLines.push(`Synergy with:`);
+        textLines.push(`- ${ABILITY_SNIPE_UPGRADE_AFTER_IMAGE}`);
+    }
+    return textLines;
 }
 
 function getAbilityUpgradeMoreRiflesUiTextLong(ability: Ability, option: AbilityUpgradeOption): string[] {

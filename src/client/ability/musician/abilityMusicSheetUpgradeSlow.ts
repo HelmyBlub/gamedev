@@ -16,7 +16,7 @@ const BASEDURATION = 2000;
 export function addAbilityMusicSheetUpgradeSlow() {
     ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS[ABILITY_MUSIC_SHEET_UPGRADE_SLOW] = {
         getStatsDisplayText: getAbilityUpgradeUiText,
-        getMoreInfoText: getAbilityUpgradeUiTextLong,
+        getMoreInfoIncreaseOneLevelText: getAbilityUpgradeUiTextLong,
         getOptions: getOptions,
         executeOption: executeOption,
         reset: reset,

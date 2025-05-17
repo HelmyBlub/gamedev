@@ -16,7 +16,7 @@ export const ABILITY_LIGHTNING_BALL_UPGRADE_BOUNCE_BONUS = "Bounce Ball Bonus";
 export function addAbilityLightningBallUpgradeBounceBonus() {
     ABILITY_LIGHTNING_BALL_UPGRADE_FUNCTIONS[ABILITY_LIGHTNING_BALL_UPGRADE_BOUNCE_BONUS] = {
         getStatsDisplayText: getAbilityUpgradeUiText,
-        getMoreInfoText: getAbilityUpgradeUiTextLong,
+        getMoreInfoIncreaseOneLevelText: getAbilityUpgradeUiTextLong,
         getOptions: getOptions,
         executeOption: executeOption,
     }

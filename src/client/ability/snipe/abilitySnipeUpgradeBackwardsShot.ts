@@ -16,8 +16,8 @@ export type AbilityUpgradeBackwardsShot = AbilityUpgrade & {
 export function addAbilitySnipeUpgradeBackwardsShot() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT] = {
         addSynergyUpgradeOption: addSynergyUpgradeOption,
-        getStatsDisplayText: getAbilityUpgradeBackwardsShotUiText,
-        getMoreInfoText: getAbilityUpgradeBackwardsShotUiTextLong,
+        getMoreInfoIncreaseOneLevelText: getAbilityUpgradeBackwardsShotUiTextLong,
+        getMoreInfoExplainText: getExplainText,
         getOptions: getOptionsBackwardsShot,
         executeOption: executeOptionBackwardsShot,
     }
@@ -59,18 +59,24 @@ function executeOptionBackwardsShot(ability: Ability, option: AbilityUpgradeOpti
     }
 }
 
-function getAbilityUpgradeBackwardsShotUiText(ability: Ability): string {
-    const abilitySnipe = ability as AbilitySnipe;
-    const upgrade: AbilityUpgradeBackwardsShot = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT];
-    return `${ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT} +${upgrade.level}` + (upgrade.upgradeSynergy ? " (Synergy)" : "");
-}
-
 function addSynergyUpgradeOption(ability: Ability): boolean {
     if (ability.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE]
         || ability.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES]) {
         return true;
     }
     return false;
+}
+
+function getExplainText(ability: Ability, upgrade: AbilityUpgrade): string[] {
+    const backwardsShotUpgrade = upgrade as AbilityUpgradeBackwardsShot;
+    const textLines: string[] = [];
+    textLines.push(`Your main shot also shoots ${backwardsShotUpgrade.level} additional shot backwards.`);
+    if (backwardsShotUpgrade.upgradeSynergy) {
+        textLines.push(`Synergy with:`);
+        textLines.push(`- ${ABILITY_SNIPE_UPGRADE_AFTER_IMAGE}`);
+        textLines.push(`- ${ABILITY_SNIPE_UPGRADE_MORE_RIFLES}`);
+    }
+    return textLines;
 }
 
 function getAbilityUpgradeBackwardsShotUiTextLong(ability: Ability, option: AbilityUpgradeOption): string[] {

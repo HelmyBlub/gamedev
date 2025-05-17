@@ -24,8 +24,8 @@ export type AbilityUpgradeFireLine = AbilityUpgrade & {
 export function addAbilitySnipeUpgradeFireLine() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_FIRE_LINE] = {
         addSynergyUpgradeOption: addSynergyUpgradeOption,
-        getStatsDisplayText: getAbilityUpgradeFireLineUiText,
-        getMoreInfoText: getAbilityUpgradeFireLineUiTextLong,
+        getMoreInfoIncreaseOneLevelText: getAbilityUpgradeFireLineUiTextLong,
+        getMoreInfoExplainText: getExplainText,
         getOptions: getOptionsFireLine,
         executeOption: executeOptionFireLine,
     }
@@ -73,12 +73,6 @@ function executeOptionFireLine(ability: Ability, option: AbilityUpgradeOption) {
     }
 }
 
-function getAbilityUpgradeFireLineUiText(ability: Ability): string {
-    const abilitySnipe = ability as AbilitySnipe;
-    const upgrade: AbilityUpgradeFireLine = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_FIRE_LINE];
-    return `${ABILITY_SNIPE_UPGRADE_FIRE_LINE}: ${upgrade.damagePerSecondFactor * 100}% damage per second. Duration: ${(upgrade.duration / 1000).toFixed()}s` + (upgrade.upgradeSynergy ? " (Synergy)" : "");
-}
-
 function addSynergyUpgradeOption(ability: Ability): boolean {
     if (ability.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE]
         || ability.upgrades[ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT]
@@ -86,6 +80,20 @@ function addSynergyUpgradeOption(ability: Ability): boolean {
         return true;
     }
     return false;
+}
+
+function getExplainText(ability: Ability, upgrade: AbilityUpgrade): string[] {
+    const fireLineUpgrade = upgrade as AbilityUpgradeFireLine;
+    const textLines: string[] = [];
+    textLines.push(`The main shot creates a fire line.`);
+    textLines.push(`Damage per second: ${DAMAGE_PER_SECOND_PER_LEVEL_FACTOR * 100 * upgrade.level}% of base damage.`);
+    if (fireLineUpgrade.upgradeSynergy) {
+        textLines.push(`Synergy with:`);
+        textLines.push(`- ${ABILITY_SNIPE_UPGRADE_AFTER_IMAGE}`);
+        textLines.push(`- ${ABILITY_SNIPE_UPGRADE_MORE_RIFLES}`);
+        textLines.push(`- ${ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT}`);
+    }
+    return textLines;
 }
 
 function getAbilityUpgradeFireLineUiTextLong(ability: Ability, option: AbilityUpgradeOption): string[] {
@@ -97,7 +105,7 @@ function getAbilityUpgradeFireLineUiTextLong(ability: Ability, option: AbilityUp
         textLines.push(`- ${ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT}`);
     } else {
         const upgrade: AbilityUpgradeFireLine | undefined = ability.upgrades[ABILITY_SNIPE_UPGRADE_FIRE_LINE];
-        textLines.push(`The main shot create a fire line.`);
+        textLines.push(`The main shot creates a fire line.`);
         textLines.push(`It stays on the ground for ${DURATION / 1000}s.`);
         if (upgrade) {
             textLines.push(`Damage per second from ${DAMAGE_PER_SECOND_PER_LEVEL_FACTOR * 100 * upgrade.level}% to ${DAMAGE_PER_SECOND_PER_LEVEL_FACTOR * 100 * (upgrade.level + 1)}%.`);

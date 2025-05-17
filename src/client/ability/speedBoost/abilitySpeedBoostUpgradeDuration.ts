@@ -13,7 +13,7 @@ export const ABILITY_SPEED_BOOST_UPGRADE_DURATION = "Speed Boost +Duration";
 export function addAbilitySpeedBoostUpgradeDuration() {
     ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS[ABILITY_SPEED_BOOST_UPGRADE_DURATION] = {
         getStatsDisplayText: getAbilityUpgradeDurationUiText,
-        getMoreInfoText: getAbilityUpgradeDurationUiTextLong,
+        getMoreInfoIncreaseOneLevelText: getAbilityUpgradeDurationUiTextLong,
         getOptions: getOptionsDuration,
         executeOption: executeOptionDuration,
     }

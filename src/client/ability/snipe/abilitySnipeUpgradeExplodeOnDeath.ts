@@ -25,8 +25,8 @@ export type AbilityUpgradeExplodeOnDeath = AbilityUpgrade & {
 export function addAbilitySnipeUpgradeExplodeOnDeath() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH] = {
         addSynergyUpgradeOption: addSynergyUpgradeOption,
-        getStatsDisplayText: getAbilityUpgradeExplodeOnDeathUiText,
-        getMoreInfoText: getAbilityUpgradeExplodeOnDeathUiTextLong,
+        getMoreInfoIncreaseOneLevelText: getAbilityUpgradeExplodeOnDeathUiTextLong,
+        getMoreInfoExplainText: getExplainText,
         getOptions: getOptionsExplodeOnDeath,
         executeOption: executeOptionExplodeOnDeath,
     }
@@ -70,12 +70,6 @@ function executeOptionExplodeOnDeath(ability: Ability, option: AbilityUpgradeOpt
     }
 }
 
-function getAbilityUpgradeExplodeOnDeathUiText(ability: Ability): string {
-    const abilitySnipe = ability as AbilitySnipe;
-    let upgrade: AbilityUpgradeExplodeOnDeath = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH];
-    return `${ABILITY_SNIPE_UPGRADE_EXPLODE_ON_DEATH}: Damage ${(upgrade.damageFactor) * 100}%` + (upgrade.upgradeSynergy ? " (Synergy)" : "");
-}
-
 function addSynergyUpgradeOption(ability: Ability): boolean {
     if (ability.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE]
         || ability.upgrades[ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT]
@@ -85,6 +79,22 @@ function addSynergyUpgradeOption(ability: Ability): boolean {
     }
     return false;
 }
+
+function getExplainText(ability: Ability, upgrade: AbilityUpgrade): string[] {
+    const explodeUpgrade = upgrade as AbilityUpgradeExplodeOnDeath;
+    const textLines: string[] = [];
+    textLines.push(`Enemies hit by the main shot explode on death.`);
+    textLines.push(`Explode damage: ${(DAMAGE_FACTOR * upgrade.level * 100).toFixed(0)}% of base damage.`);
+    if (explodeUpgrade.upgradeSynergy) {
+        textLines.push(`Synergy with:`);
+        textLines.push(`- ${ABILITY_SNIPE_UPGRADE_AFTER_IMAGE}`);
+        textLines.push(`- ${ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT}`);
+        textLines.push(`- ${ABILITY_SNIPE_UPGRADE_MORE_RIFLES}`);
+        textLines.push(`- ${ABILITY_SNIPE_UPGRADE_SPLIT_SHOT}`);
+    }
+    return textLines;
+}
+
 
 function getAbilityUpgradeExplodeOnDeathUiTextLong(ability: Ability, option: AbilityUpgradeOption): string[] {
     const textLines: string[] = [];

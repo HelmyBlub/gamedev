@@ -2,7 +2,6 @@ next test run:
 increase version
 
 current tasks:
-- cleansed tamer legendary ice should also affect pets
 - UI Change upgrades:
     - function "paintAbilityUpgradeMoreInfosIfMouseHovered"
         - text is not correct

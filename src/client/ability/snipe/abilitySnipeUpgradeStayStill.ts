@@ -19,8 +19,8 @@ export type AbilityUpgradeStayStill = AbilityUpgrade & {
 export function addAbilitySnipeUpgradeStayStill() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_STAY_STILL] = {
         addSynergyUpgradeOption: addSynergyUpgradeOption,
-        getStatsDisplayText: getAbilityUpgradeStayStillUiText,
-        getMoreInfoText: getAbilityUpgradeStayStillUiTextLong,
+        getMoreInfoIncreaseOneLevelText: getAbilityUpgradeStayStillUiTextLong,
+        getMoreInfoExplainText: getExplainText,
         getDamageFactor: getAbilityUpgradeStayStillDamageFactor,
         getOptions: getOptionsStayStill,
         executeOption: executeOptionStayStill,
@@ -104,17 +104,26 @@ function getAbilityUpgradeStayStillDamageFactor(ability: Ability, playerTriggere
     return factor;
 }
 
-function getAbilityUpgradeStayStillUiText(ability: Ability): string {
-    const abilitySnipe = ability as AbilitySnipe;
-    const upgrade: AbilityUpgradeStayStill = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_STAY_STILL];
-    return `Stay Still for ${(upgrade.stayStillTime / 1000).toFixed(2)}s to get ${upgrade.damageMultiplier * 100}% Bonus Damge for current Magazine` + (upgrade.upgradeSynergy ? " (Synergy)" : "");
-}
-
 function addSynergyUpgradeOption(ability: Ability): boolean {
     if (Object.keys(ability.upgrades).length > 1) {
         return true;
     }
     return false;
+}
+
+function getExplainText(ability: Ability, upgrade: AbilityUpgrade): string[] {
+    const stayStillUpgrade = upgrade as AbilityUpgradeStayStill;
+    const textLines: string[] = [];
+    textLines.push(`Not moving and shooting for ${STAY_STILL_TIME / 1000} seconds`);
+    textLines.push(`will activate ${DAMAGE_FACTOR * 100 * upgrade.level}% damage bonus.`);
+    textLines.push(`Current Bonus: ${stayStillUpgrade.damageMultiplierActive ? DAMAGE_FACTOR * 100 * upgrade.level : 0}%.`);
+    if (stayStillUpgrade.upgradeSynergy) {
+        textLines.push(`Synergy with:`);
+        textLines.push(`All other upgrades will benefit.`);
+    } else {
+        textLines.push(`Only affects main shot.`);
+    }
+    return textLines;
 }
 
 function getAbilityUpgradeStayStillUiTextLong(ability: Ability, option: AbilityUpgradeOption): string[] {

@@ -19,7 +19,7 @@ const DAMAGE_INCREASE_PER_LEVEL = 0.5;
 export function addAbilityPetDashUpgradeIncreaseDamageTaken() {
     ABILITY_PET_DASH_UPGRADE_FUNCTIONS[ABILITY_PET_DASH_UPGRADE_INCREASE_DAMAGE_TAKEN] = {
         getStatsDisplayText: getAbilityUpgradeUiText,
-        getMoreInfoText: getAbilityUpgradeUiTextLong,
+        getMoreInfoIncreaseOneLevelText: getAbilityUpgradeUiTextLong,
         getOptions: getOptions,
         executeOption: executeOption,
     }

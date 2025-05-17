@@ -11,7 +11,7 @@ export const ABILITY_PET_PAINTER_UPGRADE_DUPLICATE = "Paint Duplicate";
 export function addAbilityPetPainterUpgradeDuplicate() {
     ABILITY_PET_PAINTER_UPGRADE_FUNCTIONS[ABILITY_PET_PAINTER_UPGRADE_DUPLICATE] = {
         getStatsDisplayText: getAbilityUpgradeDuplicateUiText,
-        getMoreInfoText: getAbilityUpgradeDuplicateUiTextLong,
+        getMoreInfoIncreaseOneLevelText: getAbilityUpgradeDuplicateUiTextLong,
         getOptions: getOptionsDuplicate,
         executeOption: executeOptionPaintDuplicate,
     }

@@ -15,7 +15,7 @@ const DAMAGE_FACTOR_BOUNCE = 1;
 export function addAbilityPetDashUpgradeTerrainBounce() {
     ABILITY_PET_DASH_UPGRADE_FUNCTIONS[ABILITY_PET_DASH_UPGRADE_TERRAIN_BOUNCE] = {
         getStatsDisplayText: getAbilityUpgradeTerrainBounceUiText,
-        getMoreInfoText: getAbilityUpgradeTerrainBounceUiTextLong,
+        getMoreInfoIncreaseOneLevelText: getAbilityUpgradeTerrainBounceUiTextLong,
         getOptions: getOptionsBounce,
         executeOption: executeOptionDashTerrainBounce,
     }

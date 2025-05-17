@@ -14,7 +14,7 @@ export const ABILITY_PET_PAINTER_UPGRADE_SPLIT = "Paint Split";
 export function addAbilityPetPainterUpgradeSplit() {
     ABILITY_PET_PAINTER_UPGRADE_FUNCTIONS[ABILITY_PET_PAINTER_UPGRADE_SPLIT] = {
         getStatsDisplayText: getAbilityUpgradeSplitUiText,
-        getMoreInfoText: getAbilityUpgradeSplitUiTextLong,
+        getMoreInfoIncreaseOneLevelText: getAbilityUpgradeSplitUiTextLong,
         getOptions: getOptionsSplit,
         executeOption: executeOptionPaintSplit,
     }

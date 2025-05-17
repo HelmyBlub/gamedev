@@ -19,8 +19,8 @@ export type AbilityUpgradeSplitShot = AbilityUpgrade & {
 export function addAbilitySnipeUpgradeSplitShot() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_SPLIT_SHOT] = {
         addSynergyUpgradeOption: addSynergyUpgradeOption,
-        getStatsDisplayText: getAbilityUpgradeSplitShotUiText,
-        getMoreInfoText: getAbilityUpgradeSplitShotUiTextLong,
+        getMoreInfoIncreaseOneLevelText: getAbilityUpgradeSplitShotUiTextLong,
+        getMoreInfoExplainText: getExplainText,
         getOptions: getOptionsSplitShot,
         executeOption: executeOptionSplitShot,
     }
@@ -68,12 +68,6 @@ function executeOptionSplitShot(ability: Ability, option: AbilityUpgradeOption) 
     }
 }
 
-function getAbilityUpgradeSplitShotUiText(ability: Ability): string {
-    const abilitySnipe = ability as AbilitySnipe;
-    const upgrade: AbilityUpgradeSplitShot = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_SPLIT_SHOT];
-    return "Split On Hit +" + upgrade.shotSplitsPerHit + (upgrade.upgradeSynergy ? " (Synergy)" : "");
-}
-
 function addSynergyUpgradeOption(ability: Ability): boolean {
     if (ability.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE]
         || ability.upgrades[ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT]
@@ -81,6 +75,19 @@ function addSynergyUpgradeOption(ability: Ability): boolean {
         return true;
     }
     return false;
+}
+
+function getExplainText(ability: Ability, upgrade: AbilityUpgrade): string[] {
+    const splitUpgrade = upgrade as AbilityUpgradeSplitShot;
+    const textLines: string[] = [];
+    textLines.push(`The main shot will split ${splitUpgrade.level}x for every enemy hit.`);
+    if (splitUpgrade.upgradeSynergy) {
+        textLines.push(`Synergy with:`);
+        textLines.push(`- ${ABILITY_SNIPE_UPGRADE_AFTER_IMAGE}`);
+        textLines.push(`- ${ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT}`);
+        textLines.push(`- ${ABILITY_SNIPE_UPGRADE_MORE_RIFLES}`);
+    }
+    return textLines;
 }
 
 function getAbilityUpgradeSplitShotUiTextLong(ability: Ability, option: AbilityUpgradeOption): string[] {

@@ -105,7 +105,7 @@ export function getPointPaintPosition(ctx: CanvasRenderingContext2D, point: Posi
  * @param textWithKeys add character "<" + key + ">" like "Press buton <A>" to print a key visualization
  * @returns bounding box
  */
-export function paintTextLinesWithKeys(ctx: CanvasRenderingContext2D, textWithKeys: string[], paintPosition: Position, fontSize: number = 20, centered: boolean = false, bottomUp: boolean = false): Rectangle {
+export function paintTextLinesWithKeys(ctx: CanvasRenderingContext2D, textWithKeys: string[], paintPosition: Position, fontSize: number = 20, centered: boolean = false, bottomUp: boolean = false, alpha: number = 0.6): Rectangle {
     let textMaxWidth = 0;
     const tempPaintPos = { x: paintPosition.x, y: paintPosition.y };
     const verticalSpacing = 10;
@@ -117,7 +117,7 @@ export function paintTextLinesWithKeys(ctx: CanvasRenderingContext2D, textWithKe
         const textWidth = ctx.measureText(text).width;
         if (textWidth > textMaxWidth) textMaxWidth = textWidth;
     }
-    ctx.globalAlpha = 0.6;
+    ctx.globalAlpha = alpha;
     ctx.fillStyle = "white";
     const boundingBox: Rectangle = {
         topLeft: {
@@ -132,9 +132,10 @@ export function paintTextLinesWithKeys(ctx: CanvasRenderingContext2D, textWithKe
     ctx.font = `${fontSize}px Arial`;
     ctx.fillStyle = "black";
     let offsetY = 0;
+    if (!centered) tempPaintPos.x = boundingBox.topLeft.x + 2;
     for (let text of textWithKeys) {
         offsetY += fontSize;
-        paintTextWithKeys(ctx, text, { x: tempPaintPos.x, y: tempPaintPos.y + offsetY }, fontSize, true);
+        paintTextWithKeys(ctx, text, { x: tempPaintPos.x, y: tempPaintPos.y + offsetY }, fontSize, centered);
         offsetY += verticalSpacing;
     }
     return boundingBox;

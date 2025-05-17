@@ -18,6 +18,7 @@ import { TAMER_PET_TRAIT_HAPPY_ONE } from "./petTraitHappyOne.js";
 import { TAMER_PET_TRAIT_NEEDS_MORE_LOVE } from "./petTraitNeedsMoreLove.js";
 import { TAMER_PET_TRAIT_NEVER_GETS_FAT } from "./petTraitNeverGetsFat.js";
 import { TAMER_PET_TRAIT_VERY_HUNGRY } from "./petTraitVeryHungry.js";
+import { abilityUpgradeGetDefaultDisplayText } from "../../../ability/abilityUpgrade.js";
 
 export type PetTargetBehavior = "passive" | "aggressive" | "protective";
 export type PetNoTargetBehavior = "stayClose" | "hyperactive" | "following";
@@ -357,10 +358,15 @@ function createTamerPetCharacterMoreInfos(ctx: CanvasRenderingContext2D, pet: Ta
             const upgradeKeys = Object.keys(ability.upgrades);
             if (upgradeKeys.length > 0) {
                 const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-                const upgradeFunctions = abilityFunctions.abilityUpgradeFunctions;
-                if (!upgradeFunctions) continue;
+                const upgradesFunctions = abilityFunctions.abilityUpgradeFunctions;
+                if (!upgradesFunctions) continue;
                 for (let key of upgradeKeys) {
-                    textLines.push(" -" + upgradeFunctions[key].getStatsDisplayText(ability));
+                    const upgradeFunctions = upgradesFunctions[key];
+                    if (upgradeFunctions.getStatsDisplayText) {
+                        textLines.push(" -" + upgradeFunctions.getStatsDisplayText(ability, key));
+                    } else {
+                        textLines.push(abilityUpgradeGetDefaultDisplayText(ability, key));
+                    }
                 }
             }
         }

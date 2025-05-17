@@ -20,7 +20,7 @@ export const ABILITY_PET_DASH_UPGRADE_FIRE_LINE = "Dash Fire Line";
 export function addAbilityPetDashUpgradeFireLine() {
     ABILITY_PET_DASH_UPGRADE_FUNCTIONS[ABILITY_PET_DASH_UPGRADE_FIRE_LINE] = {
         getStatsDisplayText: getAbilityUpgradeFireLineUiText,
-        getMoreInfoText: getAbilityUpgradeFireLineUiTextLong,
+        getMoreInfoIncreaseOneLevelText: getAbilityUpgradeFireLineUiTextLong,
         getOptions: getOptionsFireLine,
         executeOption: executeOptionDashFireLine,
     }

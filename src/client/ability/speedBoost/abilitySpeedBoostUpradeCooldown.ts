@@ -12,7 +12,7 @@ export const ABILITY_SPEED_BOOST_UPGRADE_COOLDOWN = "Speed Boost -Cooldown";
 export function addAbilitySpeedBoostUpgradeCooldown() {
     ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS[ABILITY_SPEED_BOOST_UPGRADE_COOLDOWN] = {
         getStatsDisplayText: getAbilityUpgradeCooldownUiText,
-        getMoreInfoText: getAbilityUpgradeCooldownUiTextLong,
+        getMoreInfoIncreaseOneLevelText: getAbilityUpgradeCooldownUiTextLong,
         getOptions: getOptionsCooldown,
         executeOption: executeOptionCooldown,
     }

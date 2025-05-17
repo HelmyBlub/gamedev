@@ -17,7 +17,7 @@ const DURATION_PER_LEVEL = 500;
 export function addAbilityPetDashUpgradeRoot() {
     ABILITY_PET_DASH_UPGRADE_FUNCTIONS[ABILITY_PET_DASH_UPGRADE_ROOT_ON_HIT] = {
         getStatsDisplayText: getAbilityUpgradeRootUiText,
-        getMoreInfoText: getAbilityUpgradeRootUiTextLong,
+        getMoreInfoIncreaseOneLevelText: getAbilityUpgradeRootUiTextLong,
         getOptions: getOptionsRoot,
         executeOption: executeOptionDashRoot,
     }

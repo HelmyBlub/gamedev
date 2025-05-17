@@ -14,7 +14,7 @@ export const ABILITY_PET_BREATH_UPGRADE_RANGE_UP = "Breath Range+";
 export function addAbilityPetBreathUpgradeRangeUp() {
     ABILITY_PET_BREATH_UPGRADE_FUNCTIONS[ABILITY_PET_BREATH_UPGRADE_RANGE_UP] = {
         getStatsDisplayText: getAbilityUpgradeRangeUpUiText,
-        getMoreInfoText: getAbilityUpgradeRangeUpUiTextLong,
+        getMoreInfoIncreaseOneLevelText: getAbilityUpgradeRangeUpUiTextLong,
         getOptions: getOptionsRangeUp,
         executeOption: executeOptionPaintRangeUp,
     }

@@ -14,7 +14,7 @@ export const ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_SHIELD = "Bounce Shield";
 export function addAbilityBounceBallUpgradeBounceShield() {
     ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS[ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_SHIELD] = {
         getStatsDisplayText: getAbilityUpgradeUiText,
-        getMoreInfoText: getAbilityUpgradeUiTextLong,
+        getMoreInfoIncreaseOneLevelText: getAbilityUpgradeUiTextLong,
         getOptions: getOptions,
         executeOption: executeOption,
     }

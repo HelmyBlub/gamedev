@@ -15,7 +15,7 @@ export const ABILITY_SPEED_BOOST_UPGRADE_SLOW_TRAIL = "Slow Trail";
 export function addAbilitySpeedBoostUpgradeSlowTrail() {
     ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS[ABILITY_SPEED_BOOST_UPGRADE_SLOW_TRAIL] = {
         getStatsDisplayText: getAbilityUpgradeSlowTrailUiText,
-        getMoreInfoText: getAbilityUpgradeSlowTrailUiTextLong,
+        getMoreInfoIncreaseOneLevelText: getAbilityUpgradeSlowTrailUiTextLong,
         getOptions: getOptionsSlowTrail,
         executeOption: executeOptionSlowTrail,
     }

@@ -22,7 +22,7 @@ export function addAbilityMusicSheetUpgradeInstrumentSquare() {
     ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS[ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_SQUARE] = {
         getChainPosition: getChainPosition,
         getStatsDisplayText: getAbilityUpgradeUiText,
-        getMoreInfoText: getAbilityUpgradeUiTextLong,
+        getMoreInfoIncreaseOneLevelText: getAbilityUpgradeUiTextLong,
         getOptions: getOptions,
         executeOption: executeOption,
         executeNoteDamage: executeMusicNotesDamage,

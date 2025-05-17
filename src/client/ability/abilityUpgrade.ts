@@ -13,8 +13,9 @@ export type AbilityUpgradeFunctions = {
     getOptions?: (ability: Ability, character: Character, game: Game) => UpgradeOptionAndProbability[],
     addSynergyUpgradeOption?: (ability: Ability) => boolean,
     executeOption: (ability: Ability, option: AbilityUpgradeOption, character: Character) => void,
-    getStatsDisplayText: (ability: Ability) => string,
-    getMoreInfoText?: (ability: Ability, option: AbilityUpgradeOption) => string[],
+    getStatsDisplayText?: (ability: Ability, upgradeKey: string) => string,
+    getMoreInfoIncreaseOneLevelText?: (ability: Ability, option: AbilityUpgradeOption) => string[],
+    getMoreInfoExplainText?: (ability: Ability, upgrade: AbilityUpgrade) => string[],
     getDamageFactor?: (ability: Ability, playerTriggered: boolean, faction: string) => number,
     reset?: (ability: Ability) => void,
     setUpgradeToBossLevel?: (ability: Ability, level: number) => void,
@@ -41,16 +42,21 @@ export function pushAbilityUpgradesUiTexts(upgradeFunctions: AbilityUpgradesFunc
     const keys = Object.keys(upgradeFunctions);
     let first = true;
     for (let key of keys) {
-        if (ability.upgrades[key]) {
+        const upgrade = ability.upgrades[key];
+        if (upgrade) {
             if (first) {
                 texts.push("");
                 texts.push("Upgrades:");
                 first = false;
             }
             const functions = upgradeFunctions[key];
-            texts.push(functions.getStatsDisplayText(ability));
-            if (upgradeHoverLines && functions.getMoreInfoText) {
-                const hoverLines = functions.getMoreInfoText(ability, ability.upgrades[key]);
+            if (functions.getStatsDisplayText) {
+                texts.push(functions.getStatsDisplayText(ability, key));
+            } else {
+                texts.push(abilityUpgradeGetDefaultDisplayText(ability, key));
+            }
+            if (upgradeHoverLines && functions.getMoreInfoExplainText) {
+                const hoverLines = functions.getMoreInfoExplainText(ability, upgrade);
                 upgradeHoverLines[texts.length - 1] = hoverLines;
             }
 
@@ -113,9 +119,24 @@ export function paintAbilityUpgradeMoreInfosIfMouseHovered(ctx: CanvasRenderingC
             const mouseHoverIndex = Math.floor((mousePos.y - moreInfosPart.lastPaintedPos.y) / moreInfosPart.fontSize);
             const hoverText = moreInfosPart.hoverText[mouseHoverIndex];
             if (hoverText !== undefined) {
-                paintTextLinesWithKeys(ctx, hoverText, mousePos, 14, false, true);
+                const boundingBox = paintTextLinesWithKeys(ctx, hoverText, mousePos, 14, false, true, 1);
+                ctx.strokeStyle = "black";
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.rect(boundingBox.topLeft.x, boundingBox.topLeft.y, boundingBox.width, boundingBox.height);
+                ctx.stroke();
             }
+            break;
         }
     }
     selectedContainer.moreInfoParts
+}
+
+export function abilityUpgradeGetDefaultDisplayText(ability: Ability, upgradeKey: string): string {
+    const upgrade = ability.upgrades[upgradeKey] as AbilityUpgrade;
+    let text = `${upgradeKey}: Level ${upgrade.level}`;
+    if ((upgrade as any).upgradeSynergy) {
+        text += ` (Synergy)`;
+    }
+    return text;
 }

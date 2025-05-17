@@ -32,8 +32,8 @@ export type AbilityUpgradeAfterImage = AbilityUpgrade & {
 export function addAbilitySnipeUpgradeAfterImage() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE] = {
         addSynergyUpgradeOption: addSynergyUpgradeOption,
-        getStatsDisplayText: getAbilityUpgradeAfterImageUiText,
-        getMoreInfoText: getAbilityUpgradeAfterImageUiTextLong,
+        getMoreInfoIncreaseOneLevelText: getAbilityUpgradeAfterImageUiTextLong,
+        getMoreInfoExplainText: getExplainText,
         getOptions: getOptionsAfterImage,
         executeOption: executeOptionAfterImage,
         reset: reset,
@@ -129,17 +129,24 @@ function executeOptionAfterImage(ability: Ability, option: AbilityUpgradeOption)
     }
 }
 
-function getAbilityUpgradeAfterImageUiText(ability: Ability): string {
-    const abilitySnipe = ability as AbilitySnipe;
-    const upgrade: AbilityUpgradeAfterImage = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE];
-    return `${ABILITY_SNIPE_UPGRADE_AFTER_IMAGE}s: ${upgrade.level * AFTER_IMAGE_COUNTER_PER_LEVEL}` + (upgrade.upgradeSynergy ? " (Synergy)" : "");
-}
-
 function addSynergyUpgradeOption(ability: Ability): boolean {
     if (ability.upgrades[ABILITY_SNIPE_UPGRADE_MORE_RIFLES]) {
         return true;
     }
     return false;
+}
+
+function getExplainText(ability: Ability, upgrade: AbilityUpgrade): string[] {
+    const afterImageUpgrade = upgrade as AbilityUpgradeAfterImage;
+    const textLines: string[] = [];
+    textLines.push(`After shooting an after image is created.`);
+    textLines.push(`It stays and repeats the same shot for ${AFTER_IMAGE_DURATION / 1000}s.`);
+    textLines.push(`Max Number After Images: ${AFTER_IMAGE_COUNTER_PER_LEVEL * afterImageUpgrade.level}.`);
+    if (afterImageUpgrade.upgradeSynergy) {
+        textLines.push(`Synergy with:`);
+        textLines.push(`- ${ABILITY_SNIPE_UPGRADE_MORE_RIFLES}`);
+    }
+    return textLines;
 }
 
 function getAbilityUpgradeAfterImageUiTextLong(ability: Ability, option: AbilityUpgradeOption): string[] {

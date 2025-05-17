@@ -21,8 +21,8 @@ export type AbilityUpgradeTerrainBounce = AbilityUpgrade & {
 export function addAbilitySnipeUpgradeTerrainBounce() {
     ABILITY_SNIPE_UPGRADE_FUNCTIONS[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE] = {
         addSynergyUpgradeOption: addSynergyUpgradeOption,
-        getStatsDisplayText: getAbilityUpgradeTerrainBounceUiText,
-        getMoreInfoText: getAbilityUpgradeTerrainBounceUiTextLong,
+        getMoreInfoIncreaseOneLevelText: getAbilityUpgradeTerrainBounceUiTextLong,
+        getMoreInfoExplainText: getExplainText,
         getOptions: getOptionsTerrainBounce,
         executeOption: executeOptionTerrainBounce,
     }
@@ -108,13 +108,6 @@ function executeOptionTerrainBounce(ability: Ability, option: AbilityUpgradeOpti
     }
 }
 
-function getAbilityUpgradeTerrainBounceUiText(ability: Ability): string {
-    const abilitySnipe = ability as AbilitySnipe;
-    const upgrade: AbilityUpgradeTerrainBounce = abilitySnipe.upgrades[ABILITY_SNIPE_UPGRADE_TERRAIN_BOUNCE];
-
-    return `Terrain Bounce and +${upgrade.damageUpPerBounceFactor * 100}% damage for each bounce` + (upgrade.upgradeSynergy ? " (Synergy)" : "");
-}
-
 function addSynergyUpgradeOption(ability: Ability): boolean {
     if (ability.upgrades[ABILITY_SNIPE_UPGRADE_AFTER_IMAGE]
         || ability.upgrades[ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT]
@@ -122,6 +115,24 @@ function addSynergyUpgradeOption(ability: Ability): boolean {
         return true;
     }
     return false;
+}
+
+function getExplainText(ability: Ability, upgrade: AbilityUpgrade): string[] {
+    const bounceUpgrade = upgrade as AbilityUpgradeTerrainBounce;
+    const textLines: string[] = [];
+    textLines.push(`Main shots will bounce of blocking tiles.`);
+    textLines.push(`Each bounce will increase damage`);
+    textLines.push(`for the following bounced shot part.`);
+    textLines.push(`Damage bonus: ${DAMAGE_UP_BOUNCE * 100 * upgrade.level}% per bounce.`);
+    if (bounceUpgrade.upgradeSynergy) {
+        textLines.push(`Synergy with:`);
+        textLines.push(`- ${ABILITY_SNIPE_UPGRADE_AFTER_IMAGE}`);
+        textLines.push(`- ${ABILITY_SNIPE_UPGRADE_BACKWARDWS_SHOT}`);
+        textLines.push(`- ${ABILITY_SNIPE_UPGRADE_MORE_RIFLES}`);
+    } else {
+        textLines.push(`Only affects main shot.`);
+    }
+    return textLines;
 }
 
 function getAbilityUpgradeTerrainBounceUiTextLong(ability: Ability, option: AbilityUpgradeOption): string[] {

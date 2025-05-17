@@ -13,7 +13,7 @@ export const ABILITY_PET_PAINTER_UPGRADE_FACTORY = "Paint Factory";
 export function addAbilityPetPainterUpgradeFactory() {
     ABILITY_PET_PAINTER_UPGRADE_FUNCTIONS[ABILITY_PET_PAINTER_UPGRADE_FACTORY] = {
         getStatsDisplayText: getAbilityUpgradeFactoryUiText,
-        getMoreInfoText: getAbilityUpgradeFactoryUiTextLong,
+        getMoreInfoIncreaseOneLevelText: getAbilityUpgradeFactoryUiTextLong,
         getOptions: getOptionsFactory,
         executeOption: executeOptionPaintFactory,
     }

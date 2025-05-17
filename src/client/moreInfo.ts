@@ -261,7 +261,7 @@ export function paintMoreInfos(ctx: CanvasRenderingContext2D, moreInfos: MoreInf
     if (moreInfos.containers.containers.length > 0) {
         paintMoreInfosPartsContainer(ctx, moreInfos.containers.containers[moreInfos.containers.selected!], paintX, paintY);
     }
-    //paintAbilityUpgradeMoreInfosIfMouseHovered(ctx, game);
+    paintAbilityUpgradeMoreInfosIfMouseHovered(ctx, game);
 }
 
 export function createCharacterMoreInfosPartContainer(ctx: CanvasRenderingContext2D, character: Character, moreInfos: MoreInfos, game: Game, heading: string = "Character"): MoreInfosPartContainer {

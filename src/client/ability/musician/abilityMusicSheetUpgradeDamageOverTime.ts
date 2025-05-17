@@ -14,7 +14,7 @@ export const ABILITY_MUSIC_SHEET_UPGRADE_DAMAGE_OVER_TIME = "Damage Over Time on
 export function addAbilityMusicSheetUpgradeDamageOverTime() {
     ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS[ABILITY_MUSIC_SHEET_UPGRADE_DAMAGE_OVER_TIME] = {
         getStatsDisplayText: getAbilityUpgradeUiText,
-        getMoreInfoText: getAbilityUpgradeUiTextLong,
+        getMoreInfoIncreaseOneLevelText: getAbilityUpgradeUiTextLong,
         getOptions: getOptions,
         executeOption: executeOption,
         reset: reset,
