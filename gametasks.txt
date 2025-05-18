@@ -1,11 +1,8 @@
-next test run: 
+next test run: builder
 increase version
 
 current tasks:        
-- change: check tower builder ice dmg vs other dmg types
-- change tower builder single target: mutli target on high connections
-- bug: fountain win -> score did not make sense
-    - also check for god kill
+- change: fountain win and god kill -> score dps
 - Improve: restart confirmation question when game not ended and started?
 - Improve: restart information display when in start area?
     - unclear to new user that "T" is "restart" key
@@ -22,6 +19,7 @@ current tasks:
 - Change: ball bounce upgrade to strong? balance differently
 - bug?: ice curse king -> whole area is ice. can the crown reach the player?
 - bug?: curse can spread which is ok. Can cleansed version spread?
+- think about Tower builder scalling?
 
 - new test run: short king kill, god kill
 

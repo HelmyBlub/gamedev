@@ -132,7 +132,7 @@ export function createEndScreenMoreInfos(game: Game): MoreInfoPart[] {
     const parts: MoreInfoPart[] = [];
     const moneyGained = createMoreInfoMoneyGainedPart(ctx, game);
     if (moneyGained) parts.push(moneyGained);
-    const highscores = createHighscoresMoreInfos(ctx, game.state.highscores);
+    const highscores = createHighscoresMoreInfos(ctx, game.state.highscores, game.state.highscores.lastBoard);
     parts.push(...highscores);
     return parts;
 }

@@ -1,9 +1,12 @@
 import { Character } from "./character/characterModel.js";
+import { CHARACTER_TYPE_CURSE_FOUNTAIN_BOSS } from "./character/enemy/curseFountainBoss.js";
 import { CHARACTER_TYPE_GOD_ENEMY, GodEnemyCharacter } from "./character/enemy/god/godEnemy.js";
 import { CHARACTER_TYPE_KING_ENEMY } from "./character/enemy/kingEnemy.js";
 import { calculateDistance } from "./game.js";
 import { Game } from "./gameModel.js";
 import { getMapMidlePosition } from "./map/map.js";
+import { MAP_AREA_SPAWN_ON_DISTANCE_TYPES_FUNCTIONS } from "./map/mapAreaSpawnOnDistance.js";
+import { MAP_AREA_SPAWN_ON_DISTANCE_CURSE_CLEANSE } from "./map/mapCurseCleanseArea.js";
 import { MAP_AREA_SPAWN_ON_DISTANCE_GOD } from "./map/mapGodArea.js";
 import { MoreInfoPart, createMoreInfosPart } from "./moreInfo.js";
 
@@ -35,6 +38,7 @@ const TO_LOCAL_NO_DECIAMLS = {
 const HIGHSCORE_DISTANCE = "Distance";
 const HIGHSCORE_KING_TIME = "KingTime";
 const HIGHSCORE_GOD_TIME = "GodTime";
+const HIGHSCORE_FOUNTAIN_TIME = "FountainTime";
 const SCORE_PRIO_HP_PER_CENT = 4;
 const SCORE_PRIO_KILL_DPS = 3;
 const SCORE_PRIO_HARD_MODE_HP_PER_CENT = 2;
@@ -59,6 +63,13 @@ export function createHighscoreBoards(): Highscores {
         description: [
             "Highscore number based on damage per second",
             "or HP% of King kill."
+        ]
+    }
+    highscores.scoreBoards[HIGHSCORE_FOUNTAIN_TIME] = {
+        scores: [],
+        description: [
+            "Highscore number based on damage per second",
+            "or HP% of Fountain Fight."
         ]
     }
     createAndSetGodBoard(highscores);
@@ -89,8 +100,14 @@ export function calculateHighscoreOnGameEnd(game: Game): number {
     if (game.state.bossStuff.kingFightStartedTime !== undefined) {
         newScore = createAndPushKingScore(playerClass, game);
     } else if (game.state.bossStuff.areaSpawnFightStartedTime !== undefined) {
-        const spawnArea = game.state.map.areaSpawnOnDistance.find(a => a.id === game.state.bossStuff.areaSpawnFightStartedTime);
-        if (spawnArea && spawnArea.type === MAP_AREA_SPAWN_ON_DISTANCE_GOD) newScore = createAndPushGodScore(playerClass, game);
+        const spawnArea = game.state.map.areaSpawnOnDistance.find(a => a.id === game.state.bossStuff.areaSpawnIdFightStart);
+        if (spawnArea) {
+            if (spawnArea.type === MAP_AREA_SPAWN_ON_DISTANCE_GOD) {
+                newScore = createAndPushGodScore(playerClass, game);
+            } else if (spawnArea.type === MAP_AREA_SPAWN_ON_DISTANCE_CURSE_CLEANSE) {
+                newScore = createAndPushFountainScore(playerClass, game);
+            }
+        }
     } else {
         newScore = getHighestPlayerDistanceFromMapMiddle(game);
         const board = state.highscores.scoreBoards[HIGHSCORE_DISTANCE];
@@ -106,10 +123,11 @@ export function calculateHighscoreOnGameEnd(game: Game): number {
     return newScore;
 }
 
-export function createHighscoresMoreInfos(ctx: CanvasRenderingContext2D, highscores: Highscores): MoreInfoPart[] {
+export function createHighscoresMoreInfos(ctx: CanvasRenderingContext2D, highscores: Highscores, filterKey: string | undefined = undefined): MoreInfoPart[] {
     const moreInfosParts: MoreInfoPart[] = [];
     const keys = Object.keys(highscores.scoreBoards);
     for (let key of keys) {
+        if (filterKey && filterKey !== key) continue;
         const scoreBoard = highscores.scoreBoards[key];
         if (scoreBoard.scores.length === 0) continue;
         const textLines: string[] = [];
@@ -215,6 +233,47 @@ function createAndPushKingScore(playerClass: string, game: Game): number {
     }
     return newScore;
 }
+
+function createAndPushFountainScore(playerClass: string, game: Game): number {
+    let newScore = 0;
+    let board = game.state.highscores.scoreBoards[HIGHSCORE_FOUNTAIN_TIME];
+    if (!board) {
+        game.state.highscores.scoreBoards[HIGHSCORE_FOUNTAIN_TIME] = {
+            scores: [],
+            description: [
+                "Highscore number based on damage per second",
+                "or HP% of Fountain Fight."
+            ]
+        }
+        board = game.state.highscores.scoreBoards[HIGHSCORE_FOUNTAIN_TIME];
+    }
+    const bosses = game.state.bossStuff.bosses;
+    let totalHp = 0;
+    let currentHp = 0;
+    for (let boss of bosses) {
+        if (boss.type !== CHARACTER_TYPE_CURSE_FOUNTAIN_BOSS) continue;
+        totalHp += boss.maxHp;
+        currentHp += boss.hp;
+    }
+    if (game.state.bossStuff.areaSpawnFightStartedTime === undefined) throw Error("should not be possible?");
+    if (currentHp <= 0) {
+        newScore = totalHp / ((game.state.time - game.state.bossStuff.areaSpawnFightStartedTime) / 1000);
+        board.scores.push({ score: newScore, playerClass: playerClass, scoreTypePrio: SCORE_PRIO_KILL_DPS, scoreSuffix: "DPS" });
+        game.UI.lastHighscoreText = `New Score (Fountain Kill DPS): ${(newScore).toLocaleString(undefined, { maximumFractionDigits: 0 })} DPS`;
+    } else {
+        newScore = currentHp / totalHp * 100;
+        board.scores.push({ score: newScore, playerClass: playerClass, scoreTypePrio: SCORE_PRIO_HP_PER_CENT, scoreSuffix: "%" });
+        game.UI.lastHighscoreText = `New Score (Fountain HP %): ${(newScore).toFixed(2)}%`;
+    }
+    board.scores.sort(highscoreSort);
+    game.state.highscores.lastHighscorePosition = board.scores.findIndex((e) => e.score === newScore);
+    game.state.highscores.lastBoard = HIGHSCORE_FOUNTAIN_TIME;
+    if (board.scores.length > game.state.highscores.maxLength) {
+        board.scores.pop();
+    }
+    return newScore;
+}
+
 
 function highscoreSort(entryA: HighscoreEntry, entryB: HighscoreEntry): number {
     if (entryA.scoreTypePrio === entryB.scoreTypePrio) {
