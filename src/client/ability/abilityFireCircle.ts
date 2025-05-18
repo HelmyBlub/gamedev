@@ -151,6 +151,11 @@ function setAbilityFireCircleToLevel(ability: Ability, level: number) {
     abilityFireCircle.radius = 10 + level * 5;
     abilityFireCircle.objectDuration = 2000 + level * 500;
     abilityFireCircle.rechargeTimeDecreaseFaktor = 1 + 0.30 * level;
+    if (abilityFireCircle.rechargeTimeDecreaseFaktor > 4) {
+        const over = abilityFireCircle.rechargeTimeDecreaseFaktor - 4;
+        abilityFireCircle.rechargeTimeDecreaseFaktor = 4;
+        abilityFireCircle.damage *= 1 + over;
+    }
 }
 
 function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: number) {

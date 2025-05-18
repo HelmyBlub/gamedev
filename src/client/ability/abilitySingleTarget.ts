@@ -16,7 +16,7 @@ type AbilitySingleTarget = Ability & {
     damageIncreaseFactorPerAttack: number,
 }
 
-const MAX_SAME_TARGET_ATTACK_COUNTER = 100;
+const MAX_SAME_TARGET_ATTACK_COUNTER = 50;
 export const ABILITY_NAME_SINGLETARGET = "SingleTarget";
 
 export function addAbilitySingleTarget() {
@@ -56,7 +56,7 @@ function setAbilitySingleTargetToLevel(ability: Ability, level: number) {
     abilitySingleTarget.damage = 100 * level;
     abilitySingleTarget.maxRange = 120 + level * 15;
     abilitySingleTarget.attackTimeDecreaseFaktor = 0.70 + 0.30 * level;
-    abilitySingleTarget.damageIncreaseFactorPerAttack = 0.01 * level;
+    abilitySingleTarget.damageIncreaseFactorPerAttack = 0.02 * level;
 }
 
 function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: number) {

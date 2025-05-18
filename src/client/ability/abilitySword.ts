@@ -65,9 +65,14 @@ export function createAbilitySword(
 function setAbilitySwordToLevel(ability: Ability, level: number) {
     const abilitySword = ability as AbilitySword;
     abilitySword.damage = level * 50;
-    abilitySword.swordCount = level;
+    abilitySword.swordCount = Math.floor(level);
     abilitySword.swordLength = 30 + level * 10;
     abilitySword.angleChangePerTick = 0.01 * level;
+    if (abilitySword.swordCount > 10) {
+        const over = abilitySword.swordCount - 10;
+        abilitySword.swordCount = 10;
+        abilitySword.damage *= 1 + over / 5;
+    }
     abilitySword.angleChangePerSword = Math.PI * 2 / abilitySword.swordCount;
 }
 

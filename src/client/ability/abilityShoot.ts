@@ -66,10 +66,15 @@ function setAbilityShootToLevel(ability: Ability, level: number) {
     const abilityShoot = ability as AbilityShoot;
     abilityShoot.damage = level * 100;
     abilityShoot.frequencyIncrease = 1 + 0.2 * level;
-    abilityShoot.multiShot = level - 1;
+    abilityShoot.multiShot = Math.floor(level) - 1;
     abilityShoot.pierceCount = level - 1;
     abilityShoot.moveSpeed = 2 + level * 0.2;
     abilityShoot.bulletSize = 5 + level;
+    if (abilityShoot.frequencyIncrease > 3) {
+        const over = abilityShoot.frequencyIncrease - 3;
+        abilityShoot.frequencyIncrease = 3;
+        abilityShoot.damage *= 1 + over;
+    }
 }
 
 function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: number) {

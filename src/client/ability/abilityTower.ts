@@ -20,7 +20,6 @@ import { ABILITY_NAME_SINGLETARGET } from "./abilitySingleTarget.js";
 import { ABILITY_NAME_SWORD } from "./abilitySword.js";
 import { MoreInfoPart, createMoreInfosPart } from "../moreInfo.js";
 import { AbilityDamageBreakdown } from "../combatlog.js";
-import { CHARACTER_TYPE_AREA_BOSS } from "../character/enemy/areaBoss/areaBoss.js";
 import { CHARACTER_TYPE_CURSE_FOUNTAIN_BOSS } from "../character/enemy/curseFountainBoss.js";
 
 type AbilityObjectTower = AbilityObject & {
