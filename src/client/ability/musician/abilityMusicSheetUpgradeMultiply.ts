@@ -47,7 +47,7 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption) {
 
 function getAbilityUpgradeUiText(ability: Ability): string {
     const up: AbilityMusicSheetUpgradeMultiply = ability.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_MULTIPLY];
-    return `${ABILITY_MUSIC_SHEET_UPGRADE_MULTIPLY}: ${up.level}`;
+    return `${ABILITY_MUSIC_SHEET_UPGRADE_MULTIPLY}: Level ${up.level}`;
 }
 
 function getAbilityUpgradeUiTextLong(ability: Ability): string[] {

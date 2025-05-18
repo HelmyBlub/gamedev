@@ -17,6 +17,7 @@ const SPEED_PER_LEVEL_PER_NOTE = 0.1;
 export function addAbilityMusicSheetUpgradeSpeed() {
     ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS[ABILITY_MUSIC_SHEET_UPGRADE_SPEED] = {
         getStatsDisplayText: getAbilityUpgradeUiText,
+        getMoreInfoExplainText: getExplainText,
         getMoreInfoIncreaseOneLevelText: getAbilityUpgradeUiTextLong,
         getOptions: getOptions,
         executeOption: executeOption,
@@ -96,7 +97,16 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption, character
 
 function getAbilityUpgradeUiText(ability: Ability): string {
     const up: AbilityMusicSheetUpgradeSpeed = ability.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_SPEED];
-    return `${ABILITY_MUSIC_SHEET_UPGRADE_SPEED}: ${up.level}`;
+    return `${ABILITY_MUSIC_SHEET_UPGRADE_SPEED}: Level ${up.level}`;
+}
+
+function getExplainText(ability: Ability, upgrade: AbilityUpgrade): string[] {
+    const up = upgrade as AbilityMusicSheetUpgradeSpeed;
+    const textLines: string[] = [];
+    textLines.push(`Gain speed for every unique note.`);
+    textLines.push(`Speed increases per unique note: ${(upgrade.level * SPEED_PER_LEVEL_PER_NOTE).toFixed(1)}.`);
+    textLines.push(`Current Bonus: ${(up.currentBonusSpeed).toFixed(1)}.`);
+    return textLines;
 }
 
 function getAbilityUpgradeUiTextLong(ability: Ability): string[] {

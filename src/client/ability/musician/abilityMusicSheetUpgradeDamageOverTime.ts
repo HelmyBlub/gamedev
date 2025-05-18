@@ -14,6 +14,7 @@ export const ABILITY_MUSIC_SHEET_UPGRADE_DAMAGE_OVER_TIME = "Damage Over Time on
 export function addAbilityMusicSheetUpgradeDamageOverTime() {
     ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS[ABILITY_MUSIC_SHEET_UPGRADE_DAMAGE_OVER_TIME] = {
         getStatsDisplayText: getAbilityUpgradeUiText,
+        getMoreInfoExplainText: getExplainText,
         getMoreInfoIncreaseOneLevelText: getAbilityUpgradeUiTextLong,
         getOptions: getOptions,
         executeOption: executeOption,
@@ -58,7 +59,15 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption) {
 
 function getAbilityUpgradeUiText(ability: Ability): string {
     const up: AbilityMusicSheetUpgradeDamageOverTime = ability.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_DAMAGE_OVER_TIME];
-    return `${ABILITY_MUSIC_SHEET_UPGRADE_DAMAGE_OVER_TIME}: ${up.level}`;
+    return `${ABILITY_MUSIC_SHEET_UPGRADE_DAMAGE_OVER_TIME}: Level ${up.level}`;
+}
+
+function getExplainText(ability: Ability, upgrade: AbilityUpgrade): string[] {
+    const up = upgrade as AbilityMusicSheetUpgradeDamageOverTime;
+    const textLines: string[] = [];
+    textLines.push(`Apply permanent damage over time effect on hit.`);
+    textLines.push(`Damage Per Second: ${upgrade.level * 100}% of Base DPS.`);
+    return textLines;
 }
 
 function getAbilityUpgradeUiTextLong(ability: Ability): string[] {

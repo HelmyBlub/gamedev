@@ -3,11 +3,11 @@ increase version
 
 current tasks:
 - UI Change upgrades:
-    - hover text for other classes
-        - ball
-        - musician
-        - tamer
-        - builder
+    - musician: display level and value
+        
+- change: check tower builder ice dmg vs other dmg types
+- chage tower builder shoot on ground layer? hard to see on high connections
+- change tower builder single target: mutli target on high connections
 - bug: fountain win -> score did not make sense
     - also check for god kill
 - Improve: restart confirmation question when game not ended and started?

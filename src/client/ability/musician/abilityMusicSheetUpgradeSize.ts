@@ -47,7 +47,7 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption) {
 
 function getAbilityUpgradeUiText(ability: Ability): string {
     const up: AbilityMusicSheetUpgradeSize = ability.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_SIZE];
-    return `${ABILITY_MUSIC_SHEET_UPGRADE_SIZE}: ${up.level}`;
+    return `${ABILITY_MUSIC_SHEET_UPGRADE_SIZE}: Level ${up.level}, ${up.level * 100}% `;
 }
 
 function getAbilityUpgradeUiTextLong(ability: Ability): string[] {

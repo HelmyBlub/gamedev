@@ -96,7 +96,7 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption) {
 
 function getAbilityUpgradeUiText(ability: Ability): string {
     const up: AbilityMusicSheetUpgradeInstrumentSine = ability.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_SINE];
-    return `${ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_SINE}: ${up.level}`;
+    return `${ABILITY_MUSIC_SHEET_UPGRADE_INSTRUMENT_SINE}: Level ${up.level}`;
 }
 
 function getAbilityUpgradeUiTextLong(ability: Ability): string[] {

@@ -17,6 +17,7 @@ export function addAbilityMusicSheetUpgradeShield() {
     ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS[ABILITY_MUSIC_SHEET_UPGRADE_SHIELD] = {
         getStatsDisplayText: getAbilityUpgradeUiText,
         getMoreInfoIncreaseOneLevelText: getAbilityUpgradeUiTextLong,
+        getMoreInfoExplainText: getExplainText,
         getOptions: getOptions,
         executeOption: executeOption,
         reset: reset,
@@ -59,7 +60,18 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption) {
 
 function getAbilityUpgradeUiText(ability: Ability): string {
     const up: AbilityMusicSheetUpgradeShield = ability.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_SHIELD];
-    return `${ABILITY_MUSIC_SHEET_UPGRADE_SHIELD}: ${up.level}`;
+    return `${ABILITY_MUSIC_SHEET_UPGRADE_SHIELD}: Level ${up.level}`;
+}
+
+function getExplainText(ability: Ability, upgrade: AbilityUpgrade): string[] {
+    const up = upgrade as AbilityMusicSheetUpgradeShield;
+    const textLines: string[] = [];
+    textLines.push(
+        `Gain shield when note played.`,
+        `Cooldown of ${(SHIELD_GAIN_INTERVAL / 1000).toFixed(0)}s.`,
+        `Shield amount ${SHIELD_GAIN_AMOUNT_PER_LEVEL * upgrade.level}.`,
+    );
+    return textLines;
 }
 
 function getAbilityUpgradeUiTextLong(ability: Ability): string[] {

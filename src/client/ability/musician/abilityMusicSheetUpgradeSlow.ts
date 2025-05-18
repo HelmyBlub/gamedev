@@ -57,7 +57,8 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption) {
 
 function getAbilityUpgradeUiText(ability: Ability): string {
     const up: AbilityMusicSheetUpgradeSlow = ability.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_SLOW];
-    return `${ABILITY_MUSIC_SHEET_UPGRADE_SLOW}: ${up.level}`;
+    const currentSlowAmount = debuffSlowGetSlowAmountAsPerCentText(getSlowFactor(up));
+    return `${ABILITY_MUSIC_SHEET_UPGRADE_SLOW}: Level ${up.level}, ${currentSlowAmount}%`;
 }
 
 function getAbilityUpgradeUiTextLong(ability: Ability): string[] {
