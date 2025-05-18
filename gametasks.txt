@@ -1,10 +1,7 @@
 next test run: 
 increase version
 
-current tasks:
-- UI Change upgrades:
-    - musician: display level and value
-        
+current tasks:        
 - change: check tower builder ice dmg vs other dmg types
 - chage tower builder shoot on ground layer? hard to see on high connections
 - change tower builder single target: mutli target on high connections

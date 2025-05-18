@@ -767,40 +767,42 @@ function paintAbilityObjectsFaction(ctx: CanvasRenderingContext2D, abilityObject
             if (abilityFunctions?.paintAbilityObject !== undefined) {
                 abilityFunctions.paintAbilityObject(ctx, abilityObject, paintOrder, game);
             } else {
-                paintDefault(ctx, abilityObject, getCameraPosition(game), paintOrder, game);
+                if (paintOrder === "beforeCharacterPaint") {
+                    paintDefault(ctx, abilityObject, getCameraPosition(game), paintOrder, game);
+                }
             }
         } else if (!ifIsPlayerFaction && abilityObject.faction !== FACTION_PLAYER) {
             let abilityFunctions = ABILITIES_FUNCTIONS[abilityObject.type];
             if (abilityFunctions?.paintAbilityObject !== undefined) {
                 abilityFunctions.paintAbilityObject(ctx, abilityObject, paintOrder, game);
             } else {
-                paintDefault(ctx, abilityObject, getCameraPosition(game), paintOrder, game);
+                if (paintOrder === "afterCharacterPaint") {
+                    paintDefault(ctx, abilityObject, getCameraPosition(game), paintOrder, game);
+                }
             }
         }
     }
 }
 
 function paintDefault(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, cameraPosition: Position, paintOrder: PaintOrderAbility, game: Game) {
-    if (paintOrder === "afterCharacterPaint") {
-        const circle = abilityObject as AbilityObjectCircle;
-        if (!circle.radius) return;
-        const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition, game.UI.zoom);
-        if (abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
-        ctx.fillStyle = abilityObject.faction === FACTION_ENEMY ? "black" : abilityObject.color;
-        ctx.beginPath();
-        ctx.arc(
-            paintPos.x,
-            paintPos.y,
-            circle.radius, 0, 2 * Math.PI
-        );
-        ctx.fill();
-        if (abilityObject.faction === FACTION_ENEMY) {
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = "white";
-            ctx.stroke();
-        }
-        ctx.globalAlpha = 1;
+    const circle = abilityObject as AbilityObjectCircle;
+    if (!circle.radius) return;
+    const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition, game.UI.zoom);
+    if (abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
+    ctx.fillStyle = abilityObject.faction === FACTION_ENEMY ? "black" : abilityObject.color;
+    ctx.beginPath();
+    ctx.arc(
+        paintPos.x,
+        paintPos.y,
+        circle.radius, 0, 2 * Math.PI
+    );
+    ctx.fill();
+    if (abilityObject.faction === FACTION_ENEMY) {
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "white";
+        ctx.stroke();
     }
+    ctx.globalAlpha = 1;
 }
 
 function levelUp(ability: Ability) {
