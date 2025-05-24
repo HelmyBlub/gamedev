@@ -1,8 +1,7 @@
-next test run: builder
+next test run: 
 increase version
 
 current tasks:        
-- change: fountain win and god kill -> score dps
 - Improve: restart confirmation question when game not ended and started?
 - Improve: restart information display when in start area?
     - unclear to new user that "T" is "restart" key
