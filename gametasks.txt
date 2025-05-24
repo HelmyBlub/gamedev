@@ -2,16 +2,12 @@ next test run:
 increase version
 
 current tasks:        
-- Improve: restart confirmation question when game not ended and started?
-- Improve: restart information display when in start area?
-    - unclear to new user that "T" is "restart" key
 - Bug: "G" Auto upgrade does not work anymore?
-- Improve: Zoom Key not mentioned
+- Improve: on end money screen boss hp big number split 
 - Bug: on far away zoom map rendering broken
-- Change: distance high score based on highest reached distance and not the one died on?
+- Improve: restart confirmation question when game not ended and started?
 - Bug: enemies speed seem to fluctuate but it should not?
 - Improve: upgrade building move speed display % base speed increase instead of confusing value?
-- Improve: on end money screen boss hp big number split 
 - Change: think about sniper damage meter upgrade split
     - % damage upgrade get to much benefits?
 - Bug: past character sniper upgrade more rifles does not rotate weapon

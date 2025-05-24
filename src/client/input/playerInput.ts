@@ -223,7 +223,8 @@ export function executeUiAction(action: string, isInputDown: boolean, game: Game
         case "AutoUpgrade":
             if (!isInputDown) return;
             if (!game.clientKeyBindings) return;
-            const keys = Object.keys(game.clientKeyBindings.keyCodeToUiAction);
+            const keys = game.clientKeyBindings.keyCodeToUiAction.keys();
+            console.log("does this happen?");
             for (let key of keys) {
                 const uiAction = game.clientKeyBindings.keyCodeToUiAction.get(key);
                 if (uiAction && uiAction.action === "AutoUpgrade") {
