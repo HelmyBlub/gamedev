@@ -50,6 +50,7 @@ export type CharacterImageLoadProperties = {
 export const IMAGE_SLIME = "slime";
 export const IMAGE_PLAYER_PARTS = "playerParts";
 export const PLAYER_BASE_HP = 200;
+export const PLAYER_BASE_MOVE_SPEED = 2;
 
 GAME_IMAGES[IMAGE_SLIME] = {
     properties: { baseColor: "green" },
@@ -187,7 +188,7 @@ export function createCharacter(
 }
 
 export function createPlayerCharacter(idCounter: IdCounter, pos: Position, seed: RandomSeed, game: Game): Character {
-    const playerCharacter = createCharacter(getNextId(idCounter), pos.x, pos.y, 20, 40, undefined, 2, PLAYER_BASE_HP, FACTION_PLAYER, PLAYER_CHARACTER_TYPE, 1);
+    const playerCharacter = createCharacter(getNextId(idCounter), pos.x, pos.y, 20, 40, undefined, PLAYER_BASE_MOVE_SPEED, PLAYER_BASE_HP, FACTION_PLAYER, PLAYER_CHARACTER_TYPE, 1);
     playerCharacter.paint.randomizedCharacterImage = createRandomizedCharacterImageData(GAME_IMAGES[IMAGE_PLAYER_PARTS], seed);
     playerCharacter.willTurnToPetOnDeath = true;
     playerCharacter.combatlog = createDefaultCombatLog();

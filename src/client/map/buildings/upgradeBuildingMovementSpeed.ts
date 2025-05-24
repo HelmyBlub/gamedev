@@ -7,6 +7,7 @@ import { playerInputBindingToDisplayValue } from "../../input/playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
 import { MapTileObject } from "../mapObjects.js";
 import { UPGRADE_BUILDINGS_FUNCTIONS } from "./upgradeBuilding.js";
+import { PLAYER_BASE_MOVE_SPEED } from "../../character/characterModel.js";
 
 export const UPGRADE_BUILDING_MOVEMENT_SPEED = "Upgrade Movement Speed";
 const CHARACTER_UPGRADE = CHARACTER_UPGRADE_BONUS_MOVE_SPEED;
@@ -63,30 +64,31 @@ function refund(player: Player, game: Game) {
 function getUpgradeText(characterUpgrades: CharacterUpgrades, game: Game): string[][] {
     let moveSpeedUpgrade: CharacterUpgradeBonusMoveSpeed | undefined = characterUpgrades[CHARACTER_UPGRADE] as CharacterUpgradeBonusMoveSpeed;
     const bonusAmount = getAmount(characterUpgrades, game);
+    const bonusAmountPerCent = bonusAmount / PLAYER_BASE_MOVE_SPEED * 100;
     const upgradeCosts = getCosts(characterUpgrades, game);
     const textsText = [];
     const texts: string[] = [];
 
     if (game.UI.inputType === "keyboard") {
         texts.push(`Move Speed Upgrade Building:`);
-        texts.push(`Pay $${upgradeCosts} for ${bonusAmount} bonus move speed.`);
+        texts.push(`Pay $${upgradeCosts} for ${bonusAmountPerCent.toFixed(1)}% bonus base move speed.`);
         const interactBuyKey = playerInputBindingToDisplayValue("interact1", game);
         texts.push(`Press <${interactBuyKey}> to buy.`);
 
         if (moveSpeedUpgrade && moveSpeedUpgrade.investedMoney! > 0) {
-            texts.push(`Invested $${moveSpeedUpgrade.investedMoney} for ${moveSpeedUpgrade.bonusMoveSpeed.toFixed(2)} bonus move speed.`);
+            texts.push(`Invested $${moveSpeedUpgrade.investedMoney} for ${(moveSpeedUpgrade.bonusMoveSpeed / PLAYER_BASE_MOVE_SPEED * 100).toFixed(1)}% bonus base move speed.`);
             const interactRefundKey = playerInputBindingToDisplayValue("interact2", game);
             texts.push(`Press <${interactRefundKey}> to refund.`);
         }
         textsText.push(texts);
     } else if (game.UI.inputType === "touch") {
         texts.push(`Move Speed Upgrade Building:`);
-        texts.push(`Pay $${upgradeCosts} for ${bonusAmount} bonus move speed.`);
+        texts.push(`Pay $${upgradeCosts} for ${bonusAmountPerCent}% bonus base move speed.`);
         textsText.push(texts);
 
         if (moveSpeedUpgrade && moveSpeedUpgrade.investedMoney! > 0) {
             const text2: string[] = [];
-            text2.push(`Invested $${moveSpeedUpgrade.investedMoney} for ${moveSpeedUpgrade.bonusMoveSpeed.toFixed(2)} bonus move speed.`);
+            text2.push(`Invested $${moveSpeedUpgrade.investedMoney} for ${(moveSpeedUpgrade.bonusMoveSpeed / PLAYER_BASE_MOVE_SPEED * 100).toFixed(1)}% bonus base move speed.`);
             text2.push(`Touch to refund.`);
             textsText.push(text2);
         }

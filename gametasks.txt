@@ -2,12 +2,8 @@ next test run:
 increase version
 
 current tasks:        
-- Bug: on far away zoom map rendering broken
-    - was by a change to easier find multiplayer syncing problems.
-    - change: make it a menu option and by default i generate visible far chunks
-- Improve: restart confirmation question when game not ended and started?
-- Bug: enemies speed seem to fluctuate but it should not?
 - Improve: upgrade building move speed display % base speed increase instead of confusing value?
+- Improve: restart confirmation question when game not ended and started?
 - Change: think about sniper damage meter upgrade split
     - % damage upgrade get to much benefits?
 - Bug: past character sniper upgrade more rifles does not rotate weapon
