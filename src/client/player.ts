@@ -201,7 +201,7 @@ export function addPlayerMoney(game: Game, isKingKill: boolean = false, isGodKil
             const kingMoney = calculateMoneyForKingMaxHp(king.maxHp);
             game.UI.moneyGainedThisRun.push({
                 amount: kingMoney,
-                text: `for King kill of ${king.maxHp} HP`,
+                text: `for King kill of ${king.maxHp.toLocaleString(undefined, { maximumFractionDigits: 0 })} HP`,
             });
             moneyGain += kingMoney;
         };

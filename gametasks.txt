@@ -2,7 +2,6 @@ next test run:
 increase version
 
 current tasks:        
-- Bug: "G" Auto upgrade does not work anymore?
 - Improve: on end money screen boss hp big number split 
 - Bug: on far away zoom map rendering broken
 - Improve: restart confirmation question when game not ended and started?
