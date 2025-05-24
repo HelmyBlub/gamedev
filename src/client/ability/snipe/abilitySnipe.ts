@@ -108,6 +108,7 @@ export function addAbilitySnipe() {
         tickAI: tickAI,
         abilityUpgradeFunctions: ABILITY_SNIPE_UPGRADE_FUNCTIONS,
         canBeUsedByBosses: true,
+        tickWhenDisabled: true,
     };
 
     addAbilitySnipeUpgradeAfterImage();

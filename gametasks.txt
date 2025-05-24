@@ -2,11 +2,10 @@ next test run:
 increase version
 
 current tasks:        
-- Improve: upgrade building move speed display % base speed increase instead of confusing value?
+- Bug: past character sniper upgrade more rifles does not rotate weapon
 - Improve: restart confirmation question when game not ended and started?
 - Change: think about sniper damage meter upgrade split
     - % damage upgrade get to much benefits?
-- Bug: past character sniper upgrade more rifles does not rotate weapon
 - Change: ball bounce upgrade to strong? balance differently
 - bug?: ice curse king -> whole area is ice. can the crown reach the player?
 - bug?: curse can spread which is ok. Can cleansed version spread?

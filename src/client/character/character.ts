@@ -315,7 +315,8 @@ export function tickCharacters(characters: (Character | undefined)[], game: Game
         }
         if (char.state === "alive" || char.state === "petPlayer") {
             for (let ability of char.abilities) {
-                if (ability.disabled) continue;
+                const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+                if (ability.disabled && !abilityFunctions.tickWhenDisabled) continue;
                 const tickAbility = ABILITIES_FUNCTIONS[ability.name].tickAbility;
                 if (tickAbility) tickAbility(char, ability, game);
             }

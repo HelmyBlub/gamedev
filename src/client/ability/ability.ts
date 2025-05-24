@@ -115,6 +115,7 @@ export type AbilityFunctions = {
     canBeUsedByBosses?: boolean,
     positionNotRquired?: boolean,
     selfLatePaint?: boolean, // e.g.: used for paint after darkness map modifier for music sheet
+    tickWhenDisabled?: boolean,
 }
 
 export type AbilitiesFunctions = {
