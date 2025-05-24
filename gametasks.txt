@@ -2,13 +2,11 @@ next test run:
 increase version
 
 current tasks:        
-- Bug: past character sniper upgrade more rifles does not rotate weapon
+- bug: cleansed curse should not spread 
 - Improve: restart confirmation question when game not ended and started?
 - Change: think about sniper damage meter upgrade split
     - % damage upgrade get to much benefits?
 - Change: ball bounce upgrade to strong? balance differently
-- bug?: ice curse king -> whole area is ice. can the crown reach the player?
-- bug?: curse can spread which is ok. Can cleansed version spread?
 - think about Tower builder scalling?
 
 - new test run: short king kill, god kill

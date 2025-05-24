@@ -20,7 +20,7 @@ import { legendaryAbilityGiveBlessing, classBuildingPutLegendaryCharacterStuffBa
 import { MoreInfosPartContainer, createCharacterMoreInfosPartContainer } from "../../moreInfo.js";
 import { doDamageMeterSplit } from "../../combatlog.js";
 import { CHARACTER_TYPE_END_BOSS_CROWN_ENEMY, createKingCrownCharacter, KingCrownEnemyCharacter } from "./kingCrown.js";
-import { copyCursesToTarget } from "../../curse/curse.js";
+import { copyCursesToTarget, Curse } from "../../curse/curse.js";
 import { CHARACTER_UPGRADE_BONUS_DAMAGE_REDUCTION, CharacterUpgradeBonusDamageReduction } from "../upgrades/characterUpgradeDamageReduction.js";
 
 export type KingEnemyCharacter = Character;
@@ -108,7 +108,12 @@ export function setPlayerAsKing(game: Game) {
         for (let charClass of boss.characterClasses) {
             if (charClass.legendary) {
                 if (charClass.curses === undefined) charClass.curses = [];
-                copyCursesToTarget(boss.curses, charClass.curses, game);
+                const cursesToCopy: Curse[] = [];
+                for (let curse of boss.curses) {
+                    if (curse.cleansed) continue;
+                    cursesToCopy.push(curse);
+                }
+                copyCursesToTarget(cursesToCopy, charClass.curses, game);
             }
         }
     }
