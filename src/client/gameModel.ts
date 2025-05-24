@@ -403,12 +403,6 @@ export function createDefaultGameData(c?: HTMLCanvasElement, ctx?: CanvasRenderi
                 interval: 100,
                 nextTime: 0,
             },
-            gameStateCompare: {
-                compareInterval: 3000,
-                maxKeep: 10,
-                timeAndHash: [],
-                stateTainted: false,
-            }
         },
         camera: {
             type: "follow character"

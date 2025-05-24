@@ -144,6 +144,16 @@ export function gameInit(game: Game) {
     game.multiplayer.autosendMousePosition.sendForOwners = [];
     if (game.multiplayer.websocket !== null) {
         game.multiplayer.maxServerGameTime = 0;
+        if (game.state.activeCheats && game.state.activeCheats.indexOf("sendDebugDataMultipalyer") !== -1) {
+            game.multiplayer.gameStateCompare = {
+                compareInterval: 3000,
+                maxKeep: 10,
+                timeAndHash: [],
+                stateTainted: false,
+            };
+        } else {
+            game.multiplayer.gameStateCompare = undefined;
+        }
         if (game.multiplayer.gameStateCompare) {
             game.multiplayer.gameStateCompare.timeAndHash = [];
             game.multiplayer.gameStateCompare.nextCompareTime = undefined;

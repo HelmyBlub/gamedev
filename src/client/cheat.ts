@@ -1,6 +1,6 @@
-import { experienceForEveryPlayersLeveling, getPlayerCharacters, playerCharactersAddBossSkillPoints } from "./character/character.js";
+import { experienceForEveryPlayersLeveling, playerCharactersAddBossSkillPoints } from "./character/character.js";
 import { Character, createPlayerCharacter } from "./character/characterModel.js";
-import { createBossWithLevel, spawnBoss } from "./character/enemy/bossEnemy.js";
+import { spawnBoss } from "./character/enemy/bossEnemy.js";
 import { levelingCharacterAndClassXpGain } from "./character/playerCharacters/levelingCharacter.js";
 import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./character/playerCharacters/playerCharacters.js";
 import { executeUpgradeOptionChoice } from "./character/upgrade.js";
@@ -10,10 +10,9 @@ import { classBuildingPlacePlayerClassStuffInBuilding } from "./map/buildings/cl
 import { UPGRADE_BUILDINGS_FUNCTIONS, upgradeBuildingBuyUpgrade } from "./map/buildings/upgradeBuilding.js";
 import { createEmptyClassBuilding } from "./map/mapObjectClassBuilding.js";
 import { mapObjectPlaceUpgradeBuilding } from "./map/mapObjectUpgradeBuilding.js";
-import { mapModifierGrowArea } from "./map/modifiers/mapModifier.js";
 import { addMoneyAmountToPlayer } from "./player.js";
 import { nextRandom } from "./randomNumberGenerator.js";
-export type CheatCheckboxes = "closeKingArea" | "closeSpawnAreas" | "reducedBossHp" | "allowCheats" | "closeCurses" | "Immune&Fast&Ignored";
+export type CheatCheckboxes = "closeKingArea" | "closeSpawnAreas" | "reducedBossHp" | "allowCheats" | "closeCurses" | "Immune&Fast&Ignored" | "sendDebugDataMultipalyer";
 export const CHEAT_ACTIONS = [
     "allowCheats",
     "closeKingArea",
@@ -26,7 +25,8 @@ export const CHEAT_ACTIONS = [
     "Very Tanky",
     "next boss spawn",
     "give Money",
-    "create end game state"
+    "create end game state",
+    "sendDebugDataMultipalyer",
 ];
 export type ActiveCheats = CheatCheckboxes[];
 
@@ -56,6 +56,7 @@ export function executeCheatAction(action: string, activate: boolean, clientId: 
         case "closeKingArea":
         case "closeSpawnAreas":
         case "closeCurses":
+        case "sendDebugDataMultipalyer":
         case "reducedBossHp":
             if (activate) {
                 if (game.state.activeCheats.findIndex(a => a === action) === -1) {

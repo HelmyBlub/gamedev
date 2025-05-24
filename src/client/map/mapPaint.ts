@@ -1,6 +1,8 @@
 import { paintCharacters } from "../character/characterPaint.js";
+import { getTickInterval } from "../game.js";
 import { Debugging, Game, MapChunkPaintCache, Position } from "../gameModel.js";
 import { chunkXYToMapKey, GameMap, MapChunk, TILE_ID_GRASS, TILE_VALUES } from "./map.js";
+import { createNewChunk } from "./mapGeneration.js";
 import { paintMapChunkObjects } from "./mapObjects.js";
 import { mapModifierDarknessDarknesChunkPaint, MODIFIER_NAME_DARKNESS } from "./modifiers/mapModifierDarkness.js";
 
@@ -20,9 +22,15 @@ export function paintMap(layer: MapPaintLayer, ctx: CanvasRenderingContext2D, ca
         for (let chunkXIndex = 0; chunkXIndex < Math.ceil(width / chunkSize) + 1; chunkXIndex++) {
             const chunkX = startChunkX + chunkXIndex;
             const chunkKey = chunkXYToMapKey(chunkX, chunkY);
-            const chunk = map.chunks[chunkKey];
+            let chunk = map.chunks[chunkKey];
             if (chunk === undefined) {
-                continue;
+                if (game.multiplayer.websocket && game.multiplayer.gameStateCompare) {
+                    // chunk creation is client window/zoom dependant and uses up IDs. 
+                    // So prevent it from happening if i want to check for multiplayer syncing issues.
+                    continue;
+                } else {
+                    chunk = createNewChunk(map, chunkX, chunkY, game.state.idCounter, game);
+                }
             }
             const x = Math.floor(chunkX * chunkSize - startX);
             const y = Math.floor(chunkY * chunkSize - startY);
@@ -45,11 +53,38 @@ export function paintMap(layer: MapPaintLayer, ctx: CanvasRenderingContext2D, ca
 }
 
 export function paintMapCharacters(ctx: CanvasRenderingContext2D, cameraPosition: Position, map: GameMap, game: Game) {
-    for (let key of game.state.map.activeChunkKeys) {
-        const chunk = map.chunks[key];
-        if (chunk === undefined) continue;
-        paintCharacters(ctx, chunk.characters, cameraPosition, game);
+    const width = ctx.canvas.width / game.UI.zoom.factor;
+    const height = ctx.canvas.height / game.UI.zoom.factor;
+    // some enemies have some higher attack range. if zoom is near paint by active chunks, which should inculde all enemies which could attack.
+    // if zoom is far => paint by visibly chunks as enemies with high range should be visible
+    if (width > map.activeChunkRange * 2 || height > map.activeChunkRange * 2) {
+        let extraChunks = 0;
+        const startX = (cameraPosition.x - width / 2);
+        const startY = (cameraPosition.y - height / 2);
+        const chunkSize = map.tileSize * map.chunkLength;
+        const startChunkX = Math.floor(startX / chunkSize) - extraChunks;
+        const startChunkY = Math.floor(startY / chunkSize) - extraChunks;
+        const chunkColumns = Math.ceil(height / chunkSize) + 1 + extraChunks * 2;
+        const chunkRows = Math.ceil(width / chunkSize) + 1 + extraChunks * 2;
+        for (let chunkYIndex = 0; chunkYIndex < chunkColumns; chunkYIndex++) {
+            const chunkY = startChunkY + chunkYIndex;
+            for (let chunkXIndex = 0; chunkXIndex < chunkRows; chunkXIndex++) {
+                const chunkX = startChunkX + chunkXIndex;
+                const chunkKey = chunkXYToMapKey(chunkX, chunkY);
+                let chunk = map.chunks[chunkKey];
+                if (chunk === undefined) continue;
+                paintCharacters(ctx, chunk.characters, cameraPosition, game);
+            }
+        }
+    } else {
+        for (let key of game.state.map.activeChunkKeys) {
+            const chunk = map.chunks[key];
+            if (chunk === undefined) continue;
+            paintCharacters(ctx, chunk.characters, cameraPosition, game);
+        }
+
     }
+
 }
 
 function paintChunk(layer: MapPaintLayer, ctx: CanvasRenderingContext2D, paintTopLeftPosition: Position, chunk: MapChunk, tileSize: number, chunkXY: Position, mapChunkPaintCache: MapChunkPaintCache, game: Game, debug?: Debugging) {

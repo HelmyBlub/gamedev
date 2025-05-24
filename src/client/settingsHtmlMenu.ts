@@ -64,6 +64,7 @@ function addDebug(game: Game) {
     addCheatCheckbox("closeSpawnAreas", game);
     addCheatCheckbox("closeCurses", game);
     addCheatCheckbox("Immune&Fast&Ignored", game);
+    addCheatCheckbox("sendDebugDataMultipalyer", game);
     addCheatButton("addBossSkillPoint", game);
     addCheatButton("add alot experience", game);
     addCheatButton("Very Tanky", game);
