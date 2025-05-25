@@ -651,6 +651,7 @@ function tickAndPaint(game: Game) {
             console.log("game can not keep up");
         }
     }
+    restartHoldDown(game);
     takeTimeMeasure(game.debug, "", "paint");
     paintAll(game.ctx, game);
     game.gameSpeedSettings.ticksPerPaint.unshift(0);
@@ -795,7 +796,6 @@ function doStuff(game: Game) {
     autoSendMyMousePosition(game);
     autoSendGamePlayerHashInMultiplayer(game);
     controllerInput(game);
-    restartHoldDown(game)
 }
 
 function restartHoldDown(game: Game) {

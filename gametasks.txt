@@ -2,10 +2,6 @@ next test run:
 increase version
 
 current tasks:        
-- Improve: restart confirmation question when game not ended and started?
-    - in multiplayer show name of person who restarts
-- Change: think about sniper damage meter upgrade split
-    - % damage upgrade get to much benefits?
 - Change: ball bounce upgrade to strong? balance differently
 - think about Tower builder scalling?
 
