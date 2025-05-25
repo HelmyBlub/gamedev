@@ -4,7 +4,7 @@ import { Character, CHARACTER_TYPE_FUNCTIONS } from "./characterModel.js";
 import { getNextWaypoint, getPathingCache, PathingCache } from "./pathing.js";
 import { calculateDirection, calculateDistance, calculateDistancePointToLine, changeCharacterAndAbilityIds, getNextId, levelUpIncreaseExperienceRequirement, modulo, takeTimeMeasure } from "../game.js";
 import { Position, Game, IdCounter, Camera, FACTION_ENEMY, FACTION_PLAYER } from "../gameModel.js";
-import { findPlayerById, Player } from "../player.js";
+import { findPlayerByCliendId, Player } from "../player.js";
 import { RandomSeed, nextRandom } from "../randomNumberGenerator.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, doAbilityDamageBreakDownForAbilityId, findAbilityById, findAbilityOwnerByAbilityIdInPlayers, findAbilityOwnerById, levelingAbilityXpGain, resetAllCharacterAbilities } from "../ability/ability.js";
 import { addBossType, BossEnemyCharacter, CHARACTER_TYPE_BOSS_ENEMY } from "./enemy/bossEnemy.js";
@@ -367,7 +367,7 @@ export function getRandomAlivePlayerCharacter(players: Player[], randomSeed: Ran
 
 export function findMyCharacter(game: Game): Character | undefined {
     const myClientId = game.multiplayer.myClientId;
-    const myPlayer = findPlayerById(game.state.players, myClientId);
+    const myPlayer = findPlayerByCliendId(myClientId, game.state.players);
     return myPlayer?.character;
 }
 

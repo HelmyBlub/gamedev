@@ -146,14 +146,7 @@ export function gameInitPlayers(game: Game) {
     if (cheatActiveImmuneFastIgnored) toggleCheatImmuneFastIgnored(cheatActiveImmuneFastIgnored, game);
 }
 
-export function findPlayerById(players: Player[], clientId: number): Player | null {
-    for (let i = 0; i < players.length; i++) {
-        if (players[i].clientId === clientId) {
-            return players[i];
-        }
-    }
-    return null;
-}
+
 
 export function findPlayerByCharacterId(players: Player[], id: number): Player | null {
     for (let i = 0; i < players.length; i++) {

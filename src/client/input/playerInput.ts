@@ -1,5 +1,5 @@
 import { CommandRestart, handleCommand } from "../commands.js";
-import { findPlayerByCliendId, findPlayerById } from "../player.js";
+import { findPlayerByCliendId } from "../player.js";
 import { Character } from "../character/characterModel.js";
 import { ClientKeyBindings, Game, Position, RecordExtendendInformation } from "../gameModel.js";
 import { websocketConnect } from "../multiplayerConenction.js";
@@ -14,7 +14,6 @@ import { createRequiredMoreInfos, moreInfosHandleMouseClick } from "../moreInfo.
 import { mousePositionToMapPosition } from "../map/map.js";
 import { CHEAT_ACTIONS, executeCheatAction } from "../cheat.js";
 import { pushStackPaintTextData } from "../floatingText.js";
-import e from "express";
 
 export const MOVE_ACTION = "moveAction";
 export const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3", "upgrade4", "upgrade5"];
@@ -163,7 +162,8 @@ export function tickPlayerInputs(playerInputs: PlayerInput[], currentTime: numbe
             playerAction(playerInputs[0].clientId, playerInputs[0].data, game);
             playerInputs.shift();
         } else if (playerInputs[0].command === "restart") {
-            playerInputs.shift();
+            const restart = playerInputs.shift()!;
+            game.multiplayer.lastClientWhoRestartedId = restart.clientId;
             game.state.restartAfterTick = true;
             break;
         } else {
@@ -402,7 +402,7 @@ function playerInputChangeEvent(game: Game, inputCode: string, isInputDown: bool
             data: { action: action.action, isKeydown: isInputDown, castPosition: castPosition, castPositionRelativeToCharacter: castPositionRelativeToCharacter },
         });
     } else if (action.action.indexOf("upgrade") > -1) {
-        const character = findPlayerById(game.state.players, clientId)?.character;
+        const character = findPlayerByCliendId(clientId, game.state.players)?.character;
         if (!character || character.upgradeChoices.choices.length === 0) {
             return;
         }
@@ -435,8 +435,8 @@ function playerInputChangeEvent(game: Game, inputCode: string, isInputDown: bool
 export function playerAction(clientId: number, data: any, game: Game) {
     const action: string = data.action;
     const isKeydown: boolean = data.isKeydown;
-    const player = findPlayerById(game.state.players, clientId);
-    if (player === null) return;
+    const player = findPlayerByCliendId(clientId, game.state.players);
+    if (!player) return;
     const character = player.character;
 
     if (action !== undefined) {

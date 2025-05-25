@@ -211,6 +211,7 @@ export type SkillPoints = {
 
 export type Multiplayer = {
     myClientId: number,
+    lastClientWhoRestartedId?: number,
     websocket: WebSocket | null,
     maxServerGameTime: number,
     maxServerGameTimeReceivedTime: number,

@@ -14,7 +14,7 @@ import { findClosestInteractable, getRelativeMousePoistion } from "./game.js";
 import { Game, Position } from "./gameModel.js";
 import { createHighscoresMoreInfos } from "./highscores.js";
 import { createMoreInfosForMabObject } from "./map/mapObjects.js";
-import { createMoreInfoMoney, createMoreInfoMoneyGainedPart, findPlayerById } from "./player.js";
+import { createMoreInfoMoney, createMoreInfoMoneyGainedPart, findPlayerByCliendId } from "./player.js";
 
 export type MoreInfoPart = {
     texts: string[],
@@ -151,7 +151,7 @@ export function createRequiredMoreInfos(game: Game): MoreInfos {
     gameRuleContainer.moreInfoParts.push(createGameRulesMoreInfos(ctx));
 
     for (let client of game.state.clientInfos) {
-        const player = findPlayerById(game.state.players, client.id);
+        const player = findPlayerByCliendId(client.id, game.state.players);
         if (!player) continue;
         let heading = client.name ? client.name : "Character";
         const characterContainer = createCharacterMoreInfosPartContainer(ctx, player.character, moreInfos, game, heading);

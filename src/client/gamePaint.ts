@@ -10,7 +10,7 @@ import { Highscores } from "./highscores.js";
 import { GAME_IMAGES, loadImage } from "./imageLoad.js";
 import { MAP_OBJECTS_FUNCTIONS } from "./map/mapObjects.js";
 import { paintMap, paintMapCharacters } from "./map/mapPaint.js";
-import { Player, findPlayerById, isAutoUpgradeActive } from "./player.js";
+import { Player, findPlayerByCliendId, isAutoUpgradeActive } from "./player.js";
 import { playerInputBindingToDisplayValue } from "./input/playerInput.js";
 import { createEndScreenMoreInfos, paintMoreInfos, paintMoreInfosPart } from "./moreInfo.js";
 import { paintTextData, paintStackTextData } from "./floatingText.js";
@@ -290,8 +290,8 @@ function paintClosestInteractable(ctx: CanvasRenderingContext2D, cameraPosition:
     game.UI.paintClosesInteractableMoreInfo = false;
     game.UI.rectangles.interactRectangle = undefined;
     if (game.state.ended) return;
-    const player = findPlayerById(game.state.players, game.multiplayer.myClientId);
-    if (player === null) return;
+    const player = findPlayerByCliendId(game.multiplayer.myClientId, game.state.players);
+    if (!player) return;
     const character = player.character;
     const closestInteractable = findClosestInteractable(character, game);
     if (closestInteractable) {
@@ -562,8 +562,8 @@ function paintGameTitle(ctx: CanvasRenderingContext2D) {
 }
 
 function paintMyCharacterStats(ctx: CanvasRenderingContext2D, game: Game) {
-    const player = findPlayerById(game.state.players, game.multiplayer.myClientId);
-    if (player === null) return;
+    const player = findPlayerByCliendId(game.multiplayer.myClientId, game.state.players);
+    if (!player) return;
     paintPlayerStats(ctx, player, game);
 }
 

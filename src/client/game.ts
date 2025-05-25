@@ -1,6 +1,6 @@
 import { cappCharacter, changeCharacterId, countAlivePlayerCharacters, findAndSetNewCameraCharacterId, findCharacterById, findMyCharacter, getPlayerCharacters, resetCharacter, tickCharacters } from "./character/character.js";
 import { paintAll } from "./gamePaint.js";
-import { addPlayerMoney, createDefaultKeyBindings1, createDefaultUiKeyBindings, createPlayerWithPlayerCharacter, findNearesPastPlayerCharacter, findPlayerByCharacterId, gameInitPlayers, isAutoUpgradeActive } from "./player.js";
+import { addPlayerMoney, createDefaultKeyBindings1, createDefaultUiKeyBindings, createPlayerWithPlayerCharacter, findNearesPastPlayerCharacter, findPlayerByCharacterId, findPlayerByCliendId, gameInitPlayers, isAutoUpgradeActive } from "./player.js";
 import { MOUSE_ACTION, RESTART_HOLD_TIME, UPGRADE_ACTIONS, executeUiAction, tickPlayerInputs } from "./input/playerInput.js";
 import { Position, GameState, Game, IdCounter, Debugging, ClientInfo, GameVersion } from "./gameModel.js";
 import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap, initKingArea, mousePositionToMapPosition, tickActiveMapChunks } from "./map/map.js";
@@ -36,6 +36,7 @@ import { areaSpawnOnDistanceCheckFightStart, areaSpawnOnDistanceGetRetrySpawn, a
 import { MAP_AREA_SPAWN_ON_DISTANCE_GOD } from "./map/mapGodArea.js";
 import { MAP_AREA_SPAWN_ON_DISTANCE_CURSE_CLEANSE } from "./map/mapCurseCleanseArea.js";
 import { removeCurses } from "./curse/curse.js";
+import { displayTextAtCameraPosition } from "./floatingText.js";
 
 /** values between - Math.PI * 1.5 to Math.PI*0.5 */
 export function calculateDirection(startPos: Position, targetPos: Position): number {
@@ -165,6 +166,13 @@ export function gameInit(game: Game) {
             game.multiplayer.gameStateCompare.stateCompareSend = undefined;
         }
         game.state.playerInputs = game.multiplayer.cachePlayerInputs!;
+        if (game.multiplayer.lastClientWhoRestartedId) {
+            const clientInfo = findClientInfo(game.multiplayer.lastClientWhoRestartedId, game);
+            if (clientInfo) {
+                displayTextAtCameraPosition(`Player ${clientInfo.name} restarted`, game);
+            }
+            game.multiplayer.lastClientWhoRestartedId = undefined;
+        }
     }
     const playerAlphaInput: HTMLInputElement = document.getElementById("playerGlobalAlphaMultiplier") as HTMLInputElement;
     if (playerAlphaInput) {
