@@ -172,7 +172,9 @@ function onCloneBossKill(character: Character, game: Game) {
 function onBossKill(character: Character, game: Game) {
     playerCharactersAddBossSkillPoints(character.level?.level, game);
     experienceForEveryPlayersLeveling(character.experienceWorth, game);
-    doDamageMeterSplit(game.state.bossStuff.bossLevelCounter.toFixed(), game);
+    if (!game.state.bossStuff.kingFightStartedTime && character.level!.level + 1 >= game.state.bossStuff.bossLevelCounter) {
+        doDamageMeterSplit(game.state.bossStuff.bossLevelCounter.toFixed(), game);
+    }
     if (character.level?.level) {
         const moneyAmount = character.level.level;
         addMoneyUiMoreInfo(moneyAmount, `for Boss kills`, game);

@@ -2,6 +2,9 @@ next test run:
 increase version
 
 current tasks:        
+- bug: ball damage meter can not select both abilities
+- bug: check damage meter split when rushing to boss
+- bug?: ball fire line ticking to often?
 - Change: ball bounce upgrade to strong? balance differently
 - think about Tower builder scalling?
 

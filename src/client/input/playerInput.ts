@@ -181,7 +181,7 @@ export function executeUiAction(action: string, isInputDown: boolean, game: Game
                 game.UI.restartKeyPressTime = undefined;
                 return;
             }
-            if (game.state.bossStuff.bossLevelCounter > 1 || game.UI.restartKeyPressTime) {
+            if (!game.state.ended && (game.state.bossStuff.bossLevelCounter > 1 || game.UI.restartKeyPressTime)) {
                 if (game.UI.restartKeyPressTime === undefined) {
                     const restartIdRef = 0.1;
                     pushStackPaintTextData(game.UI.stackTextsData, ` hold for restart`, game.state.time, RESTART_HOLD_TIME, undefined, restartIdRef);
