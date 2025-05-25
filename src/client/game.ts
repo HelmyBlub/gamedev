@@ -1,7 +1,7 @@
 import { cappCharacter, changeCharacterId, countAlivePlayerCharacters, findAndSetNewCameraCharacterId, findCharacterById, findMyCharacter, getPlayerCharacters, resetCharacter, tickCharacters } from "./character/character.js";
 import { paintAll } from "./gamePaint.js";
 import { addPlayerMoney, createDefaultKeyBindings1, createDefaultUiKeyBindings, createPlayerWithPlayerCharacter, findNearesPastPlayerCharacter, findPlayerByCharacterId, gameInitPlayers, isAutoUpgradeActive } from "./player.js";
-import { MOUSE_ACTION, UPGRADE_ACTIONS, tickPlayerInputs } from "./input/playerInput.js";
+import { MOUSE_ACTION, RESTART_HOLD_TIME, UPGRADE_ACTIONS, executeUiAction, tickPlayerInputs } from "./input/playerInput.js";
 import { Position, GameState, Game, IdCounter, Debugging, ClientInfo, GameVersion } from "./gameModel.js";
 import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap, initKingArea, mousePositionToMapPosition, tickActiveMapChunks } from "./map/map.js";
 import { Character } from "./character/characterModel.js";
@@ -133,6 +133,11 @@ export function gameInit(game: Game) {
     game.UI.stackTextsData.textStack = [];
     game.UI.displayMoreInfos = false;
     game.UI.rectangles = {};
+    if (game.UI.restartKeyPressTime) {
+        game.UI.restartKeyPressTime = performance.now();
+    } else {
+        game.UI.restartKeyPressTime = undefined;
+    }
     if (game.UI.playerCharacterLevelUI) game.UI.playerCharacterLevelUI.levelUI = [];
     game.testing.saveStates.autoSaves.nextSaveStateTime = 10000;
     game.state.map.activeChunkKeys = [];
@@ -782,6 +787,13 @@ function doStuff(game: Game) {
     autoSendMyMousePosition(game);
     autoSendGamePlayerHashInMultiplayer(game);
     controllerInput(game);
+    restartHoldDown(game)
+}
+
+function restartHoldDown(game: Game) {
+    if (game.UI.restartKeyPressTime && game.UI.restartKeyPressTime + RESTART_HOLD_TIME < performance.now()) {
+        executeUiAction("Restart", true, game);
+    }
 }
 
 function autoSendMyMousePosition(game: Game) {

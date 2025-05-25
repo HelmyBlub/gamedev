@@ -2,8 +2,9 @@ next test run:
 increase version
 
 current tasks:        
-- bug: cleansed curse should not spread 
 - Improve: restart confirmation question when game not ended and started?
+    - if first boss defeated, requried to hold restart key 2 seconds, display info for it
+    - in multiplayer show name of person who restarts
 - Change: think about sniper damage meter upgrade split
     - % damage upgrade get to much benefits?
 - Change: ball bounce upgrade to strong? balance differently

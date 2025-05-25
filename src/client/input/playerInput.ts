@@ -14,12 +14,14 @@ import { createRequiredMoreInfos, moreInfosHandleMouseClick } from "../moreInfo.
 import { mousePositionToMapPosition } from "../map/map.js";
 import { CHEAT_ACTIONS, executeCheatAction } from "../cheat.js";
 import { pushStackPaintTextData } from "../floatingText.js";
+import e from "express";
 
 export const MOVE_ACTION = "moveAction";
 export const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3", "upgrade4", "upgrade5"];
 export const ABILITY_ACTIONS = ["ability1", "ability2", "ability3"];
 export const SPECIAL_ACTIONS = ["interact1", "interact2"];
 export const MOUSE_ACTION = "mousePositionUpdate";
+export const RESTART_HOLD_TIME = 2000;
 
 export type ActionsPressed = {
     [key: string]: boolean;
@@ -172,10 +174,23 @@ export function tickPlayerInputs(playerInputs: PlayerInput[], currentTime: numbe
     takeTimeMeasure(game.debug, "tickPlayerInputs", "");
 }
 
-export function executeUiAction(action: string, isInputDown: boolean, game: Game,) {
+export function executeUiAction(action: string, isInputDown: boolean, game: Game) {
     switch (action) {
         case "Restart":
-            if (!isInputDown) return;
+            if (!isInputDown) {
+                game.UI.restartKeyPressTime = undefined;
+                return;
+            }
+            if (game.state.bossStuff.bossLevelCounter > 1 || game.UI.restartKeyPressTime) {
+                if (game.UI.restartKeyPressTime === undefined) {
+                    const restartIdRef = 0.1;
+                    pushStackPaintTextData(game.UI.stackTextsData, ` hold for restart`, game.state.time, RESTART_HOLD_TIME, undefined, restartIdRef);
+                    game.UI.restartKeyPressTime = performance.now();
+                    return;
+                } else if (game.UI.restartKeyPressTime + RESTART_HOLD_TIME > performance.now()) {
+                    return;
+                }
+            }
             if (game.state.bossStuff.fightWipe) {
                 const retries = calculateFightRetryCounter(game);
                 if (retries > 0) return;

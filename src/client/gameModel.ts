@@ -292,6 +292,7 @@ export type UI = {
     lastMouseDownWasUIClick: boolean,
     playerCharacterLevelUI?: PlayerCharacterLevelUI,
     playerCharacterAbilityUI?: PlayerCharacterAbilityUI,
+    restartKeyPressTime?: number,
 }
 
 export type ClientKeyBindings = {

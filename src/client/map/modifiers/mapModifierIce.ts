@@ -158,7 +158,7 @@ function tryGenerateSomeMaze(randomSeed: RandomSeed, radius: number): { maze: Ma
         solve = solveMazeBackwards(maze, mazeTileIsBlocking);
         isSolveableResult = isSolveable(solve, maze, mazeTileIsBlocking);
         if (!isSolveableResult) {
-            if (counter > 100) {
+            if (counter > 200) {
                 console.log("maze generation max loops reached. Maze is broken");
                 break;
             }
