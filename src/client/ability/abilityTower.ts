@@ -38,6 +38,7 @@ type AbilityObjectTower = AbilityObject & {
 type AbilityTower = Ability & {
     idCounter: number,
     damage: number,
+    towerDamageFactor: number,
     maxClickRange: number,
     availableAbilityKeys: string[],
     currentAbilityIndex: number,
@@ -51,6 +52,7 @@ const START_MAX_TOWER = 5;
 const START_DAMAGE = 50;
 const UPGRADE_DAMAGE = 250;
 const UPGRADE_TOWER_COUNT = 5;
+const UPGRADE_TOWER_FACTOR_PER_LEVEL = 0.15;
 const ENEMY_TOWER_DESPAWN_TIME = 30000;
 GAME_IMAGES[ABILITY_NAME_TOWER] = {
     imagePath: "/images/hammer.png",
@@ -108,6 +110,7 @@ export function createAbilityTower(
         maxTowers: START_MAX_TOWER,
         upgrades: {},
         tradable: true,
+        towerDamageFactor: 1,
     };
 }
 
@@ -222,7 +225,7 @@ function castTower(abilityOwner: AbilityOwner, ability: Ability, castPosition: P
     }
     abilityObjects.push(newTower);
     abilityTower.lastBuildTime = game.state.time;
-    updateTowerObjectAbilityLevels(abilityObjects);
+    updateTowerObjectAbilityLevels(abilityObjects, abilityTower);
 }
 
 function updateTowersWhichHaveDeletedId(abilityObjects: AbilityObject[], deletedId: number) {
@@ -279,7 +282,7 @@ function getRandomPassiveAbilitiyKeys(): string[] {
     ];
 }
 
-function updateTowerObjectAbilityLevels(abilityObjects: AbilityObject[]) {
+function updateTowerObjectAbilityLevels(abilityObjects: AbilityObject[], abilityTower: AbilityTower) {
     for (let abilityObject of abilityObjects) {
         if (abilityObject.type !== ABILITY_NAME_TOWER) continue;
         const tower: AbilityObjectTower = abilityObject as AbilityObjectTower;
@@ -299,6 +302,10 @@ function updateTowerObjectAbilityLevels(abilityObjects: AbilityObject[]) {
             } else {
                 if (abilityFunctions.setAbilityToLevel) {
                     abilityFunctions.setAbilityToLevel(tower.ability, level);
+                    const hasDamageAbility = tower.ability as any;
+                    if (abilityTower.towerDamageFactor > 1 && hasDamageAbility.damage != undefined) {
+                        hasDamageAbility.damage *= abilityTower.towerDamageFactor;
+                    }
                 }
             }
         }
@@ -518,6 +525,7 @@ function createAbilityTowerMoreInfos(ctx: CanvasRenderingContext2D, ability: Abi
         `Max Click Range: ${abilityTower.maxClickRange}`,
         `Line Damage: ${abilityTower.damage}`,
         `Line Damage Increase per Connection: 15%`,
+        `Bonus Tower Damage: ${((abilityTower.towerDamageFactor - 1) * 100).toFixed()}%`,
     );
 
     textLines.push(`Towers Types:`);
@@ -558,6 +566,7 @@ function createAbilityTowerUpgradeOptions(ability: Ability): UpgradeOptionAndPro
     const upgradeOptions: UpgradeOptionAndProbability[] = [];
     const upgradeCountTower = abilityTower.maxTowers > START_MAX_TOWER ? ` (${(abilityTower.maxTowers - START_MAX_TOWER) / UPGRADE_TOWER_COUNT + 1})` : "";
     const upgradeCountDamage = abilityTower.damage > START_DAMAGE ? ` (${(abilityTower.damage - START_DAMAGE) / UPGRADE_DAMAGE + 1})` : "";
+    const upgradeCountTowerDamage = abilityTower.towerDamageFactor > 1 ? ` (${((abilityTower.towerDamageFactor - 1) / UPGRADE_TOWER_FACTOR_PER_LEVEL + 1).toFixed()})` : "";
     const option: AbilityUpgradeOption = {
         displayText: `Line Damage +${UPGRADE_DAMAGE}${upgradeCountDamage}`,
         type: "Ability",
@@ -570,6 +579,18 @@ function createAbilityTowerUpgradeOptions(ability: Ability): UpgradeOptionAndPro
         probability: 1,
     });
 
+    const towerFactor: AbilityUpgradeOption = {
+        displayText: `Tower Damage +${UPGRADE_TOWER_FACTOR_PER_LEVEL * 100}%${upgradeCountTowerDamage}`,
+        type: "Ability",
+        identifier: "Tower Damage Factor",
+        displayMoreInfoText: [`Increase bonus tower damage from ${((abilityTower.towerDamageFactor - 1) * 100).toFixed()}% to ${((abilityTower.towerDamageFactor + UPGRADE_TOWER_FACTOR_PER_LEVEL - 1) * 100).toFixed()}%`],
+        name: ability.name,
+    }
+    upgradeOptions.push({
+        option: towerFactor,
+        probability: 1,
+    });
+
     const abilityOption: AbilityUpgradeOption = {
         displayText: `Max Towers +${UPGRADE_TOWER_COUNT}${upgradeCountTower}`,
         identifier: `Max Towers`,
@@ -579,7 +600,7 @@ function createAbilityTowerUpgradeOptions(ability: Ability): UpgradeOptionAndPro
     }
     upgradeOptions.push({
         option: abilityOption,
-        probability: 5,
+        probability: 4,
     });
 
     return upgradeOptions;
@@ -589,6 +610,11 @@ function executeAbilityTowerUpgradeOption(ability: Ability, character: Character
     const abilityTower = ability as AbilityTower;
     if (upgradeOption.identifier === "Line Damage") {
         abilityTower.damage += UPGRADE_DAMAGE;
+        return;
+    }
+    if (upgradeOption.identifier === "Tower Damage Factor") {
+        if (!abilityTower.towerDamageFactor) abilityTower.towerDamageFactor = 1;
+        abilityTower.towerDamageFactor += UPGRADE_TOWER_FACTOR_PER_LEVEL;
         return;
     }
     if (upgradeOption.identifier === "Max Towers") {
