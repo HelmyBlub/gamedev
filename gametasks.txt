@@ -2,14 +2,16 @@ next test run:
 increase version
 
 current tasks:        
-- think about Tower builder scalling?
-    - tower builder new upgrade +5% tower damage
-- new test run: short king kill, god kill
+- improve path finding performance
+    - use rectangle idea from my other game
+        - basically build up graph of rectangles
+        - check caching also possible with this, as most enemies what to run always to player each tick
+        
 
 
 next feature ideas:
 - maybe:
-    - improve path finding perfromance
+    - improve path finding performance
 - each stream spend time on thinking whats next
     - what makes most sense to work on?
         - what would make the game more fun to play for me?
