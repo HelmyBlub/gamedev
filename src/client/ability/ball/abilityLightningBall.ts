@@ -46,7 +46,7 @@ GAME_IMAGES[IMAGE_NAME_LIGHTNING] = {
     spriteRowWidths: [40],
 };
 
-const ABILITY_LIGHTNING_BALL_DAMAGE_PER_LEVEL = 100;
+const ABILITY_LIGHTNING_BALL_DAMAGE_PER_LEVEL = 200;
 const ENEMY_JUMP_DELAY = 1500;
 
 export function addAbilityLightningBall() {

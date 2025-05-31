@@ -50,7 +50,7 @@ GAME_IMAGES[ABILITY_NAME_BOUNCE_BALL] = {
     spriteRowHeights: [40],
     spriteRowWidths: [40],
 };
-const ABILITY_BOUNCE_BALL_DAMAGE_PER_LEVEL = 100;
+const ABILITY_BOUNCE_BALL_DAMAGE_PER_LEVEL = 200;
 
 export function addAbilityBounceBall() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_BOUNCE_BALL] = {
@@ -80,7 +80,7 @@ export function addAbilityBounceBall() {
 export function createAbilityBounceBall(
     idCounter: IdCounter,
     playerInputBinding?: string,
-    damage: number = 50,
+    damage: number = ABILITY_BOUNCE_BALL_DAMAGE_PER_LEVEL,
     radius: number = 30,
 ): AbilityBounceBall {
     return {
