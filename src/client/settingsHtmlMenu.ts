@@ -12,6 +12,7 @@ import { initReplay, replayReplayData, testGame } from "./test/gameTest.js";
 type SettingsLocalStorage = {
     sliderVolume: number,
     soundDelay: number,
+    maxPaintPlayerObjects: number,
     playerAlpha: number,
     disableDamageNumbers: boolean,
     aimCursor: boolean,
@@ -34,13 +35,18 @@ function saveSettingsInLocalStorage(settingsLocalStorage: SettingsLocalStorage) 
 
 function getSettingsFromLocalStorage(): SettingsLocalStorage {
     const settings = localStorage.getItem(LOCALSTORAGE_SETTINGS);
-    if (settings) return JSON.parse(settings) as SettingsLocalStorage;
+    if (settings) {
+        const settingsFromStorage = JSON.parse(settings) as SettingsLocalStorage;
+        if (!settingsFromStorage.maxPaintPlayerObjects) settingsFromStorage.maxPaintPlayerObjects = 500;
+        return settingsFromStorage;
+    }
     return {
         disableDamageNumbers: false,
         aimCursor: false,
         playerAlpha: 100,
         sliderVolume: 10,
         soundDelay: 0,
+        maxPaintPlayerObjects: 500,
     };
 }
 
@@ -49,6 +55,7 @@ function addSettings(game: Game) {
     addSettingSliderVolume(game, settings);
     addSettingInputBoxSoundDelay(game, settings);
     addSettingInputBoxPlayerPaintAlpha(game, settings);
+    addSettingInputBoxMaxPaintPlayerObjects(game, settings);
     addSettingCheckbox("disableDamageNumbers", game, "settings", settings);
     addSettingCheckbox("aimCursor", game, "settings", settings);
     addClearLocalStorageButton(game);
@@ -239,6 +246,31 @@ function addSettingInputBoxSoundDelay(game: Game, settings: SettingsLocalStorage
             if (game.sound) {
                 game.sound.customDelay = parseInt(input.value);
                 settings.soundDelay = game.sound.customDelay;
+                saveSettingsInLocalStorage(settings);
+            }
+        });
+    }
+}
+
+function addSettingInputBoxMaxPaintPlayerObjects(game: Game, settings: SettingsLocalStorage) {
+    const settingsElement = document.getElementById("settings");
+    if (!settingsElement) return;
+    const inputBoxId = "maxPaintPlayerObjects";
+    let input: HTMLInputElement = document.getElementById(inputBoxId) as HTMLInputElement;
+    if (!input) {
+        let canvasHTML = `
+            <input type="number" id="${inputBoxId}" min=10 step=10 name="${inputBoxId}" value="${settings.maxPaintPlayerObjects}" style="width: 50px;">
+            <label for="debug">: ${inputBoxId}</label><br>
+        `;
+        settingsElement.insertAdjacentHTML("beforeend", canvasHTML);
+        game.UI.maxPaintPlayerObjects = settings.maxPaintPlayerObjects;
+        input = document.getElementById(inputBoxId) as HTMLInputElement;
+    }
+    if (input) {
+        input.addEventListener('input', () => {
+            if (game.sound) {
+                settings.maxPaintPlayerObjects = parseInt(input.value);
+                game.UI.maxPaintPlayerObjects = settings.maxPaintPlayerObjects;
                 saveSettingsInLocalStorage(settings);
             }
         });

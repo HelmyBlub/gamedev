@@ -287,6 +287,7 @@ export type UI = {
     displayMoreInfos: boolean,
     displayMorePressTimer?: number,
     playerGlobalAlphaMultiplier: number,
+    maxPaintPlayerObjects: number,
     paintClosesInteractableMoreInfo: boolean,
     moneyGainedThisRun: MoneyGainedThisRun,
     lastHighscoreText?: string;
@@ -438,6 +439,7 @@ export function createDefaultGameData(c?: HTMLCanvasElement, ctx?: CanvasRenderi
                 max: 2,
                 min: 0.5,
             },
+            maxPaintPlayerObjects: 500,
             inputType: "keyboard",
             touchInfo: {
                 touchMoveCornerSize: 150,

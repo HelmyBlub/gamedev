@@ -763,7 +763,7 @@ function paintAbilityObjectsFaction(ctx: CanvasRenderingContext2D, abilityObject
     for (let abilityObject of abilityObjects) {
         if (ifIsPlayerFaction && abilityObject.faction === FACTION_PLAYER) {
             playerObjectCounter++;
-            if (playerObjectCounter > 400) return;
+            if (playerObjectCounter > game.UI.maxPaintPlayerObjects) return;
             let abilityFunctions = ABILITIES_FUNCTIONS[abilityObject.type];
             if (abilityFunctions?.paintAbilityObject !== undefined) {
                 abilityFunctions.paintAbilityObject(ctx, abilityObject, paintOrder, game);
