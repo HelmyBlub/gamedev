@@ -192,7 +192,7 @@ function gameState(game: Game, data: GameState) {
     if (!game.multiplayer.awaitingGameState) return;
     game.multiplayer.awaitingGameState.waiting = false;
     game.state = data;
-    game.performance = {};
+    game.performance = { chunkGraphRectangles: {} };
     for (let i = 0; i < game.state.clientInfos.length; i++) {
         if (game.multiplayer.myClientId === game.state.clientInfos[i].id) {
             setClientDefaultKeyBindings(game);

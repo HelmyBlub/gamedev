@@ -149,10 +149,10 @@ function addSettingCheckbox(checkboxName: keyof Debugging, game: Game, tabCatego
         checkbox.addEventListener('change', () => {
             if (checkbox.checked) {
                 debug[checkboxName] = true;
-                game.performance = {};
+                game.performance = { chunkGraphRectangles: {} };
             } else {
                 debug[checkboxName] = false;
-                game.performance = {};
+                game.performance = { chunkGraphRectangles: {} };
             }
             if (settings) {
                 (settings as any)[checkboxName] = checkbox.checked;
@@ -393,7 +393,7 @@ function addLoadTestStateButton(game: Game) {
                 game.state = await loadCompressedStateFromUrl("/data/testState1.bin", game);
                 if (game.state.achievements === undefined) game.state.achievements = createDefaultAchivements();
                 game.multiplayer.disableLocalStorage = true;
-                game.performance = {};
+                game.performance = { chunkGraphRectangles: {} };
                 findAndSetNewCameraCharacterId(game.camera, game.state.players, game.multiplayer.myClientId);
             }
         });

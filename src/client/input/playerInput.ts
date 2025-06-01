@@ -11,9 +11,10 @@ import { shareCharactersTradeablePreventedMultipleClass } from "../character/pla
 import { findNearesInteractableMapChunkObject, interactWithMapObject } from "../map/mapObjects.js";
 import { localStorageLoad } from "../permanentData.js";
 import { createRequiredMoreInfos, moreInfosHandleMouseClick } from "../moreInfo.js";
-import { mousePositionToMapPosition } from "../map/map.js";
+import { chunkXYToMapKey, mousePositionToMapPosition, positionToChunkXY } from "../map/map.js";
 import { CHEAT_ACTIONS, executeCheatAction } from "../cheat.js";
 import { pushStackPaintTextData } from "../floatingText.js";
+import { chunkGraphRectangleSetup } from "../character/pathing.js";
 
 export const MOVE_ACTION = "moveAction";
 export const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3", "upgrade4", "upgrade5"];
@@ -107,6 +108,11 @@ export function keyDown(event: { code: string, preventDefault?: Function, stopPr
         case "F6":
             saveStateLoad(0, true, game);
             break;
+        case "KeyL":
+            if (!game.state.ended) {
+                const chunkXY = positionToChunkXY(game.state.players[0].character, game.state.map);
+                console.log(chunkGraphRectangleSetup(chunkXY, game));
+            }
         default:
             break;
     }

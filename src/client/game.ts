@@ -128,7 +128,7 @@ export function gameInit(game: Game) {
     game.state.deathCircleCreated = false;
     game.state.paused = false;
     game.state.enemyTypeDirectionSeed += 1;
-    game.performance = {};
+    game.performance = { chunkGraphRectangles: {} };
     game.UI.displayTextData = [];
     game.UI.moneyGainedThisRun = [];
     game.UI.stackTextsData.textStack = [];
@@ -184,7 +184,7 @@ export function gameInit(game: Game) {
 }
 
 export function resetGameNonStateData(game: Game) {
-    game.performance = {};
+    game.performance = { chunkGraphRectangles: {} };
     game.UI.displayTextData = [];
     game.multiplayer.autosendMousePosition.nextTime = 0;
     for (let i = 0; i < game.state.clientInfos.length; i++) {

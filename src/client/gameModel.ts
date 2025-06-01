@@ -1,7 +1,7 @@
 import { AbilityObject } from "./ability/ability.js";
 import { Character } from "./character/characterModel.js";
 import { createDefaultNextKing } from "./character/enemy/kingEnemy.js";
-import { PathingCache } from "./character/pathing.js";
+import { GraphRectangle, PathingCache } from "./character/pathing.js";
 import { CommandRestart, StateCompareHash } from "./commands.js";
 import { createHighscoreBoards, Highscores } from "./highscores.js";
 import { createMap, GameMap } from "./map/map.js";
@@ -322,6 +322,7 @@ export type Game = {
     performance: {
         mapChunkPaintCache?: MapChunkPaintCache,
         pathingCache?: PathingCache,
+        chunkGraphRectangles: { [key: string]: GraphRectangle[] },
     }
     testing: TestingStuff,
     debug: Debugging,
@@ -411,7 +412,7 @@ export function createDefaultGameData(c?: HTMLCanvasElement, ctx?: CanvasRenderi
             type: "follow character"
         },
         mouseRelativeCanvasPosition: { x: 0, y: 0 },
-        performance: {},
+        performance: { chunkGraphRectangles: {} },
         testing: {
             autoPlay: {
                 autoPlaying: false,

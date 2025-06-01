@@ -1,6 +1,6 @@
 import { calculateDistance, takeTimeMeasure } from "../game.js";
 import { Game, IdCounter, Position } from "../gameModel.js";
-import { GameMap, isPositionBlocking, positionToGameMapTileXY } from "../map/map.js";
+import { chunkXYToMapKey, GameMap, isPositionBlocking, MapChunk, positionToGameMapTileXY, TILE_VALUES } from "../map/map.js";
 
 export type PathingCacheXY = {
     cameFromCache: Map<string, Position | null>,
@@ -11,6 +11,119 @@ export type PathingCacheXY = {
 
 export type PathingCache = {
     [tileXyKey: string]: PathingCacheXY,
+}
+
+export type GraphRectangle = {
+    topLeftTileXY: Position,
+    width: number,
+    height: number,
+    connections: GraphRectangle[],
+}
+
+export function chunkGraphRectangleSetup(chunkXY: Position, game: Game) {
+    const chunkKey = chunkXYToMapKey(chunkXY.x, chunkXY.y);
+    const chunk = game.state.map.chunks[chunkKey];
+    const result: GraphRectangle[] = [];
+    const chunkLength = chunk.tiles.length;
+    const usedTiles: boolean[][] = Array.from({ length: chunkLength }, () => Array(chunkLength).fill(false));
+    for (let x = 0; x < chunkLength; x++) {
+        for (let y = 0; y < chunkLength; y++) {
+            if (usedTiles[x][y] === false && !TILE_VALUES[chunk.tiles[x][y]].blocking) {
+                let width = 1;
+                let height = 1;
+                while (x + width < chunkLength && usedTiles[x + width][y] === false && !TILE_VALUES[chunk.tiles[x + width][y]].blocking) {
+                    width++;
+                }
+
+                yWhile: while (y + height < chunkLength) {
+                    for (let tempX = x; tempX < x + width; tempX++) {
+                        if (usedTiles[tempX][y + height] === true || TILE_VALUES[chunk.tiles[tempX][y + height]].blocking) {
+                            break yWhile;
+                        }
+                    }
+                    height++;
+                }
+                const newRectanlge: GraphRectangle = { topLeftTileXY: { x: x + chunkXY.x * chunkLength, y: y + chunkXY.y * chunkLength }, connections: [], height, width };
+                for (let newX = x; newX < x + width; newX++) {
+                    for (let newY = y; newY < y + height; newY++) {
+                        usedTiles[newX][newY] = true;
+                    }
+                }
+                result.push(newRectanlge);
+            }
+        }
+    }
+    // connect rectangles in chunk
+    for (let rec1Index = 0; rec1Index < result.length; rec1Index++) {
+        for (let rec2Index = rec1Index + 1; rec2Index < result.length; rec2Index++) {
+            const rec1 = result[rec1Index];
+            const rec2 = result[rec2Index];
+            if (areGraphRectanglesTouching(rec1, rec2)) {
+                rec1.connections.push(rec2);
+                rec2.connections.push(rec1);
+            }
+        }
+    }
+    //check adjacent chunks
+    const adjacentChunkKeys = [
+        chunkXYToMapKey(chunkXY.x - 1, chunkXY.y),
+        chunkXYToMapKey(chunkXY.x + 1, chunkXY.y),
+        chunkXYToMapKey(chunkXY.x, chunkXY.y - 1),
+        chunkXYToMapKey(chunkXY.x, chunkXY.y + 1),
+    ];
+    for (let adjacentKey of adjacentChunkKeys) {
+        const adjacentChunkGraphRectanlges = game.performance.chunkGraphRectangles[adjacentKey];
+        if (!adjacentChunkGraphRectanlges) continue;
+        for (let rec1Index = 0; rec1Index < result.length; rec1Index++) {
+            for (let rec2Index = 0; rec2Index < adjacentChunkGraphRectanlges.length; rec2Index++) {
+                const rec1 = result[rec1Index];
+                const rec2 = adjacentChunkGraphRectanlges[rec2Index];
+                if (areGraphRectanglesTouching(rec1, rec2)) {
+                    rec1.connections.push(rec2);
+                    rec2.connections.push(rec1);
+                }
+            }
+        }
+    }
+    // clean up old
+    const oldGraphRec = game.performance.chunkGraphRectangles[chunkKey];
+    if (oldGraphRec) {
+        for (let adjacentKey of adjacentChunkKeys) {
+            const adjacentChunkGraphRectanlges = game.performance.chunkGraphRectangles[adjacentKey];
+            if (!adjacentChunkGraphRectanlges) continue;
+            for (let rec1Index = 0; rec1Index < adjacentChunkGraphRectanlges.length; rec1Index++) {
+                for (let rec2Index = 0; rec2Index < oldGraphRec.length; rec2Index++) {
+                    const rec1 = adjacentChunkGraphRectanlges[rec1Index];
+                    const rec2 = oldGraphRec[rec2Index];
+                    if (areGraphRectanglesTouching(rec1, rec2)) {
+                        conLoop: for (let connIndex1 = 0; connIndex1 < rec1.connections.length; connIndex1++) {
+                            for (let connIndex2 = 0; connIndex2 < rec2.connections.length; connIndex2++) {
+                                if (rec1.connections[connIndex1] === rec2.connections[connIndex2]) {
+                                    rec1.connections.splice(connIndex1, 1);
+                                    break conLoop;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    game.performance.chunkGraphRectangles[chunkKey] = result;
+    return result;
+}
+
+function areGraphRectanglesTouching(rec1: GraphRectangle, rec2: GraphRectangle): boolean {
+    if (rec1.topLeftTileXY.x <= rec2.topLeftTileXY.x + rec2.width && rec1.topLeftTileXY.x + rec1.width >= rec2.topLeftTileXY.x
+        && rec1.topLeftTileXY.y <= rec2.topLeftTileXY.y + rec2.height && rec1.topLeftTileXY.y + rec1.height >= rec2.topLeftTileXY.y
+    ) {
+        if ((rec1.topLeftTileXY.x < rec2.topLeftTileXY.x + rec2.width && rec1.topLeftTileXY.x + rec1.width > rec2.topLeftTileXY.x)
+            !== (rec1.topLeftTileXY.y < rec2.topLeftTileXY.y + rec2.height && rec1.topLeftTileXY.y + rec1.height > rec2.topLeftTileXY.y)
+        ) {
+            return true;
+        }
+    }
+    return false;
 }
 
 export function createPathingCacheXY(timeLastUsed: number): PathingCacheXY {
