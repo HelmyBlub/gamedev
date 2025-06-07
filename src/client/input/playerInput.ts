@@ -14,7 +14,6 @@ import { createRequiredMoreInfos, moreInfosHandleMouseClick } from "../moreInfo.
 import { chunkXYToMapKey, mousePositionToMapPosition, positionToChunkXY } from "../map/map.js";
 import { CHEAT_ACTIONS, executeCheatAction } from "../cheat.js";
 import { pushStackPaintTextData } from "../floatingText.js";
-import { chunkGraphRectangleSetup } from "../character/pathing.js";
 
 export const MOVE_ACTION = "moveAction";
 export const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3", "upgrade4", "upgrade5"];
@@ -111,7 +110,8 @@ export function keyDown(event: { code: string, preventDefault?: Function, stopPr
         case "KeyL":
             if (!game.state.ended) {
                 const chunkXY = positionToChunkXY(game.state.players[0].character, game.state.map);
-                console.log(chunkGraphRectangleSetup(chunkXY, game));
+                const chunkKey = chunkXYToMapKey(chunkXY.x, chunkXY.y)
+                console.log(game.performance.chunkGraphRectangles[chunkKey]);
             }
         default:
             break;

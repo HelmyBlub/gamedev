@@ -1,7 +1,7 @@
 import { findCharacterClassById, levelingCharacterAndClassXpGain } from "./playerCharacters/levelingCharacter.js";
 import { calculateMovePosition, chunkXYToMapKey, determineMapKeysInDistance, GameMap, getChunksTouchingLine, getMapTile, MapChunk, mapKeyToChunkXY, moveByDirectionAndDistance, positionToMapKey, tickTileCharacterOn } from "../map/map.js";
 import { Character, CHARACTER_TYPE_FUNCTIONS } from "./characterModel.js";
-import { getNextWaypoint, getPathingCache, PathingCache } from "./pathing.js";
+import { getNextWaypoint, getNextWaypoint2, getPathingCache, PathingCache } from "./pathing.js";
 import { calculateDirection, calculateDistance, calculateDistancePointToLine, changeCharacterAndAbilityIds, getNextId, levelUpIncreaseExperienceRequirement, modulo, takeTimeMeasure } from "../game.js";
 import { Position, Game, IdCounter, Camera, FACTION_ENEMY, FACTION_PLAYER } from "../gameModel.js";
 import { findPlayerByCliendId, Player } from "../player.js";

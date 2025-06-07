@@ -8,6 +8,7 @@ import { mapGenerationKingChunkStuff } from "./mapKingArea.js";
 import { IMAGE_FIRE_ANIMATION, MAP_OBJECT_FIRE_ANIMATION } from "./mapObjectFireAnimation.js";
 import { GAME_MAP_MODIFIER_FUNCTIONS, mapModifyIsChunkAffected } from "./modifiers/mapModifier.js";
 import { areaSpawnOnDistanceCreateAndSetOnMap } from "./mapAreaSpawnOnDistance.js";
+import { chunkGraphRectangleSetup } from "../character/pathing.js";
 
 export const pastCharactersMapTilePositions = [
     { x: 3, y: 2, tileId: 5, lookDirection: Math.PI / 2 },
@@ -41,7 +42,6 @@ export function generateMissingChunks(map: GameMap, positions: Position[], idCou
                 let chunk = map.chunks[chunkXYToMapKey(chunkX, chunkY)];
                 if (chunk === undefined) {
                     chunk = createNewChunk(map, chunkX, chunkY, idCounter, game);
-                    map.chunks[chunkXYToMapKey(chunkX, chunkY)] = chunk;
                 }
             }
         }
@@ -53,6 +53,8 @@ export function createNewChunk(map: GameMap, chunkX: number, chunkY: number, idC
     const newChunk = createNewChunkTiles(map, chunkX, chunkY, map.seed!, game);
     if (areaSpawnOnDistanceCreateAndSetOnMap(chunkX, chunkY, map, game)) return map.chunks[chunkXYToMapKey(chunkX, chunkY)];
     map.chunks[chunkXYToMapKey(chunkX, chunkY)] = newChunk;
+    chunkGraphRectangleSetup({ x: chunkX, y: chunkY }, game);
+
     createFixPositionRespawnEnemies(newChunk, chunkX, chunkY, map, idCounter, game);
     for (let modifier of map.mapModifiers) {
         if (mapModifyIsChunkAffected(modifier, chunkX, chunkY, game)) {

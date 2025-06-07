@@ -149,22 +149,23 @@ function addSettingCheckbox(checkboxName: keyof Debugging, game: Game, tabCatego
         checkbox.addEventListener('change', () => {
             if (checkbox.checked) {
                 debug[checkboxName] = true;
-                game.performance = { chunkGraphRectangles: {} };
             } else {
                 debug[checkboxName] = false;
-                game.performance = { chunkGraphRectangles: {} };
             }
             if (settings) {
                 (settings as any)[checkboxName] = checkbox.checked;
-                executeOnCheckboxEventChange(checkbox, game);
                 saveSettingsInLocalStorage(settings);
             }
+            executeOnCheckboxEventChange(checkbox, game);
         });
     }
 }
 
 function executeOnCheckboxEventChange(checkbox: HTMLInputElement, game: Game) {
     if (checkbox.id === "aimCursor") setMouseAimCursorClass(checkbox.checked, game);
+    if (checkbox.id === "paintTileXYNumbers") {
+        game.performance.mapChunkPaintCache = {};
+    }
 }
 
 function setMouseAimCursorClass(add: boolean, game: Game) {

@@ -184,7 +184,7 @@ export function gameInit(game: Game) {
 }
 
 export function resetGameNonStateData(game: Game) {
-    game.performance = { chunkGraphRectangles: {} };
+    game.performance = { chunkGraphRectangles: game.performance.chunkGraphRectangles };
     game.UI.displayTextData = [];
     game.multiplayer.autosendMousePosition.nextTime = 0;
     for (let i = 0; i < game.state.clientInfos.length; i++) {

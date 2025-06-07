@@ -3,16 +3,12 @@ increase version
 
 current tasks:      
 - improve path finding performance
-    - use rectangle idea from my other game
-        - basically build up graph of rectangles
-        - check caching also possible with this, as most enemies what to run always to player each tick
-        - think about how to check performance difference as enemies will path differently
-            - by feel?
-        - some terrain changing functions exists. like blokcing exists
-    - dev steps
-        - new function "chunkGraphRectangleSetup"
-            - call when chunks created or modified
-            - integrate with pathfinding
+    - new function "chunkGraphRectangleSetup"
+        - call when chunks created or modified for character
+        - integrate caching
+        - compare performance
+        - think about if pathfinding should check distance. Currently it check graphRectangle count
+        - check multiplayer will not desync
 
 
 

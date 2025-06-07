@@ -1,5 +1,4 @@
 import { paintCharacters } from "../character/characterPaint.js";
-import { getTickInterval } from "../game.js";
 import { Debugging, Game, MapChunkPaintCache, Position } from "../gameModel.js";
 import { chunkXYToMapKey, GameMap, MapChunk, TILE_ID_GRASS, TILE_VALUES } from "./map.js";
 import { createNewChunk } from "./mapGeneration.js";
