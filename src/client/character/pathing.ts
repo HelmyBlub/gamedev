@@ -1,11 +1,10 @@
 import { calculateDistance, takeTimeMeasure } from "../game.js";
 import { Game, IdCounter, Position } from "../gameModel.js";
-import { chunkXYToMapKey, GameMap, isPositionBlocking, MapChunk, positionToChunkXY, positionToGameMapTileXY, TILE_VALUES } from "../map/map.js";
+import { ChunkXY, chunkXYToMapKey, GameMap, isPositionBlocking, positionToChunkXY, TILE_VALUES, tileXYToChunkXY } from "../map/map.js";
 
 export type PathingCacheXY = {
-    cameFromCache: Map<string, Position | null>,
-    openNodesCache: Position[],
-    alreadyTraveledDistanceCache: Map<string, number>,
+    cameFromCache: Map<string, GraphRectangle | null>,
+    openNodesCache: GraphRectangle[],
     timeLastUsed: number,
 }
 
@@ -20,9 +19,10 @@ export type GraphRectangle = {
     connections: GraphRectangle[],
 }
 
-export function chunkGraphRectangleSetup(chunkXY: Position, game: Game) {
-    const chunkKey = chunkXYToMapKey(chunkXY.x, chunkXY.y);
+export function chunkGraphRectangleSetup(chunkXY: ChunkXY, game: Game) {
+    const chunkKey = chunkXYToMapKey(chunkXY.chunkX, chunkXY.chunkY);
     const chunk = game.state.map.chunks[chunkKey];
+    if (chunk === undefined) return;
     const result: GraphRectangle[] = [];
     const chunkLength = chunk.tiles.length;
     const usedTiles: boolean[][] = Array.from({ length: chunkLength }, () => Array(chunkLength).fill(false));
@@ -43,7 +43,7 @@ export function chunkGraphRectangleSetup(chunkXY: Position, game: Game) {
                     }
                     height++;
                 }
-                const newRectanlge: GraphRectangle = { topLeftTileXY: { x: x + chunkXY.x * chunkLength, y: y + chunkXY.y * chunkLength }, connections: [], height, width };
+                const newRectanlge: GraphRectangle = { topLeftTileXY: { x: x + chunkXY.chunkX * chunkLength, y: y + chunkXY.chunkY * chunkLength }, connections: [], height, width };
                 for (let newX = x; newX < x + width; newX++) {
                     for (let newY = y; newY < y + height; newY++) {
                         usedTiles[newX][newY] = true;
@@ -66,10 +66,10 @@ export function chunkGraphRectangleSetup(chunkXY: Position, game: Game) {
     }
     //check adjacent chunks
     const adjacentChunkKeys = [
-        chunkXYToMapKey(chunkXY.x - 1, chunkXY.y),
-        chunkXYToMapKey(chunkXY.x + 1, chunkXY.y),
-        chunkXYToMapKey(chunkXY.x, chunkXY.y - 1),
-        chunkXYToMapKey(chunkXY.x, chunkXY.y + 1),
+        chunkXYToMapKey(chunkXY.chunkX - 1, chunkXY.chunkY),
+        chunkXYToMapKey(chunkXY.chunkX + 1, chunkXY.chunkY),
+        chunkXYToMapKey(chunkXY.chunkX, chunkXY.chunkY - 1),
+        chunkXYToMapKey(chunkXY.chunkX, chunkXY.chunkY + 1),
     ];
     for (let adjacentKey of adjacentChunkKeys) {
         const adjacentChunkGraphRectanlges = game.performance.chunkGraphRectangles[adjacentKey];
@@ -128,15 +128,14 @@ function areGraphRectanglesTouching(rec1: GraphRectangle, rec2: GraphRectangle):
 
 export function createPathingCacheXY(timeLastUsed: number): PathingCacheXY {
     return {
-        cameFromCache: new Map<string, Position | null>(),
+        cameFromCache: new Map<string, GraphRectangle | null>(),
         openNodesCache: [],
-        alreadyTraveledDistanceCache: new Map<string, number>(),
         timeLastUsed: timeLastUsed
     }
 }
 
-export function tileXyToPathingCacheKey(tileXY: Position) {
-    return tileXY.x + "_" + tileXY.y;
+export function positionToPathingCacheKey(pos: Position) {
+    return pos.x + "_" + pos.y;
 }
 
 export function getPathingCache(game: Game) {
@@ -152,101 +151,7 @@ export function getPathingCache(game: Game) {
 export function getNextWaypoint(
     sourcePos: Position,
     targetPos: Position,
-    map: GameMap,
     pathingCache: PathingCache | null = null,
-    idCounter: IdCounter,
-    time: number,
-    game: Game,
-): Position | null {
-    if (isPositionBlocking(sourcePos, map, idCounter, game) || isPositionBlocking(targetPos, map, idCounter, game)) {
-        console.log("can't find way to a blocking position");
-        return null;
-    }
-    const targetXY: Position = positionToGameMapTileXY(map, sourcePos);
-    const startXY: Position = positionToGameMapTileXY(map, targetPos);
-    const maxTileDistance = 50;
-    const tileDistance = calculateDistance(startXY, targetXY);
-    if (tileDistance > maxTileDistance) {
-        console.log("pathing to big distance too far aways");
-        return null;
-    }
-    if (startXY.x === targetXY.x && startXY.y === targetXY.y) {
-        return targetPos;
-    }
-
-    let openNodes: Position[] = [];
-    let cameFrom: Map<string, Position | null> = new Map<string, Position | null>();
-
-    const targetKey = `${targetXY.x}_${targetXY.y}`;
-    let pathingCacheXY: PathingCacheXY | undefined;
-    if (pathingCache !== null) {
-        const pathingKey = tileXyToPathingCacheKey(startXY);
-        pathingCacheXY = pathingCache[pathingKey];
-        if (pathingCacheXY === undefined) {
-            pathingCacheXY = createPathingCacheXY(time);
-            pathingCache[pathingKey] = pathingCacheXY;
-        } else {
-            pathingCacheXY.timeLastUsed = time;
-        }
-        if (pathingCacheXY.openNodesCache.length > 0) {
-            openNodes = pathingCacheXY.openNodesCache;
-            cameFrom = pathingCacheXY.cameFromCache;
-            if (cameFrom.has(targetKey)) {
-                const nextWaypoint = cameFrom.get(targetKey)!;
-                if (nextWaypoint !== null) {
-                    return { x: nextWaypoint.x * map.tileSize + map.tileSize / 2, y: nextWaypoint.y * map.tileSize + map.tileSize / 2 };
-                } else {
-                    return null;
-                }
-            }
-        } else {
-            pathingCacheXY.openNodesCache = openNodes;
-            pathingCacheXY.cameFromCache = cameFrom;
-            openNodes.push(startXY);
-        }
-    } else {
-        openNodes.push(startXY);
-    }
-
-    let counter = 0;
-    const maxCounter = calculateDistance(startXY, targetXY) * 300;
-    while (openNodes.length > 0) {
-        counter++;
-        if (counter > maxCounter || isNaN(maxCounter)) {
-            console.log("stoped pathfinding, can cause multiplayer sync loss");
-            cameFrom.set(targetKey, null);
-            return null
-        };
-
-        const currentNode = openNodes.splice(0, 1)[0]!;
-
-        if (currentNode.x === targetXY.x && currentNode.y === targetXY.y) {
-            const lastPosition = cameFrom.get(`${targetXY.x}_${targetXY.y}`)!;
-            if (pathingCacheXY) openNodes.unshift(currentNode);
-            return { x: lastPosition.x * map.tileSize + map.tileSize / 2, y: lastPosition.y * map.tileSize + map.tileSize / 2 };
-        }
-
-        const neighborsXY = getPathNeighborsXY(currentNode, map, idCounter, game);
-        for (let i = 0; i < neighborsXY.length; i++) {
-            const neighborKey = `${neighborsXY[i].x}_${neighborsXY[i].y}`;
-            if (!cameFrom.has(neighborKey)) {
-                cameFrom.set(neighborKey, currentNode);
-                if (!openNodes.find((curr: Position) => curr.x === neighborsXY[i].x && curr.y === neighborsXY[i].y)) {
-                    openNodes.push(neighborsXY[i]);
-                }
-            }
-        }
-    }
-
-    return null;
-}
-
-export function getNextWaypoint2(
-    sourcePos: Position,
-    targetPos: Position,
-    map: GameMap,
-    pathingCache: PathingCache | null = null,
-    idCounter: IdCounter,
     time: number,
     game: Game,
 ): Position | null {
@@ -269,36 +174,36 @@ export function getNextWaypoint2(
     let openNodes: GraphRectangle[] = [];
     let cameFrom: Map<string, GraphRectangle | null> = new Map<string, GraphRectangle | null>();
 
-    const targetKey = `${targetGraphRectangle.topLeftTileXY.x}_${targetGraphRectangle.topLeftTileXY.y}`;
-    // let pathingCacheXY: PathingCacheXY | undefined;
-    // if (pathingCache !== null) {
-    //     const pathingKey = tileXyToPathingCacheKey(startXY);
-    //     pathingCacheXY = pathingCache[pathingKey];
-    //     if (pathingCacheXY === undefined) {
-    //         pathingCacheXY = createPathingCacheXY(time);
-    //         pathingCache[pathingKey] = pathingCacheXY;
-    //     } else {
-    //         pathingCacheXY.timeLastUsed = time;
-    //     }
-    //     if (pathingCacheXY.openNodesCache.length > 0) {
-    //         openNodes = pathingCacheXY.openNodesCache;
-    //         cameFrom = pathingCacheXY.cameFromCache;
-    //         if (cameFrom.has(targetKey)) {
-    //             const nextWaypoint = cameFrom.get(targetKey)!;
-    //             if (nextWaypoint !== null) {
-    //                 return { x: nextWaypoint.x * map.tileSize + map.tileSize / 2, y: nextWaypoint.y * map.tileSize + map.tileSize / 2 };
-    //             } else {
-    //                 return null;
-    //             }
-    //         }
-    //     } else {
-    //         pathingCacheXY.openNodesCache = openNodes;
-    //         pathingCacheXY.cameFromCache = cameFrom;
-    //         openNodes.push(startXY);
-    //     }
-    // } else {
-    openNodes.push(startGraphRectangle);
-    // }
+    const targetKey = positionToPathingCacheKey(targetGraphRectangle.topLeftTileXY);
+    let pathingCacheXY: PathingCacheXY | undefined;
+    if (pathingCache !== null) {
+        const pathingKey = positionToPathingCacheKey(startGraphRectangle.topLeftTileXY);
+        pathingCacheXY = pathingCache[pathingKey];
+        if (pathingCacheXY === undefined) {
+            pathingCacheXY = createPathingCacheXY(time);
+            pathingCache[pathingKey] = pathingCacheXY;
+        } else {
+            pathingCacheXY.timeLastUsed = time;
+        }
+        if (pathingCacheXY.openNodesCache.length > 0) {
+            openNodes = pathingCacheXY.openNodesCache;
+            cameFrom = pathingCacheXY.cameFromCache;
+            if (cameFrom.has(targetKey)) {
+                const nextWaypoint = cameFrom.get(targetKey)!;
+                if (nextWaypoint !== null) {
+                    return getMovePositionBetweenTwoGraphRectangles(sourcePos, targetGraphRectangle, nextWaypoint, game.state.map.tileSize);
+                } else {
+                    return null;
+                }
+            }
+        } else {
+            pathingCacheXY.openNodesCache = openNodes;
+            pathingCacheXY.cameFromCache = cameFrom;
+            openNodes.push(startGraphRectangle);
+        }
+    } else {
+        openNodes.push(startGraphRectangle);
+    }
 
     let counter = 0;
     const maxCounter = straightDistance * 300;
@@ -314,23 +219,43 @@ export function getNextWaypoint2(
 
         if (currentNode === targetGraphRectangle) {
             const lastGraphRectangle = cameFrom.get(targetKey)!;
-            // if (pathingCacheXY) openNodes.unshift(currentNode);
+            if (pathingCacheXY) openNodes.unshift(currentNode);
             return getMovePositionBetweenTwoGraphRectangles(sourcePos, targetGraphRectangle, lastGraphRectangle, game.state.map.tileSize);
         }
 
-        const neighborsXY = currentNode.connections;
-        for (let i = 0; i < neighborsXY.length; i++) {
-            const neighborKey = `${neighborsXY[i].topLeftTileXY.x}_${neighborsXY[i].topLeftTileXY.y}`;
+        checkIfNeighourPathingExistsAndCreateIfNot(currentNode.topLeftTileXY, game);
+        const neighborsGraphs = currentNode.connections;
+        for (let i = 0; i < neighborsGraphs.length; i++) {
+            const neighborKey = positionToPathingCacheKey(neighborsGraphs[i].topLeftTileXY);
             if (!cameFrom.has(neighborKey)) {
                 cameFrom.set(neighborKey, currentNode);
-                if (!openNodes.find((curr: GraphRectangle) => curr === neighborsXY[i])) {
-                    openNodes.push(neighborsXY[i]);
+                if (!openNodes.find((curr: GraphRectangle) => curr === neighborsGraphs[i])) {
+                    openNodes.push(neighborsGraphs[i]);
                 }
             }
         }
     }
 
     return null;
+}
+
+function checkIfNeighourPathingExistsAndCreateIfNot(tileXY: Position, game: Game) {
+    if (!game.performance.incompleteChunkGraphRectangles) return;
+    const chunkXY = tileXYToChunkXY(tileXY, game.state.map);
+
+    const chunkNeighbors: ChunkXY[] = [
+        { chunkX: chunkXY.chunkX - 1, chunkY: chunkXY.chunkY },
+        { chunkX: chunkXY.chunkX + 1, chunkY: chunkXY.chunkY },
+        { chunkX: chunkXY.chunkX, chunkY: chunkXY.chunkY - 1 },
+        { chunkX: chunkXY.chunkX, chunkY: chunkXY.chunkY + 1 },
+    ];
+
+    for (let neighbor of chunkNeighbors) {
+        const key = chunkXYToMapKey(neighbor.chunkX, neighbor.chunkY);
+        if (game.performance.chunkGraphRectangles[key] == undefined) {
+            chunkGraphRectangleSetup(neighbor, game);
+        }
+    }
 }
 
 function getMovePositionBetweenTwoGraphRectangles(entityPos: Position, rec1: GraphRectangle, rec2: GraphRectangle, tileSize: number): Position {
@@ -364,10 +289,14 @@ function getMovePositionBetweenTwoGraphRectangles(entityPos: Position, rec1: Gra
 
 function getGraphRectangleForPosition(position: Position, game: Game): GraphRectangle | undefined {
     const tileSize = game.state.map.tileSize;
-    const startChunkXY: Position = positionToChunkXY(position, game.state.map);
-    const startChunkKey = chunkXYToMapKey(startChunkXY.x, startChunkXY.y);
-    const startChunkRectangles = game.performance.chunkGraphRectangles[startChunkKey];
-    for (let rectangle of startChunkRectangles) {
+    const posChunkXY = positionToChunkXY(position, game.state.map);
+    const posChunkKey = chunkXYToMapKey(posChunkXY.chunkX, posChunkXY.chunkY);
+    let posChunkRectangles = game.performance.chunkGraphRectangles[posChunkKey];
+    if (game.performance.incompleteChunkGraphRectangles && posChunkRectangles == undefined) {
+        const graphRectangles = chunkGraphRectangleSetup(posChunkXY, game);
+        if (graphRectangles) posChunkRectangles = graphRectangles; else return undefined;
+    }
+    for (let rectangle of posChunkRectangles) {
         if (rectangle.topLeftTileXY.x * tileSize <= position.x && (rectangle.topLeftTileXY.x + rectangle.width) * tileSize > position.x
             && rectangle.topLeftTileXY.y * tileSize <= position.y && (rectangle.topLeftTileXY.y + rectangle.height) * tileSize > position.y
         ) {

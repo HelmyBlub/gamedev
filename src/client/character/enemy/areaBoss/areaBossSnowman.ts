@@ -65,7 +65,7 @@ function onDeath(character: Character, game: Game) {
                 if (getMapTileId(position, game.state.map, game.state.idCounter, game) === TILE_ID_ICE) {
                     const chunkXY = positionToChunkXY(position, game.state.map);
                     const tileXY = calculatePosToChunkTileXY(position, game.state.map);
-                    changeTileIdOfMapChunk(chunkXY.x, chunkXY.y, tileXY.x, tileXY.y, TILE_ID_GRASS, game);
+                    changeTileIdOfMapChunk(chunkXY.chunkX, chunkXY.chunkY, tileXY.x, tileXY.y, TILE_ID_GRASS, game);
                 }
             }
         }

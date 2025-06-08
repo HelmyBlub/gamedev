@@ -110,7 +110,7 @@ export function keyDown(event: { code: string, preventDefault?: Function, stopPr
         case "KeyL":
             if (!game.state.ended) {
                 const chunkXY = positionToChunkXY(game.state.players[0].character, game.state.map);
-                const chunkKey = chunkXYToMapKey(chunkXY.x, chunkXY.y)
+                const chunkKey = chunkXYToMapKey(chunkXY.chunkX, chunkXY.chunkY);
                 console.log(game.performance.chunkGraphRectangles[chunkKey]);
             }
         default:

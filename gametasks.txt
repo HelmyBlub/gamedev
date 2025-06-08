@@ -1,14 +1,24 @@
-next test run: 
+next test run: everything
 increase version
 
 current tasks:      
 - improve path finding performance
-    - new function "chunkGraphRectangleSetup"
-        - call when chunks created or modified for character
-        - integrate caching
-        - compare performance
-        - think about if pathfinding should check distance. Currently it check graphRectangle count
-        - check multiplayer will not desync
+    - continue: investigate miltiplayer desync still happening?
+    - multiplayer desync happened. On one screen dead. On the other not
+        - hp different.
+            - assumed reason: 
+                - order of chunk path creating different.
+                -> Results in different order for pathfinding
+                -> results in different choice of enemies for pathing
+            - maybe fixed by: addition to "case "sendGameState":" in "commands.ts"
+    - check multiplayer will not desync
+        - loading state should be borken? as i do not generate pathing data on state load
+        - create pathing for every chunk on state load. could take a lot of time?
+        - create pathing for active chunks
+            - some performance loss for checking if data exists
+            - 
+    - check pathing on tile changes.
+- bug: replay stuck on retry
 
 
 

@@ -4,7 +4,7 @@ import { ABILITY_NAME_FEED_PET } from "../../ability/petTamer/abilityFeedPet.js"
 import { ABILITY_NAME_LOVE_PET } from "../../ability/petTamer/abilityLovePet.js"
 import { calculateDistance, getNextId } from "../../game.js"
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../gameModel.js"
-import { MapChunk, GameMap, isPositionBlocking, mapKeyToChunkXY, chunkXYToMapKey, addEnemyToMap, getMapMidlePosition, positionToChunkXY } from "../../map/map.js"
+import { MapChunk, GameMap, isPositionBlocking, mapKeyToChunkXY, addEnemyToMap, getMapMidlePosition, positionToChunkXY } from "../../map/map.js"
 import { fixedRandom } from "../../randomNumberGenerator.js"
 import { Character, IMAGE_SLIME, createCharacter } from "../characterModel.js"
 import { createPetsBasedOnLevelAndCharacter } from "../playerCharacters/tamer/characterClassTamer.js"
@@ -111,7 +111,7 @@ export function createFakeEnemyFixPositionRespawnEnemyWithPosition(position: Pos
     const distance = calculateDistance(mapCenter, position);
     if (ENEMY_MIN_SPAWN_DISTANCE_MAP_MIDDLE < distance) {
         const chunk = positionToChunkXY(position, game.state.map);
-        const enemyType: string = decideEnemyType(chunk.x, chunk.y, game);
+        const enemyType: string = decideEnemyType(chunk.chunkX, chunk.chunkY, game);
         const level = Math.max(Math.floor((distance - ENEMY_MIN_SPAWN_DISTANCE_MAP_MIDDLE) / 1000), 0) + 1;
         const fakeIdCounter: IdCounter = { nextId: 0 };
         const enemy = createEnemyWithLevel(fakeIdCounter, position, level, ENEMY_TYPES[enemyType], enemyType, game);

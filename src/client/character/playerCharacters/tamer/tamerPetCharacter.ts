@@ -494,7 +494,7 @@ function moveTick(pet: TamerPetCharacter, petOwner: Character, game: Game, pathi
             delete pet.forcedMovePosition;
         } else {
             pet.isMoving = true;
-            let waypoint = getNextWaypoint(pet, pet.forcedMovePosition, game.state.map, game.performance.pathingCache, game.state.idCounter, game.state.time, game);
+            let waypoint = getNextWaypoint(pet, pet.forcedMovePosition, game.performance.pathingCache, game.state.time, game);
             if (waypoint) {
                 const direction = calculateDirection(pet, waypoint);
                 pet.moveDirection = direction;
@@ -548,7 +548,7 @@ function setMoveDirectionWithNoTarget(pet: TamerPetCharacter, petOwner: Characte
                     if (distanceToOwner > 800) {
                         setCharacterPosition(pet, petOwner, game.state.map);
                     } else {
-                        const nextWayPoint: Position | null = getNextWaypoint(pet, petOwner, game.state.map, game.performance.pathingCache, game.state.idCounter, game.state.time, game);
+                        const nextWayPoint: Position | null = getNextWaypoint(pet, petOwner, game.performance.pathingCache, game.state.time, game);
                         const canPetReachOwner = nextWayPoint !== null;
                         if (!canPetReachOwner) {
                             setCharacterPosition(pet, petOwner, game.state.map);
@@ -568,7 +568,7 @@ function setMoveDirectionWithNoTarget(pet: TamerPetCharacter, petOwner: Characte
                     pet.isMoving = false;
                 } else {
                     pet.isMoving = true;
-                    const nextWayPoint: Position | null = getNextWaypoint(pet, petOwner, game.state.map, game.performance.pathingCache, game.state.idCounter, game.state.time, game);
+                    const nextWayPoint: Position | null = getNextWaypoint(pet, petOwner, game.performance.pathingCache, game.state.time, game);
                     const canPetReachOwner = nextWayPoint !== null;
                     if (!canPetReachOwner) {
                         setCharacterPosition(pet, petOwner, game.state.map);

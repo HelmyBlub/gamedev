@@ -112,18 +112,18 @@ export function getEntranceChunkAndTileXYForPosition(position: Position, map: Ga
     let tile: TileData | undefined;
     let chunkX: number = 0;
     let chunkY: number = 0;
-    if (Math.abs(chunkXY.y) <= Math.floor(area.size / 2)) {
+    if (Math.abs(chunkXY.chunkY) <= Math.floor(area.size / 2)) {
         chunkY = 0;
-        if (area.numberChunksUntil <= chunkXY.x) {
+        if (area.numberChunksUntil <= chunkXY.chunkX) {
             chunkX = area.numberChunksUntil;
-        } else if (-area.numberChunksUntil >= chunkXY.x) {
+        } else if (-area.numberChunksUntil >= chunkXY.chunkX) {
             chunkX = -area.numberChunksUntil;
         }
-    } else if (Math.abs(chunkXY.x) <= Math.floor(area.size / 2)) {
+    } else if (Math.abs(chunkXY.chunkX) <= Math.floor(area.size / 2)) {
         chunkX = 0;
-        if (area.numberChunksUntil <= chunkXY.y) {
+        if (area.numberChunksUntil <= chunkXY.chunkY) {
             chunkY = area.numberChunksUntil;
-        } else if (-area.numberChunksUntil >= chunkXY.y) {
+        } else if (-area.numberChunksUntil >= chunkXY.chunkY) {
             chunkY = -area.numberChunksUntil;
         }
     }

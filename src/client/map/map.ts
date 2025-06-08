@@ -27,6 +27,11 @@ export type MapTile = {
     tickCharacter?: (character: Character, game: Game) => void,
 }
 
+export type ChunkXY = {
+    chunkX: number,
+    chunkY: number,
+}
+
 export type MapChunk = {
     tiles: number[][],
     objects: MapTileObject[],
@@ -145,7 +150,7 @@ export function findNearNonBlockingPosition(pos: Position, map: GameMap, idCount
 export function changeTileIdOfPosition(position: Position, newTileId: number, game: Game) {
     const chunkXY = positionToChunkXY(position, game.state.map);
     const tileXY = calculatePosToChunkTileXY(position, game.state.map);
-    changeTileIdOfMapChunk(chunkXY.x, chunkXY.y, tileXY.x, tileXY.y, newTileId, game);
+    changeTileIdOfMapChunk(chunkXY.chunkX, chunkXY.chunkY, tileXY.x, tileXY.y, newTileId, game);
 }
 
 export function changeTileIdOfMapChunk(chunkX: number, chunkY: number, tileX: number, tileY: number, newTileId: number, game: Game) {
@@ -172,7 +177,7 @@ export function deletePaintCacheForMapChunk(chunkX: number, chunkY: number, game
 
 export function positionToMapKey(pos: Position, map: GameMap): string {
     const chunkXY = positionToChunkXY(pos, map);
-    return chunkXYToMapKey(chunkXY.x, chunkXY.y);
+    return chunkXYToMapKey(chunkXY.chunkX, chunkXY.chunkY);
 }
 
 export function mapKeyAndTileXYToPosition(mapKey: string, tileX: number, tileY: number, map: GameMap): Position {
@@ -188,16 +193,21 @@ export function mapChunkXYAndTileXYToPosition(chunkX: number, chunkY: number, ti
     }
 }
 
-export function positionToChunkXY(pos: Position, map: GameMap): Position {
+export function positionToChunkXY(pos: Position, map: GameMap): ChunkXY {
     const chunkSize = map.tileSize * map.chunkLength;
-    return { x: Math.floor(pos.x / chunkSize), y: Math.floor(pos.y / chunkSize) };
+    return { chunkX: Math.floor(pos.x / chunkSize), chunkY: Math.floor(pos.y / chunkSize) };
+}
+
+export function tileXYToChunkXY(tileXY: Position, map: GameMap): ChunkXY {
+    const chunkLength = map.chunkLength;
+    return { chunkX: Math.floor(tileXY.x / chunkLength), chunkY: Math.floor(tileXY.y / chunkLength) };
 }
 
 export function chunkXYToMapKey(chunkX: number, chunkY: number) {
     return `${chunkX}_${chunkY}`;
 }
 
-export function mapKeyToChunkXY(mapKey: string) {
+export function mapKeyToChunkXY(mapKey: string): ChunkXY {
     const chunkX = parseInt(mapKey.split("_")[0]);
     const chunkY = parseInt(mapKey.split("_")[1]);
     return { chunkX, chunkY };

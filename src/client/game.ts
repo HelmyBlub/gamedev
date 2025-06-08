@@ -1,6 +1,6 @@
 import { cappCharacter, changeCharacterId, countAlivePlayerCharacters, findAndSetNewCameraCharacterId, findCharacterById, findMyCharacter, getPlayerCharacters, resetCharacter, tickCharacters } from "./character/character.js";
 import { paintAll } from "./gamePaint.js";
-import { addPlayerMoney, createDefaultKeyBindings1, createDefaultUiKeyBindings, createPlayerWithPlayerCharacter, findNearesPastPlayerCharacter, findPlayerByCharacterId, findPlayerByCliendId, gameInitPlayers, isAutoUpgradeActive } from "./player.js";
+import { addPlayerMoney, createDefaultKeyBindings1, createDefaultUiKeyBindings, createPlayerWithPlayerCharacter, findNearesPastPlayerCharacter, findPlayerByCharacterId, gameInitPlayers, isAutoUpgradeActive } from "./player.js";
 import { MOUSE_ACTION, RESTART_HOLD_TIME, UPGRADE_ACTIONS, executeUiAction, tickPlayerInputs } from "./input/playerInput.js";
 import { Position, GameState, Game, IdCounter, Debugging, ClientInfo, GameVersion } from "./gameModel.js";
 import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap, initKingArea, mousePositionToMapPosition, tickActiveMapChunks } from "./map/map.js";
@@ -128,7 +128,7 @@ export function gameInit(game: Game) {
     game.state.deathCircleCreated = false;
     game.state.paused = false;
     game.state.enemyTypeDirectionSeed += 1;
-    game.performance = { chunkGraphRectangles: {} };
+    game.performance = { chunkGraphRectangles: {}, incompleteChunkGraphRectangles: false };
     game.UI.displayTextData = [];
     game.UI.moneyGainedThisRun = [];
     game.UI.stackTextsData.textStack = [];
@@ -184,7 +184,7 @@ export function gameInit(game: Game) {
 }
 
 export function resetGameNonStateData(game: Game) {
-    game.performance = { chunkGraphRectangles: game.performance.chunkGraphRectangles };
+    game.performance = { chunkGraphRectangles: {}, incompleteChunkGraphRectangles: true };
     game.UI.displayTextData = [];
     game.multiplayer.autosendMousePosition.nextTime = 0;
     for (let i = 0; i < game.state.clientInfos.length; i++) {

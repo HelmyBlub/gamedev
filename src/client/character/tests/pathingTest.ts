@@ -2,7 +2,7 @@ import { Game, IdCounter, Position } from "../../gameModel.js";
 import { createGame } from "../../main.js";
 import { createMap, findNearNonBlockingPosition, GameMap, positionToGameMapTileXY } from "../../map/map.js";
 import { nextRandom, RandomSeed } from "../../randomNumberGenerator.js";
-import { getNextWaypoint, PathingCache, PathingCacheXY, tileXyToPathingCacheKey } from "../pathing.js";
+import { getNextWaypoint, PathingCache, PathingCacheXY, positionToPathingCacheKey } from "../pathing.js";
 
 export function testPathing(ctx: CanvasRenderingContext2D | undefined = undefined) {
     console.log("started test");
@@ -21,6 +21,7 @@ export function testPathing(ctx: CanvasRenderingContext2D | undefined = undefine
 function testPathingPerformance() {
     const dummyGame: Game = createGame(undefined);
     const map: GameMap = createMap();
+    dummyGame.state.map = map;
     const iterations = 3000;
     const numberEnemies = 100;
     const numberPlayers = 2;
@@ -36,7 +37,7 @@ function testPathingPerformance() {
 
     const startTime = performance.now();
     for (let i = 0; i < iterations; i++) {
-        getNextWaypoint(sourcePositions[i % numberEnemies], targetPositions[i % numberPlayers], map, pathingCache, idCounter, 0, dummyGame);
+        getNextWaypoint(sourcePositions[i % numberEnemies], targetPositions[i % numberPlayers], pathingCache, 0, dummyGame);
     }
     const time = performance.now() - startTime;
     console.log("time", time / iterations, time);
@@ -45,6 +46,7 @@ function testPathingPerformance() {
 function testPathingPerformanceCacheNotChangingResults(ctx: CanvasRenderingContext2D | undefined = undefined) {
     const dummyGame: Game = createGame(undefined);
     const map: GameMap = createMap();
+    dummyGame.state.map = map;
     const iterations = 6000;
     const numberEnemies = 500;
     const numberPlayers = 1;
@@ -71,10 +73,10 @@ function testPathingPerformanceCacheNotChangingResults(ctx: CanvasRenderingConte
         let key = `${tempSourceTile.x}_${tempSourceTile.y}|${tempTargtTile.x}_${tempTargtTile.y}`;
         if (i % 3 === 0) {
             tempCache = {};
-            result = getNextWaypoint(sourcePositions[i % numberEnemies], targetPositions[i % numberPlayers], map, tempCache, idCounter, 0, dummyGame);
+            result = getNextWaypoint(sourcePositions[i % numberEnemies], targetPositions[i % numberPlayers], tempCache, 0, dummyGame);
         } else {
             tempCache = pathingCache;
-            result = getNextWaypoint(sourcePositions[i % numberEnemies], targetPositions[i % numberPlayers], map, pathingCache, idCounter, 0, dummyGame);
+            result = getNextWaypoint(sourcePositions[i % numberEnemies], targetPositions[i % numberPlayers], pathingCache, 0, dummyGame);
         }
         const resultFromMap = resultMap.get(key);
         if (resultFromMap !== undefined) {
@@ -87,7 +89,7 @@ function testPathingPerformanceCacheNotChangingResults(ctx: CanvasRenderingConte
                 if (result.x !== resultFromMap.pos!.x || result.y !== resultFromMap.pos!.y) {
                     console.log("oh no", i, key, result, resultFromMap, sourcePositions[i % numberEnemies], targetPositions[i % numberPlayers], pathingCache);
                     if (ctx) {
-                        const key2 = tileXyToPathingCacheKey(tempTargtTile);
+                        const key2 = positionToPathingCacheKey(tempTargtTile);
                         const tempPathingCachXY: PathingCacheXY = tempCache[key2];
                         paintPathingArrows(ctx, map, tempPathingCachXY, resultFromMap.pathingCacheXY, tempTargtTile);
                         debugger;
@@ -96,7 +98,7 @@ function testPathingPerformanceCacheNotChangingResults(ctx: CanvasRenderingConte
                 }
             }
         } else {
-            const key2 = tileXyToPathingCacheKey(tempTargtTile);
+            const key2 = positionToPathingCacheKey(tempTargtTile);
             resultMap.set(key, { pos: result, pathingCacheXY: tempCache[key2] });
         }
     }
@@ -118,18 +120,18 @@ export function paintPathingArrows(ctx: CanvasRenderingContext2D, map: GameMap, 
             ctx,
             sourceTileXY.x * arrowSize + arrowOffsetX,
             sourceTileXY.y * arrowSize + arrowOffsetY,
-            targetTileXY1!.x * arrowSize + arrowOffsetX,
-            targetTileXY1!.y * arrowSize + arrowOffsetY
+            targetTileXY1!.topLeftTileXY.x * arrowSize + arrowOffsetX,
+            targetTileXY1!.topLeftTileXY.y * arrowSize + arrowOffsetY
         );
         if (pathingCache2) {
             const targetTileXY2 = pathingCache2.cameFromCache.get(key);
-            if (targetTileXY2 !== undefined && (targetTileXY1!.x !== targetTileXY2!.x || targetTileXY1!.y !== targetTileXY2!.y)) {
+            if (targetTileXY2 !== undefined && (targetTileXY1!.topLeftTileXY.x !== targetTileXY2!.topLeftTileXY.x || targetTileXY1!.topLeftTileXY.y !== targetTileXY2!.topLeftTileXY.y)) {
                 canvas_arrow(
                     ctx,
                     sourceTileXY.x * arrowSize + arrowOffsetX,
                     sourceTileXY.y * arrowSize + arrowOffsetY,
-                    targetTileXY2!.x * arrowSize + arrowOffsetX,
-                    targetTileXY2!.y * arrowSize + arrowOffsetY,
+                    targetTileXY2!.topLeftTileXY.x * arrowSize + arrowOffsetX,
+                    targetTileXY2!.topLeftTileXY.y * arrowSize + arrowOffsetY,
                     "blue"
                 );
             }
@@ -159,6 +161,7 @@ function testPathingNotEndInInfiniteLoop() {
     const dummyGame: Game = createGame(undefined);
     const idCounter = { nextId: 0 };
     const map: GameMap = createMap();
+    dummyGame.state.map = map;
     map.chunks["0_0"] = { tiles: [], characters: [], objects: [] };
     map.chunks["0_0"].tiles = [
         [0, 0, 0, 0, 0, 0, 0, 0],
@@ -180,7 +183,7 @@ function testPathingNotEndInInfiniteLoop() {
     const targetPosition: Position = { x: 5 * map.tileSize, y: 5 * map.tileSize };
 
     for (let i = 0; i < sourcePositions.length; i++) {
-        getNextWaypoint(sourcePositions[i], targetPosition, map, pathingCache, idCounter, 0, dummyGame);
+        getNextWaypoint(sourcePositions[i], targetPosition, pathingCache, 0, dummyGame);
     }
 }
 

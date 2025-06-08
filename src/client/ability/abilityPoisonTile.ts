@@ -1,6 +1,6 @@
 import { calculateDistance, getNextId } from "../game.js";
 import { Game, IdCounter } from "../gameModel.js";
-import { calculatePosToChunkTileXY, changeTileIdOfMapChunk, changeTileIdOfPosition, getMapTileId, positionToChunkXY, TILE_ID_GRASS, TILE_ID_ICE, TILE_ID_POISON, TILE_VALUES } from "../map/map.js";
+import { changeTileIdOfPosition, getMapTileId, TILE_ID_GRASS, TILE_ID_ICE, TILE_ID_POISON } from "../map/map.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner } from "./ability.js";
 
 export type AbilityPoisonTile = Ability & {

@@ -78,6 +78,7 @@ export function executeCommand(game: Game, data: any) {
             playerJoined(game, data);
             const compressedState = compressString(JSON.stringify({ command: "gameState", data: game.state, toId: data.clientId }));
             game.multiplayer.websocket!.send(compressedState);
+            game.performance = { chunkGraphRectangles: {}, incompleteChunkGraphRectangles: true };
             break;
         case "gameState":
             gameState(game, data.data);
@@ -192,7 +193,7 @@ function gameState(game: Game, data: GameState) {
     if (!game.multiplayer.awaitingGameState) return;
     game.multiplayer.awaitingGameState.waiting = false;
     game.state = data;
-    game.performance = { chunkGraphRectangles: {} };
+    game.performance = { chunkGraphRectangles: {}, incompleteChunkGraphRectangles: true };
     for (let i = 0; i < game.state.clientInfos.length; i++) {
         if (game.multiplayer.myClientId === game.state.clientInfos[i].id) {
             setClientDefaultKeyBindings(game);

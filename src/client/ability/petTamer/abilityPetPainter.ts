@@ -153,7 +153,7 @@ export function abilityPetPainterTeleportIfOwnerUnreachableOrToFarAway(pet: Tame
     if (distance > 800) {
         setCharacterPosition(pet, petOwner, game.state.map);
     } else {
-        const nextWayPoint: Position | null = getNextWaypoint(pet, petOwner, game.state.map, game.performance.pathingCache, game.state.idCounter, game.state.time, game);
+        const nextWayPoint: Position | null = getNextWaypoint(pet, petOwner, game.performance.pathingCache, game.state.time, game);
         const canPetReachPosition = nextWayPoint !== null;
         if (!canPetReachPosition) {
             setCharacterPosition(pet, petOwner, game.state.map);
