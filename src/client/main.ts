@@ -1,8 +1,9 @@
 import { onDomLoadSetAbilitiesFunctions } from "./ability/ability.js";
 import { onDomLoadSetCharacterUpgradeFunctions } from "./character/upgrades/characterUpgrades.js";
 import { onDomLoadSetCharacterClasses } from "./character/playerCharacters/playerCharacters.js";
+import { handleCommand } from "./commands.js";
 import { onDomLoadSetDebuffsFunctions } from "./debuff/debuff.js";
-import { gameInit, runner, setRelativeMousePosition } from "./game.js";
+import { runner, setRelativeMousePosition } from "./game.js";
 import { createDefaultGameData, Game, GameVersion } from "./gameModel.js";
 import { addMapObjectsFunctions } from "./map/mapObjects.js";
 import { keyDown, keyUp, mouseDown, mouseUp, mouseWheel } from "./input/playerInput.js";
@@ -63,8 +64,18 @@ export function createGame(canvasElementId: string | undefined, forTesting: bool
         c.height = window.innerHeight - 2;
         c.width = window.innerWidth - 2;
         addHTMLDebugMenusToSettings(game);
+        // makes a double restart on game start to setup recording of replay, which is required to start with a "restart" command
+        const commandRestart = {
+            command: "restart",
+            clientId: game.multiplayer.myClientId,
+            recordInputs: true,
+            replay: false,
+            testMapSeed: game.state.map.seed,
+            testRandomStartSeed: game.state.randomSeed.seed,
+            testEnemyTypeDirectionSeed: game.state.enemyTypeDirectionSeed,
+        };
         localStorageLoad(game);
-        gameInit(game);
+        handleCommand(game, commandRestart);
     } else {
         game = createDefaultGameData(undefined, undefined);
     }

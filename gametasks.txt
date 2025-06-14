@@ -1,25 +1,10 @@
-next test run: sniper, tamer, builder, ball, musician
+next test run:  builder, tamer, ball, musician
 increase version
 
 current tasks:      
-- improve path finding performance
-    - investigate miltiplayer desync still happening?
-    - multiplayer desync happened. On one screen dead. On the other not
-        - hp different.
-            - assumed reason: 
-                - order of chunk path creating different.
-                -> Results in different order for pathfinding
-                -> results in different choice of enemies for pathing
-            - maybe fixed by: addition to "case "sendGameState":" in "commands.ts"
-    - check multiplayer will not desync
-        - loading state should be borken? as i do not generate pathing data on state load
-        - create pathing for every chunk on state load. could take a lot of time?
-        - create pathing for active chunks
-            - some performance loss for checking if data exists
-            - 
+- nwe pathfinding
     - check pathing on tile changes.
 - bug: replay stuck on retry
-
 
 
 next feature ideas:
