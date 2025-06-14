@@ -1,9 +1,9 @@
-next test run: everything
+next test run: sniper, tamer, builder, ball, musician
 increase version
 
 current tasks:      
 - improve path finding performance
-    - continue: investigate miltiplayer desync still happening?
+    - investigate miltiplayer desync still happening?
     - multiplayer desync happened. On one screen dead. On the other not
         - hp different.
             - assumed reason: 

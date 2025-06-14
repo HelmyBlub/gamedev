@@ -1,7 +1,6 @@
 import { onDomLoadSetAbilitiesFunctions } from "./ability/ability.js";
 import { onDomLoadSetCharacterUpgradeFunctions } from "./character/upgrades/characterUpgrades.js";
 import { onDomLoadSetCharacterClasses } from "./character/playerCharacters/playerCharacters.js";
-import { handleCommand } from "./commands.js";
 import { onDomLoadSetDebuffsFunctions } from "./debuff/debuff.js";
 import { gameInit, runner, setRelativeMousePosition } from "./game.js";
 import { createDefaultGameData, Game, GameVersion } from "./gameModel.js";

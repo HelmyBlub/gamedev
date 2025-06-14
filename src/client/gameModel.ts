@@ -322,7 +322,6 @@ export type Game = {
     performance: {
         mapChunkPaintCache?: MapChunkPaintCache,
         pathingCache?: PathingCache,
-        incompleteChunkGraphRectangles: boolean,
         chunkGraphRectangles: { [key: string]: GraphRectangle[] },
     }
     testing: TestingStuff,
@@ -413,7 +412,7 @@ export function createDefaultGameData(c?: HTMLCanvasElement, ctx?: CanvasRenderi
             type: "follow character"
         },
         mouseRelativeCanvasPosition: { x: 0, y: 0 },
-        performance: { chunkGraphRectangles: {}, incompleteChunkGraphRectangles: false },
+        performance: { chunkGraphRectangles: {} },
         testing: {
             autoPlay: {
                 autoPlaying: false,

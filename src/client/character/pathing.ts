@@ -240,7 +240,6 @@ export function getNextWaypoint(
 }
 
 function checkIfNeighourPathingExistsAndCreateIfNot(tileXY: Position, game: Game) {
-    if (!game.performance.incompleteChunkGraphRectangles) return;
     const chunkXY = tileXYToChunkXY(tileXY, game.state.map);
 
     const chunkNeighbors: ChunkXY[] = [
@@ -292,9 +291,12 @@ function getGraphRectangleForPosition(position: Position, game: Game): GraphRect
     const posChunkXY = positionToChunkXY(position, game.state.map);
     const posChunkKey = chunkXYToMapKey(posChunkXY.chunkX, posChunkXY.chunkY);
     let posChunkRectangles = game.performance.chunkGraphRectangles[posChunkKey];
-    if (game.performance.incompleteChunkGraphRectangles && posChunkRectangles == undefined) {
+    if (posChunkRectangles == undefined) {
         const graphRectangles = chunkGraphRectangleSetup(posChunkXY, game);
-        if (graphRectangles) posChunkRectangles = graphRectangles; else return undefined;
+        if (graphRectangles) {
+            posChunkRectangles = graphRectangles;
+            game.performance.chunkGraphRectangles[posChunkKey] = posChunkRectangles;
+        } else return undefined;
     }
     for (let rectangle of posChunkRectangles) {
         if (rectangle.topLeftTileXY.x * tileSize <= position.x && (rectangle.topLeftTileXY.x + rectangle.width) * tileSize > position.x

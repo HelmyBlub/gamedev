@@ -394,7 +394,7 @@ function addLoadTestStateButton(game: Game) {
                 game.state = await loadCompressedStateFromUrl("/data/testState1.bin", game);
                 if (game.state.achievements === undefined) game.state.achievements = createDefaultAchivements();
                 game.multiplayer.disableLocalStorage = true;
-                game.performance = { chunkGraphRectangles: {}, incompleteChunkGraphRectangles: true };
+                game.performance = { chunkGraphRectangles: {} };
                 findAndSetNewCameraCharacterId(game.camera, game.state.players, game.multiplayer.myClientId);
             }
         });

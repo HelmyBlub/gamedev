@@ -53,7 +53,6 @@ export function createNewChunk(map: GameMap, chunkX: number, chunkY: number, idC
     const newChunk = createNewChunkTiles(map, chunkX, chunkY, map.seed!, game);
     if (areaSpawnOnDistanceCreateAndSetOnMap(chunkX, chunkY, map, game)) return map.chunks[chunkXYToMapKey(chunkX, chunkY)];
     map.chunks[chunkXYToMapKey(chunkX, chunkY)] = newChunk;
-    chunkGraphRectangleSetup({ chunkX: chunkX, chunkY: chunkY }, game);
 
     createFixPositionRespawnEnemies(newChunk, chunkX, chunkY, map, idCounter, game);
     for (let modifier of map.mapModifiers) {

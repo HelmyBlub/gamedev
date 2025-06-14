@@ -3,13 +3,13 @@ import { paintAll } from "./gamePaint.js";
 import { addPlayerMoney, createDefaultKeyBindings1, createDefaultUiKeyBindings, createPlayerWithPlayerCharacter, findNearesPastPlayerCharacter, findPlayerByCharacterId, gameInitPlayers, isAutoUpgradeActive } from "./player.js";
 import { MOUSE_ACTION, RESTART_HOLD_TIME, UPGRADE_ACTIONS, executeUiAction, tickPlayerInputs } from "./input/playerInput.js";
 import { Position, GameState, Game, IdCounter, Debugging, ClientInfo, GameVersion } from "./gameModel.js";
-import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap, initKingArea, mousePositionToMapPosition, tickActiveMapChunks } from "./map/map.js";
+import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap, initKingArea, mapKeyToChunkXY, mousePositionToMapPosition, tickActiveMapChunks } from "./map/map.js";
 import { Character } from "./character/characterModel.js";
 import { generateMissingChunks, pastCharactersMapTilePositions } from "./map/mapGeneration.js";
 import { createFixPositionRespawnEnemiesOnInit } from "./character/enemy/fixPositionRespawnEnemyModel.js";
 import { COMMAND_COMPARE_STATE, COMMAND_COMPARE_STATE_HASH, CommandRestart, handleCommand } from "./commands.js";
 import { ABILITIES_FUNCTIONS, tickAbilityObjects } from "./ability/ability.js";
-import { garbageCollectPathingCache, getPathingCache } from "./character/pathing.js";
+import { chunkGraphRectangleSetup, garbageCollectPathingCache, getPathingCache } from "./character/pathing.js";
 import { createObjectDeathCircle } from "./ability/abilityDeathCircle.js";
 import { checkForBossSpawn, tickBossCharacters } from "./character/enemy/bossEnemy.js";
 import { autoPlay } from "./test/autoPlay.js";
@@ -128,7 +128,7 @@ export function gameInit(game: Game) {
     game.state.deathCircleCreated = false;
     game.state.paused = false;
     game.state.enemyTypeDirectionSeed += 1;
-    game.performance = { chunkGraphRectangles: {}, incompleteChunkGraphRectangles: false };
+    game.performance = { chunkGraphRectangles: {} };
     game.UI.displayTextData = [];
     game.UI.moneyGainedThisRun = [];
     game.UI.stackTextsData.textStack = [];
@@ -184,7 +184,7 @@ export function gameInit(game: Game) {
 }
 
 export function resetGameNonStateData(game: Game) {
-    game.performance = { chunkGraphRectangles: {}, incompleteChunkGraphRectangles: true };
+    game.performance = { chunkGraphRectangles: {} };
     game.UI.displayTextData = [];
     game.multiplayer.autosendMousePosition.nextTime = 0;
     for (let i = 0; i < game.state.clientInfos.length; i++) {
@@ -922,6 +922,9 @@ function determineActiveChunks(characters: Character[], map: GameMap, game: Game
         const nearMapKeys = determineMapKeysInDistance(characters[i], map, map.activeChunkRange, false);
         for (let mapKey of nearMapKeys) {
             keySet.add(mapKey);
+            if (!game.performance.chunkGraphRectangles[mapKey]) {
+                chunkGraphRectangleSetup(mapKeyToChunkXY(mapKey), game);
+            }
         }
     }
     map.activeChunkKeys = [...keySet];
