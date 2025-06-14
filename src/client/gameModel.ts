@@ -465,7 +465,6 @@ export function createDefaultGameData(c?: HTMLCanvasElement, ctx?: CanvasRenderi
         setDefaultNextKings(game);
     }
     game.state.map.seed = nextRandom(game.state.randomSeed);
-    generateMissingChunks(game.state.map, [{ x: 0, y: 0 }], game.state.idCounter, game);
     const player = createPlayerWithPlayerCharacter(game.state.idCounter, game.state.clientInfos[0].id, { x: 0, y: 0 }, game.state.randomSeed, game);
     game.state.players.push(player);
 

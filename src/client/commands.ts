@@ -88,6 +88,7 @@ export function executeCommand(game: Game, data: any) {
             break;
         case "playerJoined":
             playerJoined(game, data);
+            game.performance = { chunkGraphRectangles: {}, incompleteChunkGraphRectangles: true };
             break;
         case "playerLeft":
             for (let i = 0; i < game.state.clientInfos.length; i++) {

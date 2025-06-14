@@ -3,7 +3,7 @@ import { onDomLoadSetCharacterUpgradeFunctions } from "./character/upgrades/char
 import { onDomLoadSetCharacterClasses } from "./character/playerCharacters/playerCharacters.js";
 import { handleCommand } from "./commands.js";
 import { onDomLoadSetDebuffsFunctions } from "./debuff/debuff.js";
-import { runner, setRelativeMousePosition } from "./game.js";
+import { gameInit, runner, setRelativeMousePosition } from "./game.js";
 import { createDefaultGameData, Game, GameVersion } from "./gameModel.js";
 import { addMapObjectsFunctions } from "./map/mapObjects.js";
 import { keyDown, keyUp, mouseDown, mouseUp, mouseWheel } from "./input/playerInput.js";
@@ -23,7 +23,7 @@ var gameCount: number = 0;
 export const GAME_VERSION: GameVersion = {
     major: 0,
     minor: 4,
-    patch: 370,
+    patch: 371,
 }
 
 export function start() {
@@ -64,17 +64,8 @@ export function createGame(canvasElementId: string | undefined, forTesting: bool
         c.height = window.innerHeight - 2;
         c.width = window.innerWidth - 2;
         addHTMLDebugMenusToSettings(game);
-        const commandRestart = {
-            command: "restart",
-            clientId: game.multiplayer.myClientId,
-            recordInputs: true,
-            replay: false,
-            testMapSeed: game.state.map.seed,
-            testRandomStartSeed: game.state.randomSeed.seed,
-            testEnemyTypeDirectionSeed: game.state.enemyTypeDirectionSeed,
-        };
         localStorageLoad(game);
-        handleCommand(game, commandRestart);
+        gameInit(game);
     } else {
         game = createDefaultGameData(undefined, undefined);
     }
