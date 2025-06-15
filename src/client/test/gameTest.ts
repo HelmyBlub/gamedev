@@ -98,6 +98,7 @@ function testPlayerClasses(game: Game) {
 
     const replay = game.testing.replay;
     replay.testInputFileQueue = [];
+    replay.testInputFileQueue.push("/data/testReplayLongBall.json");
     replay.testInputFileQueue.push("/data/testReplayShortRetry.json");
     replay.testInputFileQueue.push("/data/testReplayShortSniper.json");
     replay.testInputFileQueue.push("/data/testReplayShortBuilder.json");
@@ -109,7 +110,6 @@ function testPlayerClasses(game: Game) {
     replay.testInputFileQueue.push("/data/testReplayLongSniper.json");
     // replay.testInputFileQueue.push("/data/testReplayLongBuilder.json");
     // replay.testInputFileQueue.push("/data/testReplayLongTamer.json");
-    // replay.testInputFileQueue.push("/data/testReplayLongBall.json");
     // replay.testInputFileQueue.push("/data/testReplayLongMusician.json");
     // replay.testInputFileQueue.push("/data/testReplayHardModeGodKill.json");
 

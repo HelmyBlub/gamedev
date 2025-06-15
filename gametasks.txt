@@ -1,13 +1,19 @@
-next test run:  tamer, ball, musician
+next test run:  tamer, musician
 increase version
 
 current tasks:      
-- bug: replay stuck on retry
-
+- test runs
+- thinking about what is next
+    - different strategies per class should be viable (being able to defeat initial kings)
+        - try around, each class should have different options to achieve it
+            - ball
+                - i always use bounce damage, check others
+            - tamer
+                - range pet ability
+    - more upgrade choices
+        - think about new tamer pet ability
 
 next feature ideas:
-- maybe:
-    - improve path finding performance
 - each stream spend time on thinking whats next
     - what makes most sense to work on?
         - what would make the game more fun to play for me?
@@ -22,6 +28,8 @@ next feature ideas:
         - over achievements?
     - randomize upgarde with rariety        
         - common, rare, epic, legendary
+    - base building
+        - more options to spend money to build up map center city
     - more classes
     - graphics:
         - random weather effects

@@ -9,12 +9,15 @@ import { ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS, AbilityBounceBall } from "./abil
 type AbilityBounceBallUpgradeFireLine = AbilityUpgrade & {
     startPosition?: Position,
     damageFactor: number,
+    width: number,
     duration: number,
 }
 
 const DURATION = 3000;
-const DURATION_PER_LEVEL = 3000;
+const DURATION_PER_LEVEL = 1000;
 const DAMAGE_PER_SECOND_FACTOR = 2;
+const BASE_WIDTH = 10;
+const WIDTH_PER_LEVEL = 3;
 const TICK_INTERVAL = 250;
 
 export const ABILITY_BOUNCE_BALL_UPGRADE_FIRE_LINE = "Fire Line";
@@ -39,7 +42,7 @@ export function abilityBounceBallUpgradeFireLinePlace(ability: AbilityBounceBall
     const up: AbilityBounceBallUpgradeFireLine = ability.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_FIRE_LINE];
     if (!up) return;
     if (up.startPosition) {
-        const width = 10;
+        const width = up.width ? up.width : 10;
         const endPos = { x: owner.x, y: owner.y };
         const distance = calculateDistance(up.startPosition, endPos);
         if (distance < 120) {
@@ -57,6 +60,7 @@ function setUpgradeToBossLevel(ability: Ability, level: number) {
     up.level = level;
     up.duration = 1000 + level * 2000;
     up.damageFactor = 1;
+    up.width = 10 + 3 * level;
 }
 
 function getOptions(ability: Ability): UpgradeOptionAndProbability[] {
@@ -69,12 +73,13 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption) {
     const ball = ability as AbilityBounceBall;
     let up: AbilityBounceBallUpgradeFireLine;
     if (ball.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_FIRE_LINE] === undefined) {
-        up = { level: 0, damageFactor: DAMAGE_PER_SECOND_FACTOR, duration: DURATION };
+        up = { level: 0, damageFactor: DAMAGE_PER_SECOND_FACTOR, duration: DURATION, width: BASE_WIDTH };
         ball.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_FIRE_LINE] = up;
     } else {
         up = ball.upgrades[ABILITY_BOUNCE_BALL_UPGRADE_FIRE_LINE];
         up.duration += DURATION_PER_LEVEL;
         up.damageFactor += DAMAGE_PER_SECOND_FACTOR;
+        up.width = BASE_WIDTH + WIDTH_PER_LEVEL * up.level;
     }
     up.level++;
 }
@@ -90,8 +95,9 @@ function getAbilityUpgradeUiTextLong(ability: Ability): string[] {
     if (up) {
         textLines.push(
             `Create fire lines while rolling around.`,
-            `Duration increase from ${(DURATION / 1000 * up.level).toFixed(1)}s to ${(DURATION / 1000 * (up.level + 1)).toFixed(1)}s.`,
+            `Duration increase from ${(up.duration / 1000).toFixed(1)}s to ${((up.duration + DURATION_PER_LEVEL) / 1000).toFixed(1)}s.`,
             `Damage per second increase from ${(DAMAGE_PER_SECOND_FACTOR * 100 * up.level)}% to ${DAMAGE_PER_SECOND_FACTOR * 100 * (up.level + 1)}%.`,
+            `Width increase from ${up.width.toFixed()} to ${(up.width + WIDTH_PER_LEVEL).toFixed(0)}.`,
         );
     } else {
         textLines.push(`Create fire lines while rolling around.`);
