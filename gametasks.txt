@@ -3,6 +3,8 @@ increase version
 
 current tasks:      
 - test runs
+    - test runs broke but i don't know why. Need to investigate.
+        - sniper and builder
 - thinking about what is next
     - different strategies per class should be viable (being able to defeat initial kings)
         - try around, each class should have different options to achieve it
