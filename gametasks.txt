@@ -2,8 +2,6 @@ next test run:  tamer, ball, musician
 increase version
 
 current tasks:      
-- new pathfinding
-    - check pathing on tile changes.
 - bug: replay stuck on retry
 
 

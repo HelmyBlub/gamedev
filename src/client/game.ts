@@ -905,10 +905,13 @@ function addReplayInputs(game: Game) {
         if (replayData.replayPlayerInputs.length <= replay.replayInputCounter
             && replayData.replayPlayerInputs[replay.replayInputCounter - 1].executeTime + 60000 < game.state.time
         ) {
-            console.log("replay seem to be stuck. End it by killing players.");
+            console.log("replay seems to be stuck. End it by killing players.");
             for (let player of game.state.players) {
                 player.character.hp = 0;
                 player.character.state = "dead";
+            }
+            if (game.state.bossStuff.areaSpawnFightStartedTime !== undefined || game.state.bossStuff.kingFightStartedTime !== undefined) {
+                concedePlayerFightRetries(game);
             }
         }
     }
