@@ -6,10 +6,18 @@ current tasks:
 - thinking about what is next
     - different strategies per class should be viable (being able to defeat initial kings)
         - try around, each class should have different options to achieve it
-            - ball
-                - i always use bounce damage, check others
             - tamer
-                - range pet ability
+                - tamer pets can all have same abilities?
+                - new range pet abilities   
+                    - single target/ medium range
+                        - small pet. faster but less damage
+                        - big pet. more damage but moves less. so might not keep up with enemy
+                        - throws boomerang type of weapong. Comes back. targeted on one enemy but hits everything in its path
+                    - multi target
+                        - firing range targeted explosives
+                        - bigger pet, less frequent shooting, bigger explosion (good aoe)
+                        - smaller pet, more shooting, smaller explosions (good single target)
+
     - more upgrade choices
         - think about new tamer pet ability
 

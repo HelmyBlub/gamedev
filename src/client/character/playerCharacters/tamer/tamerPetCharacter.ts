@@ -43,6 +43,7 @@ export type TamerPetCharacter = Character & {
     tradable: boolean,
     gifted?: boolean,
     classIdRef: number,
+    collisionOff?: boolean,
 }
 
 type Happiness = {
@@ -630,6 +631,7 @@ function determineTargetsInDistance(pet: TamerPetCharacter, center: Position, ga
 }
 
 function collisionWithOtherPets(pet: TamerPetCharacter, petOwner: Character, newMovePosition: Position, game: Game): TamerPetCharacter | undefined {
+    if (pet.collisionOff) return undefined;
     for (let petIt of petOwner.pets!) {
         if (petIt === pet) continue;
         if (pet.type !== TAMER_PET_CHARACTER) continue;

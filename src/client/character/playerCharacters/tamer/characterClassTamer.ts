@@ -183,6 +183,7 @@ function executeTamerBossUpgradeOption(character: Character, upgradeOption: Upgr
         pet.bossSkillPoints!.used++;
         if (upgradeValues.abilityName === ABILITY_NAME_PET_PAINTER) {
             const leash: AbilityLeash | undefined = pet.abilities.find(a => a.name === ABILITY_NAME_LEASH) as AbilityLeash;
+            pet.collisionOff = true;
             if (leash) leash.leashMaxLength += 100;
         }
     } else if (upgradeOption.type === "PetAbility") {
@@ -310,7 +311,8 @@ function getAvailablePetAbilities(character: Character, pet: TamerPetCharacter):
         if (available) availableAbilityNames.push(abilityName);
     }
 
-    return availableAbilityNames;
+    //return availableAbilityNames;
+    return possibleAbilityNames;
 }
 
 function upgradeNameToValues(upgradeName: string): { petName: string, abilityName: string, traitName: string } {

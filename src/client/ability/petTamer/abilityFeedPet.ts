@@ -47,7 +47,7 @@ export function addAbilityFeedPet() {
 function createAbilityFeedPet(
     idCounter: IdCounter,
     playerInputBinding?: string,
-    range: number = 200,
+    range: number = 400,
     rechargeTime: number = 100,
 ): AbilityFeedPet {
     return {
