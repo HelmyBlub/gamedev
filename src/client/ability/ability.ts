@@ -46,6 +46,7 @@ import { addAbilityCloud } from "./abilityCloud.js"
 import { Curse, doCurseDamageBreakDown } from "../curse/curse.js"
 import { addAbilityPoisonTile } from "./abilityPoisonTile.js"
 import { CHARACTER_PET_TYPE_CLONE } from "../character/playerCharacters/characterPetTypeClone.js"
+import { addAbilityPetBoomerang } from "./petTamer/abilityPetBoomerang.js"
 
 export type Ability = {
     id: number,
@@ -147,6 +148,7 @@ export function onDomLoadSetAbilitiesFunctions() {
     addAbilityPetBreath();
     addAbilityPetPainter();
     addAbilityPetDash();
+    addAbilityPetBoomerang();
     addAbilityBounceBall();
     addAbilityLightningBall();
     addAbilityLightningStrikes();

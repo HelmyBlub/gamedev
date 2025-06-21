@@ -1,27 +1,31 @@
-next test run:  tamer, musician
+next test run:  sniper, builder
 increase version
 
 current tasks:      
-- test runs
-    - test runs broke but i don't know why. Need to investigate.
-        - sniper and builder
-- thinking about what is next
-    - different strategies per class should be viable (being able to defeat initial kings)
-        - try around, each class should have different options to achieve it
-            - tamer
-                - tamer pets can all have same abilities?
-                - new range pet abilities   
-                    - single target/ medium range
-                        - small pet. faster but less damage
-                        - big pet. more damage but moves less. so might not keep up with enemy
-                        - throws boomerang type of weapong. Comes back. targeted on one enemy but hits everything in its path
-                    - multi target
-                        - firing range targeted explosives
-                        - bigger pet, less frequent shooting, bigger explosion (good aoe)
-                        - smaller pet, more shooting, smaller explosions (good single target)
+- new tamer abilities for variation
+    - single target/ medium range
+        - small pet. faster but less damage
+        - big pet. more damage but moves less. so might not keep up with enemy
+        - throws boomerang type of weapong. Comes back. targeted on one enemy but hits everything in its path
+            - player version should reach target hit it
+                - after hit projectile should begin change direction back to owner
+        - upgrades:
+            - bounce between enemies
+            - fire speed
+            - increase damage taken stack for boomerang
+    - multi target
+        - firing range targeted explosives
+        - bigger pet, less frequent shooting, bigger explosion (good aoe)
+            - smaller pet, more shooting, smaller explosions (good single target)
+        - upgrades:
+            - dot area on target position
+            - more projectiles at once 
+            - fire speed up
 
-    - more upgrade choices
-        - think about new tamer pet ability
+    - balance painter as i think it is to weak
+        - bigger abilities?
+
+
 
 next feature ideas:
 - each stream spend time on thinking whats next
