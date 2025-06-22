@@ -1,8 +1,9 @@
-next test run:  sniper, builder
+next test run:  builder
 increase version
 
 current tasks:      
 - new tamer abilities for variation
+    - continue with upgrade: - increase damage taken stack for boomerang
     - single target/ medium range
         - small pet. faster but less damage
         - big pet. more damage but moves less. so might not keep up with enemy
@@ -10,8 +11,8 @@ current tasks:
             - player version should reach target hit it
                 - after hit projectile should begin change direction back to owner
         - upgrades:
-            - bounce between enemies
             - fire speed
+            - bounce between enemies
             - increase damage taken stack for boomerang
     - multi target
         - firing range targeted explosives

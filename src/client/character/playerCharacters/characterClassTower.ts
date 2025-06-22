@@ -41,7 +41,7 @@ function changeCharacterToTowerBuilderClass(
         id: getNextId(game.state.idCounter),
         className: CHARACTER_CLASS_TOWER_BUILDER,
         level: {
-            level: 0,
+            level: 1,
             leveling: {
                 experience: 0,
                 experienceForLevelUp: 10,

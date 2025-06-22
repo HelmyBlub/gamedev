@@ -131,7 +131,7 @@ export function createTamerPetCharacter(owner: Character, color: string, charact
         baseMoveSpeed: baseMoveSpeed,
         bossSkillPoints: { available: 0, used: 0 },
         level: {
-            level: 0,
+            level: 1,
             leveling: {
                 experience: 0,
                 experienceForLevelUp: 10,
