@@ -407,10 +407,9 @@ export function detectAbilityObjectCircleToCharacterHit(map: GameMap, abilityObj
 export function detectCircleCharacterHit(map: GameMap, circleCenter: Position, circleRadius: number, faction: string, abilityId: number, damage: number, game: Game, abilityObject: AbilityObject | undefined = undefined, ability: Ability | undefined = undefined, specificDamageForFactionPlayer: number | undefined = undefined) {
     const maxEnemySizeEstimate = 40;
 
-    const characters = determineCharactersInDistance(circleCenter, map, game.state.players, game.state.bossStuff.bosses, circleRadius * 2 + maxEnemySizeEstimate, faction);
+    const characters = determineCharactersInDistance(circleCenter, map, game.state.players, game.state.bossStuff.bosses, circleRadius * 2 + maxEnemySizeEstimate, faction, true);
     for (let charIt = characters.length - 1; charIt >= 0; charIt--) {
         const c = characters[charIt];
-        if (c.state === "dead" || c.faction === faction) continue;
         const distance = calculateDistance(c, circleCenter);
         if (distance < circleRadius + c.width / 2) {
             let abilityName = "Unknown";

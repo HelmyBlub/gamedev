@@ -299,7 +299,7 @@ function getAvailablePetAbilities(character: Character, pet: TamerPetCharacter):
         ABILITY_NAME_PET_BREATH,
         ABILITY_NAME_PET_PAINTER,
         ABILITY_NAME_PET_DASH,
-        // ABILITY_NAME_PET_BOOMERANG,
+        ABILITY_NAME_PET_BOOMERANG,
     ]
 
     for (let abilityName of possibleAbilityNames) {

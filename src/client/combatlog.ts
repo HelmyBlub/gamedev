@@ -128,7 +128,7 @@ export function createCombatLogMoreInfo(ctx: CanvasRenderingContext2D, moreInfos
     if (combatlog === undefined) return;
     if (combatlog.damageTakenLog.length === 0 && combatlog.damageDoneLog.length === 0) return;
     const moreInfosContainer = createDefaultMoreInfosContainer(ctx, "Combatlog", moreInfos.headingFontSize);
-    const textLines: string[] = [`Damage Taken Log:`, `<time>:<ability> <damage>, <your Hp>, <sourceId>`];
+    const textLines: string[] = [`Damage Taken Log:`, `<time>:<ability> <damage>, <your Hp>, <AbilityId>`];
     for (let entry of combatlog.damageTakenLog) {
         textLines.push(`${(entry.timestamp / 1000).toFixed(2)}s: ${entry.message}`);
     }
@@ -148,7 +148,7 @@ export function createCombatLogMoreInfo(ctx: CanvasRenderingContext2D, moreInfos
 export function addCombatlogDamageTakenEntry(character: Character, damage: number, abilityName: string, abilityId: number | undefined, game: Game) {
     if (!character.combatlog) return;
     const combatlog = character.combatlog;
-    addLog(combatlog.damageTakenLog, character, damage, abilityName, character.id, combatlog.maxLogEntries, game);
+    addLog(combatlog.damageTakenLog, character, damage, abilityName, abilityId, combatlog.maxLogEntries, game);
 }
 
 export function addCombatlogDamageDoneEntry(targetCharacter: Character, damage: number, abilityName: string, damageSourceId: number, game: Game) {

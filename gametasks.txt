@@ -1,7 +1,8 @@
-next test run:  builder
+next test run: 
 increase version
 
 current tasks:      
+- bug tamer boss not leashing pets?
 - new tamer abilities for variation
     - continue with upgrade: - increase damage taken stack for boomerang
     - single target/ medium range

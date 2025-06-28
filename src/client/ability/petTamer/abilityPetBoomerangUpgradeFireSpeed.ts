@@ -16,7 +16,16 @@ export function addAbilityPetBoomerangUpgradeFireSpeed() {
         getMoreInfoIncreaseOneLevelText: getAbilityUpgradeUiTextLong,
         getOptions: getOptions,
         executeOption: executeOption,
+        setUpgradeToBossLevel: setUpgradeToBossLevel,
     }
+}
+function setUpgradeToBossLevel(ability: Ability, level: number) {
+    const up: AbilityPetBoomerangUpgradeFireSpeed = ability.upgrades[ABILITY_PET_BOOMERANG_UPGRADE_FIRE_SPEED];
+    if (!up) return;
+    const boomerang = ability as AbilityPetBoomerang;
+    up.level = level;
+    up.fireSpeedFactor = 2 / (1 + FIRE_SPEED_PER_CENT_PER_LEVEL * up.level);
+    boomerang.throwInterval = ABILITY_BOOMERANG_BASE_THROW_INTERVAL * up.fireSpeedFactor;
 }
 
 function getOptions(ability: Ability): UpgradeOptionAndProbability[] {

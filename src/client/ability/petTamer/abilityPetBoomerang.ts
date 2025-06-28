@@ -1,17 +1,20 @@
-import { determineCharactersInDistance, findCharacterByIdAroundPosition } from "../../character/character.js";
+import { characterTakeDamage, determineCharactersInDistance, findCharacterByIdAroundPosition } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
 import { TamerPetCharacter } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { AbilityDamageBreakdown } from "../../combatlog.js";
+import { applyDebuff } from "../../debuff/debuff.js";
+import { createDebuffBoomerangStacks, DEBUFF_NAME_BOOMERANG_STACKS, DebuffBoomerangStacks } from "../../debuff/debuffBoomerangStack.js";
 import { calculateDirection, calculateDistance, getCameraPosition, getNextId } from "../../game.js";
 import { FACTION_ENEMY, FACTION_PLAYER, Game, IdCounter, Position } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
-import { calculateMovePosition, moveByDirectionAndDistance } from "../../map/map.js";
+import { calculateMovePosition, GameMap, moveByDirectionAndDistance } from "../../map/map.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
-import { Ability, AbilityObject, AbilityOwner, PaintOrderAbility, ABILITIES_FUNCTIONS, detectCircleCharacterHit, findAbilityOwnerById } from "../ability.js";
+import { Ability, AbilityObject, AbilityOwner, PaintOrderAbility, ABILITIES_FUNCTIONS, findAbilityOwnerById } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, upgradeAbility } from "../abilityUpgrade.js";
 import { addAbilityPetBoomerangUpgradeBounce } from "./abilityPetBoomerangUpgradeBounce.js";
 import { addAbilityPetBoomerangUpgradeFireSpeed } from "./abilityPetBoomerangUpgradeFireSpeed.js";
+import { ABILITY_PET_BOOMERANG_UPGRADE_STACK_DAMAGE_PER_CENT, addAbilityPetBoomerangUpgradeStackingDamage } from "./abilityPetBoomerangUpgradeStackingDamage .js";
 
 const TARGET_SEARCH_RANGE = 400;
 const BASE_DAMAGE = 200;
@@ -24,6 +27,7 @@ export type AbilityPetBoomerang = Ability & {
     duration: number,
     radius: number,
     bounce: number,
+    applyStacks: number,
 }
 
 export type AbilityObjectPetBoomerang = AbilityObject & {
@@ -37,6 +41,7 @@ export type AbilityObjectPetBoomerang = AbilityObject & {
     nextTickTime?: number,
     bounce: number,
     hitTarget: boolean,
+    applyStacks: number,
 }
 
 export const ABILITY_PET_BOOMERANG_UPGRADE_FUNCTIONS: AbilityUpgradesFunctions = {};
@@ -57,11 +62,11 @@ export function addAbilityPetBoomerang() {
         setAbilityToEnemyLevel: setAbilityToEnemyLevel,
         tickAbility: tickAbilityPetBoomerang,
         tickAbilityObject: tickAbilityObjectPetBoomerang,
-        onObjectHit: onObjectHit,
         abilityUpgradeFunctions: ABILITY_PET_BOOMERANG_UPGRADE_FUNCTIONS,
     };
     addAbilityPetBoomerangUpgradeFireSpeed();
     addAbilityPetBoomerangUpgradeBounce();
+    addAbilityPetBoomerangUpgradeStackingDamage();
 }
 
 function createAbilityPetBoomerang(idCounter: IdCounter): AbilityPetBoomerang {
@@ -75,6 +80,7 @@ function createAbilityPetBoomerang(idCounter: IdCounter): AbilityPetBoomerang {
         radius: 20,
         bounce: 0,
         duration: 5000,
+        applyStacks: 0,
     }
 }
 
@@ -104,6 +110,7 @@ function createAbilityObjectBoomerang(
         nextTickTime: game.state.time,
         hitTarget: false,
         bounce: abilityBoomerang.bounce,
+        applyStacks: abilityBoomerang.applyStacks,
     };
     if (target === undefined) {
         object.targetPosition = { x: object.x, y: object.y };
@@ -115,6 +122,10 @@ function createAbilityObjectBoomerang(
 
 function createDamageBreakDown(damage: number, ability: Ability, abilityObject: AbilityObject | undefined, damageAbilityName: string, game: Game): AbilityDamageBreakdown[] {
     const damageBreakDown: AbilityDamageBreakdown[] = [];
+    damageBreakDown.push({
+        damage: damage,
+        name: ABILITY_NAME_PET_BOOMERANG,
+    });
     return damageBreakDown;
 }
 
@@ -126,7 +137,8 @@ function getLongDescription(): string[] {
 }
 
 function resetAbility(ability: Ability) {
-    const paint = ability as AbilityPetBoomerang;
+    const boomerang = ability as AbilityPetBoomerang;
+    boomerang.lastThrowTime = undefined;
 }
 
 function setAbilityPetBoomerangToLevel(ability: Ability, level: number) {
@@ -141,10 +153,10 @@ function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: n
 
 function setAbilityPetBoomerangToBossLevel(ability: Ability, level: number) {
     const boomerang = ability as AbilityPetBoomerang;
-    boomerang.baseDamage = level * 50;
+    boomerang.baseDamage = level * 25;
 }
 
-function onObjectHit(abilityObject: AbilityObject, targetCharacter: Character, game: Game) {
+function onEnemyHit(abilityObject: AbilityObject, targetCharacter: Character, game: Game) {
     const boomerang = abilityObject as AbilityObjectPetBoomerang;
     if (boomerang.hitTarget) return;
     if (boomerang.targetIdRef === targetCharacter.id) {
@@ -181,7 +193,7 @@ function tickAbilityObjectPetBoomerang(abilityObject: AbilityObject, game: Game)
 
     if (!petBoomerang.nextTickTime || petBoomerang.nextTickTime <= game.state.time) {
         petBoomerang.nextTickTime = game.state.time + petBoomerang.tickInterval;
-        detectCircleCharacterHit(game.state.map, petBoomerang, petBoomerang.radius, petBoomerang.faction, petBoomerang.abilityIdRef!, petBoomerang.damage, game, petBoomerang);
+        detectBoomerangEnemyHit(game.state.map, petBoomerang, petBoomerang.radius, petBoomerang.faction, petBoomerang.abilityIdRef!, petBoomerang.damage, game, petBoomerang);
         if (!petBoomerang.hitTarget) {
             if (petBoomerang.targetIdRef !== undefined) {
                 const target = findCharacterByIdAroundPosition(petBoomerang, TARGET_SEARCH_RANGE, game, petBoomerang.targetIdRef);
@@ -231,6 +243,26 @@ function tickAbilityObjectPetBoomerang(abilityObject: AbilityObject, game: Game)
     }
 }
 
+export function detectBoomerangEnemyHit(map: GameMap, circleCenter: Position, circleRadius: number, faction: string, abilityId: number, damage: number, game: Game, abilityObject: AbilityObjectPetBoomerang) {
+    const maxEnemySizeEstimate = 40;
+    const characters = determineCharactersInDistance(circleCenter, map, game.state.players, game.state.bossStuff.bosses, circleRadius * 2 + maxEnemySizeEstimate, faction, true);
+    for (let charIt = characters.length - 1; charIt >= 0; charIt--) {
+        const c = characters[charIt];
+        const distance = calculateDistance(c, circleCenter);
+        if (distance < circleRadius + c.width / 2) {
+            let takeDamage = damage;
+            const stacks = c.debuffs.find((d) => d.name === DEBUFF_NAME_BOOMERANG_STACKS) as DebuffBoomerangStacks;
+            if (stacks) takeDamage *= (1 + stacks.stackCounter * ABILITY_PET_BOOMERANG_UPGRADE_STACK_DAMAGE_PER_CENT);
+            characterTakeDamage(c, takeDamage, game, abilityId, ABILITY_NAME_PET_BOOMERANG, abilityObject);
+            if (abilityObject.applyStacks > 0) {
+                const debuff = createDebuffBoomerangStacks(abilityObject.applyStacks);
+                applyDebuff(debuff, c, game);
+            }
+            onEnemyHit(abilityObject, c, game);
+        }
+    }
+}
+
 function deleteAbilityObjectPetBoomerang(abilityObject: AbilityObject, game: Game) {
     const abilityObjectPetBoomerang = abilityObject as AbilityObjectPetBoomerang;
     return abilityObjectPetBoomerang.deleteTime < game.state.time;
@@ -268,6 +300,7 @@ function tickAbilityPetBoomerang(abilityOwner: AbilityOwner, ability: Ability, g
     if (ability.disabled) return;
     const boomerang = ability as AbilityPetBoomerang;
     const pet = abilityOwner as TamerPetCharacter;
+    console.log("tick boomerang");
 
     if (!boomerang.lastThrowTime || boomerang.lastThrowTime + boomerang.throwInterval < game.state.time) {
         boomerang.lastThrowTime = game.state.time;
