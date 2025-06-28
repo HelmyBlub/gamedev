@@ -2,25 +2,17 @@ next test run:
 increase version
 
 current tasks:      
-- bug tamer boss not leashing pets?
 - new tamer abilities for variation
-    - continue with upgrade: - increase damage taken stack for boomerang
-    - single target/ medium range
-        - small pet. faster but less damage
-        - big pet. more damage but moves less. so might not keep up with enemy
-        - throws boomerang type of weapong. Comes back. targeted on one enemy but hits everything in its path
-            - player version should reach target hit it
-                - after hit projectile should begin change direction back to owner
-        - upgrades:
-            - fire speed
-            - bounce between enemies
-            - increase damage taken stack for boomerang
+    - boomerang
+        - should prioritize bosses
+        - image for boomerang instead of circle? would require player and enemy version
     - multi target
+        - name: ? Bombard?
         - firing range targeted explosives
         - bigger pet, less frequent shooting, bigger explosion (good aoe)
             - smaller pet, more shooting, smaller explosions (good single target)
         - upgrades:
-            - dot area on target position
+            - damage over time area on target position
             - more projectiles at once 
             - fire speed up
 

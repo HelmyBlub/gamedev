@@ -308,7 +308,11 @@ function tickAbilityPetBoomerang(abilityOwner: AbilityOwner, ability: Ability, g
         let target: Character | undefined = undefined;
         let direction = 0;
         if (abilityOwner.faction === FACTION_PLAYER) {
-            const targets = determineCharactersInDistance(abilityOwner, game.state.map, [], game.state.bossStuff.bosses, TARGET_SEARCH_RANGE, FACTION_PLAYER, true);
+            //prio boss
+            let targets = determineCharactersInDistance(abilityOwner, undefined, [], game.state.bossStuff.bosses, TARGET_SEARCH_RANGE, FACTION_PLAYER, true);
+            if (targets.length <= 0) {
+                targets = determineCharactersInDistance(abilityOwner, game.state.map, [], undefined, TARGET_SEARCH_RANGE, FACTION_PLAYER, true);
+            }
             if (targets.length > 0) {
                 const randomTargetIndex = Math.floor(nextRandom(game.state.randomSeed) * targets.length);
                 target = targets[randomTargetIndex];
