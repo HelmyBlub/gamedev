@@ -3,17 +3,7 @@ increase version
 
 current tasks:      
 - new tamer abilities for variation
-    - bombard
-        - firing range targeted explosives
-        - bigger pet, less frequent shooting, bigger explosion (good aoe)
-            - smaller pet, more shooting, smaller explosions (good single target)
-        - upgrades:
-            - ice area on target position
-            - more projectiles at once 
-            - fire speed up
-    - boomerang
-        - image for boomerang instead of circle? would require player and enemy version
-
+    - try around with new abilities
     - balance painter as i think it is to weak
         - bigger abilities?
     
