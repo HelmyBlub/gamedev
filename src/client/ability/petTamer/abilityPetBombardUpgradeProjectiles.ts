@@ -22,7 +22,7 @@ function setUpgradeToBossLevel(ability: Ability, level: number) {
     if (!up) return;
     const bombard = ability as AbilityPetBombard;
     up.level = level;
-    bombard.projectileCounter = up.level + 1;
+    bombard.projectileCounter = Math.floor(1 + up.level * 0.3);
 }
 
 function getOptions(ability: Ability): UpgradeOptionAndProbability[] {

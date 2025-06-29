@@ -7,7 +7,7 @@ export type AbilityPetBoomerangUpgradeStackingDamage = AbilityUpgrade & {
 }
 
 export const ABILITY_PET_BOOMERANG_UPGRADE_STACKING_DAMAGE = "Stacking Damage";
-export const ABILITY_PET_BOOMERANG_UPGRADE_STACK_DAMAGE_PER_CENT = 0.25;
+export const ABILITY_PET_BOOMERANG_UPGRADE_STACK_DAMAGE_PER_CENT = 0.025;
 
 export function addAbilityPetBoomerangUpgradeStackingDamage() {
     ABILITY_PET_BOOMERANG_UPGRADE_FUNCTIONS[ABILITY_PET_BOOMERANG_UPGRADE_STACKING_DAMAGE] = {

@@ -24,7 +24,7 @@ function setUpgradeToBossLevel(ability: Ability, level: number) {
     if (!up) return;
     const boomerang = ability as AbilityPetBoomerang;
     up.level = level;
-    up.fireSpeedFactor = 2 / (1 + FIRE_SPEED_PER_CENT_PER_LEVEL * up.level);
+    up.fireSpeedFactor = 2 / (1 + FIRE_SPEED_PER_CENT_PER_LEVEL * up.level) * 2;
     boomerang.throwInterval = ABILITY_BOOMERANG_BASE_THROW_INTERVAL * up.fireSpeedFactor;
 }
 
