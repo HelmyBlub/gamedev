@@ -300,7 +300,6 @@ function tickAbilityPetBoomerang(abilityOwner: AbilityOwner, ability: Ability, g
     if (ability.disabled) return;
     const boomerang = ability as AbilityPetBoomerang;
     const pet = abilityOwner as TamerPetCharacter;
-    console.log("tick boomerang");
 
     if (!boomerang.lastThrowTime || boomerang.lastThrowTime + boomerang.throwInterval < game.state.time) {
         boomerang.lastThrowTime = game.state.time;

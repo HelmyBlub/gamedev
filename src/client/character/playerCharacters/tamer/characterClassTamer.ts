@@ -24,6 +24,7 @@ import { characterCreateAndAddUpgradeBonusSpeed } from "../../upgrades/character
 import { findPlayerByCharacterId } from "../../../player.js";
 import { addCharacterUpgrades } from "../../upgrades/characterUpgrades.js";
 import { ABILITY_NAME_PET_BOOMERANG } from "../../../ability/petTamer/abilityPetBoomerang.js";
+import { ABILITY_NAME_PET_BOMBARD } from "../../../ability/petTamer/abilityPetBombard.js";
 
 export const CHARACTER_CLASS_TAMER = "Tamer";
 export function addTamerClass() {
@@ -300,6 +301,7 @@ function getAvailablePetAbilities(character: Character, pet: TamerPetCharacter):
         ABILITY_NAME_PET_PAINTER,
         ABILITY_NAME_PET_DASH,
         ABILITY_NAME_PET_BOOMERANG,
+        ABILITY_NAME_PET_BOMBARD,
     ]
 
     for (let abilityName of possibleAbilityNames) {

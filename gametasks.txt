@@ -3,21 +3,24 @@ increase version
 
 current tasks:      
 - new tamer abilities for variation
-    - boomerang
-        - should prioritize bosses
-        - image for boomerang instead of circle? would require player and enemy version
-    - multi target
-        - name: ? Bombard?
+    - bombard
         - firing range targeted explosives
         - bigger pet, less frequent shooting, bigger explosion (good aoe)
             - smaller pet, more shooting, smaller explosions (good single target)
         - upgrades:
-            - damage over time area on target position
+            - ice area on target position
             - more projectiles at once 
             - fire speed up
+    - boomerang
+        - image for boomerang instead of circle? would require player and enemy version
 
     - balance painter as i think it is to weak
         - bigger abilities?
+    
+    - check new abilities with
+        - kings
+        - bosses
+        - other?
 
 
 
