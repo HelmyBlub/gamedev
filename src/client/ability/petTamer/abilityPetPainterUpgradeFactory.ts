@@ -16,7 +16,16 @@ export function addAbilityPetPainterUpgradeFactory() {
         getMoreInfoIncreaseOneLevelText: getAbilityUpgradeFactoryUiTextLong,
         getOptions: getOptionsFactory,
         executeOption: executeOptionPaintFactory,
+        setUpgradeToBossLevel: setUpgradeToBossLevel,
     }
+}
+
+function setUpgradeToBossLevel(ability: Ability, level: number) {
+    const up: AbilityPetPainterUpgradeFactory = ability.upgrades[ABILITY_PET_PAINTER_UPGRADE_FACTORY];
+    if (!up) return;
+    const painter = ability as AbilityPetPainter;
+    up.level = Math.max(1, Math.floor(level / 3));
+    up.duration = up.level * up.spawnInterval + 500;
 }
 
 function getOptionsFactory(ability: Ability): UpgradeOptionAndProbability[] {

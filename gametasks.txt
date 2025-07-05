@@ -1,13 +1,13 @@
-next test run: tamer
+next test run:
 increase version
 
 current tasks:      
 - new tamer abilities for variation
     - thoughts
-        - bombard ice upgrade too weak after first? increae duration?
+        - check king with painter pet
+            - painter pet starts not doing anything because being dragged around entire time
+            - inconsitency with painter king, as pets can start leashed or not leashed
     - try around with new abilities
-    - balance painter as i think it is to weak
-        - bigger abilities?
     
     - check new abilities with
         - kings

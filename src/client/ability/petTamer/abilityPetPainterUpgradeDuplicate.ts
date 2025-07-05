@@ -14,7 +14,15 @@ export function addAbilityPetPainterUpgradeDuplicate() {
         getMoreInfoIncreaseOneLevelText: getAbilityUpgradeDuplicateUiTextLong,
         getOptions: getOptionsDuplicate,
         executeOption: executeOptionPaintDuplicate,
+        setUpgradeToBossLevel: setUpgradeToBossLevel,
     }
+}
+
+function setUpgradeToBossLevel(ability: Ability, level: number) {
+    const up: AbilityPetPainterUpgradeDuplicate = ability.upgrades[ABILITY_PET_PAINTER_UPGRADE_DUPLICATE];
+    if (!up) return;
+    const painter = ability as AbilityPetPainter;
+    up.level = Math.max(1, Math.floor(level / 3));
 }
 
 function getOptionsDuplicate(ability: Ability): UpgradeOptionAndProbability[] {

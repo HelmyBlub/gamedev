@@ -17,7 +17,16 @@ export function addAbilityPetPainterUpgradeSplit() {
         getMoreInfoIncreaseOneLevelText: getAbilityUpgradeSplitUiTextLong,
         getOptions: getOptionsSplit,
         executeOption: executeOptionPaintSplit,
+        setUpgradeToBossLevel: setUpgradeToBossLevel,
     }
+}
+
+function setUpgradeToBossLevel(ability: Ability, level: number) {
+    const up: AbilityPetPainterUpgradeSplit = ability.upgrades[ABILITY_PET_PAINTER_UPGRADE_SPLIT];
+    if (!up) return;
+    const painter = ability as AbilityPetPainter;
+    up.level = Math.max(1, Math.floor(level / 3));
+    up.count = up.level + 1;
 }
 
 export function abilityPetPainerUpgradeSplitCheckForSplit(abilityObjectPetPainter: AbilityObjectPetPainter, game: Game) {
