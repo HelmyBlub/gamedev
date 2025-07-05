@@ -7,7 +7,7 @@ import { getPointPaintPosition } from "../../gamePaint.js";
 import { isPositionBlocking } from "../../map/map.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
 import { AbilityObject, AbilityOwner, PaintOrderAbility } from "../ability.js";
-import { ABILITY_NAME_PET_PAINTER, ABILITY_PET_PAINTER_SHAPES_FUNCTIONS, AbilityObjectPetPainter, AbilityPetPainter, abilityPetPainterGetLimitedShapeBonusDamage, abilityPetPainterGetLimitedShapeCount, createShapeAbilityPetPainter } from "./abilityPetPainter.js";
+import { ABILITY_NAME_PET_PAINTER, ABILITY_PET_PAINTER_SHAPES_FUNCTIONS, AbilityObjectPetPainter, AbilityPetPainter, abilityPetPainterGetLimitedShapeBonusDamage, abilityPetPainterGetLimitedShapeCount, createShapeAbilityPetPainter, petPainterGetPaintPositionCenter } from "./abilityPetPainter.js";
 import { ABILITY_PET_PAINTER_UPGRADE_FACTORY, AbilityPetPainterUpgradeFactory } from "./abilityPetPainterUpgradeFactory.js";
 import { AbilityPetPainterUpgradeSplit } from "./abilityPetPainterUpgradeSplit.js";
 
@@ -137,9 +137,11 @@ function createShapeSquare(pet: TamerPetCharacter, abilityPetPainter: AbilityPet
         let limitDuration = factoryUpgrade.duration;
         let modifiedCounter = abilityPetPainterGetLimitedShapeCount(ABILITY_PET_PAINTER_UPGRADE_FACTORY, abilityPetPainter);
         if (modifiedCounter < factoryUpgrade.level) limitDuration = modifiedCounter * factoryUpgrade.spawnInterval;
-        return createAbilityObjectPetPainterSquareFactory(abilityPetPainter.paintPoints![0], SQUARESIZE, damage, abilityPetPainter.id, pet.faction, range, limitDuration, factoryUpgrade.spawnInterval, game.state.time);
+        return createAbilityObjectPetPainterSquareFactory({ x: abilityPetPainter.paintPoints![0].x - SQUARESIZE / 2, y: abilityPetPainter.paintPoints![0].y - SQUARESIZE / 2 },
+            SQUARESIZE * 2, damage, abilityPetPainter.id, pet.faction, range, limitDuration, factoryUpgrade.spawnInterval, game.state.time);
     } else {
-        return createAbilityObjectPetPainterSquare(abilityPetPainter.paintPoints![0], SQUARESIZE, damage, abilityPetPainter.id, pet.faction, range, game.state.time);
+        return createAbilityObjectPetPainterSquare({ x: abilityPetPainter.paintPoints![0].x - SQUARESIZE / 2, y: abilityPetPainter.paintPoints![0].y - SQUARESIZE / 2 },
+            SQUARESIZE * 2, damage, abilityPetPainter.id, pet.faction, range, game.state.time);
     }
 }
 
@@ -226,14 +228,14 @@ function paintShapeSquare(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOw
 }
 
 function getRandomStartPaintPositionSquare(pet: TamerPetCharacter, game: Game): Position | undefined {
-    const petOwner: Character = findPetOwner(pet, game)!;
-    if (!petOwner) return undefined;
+    const center: Position | undefined = petPainterGetPaintPositionCenter(pet, game);
+    if (!center) return undefined;
     let blocking = true;
     let position = { x: 0, y: 0 };
     do {
         const randomOffsetX = nextRandom(game.state.randomSeed) * 100 - 60;
         const randomOffsetY = nextRandom(game.state.randomSeed) * 100 - 60;
-        position = { x: petOwner.x + randomOffsetX, y: petOwner.y + randomOffsetY };
+        position = { x: center.x + randomOffsetX, y: center.y + randomOffsetY };
         blocking = isPositionBlocking(position, game.state.map, game.state.idCounter, game);
         if (!blocking) {
             blocking = isPositionBlocking({ x: position.x + SQUARESIZE, y: position.y }, game.state.map, game.state.idCounter, game);

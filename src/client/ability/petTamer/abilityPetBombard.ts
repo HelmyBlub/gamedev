@@ -19,7 +19,7 @@ import { addAbilityPetBombardUpgradeProjectiles } from "./abilityPetBombardUpgra
 const TARGET_SEARCH_RANGE = 400;
 const BASE_DAMAGE = 500;
 export const ABILITY_BOMBARD_BASE_SHOOT_INTERVAL = 1000;
-const ICE_DURATION = 5000;
+const ICE_DURATION = 6000;
 
 export type AbilityPetBombard = Ability & {
     baseDamage: number,

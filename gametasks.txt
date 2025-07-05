@@ -1,8 +1,10 @@
-next test run: 
+next test run: tamer
 increase version
 
 current tasks:      
 - new tamer abilities for variation
+    - thoughts
+        - bombard ice upgrade too weak after first? increae duration?
     - try around with new abilities
     - balance painter as i think it is to weak
         - bigger abilities?

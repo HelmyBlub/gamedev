@@ -1,12 +1,13 @@
+import { determineCharactersInDistance } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
-import { TamerPetCharacter, findPetOwner } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
+import { TamerPetCharacter, findPetOwner, petHappinessToDisplayText } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { calculateDistance, getCameraPosition } from "../../game.js";
 import { FACTION_ENEMY, FACTION_PLAYER, Game, Position } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { calculateBounceAngle, calculateMovePosition, isPositionBlocking } from "../../map/map.js";
 import { RandomSeed, nextRandom } from "../../randomNumberGenerator.js";
 import { AbilityObject, AbilityObjectCircle, AbilityOwner, PaintOrderAbility, detectAbilityObjectCircleToCharacterHit } from "../ability.js";
-import { ABILITY_NAME_PET_PAINTER, ABILITY_PET_PAINTER_SHAPES_FUNCTIONS, AbilityObjectPetPainter, AbilityPetPainter, abilityPetPainterGetLimitedShapeBonusDamage, abilityPetPainterGetLimitedShapeCount, abilityPetPainterTeleportIfOwnerUnreachableOrToFarAway, createShapeAbilityPetPainter } from "./abilityPetPainter.js";
+import { ABILITY_NAME_PET_PAINTER, ABILITY_PET_PAINTER_SHAPES_FUNCTIONS, AbilityObjectPetPainter, AbilityPetPainter, abilityPetPainterGetLimitedShapeBonusDamage, abilityPetPainterGetLimitedShapeCount, abilityPetPainterTeleportIfOwnerUnreachableOrToFarAway, createShapeAbilityPetPainter, petPainterGetPaintPositionCenter } from "./abilityPetPainter.js";
 import { ABILITY_PET_PAINTER_UPGRADE_FACTORY, AbilityPetPainterUpgradeFactory } from "./abilityPetPainterUpgradeFactory.js";
 import { AbilityPetPainterUpgradeSplit } from "./abilityPetPainterUpgradeSplit.js";
 
@@ -117,9 +118,9 @@ function createShapeCircle(pet: TamerPetCharacter, abilityPetPainter: AbilityPet
         let limitDuration = factoryUpgrade.duration;
         let modifiedCounter = abilityPetPainterGetLimitedShapeCount(ABILITY_PET_PAINTER_UPGRADE_FACTORY, abilityPetPainter);
         if (modifiedCounter < factoryUpgrade.level) limitDuration = modifiedCounter * factoryUpgrade.spawnInterval;
-        return createAbilityObjectPetPainterCircleFactory(abilityPetPainter.paintCircle!.middle, damage, abilityPetPainter.id, pet.faction, CIRCLERADIUS, limitDuration, factoryUpgrade.spawnInterval, game.state.time);
+        return createAbilityObjectPetPainterCircleFactory(abilityPetPainter.paintCircle!.middle, damage, abilityPetPainter.id, pet.faction, CIRCLERADIUS * 2, limitDuration, factoryUpgrade.spawnInterval, game.state.time);
     } else {
-        return createAbilityObjectPetPainterCircle(abilityPetPainter.paintCircle!.middle, damage, abilityPetPainter.id, pet.faction, CIRCLERADIUS, game.state.randomSeed, game.state.time);
+        return createAbilityObjectPetPainterCircle(abilityPetPainter.paintCircle!.middle, damage, abilityPetPainter.id, pet.faction, CIRCLERADIUS * 2, game.state.randomSeed, game.state.time);
     }
 }
 
@@ -194,14 +195,14 @@ function paintShapeCircle(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOw
 }
 
 function getRandomStartPaintPositionCircle(pet: TamerPetCharacter, game: Game): Position | undefined {
-    const petOwner: Character | undefined = findPetOwner(pet, game);
-    if (!petOwner) return undefined;
+    const center: Position | undefined = petPainterGetPaintPositionCenter(pet, game);
+    if (!center) return undefined;
     let blocking = true;
     let position = { x: 0, y: 0 };
     do {
         const randomOffsetX = nextRandom(game.state.randomSeed) * 100 - 60;
         const randomOffsetY = nextRandom(game.state.randomSeed) * 100 - 60;
-        position = { x: petOwner.x + randomOffsetX, y: petOwner.y + randomOffsetY };
+        position = { x: center.x + randomOffsetX, y: center.y + randomOffsetY };
         const centerTilePosX = Math.floor(position.x / game.state.map.tileSize) * game.state.map.tileSize + Math.floor(game.state.map.tileSize / 2);
         const centerTilePosY = Math.floor(position.y / game.state.map.tileSize) * game.state.map.tileSize + Math.floor(game.state.map.tileSize / 2);
         position = { x: centerTilePosX, y: centerTilePosY };

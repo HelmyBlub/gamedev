@@ -1,11 +1,11 @@
-import { setCharacterPosition } from "../../character/character.js";
+import { determineCharactersInDistance, setCharacterPosition } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
 import { getNextWaypoint } from "../../character/pathing.js";
 import { TamerPetCharacter, findPetOwner, petHappinessToDisplayText } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { AbilityDamageBreakdown } from "../../combatlog.js";
 import { calculateDistance, getNextId } from "../../game.js";
-import { Position, Game, IdCounter } from "../../gameModel.js";
+import { Position, Game, IdCounter, FACTION_PLAYER } from "../../gameModel.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
 import { Ability, AbilityObject, AbilityOwner, PaintOrderAbility, ABILITIES_FUNCTIONS } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, upgradeAbility } from "../abilityUpgrade.js";
@@ -96,6 +96,24 @@ export function createShapeAbilityPetPainter(shape: string, abilityOwner: Abilit
     } else {
         throw Error("missing implementation");
     }
+}
+
+export function petPainterGetPaintPositionCenter(pet: TamerPetCharacter, game: Game): Position | undefined {
+    let center: Position | undefined = undefined;
+    if (petHappinessToDisplayText(pet.happines, game.state.time) === "hyperactive") {
+        let targets = determineCharactersInDistance(pet, undefined, [], game.state.bossStuff.bosses, 500, FACTION_PLAYER, true);
+        if (targets.length > 0) {
+            const randomTargetIndex = Math.floor(nextRandom(game.state.randomSeed) * targets.length);
+            const target = targets[randomTargetIndex];
+            center = { x: target.x, y: target.y };
+        }
+    }
+    if (!center) {
+        const petOwner: Character | undefined = findPetOwner(pet, game);
+        if (!petOwner) return undefined;
+        center = { x: petOwner.x, y: petOwner.y };
+    }
+    return center;
 }
 
 export function abilityPetPainterGetLimitedShapeBonusDamage(ability: AbilityPetPainter) {
