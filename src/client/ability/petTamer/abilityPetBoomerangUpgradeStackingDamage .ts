@@ -48,7 +48,7 @@ function getAbilityUpgradeUiTextLong(ability: Ability): string[] {
     const upgrade: AbilityUpgrade | undefined = ability.upgrades[ABILITY_PET_BOOMERANG_UPGRADE_STACKING_DAMAGE];
     if (upgrade) {
         textLines.push(`Increase damage to a target each time it gets hit.`);
-        textLines.push(`Increase damage from ${upgrade.level * ABILITY_PET_BOOMERANG_UPGRADE_STACK_DAMAGE_PER_CENT * 100}% to ${(upgrade.level + 1) * ABILITY_PET_BOOMERANG_UPGRADE_STACK_DAMAGE_PER_CENT * 100}%`);
+        textLines.push(`Increase damage from ${(upgrade.level * ABILITY_PET_BOOMERANG_UPGRADE_STACK_DAMAGE_PER_CENT * 100).toFixed(1)}% to ${((upgrade.level + 1) * ABILITY_PET_BOOMERANG_UPGRADE_STACK_DAMAGE_PER_CENT * 100).toFixed(1)}%`);
     } else {
         textLines.push(`Increase damage by ${ABILITY_PET_BOOMERANG_UPGRADE_STACK_DAMAGE_PER_CENT * 100}% to a target each time it gets hit.`);
     }

@@ -57,7 +57,7 @@ function getAbilityUpgradeUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
     const upgrade: AbilityUpgrade | undefined = ability.upgrades[ABILITY_PET_BOOMERANG_UPGRADE_FIRE_SPEED];
     if (upgrade) {
-        textLines.push(`Increased fire speed from ${upgrade.level * FIRE_SPEED_PER_CENT_PER_LEVEL * 100}% to ${(upgrade.level + 1) * FIRE_SPEED_PER_CENT_PER_LEVEL * 100}%.`);
+        textLines.push(`Increased fire speed from ${(upgrade.level * FIRE_SPEED_PER_CENT_PER_LEVEL * 100).toFixed()}% to ${((upgrade.level + 1) * FIRE_SPEED_PER_CENT_PER_LEVEL * 100).toFixed()}%.`);
     } else {
         textLines.push(`Increased fire speed by ${FIRE_SPEED_PER_CENT_PER_LEVEL * 100}%.`);
     }

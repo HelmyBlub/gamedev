@@ -3,6 +3,9 @@ increase version
 
 current tasks:      
 - new tamer abilities for variation
+    - stacking damage boomerang upgrade not fixed
+    - tamer painter behavior if leashed
+    - bombard more radius?
     - thoughts
         - check king with painter pet
             - painter pet starts not doing anything because being dragged around entire time
