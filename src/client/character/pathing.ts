@@ -182,10 +182,11 @@ export function getNextWaypoint(
         if (pathingCacheXY === undefined) {
             pathingCacheXY = createPathingCacheXY(time);
             pathingCache[pathingKey] = pathingCacheXY;
+            pathingCacheXY.openNodesCache = openNodes;
+            pathingCacheXY.cameFromCache = cameFrom;
+            openNodes.push(startGraphRectangle);
         } else {
             pathingCacheXY.timeLastUsed = time;
-        }
-        if (pathingCacheXY.openNodesCache.length > 0) {
             openNodes = pathingCacheXY.openNodesCache;
             cameFrom = pathingCacheXY.cameFromCache;
             if (cameFrom.has(targetKey)) {
@@ -196,17 +197,14 @@ export function getNextWaypoint(
                     return null;
                 }
             }
-        } else {
-            pathingCacheXY.openNodesCache = openNodes;
-            pathingCacheXY.cameFromCache = cameFrom;
-            openNodes.push(startGraphRectangle);
         }
     } else {
         openNodes.push(startGraphRectangle);
     }
 
     let counter = 0;
-    const maxCounter = straightDistance * 300;
+    const maxCounter = straightDistance * 10;
+    const maxTileDistance = (game.state.map.activeChunkRange * 1.2) / game.state.map.tileSize;
     while (openNodes.length > 0) {
         counter++;
         if (counter > maxCounter || isNaN(maxCounter)) {
@@ -223,13 +221,13 @@ export function getNextWaypoint(
             return getMovePositionBetweenTwoGraphRectangles(sourcePos, targetGraphRectangle, lastGraphRectangle, game.state.map.tileSize);
         }
 
-        checkIfNeighourPathingExistsAndCreateIfNot(currentNode.topLeftTileXY, game);
+        checkIfNeighborPathingExistsAndCreateIfNot(currentNode.topLeftTileXY, game);
         const neighborsGraphs = currentNode.connections;
         for (let i = 0; i < neighborsGraphs.length; i++) {
             const neighborKey = positionToPathingCacheKey(neighborsGraphs[i].topLeftTileXY);
             if (!cameFrom.has(neighborKey)) {
                 cameFrom.set(neighborKey, currentNode);
-                if (!openNodes.find((curr: GraphRectangle) => curr === neighborsGraphs[i])) {
+                if (!openNodes.find((curr: GraphRectangle) => curr === neighborsGraphs[i]) && calculateDistance(neighborsGraphs[i].topLeftTileXY, startGraphRectangle.topLeftTileXY) < maxTileDistance) {
                     openNodes.push(neighborsGraphs[i]);
                 }
             }
@@ -239,7 +237,7 @@ export function getNextWaypoint(
     return null;
 }
 
-function checkIfNeighourPathingExistsAndCreateIfNot(tileXY: Position, game: Game) {
+function checkIfNeighborPathingExistsAndCreateIfNot(tileXY: Position, game: Game) {
     const chunkXY = tileXYToChunkXY(tileXY, game.state.map);
 
     const chunkNeighbors: ChunkXY[] = [
