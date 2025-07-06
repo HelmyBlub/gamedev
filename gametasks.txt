@@ -1,11 +1,10 @@
-next test run:
+next test run: builder, ball, tamer
 increase version
 
 current tasks:      
 - new tamer abilities for variation
-    - stacking damage boomerang upgrade not fixed
-    - tamer painter behavior if leashed
-    - bombard more radius?
+    - bug: tamer painter duplicate count is one to low
+    - only breath seems to be protective at the start? boost other abilities?
     - thoughts
         - check king with painter pet
             - painter pet starts not doing anything because being dragged around entire time
@@ -15,6 +14,7 @@ current tasks:
     - check new abilities with
         - kings
         - bosses
+        - big enemies painter
         - other?
 
 

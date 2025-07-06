@@ -19,13 +19,12 @@ import { addAbilityPetBombardUpgradeProjectiles } from "./abilityPetBombardUpgra
 const TARGET_SEARCH_RANGE = 400;
 const BASE_DAMAGE = 500;
 export const ABILITY_BOMBARD_BASE_SHOOT_INTERVAL = 1000;
-const ICE_DURATION = 6000;
+const EXPLOSION_BASE_RADIUS = 55;
 
 export type AbilityPetBombard = Ability & {
     baseDamage: number,
     shootInterval: number,
     nextShootTime?: number,
-    explosionBaseRadius: number,
     iceSlowFactor: number,
     projectileCounter: number,
 }
@@ -76,7 +75,6 @@ function createAbilityPetBombard(idCounter: IdCounter): AbilityPetBombard {
         shootInterval: ABILITY_BOMBARD_BASE_SHOOT_INTERVAL,
         passive: true,
         upgrades: {},
-        explosionBaseRadius: 40,
         iceSlowFactor: 1.0,
         projectileCounter: 1,
     }
@@ -167,7 +165,8 @@ function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
         const explodeObject = createAbilityObjectExplode(bombard, bombard.damage, bombard.explosionRadius, bombard.faction, bombard.abilityIdRef, explodeDelay, game);
         game.state.abilityObjects.push(explodeObject);
         if (bombard.iceSlowFactor > 1) {
-            const deleteTime = game.state.time + ICE_DURATION;
+            const petSizeFactor = bombard.explosionRadius / EXPLOSION_BASE_RADIUS;
+            const deleteTime = game.state.time + ABILITY_BOMBARD_BASE_SHOOT_INTERVAL * petSizeFactor + 1000;
             const iceObject = createAbilityObjectIceAura(bombard.damage / 10, explodeObject.radius, bombard.iceSlowFactor, bombard.faction, bombard.x, bombard.y, deleteTime, bombard.abilityIdRef!);
             game.state.abilityObjects.push(iceObject);
         }
@@ -255,7 +254,7 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
                 direction = nextRandom(game.state.randomSeed) * Math.PI * 2;
             }
             const damage = bombard.baseDamage;
-            const explosionRadius = bombard.explosionBaseRadius * pet.sizeFactor;
+            const explosionRadius = EXPLOSION_BASE_RADIUS * pet.sizeFactor;
             const bombardObject = createAbilityObjectBombard(abilityOwner, damage, bombard, explosionRadius, abilityOwner.faction, target, direction, game);
             game.state.abilityObjects.push(bombardObject);
         }
