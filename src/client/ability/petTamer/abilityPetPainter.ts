@@ -8,6 +8,7 @@ import { calculateDistance, getNextId } from "../../game.js";
 import { Position, Game, IdCounter, FACTION_PLAYER } from "../../gameModel.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
 import { Ability, AbilityObject, AbilityOwner, PaintOrderAbility, ABILITIES_FUNCTIONS } from "../ability.js";
+import { ABILITY_NAME_LEASH, AbilityLeash } from "../abilityLeash.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, upgradeAbility } from "../abilityUpgrade.js";
 import { addAbilityPetPainterCircle } from "./abilityPetPainterCircle.js";
 import { addAbilityPetPainterSquare } from "./abilityPetPainterSquare.js";
@@ -100,12 +101,20 @@ export function createShapeAbilityPetPainter(shape: string, abilityOwner: Abilit
 
 export function petPainterGetPaintPositionCenter(pet: TamerPetCharacter, game: Game): Position | undefined {
     let center: Position | undefined = undefined;
-    if (petHappinessToDisplayText(pet.happines, game.state.time) === "hyperactive") {
+    const leashed = pet.abilities.find((a) => a.name === ABILITY_NAME_LEASH) as AbilityLeash;
+    if (petHappinessToDisplayText(pet.happines, game.state.time) === "hyperactive" || leashed.leashedToOwnerId === undefined) {
         let targets = determineCharactersInDistance(pet, undefined, [], game.state.bossStuff.bosses, 500, FACTION_PLAYER, true);
         if (targets.length > 0) {
             const randomTargetIndex = Math.floor(nextRandom(game.state.randomSeed) * targets.length);
             const target = targets[randomTargetIndex];
             center = { x: target.x, y: target.y };
+            if (leashed.leashedToOwnerId === undefined) {
+                const petOwner: Character | undefined = findPetOwner(pet, game);
+                if (petOwner) {
+                    center.x += (petOwner.x - center.x) * 0.75;
+                    center.y += (petOwner.y - center.y) * 0.75;
+                }
+            }
         }
     }
     if (!center) {
