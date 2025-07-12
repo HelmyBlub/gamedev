@@ -3,10 +3,11 @@ increase version
 
 current tasks:      
 - new tamer abilities for variation
+    - pet boomerang enemy scaling:
+        - changed to put values to upgrade so the enemy scaling should work properly. But it seem it did not work?
     - check king with painter pet
         - painter pet starts not doing anything because being dragged around entire time
         - inconsitency with painter king, as pets can start leashed or not leashed
-    - check: big enemies painter to difficult?
     - try around with new abilities
     
     - check new abilities with

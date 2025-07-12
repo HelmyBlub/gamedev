@@ -12,9 +12,9 @@ import { calculateMovePosition, GameMap, moveByDirectionAndDistance } from "../.
 import { nextRandom } from "../../randomNumberGenerator.js";
 import { Ability, AbilityObject, AbilityOwner, PaintOrderAbility, ABILITIES_FUNCTIONS, findAbilityOwnerById } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, upgradeAbility } from "../abilityUpgrade.js";
-import { addAbilityPetBoomerangUpgradeBounce } from "./abilityPetBoomerangUpgradeBounce.js";
-import { addAbilityPetBoomerangUpgradeFireSpeed } from "./abilityPetBoomerangUpgradeFireSpeed.js";
-import { ABILITY_PET_BOOMERANG_UPGRADE_STACK_DAMAGE_PER_CENT, addAbilityPetBoomerangUpgradeStackingDamage } from "./abilityPetBoomerangUpgradeStackingDamage .js";
+import { ABILITY_PET_BOOMERANG_UPGRADE_BOUNCE, AbilityPetBoomerangUpgradeBounce, addAbilityPetBoomerangUpgradeBounce } from "./abilityPetBoomerangUpgradeBounce.js";
+import { ABILITY_PET_BOOMERANG_UPGRADE_FIRE_SPEED, AbilityPetBoomerangUpgradeFireSpeed, addAbilityPetBoomerangUpgradeFireSpeed } from "./abilityPetBoomerangUpgradeFireSpeed.js";
+import { ABILITY_PET_BOOMERANG_UPGRADE_STACK_DAMAGE_PER_CENT, AbilityPetBoomerangUpgradeStackingDamage, addAbilityPetBoomerangUpgradeStackingDamage } from "./abilityPetBoomerangUpgradeStackingDamage .js";
 
 const TARGET_SEARCH_RANGE = 400;
 const BASE_DAMAGE = 200;
@@ -22,12 +22,9 @@ export const ABILITY_BOOMERANG_BASE_THROW_INTERVAL = 1000;
 
 export type AbilityPetBoomerang = Ability & {
     baseDamage: number,
-    throwInterval: number,
-    lastThrowTime?: number,
+    nextThrowTime?: number,
     duration: number,
     radius: number,
-    bounce: number,
-    applyStacks: number,
 }
 
 export type AbilityObjectPetBoomerang = AbilityObject & {
@@ -74,13 +71,10 @@ function createAbilityPetBoomerang(idCounter: IdCounter): AbilityPetBoomerang {
         id: getNextId(idCounter),
         name: ABILITY_NAME_PET_BOOMERANG,
         baseDamage: BASE_DAMAGE,
-        throwInterval: ABILITY_BOOMERANG_BASE_THROW_INTERVAL,
         passive: true,
         upgrades: {},
         radius: 20,
-        bounce: 0,
         duration: 5000,
-        applyStacks: 0,
     }
 }
 
@@ -93,6 +87,8 @@ function createAbilityObjectBoomerang(
     direction: number,
     game: Game
 ): AbilityObjectPetBoomerang {
+    const stacksUpgrade = abilityBoomerang.upgrades[ABILITY_PET_BOOMERANG_UPGRADE_STACK_DAMAGE_PER_CENT] as AbilityPetBoomerangUpgradeStackingDamage;
+    const bounceUpgrade = abilityBoomerang.upgrades[ABILITY_PET_BOOMERANG_UPGRADE_BOUNCE] as AbilityPetBoomerangUpgradeBounce;
     let object: AbilityObjectPetBoomerang = {
         type: ABILITY_NAME_PET_BOOMERANG,
         color: "red",
@@ -102,15 +98,15 @@ function createAbilityObjectBoomerang(
         y: position.y,
         radius: abilityBoomerang.radius,
         abilityIdRef: abilityBoomerang.id,
-        deleteTime: game.state.time + abilityBoomerang.duration,
+        deleteTime: game.state.time + abilityBoomerang.duration + (bounceUpgrade ? bounceUpgrade.bonusDuration : 0),
         targetIdRef: target ? target.id : undefined,
         direction: direction,
         speed: 4,
         tickInterval: 200,
         nextTickTime: game.state.time,
         hitTarget: false,
-        bounce: abilityBoomerang.bounce,
-        applyStacks: abilityBoomerang.applyStacks,
+        bounce: bounceUpgrade ? bounceUpgrade.bounce : 0,
+        applyStacks: stacksUpgrade ? stacksUpgrade.applyStacks : 0,
     };
     if (target === undefined) {
         object.targetPosition = { x: object.x, y: object.y };
@@ -138,7 +134,7 @@ function getLongDescription(): string[] {
 
 function resetAbility(ability: Ability) {
     const boomerang = ability as AbilityPetBoomerang;
-    boomerang.lastThrowTime = undefined;
+    boomerang.nextThrowTime = undefined;
 }
 
 function setAbilityPetBoomerangToLevel(ability: Ability, level: number) {
@@ -301,8 +297,10 @@ function tickAbilityPetBoomerang(abilityOwner: AbilityOwner, ability: Ability, g
     const boomerang = ability as AbilityPetBoomerang;
     const pet = abilityOwner as TamerPetCharacter;
 
-    if (!boomerang.lastThrowTime || boomerang.lastThrowTime + boomerang.throwInterval < game.state.time) {
-        boomerang.lastThrowTime = game.state.time;
+    if (!boomerang.nextThrowTime || boomerang.nextThrowTime < game.state.time) {
+        const fireSpeedUpgrade = boomerang.upgrades[ABILITY_PET_BOOMERANG_UPGRADE_FIRE_SPEED] as AbilityPetBoomerangUpgradeFireSpeed;
+        const fireSpeedFactor = fireSpeedUpgrade ? fireSpeedUpgrade.fireSpeedFactor : 1;
+        boomerang.nextThrowTime = game.state.time + ABILITY_BOOMERANG_BASE_THROW_INTERVAL * fireSpeedFactor;
         let throwBoomerang: boolean = true;
         let target: Character | undefined = undefined;
         let direction = 0;

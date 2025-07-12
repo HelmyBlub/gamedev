@@ -4,6 +4,7 @@ import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrad
 import { ABILITY_BOOMERANG_BASE_THROW_INTERVAL, ABILITY_PET_BOOMERANG_UPGRADE_FUNCTIONS, AbilityPetBoomerang } from "./abilityPetBoomerang.js";
 
 export type AbilityPetBoomerangUpgradeStackingDamage = AbilityUpgrade & {
+    applyStacks: number,
 }
 
 export const ABILITY_PET_BOOMERANG_UPGRADE_STACKING_DAMAGE = "Stacking Damage";
@@ -15,7 +16,15 @@ export function addAbilityPetBoomerangUpgradeStackingDamage() {
         getMoreInfoIncreaseOneLevelText: getAbilityUpgradeUiTextLong,
         getOptions: getOptions,
         executeOption: executeOption,
+        setUpgradeToBossLevel: setUpgradeToBossLevel,
     }
+}
+
+function setUpgradeToBossLevel(ability: Ability, level: number) {
+    const up: AbilityPetBoomerangUpgradeStackingDamage = ability.upgrades[ABILITY_PET_BOOMERANG_UPGRADE_STACKING_DAMAGE];
+    if (!up) return;
+    up.level = level;
+    up.applyStacks = up.level;
 }
 
 function getOptions(ability: Ability): UpgradeOptionAndProbability[] {
@@ -28,13 +37,13 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption) {
     const as = ability as AbilityPetBoomerang;
     let up: AbilityPetBoomerangUpgradeStackingDamage;
     if (as.upgrades[ABILITY_PET_BOOMERANG_UPGRADE_STACKING_DAMAGE] === undefined) {
-        up = { level: 0 };
+        up = { level: 0, applyStacks: 0 };
         as.upgrades[ABILITY_PET_BOOMERANG_UPGRADE_STACKING_DAMAGE] = up;
     } else {
         up = as.upgrades[ABILITY_PET_BOOMERANG_UPGRADE_STACKING_DAMAGE];
     }
     up.level++;
-    as.applyStacks = up.level;
+    up.applyStacks = up.level;
 }
 
 function getAbilityUpgradeUiText(ability: Ability): string {
@@ -44,7 +53,6 @@ function getAbilityUpgradeUiText(ability: Ability): string {
 
 function getAbilityUpgradeUiTextLong(ability: Ability): string[] {
     const textLines: string[] = [];
-    const boomerang = ability as AbilityPetBoomerang;
     const upgrade: AbilityUpgrade | undefined = ability.upgrades[ABILITY_PET_BOOMERANG_UPGRADE_STACKING_DAMAGE];
     if (upgrade) {
         textLines.push(`Increase damage to a target each time it gets hit.`);
