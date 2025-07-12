@@ -165,7 +165,7 @@ export function abilityPetPainterGetLimitedShapeCount(upgradeName: string, abili
         differentUpgradeCount++;
     }
     if (ability.shapesPerPaintLimiter >= totalShapesPerPaint) {
-        return ability.upgrades[upgradeName].level;
+        return ability.upgrades[upgradeName].level + 1;
     }
     if (differentUpgradeCount <= 0) return 1;
     const factor = ability.shapesPerPaintLimiter / totalShapesPerPaint;

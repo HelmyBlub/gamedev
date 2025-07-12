@@ -1,4 +1,4 @@
-next test run: builder, ball, tamer
+next test run: ball, tamer
 increase version
 
 current tasks:      
@@ -12,9 +12,9 @@ current tasks:
     - try around with new abilities
     
     - check new abilities with
+        - big enemies painter
         - kings
         - bosses
-        - big enemies painter
         - other?
 
 
