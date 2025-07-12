@@ -1,6 +1,6 @@
 import { determineCharactersInDistance, findCharacterByIdAroundPosition } from "../../character/character.js";
 import { Character } from "../../character/characterModel.js";
-import { TamerPetCharacter } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
+import { findPetOwner, petHappinessToDisplayText, TamerPetCharacter } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { AbilityDamageBreakdown } from "../../combatlog.js";
 import { calculateDirection, calculateDistance, getCameraPosition, getNextId } from "../../game.js";
@@ -158,7 +158,7 @@ function setAbilityToBossLevel(ability: Ability, level: number) {
 function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
     const bombard = abilityObject as AbilityObjectPetBombard;
     moveByDirectionAndDistance(bombard, bombard.direction, bombard.speed, false);
-    if (bombard.targetPosition === undefined || calculateDistance(bombard, bombard.targetPosition) < bombard.explosionRadius) {
+    if (bombard.targetPosition === undefined || calculateDistance(bombard, bombard.targetPosition) < bombard.explosionRadius / 2) {
         bombard.delete = true;
         let explodeDelay = 0;
         if (bombard.faction === FACTION_ENEMY) explodeDelay = 1000;
@@ -230,6 +230,13 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
 
     if (!bombard.nextShootTime || bombard.nextShootTime < game.state.time) {
         bombard.nextShootTime = game.state.time + bombard.shootInterval * pet.sizeFactor;
+        let petOwnerTargets: Character[] = [];
+        if (pet.faction === FACTION_PLAYER && pet.petTargetBehavior === "protective") {
+            const petOwner = findPetOwner(pet, game);
+            if (petOwner) {
+                petOwnerTargets = determineCharactersInDistance(petOwner, game.state.map, [], game.state.bossStuff.bosses, TARGET_SEARCH_RANGE * 0.3, FACTION_PLAYER, true);
+            }
+        }
         const bossTargets = determineCharactersInDistance(abilityOwner, undefined, [], game.state.bossStuff.bosses, TARGET_SEARCH_RANGE * 1.5, FACTION_PLAYER, true);
         const targets = determineCharactersInDistance(abilityOwner, game.state.map, [], undefined, TARGET_SEARCH_RANGE, FACTION_PLAYER, true);
         for (let i = 0; i < bombard.projectileCounter; i++) {
@@ -237,7 +244,12 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
             let direction = 0;
             if (abilityOwner.faction === FACTION_PLAYER) {
                 //prio boss
-                if (bossTargets.length > 0) {
+                if (petOwnerTargets.length > 0) {
+                    const randomTargetIndex = Math.floor(nextRandom(game.state.randomSeed) * petOwnerTargets.length);
+                    target = petOwnerTargets[randomTargetIndex];
+                    direction = calculateDirection(abilityOwner, target);
+                    petOwnerTargets = []; // only target one enmey close to player
+                } else if (bossTargets.length > 0) {
                     const randomTargetIndex = Math.floor(nextRandom(game.state.randomSeed) * bossTargets.length);
                     target = bossTargets[randomTargetIndex];
                     direction = calculateDirection(abilityOwner, target);

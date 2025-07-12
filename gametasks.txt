@@ -3,8 +3,8 @@ increase version
 
 current tasks:      
 - new tamer abilities for variation
-    - bug: tamer painter duplicate count is one to low
     - only breath seems to be protective at the start? boost other abilities?
+        - bombard target enemies close to player?
     - thoughts
         - check king with painter pet
             - painter pet starts not doing anything because being dragged around entire time
@@ -16,6 +16,9 @@ current tasks:
         - kings
         - bosses
         - other?
+    - check builder king/boss damage
+        - boss builder towet shot damage was 150 on boss level 2
+    - tamer painter + boomerang, no visual difference which is bad
 
 
 
