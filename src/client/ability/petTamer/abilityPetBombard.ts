@@ -12,9 +12,9 @@ import { Ability, AbilityObject, AbilityOwner, PaintOrderAbility, ABILITIES_FUNC
 import { createAbilityObjectExplode } from "../abilityExplode.js";
 import { createAbilityObjectIceAura } from "../abilityIceAura.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, upgradeAbility } from "../abilityUpgrade.js";
-import { addAbilityPetBombardUpgradeFireSpeed } from "./abilityPetBombardUpgradeFireSpeed.js";
-import { addAbilityPetBombardUpgradeIce } from "./abilityPetBombardUpgradeIce.js";
-import { addAbilityPetBombardUpgradeProjectiles } from "./abilityPetBombardUpgradeProjectiles.js";
+import { ABILITY_PET_BOMBARD_UPGRADE_FIRE_SPEED, AbilityPetBombardUpgradeFireSpeed, addAbilityPetBombardUpgradeFireSpeed } from "./abilityPetBombardUpgradeFireSpeed.js";
+import { ABILITY_PET_BOMBARD_UPGRADE_ICE, AbilityPetBombardUpgradeIce, addAbilityPetBombardUpgradeIce } from "./abilityPetBombardUpgradeIce.js";
+import { ABILITY_PET_BOMBARD_UPGRADE_MORE_PROJECTILES, AbilityPetBombardUpgradeProjectiles, addAbilityPetBombardUpgradeProjectiles } from "./abilityPetBombardUpgradeProjectiles.js";
 
 const TARGET_SEARCH_RANGE = 400;
 const BASE_DAMAGE = 500;
@@ -23,10 +23,7 @@ const EXPLOSION_BASE_RADIUS = 55;
 
 export type AbilityPetBombard = Ability & {
     baseDamage: number,
-    shootInterval: number,
     nextShootTime?: number,
-    iceSlowFactor: number,
-    projectileCounter: number,
 }
 
 export type AbilityObjectPetBombard = AbilityObject & {
@@ -72,11 +69,8 @@ function createAbilityPetBombard(idCounter: IdCounter): AbilityPetBombard {
         id: getNextId(idCounter),
         name: ABILITY_NAME_PET_BOMBARD,
         baseDamage: BASE_DAMAGE,
-        shootInterval: ABILITY_BOMBARD_BASE_SHOOT_INTERVAL,
         passive: true,
         upgrades: {},
-        iceSlowFactor: 1.0,
-        projectileCounter: 1,
     }
 }
 
@@ -90,6 +84,7 @@ function createAbilityObjectBombard(
     direction: number,
     game: Game
 ): AbilityObjectPetBombard {
+    const iceUpgrade = abilityBombard.upgrades[ABILITY_PET_BOMBARD_UPGRADE_ICE] as AbilityPetBombardUpgradeIce;
     let object: AbilityObjectPetBombard = {
         type: ABILITY_NAME_PET_BOMBARD,
         color: "red",
@@ -106,7 +101,7 @@ function createAbilityObjectBombard(
         radius: 10,
         explosionRadius: explosionRadius,
         delete: false,
-        iceSlowFactor: abilityBombard.iceSlowFactor,
+        iceSlowFactor: iceUpgrade ? iceUpgrade.iceSlowFactor : 1,
     };
     if (target === undefined) {
         object.targetPosition = { x: object.x, y: object.y };
@@ -229,7 +224,9 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     const pet = abilityOwner as TamerPetCharacter;
 
     if (!bombard.nextShootTime || bombard.nextShootTime < game.state.time) {
-        bombard.nextShootTime = game.state.time + bombard.shootInterval * pet.sizeFactor;
+        const fireSpeedUpgrade = ability.upgrades[ABILITY_PET_BOMBARD_UPGRADE_FIRE_SPEED] as AbilityPetBombardUpgradeFireSpeed;
+        const fireSpeedFactor = fireSpeedUpgrade ? fireSpeedUpgrade.fireSpeedFactor : 1;
+        bombard.nextShootTime = game.state.time + ABILITY_BOMBARD_BASE_SHOOT_INTERVAL * pet.sizeFactor * fireSpeedFactor;
         let petOwnerTargets: Character[] = [];
         if (pet.faction === FACTION_PLAYER && pet.petTargetBehavior === "protective") {
             const petOwner = findPetOwner(pet, game);
@@ -239,7 +236,9 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
         }
         const bossTargets = determineCharactersInDistance(abilityOwner, undefined, [], game.state.bossStuff.bosses, TARGET_SEARCH_RANGE * 1.5, FACTION_PLAYER, true);
         const targets = determineCharactersInDistance(abilityOwner, game.state.map, [], undefined, TARGET_SEARCH_RANGE, FACTION_PLAYER, true);
-        for (let i = 0; i < bombard.projectileCounter; i++) {
+        const projectileUpgrade = ability.upgrades[ABILITY_PET_BOMBARD_UPGRADE_MORE_PROJECTILES] as AbilityPetBombardUpgradeProjectiles;
+        const projectileCounter = projectileUpgrade ? projectileUpgrade.projectileCounter : 1;
+        for (let i = 0; i < projectileCounter; i++) {
             let target: Character | undefined = undefined;
             let direction = 0;
             if (abilityOwner.faction === FACTION_PLAYER) {

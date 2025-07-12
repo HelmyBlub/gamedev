@@ -4,6 +4,7 @@ import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrad
 import { ABILITY_PET_BOMBARD_UPGRADE_FUNCTIONS, AbilityPetBombard } from "./abilityPetBombard.js";
 
 export type AbilityPetBombardUpgradeProjectiles = AbilityUpgrade & {
+    projectileCounter: number,
 }
 
 export const ABILITY_PET_BOMBARD_UPGRADE_MORE_PROJECTILES = "More Projectiles";
@@ -22,7 +23,7 @@ function setUpgradeToBossLevel(ability: Ability, level: number) {
     if (!up) return;
     const bombard = ability as AbilityPetBombard;
     up.level = level;
-    bombard.projectileCounter = Math.floor(1 + up.level * 0.3);
+    up.projectileCounter = Math.floor(1 + up.level * 0.3);
 }
 
 function getOptions(ability: Ability): UpgradeOptionAndProbability[] {
@@ -35,13 +36,13 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption) {
     const as = ability as AbilityPetBombard;
     let up: AbilityPetBombardUpgradeProjectiles;
     if (as.upgrades[ABILITY_PET_BOMBARD_UPGRADE_MORE_PROJECTILES] === undefined) {
-        up = { level: 0 };
+        up = { level: 0, projectileCounter: 0 };
         as.upgrades[ABILITY_PET_BOMBARD_UPGRADE_MORE_PROJECTILES] = up;
     } else {
         up = as.upgrades[ABILITY_PET_BOMBARD_UPGRADE_MORE_PROJECTILES];
     }
     up.level++;
-    as.projectileCounter = up.level + 1;
+    up.projectileCounter = up.level + 1;
 }
 
 function getAbilityUpgradeUiText(ability: Ability): string {

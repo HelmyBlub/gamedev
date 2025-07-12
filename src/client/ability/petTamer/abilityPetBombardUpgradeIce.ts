@@ -5,6 +5,7 @@ import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrad
 import { ABILITY_PET_BOMBARD_UPGRADE_FUNCTIONS, AbilityPetBombard } from "./abilityPetBombard.js";
 
 export type AbilityPetBombardUpgradeIce = AbilityUpgrade & {
+    iceSlowFactor: number,
 }
 const SLOW_PER_LEVEL = 1;
 export const ABILITY_PET_BOMBARD_UPGRADE_ICE = "Ice";
@@ -23,7 +24,7 @@ function setUpgradeToBossLevel(ability: Ability, level: number) {
     if (!up) return;
     const bombard = ability as AbilityPetBombard;
     up.level = level;
-    bombard.iceSlowFactor = 1 + up.level * 0.1;
+    up.iceSlowFactor = 1 + up.level * 0.1;
 }
 
 function getOptions(ability: Ability): UpgradeOptionAndProbability[] {
@@ -36,13 +37,13 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption) {
     const as = ability as AbilityPetBombard;
     let up: AbilityPetBombardUpgradeIce;
     if (as.upgrades[ABILITY_PET_BOMBARD_UPGRADE_ICE] === undefined) {
-        up = { level: 0 };
+        up = { level: 0, iceSlowFactor: 1 };
         as.upgrades[ABILITY_PET_BOMBARD_UPGRADE_ICE] = up;
     } else {
         up = as.upgrades[ABILITY_PET_BOMBARD_UPGRADE_ICE];
     }
     up.level++;
-    as.iceSlowFactor = 1 + up.level * SLOW_PER_LEVEL;
+    up.iceSlowFactor = 1 + up.level * SLOW_PER_LEVEL;
 }
 
 function getAbilityUpgradeUiText(ability: Ability): string {

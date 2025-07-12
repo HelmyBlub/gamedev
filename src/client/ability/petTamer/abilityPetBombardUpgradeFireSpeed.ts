@@ -25,7 +25,6 @@ function setUpgradeToBossLevel(ability: Ability, level: number) {
     const bombard = ability as AbilityPetBombard;
     up.level = level;
     up.fireSpeedFactor = 2 / (1 + FIRE_SPEED_PER_CENT_PER_LEVEL * up.level) * 3;
-    bombard.shootInterval = ABILITY_BOMBARD_BASE_SHOOT_INTERVAL * up.fireSpeedFactor;
 }
 
 function getOptions(ability: Ability): UpgradeOptionAndProbability[] {
@@ -45,7 +44,6 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption) {
     }
     up.level++;
     up.fireSpeedFactor = 1 / (1 + FIRE_SPEED_PER_CENT_PER_LEVEL * up.level);
-    as.shootInterval = ABILITY_BOMBARD_BASE_SHOOT_INTERVAL * up.fireSpeedFactor;
 }
 
 function getAbilityUpgradeUiText(ability: Ability): string {

@@ -3,12 +3,10 @@ increase version
 
 current tasks:      
 - new tamer abilities for variation
-    - only breath seems to be protective at the start? boost other abilities?
-        - bombard target enemies close to player?
-    - thoughts
-        - check king with painter pet
-            - painter pet starts not doing anything because being dragged around entire time
-            - inconsitency with painter king, as pets can start leashed or not leashed
+    - check king with painter pet
+        - painter pet starts not doing anything because being dragged around entire time
+        - inconsitency with painter king, as pets can start leashed or not leashed
+    - check: big enemies painter to difficult?
     - try around with new abilities
     
     - check new abilities with
