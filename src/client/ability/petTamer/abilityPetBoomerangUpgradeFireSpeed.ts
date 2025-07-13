@@ -23,7 +23,7 @@ function setUpgradeToBossLevel(ability: Ability, level: number) {
     const up: AbilityPetBoomerangUpgradeFireSpeed = ability.upgrades[ABILITY_PET_BOOMERANG_UPGRADE_FIRE_SPEED];
     if (!up) return;
     up.level = level;
-    up.fireSpeedFactor = 2 / (1 + FIRE_SPEED_PER_CENT_PER_LEVEL * up.level) * 2;
+    up.fireSpeedFactor = 2 / (1 + FIRE_SPEED_PER_CENT_PER_LEVEL * up.level);
 }
 
 function getOptions(ability: Ability): UpgradeOptionAndProbability[] {

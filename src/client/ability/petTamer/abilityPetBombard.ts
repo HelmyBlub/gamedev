@@ -225,7 +225,9 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
 
     if (!bombard.nextShootTime || bombard.nextShootTime < game.state.time) {
         const fireSpeedUpgrade = ability.upgrades[ABILITY_PET_BOMBARD_UPGRADE_FIRE_SPEED] as AbilityPetBombardUpgradeFireSpeed;
-        const fireSpeedFactor = fireSpeedUpgrade ? fireSpeedUpgrade.fireSpeedFactor : 1;
+        let fireSpeedFactor = fireSpeedUpgrade ? fireSpeedUpgrade.fireSpeedFactor : 1;
+        if (pet.faction === FACTION_ENEMY) fireSpeedFactor * 3;
+
         bombard.nextShootTime = game.state.time + ABILITY_BOMBARD_BASE_SHOOT_INTERVAL * pet.sizeFactor * fireSpeedFactor;
         let petOwnerTargets: Character[] = [];
         if (pet.faction === FACTION_PLAYER && pet.petTargetBehavior === "protective") {

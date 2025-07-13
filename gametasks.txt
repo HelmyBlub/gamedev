@@ -3,12 +3,9 @@ increase version
 
 current tasks:      
 - new tamer abilities for variation
-    - check king with painter pet
-        - painter pet starts not doing anything because being dragged around entire time
-        - inconsitency with painter king, as pets can start leashed or not leashed
-    - try around with new abilities
     - check: big enemies pet upgrade area always the same. Change it?
     - bug: big enemies don't feed pets?
+    - try around with new abilities
     - check new abilities with
         - big enemies painter
         - kings

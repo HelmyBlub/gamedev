@@ -299,7 +299,8 @@ function tickAbilityPetBoomerang(abilityOwner: AbilityOwner, ability: Ability, g
 
     if (!boomerang.nextThrowTime || boomerang.nextThrowTime < game.state.time) {
         const fireSpeedUpgrade = boomerang.upgrades[ABILITY_PET_BOOMERANG_UPGRADE_FIRE_SPEED] as AbilityPetBoomerangUpgradeFireSpeed;
-        const fireSpeedFactor = fireSpeedUpgrade ? fireSpeedUpgrade.fireSpeedFactor : 1;
+        let fireSpeedFactor = fireSpeedUpgrade ? fireSpeedUpgrade.fireSpeedFactor : 1;
+        if (pet.faction === FACTION_ENEMY) fireSpeedFactor * 2;
         boomerang.nextThrowTime = game.state.time + ABILITY_BOOMERANG_BASE_THROW_INTERVAL * fireSpeedFactor;
         let throwBoomerang: boolean = true;
         let target: Character | undefined = undefined;

@@ -15,7 +15,7 @@ import { ABILITY_NAME_PET_PAINTER } from "../../../ability/petTamer/abilityPetPa
 import { ABILITY_NAME_PET_DASH } from "../../../ability/petTamer/abilityPetDash.js";
 import { AbilityUpgradeOption, PetAbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../upgrade.js";
 import { addTraitToTamerPet, getAvailableTamerPetTraits, getMoreInfoTextForTamerPetTrait } from "./petTrait.js";
-import { changeCharacterAndAbilityIds, deepCopy, getNextId } from "../../../game.js";
+import { changeCharacterAndAbilityIds, deepCopy, getNextId, modulo } from "../../../game.js";
 import { CHARACTER_TYPE_BOSS_ENEMY, calculateBossEnemyExperienceWorth } from "../../enemy/bossEnemy.js";
 import { AbilityUpgrade } from "../../../ability/abilityUpgrade.js";
 import { ABILITY_NAME_UNLEASH_PET } from "../../../ability/petTamer/abilityUnleashPet.js";
@@ -75,7 +75,7 @@ export function createPetsBasedOnLevelAndCharacter(basedOnCharacter: Character, 
     } else {
         const petLevel = calculatePetLevel(pet);
         if (petLevel > level) {
-            reducePetLevel(pet, petLevel - level, game.state.randomSeed);
+            reducePetLevel(pet, petLevel - level);
         }
     }
     changeCharacterAndAbilityIds(pet, game.state.idCounter);
@@ -160,13 +160,14 @@ function getLongUiText(): string[] {
     return text;
 }
 
-function reducePetLevel(pet: TamerPetCharacter, amount: number, randomSeed: RandomSeed) {
+function reducePetLevel(pet: TamerPetCharacter, amount: number) {
     for (let i = 0; i < amount; i++) {
         for (let ability of pet.abilities) {
             const upgradeKeys = Object.keys(ability.upgrades);
             for (let upgradeKeyIndex = upgradeKeys.length - 1; upgradeKeyIndex >= 0; upgradeKeyIndex--) {
-                const upgrade: AbilityUpgrade = ability.upgrades[upgradeKeys[upgradeKeyIndex]];
-                delete ability.upgrades[upgradeKeys[upgradeKeyIndex]];
+                const fixedRandomizedIndex = modulo(Math.floor(upgradeKeyIndex + pet.x + pet.y), upgradeKeys.length);
+                const upgrade: AbilityUpgrade = ability.upgrades[upgradeKeys[fixedRandomizedIndex]];
+                delete ability.upgrades[upgradeKeys[fixedRandomizedIndex]];
                 amount -= upgrade.level;
                 if (amount <= 0) {
                     return;
