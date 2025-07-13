@@ -3,17 +3,13 @@ increase version
 
 current tasks:      
 - new tamer abilities for variation
-    - check: big enemies pet upgrade area always the same. Change it?
-    - bug: big enemies don't feed pets?
+    - tamer painter + boomerang, no visual difference which is bad
+        - but have different move patterns, not easy to distinguish
     - try around with new abilities
     - check new abilities with
-        - big enemies painter
-        - kings
         - bosses
+        - dark clones?
         - other?
-    - check builder king/boss damage
-        - boss builder towet shot damage was 150 on boss level 2
-    - tamer painter + boomerang, no visual difference which is bad
 
 
 
