@@ -23,8 +23,12 @@ export function addAbilityPetPainterUpgradeFactory() {
 function setUpgradeToBossLevel(ability: Ability, level: number) {
     const up: AbilityPetPainterUpgradeFactory = ability.upgrades[ABILITY_PET_PAINTER_UPGRADE_FACTORY];
     if (!up) return;
-    const painter = ability as AbilityPetPainter;
-    up.level = Math.max(1, Math.floor(level / 3));
+    const levelToUpgradeLevel = [0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1];
+    if (level < levelToUpgradeLevel.length) {
+        up.level = levelToUpgradeLevel[level];
+    } else {
+        up.level = Math.max(0, Math.floor(level / 4));
+    }
     up.duration = up.level * up.spawnInterval + 500;
 }
 

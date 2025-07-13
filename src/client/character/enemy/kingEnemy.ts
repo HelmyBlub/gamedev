@@ -22,6 +22,7 @@ import { doDamageMeterSplit } from "../../combatlog.js";
 import { CHARACTER_TYPE_END_BOSS_CROWN_ENEMY, createKingCrownCharacter, KingCrownEnemyCharacter } from "./kingCrown.js";
 import { copyCursesToTarget, Curse } from "../../curse/curse.js";
 import { CHARACTER_UPGRADE_BONUS_DAMAGE_REDUCTION, CharacterUpgradeBonusDamageReduction } from "../upgrades/characterUpgradeDamageReduction.js";
+import { playerCharacterChangeToKingModification } from "../playerCharacters/playerCharacters.js";
 
 export type KingEnemyCharacter = Character;
 export const CHARACTER_TYPE_KING_ENEMY = "KingEnemyCharacter";
@@ -95,21 +96,21 @@ export function setPlayerAsKing(game: Game) {
             }
         }
     }
-    const boss: Character = deepCopy(kingBaseCharacter);
-    boss.isDamageImmune = false;
-    boss.isDebuffImmune = false;
-    boss.width += 15;
-    resetCharacter(boss, game);
-    const celestialDirection = getCelestialDirection(boss, game.state.map);
+    const king: Character = deepCopy(kingBaseCharacter);
+    king.isDamageImmune = false;
+    king.isDebuffImmune = false;
+    king.width += 15;
+    resetCharacter(king, game);
+    const celestialDirection = getCelestialDirection(king, game.state.map);
     const oldBoss = game.state.bossStuff.nextKings[celestialDirection];
-    game.state.bossStuff.nextKings[celestialDirection] = boss;
+    game.state.bossStuff.nextKings[celestialDirection] = king;
     game.state.players[0].character.becameKing = true;
-    if (boss.curses && boss.characterClasses) {
-        for (let charClass of boss.characterClasses) {
+    if (king.curses && king.characterClasses) {
+        for (let charClass of king.characterClasses) {
             if (charClass.legendary) {
                 if (charClass.curses === undefined) charClass.curses = [];
                 const cursesToCopy: Curse[] = [];
-                for (let curse of boss.curses) {
+                for (let curse of king.curses) {
                     if (curse.cleansed) continue;
                     cursesToCopy.push(curse);
                 }
@@ -117,6 +118,7 @@ export function setPlayerAsKing(game: Game) {
             }
         }
     }
+    playerCharacterChangeToKingModification(king);
     if (oldBoss?.characterClasses) {
         legendaryAbilityGiveBlessing(celestialDirection, [oldBoss]);
         classBuildingPutLegendaryCharacterStuffBackIntoBuilding(oldBoss, game);

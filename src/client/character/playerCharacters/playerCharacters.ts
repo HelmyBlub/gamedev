@@ -24,6 +24,7 @@ export type PlayerCharacterClassFunctions = {
     createBossUpgradeOptions?: (character: Character, game: Game) => UpgradeOptionAndProbability[],
     executeUpgradeOption?: (character: Character, upgradeOptionChoice: UpgradeOption, game: Game) => void,
     getMoreInfosText?: () => string[],
+    kingModification?: (character: Character, characterClass: CharacterClass) => void,
     paintLevelUI: (ctx: CanvasRenderingContext2D, character: Character, charClass: CharacterClass, topLeft: Position, width: number, height: number, game: Game) => void,
     preventMultiple?: boolean,
 }
@@ -152,6 +153,14 @@ export function getAverageLevelOfAbilitiesPetsCharClassId(charClassId: number, a
         }
     }
     return averageLevel;
+}
+
+export function playerCharacterChangeToKingModification(king: Character) {
+    if (!king.characterClasses) return;
+    for (let kingClass of king.characterClasses) {
+        const classFunctions = PLAYER_CHARACTER_CLASSES_FUNCTIONS[kingClass.className];
+        if (classFunctions && classFunctions.kingModification) classFunctions.kingModification(king, kingClass);
+    }
 }
 
 export function playerCharacterClassGetAverageLevel(character: Character, charClass: CharacterClass): number {

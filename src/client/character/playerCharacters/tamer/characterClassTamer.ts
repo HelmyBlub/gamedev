@@ -34,12 +34,29 @@ export function addTamerClass() {
         createBossUpgradeOptions: createTamerBossUpgradeOptions,
         executeUpgradeOption: executeTamerBossUpgradeOption,
         getMoreInfosText: getLongUiText,
+        kingModification: kingModification,
         paintLevelUI: paintLevelUI,
     }
     CHARACTER_TYPE_FUNCTIONS[CHARACTER_CLASS_TAMER] = {
         tickFunction: tickDefaultCharacter,
     }
     addTamerPetFunctions();
+}
+
+function kingModification(character: Character, characterClass: CharacterClass) {
+    if (!character.pets) return;
+    for (let char of character.pets) {
+        const pet = char as TamerPetCharacter;
+        if (pet.classIdRef !== characterClass.id) continue;
+        const leash = pet.abilities.find((a) => a.name === ABILITY_NAME_LEASH) as AbilityLeash;
+        if (!leash) continue;
+        const isPainter = pet.abilities.find((a) => a.name === ABILITY_NAME_PET_PAINTER) != undefined;
+        if (isPainter) {
+            leash.leashedToOwnerId = undefined;
+        } else if (!isPainter) {
+            leash.leashedToOwnerId = character.id;
+        }
+    }
 }
 
 export function createPetsBasedOnLevelAndCharacter(basedOnCharacter: Character, level: number, petOwner: Character, game: Game): TamerPetCharacter[] {

@@ -242,12 +242,14 @@ export function changeCharacterId(character: Character, idCounter: IdCounter) {
         for (let pet of character.pets) {
             changeCharacterAndAbilityIds(pet, idCounter);
             const leash: AbilityLeash = pet.abilities.find((a) => a.name === ABILITY_NAME_LEASH) as AbilityLeash;
-            if (leash) leash.leashedToOwnerId = character.id;
+            if (leash && leash.leashedToOwnerId !== undefined) leash.leashedToOwnerId = character.id;
         }
     }
-    const leash: AbilityLeash = character.abilities.find((a) => a.name === ABILITY_NAME_LEASH) as AbilityLeash;
-    if (leash) {
-        delete leash.leashedToOwnerId;
+    if (character.type !== TAMER_PET_CHARACTER) {
+        const leash: AbilityLeash = character.abilities.find((a) => a.name === ABILITY_NAME_LEASH) as AbilityLeash;
+        if (leash) {
+            delete leash.leashedToOwnerId;
+        }
     }
 }
 

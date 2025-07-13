@@ -5,7 +5,6 @@ import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrad
 import { ABILITY_PET_PAINTER_SHAPES_FUNCTIONS, ABILITY_PET_PAINTER_UPGRADE_FUNCTIONS, AbilityObjectPetPainter, AbilityPetPainter, abilityPetPainterGetLimitedShapeCount } from "./abilityPetPainter.js";
 
 export type AbilityPetPainterUpgradeSplit = AbilityUpgrade & {
-    count: number,
     damageFactor: number,
 }
 
@@ -24,9 +23,12 @@ export function addAbilityPetPainterUpgradeSplit() {
 function setUpgradeToBossLevel(ability: Ability, level: number) {
     const up: AbilityPetPainterUpgradeSplit = ability.upgrades[ABILITY_PET_PAINTER_UPGRADE_SPLIT];
     if (!up) return;
-    const painter = ability as AbilityPetPainter;
-    up.level = Math.max(1, Math.floor(level / 3));
-    up.count = up.level + 1;
+    const levelToUpgradeLevel = [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1];
+    if (level < levelToUpgradeLevel.length) {
+        up.level = levelToUpgradeLevel[level];
+    } else {
+        up.level = Math.max(0, Math.floor(level / 4));
+    }
 }
 
 export function abilityPetPainerUpgradeSplitCheckForSplit(abilityObjectPetPainter: AbilityObjectPetPainter, game: Game) {
@@ -54,12 +56,11 @@ function executeOptionPaintSplit(ability: Ability, option: AbilityUpgradeOption)
     const as = ability as AbilityPetPainter;
     let up: AbilityPetPainterUpgradeSplit;
     if (as.upgrades[ABILITY_PET_PAINTER_UPGRADE_SPLIT] === undefined) {
-        up = { level: 0, count: 1, damageFactor: 0.5 };
+        up = { level: 0, damageFactor: 0.5 };
         as.upgrades[ABILITY_PET_PAINTER_UPGRADE_SPLIT] = up;
     } else {
         up = as.upgrades[ABILITY_PET_PAINTER_UPGRADE_SPLIT];
     }
-    up.count += 1;
     up.level++;
 }
 
