@@ -14,7 +14,7 @@ import { Ability, AbilityObject, AbilityOwner, PaintOrderAbility, ABILITIES_FUNC
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, upgradeAbility } from "../abilityUpgrade.js";
 import { ABILITY_PET_BOOMERANG_UPGRADE_BOUNCE, AbilityPetBoomerangUpgradeBounce, addAbilityPetBoomerangUpgradeBounce } from "./abilityPetBoomerangUpgradeBounce.js";
 import { ABILITY_PET_BOOMERANG_UPGRADE_FIRE_SPEED, AbilityPetBoomerangUpgradeFireSpeed, addAbilityPetBoomerangUpgradeFireSpeed } from "./abilityPetBoomerangUpgradeFireSpeed.js";
-import { ABILITY_PET_BOOMERANG_UPGRADE_STACK_DAMAGE_PER_CENT, AbilityPetBoomerangUpgradeStackingDamage, addAbilityPetBoomerangUpgradeStackingDamage } from "./abilityPetBoomerangUpgradeStackingDamage .js";
+import { ABILITY_PET_BOOMERANG_UPGRADE_STACK_DAMAGE_PER_CENT, ABILITY_PET_BOOMERANG_UPGRADE_STACKING_DAMAGE, AbilityPetBoomerangUpgradeStackingDamage, addAbilityPetBoomerangUpgradeStackingDamage } from "./abilityPetBoomerangUpgradeStackingDamage .js";
 
 const TARGET_SEARCH_RANGE = 400;
 const BASE_DAMAGE = 200;
@@ -87,7 +87,7 @@ function createAbilityObjectBoomerang(
     direction: number,
     game: Game
 ): AbilityObjectPetBoomerang {
-    const stacksUpgrade = abilityBoomerang.upgrades[ABILITY_PET_BOOMERANG_UPGRADE_STACK_DAMAGE_PER_CENT] as AbilityPetBoomerangUpgradeStackingDamage;
+    const stacksUpgrade = abilityBoomerang.upgrades[ABILITY_PET_BOOMERANG_UPGRADE_STACKING_DAMAGE] as AbilityPetBoomerangUpgradeStackingDamage;
     const bounceUpgrade = abilityBoomerang.upgrades[ABILITY_PET_BOOMERANG_UPGRADE_BOUNCE] as AbilityPetBoomerangUpgradeBounce;
     let object: AbilityObjectPetBoomerang = {
         type: ABILITY_NAME_PET_BOOMERANG,
