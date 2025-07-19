@@ -2,9 +2,8 @@ next test run:
 increase version
 
 current tasks:      
+- server zip files?
 - new tamer abilities for variation
-    - tamer painter + boomerang, no visual difference which is bad
-        - but have different move patterns, not easy to distinguish
     - try around with new abilities
     - check new abilities with
         - bosses

@@ -16,8 +16,8 @@ type Lobby = {
     startTime: bigint,
     nextGameStateTo: Connection[],
 }
-
 const express = require('express');
+const compression = require('compression');
 const app = express();
 const expressWs = require('express-ws')(app);
 const port = 3000;
@@ -26,6 +26,7 @@ const lobbys: Map<string, Lobby> = new Map<string, Lobby>();
 
 let clientIdCounter = 0;
 
+app.use(compression());
 app.use(express.static('public'));
 
 app.ws('/ws', function (ws: any, req: any) {

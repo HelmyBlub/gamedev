@@ -8,15 +8,16 @@
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q public/js/server/server.js\""
   },
   "devDependencies": {
-    "@types/express": "5.0.0",
-    "@types/node": "22.10.7",
-    "concurrently": "9.0.1",
-    "nodemon": "3.1.7",
-    "typescript": "5.6.3"
+    "@types/express": "5.0.3",
+    "@types/node": "24.0.15",
+    "concurrently": "9.2",
+    "nodemon": "3.1.10",
+    "typescript": "5.8.3"
   },
   "dependencies": {
+    "compression": "^1.8.1",
     "ejs": "3.1.10",
-    "express": "4.21.2",
+    "express": "5.1.0",
     "express-ws": "5.0.2"
   }
 }
