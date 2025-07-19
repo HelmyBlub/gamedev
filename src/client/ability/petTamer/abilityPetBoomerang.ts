@@ -8,6 +8,7 @@ import { createDebuffBoomerangStacks, DEBUFF_NAME_BOOMERANG_STACKS, DebuffBoomer
 import { calculateDirection, calculateDistance, getCameraPosition, getNextId } from "../../game.js";
 import { FACTION_ENEMY, FACTION_PLAYER, Game, IdCounter, Position } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
+import { GAME_IMAGES, getImage, loadImage } from "../../imageLoad.js";
 import { calculateMovePosition, GameMap, moveByDirectionAndDistance } from "../../map/map.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
 import { Ability, AbilityObject, AbilityOwner, PaintOrderAbility, ABILITIES_FUNCTIONS, findAbilityOwnerById } from "../ability.js";
@@ -43,6 +44,11 @@ export type AbilityObjectPetBoomerang = AbilityObject & {
 
 export const ABILITY_PET_BOOMERANG_UPGRADE_FUNCTIONS: AbilityUpgradesFunctions = {};
 export const ABILITY_NAME_PET_BOOMERANG = "Boomerang";
+GAME_IMAGES[ABILITY_NAME_PET_BOOMERANG] = {
+    imagePath: "/images/boomerang.png",
+    spriteRowHeights: [40],
+    spriteRowWidths: [40],
+};
 
 export function addAbilityPetBoomerang() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_PET_BOOMERANG] = {
@@ -265,19 +271,31 @@ function deleteAbilityObjectPetBoomerang(abilityObject: AbilityObject, game: Gam
 }
 
 function paintAbilityObjectPetBoomerang(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
-    const petBoomerang = abilityObject as AbilityObjectPetBoomerang;
-    const cameraPosition = getCameraPosition(game);
-    const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition, game.UI.zoom);
-    ctx.fillStyle = abilityObject.faction === FACTION_ENEMY ? "black" : abilityObject.color;
-
+    if (paintOrder !== "afterCharacterPaint") return;
+    const boomerangImage = GAME_IMAGES[ABILITY_NAME_PET_BOOMERANG];
+    loadImage(boomerangImage);
     if (abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
-    ctx.beginPath();
-    ctx.arc(
-        paintPos.x,
-        paintPos.y,
-        petBoomerang.radius, 0, 2 * Math.PI,
-    );
-    ctx.fill();
+    if (boomerangImage.imageRef) {
+        const petBoomerang = abilityObject as AbilityObjectPetBoomerang;
+        const cameraPosition = getCameraPosition(game);
+        const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition, game.UI.zoom);
+        const radius = petBoomerang.radius;
+        const size = radius * 2;
+        ctx.save();
+        ctx.translate(paintPos.x, paintPos.y);
+        ctx.rotate(game.state.time / 100);
+        ctx.translate(-paintPos.x, -paintPos.y);
+        if (abilityObject.faction === FACTION_ENEMY) {
+            ctx.drawImage(boomerangImage.imageRef, 40, 0, 40, 40,
+                paintPos.x - radius, paintPos.y - radius, size, size
+            );
+        } else {
+            ctx.drawImage(boomerangImage.imageRef, 0, 0, 40, 40,
+                paintPos.x - radius, paintPos.y - radius, size, size
+            );
+        }
+        ctx.restore();
+    }
     ctx.globalAlpha = 1;
 }
 

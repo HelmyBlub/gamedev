@@ -1,6 +1,6 @@
 import { ABILITIES_FUNCTIONS } from "../../ability/ability.js";
 import { calculateDistance } from "../../game.js";
-import { Game, IdCounter } from "../../gameModel.js";
+import { Game } from "../../gameModel.js";
 import { GameMap } from "../../map/map.js";
 import { MoreInfosPartContainer, createCharacterMoreInfosPartContainer } from "../../moreInfo.js";
 import { determineCharactersInDistance, determineClosestCharacter, calculateAndSetMoveDirectionToPositionWithPathing, getPlayerCharacters, moveCharacterTick, setCharacterPosition, findMyCharacter } from "../character.js";
