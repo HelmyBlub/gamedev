@@ -2,14 +2,13 @@ next test run:
 increase version
 
 current tasks:      
-- server zip files?
-- new tamer abilities for variation
-    - try around with new abilities
-    - check new abilities with
-        - bosses
-        - dark clones?
-        - other?
-
+- choice for builder?
+    - start upgrade option which changes player style
+        - tower stationary stuck to player (+1 Tower on upgrade only)
+        - many stationary tower (current version)
+        - orbiting towers (+1 Tower on upgrade only)
+        - moving towers
+        - stronger single towers
 
 
 next feature ideas:
