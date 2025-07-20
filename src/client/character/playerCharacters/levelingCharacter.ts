@@ -103,27 +103,6 @@ export function executeLevelingCharacterUpgradeOption(character: Character, upgr
     charClass.availableSkillPoints.used++;
 }
 
-export function createCharacterUpgradeOptions(character: Character, characterClass: CharacterClass, game: Game): UpgradeOptionAndProbability[] {
-    const upgradeOptions: UpgradeOptionAndProbability[] = [];
-    if (characterClass.availableSkillPoints === undefined || characterClass.availableSkillPoints.available <= 0) return upgradeOptions;
-    character.upgradeChoices.displayText = `Choose Upgrade:`;
-    upgradeOptions.push(...CHARACTER_UPGRADE_FUNCTIONS[CHARACTER_UPGRADE_BONUS_HP].getOptions!(character, characterClass, game));
-    upgradeOptions.push(...CHARACTER_UPGRADE_FUNCTIONS[CHARACTER_UPGRADE_BONUS_MOVE_SPEED].getOptions!(character, characterClass, game));
-
-    for (let ability of character.abilities) {
-        if (ability.classIdRef !== characterClass.id) continue;
-        const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
-        if (abilityFunctions && abilityFunctions.createAbilityUpgradeOptions) {
-            upgradeOptions.push(...abilityFunctions.createAbilityUpgradeOptions(ability));
-        }
-    }
-    for (let option of upgradeOptions) {
-        option.option.characterClass = CHARACTER_CLASS_TOWER_BUILDER;
-        option.option.classIdRef = characterClass.id;
-    }
-    return upgradeOptions;
-}
-
 export function findCharacterClassById(character: Character, classId?: number): CharacterClass | undefined {
     if (classId === undefined) return undefined;
     if (character.characterClasses) {

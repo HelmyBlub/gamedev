@@ -33,6 +33,7 @@ type AbilityObjectTower = AbilityObject & {
     isBossTower?: boolean,
     ownerEnemyLevel?: number,
     deleteTime?: number,
+    relativePositon?: Position,
 }
 
 type AbilityTower = Ability & {
@@ -45,15 +46,21 @@ type AbilityTower = Ability & {
     maxTowers: number,
     lastBuildTime?: number,
     maxConnectRange?: number,
+    subType: string,
+    abilityObjectsAttached?: AbilityObjectTower[],
 }
 
 export const ABILITY_NAME_TOWER = "Tower";
 const START_MAX_TOWER = 5;
 const START_DAMAGE = 50;
 const UPGRADE_DAMAGE = 250;
-const UPGRADE_TOWER_COUNT = 5;
+const UPGRADE_TOWER_COUNT_STATIONARY = 5;
+const UPGRADE_TOWER_COUNT_ATTACHED = 2;
 const UPGRADE_TOWER_FACTOR_PER_LEVEL = 0.15;
 const ENEMY_TOWER_DESPAWN_TIME = 30000;
+const SUBTYPE_STATIONARY = "Stationary";
+const SUBTYPE_ATTACHED = "Attached";
+
 GAME_IMAGES[ABILITY_NAME_TOWER] = {
     imagePath: "/images/hammer.png",
     spriteRowHeights: [20],
@@ -111,7 +118,29 @@ export function createAbilityTower(
         upgrades: {},
         tradable: true,
         towerDamageFactor: 1,
+        subType: SUBTYPE_STATIONARY,
     };
+}
+
+export function abilityTowerSubTypeUpgradeChoices(): UpgradeOptionAndProbability[] {
+    const upgradeOptionAndProbabilities: UpgradeOptionAndProbability[] = [];
+    const upgradeOption1: AbilityUpgradeOption = {
+        displayText: `Stationary Towers`,
+        type: "Ability",
+        identifier: SUBTYPE_STATIONARY,
+        displayMoreInfoText: [`Towers placed will stay on position of map.`],
+        name: ABILITY_NAME_TOWER,
+    };
+    upgradeOptionAndProbabilities.push({ option: upgradeOption1, probability: 1 });
+    const upgradeOption2: AbilityUpgradeOption = {
+        displayText: `Attached Towers`,
+        type: "Ability",
+        identifier: SUBTYPE_ATTACHED,
+        displayMoreInfoText: [`Towers placed will attach relative to player.`],
+        name: ABILITY_NAME_TOWER,
+    };
+    upgradeOptionAndProbabilities.push({ option: upgradeOption2, probability: 1 });
+    return upgradeOptionAndProbabilities;
 }
 
 function createAbilityObjectTower(idCounter: IdCounter, ownerId: number, faction: string, position: Position, ability: Ability | undefined, damage: number, size: number = 8): AbilityObjectTower {
@@ -194,9 +223,15 @@ function deleteAbilityObjectTower(abilityObject: AbilityObject, game: Game) {
 function castTower(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, castPositionRelativeToCharacter: Position | undefined, isKeydown: boolean, game: Game) {
     if (!isKeydown) return;
     const abilityTower = ability as AbilityTower;
+    if (abilityTower.subType === undefined) {
+        abilityTower.subType = SUBTYPE_STATIONARY;
+    }
     const distance = calculateDistance(abilityOwner, castPosition);
     if (distance > abilityTower.maxClickRange) return;
-    const abilityObjects = game.state.abilityObjects;
+    let abilityObjects = game.state.abilityObjects;
+    if (abilityTower.subType === SUBTYPE_ATTACHED) {
+        abilityObjects = abilityTower.abilityObjectsAttached!;
+    }
 
     if (getTowerCountOfOwner(abilityObjects, abilityOwner.id) >= abilityTower.maxTowers) {
         const deletedId = deleteOldesTowerOfOwnerAndReturnDeletedId(abilityObjects, abilityOwner.id);
@@ -222,6 +257,12 @@ function castTower(abilityOwner: AbilityOwner, ability: Ability, castPosition: P
     const nearest = getNearestTower(abilityObjects, newTower, game.state.randomSeed, abilityTower.maxConnectRange);
     if (nearest) {
         newTower.conntetedToId = nearest.id;
+    }
+    if (abilityTower.subType === SUBTYPE_ATTACHED) {
+        newTower.relativePositon = {
+            x: newTower.x - abilityOwner.x,
+            y: newTower.y - abilityOwner.y,
+        };
     }
     abilityObjects.push(newTower);
     abilityTower.lastBuildTime = game.state.time;
@@ -316,6 +357,15 @@ function paintAbilityTower(ctx: CanvasRenderingContext2D, abilityOwner: AbilityO
     const abiltiyTower = ability as AbilityTower;
     const paintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition, game.UI.zoom);
     paintHammer(ctx, abiltiyTower, paintPos.x - 10, paintPos.y, game);
+    if (ability.disabled) return;
+    if (abiltiyTower.abilityObjectsAttached) {
+        for (let tower of abiltiyTower.abilityObjectsAttached) {
+            paintAbilityObjectTower(ctx, tower, "beforeCharacterPaint", game, abiltiyTower);
+        }
+        for (let tower of abiltiyTower.abilityObjectsAttached) {
+            paintAbilityObjectTower(ctx, tower, "afterCharacterPaint", game, abiltiyTower);
+        }
+    }
 }
 
 function paintAbilityAccessoire(ctx: CanvasRenderingContext2D, ability: Ability, paintPosition: Position, game: Game) {
@@ -351,12 +401,13 @@ function paintHammer(ctx: CanvasRenderingContext2D, abilityTower: AbilityTower, 
     }
 }
 
-function paintAbilityObjectTower(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {
+function paintAbilityObjectTower(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game, abilityTower: AbilityTower | undefined = undefined) {
     const cameraPosition = getCameraPosition(game);
     const tower = abilityObject as AbilityObjectTower;
+    const abilityObjects = abilityTower ? abilityTower.abilityObjectsAttached! : game.state.abilityObjects;
 
     if (paintOrder === "beforeCharacterPaint") {
-        paintEffectConnected(ctx, tower, cameraPosition, game.state.abilityObjects, game);
+        paintEffectConnected(ctx, tower, cameraPosition, abilityObjects, game);
     } else if (paintOrder === "afterCharacterPaint") {
         const owner = findPlayerByCharacterId(game.state.players, tower.ownerId);
         const towerBaseSize = tower.size;
@@ -367,7 +418,7 @@ function paintAbilityObjectTower(ctx: CanvasRenderingContext2D, abilityObject: A
         if (owner?.clientId === game.multiplayer.myClientId) {
             const ability = owner.character.abilities.find((e) => e.name === ABILITY_NAME_TOWER) as AbilityTower;
             if (ability && getTowerCountOfOwner(game.state.abilityObjects, tower.ownerId) >= ability.maxTowers) {
-                const oldestTower = findOldesTowerOfOwner(game.state.abilityObjects, tower.ownerId)?.tower;
+                const oldestTower = findOldesTowerOfOwner(abilityObjects, tower.ownerId)?.tower;
                 if (oldestTower && oldestTower === tower) {
                     ctx.fillStyle = "darkblue";
                 } else {
@@ -471,9 +522,9 @@ function getNearestTower(abilityObjects: AbilityObject[], tower: AbilityObjectTo
     }
 }
 
-function tickEffectConnected(abilityObjectTower: AbilityObjectTower, game: Game) {
+function tickEffectConnected(abilityObjectTower: AbilityObjectTower, game: Game, abilityTower: AbilityTower | undefined = undefined) {
     if (abilityObjectTower.conntetedToId === undefined) return;
-    const abilityObjects = game.state.abilityObjects;
+    const abilityObjects = abilityTower ? abilityTower.abilityObjectsAttached! : game.state.abilityObjects;
     const connectedTower = getTowerById(abilityObjects, abilityObjectTower.conntetedToId);
     if (connectedTower === undefined) {
         console.log("tower connection not cleaned up");
@@ -539,32 +590,40 @@ function createAbilityTowerMoreInfos(ctx: CanvasRenderingContext2D, ability: Abi
 
 function tickAbilityTower(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     const abilityTower = ability as AbilityTower;
+    if (abilityTower.abilityObjectsAttached) {
+        for (let objectTower of abilityTower.abilityObjectsAttached) {
+            objectTower.x = abilityOwner.x + objectTower.relativePositon!.x;
+            objectTower.y = abilityOwner.y + objectTower.relativePositon!.y;
+            tickAbilityObjectTower(objectTower, game, abilityTower);
+        }
+    }
 }
 
-function tickAbilityObjectTower(abilityObject: AbilityObject, game: Game) {
-    const abilityTower = abilityObject as AbilityObjectTower;
+function tickAbilityObjectTower(abilityObject: AbilityObject, game: Game, abilityTower: AbilityTower | undefined = undefined) {
+    const objectTower = abilityObject as AbilityObjectTower;
     const mapKeyOfCharacterPosistion = positionToMapKey(abilityObject, game.state.map);
     if (!game.state.map.activeChunkKeys.includes(mapKeyOfCharacterPosistion)) return;
 
-    if (abilityTower.lineDamageNextDamageTick === undefined) abilityTower.lineDamageNextDamageTick = game.state.time + abilityTower.lineDamageTickFrequency;
-    if (abilityTower.lineDamageNextDamageTick <= game.state.time) {
-        tickEffectConnected(abilityTower, game);
-        abilityTower.lineDamageNextDamageTick += abilityTower.lineDamageTickFrequency;
-        if (abilityTower.lineDamageNextDamageTick <= game.state.time) {
-            abilityTower.lineDamageNextDamageTick = game.state.time + abilityTower.lineDamageTickFrequency;
+    if (objectTower.lineDamageNextDamageTick === undefined) objectTower.lineDamageNextDamageTick = game.state.time + objectTower.lineDamageTickFrequency;
+    if (objectTower.lineDamageNextDamageTick <= game.state.time) {
+        tickEffectConnected(objectTower, game, abilityTower);
+        objectTower.lineDamageNextDamageTick += objectTower.lineDamageTickFrequency;
+        if (objectTower.lineDamageNextDamageTick <= game.state.time) {
+            objectTower.lineDamageNextDamageTick = game.state.time + objectTower.lineDamageTickFrequency;
         }
     }
 
-    if (abilityTower.ability) {
-        const abilityFunction = ABILITIES_FUNCTIONS[abilityTower.ability.name];
-        if (abilityFunction.tickAbility) abilityFunction.tickAbility(abilityTower, abilityTower.ability, game);
+    if (objectTower.ability) {
+        const abilityFunction = ABILITIES_FUNCTIONS[objectTower.ability.name];
+        if (abilityFunction.tickAbility) abilityFunction.tickAbility(objectTower, objectTower.ability, game);
     }
 }
 
 function createAbilityTowerUpgradeOptions(ability: Ability): UpgradeOptionAndProbability[] {
     const abilityTower = ability as AbilityTower;
     const upgradeOptions: UpgradeOptionAndProbability[] = [];
-    const upgradeCountTower = abilityTower.maxTowers > START_MAX_TOWER ? ` (${(abilityTower.maxTowers - START_MAX_TOWER) / UPGRADE_TOWER_COUNT + 1})` : "";
+    const additionalTowers = abilityTower.abilityObjectsAttached ? UPGRADE_TOWER_COUNT_ATTACHED : UPGRADE_TOWER_COUNT_STATIONARY;
+    const upgradeCountTower = abilityTower.maxTowers > START_MAX_TOWER ? ` (${(abilityTower.maxTowers - START_MAX_TOWER) / additionalTowers + 1})` : "";
     const upgradeCountDamage = abilityTower.damage > START_DAMAGE ? ` (${(abilityTower.damage - START_DAMAGE) / UPGRADE_DAMAGE + 1})` : "";
     const upgradeCountTowerDamage = abilityTower.towerDamageFactor > 1 ? ` (${((abilityTower.towerDamageFactor - 1) / UPGRADE_TOWER_FACTOR_PER_LEVEL + 1).toFixed()})` : "";
     const option: AbilityUpgradeOption = {
@@ -592,10 +651,10 @@ function createAbilityTowerUpgradeOptions(ability: Ability): UpgradeOptionAndPro
     });
 
     const abilityOption: AbilityUpgradeOption = {
-        displayText: `Max Towers +${UPGRADE_TOWER_COUNT}${upgradeCountTower}`,
+        displayText: `Max Towers +${additionalTowers}${upgradeCountTower}`,
         identifier: `Max Towers`,
         type: "Ability",
-        displayMoreInfoText: [`Increase max towers from ${abilityTower.maxTowers} to ${abilityTower.maxTowers + UPGRADE_TOWER_COUNT}`],
+        displayMoreInfoText: [`Increase max towers from ${abilityTower.maxTowers} to ${abilityTower.maxTowers + additionalTowers}`],
         name: ability.name,
     }
     upgradeOptions.push({
@@ -610,15 +669,32 @@ function executeAbilityTowerUpgradeOption(ability: Ability, character: Character
     const abilityTower = ability as AbilityTower;
     if (upgradeOption.identifier === "Line Damage") {
         abilityTower.damage += UPGRADE_DAMAGE;
+        if (abilityTower.abilityObjectsAttached) {
+            for (let object of abilityTower.abilityObjectsAttached) {
+                object.damage = abilityTower.damage;
+            }
+        }
         return;
     }
     if (upgradeOption.identifier === "Tower Damage Factor") {
         if (!abilityTower.towerDamageFactor) abilityTower.towerDamageFactor = 1;
         abilityTower.towerDamageFactor += UPGRADE_TOWER_FACTOR_PER_LEVEL;
+        if (abilityTower.abilityObjectsAttached) {
+            updateTowerObjectAbilityLevels(abilityTower.abilityObjectsAttached, abilityTower);
+        }
         return;
     }
     if (upgradeOption.identifier === "Max Towers") {
-        abilityTower.maxTowers += UPGRADE_TOWER_COUNT;
+        abilityTower.maxTowers += abilityTower.abilityObjectsAttached ? UPGRADE_TOWER_COUNT_ATTACHED : UPGRADE_TOWER_COUNT_STATIONARY;
+        return;
+    }
+    if (upgradeOption.identifier === SUBTYPE_STATIONARY) {
+        abilityTower.subType = SUBTYPE_STATIONARY;
+        return;
+    }
+    if (upgradeOption.identifier === SUBTYPE_ATTACHED) {
+        abilityTower.subType = SUBTYPE_ATTACHED;
+        abilityTower.abilityObjectsAttached = [];
         return;
     }
 }

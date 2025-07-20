@@ -1,13 +1,17 @@
-import { addAbilityToCharacter, setAbilityToBossLevel } from "../../ability/ability.js";
+import { ABILITIES_FUNCTIONS, addAbilityToCharacter, setAbilityToBossLevel } from "../../ability/ability.js";
 import { createAbilityHpRegen } from "../../ability/abilityHpRegen.js";
-import { ABILITY_NAME_TOWER, createAbilityTower } from "../../ability/abilityTower.js";
+import { ABILITY_NAME_TOWER, abilityTowerSubTypeUpgradeChoices, createAbilityTower } from "../../ability/abilityTower.js";
 import { AbilitySnipe } from "../../ability/snipe/abilitySnipe.js";
 import { getNextId, deepCopy } from "../../game.js";
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../gameModel.js";
 import { resetCharacter } from "../character.js";
 import { Character, IMAGE_SLIME, createCharacter } from "../characterModel.js";
 import { CHARACTER_TYPE_BOSS_ENEMY, calculateBossEnemyExperienceWorth } from "../enemy/bossEnemy.js";
-import { createCharacterUpgradeOptions, executeLevelingCharacterUpgradeOption } from "./levelingCharacter.js";
+import { UpgradeOptionAndProbability } from "../upgrade.js";
+import { CHARACTER_UPGRADE_BONUS_HP } from "../upgrades/characterUpgradeBonusHealth.js";
+import { CHARACTER_UPGRADE_BONUS_MOVE_SPEED } from "../upgrades/characterUpgradeMoveSpeed.js";
+import { CHARACTER_UPGRADE_FUNCTIONS } from "../upgrades/characterUpgrades.js";
+import { executeLevelingCharacterUpgradeOption } from "./levelingCharacter.js";
 import { CharacterClass, PLAYER_CHARACTER_CLASSES_FUNCTIONS, paintPlayerLevelUI } from "./playerCharacters.js";
 
 export const CHARACTER_CLASS_TOWER_BUILDER = "Tower Builder";
@@ -47,11 +51,39 @@ function changeCharacterToTowerBuilderClass(
                 experienceForLevelUp: 10,
             }
         },
-        availableSkillPoints: { available: 0, used: 0 },
+        availableSkillPoints: { available: 0, used: 1 },
     };
     character.characterClasses.push(charClass);
     addAbilityToCharacter(character, createAbilityTower(idCounter, "ability1"), charClass);
     addAbilityToCharacter(character, createAbilityHpRegen(idCounter), charClass);
+}
+
+export function createCharacterUpgradeOptions(character: Character, characterClass: CharacterClass, game: Game): UpgradeOptionAndProbability[] {
+    const upgradeOptions: UpgradeOptionAndProbability[] = [];
+    if (characterClass.availableSkillPoints === undefined || characterClass.availableSkillPoints.available <= 0) return upgradeOptions;
+    character.upgradeChoices.displayText = `Choose Upgrade:`;
+    if (characterClass.availableSkillPoints.used === 0) {
+        const towerAbility = character.abilities.find(a => a.name === ABILITY_NAME_TOWER);
+        if (towerAbility) {
+            upgradeOptions.push(...abilityTowerSubTypeUpgradeChoices());
+        }
+    } else {
+        upgradeOptions.push(...CHARACTER_UPGRADE_FUNCTIONS[CHARACTER_UPGRADE_BONUS_HP].getOptions!(character, characterClass, game));
+        upgradeOptions.push(...CHARACTER_UPGRADE_FUNCTIONS[CHARACTER_UPGRADE_BONUS_MOVE_SPEED].getOptions!(character, characterClass, game));
+
+        for (let ability of character.abilities) {
+            if (ability.classIdRef !== characterClass.id) continue;
+            const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+            if (abilityFunctions && abilityFunctions.createAbilityUpgradeOptions) {
+                upgradeOptions.push(...abilityFunctions.createAbilityUpgradeOptions(ability));
+            }
+        }
+    }
+    for (let option of upgradeOptions) {
+        option.option.characterClass = CHARACTER_CLASS_TOWER_BUILDER;
+        option.option.classIdRef = characterClass.id;
+    }
+    return upgradeOptions;
 }
 
 function getMoreInfoText(): string[] {

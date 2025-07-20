@@ -2,13 +2,16 @@ next test run:
 increase version
 
 current tasks:      
-- choice for builder?
-    - start upgrade option which changes player style
-        - tower stationary stuck to player (+1 Tower on upgrade only)
-        - many stationary tower (current version)
-        - orbiting towers (+1 Tower on upgrade only)
-        - moving towers
-        - stronger single towers
+- builder attached towers
+    - continue: set subType to undefined again. 
+        - code which makes it no break with old stuff
+    - bug: line damage not working for enemy
+    - bug: king tower count not working correctly
+    - bug: ability objects don't update ids
+        - when taken from past character, have wrong id and stay forever
+    - balance different choices
+        - limit place range for attached
+
 
 
 next feature ideas:
