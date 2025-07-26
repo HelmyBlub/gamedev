@@ -2,6 +2,7 @@ next test run:
 increase version
 
 current tasks:      
+- deployments fail
 - builder attached towers
     - continue: set subType to undefined again. 
         - code which makes it no break with old stuff
