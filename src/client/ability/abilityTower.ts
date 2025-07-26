@@ -46,7 +46,7 @@ type AbilityTower = Ability & {
     maxTowers: number,
     lastBuildTime?: number,
     maxConnectRange?: number,
-    subType: string,
+    subType?: string,
     abilityObjectsAttached?: AbilityObjectTower[],
 }
 
@@ -118,7 +118,6 @@ export function createAbilityTower(
         upgrades: {},
         tradable: true,
         towerDamageFactor: 1,
-        subType: SUBTYPE_STATIONARY,
     };
 }
 
@@ -128,7 +127,7 @@ export function abilityTowerSubTypeUpgradeChoices(): UpgradeOptionAndProbability
         displayText: `Stationary Towers`,
         type: "Ability",
         identifier: SUBTYPE_STATIONARY,
-        displayMoreInfoText: [`Towers placed will stay on position of map.`],
+        displayMoreInfoText: [`Towers placed will stay on position of map.`, `Get more additional towers through upgrades.`],
         name: ABILITY_NAME_TOWER,
     };
     upgradeOptionAndProbabilities.push({ option: upgradeOption1, probability: 1 });
@@ -223,8 +222,13 @@ function deleteAbilityObjectTower(abilityObject: AbilityObject, game: Game) {
 function castTower(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, castPositionRelativeToCharacter: Position | undefined, isKeydown: boolean, game: Game) {
     if (!isKeydown) return;
     const abilityTower = ability as AbilityTower;
-    if (abilityTower.subType === undefined) {
-        abilityTower.subType = SUBTYPE_STATIONARY;
+    if (abilityTower.subType === undefined && abilityOwner.characterClasses) {
+        const charClass = abilityOwner.characterClasses.find(c => c.id === ability.classIdRef);
+        if (charClass && charClass.availableSkillPoints && charClass.availableSkillPoints.used > 0) {
+            abilityTower.subType = SUBTYPE_STATIONARY;
+        } else {
+            return;
+        }
     }
     const distance = calculateDistance(abilityOwner, castPosition);
     if (distance > abilityTower.maxClickRange) return;
