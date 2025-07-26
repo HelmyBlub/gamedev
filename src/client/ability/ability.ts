@@ -113,6 +113,7 @@ export type AbilityFunctions = {
     tickAbility?: (abilityOwner: AbilityOwner, ability: Ability, game: Game) => void,
     tickAI?: (abilityOwner: AbilityOwner, ability: Ability, game: Game) => void,
     tickAbilityObject?: (abilityObject: AbilityObject, game: Game) => void,
+    updateOnCharcterChanges?: (abilityOwner: AbilityOwner, ability: Ability, game: Game) => void,
     abilityUpgradeFunctions?: AbilityUpgradesFunctions,
     canBeUsedByBosses?: boolean,
     positionNotRquired?: boolean,
@@ -167,6 +168,15 @@ export function doAbilityDamageBreakDown(damage: number, ability: Ability | unde
     if (abilityFunctions && abilityFunctions.createDamageBreakDown) {
         const breakdowns = abilityFunctions.createDamageBreakDown(damage, ability, abilityObject, damageAbilityName, game, faction);
         addDamageBreakDownToDamageMeter(game.UI.damageMeter, ability, breakdowns, clientId, petName);
+    }
+}
+
+export function updateAbilitiesOnCharacterChange(character: Character, game: Game) {
+    for (let ability of character.abilities) {
+        let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+        if (abilityFunctions && abilityFunctions.updateOnCharcterChanges) {
+            abilityFunctions.updateOnCharcterChanges(character, ability, game);
+        }
     }
 }
 

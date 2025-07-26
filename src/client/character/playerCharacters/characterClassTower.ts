@@ -1,6 +1,6 @@
 import { ABILITIES_FUNCTIONS, addAbilityToCharacter, setAbilityToBossLevel } from "../../ability/ability.js";
 import { createAbilityHpRegen } from "../../ability/abilityHpRegen.js";
-import { ABILITY_NAME_TOWER, abilityTowerSubTypeUpgradeChoices, createAbilityTower } from "../../ability/abilityTower.js";
+import { ABILITY_NAME_TOWER, AbilityTower, abilityTowerSubTypeUpgradeChoices, createAbilityTower } from "../../ability/abilityTower.js";
 import { AbilitySnipe } from "../../ability/snipe/abilitySnipe.js";
 import { getNextId, deepCopy } from "../../game.js";
 import { FACTION_ENEMY, Game, IdCounter, Position } from "../../gameModel.js";
@@ -23,6 +23,7 @@ export function addTowerClass() {
         createUpgradeOptions: createCharacterUpgradeOptions,
         executeUpgradeOption: executeLevelingCharacterUpgradeOption,
         getMoreInfosText: getMoreInfoText,
+        kingModification: kingModification,
         paintLevelUI: paintLevelUI,
         preventMultiple: true,
     }
@@ -51,11 +52,26 @@ function changeCharacterToTowerBuilderClass(
                 experienceForLevelUp: 10,
             }
         },
-        availableSkillPoints: { available: 1, used: 0 },
+        availableSkillPoints: { available: 0, used: 1 },
     };
     character.characterClasses.push(charClass);
     addAbilityToCharacter(character, createAbilityTower(idCounter, "ability1"), charClass);
     addAbilityToCharacter(character, createAbilityHpRegen(idCounter), charClass);
+}
+
+function kingModification(character: Character, characterClass: CharacterClass) {
+    for (let ability of character.abilities) {
+        if (ability.classIdRef !== characterClass.id) continue;
+        if (ability.name === ABILITY_NAME_TOWER) {
+            const tower = ability as AbilityTower;
+            if (tower.abilityObjectsAttached) {
+                for (let attached of tower.abilityObjectsAttached) {
+                    attached.faction = character.faction;
+                    attached.ownerId = character.id;
+                }
+            }
+        }
+    }
 }
 
 export function createCharacterUpgradeOptions(character: Character, characterClass: CharacterClass, game: Game): UpgradeOptionAndProbability[] {
@@ -107,7 +123,9 @@ function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: 
     bossCharacter.paint.image = IMAGE_SLIME;
     bossCharacter.level = { level: level };
     const baseTower = basedOnCharacter.abilities.find((a) => a.name === ABILITY_NAME_TOWER);
-    const tower: AbilitySnipe = deepCopy(baseTower);
+    const tower: AbilityTower = deepCopy(baseTower);
+    const towerFunctions = ABILITIES_FUNCTIONS[tower.name];
+    if (towerFunctions.updateOnCharcterChanges) towerFunctions.updateOnCharcterChanges(bossCharacter, tower, game);
     bossCharacter.abilities.push(tower);
     setAbilityToBossLevel(tower, level);
     resetCharacter(bossCharacter, game);

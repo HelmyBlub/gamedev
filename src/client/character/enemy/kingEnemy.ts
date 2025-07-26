@@ -1,4 +1,4 @@
-import { ABILITIES_FUNCTIONS, Ability, setAbilityToBossLevel } from "../../ability/ability.js";
+import { ABILITIES_FUNCTIONS, Ability, setAbilityToBossLevel, updateAbilitiesOnCharacterChange } from "../../ability/ability.js";
 import { ABILITY_NAME_FIRE_CIRCLE } from "../../ability/abilityFireCircle.js";
 import { ABILITY_NAME_ICE_AURA } from "../../ability/abilityIceAura.js";
 import { ABILITY_NAME_MELEE } from "../../ability/abilityMelee.js";
@@ -134,6 +134,7 @@ export function startKingFight(kingAreaPosition: Position, game: Game) {
         const celestialDirection = getCelestialDirection(spawn, game.state.map);
         const king: Character = deepCopy(game.state.bossStuff.nextKings[celestialDirection]);
         modifyCharacterToKing(king, game);
+        updateAbilitiesOnCharacterChange(king, game);
         king.x = spawn.x;
         king.y = spawn.y;
         if (king.pets) {

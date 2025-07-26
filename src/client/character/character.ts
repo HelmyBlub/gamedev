@@ -209,6 +209,8 @@ export function characterTradeAbilityAndPets(fromCharacter: Character, toCharact
             ability.disabled = false;
             if (ability.bossSkillPoints != undefined) delete ability.bossSkillPoints;
             if (ability.level) delete ability.level.leveling;
+            const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+            if (abilityFunctions.updateOnCharcterChanges) abilityFunctions.updateOnCharcterChanges(toCharacter, ability, game);
             toCharacter.abilities.splice(indexSplicePosition, 0, ability);
         }
     }
