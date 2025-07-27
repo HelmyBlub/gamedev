@@ -40,6 +40,7 @@ export function addAbilityFireCircle() {
         deleteAbilityObject: deleteObjectFireCircle,
         paintAbilityUI: paintAbilityFireCircleUI,
         paintAbilityObject: paintAbilityObjectFireCircle,
+        resetAbility: resetAbility,
         setAbilityToLevel: setAbilityFireCircleToLevel,
         setAbilityToBossLevel: setAbilityFireCircleToBossLevel,
         setAbilityToEnemyLevel: setAbilityToEnemyLevel,
@@ -108,6 +109,11 @@ function createObjectFireCircle(abilityObject: AbilityObjectFireCircleTraveling,
         tickInterval: 250,
         abilityIdRef: abilityObject.abilityIdRef,
     }
+}
+
+function resetAbility(ability: Ability) {
+    const shoot = ability as AbilityFireCircle;
+    shoot.nextRechargeTime = -1;
 }
 
 function paintAbilityObjectFireCircle(ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) {

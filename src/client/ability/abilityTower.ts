@@ -12,7 +12,7 @@ import { positionToMapKey } from "../map/map.js";
 import { findPlayerByCharacterId } from "../player.js";
 import { playerInputBindingToDisplayValue } from "../input/playerInput.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, getAbilityNameUiText, paintAbilityUiKeyBind } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, abilityResetAbility, getAbilityNameUiText, paintAbilityUiKeyBind } from "./ability.js";
 import { ABILITY_NAME_FIRE_CIRCLE } from "./abilityFireCircle.js";
 import { ABILITY_NAME_ICE_AURA } from "./abilityIceAura.js";
 import { ABILITY_NAME_SHOOT } from "./abilityShoot.js";
@@ -175,6 +175,12 @@ function createAbilityObjectTower(idCounter: IdCounter, ownerId: number, faction
 function resetAbility(ability: Ability) {
     const abilityTower = ability as AbilityTower;
     abilityTower.lastBuildTime = undefined;
+    if (abilityTower.abilityObjectsAttached) {
+        for (let attached of abilityTower.abilityObjectsAttached) {
+            attached.lineDamageNextDamageTick = undefined;
+            if (attached.ability) abilityResetAbility(attached.ability);
+        }
+    }
 }
 
 function createDamageBreakDown(damage: number, ability: Ability, abilityObject: AbilityObject | undefined, damageAbilityName: string, game: Game): AbilityDamageBreakdown[] {
@@ -210,8 +216,13 @@ function setAbilityTowerToBossLevel(ability: Ability, level: number) {
     abilityTower.damage = level * 10;
     abilityTower.maxConnectRange = 800;
     if (abilityTower.abilityObjectsAttached) {
+        abilityTower.maxTowers = 2 + level;
         const abilityObjects = abilityTower.abilityObjectsAttached.slice(0, abilityTower.maxTowers);
         updateTowerObjectAbilityLevels(abilityObjects, abilityTower);
+        for (let object of abilityObjects) {
+            const objectTower = object as AbilityObjectTower;
+            objectTower.damage = 10 * level;
+        }
     }
 }
 

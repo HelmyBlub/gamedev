@@ -52,7 +52,7 @@ function changeCharacterToTowerBuilderClass(
                 experienceForLevelUp: 10,
             }
         },
-        availableSkillPoints: { available: 0, used: 1 },
+        availableSkillPoints: { available: 1, used: 0 },
     };
     character.characterClasses.push(charClass);
     addAbilityToCharacter(character, createAbilityTower(idCounter, "ability1"), charClass);

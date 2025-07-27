@@ -23,6 +23,7 @@ export function addAbilitySingleTarget() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_SINGLETARGET] = {
         createAbility: createAbilitySingleTarget,
         paintAbility: paintAbilitySingleTarget,
+        resetAbility: resetAbility,
         setAbilityToLevel: setAbilitySingleTargetToLevel,
         setAbilityToBossLevel: setAbilitySingleTargetToBossLevel,
         setAbilityToEnemyLevel: setAbilityToEnemyLevel,
@@ -49,6 +50,11 @@ export function createAbilitySingleTarget(
         damageIncreaseFactorPerAttack: 0,
         upgrades: {},
     };
+}
+
+function resetAbility(ability: Ability) {
+    const single = ability as AbilitySingleTarget;
+    single.nextAttackTime = undefined;
 }
 
 function setAbilitySingleTargetToLevel(ability: Ability, level: number) {
@@ -110,7 +116,10 @@ function tickAbilitySingleTarget(abilityOwner: AbilityOwner, ability: Ability, g
             target = findCharacterByIdAroundPosition(abilityOwner, abilitySingleTarget.maxRange, game, abilitySingleTarget.targetId);
             if (!target) {
                 abilitySingleTarget.sameTargetAttackCounter -= 2;
-                if (abilitySingleTarget.sameTargetAttackCounter < 0) abilitySingleTarget.sameTargetAttackCounter = 0;
+                if (abilitySingleTarget.sameTargetAttackCounter < 0) {
+                    abilitySingleTarget.sameTargetAttackCounter = 0;
+                    abilitySingleTarget.targetId = undefined;
+                }
             }
         }
         if (target) {

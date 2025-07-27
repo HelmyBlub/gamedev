@@ -363,21 +363,25 @@ export function findAbilityOwnerById(abilityId: number, game: Game): AbilityOwne
     return undefined;
 }
 
-export function resetAllCharacterAbilities(character: Character) {
-    for (let ability of character.abilities) {
-        const abililtyFunctions = ABILITIES_FUNCTIONS[ability.name];
-        if (abililtyFunctions && abililtyFunctions.resetAbility) {
-            abililtyFunctions.resetAbility(ability);
-            const upgradesFunctions = abililtyFunctions.abilityUpgradeFunctions;
-            if (!upgradesFunctions) continue;
-            const keys = Object.keys(ability.upgrades);
-            for (let key of keys) {
-                const functions = upgradesFunctions[key];
-                if (functions && functions.reset) {
-                    functions.reset(ability);
-                }
+export function abilityResetAbility(ability: Ability) {
+    const abililtyFunctions = ABILITIES_FUNCTIONS[ability.name];
+    if (abililtyFunctions && abililtyFunctions.resetAbility) {
+        abililtyFunctions.resetAbility(ability);
+        const upgradesFunctions = abililtyFunctions.abilityUpgradeFunctions;
+        if (!upgradesFunctions) return;
+        const keys = Object.keys(ability.upgrades);
+        for (let key of keys) {
+            const functions = upgradesFunctions[key];
+            if (functions && functions.reset) {
+                functions.reset(ability);
             }
         }
+    }
+}
+
+export function resetAllCharacterAbilities(character: Character) {
+    for (let ability of character.abilities) {
+        abilityResetAbility(ability);
     }
     if (character.pets) {
         for (let pet of character.pets) {

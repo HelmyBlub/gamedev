@@ -30,6 +30,7 @@ export function addAbilitySword() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_SWORD] = {
         createAbility: createAbilitySword,
         paintAbility: paintAbilitySword,
+        resetAbility: resetAbility,
         setAbilityToLevel: setAbilitySwordToLevel,
         setAbilityToBossLevel: setAbilitySwordToBossLevel,
         setAbilityToEnemyLevel: setAbilityToEnemyLevel,
@@ -60,6 +61,11 @@ export function createAbilitySword(
         tickInterval: 100,
         upgrades: {},
     };
+}
+
+function resetAbility(ability: Ability) {
+    const sword = ability as AbilitySword;
+    sword.nextTickTime = undefined;
 }
 
 function setAbilitySwordToLevel(ability: Ability, level: number) {

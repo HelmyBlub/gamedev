@@ -20,15 +20,16 @@ export type AbilityShoot = Ability & {
 
 export function addAbilityShoot() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_SHOOT] = {
-        tickAbility: tickAbilityShoot,
-        tickAbilityObject: tickProjectile,
+        canObjectHitMore: canShootHitMore,
+        createAbility: createAbilityShoot,
         deleteAbilityObject: deleteProjectile,
         onObjectHit: onShootHit,
-        canObjectHitMore: canShootHitMore,
-        setAbilityToLevel: setAbilityShootToLevel,
-        createAbility: createAbilityShoot,
+        resetAbility: resetAbility,
         setAbilityToBossLevel: setAbilityShootToBossLevel,
         setAbilityToEnemyLevel: setAbilityToEnemyLevel,
+        setAbilityToLevel: setAbilityShootToLevel,
+        tickAbility: tickAbilityShoot,
+        tickAbilityObject: tickProjectile,
         canBeUsedByBosses: true,
     };
 }
@@ -60,6 +61,11 @@ export function createAbilityShoot(
         bulletSize: bulletSize,
         upgrades: {},
     };
+}
+
+function resetAbility(ability: Ability) {
+    const shoot = ability as AbilityShoot;
+    shoot.nextShotTime = -1;
 }
 
 function setAbilityShootToLevel(ability: Ability, level: number) {
