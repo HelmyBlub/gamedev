@@ -4,7 +4,7 @@ import { CHARACTER_TYPE_BOSS_CLONE_ENEMY, CHARACTER_TYPE_BOSS_ENEMY } from "../c
 import { CHARACTER_TYPE_KING_ENEMY } from "../character/enemy/kingEnemy.js";
 import { CHARACTER_TYPE_ENEMY_FIX_RESPAWN_POSITION, FixPositionRespawnEnemyCharacter } from "../character/enemy/fixPositionRespawnEnemyModel.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../character/upgrade.js";
-import { calculateDistance, getCameraPosition, getNextId } from "../game.js";
+import { calculateDistance, getCameraPosition, getNextId, rotateAroundPoint } from "../game.js";
 import { Position, Game, IdCounter, FACTION_ENEMY, FACTION_PLAYER } from "../gameModel.js";
 import { getPointPaintPosition } from "../gamePaint.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
@@ -12,7 +12,7 @@ import { positionToMapKey } from "../map/map.js";
 import { findPlayerByCharacterId } from "../player.js";
 import { playerInputBindingToDisplayValue } from "../input/playerInput.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, abilityResetAbility, getAbilityNameUiText, paintAbilityUiKeyBind } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, abilityResetAbility, addAbilityToCharacter, getAbilityNameUiText, paintAbilityUiKeyBind } from "./ability.js";
 import { ABILITY_NAME_FIRE_CIRCLE } from "./abilityFireCircle.js";
 import { ABILITY_NAME_ICE_AURA } from "./abilityIceAura.js";
 import { ABILITY_NAME_SHOOT } from "./abilityShoot.js";
@@ -21,6 +21,7 @@ import { ABILITY_NAME_SWORD } from "./abilitySword.js";
 import { MoreInfoPart, createMoreInfosPart } from "../moreInfo.js";
 import { AbilityDamageBreakdown } from "../combatlog.js";
 import { CHARACTER_TYPE_CURSE_FOUNTAIN_BOSS } from "../character/enemy/curseFountainBoss.js";
+import { createAbilityTowerRotate } from "./abilityTowerRotate.js";
 
 type AbilityObjectTower = AbilityObject & {
     ownerId: number,
@@ -48,6 +49,7 @@ export type AbilityTower = Ability & {
     maxConnectRange?: number,
     subType?: string,
     abilityObjectsAttached?: AbilityObjectTower[],
+    rotateClockwise?: boolean,
 }
 
 export const ABILITY_NAME_TOWER = "Tower";
@@ -128,7 +130,11 @@ export function abilityTowerSubTypeUpgradeChoices(): UpgradeOptionAndProbability
         displayText: `Stationary Towers`,
         type: "Ability",
         identifier: SUBTYPE_STATIONARY,
-        displayMoreInfoText: [`Towers placed will stay on position of map.`, `Get more additional towers through upgrades.`],
+        displayMoreInfoText: [
+            `Towers placed will stay on position of map.`,
+            `Get more additional towers through upgrades.`,
+            `Higher range to place towers.`,
+        ],
         name: ABILITY_NAME_TOWER,
     };
     upgradeOptionAndProbabilities.push({ option: upgradeOption1, probability: 1 });
@@ -175,6 +181,7 @@ function createAbilityObjectTower(idCounter: IdCounter, ownerId: number, faction
 function resetAbility(ability: Ability) {
     const abilityTower = ability as AbilityTower;
     abilityTower.lastBuildTime = undefined;
+    abilityTower.rotateClockwise = undefined;
     if (abilityTower.abilityObjectsAttached) {
         for (let attached of abilityTower.abilityObjectsAttached) {
             attached.lineDamageNextDamageTick = undefined;
@@ -655,6 +662,13 @@ function tickAbilityTower(abilityOwner: AbilityOwner, ability: Ability, game: Ga
             objectTower.y = abilityOwner.y + objectTower.relativePositon!.y;
             tickAbilityObjectTower(objectTower, game, abilityTower);
         }
+        for (let objectTower of abilityTower.abilityObjectsAttached) {
+            if (abilityTower.rotateClockwise) {
+                objectTower.relativePositon = rotateAroundPoint(objectTower.relativePositon!, { x: 0, y: 0 }, 0.01);
+            } else if (abilityTower.rotateClockwise === false) {
+                objectTower.relativePositon = rotateAroundPoint(objectTower.relativePositon!, { x: 0, y: 0 }, -0.01);
+            }
+        }
     }
 }
 
@@ -754,6 +768,10 @@ function executeAbilityTowerUpgradeOption(ability: Ability, character: Character
     if (upgradeOption.identifier === SUBTYPE_ATTACHED) {
         abilityTower.subType = SUBTYPE_ATTACHED;
         abilityTower.abilityObjectsAttached = [];
+        abilityTower.maxClickRange *= 0.5;
+        const charClass = character.characterClasses!.find(c => c.id === abilityTower.classIdRef);
+        addAbilityToCharacter(character, createAbilityTowerRotate(game.state.idCounter, "ability2", true), charClass);
+        addAbilityToCharacter(character, createAbilityTowerRotate(game.state.idCounter, "ability3", false), charClass);
         return;
     }
 }

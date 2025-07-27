@@ -586,6 +586,17 @@ export function retryFight(game: Game) {
     game.state.abilityObjects = [];
 }
 
+export function rotateAroundPoint(point: Position, pivot: Position, angle: number): Position {
+    const translatedX = point.x - pivot.x;
+    const translatedY = point.y - pivot.y;
+    const s = Math.sin(angle);
+    const c = Math.cos(angle);
+    const rotatedX = c * translatedX - s * translatedY;
+    const rotatedY = s * translatedX + c * translatedY;
+    return { x: rotatedX + pivot.x, y: rotatedY + pivot.y };
+}
+
+
 function shouldTickCatchUpSinglePlayer(game: Game, shouldTickTime: number): boolean {
     if (game.gameSpeedSettings.ticksPerPaint[0] === 0) return true;
     const now = performance.now();

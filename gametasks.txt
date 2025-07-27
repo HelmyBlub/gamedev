@@ -3,13 +3,6 @@ increase version
 
 current tasks:      
 - builder attached towers
-    - bug: not all towers work
-    - bug: tower level incorrect
-    - bug: line damage not working for enemy
-        - not working always?
-    - bug: ability objects don't update ids
-        - when taken from past character, have wrong id and stay forever
-    - check: king change and refresh browser, see if ids are correct
     - add button to rotate towers
     - check tower connectedToId
     - balance different choices

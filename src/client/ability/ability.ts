@@ -48,6 +48,7 @@ import { addAbilityPoisonTile } from "./abilityPoisonTile.js"
 import { CHARACTER_PET_TYPE_CLONE } from "../character/playerCharacters/characterPetTypeClone.js"
 import { addAbilityPetBoomerang } from "./petTamer/abilityPetBoomerang.js"
 import { addAbilityPetBombard } from "./petTamer/abilityPetBombard.js"
+import { addAbilityTowerRotate } from "./abilityTowerRotate.js"
 
 export type Ability = {
     id: number,
@@ -160,6 +161,7 @@ export function onDomLoadSetAbilitiesFunctions() {
     addAbilityCircleAround();
     addAbilityCloud();
     addAbilityPoisonTile();
+    addAbilityTowerRotate();
 }
 
 export function doAbilityDamageBreakDown(damage: number, ability: Ability | undefined, abilityObject: AbilityObject | undefined, damageAbilityName: string, clientId: number, petName: string | undefined, game: Game, faction: string) {
@@ -695,6 +697,7 @@ export function paintAbilityUiDefault(
     imageName: string | undefined = undefined,
     grayFillPercent: number = 0,
     counter: number | undefined = undefined,
+    mirrorImage: boolean = false,
 ) {
     const rectSize = size;
 
@@ -713,7 +716,15 @@ export function paintAbilityUiDefault(
     if (imageName) {
         const image = getImage(imageName);
         if (image) {
-            ctx.drawImage(image, 0, 0, 40, 40, drawStartX, drawStartY, rectSize, rectSize);
+            if (mirrorImage) {
+                ctx.save();
+                ctx.translate(drawStartX, 0);
+                ctx.scale(-1, 1);
+                ctx.drawImage(image, 0, 0, 40, 40, 0, drawStartY, -rectSize, rectSize);
+                ctx.restore();
+            } else {
+                ctx.drawImage(image, 0, 0, 40, 40, drawStartX, drawStartY, rectSize, rectSize);
+            }
         }
     }
 
