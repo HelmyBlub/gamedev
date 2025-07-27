@@ -27,7 +27,7 @@ type AbilityObjectTower = AbilityObject & {
     ownerId: number,
     size: number,
     id: number,
-    conntetedToId?: number,
+    connectedToId?: number,
     ability?: Ability,
     lineDamageTickFrequency: number,
     lineDamageNextDamageTick?: number,
@@ -300,7 +300,7 @@ function castTower(abilityOwner: AbilityOwner, ability: Ability, castPosition: P
     }
     const nearest = getNearestTower(abilityObjects, newTower, game.state.randomSeed, abilityTower.maxConnectRange);
     if (nearest) {
-        newTower.conntetedToId = nearest.id;
+        newTower.connectedToId = nearest.id;
     }
     if (abilityTower.subType === SUBTYPE_ATTACHED) {
         newTower.relativePositon = {
@@ -317,8 +317,8 @@ function updateTowersWhichHaveDeletedId(abilityObjects: AbilityObject[], deleted
     for (let abilityObject of abilityObjects) {
         if (abilityObject.type === ABILITY_NAME_TOWER) {
             const abilityTower = abilityObject as AbilityObjectTower;
-            if (abilityTower.conntetedToId !== undefined && abilityTower.conntetedToId === deletedId) {
-                delete abilityTower.conntetedToId;
+            if (abilityTower.connectedToId !== undefined && abilityTower.connectedToId === deletedId) {
+                delete abilityTower.connectedToId;
             }
         }
     }
@@ -503,11 +503,11 @@ function paintAbilityObjectTower(ctx: CanvasRenderingContext2D, abilityObject: A
 
 function getTowerConnectionCount(abilityObjects: AbilityObject[], tower: AbilityObjectTower): number {
     let counter = 0;
-    if (tower.conntetedToId !== undefined) counter++;
+    if (tower.connectedToId !== undefined) counter++;
     for (let abilityObject of abilityObjects) {
         if (abilityObject.type === ABILITY_NAME_TOWER) {
             const abilityTower = abilityObject as AbilityObjectTower;
-            if (abilityTower.conntetedToId !== undefined && abilityTower.conntetedToId === tower.id) {
+            if (abilityTower.connectedToId !== undefined && abilityTower.connectedToId === tower.id) {
                 counter++;
             }
         }
@@ -517,12 +517,12 @@ function getTowerConnectionCount(abilityObjects: AbilityObject[], tower: Ability
 }
 
 function paintEffectConnected(ctx: CanvasRenderingContext2D, abilityObjectTower: AbilityObjectTower, cameraPosition: Position, abilityObjects: AbilityObject[], game: Game) {
-    if (abilityObjectTower.conntetedToId !== undefined) {
+    if (abilityObjectTower.connectedToId !== undefined) {
         ctx.strokeStyle = "red";
         if (abilityObjectTower.faction === FACTION_ENEMY) {
             ctx.strokeStyle = "black";
         }
-        const connectedTower = getTowerById(abilityObjects, abilityObjectTower.conntetedToId);
+        const connectedTower = getTowerById(abilityObjects, abilityObjectTower.connectedToId);
         if (connectedTower === undefined) {
             console.log("tower connection not cleaned up");
             return;
@@ -579,7 +579,7 @@ function getNearestTower(abilityObjects: AbilityObject[], tower: AbilityObjectTo
 }
 
 function tickEffectConnected(abilityObjectTower: AbilityObjectTower, game: Game, abilityTower: AbilityTower | undefined = undefined) {
-    if (abilityObjectTower.conntetedToId === undefined) return;
+    if (abilityObjectTower.connectedToId === undefined) return;
     let abilityObjects = game.state.abilityObjects;
     if (abilityTower) {
         abilityObjects = abilityTower.abilityObjectsAttached!;
@@ -588,7 +588,7 @@ function tickEffectConnected(abilityObjectTower: AbilityObjectTower, game: Game,
         }
     }
 
-    const connectedTower = getTowerById(abilityObjects, abilityObjectTower.conntetedToId);
+    const connectedTower = getTowerById(abilityObjects, abilityObjectTower.connectedToId);
     if (connectedTower === undefined) {
         console.log("tower connection not cleaned up");
         return;

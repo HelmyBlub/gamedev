@@ -1,13 +1,11 @@
-next test run:
+next test run: tower
 increase version
 
 current tasks:      
 - builder attached towers
-    - add button to rotate towers
-    - check tower connectedToId
-    - balance different choices
-        - limit place range for attached
-
+    - test and balance different choices
+    - bug: king sign paints towers far away
+        - when using cheat close king. on king sign itneract can see towers in king area
 
 
 next feature ideas:
