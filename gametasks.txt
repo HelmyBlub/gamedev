@@ -1,11 +1,15 @@
-next test run: tower
+next test run:
 increase version
 
 current tasks:      
+- display bug: tower builder bonus move speed with move speed upgrade building, tooltip long numbers
 - builder attached towers
     - test and balance different choices
     - bug: king sign paints towers far away
         - when using cheat close king. on king sign itneract can see towers in king area
+- testruns:
+    - short builder
+    - short king
 
 
 next feature ideas:

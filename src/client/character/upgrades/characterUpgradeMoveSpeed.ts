@@ -57,7 +57,7 @@ function getOptions(character: Character, characterClass: CharacterClass, game: 
         option: {
             identifier: CHARACTER_UPGRADE_BONUS_MOVE_SPEED,
             displayText: CHARACTER_UPGRADE_BONUS_MOVE_SPEED + upgradeCounter,
-            displayMoreInfoText: [`Increase movement speed from ${character.baseMoveSpeed} to ${character.baseMoveSpeed + BONUS_MOVE_SPEED_PER_LEVEL}`],
+            displayMoreInfoText: [`Increase movement speed from ${character.baseMoveSpeed.toFixed(2)} to ${(character.baseMoveSpeed + BONUS_MOVE_SPEED_PER_LEVEL).toFixed(2)}`],
             type: "Character",
         },
         probability: 1,

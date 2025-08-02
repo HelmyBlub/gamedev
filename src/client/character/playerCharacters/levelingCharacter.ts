@@ -1,13 +1,10 @@
 import { getPlayerCharacters } from "../character.js";
 import { Game, GameState } from "../../gameModel.js";
 import { Character } from "../characterModel.js";
-import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability, fillRandomUpgradeOptionChoices } from "../upgrade.js";
+import { AbilityUpgradeOption, UpgradeOption, fillRandomUpgradeOptionChoices } from "../upgrade.js";
 import { ABILITIES_FUNCTIONS } from "../../ability/ability.js";
-import { CHARACTER_CLASS_TOWER_BUILDER } from "./characterClassTower.js";
 import { CharacterClass } from "./playerCharacters.js";
 import { CHARACTER_UPGRADE_FUNCTIONS } from "../upgrades/characterUpgrades.js";
-import { CHARACTER_UPGRADE_BONUS_HP } from "../upgrades/characterUpgradeBonusHealth.js";
-import { CHARACTER_UPGRADE_BONUS_MOVE_SPEED } from "../upgrades/characterUpgradeMoveSpeed.js";
 import { levelUpIncreaseExperienceRequirement } from "../../game.js";
 
 export const LEVELING_CLASS_SKILL_POINT_GAIN_EVERY_X_LEVELS = 3;
