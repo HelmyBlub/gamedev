@@ -2,13 +2,6 @@ next test run:
 increase version
 
 current tasks:      
-- bug: sign boss display vanish when zoomed in and left of sign
-- builder attached towers
-    - bug: king sign paints towers far away
-        - when using cheat close king. on king sign interact can see towers in king area
-- testruns:
-    - short builder
-    - short king
 
 
 next feature ideas:
