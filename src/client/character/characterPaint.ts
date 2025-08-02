@@ -292,8 +292,9 @@ function randomizedCharacterImagePaint(ctx: CanvasRenderingContext2D, character:
     if (characterImage.properties?.canvases
         && characterImage.properties?.canvases[randomizedCharacterImageToKey(character.paint.randomizedCharacterImage!)]) {
         const paintPos = getPointPaintPosition(ctx, character, cameraPosition, game.UI.zoom);
-        if (paintPos.x < -character.width || paintPos.x > (ctx.canvas.width + character.width) / game.UI.zoom.factor
-            || paintPos.y < -character.height || paintPos.y > (ctx.canvas.height + character.height) / game.UI.zoom.factor) return;
+        let activeZoom = ctx.getTransform().m11 !== 1 ? game.UI.zoom.factor : 1;
+        if (paintPos.x < -character.width || paintPos.x > (ctx.canvas.width + character.width) / activeZoom
+            || paintPos.y < -character.height || paintPos.y > (ctx.canvas.height + character.height) / activeZoom) return;
 
         const spriteWidth = characterImage.spriteRowWidths[0];
         const spriteHeight = 40;
@@ -334,8 +335,9 @@ function slimePaint(ctx: CanvasRenderingContext2D, character: Character, cameraP
     loadImage(characterImage, character.paint.color, undefined);
     if (characterImage.properties?.canvas) {
         const paintPos = getPointPaintPosition(ctx, character, cameraPosition, game.UI.zoom);
-        if (paintPos.x < -character.width || paintPos.x > ctx.canvas.width / game.UI.zoom.factor
-            || paintPos.y < -character.height || paintPos.y > ctx.canvas.height / game.UI.zoom.factor) return;
+        let activeZoom = ctx.getTransform().m11 !== 1 ? game.UI.zoom.factor : 1;
+        if (paintPos.x < -character.width || paintPos.x > ctx.canvas.width / activeZoom
+            || paintPos.y < -character.height || paintPos.y > ctx.canvas.height / activeZoom) return;
         const spriteAnimation = Math.floor(game.state.time / 250) % 2;
         const spriteColor = characterImage.properties.colorToSprite!.indexOf(character.paint.color);
         const spriteWidth = characterImage.spriteRowWidths[0];

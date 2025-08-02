@@ -1,3 +1,4 @@
+import { ABILITY_NAME_TOWER, AbilityTower } from "../ability/abilityTower.js";
 import { resetCharacter } from "../character/character.js";
 import { Character } from "../character/characterModel.js";
 import { paintCharacters } from "../character/characterPaint.js";
@@ -90,6 +91,14 @@ function paintInteractSign(ctx: CanvasRenderingContext2D, mapObject: MapTileObje
                 pet.x = kingPositionToFitForPaint.x + offsetX;
                 pet.y = kingPositionToFitForPaint.y;
                 offsetX += 20;
+            }
+        }
+        for (let ability of kingCopy.abilities) {
+            if (ability.name === ABILITY_NAME_TOWER) {
+                const tower = ability as AbilityTower;
+                if (tower.abilityObjectsAttached) {
+                    tower.abilityObjectsAttached = undefined;
+                }
             }
         }
         paintCharacters(ctx, [kingCopy], cameraPosition, game);
