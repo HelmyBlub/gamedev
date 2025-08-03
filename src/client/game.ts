@@ -37,6 +37,7 @@ import { MAP_AREA_SPAWN_ON_DISTANCE_GOD } from "./map/mapGodArea.js";
 import { MAP_AREA_SPAWN_ON_DISTANCE_CURSE_CLEANSE } from "./map/mapCurseCleanseArea.js";
 import { removeCurses } from "./curse/curse.js";
 import { displayTextAtCameraPosition } from "./floatingText.js";
+import { statisticsOnGameRestart } from "./statistics.js";
 
 /** values between - Math.PI * 1.5 to Math.PI*0.5 */
 export function calculateDirection(startPos: Position, targetPos: Position): number {
@@ -80,6 +81,7 @@ export function gameRestart(game: Game) {
         }
         copyAndSetPermanentDataForReplay(record.data.permanentData, game);
     }
+    statisticsOnGameRestart(game);
     gameInit(game);
 }
 

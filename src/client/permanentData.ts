@@ -10,6 +10,7 @@ import { Highscores, createHighscoreBoards } from "./highscores.js";
 import { Achievements, createDefaultAchivements } from "./achievements/achievements.js";
 import { GameMapModifier } from "./map/modifiers/mapModifier.js";
 import { TamerPetCharacter } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
+import { PERMANENT_DATA_LOCALSTORAGE_GAME_STATISTICS } from "./statistics.js";
 
 export type PermanentDataParts = {
     pastCharacters?: PastPlayerCharacters,
@@ -40,6 +41,7 @@ export function permanentStorageLoadByJson(data: string | null, game: Game) {
 
 export function resetPermanentData() {
     localStorage.removeItem(PERMANENT_DATA_LOCALSTORAGE_GAME);
+    localStorage.removeItem(PERMANENT_DATA_LOCALSTORAGE_GAME_STATISTICS);
 }
 
 export function copyAndSetPermanentDataForReplay(permanentData: PermanentDataParts, game: Game) {
@@ -93,7 +95,7 @@ export function setPermanentDataFromReplayData(game: Game) {
     }
 }
 
-function jsonParseNullAllowed(jsonString: string | null): any {
+export function jsonParseNullAllowed(jsonString: string | null): any {
     if (!jsonString) return undefined;
     try {
         const result = JSON.parse(jsonString);

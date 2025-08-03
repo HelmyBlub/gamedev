@@ -6,7 +6,6 @@ import { CommandRestart, StateCompareHash } from "./commands.js";
 import { createHighscoreBoards, Highscores } from "./highscores.js";
 import { createMap, GameMap } from "./map/map.js";
 import { KingAreaEntranceData } from "./map/mapKingArea.js";
-import { generateMissingChunks } from "./map/mapGeneration.js";
 import { PermanentDataParts } from "./permanentData.js";
 import { createPlayerWithPlayerCharacter, MoneyGainedThisRun, PermanentPlayerData, Player } from "./player.js";
 import { PlayerInput } from "./input/playerInput.js";
@@ -23,6 +22,7 @@ import { createDefaultStackTextsData, PaintStackTextsData, PaintTextData } from 
 import { TouchUiInfo } from "./input/inputTouch.js";
 import { ControllerButtonsPressed } from "./input/inputController.js";
 import { AdditionalPaints } from "./additionalPaint.js";
+import { GameStatistics, statisticsCreate } from "./statistics.js";
 
 export type Position = {
     x: number,
@@ -330,6 +330,7 @@ export type Game = {
     sound?: Sound,
     additionalPaints?: AdditionalPaints,
     UI: UI,
+    statistics: GameStatistics,
 }
 
 export const FACTION_ENEMY = "enemy";
@@ -459,6 +460,7 @@ export function createDefaultGameData(c?: HTMLCanvasElement, ctx?: CanvasRenderi
             lastMouseDownWasUIClick: false,
         },
         sound: createSound(),
+        statistics: statisticsCreate(),
     }
     if (game.state.map.kingArea) {
         setDefaultNextKings(game);

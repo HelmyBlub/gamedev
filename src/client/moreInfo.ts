@@ -15,6 +15,7 @@ import { Game, Position } from "./gameModel.js";
 import { createHighscoresMoreInfos } from "./highscores.js";
 import { createMoreInfosForMabObject } from "./map/mapObjects.js";
 import { createMoreInfoMoney, createMoreInfoMoneyGainedPart, findPlayerByCliendId } from "./player.js";
+import { createMoreInfoStatistics } from "./statistics.js";
 
 export type MoreInfoPart = {
     texts: string[],
@@ -249,6 +250,13 @@ export function createRequiredMoreInfos(game: Game): MoreInfos {
     const achievemntsContainer = createAchievementsMoreInfo(ctx, moreInfos, game.state.achievements);
     moreInfos.containers.containers.push(achievemntsContainer);
     paintX += achievemntsContainer.headingWidth + moreInfos.headingHorizontalSpacing;
+
+    const statisticsContainer = createMoreInfoStatistics(moreInfos, game);
+    if (statisticsContainer) {
+        moreInfos.containers.containers.push(statisticsContainer);
+        paintX += statisticsContainer.headingWidth + moreInfos.headingHorizontalSpacing;
+    }
+
 
     return moreInfos;
 }

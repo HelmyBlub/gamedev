@@ -27,6 +27,7 @@ import { addPetTypeFollowAttackFunctions } from "./playerCharacters/characterPet
 import { addAreaBossType } from "./enemy/areaBoss/areaBoss.js";
 import { addCurseFountainBossType } from "./enemy/curseFountainBoss.js";
 import { CURSE_ICE } from "../curse/curseIce.js";
+import { statisticsAddRun } from "../statistics.js";
 
 export function onDomLoadSetCharactersFunctions() {
     addAreaBossType();
@@ -694,7 +695,10 @@ function onCharacterTypeKill(character: Character, game: Game) {
 function killCharacter(character: Character, game: Game, abilityIdRef: number | undefined = undefined) {
     character.state = "dead";
 
-    if (game.state.timeFirstKill === undefined) game.state.timeFirstKill = game.state.time;
+    if (game.state.timeFirstKill === undefined) {
+        game.state.timeFirstKill = game.state.time;
+        statisticsAddRun(game);
+    }
     levelingCharacterAndClassXpGain(game.state, character.experienceWorth, game);
     onCharacterTypeKill(character, game);
     if (abilityIdRef !== undefined && character.type !== CHARACTER_TYPE_BOSS_ENEMY) {

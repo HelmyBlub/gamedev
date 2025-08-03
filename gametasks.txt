@@ -2,9 +2,18 @@ next test run:
 increase version
 
 current tasks:      
+- speedrun my game
+    - kill god as fast as possible
+        - real Time: <12:07
 
 
 next feature ideas:
+- more info: Game statistics
+    - timer for speedrun results
+        - real time
+        - game time
+        - lost frames
+    - save permanent but  not in replay
 - each stream spend time on thinking whats next
     - what makes most sense to work on?
         - what would make the game more fun to play for me?
@@ -22,6 +31,8 @@ next feature ideas:
     - base building
         - more options to spend money to build up map center city
     - more classes
+        - spellmaker
+            - be able to make spells by drawing
     - graphics:
         - random weather effects
         - more variation 
@@ -29,15 +40,13 @@ next feature ideas:
                 - 
             - becomes desert
                 - nothing special
+    - defense mode
+        - defend base, waves of enemies invade
 
-interests me:
-- WebGPU
-    - can not do it with my Virtual Machine setup
-        - GPU not available in VM. I only have one for host operating system
 
 
 refactor possibilities:
 
-possible future tasks: (only keep 5)
+possible future tasks:
 - improvement: getChunksTouchingLine2 does not work, still needs to improve
 
