@@ -2,13 +2,36 @@ next test run:
 increase version
 
 current tasks:      
-- check statistics with replays? should it be counted?
+- check god hard mode activate for achievement god kill and money
+    - should i get it here?
+    - should i get legendary improvement?
 - speedrun my game
     - kill god as fast as possible
         - real Time: <12:07 (builder + ball)
+        - real time: <18:20 (builder + tamer)
+        - to squishy (builder + sniper)
     - kill hard mode god as fast as possible:
         - strategy:
-            - nce
+            - ball to end for money and upgrade buildings
+            - play sniper and become king
+                - defeat king for legendary, use ball + legendary to defeat all kings to level up
+            - sniper legendary
+                - level up max (~40min skillpoints 25 and level 430)
+                    - still to weak and very laggy build
+- base defense mode
+    - requires 12 past character with main abilities still availalble to start
+        - button 6 for easy use
+    - defend base, waves of enemies invade
+        - all enemy types (small, big, normal)
+        - bosses
+        - kings
+    - past characters protect base
+    - past character will be ticking AI
+    - place past character at positions
+    - button to cycle through past characters
+        - can play each one of them
+    - death circle preventing player from running to far out
+    - will end when all past players dead?
 
 
 next feature ideas:

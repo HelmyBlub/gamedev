@@ -21,6 +21,8 @@ import { addMoneyAmountToPlayer, calculateMoneyForKingMaxHp } from "../../../pla
 import { calculateMovePosition } from "../../../map/map.js";
 import { legendaryAbilityGiveBlessing } from "../../../map/buildings/classBuilding.js";
 import { areaSpawnOnDistanceGetAreaMiddlePosition, GameMapAreaSpawnOnDistance } from "../../../map/mapAreaSpawnOnDistance.js";
+import { finishAchievement } from "../../../achievements/achievements.js";
+import { ACHIEVEMENT_NAME_GOD_KILL } from "../../../achievements/achievementGodKill.js";
 
 
 const FIRST_PICK_UP_DELAY = 3000;
@@ -72,6 +74,10 @@ export function godEnemyActivateHardMode(game: Game) {
     const god: GodEnemyCharacter = game.state.bossStuff.bosses.find(b => b.type === CHARACTER_TYPE_GOD_ENEMY) as GodEnemyCharacter;
     if (!game.state.bossStuff.normalModeMoneyAwarded) {
         const moneyGain = calculateMoneyForKingMaxHp(god.maxHp) * 2;
+        const godKillAchievement = game.state.achievements.open.find(a => a.name === ACHIEVEMENT_NAME_GOD_KILL);
+        if (godKillAchievement) {
+            finishAchievement(godKillAchievement, game.state.achievements, game);
+        }
         addMoneyAmountToPlayer(moneyGain, game.state.players, game);
         game.UI.moneyGainedThisRun.push({
             amount: moneyGain,
@@ -118,10 +124,10 @@ export function godCreateMoreInfos(game: Game, heading: string): MoreInfosPartCo
 }
 
 function onCharacterKill(character: Character, game: Game) {
+    legendaryAbilityGiveBlessing("God", getPlayerCharacters(game.state.players));
     if (godEnemyHardModeConditionFullfiled(game)) {
         godEnemyActivateHardMode(game);
     } else {
-        legendaryAbilityGiveBlessing("God", getPlayerCharacters(game.state.players));
         if (isGodHardModeActive(game)) legendaryAbilityGiveBlessing("God Hard Mode", getPlayerCharacters(game.state.players));
         endGame(game, false, true);
     }
