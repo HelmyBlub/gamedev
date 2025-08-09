@@ -2,18 +2,16 @@ next test run:
 increase version
 
 current tasks:      
+- check statistics with replays? should it be counted?
 - speedrun my game
     - kill god as fast as possible
-        - real Time: <12:07
+        - real Time: <12:07 (builder + ball)
+    - kill hard mode god as fast as possible:
+        - strategy:
+            - nce
 
 
 next feature ideas:
-- more info: Game statistics
-    - timer for speedrun results
-        - real time
-        - game time
-        - lost frames
-    - save permanent but  not in replay
 - each stream spend time on thinking whats next
     - what makes most sense to work on?
         - what would make the game more fun to play for me?
@@ -28,20 +26,15 @@ next feature ideas:
         - over achievements?
     - randomize upgarde with rariety        
         - common, rare, epic, legendary
-    - base building
-        - more options to spend money to build up map center city
     - more classes
         - spellmaker
             - be able to make spells by drawing
-    - graphics:
-        - random weather effects
-        - more variation 
-            - becomes rainy
-                - 
-            - becomes desert
-                - nothing special
-    - defense mode
+    - base building
+        - more options to spend money to build up map center city
+    - base defense mode
         - defend base, waves of enemies invade
+        - past characters protect base
+        - place past character at positions
 
 
 

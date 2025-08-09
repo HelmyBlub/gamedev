@@ -4,9 +4,10 @@ import { pushStackPaintTextData } from "./floatingText.js";
 import { deepCopy, setClientDefaultKeyBindings } from "./game.js";
 import { Game, GameState, RecordDataMultiplayer } from "./gameModel.js";
 import { sendMultiplayer } from "./multiplayerConenction.js";
-import { createDefaultKeyBindings1, createDefaultUiKeyBindings, findPlayerByCliendId } from "./player.js";
+import { findPlayerByCliendId } from "./player.js";
 import { playerAction, PlayerInput } from "./input/playerInput.js";
 import { compressString } from "./stringCompress.js";
+import { statisticsOnGameRestart } from "./statistics.js";
 
 type Command = { command: string };
 type CommandTimeUpdate = Command & { time: number };
@@ -213,6 +214,7 @@ function handleReceivedInputsWhichCameBeforeGameState(game: Game) {
 }
 
 function restart(game: Game, data: CommandRestart) {
+    statisticsOnGameRestart(game);
     if (game.testing.record?.data.replayPlayerInputs !== undefined) game.testing.record.data.replayPlayerInputs.push(data);
     game.state.playerInputs.push(data);
     game.state.triggerRestart = true;
