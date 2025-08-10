@@ -1,5 +1,6 @@
 import { createDefaultAchivements } from "./achievements/achievements.js";
 import { findAndSetNewCameraCharacterId } from "./character/character.js";
+import { startBaseDefenseMode } from "./character/enemy/enemyWave.js";
 import { CheatCheckboxes, toggleCheats } from "./cheat.js";
 import { handleCommand } from "./commands.js";
 import { deepCopy, gameRestart, getGameVersionString } from "./game.js";
@@ -91,7 +92,7 @@ function addTest(game: Game) {
     addLoadTestStateButton(game);
     addCopySaveToClipboardButton(game);
     addLoadFromClipboardButton(game);
-
+    addStartBaseDefenseModeButton(game);
 }
 
 function setVersionNumberToSettingButton() {
@@ -341,6 +342,18 @@ function addLoadFromClipboardButton(game: Game) {
                 permanentStorageLoadByJson(data, game);
                 gameRestart(game);
             });
+        });
+    }
+}
+
+function addStartBaseDefenseModeButton(game: Game) {
+    const buttonName = "Base Defense Mode";
+    addButtonToTab(buttonName, "test");
+    const button = document.getElementById(buttonName) as HTMLButtonElement;
+    if (button) {
+        button.addEventListener('click', () => {
+            if (game.multiplayer.websocket) return;
+            startBaseDefenseMode(game);
         });
     }
 }

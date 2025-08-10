@@ -28,10 +28,12 @@ import { addAreaBossType } from "./enemy/areaBoss/areaBoss.js";
 import { addCurseFountainBossType } from "./enemy/curseFountainBoss.js";
 import { CURSE_ICE } from "../curse/curseIce.js";
 import { statisticsAddRun } from "../statistics.js";
+import { addEnemyWave } from "./enemy/enemyWave.js";
 
 export function onDomLoadSetCharactersFunctions() {
     addAreaBossType();
     addBossType();
+    addEnemyWave();
     addKingType();
     addGodEnemyType();
     addKingCrownType();

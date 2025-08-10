@@ -185,6 +185,7 @@ export type GameState = {
     gameVersion: GameVersion,
     achievements: Achievements,
     activeCheats?: ActiveCheats,
+    gameMode?: string,
 }
 
 export type PastPlayerCharacters = {

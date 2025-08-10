@@ -1,4 +1,5 @@
 import { getPlayerCharacters, characterTakeDamage } from "../character/character.js";
+import { GAME_MODE_WAVE_DEFENSE } from "../character/enemy/enemyWave.js";
 import { calculateDistance, getCameraPosition, getNextId } from "../game.js";
 import { FACTION_ENEMY, Game, IdCounter } from "../gameModel.js";
 import { getPointPaintPosition } from "../gamePaint.js";
@@ -15,6 +16,7 @@ export type AbilityObjectDeathCircle = AbilityObjectCircle & {
     growSpeed: number,
     tickInterval: number,
     nextTickTime?: number,
+    reversed?: boolean,
 }
 
 const ABILITY_NAME_DEATH_CIRCLE = "DeathCircle";
@@ -40,11 +42,11 @@ export function createAbilityDeathCircle(idCounter: IdCounter): AbilityDeathCirc
     }
 }
 
-export function createObjectDeathCircle(map: GameMap): AbilityObjectDeathCircle {
+export function createObjectDeathCircle(reversed: boolean, map: GameMap): AbilityObjectDeathCircle {
     const mapCenter = (map.tileSize * map.chunkLength) / 2;
     return {
         type: ABILITY_NAME_DEATH_CIRCLE,
-        radius: 0,
+        radius: reversed ? 1500 : 0,
         color: "black",
         damage: 0.1,
         faction: FACTION_ENEMY,
@@ -52,6 +54,7 @@ export function createObjectDeathCircle(map: GameMap): AbilityObjectDeathCircle 
         x: mapCenter,
         y: mapCenter,
         tickInterval: 250,
+        reversed: reversed,
     }
 }
 
@@ -65,7 +68,11 @@ function tickAbilityDeathCircle(abilityOwner: AbilityOwner, ability: Ability, ga
 
 function tickAbilityObjectDeathCircle(abilityObject: AbilityObject, game: Game) {
     const abilityObjectDeathCircle = abilityObject as AbilityObjectDeathCircle;
-    abilityObjectDeathCircle.radius += abilityObjectDeathCircle.growSpeed;
+    if (!abilityObjectDeathCircle.reversed) {
+        abilityObjectDeathCircle.radius += abilityObjectDeathCircle.growSpeed;
+    } else {
+        if (abilityObjectDeathCircle.radius > 800) abilityObjectDeathCircle.radius -= abilityObjectDeathCircle.growSpeed * 4;
+    }
     if (abilityObjectDeathCircle.nextTickTime === undefined) abilityObjectDeathCircle.nextTickTime = game.state.time + abilityObjectDeathCircle.tickInterval;
     if (abilityObjectDeathCircle.nextTickTime > game.state.time) return;
 
@@ -75,8 +82,14 @@ function tickAbilityObjectDeathCircle(abilityObject: AbilityObject, game: Game) 
     const playerCharacters = getPlayerCharacters(game.state.players);
     for (let playerCharacter of playerCharacters) {
         const distance = calculateDistance(playerCharacter, abilityObject);
-        if (distance < abilityObjectDeathCircle.radius) {
-            characterTakeDamage(playerCharacter, abilityObject.damage, game, undefined, abilityObject.type);
+        if (abilityObjectDeathCircle.reversed) {
+            if (distance > abilityObjectDeathCircle.radius) {
+                characterTakeDamage(playerCharacter, abilityObject.damage, game, undefined, abilityObject.type);
+            }
+        } else {
+            if (distance < abilityObjectDeathCircle.radius) {
+                characterTakeDamage(playerCharacter, abilityObject.damage, game, undefined, abilityObject.type);
+            }
         }
     }
 }
@@ -90,11 +103,26 @@ function paintAbilityObjectDeathCircle(ctx: CanvasRenderingContext2D, abilityObj
         ctx.fillStyle = abilityObject.color;
         ctx.globalAlpha = 0.65;
         ctx.beginPath();
-        ctx.arc(
-            paintPos.x,
-            paintPos.y,
-            abilityObjectDeathCircle.radius, 0, 2 * Math.PI
-        );
+        if (abilityObjectDeathCircle.reversed) {
+            ctx.moveTo(0, 0);
+            ctx.lineTo(ctx.canvas.width / game.UI.zoom.factor, 0);
+            ctx.lineTo(ctx.canvas.width / game.UI.zoom.factor, ctx.canvas.height / game.UI.zoom.factor);
+            ctx.lineTo(0, ctx.canvas.height / game.UI.zoom.factor);
+            ctx.lineTo(0, 0);
+            ctx.arc(
+                paintPos.x,
+                paintPos.y,
+                abilityObjectDeathCircle.radius, 0, 2 * Math.PI,
+                true,
+            );
+
+        } else {
+            ctx.arc(
+                paintPos.x,
+                paintPos.y,
+                abilityObjectDeathCircle.radius, 0, 2 * Math.PI,
+            );
+        }
         ctx.fill();
         ctx.globalAlpha = 1;
     }

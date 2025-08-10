@@ -2,9 +2,36 @@ next test run:
 increase version
 
 current tasks:      
-- check god hard mode activate for achievement god kill and money
-    - should i get it here?
-    - should i get legendary improvement?
+- base defense mode
+    - dev steps:  
+        - button to start
+        - change all enemies to wave type
+            - all enemies in active chunk attack player
+            - when enemy dies, upgrade to higher level
+            - does not care if player is close for respawn
+        - prevent death circle
+            - change to reverse death circle
+                - to far away take damage
+    - defend base, waves of enemies invade
+        - all enemy types (small, big, normal)
+        - bosses
+        - kings
+    - close enemies need upgrade to higher level
+        - on death upgrade
+    - display wave number
+
+
+    - past characters protect base
+    - past character will be ticking AI
+    - place past character at positions
+    - button to cycle through past characters
+        - can play each one of them
+    - death circle preventing player from running to far out
+    - will end when all past players dead?
+    - requires 12 past character with main abilities still availalble to start
+
+- musician need one more dps upgrade
+    - if not getting dot upgrade, can be to weak against boss ~5
 - speedrun my game
     - kill god as fast as possible
         - real Time: <12:07 (builder + ball)
@@ -18,20 +45,6 @@ current tasks:
             - sniper legendary
                 - level up max (~40min skillpoints 25 and level 430)
                     - still to weak and very laggy build
-- base defense mode
-    - requires 12 past character with main abilities still availalble to start
-        - button 6 for easy use
-    - defend base, waves of enemies invade
-        - all enemy types (small, big, normal)
-        - bosses
-        - kings
-    - past characters protect base
-    - past character will be ticking AI
-    - place past character at positions
-    - button to cycle through past characters
-        - can play each one of them
-    - death circle preventing player from running to far out
-    - will end when all past players dead?
 
 
 next feature ideas:

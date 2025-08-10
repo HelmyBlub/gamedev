@@ -46,7 +46,7 @@ export const ENEMY_TYPES: EnemyTypes = {
     "small": { hpFactor: 0.5, sizeFactor: 0.75, spawnAmountFactor: 1, xpFactor: 0.5, damageFactor: 0.5, maxPathfindBackDistance: 200 },
 }
 
-export function createEnemyWithLevel(idCounter: IdCounter, enemyPos: Position, level: number, enemyType: EnemyType, enemyTypeKey: string, game: Game) {
+export function createFixPosEnemyWithLevel(idCounter: IdCounter, enemyPos: Position, level: number, enemyType: EnemyType, enemyTypeKey: string, game: Game): FixPositionRespawnEnemyCharacter {
     if (enemyType === undefined) {
         throw Error("enemy type unknwon" + enemyType);
     }
@@ -114,7 +114,7 @@ export function createFakeEnemyFixPositionRespawnEnemyWithPosition(position: Pos
         const enemyType: string = decideEnemyType(chunk.chunkX, chunk.chunkY, game);
         const level = Math.max(Math.floor((distance - ENEMY_MIN_SPAWN_DISTANCE_MAP_MIDDLE) / 1000), 0) + 1;
         const fakeIdCounter: IdCounter = { nextId: 0 };
-        const enemy = createEnemyWithLevel(fakeIdCounter, position, level, ENEMY_TYPES[enemyType], enemyType, game);
+        const enemy = createFixPosEnemyWithLevel(fakeIdCounter, position, level, ENEMY_TYPES[enemyType], enemyType, game);
         return enemy;
     }
     return undefined;
@@ -151,7 +151,7 @@ export function createFixPositionRespawnEnemies(chunk: MapChunk, chunkX: number,
                     if (ENEMY_MIN_SPAWN_DISTANCE_MAP_MIDDLE < distance) {
                         if (!isPositionBlocking(enemyPos, map, idCounter, game)) {
                             const level = Math.max(Math.floor((distance - ENEMY_MIN_SPAWN_DISTANCE_MAP_MIDDLE) / 1000), 0) + 1;
-                            const enemy = createEnemyWithLevel(idCounter, enemyPos, level, ENEMY_TYPES[enemyType], enemyType, game);
+                            const enemy = createFixPosEnemyWithLevel(idCounter, enemyPos, level, ENEMY_TYPES[enemyType], enemyType, game);
                             addEnemyToMap(map, enemy);
                         }
                     }
