@@ -1,11 +1,12 @@
-next test run:
+next test run: sniper, builder, tamer, musician
 increase version
 
-current tasks:      
+current tasks:     
+- bug: short king replay failed. why?
+- bug: dead enemies influence collision
 - base defense mode
     - dev steps:  
-        - wait for all enemies to be dead before next wave
-        - display wave number
+        - why do some enemies seem to spawn incorrectly?
         - move enemy spawn to edge of fight area
         - boss spawn with certain waves?
     - defend base, waves of enemies invade

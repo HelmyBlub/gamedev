@@ -93,7 +93,7 @@ export function transformFixPositionRespawnEnemyToWaveEnemy(fixPositionEnemy: Fi
     delete (fixPositionEnemy as any).isAggroed;
     delete fixPositionEnemy.nextTickTime;
     delete fixPositionEnemy.respawnOnTime;
-    fixPositionEnemy.respawnTime = 10_000;
+    delete (fixPositionEnemy as any).respawnTime;
     (fixPositionEnemy as any as EnemyWaveCharacter).testPorperty = 1;
     fixPositionEnemy.type = CHARACTER_TYPE_ENEMY_WAVE;
 }

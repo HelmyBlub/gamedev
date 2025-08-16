@@ -740,6 +740,7 @@ function collisionDetectionTick(game: Game) {
         const iteratorCap = Math.min(currentChunk.characters.length, maxIterateCharacters);
         for (let i = 0; i < iteratorCap; i++) {
             const character = currentChunk.characters[i];
+            if (character.state != "alive") continue;
             const tileX = Math.floor(modulo(character.x, chunkSize) / game.state.map.tileSize);
             const tileY = Math.floor(modulo(character.y, chunkSize) / game.state.map.tileSize);
             if (!tileEnemies[tileX]) tileEnemies[tileX] = [];

@@ -8,7 +8,6 @@ import { createFixPosEnemyWithLevel, ENEMY_TYPES } from "./fixPositionRespawnEne
 
 export type EnemyWaveCharacter = Character & {
     spawnPosition: Position,
-    respawnTime: number,
     enemyTypeKey: string,
     testPorperty: number,
     positionReseted?: boolean,
