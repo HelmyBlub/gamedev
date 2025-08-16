@@ -16,6 +16,7 @@ import { Ability } from "../../ability/ability.js"
 import { TAMER_PET_CHARACTER, TamerPetCharacter } from "./tamer/tamerPetCharacter.js"
 import { getNextBossSpawnDistance, getNextBossSpawnTime } from "../enemy/bossEnemy.js"
 import { Curse } from "../../curse/curse.js"
+import { GAME_MODE_BASE_DEFENSE, paintGameModeBaseDefeseWave } from "../../gameModeBaseDefense.js"
 
 export type PlayerCharacterClassFunctions = {
     changeCharacterToThisClass: (character: Character, idCounter: IdCounter, game: Game) => void,
@@ -110,9 +111,15 @@ export function paintPlayerCharacterUI(ctx: CanvasRenderingContext2D, player: Pl
     let tempWidth = width;
     const character = player.character;
 
-    const distancePaintWidth = paintPlayerDistance(ctx, player, tempTopLeft, height, game) + horizontalSpacing;
-    tempTopLeft.x += distancePaintWidth;
-    tempWidth -= distancePaintWidth;
+    if (game.state.gameMode === GAME_MODE_BASE_DEFENSE) {
+        const distancePaintWidth = paintGameModeBaseDefeseWave(ctx, player, tempTopLeft, height, game) + horizontalSpacing;
+        tempTopLeft.x += distancePaintWidth;
+        tempWidth -= distancePaintWidth;
+    } else {
+        const distancePaintWidth = paintPlayerDistance(ctx, player, tempTopLeft, height, game) + horizontalSpacing;
+        tempTopLeft.x += distancePaintWidth;
+        tempWidth -= distancePaintWidth;
+    }
 
     const bossTimerPaintWidth = paintBossTimer(ctx, player, tempTopLeft, height, game) + horizontalSpacing;
     tempTopLeft.x += bossTimerPaintWidth;

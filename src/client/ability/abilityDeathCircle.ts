@@ -1,5 +1,4 @@
 import { getPlayerCharacters, characterTakeDamage } from "../character/character.js";
-import { GAME_MODE_WAVE_DEFENSE } from "../character/enemy/enemyWave.js";
 import { calculateDistance, getCameraPosition, getNextId } from "../game.js";
 import { FACTION_ENEMY, Game, IdCounter } from "../gameModel.js";
 import { getPointPaintPosition } from "../gamePaint.js";

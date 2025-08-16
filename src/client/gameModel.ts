@@ -23,6 +23,7 @@ import { TouchUiInfo } from "./input/inputTouch.js";
 import { ControllerButtonsPressed } from "./input/inputController.js";
 import { AdditionalPaints } from "./additionalPaint.js";
 import { GameStatistics, statisticsCreate } from "./statistics.js";
+import { GameModeBaseDefenseData } from "./gameModeBaseDefense.js";
 
 export type Position = {
     x: number,
@@ -186,6 +187,7 @@ export type GameState = {
     achievements: Achievements,
     activeCheats?: ActiveCheats,
     gameMode?: string,
+    gameModeData?: GameModeBaseDefenseData,
 }
 
 export type PastPlayerCharacters = {

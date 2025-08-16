@@ -37,7 +37,7 @@ import { MAP_AREA_SPAWN_ON_DISTANCE_GOD } from "./map/mapGodArea.js";
 import { MAP_AREA_SPAWN_ON_DISTANCE_CURSE_CLEANSE } from "./map/mapCurseCleanseArea.js";
 import { removeCurses } from "./curse/curse.js";
 import { displayTextAtCameraPosition } from "./floatingText.js";
-import { GAME_MODE_WAVE_DEFENSE } from "./character/enemy/enemyWave.js";
+import { GAME_MODE_BASE_DEFENSE, gameModeBaseDefenseTick } from "./gameModeBaseDefense.js";
 
 /** values between - Math.PI * 1.5 to Math.PI*0.5 */
 export function calculateDirection(startPos: Position, targetPos: Position): number {
@@ -95,6 +95,7 @@ export function closeGame(game: Game) {
 export function gameInit(game: Game) {
     game.state.restartCounter++;
     game.state.gameMode = undefined;
+    game.state.gameModeData = undefined;
     game.state.map.areaSpawnOnDistance = [];
     if (game.state.activeCheats && game.state.activeCheats.indexOf("closeKingArea") !== -1) {
         initKingArea(game.state.map, 1_000);
@@ -809,6 +810,7 @@ function doStuff(game: Game) {
     autoSendMyMousePosition(game);
     autoSendGamePlayerHashInMultiplayer(game);
     controllerInput(game);
+    gameModeBaseDefenseTick(game);
 }
 
 function restartHoldDown(game: Game) {
@@ -886,10 +888,10 @@ function checkMovementKeyPressedHint(game: Game) {
 
 function checkDeathCircleSpawn(game: Game) {
     if (!game.state.deathCircleCreated) {
-        const waitTime = game.state.gameMode === GAME_MODE_WAVE_DEFENSE ? 0 : 30000;
+        const waitTime = game.state.gameMode === GAME_MODE_BASE_DEFENSE ? 0 : 30000;
         const spawnAfterTime = getTimeSinceFirstKill(game.state) > waitTime;
         if (spawnAfterTime) {
-            const reversed = game.state.gameMode === GAME_MODE_WAVE_DEFENSE ? true : false;
+            const reversed = game.state.gameMode === GAME_MODE_BASE_DEFENSE ? true : false;
             game.state.abilityObjects.push(createObjectDeathCircle(reversed, game.state.map));
             game.state.deathCircleCreated = true;
         }

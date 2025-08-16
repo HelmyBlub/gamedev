@@ -1,5 +1,5 @@
 import { paintCharacters } from "../character/characterPaint.js";
-import { GAME_MODE_WAVE_DEFENSE } from "../character/enemy/enemyWave.js";
+import { GAME_MODE_BASE_DEFENSE } from "../gameModeBaseDefense.js";
 import { Debugging, Game, MapChunkPaintCache, Position } from "../gameModel.js";
 import { chunkXYToMapKey, GameMap, MapChunk, TILE_ID_GRASS, TILE_VALUES } from "./map.js";
 import { createNewChunk } from "./mapGeneration.js";
@@ -57,7 +57,7 @@ export function paintMapCharacters(ctx: CanvasRenderingContext2D, cameraPosition
     const height = ctx.canvas.height / game.UI.zoom.factor;
     // some enemies have some higher attack range. if zoom is near paint by active chunks, which should inculde all enemies which could attack.
     // if zoom is far => paint by visibly chunks as enemies with high range should be visible
-    if (width > map.activeChunkRange * 2 || height > map.activeChunkRange * 2 || game.state.gameMode === GAME_MODE_WAVE_DEFENSE) {
+    if (width > map.activeChunkRange * 2 || height > map.activeChunkRange * 2 || game.state.gameMode === GAME_MODE_BASE_DEFENSE) {
         let extraChunks = 0;
         const startX = (cameraPosition.x - width / 2);
         const startY = (cameraPosition.y - height / 2);

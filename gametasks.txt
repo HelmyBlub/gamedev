@@ -4,14 +4,10 @@ increase version
 current tasks:      
 - base defense mode
     - dev steps:  
-        - button to start
-        - change all enemies to wave type
-            - all enemies in active chunk attack player
-            - when enemy dies, upgrade to higher level
-            - does not care if player is close for respawn
-        - prevent death circle
-            - change to reverse death circle
-                - to far away take damage
+        - wait for all enemies to be dead before next wave
+        - display wave number
+        - move enemy spawn to edge of fight area
+        - boss spawn with certain waves?
     - defend base, waves of enemies invade
         - all enemy types (small, big, normal)
         - bosses
