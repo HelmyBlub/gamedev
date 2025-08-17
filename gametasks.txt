@@ -4,15 +4,15 @@ increase version
 current tasks:     
 - base defense mode
     - dev steps:  
-        - boss spawn with certain waves?
-    - defend base, waves of enemies invade
-        - all enemy types (small, big, normal)
-        - bosses
+        - check big enemies changing abilities and upgrading them
+        - sometimes enemies stuck
+            - player can go into one corner, other corner will not run to player
+            - increase pathfinding distance for this mode?
         - kings
-    - close enemies need upgrade to higher level
-        - on death upgrade
-    - display wave number
-
+        - money rewards as distance no longer gives
+    - defend base, waves of enemies invade
+        - kings
+        - curses?
 
     - past characters protect base
     - past character will be ticking AI
