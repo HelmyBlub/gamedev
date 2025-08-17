@@ -127,7 +127,7 @@ function determineBossHp(game: Game): number {
             curseLevelSum += curse.level;
         }
     }
-    var baseHp = 1_000_000_000;
+    let baseHp = 1_000_000_000;
     if (game.state.activeCheats && game.state.activeCheats.indexOf("reducedBossHp") !== -1) {
         baseHp = 1_000;
     }

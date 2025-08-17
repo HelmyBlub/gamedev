@@ -787,7 +787,7 @@ function paintKeyBindingUI(ctx: CanvasRenderingContext2D, ability: Ability, draw
 }
 
 function paintAbilityObjectsFaction(ctx: CanvasRenderingContext2D, abilityObjects: AbilityObject[], game: Game, paintOrder: PaintOrderAbility, ifIsPlayerFaction: boolean) {
-    var playerObjectCounter = 0;
+    let playerObjectCounter = 0;
     for (let abilityObject of abilityObjects) {
         if (ifIsPlayerFaction && abilityObject.faction === FACTION_PLAYER) {
             playerObjectCounter++;

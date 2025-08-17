@@ -101,7 +101,7 @@ export function transformFixPositionRespawnEnemyToWaveEnemy(fixPositionEnemy: Fi
 
 function determineActiveChunksForDefenseMode(map: GameMap, game: Game) {
     const keySet: Set<string> = new Set();
-    const nearMapKeys = determineMapKeysInDistance({ x: 0, y: 0 }, map, map.activeChunkRange, false);
+    const nearMapKeys = determineMapKeysInDistance(getMapMidlePosition(map), map, map.activeChunkRange, false);
     for (let mapKey of nearMapKeys) {
         keySet.add(mapKey);
         if (!game.performance.chunkGraphRectangles[mapKey]) {
