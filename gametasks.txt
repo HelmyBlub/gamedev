@@ -1,12 +1,9 @@
-next test run: sniper, builder, tamer, musician
+next test run: builder, tamer, musician, sniper
 increase version
 
 current tasks:     
-- bug: short king replay failed. why?
-- bug: dead enemies influence collision
 - base defense mode
     - dev steps:  
-        - why do some enemies seem to spawn incorrectly?
         - move enemy spawn to edge of fight area
         - boss spawn with certain waves?
     - defend base, waves of enemies invade
@@ -26,6 +23,9 @@ current tasks:
     - death circle preventing player from running to far out
     - will end when all past players dead?
     - requires 12 past character with main abilities still availalble to start
+
+- bug: short king replay failed. why?
+    - very first pet movement of past characters seems correct, second broken
 
 - musician need one more dps upgrade
     - if not getting dot upgrade, can be to weak against boss ~5
