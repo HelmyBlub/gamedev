@@ -16,7 +16,7 @@ import { Ability } from "../../ability/ability.js"
 import { TAMER_PET_CHARACTER, TamerPetCharacter } from "./tamer/tamerPetCharacter.js"
 import { getNextBossSpawnDistance, getNextBossSpawnTime } from "../enemy/bossEnemy.js"
 import { Curse } from "../../curse/curse.js"
-import { GAME_MODE_BASE_DEFENSE, paintGameModeBaseDefeseWave } from "../../gameModeBaseDefense.js"
+import { baseDefenseGetNextBossSpawnWave, GAME_MODE_BASE_DEFENSE, paintGameModeBaseDefeseWave } from "../../gameModeBaseDefense.js"
 
 export type PlayerCharacterClassFunctions = {
     changeCharacterToThisClass: (character: Character, idCounter: IdCounter, game: Game) => void,
@@ -404,14 +404,19 @@ function paintBossTimer(ctx: CanvasRenderingContext2D, player: Player, topLeft: 
         const timeUntiLNextBossMS = getNextBossSpawnTime(game.state.bossStuff) - getTimeSinceFirstKill(game.state);
         const timeUntilNextBossSeconds = Math.round(timeUntiLNextBossMS / 1000);
 
-        const distanceUntiLNextBoss = getNextBossSpawnDistance(game.state.bossStuff);
+        let valueUntiLNextBoss = 0;
+        if (game.state.gameMode === GAME_MODE_BASE_DEFENSE) {
+            valueUntiLNextBoss = baseDefenseGetNextBossSpawnWave(game) + 1;
+        } else {
+            valueUntiLNextBoss = getNextBossSpawnDistance(game.state.bossStuff);
+        }
         ctx.fillRect(topLeft.x, topLeft.y, timerPaintWidth, height);
         ctx.beginPath();
         ctx.rect(topLeft.x, topLeft.y, timerPaintWidth, height);
         ctx.stroke();
         paintTextWithOutline(ctx, "white", "black", timerDisplayText, topLeft.x + margin, topLeft.y + fontSize);
 
-        paintTextWithOutline(ctx, "white", "black", `${distanceUntiLNextBoss}`, topLeft.x + Math.floor(timerPaintWidth / 2), topLeft.y + fontSize * 2 - 1, true);
+        paintTextWithOutline(ctx, "white", "black", `${valueUntiLNextBoss}`, topLeft.x + Math.floor(timerPaintWidth / 2), topLeft.y + fontSize * 2 - 1, true);
         paintTextWithOutline(ctx, "white", "black", `or ${timeUntilNextBossSeconds}s`, topLeft.x + Math.floor(timerPaintWidth / 2), topLeft.y + height - 1, true);
     }
     return timerPaintWidth;

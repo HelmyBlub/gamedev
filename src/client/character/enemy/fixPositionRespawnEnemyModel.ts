@@ -40,6 +40,7 @@ type EnemyType = {
 
 export const CHARACTER_TYPE_ENEMY_FIX_RESPAWN_POSITION = "fixPositionRespawnEnemy";
 const ENEMY_MIN_SPAWN_DISTANCE_MAP_MIDDLE = 500;
+export const ENEMY_FIX_RESPAWN_POSITION_LEVEL_UP_DISTANCE = 1000;
 export const ENEMY_TYPES: EnemyTypes = {
     "big": { hpFactor: 16, sizeFactor: 1.5, spawnAmountFactor: 0.008, xpFactor: 38, damageFactor: 2, hasAbility: true, abilityProbabiltiy: 1, maxPathfindBackDistance: 800 },
     "default": { hpFactor: 1, sizeFactor: 1, spawnAmountFactor: 0.5, xpFactor: 1, damageFactor: 1, maxPathfindBackDistance: 400 },
@@ -112,7 +113,7 @@ export function createFakeEnemyFixPositionRespawnEnemyWithPosition(position: Pos
     if (ENEMY_MIN_SPAWN_DISTANCE_MAP_MIDDLE < distance) {
         const chunk = positionToChunkXY(position, game.state.map);
         const enemyType: string = decideEnemyType(chunk.chunkX, chunk.chunkY, game);
-        const level = Math.max(Math.floor((distance - ENEMY_MIN_SPAWN_DISTANCE_MAP_MIDDLE) / 1000), 0) + 1;
+        const level = Math.max(Math.floor((distance - ENEMY_MIN_SPAWN_DISTANCE_MAP_MIDDLE) / ENEMY_FIX_RESPAWN_POSITION_LEVEL_UP_DISTANCE), 0) + 1;
         const fakeIdCounter: IdCounter = { nextId: 0 };
         const enemy = createFixPosEnemyWithLevel(fakeIdCounter, position, level, ENEMY_TYPES[enemyType], enemyType, game);
         return enemy;
@@ -150,7 +151,7 @@ export function createFixPositionRespawnEnemies(chunk: MapChunk, chunkX: number,
                     const distance = calculateDistance(mapCenter, enemyPos);
                     if (ENEMY_MIN_SPAWN_DISTANCE_MAP_MIDDLE < distance) {
                         if (!isPositionBlocking(enemyPos, map, idCounter, game)) {
-                            const level = Math.max(Math.floor((distance - ENEMY_MIN_SPAWN_DISTANCE_MAP_MIDDLE) / 1000), 0) + 1;
+                            const level = Math.max(Math.floor((distance - ENEMY_MIN_SPAWN_DISTANCE_MAP_MIDDLE) / ENEMY_FIX_RESPAWN_POSITION_LEVEL_UP_DISTANCE), 0) + 1;
                             const enemy = createFixPosEnemyWithLevel(idCounter, enemyPos, level, ENEMY_TYPES[enemyType], enemyType, game);
                             addEnemyToMap(map, enemy);
                         }

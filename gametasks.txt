@@ -4,7 +4,6 @@ increase version
 current tasks:     
 - base defense mode
     - dev steps:  
-        - move enemy spawn to edge of fight area
         - boss spawn with certain waves?
     - defend base, waves of enemies invade
         - all enemy types (small, big, normal)

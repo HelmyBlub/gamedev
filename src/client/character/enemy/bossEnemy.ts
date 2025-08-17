@@ -6,6 +6,7 @@ import { doDamageMeterSplit } from "../../combatlog.js";
 import { curseDarknessCloneKillCheck } from "../../curse/curseDarkness.js";
 import { tickCharacterDebuffs } from "../../debuff/debuff.js";
 import { calculateDirection, deepCopy, getNextId, getTimeSinceFirstKill } from "../../game.js";
+import { baseDefenseGetNextBossSpawnWave, GAME_MODE_BASE_DEFENSE } from "../../gameModeBaseDefense.js";
 import { IdCounter, Game, Position, BossStuff, FACTION_ENEMY, CelestialDirection } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { getHighestPlayerDistanceFromMapMiddle } from "../../highscores.js";
@@ -101,10 +102,19 @@ export function checkForBossSpawn(game: Game) {
     const nextBossSpawnTime = getNextBossSpawnTime(bossStuff);
     if (getTimeSinceFirstKill(game.state) >= nextBossSpawnTime) {
         spawnBoss(bossStuff, game);
+        return;
     }
-    const nextBossSpawnDistance = getNextBossSpawnDistance(bossStuff);
-    if (getHighestPlayerDistanceFromMapMiddle(game) >= nextBossSpawnDistance) {
-        spawnBoss(bossStuff, game);
+    if (game.state.gameMode === GAME_MODE_BASE_DEFENSE) {
+        if (baseDefenseGetNextBossSpawnWave(game) <= game.state.gameModeData!.currentWave) {
+            spawnBoss(bossStuff, game);
+            return;
+        }
+    } else {
+        const nextBossSpawnDistance = getNextBossSpawnDistance(bossStuff);
+        if (getHighestPlayerDistanceFromMapMiddle(game) >= nextBossSpawnDistance) {
+            spawnBoss(bossStuff, game);
+            return;
+        }
     }
 }
 

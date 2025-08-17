@@ -1,6 +1,7 @@
 import { Character } from "./character/characterModel.js";
+import { getNextBossSpawnDistance } from "./character/enemy/bossEnemy.js";
 import { CHARACTER_TYPE_ENEMY_WAVE, EnemyWaveCharacter } from "./character/enemy/enemyWave.js";
-import { CHARACTER_TYPE_ENEMY_FIX_RESPAWN_POSITION, FixPositionRespawnEnemyCharacter } from "./character/enemy/fixPositionRespawnEnemyModel.js";
+import { CHARACTER_TYPE_ENEMY_FIX_RESPAWN_POSITION, ENEMY_FIX_RESPAWN_POSITION_LEVEL_UP_DISTANCE, FixPositionRespawnEnemyCharacter } from "./character/enemy/fixPositionRespawnEnemyModel.js";
 import { chunkGraphRectangleSetup } from "./character/pathing.js";
 import { getTimeSinceFirstKill } from "./game.js";
 import { Game, Position } from "./gameModel.js";
@@ -75,15 +76,10 @@ export function paintGameModeBaseDefeseWave(ctx: CanvasRenderingContext2D, playe
     return wavePaintWidth;
 }
 
-function transformFixPositionRespawnEnemiesToWaveEnemies(game: Game) {
-    for (let chunkKey of game.state.map.activeChunkKeys) {
-        const chunk = game.state.map.chunks[chunkKey];
-        for (let enemy of chunk.characters) {
-            if (enemy.type === CHARACTER_TYPE_ENEMY_FIX_RESPAWN_POSITION) {
-                transformFixPositionRespawnEnemyToWaveEnemy(enemy as FixPositionRespawnEnemyCharacter);
-            }
-        }
-    }
+export function baseDefenseGetNextBossSpawnWave(game: Game): number {
+    const distance = getNextBossSpawnDistance(game.state.bossStuff);
+    const waveSpawn = Math.floor(distance / ENEMY_FIX_RESPAWN_POSITION_LEVEL_UP_DISTANCE);
+    return waveSpawn;
 }
 
 export function transformFixPositionRespawnEnemyToWaveEnemy(fixPositionEnemy: FixPositionRespawnEnemyCharacter) {
@@ -109,4 +105,15 @@ function determineActiveChunksForDefenseMode(map: GameMap, game: Game) {
         }
     }
     map.activeChunkKeys = [...keySet];
+}
+
+function transformFixPositionRespawnEnemiesToWaveEnemies(game: Game) {
+    for (let chunkKey of game.state.map.activeChunkKeys) {
+        const chunk = game.state.map.chunks[chunkKey];
+        for (let enemy of chunk.characters) {
+            if (enemy.type === CHARACTER_TYPE_ENEMY_FIX_RESPAWN_POSITION) {
+                transformFixPositionRespawnEnemyToWaveEnemy(enemy as FixPositionRespawnEnemyCharacter);
+            }
+        }
+    }
 }
