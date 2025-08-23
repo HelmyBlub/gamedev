@@ -4,16 +4,13 @@ increase version
 current tasks:     
 - base defense mode
     - dev steps:  
-        - bug: sometimes enemies stuck
-            - player can go into one corner, other corner will not run to player
-            - increase pathfinding distance for this mode?
-        - bug: enemies can be stuck outside
         - kings
         - money rewards as distance no longer gives
     - defend base, waves of enemies invade
         - kings
         - curses?
-
+    - global player alpha as it is harder to see enemy abilities with so many enemies
+    - damage meter splits per wave?
     - past characters protect base
     - past character will be ticking AI
     - place past character at positions

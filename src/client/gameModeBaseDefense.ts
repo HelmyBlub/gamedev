@@ -1,19 +1,23 @@
 import { Character } from "./character/characterModel.js";
-import { getNextBossSpawnDistance } from "./character/enemy/bossEnemy.js";
+import { getCelestialDirection, getNextBossSpawnDistance } from "./character/enemy/bossEnemy.js";
 import { CHARACTER_TYPE_ENEMY_WAVE, EnemyWaveCharacter } from "./character/enemy/enemyWave.js";
 import { CHARACTER_TYPE_ENEMY_FIX_RESPAWN_POSITION, ENEMY_FIX_RESPAWN_POSITION_LEVEL_UP_DISTANCE, FixPositionRespawnEnemyCharacter } from "./character/enemy/fixPositionRespawnEnemyModel.js";
+import { kingEnemySpawnAtPosition } from "./character/enemy/kingEnemy.js";
 import { chunkGraphRectangleSetup } from "./character/pathing.js";
 import { getTimeSinceFirstKill } from "./game.js";
 import { Game, Position } from "./gameModel.js";
 import { paintTextWithOutline } from "./gamePaint.js";
-import { determineMapKeysInDistance, GameMap, getMapMidlePosition, mapKeyToChunkXY } from "./map/map.js";
+import { determineMapKeysInDistance, findNearNonBlockingPosition, GameMap, getMapMidlePosition, mapKeyToChunkXY } from "./map/map.js";
 import { Player } from "./player.js";
+import { nextRandom } from "./randomNumberGenerator.js";
 
 export type GameModeBaseDefenseData = {
     currentWave: number,
     enemyAliveTickCount: number,
     removedStuckEnemies: boolean,
     mapCharactersToTick: Character[],
+    kingSpawnWaves: number[],
+    kingSpawned: boolean,
 }
 
 export const GAME_MODE_BASE_DEFENSE = "BaseDefense";
@@ -27,10 +31,15 @@ export function startBaseDefenseMode(game: Game) {
         enemyAliveTickCount: 1,
         removedStuckEnemies: false,
         mapCharactersToTick: [],
+        kingSpawnWaves: [20],
+        kingSpawned: false,
     };
     determineActiveChunksForDefenseMode(game.state.map, game);
     transformFixPositionRespawnEnemiesToWaveEnemies(game);
     game.performance.pathingCache = {};
+    if (game.UI.playerGlobalAlphaMultiplier > 0.5) {
+        game.UI.playerGlobalAlphaMultiplier = 0.5;
+    }
 }
 
 export function gameModeBaseDefenseTick(game: Game) {
@@ -38,6 +47,13 @@ export function gameModeBaseDefenseTick(game: Game) {
     const data = game.state.gameModeData!;
     if (data.enemyAliveTickCount === 0) {
         data.currentWave++;
+        for (let spawnWave of data.kingSpawnWaves) {
+            if (spawnWave === data.currentWave + 1) {
+                spawnRandomKing(game);
+                data.kingSpawned = true;
+                break;
+            }
+        }
     }
 
     data.enemyAliveTickCount = 0;
@@ -56,6 +72,28 @@ export function gameModeBaseDefenseTick(game: Game) {
             data.removedStuckEnemies = true;
         }
     }
+}
+
+function spawnRandomKing(game: Game) {
+    const randomValueForDirection = Math.floor(nextRandom(game.state.randomSeed) * 4);
+    const randomPos: Position = { x: 0, y: 0 };
+    switch (randomValueForDirection) {
+        case 0:
+            randomPos.x = 1000
+            break;
+        case 1:
+            randomPos.x = -1000
+            break;
+        case 2:
+            randomPos.y = 1000
+            break;
+        case 3:
+            randomPos.y = -1000
+            break;
+    }
+    const spawnPos = findNearNonBlockingPosition(randomPos, game.state.map, game.state.idCounter, game);
+    const randomCelestialDirection = getCelestialDirection(spawnPos, game.state.map);
+    kingEnemySpawnAtPosition(spawnPos, randomCelestialDirection, game);
 }
 
 export function paintGameModeBaseDefeseWave(ctx: CanvasRenderingContext2D, player: Player, topLeft: Position, height: number, game: Game): number {

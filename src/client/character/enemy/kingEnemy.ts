@@ -23,6 +23,7 @@ import { CHARACTER_TYPE_END_BOSS_CROWN_ENEMY, createKingCrownCharacter, KingCrow
 import { copyCursesToTarget, Curse } from "../../curse/curse.js";
 import { CHARACTER_UPGRADE_BONUS_DAMAGE_REDUCTION, CharacterUpgradeBonusDamageReduction } from "../upgrades/characterUpgradeDamageReduction.js";
 import { playerCharacterChangeToKingModification } from "../playerCharacters/playerCharacters.js";
+import { GAME_MODE_BASE_DEFENSE } from "../../gameModeBaseDefense.js";
 
 export type KingEnemyCharacter = Character;
 export const CHARACTER_TYPE_KING_ENEMY = "KingEnemyCharacter";
@@ -126,28 +127,32 @@ export function setPlayerAsKing(game: Game) {
     }
 }
 
+export function kingEnemySpawnAtPosition(spawn: Position, kingCelestialDirection: CelestialDirection, game: Game) {
+    const king: Character = deepCopy(game.state.bossStuff.nextKings[kingCelestialDirection]);
+    modifyCharacterToKing(king, game);
+    updateAbilitiesOnCharacterChange(king, game);
+    king.x = spawn.x;
+    king.y = spawn.y;
+    if (king.pets) {
+        for (let pet of king.pets) {
+            pet.x = spawn.x;
+            pet.y = spawn.y;
+        }
+    }
+    if (game.state.activeCheats && game.state.activeCheats.indexOf("reducedBossHp") !== -1) {
+        king.hp = 500;
+        king.maxHp = 500;
+    }
+    game.state.bossStuff.bosses.push(king);
+}
+
 export function startKingFight(kingAreaPosition: Position, game: Game) {
     const entrance = getEntranceChunkAndTileXYForPosition(game.state.players[0].character, game.state.map);
     if (entrance) {
         changeTileIdOfMapChunk(entrance.chunkX, entrance.chunkY, entrance.tileX, entrance.tileY, 2, game);
         const spawn: Position = getKingAreaMiddlePosition(kingAreaPosition, game.state.map)!;
         const celestialDirection = getCelestialDirection(spawn, game.state.map);
-        const king: Character = deepCopy(game.state.bossStuff.nextKings[celestialDirection]);
-        modifyCharacterToKing(king, game);
-        updateAbilitiesOnCharacterChange(king, game);
-        king.x = spawn.x;
-        king.y = spawn.y;
-        if (king.pets) {
-            for (let pet of king.pets) {
-                pet.x = spawn.x;
-                pet.y = spawn.y;
-            }
-        }
-        if (game.state.activeCheats && game.state.activeCheats.indexOf("reducedBossHp") !== -1) {
-            king.hp = 500;
-            king.maxHp = 500;
-        }
-        game.state.bossStuff.bosses.push(king);
+        kingEnemySpawnAtPosition(spawn, celestialDirection, game);
         game.state.bossStuff.closedOfKingAreaEntrance = entrance;
         game.state.bossStuff.kingFightStartedTime = game.state.time;
         if (game.UI.playerGlobalAlphaMultiplier > 0.25) {
@@ -239,7 +244,11 @@ function removeDamageReductionUpgrades(boss: Character) {
 }
 
 function onCharacterKill(character: Character, game: Game) {
-    game.state.bossStuff.bosses.push(createKingCrownCharacter(game.state.idCounter, character));
+    if (game.state.gameMode !== GAME_MODE_BASE_DEFENSE) {
+        game.state.bossStuff.bosses.push(createKingCrownCharacter(game.state.idCounter, character));
+    } else {
+        game.state.gameModeData!.kingSpawned = false;
+    }
 }
 
 function changeKingAbilityLevelBasedOnHp(enemy: KingEnemyCharacter) {

@@ -132,7 +132,8 @@ export type MapChunkPaintCache = {
     [key: string]: CanvasRenderingContext2D
 }
 
-export type CelestialDirection = "north" | "west" | "south" | "east";
+export const CELESTIAL_DIRECTIONS_ARRAY = ["north", "west", "south", "east"] as const;
+export type CelestialDirection = typeof CELESTIAL_DIRECTIONS_ARRAY[number];
 export type NextKings = {
     north?: Character,
     west?: Character,
