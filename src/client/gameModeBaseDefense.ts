@@ -13,6 +13,7 @@ export type GameModeBaseDefenseData = {
     currentWave: number,
     enemyAliveTickCount: number,
     removedStuckEnemies: boolean,
+    mapCharactersToTick: Character[],
 }
 
 export const GAME_MODE_BASE_DEFENSE = "BaseDefense";
@@ -25,9 +26,11 @@ export function startBaseDefenseMode(game: Game) {
         currentWave: 0,
         enemyAliveTickCount: 1,
         removedStuckEnemies: false,
+        mapCharactersToTick: [],
     };
     determineActiveChunksForDefenseMode(game.state.map, game);
     transformFixPositionRespawnEnemiesToWaveEnemies(game);
+    game.performance.pathingCache = {};
 }
 
 export function gameModeBaseDefenseTick(game: Game) {

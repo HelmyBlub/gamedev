@@ -29,6 +29,7 @@ import { addCurseFountainBossType } from "./enemy/curseFountainBoss.js";
 import { CURSE_ICE } from "../curse/curseIce.js";
 import { statisticsAddRun } from "../statistics.js";
 import { addEnemyWave } from "./enemy/enemyWave.js";
+import { GAME_MODE_BASE_DEFENSE } from "../gameModeBaseDefense.js";
 
 export function onDomLoadSetCharactersFunctions() {
     addAreaBossType();
@@ -287,10 +288,24 @@ export function setCharacterAbilityLevel(ability: Ability, character: Character)
 export function tickMapCharacters(map: GameMap, game: Game) {
     takeTimeMeasure(game.debug, "", "tickMapCharacters");
     const pathingCache = getPathingCache(game);
-    const allMapCharacters: Character[] = [];
-    for (let i = 0; i < map.activeChunkKeys.length; i++) {
-        const chunk = map.chunks[map.activeChunkKeys[i]];
-        allMapCharacters.push(...chunk.characters);
+    let allMapCharacters: Character[] = [];
+    if (game.state.gameMode === GAME_MODE_BASE_DEFENSE) {
+        if (game.state.gameModeData!.mapCharactersToTick.length > 0) {
+            allMapCharacters = game.state.gameModeData!.mapCharactersToTick;
+        } else {
+            for (let i = 0; i < map.activeChunkKeys.length; i++) {
+                const chunk = map.chunks[map.activeChunkKeys[i]];
+                allMapCharacters.push(...chunk.characters);
+            }
+            if (game.state.gameModeData!.removedStuckEnemies) {
+                game.state.gameModeData!.mapCharactersToTick = allMapCharacters;
+            }
+        }
+    } else {
+        for (let i = 0; i < map.activeChunkKeys.length; i++) {
+            const chunk = map.chunks[map.activeChunkKeys[i]];
+            allMapCharacters.push(...chunk.characters);
+        }
     }
     tickCharacters(allMapCharacters, game, pathingCache);
     collisionDetectionTick(game);

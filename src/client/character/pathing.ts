@@ -1,4 +1,5 @@
 import { calculateDistance, takeTimeMeasure } from "../game.js";
+import { GAME_MODE_BASE_DEFENSE } from "../gameModeBaseDefense.js";
 import { Game, IdCounter, Position } from "../gameModel.js";
 import { ChunkXY, chunkXYToMapKey, GameMap, isPositionBlocking, positionToChunkXY, TILE_VALUES, tileXYToChunkXY } from "../map/map.js";
 
@@ -204,7 +205,8 @@ export function getNextWaypoint(
 
     let counter = 0;
     const maxCounter = straightDistance * 10;
-    const maxTileDistance = (game.state.map.activeChunkRange * 1.2) / game.state.map.tileSize;
+    const chunkDistanceIncreaseFactor = game.state.gameMode === GAME_MODE_BASE_DEFENSE ? 2 : 1.2;
+    const maxTileDistance = (game.state.map.activeChunkRange * chunkDistanceIncreaseFactor) / game.state.map.tileSize;
     while (openNodes.length > 0) {
         counter++;
         if (counter > maxCounter || isNaN(maxCounter)) {
@@ -319,54 +321,3 @@ export function garbageCollectPathingCache(pathingCache: PathingCache | undefine
     takeTimeMeasure(game.debug, "garbageCollectPathingCache", "");
 }
 
-function getPathNeighborsXY(pos: Position, map: GameMap, idCounter: IdCounter, game: Game): Position[] {
-    const result: Position[] = [];
-    let top, bottom, left, right: boolean = false;
-
-    let tempXY = { x: pos.x, y: pos.y - 1 };
-    if (!isPositionBlocking({ x: tempXY.x * map.tileSize, y: tempXY.y * map.tileSize }, map, idCounter, game)) {
-        top = true;
-        result.push(tempXY);
-    }
-    tempXY = { x: pos.x, y: pos.y + 1 };
-    if (!isPositionBlocking({ x: tempXY.x * map.tileSize, y: tempXY.y * map.tileSize }, map, idCounter, game)) {
-        bottom = true;
-        result.push(tempXY);
-    }
-    tempXY = { x: pos.x - 1, y: pos.y };
-    if (!isPositionBlocking({ x: tempXY.x * map.tileSize, y: tempXY.y * map.tileSize }, map, idCounter, game)) {
-        left = true;
-        result.push(tempXY);
-    }
-    tempXY = { x: pos.x + 1, y: pos.y };
-    if (!isPositionBlocking({ x: tempXY.x * map.tileSize, y: tempXY.y * map.tileSize }, map, idCounter, game)) {
-        right = true;
-        result.push(tempXY);
-    }
-    if (top && right) {
-        tempXY = { x: pos.x + 1, y: pos.y - 1 };
-        if (!isPositionBlocking({ x: tempXY.x * map.tileSize, y: tempXY.y * map.tileSize }, map, idCounter, game)) {
-            result.push(tempXY);
-        }
-    }
-    if (right && bottom) {
-        tempXY = { x: pos.x + 1, y: pos.y + 1 };
-        if (!isPositionBlocking({ x: tempXY.x * map.tileSize, y: tempXY.y * map.tileSize }, map, idCounter, game)) {
-            result.push(tempXY);
-        }
-    }
-    if (bottom && left) {
-        tempXY = { x: pos.x - 1, y: pos.y + 1 };
-        if (!isPositionBlocking({ x: tempXY.x * map.tileSize, y: tempXY.y * map.tileSize }, map, idCounter, game)) {
-            result.push(tempXY);
-        }
-    }
-    if (left && top) {
-        tempXY = { x: pos.x - 1, y: pos.y - 1 };
-        if (!isPositionBlocking({ x: tempXY.x * map.tileSize, y: tempXY.y * map.tileSize }, map, idCounter, game)) {
-            result.push(tempXY);
-        }
-    }
-
-    return result;
-}
