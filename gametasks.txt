@@ -4,13 +4,13 @@ increase version
 current tasks:     
 - base defense mode
     - dev steps:  
-        - kings
         - money rewards as distance no longer gives
-    - defend base, waves of enemies invade
-        - kings
-        - curses?
     - global player alpha as it is harder to see enemy abilities with so many enemies
     - damage meter splits per wave?
+    - spawn each king once?
+        - spawn one king on 20, one king on 30, two kings on 40?
+    - problem: interacts in base add to much useless information when fighting
+        - no interaction with base stuff possible when started
     - past characters protect base
     - past character will be ticking AI
     - place past character at positions
