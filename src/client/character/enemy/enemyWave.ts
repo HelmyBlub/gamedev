@@ -1,3 +1,4 @@
+import { ABILITIES_FUNCTIONS } from "../../ability/ability.js";
 import { calculateDirection, calculateDistance } from "../../game.js";
 import { transformFixPositionRespawnEnemyToWaveEnemy } from "../../gameModeBaseDefense.js";
 import { Game, Position } from "../../gameModel.js";
@@ -34,6 +35,13 @@ function tickEnemy(character: Character, game: Game, pathingCache: PathingCache 
         return;
     }
     game.state.gameModeData!.enemyAliveTickCount++;
+    for (let ability of enemy.abilities) {
+        const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+        if (abilityFunctions) {
+            if (abilityFunctions.tickAI) abilityFunctions.tickAI(enemy, ability, game);
+        }
+    }
+
     const playerCharacters = getPlayerCharacters(game.state.players, true);
     const closest = determineClosestCharacter(enemy, playerCharacters, true, game.state.map);
     calculateAndSetMoveDirectionToPositionWithPathing(enemy, closest.minDistanceCharacter, game.state.map, pathingCache, game.state.idCounter, game.state.time, game);

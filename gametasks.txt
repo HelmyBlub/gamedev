@@ -5,7 +5,9 @@ current tasks:
 - base defense mode
     - dev steps:  
         - check big enemies changing abilities and upgrading them
-        - sometimes enemies stuck
+            - using abilties
+        - bug: enemies can be stuck outside
+        - bug: sometimes enemies stuck
             - player can go into one corner, other corner will not run to player
             - increase pathfinding distance for this mode?
         - kings
