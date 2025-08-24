@@ -42,6 +42,10 @@ export function startBaseDefenseMode(game: Game) {
     }
 }
 
+export function baseDefenseWaveToDistance(wave: number): number {
+    return wave * ENEMY_FIX_RESPAWN_POSITION_LEVEL_UP_DISTANCE;
+}
+
 export function gameModeBaseDefenseTick(game: Game) {
     if (game.state.gameMode !== GAME_MODE_BASE_DEFENSE) return;
     const data = game.state.gameModeData!;

@@ -13,6 +13,7 @@ import { ActionsPressed, createActionsPressed } from "./input/playerInput.js";
 import { RandomSeed } from "./randomNumberGenerator.js";
 import { localStorageSaveMidGame } from "./permanentData.js";
 import { toggleCheatImmuneFastIgnored } from "./cheat.js";
+import { baseDefenseWaveToDistance, GAME_MODE_BASE_DEFENSE } from "./gameModeBaseDefense.js";
 
 export type PermanentPlayerData = {
     money: number,
@@ -178,11 +179,23 @@ export function addPlayerMoney(game: Game, isKingKill: boolean = false, isGodKil
         const distance = Math.round(calculateDistance(player.character, getMapMidlePosition(game.state.map)));
         if (distance > highestPlayerDistance) highestPlayerDistance = distance;
     }
-    let moneyGain = calculateMoneyGainByDistance(highestPlayerDistance);
-    game.UI.moneyGainedThisRun.push({
-        amount: moneyGain,
-        text: `for distance of ${highestPlayerDistance}`,
-    });
+    let moneyGain = 0;
+    if (game.state.gameMode === GAME_MODE_BASE_DEFENSE) {
+        const waveMoney = calculateMoneyGainByDistance(baseDefenseWaveToDistance(game.state.gameModeData!.currentWave));
+        if (waveMoney > 0) {
+            moneyGain += waveMoney;
+            game.UI.moneyGainedThisRun.push({
+                amount: waveMoney,
+                text: `for reaching wave ${game.state.gameModeData!.currentWave + 1}`,
+            });
+        }
+    } else {
+        moneyGain += calculateMoneyGainByDistance(highestPlayerDistance)
+        game.UI.moneyGainedThisRun.push({
+            amount: moneyGain,
+            text: `for distance of ${highestPlayerDistance}`,
+        });
+    }
     if (isKingKill) {
         let king: Character | undefined;
         for (let boss of game.state.bossStuff.bosses) {
