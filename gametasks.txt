@@ -4,7 +4,8 @@ increase version
 current tasks:     
 - base defense mode
     - dev steps:  
-        - money rewards as distance no longer gives
+        - money rewards king kill
+    - bug: spawn pos of wave enemy can be inside blocked area
     - global player alpha as it is harder to see enemy abilities with so many enemies
     - damage meter splits per wave?
     - spawn each king once?

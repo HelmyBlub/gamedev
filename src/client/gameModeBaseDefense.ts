@@ -18,6 +18,7 @@ export type GameModeBaseDefenseData = {
     mapCharactersToTick: Character[],
     kingSpawnWaves: number[],
     kingSpawned: boolean,
+    startAlpha: number,
 }
 
 export const GAME_MODE_BASE_DEFENSE = "BaseDefense";
@@ -26,6 +27,7 @@ export function startBaseDefenseMode(game: Game) {
     if (game.state.timeFirstKill != undefined) return;
     game.state.gameMode = GAME_MODE_BASE_DEFENSE;
     game.state.timeFirstKill = game.state.time;
+    baseDefenseSetGlobalAlpha(game);
     game.state.gameModeData = {
         currentWave: 0,
         enemyAliveTickCount: 1,
@@ -33,17 +35,21 @@ export function startBaseDefenseMode(game: Game) {
         mapCharactersToTick: [],
         kingSpawnWaves: [20],
         kingSpawned: false,
+        startAlpha: game.UI.playerGlobalAlphaMultiplier,
     };
     determineActiveChunksForDefenseMode(game.state.map, game);
     transformFixPositionRespawnEnemiesToWaveEnemies(game);
     game.performance.pathingCache = {};
-    if (game.UI.playerGlobalAlphaMultiplier > 0.5) {
-        game.UI.playerGlobalAlphaMultiplier = 0.5;
-    }
 }
 
 export function baseDefenseWaveToDistance(wave: number): number {
     return wave * ENEMY_FIX_RESPAWN_POSITION_LEVEL_UP_DISTANCE;
+}
+
+export function baseDefenseSetGlobalAlpha(game: Game) {
+    if (game.UI.playerGlobalAlphaMultiplier > 0.5) {
+        game.UI.playerGlobalAlphaMultiplier = 0.5;
+    }
 }
 
 export function gameModeBaseDefenseTick(game: Game) {
@@ -98,6 +104,9 @@ function spawnRandomKing(game: Game) {
     const spawnPos = findNearNonBlockingPosition(randomPos, game.state.map, game.state.idCounter, game);
     const randomCelestialDirection = getCelestialDirection(spawnPos, game.state.map);
     kingEnemySpawnAtPosition(spawnPos, randomCelestialDirection, game);
+    if (game.UI.playerGlobalAlphaMultiplier > 0.25) {
+        game.UI.playerGlobalAlphaMultiplier = 0.25;
+    }
 }
 
 export function paintGameModeBaseDefeseWave(ctx: CanvasRenderingContext2D, player: Player, topLeft: Position, height: number, game: Game): number {

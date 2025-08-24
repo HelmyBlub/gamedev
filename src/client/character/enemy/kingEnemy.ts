@@ -23,7 +23,8 @@ import { CHARACTER_TYPE_END_BOSS_CROWN_ENEMY, createKingCrownCharacter, KingCrow
 import { copyCursesToTarget, Curse } from "../../curse/curse.js";
 import { CHARACTER_UPGRADE_BONUS_DAMAGE_REDUCTION, CharacterUpgradeBonusDamageReduction } from "../upgrades/characterUpgradeDamageReduction.js";
 import { playerCharacterChangeToKingModification } from "../playerCharacters/playerCharacters.js";
-import { GAME_MODE_BASE_DEFENSE } from "../../gameModeBaseDefense.js";
+import { baseDefenseSetGlobalAlpha, GAME_MODE_BASE_DEFENSE } from "../../gameModeBaseDefense.js";
+import { addMoneyAmountToPlayer, addMoneyUiMoreInfo, addPlayerMoney, calculateMoneyForKingMaxHp } from "../../player.js";
 
 export type KingEnemyCharacter = Character;
 export const CHARACTER_TYPE_KING_ENEMY = "KingEnemyCharacter";
@@ -248,6 +249,13 @@ function onCharacterKill(character: Character, game: Game) {
         game.state.bossStuff.bosses.push(createKingCrownCharacter(game.state.idCounter, character));
     } else {
         game.state.gameModeData!.kingSpawned = false;
+        baseDefenseSetGlobalAlpha(game);
+        const kingMoney = calculateMoneyForKingMaxHp(character.maxHp);
+        game.UI.moneyGainedThisRun.push({
+            amount: kingMoney,
+            text: `for King kill of ${character.maxHp.toLocaleString(undefined, { maximumFractionDigits: 0 })} HP`,
+        });
+        addMoneyAmountToPlayer(kingMoney, game.state.players, game, 0, `King kill`);
     }
 }
 
