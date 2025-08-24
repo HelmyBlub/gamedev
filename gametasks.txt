@@ -3,11 +3,8 @@ increase version
 
 current tasks:     
 - base defense mode
-    - dev steps:  
-        - money rewards king kill
     - bug: spawn pos of wave enemy can be inside blocked area
-    - global player alpha as it is harder to see enemy abilities with so many enemies
-    - damage meter splits per wave?
+        - seed = 0.3766717102190202 (don't know how to reproduce)
     - spawn each king once?
         - spawn one king on 20, one king on 30, two kings on 40?
     - problem: interacts in base add to much useless information when fighting

@@ -6,7 +6,7 @@ import { calculateMovePosition, GameMap, getMapMidlePosition, isPositionBlocking
 import { nextRandom } from "../../randomNumberGenerator.js";
 import { calculateAndSetMoveDirectionToPositionWithPathing, determineClosestCharacter, getPlayerCharacters, moveCharacterTick, setCharacterPosition } from "../character.js";
 import { Character, CHARACTER_TYPE_FUNCTIONS } from "../characterModel.js";
-import { PathingCache } from "../pathing.js";
+import { getNextWaypoint, PathingCache } from "../pathing.js";
 import { createFixPosEnemyWithLevel, ENEMY_TYPES } from "./fixPositionRespawnEnemyModel.js";
 
 export type EnemyWaveCharacter = Character & {
@@ -98,7 +98,7 @@ function setSpawnToOutside(enemy: EnemyWaveCharacter, map: GameMap, game: Game) 
     let newPosition: Position = { x: mapMiddle.x + positionOffset.x, y: mapMiddle.y + positionOffset.y };
     let count = 0;
     const maxCount = 100;
-    while (isPositionBlocking(newPosition, map, game.state.idCounter, game)) {
+    while (!isValidSpawnPosition(newPosition, game)) {
         const random = nextRandom(game.state.randomSeed) * Math.PI * 2;
         positionOffset.x = randomisedDesiredDistance * Math.sin(random);
         positionOffset.y = randomisedDesiredDistance * Math.cos(random);
@@ -111,4 +111,14 @@ function setSpawnToOutside(enemy: EnemyWaveCharacter, map: GameMap, game: Game) 
     }
     enemy.spawnPosition.x = newPosition.x;
     enemy.spawnPosition.y = newPosition.y;
+}
+
+function isValidSpawnPosition(position: Position, game: Game) {
+    if (!isPositionBlocking(position, game.state.map, game.state.idCounter, game)) {
+        const nextWayPoint = getNextWaypoint(position, getMapMidlePosition(game.state.map), game.performance.pathingCache, game.state.time, game);
+        if (nextWayPoint) {
+            return true;
+        }
+    }
+    return false;
 }
