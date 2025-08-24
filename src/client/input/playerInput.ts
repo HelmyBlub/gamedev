@@ -14,6 +14,7 @@ import { createRequiredMoreInfos, moreInfosHandleMouseClick } from "../moreInfo.
 import { chunkXYToMapKey, mousePositionToMapPosition, positionToChunkXY } from "../map/map.js";
 import { CHEAT_ACTIONS, executeCheatAction } from "../cheat.js";
 import { pushStackPaintTextData } from "../floatingText.js";
+import { GAME_MODE_BASE_DEFENSE } from "../gameModeBaseDefense.js";
 
 export const MOVE_ACTION = "moveAction";
 export const UPGRADE_ACTIONS = ["upgrade1", "upgrade2", "upgrade3", "upgrade4", "upgrade5"];
@@ -493,6 +494,7 @@ export function playerAction(clientId: number, data: any, game: Game) {
 }
 
 function interactKeys(character: Character, specialAction: string, game: Game) {
+    if (game.state.gameMode === GAME_MODE_BASE_DEFENSE) return;
     if (specialAction === "interact1") {
         if (game.state.bossStuff.areaSpawnFightStartedTime !== undefined || game.state.bossStuff.kingFightStartedTime !== undefined) {
             retryFight(game);

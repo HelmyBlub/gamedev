@@ -17,6 +17,7 @@ import { paintTextData, paintStackTextData } from "./floatingText.js";
 import { paintMapModifierLate } from "./map/modifiers/mapModifier.js";
 import { moveByDirectionAndDistance } from "./map/map.js";
 import { paintAdditionalPaints } from "./additionalPaint.js";
+import { GAME_MODE_BASE_DEFENSE } from "./gameModeBaseDefense.js";
 
 GAME_IMAGES["blankKey"] = {
     imagePath: "/images/singleBlankKey.png",
@@ -287,6 +288,7 @@ function calculatePositionToSquareEdge(centerX: number, centerY: number, rectWid
 }
 
 function paintClosestInteractable(ctx: CanvasRenderingContext2D, cameraPosition: Position, game: Game) {
+    if (game.state.gameMode === GAME_MODE_BASE_DEFENSE) return;
     game.UI.paintClosesInteractableMoreInfo = false;
     game.UI.rectangles.interactRectangle = undefined;
     if (game.state.ended) return;

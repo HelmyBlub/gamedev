@@ -3,12 +3,10 @@ increase version
 
 current tasks:     
 - base defense mode
-    - bug: spawn pos of wave enemy can be inside blocked area
-        - seed = 0.3766717102190202 (don't know how to reproduce)
-    - spawn each king once?
-        - spawn one king on 20, one king on 30, two kings on 40?
     - problem: interacts in base add to much useless information when fighting
         - no interaction with base stuff possible when started
+    - spawn each king once?
+        - spawn one king on 20, one king on 40, two kings on 60?
     - past characters protect base
     - past character will be ticking AI
     - place past character at positions
