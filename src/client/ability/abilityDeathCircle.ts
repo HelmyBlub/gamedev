@@ -76,7 +76,11 @@ function tickAbilityObjectDeathCircle(abilityObject: AbilityObject, game: Game) 
     if (abilityObjectDeathCircle.nextTickTime > game.state.time) return;
 
     abilityObjectDeathCircle.nextTickTime += abilityObjectDeathCircle.tickInterval;
-    abilityObjectDeathCircle.damage = Math.max(1, abilityObjectDeathCircle.radius / 200);
+    if (!abilityObjectDeathCircle.reversed) {
+        abilityObjectDeathCircle.damage = Math.max(1, abilityObjectDeathCircle.radius / 200);
+    } else {
+        abilityObjectDeathCircle.damage = Math.max(1, game.state.gameModeData!.currentWave * 2);
+    }
 
     const playerCharacters = getPlayerCharacters(game.state.players);
     for (let playerCharacter of playerCharacters) {

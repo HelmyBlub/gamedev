@@ -8,7 +8,7 @@ import { Position, Game, IdCounter, FACTION_ENEMY, ClientInfo, FACTION_PLAYER } 
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { calculateMovePosition, getFirstBlockingGameMapTilePositionTouchingLine, isMoveFromToBlocking } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../input/playerInput.js";
-import { fixedRandom } from "../../randomNumberGenerator.js";
+import { fixedRandom, nextRandom } from "../../randomNumberGenerator.js";
 import { MoreInfoHoverTexts, MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectSomethingToCharacterHit, getAbilityNameUiText, paintAbilityUiDefault, paintAbilityUiKeyBind } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
@@ -156,6 +156,7 @@ function tickAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
         const ballPhysics: BuffBallPhysics | undefined = abilityOwner.debuffs.find((d) => d.name === BUFF_NAME_BALL_PHYSICS) as any;
         if (ballPhysics) return;
     }
+    if (nextRandom(game.state.randomSeed) > 0.5) return; // randomized so bounce ball and lightning ball get both cast
     let pos: Position = {
         x: abilityOwner.x,
         y: abilityOwner.y

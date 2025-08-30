@@ -4,11 +4,12 @@ import { CHARACTER_TYPE_ENEMY_WAVE, EnemyWaveCharacter } from "./character/enemy
 import { CHARACTER_TYPE_ENEMY_FIX_RESPAWN_POSITION, ENEMY_FIX_RESPAWN_POSITION_LEVEL_UP_DISTANCE, FixPositionRespawnEnemyCharacter } from "./character/enemy/fixPositionRespawnEnemyModel.js";
 import { kingEnemySpawnAtPosition } from "./character/enemy/kingEnemy.js";
 import { chunkGraphRectangleSetup } from "./character/pathing.js";
+import { CHARACTER_TYPE_BOT } from "./character/playerCharacters/characterBot.js";
 import { getTimeSinceFirstKill } from "./game.js";
 import { Game, Position } from "./gameModel.js";
 import { paintTextWithOutline } from "./gamePaint.js";
 import { determineMapKeysInDistance, findNearNonBlockingPosition, GameMap, getMapMidlePosition, mapKeyToChunkXY } from "./map/map.js";
-import { Player } from "./player.js";
+import { createPlayer, Player } from "./player.js";
 import { nextRandom } from "./randomNumberGenerator.js";
 
 export type GameModeBaseDefenseData = {
@@ -40,6 +41,26 @@ export function startBaseDefenseMode(game: Game) {
     determineActiveChunksForDefenseMode(game.state.map, game);
     transformFixPositionRespawnEnemiesToWaveEnemies(game);
     game.performance.pathingCache = {};
+    for (let i = game.state.pastPlayerCharacters.characters.length - 1; i >= 0; i--) {
+        const pastChar = game.state.pastPlayerCharacters.characters.pop();
+        if (pastChar) {
+            pastChar.willTurnToPetOnDeath = false;
+            pastChar.type = CHARACTER_TYPE_BOT;
+            for (let ability of pastChar.abilities) {
+                ability.disabled = false;
+            }
+            if (pastChar.pets) {
+                for (let pet of pastChar.pets) {
+                    for (let ability of pet.abilities) {
+                        ability.disabled = false;
+                    }
+                }
+            }
+            const pastBotPlayer = createPlayer(-(i + 2), pastChar);
+            pastBotPlayer.isBot = true;
+            game.state.players.push(pastBotPlayer);
+        }
+    }
 }
 
 export function baseDefenseWaveToDistance(wave: number): number {

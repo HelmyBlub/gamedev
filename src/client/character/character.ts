@@ -30,6 +30,7 @@ import { CURSE_ICE } from "../curse/curseIce.js";
 import { statisticsAddRun } from "../statistics.js";
 import { addEnemyWave } from "./enemy/enemyWave.js";
 import { GAME_MODE_BASE_DEFENSE } from "../gameModeBaseDefense.js";
+import { addCharacterTypeBotFunctions } from "./playerCharacters/characterBot.js";
 
 export function onDomLoadSetCharactersFunctions() {
     addAreaBossType();
@@ -41,6 +42,7 @@ export function onDomLoadSetCharactersFunctions() {
     addCurseFountainBossType();
     addPlayerCharacterType();
     addPetTypeFollowAttackFunctions();
+    addCharacterTypeBotFunctions();
 }
 
 export function findCharacterById(characters: Character[], id: number): Character | null {

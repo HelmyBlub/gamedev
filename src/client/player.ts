@@ -26,6 +26,7 @@ export type Player = {
     actionsPressed: ActionsPressed,
     permanentData: PermanentPlayerData,
     ignoredByEnemies?: boolean,
+    isBot?: boolean,
 }
 
 export type MoneyGainedThisRun = {

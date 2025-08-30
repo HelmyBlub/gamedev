@@ -3,18 +3,23 @@ increase version
 
 current tasks:     
 - base defense mode
+    - past characters protect base
+    - past character will be ability ticking AI
+        - but don't move?
+    - can past characters die?
+        - will end when all past players dead?
+    - button to cycle through past characters
+        - place past character at positions
+        - can play each one of them
+    - tower builder bot only place until limit reached
     - spawn each king once?
         - spawn one king on 20, one king on 40, two kings on 60?
     - interact:
-        - should it be possible for buildings and legendarys in first waves?
-    - past characters protect base
-    - past character will be ticking AI
-    - place past character at positions
-    - button to cycle through past characters
-        - can play each one of them
-    - death circle preventing player from running to far out
-    - will end when all past players dead?
-    - requires 12 past character with main abilities still availalble to start
+        - should it be possible for buildings and legendarys to interact with in first waves?
+    - some wait time between waves
+    - requires achievement for legendary blessing
+        - make blessing achieveable thorugh base defense mode
+    - highscore 
 
 - bug: short king replay failed. why?
     - very first pet movement of past characters seems correct, second broken

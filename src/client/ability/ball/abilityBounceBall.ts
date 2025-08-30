@@ -7,7 +7,7 @@ import { applyDebuff, removeCharacterDebuff } from "../../debuff/debuff.js";
 import { calculateDirection, findClientInfoByCharacterId, getNextId, modulo } from "../../game.js";
 import { Position, Game, IdCounter, FACTION_ENEMY, ClientInfo, FACTION_PLAYER } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
-import { calculateBounceAngle, calculateMovePosition, isMoveFromToBlocking, moveByDirectionAndDistance } from "../../map/map.js";
+import { calculateBounceAngle, calculateMovePosition, getMapMidlePosition, isMoveFromToBlocking, moveByDirectionAndDistance } from "../../map/map.js";
 import { playerInputBindingToDisplayValue } from "../../input/playerInput.js";
 import { MoreInfoHoverTexts, MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectSomethingToCharacterHit, getAbilityNameUiText, paintAbilityUiDefault, paintAbilityUiKeyBind } from "../ability.js";
@@ -19,6 +19,9 @@ import { AbilityDamageBreakdown } from "../../combatlog.js";
 import { ABILITY_NAME_FIRE_LINE } from "../abilityFireLine.js";
 import { GAME_IMAGES } from "../../imageLoad.js";
 import { addPaintFloatingTextInfoForMyself } from "../../floatingText.js";
+import { GAME_MODE_BASE_DEFENSE } from "../../gameModeBaseDefense.js";
+import { CHARACTER_TYPE_BOT } from "../../character/playerCharacters/characterBot.js";
+import { nextRandom } from "../../randomNumberGenerator.js";
 
 export type AbilityBounceBall = Ability & {
     baseRechargeTime: number,
@@ -154,11 +157,14 @@ function tickAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
         const ballPhysics: BuffBallPhysics | undefined = abilityOwner.debuffs.find((d) => d.name === BUFF_NAME_BALL_PHYSICS) as any;
         if (ballPhysics) return;
     }
+    if (nextRandom(game.state.randomSeed) > 0.5) return; // randomized so bounce ball and lightning ball get both cast
     let pos: Position = {
         x: abilityOwner.x,
         y: abilityOwner.y
     };
-    if (abilityOwner.moveDirection) {
+    if (game.state.gameMode === GAME_MODE_BASE_DEFENSE && abilityOwner.type === CHARACTER_TYPE_BOT) {
+        pos = getMapMidlePosition(game.state.map);
+    } else if (abilityOwner.moveDirection) {
         pos = calculateMovePosition(abilityOwner, abilityOwner.moveDirection, 1, false);
     }
 

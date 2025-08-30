@@ -733,7 +733,7 @@ function gameEndedCheck(game: Game) {
 function savePlayerCharatersAsPastCharacters(game: Game) {
     const players = game.state.players;
     for (let player of players) {
-        saveCharacterAsPastCharacter(player.character, game);
+        if (!player.isBot) saveCharacterAsPastCharacter(player.character, game);
     }
 }
 
