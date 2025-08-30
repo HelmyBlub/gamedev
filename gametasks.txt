@@ -1,13 +1,10 @@
-next test run: musician, sniper, tamer
+next test run: musician, tamer
 increase version
 
 current tasks:     
 - base defense mode
-    - past characters protect base
-    - past character will be ability ticking AI
-        - but don't move?
-    - can past characters die?
-        - will end when all past players dead?
+    - check console log with sniper spaming random snipe?
+    - check console log with message pathing to far distance
     - button to cycle through past characters
         - place past character at positions
         - can play each one of them
