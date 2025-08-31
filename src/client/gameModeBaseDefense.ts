@@ -2,12 +2,13 @@ import { Character } from "./character/characterModel.js";
 import { getCelestialDirection, getNextBossSpawnDistance } from "./character/enemy/bossEnemy.js";
 import { CHARACTER_TYPE_ENEMY_WAVE, EnemyWaveCharacter } from "./character/enemy/enemyWave.js";
 import { CHARACTER_TYPE_ENEMY_FIX_RESPAWN_POSITION, ENEMY_FIX_RESPAWN_POSITION_LEVEL_UP_DISTANCE, FixPositionRespawnEnemyCharacter } from "./character/enemy/fixPositionRespawnEnemyModel.js";
-import { kingEnemySpawnAtPosition } from "./character/enemy/kingEnemy.js";
+import { createDefaultNextKing, KingEnemyCharacter, kingEnemySpawnAtPosition } from "./character/enemy/kingEnemy.js";
 import { chunkGraphRectangleSetup } from "./character/pathing.js";
 import { CHARACTER_TYPE_BOT } from "./character/playerCharacters/characterBot.js";
 import { getTimeSinceFirstKill } from "./game.js";
-import { Game, Position } from "./gameModel.js";
+import { CelestialDirection, Game, Position } from "./gameModel.js";
 import { paintTextWithOutline } from "./gamePaint.js";
+import { classBuildingPutLegendaryCharacterStuffBackIntoBuilding, legendaryAbilityGiveBlessing } from "./map/buildings/classBuilding.js";
 import { determineMapKeysInDistance, findNearNonBlockingPosition, GameMap, getMapMidlePosition, mapKeyToChunkXY } from "./map/map.js";
 import { createPlayer, Player } from "./player.js";
 import { nextRandom } from "./randomNumberGenerator.js";
@@ -18,7 +19,7 @@ export type GameModeBaseDefenseData = {
     removedStuckEnemies: boolean,
     mapCharactersToTick: Character[],
     kingSpawnWaves: number[],
-    kingSpawned: boolean,
+    kingCelestialDirection?: CelestialDirection,
     startAlpha: number,
 }
 
@@ -35,7 +36,7 @@ export function startBaseDefenseMode(game: Game) {
         removedStuckEnemies: false,
         mapCharactersToTick: [],
         kingSpawnWaves: [20],
-        kingSpawned: false,
+        kingCelestialDirection: undefined,
         startAlpha: game.UI.playerGlobalAlphaMultiplier,
     };
     determineActiveChunksForDefenseMode(game.state.map, game);
@@ -63,6 +64,21 @@ export function startBaseDefenseMode(game: Game) {
     }
 }
 
+export function baseDefenseOnKingKilled(king: KingEnemyCharacter, game: Game) {
+    if (king.characterClasses && game.state.gameMode === GAME_MODE_BASE_DEFENSE) {
+        const celestialDirection = game.state.gameModeData!.kingCelestialDirection!;
+        if (!celestialDirection) {
+            console.log("problem: undefined celestial direction");
+            return;
+        }
+        legendaryAbilityGiveBlessing(celestialDirection, [king]);
+        classBuildingPutLegendaryCharacterStuffBackIntoBuilding(king, game);
+        king.state = "dead";
+        game.state.bossStuff.nextKings[celestialDirection] = createDefaultNextKing(game.state.idCounter, game);
+    }
+    game.state.gameModeData!.kingCelestialDirection = undefined;
+}
+
 export function baseDefenseWaveToDistance(wave: number): number {
     return wave * ENEMY_FIX_RESPAWN_POSITION_LEVEL_UP_DISTANCE;
 }
@@ -81,7 +97,6 @@ export function gameModeBaseDefenseTick(game: Game) {
         for (let spawnWave of data.kingSpawnWaves) {
             if (spawnWave === data.currentWave + 1) {
                 spawnRandomKing(game);
-                data.kingSpawned = true;
                 break;
             }
         }
@@ -107,24 +122,25 @@ export function gameModeBaseDefenseTick(game: Game) {
 
 function spawnRandomKing(game: Game) {
     const randomValueForDirection = Math.floor(nextRandom(game.state.randomSeed) * 4);
-    const randomPos: Position = { x: 0, y: 0 };
+    const randomPos: Position = getMapMidlePosition(game.state.map);
     switch (randomValueForDirection) {
         case 0:
-            randomPos.x = 1000
+            randomPos.x += 1000
             break;
         case 1:
-            randomPos.x = -1000
+            randomPos.x -= 1000
             break;
         case 2:
-            randomPos.y = 1000
+            randomPos.y += 1000
             break;
         case 3:
-            randomPos.y = -1000
+            randomPos.y -= 1000
             break;
     }
     const spawnPos = findNearNonBlockingPosition(randomPos, game.state.map, game.state.idCounter, game);
     const randomCelestialDirection = getCelestialDirection(spawnPos, game.state.map);
     kingEnemySpawnAtPosition(spawnPos, randomCelestialDirection, game);
+    game.state.gameModeData!.kingCelestialDirection = randomCelestialDirection;
     if (game.UI.playerGlobalAlphaMultiplier > 0.25) {
         game.UI.playerGlobalAlphaMultiplier = 0.25;
     }

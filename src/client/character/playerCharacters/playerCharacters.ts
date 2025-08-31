@@ -129,7 +129,7 @@ export function paintPlayerCharacterUI(ctx: CanvasRenderingContext2D, player: Pl
     tempTopLeft.x += moneyPaintWidth;
     tempWidth -= moneyPaintWidth;
 
-    if (game.state.gameMode === GAME_MODE_BASE_DEFENSE && game.state.gameModeData!.kingSpawned) {
+    if (game.state.gameMode === GAME_MODE_BASE_DEFENSE && game.state.gameModeData!.kingCelestialDirection) {
         for (let boss of game.state.bossStuff.bosses) {
             const charFunctions = CHARACTER_TYPE_FUNCTIONS[boss.type];
             if (charFunctions && charFunctions.paintBigUiHpBarOnSpecialFight) {

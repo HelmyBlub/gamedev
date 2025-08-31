@@ -4,7 +4,7 @@ import { transformFixPositionRespawnEnemyToWaveEnemy } from "../../gameModeBaseD
 import { Game, Position } from "../../gameModel.js";
 import { calculateMovePosition, GameMap, getMapMidlePosition, isPositionBlocking } from "../../map/map.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
-import { calculateAndSetMoveDirectionToPositionWithPathing, determineClosestCharacter, getPlayerCharacters, moveCharacterTick, setCharacterPosition } from "../character.js";
+import { calculateAndSetMoveDirectionToPositionWithPathing, determineClosestCharacter, getPlayerCharacters, moveCharacterTick, resetCharacter, setCharacterPosition } from "../character.js";
 import { Character, CHARACTER_TYPE_FUNCTIONS } from "../characterModel.js";
 import { getNextWaypoint, PathingCache } from "../pathing.js";
 import { createFixPosEnemyWithLevel, ENEMY_TYPES } from "./fixPositionRespawnEnemyModel.js";
@@ -59,10 +59,12 @@ function respawnLogic(enemy: EnemyWaveCharacter, game: Game) {
     if (!enemy.positionReseted) {
         resetPosition(enemy, game.state.map, game);
         enemy.positionReseted = true;
+        enemy.state = "dead";
     } else if (game.state.gameModeData!.currentWave >= enemy.level!.level) {
         game.state.gameModeData!.enemyAliveTickCount++;
         upgradeEnemy(enemy, game);
         enemy.positionReseted = undefined;
+        enemy.state = "alive";
     }
 }
 
@@ -71,7 +73,6 @@ function upgradeEnemy(enemy: EnemyWaveCharacter, game: Game) {
     transformFixPositionRespawnEnemyToWaveEnemy(upgradedEnemy);
     enemy.maxHp = upgradedEnemy.maxHp;
     enemy.hp = upgradedEnemy.maxHp;
-    enemy.state = "alive";
     enemy.abilities = upgradedEnemy.abilities;
     enemy.pets = upgradedEnemy.pets;
     enemy.level = upgradedEnemy.level;
@@ -86,6 +87,7 @@ function resetPosition(enemy: EnemyWaveCharacter, map: GameMap, game: Game) {
     if (enemy.level!.level <= 1) {
         setSpawnToOutside(enemy, map, game);
     }
+    resetCharacter(enemy, game);
     setCharacterPosition(enemy, enemy.spawnPosition, map);
     if (enemy.pets) {
         for (let pet of enemy.pets) {

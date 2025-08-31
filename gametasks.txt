@@ -3,8 +3,11 @@ increase version
 
 current tasks:     
 - base defense mode
-    - if enemy kited outside to far away, teleport back
     - king defeat reset him to default
+        - legendaries need to be returned
+        - blessings applied
+        - game save not in broken state because can happen mid run
+        - enemy spawn broken
     - button to cycle through past characters
         - place past character at positions
         - can play each one of them
