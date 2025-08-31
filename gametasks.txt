@@ -1,4 +1,4 @@
-next test run: musician, tamer
+next test run: musician
 increase version
 
 current tasks:     
@@ -17,6 +17,8 @@ current tasks:
     - requires achievement for legendary blessing
         - make blessing achieveable thorugh base defense mode
     - highscore 
+    - death circle more damage if further out
+    - king defeat reset him to default
 
 - bug: short king replay failed. why?
     - very first pet movement of past characters seems correct, second broken
