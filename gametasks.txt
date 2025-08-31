@@ -3,12 +3,12 @@ increase version
 
 current tasks:     
 - base defense mode
-    - check console log with sniper spaming random snipe?
-    - check console log with message pathing to far distance
+    - tower builder bot only place until limit reached
+    - king defeat reset him to default
+    - death circle more damage if further out
     - button to cycle through past characters
         - place past character at positions
         - can play each one of them
-    - tower builder bot only place until limit reached
     - spawn each king once?
         - spawn one king on 20, one king on 40, two kings on 60?
     - interact:
@@ -17,8 +17,6 @@ current tasks:
     - requires achievement for legendary blessing
         - make blessing achieveable thorugh base defense mode
     - highscore 
-    - death circle more damage if further out
-    - king defeat reset him to default
 
 - bug: short king replay failed. why?
     - very first pet movement of past characters seems correct, second broken

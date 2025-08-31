@@ -22,6 +22,8 @@ import { MoreInfoPart, createMoreInfosPart } from "../moreInfo.js";
 import { AbilityDamageBreakdown } from "../combatlog.js";
 import { CHARACTER_TYPE_CURSE_FOUNTAIN_BOSS } from "../character/enemy/curseFountainBoss.js";
 import { createAbilityTowerRotate } from "./abilityTowerRotate.js";
+import { GAME_MODE_BASE_DEFENSE } from "../gameModeBaseDefense.js";
+import { CHARACTER_TYPE_BOT } from "../character/playerCharacters/characterBot.js";
 
 type AbilityObjectTower = AbilityObject & {
     ownerId: number,
@@ -242,6 +244,14 @@ function tickAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     }
     const buildFrequency = 1000;
     if (abilityTower.lastBuildTime === undefined || abilityTower.lastBuildTime + buildFrequency <= game.state.time) {
+        if (game.state.gameMode === GAME_MODE_BASE_DEFENSE) {
+            if (abilityOwner.type === CHARACTER_TYPE_BOT && abilityTower.subType === SUBTYPE_STATIONARY
+                && getTowerCountOfOwner(game.state.abilityObjects, abilityOwner.id) >= Math.min(15, abilityTower.maxTowers)
+            ) {
+                abilityTower.lastBuildTime = game.state.time + buildFrequency;
+                return;
+            }
+        }
         const pos: Position = {
             x: abilityOwner.x + (nextRandom(game.state.randomSeed) * 50 - 25),
             y: abilityOwner.y + (nextRandom(game.state.randomSeed) * 50 - 25)
