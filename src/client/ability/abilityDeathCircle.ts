@@ -87,7 +87,12 @@ function tickAbilityObjectDeathCircle(abilityObject: AbilityObject, game: Game) 
         const distance = calculateDistance(playerCharacter, abilityObject);
         if (abilityObjectDeathCircle.reversed) {
             if (distance > abilityObjectDeathCircle.radius) {
-                characterTakeDamage(playerCharacter, abilityObject.damage, game, undefined, abilityObject.type);
+                const toFarDistance = (distance - abilityObjectDeathCircle.radius);
+                let damageByDistanceAmplify = 1;
+                if (toFarDistance > 200) {
+                    damageByDistanceAmplify = Math.max(1, Math.pow(2, (toFarDistance - 200) / 200))
+                }
+                characterTakeDamage(playerCharacter, abilityObject.damage * damageByDistanceAmplify, game, undefined, abilityObject.type);
             }
         } else {
             if (distance < abilityObjectDeathCircle.radius) {

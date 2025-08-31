@@ -3,9 +3,9 @@ increase version
 
 current tasks:     
 - base defense mode
-    - tower builder bot only place until limit reached
-    - king defeat reset him to default
     - death circle more damage if further out
+    - if enemy kited outside to far away, teleport back
+    - king defeat reset him to default
     - button to cycle through past characters
         - place past character at positions
         - can play each one of them
