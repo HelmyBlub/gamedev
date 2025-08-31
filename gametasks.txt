@@ -3,7 +3,6 @@ increase version
 
 current tasks:     
 - base defense mode
-    - death circle more damage if further out
     - if enemy kited outside to far away, teleport back
     - king defeat reset him to default
     - button to cycle through past characters

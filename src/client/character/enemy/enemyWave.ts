@@ -44,7 +44,14 @@ function tickEnemy(character: Character, game: Game, pathingCache: PathingCache 
 
     const playerCharacters = getPlayerCharacters(game.state.players, true);
     const closest = determineClosestCharacter(enemy, playerCharacters, true, game.state.map);
-    calculateAndSetMoveDirectionToPositionWithPathing(enemy, closest.minDistanceCharacter, game.state.map, pathingCache, game.state.idCounter, game.state.time, game);
+    const pathfindSuccess = calculateAndSetMoveDirectionToPositionWithPathing(enemy, closest.minDistanceCharacter, game.state.map, pathingCache, game.state.idCounter, game.state.time, game)
+    if (!pathfindSuccess) {
+        const distanceToMiddle = calculateDistance(character, getMapMidlePosition(game.state.map));
+        if (distanceToMiddle > 1400) {
+            resetPosition(enemy, game.state.map, game);
+        }
+    }
+
     moveCharacterTick(enemy, game.state.map, game.state.idCounter, game);
 }
 
