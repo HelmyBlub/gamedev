@@ -4,7 +4,6 @@ increase version
 current tasks:     
 - check: tower builder big enemies
 - base defense mode
-    - interact with fire starts base defense mode
     - highscore 
     - button to cycle through past characters
         - place past character at positions

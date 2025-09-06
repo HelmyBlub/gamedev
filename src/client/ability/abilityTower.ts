@@ -302,9 +302,8 @@ function castTower(abilityOwner: AbilityOwner, ability: Ability, castPosition: P
     if (abilityOwner.faction === FACTION_ENEMY) {
         if (abilityOwner.type === CHARACTER_TYPE_BOSS_ENEMY || abilityOwner.type === CHARACTER_TYPE_KING_ENEMY || abilityOwner.type === CHARACTER_TYPE_CURSE_FOUNTAIN_BOSS) {
             newTower.isBossTower = true;
-        } else if (abilityOwner.type === CHARACTER_TYPE_ENEMY_FIX_RESPAWN_POSITION || abilityOwner.type === CHARACTER_TYPE_BOSS_CLONE_ENEMY) {
-            const enemy: FixPositionRespawnEnemyCharacter = abilityOwner as any;
-            newTower.ownerEnemyLevel = enemy.level?.level;
+        } else if (abilityOwner.level?.level) {
+            newTower.ownerEnemyLevel = abilityOwner.level!.level;
         }
         newTower.deleteTime = game.state.time + ENEMY_TOWER_DESPAWN_TIME;
     }
