@@ -1,6 +1,13 @@
+import { Character } from "../character/characterModel.js";
+import { getCameraPosition } from "../game.js";
+import { startBaseDefenseMode } from "../gameModeBaseDefense.js";
 import { Game, Position } from "../gameModel.js";
+import { getPointPaintPosition, paintTextLinesWithKeys } from "../gamePaint.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
-import { MAP_OBJECTS_FUNCTIONS, MapTileObject } from "./mapObjects.js";
+import { playerInputBindingToDisplayValue } from "../input/playerInput.js";
+import { findPlayerByCharacterId } from "../player.js";
+import { mapKeyAndTileXYToPosition } from "./map.js";
+import { findMapKeyForMapObject, MAP_OBJECTS_FUNCTIONS, MapTileObject } from "./mapObjects.js";
 
 export const IMAGE_FIRE_ANIMATION = "FireAnimation";
 export const MAP_OBJECT_FIRE_ANIMATION = IMAGE_FIRE_ANIMATION;
@@ -14,6 +21,8 @@ GAME_IMAGES[IMAGE_FIRE_ANIMATION] = {
 export function addMapObjectFireAnimation() {
     MAP_OBJECTS_FUNCTIONS[MAP_OBJECT_FIRE_ANIMATION] = {
         paint: paintFireAnimation,
+        interact1: interactStartBaseDefense,
+        paintInteract: paintInteract,
     }
 }
 
@@ -37,4 +46,31 @@ function paintFireAnimation(ctx: CanvasRenderingContext2D, mapObject: MapTileObj
             spriteWidth, spriteHeight
         );
     }
+}
+
+function interactStartBaseDefense(interacter: Character, mapObject: MapTileObject, game: Game) {
+    startBaseDefenseMode(game);
+}
+
+function paintInteract(ctx: CanvasRenderingContext2D, mapObject: MapTileObject, interacter: Character, game: Game) {
+    if (game.state.timeFirstKill != undefined) return;
+    const key = findMapKeyForMapObject(mapObject, game.state.map);
+    if (!key) return;
+    const player = findPlayerByCharacterId(game.state.players, interacter.id);
+    if (!player) return;
+    const map = game.state.map;
+    const cameraPosition = getCameraPosition(game);
+    const topMiddlePos = mapKeyAndTileXYToPosition(key, mapObject.x, mapObject.y, map);
+    topMiddlePos.y -= map.tileSize / 2;
+
+    const texts = [];
+    const interact1 = playerInputBindingToDisplayValue("interact1", game);
+    if (game.UI.inputType === "touch") {
+        texts.push(`Touch to start Base Defense Mode`);
+    } else if (game.UI.inputType === "keyboard") {
+        texts.push(`Press <${interact1}> to start Base Defense Mode`);
+    }
+    const paintPos = getPointPaintPosition(ctx, topMiddlePos, cameraPosition, game.UI.zoom, false);
+    const rectangle = paintTextLinesWithKeys(ctx, texts, paintPos, 20, true, true);
+    if (game.UI.inputType === "touch") game.UI.rectangles.interactRectangle = [{ ...rectangle, interactAction: "interact1" }];
 }

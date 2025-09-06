@@ -8,7 +8,6 @@ import { mapGenerationKingChunkStuff } from "./mapKingArea.js";
 import { IMAGE_FIRE_ANIMATION, MAP_OBJECT_FIRE_ANIMATION } from "./mapObjectFireAnimation.js";
 import { GAME_MAP_MODIFIER_FUNCTIONS, mapModifyIsChunkAffected } from "./modifiers/mapModifier.js";
 import { areaSpawnOnDistanceCreateAndSetOnMap } from "./mapAreaSpawnOnDistance.js";
-import { chunkGraphRectangleSetup } from "../character/pathing.js";
 
 export const pastCharactersMapTilePositions = [
     { x: 3, y: 2, tileId: 5, lookDirection: Math.PI / 2 },
@@ -104,6 +103,7 @@ function createSpawnChunk(mapChunk: MapChunk, chunkLength: number, game: Game) {
         y: 4,
         type: MAP_OBJECT_FIRE_ANIMATION,
         image: IMAGE_FIRE_ANIMATION,
+        interactable: true,
     });
     for (let i = 0; i < chunkLength; i++) {
         chunk.push([]);

@@ -4,20 +4,16 @@ increase version
 current tasks:     
 - check: tower builder big enemies
 - base defense mode
-    - king defeat reset him to default
-        - check: legendaries need to be returned
-        - check: blessings applied
-        - check: ball king not ending up far away
+    - interact with fire starts base defense mode
+    - highscore 
     - button to cycle through past characters
         - place past character at positions
         - can play each one of them
-
     - interact:
         - should it be possible for buildings and legendarys to interact with in first waves?
     - some wait time between waves
     - requires achievement for legendary blessing
         - make blessing achieveable thorugh base defense mode
-    - highscore 
 
 - bug: short king replay failed. why?
     - very first pet movement of past characters seems correct, second broken
