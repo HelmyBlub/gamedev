@@ -2,10 +2,8 @@ next test run:
 increase version
 
 current tasks:     
+- check: tower builder big enemies
 - base defense mode
-    - spawn each king once?
-        - spawn one king on 20, one king on 40 (with bonus hp), two kings on 60 (with more bonus hp)?
-        - check overlapping kings
     - king defeat reset him to default
         - check: legendaries need to be returned
         - check: blessings applied

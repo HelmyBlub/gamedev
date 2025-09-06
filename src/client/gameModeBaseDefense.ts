@@ -72,10 +72,13 @@ export function baseDefenseOnKingKilled(enemy: Character, game: Game) {
             console.log("problem: undefined celestial direction");
             return;
         }
-        legendaryAbilityGiveBlessing(celestialDirection, [king]);
-        classBuildingPutLegendaryCharacterStuffBackIntoBuilding(king, game);
-        king.state = "dead";
-        game.state.bossStuff.nextKings[celestialDirection] = createDefaultNextKing(game.state.idCounter, game);
+        const oldKing = game.state.bossStuff.nextKings[celestialDirection];
+        if (oldKing) {
+            legendaryAbilityGiveBlessing(celestialDirection, [oldKing]);
+            classBuildingPutLegendaryCharacterStuffBackIntoBuilding(oldKing, game);
+            king.state = "dead";
+            game.state.bossStuff.nextKings[celestialDirection] = createDefaultNextKing(game.state.idCounter, game);
+        }
     }
 }
 
