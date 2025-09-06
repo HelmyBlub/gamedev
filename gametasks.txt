@@ -1,18 +1,19 @@
-next test run: musician
+next test run: 
 increase version
 
 current tasks:     
 - base defense mode
+    - spawn each king once?
+        - spawn one king on 20, one king on 40 (with bonus hp), two kings on 60 (with more bonus hp)?
+        - check overlapping kings
     - king defeat reset him to default
-        - legendaries need to be returned
-        - blessings applied
-        - game save not in broken state because can happen mid run
-        - enemy spawn broken
+        - check: legendaries need to be returned
+        - check: blessings applied
+        - check: ball king not ending up far away
     - button to cycle through past characters
         - place past character at positions
         - can play each one of them
-    - spawn each king once?
-        - spawn one king on 20, one king on 40, two kings on 60?
+
     - interact:
         - should it be possible for buildings and legendarys to interact with in first waves?
     - some wait time between waves

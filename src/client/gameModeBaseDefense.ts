@@ -19,7 +19,7 @@ export type GameModeBaseDefenseData = {
     removedStuckEnemies: boolean,
     mapCharactersToTick: Character[],
     kingSpawnWaves: number[],
-    kingCelestialDirection?: CelestialDirection,
+    availableKings: CelestialDirection[],
     startAlpha: number,
 }
 
@@ -35,8 +35,8 @@ export function startBaseDefenseMode(game: Game) {
         enemyAliveTickCount: 1,
         removedStuckEnemies: false,
         mapCharactersToTick: [],
-        kingSpawnWaves: [20],
-        kingCelestialDirection: undefined,
+        kingSpawnWaves: [20, 40, 60, 80],
+        availableKings: ["east", "north", "south", "west"],
         startAlpha: game.UI.playerGlobalAlphaMultiplier,
     };
     determineActiveChunksForDefenseMode(game.state.map, game);
@@ -64,9 +64,10 @@ export function startBaseDefenseMode(game: Game) {
     }
 }
 
-export function baseDefenseOnKingKilled(king: KingEnemyCharacter, game: Game) {
+export function baseDefenseOnKingKilled(enemy: Character, game: Game) {
+    const king = enemy as KingEnemyCharacter;
     if (king.characterClasses && game.state.gameMode === GAME_MODE_BASE_DEFENSE) {
-        const celestialDirection = game.state.gameModeData!.kingCelestialDirection!;
+        const celestialDirection = king.celestialDirection;
         if (!celestialDirection) {
             console.log("problem: undefined celestial direction");
             return;
@@ -76,7 +77,6 @@ export function baseDefenseOnKingKilled(king: KingEnemyCharacter, game: Game) {
         king.state = "dead";
         game.state.bossStuff.nextKings[celestialDirection] = createDefaultNextKing(game.state.idCounter, game);
     }
-    game.state.gameModeData!.kingCelestialDirection = undefined;
 }
 
 export function baseDefenseWaveToDistance(wave: number): number {
@@ -94,11 +94,13 @@ export function gameModeBaseDefenseTick(game: Game) {
     const data = game.state.gameModeData!;
     if (data.enemyAliveTickCount === 0) {
         data.currentWave++;
+        let index = 0;
         for (let spawnWave of data.kingSpawnWaves) {
             if (spawnWave === data.currentWave + 1) {
-                spawnRandomKing(game);
+                spawnRandomKing(game, index);
                 break;
             }
+            index++;
         }
     }
 
@@ -120,27 +122,33 @@ export function gameModeBaseDefenseTick(game: Game) {
     }
 }
 
-function spawnRandomKing(game: Game) {
-    const randomValueForDirection = Math.floor(nextRandom(game.state.randomSeed) * 4);
+function spawnRandomKing(game: Game, index: number) {
+    const gameModeData = game.state.gameModeData!;
+    const randomIndexAvailableKings = Math.floor(nextRandom(game.state.randomSeed) * gameModeData.availableKings.length);
+    const randomCelestialDirection = gameModeData.availableKings[randomIndexAvailableKings];
+    gameModeData.availableKings.splice(randomIndexAvailableKings, 1);
     const randomPos: Position = getMapMidlePosition(game.state.map);
-    switch (randomValueForDirection) {
-        case 0:
+    switch (randomCelestialDirection) {
+        case "east":
             randomPos.x += 1000
             break;
-        case 1:
+        case "west":
             randomPos.x -= 1000
             break;
-        case 2:
+        case "south":
             randomPos.y += 1000
             break;
-        case 3:
+        case "north":
             randomPos.y -= 1000
             break;
     }
     const spawnPos = findNearNonBlockingPosition(randomPos, game.state.map, game.state.idCounter, game);
-    const randomCelestialDirection = getCelestialDirection(spawnPos, game.state.map);
-    kingEnemySpawnAtPosition(spawnPos, randomCelestialDirection, game);
-    game.state.gameModeData!.kingCelestialDirection = randomCelestialDirection;
+    const king = kingEnemySpawnAtPosition(spawnPos, randomCelestialDirection, game);
+
+    if (index > 0) {
+        king.maxHp *= Math.pow(5, index);
+        king.hp = king.maxHp;
+    }
     if (game.UI.playerGlobalAlphaMultiplier > 0.25) {
         game.UI.playerGlobalAlphaMultiplier = 0.25;
     }

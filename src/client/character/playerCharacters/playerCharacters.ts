@@ -129,15 +129,19 @@ export function paintPlayerCharacterUI(ctx: CanvasRenderingContext2D, player: Pl
     tempTopLeft.x += moneyPaintWidth;
     tempWidth -= moneyPaintWidth;
 
-    if (game.state.gameMode === GAME_MODE_BASE_DEFENSE && game.state.gameModeData!.kingCelestialDirection) {
+    let skipCharacterLevelsUi = false;
+    if (game.state.gameMode === GAME_MODE_BASE_DEFENSE) {
         for (let boss of game.state.bossStuff.bosses) {
+            if (boss.state === "dead") continue;
             const charFunctions = CHARACTER_TYPE_FUNCTIONS[boss.type];
             if (charFunctions && charFunctions.paintBigUiHpBarOnSpecialFight) {
                 charFunctions.paintBigUiHpBarOnSpecialFight(ctx, boss, game);
+                skipCharacterLevelsUi = true;
                 break;
             }
         }
-    } else {
+    }
+    if (!skipCharacterLevelsUi) {
         paintCharacterClassLevels(ctx, character, tempTopLeft, tempWidth, height, game);
         ctx.globalAlpha /= aplha;
 

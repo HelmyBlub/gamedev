@@ -26,7 +26,9 @@ import { playerCharacterChangeToKingModification } from "../playerCharacters/pla
 import { baseDefenseOnKingKilled, baseDefenseSetGlobalAlpha, GAME_MODE_BASE_DEFENSE } from "../../gameModeBaseDefense.js";
 import { addMoneyAmountToPlayer, addMoneyUiMoreInfo, addPlayerMoney, calculateMoneyForKingMaxHp } from "../../player.js";
 
-export type KingEnemyCharacter = Character;
+export type KingEnemyCharacter = Character & {
+    celestialDirection: CelestialDirection,
+};
 export const CHARACTER_TYPE_KING_ENEMY = "KingEnemyCharacter";
 
 export const IMAGE_CROWN = "Crown";
@@ -46,7 +48,7 @@ export function addKingType() {
     }
 }
 
-export function createDefaultNextKing(idCounter: IdCounter, game: Game): KingEnemyCharacter {
+export function createDefaultNextKing(idCounter: IdCounter, game: Game): Character {
     const bossSize = 60;
     const color = "black";
     const moveSpeed = 1;
@@ -128,10 +130,11 @@ export function setPlayerAsKing(game: Game) {
     }
 }
 
-export function kingEnemySpawnAtPosition(spawn: Position, kingCelestialDirection: CelestialDirection, game: Game) {
-    const king: Character = deepCopy(game.state.bossStuff.nextKings[kingCelestialDirection]);
+export function kingEnemySpawnAtPosition(spawn: Position, kingCelestialDirection: CelestialDirection, game: Game): KingEnemyCharacter {
+    const king = deepCopy(game.state.bossStuff.nextKings[kingCelestialDirection]) as KingEnemyCharacter;
     modifyCharacterToKing(king, game);
     updateAbilitiesOnCharacterChange(king, game);
+    king.celestialDirection = kingCelestialDirection;
     king.x = spawn.x;
     king.y = spawn.y;
     if (king.pets) {
@@ -145,6 +148,7 @@ export function kingEnemySpawnAtPosition(spawn: Position, kingCelestialDirection
         king.maxHp = 500;
     }
     game.state.bossStuff.bosses.push(king);
+    return king;
 }
 
 export function startKingFight(kingAreaPosition: Position, game: Game) {
@@ -171,7 +175,7 @@ export function startKingFight(kingAreaPosition: Position, game: Game) {
     }
 }
 
-function tickKingEnemyCharacter(enemy: KingEnemyCharacter, game: Game, pathingCache: PathingCache | null) {
+function tickKingEnemyCharacter(enemy: Character, game: Game, pathingCache: PathingCache | null) {
     if (enemy.state === "dead") return;
     const playerCharacters = getPlayerCharacters(game.state.players);
     const closest = determineClosestCharacter(enemy, playerCharacters);
@@ -259,7 +263,7 @@ function onCharacterKill(character: Character, game: Game) {
     }
 }
 
-function changeKingAbilityLevelBasedOnHp(enemy: KingEnemyCharacter) {
+function changeKingAbilityLevelBasedOnHp(enemy: Character) {
     const hpLeftPerCent = enemy.hp / enemy.maxHp;
     const hpBasedlevel = Math.max(Math.floor((1 - hpLeftPerCent) * 10 + 1), 1);
 

@@ -20,7 +20,7 @@ export function addKingCrownType() {
     }
 }
 
-export function createKingCrownCharacter(idCounter: IdCounter, spawn: Position): KingEnemyCharacter {
+export function createKingCrownCharacter(idCounter: IdCounter, spawn: Position): Character {
     const crownSize = 20;
     const color = "black";
     const moveSpeed = 2;
