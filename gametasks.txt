@@ -2,24 +2,12 @@ next test run:
 increase version
 
 current tasks:     
-- base defense mode
-    - tower builder: upgrade placed towers in base defense mode
-    - button to cycle through past characters
-        - place past character at positions
-        - can play each one of them
-    - interact:
-        - should it be possible for buildings and legendarys to interact with in first waves?
-    - some wait time between waves
-    - requires achievement for legendary blessing
-        - make blessing achieveable thorugh base defense mode
+- musician need one more dps upgrade
+    - if not getting dot upgrade, can be to weak against boss ~5
+    - upgrade idea1: every second note does x-times more damage (crit like)
 
 - bug: short king replay failed. why?
     - very first pet movement of past characters seems correct, second broken
-- when standing on entrance of king area, performance seems to be bad
-    - i guess all enemies all the time calculate waypoints, but one check could be enough?
-
-- musician need one more dps upgrade
-    - if not getting dot upgrade, can be to weak against boss ~5
 - speedrun my game
     - kill god as fast as possible
         - real Time: <12:07 (builder + ball)
