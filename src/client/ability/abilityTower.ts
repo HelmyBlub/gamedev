@@ -397,7 +397,7 @@ function updateTowerObjectAbilityLevels(abilityObjects: AbilityObject[], ability
                 if (abilityFunctions.setAbilityToLevel) {
                     abilityFunctions.setAbilityToLevel(tower.ability, level);
                     const hasDamageAbility = tower.ability as any;
-                    if (abilityTower.towerDamageFactor > 1 && hasDamageAbility.damage != undefined) {
+                    if (tower.abilityIdRef === abilityTower.id && abilityTower.towerDamageFactor > 1 && hasDamageAbility.damage != undefined) {
                         hasDamageAbility.damage *= abilityTower.towerDamageFactor;
                     }
                 }
@@ -755,6 +755,13 @@ function executeAbilityTowerUpgradeOption(ability: Ability, character: Character
             for (let object of abilityTower.abilityObjectsAttached) {
                 object.damage = abilityTower.damage;
             }
+        } else if (game.state.gameMode === GAME_MODE_BASE_DEFENSE) {
+            for (let object of game.state.abilityObjects) {
+                if (object.type === ABILITY_NAME_TOWER) {
+                    const tower = object as AbilityObjectTower;
+                    if (tower.abilityIdRef === ability.id) object.damage = abilityTower.damage;
+                }
+            }
         }
         return;
     }
@@ -763,6 +770,8 @@ function executeAbilityTowerUpgradeOption(ability: Ability, character: Character
         abilityTower.towerDamageFactor += UPGRADE_TOWER_FACTOR_PER_LEVEL;
         if (abilityTower.abilityObjectsAttached) {
             updateTowerObjectAbilityLevels(abilityTower.abilityObjectsAttached, abilityTower);
+        } else if (game.state.gameMode === GAME_MODE_BASE_DEFENSE) {
+            updateTowerObjectAbilityLevels(game.state.abilityObjects, abilityTower);
         }
         return;
     }

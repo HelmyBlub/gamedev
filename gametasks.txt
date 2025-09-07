@@ -3,7 +3,7 @@ increase version
 
 current tasks:     
 - base defense mode
-    - highscore 
+    - tower builder: upgrade placed towers in base defense mode
     - button to cycle through past characters
         - place past character at positions
         - can play each one of them
