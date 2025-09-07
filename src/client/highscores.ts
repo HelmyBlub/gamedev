@@ -3,6 +3,7 @@ import { CHARACTER_TYPE_CURSE_FOUNTAIN_BOSS } from "./character/enemy/curseFount
 import { CHARACTER_TYPE_GOD_ENEMY, GodEnemyCharacter } from "./character/enemy/god/godEnemy.js";
 import { CHARACTER_TYPE_KING_ENEMY } from "./character/enemy/kingEnemy.js";
 import { calculateDistance } from "./game.js";
+import { GAME_MODE_BASE_DEFENSE } from "./gameModeBaseDefense.js";
 import { Game } from "./gameModel.js";
 import { getMapMidlePosition } from "./map/map.js";
 import { MAP_AREA_SPAWN_ON_DISTANCE_TYPES_FUNCTIONS } from "./map/mapAreaSpawnOnDistance.js";
@@ -39,6 +40,7 @@ const HIGHSCORE_DISTANCE = "Distance";
 const HIGHSCORE_KING_TIME = "KingTime";
 const HIGHSCORE_GOD_TIME = "GodTime";
 const HIGHSCORE_FOUNTAIN_TIME = "FountainTime";
+const HIGHSCORE_BASE_DEFENSE = "BaseDefense";
 const SCORE_PRIO_HP_PER_CENT = 4;
 const SCORE_PRIO_KILL_DPS = 3;
 const SCORE_PRIO_HARD_MODE_HP_PER_CENT = 2;
@@ -70,6 +72,12 @@ export function createHighscoreBoards(): Highscores {
         description: [
             "Highscore number based on damage per second",
             "or HP% of Fountain Fight."
+        ]
+    }
+    highscores.scoreBoards[HIGHSCORE_BASE_DEFENSE] = {
+        scores: [],
+        description: [
+            "Base Defense Waves Survived"
         ]
     }
     createAndSetGodBoard(highscores);
@@ -108,6 +116,8 @@ export function calculateHighscoreOnGameEnd(game: Game): number {
                 newScore = createAndPushFountainScore(playerClass, game);
             }
         }
+    } else if (game.state.gameMode === GAME_MODE_BASE_DEFENSE) {
+        newScore = createAndPushBaseDefenseScore(playerClass, game);
     } else {
         newScore = getHighestPlayerDistanceFromMapMiddle(game);
         const board = state.highscores.scoreBoards[HIGHSCORE_DISTANCE];
@@ -274,6 +284,31 @@ function createAndPushFountainScore(playerClass: string, game: Game): number {
     return newScore;
 }
 
+function createAndPushBaseDefenseScore(playerClass: string, game: Game): number {
+    let newScore = 0;
+    let board = game.state.highscores.scoreBoards[HIGHSCORE_BASE_DEFENSE];
+    if (!board) {
+        game.state.highscores.scoreBoards[HIGHSCORE_BASE_DEFENSE] = {
+            scores: [],
+            description: [
+                "Base Defense Waves Survived"
+            ]
+        }
+        board = game.state.highscores.scoreBoards[HIGHSCORE_BASE_DEFENSE];
+    }
+    newScore = game.state.gameModeData!.currentWave;
+    board.scores.push({ score: newScore, playerClass: playerClass, scoreTypePrio: SCORE_PRIO_KILL_DPS, scoreSuffix: "Waves" });
+    game.UI.lastHighscoreText = `Survived ${(newScore).toFixed()} Waves`;
+
+    board.scores.sort(highscoreSort);
+    game.state.highscores.lastHighscorePosition = board.scores.findIndex((e) => e.score === newScore);
+    game.state.highscores.lastBoard = HIGHSCORE_BASE_DEFENSE;
+    if (board.scores.length > game.state.highscores.maxLength) {
+        board.scores.pop();
+    }
+    return newScore;
+}
+
 
 function highscoreSort(entryA: HighscoreEntry, entryB: HighscoreEntry): number {
     if (entryA.scoreTypePrio === entryB.scoreTypePrio) {
@@ -328,8 +363,10 @@ function getHighscoreTextLine(index: number, highscoreBoard: HighscoreBoard): st
     if (highscoreBoard.scores[index].scoreSuffix !== undefined) {
         if (highscoreBoard.scores[index].scoreSuffix === "DPS") {
             return `${(index + 1)}: ${(highscoreBoard.scores[index].score).toLocaleString(undefined, TO_LOCAL_NO_DECIAMLS)} ${highscoreBoard.scores[index].scoreSuffix} ${hardModeText}(${highscoreBoard.scores[index].playerClass})`;
-        } else {
+        } else if (highscoreBoard.scores[index].scoreSuffix === "%") {
             return `${(index + 1)}: ${(highscoreBoard.scores[index].score).toFixed(2)}${highscoreBoard.scores[index].scoreSuffix} ${hardModeText}(${highscoreBoard.scores[index].playerClass})`;
+        } else {
+            return `${(index + 1)}: ${(highscoreBoard.scores[index].score).toFixed()} ${highscoreBoard.scores[index].scoreSuffix} ${hardModeText}(${highscoreBoard.scores[index].playerClass})`;
         }
     } else {
         return `${(index + 1)}: ${highscoreBoard.scores[index].score} (${highscoreBoard.scores[index].playerClass})`;

@@ -2,7 +2,6 @@ next test run:
 increase version
 
 current tasks:     
-- check: tower builder big enemies
 - base defense mode
     - highscore 
     - button to cycle through past characters
