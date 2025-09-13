@@ -29,6 +29,7 @@ import { addAbilityMusicSheetDeleteNote } from "./abilityMusicSheetDeleteNote.js
 import { addAbilityMusicSheetChangeInstrument } from "./abilityMusicSheetChangeInstrument.js";
 import { displayTextAtCameraPosition } from "../../floatingText.js";
 import { CHARACTER_PET_TYPE_CLONE } from "../../character/playerCharacters/characterPetTypeClone.js";
+import { addAbilityMusicSheetUpgradeCrit } from "./abilityMusicSheetUpgradeCrit.js";
 
 export type AbilityMusicSheets = Ability & {
     nextUpgradeAddInstrument: boolean,
@@ -135,6 +136,7 @@ export function addAbilityMusicSheet() {
     addAbilityMusicSheetUpgradeSpeed();
     addAbilityMusicSheetUpgradeShield();
     addAbilityMusicSheetUpgradeDamageOverTime();
+    addAbilityMusicSheetUpgradeCrit();
 
     addAbilityMusicSheetDeleteNote();
     addAbilityMusicSheetChangeInstrument();

@@ -9,6 +9,7 @@ import { Ability, AbilityOwner } from "../ability.js";
 import { createAbilityObjectExplode } from "../abilityExplode.js";
 import { getAbilityUpgradeOptionDefault } from "../abilityUpgrade.js";
 import { ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS, ABILITY_NAME_MUSIC_SHEET, AbilityMusicSheetUpgradeInstrument, AbilityMusicSheets, getMusicSheetUpgradeChainPosition } from "./abilityMusicSheet.js";
+import { getAbilityMusicSheetsUpgradeCritDamageFactor } from "./abilityMusicSheetUpgradeCrit.js";
 import { getAbilityMusicSheetsUpgradeMultiplyAmount } from "./abilityMusicSheetUpgradeMultiply.js";
 import { getAbilityMusicSheetsUpgradeAreaFactor } from "./abilityMusicSheetUpgradeSize.js";
 
@@ -137,6 +138,7 @@ function executeMusicNotesDamage(notes: MusicNote[], abilityOwner: AbilityOwner,
     const explodeRadius = Math.sqrt(area / Math.PI);
     const multiply = getAbilityMusicSheetsUpgradeMultiplyAmount(abilityMusicSheets);
     for (let note of notes) {
+        const upgradeCritFactor = getAbilityMusicSheetsUpgradeCritDamageFactor(abilityMusicSheets);
         for (let i = 0; i < multiply; i++) {
             let randomPos: Position | undefined = undefined;
             if (bosses.length > 0) {
@@ -165,7 +167,7 @@ function executeMusicNotesDamage(notes: MusicNote[], abilityOwner: AbilityOwner,
             upgrade.lastSpawns.push({ x: randomPos.x, y: randomPos.y });
             let explodeDelay = 0;
             if (abilityOwner.faction === FACTION_ENEMY) explodeDelay = 1500;
-            const strikeObject = createAbilityObjectExplode(randomPos, damagePerNote, explodeRadius, abilityOwner.faction, abilityMusicSheets.id, explodeDelay, game);
+            const strikeObject = createAbilityObjectExplode(randomPos, damagePerNote * upgradeCritFactor, explodeRadius, abilityOwner.faction, abilityMusicSheets.id, explodeDelay, game);
             strikeObject.abilityRefTypeDoOnHit = ABILITY_NAME_MUSIC_SHEET;
             game.state.abilityObjects.push(strikeObject);
         }

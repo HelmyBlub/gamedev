@@ -6,6 +6,7 @@ import { FACTION_ENEMY, FACTION_PLAYER, Game } from "../../gameModel.js";
 import { Ability, AbilityObject } from "../ability.js";
 import { AbilityUpgrade, getAbilityUpgradeOptionDefault } from "../abilityUpgrade.js";
 import { ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS, AbilityMusicSheets } from "./abilityMusicSheet.js";
+import { ABILITY_MUSIC_SHEET_UPGRADE_CRIT, AbilityMusicSheetUpgradeCrit } from "./abilityMusicSheetUpgradeCrit.js";
 
 export type AbilityMusicSheetUpgradeDamageOverTime = AbilityUpgrade & {
 }
@@ -31,7 +32,12 @@ export function abilityMusicSheetsUpgradeDamageOverTimeApply(ability: AbilityMus
     } else {
         damage *= 1 + up.level / 5;
     }
-    const debuffDamageOverTime = createDebuffDamageOverTime(damage, ability.damagePerSecond * up.level * 40, ability.id);
+    const upCrit = ability.upgrades[ABILITY_MUSIC_SHEET_UPGRADE_CRIT] as AbilityMusicSheetUpgradeCrit;
+    let critBonusFactor = 1;
+    if (upCrit) {
+        critBonusFactor += upCrit.level;
+    }
+    const debuffDamageOverTime = createDebuffDamageOverTime(damage, ability.damagePerSecond * up.level * 40 * critBonusFactor, ability.id);
     if (target.faction === FACTION_PLAYER) debuffDamageOverTime.removeTime = game.state.time + 2000;
     applyDebuff(debuffDamageOverTime, target, game);
 }

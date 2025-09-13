@@ -10,6 +10,7 @@ import { Ability, AbilityObject, AbilityOwner } from "../ability.js";
 import { getAbilityUpgradeOptionDefault } from "../abilityUpgrade.js";
 import { createProjectile } from "../projectile.js";
 import { ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS, ABILITY_NAME_MUSIC_SHEET, AbilityMusicSheetUpgradeInstrument, AbilityMusicSheets, getMusicSheetUpgradeChainPosition } from "./abilityMusicSheet.js";
+import { getAbilityMusicSheetsUpgradeCritDamageFactor } from "./abilityMusicSheetUpgradeCrit.js";
 import { getAbilityMusicSheetsUpgradeMultiplyAmount } from "./abilityMusicSheetUpgradeMultiply.js";
 import { getAbilityMusicSheetsUpgradeAreaFactor } from "./abilityMusicSheetUpgradeSize.js";
 
@@ -148,6 +149,7 @@ function executeMusicNotesDamage(notes: MusicNote[], abilityOwner: AbilityOwner,
     const radius = Math.sqrt(area / Math.PI);
     const multiply = getAbilityMusicSheetsUpgradeMultiplyAmount(abilityMusicSheets);
     for (let note of notes) {
+        const upgradeCritFactor = getAbilityMusicSheetsUpgradeCritDamageFactor(abilityMusicSheets);
         for (let i = 0; i < multiply; i++) {
             let randomDirection: number | undefined = undefined;
             if (bosses.length > 0) {
@@ -164,7 +166,7 @@ function executeMusicNotesDamage(notes: MusicNote[], abilityOwner: AbilityOwner,
             if (!randomDirection) {
                 randomDirection = nextRandom(game.state.randomSeed) * Math.PI * 2;
             }
-            const bullet = createProjectile(chainPos.x, chainPos.y, randomDirection, damagePerNote, abilityOwner.faction, 4, game.state.time, 1000, 5000, ABILITY_NAME_MUSIC_SHEET, abilityMusicSheets.id, radius);
+            const bullet = createProjectile(chainPos.x, chainPos.y, randomDirection, damagePerNote * upgradeCritFactor, abilityOwner.faction, 4, game.state.time, 1000, 5000, ABILITY_NAME_MUSIC_SHEET, abilityMusicSheets.id, radius);
             game.state.abilityObjects.push(bullet);
             bullet.id = getNextId(game.state.idCounter);
             upgrade.lastSpawnObjectIds.push(bullet.id);
