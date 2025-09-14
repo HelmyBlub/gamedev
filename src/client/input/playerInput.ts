@@ -446,8 +446,12 @@ export function playerAction(clientId: number, data: any, game: Game) {
                 game.UI.movementKeyPressed = true;
                 game.UI.displayMovementKeyHint = false;
                 const moveData: MoveData = data;
-                character.moveDirection = moveData.direction;
-                if (moveData.faktor > 0) character.isMoving = true; else character.isMoving = false;
+                if (moveData.faktor > 0) {
+                    character.isMoving = true;;
+                    character.moveDirection = moveData.direction;
+                } else {
+                    character.isMoving = false
+                }
             }
         } else if (UPGRADE_ACTIONS.indexOf(action) !== -1) {
             if (isKeydown) {
