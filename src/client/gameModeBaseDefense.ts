@@ -59,6 +59,7 @@ export function startBaseDefenseMode(game: Game) {
             }
             const pastBotPlayer = createPlayer(-(i + 2), pastChar);
             pastBotPlayer.isBot = true;
+            pastBotPlayer.character.isDamageImmune = false;
             game.state.players.push(pastBotPlayer);
         }
     }

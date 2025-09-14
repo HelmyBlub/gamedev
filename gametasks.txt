@@ -2,7 +2,6 @@ next test run:
 increase version
 
 current tasks:     
-- check: character when stopping forgets his look direction
 - speedrun my game
     - kill god as fast as possible
         - real Time: <12:07 (builder + ball)
@@ -28,10 +27,10 @@ next feature ideas:
                 - difficult to create when i am the one developing it
 
 - think about next bigger feature 
-    - extends existings classes for more upgrade choice?
+    - extend existings classes for more upgrade choice?
         - more run variation
-    - unlock more upgrade choices. Don't overwhelm player at start, but give choice for future
-        - with money?
+        - unlock more upgrade choices. Don't overwhelm player at start, but give choice for future
+            - with money?
         - over achievements?
     - randomize upgarde with rariety        
         - common, rare, epic, legendary
@@ -40,6 +39,10 @@ next feature ideas:
             - be able to make spells by drawing
     - base building
         - more options to spend money to build up map center city
+    - money gambling casino
+    - make random caves/dungeon to enter
+        - try out different generation stategies
+        - minigames?
 
 
 refactor possibilities:
