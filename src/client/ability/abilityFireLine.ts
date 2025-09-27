@@ -52,7 +52,7 @@ export function createAbilityObjectFireLine(
         faction: faction,
         x: startPosition.x,
         y: startPosition.y,
-        endPosition: endPosition,
+        endPosition: { x: endPosition.x, y: endPosition.y },
         endTime: game.state.time + duration,
         abilityIdRef: abilityIdRef,
     };

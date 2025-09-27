@@ -17,6 +17,7 @@ import { TAMER_PET_CHARACTER, TamerPetCharacter } from "./tamer/tamerPetCharacte
 import { getNextBossSpawnDistance, getNextBossSpawnTime } from "../enemy/bossEnemy.js"
 import { Curse } from "../../curse/curse.js"
 import { baseDefenseGetNextBossSpawnWave, GAME_MODE_BASE_DEFENSE, paintGameModeBaseDefeseWave } from "../../gameModeBaseDefense.js"
+import { addSpellmakerClass } from "./spellmaker/characterClassSpellmaker.js"
 
 export type PlayerCharacterClassFunctions = {
     changeCharacterToThisClass: (character: Character, idCounter: IdCounter, game: Game) => void,
@@ -90,6 +91,7 @@ export function onDomLoadSetCharacterClasses() {
     addTamerClass();
     addBallClass();
     addMusicianClass();
+    addSpellmakerClass();
 }
 
 export function paintPlayerCharacterUI(ctx: CanvasRenderingContext2D, player: Player, topLeft: Position, width: number, height: number, game: Game) {

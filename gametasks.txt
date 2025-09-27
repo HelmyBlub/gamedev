@@ -2,6 +2,22 @@ next test run:
 increase version
 
 current tasks:     
+- think about feature ideas
+    - new class spellmaker
+        - start simple
+            - paint fire lines ability
+                - paint where mouse is
+                - costs mana
+        - somehow make arbitrary spells
+            - can influence size    (brush size)
+            - can influence shape   (paint)
+            - can influence effect  (color)
+            - player has mana: paint amount limited
+                - amount of paint used for a spell determines mana usage
+            - black color Damage:
+                - when painting closed shape => will do aoe damage with this shape
+                - when painting line => will shot projectile
+                - 
 - speedrun my game
     - kill god as fast as possible
         - real Time: <12:07 (builder + ball)

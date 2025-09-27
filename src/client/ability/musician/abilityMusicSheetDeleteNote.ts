@@ -51,7 +51,6 @@ function castDeleteNote(abilityOwner: AbilityOwner, ability: Ability, castPositi
         y: abilityOwner.y + castPositionRelativeToCharacter.y,
     }
     abilityMusicSheetsDeleteNoteClick(abilityOwner, abilityMusicSheets, fixedCastPosition, game);
-
 }
 
 function createAbilityMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability, game: Game): MoreInfoPart {

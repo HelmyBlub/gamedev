@@ -336,9 +336,15 @@ export function getChunksTouchingLine(map: GameMap, lineStart: Position, lineEnd
     if (firstKey !== endKey) {
         const xDiff = lineEnd.x - lineStart.x;
         const yDiff = lineEnd.y - lineStart.y;
-        const currentPos = { ...lineStart };
+        const currentPos = { x: lineStart.x, y: lineStart.y };
         let currentKey: string;
+        let count = 0;
+        var reachedEndWithSideTile = false;
         do {
+            count++;
+            if (count > 1000) {
+                debugger;
+            }
             let nextYBorder: number | undefined;
             let nextXBorder: number | undefined;
             let nextYBorderX: number | undefined;
@@ -389,16 +395,22 @@ export function getChunksTouchingLine(map: GameMap, lineStart: Position, lineEnd
                 console.log("should not happen?");
             }
             currentKey = positionToMapKey(currentPos, map);
+
             chunkKeys.add(currentKey);
             let tempKey = positionToMapKey({ x: currentPos.x - width / 2, y: currentPos.y }, map);
             chunkKeys.add(tempKey);
+            if (tempKey === endKey) reachedEndWithSideTile = true;
+
             tempKey = positionToMapKey({ x: currentPos.x + width / 2, y: currentPos.y }, map);
             chunkKeys.add(tempKey);
+            if (tempKey === endKey) reachedEndWithSideTile = true;
             tempKey = positionToMapKey({ x: currentPos.x, y: currentPos.y + width / 2 }, map);
             chunkKeys.add(tempKey);
+            if (tempKey === endKey) reachedEndWithSideTile = true;
             tempKey = positionToMapKey({ x: currentPos.x, y: currentPos.y - width / 2 }, map);
             chunkKeys.add(tempKey);
-        } while (currentKey !== endKey);
+            if (tempKey === endKey) reachedEndWithSideTile = true;
+        } while (currentKey !== endKey && !reachedEndWithSideTile);
     }
 
     const chunks: MapChunk[] = [];
