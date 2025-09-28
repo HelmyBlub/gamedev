@@ -4,11 +4,17 @@ increase version
 current tasks:     
 - think about feature ideas
     - new class spellmaker
-        - start simple
-            - paint fire lines ability
-                - paint where mouse is
-                - costs mana
-        - somehow make arbitrary spells
+        - make a simple spell to recast
+            - create ability spell Make
+                - records "spell" actions
+                    - fire line position
+                - when done puts info to spellCast
+            - create ability spell Cast
+                - uses mana
+                - if enough mana puts down spell
+            - first paint fire lines which will be recorded, relative to player
+            - after use ability to cast this setup to position
+        - somehow make arbitrary spells and be able to cast them repeatedly
             - can influence size    (brush size)
             - can influence shape   (paint)
             - can influence effect  (color)
@@ -17,7 +23,7 @@ current tasks:
             - black color Damage:
                 - when painting closed shape => will do aoe damage with this shape
                 - when painting line => will shot projectile
-                - 
+        - remember: relative mouse position not used for holding mouse button down
 - speedrun my game
     - kill god as fast as possible
         - real Time: <12:07 (builder + ball)

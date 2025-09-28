@@ -7,7 +7,9 @@ import { Character, createCharacter, IMAGE_SLIME } from "../../characterModel.js
 import { calculateBossEnemyExperienceWorth, CHARACTER_TYPE_BOSS_ENEMY } from "../../enemy/bossEnemy.js";
 import { createBossUpgradeOptionsAbilityLeveling, executeAbilityLevelingCharacterUpgradeOption } from "../abilityLevelingCharacter.js";
 import { CharacterClass, paintPlayerAbilityLevelUI, PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "../playerCharacters.js";
-import { ABILITY_NAME_CREATE_FIRE, addAbilityCreateFire } from "./abilityCreateFire.js";
+import { ABILITY_NAME_SPELLMAKER, addAbilitySpellmaker } from "./abilitySpellmaker.js";
+import { ABILITY_NAME_SPELLMAKER_CHANGE_MODE, addAbilitySpellmakerChangeMode } from "./abilitySpellmakerChangeMode.js";
+import { ABILITY_NAME_SPELLMAKER_RESET, addAbilitySpellmakerReset } from "./abilitySpellmakerReset.js";
 
 export const CHARACTER_CLASS_SPELLMAKER = "Spellmaker";
 
@@ -21,11 +23,13 @@ export function addSpellmakerClass() {
         paintLevelUI: paintLevelUI,
         preventMultiple: true,
     }
-    addAbilityCreateFire();
+    addAbilitySpellmaker();
+    addAbilitySpellmakerChangeMode();
+    addAbilitySpellmakerReset()
 }
 
 function paintLevelUI(ctx: CanvasRenderingContext2D, character: Character, charClass: CharacterClass, topLeft: Position, width: number, height: number, game: Game) {
-    const ability = character.abilities.find(a => a.classIdRef === charClass.id && a.name === ABILITY_NAME_CREATE_FIRE);
+    const ability = character.abilities.find(a => a.classIdRef === charClass.id && a.name === ABILITY_NAME_SPELLMAKER);
     if (!ability || ability.level?.leveling === undefined) return;
     paintPlayerAbilityLevelUI(ctx, ability, topLeft, width, height, game);
 }
@@ -42,7 +46,9 @@ function changeCharacterToSpellmakerClass(
     };
     character.characterClasses.push(charClass);
     addAbilityToCharacter(character, createAbilityHpRegen(idCounter, undefined, 5), charClass);
-    addAbilityToCharacter(character, createAbility(ABILITY_NAME_CREATE_FIRE, idCounter, true, true, "ability1"), charClass);
+    addAbilityToCharacter(character, createAbility(ABILITY_NAME_SPELLMAKER, idCounter, true, true, "ability1"), charClass);
+    addAbilityToCharacter(character, createAbility(ABILITY_NAME_SPELLMAKER_CHANGE_MODE, idCounter, false, false, "ability2"), charClass);
+    addAbilityToCharacter(character, createAbility(ABILITY_NAME_SPELLMAKER_RESET, idCounter, false, false, "ability3"), charClass);
 }
 
 function getLongUiText(): string[] {
