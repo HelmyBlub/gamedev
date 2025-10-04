@@ -2,28 +2,34 @@ next test run:
 increase version
 
 current tasks:     
-- think about feature ideas
-    - new class spellmaker
-        - make a simple spell to recast
-            - create ability spell Make
-                - records "spell" actions
-                    - fire line position
-                - when done puts info to spellCast
-            - create ability spell Cast
-                - uses mana
-                - if enough mana puts down spell
-            - first paint fire lines which will be recorded, relative to player
-            - after use ability to cast this setup to position
-        - somehow make arbitrary spells and be able to cast them repeatedly
-            - can influence size    (brush size)
-            - can influence shape   (paint)
-            - can influence effect  (color)
-            - player has mana: paint amount limited
-                - amount of paint used for a spell determines mana usage
-            - black color Damage:
-                - when painting closed shape => will do aoe damage with this shape
-                - when painting line => will shot projectile
-        - remember: relative mouse position not used for holding mouse button down
+- new class spellmaker
+    - dev steps:
+        - create abilitySpellmakerFireline
+            - fire line which can move
+            - more than just one line
+            - and more in the future like rotate
+        - abilitySpellmaker needs to have list ob paint objects like fireLine
+            - information needs to be able to create fireLineObjects
+            
+
+    - create button only usable with mouse like for musician
+        - to choose different paint tools
+    - be able to paint a spell which makes multiple fire lines moving in different directions
+        - can attach move direction to firelineObject
+        - one fireline object from mouse down to mouse up
+        - can paint move pattern. Fire line object will follow painted pattern
+
+    - somehow make arbitrary spells and be able to cast them repeatedly
+        - can influence size    (brush size)
+        - can influence shape   (paint)
+        - can influence effect  (color)
+        - player has mana: paint amount limited
+            - amount of paint used for a spell determines mana usage
+        - black color Damage:
+            - when painting closed shape => will do aoe damage with this shape
+            - when painting line => will shot projectile
+    - remember: relative mouse position not used for holding mouse button down
+    - hope explosion spell possible in the end: gets more expensive but explosion can get bigger and bigger
 - speedrun my game
     - kill god as fast as possible
         - real Time: <12:07 (builder + ball)
