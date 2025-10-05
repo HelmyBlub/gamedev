@@ -55,7 +55,7 @@ export function createAbilityObjectSpellmakerFireLine(
         y: startPosition.y,
         moveSpeed: moveSpeed,
         fireLineJoints: deepCopy(fireLineJoints),
-        moveToPositions: moveToPositions,
+        moveToPositions: deepCopy(moveToPositions),
         endTime: game.state.time + duration,
         abilityIdRef: abilityIdRef,
     };

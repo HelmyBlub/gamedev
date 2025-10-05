@@ -4,6 +4,7 @@ increase version
 current tasks:     
 - new class spellmaker
     - dev steps:
+        - bug: mana reg?
         - create abilitySpellmakerFireline
             - fire line which can move
             - more than just one line

@@ -42,7 +42,7 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, castPosition:
     for (let abilityIter of abilityOwner.abilities) {
         if (abilityIter.name === ABILITY_NAME_SPELLMAKER) {
             const spellmaker = abilityIter as AbilitySpellmaker;
-            spellmaker.fireLines = [[]];
+            spellmaker.fireLines = [{ moveToPositions: [], positions: [] }];
         }
     }
 }
