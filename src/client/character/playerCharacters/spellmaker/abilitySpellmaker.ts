@@ -1,13 +1,15 @@
-import { ABILITIES_FUNCTIONS, Ability, ABILITY_DEFAULT_SMALL_GROUP, AbilityOwner, getAbilityNameUiText, paintAbilityUiDefault } from "../../../ability/ability.js";
-import { createAbilityObjectFireLine } from "../../../ability/abilityFireLine.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, getAbilityNameUiText, paintAbilityUiDefault } from "../../../ability/ability.js";
 import { IMAGE_NAME_SWITCH } from "../../../ability/musician/abilityMusicSheetChangeInstrument.js";
-import { autoSendMousePositionHandler, calculateDistance, calculateDistancePointToLine, findClientInfoByCharacterId, getNextId } from "../../../game.js";
-import { ClientInfo, Game, IdCounter, Position } from "../../../gameModel.js";
+import { autoSendMousePositionHandler, calculateDistance, getNextId } from "../../../game.js";
+import { Game, IdCounter, Position } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
 import { playerInputBindingToDisplayValue } from "../../../input/playerInput.js";
 import { createMoreInfosPart, MoreInfoHoverTexts, MoreInfoPart } from "../../../moreInfo.js";
 import { CHARACTER_PET_TYPE_CLONE } from "../characterPetTypeClone.js";
 import { createAbilityObjectSpellmakerFireLine } from "./abilitySpellmakerFireLine.js";
+import { SPELLMAKER_TOOLS_FUNCTIONS } from "./spellmakerTool.js";
+import { addSpellmakerToolFireline } from "./spellmakerToolFireLine.js";
+import { addSpellmakerToolMove } from "./spellmakerToolMove.js";
 
 export type AbilitySpellmaker = Ability & {
     mode: "spellmake" | "spellcast",
@@ -54,6 +56,8 @@ export function addAbilitySpellmaker() {
         setAbilityToEnemyLevel: setAbilityToEnemyLevel,
         tickAbility: tickAbility,
     };
+    addSpellmakerToolFireline();
+    addSpellmakerToolMove();
 }
 
 function createAbility(
@@ -90,47 +94,12 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     const abilitySm = ability as AbilitySpellmaker;
     abilitySm.mana = Math.min(abilitySm.mana + abilitySm.manaRegeneration, abilitySm.maxMana);
     if (abilitySm.mode === "spellmake") {
-        const clientInfo: ClientInfo | undefined = findClientInfoByCharacterId(abilityOwner.id, game);
-        if (clientInfo) {
-            if (abilitySm.createTools.createTools[abilitySm.createTools.selectedToolIndex].type === "FireLine") {
-                if (abilitySm.startPosition) {
-                    const end: Position = {
-                        x: clientInfo.lastMousePosition.x - abilityOwner.x,
-                        y: clientInfo.lastMousePosition.y - abilityOwner.y,
-                    };
-                    const pushIndex = abilitySm.attachToIndex;
-                    const startPos = abilitySm.fireLines[pushIndex].positions.length == 0 ? abilitySm.startPosition : abilitySm.fireLines[pushIndex].positions[abilitySm.fireLines[pushIndex].positions.length - 1];
-                    const distance = calculateDistance(startPos, end);
-                    if (distance > 40) {
-                        if (abilitySm.fireLines[pushIndex].positions.length == 0) {
-                            abilitySm.fireLines[pushIndex].positions.push(abilitySm.startPosition);
-                        }
-                        abilitySm.fireLines[pushIndex].positions.push(end);
-                        calculateManaCost(abilitySm);
-                    }
-                }
-            } else if (abilitySm.createTools.createTools[abilitySm.createTools.selectedToolIndex].type === "Move") {
-                if (abilitySm.startPosition) {
-                    const end: Position = {
-                        x: clientInfo.lastMousePosition.x - abilityOwner.x,
-                        y: clientInfo.lastMousePosition.y - abilityOwner.y,
-                    };
-                    const pushIndex = abilitySm.attachToIndex;
-                    const startPos = abilitySm.fireLines[pushIndex].moveToPositions.length == 0 ? abilitySm.startPosition : abilitySm.fireLines[pushIndex].moveToPositions[abilitySm.fireLines[pushIndex].moveToPositions.length - 1];
-                    const distance = calculateDistance(startPos, end);
-                    if (distance > 40) {
-                        if (abilitySm.fireLines[pushIndex].moveToPositions.length == 0) {
-                            abilitySm.fireLines[pushIndex].moveToPositions.push(abilitySm.startPosition);
-                        }
-                        abilitySm.fireLines[pushIndex].moveToPositions.push(end);
-                    }
-                }
-            }
-        }
+        const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[abilitySm.createTools.createTools[abilitySm.createTools.selectedToolIndex].type];
+        if (toolFunctions.onTick) toolFunctions.onTick(abilityOwner, abilitySm, game);
     }
 }
 
-function calculateManaCost(ability: AbilitySpellmaker) {
+export function abilitySpellmakerCalculateManaCost(ability: AbilitySpellmaker) {
     ability.spellManaCost = 0;
     for (let fireLine of ability.fireLines) {
         for (let i = 1; i < fireLine.positions.length; i++) {
@@ -194,52 +163,23 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, castPosition:
     const abilitySm: AbilitySpellmaker | undefined = abilityOwner.abilities.find(a => a.name === ABILITY_NAME_SPELLMAKER) as AbilitySpellmaker;
     if (!abilitySm) return;
     if (abilitySm.mode === "spellmake") {
-        if (isKeydown) {
-            if (castPositionRelativeToCharacter && !clickCreateToolsCheck(abilityOwner, abilitySm, castPositionRelativeToCharacter)) {
-                abilitySm.startPosition = { x: castPositionRelativeToCharacter.x, y: castPositionRelativeToCharacter.y };
-                if (abilitySm.fireLines[abilitySm.fireLines.length - 1].positions.length > 1) {
-                    abilitySm.fireLines.push({ moveToPositions: [], positions: [] });
-                }
-                autoSendMousePositionHandler(abilityOwner.id, `${abilitySm.name}`, true, castPosition, game);
-                if (abilitySm.createTools.createTools[abilitySm.createTools.selectedToolIndex].type === "FireLine") {
-                    abilitySm.attachToIndex = abilitySm.fireLines.length - 1;
-                } else if (abilitySm.createTools.createTools[abilitySm.createTools.selectedToolIndex].type === "Move") {
-                    let closestDistance = 0;
-                    let closestIndex: number | undefined = undefined;
-                    for (let fireLineIndex = 0; fireLineIndex < abilitySm.fireLines.length; fireLineIndex++) {
-                        const fireline = abilitySm.fireLines[fireLineIndex];
-                        for (let i = 1; i < fireline.positions.length; i++) {
-                            const tempDistance = calculateDistancePointToLine(castPositionRelativeToCharacter, fireline.positions[i - 1], fireline.positions[i]);
-                            if (closestIndex == undefined || closestDistance > tempDistance) {
-                                closestDistance = tempDistance;
-                                closestIndex = fireLineIndex;
-                            }
-                        }
+        if (castPositionRelativeToCharacter) {
+            if (isKeydown) {
+                if (!clickCreateToolsCheck(abilityOwner, abilitySm, castPositionRelativeToCharacter)) {
+                    abilitySm.startPosition = { x: castPositionRelativeToCharacter.x, y: castPositionRelativeToCharacter.y };
+                    if (abilitySm.fireLines[abilitySm.fireLines.length - 1].positions.length > 1) {
+                        abilitySm.fireLines.push({ moveToPositions: [], positions: [] });
                     }
-                    abilitySm.attachToIndex = closestIndex ?? 0;
-                    if (abilitySm.fireLines[abilitySm.attachToIndex].moveToPositions.length > 0) {
-                        abilitySm.fireLines[abilitySm.attachToIndex].moveToPositions = [];
-                    }
+                    autoSendMousePositionHandler(abilityOwner.id, `${abilitySm.name}`, true, castPosition, game);
+                    const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[abilitySm.createTools.createTools[abilitySm.createTools.selectedToolIndex].type];
+                    if (toolFunctions.onKeyDown) toolFunctions.onKeyDown(abilityOwner, abilitySm, castPositionRelativeToCharacter, game);
                 }
+            } else {
+                autoSendMousePositionHandler(abilityOwner.id, `${abilitySm.name}`, false, castPosition, game);
+                const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[abilitySm.createTools.createTools[abilitySm.createTools.selectedToolIndex].type];
+                if (toolFunctions.onKeyUp) toolFunctions.onKeyUp(abilityOwner, abilitySm, castPositionRelativeToCharacter, game);
+                abilitySm.startPosition = undefined;
             }
-        } else {
-            autoSendMousePositionHandler(abilityOwner.id, `${abilitySm.name}`, false, castPosition, game);
-            if (abilitySm.startPosition) {
-                const pushIndex = abilitySm.attachToIndex;
-                if (abilitySm.createTools.createTools[abilitySm.createTools.selectedToolIndex].type === "FireLine") {
-                    if (abilitySm.fireLines[pushIndex].positions.length == 0) {
-                        abilitySm.fireLines[pushIndex].positions.push(abilitySm.startPosition);
-                    }
-                    abilitySm.fireLines[pushIndex].positions.push(castPositionRelativeToCharacter!);
-                    calculateManaCost(abilitySm);
-                } else if (abilitySm.createTools.createTools[abilitySm.createTools.selectedToolIndex].type === "Move") {
-                    if (abilitySm.fireLines[pushIndex].moveToPositions.length == 0) {
-                        abilitySm.fireLines[pushIndex].moveToPositions.push(abilitySm.startPosition);
-                    }
-                    abilitySm.fireLines[pushIndex].moveToPositions.push(castPositionRelativeToCharacter!);
-                }
-            }
-            abilitySm.startPosition = undefined;
         }
     }
     if (abilitySm.mode === "spellcast") {

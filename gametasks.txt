@@ -3,15 +3,15 @@ increase version
 
 current tasks:     
 - new class spellmaker
-    - dev steps:
-        - replace moveTo with new
-            
-
-    - be able to paint a spell which makes multiple fire lines moving in different directions
-        - can attach move direction to firelineObject
-        - one fireline object from mouse down to mouse up
-        - can paint move pattern. Fire line object will follow painted pattern
-
+    - seeker explosion
+        - spellcast creates seeker projectile which seeks enemy and explodes on contact, can define start fly direction of each single one
+            - need explosion. Be able to influence size and damage?
+                - spellmaker mode:  
+                    - mouse down defines explosion circle center
+                        - mouse move to define radius
+                    - mouse down on existing explosion can be used to define damage
+            - need seeker attachmend as movement options
+            - need "shell" + seeker attachment and "stage 2" which triggers on enemy hit with explosion
     - somehow make arbitrary spells and be able to cast them repeatedly
         - can influence size    (brush size)
         - can influence shape   (paint)
