@@ -217,6 +217,9 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, castPosition:
                         }
                     }
                     abilitySm.attachToIndex = closestIndex ?? 0;
+                    if (abilitySm.fireLines[abilitySm.attachToIndex].moveToPositions.length > 0) {
+                        abilitySm.fireLines[abilitySm.attachToIndex].moveToPositions = [];
+                    }
                 }
             }
         } else {
