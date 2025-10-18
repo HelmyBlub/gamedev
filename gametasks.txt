@@ -4,6 +4,9 @@ increase version
 current tasks:     
 - new class spellmaker
     - seeker explosion
+        - continue: moveAttachment
+            - bug: reacting to player movement
+            - no setup correctly to work with other moveAttachments
         - spellcast creates seeker projectile which seeks enemy and explodes on contact, can define start fly direction of each single one
             - need explosion. Be able to influence size and damage?
                 - spellmaker mode:  
@@ -11,7 +14,7 @@ current tasks:
                         - mouse move to define radius
                     - mouse down on existing explosion can be used to define damage
             - need seeker attachmend as movement options
-            - need "shell" + seeker attachment and "stage 2" which triggers on enemy hit with explosion
+            - need "proximitySensor" + seeker attachment and "stage 2" which triggers on enemy hit with explosion
     - somehow make arbitrary spells and be able to cast them repeatedly
         - can influence size    (brush size)
         - can influence shape   (paint)
