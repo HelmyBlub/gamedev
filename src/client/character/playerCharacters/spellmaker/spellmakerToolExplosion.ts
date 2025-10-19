@@ -63,7 +63,7 @@ function onKeyUp(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability
     if (toolExplode.startPosition && toolExplode.objectIndex !== undefined) {
         const explode = ability.createdObjects[toolExplode.objectIndex] as CreateToolObjectExplosionData;
         explode.radius = Math.max(5, Math.abs(castPositionRelativeToCharacter.x - explode.center.x))
-        explode.damageFactor = Math.min(10, (Math.max(0.1, Math.abs(castPositionRelativeToCharacter.y - explode.center.y) / 10)));
+        explode.damageFactor = Math.min(10, (Math.max(1, Math.abs(castPositionRelativeToCharacter.y - explode.center.y) / 10)));
         abilitySpellmakerCalculateManaCost(ability);
     }
     toolExplode.startPosition = undefined;
@@ -100,8 +100,9 @@ function spellCast(createObject: SpellmakerCreateToolObjectData, abilityOwner: A
 
 function paint(ctx: CanvasRenderingContext2D, createdObject: SpellmakerCreateToolObjectData, ownerPaintPos: Position, ability: AbilitySpellmaker, game: Game) {
     const explode = createdObject as CreateToolObjectExplosionData;
-    ctx.globalAlpha = 0.1 * explode.damageFactor;
+    ctx.globalAlpha = 0.1 + 0.09 * explode.damageFactor;
     ctx.strokeStyle = "red";
+    ctx.fillStyle = "red";
     ctx.beginPath();
     ctx.arc(explode.center.x + ownerPaintPos.x, explode.center.y + ownerPaintPos.y, explode.radius, 0, Math.PI * 2);
     ctx.fill();

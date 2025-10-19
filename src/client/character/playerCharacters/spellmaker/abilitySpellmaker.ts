@@ -11,6 +11,7 @@ import { SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateToolsData } from "./spellma
 import { addSpellmakerToolExplosion, SPELLMAKER_TOOL_EXPLOSION } from "./spellmakerToolExplosion.js";
 import { addSpellmakerToolFireline, SPELLMAKER_TOOL_FIRELINE } from "./spellmakerToolFireLine.js";
 import { addSpellmakerToolMove, SPELLMAKER_TOOL_MOVE } from "./spellmakerToolMove.js";
+import { addSpellmakerToolSeeker, SPELLMAKER_TOOL_SEEKER } from "./spellmakerToolSeeker.js";
 
 export type AbilitySpellmaker = Ability & {
     mode: "spellmake" | "spellcast",
@@ -54,6 +55,7 @@ export function addAbilitySpellmaker() {
     addSpellmakerToolFireline();
     addSpellmakerToolMove();
     addSpellmakerToolExplosion();
+    addSpellmakerToolSeeker();
 }
 
 function createAbility(
@@ -79,6 +81,7 @@ function createAbility(
                 { type: SPELLMAKER_TOOL_FIRELINE },
                 { type: SPELLMAKER_TOOL_MOVE },
                 { type: SPELLMAKER_TOOL_EXPLOSION },
+                { type: SPELLMAKER_TOOL_SEEKER },
             ],
             position: { x: -20, y: +20 },
             size: 20,
