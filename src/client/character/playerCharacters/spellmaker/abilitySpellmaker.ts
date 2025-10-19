@@ -8,8 +8,9 @@ import { createMoreInfosPart, MoreInfoHoverTexts, MoreInfoPart } from "../../../
 import { CHARACTER_PET_TYPE_CLONE } from "../characterPetTypeClone.js";
 import { createAbilityObjectSpellmakerFireLine } from "./abilitySpellmakerFireLine.js";
 import { SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateToolsData } from "./spellmakerTool.js";
+import { addSpellmakerToolExplosion, SPELLMAKER_TOOL_EXPLOSION } from "./spellmakerToolExplosion.js";
 import { addSpellmakerToolFireline, SPELLMAKER_TOOL_FIRELINE } from "./spellmakerToolFireLine.js";
-import { addSpellmakerToolMove } from "./spellmakerToolMove.js";
+import { addSpellmakerToolMove, SPELLMAKER_TOOL_MOVE } from "./spellmakerToolMove.js";
 
 export type AbilitySpellmaker = Ability & {
     mode: "spellmake" | "spellcast",
@@ -52,6 +53,7 @@ export function addAbilitySpellmaker() {
     };
     addSpellmakerToolFireline();
     addSpellmakerToolMove();
+    addSpellmakerToolExplosion();
 }
 
 function createAbility(
@@ -73,7 +75,11 @@ function createAbility(
         spellManaCost: 0,
         createTools: {
             selectedToolIndex: 0,
-            createTools: [{ type: "FireLine" }, { type: "Move" }],
+            createTools: [
+                { type: SPELLMAKER_TOOL_FIRELINE },
+                { type: SPELLMAKER_TOOL_MOVE },
+                { type: SPELLMAKER_TOOL_EXPLOSION },
+            ],
             position: { x: -20, y: +20 },
             size: 20,
         },

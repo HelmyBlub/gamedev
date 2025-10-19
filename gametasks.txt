@@ -4,9 +4,6 @@ increase version
 current tasks:     
 - new class spellmaker
     - seeker explosion
-        - continue: moveAttachment
-            - bug: reacting to player movement
-            - no setup correctly to work with other moveAttachments
         - spellcast creates seeker projectile which seeks enemy and explodes on contact, can define start fly direction of each single one
             - need explosion. Be able to influence size and damage?
                 - spellmaker mode:  
