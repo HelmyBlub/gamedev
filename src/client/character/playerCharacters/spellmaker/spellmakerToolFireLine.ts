@@ -42,7 +42,7 @@ function calculateDistanceFireLine(relativePosition: Position, createObject: Spe
     let closestDistance = 0;
     for (let i = 1; i < objectFireLine.positions.length; i++) {
         const tempDistance = calculateDistancePointToLine(relativePosition, objectFireLine.positions[i - 1], objectFireLine.positions[i]);
-        if (i == 1 || closestDistance > tempDistance) {
+        if (i === 1 || closestDistance > tempDistance) {
             closestDistance = tempDistance;
         }
     }
@@ -69,12 +69,12 @@ function onKeyDown(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, abili
 function onKeyUp(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game) {
     const toolFireLine = tool as SpellmakerCreateToolFireLine;
     if (toolFireLine.startPosition) {
-        if (!toolFireLine.attachToIndex) {
+        if (toolFireLine.attachToIndex === undefined) {
             ability.createdObjects.push(createObjectFireLine());
             toolFireLine.attachToIndex = ability.createdObjects.length - 1;
         }
         const fireLine = ability.createdObjects[toolFireLine.attachToIndex] as CreateToolObjectFireLineData;
-        if (fireLine.positions.length == 0) {
+        if (fireLine.positions.length === 0) {
             fireLine.positions.push(toolFireLine.startPosition);
         }
         fireLine.positions.push(castPositionRelativeToCharacter);
@@ -88,12 +88,12 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
     if (clientInfo) {
         const toolFireLine = tool as SpellmakerCreateToolFireLine;
         if (toolFireLine.startPosition) {
-            if (!toolFireLine.attachToIndex) {
+            if (toolFireLine.attachToIndex === undefined) {
                 ability.createdObjects.push(createObjectFireLine());
                 toolFireLine.attachToIndex = ability.createdObjects.length - 1;
             }
             const fireLine = ability.createdObjects[toolFireLine.attachToIndex] as CreateToolObjectFireLineData;
-            if (fireLine.positions.length == 0) {
+            if (fireLine.positions.length === 0) {
                 fireLine.positions.push(toolFireLine.startPosition);
             }
             const end: Position = {
@@ -118,20 +118,16 @@ function spellCast(createObject: SpellmakerCreateToolObjectData, abilityOwner: A
     for (let i = 1; i < fireline.positions.length; i++) {
         joints.push({ x: fireline.positions[i].x + castPosition.x, y: fireline.positions[i].y + castPosition.y });
     }
-    const moveTo: Position[] = [];
+    let moveAttachment: SpellmakerCreateToolMoveAttachment | undefined = undefined;
     if (fireline.moveAttachment) {
-        const moveToPositions = fireline.moveAttachment as SpellmakerCreateToolMoveAttachmentLine;
-        if (moveToPositions.moveTo.length >= 2) {
-            for (let i = 1; i < moveToPositions.moveTo.length; i++) {
-                moveTo.push({ x: moveToPositions.moveTo[i].x - moveToPositions.moveTo[i - 1].x, y: moveToPositions.moveTo[i].y - moveToPositions.moveTo[i - 1].y });
-            }
-        }
+        const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[fireline.moveAttachment.type];
+        if (toolFunctions.getMoveAttachment) moveAttachment = toolFunctions.getMoveAttachment(createObject, abilityOwner, ability, castPosition, game);
     }
     const moveSpeed = 2;
     const width = 10;
     const duration = 5000;
     const tickInterval = 250;
-    const objectFireLine = createAbilityObjectSpellmakerFireLine(abilityOwner.faction, start, joints, moveTo, damage, width, duration, moveSpeed, tickInterval, "red", ability.id, game);
+    const objectFireLine = createAbilityObjectSpellmakerFireLine(abilityOwner.faction, start, joints, moveAttachment, damage, width, duration, moveSpeed, tickInterval, "red", ability.id, game);
     game.state.abilityObjects.push(objectFireLine);
 }
 

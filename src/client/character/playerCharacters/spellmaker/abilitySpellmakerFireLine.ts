@@ -5,13 +5,15 @@ import { getPointPaintPosition } from "../../../gamePaint.js";
 import { moveByDirectionAndDistance } from "../../../map/map.js";
 import { getCharactersTouchingLine, characterTakeDamage } from "../../character.js";
 import { Character } from "../../characterModel.js";
+import { SpellmakerCreateToolMoveAttachment } from "./abilitySpellmaker.js";
+import { SPELLMAKER_TOOLS_FUNCTIONS } from "./spellmakerTool.js";
 
 export type AbilitySpellmakerFireLine = Ability & {
 }
 
 type AbilityObjectSpellmakerFireLine = AbilityObject & {
     fireLineJoints: Position[],
-    moveToPositions: Position[],
+    moveAttachment?: SpellmakerCreateToolMoveAttachment,
     moveSpeed: number,
     endTime: number,
     tickInterval: number,
@@ -34,7 +36,7 @@ export function createAbilityObjectSpellmakerFireLine(
     faction: string,
     startPosition: Position,
     fireLineJoints: Position[],
-    moveToPositions: Position[],
+    moveAttachment: SpellmakerCreateToolMoveAttachment | undefined,
     damage: number,
     width: number,
     duration: number,
@@ -55,7 +57,7 @@ export function createAbilityObjectSpellmakerFireLine(
         y: startPosition.y,
         moveSpeed: moveSpeed,
         fireLineJoints: deepCopy(fireLineJoints),
-        moveToPositions: deepCopy(moveToPositions),
+        moveAttachment: deepCopy(moveAttachment),
         endTime: game.state.time + duration,
         abilityIdRef: abilityIdRef,
     };
@@ -109,23 +111,16 @@ function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
     if (objectFireLine.nextTickTime === undefined) {
         objectFireLine.nextTickTime = game.state.time + objectFireLine.tickInterval;
     }
-    if (objectFireLine.moveSpeed > 0 && objectFireLine.moveToPositions.length > 0) {
-        const nextMoveTo = objectFireLine.moveToPositions[0];
-        const direction = calculateDirection({ x: 0, y: 0 }, nextMoveTo);
-        const moveXY: Position = { x: 0, y: 0 };
-        moveByDirectionAndDistance(moveXY, direction, objectFireLine.moveSpeed, false);
-        objectFireLine.x += moveXY.x;
-        objectFireLine.y += moveXY.y;
-        for (let joint of objectFireLine.fireLineJoints) {
-            joint.x += moveXY.x;
-            joint.y += moveXY.y;
-        }
-        const distance = calculateDistance(moveXY, nextMoveTo);
-        if (distance <= objectFireLine.moveSpeed * 1.1) {
-            objectFireLine.moveToPositions.splice(0, 1);
-        } else {
-            nextMoveTo.x -= moveXY.x;
-            nextMoveTo.y -= moveXY.y;
+    if (objectFireLine.moveAttachment) {
+        const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[objectFireLine.moveAttachment.type];
+        if (toolFunctions.getMoveAttachmentNextMoveByAmount) {
+            const moveXY: Position = toolFunctions.getMoveAttachmentNextMoveByAmount(objectFireLine.moveAttachment, abilityObject, game);
+            objectFireLine.x += moveXY.x;
+            objectFireLine.y += moveXY.y;
+            for (let joint of objectFireLine.fireLineJoints) {
+                joint.x += moveXY.x;
+                joint.y += moveXY.y;
+            }
         }
     }
     if (objectFireLine.nextTickTime <= game.state.time) {

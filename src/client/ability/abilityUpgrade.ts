@@ -107,7 +107,7 @@ export function getAbilityUpgradeOptionDefault(ability: Ability, upgradeName: st
 
 export function paintAbilityUpgradeMoreInfosIfMouseHovered(ctx: CanvasRenderingContext2D, game: Game) {
     if (!game.UI.displayMoreInfos) return;
-    if (game.UI.moreInfos.containers.selected == undefined) return;
+    if (game.UI.moreInfos.containers.selected === undefined) return;
     const mousePos = game.mouseRelativeCanvasPosition;
     const selectedContainer = game.UI.moreInfos.containers.containers[game.UI.moreInfos.containers.selected];
 

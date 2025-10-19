@@ -1,4 +1,4 @@
-import { Ability, AbilityOwner } from "../../../ability/ability.js";
+import { Ability, AbilityObject, AbilityOwner } from "../../../ability/ability.js";
 import { Game, Position } from "../../../gameModel.js";
 import { AbilitySpellmaker, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 
@@ -22,6 +22,7 @@ export type SpellmakerToolFunctions = {
     paint: (ctx: CanvasRenderingContext2D, createObject: SpellmakerCreateToolObjectData, ownerPaintPos: Position, ability: AbilitySpellmaker, game: Game) => void,
     spellCast?: (createObject: SpellmakerCreateToolObjectData, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPosition: Position, game: Game) => void,
     getMoveAttachment?: (createObject: SpellmakerCreateToolObjectData, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPosition: Position, game: Game) => SpellmakerCreateToolMoveAttachment,
+    getMoveAttachmentNextMoveByAmount?: (moveAttach: SpellmakerCreateToolMoveAttachment, abilityObject: AbilityObject, game: Game) => Position,
 }
 
 export type SpellmakerToolsFunctions = {
