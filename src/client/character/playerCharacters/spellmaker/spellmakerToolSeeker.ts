@@ -1,6 +1,5 @@
-import { create } from "domain";
 import { AbilityObject, AbilityOwner } from "../../../ability/ability.js";
-import { calculateDirection, calculateDistance, calculateDistancePointToLine, findClientInfoByCharacterId } from "../../../game.js";
+import { calculateDirection, calculateDistance, findClientInfoByCharacterId } from "../../../game.js";
 import { Position, Game, ClientInfo } from "../../../gameModel.js";
 import { AbilitySpellmaker, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 import { SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
@@ -46,7 +45,7 @@ function onKeyDown(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, abili
     for (let objectIndex = 0; objectIndex < ability.createdObjects.length; objectIndex++) {
         const object = ability.createdObjects[objectIndex];
         const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[object.type];
-        if (toolFunctions.calculateDistance) {
+        if (toolFunctions.canHaveMoveAttachment && toolFunctions.calculateDistance) {
             const tempDistance = toolFunctions.calculateDistance(castPositionRelativeToCharacter, object);
             if (closestIndex === undefined || tempDistance < closestDistance) {
                 closestDistance = tempDistance;

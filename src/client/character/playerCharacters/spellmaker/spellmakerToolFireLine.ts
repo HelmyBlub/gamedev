@@ -1,10 +1,8 @@
-import { create } from "domain";
-import { Ability, AbilityOwner } from "../../../ability/ability.js";
+import { AbilityOwner } from "../../../ability/ability.js";
 import { calculateDistance, calculateDistancePointToLine, findClientInfoByCharacterId } from "../../../game.js";
 import { Position, Game, ClientInfo } from "../../../gameModel.js";
 import { AbilitySpellmaker, abilitySpellmakerCalculateManaCost, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 import { SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
-import { SpellmakerCreateToolMoveAttachmentLine } from "./spellmakerToolMove.js";
 import { createAbilityObjectSpellmakerFireLine } from "./abilitySpellmakerFireLine.js";
 
 type CreateToolObjectFireLineData = SpellmakerCreateToolObjectData & {
@@ -27,6 +25,7 @@ export function addSpellmakerToolFireline() {
         onTick: onTick,
         paint: paint,
         spellCast: spellCast,
+        canHaveMoveAttachment: true,
     };
 }
 
@@ -145,9 +144,5 @@ function paint(ctx: CanvasRenderingContext2D, createdObject: SpellmakerCreateToo
         ctx.stroke();
         ctx.globalAlpha = 1;
 
-    }
-    if (fireline.moveAttachment) {
-        const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[fireline.moveAttachment.type];
-        toolFunctions.paint(ctx, createdObject, ownerPaintPos, ability, game);
     }
 }

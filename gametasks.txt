@@ -3,15 +3,14 @@ increase version
 
 current tasks:     
 - new class spellmaker
-    - seeker explosion
-        - spellcast creates seeker projectile which seeks enemy and explodes on contact, can define start fly direction of each single one
-            - need explosion. Be able to influence size and damage?
-                - spellmaker mode:  
-                    - mouse down defines explosion circle center
-                        - mouse move to define radius
-                    - mouse down on existing explosion can be used to define damage
-            - need seeker attachmend as movement options
-            - need "proximitySensor" + seeker attachment and "stage 2" which triggers on enemy hit with explosion
+    - spellcast creates seeker projectile which seeks enemy and explodes on contact, can define start fly direction of each single one
+        - need "proximitySensor" + seeker attachment and "stage 2" which triggers on enemy hit with explosion
+            - design "stage"
+                - buttons to switch through stages
+                    - display some text on button to know what it does
+                - continue: paint only stage relevant stuff
+                - attach second stage to proximity
+                - mana cost calc
     - somehow make arbitrary spells and be able to cast them repeatedly
         - can influence size    (brush size)
         - can influence shape   (paint)

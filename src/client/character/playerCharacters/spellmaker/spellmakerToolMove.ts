@@ -37,7 +37,7 @@ function onKeyDown(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, abili
     for (let objectIndex = 0; objectIndex < ability.createdObjects.length; objectIndex++) {
         const object = ability.createdObjects[objectIndex];
         const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[object.type];
-        if (toolFunctions.calculateDistance) {
+        if (toolFunctions.canHaveMoveAttachment && toolFunctions.calculateDistance) {
             const tempDistance = toolFunctions.calculateDistance(castPositionRelativeToCharacter, object);
             if (closestIndex === undefined || tempDistance < closestDistance) {
                 closestDistance = tempDistance;

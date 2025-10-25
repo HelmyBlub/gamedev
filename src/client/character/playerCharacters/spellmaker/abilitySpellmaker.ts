@@ -1,17 +1,17 @@
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, getAbilityNameUiText, paintAbilityUiDefault } from "../../../ability/ability.js";
 import { IMAGE_NAME_SWITCH } from "../../../ability/musician/abilityMusicSheetChangeInstrument.js";
-import { autoSendMousePositionHandler, calculateDistance, getNextId } from "../../../game.js";
+import { autoSendMousePositionHandler, getNextId } from "../../../game.js";
 import { Game, IdCounter, Position } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
 import { playerInputBindingToDisplayValue } from "../../../input/playerInput.js";
 import { createMoreInfosPart, MoreInfoHoverTexts, MoreInfoPart } from "../../../moreInfo.js";
 import { CHARACTER_PET_TYPE_CLONE } from "../characterPetTypeClone.js";
-import { createAbilityObjectSpellmakerFireLine } from "./abilitySpellmakerFireLine.js";
-import { SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateToolsData } from "./spellmakerTool.js";
+import { addSpellmakerToolsDefault, SPELLMAKER_TOOL_SWITCH_STAGE, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateToolsData } from "./spellmakerTool.js";
 import { addSpellmakerToolExplosion, SPELLMAKER_TOOL_EXPLOSION } from "./spellmakerToolExplosion.js";
 import { addSpellmakerToolFireline, SPELLMAKER_TOOL_FIRELINE } from "./spellmakerToolFireLine.js";
 import { addSpellmakerToolMove, SPELLMAKER_TOOL_MOVE } from "./spellmakerToolMove.js";
 import { addSpellmakerToolSeeker, SPELLMAKER_TOOL_SEEKER } from "./spellmakerToolSeeker.js";
+import { addSpellmakerToolProximity, SPELLMAKER_TOOL_PROXIMITY } from "./spellmakerToolTriggerProximity.js";
 
 export type AbilitySpellmaker = Ability & {
     mode: "spellmake" | "spellcast",
@@ -22,20 +22,17 @@ export type AbilitySpellmaker = Ability & {
     createdObjects: SpellmakerCreateToolObjectData[],
     spellManaCost: number,
     createTools: SpellmakerCreateToolsData,
+    spellmakeStage: number,
 }
 
 export type SpellmakerCreateToolObjectData = {
     type: string,
     moveAttachment?: SpellmakerCreateToolMoveAttachment,
+    nextStage?: SpellmakerCreateToolObjectData,
 }
 
 export type SpellmakerCreateToolMoveAttachment = {
     type: string,
-}
-
-type CreateToolMoveAttachmentSeeker = SpellmakerCreateToolMoveAttachment & {
-    direction: number,
-    speed: number,
 }
 
 export const ABILITY_NAME_SPELLMAKER = "Spellmaker";
@@ -52,10 +49,12 @@ export function addAbilitySpellmaker() {
         setAbilityToEnemyLevel: setAbilityToEnemyLevel,
         tickAbility: tickAbility,
     };
+    addSpellmakerToolsDefault();
     addSpellmakerToolFireline();
     addSpellmakerToolMove();
     addSpellmakerToolExplosion();
     addSpellmakerToolSeeker();
+    addSpellmakerToolProximity();
 }
 
 function createAbility(
@@ -78,15 +77,18 @@ function createAbility(
         createTools: {
             selectedToolIndex: 0,
             createTools: [
+                { type: SPELLMAKER_TOOL_SWITCH_STAGE },
                 { type: SPELLMAKER_TOOL_FIRELINE },
                 { type: SPELLMAKER_TOOL_MOVE },
                 { type: SPELLMAKER_TOOL_EXPLOSION },
                 { type: SPELLMAKER_TOOL_SEEKER },
+                { type: SPELLMAKER_TOOL_PROXIMITY },
             ],
             position: { x: -20, y: +20 },
             size: 20,
         },
         attachToIndex: 0,
+        spellmakeStage: 0,
     };
 }
 
@@ -116,7 +118,14 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
         let ownerPaintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition, game.UI.zoom);
         for (let createdObject of abilitySm.createdObjects) {
             const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[createdObject.type];
-            toolFunctions.paint(ctx, createdObject, ownerPaintPos, abilitySm, game);
+            if (toolFunctions.paint) {
+                toolFunctions.paint(ctx, createdObject, ownerPaintPos, abilitySm, game);
+                if (toolFunctions.canHaveMoveAttachment && createdObject.moveAttachment) {
+                    const toolMoveFunctions = SPELLMAKER_TOOLS_FUNCTIONS[createdObject.moveAttachment.type];
+                    if (toolMoveFunctions.paint) toolMoveFunctions.paint(ctx, createdObject, ownerPaintPos, abilitySm, game);
+                }
+
+            }
         }
 
         for (let i = 0; i < abilitySm.createTools.createTools.length; i++) {
@@ -143,7 +152,7 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, castPosition:
         if (castPositionRelativeToCharacter) {
             const tool = abilitySm.createTools.createTools[abilitySm.createTools.selectedToolIndex];
             if (isKeydown) {
-                if (!clickCreateToolsCheck(abilityOwner, abilitySm, castPositionRelativeToCharacter)) {
+                if (!clickCreateToolsCheck(abilityOwner, abilitySm, castPositionRelativeToCharacter, game)) {
                     autoSendMousePositionHandler(abilityOwner.id, `${abilitySm.name}`, true, castPosition, game);
                     const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[tool.type];
                     if (toolFunctions.onKeyDown) toolFunctions.onKeyDown(tool, abilityOwner, abilitySm, castPositionRelativeToCharacter, game);
@@ -169,12 +178,20 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, castPosition:
 }
 
 /// returns true if a tool button was clicked
-function clickCreateToolsCheck(abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position | undefined): boolean {
+function clickCreateToolsCheck(abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position | undefined, game: Game): boolean {
     if (!castPositionRelativeToCharacter) return false;
     for (let i = 0; i < ability.createTools.createTools.length; i++) {
         const pos: Position = { x: ability.createTools.position.x + ability.createTools.size * i, y: ability.createTools.position.y };
         if (pos.x < castPositionRelativeToCharacter.x && pos.x + ability.createTools.size > castPositionRelativeToCharacter.x && pos.y < castPositionRelativeToCharacter.y && pos.y + ability.createTools.size > castPositionRelativeToCharacter.y) {
-            ability.createTools.selectedToolIndex = i;
+            const tool = ability.createTools.createTools[i];
+            const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[tool.type];
+            if (toolFunctions.onToolSelect) {
+                if (toolFunctions.onToolSelect(tool, abilityOwner, ability, game)) {
+                    ability.createTools.selectedToolIndex = i;
+                }
+            } else {
+                ability.createTools.selectedToolIndex = i;
+            }
             return true;
         }
     }
