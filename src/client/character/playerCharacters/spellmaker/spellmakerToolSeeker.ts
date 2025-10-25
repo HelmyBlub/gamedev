@@ -5,11 +5,16 @@ import { Position, Game, ClientInfo } from "../../../gameModel.js";
 import { AbilitySpellmaker, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 import { SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
 import { calculateMovePosition, moveByDirectionAndDistance } from "../../../map/map.js";
+import { determineCharactersInDistance, determineClosestCharacter } from "../../character.js";
+import { nextRandom } from "../../../randomNumberGenerator.js";
+import { Character } from "../../characterModel.js";
 
 export type SpellmakerCreateToolMoveAttachmentSeeker = SpellmakerCreateToolMoveAttachment & {
     direction: number,
     speed: number,
     startPos: Position,
+    nextTargetAquireTickTime: number,
+    currentTargetPos?: Position,
 }
 
 export type SpellmakerCreateToolSeeker = SpellmakerCreateTool & {
@@ -19,6 +24,8 @@ export type SpellmakerCreateToolSeeker = SpellmakerCreateTool & {
 
 export const SPELLMAKER_TOOL_SEEKER = "Seeker";
 const SPEED = 2;
+const TICK_INTERVAL = 100;
+const SEEK_RANGE = 300;
 
 export function addSpellmakerToolSeeker() {
     SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_SEEKER] = {
@@ -56,6 +63,7 @@ function onKeyDown(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, abili
             speed: SPEED,
             direction: 0,
             startPos: moveTool.startPosition,
+            nextTargetAquireTickTime: 0,
         }
         createdObject.moveAttachment = moveAttach;
     } else {
@@ -109,13 +117,44 @@ function getMoveAttachment(createObject: SpellmakerCreateToolObjectData, ability
     const moveAttach: SpellmakerCreateToolMoveAttachmentSeeker = {
         type: SPELLMAKER_TOOL_SEEKER,
         direction: seeker.direction,
-        speed: seeker.speed,
+        speed: seeker.speed / 10,
         startPos: { x: 0, y: 0 },
+        nextTargetAquireTickTime: 0,
     };
     return moveAttach;
 }
 
 function getMoveAttachmentNextMoveByAmount(moveAttach: SpellmakerCreateToolMoveAttachment, abilityObject: AbilityObject, game: Game): Position {
     const seeker = moveAttach as SpellmakerCreateToolMoveAttachmentSeeker;
-    return calculateMovePosition({ x: 0, y: 0 }, seeker.direction, seeker.speed / 10, false);
+    if (seeker.nextTargetAquireTickTime < game.state.time) {
+        seeker.nextTargetAquireTickTime = game.state.time + TICK_INTERVAL;
+        let target: Character | undefined = undefined;
+        let targets = determineCharactersInDistance(abilityObject, undefined, [], game.state.bossStuff.bosses, SEEK_RANGE * 2, abilityObject.faction, true);
+        if (targets.length <= 0) {
+            targets = determineCharactersInDistance(abilityObject, game.state.map, [], undefined, SEEK_RANGE, abilityObject.faction, true);
+        }
+        if (targets.length > 0) {
+            const randomTargetIndex = Math.floor(nextRandom(game.state.randomSeed) * targets.length);
+            target = targets[randomTargetIndex];
+            const closest = determineClosestCharacter(abilityObject, targets, false)
+            if (closest.minDistanceCharacter) {
+                seeker.currentTargetPos = { x: closest.minDistanceCharacter.x, y: closest.minDistanceCharacter.y };
+            } else {
+                seeker.currentTargetPos = undefined;
+            }
+        } else {
+            seeker.currentTargetPos = undefined;
+        }
+    }
+    if (seeker.currentTargetPos) {
+        const nextPosition: Position = { x: abilityObject.x, y: abilityObject.y };
+        moveByDirectionAndDistance(nextPosition, seeker.direction, seeker.speed, false);
+        const modify = calculateMovePosition({ x: 0, y: 0 }, calculateDirection(abilityObject, seeker.currentTargetPos), 0.25, false);
+        nextPosition.x += modify.x;
+        nextPosition.y += modify.y;
+        seeker.direction = calculateDirection(abilityObject, nextPosition);
+        seeker.speed = calculateDistance(abilityObject, nextPosition);
+    }
+    if (seeker.speed > 4) seeker.speed = 4;
+    return calculateMovePosition({ x: 0, y: 0 }, seeker.direction, seeker.speed, false);
 }
