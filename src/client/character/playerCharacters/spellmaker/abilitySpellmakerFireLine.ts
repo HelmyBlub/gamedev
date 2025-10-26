@@ -124,7 +124,7 @@ function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
         }
     }
     if (objectFireLine.nextTickTime <= game.state.time) {
-
+        console.log(`fireLineTick:${game.state.time}`);
         let linePartStart: Position = { x: objectFireLine.x, y: objectFireLine.y };
         for (let joint of objectFireLine.fireLineJoints) {
             const characters: Character[] = getCharactersTouchingLine(game, linePartStart, joint, abilityObject.faction, objectFireLine.width);

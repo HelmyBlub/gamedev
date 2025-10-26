@@ -69,6 +69,9 @@ function onKeyUp(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability
     const toolFireLine = tool as SpellmakerCreateToolFireLine;
     if (toolFireLine.startPosition) {
         if (toolFireLine.attachToIndex === undefined) {
+            if (calculateDistance(castPositionRelativeToCharacter, toolFireLine.startPosition) <= 5) {
+                return;
+            }
             ability.createdObjects.push(createObjectFireLine());
             toolFireLine.attachToIndex = ability.createdObjects.length - 1;
         }
@@ -76,8 +79,10 @@ function onKeyUp(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability
         if (fireLine.positions.length === 0) {
             fireLine.positions.push(toolFireLine.startPosition);
         }
-        fireLine.positions.push(castPositionRelativeToCharacter);
-        abilitySpellmakerCalculateManaCost(ability);
+        if (calculateDistance(fireLine.positions[fireLine.positions.length - 1], castPositionRelativeToCharacter) > 5) {
+            fireLine.positions.push(castPositionRelativeToCharacter);
+            abilitySpellmakerCalculateManaCost(ability);
+        }
         toolFireLine.startPosition = undefined;
     }
 }
@@ -99,8 +104,10 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
                 x: clientInfo.lastMousePosition.x - abilityOwner.x,
                 y: clientInfo.lastMousePosition.y - abilityOwner.y,
             };
-            fireLine.positions.push(end);
-            abilitySpellmakerCalculateManaCost(ability);
+            if (calculateDistance(fireLine.positions[fireLine.positions.length - 1], end) > 10) {
+                fireLine.positions.push(end);
+                abilitySpellmakerCalculateManaCost(ability);
+            }
         }
     }
 }

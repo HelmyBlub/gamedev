@@ -3,6 +3,7 @@ increase version
 
 current tasks:     
 - new class spellmaker
+    - bug: fire lines ticks forever
     - spellcast creates seeker projectile which seeks enemy and explodes on contact, can define start fly direction of each single one
         - need "proximitySensor" + seeker attachment and "stage 2" which triggers on enemy hit with explosion
             - design "stage"
