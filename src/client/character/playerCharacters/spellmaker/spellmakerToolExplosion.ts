@@ -12,8 +12,7 @@ type CreateToolObjectExplosionData = SpellmakerCreateToolObjectData & {
 }
 
 export type SpellmakerCreateToolExplosion = SpellmakerCreateTool & {
-    startPosition?: Position,
-    objectIndex?: number,
+    workInProgress?: CreateToolObjectExplosionData,
 }
 
 export const SPELLMAKER_TOOL_EXPLOSION = "Explosion";
@@ -53,36 +52,33 @@ function calculateManaCost(createObject: SpellmakerCreateToolObjectData): number
 
 function onKeyDown(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game) {
     const toolExplode = tool as SpellmakerCreateToolExplosion;
-    toolExplode.startPosition = { x: castPositionRelativeToCharacter.x, y: castPositionRelativeToCharacter.y };
-    toolExplode.objectIndex = ability.createdObjects.length;
-    ability.createdObjects.push(createObjectExplosion(toolExplode.startPosition));
+    toolExplode.workInProgress = createObjectExplosion({ x: castPositionRelativeToCharacter.x, y: castPositionRelativeToCharacter.y });
 }
 
-function onKeyUp(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game) {
+function onKeyUp(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game): SpellmakerCreateToolObjectData | undefined {
     const toolExplode = tool as SpellmakerCreateToolExplosion;
-    if (toolExplode.startPosition && toolExplode.objectIndex !== undefined) {
-        const explode = ability.createdObjects[toolExplode.objectIndex] as CreateToolObjectExplosionData;
+    if (toolExplode.workInProgress) {
+        const explode = toolExplode.workInProgress;
         explode.radius = Math.max(5, Math.abs(castPositionRelativeToCharacter.x - explode.center.x))
         explode.damageFactor = Math.min(10, (Math.max(1, Math.abs(castPositionRelativeToCharacter.y - explode.center.y) / 10)));
-        abilitySpellmakerCalculateManaCost(ability);
+        toolExplode.workInProgress = undefined;
+        return explode;
     }
-    toolExplode.startPosition = undefined;
-    toolExplode.objectIndex = undefined;
+    return undefined;
 }
 
 function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, game: Game) {
     const clientInfo: ClientInfo | undefined = findClientInfoByCharacterId(abilityOwner.id, game);
     if (clientInfo) {
         const toolExplode = tool as SpellmakerCreateToolExplosion;
-        if (toolExplode.startPosition && toolExplode.objectIndex !== undefined) {
+        if (toolExplode.workInProgress) {
             const relativePos: Position = {
                 x: clientInfo.lastMousePosition.x - abilityOwner.x,
                 y: clientInfo.lastMousePosition.y - abilityOwner.y,
             };
-            const explode = ability.createdObjects[toolExplode.objectIndex] as CreateToolObjectExplosionData;
+            const explode = toolExplode.workInProgress;
             explode.radius = Math.max(5, Math.abs(relativePos.x - explode.center.x))
             explode.damageFactor = Math.min(10, (Math.max(0.1, Math.abs(relativePos.y - explode.center.y) / 10)));
-            abilitySpellmakerCalculateManaCost(ability);
         }
     }
 }

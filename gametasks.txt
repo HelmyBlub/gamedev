@@ -3,14 +3,18 @@ increase version
 
 current tasks:     
 - new class spellmaker
-    - bug: fire lines ticks forever
     - spellcast creates seeker projectile which seeks enemy and explodes on contact, can define start fly direction of each single one
         - need "proximitySensor" + seeker attachment and "stage 2" which triggers on enemy hit with explosion
             - design "stage"
                 - buttons to switch through stages
                     - display some text on button to know what it does
-                - continue: paint only stage relevant stuff
+                - paint only stage relevant stuff
                 - attach second stage to proximity
+                    - problem: does each tool care for stage code or does one code part handle it
+                        - i think better for one code part
+                        - would require:
+                            - some way for one code part to know how each tool needs stuff
+                            - 
                 - mana cost calc
     - somehow make arbitrary spells and be able to cast them repeatedly
         - can influence size    (brush size)

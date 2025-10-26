@@ -1,10 +1,10 @@
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityObjectCircle, detectAbilityObjectCircleToCharacterHit, PaintOrderAbility } from "../../../ability/ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityObjectCircle, detectAbilityObjectCircleToCharacterHit, findAbilityOwnerByAbilityIdInPlayers, PaintOrderAbility } from "../../../ability/ability.js";
 import { getNextId, getCameraPosition, deepCopy } from "../../../game.js";
 import { Position, IdCounter, Game, FACTION_ENEMY, FACTION_PLAYER } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
 import { determineCharactersInDistance } from "../../character.js";
-import { SpellmakerCreateToolMoveAttachment } from "./abilitySpellmaker.js";
-import { SPELLMAKER_TOOLS_FUNCTIONS } from "./spellmakerTool.js";
+import { SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
+import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOLS_FUNCTIONS } from "./spellmakerTool.js";
 
 export type AbilitySpellmakerProximity = Ability & {
     radius: number,
@@ -16,6 +16,7 @@ type AbilityObjectSpellmakerProximity = AbilityObjectCircle & {
     removeTime?: number,
     nextTriggerCheckTime?: number,
     moveAttachment?: SpellmakerCreateToolMoveAttachment,
+    nextStage?: SpellmakerCreateToolObjectData,
 }
 
 export const ABILITY_NAME_SPELLMAKER_PROXIMITY = "SpellmakerProximity";
@@ -33,6 +34,7 @@ export function createAbilityObjectSpellmakerProximity(
     position: Position,
     triggerRadius: number,
     moveAttachment: SpellmakerCreateToolMoveAttachment | undefined,
+    nextStage: SpellmakerCreateToolObjectData | undefined,
     faction: string,
     abilityIdRef: number | undefined,
 ): AbilityObjectSpellmakerProximity {
@@ -48,6 +50,7 @@ export function createAbilityObjectSpellmakerProximity(
         damage: 0,
         triggerRadius: triggerRadius,
         moveAttachment: deepCopy(moveAttachment),
+        nextStage: nextStage,
     };
 }
 
@@ -95,12 +98,17 @@ function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
         let targets = determineCharactersInDistance(abilityObject, game.state.map, [], game.state.bossStuff.bosses, abilityObjectProximity.triggerRadius, abilityObject.faction, true);
         if (targets.length > 0) {
             abilityObjectProximity.triggered = true;
+            if (abilityObjectProximity.nextStage) {
+                const spellmakerFunctions = SPELLMAKER_TOOLS_FUNCTIONS[abilityObjectProximity.nextStage.type];
+                //TODO
+                // if (spellmakerFunctions.spellCast) spellmakerFunctions.spellCast(abilityObjectProximity.nextStage, owner.abilityOwner, abilityObject, abilityObject, game);
+            }
             abilityObjectProximity.removeTime = game.state.time;
         }
     }
 
     if (abilityObjectProximity.moveAttachment) {
-        const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[abilityObjectProximity.moveAttachment.type];
+        const toolFunctions = SPELLMAKER_MOVE_TOOLS_FUNCTIONS[abilityObjectProximity.moveAttachment.type];
         if (toolFunctions.getMoveAttachmentNextMoveByAmount) {
             const moveXY: Position = toolFunctions.getMoveAttachmentNextMoveByAmount(abilityObjectProximity.moveAttachment, abilityObject, game);
             abilityObjectProximity.x += moveXY.x;

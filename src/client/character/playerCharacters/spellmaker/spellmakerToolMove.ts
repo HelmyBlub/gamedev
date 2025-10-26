@@ -3,7 +3,7 @@ import { AbilityObject, AbilityOwner } from "../../../ability/ability.js";
 import { calculateDirection, calculateDistance, calculateDistancePointToLine, findClientInfoByCharacterId } from "../../../game.js";
 import { Position, Game, ClientInfo } from "../../../gameModel.js";
 import { AbilitySpellmaker, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
-import { SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
+import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
 import { moveByDirectionAndDistance } from "../../../map/map.js";
 
 export type SpellmakerCreateToolMoveAttachmentLine = SpellmakerCreateToolMoveAttachment & {
@@ -12,14 +12,13 @@ export type SpellmakerCreateToolMoveAttachmentLine = SpellmakerCreateToolMoveAtt
 }
 
 export type SpellmakerCreateToolMove = SpellmakerCreateTool & {
-    startPosition?: Position,
-    attachToIndex?: number,
+    workInProgress?: SpellmakerCreateToolMoveAttachmentLine,
 }
 
 export const SPELLMAKER_TOOL_MOVE = "Move";
 const SPEED = 2;
 export function addSpellmakerToolMove() {
-    SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_MOVE] = {
+    SPELLMAKER_MOVE_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_MOVE] = {
         onKeyDown: onKeyDown,
         onKeyUp: onKeyUp,
         onTick: onTick,
@@ -32,78 +31,45 @@ export function addSpellmakerToolMove() {
 
 function onKeyDown(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game) {
     const moveTool = tool as SpellmakerCreateToolMove;
-    let closestDistance = 0;
-    let closestIndex: number | undefined = undefined;
-    for (let objectIndex = 0; objectIndex < ability.createdObjects.length; objectIndex++) {
-        const object = ability.createdObjects[objectIndex];
-        const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[object.type];
-        if (toolFunctions.canHaveMoveAttachment && toolFunctions.calculateDistance) {
-            const tempDistance = toolFunctions.calculateDistance(castPositionRelativeToCharacter, object);
-            if (closestIndex === undefined || tempDistance < closestDistance) {
-                closestDistance = tempDistance;
-                closestIndex = objectIndex;
-            }
-        }
-    }
-    if (closestIndex != undefined && closestDistance < 20) {
-        moveTool.attachToIndex = closestIndex;
-        moveTool.startPosition = castPositionRelativeToCharacter;
-    } else {
-        moveTool.attachToIndex = undefined;
-        moveTool.startPosition = undefined;
+    moveTool.workInProgress = {
+        type: SPELLMAKER_TOOL_MOVE,
+        moveTo: [{ x: castPositionRelativeToCharacter.x, y: castPositionRelativeToCharacter.y }],
+        speed: SPEED,
     }
 }
 
-function onKeyUp(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game) {
+function onKeyUp(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game): SpellmakerCreateToolMoveAttachment | undefined {
     const moveTool = tool as SpellmakerCreateToolMove;
-    if (moveTool.attachToIndex != undefined) {
-        const createdObject = ability.createdObjects[moveTool.attachToIndex];
-        if (moveTool.startPosition) {
-            const moveAttach: SpellmakerCreateToolMoveAttachmentLine = {
-                type: SPELLMAKER_TOOL_MOVE,
-                moveTo: [moveTool.startPosition],
-                speed: SPEED,
-            }
-            createdObject.moveAttachment = moveAttach;
-            moveTool.startPosition = undefined;
-        }
-        const moveTo = createdObject.moveAttachment as SpellmakerCreateToolMoveAttachmentLine;
+    if (moveTool.workInProgress) {
+        const moveTo = moveTool.workInProgress;
         moveTo.moveTo.push(castPositionRelativeToCharacter);
-        moveTool.attachToIndex = undefined
+        moveTool.workInProgress = undefined;
+        return moveTo;
     }
+    return undefined;
 }
 
 function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, game: Game) {
     const clientInfo: ClientInfo | undefined = findClientInfoByCharacterId(abilityOwner.id, game);
     if (clientInfo) {
         const moveTool = tool as SpellmakerCreateToolMove;
-        if (moveTool.attachToIndex != undefined) {
-            const createdObject = ability.createdObjects[moveTool.attachToIndex];
-            if (moveTool.startPosition) {
-                const moveAttach: SpellmakerCreateToolMoveAttachmentLine = {
-                    type: SPELLMAKER_TOOL_MOVE,
-                    moveTo: [moveTool.startPosition],
-                    speed: SPEED,
-                }
-                createdObject.moveAttachment = moveAttach;
-                moveTool.startPosition = undefined;
-            }
+        if (moveTool.workInProgress) {
             const end: Position = {
                 x: clientInfo.lastMousePosition.x - abilityOwner.x,
                 y: clientInfo.lastMousePosition.y - abilityOwner.y,
             };
-            const moveTo = createdObject.moveAttachment as SpellmakerCreateToolMoveAttachmentLine;
-            const startPos = moveTo.moveTo[moveTo.moveTo.length - 1];
-            const distance = calculateDistance(startPos, end);
-            if (distance > 40) {
+            const moveTo = moveTool.workInProgress;
+            const beforePos = moveTo.moveTo[moveTo.moveTo.length - 1];
+            const distance = calculateDistance(beforePos, end);
+            if (distance > 20) {
                 moveTo.moveTo.push(end);
             }
         }
     }
 }
 
-function paint(ctx: CanvasRenderingContext2D, createObject: SpellmakerCreateToolObjectData, ownerPaintPos: Position, ability: AbilitySpellmaker, game: Game) {
-    const moveToPositions = createObject.moveAttachment as SpellmakerCreateToolMoveAttachmentLine;
+function paint(ctx: CanvasRenderingContext2D, moveAttachment: SpellmakerCreateToolMoveAttachment, ownerPaintPos: Position, ability: AbilitySpellmaker, game: Game) {
+    const moveToPositions = moveAttachment as SpellmakerCreateToolMoveAttachmentLine;
     if (moveToPositions.moveTo.length >= 2) {
         ctx.strokeStyle = "black";
         ctx.lineWidth = 1;

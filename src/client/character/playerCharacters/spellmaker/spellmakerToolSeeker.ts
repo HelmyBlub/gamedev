@@ -2,7 +2,7 @@ import { AbilityObject, AbilityOwner } from "../../../ability/ability.js";
 import { calculateDirection, calculateDistance, findClientInfoByCharacterId } from "../../../game.js";
 import { Position, Game, ClientInfo } from "../../../gameModel.js";
 import { AbilitySpellmaker, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
-import { SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
+import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
 import { calculateMovePosition, moveByDirectionAndDistance } from "../../../map/map.js";
 import { determineCharactersInDistance, determineClosestCharacter } from "../../character.js";
 import { nextRandom } from "../../../randomNumberGenerator.js";
@@ -17,8 +17,7 @@ export type SpellmakerCreateToolMoveAttachmentSeeker = SpellmakerCreateToolMoveA
 }
 
 export type SpellmakerCreateToolSeeker = SpellmakerCreateTool & {
-    startPosition?: Position,
-    attachToIndex?: number,
+    workInProgress?: SpellmakerCreateToolMoveAttachmentSeeker,
 }
 
 export const SPELLMAKER_TOOL_SEEKER = "Seeker";
@@ -27,7 +26,7 @@ const TICK_INTERVAL = 100;
 const SEEK_RANGE = 300;
 
 export function addSpellmakerToolSeeker() {
-    SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_SEEKER] = {
+    SPELLMAKER_MOVE_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_SEEKER] = {
         onKeyDown: onKeyDown,
         onKeyUp: onKeyUp,
         onTick: onTick,
@@ -40,56 +39,33 @@ export function addSpellmakerToolSeeker() {
 
 function onKeyDown(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game) {
     const moveTool = tool as SpellmakerCreateToolSeeker;
-    let closestDistance = 0;
-    let closestIndex: number | undefined = undefined;
-    for (let objectIndex = 0; objectIndex < ability.createdObjects.length; objectIndex++) {
-        const object = ability.createdObjects[objectIndex];
-        const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[object.type];
-        if (toolFunctions.canHaveMoveAttachment && toolFunctions.calculateDistance) {
-            const tempDistance = toolFunctions.calculateDistance(castPositionRelativeToCharacter, object);
-            if (closestIndex === undefined || tempDistance < closestDistance) {
-                closestDistance = tempDistance;
-                closestIndex = objectIndex;
-            }
-        }
-    }
-    if (closestIndex != undefined && closestDistance < 20) {
-        moveTool.attachToIndex = closestIndex;
-        moveTool.startPosition = castPositionRelativeToCharacter;
-        const createdObject = ability.createdObjects[moveTool.attachToIndex];
-        const moveAttach: SpellmakerCreateToolMoveAttachmentSeeker = {
-            type: SPELLMAKER_TOOL_SEEKER,
-            speed: SPEED,
-            direction: 0,
-            startPos: moveTool.startPosition,
-            nextTargetAquireTickTime: 0,
-        }
-        createdObject.moveAttachment = moveAttach;
-    } else {
-        moveTool.attachToIndex = undefined;
-        moveTool.startPosition = undefined;
+    moveTool.workInProgress = {
+        type: SPELLMAKER_TOOL_SEEKER,
+        speed: SPEED,
+        direction: 0,
+        startPos: { x: castPositionRelativeToCharacter.x, y: castPositionRelativeToCharacter.y },
+        nextTargetAquireTickTime: 0,
     }
 }
 
-function onKeyUp(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game) {
+function onKeyUp(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game): SpellmakerCreateToolMoveAttachment | undefined {
     const moveTool = tool as SpellmakerCreateToolSeeker;
-    if (moveTool.attachToIndex != undefined && moveTool.startPosition) {
-        const createdObject = ability.createdObjects[moveTool.attachToIndex];
-        const seeker = createdObject.moveAttachment as SpellmakerCreateToolMoveAttachmentSeeker;
+    if (moveTool.workInProgress) {
+        const seeker = moveTool.workInProgress;
         seeker.direction = calculateDirection(seeker.startPos, castPositionRelativeToCharacter);
         seeker.speed = calculateDistance(seeker.startPos, castPositionRelativeToCharacter);
+        moveTool.workInProgress = undefined;
+        return seeker;
     }
-    moveTool.startPosition = undefined;
-    moveTool.attachToIndex = undefined
+    return undefined;
 }
 
 function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, game: Game) {
     const clientInfo: ClientInfo | undefined = findClientInfoByCharacterId(abilityOwner.id, game);
     if (clientInfo) {
         const moveTool = tool as SpellmakerCreateToolSeeker;
-        if (moveTool.attachToIndex != undefined && moveTool.startPosition) {
-            const createdObject = ability.createdObjects[moveTool.attachToIndex];
-            const seeker = createdObject.moveAttachment as SpellmakerCreateToolMoveAttachmentSeeker;
+        if (moveTool.workInProgress) {
+            const seeker = moveTool.workInProgress;
             const relativPos: Position = {
                 x: clientInfo.lastMousePosition.x - abilityOwner.x,
                 y: clientInfo.lastMousePosition.y - abilityOwner.y,
@@ -100,8 +76,8 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
     }
 }
 
-function paint(ctx: CanvasRenderingContext2D, createObject: SpellmakerCreateToolObjectData, ownerPaintPos: Position, ability: AbilitySpellmaker, game: Game) {
-    const seeker = createObject.moveAttachment as SpellmakerCreateToolMoveAttachmentSeeker;
+function paint(ctx: CanvasRenderingContext2D, moveAttachment: SpellmakerCreateToolMoveAttachment, ownerPaintPos: Position, ability: AbilitySpellmaker, game: Game) {
+    const seeker = moveAttachment as SpellmakerCreateToolMoveAttachmentSeeker;
     ctx.strokeStyle = "black";
     ctx.lineWidth = 1;
     ctx.beginPath();

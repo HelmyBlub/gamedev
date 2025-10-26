@@ -2,7 +2,7 @@ import { AbilityOwner } from "../../../ability/ability.js";
 import { calculateDistance, calculateDistancePointToLine, findClientInfoByCharacterId } from "../../../game.js";
 import { Position, Game, ClientInfo } from "../../../gameModel.js";
 import { AbilitySpellmaker, abilitySpellmakerCalculateManaCost, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
-import { SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
+import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
 import { createAbilityObjectSpellmakerFireLine } from "./abilitySpellmakerFireLine.js";
 
 type CreateToolObjectFireLineData = SpellmakerCreateToolObjectData & {
@@ -10,8 +10,7 @@ type CreateToolObjectFireLineData = SpellmakerCreateToolObjectData & {
 }
 
 export type SpellmakerCreateToolFireLine = SpellmakerCreateTool & {
-    startPosition?: Position,
-    attachToIndex?: number,
+    workInProgress?: CreateToolObjectFireLineData,
 }
 
 export const SPELLMAKER_TOOL_FIRELINE = "FireLine";
@@ -61,52 +60,41 @@ function calculateManaCost(createObject: SpellmakerCreateToolObjectData): number
 
 function onKeyDown(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game) {
     const toolFireLine = tool as SpellmakerCreateToolFireLine;
-    toolFireLine.startPosition = { x: castPositionRelativeToCharacter.x, y: castPositionRelativeToCharacter.y };
-    toolFireLine.attachToIndex = undefined;
+    toolFireLine.workInProgress = createObjectFireLine();
+    toolFireLine.workInProgress.positions.push({ x: castPositionRelativeToCharacter.x, y: castPositionRelativeToCharacter.y });
 }
 
-function onKeyUp(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game) {
+function onKeyUp(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game): SpellmakerCreateToolObjectData | undefined {
     const toolFireLine = tool as SpellmakerCreateToolFireLine;
-    if (toolFireLine.startPosition) {
-        if (toolFireLine.attachToIndex === undefined) {
-            if (calculateDistance(castPositionRelativeToCharacter, toolFireLine.startPosition) <= 5) {
-                return;
+    if (toolFireLine.workInProgress) {
+        const fireLine = toolFireLine.workInProgress;
+        if (fireLine.positions.length == 1) {
+            if (calculateDistance(castPositionRelativeToCharacter, fireLine.positions[0]) <= 5) {
+                toolFireLine.workInProgress = undefined;
+                return undefined;
             }
-            ability.createdObjects.push(createObjectFireLine());
-            toolFireLine.attachToIndex = ability.createdObjects.length - 1;
-        }
-        const fireLine = ability.createdObjects[toolFireLine.attachToIndex] as CreateToolObjectFireLineData;
-        if (fireLine.positions.length === 0) {
-            fireLine.positions.push(toolFireLine.startPosition);
         }
         if (calculateDistance(fireLine.positions[fireLine.positions.length - 1], castPositionRelativeToCharacter) > 5) {
             fireLine.positions.push(castPositionRelativeToCharacter);
-            abilitySpellmakerCalculateManaCost(ability);
         }
-        toolFireLine.startPosition = undefined;
+        toolFireLine.workInProgress = undefined;
+        return fireLine;
     }
+    return undefined;
 }
 
 function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, game: Game) {
     const clientInfo: ClientInfo | undefined = findClientInfoByCharacterId(abilityOwner.id, game);
     if (clientInfo) {
         const toolFireLine = tool as SpellmakerCreateToolFireLine;
-        if (toolFireLine.startPosition) {
-            if (toolFireLine.attachToIndex === undefined) {
-                ability.createdObjects.push(createObjectFireLine());
-                toolFireLine.attachToIndex = ability.createdObjects.length - 1;
-            }
-            const fireLine = ability.createdObjects[toolFireLine.attachToIndex] as CreateToolObjectFireLineData;
-            if (fireLine.positions.length === 0) {
-                fireLine.positions.push(toolFireLine.startPosition);
-            }
+        if (toolFireLine.workInProgress) {
+            const fireLine = toolFireLine.workInProgress;
             const end: Position = {
                 x: clientInfo.lastMousePosition.x - abilityOwner.x,
                 y: clientInfo.lastMousePosition.y - abilityOwner.y,
             };
             if (calculateDistance(fireLine.positions[fireLine.positions.length - 1], end) > 10) {
                 fireLine.positions.push(end);
-                abilitySpellmakerCalculateManaCost(ability);
             }
         }
     }
@@ -126,7 +114,7 @@ function spellCast(createObject: SpellmakerCreateToolObjectData, abilityOwner: A
     }
     let moveAttachment: SpellmakerCreateToolMoveAttachment | undefined = undefined;
     if (fireline.moveAttachment) {
-        const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[fireline.moveAttachment.type];
+        const toolFunctions = SPELLMAKER_MOVE_TOOLS_FUNCTIONS[fireline.moveAttachment.type];
         if (toolFunctions.getMoveAttachment) moveAttachment = toolFunctions.getMoveAttachment(createObject, abilityOwner, ability, castPosition, game);
     }
     const moveSpeed = 2;

@@ -6,7 +6,7 @@ import { moveByDirectionAndDistance } from "../../../map/map.js";
 import { getCharactersTouchingLine, characterTakeDamage } from "../../character.js";
 import { Character } from "../../characterModel.js";
 import { SpellmakerCreateToolMoveAttachment } from "./abilitySpellmaker.js";
-import { SPELLMAKER_TOOLS_FUNCTIONS } from "./spellmakerTool.js";
+import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOLS_FUNCTIONS } from "./spellmakerTool.js";
 
 export type AbilitySpellmakerFireLine = Ability & {
 }
@@ -112,7 +112,7 @@ function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
         objectFireLine.nextTickTime = game.state.time + objectFireLine.tickInterval;
     }
     if (objectFireLine.moveAttachment) {
-        const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[objectFireLine.moveAttachment.type];
+        const toolFunctions = SPELLMAKER_MOVE_TOOLS_FUNCTIONS[objectFireLine.moveAttachment.type];
         if (toolFunctions.getMoveAttachmentNextMoveByAmount) {
             const moveXY: Position = toolFunctions.getMoveAttachmentNextMoveByAmount(objectFireLine.moveAttachment, abilityObject, game);
             objectFireLine.x += moveXY.x;
@@ -124,7 +124,6 @@ function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
         }
     }
     if (objectFireLine.nextTickTime <= game.state.time) {
-        console.log(`fireLineTick:${game.state.time}`);
         let linePartStart: Position = { x: objectFireLine.x, y: objectFireLine.y };
         for (let joint of objectFireLine.fireLineJoints) {
             const characters: Character[] = getCharactersTouchingLine(game, linePartStart, joint, abilityObject.faction, objectFireLine.width);
