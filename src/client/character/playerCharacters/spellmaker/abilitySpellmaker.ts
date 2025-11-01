@@ -18,7 +18,7 @@ export type AbilitySpellmaker = Ability & {
     mana: number,
     maxMana: number,
     manaRegeneration: number
-    attachToIndex?: number,
+    attachToIndex?: number[],
     createdObjects: SpellmakerCreateToolObjectData[],
     spellManaCost: number,
     createTools: SpellmakerCreateToolsData,
@@ -27,8 +27,10 @@ export type AbilitySpellmaker = Ability & {
 
 export type SpellmakerCreateToolObjectData = {
     type: string,
+    level: number,
+    castPosOffset?: Position,
     moveAttachment?: SpellmakerCreateToolMoveAttachment,
-    nextStage?: SpellmakerCreateToolObjectData,
+    nextStage: SpellmakerCreateToolObjectData[],
 }
 
 export type SpellmakerCreateToolMoveAttachment = {
@@ -114,43 +116,31 @@ export function abilitySpellmakerCalculateManaCost(ability: AbilitySpellmaker) {
     }
 }
 
+function paintToolObjectsRecusive(ctx: CanvasRenderingContext2D, stage: number, createdObject: SpellmakerCreateToolObjectData, ability: AbilitySpellmaker, ownerPaintPos: Position, game: Game) {
+    const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[createdObject.type];
+    if ((stage == ability.spellmakeStage - 1 && toolFunctions.canHaveNextStage) || stage == ability.spellmakeStage) {
+        if (toolFunctions.paint) {
+            toolFunctions.paint(ctx, createdObject, ownerPaintPos, ability, game);
+            if (toolFunctions.canHaveMoveAttachment && createdObject.moveAttachment) {
+                const toolMoveFunctions = SPELLMAKER_MOVE_TOOLS_FUNCTIONS[createdObject.moveAttachment.type];
+                toolMoveFunctions.paint(ctx, createdObject.moveAttachment, ownerPaintPos, ability, game);
+            }
+        }
+    } else if (stage < ability.spellmakeStage) {
+        for (let stageObjects of createdObject.nextStage) {
+            paintToolObjectsRecusive(ctx, stage + 1, stageObjects, ability, ownerPaintPos, game);
+        }
+    }
+}
+
 function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
     if (abilityOwner.type === CHARACTER_PET_TYPE_CLONE) return;
     if (ability.disabled) return;
     const abilitySm = ability as AbilitySpellmaker;
     if (abilitySm.mode === "spellmake") {
         let ownerPaintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition, game.UI.zoom);
-        createdObjectLoop: for (let createdObject of abilitySm.createdObjects) {
-            let currentStage = 0;
-            let currentCreatedObject = createdObject;
-            while (currentStage < abilitySm.spellmakeStage) {
-                if (currentStage == abilitySm.spellmakeStage - 1) {
-                    const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[currentCreatedObject.type];
-                    if (toolFunctions.canHaveNextStage) {
-                        if (toolFunctions.paint) {
-                            toolFunctions.paint(ctx, currentCreatedObject, ownerPaintPos, abilitySm, game);
-                            if (toolFunctions.canHaveMoveAttachment && currentCreatedObject.moveAttachment) {
-                                const toolMoveFunctions = SPELLMAKER_MOVE_TOOLS_FUNCTIONS[currentCreatedObject.moveAttachment.type];
-                                toolMoveFunctions.paint(ctx, currentCreatedObject.moveAttachment, ownerPaintPos, abilitySm, game);
-                            }
-                        }
-                    }
-                }
-                if (currentCreatedObject.nextStage) {
-                    currentCreatedObject = currentCreatedObject.nextStage;
-                    currentStage += 1;
-                } else {
-                    continue createdObjectLoop;
-                }
-            }
-            const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[currentCreatedObject.type];
-            if (toolFunctions.paint) {
-                toolFunctions.paint(ctx, currentCreatedObject, ownerPaintPos, abilitySm, game);
-                if (toolFunctions.canHaveMoveAttachment && currentCreatedObject.moveAttachment) {
-                    const toolMoveFunctions = SPELLMAKER_MOVE_TOOLS_FUNCTIONS[currentCreatedObject.moveAttachment.type];
-                    toolMoveFunctions.paint(ctx, currentCreatedObject.moveAttachment, ownerPaintPos, abilitySm, game);
-                }
-            }
+        for (let createdObject of abilitySm.createdObjects) {
+            paintToolObjectsRecusive(ctx, 0, createdObject, abilitySm, ownerPaintPos, game);
         }
         const tool = abilitySm.createTools.createTools[abilitySm.createTools.selectedToolIndex];
         if (tool.workInProgress) {
@@ -219,17 +209,17 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, castPosition:
                             if (abilitySm.spellmakeStage == 0) {
                                 abilitySm.createdObjects.push(result);
                             } else if (abilitySm.attachToIndex != undefined) {
-                                let currentObject = abilitySm.createdObjects[abilitySm.attachToIndex];
+                                let currentObject = abilitySm.createdObjects[abilitySm.attachToIndex[0]];
                                 let currentStage = 0;
                                 while (currentStage < abilitySm.spellmakeStage - 1) {
                                     if (currentObject.nextStage) {
-                                        currentObject = currentObject.nextStage;
                                         currentStage++;
+                                        currentObject = currentObject.nextStage[abilitySm.attachToIndex[currentStage]];
                                     } else {
                                         return;
                                     }
                                 }
-                                currentObject.nextStage = result;
+                                currentObject.nextStage.push(result);
                             }
                         }
                     }
@@ -239,7 +229,17 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, castPosition:
                         if (abilitySm.attachToIndex != undefined) {
                             const result = toolFunctions.onKeyUp(tool, abilityOwner, abilitySm, castPositionRelativeToCharacter, game);
                             if (result) {
-                                abilitySm.createdObjects[abilitySm.attachToIndex].moveAttachment = result;
+                                let currentObject = abilitySm.createdObjects[abilitySm.attachToIndex[0]];
+                                let currentStage = 0;
+                                while (currentStage < abilitySm.spellmakeStage) {
+                                    if (currentObject.nextStage) {
+                                        currentStage++;
+                                        currentObject = currentObject.nextStage[abilitySm.attachToIndex[currentStage]];
+                                    } else {
+                                        return;
+                                    }
+                                }
+                                currentObject.moveAttachment = result;
                             }
                         }
                     }
@@ -253,65 +253,53 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, castPosition:
                 abilitySm.mana -= abilitySm.spellManaCost;
                 for (let createdObject of abilitySm.createdObjects) {
                     const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[createdObject.type];
-                    if (toolFunctions.spellCast) toolFunctions.spellCast(createdObject, abilityOwner, abilitySm, castPosition, game);
+                    if (toolFunctions.spellCast) toolFunctions.spellCast(createdObject, ability.level!.level, abilityOwner.faction, ability.id, castPosition, game);
                 }
             }
         }
     }
 }
 
-function findClosestAttachToIndex(ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, moveToAttach: boolean): number | undefined {
+function findClosestAttachToIndexRecursive(stage: number, currentStage: SpellmakerCreateToolObjectData[], ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, moveToAttach: boolean): { closestDistance: number, attachToIndexes: number[] } | undefined {
     let closestDistance = 0;
-    let closestIndex: number | undefined = undefined;
-    objectLoop: for (let objectIndex = 0; objectIndex < ability.createdObjects.length; objectIndex++) {
-        if (moveToAttach) {
-            let object = ability.createdObjects[objectIndex];
-            if (ability.spellmakeStage > 0) {
-                let currentStage = 0;
-                let object = ability.createdObjects[objectIndex];
-                while (currentStage < ability.spellmakeStage) {
-                    if (object.nextStage) {
-                        object = object.nextStage;
-                        currentStage++;
-                    } else {
-                        continue objectLoop;
-                    }
-                }
-            }
-
-            const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[object.type];
-            if (toolFunctions.canHaveMoveAttachment && toolFunctions.calculateDistance) {
-                const tempDistance = toolFunctions.calculateDistance(castPositionRelativeToCharacter, object);
-                if (closestIndex === undefined || tempDistance < closestDistance) {
-                    closestDistance = tempDistance;
-                    closestIndex = objectIndex;
-                }
-            }
-        } else {
-            if (ability.spellmakeStage > 0) {
-                let currentStage = 0;
-                let object = ability.createdObjects[objectIndex];
-                while (currentStage < ability.spellmakeStage - 1) {
-                    if (object.nextStage) {
-                        object = object.nextStage;
-                        currentStage++;
-                    } else {
-                        continue objectLoop;
-                    }
-                }
-                const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[object.type];
-                if (toolFunctions.canHaveNextStage && toolFunctions.calculateDistance) {
-                    const tempDistance = toolFunctions.calculateDistance(castPositionRelativeToCharacter, object);
-                    if (closestIndex === undefined || tempDistance < closestDistance) {
-                        closestDistance = tempDistance;
-                        closestIndex = objectIndex;
-                    }
-                }
+    let attachToIndexes: number[] | undefined = undefined;
+    if (ability.spellmakeStage > stage) {
+        for (let objectIndex = 0; objectIndex < currentStage.length; objectIndex++) {
+            const stageObject = currentStage[objectIndex];
+            const result = findClosestAttachToIndexRecursive(stage + 1, stageObject.nextStage, ability, castPositionRelativeToCharacter, moveToAttach);
+            if (result && (attachToIndexes === undefined || result.closestDistance < closestDistance)) {
+                closestDistance = result.closestDistance;
+                attachToIndexes = result.attachToIndexes;
+                attachToIndexes.unshift(objectIndex);
             }
         }
+    } else {
+        for (let objectIndex = 0; objectIndex < currentStage.length; objectIndex++) {
+            const stageObject = currentStage[objectIndex];
+            const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[stageObject.type];
+            if (toolFunctions.calculateDistance && (
+                (moveToAttach && toolFunctions.canHaveMoveAttachment)
+                || (!moveToAttach && toolFunctions.canHaveNextStage))
+            ) {
+                const tempDistance = toolFunctions.calculateDistance(castPositionRelativeToCharacter, stageObject);
+                closestDistance = tempDistance;
+                attachToIndexes = [objectIndex];
+            }
+        }
+
     }
-    if (closestIndex != undefined && closestDistance < 20) {
-        return closestIndex;
+    if (attachToIndexes !== undefined) {
+        return { closestDistance: closestDistance, attachToIndexes: attachToIndexes };
+    } else {
+        return undefined;
+    }
+}
+
+
+function findClosestAttachToIndex(ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, moveToAttach: boolean): number[] | undefined {
+    const result = findClosestAttachToIndexRecursive(0, ability.createdObjects, ability, castPositionRelativeToCharacter, moveToAttach);
+    if (result && result.closestDistance < 20) {
+        return result.attachToIndexes;
     }
     return undefined;
 }

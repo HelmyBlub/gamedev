@@ -35,6 +35,8 @@ function createObjectExplosion(center: Position): CreateToolObjectExplosionData 
         center: center,
         damageFactor: 1,
         radius: 5,
+        level: 1,
+        nextStage: [],
     }
 }
 
@@ -83,14 +85,14 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
     }
 }
 
-function spellCast(createObject: SpellmakerCreateToolObjectData, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPosition: Position, game: Game) {
+function spellCast(createObject: SpellmakerCreateToolObjectData, level: number, faction: string, abilityId: number, castPosition: Position, game: Game) {
     const explode = createObject as CreateToolObjectExplosionData;
-    const damage = ability.level!.level * 500 * explode.damageFactor;
+    const damage = level * 500 * explode.damageFactor;
     const center: Position = {
         x: explode.center.x + castPosition.x,
         y: explode.center.y + castPosition.y,
     };
-    const explodeObject = createAbilityObjectExplode(center, damage, explode.radius, abilityOwner.faction, ability.id, 0, game);
+    const explodeObject = createAbilityObjectExplode(center, damage, explode.radius, faction, abilityId, 0, game);
     game.state.abilityObjects.push(explodeObject);
 }
 

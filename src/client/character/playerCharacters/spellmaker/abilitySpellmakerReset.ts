@@ -43,6 +43,7 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, castPosition:
         if (abilityIter.name === ABILITY_NAME_SPELLMAKER) {
             const spellmaker = abilityIter as AbilitySpellmaker;
             spellmaker.createdObjects = [];
+            spellmaker.spellmakeStage = 0;
         }
     }
 }

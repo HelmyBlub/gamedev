@@ -32,6 +32,8 @@ function createObjectFireLine(): CreateToolObjectFireLineData {
     return {
         type: SPELLMAKER_TOOL_FIRELINE,
         positions: [],
+        level: 1,
+        nextStage: [],
     }
 }
 
@@ -100,10 +102,10 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
     }
 }
 
-function spellCast(createObject: SpellmakerCreateToolObjectData, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPosition: Position, game: Game) {
+function spellCast(createObject: SpellmakerCreateToolObjectData, level: number, faction: string, abilityId: number, castPosition: Position, game: Game) {
     const fireline = createObject as CreateToolObjectFireLineData;
     if (fireline.positions.length < 2) return;
-    const damage = ability.level!.level * 100;
+    const damage = level * 100;
     const start: Position = {
         x: fireline.positions[0].x + castPosition.x,
         y: fireline.positions[0].y + castPosition.y,
@@ -115,13 +117,13 @@ function spellCast(createObject: SpellmakerCreateToolObjectData, abilityOwner: A
     let moveAttachment: SpellmakerCreateToolMoveAttachment | undefined = undefined;
     if (fireline.moveAttachment) {
         const toolFunctions = SPELLMAKER_MOVE_TOOLS_FUNCTIONS[fireline.moveAttachment.type];
-        if (toolFunctions.getMoveAttachment) moveAttachment = toolFunctions.getMoveAttachment(createObject, abilityOwner, ability, castPosition, game);
+        if (toolFunctions.getMoveAttachment) moveAttachment = toolFunctions.getMoveAttachment(createObject, castPosition, game);
     }
     const moveSpeed = 2;
     const width = 10;
     const duration = 5000;
     const tickInterval = 250;
-    const objectFireLine = createAbilityObjectSpellmakerFireLine(abilityOwner.faction, start, joints, moveAttachment, damage, width, duration, moveSpeed, tickInterval, "red", ability.id, game);
+    const objectFireLine = createAbilityObjectSpellmakerFireLine(faction, start, joints, moveAttachment, damage, width, duration, moveSpeed, tickInterval, "red", abilityId, game);
     game.state.abilityObjects.push(objectFireLine);
 }
 

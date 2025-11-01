@@ -14,9 +14,10 @@ type AbilityObjectSpellmakerProximity = AbilityObjectCircle & {
     triggered: boolean,
     triggerRadius: number,
     removeTime?: number,
+    latestTriggerTime: number,
     nextTriggerCheckTime?: number,
     moveAttachment?: SpellmakerCreateToolMoveAttachment,
-    nextStage?: SpellmakerCreateToolObjectData,
+    nextStage: SpellmakerCreateToolObjectData[],
 }
 
 export const ABILITY_NAME_SPELLMAKER_PROXIMITY = "SpellmakerProximity";
@@ -34,9 +35,10 @@ export function createAbilityObjectSpellmakerProximity(
     position: Position,
     triggerRadius: number,
     moveAttachment: SpellmakerCreateToolMoveAttachment | undefined,
-    nextStage: SpellmakerCreateToolObjectData | undefined,
+    nextStage: SpellmakerCreateToolObjectData[],
     faction: string,
     abilityIdRef: number | undefined,
+    gametime: number,
 ): AbilityObjectSpellmakerProximity {
     return {
         type: ABILITY_NAME_SPELLMAKER_PROXIMITY,
@@ -51,6 +53,7 @@ export function createAbilityObjectSpellmakerProximity(
         triggerRadius: triggerRadius,
         moveAttachment: deepCopy(moveAttachment),
         nextStage: nextStage,
+        latestTriggerTime: gametime + 10_000,
     };
 }
 
@@ -96,12 +99,18 @@ function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
         abilityObjectProximity.nextTriggerCheckTime = game.state.time + 100;
 
         let targets = determineCharactersInDistance(abilityObject, game.state.map, [], game.state.bossStuff.bosses, abilityObjectProximity.triggerRadius, abilityObject.faction, true);
-        if (targets.length > 0) {
+        if (targets.length > 0 || abilityObjectProximity.latestTriggerTime < game.state.time) {
             abilityObjectProximity.triggered = true;
-            if (abilityObjectProximity.nextStage) {
-                const spellmakerFunctions = SPELLMAKER_TOOLS_FUNCTIONS[abilityObjectProximity.nextStage.type];
-                //TODO
-                // if (spellmakerFunctions.spellCast) spellmakerFunctions.spellCast(abilityObjectProximity.nextStage, owner.abilityOwner, abilityObject, abilityObject, game);
+            for (let stageObject of abilityObjectProximity.nextStage) {
+                const spellmakerFunctions = SPELLMAKER_TOOLS_FUNCTIONS[stageObject.type];
+                if (spellmakerFunctions.spellCast) {
+                    const pos: Position = { x: abilityObject.x, y: abilityObject.y };
+                    if (stageObject.castPosOffset) {
+                        pos.x += stageObject.castPosOffset.x;
+                        pos.y += stageObject.castPosOffset.y;
+                    }
+                    spellmakerFunctions.spellCast(stageObject, stageObject.level, abilityObject.faction, abilityObject.abilityIdRef!, pos, game);
+                }
             }
             abilityObjectProximity.removeTime = game.state.time;
         }

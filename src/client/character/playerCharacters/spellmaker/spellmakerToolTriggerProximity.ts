@@ -2,7 +2,7 @@ import { AbilityOwner } from "../../../ability/ability.js";
 import { calculateDistance, findClientInfoByCharacterId } from "../../../game.js";
 import { Position, Game, ClientInfo } from "../../../gameModel.js";
 import { AbilitySpellmaker, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
-import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
+import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool, spellmakerNextStageSetup } from "./spellmakerTool.js";
 import { createAbilityObjectSpellmakerProximity } from "./abilitySpellmakerProximity.js";
 
 type CreateToolObjectProximityData = SpellmakerCreateToolObjectData & {
@@ -35,6 +35,8 @@ function createObjectProximity(center: Position): CreateToolObjectProximityData 
         type: SPELLMAKER_TOOL_PROXIMITY,
         center: center,
         radius: 5,
+        level: 1,
+        nextStage: [],
     }
 }
 
@@ -59,7 +61,7 @@ function onKeyUp(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability
     const toolProximity = tool as SpellmakerCreateToolProximity;
     if (toolProximity.workInProgress) {
         const proximity = toolProximity.workInProgress;
-        proximity.radius = Math.max(5, Math.abs(castPositionRelativeToCharacter.x - proximity.center.x))
+        proximity.radius = Math.max(10, Math.abs(castPositionRelativeToCharacter.x - proximity.center.x))
         toolProximity.workInProgress = undefined;
         return proximity;
     }
@@ -81,7 +83,7 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
     }
 }
 
-function spellCast(createObject: SpellmakerCreateToolObjectData, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPosition: Position, game: Game) {
+function spellCast(createObject: SpellmakerCreateToolObjectData, level: number, faction: string, abilityId: number, castPosition: Position, game: Game) {
     const toolProximity = createObject as CreateToolObjectProximityData;
     const center: Position = {
         x: toolProximity.center.x + castPosition.x,
@@ -90,10 +92,10 @@ function spellCast(createObject: SpellmakerCreateToolObjectData, abilityOwner: A
     let moveAttachment: SpellmakerCreateToolMoveAttachment | undefined = undefined;
     if (toolProximity.moveAttachment) {
         const toolFunctions = SPELLMAKER_MOVE_TOOLS_FUNCTIONS[toolProximity.moveAttachment.type];
-        if (toolFunctions.getMoveAttachment) moveAttachment = toolFunctions.getMoveAttachment(createObject, abilityOwner, ability, castPosition, game);
+        if (toolFunctions.getMoveAttachment) moveAttachment = toolFunctions.getMoveAttachment(createObject, castPosition, game);
     }
-
-    const objectProximity = createAbilityObjectSpellmakerProximity(center, toolProximity.radius, moveAttachment, toolProximity.nextStage, abilityOwner.faction, ability.id);
+    const nextStage = spellmakerNextStageSetup(toolProximity.nextStage, level, toolProximity.center);
+    const objectProximity = createAbilityObjectSpellmakerProximity(center, toolProximity.radius, moveAttachment, nextStage, faction, abilityId, game.state.time);
     game.state.abilityObjects.push(objectProximity);
 }
 

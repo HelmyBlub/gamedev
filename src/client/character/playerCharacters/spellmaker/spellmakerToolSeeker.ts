@@ -87,7 +87,7 @@ function paint(ctx: CanvasRenderingContext2D, moveAttachment: SpellmakerCreateTo
     ctx.stroke();
 }
 
-function getMoveAttachment(createObject: SpellmakerCreateToolObjectData, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPosition: Position, game: Game): SpellmakerCreateToolMoveAttachment {
+function getMoveAttachment(createObject: SpellmakerCreateToolObjectData, castPosition: Position, game: Game): SpellmakerCreateToolMoveAttachment {
     const seeker = createObject.moveAttachment as SpellmakerCreateToolMoveAttachmentSeeker;
     const moveAttach: SpellmakerCreateToolMoveAttachmentSeeker = {
         type: SPELLMAKER_TOOL_SEEKER,

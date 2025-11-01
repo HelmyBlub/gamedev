@@ -1,4 +1,3 @@
-import { create } from "domain";
 import { AbilityObject, AbilityOwner } from "../../../ability/ability.js";
 import { calculateDirection, calculateDistance, calculateDistancePointToLine, findClientInfoByCharacterId } from "../../../game.js";
 import { Position, Game, ClientInfo } from "../../../gameModel.js";
@@ -82,7 +81,7 @@ function paint(ctx: CanvasRenderingContext2D, moveAttachment: SpellmakerCreateTo
     }
 }
 
-function getMoveAttachment(createObject: SpellmakerCreateToolObjectData, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPosition: Position, game: Game): SpellmakerCreateToolMoveAttachment {
+function getMoveAttachment(createObject: SpellmakerCreateToolObjectData, castPosition: Position, game: Game): SpellmakerCreateToolMoveAttachment {
     const moveTo: Position[] = [];
     const moveToPositions = createObject.moveAttachment as SpellmakerCreateToolMoveAttachmentLine;
     if (moveToPositions.moveTo.length >= 2) {
