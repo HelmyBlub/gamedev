@@ -126,7 +126,8 @@ function paintToolObjectsRecusive(ctx: CanvasRenderingContext2D, stage: number, 
                 toolMoveFunctions.paint(ctx, createdObject.moveAttachment, ownerPaintPos, ability, game);
             }
         }
-    } else if (stage < ability.spellmakeStage) {
+    }
+    if (stage < ability.spellmakeStage) {
         for (let stageObjects of createdObject.nextStage) {
             paintToolObjectsRecusive(ctx, stage + 1, stageObjects, ability, ownerPaintPos, game);
         }
@@ -263,7 +264,8 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, castPosition:
 function findClosestAttachToIndexRecursive(stage: number, currentStage: SpellmakerCreateToolObjectData[], ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, moveToAttach: boolean): { closestDistance: number, attachToIndexes: number[] } | undefined {
     let closestDistance = 0;
     let attachToIndexes: number[] | undefined = undefined;
-    if (ability.spellmakeStage > stage) {
+    const stageToReach = moveToAttach ? ability.spellmakeStage : ability.spellmakeStage - 1;
+    if (stageToReach > stage) {
         for (let objectIndex = 0; objectIndex < currentStage.length; objectIndex++) {
             const stageObject = currentStage[objectIndex];
             const result = findClosestAttachToIndexRecursive(stage + 1, stageObject.nextStage, ability, castPositionRelativeToCharacter, moveToAttach);
@@ -282,8 +284,10 @@ function findClosestAttachToIndexRecursive(stage: number, currentStage: Spellmak
                 || (!moveToAttach && toolFunctions.canHaveNextStage))
             ) {
                 const tempDistance = toolFunctions.calculateDistance(castPositionRelativeToCharacter, stageObject);
-                closestDistance = tempDistance;
-                attachToIndexes = [objectIndex];
+                if (attachToIndexes === undefined || tempDistance < closestDistance) {
+                    closestDistance = tempDistance;
+                    attachToIndexes = [objectIndex];
+                }
             }
         }
 
