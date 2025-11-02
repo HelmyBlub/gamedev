@@ -2,7 +2,7 @@ import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, getAbilityNameUiText, paint
 import { IMAGE_NAME_SWITCH } from "../../../ability/musician/abilityMusicSheetChangeInstrument.js";
 import { autoSendMousePositionHandler, getNextId } from "../../../game.js";
 import { Game, IdCounter, Position } from "../../../gameModel.js";
-import { getPointPaintPosition } from "../../../gamePaint.js";
+import { getPointPaintPosition, paintTextWithOutline } from "../../../gamePaint.js";
 import { playerInputBindingToDisplayValue } from "../../../input/playerInput.js";
 import { createMoreInfosPart, MoreInfoHoverTexts, MoreInfoPart } from "../../../moreInfo.js";
 import { CHARACTER_PET_TYPE_CLONE } from "../characterPetTypeClone.js";
@@ -149,8 +149,8 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
     if (abilityOwner.type === CHARACTER_PET_TYPE_CLONE) return;
     if (ability.disabled) return;
     const abilitySm = ability as AbilitySpellmaker;
+    let ownerPaintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition, game.UI.zoom);
     if (abilitySm.mode === "spellmake") {
-        let ownerPaintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition, game.UI.zoom);
         for (let createdObject of abilitySm.createdObjects) {
             paintToolObjectsRecusive(ctx, 0, createdObject, abilitySm, ownerPaintPos, game);
         }
@@ -166,15 +166,34 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
             }
         }
 
+        const fontSize = abilitySm.createTools.size * 0.8;
+        ctx.font = fontSize + "px Arial";
         for (let i = 0; i < abilitySm.createTools.createTools.length; i++) {
+            const toolPosition: Position = {
+                x: ownerPaintPos.x + abilitySm.createTools.position.x + abilitySm.createTools.size * i,
+                y: ownerPaintPos.y + abilitySm.createTools.position.y,
+            }
             ctx.lineWidth = 1;
             ctx.strokeStyle = "black";
             ctx.fillStyle = "white";
-            ctx.fillRect(ownerPaintPos.x + abilitySm.createTools.position.x + abilitySm.createTools.size * i, ownerPaintPos.y + abilitySm.createTools.position.y, abilitySm.createTools.size, abilitySm.createTools.size);
+            ctx.fillRect(toolPosition.x, toolPosition.y, abilitySm.createTools.size, abilitySm.createTools.size);
             ctx.beginPath();
-            ctx.rect(ownerPaintPos.x + abilitySm.createTools.position.x + abilitySm.createTools.size * i, ownerPaintPos.y + abilitySm.createTools.position.y, abilitySm.createTools.size, abilitySm.createTools.size);
+            ctx.rect(toolPosition.x, toolPosition.y, abilitySm.createTools.size, abilitySm.createTools.size);
             ctx.stroke();
+            paintTextWithOutline(ctx, "white", "black", abilitySm.createTools.createTools[i].type.substring(0, 2), toolPosition.x + abilitySm.createTools.size / 2, toolPosition.y + abilitySm.createTools.size * 0.9, true, 1);
         }
+    } else {
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "black";
+        ctx.fillStyle = "blue";
+        const fillPerCent = abilitySm.mana / abilitySm.maxMana;
+        const sizeWidth = abilityOwner.width != undefined ? abilityOwner.width : 20;
+        const sizeHeight = Math.min(sizeWidth / 4, 10);
+        const manaBarPos: Position = { x: ownerPaintPos.x - sizeWidth / 2, y: ownerPaintPos.y + abilityOwner.height! / 2 + sizeHeight };
+        ctx.fillRect(manaBarPos.x, manaBarPos.y, sizeWidth * fillPerCent, sizeHeight);
+        ctx.beginPath();
+        ctx.rect(manaBarPos.x, manaBarPos.y, sizeWidth, sizeHeight);
+        ctx.stroke();
     }
 }
 

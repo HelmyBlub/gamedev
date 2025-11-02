@@ -3,15 +3,8 @@ increase version
 
 current tasks:     
 - new class spellmaker
-    - spellcast creates seeker projectile which seeks enemy and explodes on contact, can define start fly direction of each single one
-        - need "proximitySensor" + seeker attachment and "stage 2" which triggers on enemy hit with explosion
-            - design "stage"
-                - attach second stage to proximity
-                    - continue: multiple next stage attachements
-                        - recursion code change work in progress
-                - mana cost calc
-        - tool labeling
-        - mana display
+    - mana display
+    - tool labeling
     - somehow make arbitrary spells and be able to cast them repeatedly
         - can influence size    (brush size)
         - can influence shape   (paint)
