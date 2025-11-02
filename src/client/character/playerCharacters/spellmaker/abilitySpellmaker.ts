@@ -175,12 +175,16 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
             }
             ctx.lineWidth = 1;
             ctx.strokeStyle = "black";
-            ctx.fillStyle = "white";
+            ctx.fillStyle = abilitySm.createTools.selectedToolIndex === i ? "gray" : "white";
             ctx.fillRect(toolPosition.x, toolPosition.y, abilitySm.createTools.size, abilitySm.createTools.size);
             ctx.beginPath();
             ctx.rect(toolPosition.x, toolPosition.y, abilitySm.createTools.size, abilitySm.createTools.size);
             ctx.stroke();
-            paintTextWithOutline(ctx, "white", "black", abilitySm.createTools.createTools[i].type.substring(0, 2), toolPosition.x + abilitySm.createTools.size / 2, toolPosition.y + abilitySm.createTools.size * 0.9, true, 1);
+            if (abilitySm.createTools.createTools[i].type === SPELLMAKER_TOOL_SWITCH_STAGE) {
+                paintTextWithOutline(ctx, "white", "black", abilitySm.spellmakeStage.toString(), toolPosition.x + abilitySm.createTools.size / 2, toolPosition.y + abilitySm.createTools.size * 0.9, true, 1);
+            } else {
+                paintTextWithOutline(ctx, "white", "black", abilitySm.createTools.createTools[i].type.substring(0, 2), toolPosition.x + abilitySm.createTools.size / 2, toolPosition.y + abilitySm.createTools.size * 0.9, true, 1);
+            }
         }
     } else {
         ctx.lineWidth = 1;
