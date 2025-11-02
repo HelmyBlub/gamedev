@@ -3,19 +3,26 @@ increase version
 
 current tasks:     
 - new class spellmaker
-    - mana display
-    - tool labeling
-    - somehow make arbitrary spells and be able to cast them repeatedly
-        - can influence size    (brush size)
-        - can influence shape   (paint)
-        - can influence effect  (color)
-        - player has mana: paint amount limited
-            - amount of paint used for a spell determines mana usage
-        - black color Damage:
-            - when painting closed shape => will do aoe damage with this shape
-            - when painting line => will shot projectile
+    - next steps?
+        - improve UX
+            - put tool options to paintUI and paintAbove normal ability buttons
+                - match size
+                - hover text
+            - display mana cost for spell in creation
+            - visualize when in spellmake stage
+        - more tools
+            - upgrades
+        - spelltype: fix charge, custom charge, instant, stationary custom charge
+        - check bosses and other stuff
+    - generall gameplay
+        - defeating bosses gives new tool selection
+        - should be able to have two spells
+        - somehow able to create new spells while playing
+            - maybe character invisible to normal enemies when making spells?
+
     - remember: relative mouse position not used for holding mouse button down
     - hope explosion spell possible in the end: gets more expensive but explosion can get bigger and bigger
+        - charge type spell
 - speedrun my game
     - kill god as fast as possible
         - real Time: <12:07 (builder + ball)
