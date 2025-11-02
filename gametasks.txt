@@ -10,6 +10,8 @@ current tasks:
                     - continue: multiple next stage attachements
                         - recursion code change work in progress
                 - mana cost calc
+        - tool labeling
+        - mana display
     - somehow make arbitrary spells and be able to cast them repeatedly
         - can influence size    (brush size)
         - can influence shape   (paint)
