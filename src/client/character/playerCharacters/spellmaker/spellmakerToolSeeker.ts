@@ -7,6 +7,7 @@ import { calculateMovePosition, moveByDirectionAndDistance } from "../../../map/
 import { determineCharactersInDistance, determineClosestCharacter } from "../../character.js";
 import { nextRandom } from "../../../randomNumberGenerator.js";
 import { Character } from "../../characterModel.js";
+import { createMoreInfosPart } from "../../../moreInfo.js";
 
 export type SpellmakerCreateToolMoveAttachmentSeeker = SpellmakerCreateToolMoveAttachment & {
     direction: number,
@@ -27,6 +28,7 @@ const SEEK_RANGE = 300;
 
 export function addSpellmakerToolSeeker() {
     SPELLMAKER_MOVE_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_SEEKER] = {
+        createTool: createTool,
         onKeyDown: onKeyDown,
         onKeyUp: onKeyUp,
         onTick: onTick,
@@ -46,6 +48,18 @@ function onKeyDown(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, abili
         startPos: { x: castPositionRelativeToCharacter.x, y: castPositionRelativeToCharacter.y },
         nextTargetAquireTickTime: 0,
     }
+}
+
+function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
+    return {
+        type: SPELLMAKER_TOOL_SEEKER,
+        subType: "move",
+        description: createMoreInfosPart(ctx, [
+            "Move Tool: Seeker",
+            "Attaches to close object",
+            "Automatically seeks and moves towards enemy",
+        ]),
+    };
 }
 
 function onKeyUp(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game): SpellmakerCreateToolMoveAttachment | undefined {

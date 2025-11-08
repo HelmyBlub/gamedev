@@ -4,6 +4,7 @@ import { Position, Game, ClientInfo } from "../../../gameModel.js";
 import { AbilitySpellmaker, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool, spellmakerNextStageSetup } from "./spellmakerTool.js";
 import { createAbilityObjectSpellmakerProximity } from "./abilitySpellmakerProximity.js";
+import { createMoreInfosPart } from "../../../moreInfo.js";
 
 type CreateToolObjectProximityData = SpellmakerCreateToolObjectData & {
     radius: number,
@@ -20,6 +21,7 @@ export function addSpellmakerToolProximity() {
     SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_PROXIMITY] = {
         calculateDistance: calculateDistanceProximity,
         calculateManaCost: calculateManaCost,
+        createTool: createTool,
         onKeyDown: onKeyDown,
         onKeyUp: onKeyUp,
         onTick: onTick,
@@ -38,6 +40,20 @@ function createObjectProximity(center: Position): CreateToolObjectProximityData 
         level: 1,
         nextStage: [],
     }
+}
+
+function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
+    return {
+        type: SPELLMAKER_TOOL_PROXIMITY,
+        subType: "default",
+        description: createMoreInfosPart(ctx, [
+            "Tool: Proximity",
+            "Triggers next stage when enemy close",
+            "Mouse move horizonzal: change trigger range",
+            `can have move attach: ${SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_PROXIMITY].canHaveMoveAttachment ? "Yes" : "No"}`,
+            `can have next stage: ${SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_PROXIMITY].canHaveNextStage ? "Yes" : "No"}`,
+        ]),
+    };
 }
 
 function calculateDistanceProximity(relativePosition: Position, createObject: SpellmakerCreateToolObjectData): number {

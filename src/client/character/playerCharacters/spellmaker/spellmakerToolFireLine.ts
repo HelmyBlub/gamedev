@@ -4,6 +4,7 @@ import { Position, Game, ClientInfo } from "../../../gameModel.js";
 import { AbilitySpellmaker, abilitySpellmakerCalculateManaCost, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
 import { createAbilityObjectSpellmakerFireLine } from "./abilitySpellmakerFireLine.js";
+import { createMoreInfosPart } from "../../../moreInfo.js";
 
 type CreateToolObjectFireLineData = SpellmakerCreateToolObjectData & {
     positions: Position[],
@@ -19,6 +20,7 @@ export function addSpellmakerToolFireline() {
     SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_FIRELINE] = {
         calculateDistance: calculateDistanceFireLine,
         calculateManaCost: calculateManaCost,
+        createTool: createTool,
         onKeyDown: onKeyDown,
         onKeyUp: onKeyUp,
         onTick: onTick,
@@ -35,6 +37,19 @@ function createObjectFireLine(): CreateToolObjectFireLineData {
         level: 1,
         nextStage: [],
     }
+}
+
+function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
+    return {
+        type: SPELLMAKER_TOOL_FIRELINE,
+        subType: "default",
+        description: createMoreInfosPart(ctx, [
+            "Tool: Fireline",
+            "Hold button and drag mouse to paint path",
+            `can have move attach: ${SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_FIRELINE].canHaveMoveAttachment ? "Yes" : "No"}`,
+            `can have next stage: ${SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_FIRELINE].canHaveNextStage ? "Yes" : "No"}`,
+        ]),
+    };
 }
 
 function calculateDistanceFireLine(relativePosition: Position, createObject: SpellmakerCreateToolObjectData): number {

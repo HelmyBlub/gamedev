@@ -4,6 +4,7 @@ import { Position, Game, ClientInfo } from "../../../gameModel.js";
 import { AbilitySpellmaker, abilitySpellmakerCalculateManaCost, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 import { SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
 import { createAbilityObjectExplode } from "../../../ability/abilityExplode.js";
+import { createMoreInfosPart } from "../../../moreInfo.js";
 
 type CreateToolObjectExplosionData = SpellmakerCreateToolObjectData & {
     radius: number,
@@ -21,6 +22,7 @@ export function addSpellmakerToolExplosion() {
     SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_EXPLOSION] = {
         calculateDistance: calculateDistanceExplosion,
         calculateManaCost: calculateManaCost,
+        createTool: createTool,
         onKeyDown: onKeyDown,
         onKeyUp: onKeyUp,
         onTick: onTick,
@@ -38,6 +40,20 @@ function createObjectExplosion(center: Position): CreateToolObjectExplosionData 
         level: 1,
         nextStage: [],
     }
+}
+
+function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
+    return {
+        type: SPELLMAKER_TOOL_EXPLOSION,
+        subType: "default",
+        description: createMoreInfosPart(ctx, [
+            "Tool: Explosion",
+            "Mouse Move Vertical: Change Damage",
+            "Mouse Move Horizontal: Change Size",
+            `can have move attach: ${SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_EXPLOSION].canHaveMoveAttachment ? "Yes" : "No"}`,
+            `can have next stage: ${SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_EXPLOSION].canHaveNextStage ? "Yes" : "No"}`,
+        ]),
+    };
 }
 
 function calculateDistanceExplosion(relativePosition: Position, createObject: SpellmakerCreateToolObjectData): number {

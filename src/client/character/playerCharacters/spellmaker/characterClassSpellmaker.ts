@@ -7,11 +7,12 @@ import { Character, createCharacter, IMAGE_SLIME } from "../../characterModel.js
 import { calculateBossEnemyExperienceWorth, CHARACTER_TYPE_BOSS_ENEMY } from "../../enemy/bossEnemy.js";
 import { createBossUpgradeOptionsAbilityLeveling, executeAbilityLevelingCharacterUpgradeOption } from "../abilityLevelingCharacter.js";
 import { CharacterClass, paintPlayerAbilityLevelUI, PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "../playerCharacters.js";
-import { ABILITY_NAME_SPELLMAKER, addAbilitySpellmaker } from "./abilitySpellmaker.js";
+import { ABILITY_NAME_SPELLMAKER, AbilitySpellmaker, addAbilitySpellmaker } from "./abilitySpellmaker.js";
 import { ABILITY_NAME_SPELLMAKER_CHANGE_MODE, addAbilitySpellmakerChangeMode } from "./abilitySpellmakerChangeMode.js";
 import { addAbilitySpellmakerFireLine } from "./abilitySpellmakerFireLine.js";
 import { addAbilitySpellmakerProximity } from "./abilitySpellmakerProximity.js";
 import { ABILITY_NAME_SPELLMAKER_RESET, addAbilitySpellmakerReset } from "./abilitySpellmakerReset.js";
+import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOLS_FUNCTIONS } from "./spellmakerTool.js";
 
 export const CHARACTER_CLASS_SPELLMAKER = "Spellmaker";
 
@@ -49,8 +50,17 @@ function changeCharacterToSpellmakerClass(
         className: CHARACTER_CLASS_SPELLMAKER
     };
     character.characterClasses.push(charClass);
+    const abilitySm = createAbility(ABILITY_NAME_SPELLMAKER, idCounter, true, true, "ability1") as AbilitySpellmaker;
+    if (game.ctx) {
+        for (let key of Object.keys(SPELLMAKER_MOVE_TOOLS_FUNCTIONS)) {
+            abilitySm.createTools.createTools.push(SPELLMAKER_MOVE_TOOLS_FUNCTIONS[key].createTool(game.ctx));
+        }
+        for (let key of Object.keys(SPELLMAKER_TOOLS_FUNCTIONS)) {
+            abilitySm.createTools.createTools.push(SPELLMAKER_TOOLS_FUNCTIONS[key].createTool(game.ctx));
+        }
+    }
     addAbilityToCharacter(character, createAbilityHpRegen(idCounter, undefined, 5), charClass);
-    addAbilityToCharacter(character, createAbility(ABILITY_NAME_SPELLMAKER, idCounter, true, true, "ability1"), charClass);
+    addAbilityToCharacter(character, abilitySm, charClass);
     addAbilityToCharacter(character, createAbility(ABILITY_NAME_SPELLMAKER_CHANGE_MODE, idCounter, false, false, "ability2"), charClass);
     addAbilityToCharacter(character, createAbility(ABILITY_NAME_SPELLMAKER_RESET, idCounter, false, false, "ability3"), charClass);
 }

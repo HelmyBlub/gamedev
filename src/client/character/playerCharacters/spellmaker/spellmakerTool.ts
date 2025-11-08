@@ -1,6 +1,7 @@
 import { Ability, AbilityObject, AbilityOwner } from "../../../ability/ability.js";
 import { deepCopy } from "../../../game.js";
 import { Game, Position } from "../../../gameModel.js";
+import { createMoreInfosPart, MoreInfoPart } from "../../../moreInfo.js";
 import { AbilitySpellmaker, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 
 export type SpellmakerCreateToolsData = {
@@ -14,10 +15,12 @@ export type SpellmakerCreateTool = {
     type: string,
     subType: "default" | "move",
     workInProgress?: any,
+    description: MoreInfoPart,
 }
 
 export type SpellmakerMoveToolFunctions = {
     calculateManaCost?: (createObject: SpellmakerCreateToolObjectData) => number,
+    createTool: (ctx: CanvasRenderingContext2D) => SpellmakerCreateTool,
     getMoveAttachment: (createObject: SpellmakerCreateToolObjectData, castPosition: Position, game: Game) => SpellmakerCreateToolMoveAttachment,
     getMoveAttachmentNextMoveByAmount: (moveAttach: SpellmakerCreateToolMoveAttachment, abilityObject: AbilityObject, game: Game) => Position,
     onKeyDown: (tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game) => void,
@@ -29,6 +32,7 @@ export type SpellmakerMoveToolFunctions = {
 export type SpellmakerToolFunctions = {
     calculateManaCost?: (createObject: SpellmakerCreateToolObjectData) => number,
     calculateDistance?: (relativePosition: Position, createObject: SpellmakerCreateToolObjectData) => number,
+    createTool: (ctx: CanvasRenderingContext2D) => SpellmakerCreateTool,
     onKeyDown?: (tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game) => void,
     onKeyUp?: (tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game) => SpellmakerCreateToolObjectData | undefined,
     onTick?: (tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, game: Game) => void,
@@ -54,6 +58,7 @@ export const SPELLMAKER_TOOL_SWITCH_STAGE = "Staging";
 export function addSpellmakerToolsDefault() {
     SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_SWITCH_STAGE] = {
         onToolSelect: onToolSelectStaging,
+        createTool: createToolStage,
     };
 }
 
@@ -65,6 +70,18 @@ export function spellmakerNextStageSetup(nextStage: SpellmakerCreateToolObjectDa
         object.castPosOffset = { x: -castOffset.x, y: -castOffset.y };
     }
     return copy;
+}
+
+function createToolStage(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
+    return {
+        type: SPELLMAKER_TOOL_SWITCH_STAGE,
+        subType: "default",
+        description: createMoreInfosPart(ctx, [
+            "Staging Tool",
+            "Change Stage when clicking",
+            "Loops over available stages",
+        ]),
+    };
 }
 
 function onToolSelectStaging(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, game: Game): boolean {

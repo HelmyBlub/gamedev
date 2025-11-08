@@ -4,6 +4,7 @@ import { Position, Game, ClientInfo } from "../../../gameModel.js";
 import { AbilitySpellmaker, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
 import { moveByDirectionAndDistance } from "../../../map/map.js";
+import { createMoreInfosPart } from "../../../moreInfo.js";
 
 export type SpellmakerCreateToolMoveAttachmentLine = SpellmakerCreateToolMoveAttachment & {
     moveTo: Position[],
@@ -18,6 +19,7 @@ export const SPELLMAKER_TOOL_MOVE = "Move";
 const SPEED = 2;
 export function addSpellmakerToolMove() {
     SPELLMAKER_MOVE_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_MOVE] = {
+        createTool: createTool,
         onKeyDown: onKeyDown,
         onKeyUp: onKeyUp,
         onTick: onTick,
@@ -35,6 +37,18 @@ function onKeyDown(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, abili
         moveTo: [{ x: castPositionRelativeToCharacter.x, y: castPositionRelativeToCharacter.y }],
         speed: SPEED,
     }
+}
+
+function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
+    return {
+        type: SPELLMAKER_TOOL_MOVE,
+        subType: "move",
+        description: createMoreInfosPart(ctx, [
+            "Move Tool: Line",
+            "Attaches to close object",
+            "Hold button and drag mouse to paint path",
+        ]),
+    };
 }
 
 function onKeyUp(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game): SpellmakerCreateToolMoveAttachment | undefined {

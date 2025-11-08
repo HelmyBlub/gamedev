@@ -4,7 +4,9 @@ import { autoSendMousePositionHandler, getNextId } from "../../../game.js";
 import { Game, IdCounter, Position } from "../../../gameModel.js";
 import { getPointPaintPosition, paintTextWithOutline } from "../../../gamePaint.js";
 import { playerInputBindingToDisplayValue } from "../../../input/playerInput.js";
-import { createMoreInfosPart, MoreInfoHoverTexts, MoreInfoPart } from "../../../moreInfo.js";
+import { mousePositionToMapPosition } from "../../../map/map.js";
+import { createMoreInfosPart, MoreInfoHoverTexts, MoreInfoPart, paintMoreInfosPart } from "../../../moreInfo.js";
+import { findMyCharacter } from "../../character.js";
 import { CHARACTER_PET_TYPE_CLONE } from "../characterPetTypeClone.js";
 import { addSpellmakerToolsDefault, SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOL_SWITCH_STAGE, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateToolsData } from "./spellmakerTool.js";
 import { addSpellmakerToolExplosion, SPELLMAKER_TOOL_EXPLOSION } from "./spellmakerToolExplosion.js";
@@ -78,14 +80,7 @@ function createAbility(
         spellManaCost: 0,
         createTools: {
             selectedToolIndex: 0,
-            createTools: [
-                { type: SPELLMAKER_TOOL_SWITCH_STAGE, subType: "default" },
-                { type: SPELLMAKER_TOOL_FIRELINE, subType: "default" },
-                { type: SPELLMAKER_TOOL_MOVE, subType: "move" },
-                { type: SPELLMAKER_TOOL_EXPLOSION, subType: "default" },
-                { type: SPELLMAKER_TOOL_SEEKER, subType: "move" },
-                { type: SPELLMAKER_TOOL_PROXIMITY, subType: "default" },
-            ],
+            createTools: [],
             position: { x: -20, y: +20 },
             size: 20,
         },
@@ -159,16 +154,15 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
             if (tool.subType == "default") {
                 const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[tool.type];
                 if (toolFunctions.paint) toolFunctions.paint(ctx, tool.workInProgress, ownerPaintPos, abilitySm, game);
-
             } else if (tool.subType == "move") {
                 const toolMoveFunctions = SPELLMAKER_MOVE_TOOLS_FUNCTIONS[tool.type];
                 toolMoveFunctions.paint(ctx, tool.workInProgress, ownerPaintPos, abilitySm, game);
             }
         }
-
         const fontSize = abilitySm.createTools.size * 0.8;
-        ctx.font = fontSize + "px Arial";
+        const isMyCharacter = findMyCharacter(game)?.id === abilityOwner.id;
         for (let i = 0; i < abilitySm.createTools.createTools.length; i++) {
+            ctx.font = fontSize + "px Arial";
             const toolPosition: Position = {
                 x: ownerPaintPos.x + abilitySm.createTools.position.x + abilitySm.createTools.size * i,
                 y: ownerPaintPos.y + abilitySm.createTools.position.y,
@@ -184,6 +178,15 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
                 paintTextWithOutline(ctx, "white", "black", abilitySm.spellmakeStage.toString(), toolPosition.x + abilitySm.createTools.size / 2, toolPosition.y + abilitySm.createTools.size * 0.9, true, 1);
             } else {
                 paintTextWithOutline(ctx, "white", "black", abilitySm.createTools.createTools[i].type.substring(0, 2), toolPosition.x + abilitySm.createTools.size / 2, toolPosition.y + abilitySm.createTools.size * 0.9, true, 1);
+            }
+            if (isMyCharacter) {
+                const mousePos = game.mouseRelativeCanvasPosition;
+                if (mousePos.y > toolPosition.y && mousePos.y < toolPosition.y + abilitySm.createTools.size
+                    && mousePos.x > toolPosition.x && mousePos.x < toolPosition.x + abilitySm.createTools.size
+                ) {
+                    const description = abilitySm.createTools.createTools[i].description;
+                    paintMoreInfosPart(ctx, description, toolPosition.x, toolPosition.y + abilitySm.createTools.size + 10);
+                }
             }
         }
     } else {
