@@ -4,14 +4,20 @@ increase version
 current tasks:     
 - new class spellmaker
     - next steps?
+        - get a better feel for the class
+            - more tools
+                - upgrades
+            - update choices are adding a tool
         - improve UX
             - put tool options to paintUI and paintAbove normal ability buttons
+                - problems:
+                    - code for network play can not support this
+                        - only sends abilityIndex and mouse position
+                        - would need ability + ability specific information
+                        - if i want to paint based on canvas size i am client dependant which does no work mith multiplayer code
                 - match size
-                - hover text
             - display mana cost for spell in creation
             - visualize when in spellmake stage
-        - more tools
-            - upgrades
         - spelltype: fix charge, custom charge, instant, stationary custom charge
         - check bosses and other stuff
     - generall gameplay
