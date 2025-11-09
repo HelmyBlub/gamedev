@@ -10,6 +10,7 @@ import { CHARACTER_PET_TYPE_CLONE } from "../characterPetTypeClone.js";
 import { addSpellmakerToolsDefault, SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOL_SWITCH_STAGE, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateToolsData } from "./spellmakerTool.js";
 import { addSpellmakerToolExplosion } from "./spellmakerToolExplosion.js";
 import { addSpellmakerToolFireline } from "./spellmakerToolFireLine.js";
+import { addSpellmakerToolLightning } from "./spellmakerToolLightning.js";
 import { addSpellmakerToolMove } from "./spellmakerToolMove.js";
 import { addSpellmakerToolSeeker } from "./spellmakerToolSeeker.js";
 import { addSpellmakerToolProximity } from "./spellmakerToolTriggerProximity.js";
@@ -63,6 +64,7 @@ export function addAbilitySpellmaker() {
     addSpellmakerToolExplosion();
     addSpellmakerToolSeeker();
     addSpellmakerToolProximity();
+    addSpellmakerToolLightning();
 }
 
 function createAbility(

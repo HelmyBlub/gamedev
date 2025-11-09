@@ -96,7 +96,7 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
             };
             const explode = toolExplode.workInProgress;
             explode.radius = Math.max(5, Math.abs(relativePos.x - explode.center.x))
-            explode.damageFactor = Math.min(10, (Math.max(0.1, Math.abs(relativePos.y - explode.center.y) / 10)));
+            explode.damageFactor = Math.min(10, (Math.max(1, Math.abs(relativePos.y - explode.center.y) / 10)));
         }
     }
 }

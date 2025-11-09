@@ -1,12 +1,11 @@
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, PaintOrderAbility } from "../../../ability/ability.js";
-import { getNextId, getCameraPosition, deepCopy, calculateDistance, calculateDirection } from "../../../game.js";
+import { getNextId, getCameraPosition, deepCopy } from "../../../game.js";
 import { FACTION_ENEMY, FACTION_PLAYER, Game, IdCounter, Position } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
-import { moveByDirectionAndDistance } from "../../../map/map.js";
 import { getCharactersTouchingLine, characterTakeDamage } from "../../character.js";
 import { Character } from "../../characterModel.js";
 import { SpellmakerCreateToolMoveAttachment } from "./abilitySpellmaker.js";
-import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOLS_FUNCTIONS } from "./spellmakerTool.js";
+import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS } from "./spellmakerTool.js";
 
 export type AbilitySpellmakerFireLine = Ability & {
 }

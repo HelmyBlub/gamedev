@@ -5,19 +5,25 @@ current tasks:
 - new class spellmaker
     - next steps?
         - get a better feel for the class
-            - be able to have more than one spell
-                - dev steps:
-                    - ability spellmaker needs multiple spells
-                    - change reset to change spell
-                    - add tools 
-                        - reset
-                        - add
-                        - delete
-                - reset as tool
-                - new ability to switch spellmaker spell
-                - new tool to add/delete spell
             - more tools
-                - upgrades
+                - spell idea:
+                    - orbiting player lightning turrets
+                        - orbiting parent/player
+                        - shoot lightning, bounces x-times from enemy to enemy
+                        - shooting costs mana
+                        - can be activated or deactivated
+                        steps:
+                            - lightning tool:
+                                - create lightning which bounces x-times between enemies
+                                - set bounce count and damage defined by x/y 
+                            - turret tool
+                                - next stage defined what it shoots
+                                - set turret mana pool and shoot frequency defined by x/y
+                            - orbiting move tool
+                                - orbits around attach
+                                - set orbiting distance
+                            - spell type passive/autoCast
+                                - player should not need to press, but will drain mana constantly
             - update choices are adding a tool
         - improve UX
             - put tool options to paintUI and paintAbove normal ability buttons
