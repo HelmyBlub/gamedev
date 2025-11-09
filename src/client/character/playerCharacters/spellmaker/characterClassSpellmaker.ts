@@ -11,7 +11,7 @@ import { ABILITY_NAME_SPELLMAKER, AbilitySpellmaker, addAbilitySpellmaker } from
 import { ABILITY_NAME_SPELLMAKER_CHANGE_MODE, addAbilitySpellmakerChangeMode } from "./abilitySpellmakerChangeMode.js";
 import { addAbilitySpellmakerFireLine } from "./abilitySpellmakerFireLine.js";
 import { addAbilitySpellmakerProximity } from "./abilitySpellmakerProximity.js";
-import { ABILITY_NAME_SPELLMAKER_RESET, addAbilitySpellmakerReset } from "./abilitySpellmakerReset.js";
+import { ABILITY_NAME_SPELLMAKER_SWITCH_SPELL, addAbilitySpellmakerSwitchSpell } from "./abilitySpellmakerSwitchSpell.js";
 import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOLS_FUNCTIONS } from "./spellmakerTool.js";
 
 export const CHARACTER_CLASS_SPELLMAKER = "Spellmaker";
@@ -28,7 +28,7 @@ export function addSpellmakerClass() {
     }
     addAbilitySpellmaker();
     addAbilitySpellmakerChangeMode();
-    addAbilitySpellmakerReset()
+    addAbilitySpellmakerSwitchSpell()
     addAbilitySpellmakerFireLine();
     addAbilitySpellmakerProximity();
 }
@@ -62,7 +62,7 @@ function changeCharacterToSpellmakerClass(
     addAbilityToCharacter(character, createAbilityHpRegen(idCounter, undefined, 5), charClass);
     addAbilityToCharacter(character, abilitySm, charClass);
     addAbilityToCharacter(character, createAbility(ABILITY_NAME_SPELLMAKER_CHANGE_MODE, idCounter, false, false, "ability2"), charClass);
-    addAbilityToCharacter(character, createAbility(ABILITY_NAME_SPELLMAKER_RESET, idCounter, false, false, "ability3"), charClass);
+    addAbilityToCharacter(character, createAbility(ABILITY_NAME_SPELLMAKER_SWITCH_SPELL, idCounter, false, false, "ability3"), charClass);
 }
 
 function getLongUiText(): string[] {

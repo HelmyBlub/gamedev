@@ -6,13 +6,13 @@ import { playerInputBindingToDisplayValue } from "../../../input/playerInput.js"
 import { MoreInfoPart, createMoreInfosPart } from "../../../moreInfo.js";
 import { ABILITY_NAME_SPELLMAKER, AbilitySpellmaker } from "./abilitySpellmaker.js";
 
-export type AbilitySpellmakerReset = Ability & {
+export type AbilitySpellmakerSwitchSpell = Ability & {
 }
 
-export const ABILITY_NAME_SPELLMAKER_RESET = "Spellmaker Reset";
+export const ABILITY_NAME_SPELLMAKER_SWITCH_SPELL = "Switch Spell";
 
-export function addAbilitySpellmakerReset() {
-    ABILITIES_FUNCTIONS[ABILITY_NAME_SPELLMAKER_RESET] = {
+export function addAbilitySpellmakerSwitchSpell() {
+    ABILITIES_FUNCTIONS[ABILITY_NAME_SPELLMAKER_SWITCH_SPELL] = {
         activeAbilityCast: castAbility,
         createAbility: createAbility,
         createAbilityMoreInfos: createAbilityMoreInfos,
@@ -20,10 +20,10 @@ export function addAbilitySpellmakerReset() {
         positionNotRquired: true,
     };
 }
-export function createAbility(idCounter: IdCounter, playerInputBinding?: string): AbilitySpellmakerReset {
+export function createAbility(idCounter: IdCounter, playerInputBinding?: string): AbilitySpellmakerSwitchSpell {
     return {
         id: getNextId(idCounter),
-        name: ABILITY_NAME_SPELLMAKER_RESET,
+        name: ABILITY_NAME_SPELLMAKER_SWITCH_SPELL,
         playerInputBinding: playerInputBinding,
         passive: false,
         upgrades: {},
@@ -42,17 +42,16 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, castPosition:
     for (let abilityIter of abilityOwner.abilities) {
         if (abilityIter.name === ABILITY_NAME_SPELLMAKER) {
             const spellmaker = abilityIter as AbilitySpellmaker;
-            spellmaker.createdObjects = [];
-            spellmaker.spellmakeStage = 0;
+            spellmaker.spellIndex = (spellmaker.spellIndex + 1) % spellmaker.spells.length;
         }
     }
 }
 
 function createAbilityMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability, game: Game): MoreInfoPart {
-    const abilityReset = ability as AbilitySpellmakerReset;
+    const abilitySwitch = ability as AbilitySpellmakerSwitchSpell;
     const textLines: string[] = getAbilityNameUiText(ability);
     textLines.push(
-        `Key: ${playerInputBindingToDisplayValue(abilityReset.playerInputBinding!, game)}`,
+        `Key: ${playerInputBindingToDisplayValue(abilitySwitch.playerInputBinding!, game)}`,
     );
 
     return createMoreInfosPart(ctx, textLines, ABILITY_DEFAULT_SMALL_GROUP);

@@ -1,7 +1,7 @@
 import { AbilityOwner } from "../../../ability/ability.js";
 import { calculateDistance, findClientInfoByCharacterId } from "../../../game.js";
 import { Position, Game, ClientInfo } from "../../../gameModel.js";
-import { AbilitySpellmaker, abilitySpellmakerCalculateManaCost, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
+import { AbilitySpellmaker, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 import { SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
 import { createAbilityObjectExplode } from "../../../ability/abilityExplode.js";
 import { createMoreInfosPart } from "../../../moreInfo.js";
