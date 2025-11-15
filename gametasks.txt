@@ -13,9 +13,6 @@ current tasks:
                         - shooting costs mana
                         - can be activated or deactivated
                         steps:
-                            - turret tool
-                                - next stage defined what it shoots
-                                - set turret mana pool and shoot frequency defined by x/y
                             - orbiting move tool
                                 - orbits around attach
                                 - set orbiting distance

@@ -12,6 +12,7 @@ import { addSpellmakerToolExplosion } from "./spellmakerToolExplosion.js";
 import { addSpellmakerToolFireline } from "./spellmakerToolFireLine.js";
 import { addSpellmakerToolLightning } from "./spellmakerToolLightning.js";
 import { addSpellmakerToolMove } from "./spellmakerToolMove.js";
+import { addSpellmakerToolOrbiter } from "./spellmakerToolOrbiter.js";
 import { addSpellmakerToolSeeker } from "./spellmakerToolSeeker.js";
 import { addSpellmakerToolProximity } from "./spellmakerToolTriggerProximity.js";
 import { addSpellmakerToolTurret } from "./spellmakerToolTurret.js";
@@ -67,6 +68,7 @@ export function addAbilitySpellmaker() {
     addSpellmakerToolProximity();
     addSpellmakerToolLightning();
     addSpellmakerToolTurret();
+    addSpellmakerToolOrbiter();
 }
 
 function createAbility(
