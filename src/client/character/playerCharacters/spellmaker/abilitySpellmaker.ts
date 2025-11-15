@@ -14,6 +14,7 @@ import { addSpellmakerToolLightning } from "./spellmakerToolLightning.js";
 import { addSpellmakerToolMove } from "./spellmakerToolMove.js";
 import { addSpellmakerToolSeeker } from "./spellmakerToolSeeker.js";
 import { addSpellmakerToolProximity } from "./spellmakerToolTriggerProximity.js";
+import { addSpellmakerToolTurret } from "./spellmakerToolTurret.js";
 
 export type AbilitySpellmaker = Ability & {
     mode: "spellmake" | "spellcast",
@@ -65,6 +66,7 @@ export function addAbilitySpellmaker() {
     addSpellmakerToolSeeker();
     addSpellmakerToolProximity();
     addSpellmakerToolLightning();
+    addSpellmakerToolTurret();
 }
 
 function createAbility(
@@ -109,22 +111,18 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     }
 }
 
-function calculateManaCostRecusive(createdObjects: SpellmakerCreateToolObjectData[]): number {
+export function abilitySpellmakerCalculateManaCost(createdObjects: SpellmakerCreateToolObjectData[]): number {
     let spellManaCost = 0;
     for (let createdObject of createdObjects) {
         const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[createdObject.type];
         if (toolFunctions.calculateManaCost) spellManaCost += toolFunctions.calculateManaCost(createdObject);
-        spellManaCost += calculateManaCostRecusive(createdObject.nextStage);
+        if (!toolFunctions.calculateManaCostIncludesNextStage) spellManaCost += abilitySpellmakerCalculateManaCost(createdObject.nextStage);
         if (createdObject.moveAttachment) {
             const moveToolFunctions = SPELLMAKER_MOVE_TOOLS_FUNCTIONS[createdObject.moveAttachment.type];
             if (moveToolFunctions.calculateManaCost) spellManaCost += moveToolFunctions.calculateManaCost(createdObject);
         }
     }
     return spellManaCost;
-}
-
-function abilitySpellmakerCalculateManaCost(spell: SpellmakerSpell) {
-    spell.spellManaCost = calculateManaCostRecusive(spell.createdObjects);
 }
 
 function paintToolObjectsRecusive(ctx: CanvasRenderingContext2D, stage: number, createdObject: SpellmakerCreateToolObjectData, ability: AbilitySpellmaker, ownerPaintPos: Position, game: Game) {
@@ -256,7 +254,7 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, castPosition:
                         if (result) {
                             if (abilitySm.spellmakeStage == 0) {
                                 currentSpell.createdObjects.push(result);
-                                abilitySpellmakerCalculateManaCost(currentSpell);
+                                currentSpell.spellManaCost = abilitySpellmakerCalculateManaCost(currentSpell.createdObjects);
                             } else if (abilitySm.attachToIndex != undefined) {
                                 let currentObject = currentSpell.createdObjects[abilitySm.attachToIndex[0]];
                                 let currentStage = 0;
@@ -269,7 +267,7 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, castPosition:
                                     }
                                 }
                                 currentObject.nextStage.push(result);
-                                abilitySpellmakerCalculateManaCost(currentSpell);
+                                currentSpell.spellManaCost = abilitySpellmakerCalculateManaCost(currentSpell.createdObjects);
                             }
                         }
                     }
@@ -290,7 +288,7 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, castPosition:
                                     }
                                 }
                                 currentObject.moveAttachment = result;
-                                abilitySpellmakerCalculateManaCost(currentSpell);
+                                currentSpell.spellManaCost = abilitySpellmakerCalculateManaCost(currentSpell.createdObjects);
                             }
                         }
                     }

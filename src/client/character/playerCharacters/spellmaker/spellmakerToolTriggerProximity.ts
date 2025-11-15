@@ -63,7 +63,7 @@ function calculateDistanceProximity(relativePosition: Position, createObject: Sp
 
 function calculateManaCost(createObject: SpellmakerCreateToolObjectData): number {
     const object = createObject as CreateToolObjectProximityData;
-    let manaCost = 1;
+    let manaCost = 0.5;
     return manaCost;
 }
 
@@ -94,7 +94,7 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
                 y: clientInfo.lastMousePosition.y - abilityOwner.y,
             };
             const proximity = toolProximity.workInProgress;
-            proximity.radius = Math.max(5, Math.abs(relativePos.x - proximity.center.x))
+            proximity.radius = Math.max(10, Math.abs(relativePos.x - proximity.center.x))
         }
     }
 }

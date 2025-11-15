@@ -41,6 +41,7 @@ export type SpellmakerToolFunctions = {
     paint?: (ctx: CanvasRenderingContext2D, createObject: SpellmakerCreateToolObjectData, ownerPaintPos: Position, ability: AbilitySpellmaker, game: Game) => void,
     paintButton?: (ctx: CanvasRenderingContext2D, buttonPaintPos: Position, ability: AbilitySpellmaker, game: Game) => void,
     spellCast?: (createObject: SpellmakerCreateToolObjectData, level: number, faction: string, abilityId: number, castPosition: Position, game: Game) => void,
+    calculateManaCostIncludesNextStage?: boolean,
     canHaveNextStage?: boolean,
     canHaveMoveAttachment?: boolean,
 }
@@ -163,6 +164,7 @@ function onToolSelectStaging(tool: SpellmakerCreateTool, abilityOwner: AbilityOw
 function onToolSelectReset(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, game: Game): boolean {
     ability.spells[ability.spellIndex].createdObjects = [];
     ability.spells[ability.spellIndex].spellManaCost = 0;
+    ability.spellmakeStage = 0;
     return false;
 }
 
