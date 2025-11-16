@@ -8,16 +8,15 @@ current tasks:
             - more tools
                 - spell idea:
                     - orbiting player lightning turrets
-                        - orbiting parent/player
-                        - shoot lightning, bounces x-times from enemy to enemy
-                        - shooting costs mana
                         - can be activated or deactivated
                         steps:
+                            - spell type 
+                                - "autocast": automatically casts on player position if enough mana and mana full
+                                    - pressing cast activates or deactivates it
+                                - "Instant": cast on click position
                             - orbiting move tool
                                 - orbits around attach
                                 - set orbiting distance
-                            - spell type passive/autoCast
-                                - player should not need to press, but will drain mana constantly
             - update choices are adding a tool
         - improve UX
             - put tool options to paintUI and paintAbove normal ability buttons

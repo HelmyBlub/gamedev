@@ -3,7 +3,7 @@ import { deepCopy } from "../../../game.js";
 import { Game, Position } from "../../../gameModel.js";
 import { paintTextWithOutline } from "../../../gamePaint.js";
 import { createMoreInfosPart, MoreInfoPart } from "../../../moreInfo.js";
-import { AbilitySpellmaker, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
+import { AbilitySpellmaker, SPELLMAKER_SPELLTYPE_INSTANT, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 
 export type SpellmakerCreateToolsData = {
     selectedToolIndex: number,
@@ -60,6 +60,7 @@ export const SPELLMAKER_TOOL_SWITCH_STAGE = "Staging";
 export const SPELLMAKER_TOOL_RESET = "Reset";
 export const SPELLMAKER_TOOL_NEW = "New Spell";
 export const SPELLMAKER_TOOL_DELETE = "Delete Spell";
+export const SPELLMAKER_TOOL_SPELL_TYPE = "Change Spell Type";
 
 export function addSpellmakerToolsDefault() {
     SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_SWITCH_STAGE] = {
@@ -80,6 +81,11 @@ export function addSpellmakerToolsDefault() {
     SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_DELETE] = {
         onToolSelect: onToolSelectDelete,
         createTool: createToolDelete,
+    };
+    SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_SPELL_TYPE] = {
+        onToolSelect: onToolSelectSpellType,
+        createTool: createToolSpellType,
+        paintButton: paintButtonSpellType,
     };
 }
 
@@ -140,6 +146,19 @@ function createToolDelete(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
     };
 }
 
+function createToolSpellType(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
+    return {
+        type: SPELLMAKER_TOOL_SPELL_TYPE,
+        subType: "default",
+        description: createMoreInfosPart(ctx, [
+            "Change Spell Type Tool",
+            "Switchtes between available spell types",
+            "instant: spell is cast instantly on ability click",
+            "autocast: spell is cast automatically when mana full",
+        ]),
+    };
+}
+
 function paintButtonStage(ctx: CanvasRenderingContext2D, buttonPaintPos: Position, ability: AbilitySpellmaker, game: Game) {
     paintTextWithOutline(ctx, "white", "black", ability.spellmakeStage.toString(), buttonPaintPos.x + ability.createTools.size / 2, buttonPaintPos.y + ability.createTools.size * 0.9, true, 1);
 }
@@ -151,6 +170,11 @@ function paintButtonReset(ctx: CanvasRenderingContext2D, buttonPaintPos: Positio
 
 function paintButtonNew(ctx: CanvasRenderingContext2D, buttonPaintPos: Position, ability: AbilitySpellmaker, game: Game) {
     paintTextWithOutline(ctx, "white", "black", ability.spells.length.toFixed(), buttonPaintPos.x + ability.createTools.size / 2, buttonPaintPos.y + ability.createTools.size * 0.9, true, 1);
+}
+
+function paintButtonSpellType(ctx: CanvasRenderingContext2D, buttonPaintPos: Position, ability: AbilitySpellmaker, game: Game) {
+    const spelltype = ability.spells[ability.spellIndex].spellType;
+    paintTextWithOutline(ctx, "white", "black", spelltype.substring(0, 2), buttonPaintPos.x + ability.createTools.size / 2, buttonPaintPos.y + ability.createTools.size * 0.9, true, 1);
 }
 
 function onToolSelectStaging(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, game: Game): boolean {
@@ -169,7 +193,18 @@ function onToolSelectReset(tool: SpellmakerCreateTool, abilityOwner: AbilityOwne
 }
 
 function onToolSelectNew(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, game: Game): boolean {
-    ability.spells.push({ createdObjects: [], spellManaCost: 0 });
+    ability.spells.push({ createdObjects: [], spellManaCost: 0, spellType: SPELLMAKER_SPELLTYPE_INSTANT });
+    return false;
+}
+
+function onToolSelectSpellType(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, game: Game): boolean {
+    const currentSpell = ability.spells[ability.spellIndex];
+    const spellTypeIndex = ability.availableSpellTypes.findIndex(t => t === currentSpell.spellType);
+    if (spellTypeIndex === -1) {
+        currentSpell.spellType = ability.availableSpellTypes[0];
+    } else {
+        currentSpell.spellType = ability.availableSpellTypes[(spellTypeIndex + 1) % ability.availableSpellTypes.length];
+    }
     return false;
 }
 

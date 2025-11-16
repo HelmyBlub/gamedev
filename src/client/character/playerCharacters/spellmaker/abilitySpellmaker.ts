@@ -7,7 +7,7 @@ import { playerInputBindingToDisplayValue } from "../../../input/playerInput.js"
 import { createMoreInfosPart, MoreInfoHoverTexts, MoreInfoPart, paintMoreInfosPart } from "../../../moreInfo.js";
 import { findMyCharacter } from "../../character.js";
 import { CHARACTER_PET_TYPE_CLONE } from "../characterPetTypeClone.js";
-import { addSpellmakerToolsDefault, SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOL_SWITCH_STAGE, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateToolsData } from "./spellmakerTool.js";
+import { addSpellmakerToolsDefault, SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateToolsData } from "./spellmakerTool.js";
 import { addSpellmakerToolExplosion } from "./spellmakerToolExplosion.js";
 import { addSpellmakerToolFireline } from "./spellmakerToolFireLine.js";
 import { addSpellmakerToolLightning } from "./spellmakerToolLightning.js";
@@ -27,11 +27,13 @@ export type AbilitySpellmaker = Ability & {
     spellIndex: number,
     createTools: SpellmakerCreateToolsData,
     spellmakeStage: number,
+    availableSpellTypes: string[],
 }
 
 export type SpellmakerSpell = {
     createdObjects: SpellmakerCreateToolObjectData[],
     spellManaCost: number,
+    spellType: string,
 }
 
 export type SpellmakerCreateToolObjectData = {
@@ -47,6 +49,9 @@ export type SpellmakerCreateToolMoveAttachment = {
 }
 
 export const ABILITY_NAME_SPELLMAKER = "Spellmaker";
+export const SPELLMAKER_SPELLTYPE_INSTANT = "instant";
+export const SPELLMAKER_SPELLTYPE_AUTOCAST = "autocast";
+
 
 export function addAbilitySpellmaker() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_SPELLMAKER] = {
@@ -86,7 +91,7 @@ function createAbility(
         maxMana: 100,
         manaRegeneration: 0.1,
         mode: "spellmake",
-        spells: [{ createdObjects: [], spellManaCost: 0 }],
+        spells: [{ createdObjects: [], spellManaCost: 0, spellType: SPELLMAKER_SPELLTYPE_INSTANT }],
         spellIndex: 0,
         createTools: {
             selectedToolIndex: 0,
@@ -95,6 +100,7 @@ function createAbility(
             size: 20,
         },
         spellmakeStage: 0,
+        availableSpellTypes: [SPELLMAKER_SPELLTYPE_INSTANT, SPELLMAKER_SPELLTYPE_AUTOCAST],
     };
 }
 
@@ -109,6 +115,13 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
         } else if (tool.subType == "move") {
             const toolFunctions = SPELLMAKER_MOVE_TOOLS_FUNCTIONS[tool.type];
             if (toolFunctions.onTick) toolFunctions.onTick(tool, abilityOwner, abilitySm, game);
+        }
+    } else {
+        const currentSpell = abilitySm.spells[abilitySm.spellIndex];
+        if (currentSpell.spellType === SPELLMAKER_SPELLTYPE_AUTOCAST) {
+            if (abilitySm.mana >= abilitySm.maxMana - 1 && currentSpell.spellManaCost < abilitySm.maxMana) {
+                castAbility(abilityOwner, ability, abilityOwner, { x: 0, y: 0 }, true, game);
+            }
         }
     }
 }
