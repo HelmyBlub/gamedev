@@ -29,6 +29,13 @@ export function addSpellmakerToolProximity() {
         spellCast: spellCast,
         canHaveMoveAttachment: true,
         canHaveNextStage: true,
+        description: [
+            "Tool: Proximity",
+            "Triggers next stage when enemy close",
+            "Mouse move horizonzal: change trigger range",
+            `can have move attach: Yes`,
+            `can have next stage: Yes`,
+        ],
     };
 }
 
@@ -46,13 +53,7 @@ function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
     return {
         type: SPELLMAKER_TOOL_PROXIMITY,
         subType: "default",
-        description: createMoreInfosPart(ctx, [
-            "Tool: Proximity",
-            "Triggers next stage when enemy close",
-            "Mouse move horizonzal: change trigger range",
-            `can have move attach: ${SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_PROXIMITY].canHaveMoveAttachment ? "Yes" : "No"}`,
-            `can have next stage: ${SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_PROXIMITY].canHaveNextStage ? "Yes" : "No"}`,
-        ]),
+        description: createMoreInfosPart(ctx, SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_PROXIMITY].description),
     };
 }
 

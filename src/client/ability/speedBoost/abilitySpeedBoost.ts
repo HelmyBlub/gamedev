@@ -151,7 +151,7 @@ function createAbilityBossSpeedBoostUpgradeOptions(ability: Ability, character: 
 
 function executeAbilitySpeedBoostUpgradeOption(ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game) {
     const abilityUpgradeOption: AbilityUpgradeOption = upgradeOption as AbilityUpgradeOption;
-    upgradeAbility(ability, character, abilityUpgradeOption);
+    upgradeAbility(ability, character, abilityUpgradeOption, game);
 }
 
 

@@ -307,7 +307,7 @@ function createAbilityPetBoomerangUpgradeOptions(ability: Ability, character: Ch
 
 function executeAbilityPetBoomerangUpgradeOption(ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game) {
     const abilityUpgradeOption: AbilityUpgradeOption = upgradeOption as AbilityUpgradeOption;
-    upgradeAbility(ability, character, abilityUpgradeOption);
+    upgradeAbility(ability, character, abilityUpgradeOption, game);
 }
 
 function tickAbilityPetBoomerang(abilityOwner: AbilityOwner, ability: Ability, game: Game) {

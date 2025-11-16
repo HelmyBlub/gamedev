@@ -5,19 +5,15 @@ current tasks:
 - new class spellmaker
     - next steps?
         - get a better feel for the class
-            - more tools
-                - spell idea:
-                    - orbiting player lightning turrets
-                        - can be activated or deactivated
-                        steps:
-                            - spell type 
-                                - "autocast": automatically casts on player position if enough mana and mana full
-                                    - pressing cast activates or deactivates it
-                                - "Instant": cast on click position
-                            - orbiting move tool
-                                - orbits around attach
-                                - set orbiting distance
-            - update choices are adding a tool
+            - continue: upgrades currently are just tools. only specific tools should be upgrades
+                - certain tools need to be added depending on upgrade choice
+                    -e.g. when tool with next stage capability is choosen -> add stage select tool
+            - each upgrade is a tool choice
+            - start with one upgrade choice on class select
+                - needs to be damage choice
+            - upgrades also need to include spelltype
+        - autocast each spell, not just the selected one
+            - autocast while in spellmaker mode
         - improve UX
             - put tool options to paintUI and paintAbove normal ability buttons
                 - problems:

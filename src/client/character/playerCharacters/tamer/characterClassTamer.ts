@@ -216,7 +216,7 @@ function executeTamerBossUpgradeOption(character: Character, upgradeOption: Upgr
             const trait = option.additionalInfo;
             addTraitToTamerPet(pet, trait, game);
         }
-        upgradeFunctions.executeOption(ability, upgradeOption as AbilityUpgradeOption, pet);
+        upgradeFunctions.executeOption(ability, upgradeOption as AbilityUpgradeOption, pet, game);
         pet.bossSkillPoints!.available--;
         pet.bossSkillPoints!.used++;
     }

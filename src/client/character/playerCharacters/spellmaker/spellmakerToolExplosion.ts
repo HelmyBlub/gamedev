@@ -28,6 +28,13 @@ export function addSpellmakerToolExplosion() {
         onTick: onTick,
         paint: paint,
         spellCast: spellCast,
+        description: [
+            "Tool: Explosion",
+            "Mouse Move Vertical: Change Damage",
+            "Mouse Move Horizontal: Change Size",
+            `can have move attach: No`,
+            `can have next stage: No`,
+        ],
     };
 }
 
@@ -46,13 +53,7 @@ function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
     return {
         type: SPELLMAKER_TOOL_EXPLOSION,
         subType: "default",
-        description: createMoreInfosPart(ctx, [
-            "Tool: Explosion",
-            "Mouse Move Vertical: Change Damage",
-            "Mouse Move Horizontal: Change Size",
-            `can have move attach: ${SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_EXPLOSION].canHaveMoveAttachment ? "Yes" : "No"}`,
-            `can have next stage: ${SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_EXPLOSION].canHaveNextStage ? "Yes" : "No"}`,
-        ]),
+        description: createMoreInfosPart(ctx, SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_EXPLOSION].description),
     };
 }
 

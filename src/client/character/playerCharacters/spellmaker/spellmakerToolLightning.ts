@@ -28,6 +28,13 @@ export function addSpellmakerToolLightning() {
         onTick: onTick,
         paint: paint,
         spellCast: spellCast,
+        description: [
+            "Tool: Lightning",
+            "Mouse Move Vertical: Change Damage",
+            "Mouse Move Horizontal: Change Jumps",
+            `can have move attach: No`,
+            `can have next stage: No`,
+        ],
     };
 }
 
@@ -46,13 +53,7 @@ function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
     return {
         type: SPELLMAKER_TOOL_LIGHTNING,
         subType: "default",
-        description: createMoreInfosPart(ctx, [
-            "Tool: Lightning",
-            "Mouse Move Vertical: Change Damage",
-            "Mouse Move Horizontal: Change Jumps",
-            `can have move attach: ${SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_LIGHTNING].canHaveMoveAttachment ? "Yes" : "No"}`,
-            `can have next stage: ${SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_LIGHTNING].canHaveNextStage ? "Yes" : "No"}`,
-        ]),
+        description: createMoreInfosPart(ctx, SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_LIGHTNING].description),
     };
 }
 

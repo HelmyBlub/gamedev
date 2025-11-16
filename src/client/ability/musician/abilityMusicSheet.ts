@@ -590,7 +590,7 @@ function createAbilityBossUpgradeOptions(ability: Ability, character: Character,
 function executeAbilityUpgradeOption(ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game) {
     const abilityUpgradeOption: AbilityUpgradeOption = upgradeOption as AbilityUpgradeOption;
     const musicSheets = ability as AbilityMusicSheets;
-    upgradeAbility(ability, character, abilityUpgradeOption);
+    upgradeAbility(ability, character, abilityUpgradeOption, game);
     if (!musicSheets.nextUpgradeAddInstrument && ability.bossSkillPoints) {
         ability.bossSkillPoints.available++;
         ability.bossSkillPoints.used--;
@@ -611,7 +611,7 @@ function setUpAbilityForEnemy(abilityOwner: AbilityOwner, ability: Ability, game
     const musicSheets = ability as AbilityMusicSheets;
     musicSheets.musicSheets[0].maxPlayTicks = 4;
     if (Object.keys(musicSheets.upgrades).length > 0) return;
-    addRandomInstrument(musicSheets, abilityOwner as Character, { seed: fixedRandom(abilityOwner.x, abilityOwner.y, game.state.map.seed!) });
+    addRandomInstrument(musicSheets, abilityOwner as Character, { seed: fixedRandom(abilityOwner.x, abilityOwner.y, game.state.map.seed!) }, game);
     addRandomNote(musicSheets, musicSheets.musicSheets[0], { seed: fixedRandom(abilityOwner.x, abilityOwner.y, game.state.map.seed!) });
 }
 
@@ -652,13 +652,13 @@ function getInstrumentKeys(): string[] {
     return instrumentKeys;
 }
 
-function addRandomInstrument(ability: AbilityMusicSheets, abilityOwner: Character, randomSeed: RandomSeed) {
+function addRandomInstrument(ability: AbilityMusicSheets, abilityOwner: Character, randomSeed: RandomSeed, game: Game) {
     const instrumentKeys = getInstrumentKeys();
     const randomInstrumentKeyIndex = Math.floor(nextRandom(randomSeed) * instrumentKeys.length);
     const randomInstrumentKey = instrumentKeys[randomInstrumentKeyIndex];
     const functions = ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS[randomInstrumentKey];
     const option = getAbilityUpgradeOptionDefault(ability, randomInstrumentKey)[0].option as AbilityUpgradeOption;
-    functions.executeOption(ability, option, abilityOwner);
+    functions.executeOption(ability, option, abilityOwner, game);
 }
 
 function setAbilityToBossLevel(ability: Ability, level: number) {

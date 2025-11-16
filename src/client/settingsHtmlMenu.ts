@@ -2,6 +2,7 @@ import { createDefaultAchivements } from "./achievements/achievements.js";
 import { findAndSetNewCameraCharacterId } from "./character/character.js";
 import { PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "./character/playerCharacters/playerCharacters.js";
 import { CHARACTER_CLASS_SPELLMAKER } from "./character/playerCharacters/spellmaker/characterClassSpellmaker.js";
+import { fillRandomUpgradeOptionChoices } from "./character/upgrade.js";
 import { CheatCheckboxes, toggleCheats } from "./cheat.js";
 import { handleCommand } from "./commands.js";
 import { deepCopy, gameRestart, getGameVersionString } from "./game.js";
@@ -441,6 +442,7 @@ function addClassSpellmakerButton(game: Game) {
                 if (character.upgradeChoices.choices.length > 0 && character.upgradeChoices.choices[0].type === "ChooseClass") {
                     PLAYER_CHARACTER_CLASSES_FUNCTIONS[CHARACTER_CLASS_SPELLMAKER].changeCharacterToThisClass(character, game.state.idCounter, game);
                     character.upgradeChoices.choices = [];
+                    fillRandomUpgradeOptionChoices(character, game);
                 }
             }
         });

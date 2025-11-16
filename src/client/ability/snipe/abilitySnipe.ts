@@ -621,5 +621,5 @@ function createAbilityBossSnipeUpgradeOptions(ability: Ability, character: Chara
 
 function executeAbilitySnipeUpgradeOption(ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game) {
     const abilityUpgradeOption: AbilityUpgradeOption = upgradeOption as AbilityUpgradeOption;
-    upgradeAbility(ability, character, abilityUpgradeOption);
+    upgradeAbility(ability, character, abilityUpgradeOption, game);
 }

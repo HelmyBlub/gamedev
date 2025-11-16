@@ -27,6 +27,12 @@ export function addSpellmakerToolFireline() {
         paint: paint,
         spellCast: spellCast,
         canHaveMoveAttachment: true,
+        description: [
+            "Tool: Fireline",
+            "Hold button and drag mouse to paint path",
+            `can have move attach: Yes`,
+            `can have next stage: No`,
+        ],
     };
 }
 
@@ -43,12 +49,7 @@ function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
     return {
         type: SPELLMAKER_TOOL_FIRELINE,
         subType: "default",
-        description: createMoreInfosPart(ctx, [
-            "Tool: Fireline",
-            "Hold button and drag mouse to paint path",
-            `can have move attach: ${SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_FIRELINE].canHaveMoveAttachment ? "Yes" : "No"}`,
-            `can have next stage: ${SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_FIRELINE].canHaveNextStage ? "Yes" : "No"}`,
-        ]),
+        description: createMoreInfosPart(ctx, SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_FIRELINE].description),
     };
 }
 

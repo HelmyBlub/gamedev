@@ -59,9 +59,13 @@ function changeCharacterToSpellmakerClass(
         for (let key of Object.keys(SPELLMAKER_MOVE_TOOLS_FUNCTIONS)) {
             abilitySm.createTools.createTools.push(SPELLMAKER_MOVE_TOOLS_FUNCTIONS[key].createTool(game.ctx));
         }
-        for (let key of Object.keys(SPELLMAKER_TOOLS_FUNCTIONS)) {
-            abilitySm.createTools.createTools.push(SPELLMAKER_TOOLS_FUNCTIONS[key].createTool(game.ctx));
-        }
+        // for (let key of Object.keys(SPELLMAKER_TOOLS_FUNCTIONS)) {
+        //     abilitySm.createTools.createTools.push(SPELLMAKER_TOOLS_FUNCTIONS[key].createTool(game.ctx));
+        // }
+    }
+    if (abilitySm.bossSkillPoints) {
+        abilitySm.bossSkillPoints.available++;
+        abilitySm.bossSkillPoints.used--;
     }
     addAbilityToCharacter(character, createAbilityHpRegen(idCounter, undefined, 5), charClass);
     addAbilityToCharacter(character, abilitySm, charClass);

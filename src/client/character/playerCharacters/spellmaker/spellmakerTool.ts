@@ -44,6 +44,7 @@ export type SpellmakerToolFunctions = {
     calculateManaCostIncludesNextStage?: boolean,
     canHaveNextStage?: boolean,
     canHaveMoveAttachment?: boolean,
+    description: string[],
 }
 
 export type SpellmakerToolsFunctions = {
@@ -67,25 +68,51 @@ export function addSpellmakerToolsDefault() {
         onToolSelect: onToolSelectStaging,
         createTool: createToolStage,
         paintButton: paintButtonStage,
+        description: [
+            "Staging Tool",
+            "Change Stage when clicking",
+            "Loops over available stages",
+            "displays current stage",
+        ],
     };
     SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_RESET] = {
         onToolSelect: onToolSelectReset,
         createTool: createToolReset,
         paintButton: paintButtonReset,
+        description: [
+            "Reset Tool",
+            "Resets Current Spell",
+            "Displays current spells mana cost",
+        ],
     };
     SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_NEW] = {
         onToolSelect: onToolSelectNew,
         createTool: createToolNew,
         paintButton: paintButtonNew,
+        description: [
+            "New Spell Tool",
+            "Add a new spell",
+            "displays current spell count",
+        ],
     };
     SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_DELETE] = {
         onToolSelect: onToolSelectDelete,
         createTool: createToolDelete,
+        description: [
+            "Delete Tool",
+            "Delete current selected spell",
+        ],
     };
     SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_SPELL_TYPE] = {
         onToolSelect: onToolSelectSpellType,
         createTool: createToolSpellType,
         paintButton: paintButtonSpellType,
+        description: [
+            "Change Spell Type Tool",
+            "Switchtes between available spell types",
+            "instant: spell is cast instantly on ability click",
+            "autocast: spell is cast automatically when mana full",
+        ],
     };
 }
 
@@ -103,12 +130,7 @@ function createToolStage(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
     return {
         type: SPELLMAKER_TOOL_SWITCH_STAGE,
         subType: "default",
-        description: createMoreInfosPart(ctx, [
-            "Staging Tool",
-            "Change Stage when clicking",
-            "Loops over available stages",
-            "displays current stage",
-        ]),
+        description: createMoreInfosPart(ctx, SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_SWITCH_STAGE].description),
     };
 }
 
@@ -116,11 +138,7 @@ function createToolReset(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
     return {
         type: SPELLMAKER_TOOL_RESET,
         subType: "default",
-        description: createMoreInfosPart(ctx, [
-            "Reset Tool",
-            "Resets Current Spell",
-            "Displays current spells mana cost",
-        ]),
+        description: createMoreInfosPart(ctx, SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_RESET].description),
     };
 }
 
@@ -128,21 +146,14 @@ function createToolNew(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
     return {
         type: SPELLMAKER_TOOL_NEW,
         subType: "default",
-        description: createMoreInfosPart(ctx, [
-            "New Spell Tool",
-            "Add a new spell",
-            "displays current spell count",
-        ]),
+        description: createMoreInfosPart(ctx, SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_NEW].description),
     };
 }
 function createToolDelete(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
     return {
         type: SPELLMAKER_TOOL_DELETE,
         subType: "default",
-        description: createMoreInfosPart(ctx, [
-            "Delete Tool",
-            "Delete current selected spell",
-        ]),
+        description: createMoreInfosPart(ctx, SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_DELETE].description),
     };
 }
 
@@ -150,12 +161,7 @@ function createToolSpellType(ctx: CanvasRenderingContext2D): SpellmakerCreateToo
     return {
         type: SPELLMAKER_TOOL_SPELL_TYPE,
         subType: "default",
-        description: createMoreInfosPart(ctx, [
-            "Change Spell Type Tool",
-            "Switchtes between available spell types",
-            "instant: spell is cast instantly on ability click",
-            "autocast: spell is cast automatically when mana full",
-        ]),
+        description: createMoreInfosPart(ctx, SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_SPELL_TYPE].description),
     };
 }
 

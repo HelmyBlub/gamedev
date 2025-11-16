@@ -30,6 +30,14 @@ export function addSpellmakerToolTurret() {
         calculateManaCostIncludesNextStage: true,
         canHaveMoveAttachment: true,
         canHaveNextStage: true,
+        description: [
+            "Tool: Turret",
+            "Shoots at close enemies",
+            "Shoots next stage attachments",
+            "Mouse move horizonzal: mana capacity",
+            `can have move attach: Yes`,
+            `can have next stage: Yes`,
+        ],
     };
 }
 
@@ -47,14 +55,7 @@ function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
     return {
         type: SPELLMAKER_TOOL_TURRET,
         subType: "default",
-        description: createMoreInfosPart(ctx, [
-            "Tool: Turret",
-            "Shoots at close enemies",
-            "Shoots next stage attachments",
-            "Mouse move horizonzal: mana capacity",
-            `can have move attach: ${SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_TURRET].canHaveMoveAttachment ? "Yes" : "No"}`,
-            `can have next stage: ${SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_TURRET].canHaveNextStage ? "Yes" : "No"}`,
-        ]),
+        description: createMoreInfosPart(ctx, SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_TURRET].description),
     };
 }
 

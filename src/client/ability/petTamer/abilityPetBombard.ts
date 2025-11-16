@@ -215,7 +215,7 @@ function createAbilityPetUpgradeOptions(ability: Ability, character: Character, 
 
 function executeAbilityUpgradeOption(ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game) {
     const abilityUpgradeOption: AbilityUpgradeOption = upgradeOption as AbilityUpgradeOption;
-    upgradeAbility(ability, character, abilityUpgradeOption);
+    upgradeAbility(ability, character, abilityUpgradeOption, game);
 }
 
 function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {

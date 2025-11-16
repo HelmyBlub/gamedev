@@ -59,7 +59,7 @@ export function addAbilityBounceBall() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_BOUNCE_BALL] = {
         activeAbilityCast: castBounceBall,
         createAbility: createAbilityBounceBall,
-        createAbilityBossUpgradeOptions: createAbilityBossSpeedBoostUpgradeOptions,
+        createAbilityBossUpgradeOptions: createAbilityBossUpgradeOptions,
         createAbilityMoreInfos: createAbilityMoreInfos,
         createDamageBreakDown: createDamageBreakDown,
         executeUpgradeOption: executeAbilityUpgradeOption,
@@ -208,7 +208,7 @@ function castBounceBall(abilityOwner: AbilityOwner, ability: Ability, castPositi
     if (clientInfo) clientInfo.lastMousePosition = castPosition;
 }
 
-function createAbilityBossSpeedBoostUpgradeOptions(ability: Ability, character: Character, game: Game): UpgradeOptionAndProbability[] {
+function createAbilityBossUpgradeOptions(ability: Ability, character: Character, game: Game): UpgradeOptionAndProbability[] {
     const upgradeOptions: UpgradeOptionAndProbability[] = [];
     pushAbilityUpgradesOptions(ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS, upgradeOptions, ability, character, game);
     return upgradeOptions;
@@ -216,7 +216,7 @@ function createAbilityBossSpeedBoostUpgradeOptions(ability: Ability, character: 
 
 function executeAbilityUpgradeOption(ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game) {
     const abilityUpgradeOption: AbilityUpgradeOption = upgradeOption as AbilityUpgradeOption;
-    upgradeAbility(ability, character, abilityUpgradeOption);
+    upgradeAbility(ability, character, abilityUpgradeOption, game);
 }
 
 function setAbilityToLevel(ability: Ability, level: number) {

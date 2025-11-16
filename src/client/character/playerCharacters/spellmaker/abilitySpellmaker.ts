@@ -1,4 +1,5 @@
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, getAbilityNameUiText, paintAbilityUiDefault } from "../../../ability/ability.js";
+import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, upgradeAbility } from "../../../ability/abilityUpgrade.js";
 import { IMAGE_NAME_SWITCH } from "../../../ability/musician/abilityMusicSheetChangeInstrument.js";
 import { autoSendMousePositionHandler, getNextId } from "../../../game.js";
 import { Game, IdCounter, Position } from "../../../gameModel.js";
@@ -6,7 +7,10 @@ import { getPointPaintPosition, paintTextWithOutline } from "../../../gamePaint.
 import { playerInputBindingToDisplayValue } from "../../../input/playerInput.js";
 import { createMoreInfosPart, MoreInfoHoverTexts, MoreInfoPart, paintMoreInfosPart } from "../../../moreInfo.js";
 import { findMyCharacter } from "../../character.js";
+import { Character } from "../../characterModel.js";
+import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../upgrade.js";
 import { CHARACTER_PET_TYPE_CLONE } from "../characterPetTypeClone.js";
+import { addAbilitySpellmakerUpgradeTools } from "./abilitySpellmakerUpgrades.js";
 import { addSpellmakerToolsDefault, SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateToolsData } from "./spellmakerTool.js";
 import { addSpellmakerToolExplosion } from "./spellmakerToolExplosion.js";
 import { addSpellmakerToolFireline } from "./spellmakerToolFireLine.js";
@@ -51,19 +55,22 @@ export type SpellmakerCreateToolMoveAttachment = {
 export const ABILITY_NAME_SPELLMAKER = "Spellmaker";
 export const SPELLMAKER_SPELLTYPE_INSTANT = "instant";
 export const SPELLMAKER_SPELLTYPE_AUTOCAST = "autocast";
-
+export const ABILITY_SPELLMAKER_UPGRADE_FUNCTIONS: AbilityUpgradesFunctions = {};
 
 export function addAbilitySpellmaker() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_SPELLMAKER] = {
         activeAbilityCast: castAbility,
         createAbility: createAbility,
         createAbilityMoreInfos: createAbilityMoreInfos,
+        createAbilityBossUpgradeOptions: createAbilityBossUpgradeOptions,
+        executeUpgradeOption: executeAbilityUpgradeOption,
         paintAbility: paintAbility,
         paintAbilityUI: paintAbilityUI,
         setAbilityToLevel: setAbilityToLevel,
         setAbilityToBossLevel: setAbilityToBossLevel,
         setAbilityToEnemyLevel: setAbilityToEnemyLevel,
         tickAbility: tickAbility,
+        abilityUpgradeFunctions: ABILITY_SPELLMAKER_UPGRADE_FUNCTIONS,
     };
     addSpellmakerToolsDefault();
     addSpellmakerToolFireline();
@@ -74,6 +81,7 @@ export function addAbilitySpellmaker() {
     addSpellmakerToolLightning();
     addSpellmakerToolTurret();
     addSpellmakerToolOrbiter();
+    addAbilitySpellmakerUpgradeTools();
 }
 
 function createAbility(
@@ -102,6 +110,17 @@ function createAbility(
         spellmakeStage: 0,
         availableSpellTypes: [SPELLMAKER_SPELLTYPE_INSTANT, SPELLMAKER_SPELLTYPE_AUTOCAST],
     };
+}
+
+function createAbilityBossUpgradeOptions(ability: Ability, character: Character, game: Game): UpgradeOptionAndProbability[] {
+    const upgradeOptions: UpgradeOptionAndProbability[] = [];
+    pushAbilityUpgradesOptions(ABILITY_SPELLMAKER_UPGRADE_FUNCTIONS, upgradeOptions, ability, character, game);
+    return upgradeOptions;
+}
+
+function executeAbilityUpgradeOption(ability: Ability, character: Character, upgradeOption: UpgradeOption, game: Game) {
+    const abilityUpgradeOption: AbilityUpgradeOption = upgradeOption as AbilityUpgradeOption;
+    upgradeAbility(ability, character, abilityUpgradeOption, game);
 }
 
 function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
