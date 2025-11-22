@@ -3,7 +3,7 @@ import { deepCopy } from "../../../game.js";
 import { Game, Position } from "../../../gameModel.js";
 import { paintTextWithOutline } from "../../../gamePaint.js";
 import { createMoreInfosPart, MoreInfoPart } from "../../../moreInfo.js";
-import { AbilitySpellmaker, SPELLMAKER_SPELLTYPE_INSTANT, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
+import { AbilitySpellmaker, SPELLMAKER_SPELLTYPE_INSTANT, SPELLMAKER_SPELLTYPES, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 
 export type SpellmakerCreateToolsData = {
     selectedToolIndex: number,
@@ -118,8 +118,7 @@ export function addSpellmakerToolsDefault() {
         description: [
             "Change Spell Type Tool",
             "Switchtes between available spell types",
-            "instant: spell is cast instantly on ability click",
-            "autocast: spell is cast automatically when mana full",
+            `${SPELLMAKER_SPELLTYPES[0].name}: ${SPELLMAKER_SPELLTYPES[0].description}`,
         ],
     };
 }

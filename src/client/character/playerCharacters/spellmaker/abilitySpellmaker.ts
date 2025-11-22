@@ -52,9 +52,18 @@ export type SpellmakerCreateToolMoveAttachment = {
     type: string,
 }
 
+export type SpellmakerSpelltypeData = {
+    name: string,
+    description: string[],
+}
+
 export const ABILITY_NAME_SPELLMAKER = "Spellmaker";
 export const SPELLMAKER_SPELLTYPE_INSTANT = "instant";
 export const SPELLMAKER_SPELLTYPE_AUTOCAST = "autocast";
+export const SPELLMAKER_SPELLTYPES: SpellmakerSpelltypeData[] = [
+    { name: SPELLMAKER_SPELLTYPE_INSTANT, description: ["spell is cast instantly"] },
+    { name: SPELLMAKER_SPELLTYPE_AUTOCAST, description: ["spell is cast automatically when mana full"] },
+];
 export const ABILITY_SPELLMAKER_UPGRADE_FUNCTIONS: AbilityUpgradesFunctions = {};
 
 export function addAbilitySpellmaker() {
@@ -108,7 +117,7 @@ function createAbility(
             size: 20,
         },
         spellmakeStage: 0,
-        availableSpellTypes: [SPELLMAKER_SPELLTYPE_INSTANT, SPELLMAKER_SPELLTYPE_AUTOCAST],
+        availableSpellTypes: [SPELLMAKER_SPELLTYPE_INSTANT],
     };
 }
 
