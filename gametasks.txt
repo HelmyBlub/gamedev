@@ -4,8 +4,6 @@ increase version
 current tasks:     
 - new class spellmaker
     - next steps?
-        - get a better feel for the class
-            - upgrades also need to include spelltype
         - autocast each spell, not just the selected one
             - autocast while in spellmaker mode
         - improve UX

@@ -3,7 +3,7 @@ import { deepCopy } from "../../../game.js";
 import { Game, Position } from "../../../gameModel.js";
 import { paintTextWithOutline } from "../../../gamePaint.js";
 import { createMoreInfosPart, MoreInfoPart } from "../../../moreInfo.js";
-import { AbilitySpellmaker, SPELLMAKER_SPELLTYPE_INSTANT, SPELLMAKER_SPELLTYPES, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
+import { AbilitySpellmaker, SPELLMAKER_SPELLTYPE_AUTOCAST, SPELLMAKER_SPELLTYPE_INSTANT, SPELLMAKER_SPELLTYPES, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 
 export type SpellmakerCreateToolsData = {
     selectedToolIndex: number,
@@ -217,6 +217,19 @@ function onToolSelectSpellType(tool: SpellmakerCreateTool, abilityOwner: Ability
         currentSpell.spellType = ability.availableSpellTypes[0];
     } else {
         currentSpell.spellType = ability.availableSpellTypes[(spellTypeIndex + 1) % ability.availableSpellTypes.length];
+    }
+    if (currentSpell.spellType === SPELLMAKER_SPELLTYPE_AUTOCAST && ability.autoCastSpellIndex === undefined) {
+        ability.autoCastSpellIndex = ability.spellIndex;
+    } else if (ability.autoCastSpellIndex !== undefined && ability.spells[ability.autoCastSpellIndex].spellType !== SPELLMAKER_SPELLTYPE_AUTOCAST) {
+        let foundAutocast = false;
+        for (let i = 0; i < ability.spells.length; i++) {
+            if (ability.spells[i].spellType === SPELLMAKER_SPELLTYPE_AUTOCAST) {
+                foundAutocast = true;
+                ability.autoCastSpellIndex = i;
+                break;
+            }
+        }
+        if (!foundAutocast) ability.attachToIndex = undefined;
     }
     return false;
 }

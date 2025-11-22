@@ -29,6 +29,7 @@ export type AbilitySpellmaker = Ability & {
     attachToIndex?: number[],
     spells: SpellmakerSpell[],
     spellIndex: number,
+    autoCastSpellIndex?: number,
     createTools: SpellmakerCreateToolsData,
     spellmakeStage: number,
     availableSpellTypes: string[],
@@ -144,11 +145,20 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
             const toolFunctions = SPELLMAKER_MOVE_TOOLS_FUNCTIONS[tool.type];
             if (toolFunctions.onTick) toolFunctions.onTick(tool, abilityOwner, abilitySm, game);
         }
-    } else {
-        const currentSpell = abilitySm.spells[abilitySm.spellIndex];
-        if (currentSpell.spellType === SPELLMAKER_SPELLTYPE_AUTOCAST) {
-            if (abilitySm.mana >= abilitySm.maxMana - 1 && currentSpell.spellManaCost < abilitySm.maxMana) {
-                castAbility(abilityOwner, ability, abilityOwner, { x: 0, y: 0 }, true, game);
+    }
+    if (abilitySm.autoCastSpellIndex !== undefined) {
+        const currentAutoCast = abilitySm.spells[abilitySm.autoCastSpellIndex];
+        if (currentAutoCast.spellType === SPELLMAKER_SPELLTYPE_AUTOCAST) {
+            if (abilitySm.mana >= abilitySm.maxMana - 1 && currentAutoCast.spellManaCost < abilitySm.maxMana) {
+                spellCast(abilityOwner, abilitySm, abilitySm.autoCastSpellIndex, abilityOwner, game);
+                for (let i = 1; i < abilitySm.spells.length; i++) {
+                    const nextIndex = (abilitySm.autoCastSpellIndex + i) % abilitySm.spells.length;
+                    const nextAutoCast = abilitySm.spells[nextIndex];
+                    if (nextAutoCast.spellType === SPELLMAKER_SPELLTYPE_AUTOCAST) {
+                        abilitySm.autoCastSpellIndex = nextIndex;
+                        break;
+                    }
+                }
             }
         }
     }
@@ -341,14 +351,18 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, castPosition:
     }
     if (abilitySm.mode === "spellcast") {
         if (isKeydown) {
-            const currentSpell = abilitySm.spells[abilitySm.spellIndex];
-            if (abilitySm.mana > currentSpell.spellManaCost) {
-                abilitySm.mana -= currentSpell.spellManaCost;
-                for (let createdObject of currentSpell.createdObjects) {
-                    const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[createdObject.type];
-                    if (toolFunctions.spellCast) toolFunctions.spellCast(createdObject, ability.level!.level, abilityOwner.faction, ability.id, castPosition, game);
-                }
-            }
+            spellCast(abilityOwner, abilitySm, abilitySm.spellIndex, castPosition, game);
+        }
+    }
+}
+
+function spellCast(abilityOwner: AbilityOwner, abilitySm: AbilitySpellmaker, spellIndex: number, castPosition: Position, game: Game) {
+    const currentSpell = abilitySm.spells[spellIndex];
+    if (abilitySm.mana > currentSpell.spellManaCost) {
+        abilitySm.mana -= currentSpell.spellManaCost;
+        for (let createdObject of currentSpell.createdObjects) {
+            const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[createdObject.type];
+            if (toolFunctions.spellCast) toolFunctions.spellCast(createdObject, abilitySm.level!.level, abilityOwner.faction, abilitySm.id, castPosition, game);
         }
     }
 }
