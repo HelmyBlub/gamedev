@@ -35,6 +35,8 @@ export function addSpellmakerToolLightning() {
             `can have move attach: No`,
             `can have next stage: No`,
         ],
+        learnedThroughUpgrade: true,
+        availableOnFirstUpgradeChoice: true,
     };
 }
 
@@ -115,7 +117,7 @@ function spellCast(createObject: SpellmakerCreateToolObjectData, level: number, 
 
 function paint(ctx: CanvasRenderingContext2D, createdObject: SpellmakerCreateToolObjectData, ownerPaintPos: Position, ability: AbilitySpellmaker, game: Game) {
     const lightning = createdObject as CreateToolObjectLightningData;
-    ctx.globalAlpha = 0.1 + 0.09 * lightning.damageFactor;
+    ctx.globalAlpha = 0.3 + 0.07 * lightning.damageFactor;
     ctx.strokeStyle = "white";
     ctx.fillStyle = "white";
     ctx.beginPath();

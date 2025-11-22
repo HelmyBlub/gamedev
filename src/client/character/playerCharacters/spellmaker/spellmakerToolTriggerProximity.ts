@@ -36,6 +36,7 @@ export function addSpellmakerToolProximity() {
             `can have move attach: Yes`,
             `can have next stage: Yes`,
         ],
+        learnedThroughUpgrade: true,
     };
 }
 

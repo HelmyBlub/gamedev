@@ -35,6 +35,8 @@ export function addSpellmakerToolExplosion() {
             `can have move attach: No`,
             `can have next stage: No`,
         ],
+        learnedThroughUpgrade: true,
+        availableOnFirstUpgradeChoice: true,
     };
 }
 

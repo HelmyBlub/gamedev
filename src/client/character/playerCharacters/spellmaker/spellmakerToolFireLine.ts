@@ -33,6 +33,8 @@ export function addSpellmakerToolFireline() {
             `can have move attach: Yes`,
             `can have next stage: No`,
         ],
+        learnedThroughUpgrade: true,
+        availableOnFirstUpgradeChoice: true,
     };
 }
 

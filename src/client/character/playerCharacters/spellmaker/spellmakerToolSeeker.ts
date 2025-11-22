@@ -35,6 +35,12 @@ export function addSpellmakerToolSeeker() {
         paint: paint,
         getMoveAttachment: getMoveAttachment,
         getMoveAttachmentNextMoveByAmount: getMoveAttachmentNextMoveByAmount,
+        description: [
+            "Move Tool: Seeker",
+            "Attaches to close object",
+            "Automatically seeks and moves towards enemy",
+        ],
+        learnedThroughUpgrade: true,
     };
 }
 
@@ -54,11 +60,7 @@ function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
     return {
         type: SPELLMAKER_TOOL_SEEKER,
         subType: "move",
-        description: createMoreInfosPart(ctx, [
-            "Move Tool: Seeker",
-            "Attaches to close object",
-            "Automatically seeks and moves towards enemy",
-        ]),
+        description: createMoreInfosPart(ctx, SPELLMAKER_MOVE_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_SEEKER].description),
     };
 }
 

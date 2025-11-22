@@ -28,6 +28,8 @@ export type SpellmakerMoveToolFunctions = {
     onKeyUp: (tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game) => SpellmakerCreateToolMoveAttachment | undefined,
     onTick: (tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, game: Game) => void,
     paint: (ctx: CanvasRenderingContext2D, moveAttachment: SpellmakerCreateToolMoveAttachment, ownerPaintPos: Position, ability: AbilitySpellmaker, game: Game) => void,
+    description: string[],
+    learnedThroughUpgrade?: boolean,
 }
 
 export type SpellmakerToolFunctions = {
@@ -45,6 +47,9 @@ export type SpellmakerToolFunctions = {
     canHaveNextStage?: boolean,
     canHaveMoveAttachment?: boolean,
     description: string[],
+    learnedThroughUpgrade?: boolean,
+    availableFromTheStart?: boolean,
+    availableOnFirstUpgradeChoice?: boolean,
 }
 
 export type SpellmakerToolsFunctions = {
@@ -84,6 +89,7 @@ export function addSpellmakerToolsDefault() {
             "Resets Current Spell",
             "Displays current spells mana cost",
         ],
+        availableFromTheStart: true,
     };
     SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_NEW] = {
         onToolSelect: onToolSelectNew,
@@ -94,6 +100,7 @@ export function addSpellmakerToolsDefault() {
             "Add a new spell",
             "displays current spell count",
         ],
+        availableFromTheStart: true,
     };
     SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_DELETE] = {
         onToolSelect: onToolSelectDelete,
@@ -102,6 +109,7 @@ export function addSpellmakerToolsDefault() {
             "Delete Tool",
             "Delete current selected spell",
         ],
+        availableFromTheStart: true,
     };
     SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_SPELL_TYPE] = {
         onToolSelect: onToolSelectSpellType,

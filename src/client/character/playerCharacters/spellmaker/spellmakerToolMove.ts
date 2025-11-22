@@ -26,6 +26,12 @@ export function addSpellmakerToolMove() {
         paint: paint,
         getMoveAttachment: getMoveAttachment,
         getMoveAttachmentNextMoveByAmount: getMoveAttachmentNextMoveByAmount,
+        description: [
+            "Move Tool: Line",
+            "Attaches to close object",
+            "Hold button and drag mouse to paint path",
+        ],
+        learnedThroughUpgrade: true,
     };
 }
 
@@ -43,11 +49,7 @@ function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
     return {
         type: SPELLMAKER_TOOL_MOVE,
         subType: "move",
-        description: createMoreInfosPart(ctx, [
-            "Move Tool: Line",
-            "Attaches to close object",
-            "Hold button and drag mouse to paint path",
-        ]),
+        description: createMoreInfosPart(ctx, SPELLMAKER_MOVE_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_MOVE].description),
     };
 }
 

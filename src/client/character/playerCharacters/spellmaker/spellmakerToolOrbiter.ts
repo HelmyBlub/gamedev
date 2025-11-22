@@ -36,6 +36,12 @@ export function addSpellmakerToolOrbiter() {
         paint: paint,
         getMoveAttachment: getMoveAttachment,
         getMoveAttachmentNextMoveByAmount: getMoveAttachmentNextMoveByAmount,
+        description: [
+            "Move Tool: Orbiter",
+            "Attaches to close object",
+            "Orbits around attached object",
+        ],
+        learnedThroughUpgrade: true,
     };
 }
 
@@ -44,11 +50,7 @@ function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
     return {
         type: SPELLMAKER_TOOL_ORBITER,
         subType: "move",
-        description: createMoreInfosPart(ctx, [
-            "Move Tool: Orbiter",
-            "Attaches to close object",
-            "Orbits around attached object",
-        ]),
+        description: createMoreInfosPart(ctx, SPELLMAKER_MOVE_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_ORBITER].description),
     };
 }
 

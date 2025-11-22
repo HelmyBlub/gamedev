@@ -38,6 +38,7 @@ export function addSpellmakerToolTurret() {
             `can have move attach: Yes`,
             `can have next stage: Yes`,
         ],
+        learnedThroughUpgrade: true,
     };
 }
 

@@ -56,12 +56,11 @@ function changeCharacterToSpellmakerClass(
     character.characterClasses.push(charClass);
     const abilitySm = createAbility(ABILITY_NAME_SPELLMAKER, idCounter, true, true, "ability1") as AbilitySpellmaker;
     if (game.ctx) {
-        for (let key of Object.keys(SPELLMAKER_MOVE_TOOLS_FUNCTIONS)) {
-            abilitySm.createTools.createTools.push(SPELLMAKER_MOVE_TOOLS_FUNCTIONS[key].createTool(game.ctx));
+        for (let key of Object.keys(SPELLMAKER_TOOLS_FUNCTIONS)) {
+            const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[key];
+            if (!toolFunctions.availableFromTheStart) continue;
+            abilitySm.createTools.createTools.push(SPELLMAKER_TOOLS_FUNCTIONS[key].createTool(game.ctx));
         }
-        // for (let key of Object.keys(SPELLMAKER_TOOLS_FUNCTIONS)) {
-        //     abilitySm.createTools.createTools.push(SPELLMAKER_TOOLS_FUNCTIONS[key].createTool(game.ctx));
-        // }
     }
     if (abilitySm.bossSkillPoints) {
         abilitySm.bossSkillPoints.available++;
