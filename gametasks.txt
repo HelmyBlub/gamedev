@@ -3,8 +3,15 @@ increase version
 
 current tasks:     
 - new class spellmaker
+    - bug: autocast description adds itself each restart making it appear more and more times
+    - bug: gamecrash on line: "currentAutoCast.spellType === SPELLMAKER_SPELLTYPE_AUTOCAST" being undefined
     - next steps?
-        - play spellmaker, does it feel fun?
+        - when a tool is doing damage it levels up and makes the ability more mana efficient and damage multiply
+            - continue: mana factor need to be calculated and used
+            - toolChain needs to be filled correctly to determine which tool gets damage contribution
+        - balance stuff:
+            - lightning too strong
+            - other to weak?
         - improve UX
             - put tool options to paintUI and paintAbove normal ability buttons
                 - problems:

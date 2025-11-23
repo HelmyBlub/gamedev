@@ -4,13 +4,13 @@ import { FACTION_ENEMY, FACTION_PLAYER, Game, IdCounter, Position } from "../../
 import { getPointPaintPosition } from "../../../gamePaint.js";
 import { getCharactersTouchingLine, characterTakeDamage } from "../../character.js";
 import { Character } from "../../characterModel.js";
-import { SpellmakerCreateToolMoveAttachment } from "./abilitySpellmaker.js";
+import { AbilitySpellmakerObject, SpellmakerCreateToolMoveAttachment } from "./abilitySpellmaker.js";
 import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS } from "./spellmakerTool.js";
 
 export type AbilitySpellmakerFireLine = Ability & {
 }
 
-type AbilityObjectSpellmakerFireLine = AbilityObject & {
+type AbilityObjectSpellmakerFireLine = AbilitySpellmakerObject & {
     fireLineJoints: Position[],
     moveAttachment?: SpellmakerCreateToolMoveAttachment,
     moveSpeed: number,
@@ -42,6 +42,8 @@ export function createAbilityObjectSpellmakerFireLine(
     moveSpeed: number,
     tickInterval: number,
     color: string,
+    manaFactor: number,
+    toolChain: string[],
     abilityIdRef: number | undefined,
     game: Game
 ): AbilityObjectSpellmakerFireLine {
@@ -59,6 +61,8 @@ export function createAbilityObjectSpellmakerFireLine(
         moveAttachment: deepCopy(moveAttachment),
         endTime: game.state.time + duration,
         abilityIdRef: abilityIdRef,
+        manaFactor: manaFactor,
+        toolChain: toolChain,
     };
 }
 

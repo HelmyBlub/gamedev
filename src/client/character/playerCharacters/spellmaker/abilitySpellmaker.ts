@@ -1,4 +1,4 @@
-import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, getAbilityNameUiText, paintAbilityUiDefault } from "../../../ability/ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, getAbilityNameUiText, paintAbilityUiDefault } from "../../../ability/ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, upgradeAbility } from "../../../ability/abilityUpgrade.js";
 import { IMAGE_NAME_SWITCH } from "../../../ability/musician/abilityMusicSheetChangeInstrument.js";
 import { autoSendMousePositionHandler, getNextId } from "../../../game.js";
@@ -33,6 +33,12 @@ export type AbilitySpellmaker = Ability & {
     createTools: SpellmakerCreateToolsData,
     spellmakeStage: number,
     availableSpellTypes: string[],
+    manaLevelFactor: number,
+    damageLevelFactor: number,
+}
+export type AbilitySpellmakerObject = AbilityObject & {
+    manaFactor: number,
+    toolChain: string[],
 }
 
 export type SpellmakerSpell = {
@@ -119,6 +125,8 @@ function createAbility(
         },
         spellmakeStage: 0,
         availableSpellTypes: [SPELLMAKER_SPELLTYPE_INSTANT],
+        damageLevelFactor: 1,
+        manaLevelFactor: 1,
     };
 }
 
@@ -307,7 +315,7 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, castPosition:
                         if (result) {
                             if (abilitySm.spellmakeStage == 0) {
                                 currentSpell.createdObjects.push(result);
-                                currentSpell.spellManaCost = abilitySpellmakerCalculateManaCost(currentSpell.createdObjects);
+                                currentSpell.spellManaCost = abilitySpellmakerCalculateManaCost(currentSpell.createdObjects) * abilitySm.manaLevelFactor;
                             } else if (abilitySm.attachToIndex != undefined) {
                                 let currentObject = currentSpell.createdObjects[abilitySm.attachToIndex[0]];
                                 let currentStage = 0;
@@ -320,7 +328,7 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, castPosition:
                                     }
                                 }
                                 currentObject.nextStage.push(result);
-                                currentSpell.spellManaCost = abilitySpellmakerCalculateManaCost(currentSpell.createdObjects);
+                                currentSpell.spellManaCost = abilitySpellmakerCalculateManaCost(currentSpell.createdObjects) * abilitySm.manaLevelFactor;
                             }
                         }
                     }
@@ -341,7 +349,7 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, castPosition:
                                     }
                                 }
                                 currentObject.moveAttachment = result;
-                                currentSpell.spellManaCost = abilitySpellmakerCalculateManaCost(currentSpell.createdObjects);
+                                currentSpell.spellManaCost = abilitySpellmakerCalculateManaCost(currentSpell.createdObjects) * abilitySm.manaLevelFactor;
                             }
                         }
                     }
@@ -362,7 +370,21 @@ function spellCast(abilityOwner: AbilityOwner, abilitySm: AbilitySpellmaker, spe
         abilitySm.mana -= currentSpell.spellManaCost;
         for (let createdObject of currentSpell.createdObjects) {
             const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[createdObject.type];
-            if (toolFunctions.spellCast) toolFunctions.spellCast(createdObject, abilitySm.level!.level, abilityOwner.faction, abilitySm.id, castPosition, game);
+            if (toolFunctions.spellCast) toolFunctions.spellCast(createdObject, abilitySm.level!.level, abilityOwner.faction, abilitySm.id, castPosition, abilitySm.manaLevelFactor, game);
+        }
+    }
+}
+
+export function abilitySpellmakerCastNextStage(nextStage: SpellmakerCreateToolObjectData[], abilityObject: AbilitySpellmakerObject, game: Game) {
+    for (let stageObject of nextStage) {
+        const spellmakerFunctions = SPELLMAKER_TOOLS_FUNCTIONS[stageObject.type];
+        if (spellmakerFunctions.spellCast) {
+            const pos: Position = { x: abilityObject.x, y: abilityObject.y };
+            if (stageObject.castPosOffset) {
+                pos.x += stageObject.castPosOffset.x;
+                pos.y += stageObject.castPosOffset.y;
+            }
+            spellmakerFunctions.spellCast(stageObject, stageObject.level, abilityObject.faction, abilityObject.abilityIdRef!, pos, abilityObject.manaFactor, game);
         }
     }
 }

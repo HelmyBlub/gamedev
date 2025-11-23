@@ -3,13 +3,13 @@ import { getNextId, getCameraPosition, deepCopy } from "../../../game.js";
 import { Position, IdCounter, Game, FACTION_ENEMY, FACTION_PLAYER } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
 import { determineCharactersInDistance } from "../../character.js";
-import { abilitySpellmakerCalculateManaCost, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
+import { abilitySpellmakerCalculateManaCost, abilitySpellmakerCastNextStage, AbilitySpellmakerObject, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOLS_FUNCTIONS } from "./spellmakerTool.js";
 
 export type AbilitySpellmakerTurret = Ability & {
 }
 
-type AbilityObjectSpellmakerTurret = AbilityObjectCircle & {
+type AbilityObjectSpellmakerTurret = AbilitySpellmakerObject & {
     mana: number,
     triggerManaCost: number,
     triggerRadius: number,
@@ -18,6 +18,7 @@ type AbilityObjectSpellmakerTurret = AbilityObjectCircle & {
     triggerInterval: number,
     moveAttachment?: SpellmakerCreateToolMoveAttachment,
     nextStage: SpellmakerCreateToolObjectData[],
+    radius: number,
 }
 
 export const ABILITY_NAME_SPELLMAKER_TURRET = "SpellmakerTurret";
@@ -37,11 +38,13 @@ export function createAbilityObjectSpellmakerTurret(
     nextStage: SpellmakerCreateToolObjectData[],
     maxDuration: number,
     mana: number,
+    manaFactor: number,
+    toolChain: string[],
     faction: string,
     abilityIdRef: number | undefined,
     gametime: number,
 ): AbilityObjectSpellmakerTurret {
-    const spellManaCost = abilitySpellmakerCalculateManaCost(nextStage);
+    const spellManaCost = abilitySpellmakerCalculateManaCost(nextStage) * manaFactor;
     return {
         type: ABILITY_NAME_SPELLMAKER_TURRET,
         color: "blue",
@@ -58,6 +61,8 @@ export function createAbilityObjectSpellmakerTurret(
         triggerInterval: 250,
         triggerRadius: 200,
         removeTime: gametime + maxDuration,
+        manaFactor: manaFactor,
+        toolChain: toolChain,
     };
 }
 
@@ -106,17 +111,7 @@ function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
 
         let targets = determineCharactersInDistance(abilityObject, game.state.map, [], game.state.bossStuff.bosses, abilityObjectTurret.triggerRadius, abilityObject.faction, true);
         if (targets.length > 0 || abilityObjectTurret.nextTriggerTime < game.state.time) {
-            for (let stageObject of abilityObjectTurret.nextStage) {
-                const spellmakerFunctions = SPELLMAKER_TOOLS_FUNCTIONS[stageObject.type];
-                if (spellmakerFunctions.spellCast) {
-                    const pos: Position = { x: abilityObject.x, y: abilityObject.y };
-                    if (stageObject.castPosOffset) {
-                        pos.x += stageObject.castPosOffset.x;
-                        pos.y += stageObject.castPosOffset.y;
-                    }
-                    spellmakerFunctions.spellCast(stageObject, stageObject.level, abilityObject.faction, abilityObject.abilityIdRef!, pos, game);
-                }
-            }
+            abilitySpellmakerCastNextStage(abilityObjectTurret.nextStage, abilityObjectTurret, game);
             abilityObjectTurret.mana -= abilityObjectTurret.triggerManaCost;
         }
     }

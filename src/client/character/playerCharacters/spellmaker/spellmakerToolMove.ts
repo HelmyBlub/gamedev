@@ -50,6 +50,8 @@ function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
         type: SPELLMAKER_TOOL_MOVE,
         subType: "move",
         description: createMoreInfosPart(ctx, SPELLMAKER_MOVE_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_MOVE].description),
+        level: 0,
+        totalDamage: 0,
     };
 }
 

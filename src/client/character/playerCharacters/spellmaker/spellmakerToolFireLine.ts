@@ -52,6 +52,8 @@ function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
         type: SPELLMAKER_TOOL_FIRELINE,
         subType: "default",
         description: createMoreInfosPart(ctx, SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_FIRELINE].description),
+        level: 0,
+        totalDamage: 0,
     };
 }
 
@@ -120,7 +122,7 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
     }
 }
 
-function spellCast(createObject: SpellmakerCreateToolObjectData, level: number, faction: string, abilityId: number, castPosition: Position, game: Game) {
+function spellCast(createObject: SpellmakerCreateToolObjectData, level: number, faction: string, abilityId: number, castPosition: Position, manaFactor: number, game: Game) {
     const fireline = createObject as CreateToolObjectFireLineData;
     if (fireline.positions.length < 2) return;
     const damage = level * 100;
@@ -141,7 +143,7 @@ function spellCast(createObject: SpellmakerCreateToolObjectData, level: number, 
     const width = 10;
     const duration = 5000;
     const tickInterval = 250;
-    const objectFireLine = createAbilityObjectSpellmakerFireLine(faction, start, joints, moveAttachment, damage, width, duration, moveSpeed, tickInterval, "red", abilityId, game);
+    const objectFireLine = createAbilityObjectSpellmakerFireLine(faction, start, joints, moveAttachment, damage, width, duration, moveSpeed, tickInterval, "red", manaFactor, [SPELLMAKER_TOOL_FIRELINE], abilityId, game);
     game.state.abilityObjects.push(objectFireLine);
 }
 

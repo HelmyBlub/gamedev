@@ -17,6 +17,8 @@ export type SpellmakerCreateTool = {
     subType: "default" | "move",
     workInProgress?: any,
     description: MoreInfoPart,
+    totalDamage: number,
+    level: number,
 }
 
 export type SpellmakerMoveToolFunctions = {
@@ -42,7 +44,7 @@ export type SpellmakerToolFunctions = {
     onToolSelect?: (tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, game: Game) => boolean, // return false if it should no be selectable
     paint?: (ctx: CanvasRenderingContext2D, createObject: SpellmakerCreateToolObjectData, ownerPaintPos: Position, ability: AbilitySpellmaker, game: Game) => void,
     paintButton?: (ctx: CanvasRenderingContext2D, buttonPaintPos: Position, ability: AbilitySpellmaker, game: Game) => void,
-    spellCast?: (createObject: SpellmakerCreateToolObjectData, level: number, faction: string, abilityId: number, castPosition: Position, game: Game) => void,
+    spellCast?: (createObject: SpellmakerCreateToolObjectData, level: number, faction: string, abilityId: number, castPosition: Position, manaFactor: number, game: Game) => void,
     calculateManaCostIncludesNextStage?: boolean,
     canHaveNextStage?: boolean,
     canHaveMoveAttachment?: boolean,
@@ -123,6 +125,15 @@ export function addSpellmakerToolsDefault() {
     };
 }
 
+export function spellmakerAddToolDamage(ability: AbilitySpellmaker, damage: number, toolChain: string[], game: Game) {
+    for (let toolKey of toolChain) {
+        const tool = ability.createTools.createTools.find(t => t.type === toolKey);
+        if (!tool) continue;
+        tool.totalDamage += damage;
+        tool.level = Math.floor(Math.max(0, Math.log2(tool.totalDamage / 100)));
+    }
+}
+
 export function spellmakerNextStageSetup(nextStage: SpellmakerCreateToolObjectData[] | undefined, level: number, castOffset: Position): SpellmakerCreateToolObjectData[] {
     if (!nextStage) return [];
     const copy = deepCopy(nextStage) as SpellmakerCreateToolObjectData[];
@@ -138,6 +149,8 @@ function createToolStage(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
         type: SPELLMAKER_TOOL_SWITCH_STAGE,
         subType: "default",
         description: createMoreInfosPart(ctx, SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_SWITCH_STAGE].description),
+        level: 0,
+        totalDamage: 0,
     };
 }
 
@@ -146,6 +159,8 @@ function createToolReset(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
         type: SPELLMAKER_TOOL_RESET,
         subType: "default",
         description: createMoreInfosPart(ctx, SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_RESET].description),
+        level: 0,
+        totalDamage: 0,
     };
 }
 
@@ -154,6 +169,8 @@ function createToolNew(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
         type: SPELLMAKER_TOOL_NEW,
         subType: "default",
         description: createMoreInfosPart(ctx, SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_NEW].description),
+        level: 0,
+        totalDamage: 0,
     };
 }
 function createToolDelete(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
@@ -161,6 +178,8 @@ function createToolDelete(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
         type: SPELLMAKER_TOOL_DELETE,
         subType: "default",
         description: createMoreInfosPart(ctx, SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_DELETE].description),
+        level: 0,
+        totalDamage: 0,
     };
 }
 
@@ -169,6 +188,8 @@ function createToolSpellType(ctx: CanvasRenderingContext2D): SpellmakerCreateToo
         type: SPELLMAKER_TOOL_SPELL_TYPE,
         subType: "default",
         description: createMoreInfosPart(ctx, SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_SPELL_TYPE].description),
+        level: 0,
+        totalDamage: 0,
     };
 }
 

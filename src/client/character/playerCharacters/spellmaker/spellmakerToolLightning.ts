@@ -56,6 +56,8 @@ function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
         type: SPELLMAKER_TOOL_LIGHTNING,
         subType: "default",
         description: createMoreInfosPart(ctx, SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_LIGHTNING].description),
+        level: 0,
+        totalDamage: 0,
     };
 }
 
@@ -104,14 +106,14 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
     }
 }
 
-function spellCast(createObject: SpellmakerCreateToolObjectData, level: number, faction: string, abilityId: number, castPosition: Position, game: Game) {
+function spellCast(createObject: SpellmakerCreateToolObjectData, level: number, faction: string, abilityId: number, castPosition: Position, manaFactor: number, game: Game) {
     const lightning = createObject as CreateToolObjectLightningData;
     const damage = level * 1000 * lightning.damageFactor;
     const center: Position = {
         x: lightning.center.x + castPosition.x,
         y: lightning.center.y + castPosition.y,
     };
-    const lightningObject = createAbilityObjectSpellmakerLightning(faction, center, lightning.jumps, damage, abilityId, game);
+    const lightningObject = createAbilityObjectSpellmakerLightning(faction, center, lightning.jumps, damage, abilityId, manaFactor, [SPELLMAKER_TOOL_LIGHTNING], game);
     game.state.abilityObjects.push(lightningObject);
 }
 

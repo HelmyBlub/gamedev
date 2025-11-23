@@ -56,6 +56,8 @@ function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
         type: SPELLMAKER_TOOL_EXPLOSION,
         subType: "default",
         description: createMoreInfosPart(ctx, SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_EXPLOSION].description),
+        level: 0,
+        totalDamage: 0,
     };
 }
 
@@ -104,7 +106,7 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
     }
 }
 
-function spellCast(createObject: SpellmakerCreateToolObjectData, level: number, faction: string, abilityId: number, castPosition: Position, game: Game) {
+function spellCast(createObject: SpellmakerCreateToolObjectData, level: number, faction: string, abilityId: number, castPosition: Position, manaFactor: number, game: Game) {
     const explode = createObject as CreateToolObjectExplosionData;
     const damage = level * 500 * explode.damageFactor;
     const center: Position = {
