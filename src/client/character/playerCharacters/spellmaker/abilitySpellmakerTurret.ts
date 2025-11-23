@@ -35,6 +35,7 @@ export function createAbilityObjectSpellmakerTurret(
     position: Position,
     moveAttachment: SpellmakerCreateToolMoveAttachment | undefined,
     nextStage: SpellmakerCreateToolObjectData[],
+    maxDuration: number,
     mana: number,
     faction: string,
     abilityIdRef: number | undefined,
@@ -56,6 +57,7 @@ export function createAbilityObjectSpellmakerTurret(
         triggerManaCost: spellManaCost,
         triggerInterval: 250,
         triggerRadius: 200,
+        removeTime: gametime + maxDuration,
     };
 }
 

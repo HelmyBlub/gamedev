@@ -4,8 +4,7 @@ increase version
 current tasks:     
 - new class spellmaker
     - next steps?
-        - autocast each spell, not just the selected one
-            - autocast while in spellmaker mode
+        - play spellmaker, does it feel fun?
         - improve UX
             - put tool options to paintUI and paintAbove normal ability buttons
                 - problems:

@@ -16,6 +16,7 @@ export type SpellmakerCreateToolTurret = SpellmakerCreateTool & {
 }
 
 export const SPELLMAKER_TOOL_TURRET = "Turret";
+const MAX_DURATION = 60000;
 
 export function addSpellmakerToolTurret() {
     SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_TURRET] = {
@@ -34,6 +35,7 @@ export function addSpellmakerToolTurret() {
             "Tool: Turret",
             "Shoots at close enemies",
             "Shoots next stage attachments",
+            `Disappears after ${(MAX_DURATION / 1000).toFixed()}sec`,
             "Mouse move horizonzal: mana capacity",
             `can have move attach: Yes`,
             `can have next stage: Yes`,
@@ -119,7 +121,7 @@ function spellCast(createObject: SpellmakerCreateToolObjectData, level: number, 
         if (toolFunctions.getMoveAttachment) moveAttachment = toolFunctions.getMoveAttachment(createObject, castPosition, game);
     }
     const nextStage = spellmakerNextStageSetup(toolTurret.nextStage, level, toolTurret.center);
-    const objectTurret = createAbilityObjectSpellmakerTurret(center, moveAttachment, nextStage, toolTurret.mana, faction, abilityId, game.state.time);
+    const objectTurret = createAbilityObjectSpellmakerTurret(center, moveAttachment, nextStage, MAX_DURATION, toolTurret.mana, faction, abilityId, game.state.time);
     game.state.abilityObjects.push(objectTurret);
 }
 
