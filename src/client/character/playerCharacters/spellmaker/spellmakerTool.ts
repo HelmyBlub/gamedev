@@ -3,7 +3,7 @@ import { deepCopy } from "../../../game.js";
 import { Game, Position } from "../../../gameModel.js";
 import { paintTextWithOutline } from "../../../gamePaint.js";
 import { createMoreInfosPart, MoreInfoPart } from "../../../moreInfo.js";
-import { AbilitySpellmaker, SPELLMAKER_SPELLTYPE_AUTOCAST, SPELLMAKER_SPELLTYPE_INSTANT, SPELLMAKER_SPELLTYPES, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
+import { AbilitySpellmaker, abilitySpellmakerCalculateManaCost, abilitySpellmakerCalculateManaCostForSpellAndUpdateToolDisplay, SPELLMAKER_SPELLTYPE_AUTOCAST, SPELLMAKER_SPELLTYPE_INSTANT, SPELLMAKER_SPELLTYPES, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 
 export type SpellmakerCreateToolsData = {
     selectedToolIndex: number,
@@ -90,6 +90,7 @@ export function addSpellmakerToolsDefault() {
             "Reset Tool",
             "Resets Current Spell",
             "Displays current spells mana cost",
+            "Mana cost of current spell: 0",
         ],
         availableFromTheStart: true,
     };
@@ -132,6 +133,7 @@ export function spellmakerAddToolDamage(ability: AbilitySpellmaker, damage: numb
         tool.totalDamage += damage;
         tool.level = Math.floor(Math.max(0, Math.log2(tool.totalDamage / 100)));
     }
+    calculateManaFactorAndDamageFactor(ability);
 }
 
 export function spellmakerNextStageSetup(nextStage: SpellmakerCreateToolObjectData[] | undefined, level: number, castOffset: Position): SpellmakerCreateToolObjectData[] {
@@ -142,6 +144,18 @@ export function spellmakerNextStageSetup(nextStage: SpellmakerCreateToolObjectDa
         object.castPosOffset = { x: -castOffset.x, y: -castOffset.y };
     }
     return copy;
+}
+
+function calculateManaFactorAndDamageFactor(ability: AbilitySpellmaker) {
+    let totalLevel = 0;
+    for (let toolKey of ability.createTools.createTools) {
+        totalLevel += toolKey.level;
+    }
+    ability.manaLevelFactor = Math.pow(0.99, totalLevel);
+    ability.damageLevelFactor = Math.pow(1.05, totalLevel);
+    for (let spell of ability.spells) {
+        abilitySpellmakerCalculateManaCostForSpellAndUpdateToolDisplay(ability, spell);
+    }
 }
 
 function createToolStage(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
@@ -222,6 +236,11 @@ function onToolSelectStaging(tool: SpellmakerCreateTool, abilityOwner: AbilityOw
 function onToolSelectReset(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, game: Game): boolean {
     ability.spells[ability.spellIndex].createdObjects = [];
     ability.spells[ability.spellIndex].spellManaCost = 0;
+    const resetTool = ability.createTools.createTools.find(t => t.type === SPELLMAKER_TOOL_RESET);
+    if (resetTool) {
+        resetTool.description.texts[3] = resetTool.description.texts[3].substring(0, resetTool.description.texts[3].indexOf(":") + 1) + ` 0`;
+    }
+
     ability.spellmakeStage = 0;
     return false;
 }

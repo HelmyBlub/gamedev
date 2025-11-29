@@ -11,7 +11,7 @@ import { Character } from "../../characterModel.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../upgrade.js";
 import { CHARACTER_PET_TYPE_CLONE } from "../characterPetTypeClone.js";
 import { addAbilitySpellmakerUpgradeTools } from "./abilitySpellmakerUpgrades.js";
-import { addSpellmakerToolsDefault, SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateToolsData } from "./spellmakerTool.js";
+import { addSpellmakerToolsDefault, SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOL_RESET, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateToolsData } from "./spellmakerTool.js";
 import { addSpellmakerToolExplosion } from "./spellmakerToolExplosion.js";
 import { addSpellmakerToolFireline } from "./spellmakerToolFireLine.js";
 import { addSpellmakerToolLightning } from "./spellmakerToolLightning.js";
@@ -180,6 +180,14 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     }
 }
 
+export function abilitySpellmakerCalculateManaCostForSpellAndUpdateToolDisplay(ability: AbilitySpellmaker, spell: SpellmakerSpell) {
+    spell.spellManaCost = abilitySpellmakerCalculateManaCost(spell.createdObjects) * ability.manaLevelFactor;
+    const resetTool = ability.createTools.createTools.find(t => t.type === SPELLMAKER_TOOL_RESET);
+    if (resetTool) {
+        resetTool.description.texts[3] = resetTool.description.texts[3].substring(0, resetTool.description.texts[3].indexOf(":") + 1) + ` ${spell.spellManaCost.toFixed(2)}`;
+    }
+}
+
 export function abilitySpellmakerCalculateManaCost(createdObjects: SpellmakerCreateToolObjectData[]): number {
     let spellManaCost = 0;
     for (let createdObject of createdObjects) {
@@ -323,7 +331,7 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, castPosition:
                         if (result) {
                             if (abilitySm.spellmakeStage == 0) {
                                 currentSpell.createdObjects.push(result);
-                                currentSpell.spellManaCost = abilitySpellmakerCalculateManaCost(currentSpell.createdObjects) * abilitySm.manaLevelFactor;
+                                abilitySpellmakerCalculateManaCostForSpellAndUpdateToolDisplay(abilitySm, currentSpell);
                             } else if (abilitySm.attachToIndex != undefined) {
                                 let currentObject = currentSpell.createdObjects[abilitySm.attachToIndex[0]];
                                 let currentStage = 0;
@@ -336,7 +344,7 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, castPosition:
                                     }
                                 }
                                 currentObject.nextStage.push(result);
-                                currentSpell.spellManaCost = abilitySpellmakerCalculateManaCost(currentSpell.createdObjects) * abilitySm.manaLevelFactor;
+                                abilitySpellmakerCalculateManaCostForSpellAndUpdateToolDisplay(abilitySm, currentSpell);
                             }
                         }
                     }
@@ -357,7 +365,7 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, castPosition:
                                     }
                                 }
                                 currentObject.moveAttachment = result;
-                                currentSpell.spellManaCost = abilitySpellmakerCalculateManaCost(currentSpell.createdObjects) * abilitySm.manaLevelFactor;
+                                abilitySpellmakerCalculateManaCostForSpellAndUpdateToolDisplay(abilitySm, currentSpell);
                             }
                         }
                     }
