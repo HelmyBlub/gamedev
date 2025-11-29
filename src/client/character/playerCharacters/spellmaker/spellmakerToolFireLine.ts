@@ -122,10 +122,10 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
     }
 }
 
-function spellCast(createObject: SpellmakerCreateToolObjectData, level: number, faction: string, abilityId: number, castPosition: Position, manaFactor: number, game: Game) {
+function spellCast(createObject: SpellmakerCreateToolObjectData, level: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, game: Game) {
     const fireline = createObject as CreateToolObjectFireLineData;
     if (fireline.positions.length < 2) return;
-    const damage = level * 100;
+    const damage = level * 25 * damageFactor;
     const start: Position = {
         x: fireline.positions[0].x + castPosition.x,
         y: fireline.positions[0].y + castPosition.y,
@@ -143,7 +143,7 @@ function spellCast(createObject: SpellmakerCreateToolObjectData, level: number, 
     const width = 10;
     const duration = 5000;
     const tickInterval = 250;
-    const objectFireLine = createAbilityObjectSpellmakerFireLine(faction, start, joints, moveAttachment, damage, width, duration, moveSpeed, tickInterval, "red", manaFactor, [SPELLMAKER_TOOL_FIRELINE], abilityId, game);
+    const objectFireLine = createAbilityObjectSpellmakerFireLine(faction, start, joints, moveAttachment, damage, width, duration, moveSpeed, tickInterval, "red", damageFactor, manaFactor, [SPELLMAKER_TOOL_FIRELINE], abilityId, game);
     game.state.abilityObjects.push(objectFireLine);
 }
 

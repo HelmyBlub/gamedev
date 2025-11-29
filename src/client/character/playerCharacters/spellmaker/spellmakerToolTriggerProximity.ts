@@ -103,7 +103,7 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
     }
 }
 
-function spellCast(createObject: SpellmakerCreateToolObjectData, level: number, faction: string, abilityId: number, castPosition: Position, manaFactor: number, game: Game) {
+function spellCast(createObject: SpellmakerCreateToolObjectData, level: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, game: Game) {
     const toolProximity = createObject as CreateToolObjectProximityData;
     const center: Position = {
         x: toolProximity.center.x + castPosition.x,
@@ -115,7 +115,7 @@ function spellCast(createObject: SpellmakerCreateToolObjectData, level: number, 
         if (toolFunctions.getMoveAttachment) moveAttachment = toolFunctions.getMoveAttachment(createObject, castPosition, game);
     }
     const nextStage = spellmakerNextStageSetup(toolProximity.nextStage, level, toolProximity.center);
-    const objectProximity = createAbilityObjectSpellmakerProximity(center, toolProximity.radius, moveAttachment, nextStage, manaFactor, [SPELLMAKER_TOOL_PROXIMITY], faction, abilityId, game.state.time);
+    const objectProximity = createAbilityObjectSpellmakerProximity(center, toolProximity.radius, moveAttachment, nextStage, damageFactor, manaFactor, [SPELLMAKER_TOOL_PROXIMITY], faction, abilityId, game.state.time);
     game.state.abilityObjects.push(objectProximity);
 }
 

@@ -42,6 +42,7 @@ export function createAbilityObjectSpellmakerFireLine(
     moveSpeed: number,
     tickInterval: number,
     color: string,
+    damageFactor: number,
     manaFactor: number,
     toolChain: string[],
     abilityIdRef: number | undefined,
@@ -61,6 +62,7 @@ export function createAbilityObjectSpellmakerFireLine(
         moveAttachment: deepCopy(moveAttachment),
         endTime: game.state.time + duration,
         abilityIdRef: abilityIdRef,
+        damageFactor: damageFactor,
         manaFactor: manaFactor,
         toolChain: toolChain,
     };

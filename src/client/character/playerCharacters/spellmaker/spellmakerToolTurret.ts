@@ -111,7 +111,7 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
     }
 }
 
-function spellCast(createObject: SpellmakerCreateToolObjectData, level: number, faction: string, abilityId: number, castPosition: Position, manaFactor: number, game: Game) {
+function spellCast(createObject: SpellmakerCreateToolObjectData, level: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, game: Game) {
     const toolTurret = createObject as CreateToolObjectTurretData;
     const center: Position = {
         x: toolTurret.center.x + castPosition.x,
@@ -123,7 +123,7 @@ function spellCast(createObject: SpellmakerCreateToolObjectData, level: number, 
         if (toolFunctions.getMoveAttachment) moveAttachment = toolFunctions.getMoveAttachment(createObject, castPosition, game);
     }
     const nextStage = spellmakerNextStageSetup(toolTurret.nextStage, level, toolTurret.center);
-    const objectTurret = createAbilityObjectSpellmakerTurret(center, moveAttachment, nextStage, MAX_DURATION, toolTurret.mana, manaFactor, [SPELLMAKER_TOOL_TURRET], faction, abilityId, game.state.time);
+    const objectTurret = createAbilityObjectSpellmakerTurret(center, moveAttachment, nextStage, MAX_DURATION, toolTurret.mana, damageFactor, manaFactor, [SPELLMAKER_TOOL_TURRET], faction, abilityId, game.state.time);
     game.state.abilityObjects.push(objectTurret);
 }
 

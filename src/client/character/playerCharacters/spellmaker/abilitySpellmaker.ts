@@ -38,6 +38,7 @@ export type AbilitySpellmaker = Ability & {
 }
 export type AbilitySpellmakerObject = AbilityObject & {
     manaFactor: number,
+    damageFactor: number,
     toolChain: string[],
 }
 
@@ -386,7 +387,7 @@ function spellCast(abilityOwner: AbilityOwner, abilitySm: AbilitySpellmaker, spe
         abilitySm.mana -= currentSpell.spellManaCost;
         for (let createdObject of currentSpell.createdObjects) {
             const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[createdObject.type];
-            if (toolFunctions.spellCast) toolFunctions.spellCast(createdObject, abilitySm.level!.level, abilityOwner.faction, abilitySm.id, castPosition, abilitySm.manaLevelFactor, game);
+            if (toolFunctions.spellCast) toolFunctions.spellCast(createdObject, abilitySm.level!.level, abilityOwner.faction, abilitySm.id, castPosition, abilitySm.damageLevelFactor, abilitySm.manaLevelFactor, game);
         }
     }
 }
@@ -400,7 +401,7 @@ export function abilitySpellmakerCastNextStage(nextStage: SpellmakerCreateToolOb
                 pos.x += stageObject.castPosOffset.x;
                 pos.y += stageObject.castPosOffset.y;
             }
-            spellmakerFunctions.spellCast(stageObject, stageObject.level, abilityObject.faction, abilityObject.abilityIdRef!, pos, abilityObject.manaFactor, game);
+            spellmakerFunctions.spellCast(stageObject, stageObject.level, abilityObject.faction, abilityObject.abilityIdRef!, pos, abilityObject.damageFactor, abilityObject.manaFactor, game);
         }
     }
 }

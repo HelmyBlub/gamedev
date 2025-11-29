@@ -35,6 +35,7 @@ export function createAbilityObjectSpellmakerLightning(
     jumps: number,
     damage: number,
     abilityIdRef: number | undefined,
+    damageFactor: number,
     manaFactor: number,
     toolChain: string[],
     game: Game
@@ -50,6 +51,7 @@ export function createAbilityObjectSpellmakerLightning(
         jumpPositions: [],
         jumps: jumps,
         toolChain: toolChain,
+        damageFactor: damageFactor,
         manaFactor: manaFactor,
     };
 }

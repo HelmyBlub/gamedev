@@ -10,7 +10,7 @@ import { godCreateMoreInfos } from "./character/enemy/god/godEnemy.js";
 import { kingCreateMoreInfos } from "./character/enemy/kingEnemy.js";
 import { TAMER_PET_CHARACTER, TamerPetCharacter, createTamerPetsCharacterMoreInfos } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
 import { createCombatLogMoreInfo, createDamageMeterMoreInfo } from "./combatlog.js";
-import { findClosestInteractable, getRelativeMousePoistion } from "./game.js";
+import { deepCopy, findClosestInteractable, getRelativeMousePoistion } from "./game.js";
 import { Game, Position } from "./gameModel.js";
 import { createHighscoresMoreInfos } from "./highscores.js";
 import { createMoreInfosForMabObject } from "./map/mapObjects.js";
@@ -62,7 +62,7 @@ export function createMoreInfosPart(ctx: CanvasRenderingContext2D, texts: string
     return {
         fontSize: fontSize,
         height: height,
-        texts: texts,
+        texts: deepCopy(texts),
         width: width,
         group: group,
         hoverText: hoverTexts,

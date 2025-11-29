@@ -37,6 +37,7 @@ export function createAbilityObjectSpellmakerProximity(
     triggerRadius: number,
     moveAttachment: SpellmakerCreateToolMoveAttachment | undefined,
     nextStage: SpellmakerCreateToolObjectData[],
+    damageFactor: number,
     manaFactor: number,
     toolChain: string[],
     faction: string,
@@ -57,6 +58,7 @@ export function createAbilityObjectSpellmakerProximity(
         moveAttachment: deepCopy(moveAttachment),
         nextStage: nextStage,
         latestTriggerTime: gametime + 10_000,
+        damageFactor: damageFactor,
         manaFactor: manaFactor,
         toolChain: toolChain,
     };

@@ -38,6 +38,7 @@ export function createAbilityObjectSpellmakerTurret(
     nextStage: SpellmakerCreateToolObjectData[],
     maxDuration: number,
     mana: number,
+    damageFactor: number,
     manaFactor: number,
     toolChain: string[],
     faction: string,
@@ -61,6 +62,7 @@ export function createAbilityObjectSpellmakerTurret(
         triggerInterval: 250,
         triggerRadius: 200,
         removeTime: gametime + maxDuration,
+        damageFactor: damageFactor,
         manaFactor: manaFactor,
         toolChain: toolChain,
     };

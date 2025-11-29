@@ -44,7 +44,7 @@ export type SpellmakerToolFunctions = {
     onToolSelect?: (tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, game: Game) => boolean, // return false if it should no be selectable
     paint?: (ctx: CanvasRenderingContext2D, createObject: SpellmakerCreateToolObjectData, ownerPaintPos: Position, ability: AbilitySpellmaker, game: Game) => void,
     paintButton?: (ctx: CanvasRenderingContext2D, buttonPaintPos: Position, ability: AbilitySpellmaker, game: Game) => void,
-    spellCast?: (createObject: SpellmakerCreateToolObjectData, level: number, faction: string, abilityId: number, castPosition: Position, manaFactor: number, game: Game) => void,
+    spellCast?: (createObject: SpellmakerCreateToolObjectData, level: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, game: Game) => void,
     calculateManaCostIncludesNextStage?: boolean,
     canHaveNextStage?: boolean,
     canHaveMoveAttachment?: boolean,
@@ -131,7 +131,16 @@ export function spellmakerAddToolDamage(ability: AbilitySpellmaker, damage: numb
         const tool = ability.createTools.createTools.find(t => t.type === toolKey);
         if (!tool) continue;
         tool.totalDamage += damage;
-        tool.level = Math.floor(Math.max(0, Math.log2(tool.totalDamage / 100)));
+        const beforeLevel = tool.level;
+        tool.level = Math.max(0, Math.log2(tool.totalDamage / 100));
+        if (Math.floor(beforeLevel * 10) < Math.floor(tool.level * 10)) {
+            const index = tool.description.texts[0].indexOf("(Level ");
+            if (index > - 1) {
+                tool.description.texts[0] = tool.description.texts[0].substring(0, index + 7) + `${tool.level.toFixed(1)})`;
+            } else {
+                tool.description.texts[0] += ` (Level ${tool.level.toFixed(1)})`;
+            }
+        }
     }
     calculateManaFactorAndDamageFactor(ability);
 }
@@ -149,7 +158,7 @@ export function spellmakerNextStageSetup(nextStage: SpellmakerCreateToolObjectDa
 function calculateManaFactorAndDamageFactor(ability: AbilitySpellmaker) {
     let totalLevel = 0;
     for (let toolKey of ability.createTools.createTools) {
-        totalLevel += toolKey.level;
+        totalLevel += Math.floor(toolKey.level);
     }
     ability.manaLevelFactor = Math.pow(0.99, totalLevel);
     ability.damageLevelFactor = Math.pow(1.05, totalLevel);
