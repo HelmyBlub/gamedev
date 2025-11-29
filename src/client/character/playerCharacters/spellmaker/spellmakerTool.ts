@@ -187,7 +187,7 @@ function createToolSpellType(ctx: CanvasRenderingContext2D): SpellmakerCreateToo
     return {
         type: SPELLMAKER_TOOL_SPELL_TYPE,
         subType: "default",
-        description: createMoreInfosPart(ctx, SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_SPELL_TYPE].description),
+        description: createMoreInfosPart(ctx, deepCopy(SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_SPELL_TYPE].description)),
         level: 0,
         totalDamage: 0,
     };
