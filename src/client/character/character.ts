@@ -496,6 +496,7 @@ export function getCharactersTouchingLine(game: Game, lineStart: Position, lineE
         const chunks: MapChunk[] = getChunksTouchingLine(game.state.map, lineStart, lineEnd, lineWidth + enemyMaxWidth);
         for (let chunk of chunks) {
             for (let char of chunk.characters) {
+                if (char.state !== "alive") continue;
                 const distance = calculateDistancePointToLine(char, lineStart, lineEnd);
                 if (distance < char.width / 2 + lineWidth / 2) {
                     charactersTouchingLine.push(char);
@@ -503,6 +504,7 @@ export function getCharactersTouchingLine(game: Game, lineStart: Position, lineE
             }
         }
         for (let boss of game.state.bossStuff.bosses) {
+            if (boss.state !== "alive") continue;
             const distance = calculateDistancePointToLine(boss, lineStart, lineEnd);
             if (distance < boss.width / 2 + lineWidth / 2) {
                 charactersTouchingLine.push(boss);
@@ -512,6 +514,7 @@ export function getCharactersTouchingLine(game: Game, lineStart: Position, lineE
     if (excludeFaction !== FACTION_PLAYER) {
         const playerCharacters = getPlayerCharacters(game.state.players);
         for (let player of playerCharacters) {
+            if (player.state !== "alive") continue;
             const distance = calculateDistancePointToLine(player, lineStart, lineEnd);
             if (distance < player.width / 2 + lineWidth / 2) {
                 charactersTouchingLine.push(player);

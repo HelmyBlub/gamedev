@@ -9,6 +9,7 @@ import { createBossUpgradeOptionsAbilityLeveling, executeAbilityLevelingCharacte
 import { CharacterClass, paintPlayerAbilityLevelUI, PLAYER_CHARACTER_CLASSES_FUNCTIONS } from "../playerCharacters.js";
 import { ABILITY_NAME_SPELLMAKER, AbilitySpellmaker, addAbilitySpellmaker } from "./abilitySpellmaker.js";
 import { ABILITY_NAME_SPELLMAKER_CHANGE_MODE, addAbilitySpellmakerChangeMode } from "./abilitySpellmakerChangeMode.js";
+import { addAbilitySpellmakerExplode } from "./abilitySpellmakerExplode.js";
 import { addAbilitySpellmakerFireLine } from "./abilitySpellmakerFireLine.js";
 import { addAbilitySpellmakerLightning } from "./abilitySpellmakerLightning.js";
 import { addAbilitySpellmakerProximity } from "./abilitySpellmakerProximity.js";
@@ -34,6 +35,7 @@ export function addSpellmakerClass() {
     addAbilitySpellmakerFireLine();
     addAbilitySpellmakerProximity();
     addAbilitySpellmakerLightning();
+    addAbilitySpellmakerExplode();
     addAbilitySpellmakerTurret();
 }
 

@@ -5,6 +5,7 @@ import { AbilitySpellmaker, SpellmakerCreateToolObjectData } from "./abilitySpel
 import { SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
 import { createAbilityObjectExplode } from "../../../ability/abilityExplode.js";
 import { createMoreInfosPart } from "../../../moreInfo.js";
+import { createAbilityObjectSpellmakerExplode } from "./abilitySpellmakerExplode.js";
 
 type CreateToolObjectExplosionData = SpellmakerCreateToolObjectData & {
     radius: number,
@@ -113,7 +114,7 @@ function spellCast(createObject: SpellmakerCreateToolObjectData, level: number, 
         x: explode.center.x + castPosition.x,
         y: explode.center.y + castPosition.y,
     };
-    const explodeObject = createAbilityObjectExplode(center, damage, explode.radius, faction, abilityId, 0, game);
+    const explodeObject = createAbilityObjectSpellmakerExplode(center, damage, explode.radius, faction, damageFactor, manaFactor, [SPELLMAKER_TOOL_EXPLOSION], abilityId, 0, game);
     game.state.abilityObjects.push(explodeObject);
 }
 

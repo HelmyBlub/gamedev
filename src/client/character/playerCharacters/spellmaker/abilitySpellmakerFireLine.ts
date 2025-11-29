@@ -1,11 +1,11 @@
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, PaintOrderAbility } from "../../../ability/ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, findAbilityAndOwnerInCharacterById, PaintOrderAbility } from "../../../ability/ability.js";
 import { getNextId, getCameraPosition, deepCopy } from "../../../game.js";
 import { FACTION_ENEMY, FACTION_PLAYER, Game, IdCounter, Position } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
 import { getCharactersTouchingLine, characterTakeDamage } from "../../character.js";
 import { Character } from "../../characterModel.js";
-import { AbilitySpellmakerObject, SpellmakerCreateToolMoveAttachment } from "./abilitySpellmaker.js";
-import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS } from "./spellmakerTool.js";
+import { AbilitySpellmaker, AbilitySpellmakerObject, SpellmakerCreateToolMoveAttachment } from "./abilitySpellmaker.js";
+import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, spellmakerAddToolDamage } from "./spellmakerTool.js";
 
 export type AbilitySpellmakerFireLine = Ability & {
 }
@@ -130,10 +130,18 @@ function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
     }
     if (objectFireLine.nextTickTime <= game.state.time) {
         let linePartStart: Position = { x: objectFireLine.x, y: objectFireLine.y };
+        let ability: AbilitySpellmaker | undefined = undefined;
+        if (abilityObject.abilityIdRef !== undefined) {
+            for (let player of game.state.players) {
+                const result = findAbilityAndOwnerInCharacterById(player.character, abilityObject.abilityIdRef);
+                if (result) ability = result.ability as AbilitySpellmaker;
+            }
+        }
         for (let joint of objectFireLine.fireLineJoints) {
             const characters: Character[] = getCharactersTouchingLine(game, linePartStart, joint, abilityObject.faction, objectFireLine.width);
             for (let char of characters) {
                 characterTakeDamage(char, objectFireLine.damage, game, objectFireLine.abilityIdRef, abilityObject.type, objectFireLine);
+                if (ability) spellmakerAddToolDamage(ability, objectFireLine.damage, objectFireLine.toolChain, game);
             }
             linePartStart = joint;
         }
