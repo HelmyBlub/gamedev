@@ -3,7 +3,6 @@ increase version
 
 current tasks:     
 - new class spellmaker
-    - bug: autocast description adds itself each restart making it appear more and more times
     - bug: gamecrash on line: "currentAutoCast.spellType === SPELLMAKER_SPELLTYPE_AUTOCAST" being undefined
     - next steps?
         - when a tool is doing damage it levels up and makes the ability more mana efficient and damage multiply

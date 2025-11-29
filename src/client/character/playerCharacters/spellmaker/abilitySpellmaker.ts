@@ -156,7 +156,7 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     }
     if (abilitySm.autoCastSpellIndex !== undefined) {
         const currentAutoCast = abilitySm.spells[abilitySm.autoCastSpellIndex];
-        if (currentAutoCast.spellType === SPELLMAKER_SPELLTYPE_AUTOCAST) {
+        if (currentAutoCast && currentAutoCast.spellType === SPELLMAKER_SPELLTYPE_AUTOCAST) {
             if (abilitySm.mana >= abilitySm.maxMana - 1 && currentAutoCast.spellManaCost < abilitySm.maxMana) {
                 spellCast(abilityOwner, abilitySm, abilitySm.autoCastSpellIndex, abilityOwner, game);
                 for (let i = 1; i < abilitySm.spells.length; i++) {
@@ -166,6 +166,14 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
                         abilitySm.autoCastSpellIndex = nextIndex;
                         break;
                     }
+                }
+            }
+        } else {
+            abilitySm.autoCastSpellIndex = undefined;
+            for (let i = 0; i < abilitySm.spells.length; i++) {
+                if (abilitySm.spells[i].spellType === SPELLMAKER_SPELLTYPE_AUTOCAST) {
+                    abilitySm.autoCastSpellIndex = i;
+                    break;
                 }
             }
         }
