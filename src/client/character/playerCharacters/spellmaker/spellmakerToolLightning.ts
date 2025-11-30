@@ -106,14 +106,14 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
     }
 }
 
-function spellCast(createObject: SpellmakerCreateToolObjectData, level: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, game: Game) {
+function spellCast(createObject: SpellmakerCreateToolObjectData, level: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, toolChain: string[], game: Game) {
     const lightning = createObject as CreateToolObjectLightningData;
     const damage = level * 100 * lightning.damageFactor * damageFactor;
     const center: Position = {
         x: lightning.center.x + castPosition.x,
         y: lightning.center.y + castPosition.y,
     };
-    const lightningObject = createAbilityObjectSpellmakerLightning(faction, center, lightning.jumps, damage, abilityId, damageFactor, manaFactor, [SPELLMAKER_TOOL_LIGHTNING], game);
+    const lightningObject = createAbilityObjectSpellmakerLightning(faction, center, lightning.jumps, damage, abilityId, damageFactor, manaFactor, [...toolChain], game);
     game.state.abilityObjects.push(lightningObject);
 }
 

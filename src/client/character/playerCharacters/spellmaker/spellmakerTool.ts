@@ -44,7 +44,7 @@ export type SpellmakerToolFunctions = {
     onToolSelect?: (tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, game: Game) => boolean, // return false if it should no be selectable
     paint?: (ctx: CanvasRenderingContext2D, createObject: SpellmakerCreateToolObjectData, ownerPaintPos: Position, ability: AbilitySpellmaker, game: Game) => void,
     paintButton?: (ctx: CanvasRenderingContext2D, buttonPaintPos: Position, ability: AbilitySpellmaker, game: Game) => void,
-    spellCast?: (createObject: SpellmakerCreateToolObjectData, level: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, game: Game) => void,
+    spellCast?: (createObject: SpellmakerCreateToolObjectData, level: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, toolChain: string[], game: Game) => void,
     calculateManaCostIncludesNextStage?: boolean,
     canHaveNextStage?: boolean,
     canHaveMoveAttachment?: boolean,

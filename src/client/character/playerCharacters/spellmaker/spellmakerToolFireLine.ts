@@ -122,10 +122,11 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
     }
 }
 
-function spellCast(createObject: SpellmakerCreateToolObjectData, level: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, game: Game) {
+function spellCast(createObject: SpellmakerCreateToolObjectData, level: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, toolChain: string[], game: Game) {
     const fireline = createObject as CreateToolObjectFireLineData;
     if (fireline.positions.length < 2) return;
     const damage = level * 25 * damageFactor;
+    const newToolChain: string[] = [...toolChain];
     const start: Position = {
         x: fireline.positions[0].x + castPosition.x,
         y: fireline.positions[0].y + castPosition.y,
@@ -137,13 +138,16 @@ function spellCast(createObject: SpellmakerCreateToolObjectData, level: number, 
     let moveAttachment: SpellmakerCreateToolMoveAttachment | undefined = undefined;
     if (fireline.moveAttachment) {
         const toolFunctions = SPELLMAKER_MOVE_TOOLS_FUNCTIONS[fireline.moveAttachment.type];
-        if (toolFunctions.getMoveAttachment) moveAttachment = toolFunctions.getMoveAttachment(createObject, castPosition, game);
+        if (toolFunctions.getMoveAttachment) {
+            if (!newToolChain.includes(fireline.moveAttachment.type)) newToolChain.push(fireline.moveAttachment.type);
+            moveAttachment = toolFunctions.getMoveAttachment(createObject, castPosition, game);
+        }
     }
     const moveSpeed = 2;
     const width = 10;
     const duration = 5000;
     const tickInterval = 250;
-    const objectFireLine = createAbilityObjectSpellmakerFireLine(faction, start, joints, moveAttachment, damage, width, duration, moveSpeed, tickInterval, "red", damageFactor, manaFactor, [SPELLMAKER_TOOL_FIRELINE], abilityId, game);
+    const objectFireLine = createAbilityObjectSpellmakerFireLine(faction, start, joints, moveAttachment, damage, width, duration, moveSpeed, tickInterval, "red", damageFactor, manaFactor, newToolChain, abilityId, game);
     game.state.abilityObjects.push(objectFireLine);
 }
 
