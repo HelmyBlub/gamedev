@@ -3,9 +3,7 @@ increase version
 
 current tasks:     
 - new class spellmaker
-    - next steps?
-        - when a tool is doing damage it levels up and makes the ability more mana efficient and damage multiply
-            - toolChain needs to be filled correctly to determine which tool gets damage contribution
+    - next steps
         - balance stuff
         - improve UX
             - put tool options to paintUI and paintAbove normal ability buttons

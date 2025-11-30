@@ -109,7 +109,7 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
 
 function spellCast(createObject: SpellmakerCreateToolObjectData, level: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, toolChain: string[], game: Game) {
     const explode = createObject as CreateToolObjectExplosionData;
-    const damage = level * 100 * explode.damageFactor * damageFactor;
+    const damage = level * 10 * explode.damageFactor * damageFactor;
     const center: Position = {
         x: explode.center.x + castPosition.x,
         y: explode.center.y + castPosition.y,

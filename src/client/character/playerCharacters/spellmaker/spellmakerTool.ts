@@ -161,7 +161,7 @@ function calculateManaFactorAndDamageFactor(ability: AbilitySpellmaker) {
         totalLevel += Math.floor(toolKey.level);
     }
     ability.manaLevelFactor = Math.pow(0.99, totalLevel);
-    ability.damageLevelFactor = Math.pow(1.05, totalLevel);
+    ability.damageLevelFactor = 1 + 0.1 * totalLevel;
     for (let spell of ability.spells) {
         abilitySpellmakerCalculateManaCostForSpellAndUpdateToolDisplay(ability, spell);
     }
