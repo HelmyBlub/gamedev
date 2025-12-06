@@ -153,7 +153,7 @@ function paintAbilityAccessoire(ctx: CanvasRenderingContext2D, ability: Ability,
 function tickAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     const abilityBall = ability as AbilityLightningBall;
     if (abilityOwner.debuffs) {
-        const ballPhysics: BuffBallPhysics | undefined = abilityOwner.debuffs.find((d) => d.name === BUFF_NAME_BALL_PHYSICS) as any;
+        const ballPhysics = abilityOwner.debuffs.find((d) => d.name === BUFF_NAME_BALL_PHYSICS);
         if (ballPhysics) return;
     }
     if (nextRandom(game.state.randomSeed) > 0.5) return; // randomized so bounce ball and lightning ball get both cast
@@ -184,7 +184,7 @@ function castLightningBall(abilityOwner: AbilityOwner, ability: Ability, castPos
     }
 
     const buffBallPhyscis = createBuffBallPhysics(ability.id, ability.name);
-    applyDebuff(buffBallPhyscis, abilityOwner as any, game);
+    applyDebuff(buffBallPhyscis, abilityOwner as Character, game);
     abilityLightningBall.moveDirection = calculateDirection(abilityOwner, castPosition);
     abilityLightningBall.currentCharges--;
     if (abilityLightningBall.firstJumpDelay) {
@@ -330,7 +330,7 @@ function jumpTick(abilityLightningBall: AbilityLightningBall, abilityOwner: Abil
         return false;
     } else {
         lightningBallUpgradeIceAuraExecute(abilityLightningBall, abilityOwner, game);
-        removeCharacterDebuff(ballBuff, abilityOwner as any, game);
+        removeCharacterDebuff(ballBuff, abilityOwner as Character, game);
         return true;
     }
 }

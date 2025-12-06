@@ -154,7 +154,7 @@ function paintAbilityAccessoire(ctx: CanvasRenderingContext2D, ability: Ability,
 
 function tickAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     if (abilityOwner.debuffs) {
-        const ballPhysics: BuffBallPhysics | undefined = abilityOwner.debuffs.find((d) => d.name === BUFF_NAME_BALL_PHYSICS) as any;
+        const ballPhysics = abilityOwner.debuffs.find((d) => d.name === BUFF_NAME_BALL_PHYSICS);
         if (ballPhysics) return;
     }
     if (nextRandom(game.state.randomSeed) > 0.5) return; // randomized so bounce ball and lightning ball get both cast
@@ -188,12 +188,12 @@ function castBounceBall(abilityOwner: AbilityOwner, ability: Ability, castPositi
     const buffBallPhyscis = createBuffBallPhysics(ability.id, ability.name);
     let keepCurrentSpeed = false;
     if (abilityOwner.debuffs) {
-        const ballPhysics: BuffBallPhysics = abilityOwner.debuffs.find((d) => d.name === BUFF_NAME_BALL_PHYSICS) as any;
+        const ballPhysics = abilityOwner.debuffs.find((d) => d.name === BUFF_NAME_BALL_PHYSICS) as BuffBallPhysics;
         if (ballPhysics && ballPhysics.abilityRefName === ability.name) {
             keepCurrentSpeed = true;
         }
     }
-    applyDebuff(buffBallPhyscis, abilityOwner as any, game);
+    applyDebuff(buffBallPhyscis, abilityOwner as Character, game);
     abilityBounceBallUpgradeFireLineStart(abilityBounceBall, abilityOwner, game);
     if (abilityBounceBall.currentSpeed < abilityBounceBall.startSpeed || !keepCurrentSpeed) {
         abilityBounceBall.currentSpeed = abilityBounceBall.startSpeed;
@@ -377,7 +377,7 @@ function speedDrecreaseTick(abilityBounceBall: AbilityBounceBall, abilityOwner: 
     abilityBounceBall.currentSpeed -= tickSpeedDecrease;
     abilityBounceBall.currentSpeedDecrease += abilityBounceBall.speedDecreaseIncrease;
     if (abilityBounceBall.currentSpeed <= abilityBounceBall.stopSpeed) {
-        removeCharacterDebuff(ballBuff, abilityOwner as any, game);
+        removeCharacterDebuff(ballBuff, abilityOwner as Character, game);
         return;
     }
 }

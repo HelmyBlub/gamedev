@@ -74,7 +74,7 @@ export function gameRestart(game: Game) {
     if (game.testing.record) {
         const record = game.testing.record;
         if (record.restartPlayerInput) record.data.replayPlayerInputs.push(record.restartPlayerInput);
-        const restart: CommandRestart = record.data.replayPlayerInputs[0] as any;
+        const restart = record.data.replayPlayerInputs[0] as CommandRestart;
         if (restart.command && restart.command === COMMAND_RESTART) {
             restart.testRandomStartSeed = game.state.randomSeed.seed;
             restart.testEnemyTypeDirectionSeed = game.state.enemyTypeDirectionSeed;
