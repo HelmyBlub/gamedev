@@ -147,7 +147,7 @@ export function replayReplayData(game: Game, replayData: ReplayData): boolean {
         startCommand.replay = true;
         handleCommand(game, startCommand);
     } else {
-        handleCommand(game, { command: "restart", clientId: game.multiplayer.myClientId, testing: true });
+        handleCommand(game, { command: "restart", clientId: game.multiplayer.myClientId });
     }
     return true;
 }
@@ -232,7 +232,7 @@ async function runGameWithPlayerInputsMultiplayer(game: Game, playerInputs: Play
     await waitForMultiplayerConnections;
 
     game.state.ended = true;
-    handleCommand(game, { command: "restart", clientId: game.multiplayer.myClientId, testing: true });
+    handleCommand(game, { command: "restart", clientId: game.multiplayer.myClientId });
     const waitForRestart = getUntilPromise(() => {
         for (const tGame of games) {
             if (tGame.state.ended) return false;

@@ -2,7 +2,7 @@ import { ABILITIES_FUNCTIONS, Ability, ABILITY_DEFAULT_SMALL_GROUP, AbilityOwner
 import { IMAGE_NAME_SWITCH } from "../../../ability/musician/abilityMusicSheetChangeInstrument.js";
 import { getNextId } from "../../../game.js";
 import { Game, IdCounter, Position } from "../../../gameModel.js";
-import { playerInputBindingToDisplayValue } from "../../../input/playerInput.js";
+import { PlayerAbilityActionData, playerInputBindingToDisplayValue } from "../../../input/playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../../moreInfo.js";
 import { ABILITY_NAME_SPELLMAKER, AbilitySpellmaker } from "./abilitySpellmaker.js";
 
@@ -36,8 +36,8 @@ function paintAbilityUI(ctx: CanvasRenderingContext2D, ability: Ability, drawSta
     paintAbilityUiDefault(ctx, ability, drawStartX, drawStartY, size, game, IMAGE_NAME_SWITCH);
 }
 
-function castAbility(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, castPositionRelativeToCharacter: Position | undefined, isKeydown: boolean, game: Game) {
-    if (!isKeydown) return;
+function castAbility(abilityOwner: AbilityOwner, ability: Ability, data: PlayerAbilityActionData, game: Game) {
+    if (!data.isKeydown) return;
     if (!abilityOwner.abilities) return;
     for (let abilityIter of abilityOwner.abilities) {
         if (abilityIter.name === ABILITY_NAME_SPELLMAKER) {

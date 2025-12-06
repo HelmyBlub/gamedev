@@ -32,7 +32,7 @@ import { addAbilityBounceBall } from "./ball/abilityBounceBall.js"
 import { addAbilityLightningBall } from "./ball/abilityLightningBall.js"
 import { addAbilityLightningStrikes } from "./abilityLightningStrikes.js"
 import { addAbilitySnipeReload } from "./snipe/abilitySnipeReload.js"
-import { playerInputBindingToDisplayValue } from "../input/playerInput.js"
+import { PlayerAbilityActionData, PlayerActionData, playerInputBindingToDisplayValue } from "../input/playerInput.js"
 import { addAbilityUnleashPet } from "./petTamer/abilityUnleashPet.js"
 import { Leveling } from "../character/playerCharacters/levelingCharacter.js"
 import { AbilityUiRectangle, CharacterClass } from "../character/playerCharacters/playerCharacters.js"
@@ -89,8 +89,13 @@ export type AbilityOwner = Position & Partial<Character> & {
     id: number,
 }
 
+export type DefaultAbilityCastData = PlayerAbilityActionData & {
+    castPosition?: Position,
+    castPositionRelativeToCharacter?: Position,
+}
+
 export type AbilityFunctions = {
-    activeAbilityCast?: (abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, castPositionRelativeToCharacter: Position | undefined, isKeydown: boolean, game: Game) => void,
+    activeAbilityCast?: (abilityOwner: AbilityOwner, ability: Ability, data: DefaultAbilityCastData, game: Game) => void,
     canObjectHitMore?: (abilityObject: AbilityObject) => boolean,
     createAbility: (idCounter: IdCounter, playerInputBinding?: string) => Ability,
     createAbilityUpgradeOptions?: (ability: Ability) => UpgradeOptionAndProbability[],

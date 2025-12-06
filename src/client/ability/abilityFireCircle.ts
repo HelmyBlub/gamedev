@@ -1,9 +1,9 @@
 import { calculateDirection, calculateDistance, getCameraPosition, getNextId } from "../game.js";
 import { FACTION_ENEMY, FACTION_PLAYER, Game, IdCounter, Position } from "../gameModel.js";
 import { getPointPaintPosition } from "../gamePaint.js";
-import { playerInputBindingToDisplayValue } from "../input/playerInput.js";
+import { PlayerAbilityActionData, playerInputBindingToDisplayValue } from "../input/playerInput.js";
 import { nextRandom } from "../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectAbilityObjectCircleToCharacterHit, PaintOrderAbility, AbilityObjectCircle, paintAbilityUiKeyBind } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectAbilityObjectCircleToCharacterHit, PaintOrderAbility, AbilityObjectCircle, paintAbilityUiKeyBind, DefaultAbilityCastData } from "./ability.js";
 
 export const ABILITY_NAME_FIRE_CIRCLE = "FireCircle";
 export type AbilityFireCircle = Ability & {
@@ -213,8 +213,12 @@ function autoCastAbility(abilityOwner: AbilityOwner, abilityFireCircle: AbilityF
         x: abilityOwner.x + nextRandom(game.state.randomSeed) * areaSize * 2 - areaSize,
         y: abilityOwner.y + nextRandom(game.state.randomSeed) * areaSize * 2 - areaSize
     };
-
-    castFireCircle(abilityOwner, abilityFireCircle, castRandomPosition, undefined, true, game);
+    const defaultData: DefaultAbilityCastData = {
+        action: "AI",
+        isKeydown: true,
+        castPosition: castRandomPosition,
+    };
+    castFireCircle(abilityOwner, abilityFireCircle, defaultData, game);
 }
 
 function paintAbilityFireCircleUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
@@ -276,10 +280,11 @@ function deleteObjectFireCircle(abilityObject: AbilityObject, game: Game): boole
     }
 }
 
-function castFireCircle(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, castPositionRelativeToCharacter: Position | undefined, isKeydown: boolean, game: Game) {
-    if (!isKeydown) return;
+function castFireCircle(abilityOwner: AbilityOwner, ability: Ability, data: PlayerAbilityActionData, game: Game) {
+    if (!data.isKeydown) return;
     const abilityFireCircle = ability as AbilityFireCircle;
     if (abilityFireCircle.currentCharges > 0) {
+        const castPosition = (data as DefaultAbilityCastData).castPosition!;
         game.state.abilityObjects.push(createObjectFireCircleTraveling(
             castPosition.x,
             castPosition.y,

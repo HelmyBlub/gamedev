@@ -270,11 +270,12 @@ function touchMoveEnd(touch: Touch, game: Game) {
         const moveData: MoveData = {
             direction: 0,
             faktor: 0,
+            action: MOVE_ACTION,
         }
         handleCommand(game, {
             command: "playerInput",
             clientId: clientId,
-            data: { ...moveData, action: MOVE_ACTION },
+            data: moveData,
         });
     }
 }
@@ -294,11 +295,12 @@ function touchMoveActionMove(touch: Touch, game: Game) {
     const moveData: MoveData = {
         direction: direction,
         faktor: 1,
+        action: MOVE_ACTION,
     }
     handleCommand(game, {
         command: "playerInput",
         clientId: clientId,
-        data: { ...moveData, action: MOVE_ACTION },
+        data: moveData,
     });
 }
 

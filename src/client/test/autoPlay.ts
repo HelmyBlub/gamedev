@@ -65,13 +65,14 @@ function autoMove(game: Game) {
 
         } else {
             const moveData: MoveData = {
+                action: MOVE_ACTION,
                 direction: Math.floor(Math.random() * 4) * Math.PI * 2,
-                faktor: 1,
+                faktor: Math.random() > 0.5 ? 1 : 0,
             }
             handleCommand(game, {
                 command: "playerInput",
                 clientId: game.multiplayer.myClientId,
-                data: { ...moveData, action: MOVE_ACTION, isKeydown: Math.random() > 0.5 },
+                data: moveData,
             });
         }
     }

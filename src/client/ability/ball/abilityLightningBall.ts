@@ -7,10 +7,10 @@ import { calcNewPositionMovedInDirection, calculateDirection, findClientInfoByCh
 import { Position, Game, IdCounter, FACTION_ENEMY, ClientInfo, FACTION_PLAYER } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { calculateMovePosition, getFirstBlockingGameMapTilePositionTouchingLine, isMoveFromToBlocking } from "../../map/map.js";
-import { playerInputBindingToDisplayValue } from "../../input/playerInput.js";
+import { PlayerAbilityActionData, playerInputBindingToDisplayValue } from "../../input/playerInput.js";
 import { fixedRandom, nextRandom } from "../../randomNumberGenerator.js";
 import { MoreInfoHoverTexts, MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectSomethingToCharacterHit, getAbilityNameUiText, paintAbilityUiDefault, paintAbilityUiKeyBind } from "../ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, DefaultAbilityCastData, detectSomethingToCharacterHit, getAbilityNameUiText, paintAbilityUiDefault, paintAbilityUiKeyBind } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
 import { ABILITY_LIGHTNING_BALL_UPGRADE_BOUNCE_BONUS, addAbilityLightningBallUpgradeBounceBonus, lightningBallUpgradeBounceBonusGetBonusDamageFactor, lightningBallUpgradeBounceBonusSetBonusDamageFactor } from "./abilityLightningBallUpgradeBounceBonus.js";
 import { addAbilityLightningBallUpgradeHpLeach, lightningBallUpgradeHpLeachExecute } from "./abilityLightningBallUpgradeHpLeach.js";
@@ -164,8 +164,12 @@ function tickAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     if (abilityOwner.moveDirection) {
         pos = calculateMovePosition(abilityOwner, abilityOwner.moveDirection, 1, false);
     }
-
-    castLightningBall(abilityOwner, ability, pos, undefined, true, game);
+    const defaultData: DefaultAbilityCastData = {
+        action: "AI",
+        isKeydown: true,
+        castPosition: pos,
+    };
+    castLightningBall(abilityOwner, ability, defaultData, game);
 }
 
 function resetAbility(ability: Ability) {
@@ -174,8 +178,8 @@ function resetAbility(ability: Ability) {
     ball.currentCharges = ball.maxCharges;
 }
 
-function castLightningBall(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, castPositionRelativeToCharacter: Position | undefined, isKeydown: boolean, game: Game) {
-    if (!isKeydown) return;
+function castLightningBall(abilityOwner: AbilityOwner, ability: Ability, data: PlayerAbilityActionData, game: Game) {
+    if (!data.isKeydown) return;
     const abilityLightningBall = ability as AbilityLightningBall;
     if (abilityLightningBall.currentCharges <= 0) {
         const timeUntil = abilityLightningBall.nextRechargeTime! - game.state.time;
@@ -185,6 +189,7 @@ function castLightningBall(abilityOwner: AbilityOwner, ability: Ability, castPos
 
     const buffBallPhyscis = createBuffBallPhysics(ability.id, ability.name);
     applyDebuff(buffBallPhyscis, abilityOwner as Character, game);
+    const castPosition = (data as DefaultAbilityCastData).castPosition!;
     abilityLightningBall.moveDirection = calculateDirection(abilityOwner, castPosition);
     abilityLightningBall.currentCharges--;
     if (abilityLightningBall.firstJumpDelay) {

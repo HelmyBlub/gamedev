@@ -1,9 +1,9 @@
 import { TAMER_PET_CHARACTER, TamerPetCharacter } from "../../character/playerCharacters/tamer/tamerPetCharacter.js";
 import { calculateDistance, getNextId } from "../../game.js";
 import { IdCounter, Position, Game } from "../../gameModel.js";
-import { playerInputBindingToDisplayValue } from "../../input/playerInput.js";
+import { PlayerAbilityActionData, playerInputBindingToDisplayValue } from "../../input/playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
-import { ABILITIES_FUNCTIONS, ABILITY_DEFAULT_SMALL_GROUP, Ability, AbilityOwner, getAbilityNameUiText, paintAbilityUiDefault, paintAbilityUiKeyBind } from "../ability.js";
+import { ABILITIES_FUNCTIONS, ABILITY_DEFAULT_SMALL_GROUP, Ability, AbilityOwner, DefaultAbilityCastData, getAbilityNameUiText, paintAbilityUiDefault, paintAbilityUiKeyBind } from "../ability.js";
 import { ABILITY_NAME_LEASH, AbilityLeash } from "../abilityLeash.js";
 import { GAME_IMAGES } from "../../imageLoad.js";
 
@@ -64,11 +64,12 @@ function paintAbilityUI(ctx: CanvasRenderingContext2D, ability: Ability, drawSta
     paintAbilityUiDefault(ctx, ability, drawStartX, drawStartY, size, game, IMAGE_NAME_LEASH, heightFactor);
 }
 
-function castUnLeashPet(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, castPositionRelativeToCharacter: Position | undefined, isInputdown: boolean, game: Game) {
-    if (!isInputdown || abilityOwner.pets === undefined) return;
+function castUnLeashPet(abilityOwner: AbilityOwner, ability: Ability, data: PlayerAbilityActionData, game: Game) {
+    if (!data.isKeydown || abilityOwner.pets === undefined) return;
     const abilityUnleash = ability as AbilityUnleashPet;
 
     if (abilityUnleash.nextRechargeTime === undefined || game.state.time >= abilityUnleash.nextRechargeTime) {
+        const castPosition = (data as DefaultAbilityCastData).castPosition!;
         let distance: number = 40;
         let closestPet: TamerPetCharacter | undefined = undefined;
         for (let pet of abilityOwner.pets!) {

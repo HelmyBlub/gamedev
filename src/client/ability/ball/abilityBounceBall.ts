@@ -8,9 +8,9 @@ import { calculateDirection, findClientInfoByCharacterId, getNextId, modulo } fr
 import { Position, Game, IdCounter, FACTION_ENEMY, ClientInfo, FACTION_PLAYER } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { calculateBounceAngle, calculateMovePosition, getMapMidlePosition, isMoveFromToBlocking, moveByDirectionAndDistance } from "../../map/map.js";
-import { playerInputBindingToDisplayValue } from "../../input/playerInput.js";
+import { PlayerAbilityActionData, playerInputBindingToDisplayValue } from "../../input/playerInput.js";
 import { MoreInfoHoverTexts, MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, detectSomethingToCharacterHit, getAbilityNameUiText, paintAbilityUiDefault, paintAbilityUiKeyBind } from "../ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, DefaultAbilityCastData, detectSomethingToCharacterHit, getAbilityNameUiText, paintAbilityUiDefault, paintAbilityUiKeyBind } from "../ability.js";
 import { AbilityUpgradesFunctions, getAbilityUpgradesDamageFactor, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
 import { ABILITY_BOUNCE_BALL_UPGRADE_BOUNCE_BONUS_DAMAGE, abilityBounceBallUpgradeBounceBonusDamageAddBounce, abilityBounceBallUpgradeBounceBonusDamagePaintStacks, abilityBounceBallUpgradeBounceBonusDamageTick, addAbilityBounceBallUpgradeBounceBonusDamage } from "./abilityBounceBallUpgradeBounceBonusDamage.js";
 import { addAbilityBounceBallUpgradeBounceShield, bounceBallUpgradeBounceShieldExecute } from "./abilityBounceBallUpgradeBounceShield.js";
@@ -167,8 +167,12 @@ function tickAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     } else if (abilityOwner.moveDirection) {
         pos = calculateMovePosition(abilityOwner, abilityOwner.moveDirection, 1, false);
     }
-
-    castBounceBall(abilityOwner, ability, pos, undefined, true, game);
+    const defaultData: DefaultAbilityCastData = {
+        action: "AI",
+        isKeydown: true,
+        castPosition: pos,
+    };
+    castBounceBall(abilityOwner, ability, defaultData, game);
 }
 
 function resetAbility(ability: Ability) {
@@ -177,8 +181,8 @@ function resetAbility(ability: Ability) {
     ball.currentCharges = ball.maxCharges;
 }
 
-function castBounceBall(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, castPositionRelativeToCharacter: Position | undefined, isKeydown: boolean, game: Game) {
-    if (!isKeydown) return;
+function castBounceBall(abilityOwner: AbilityOwner, ability: Ability, data: PlayerAbilityActionData, game: Game) {
+    if (!data.isKeydown) return;
     const abilityBounceBall = ability as AbilityBounceBall;
     if (abilityBounceBall.currentCharges <= 0) {
         const timeUntil = abilityBounceBall.nextRechargeTime! - game.state.time;
@@ -198,6 +202,7 @@ function castBounceBall(abilityOwner: AbilityOwner, ability: Ability, castPositi
     if (abilityBounceBall.currentSpeed < abilityBounceBall.startSpeed || !keepCurrentSpeed) {
         abilityBounceBall.currentSpeed = abilityBounceBall.startSpeed;
     }
+    const castPosition = (data as DefaultAbilityCastData).castPosition!;
     abilityBounceBall.moveDirection = calculateDirection(abilityOwner, castPosition);
     abilityBounceBall.currentCharges--;
     abilityBounceBall.currentSpeedDecrease = abilityBounceBall.startSpeedDecrease;

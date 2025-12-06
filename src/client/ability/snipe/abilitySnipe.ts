@@ -4,7 +4,7 @@ import { UpgradeOptionAndProbability, UpgradeOption, AbilityUpgradeOption } from
 import { autoSendMousePositionHandler, calcNewPositionMovedInDirection, calculateDirection, findClientInfoByCharacterId, getNextId } from "../../game.js";
 import { Position, Game, IdCounter, ClientInfo, FACTION_ENEMY, FACTION_PLAYER } from "../../gameModel.js";
 import { GAME_IMAGES } from "../../imageLoad.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, findAbilityById } from "../ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, DefaultAbilityCastData, findAbilityById } from "../ability.js";
 import { AbilityUpgrade, AbilityUpgradesFunctions, getAbilityUpgradeOptionDefault, getAbilityUpgradesDamageFactor, pushAbilityUpgradesOptions, upgradeAbility } from "../abilityUpgrade.js";
 import { paintAbilityObjectSnipe, paintAbilitySnipe, paintAbilitySnipeAccessoire, createAbilitySnipeMoreInfos, paintAbilitySnipeUI } from "./abilitySnipePaint.js";
 import { addAbilitySnipeUpgradeAfterImage, castSnipeAfterImage, tickAbilityUpgradeAfterImage } from "./abilitySnipeUpgradeAfterImage.js";
@@ -22,6 +22,7 @@ import { ABILITY_NAME_EXPLODE } from "../abilityExplode.js";
 import { ABILITY_NAME_FIRE_LINE } from "../abilityFireLine.js";
 import { nextRandom } from "../../randomNumberGenerator.js";
 import { PLAYER_CHARACTER_TYPE } from "../../character/playerCharacters/playerCharacters.js";
+import { PlayerAbilityActionData } from "../../input/playerInput.js";
 
 export type AbilityObjectSnipe = AbilityObject & {
     damage: number,
@@ -417,10 +418,11 @@ function deleteAbilityObjectSnipe(abilityObject: AbilityObject, game: Game) {
     return abilityObjectSnipe.deleteTime <= game.state.time;
 }
 
-function castSnipe(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, castPositionRelativeToCharacter: Position | undefined, isInputdown: boolean, game: Game) {
+function castSnipe(abilityOwner: AbilityOwner, ability: Ability, data: PlayerAbilityActionData, game: Game) {
     const abilitySnipe = ability as AbilitySnipe;
-    abilitySnipe.shotNextAllowedTime = isInputdown;
-    autoSendMousePositionHandler(abilityOwner.id, ability.id.toString(), isInputdown, castPosition, game);
+    abilitySnipe.shotNextAllowedTime = data.isKeydown;
+    const castPosition = (data as DefaultAbilityCastData).castPosition!;
+    autoSendMousePositionHandler(abilityOwner.id, ability.id.toString(), data.isKeydown, castPosition, game);
     if (abilitySnipe.currentCharges > 0 && abilitySnipe.shotNextAllowedTime && game.state.time >= abilitySnipe.nextAllowedShotTime) {
         createAbilityObjectSnipeInitialPlayerTriggered(abilityOwner, abilitySnipe, castPosition, game);
     }

@@ -1,6 +1,6 @@
 import { getNextId } from "../game.js";
 import { IdCounter, Game, Position } from "../gameModel.js";
-import { playerInputBindingToDisplayValue } from "../input/playerInput.js";
+import { PlayerAbilityActionData, playerInputBindingToDisplayValue } from "../input/playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../moreInfo.js";
 import { ABILITIES_FUNCTIONS, Ability, ABILITY_DEFAULT_SMALL_GROUP, AbilityOwner, getAbilityNameUiText, paintAbilityUiDefault } from "./ability.js";
 import { ABILITY_NAME_TOWER, AbilityTower } from "./abilityTower.js";
@@ -38,8 +38,8 @@ function paintAbilityUI(ctx: CanvasRenderingContext2D, ability: Ability, drawSta
 
 }
 
-function castRotate(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, castPositionRelativeToCharacter: Position | undefined, isKeydown: boolean, game: Game) {
-    if (!isKeydown) return;
+function castRotate(abilityOwner: AbilityOwner, ability: Ability, data: PlayerAbilityActionData, game: Game) {
+    if (!data.isKeydown) return;
     if (!abilityOwner.abilities) return;
     const rotate = ability as AbilityTowerRotate;
     for (let abilityIter of abilityOwner.abilities) {

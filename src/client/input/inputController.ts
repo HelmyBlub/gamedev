@@ -143,13 +143,14 @@ function moveInput(gamepad: Gamepad, game: Game) {
     const moveData: MoveData = {
         direction: direction,
         faktor: moveFactor,
+        action: MOVE_ACTION,
     }
     const clientId = game.multiplayer.myClientId;
 
     handleCommand(game, {
         command: "playerInput",
         clientId: clientId,
-        data: { ...moveData, action: MOVE_ACTION },
+        data: moveData,
     });
 }
 

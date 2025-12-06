@@ -6,9 +6,9 @@ import { IdCounter, Position, Game, FACTION_PLAYER } from "../../gameModel.js";
 import { getPointPaintPosition } from "../../gamePaint.js";
 import { GAME_IMAGES, getImage } from "../../imageLoad.js";
 import { moveByDirectionAndDistance } from "../../map/map.js";
-import { playerInputBindingToDisplayValue } from "../../input/playerInput.js";
+import { PlayerAbilityActionData, playerInputBindingToDisplayValue } from "../../input/playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
-import { ABILITIES_FUNCTIONS, ABILITY_DEFAULT_SMALL_GROUP, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, findAbilityOwnerById, getAbilityNameUiText, paintAbilityUiDefault, paintAbilityUiKeyBind } from "../ability.js";
+import { ABILITIES_FUNCTIONS, ABILITY_DEFAULT_SMALL_GROUP, Ability, AbilityObject, AbilityOwner, DefaultAbilityCastData, PaintOrderAbility, findAbilityOwnerById, getAbilityNameUiText, paintAbilityUiDefault, paintAbilityUiKeyBind } from "../ability.js";
 
 export type AbilityLovePet = Ability & {
     loveValue: number,
@@ -77,7 +77,12 @@ function tickAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
             const tamerPet = pet as TamerPetCharacter;
             const happines: PetHappines = petHappinessToDisplayText(tamerPet.happines, game.state.time);
             if ((happines === "unhappy" || happines === "very unhappy") && (!abilityLovePet.nextRechargeTime || abilityLovePet.nextRechargeTime + 500 <= game.state.time)) {
-                castLovePet(abilityOwner, ability, pet, undefined, true, game);
+                const defaultData: DefaultAbilityCastData = {
+                    action: "AI",
+                    isKeydown: true,
+                    castPosition: pet,
+                };
+                castLovePet(abilityOwner, ability, defaultData, game);
                 break;
             }
         }
@@ -130,11 +135,12 @@ function paintAbilityLovePetUI(ctx: CanvasRenderingContext2D, ability: Ability, 
     paintAbilityUiDefault(ctx, ability, drawStartX, drawStartY, size, game, ABILITY_NAME_LOVE_PET, heightFactor);
 }
 
-function castLovePet(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, castPositionRelativeToCharacter: Position | undefined, isInputdown: boolean, game: Game) {
-    if (!isInputdown || abilityOwner.pets === undefined) return;
+function castLovePet(abilityOwner: AbilityOwner, ability: Ability, data: PlayerAbilityActionData, game: Game) {
+    if (!data.isKeydown || abilityOwner.pets === undefined) return;
     const abilityLovePet = ability as AbilityLovePet;
 
     if (abilityLovePet.nextRechargeTime === undefined || game.state.time >= abilityLovePet.nextRechargeTime) {
+        const castPosition = (data as DefaultAbilityCastData).castPosition!;
         let distance: number = 40;
         let closestPet: TamerPetCharacter | undefined = undefined;
         for (let pet of abilityOwner.pets!) {

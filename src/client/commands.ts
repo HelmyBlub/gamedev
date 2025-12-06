@@ -9,10 +9,16 @@ import { playerAction, PlayerInput } from "./input/playerInput.js";
 import { compressString } from "./stringCompress.js";
 import { statisticsOnGameRestart } from "./statistics.js";
 
-type Command = { command: string };
-type CommandTimeUpdate = Command & { time: number };
+type CommandTimeUpdate = ExecuteCommand & { time: number };
 export const COMMAND_COMPARE_STATE_HASH = "COMPARE_STATE_HASH";
 export const COMMAND_COMPARE_STATE = "COMPARE_STATE";
+export type ExecuteCommand = {
+    command: string,
+    clientId: number,
+    data?: any,
+    executeTime?: number,
+}
+
 export type CommandRestart = PlayerInput & {
     recordInputs?: boolean,
     replay?: boolean,
@@ -21,17 +27,15 @@ export type CommandRestart = PlayerInput & {
     testEnemyTypeDirectionSeed?: number
 }
 
-type ConnectInfo = {
+type ConnectInfo = ExecuteCommand & {
     clientName: string,
-    clientId: number,
     updateInterval: number,
     randomIdentifier: string,
     numberConnections: number,
 }
 
-type PlayerJoined = {
+type PlayerJoined = ExecuteCommand & {
     clientName: string,
-    clientId: number,
 }
 
 export type StateCompareHash = {
@@ -46,7 +50,7 @@ type StateComparePlayers = {
     playersJson: string,
 }
 
-export function handleCommand(game: Game, data: any) {
+export function handleCommand(game: Game, data: ExecuteCommand) {
     if (game.multiplayer.websocket === null) {
         if (data.executeTime === undefined) data.executeTime = game.state.time + 1;
         executeCommand(game, data);
@@ -55,7 +59,7 @@ export function handleCommand(game: Game, data: any) {
     }
 }
 
-export function executeCommand(game: Game, data: any) {
+export function executeCommand(game: Game, data: ExecuteCommand) {
     const command = data.command;
     if (game.multiplayer.awaitingGameState.waiting &&
         (command !== "gameState" && command !== "sendGameState" && command !== "connectInfo")) {
@@ -65,19 +69,21 @@ export function executeCommand(game: Game, data: any) {
 
     switch (command) {
         case "restart":
-            restart(game, data);
+            restart(game, data as CommandRestart);
             break;
         case "playerInput":
+            const playerInputData = data as PlayerInput;
             if (game.state.ended) {
                 //cheats can be changed when game ended
-                playerAction(data.clientId, data.data, game);
+                playerAction(playerInputData.clientId, playerInputData.data, game);
             } else {
-                playerInput(game, data);
+                playerInput(game, playerInputData);
             }
             break;
         case "sendGameState":
-            playerJoined(game, data);
-            const compressedState = compressString(JSON.stringify({ command: "gameState", data: game.state, toId: data.clientId }));
+            const playerJoinedData = data as PlayerJoined;
+            playerJoined(game, playerJoinedData);
+            const compressedState = compressString(JSON.stringify({ command: "gameState", data: game.state, toId: playerJoinedData.clientId }));
             game.multiplayer.websocket!.send(compressedState);
             game.performance = { chunkGraphRectangles: {} };
             break;
@@ -85,10 +91,10 @@ export function executeCommand(game: Game, data: any) {
             gameState(game, data.data);
             break;
         case "connectInfo":
-            connectInfo(game, data);
+            connectInfo(game, data as ConnectInfo);
             break;
         case "playerJoined":
-            playerJoined(game, data);
+            playerJoined(game, data as PlayerJoined);
             game.performance = { chunkGraphRectangles: {} };
             break;
         case "playerLeft":
@@ -102,7 +108,7 @@ export function executeCommand(game: Game, data: any) {
             }
             break;
         case "timeUpdate":
-            timeUpdate(game, data);
+            timeUpdate(game, data as CommandTimeUpdate);
             break;
         case COMMAND_COMPARE_STATE_HASH:
             compareStateHash(game, data.data);

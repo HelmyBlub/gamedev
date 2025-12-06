@@ -10,9 +10,9 @@ import { getPointPaintPosition } from "../gamePaint.js";
 import { GAME_IMAGES, loadImage } from "../imageLoad.js";
 import { positionToMapKey } from "../map/map.js";
 import { findPlayerByCharacterId } from "../player.js";
-import { playerInputBindingToDisplayValue } from "../input/playerInput.js";
+import { PlayerAbilityActionData, playerInputBindingToDisplayValue } from "../input/playerInput.js";
 import { nextRandom, RandomSeed } from "../randomNumberGenerator.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, PaintOrderAbility, abilityResetAbility, addAbilityToCharacter, getAbilityNameUiText, paintAbilityUiKeyBind } from "./ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, DefaultAbilityCastData, PaintOrderAbility, abilityResetAbility, addAbilityToCharacter, getAbilityNameUiText, paintAbilityUiKeyBind } from "./ability.js";
 import { ABILITY_NAME_FIRE_CIRCLE } from "./abilityFireCircle.js";
 import { ABILITY_NAME_ICE_AURA } from "./abilityIceAura.js";
 import { ABILITY_NAME_SHOOT } from "./abilityShoot.js";
@@ -256,7 +256,12 @@ function tickAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
             x: abilityOwner.x + (nextRandom(game.state.randomSeed) * 50 - 25),
             y: abilityOwner.y + (nextRandom(game.state.randomSeed) * 50 - 25)
         };
-        castTower(abilityOwner, ability, pos, undefined, true, game);
+        const defaultData: DefaultAbilityCastData = {
+            action: "AI",
+            isKeydown: true,
+            castPosition: pos,
+        };
+        castTower(abilityOwner, ability, defaultData, game);
     }
 }
 
@@ -269,8 +274,8 @@ function deleteAbilityObjectTower(abilityObject: AbilityObject, game: Game) {
     return false;
 }
 
-function castTower(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, castPositionRelativeToCharacter: Position | undefined, isKeydown: boolean, game: Game) {
-    if (!isKeydown) return;
+function castTower(abilityOwner: AbilityOwner, ability: Ability, data: PlayerAbilityActionData, game: Game) {
+    if (!data.isKeydown) return;
     const abilityTower = ability as AbilityTower;
     if (abilityTower.subType === undefined && abilityOwner.characterClasses) {
         const charClass = abilityOwner.characterClasses.find(c => c.id === ability.classIdRef);
@@ -280,6 +285,7 @@ function castTower(abilityOwner: AbilityOwner, ability: Ability, castPosition: P
             return;
         }
     }
+    const castPosition = (data as DefaultAbilityCastData).castPosition!;
     const distance = calculateDistance(abilityOwner, castPosition);
     if (distance > abilityTower.maxClickRange) return;
     let abilityObjects = game.state.abilityObjects;

@@ -5,7 +5,7 @@ import { createBuffSpeed } from "../../debuff/buffSpeed.js";
 import { applyDebuff } from "../../debuff/debuff.js";
 import { getNextId } from "../../game.js";
 import { Game, IdCounter, Position } from "../../gameModel.js";
-import { playerInputBindingToDisplayValue } from "../../input/playerInput.js";
+import { PlayerAbilityActionData, playerInputBindingToDisplayValue } from "../../input/playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
 import { ABILITIES_FUNCTIONS, Ability, AbilityOwner, getAbilityNameUiText, paintAbilityUiDefault, paintAbilityUiKeyBind } from "../ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
@@ -83,8 +83,8 @@ function tickAbilitySpeedBoost(abilityOwner: AbilityOwner, ability: Ability, gam
     tickAbilitySpeedBoostUpgradeAddCharge(abilitySpeedBoost, game);
 }
 
-function castSpeedBoost(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, castPositionRelativeToCharacter: Position | undefined, isInputdown: boolean, game: Game) {
-    if (!isInputdown) return;
+function castSpeedBoost(abilityOwner: AbilityOwner, ability: Ability, data: PlayerAbilityActionData, game: Game) {
+    if (!data.isKeydown) return;
     const abilitySpeedBoost = ability as AbilitySpeedBoost;
     const chargeUpgrade: AbilitySpeedBoostUpgradeAddCharge | undefined = ability.upgrades[ABILITY_SPEED_BOOST_UPGRADE_ADD_CHARGE];
     const readyToCast = (chargeUpgrade && chargeUpgrade.currentCharges > 0) || (!chargeUpgrade && abilitySpeedBoost.cooldownFinishTime <= game.state.time);

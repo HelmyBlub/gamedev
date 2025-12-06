@@ -2,9 +2,9 @@ import { Character } from "../../character/characterModel.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../character/upgrade.js";
 import { calculateDistance, getCameraPosition, getNextId, getTickInterval } from "../../game.js";
 import { Position, Game, IdCounter, FACTION_PLAYER } from "../../gameModel.js";
-import { playerInputBindingToDisplayValue } from "../../input/playerInput.js";
+import { PlayerAbilityActionData, playerInputBindingToDisplayValue } from "../../input/playerInput.js";
 import { MoreInfoHoverTexts, MoreInfoPart, createMoreInfosPart } from "../../moreInfo.js";
-import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, findAbilityById, getAbilityNameUiText, paintAbilityInputBinding, paintAbilityUiKeyBind } from "../ability.js";
+import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, DefaultAbilityCastData, findAbilityById, getAbilityNameUiText, paintAbilityInputBinding, paintAbilityUiKeyBind } from "../ability.js";
 import { AbilityUpgrade, AbilityUpgradeFunctions, AbilityUpgradesFunctions, getAbilityUpgradeOptionDefault, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../abilityUpgrade.js";
 import { AbilityDamageBreakdown } from "../../combatlog.js";
 import { MusicNote, MusicSheet, Note, playMusicNote } from "../../sound.js";
@@ -318,8 +318,9 @@ function resetAbility(ability: Ability) {
     }
 }
 
-function castAbility(abilityOwner: AbilityOwner, ability: Ability, castPosition: Position, castPositionRelativeToCharacter: Position | undefined, isKeydown: boolean, game: Game) {
-    if (isKeydown || !castPositionRelativeToCharacter) return;
+function castAbility(abilityOwner: AbilityOwner, ability: Ability, data: PlayerAbilityActionData, game: Game) {
+    const castPositionRelativeToCharacter = (data as DefaultAbilityCastData).castPositionRelativeToCharacter;
+    if (data.isKeydown || !castPositionRelativeToCharacter) return;
     const fixedCastPosition = {
         x: abilityOwner.x + castPositionRelativeToCharacter.x,
         y: abilityOwner.y + castPositionRelativeToCharacter.y,

@@ -1,9 +1,9 @@
-import { CommandRestart, handleCommand } from "../commands.js";
+import { CommandRestart, ExecuteCommand, handleCommand } from "../commands.js";
 import { findPlayerByCliendId } from "../player.js";
 import { Character } from "../character/characterModel.js";
 import { ClientKeyBindings, Game, Position, RecordExtendendInformation } from "../gameModel.js";
 import { websocketConnect } from "../multiplayerConenction.js";
-import { ABILITIES_FUNCTIONS } from "../ability/ability.js";
+import { ABILITIES_FUNCTIONS, DefaultAbilityCastData } from "../ability/ability.js";
 import { calculateDirection, getCameraPosition, findClientInfo, resetGameNonStateData, takeTimeMeasure, findClosestInteractable, concedePlayerFightRetries, retryFight, calculateFightRetryCounter, getRelativeMousePoistion, calculateDistance, getTickInterval } from "../game.js";
 import { executeUpgradeOptionChoice } from "../character/upgrade.js";
 import { canCharacterTradeAbilityOrPets, characterTradeAbilityAndPets } from "../character/character.js";
@@ -27,16 +27,25 @@ export type ActionsPressed = {
     [key: string]: boolean;
 }
 
-export type MoveData = {
+export type PlayerActionData = {
+    action: string,
+}
+
+export type PlayerAbilityActionData = PlayerActionData & {
+    isKeydown: boolean,
+}
+
+export type MouseActionData = PlayerActionData & {
+    mousePosition: Position,
+}
+
+export type MoveData = PlayerActionData & {
     direction: number,
     faktor: number
 }
 
-export type PlayerInput = {
+export type PlayerInput = ExecuteCommand & {
     executeTime: number,
-    command: string,
-    clientId: number,
-    data?: any,
     replayExtended?: RecordExtendendInformation,
 }
 
@@ -357,9 +366,9 @@ function determinePlayerMoveDirectionKeyboard(clientKeyBindings: ClientKeyBindin
     if (upPressed) down--;
     newDirection = calculateDirection({ x: 0, y: 0 }, { x: left, y: down });
     if (left === 0 && down === 0) {
-        return { direction: newDirection, faktor: 0 };
+        return { direction: newDirection, faktor: 0, action: MOVE_ACTION };
     } else {
-        return { direction: newDirection, faktor: 1 };
+        return { direction: newDirection, faktor: 1, action: MOVE_ACTION };
     }
 }
 
@@ -396,11 +405,11 @@ function playerInputChangeEvent(game: Game, inputCode: string, isInputDown: bool
             x: castPosition.x - player.character.x,
             y: castPosition.y - player.character.y,
         };
-
+        const defaultData: DefaultAbilityCastData = { action: action.action, isKeydown: isInputDown, castPosition: castPosition, castPositionRelativeToCharacter: castPositionRelativeToCharacter };
         handleCommand(game, {
             command: "playerInput",
             clientId: clientId,
-            data: { action: action.action, isKeydown: isInputDown, castPosition: castPosition, castPositionRelativeToCharacter: castPositionRelativeToCharacter },
+            data: defaultData,
         });
     } else if (action.action.indexOf("upgrade") > -1) {
         const character = findPlayerByCliendId(clientId, game.state.players)?.character;
@@ -422,7 +431,7 @@ function playerInputChangeEvent(game: Game, inputCode: string, isInputDown: bool
         handleCommand(game, {
             command: "playerInput",
             clientId: clientId,
-            data: { ...moveData, action: MOVE_ACTION },
+            data: { ...moveData },
         });
     } else {
         handleCommand(game, {
@@ -433,9 +442,8 @@ function playerInputChangeEvent(game: Game, inputCode: string, isInputDown: bool
     }
 }
 
-export function playerAction(clientId: number, data: any, game: Game) {
+export function playerAction(clientId: number, data: PlayerActionData, game: Game) {
     const action: string = data.action;
-    const isKeydown: boolean = data.isKeydown;
     const player = findPlayerByCliendId(clientId, game.state.players);
     if (!player) return;
     const character = player.character;
@@ -445,15 +453,16 @@ export function playerAction(clientId: number, data: any, game: Game) {
             if (character !== null) {
                 game.UI.movementKeyPressed = true;
                 game.UI.displayMovementKeyHint = false;
-                const moveData: MoveData = data;
+                const moveData = data as MoveData;
                 if (moveData.faktor > 0) {
-                    character.isMoving = true;;
+                    character.isMoving = true;
                     character.moveDirection = moveData.direction;
                 } else {
-                    character.isMoving = false
+                    character.isMoving = false;
                 }
             }
         } else if (UPGRADE_ACTIONS.indexOf(action) !== -1) {
+            const isKeydown: boolean = (data as PlayerAbilityActionData).isKeydown;
             if (isKeydown) {
                 const option = character.upgradeChoices.choices[UPGRADE_ACTIONS.indexOf(action)];
                 if (option) {
@@ -467,15 +476,14 @@ export function playerAction(clientId: number, data: any, game: Game) {
                 if (ability.playerInputBinding && ability.playerInputBinding === action) {
                     const functions = ABILITIES_FUNCTIONS[ability.name];
                     if (functions.activeAbilityCast !== undefined) {
-                        if (functions.positionNotRquired || (data.castPosition && data.castPositionRelativeToCharacter)) {
-                            functions.activeAbilityCast(character, ability, data.castPosition, data.castPositionRelativeToCharacter, isKeydown, game);
-                        }
+                        functions.activeAbilityCast(character, ability, data as PlayerAbilityActionData, game);
                     } else {
                         console.log("missing activeAbilityCast function for", action, ability);
                     }
                 }
             }
         } else if (SPECIAL_ACTIONS.indexOf(action) !== -1) {
+            const isKeydown: boolean = (data as PlayerAbilityActionData).isKeydown;
             if (isKeydown) {
                 const special = SPECIAL_ACTIONS[SPECIAL_ACTIONS.indexOf(action)];
                 interactKeys(character, special, game);
@@ -483,9 +491,10 @@ export function playerAction(clientId: number, data: any, game: Game) {
         } else if (MOUSE_ACTION === action) {
             const client = findClientInfo(clientId, game);
             if (client) {
-                client.lastMousePosition = data.mousePosition;
+                client.lastMousePosition = (data as MouseActionData).mousePosition;
             }
         } else if (CHEAT_ACTIONS.indexOf(action) !== -1) {
+            const isKeydown: boolean = (data as PlayerAbilityActionData).isKeydown;
             executeCheatAction(action, isKeydown, clientId, game);
         }
     }

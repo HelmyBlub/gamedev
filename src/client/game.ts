@@ -1,7 +1,7 @@
 import { cappCharacter, changeCharacterId, countAlivePlayerCharacters, findAndSetNewCameraCharacterId, findCharacterById, findMyCharacter, getPlayerCharacters, resetCharacter, tickCharacters } from "./character/character.js";
 import { paintAll } from "./gamePaint.js";
 import { addPlayerMoney, createDefaultKeyBindings1, createDefaultUiKeyBindings, createPlayerWithPlayerCharacter, findNearesPastPlayerCharacter, findPlayerByCharacterId, gameInitPlayers, isAutoUpgradeActive } from "./player.js";
-import { MOUSE_ACTION, RESTART_HOLD_TIME, UPGRADE_ACTIONS, executeUiAction, tickPlayerInputs } from "./input/playerInput.js";
+import { MOUSE_ACTION, MouseActionData, PlayerAbilityActionData, RESTART_HOLD_TIME, UPGRADE_ACTIONS, executeUiAction, tickPlayerInputs } from "./input/playerInput.js";
 import { Position, GameState, Game, IdCounter, Debugging, ClientInfo, GameVersion } from "./gameModel.js";
 import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap, initKingArea, mapKeyToChunkXY, mousePositionToMapPosition, tickActiveMapChunks } from "./map/map.js";
 import { Character } from "./character/characterModel.js";
@@ -826,10 +826,11 @@ function autoSendMyMousePosition(game: Game) {
     if (game.multiplayer.autosendMousePosition.nextTime <= game.state.time) {
         const cameraPosition = getCameraPosition(game);
         const castPosition = mousePositionToMapPosition(game, cameraPosition);
+        const mouseData: MouseActionData = { action: MOUSE_ACTION, mousePosition: castPosition };
         handleCommand(game, {
             command: "playerInput",
             clientId: game.multiplayer.myClientId,
-            data: { action: MOUSE_ACTION, mousePosition: castPosition },
+            data: mouseData,
         });
         game.multiplayer.autosendMousePosition.nextTime = game.state.time + game.multiplayer.autosendMousePosition.interval;
     }
