@@ -247,7 +247,7 @@ function teleportBossToNearestPlayer(enemy: BossEnemyCharacter, game: Game) {
 function createBossPets(level: number, boss: Character, nextKing: Character, game: Game): TamerPetCharacter[] | undefined {
     if (nextKing?.pets) {
         const random = Math.floor(nextRandom(game.state.randomSeed) * nextKing.pets.length);
-        const pet: TamerPetCharacter = deepCopy(nextKing.pets[random]);
+        const pet = deepCopy(nextKing.pets[random]) as TamerPetCharacter;
         const leash: AbilityLeash | undefined = pet.abilities.find((a) => a.name === ABILITY_NAME_LEASH) as AbilityLeash;
         if (leash) {
             leash.leashedToOwnerId = boss.id;

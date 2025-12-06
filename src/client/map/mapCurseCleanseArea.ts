@@ -136,7 +136,7 @@ function determineBossHp(game: Game): number {
 }
 
 function copyCharacterForBoss(character: Character, game: Game): CurseFountainBossEnemy {
-    const boss: CurseFountainBossEnemy = deepCopy(character);
+    const boss = deepCopy(character) as CurseFountainBossEnemy;
     if (boss.pets) {
         for (let i = boss.pets.length - 1; i >= 0; i--) {
             if (boss.pets[i].type === TAMER_PET_CHARACTER) continue;

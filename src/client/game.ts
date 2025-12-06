@@ -346,8 +346,8 @@ export function calculateDistancePointToLine(point: Position, linestart: Positio
     return Math.sqrt(dx * dx + dy * dy);
 }
 
-export function deepCopy(object: any): any {
-    if (object === undefined) return undefined;
+export function deepCopy<Type>(object: Type): Type {
+    if (object === undefined) return object;
     const json = JSON.stringify(object);
     return JSON.parse(json);
 }

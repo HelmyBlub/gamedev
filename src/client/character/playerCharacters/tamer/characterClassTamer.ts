@@ -61,7 +61,7 @@ function kingModification(character: Character, characterClass: CharacterClass) 
 
 export function createPetsBasedOnLevelAndCharacter(basedOnCharacter: Character, level: number, petOwner: Character, game: Game): TamerPetCharacter[] {
     const randomPetIndex = Math.floor(nextRandom(game.state.randomSeed) * basedOnCharacter.pets!.length);
-    const pet: TamerPetCharacter = deepCopy(basedOnCharacter.pets![randomPetIndex]);
+    const pet = deepCopy(basedOnCharacter.pets![randomPetIndex]) as TamerPetCharacter;
     pet.x = petOwner.x;
     pet.y = petOwner.y;
     pet.faction = petOwner.faction;

@@ -2,9 +2,12 @@ next test run:
 increase version
 
 current tasks:     
+- network code support send of ability infos
+    - on client action check if ability has "customData(): customData" function
+        - if yes call function and send data with network
+        - when receiving, send data to ability
 - new class spellmaker
     - next steps
-        - balance stuff
         - improve UX
             - put tool options to paintUI and paintAbove normal ability buttons
                 - problems:

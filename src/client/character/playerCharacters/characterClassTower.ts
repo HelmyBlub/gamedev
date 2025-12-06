@@ -122,8 +122,8 @@ function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: 
     const bossCharacter = createCharacter(getNextId(idCounter), spawn.x, spawn.y, bossSize, bossSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_BOSS_ENEMY, experienceWorth);
     bossCharacter.paint.image = IMAGE_SLIME;
     bossCharacter.level = { level: level };
-    const baseTower = basedOnCharacter.abilities.find((a) => a.name === ABILITY_NAME_TOWER);
-    const tower: AbilityTower = deepCopy(baseTower);
+    const baseTower = basedOnCharacter.abilities.find((a) => a.name === ABILITY_NAME_TOWER) as AbilityTower;
+    const tower = deepCopy(baseTower);
     const towerFunctions = ABILITIES_FUNCTIONS[tower.name];
     if (towerFunctions.updateOnCharcterChanges) towerFunctions.updateOnCharcterChanges(bossCharacter, tower, game);
     bossCharacter.abilities.push(tower);

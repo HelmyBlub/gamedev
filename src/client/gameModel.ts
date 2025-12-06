@@ -44,7 +44,7 @@ export type RecordExtendendInformation = {
 }
 
 export type RecordData = {
-    replayPlayerInputs: Omit<PlayerInput, "executeTime">[],
+    replayPlayerInputs: PlayerInput[],
     extendendInputData?: RecordExtendendInformation[],
     permanentData: PermanentDataParts,
     multiplayerData?: RecordDataMultiplayer[],
@@ -59,7 +59,6 @@ export type Legendary = {
 }
 
 export type ReplayData = RecordData & {
-    replayPlayerInputs: PlayerInput[],
 }
 
 export type ReplayAssert = {
@@ -88,7 +87,7 @@ export type TestingStuff = {
         mapSeed?: number,
         randomStartSeed?: number,
         enemyTypeDirectionSeed?: number,
-        restartPlayerInput?: Omit<CommandRestart, "executeTime">,
+        restartPlayerInput?: CommandRestart,
     }
     replay?: Replay,
     autoPlay: {

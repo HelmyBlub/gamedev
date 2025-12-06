@@ -100,7 +100,7 @@ export function setPlayerAsKing(game: Game) {
             }
         }
     }
-    const king: Character = deepCopy(kingBaseCharacter);
+    const king = deepCopy(kingBaseCharacter) as Character;
     king.isDamageImmune = false;
     king.isDebuffImmune = false;
     king.width += 15;

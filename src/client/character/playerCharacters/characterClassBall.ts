@@ -79,13 +79,13 @@ function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: 
     const bossCharacter = createCharacter(getNextId(idCounter), spawn.x, spawn.y, bossSize, bossSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_BOSS_ENEMY, experienceWorth);
     bossCharacter.paint.image = IMAGE_SLIME;
     bossCharacter.level = { level: level };
-    const baseBounceBall = basedOnCharacter.abilities.find((a) => a.name === ABILITY_NAME_BOUNCE_BALL);
-    const baseLightningBall = basedOnCharacter.abilities.find((a) => a.name === ABILITY_NAME_LIGHTNING_BALL);
-    const bounceBall: AbilityBounceBall = deepCopy(baseBounceBall);
+    const baseBounceBall = basedOnCharacter.abilities.find((a) => a.name === ABILITY_NAME_BOUNCE_BALL) as AbilityBounceBall;
+    const baseLightningBall = basedOnCharacter.abilities.find((a) => a.name === ABILITY_NAME_LIGHTNING_BALL) as AbilityLightningBall;
+    const bounceBall = deepCopy(baseBounceBall);
     bossCharacter.abilities.push(bounceBall);
     setAbilityToBossLevel(bounceBall, level);
 
-    const lightningBall: AbilityLightningBall = deepCopy(baseLightningBall);
+    const lightningBall = deepCopy(baseLightningBall);
     bossCharacter.abilities.push(lightningBall);
     setAbilityToBossLevel(lightningBall, level);
 

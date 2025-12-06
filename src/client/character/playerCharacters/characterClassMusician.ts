@@ -73,8 +73,8 @@ function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: 
     const bossCharacter = createCharacter(getNextId(idCounter), spawn.x, spawn.y, bossSize, bossSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_BOSS_ENEMY, experienceWorth);
     bossCharacter.paint.image = IMAGE_SLIME;
     bossCharacter.level = { level: level };
-    const baseMusicSheets = basedOnCharacter.abilities.find((a) => a.name === ABILITY_NAME_MUSIC_SHEET);
-    const musicSheets: AbilityMusicSheets = deepCopy(baseMusicSheets);
+    const baseMusicSheets = basedOnCharacter.abilities.find((a) => a.name === ABILITY_NAME_MUSIC_SHEET) as AbilityMusicSheets;
+    const musicSheets = deepCopy(baseMusicSheets);
     bossCharacter.abilities.push(musicSheets);
     deleteUpgradesBasedOnBossLevel(musicSheets, level);
     setAbilityToBossLevel(musicSheets, level);
