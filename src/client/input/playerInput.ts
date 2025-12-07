@@ -415,6 +415,10 @@ function playerInputChangeEvent(game: Game, inputCode: string, isInputDown: bool
                     };
                     defaultData.castPositionRelativeToCharacter = castPositionRelativeToCharacter;
                 }
+                if (abilityFunctions.getCustomCastData) {
+                    const customData = abilityFunctions.getCustomCastData(player.character, ability, defaultData, game);
+                    if (customData !== undefined) (defaultData as any)[ability.name] = customData;
+                }
             }
         }
         handleCommand(game, {

@@ -98,6 +98,7 @@ export type AbilityFunctions = {
     activeAbilityCast?: (abilityOwner: AbilityOwner, ability: Ability, data: DefaultAbilityCastData, game: Game) => void,
     omitCastPosition?: boolean,
     sendRelativeCastPosition?: boolean,
+    getCustomCastData?: (abilityOwner: AbilityOwner, ability: Ability, data: DefaultAbilityCastData, game: Game) => any,
     canObjectHitMore?: (abilityObject: AbilityObject) => boolean,
     createAbility: (idCounter: IdCounter, playerInputBinding?: string) => Ability,
     createAbilityUpgradeOptions?: (ability: Ability) => UpgradeOptionAndProbability[],

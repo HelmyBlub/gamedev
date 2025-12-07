@@ -65,6 +65,17 @@ export type SpellmakerSpelltypeData = {
     description: string[],
 }
 
+type SpellmakerAbilityAdditionalCastData = {
+    clickedToolRectangleIndex: number,
+}
+
+
+type SpellmakerCastData = DefaultAbilityCastData & {
+    castPosition?: Position,
+    castPositionRelativeToCharacter?: Position,
+    Spellmaker: SpellmakerAbilityAdditionalCastData,
+}
+
 export const ABILITY_NAME_SPELLMAKER = "Spellmaker";
 export const SPELLMAKER_SPELLTYPE_INSTANT = "instant";
 export const SPELLMAKER_SPELLTYPE_AUTOCAST = "autocast";
@@ -81,6 +92,7 @@ export function addAbilitySpellmaker() {
         createAbilityMoreInfos: createAbilityMoreInfos,
         createAbilityBossUpgradeOptions: createAbilityBossUpgradeOptions,
         executeUpgradeOption: executeAbilityUpgradeOption,
+        getCustomCastData: getCustomCastData,
         paintAbility: paintAbility,
         paintAbilityUI: paintAbilityUI,
         setAbilityToLevel: setAbilityToLevel,
@@ -295,17 +307,26 @@ function paintAbilityUI(ctx: CanvasRenderingContext2D, ability: Ability, drawSta
 }
 
 function castAbility(abilityOwner: AbilityOwner, ability: Ability, data: PlayerAbilityActionData, game: Game) {
-    if (!abilityOwner.abilities) return;
     const isKeydown = data.isKeydown;
-    const castPositionRelativeToCharacter = (data as DefaultAbilityCastData).castPositionRelativeToCharacter;
-    const castPosition = (data as DefaultAbilityCastData).castPosition!;
-    const abilitySm: AbilitySpellmaker | undefined = abilityOwner.abilities.find(a => a.name === ABILITY_NAME_SPELLMAKER) as AbilitySpellmaker;
-    if (!abilitySm) return;
+    const spellmakerCastData = data as SpellmakerCastData;
+    const castPositionRelativeToCharacter = spellmakerCastData.castPositionRelativeToCharacter;
+    const castPosition = spellmakerCastData.castPosition!;
+    const abilitySm = ability as AbilitySpellmaker;
     if (abilitySm.mode === "spellmake") {
         if (castPositionRelativeToCharacter) {
             const tool = abilitySm.createTools.createTools[abilitySm.createTools.selectedToolIndex];
             if (isKeydown) {
-                if (!clickCreateToolsCheck(abilityOwner, abilitySm, castPositionRelativeToCharacter, game)) {
+                if (spellmakerCastData.Spellmaker) {
+                    const tool = abilitySm.createTools.createTools[spellmakerCastData.Spellmaker.clickedToolRectangleIndex];
+                    const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[tool.type];
+                    if (toolFunctions && toolFunctions.onToolSelect) {
+                        if (toolFunctions.onToolSelect(tool, abilityOwner, abilitySm, game)) {
+                            abilitySm.createTools.selectedToolIndex = spellmakerCastData.Spellmaker.clickedToolRectangleIndex;
+                        }
+                    } else {
+                        abilitySm.createTools.selectedToolIndex = spellmakerCastData.Spellmaker.clickedToolRectangleIndex;
+                    }
+                } else {
                     autoSendMousePositionHandler(abilityOwner.id, `${abilitySm.name}`, true, castPosition, game);
                     if (tool.subType == "default") {
                         if (abilitySm.spellmakeStage == 0) {
@@ -385,6 +406,22 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, data: PlayerA
     }
 }
 
+function getCustomCastData(abilityOwner: AbilityOwner, ability: Ability, data: DefaultAbilityCastData, game: Game): SpellmakerAbilityAdditionalCastData | undefined {
+    const abilitySm = ability as AbilitySpellmaker;
+    const isKeydown = data.isKeydown;
+    const castPositionRelativeToCharacter = (data as DefaultAbilityCastData).castPositionRelativeToCharacter;
+    if (abilitySm.mode === "spellmake") {
+        if (castPositionRelativeToCharacter) {
+            if (isKeydown) {
+                const result = clickCreateToolsCheck(abilityOwner, abilitySm, castPositionRelativeToCharacter, game);
+                if (result !== -1) return { clickedToolRectangleIndex: result };
+            }
+        }
+    }
+
+    return undefined;
+}
+
 function spellCast(abilityOwner: AbilityOwner, abilitySm: AbilitySpellmaker, spellIndex: number, castPosition: Position, game: Game) {
     const currentSpell = abilitySm.spells[spellIndex];
     if (abilitySm.mana > currentSpell.spellManaCost) {
@@ -460,25 +497,16 @@ function findClosestAttachToIndex(ability: AbilitySpellmaker, castPositionRelati
     return undefined;
 }
 
-/// returns true if a tool button was clicked
-function clickCreateToolsCheck(abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position | undefined, game: Game): boolean {
-    if (!castPositionRelativeToCharacter) return false;
+/// returns index of tool clicked or -1 if nothing
+function clickCreateToolsCheck(abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position | undefined, game: Game): number {
+    if (!castPositionRelativeToCharacter) return -1;
     for (let i = 0; i < ability.createTools.createTools.length; i++) {
         const pos: Position = { x: ability.createTools.position.x + ability.createTools.size * i, y: ability.createTools.position.y };
         if (pos.x < castPositionRelativeToCharacter.x && pos.x + ability.createTools.size > castPositionRelativeToCharacter.x && pos.y < castPositionRelativeToCharacter.y && pos.y + ability.createTools.size > castPositionRelativeToCharacter.y) {
-            const tool = ability.createTools.createTools[i];
-            const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[tool.type];
-            if (toolFunctions && toolFunctions.onToolSelect) {
-                if (toolFunctions.onToolSelect(tool, abilityOwner, ability, game)) {
-                    ability.createTools.selectedToolIndex = i;
-                }
-            } else {
-                ability.createTools.selectedToolIndex = i;
-            }
-            return true;
+            return i;
         }
     }
-    return false;
+    return -1;
 }
 
 
