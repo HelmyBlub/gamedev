@@ -69,13 +69,6 @@ type SpellmakerAbilityAdditionalCastData = {
     clickedToolRectangleIndex: number,
 }
 
-
-type SpellmakerCastData = DefaultAbilityCastData & {
-    castPosition?: Position,
-    castPositionRelativeToCharacter?: Position,
-    Spellmaker: SpellmakerAbilityAdditionalCastData,
-}
-
 export const ABILITY_NAME_SPELLMAKER = "Spellmaker";
 export const SPELLMAKER_SPELLTYPE_INSTANT = "instant";
 export const SPELLMAKER_SPELLTYPE_AUTOCAST = "autocast";
@@ -308,7 +301,7 @@ function paintAbilityUI(ctx: CanvasRenderingContext2D, ability: Ability, drawSta
 
 function castAbility(abilityOwner: AbilityOwner, ability: Ability, data: PlayerAbilityActionData, game: Game) {
     const isKeydown = data.isKeydown;
-    const spellmakerCastData = data as SpellmakerCastData;
+    const spellmakerCastData = data as DefaultAbilityCastData;
     const castPositionRelativeToCharacter = spellmakerCastData.castPositionRelativeToCharacter;
     const castPosition = spellmakerCastData.castPosition!;
     const abilitySm = ability as AbilitySpellmaker;
@@ -316,7 +309,7 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, data: PlayerA
         if (castPositionRelativeToCharacter) {
             const tool = abilitySm.createTools.createTools[abilitySm.createTools.selectedToolIndex];
             if (isKeydown) {
-                if (spellmakerCastData.Spellmaker) {
+                if (spellmakerCastData[ABILITY_NAME_SPELLMAKER]) {
                     const tool = abilitySm.createTools.createTools[spellmakerCastData.Spellmaker.clickedToolRectangleIndex];
                     const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[tool.type];
                     if (toolFunctions && toolFunctions.onToolSelect) {

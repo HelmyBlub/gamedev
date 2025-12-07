@@ -92,6 +92,7 @@ export type AbilityOwner = Position & Partial<Character> & {
 export type DefaultAbilityCastData = PlayerAbilityActionData & {
     castPosition?: Position,
     castPositionRelativeToCharacter?: Position,
+    [key: string]: any,
 }
 
 export type AbilityFunctions = {
