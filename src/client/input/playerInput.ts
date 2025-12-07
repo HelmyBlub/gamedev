@@ -398,14 +398,25 @@ function playerInputChangeEvent(game: Game, inputCode: string, isInputDown: bool
     action.isInputAlreadyDown = isInputDown;
     if (action.action.indexOf("ability") > -1) {
         const cameraPosition = getCameraPosition(game);
-        const castPosition = mousePositionToMapPosition(game, cameraPosition);
         const player = findPlayerByCliendId(clientId, game.state.players);
         if (!player) return;
-        const castPositionRelativeToCharacter: Position = {
-            x: castPosition.x - player.character.x,
-            y: castPosition.y - player.character.y,
-        };
-        const defaultData: DefaultAbilityCastData = { action: action.action, isKeydown: isInputDown, castPosition: castPosition, castPositionRelativeToCharacter: castPositionRelativeToCharacter };
+        const defaultData: DefaultAbilityCastData = { action: action.action, isKeydown: isInputDown };
+        const castPosition = mousePositionToMapPosition(game, cameraPosition);
+        for (let ability of player.character.abilities) {
+            if (ability.playerInputBinding === action.action) {
+                const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+                if (!defaultData.castPosition && !abilityFunctions.omitCastPosition) {
+                    defaultData.castPosition = castPosition;
+                }
+                if (!defaultData.castPositionRelativeToCharacter && abilityFunctions.sendRelativeCastPosition) {
+                    const castPositionRelativeToCharacter: Position = {
+                        x: castPosition.x - player.character.x,
+                        y: castPosition.y - player.character.y,
+                    };
+                    defaultData.castPositionRelativeToCharacter = castPositionRelativeToCharacter;
+                }
+            }
+        }
         handleCommand(game, {
             command: "playerInput",
             clientId: clientId,

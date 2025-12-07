@@ -1,3 +1,4 @@
+import { ABILITIES_FUNCTIONS } from "../ability/ability.js";
 import { handleCommand } from "../commands.js";
 import { calculateDirection, calculateDistance, getCameraPosition } from "../game.js";
 import { Game, Position } from "../gameModel.js";
@@ -126,13 +127,26 @@ function touchAbilitySelect(touch: Touch, game: Game): boolean {
 
             if (player) {
                 const ability = player.character.abilities.find((a) => a.id === abilityId);
-                if (ability && rectangle.positionNotRequired) {
-                    handleCommand(game, {
-                        command: "playerInput",
-                        clientId: clientId,
-                        data: { action: ability.playerInputBinding, isKeydown: true },
-                    });
-                    return true;
+                if (ability) {
+                    const playerInputBinding = ability.playerInputBinding!;
+                    let canOmitCastPositions = true;
+                    for (let ability of player.character.abilities) {
+                        if (playerInputBinding === ability.playerInputBinding) {
+                            const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+                            if (!abilityFunctions.omitCastPosition || abilityFunctions.sendRelativeCastPosition) {
+                                canOmitCastPositions = false;
+                                break;
+                            }
+                        }
+                    }
+                    if (canOmitCastPositions) {
+                        handleCommand(game, {
+                            command: "playerInput",
+                            clientId: clientId,
+                            data: { action: ability.playerInputBinding, isKeydown: true },
+                        });
+                        return true;
+                    }
                 }
             }
 

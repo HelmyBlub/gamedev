@@ -96,6 +96,8 @@ export type DefaultAbilityCastData = PlayerAbilityActionData & {
 
 export type AbilityFunctions = {
     activeAbilityCast?: (abilityOwner: AbilityOwner, ability: Ability, data: DefaultAbilityCastData, game: Game) => void,
+    omitCastPosition?: boolean,
+    sendRelativeCastPosition?: boolean,
     canObjectHitMore?: (abilityObject: AbilityObject) => boolean,
     createAbility: (idCounter: IdCounter, playerInputBinding?: string) => Ability,
     createAbilityUpgradeOptions?: (ability: Ability) => UpgradeOptionAndProbability[],
@@ -122,7 +124,6 @@ export type AbilityFunctions = {
     updateOnCharcterChanges?: (abilityOwner: AbilityOwner, ability: Ability, game: Game) => void,
     abilityUpgradeFunctions?: AbilityUpgradesFunctions,
     canBeUsedByBosses?: boolean,
-    positionNotRquired?: boolean,
     selfLatePaint?: boolean, // e.g.: used for paint after darkness map modifier for music sheet
     tickWhenDisabled?: boolean,
 }
@@ -556,28 +557,15 @@ function calculateAbilityUiRectangles(ctx: CanvasRenderingContext2D, player: Pla
 
     for (let ability of player.character.abilities) {
         if (ability.playerInputBinding) {
-            const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
             if (game.UI.inputType === "touch") {
                 const usedInputIndex = usedInputs.indexOf(ability.playerInputBinding);
                 if (usedInputIndex !== -1) {
-                    if (abilityUiRectangles[usedInputIndex].positionNotRequired
-                        && !abilityFunctions.positionNotRquired
-                    ) {
-                        abilityUiRectangles.splice(usedInputIndex, 1, {
-                            abilityRefId: ability.id,
-                            positionNotRequired: abilityFunctions.positionNotRquired,
-                            height: 0,
-                            width: 0,
-                            topLeft: { x: 0, y: 0 },
-                        });
-                    }
                     continue;
                 }
                 usedInputs.push(ability.playerInputBinding);
             }
             abilityUiRectangles.push({
                 abilityRefId: ability.id,
-                positionNotRequired: abilityFunctions.positionNotRquired,
                 height: 0,
                 width: 0,
                 topLeft: { x: 0, y: 0 },

@@ -45,7 +45,7 @@ export function addAbilitySpeedBoost() {
         setAbilityToLevel: setAbilitySpeedBoostToLevel,
         tickAbility: tickAbilitySpeedBoost,
         abilityUpgradeFunctions: ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS,
-        positionNotRquired: true,
+        omitCastPosition: true,
     };
 
     addAbilitySpeedBoostUpgradeAddCharge();

@@ -88,6 +88,7 @@ export function addAbilitySpellmaker() {
         setAbilityToEnemyLevel: setAbilityToEnemyLevel,
         tickAbility: tickAbility,
         abilityUpgradeFunctions: ABILITY_SPELLMAKER_UPGRADE_FUNCTIONS,
+        sendRelativeCastPosition: true,
     };
     addSpellmakerToolsDefault();
     addSpellmakerToolFireline();

@@ -3,6 +3,8 @@ increase version
 
 current tasks:     
 - network code support send of ability infos
+    - continue: check for reduce data send with castPosition and relativeCastPosition
+        - check touch/controller inputs
     - on client action check if ability has "customData(): customData" function
         - if yes call function and send data with network
         - when receiving, send data to ability

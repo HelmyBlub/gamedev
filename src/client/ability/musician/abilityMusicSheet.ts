@@ -126,6 +126,8 @@ export function addAbilityMusicSheet() {
         abilityUpgradeFunctions: ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS,
         canBeUsedByBosses: true,
         selfLatePaint: true,
+        sendRelativeCastPosition: true,
+        omitCastPosition: true,
     };
     addAbilityMusicSheetUpgradeInstrumentSine();
     addAbilityMusicSheetUpgradeInstrumentSquare();

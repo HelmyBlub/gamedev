@@ -17,7 +17,7 @@ export function addAbilityTowerRotate() {
         createAbility: createAbilityTowerRotate,
         createAbilityMoreInfos: createAbilityMoreInfos,
         paintAbilityUI: paintAbilityUI,
-        positionNotRquired: true,
+        omitCastPosition: true,
     };
 }
 export function createAbilityTowerRotate(idCounter: IdCounter, playerInputBinding?: string, clockwise: boolean = true): AbilityTowerRotate {

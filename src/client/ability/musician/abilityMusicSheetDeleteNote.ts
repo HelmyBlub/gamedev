@@ -23,6 +23,8 @@ export function addAbilityMusicSheetDeleteNote() {
         createAbility: createAbility,
         createAbilityMoreInfos: createAbilityMoreInfos,
         paintAbilityUI: paintAbilityUI,
+        sendRelativeCastPosition: true,
+        omitCastPosition: true,
     };
 }
 export function createAbility(idCounter: IdCounter, playerInputBinding?: string): AbilityMusicSheetDeleteNote {

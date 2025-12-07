@@ -17,7 +17,7 @@ export function addAbilitySpellmakerChangeMode() {
         createAbility: createAbility,
         createAbilityMoreInfos: createAbilityMoreInfos,
         paintAbilityUI: paintAbilityUI,
-        positionNotRquired: true,
+        omitCastPosition: true,
     };
 }
 export function createAbility(idCounter: IdCounter, playerInputBinding?: string): AbilitySpellmakerChangeMode {
