@@ -10,6 +10,7 @@ export type SpellmakerCreateToolsData = {
     position: Position,
     size: number,
     createTools: SpellmakerCreateTool[],
+    spacing: number,
 }
 
 export type SpellmakerCreateTool = {

@@ -2,10 +2,6 @@ next test run:
 increase version
 
 current tasks:     
-- network code support send of ability infos
-    - on client action check if ability has "customData(): customData" function
-        - if yes call function and send data with network
-        - when receiving, send data to ability
 - new class spellmaker
     - next steps
         - improve UX
@@ -20,12 +16,6 @@ current tasks:
             - visualize when in spellmake stage
         - spelltype: fix charge, custom charge, instant, stationary custom charge
         - check bosses and other stuff
-    - generall gameplay
-        - defeating bosses gives new tool selection
-        - should be able to have two spells
-        - somehow able to create new spells while playing
-            - maybe character invisible to normal enemies when making spells?
-
     - remember: relative mouse position not used for holding mouse button down
     - hope explosion spell possible in the end: gets more expensive but explosion can get bigger and bigger
         - charge type spell

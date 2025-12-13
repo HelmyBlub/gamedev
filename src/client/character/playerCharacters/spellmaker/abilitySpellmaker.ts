@@ -6,7 +6,6 @@ import { Game, IdCounter, Position } from "../../../gameModel.js";
 import { getPointPaintPosition, paintTextWithOutline } from "../../../gamePaint.js";
 import { PlayerAbilityActionData, playerInputBindingToDisplayValue } from "../../../input/playerInput.js";
 import { createMoreInfosPart, MoreInfoHoverTexts, MoreInfoPart, paintMoreInfosPart } from "../../../moreInfo.js";
-import { findMyCharacter } from "../../character.js";
 import { Character } from "../../characterModel.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../upgrade.js";
 import { CHARACTER_PET_TYPE_CLONE } from "../characterPetTypeClone.js";
@@ -128,7 +127,8 @@ function createAbility(
             selectedToolIndex: 0,
             createTools: [],
             position: { x: -20, y: +20 },
-            size: 20,
+            size: 40,
+            spacing: 5,
         },
         spellmakeStage: 0,
         availableSpellTypes: [SPELLMAKER_SPELLTYPE_INSTANT],
@@ -247,38 +247,6 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
                 toolMoveFunctions.paint(ctx, tool.workInProgress, ownerPaintPos, abilitySm, game);
             }
         }
-        const fontSize = abilitySm.createTools.size * 0.8;
-        const isMyCharacter = findMyCharacter(game)?.id === abilityOwner.id;
-        for (let i = 0; i < abilitySm.createTools.createTools.length; i++) {
-            ctx.font = fontSize + "px Arial";
-            const toolPosition: Position = {
-                x: ownerPaintPos.x + abilitySm.createTools.position.x + abilitySm.createTools.size * i,
-                y: ownerPaintPos.y + abilitySm.createTools.position.y,
-            }
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = "black";
-            ctx.fillStyle = abilitySm.createTools.selectedToolIndex === i ? "gray" : "white";
-            ctx.fillRect(toolPosition.x, toolPosition.y, abilitySm.createTools.size, abilitySm.createTools.size);
-            ctx.beginPath();
-            ctx.rect(toolPosition.x, toolPosition.y, abilitySm.createTools.size, abilitySm.createTools.size);
-            ctx.stroke();
-            const itTool = abilitySm.createTools.createTools[i];
-            const itToolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[itTool.type];
-            if (itTool.subType == "default" && itToolFunctions && itToolFunctions.paintButton) {
-                itToolFunctions.paintButton(ctx, toolPosition, abilitySm, game);
-            } else {
-                paintTextWithOutline(ctx, "white", "black", itTool.type.substring(0, 2), toolPosition.x + abilitySm.createTools.size / 2, toolPosition.y + abilitySm.createTools.size * 0.9, true, 1);
-            }
-            if (isMyCharacter) {
-                const mousePos = game.mouseRelativeCanvasPosition;
-                if (mousePos.y > toolPosition.y && mousePos.y < toolPosition.y + abilitySm.createTools.size
-                    && mousePos.x > toolPosition.x && mousePos.x < toolPosition.x + abilitySm.createTools.size
-                ) {
-                    const description = abilitySm.createTools.createTools[i].description;
-                    paintMoreInfosPart(ctx, description, toolPosition.x, toolPosition.y + abilitySm.createTools.size + 10);
-                }
-            }
-        }
     } else {
         ctx.lineWidth = 1;
         ctx.strokeStyle = "black";
@@ -297,6 +265,39 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
 function paintAbilityUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
     const abilitySm = ability as AbilitySpellmaker;
     paintAbilityUiDefault(ctx, ability, drawStartX, drawStartY, size, game, IMAGE_NAME_SWITCH, 0, abilitySm.spellIndex);
+    const fontSize = abilitySm.createTools.size * 0.8;
+    abilitySm.createTools.position.y = drawStartY - abilitySm.createTools.size - 1 - abilitySm.createTools.spacing;
+    abilitySm.createTools.position.x = ctx.canvas.width / 2 - ((abilitySm.createTools.createTools.length * (abilitySm.createTools.size + abilitySm.createTools.spacing) - abilitySm.createTools.spacing) / 2);
+    if (abilitySm.mode === "spellmake") {
+        for (let i = 0; i < abilitySm.createTools.createTools.length; i++) {
+            ctx.font = fontSize + "px Arial";
+            const toolPosition: Position = {
+                x: abilitySm.createTools.position.x + (abilitySm.createTools.size + abilitySm.createTools.spacing) * i,
+                y: abilitySm.createTools.position.y,
+            }
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = "black";
+            ctx.fillStyle = abilitySm.createTools.selectedToolIndex === i ? "gray" : "white";
+            ctx.fillRect(toolPosition.x, toolPosition.y, abilitySm.createTools.size, abilitySm.createTools.size);
+            ctx.beginPath();
+            ctx.rect(toolPosition.x, toolPosition.y, abilitySm.createTools.size, abilitySm.createTools.size);
+            ctx.stroke();
+            const itTool = abilitySm.createTools.createTools[i];
+            const itToolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[itTool.type];
+            if (itTool.subType == "default" && itToolFunctions && itToolFunctions.paintButton) {
+                itToolFunctions.paintButton(ctx, toolPosition, abilitySm, game);
+            } else {
+                paintTextWithOutline(ctx, "white", "black", itTool.type.substring(0, 2), toolPosition.x + abilitySm.createTools.size / 2, toolPosition.y + abilitySm.createTools.size * 0.9, true, 1);
+            }
+            const mousePos = game.mouseRelativeCanvasPosition;
+            if (mousePos.y > toolPosition.y && mousePos.y < toolPosition.y + abilitySm.createTools.size
+                && mousePos.x > toolPosition.x && mousePos.x < toolPosition.x + abilitySm.createTools.size
+            ) {
+                const description = abilitySm.createTools.createTools[i].description;
+                paintMoreInfosPart(ctx, description, toolPosition.x, toolPosition.y - description.height - 2);
+            }
+        }
+    }
 }
 
 function castAbility(abilityOwner: AbilityOwner, ability: Ability, data: PlayerAbilityActionData, game: Game) {
@@ -402,13 +403,10 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, data: PlayerA
 function getCustomCastData(abilityOwner: AbilityOwner, ability: Ability, data: DefaultAbilityCastData, game: Game): SpellmakerAbilityAdditionalCastData | undefined {
     const abilitySm = ability as AbilitySpellmaker;
     const isKeydown = data.isKeydown;
-    const castPositionRelativeToCharacter = (data as DefaultAbilityCastData).castPositionRelativeToCharacter;
     if (abilitySm.mode === "spellmake") {
-        if (castPositionRelativeToCharacter) {
-            if (isKeydown) {
-                const result = clickCreateToolsCheck(abilityOwner, abilitySm, castPositionRelativeToCharacter, game);
-                if (result !== -1) return { clickedToolRectangleIndex: result };
-            }
+        if (isKeydown) {
+            const result = clickCreateToolsCheck(abilityOwner, abilitySm, game.mouseRelativeCanvasPosition, game);
+            if (result !== -1) return { clickedToolRectangleIndex: result };
         }
     }
 
@@ -491,11 +489,12 @@ function findClosestAttachToIndex(ability: AbilitySpellmaker, castPositionRelati
 }
 
 /// returns index of tool clicked or -1 if nothing
-function clickCreateToolsCheck(abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position | undefined, game: Game): number {
-    if (!castPositionRelativeToCharacter) return -1;
+function clickCreateToolsCheck(abilityOwner: AbilityOwner, ability: AbilitySpellmaker, relativCanvasPosition: Position, game: Game): number {
     for (let i = 0; i < ability.createTools.createTools.length; i++) {
-        const pos: Position = { x: ability.createTools.position.x + ability.createTools.size * i, y: ability.createTools.position.y };
-        if (pos.x < castPositionRelativeToCharacter.x && pos.x + ability.createTools.size > castPositionRelativeToCharacter.x && pos.y < castPositionRelativeToCharacter.y && pos.y + ability.createTools.size > castPositionRelativeToCharacter.y) {
+        const pos: Position = { x: ability.createTools.position.x + (ability.createTools.size + ability.createTools.spacing) * i, y: ability.createTools.position.y };
+        if (pos.x < relativCanvasPosition.x && pos.x + ability.createTools.size > relativCanvasPosition.x
+            && pos.y < relativCanvasPosition.y && pos.y + ability.createTools.size > relativCanvasPosition.y
+        ) {
             return i;
         }
     }
