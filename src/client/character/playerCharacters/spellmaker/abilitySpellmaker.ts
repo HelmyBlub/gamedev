@@ -6,6 +6,7 @@ import { Game, IdCounter, Position } from "../../../gameModel.js";
 import { getPointPaintPosition, paintTextWithOutline } from "../../../gamePaint.js";
 import { PlayerAbilityActionData, playerInputBindingToDisplayValue } from "../../../input/playerInput.js";
 import { createMoreInfosPart, MoreInfoHoverTexts, MoreInfoPart, paintMoreInfosPart } from "../../../moreInfo.js";
+import { nextRandom } from "../../../randomNumberGenerator.js";
 import { Character } from "../../characterModel.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../upgrade.js";
 import { CHARACTER_PET_TYPE_CLONE } from "../characterPetTypeClone.js";
@@ -91,8 +92,10 @@ export function addAbilitySpellmaker() {
         setAbilityToBossLevel: setAbilityToBossLevel,
         setAbilityToEnemyLevel: setAbilityToEnemyLevel,
         tickAbility: tickAbility,
+        tickAI: tickAI,
         abilityUpgradeFunctions: ABILITY_SPELLMAKER_UPGRADE_FUNCTIONS,
         sendRelativeCastPosition: true,
+        canBeUsedByBosses: true,
     };
     addSpellmakerToolsDefault();
     addSpellmakerToolFireline();
@@ -148,11 +151,21 @@ function executeAbilityUpgradeOption(ability: Ability, character: Character, upg
     upgradeAbility(ability, character, abilityUpgradeOption, game);
 }
 
+function tickAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
+    const abilitySm = ability as AbilitySpellmaker;
+    if (abilitySm.mode === "spellmake") abilitySm.mode = "spellcast";
+    if (abilitySm.mana >= abilitySm.maxMana && abilitySm.spells.length > 0) {
+        const randomSpellIndex = Math.floor(nextRandom(game.state.randomSeed) * abilitySm.spells.length);
+        spellCast(abilityOwner, abilitySm, randomSpellIndex, abilityOwner, game);
+    }
+}
+
 function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     const abilitySm = ability as AbilitySpellmaker;
     abilitySm.mana = Math.min(abilitySm.mana + abilitySm.manaRegeneration, abilitySm.maxMana);
     if (abilitySm.mode === "spellmake") {
         const tool = abilitySm.createTools.createTools[abilitySm.createTools.selectedToolIndex];
+        if (!tool) return;
         if (tool.subType == "default") {
             const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[tool.type];
             if (toolFunctions.onTick) toolFunctions.onTick(tool, abilityOwner, abilitySm, game);
@@ -238,7 +251,7 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
             paintToolObjectsRecusive(ctx, 0, createdObject, abilitySm, ownerPaintPos, game);
         }
         const tool = abilitySm.createTools.createTools[abilitySm.createTools.selectedToolIndex];
-        if (tool.workInProgress) {
+        if (tool && tool.workInProgress) {
             if (tool.subType == "default") {
                 const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[tool.type];
                 if (toolFunctions.paint) toolFunctions.paint(ctx, tool.workInProgress, ownerPaintPos, abilitySm, game);

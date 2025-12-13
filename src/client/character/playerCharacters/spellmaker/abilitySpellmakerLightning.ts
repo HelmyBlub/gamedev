@@ -109,7 +109,8 @@ function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
     if (objectLightning.deleteTime !== undefined) return;
     objectLightning.deleteTime = game.state.time + FADE_PAINT_TIME;
     const lightningJumpRadius = 200;
-    let targets = determineCharactersInDistance(abilityObject, game.state.map, [], game.state.bossStuff.bosses, lightningJumpRadius, abilityObject.faction, true);
+    let targets = abilityObject.faction === FACTION_PLAYER ? determineCharactersInDistance(abilityObject, game.state.map, [], game.state.bossStuff.bosses, lightningJumpRadius, abilityObject.faction, true)
+        : determineCharactersInDistance(abilityObject, undefined, game.state.players, undefined, lightningJumpRadius, abilityObject.faction, true);
     if (targets.length > 0) {
         let ability: AbilitySpellmaker | undefined = undefined;
         if (abilityObject.abilityIdRef !== undefined) {

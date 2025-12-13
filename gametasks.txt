@@ -4,18 +4,14 @@ increase version
 current tasks:     
 - new class spellmaker
     - next steps
+        - kings:
+            - make spells avoidable
+            - balance spell damage for kings
+        - check bosses and other stuff
         - improve UX
-            - put tool options to paintUI and paintAbove normal ability buttons
-                - problems:
-                    - code for network play can not support this
-                        - only sends abilityIndex and mouse position
-                        - would need ability + ability specific information
-                        - if i want to paint based on canvas size i am client dependant which does no work mith multiplayer code
-                - match size
             - display mana cost for spell in creation
             - visualize when in spellmake stage
         - spelltype: fix charge, custom charge, instant, stationary custom charge
-        - check bosses and other stuff
     - remember: relative mouse position not used for holding mouse button down
     - hope explosion spell possible in the end: gets more expensive but explosion can get bigger and bigger
         - charge type spell
