@@ -2,7 +2,7 @@ import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, DefaultAbili
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, upgradeAbility } from "../../../ability/abilityUpgrade.js";
 import { IMAGE_NAME_SWITCH } from "../../../ability/musician/abilityMusicSheetChangeInstrument.js";
 import { autoSendMousePositionHandler, getNextId } from "../../../game.js";
-import { Game, IdCounter, Position } from "../../../gameModel.js";
+import { FACTION_PLAYER, Game, IdCounter, Position } from "../../../gameModel.js";
 import { getPointPaintPosition, paintTextWithOutline } from "../../../gamePaint.js";
 import { PlayerAbilityActionData, playerInputBindingToDisplayValue } from "../../../input/playerInput.js";
 import { createMoreInfosPart, MoreInfoHoverTexts, MoreInfoPart, paintMoreInfosPart } from "../../../moreInfo.js";
@@ -35,6 +35,7 @@ export type AbilitySpellmaker = Ability & {
     availableSpellTypes: string[],
     manaLevelFactor: number,
     damageLevelFactor: number,
+    baseDamage: number,
 }
 export type AbilitySpellmakerObject = AbilityObject & {
     manaFactor: number,
@@ -50,7 +51,7 @@ export type SpellmakerSpell = {
 
 export type SpellmakerCreateToolObjectData = {
     type: string,
-    level: number,
+    baseDamage: number,
     castPosOffset?: Position,
     moveAttachment?: SpellmakerCreateToolMoveAttachment,
     nextStage: SpellmakerCreateToolObjectData[],
@@ -137,6 +138,7 @@ function createAbility(
         availableSpellTypes: [SPELLMAKER_SPELLTYPE_INSTANT],
         damageLevelFactor: 1,
         manaLevelFactor: 1,
+        baseDamage: 10,
     };
 }
 
@@ -432,7 +434,8 @@ function spellCast(abilityOwner: AbilityOwner, abilitySm: AbilitySpellmaker, spe
         abilitySm.mana -= currentSpell.spellManaCost;
         for (let createdObject of currentSpell.createdObjects) {
             const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[createdObject.type];
-            if (toolFunctions.spellCast) toolFunctions.spellCast(createdObject, abilitySm.level!.level, abilityOwner.faction, abilitySm.id, castPosition, abilitySm.damageLevelFactor, abilitySm.manaLevelFactor, [createdObject.type], game);
+            const damageFactor = abilityOwner.faction === FACTION_PLAYER ? abilitySm.damageLevelFactor : 1;
+            if (toolFunctions.spellCast) toolFunctions.spellCast(createdObject, abilitySm.baseDamage, abilityOwner.faction, abilitySm.id, castPosition, damageFactor, abilitySm.manaLevelFactor, [createdObject.type], game);
         }
     }
 }
@@ -448,7 +451,7 @@ export function abilitySpellmakerCastNextStage(nextStage: SpellmakerCreateToolOb
             }
             const toolChain = [...abilityObject.toolChain];
             if (!toolChain.includes(stageObject.type)) toolChain.push(stageObject.type);
-            spellmakerFunctions.spellCast(stageObject, stageObject.level, abilityObject.faction, abilityObject.abilityIdRef!, pos, abilityObject.damageFactor, abilityObject.manaFactor, toolChain, game);
+            spellmakerFunctions.spellCast(stageObject, stageObject.baseDamage, abilityObject.faction, abilityObject.abilityIdRef!, pos, abilityObject.damageFactor, abilityObject.manaFactor, toolChain, game);
         }
     }
 }
@@ -517,14 +520,17 @@ function clickCreateToolsCheck(abilityOwner: AbilityOwner, ability: AbilitySpell
 
 function setAbilityToLevel(ability: Ability, level: number) {
     const sm = ability as AbilitySpellmaker;
+    sm.baseDamage = 10 * level;
 }
 
 function setAbilityToEnemyLevel(ability: Ability, level: number, damageFactor: number) {
     const sm = ability as AbilitySpellmaker;
+    sm.baseDamage = 10 * level;
 }
 
 function setAbilityToBossLevel(ability: Ability, level: number) {
     const sm = ability as AbilitySpellmaker;
+    sm.baseDamage = 10 * level;
 }
 
 function createAbilityMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability, game: Game): MoreInfoPart {

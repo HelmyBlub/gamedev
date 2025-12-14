@@ -111,7 +111,7 @@ function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
             abilityObjectTurret.removeTime = game.state.time + 1000;
         }
 
-        let targets = determineCharactersInDistance(abilityObject, game.state.map, [], game.state.bossStuff.bosses, abilityObjectTurret.triggerRadius, abilityObject.faction, true);
+        let targets = determineCharactersInDistance(abilityObject, game.state.map, game.state.players, game.state.bossStuff.bosses, abilityObjectTurret.triggerRadius, abilityObject.faction, true)
         if (targets.length > 0 || abilityObjectTurret.nextTriggerTime < game.state.time) {
             abilitySpellmakerCastNextStage(abilityObjectTurret.nextStage, abilityObjectTurret, game);
             abilityObjectTurret.mana -= abilityObjectTurret.triggerManaCost;

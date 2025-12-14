@@ -6,7 +6,12 @@ current tasks:
     - next steps
         - kings:
             - make spells avoidable
+                - lightning
+                - fire line delay first tick
+                - explosion delay
             - balance spell damage for kings
+        - big enemies
+            - should cast something
         - check bosses and other stuff
         - improve UX
             - display mana cost for spell in creation

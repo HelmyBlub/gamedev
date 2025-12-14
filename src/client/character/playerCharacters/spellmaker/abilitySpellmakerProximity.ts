@@ -105,7 +105,7 @@ function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
     if (abilityObjectProximity.nextTriggerCheckTime == undefined || abilityObjectProximity.nextTriggerCheckTime <= game.state.time) {
         abilityObjectProximity.nextTriggerCheckTime = game.state.time + 50;
 
-        let targets = determineCharactersInDistance(abilityObject, game.state.map, [], game.state.bossStuff.bosses, abilityObjectProximity.triggerRadius, abilityObject.faction, true);
+        let targets = determineCharactersInDistance(abilityObject, game.state.map, game.state.players, game.state.bossStuff.bosses, abilityObjectProximity.triggerRadius, abilityObject.faction, true);
         if (targets.length > 0 || abilityObjectProximity.latestTriggerTime < game.state.time) {
             abilityObjectProximity.triggered = true;
             abilitySpellmakerCastNextStage(abilityObjectProximity.nextStage, abilityObject as AbilitySpellmakerObject, game);

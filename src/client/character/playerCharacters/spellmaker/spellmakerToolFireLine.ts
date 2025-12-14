@@ -42,7 +42,7 @@ function createObjectFireLine(): CreateToolObjectFireLineData {
     return {
         type: SPELLMAKER_TOOL_FIRELINE,
         positions: [],
-        level: 1,
+        baseDamage: 10,
         nextStage: [],
     }
 }
@@ -122,10 +122,10 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
     }
 }
 
-function spellCast(createObject: SpellmakerCreateToolObjectData, level: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, toolChain: string[], game: Game) {
+function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, toolChain: string[], game: Game) {
     const fireline = createObject as CreateToolObjectFireLineData;
     if (fireline.positions.length < 2) return;
-    const damage = level * 10 * damageFactor;
+    const damage = baseDamage * damageFactor;
     const newToolChain: string[] = [...toolChain];
     const start: Position = {
         x: fireline.positions[0].x + castPosition.x,

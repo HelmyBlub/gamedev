@@ -122,7 +122,7 @@ function getMoveAttachmentNextMoveByAmount(moveAttach: SpellmakerCreateToolMoveA
     if (seeker.nextTargetAquireTickTime < game.state.time) {
         seeker.nextTargetAquireTickTime = game.state.time + TICK_INTERVAL;
         let target: Character | undefined = undefined;
-        let targets = determineCharactersInDistance(abilityObject, undefined, [], game.state.bossStuff.bosses, SEEK_RANGE * 2, abilityObject.faction, true);
+        let targets = determineCharactersInDistance(abilityObject, undefined, game.state.players, game.state.bossStuff.bosses, SEEK_RANGE * 2, abilityObject.faction, true);
         if (targets.length <= 0) {
             targets = determineCharactersInDistance(abilityObject, game.state.map, [], undefined, SEEK_RANGE, abilityObject.faction, true);
         }

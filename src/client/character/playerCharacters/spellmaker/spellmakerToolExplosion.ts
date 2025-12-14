@@ -1,6 +1,6 @@
 import { AbilityOwner } from "../../../ability/ability.js";
 import { calculateDistance, findClientInfoByCharacterId } from "../../../game.js";
-import { Position, Game, ClientInfo } from "../../../gameModel.js";
+import { Position, Game, ClientInfo, FACTION_ENEMY } from "../../../gameModel.js";
 import { AbilitySpellmaker, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 import { SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
 import { createAbilityObjectExplode } from "../../../ability/abilityExplode.js";
@@ -47,7 +47,7 @@ function createObjectExplosion(center: Position): CreateToolObjectExplosionData 
         center: center,
         damageFactor: 1,
         radius: 5,
-        level: 1,
+        baseDamage: 10,
         nextStage: [],
     }
 }
@@ -107,14 +107,15 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
     }
 }
 
-function spellCast(createObject: SpellmakerCreateToolObjectData, level: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, toolChain: string[], game: Game) {
+function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, toolChain: string[], game: Game) {
     const explode = createObject as CreateToolObjectExplosionData;
-    const damage = level * 10 * explode.damageFactor * damageFactor;
+    const damage = baseDamage * explode.damageFactor * damageFactor;
     const center: Position = {
         x: explode.center.x + castPosition.x,
         y: explode.center.y + castPosition.y,
     };
-    const explodeObject = createAbilityObjectSpellmakerExplode(center, damage, explode.radius, faction, damageFactor, manaFactor, [...toolChain], abilityId, 0, game);
+    let explodeDelay = faction === FACTION_ENEMY ? 2000 : 0;
+    const explodeObject = createAbilityObjectSpellmakerExplode(center, damage, explode.radius, faction, damageFactor, manaFactor, [...toolChain], abilityId, explodeDelay, game);
     game.state.abilityObjects.push(explodeObject);
 }
 

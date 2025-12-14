@@ -45,7 +45,7 @@ export type SpellmakerToolFunctions = {
     onToolSelect?: (tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, game: Game) => boolean, // return false if it should no be selectable
     paint?: (ctx: CanvasRenderingContext2D, createObject: SpellmakerCreateToolObjectData, ownerPaintPos: Position, ability: AbilitySpellmaker, game: Game) => void,
     paintButton?: (ctx: CanvasRenderingContext2D, buttonPaintPos: Position, ability: AbilitySpellmaker, game: Game) => void,
-    spellCast?: (createObject: SpellmakerCreateToolObjectData, level: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, toolChain: string[], game: Game) => void,
+    spellCast?: (createObject: SpellmakerCreateToolObjectData, baseDamage: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, toolChain: string[], game: Game) => void,
     calculateManaCostIncludesNextStage?: boolean,
     canHaveNextStage?: boolean,
     canHaveMoveAttachment?: boolean,
@@ -146,11 +146,11 @@ export function spellmakerAddToolDamage(ability: AbilitySpellmaker, damage: numb
     calculateManaFactorAndDamageFactor(ability);
 }
 
-export function spellmakerNextStageSetup(nextStage: SpellmakerCreateToolObjectData[] | undefined, level: number, castOffset: Position): SpellmakerCreateToolObjectData[] {
+export function spellmakerNextStageSetup(nextStage: SpellmakerCreateToolObjectData[] | undefined, baseDamage: number, castOffset: Position): SpellmakerCreateToolObjectData[] {
     if (!nextStage) return [];
     const copy = deepCopy(nextStage) as SpellmakerCreateToolObjectData[];
     for (let object of copy) {
-        object.level = level;
+        object.baseDamage = baseDamage;
         object.castPosOffset = { x: -castOffset.x, y: -castOffset.y };
     }
     return copy;
