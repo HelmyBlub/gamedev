@@ -4,14 +4,13 @@ increase version
 current tasks:     
 - new class spellmaker
     - next steps
-        - kings:
-            - make spells avoidable
-                - lightning
-                - fire line delay first tick
-                - explosion delay
-            - balance spell damage for kings
+        - bug: king not starting with full mana
+        - bosses:
+            - should case a spell
         - big enemies
             - should cast something
+        - kings:
+            - balance spell damage for kings
         - check bosses and other stuff
         - improve UX
             - display mana cost for spell in creation

@@ -89,6 +89,7 @@ export function addAbilitySpellmaker() {
         getCustomCastData: getCustomCastData,
         paintAbility: paintAbility,
         paintAbilityUI: paintAbilityUI,
+        resetAbility: resetAbility,
         setAbilityToLevel: setAbilityToLevel,
         setAbilityToBossLevel: setAbilityToBossLevel,
         setAbilityToEnemyLevel: setAbilityToEnemyLevel,
@@ -140,6 +141,11 @@ function createAbility(
         manaLevelFactor: 1,
         baseDamage: 10,
     };
+}
+
+function resetAbility(ability: Ability) {
+    const spellmaker = ability as AbilitySpellmaker;
+    spellmaker.mana = spellmaker.maxMana;
 }
 
 function createAbilityBossUpgradeOptions(ability: Ability, character: Character, game: Game): UpgradeOptionAndProbability[] {
