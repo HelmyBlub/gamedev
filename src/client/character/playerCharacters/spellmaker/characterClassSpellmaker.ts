@@ -1,7 +1,9 @@
-import { addAbilityToCharacter, createAbility } from "../../../ability/ability.js";
+import { addAbilityToCharacter, createAbility, setAbilityToBossLevel } from "../../../ability/ability.js";
 import { createAbilityHpRegen } from "../../../ability/abilityHpRegen.js";
-import { getNextId } from "../../../game.js";
+import { createAbilityMelee } from "../../../ability/abilityMelee.js";
+import { deepCopy, getNextId } from "../../../game.js";
 import { Position, Game, IdCounter, FACTION_ENEMY } from "../../../gameModel.js";
+import { nextRandom } from "../../../randomNumberGenerator.js";
 import { resetCharacter } from "../../character.js";
 import { Character, createCharacter, IMAGE_SLIME } from "../../characterModel.js";
 import { calculateBossEnemyExperienceWorth, CHARACTER_TYPE_BOSS_ENEMY } from "../../enemy/bossEnemy.js";
@@ -91,6 +93,19 @@ function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: 
     const bossCharacter = createCharacter(getNextId(idCounter), spawn.x, spawn.y, bossSize, bossSize, color, moveSpeed, hp, FACTION_ENEMY, CHARACTER_TYPE_BOSS_ENEMY, experienceWorth);
     bossCharacter.paint.image = IMAGE_SLIME;
     bossCharacter.level = { level: level };
+
+    const baseSpellmaker = basedOnCharacter.abilities.find((a) => a.name === ABILITY_NAME_SPELLMAKER) as AbilitySpellmaker;
+    const spellmaker = deepCopy(baseSpellmaker);
+    while (spellmaker.spells.length > 1) {
+        const randomDeleteIndex = Math.floor(nextRandom(game.state.randomSeed) * spellmaker.spells.length);
+        spellmaker.spells.splice(randomDeleteIndex, 1);
+    }
+    bossCharacter.abilities.push(spellmaker);
+    setAbilityToBossLevel(spellmaker, level);
+    const abilityMelee = createAbilityMelee(game.state.idCounter);
+    setAbilityToBossLevel(abilityMelee, level);
+    bossCharacter.abilities.push(abilityMelee);
+
     resetCharacter(bossCharacter, game);
 
     return bossCharacter;

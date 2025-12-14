@@ -4,9 +4,8 @@ increase version
 current tasks:     
 - new class spellmaker
     - next steps
-        - bug: king not starting with full mana
         - bosses:
-            - should case a spell
+            - should cast a spell
         - big enemies
             - should cast something
         - kings:
@@ -16,6 +15,7 @@ current tasks:
             - display mana cost for spell in creation
             - visualize when in spellmake stage
         - spelltype: fix charge, custom charge, instant, stationary custom charge
+        - prevent: player deleting all spells before king defeated results in king without any spell
     - remember: relative mouse position not used for holding mouse button down
     - hope explosion spell possible in the end: gets more expensive but explosion can get bigger and bigger
         - charge type spell
