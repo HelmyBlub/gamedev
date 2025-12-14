@@ -1,6 +1,6 @@
 import { AbilityObject, AbilityOwner } from "../../../ability/ability.js";
 import { calculateDirection, calculateDistance, findClientInfoByCharacterId } from "../../../game.js";
-import { Position, Game, ClientInfo } from "../../../gameModel.js";
+import { Position, Game, ClientInfo, FACTION_PLAYER, FACTION_ENEMY } from "../../../gameModel.js";
 import { AbilitySpellmaker, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
 import { calculateMovePosition, moveByDirectionAndDistance } from "../../../map/map.js";
@@ -142,11 +142,13 @@ function getMoveAttachmentNextMoveByAmount(moveAttach: SpellmakerCreateToolMoveA
     if (seeker.currentTargetPos) {
         const nextPosition: Position = { x: abilityObject.x, y: abilityObject.y };
         moveByDirectionAndDistance(nextPosition, seeker.direction, seeker.speed, false);
-        const modify = calculateMovePosition({ x: 0, y: 0 }, calculateDirection(abilityObject, seeker.currentTargetPos), 0.25, false);
+        const modFactor = abilityObject.faction === FACTION_PLAYER ? 0.25 : 0.15;
+        const modify = calculateMovePosition({ x: 0, y: 0 }, calculateDirection(abilityObject, seeker.currentTargetPos), modFactor, false);
         nextPosition.x += modify.x;
         nextPosition.y += modify.y;
         seeker.direction = calculateDirection(abilityObject, nextPosition);
         seeker.speed = calculateDistance(abilityObject, nextPosition);
+        if (abilityObject.faction === FACTION_ENEMY && seeker.speed < 2) seeker.speed = 2;
     }
     if (seeker.speed > 4) seeker.speed = 4;
     return calculateMovePosition({ x: 0, y: 0 }, seeker.direction, seeker.speed, false);

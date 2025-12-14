@@ -1,6 +1,6 @@
 import { AbilityOwner } from "../../../ability/ability.js";
 import { calculateDistance, findClientInfoByCharacterId } from "../../../game.js";
-import { Position, Game, ClientInfo } from "../../../gameModel.js";
+import { Position, Game, ClientInfo, FACTION_PLAYER } from "../../../gameModel.js";
 import { AbilitySpellmaker, abilitySpellmakerCalculateManaCost, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool, spellmakerNextStageSetup } from "./spellmakerTool.js";
 import { createMoreInfosPart } from "../../../moreInfo.js";
@@ -127,7 +127,8 @@ function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: num
         }
     }
     const nextStage = spellmakerNextStageSetup(toolTurret.nextStage, baseDamage, toolTurret.center);
-    const objectTurret = createAbilityObjectSpellmakerTurret(center, moveAttachment, nextStage, MAX_DURATION, toolTurret.mana, damageFactor, manaFactor, newToolChain, faction, abilityId, game.state.time);
+    const maxDuration = faction === FACTION_PLAYER ? MAX_DURATION : MAX_DURATION / 4;
+    const objectTurret = createAbilityObjectSpellmakerTurret(center, moveAttachment, nextStage, maxDuration, toolTurret.mana, damageFactor, manaFactor, newToolChain, faction, abilityId, game.state.time);
     game.state.abilityObjects.push(objectTurret);
 }
 
