@@ -96,6 +96,7 @@ function createBossBasedOnClassAndCharacter(basedOnCharacter: Character, level: 
 
     const baseSpellmaker = basedOnCharacter.abilities.find((a) => a.name === ABILITY_NAME_SPELLMAKER) as AbilitySpellmaker;
     const spellmaker = deepCopy(baseSpellmaker);
+    spellmaker.id = getNextId(game.state.idCounter);
     while (spellmaker.spells.length > 1) {
         const randomDeleteIndex = Math.floor(nextRandom(game.state.randomSeed) * spellmaker.spells.length);
         spellmaker.spells.splice(randomDeleteIndex, 1);

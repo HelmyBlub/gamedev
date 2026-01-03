@@ -127,7 +127,9 @@ function getMoveAttachmentNextMoveByAmount(moveAttach: SpellmakerCreateToolMoveA
     const orbiter = moveAttach as SpellmakerCreateObjectMoveAttachmentOrbiter;
     if (abilityObject.abilityIdRef === undefined) return { x: 0, y: 0 };
     const owner = findAbilityOwnerById(abilityObject.abilityIdRef, game);
-    if (owner === undefined) return { x: 0, y: 0 };
+    if (owner === undefined) {
+        return { x: 0, y: 0 };
+    }
     orbiter.angle += orbiter.angleTickChange;
     const newPosition: Position = calculateMovePosition(owner, orbiter.angle, orbiter.orbitRadius, false);
     return { x: newPosition.x - abilityObject.x, y: newPosition.y - abilityObject.y };

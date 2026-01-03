@@ -3,7 +3,6 @@ increase version
 
 current tasks:     
 - new class spellmaker
-    - bug: lightning with no target not disappearing
     - next steps
         - bosses:
             - bug: orbiter attaches to next boss
@@ -18,6 +17,9 @@ current tasks:
             - visualize when in spellmake stage
         - spelltype: fix charge, custom charge, instant, stationary custom charge
         - prevent: player deleting all spells before king defeated results in king without any spell
+        - tool orbiter:
+            - currently only handles to work for character as orbit target. Either make i the only option with explanation or work with other things
+            - if orbit target no longer exists, don't search each tick in all entities, bad for performance
     - remember: relative mouse position not used for holding mouse button down
     - hope explosion spell possible in the end: gets more expensive but explosion can get bigger and bigger
         - charge type spell
