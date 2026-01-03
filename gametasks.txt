@@ -3,8 +3,10 @@ increase version
 
 current tasks:     
 - new class spellmaker
+    - bug: lightning with no target not disappearing
     - next steps
         - bosses:
+            - bug: orbiter attaches to next boss
             - should cast a spell
         - big enemies
             - should cast something

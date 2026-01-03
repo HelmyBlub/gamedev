@@ -143,8 +143,8 @@ function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
                     break;
                 }
             }
-            objectLightning.damageDone = true;
         }
+        objectLightning.damageDone = true;
     } else {
         if (objectLightning.deleteTime === undefined) {
             objectLightning.deleteTime = game.state.time + FADE_PAINT_TIME + FACTION_ENEMY_HIT_DELAY;
