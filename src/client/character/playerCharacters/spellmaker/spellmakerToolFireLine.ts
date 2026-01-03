@@ -6,7 +6,7 @@ import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOLS_FUNCTIONS, Spellmaker
 import { createAbilityObjectSpellmakerFireLine } from "./abilitySpellmakerFireLine.js";
 import { createMoreInfosPart } from "../../../moreInfo.js";
 
-type CreateToolObjectFireLineData = SpellmakerCreateToolObjectData & {
+export type CreateToolObjectFireLineData = SpellmakerCreateToolObjectData & {
     positions: Position[],
 }
 

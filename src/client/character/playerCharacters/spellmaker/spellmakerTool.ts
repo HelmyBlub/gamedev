@@ -1,9 +1,9 @@
-import { Ability, AbilityObject, AbilityOwner } from "../../../ability/ability.js";
+import { AbilityObject, AbilityOwner } from "../../../ability/ability.js";
 import { deepCopy } from "../../../game.js";
 import { Game, Position } from "../../../gameModel.js";
 import { paintTextWithOutline } from "../../../gamePaint.js";
 import { createMoreInfosPart, MoreInfoPart } from "../../../moreInfo.js";
-import { AbilitySpellmaker, abilitySpellmakerCalculateManaCost, abilitySpellmakerCalculateManaCostForSpellAndUpdateToolDisplay, SPELLMAKER_SPELLTYPE_AUTOCAST, SPELLMAKER_SPELLTYPE_INSTANT, SPELLMAKER_SPELLTYPES, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
+import { AbilitySpellmaker, abilitySpellmakerCalculateManaCostForSpellAndUpdateToolDisplay, SPELLMAKER_SPELLTYPE_AUTOCAST, SPELLMAKER_SPELLTYPE_INSTANT, SPELLMAKER_SPELLTYPES, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 
 export type SpellmakerCreateToolsData = {
     selectedToolIndex: number,

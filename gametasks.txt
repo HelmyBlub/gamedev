@@ -4,12 +4,10 @@ increase version
 current tasks:     
 - new class spellmaker
     - next steps
-        - bosses:
-            - bug: orbiter attaches to next boss
-            - should cast a spell
         - big enemies
             - should cast something
         - kings:
+            - should cast a spell
             - balance spell damage for kings
         - check bosses and other stuff
         - improve UX

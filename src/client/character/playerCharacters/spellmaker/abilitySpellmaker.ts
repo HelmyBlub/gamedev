@@ -6,15 +6,15 @@ import { FACTION_PLAYER, Game, IdCounter, Position } from "../../../gameModel.js
 import { getPointPaintPosition, paintTextWithOutline } from "../../../gamePaint.js";
 import { PlayerAbilityActionData, playerInputBindingToDisplayValue } from "../../../input/playerInput.js";
 import { createMoreInfosPart, MoreInfoHoverTexts, MoreInfoPart, paintMoreInfosPart } from "../../../moreInfo.js";
-import { nextRandom } from "../../../randomNumberGenerator.js";
+import { fixedRandom, nextRandom } from "../../../randomNumberGenerator.js";
 import { Character } from "../../characterModel.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../upgrade.js";
 import { CHARACTER_PET_TYPE_CLONE } from "../characterPetTypeClone.js";
 import { addAbilitySpellmakerUpgradeTools } from "./abilitySpellmakerUpgrades.js";
 import { addSpellmakerToolsDefault, SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOL_RESET, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateToolsData } from "./spellmakerTool.js";
-import { addSpellmakerToolExplosion } from "./spellmakerToolExplosion.js";
-import { addSpellmakerToolFireline } from "./spellmakerToolFireLine.js";
-import { addSpellmakerToolLightning } from "./spellmakerToolLightning.js";
+import { addSpellmakerToolExplosion, CreateToolObjectExplosionData, SPELLMAKER_TOOL_EXPLOSION } from "./spellmakerToolExplosion.js";
+import { addSpellmakerToolFireline, CreateToolObjectFireLineData, SPELLMAKER_TOOL_FIRELINE } from "./spellmakerToolFireLine.js";
+import { addSpellmakerToolLightning, CreateToolObjectLightningData, SPELLMAKER_TOOL_LIGHTNING } from "./spellmakerToolLightning.js";
 import { addSpellmakerToolMove } from "./spellmakerToolMove.js";
 import { addSpellmakerToolOrbiter } from "./spellmakerToolOrbiter.js";
 import { addSpellmakerToolSeeker } from "./spellmakerToolSeeker.js";
@@ -93,6 +93,7 @@ export function addAbilitySpellmaker() {
         setAbilityToLevel: setAbilityToLevel,
         setAbilityToBossLevel: setAbilityToBossLevel,
         setAbilityToEnemyLevel: setAbilityToEnemyLevel,
+        setUpAbilityForEnemy: setUpAbilityForEnemy,
         tickAbility: tickAbility,
         tickAI: tickAI,
         abilityUpgradeFunctions: ABILITY_SPELLMAKER_UPGRADE_FUNCTIONS,
@@ -141,6 +142,47 @@ function createAbility(
         manaLevelFactor: 1,
         baseDamage: 10,
     };
+}
+
+function setUpAbilityForEnemy(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
+    const spellmaker = ability as AbilitySpellmaker;
+    if (spellmaker.spells.length === 0) {
+        spellmaker.spells.push({ createdObjects: [], spellManaCost: 0, spellType: SPELLMAKER_SPELLTYPE_INSTANT });
+    }
+    spellmaker.mode = "spellcast";
+
+    const random = Math.floor(fixedRandom(abilityOwner.x, abilityOwner.y, game.state.map.seed!) * 3);
+    if (random === 0) {
+        let explode: CreateToolObjectExplosionData = {
+            type: SPELLMAKER_TOOL_EXPLOSION,
+            baseDamage: 10,
+            center: { x: 0, y: 0 },
+            damageFactor: 1,
+            nextStage: [],
+            radius: 30,
+        }
+        spellmaker.spells[0].createdObjects.push(explode);
+    } else if (random === 1) {
+        let lightning: CreateToolObjectLightningData = {
+            type: SPELLMAKER_TOOL_LIGHTNING,
+            baseDamage: 10,
+            center: { x: 0, y: 0 },
+            damageFactor: 1,
+            nextStage: [],
+            jumps: 1,
+        }
+        spellmaker.spells[0].createdObjects.push(lightning);
+    } else {
+        let fireline: CreateToolObjectFireLineData = {
+            type: SPELLMAKER_TOOL_FIRELINE,
+            baseDamage: 10,
+            nextStage: [],
+            positions: [{ x: -10, y: -10 }, { x: 10, y: 10 }],
+        }
+        spellmaker.spells[0].createdObjects.push(fireline);
+    }
+
+    spellmaker.spells[0].spellManaCost = abilitySpellmakerCalculateManaCost(spellmaker.spells[0].createdObjects) * 50;
 }
 
 function resetAbility(ability: Ability) {

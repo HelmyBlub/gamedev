@@ -3,11 +3,10 @@ import { calculateDistance, findClientInfoByCharacterId } from "../../../game.js
 import { Position, Game, ClientInfo, FACTION_ENEMY } from "../../../gameModel.js";
 import { AbilitySpellmaker, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 import { SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
-import { createAbilityObjectExplode } from "../../../ability/abilityExplode.js";
 import { createMoreInfosPart } from "../../../moreInfo.js";
 import { createAbilityObjectSpellmakerExplode } from "./abilitySpellmakerExplode.js";
 
-type CreateToolObjectExplosionData = SpellmakerCreateToolObjectData & {
+export type CreateToolObjectExplosionData = SpellmakerCreateToolObjectData & {
     radius: number,
     center: Position,
     damageFactor: number,
@@ -82,7 +81,7 @@ function onKeyDown(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, abili
 function onKeyUp(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game): SpellmakerCreateToolObjectData | undefined {
     const toolExplode = tool as SpellmakerCreateToolExplosion;
     if (toolExplode.workInProgress) {
-        const explode = toolExplode.workInProgress;
+        const explode = toolExplode.workInProgress as CreateToolObjectExplosionData;
         explode.radius = Math.max(5, Math.abs(castPositionRelativeToCharacter.x - explode.center.x))
         explode.damageFactor = Math.min(10, (Math.max(1, Math.abs(castPositionRelativeToCharacter.y - explode.center.y) / 10)));
         toolExplode.workInProgress = undefined;

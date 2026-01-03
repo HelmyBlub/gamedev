@@ -6,7 +6,7 @@ import { SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTo
 import { createMoreInfosPart } from "../../../moreInfo.js";
 import { createAbilityObjectSpellmakerLightning } from "./abilitySpellmakerLightning.js";
 
-type CreateToolObjectLightningData = SpellmakerCreateToolObjectData & {
+export type CreateToolObjectLightningData = SpellmakerCreateToolObjectData & {
     jumps: number,
     center: Position,
     damageFactor: number,
