@@ -1,6 +1,7 @@
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, DefaultAbilityCastData, getAbilityNameUiText, paintAbilityUiDefault } from "../../../ability/ability.js";
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, upgradeAbility } from "../../../ability/abilityUpgrade.js";
 import { IMAGE_NAME_SWITCH } from "../../../ability/musician/abilityMusicSheetChangeInstrument.js";
+import { AbilityDamageBreakdown } from "../../../combatlog.js";
 import { autoSendMousePositionHandler, getNextId } from "../../../game.js";
 import { FACTION_PLAYER, Game, IdCounter, Position } from "../../../gameModel.js";
 import { getPointPaintPosition, paintTextWithOutline } from "../../../gamePaint.js";
@@ -10,6 +11,9 @@ import { fixedRandom, nextRandom } from "../../../randomNumberGenerator.js";
 import { Character } from "../../characterModel.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../upgrade.js";
 import { CHARACTER_PET_TYPE_CLONE } from "../characterPetTypeClone.js";
+import { ABILITY_NAME_SPELLMAKER_EXPLODE } from "./abilitySpellmakerExplode.js";
+import { ABILITY_NAME_SPELLMAKER_FIRE_LINE } from "./abilitySpellmakerFireLine.js";
+import { ABILITY_NAME_SPELLMAKER_LIGHTNING } from "./abilitySpellmakerLightning.js";
 import { addAbilitySpellmakerUpgradeTools } from "./abilitySpellmakerUpgrades.js";
 import { addSpellmakerToolsDefault, SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOL_RESET, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateToolsData } from "./spellmakerTool.js";
 import { addSpellmakerToolExplosion, CreateToolObjectExplosionData, SPELLMAKER_TOOL_EXPLOSION } from "./spellmakerToolExplosion.js";
@@ -85,6 +89,7 @@ export function addAbilitySpellmaker() {
         createAbility: createAbility,
         createAbilityMoreInfos: createAbilityMoreInfos,
         createAbilityBossUpgradeOptions: createAbilityBossUpgradeOptions,
+        createDamageBreakDown: createDamageBreakDown,
         executeUpgradeOption: executeAbilityUpgradeOption,
         getCustomCastData: getCustomCastData,
         paintAbility: paintAbility,
@@ -143,6 +148,26 @@ function createAbility(
         baseDamage: 10,
     };
 }
+
+function createDamageBreakDown(damage: number, ability: Ability, abilityObject: AbilityObject | undefined, damageAbilityName: string, game: Game): AbilityDamageBreakdown[] {
+    const damageBreakDown: AbilityDamageBreakdown[] = [];
+    if (abilityObject) {
+        let name = "Base Damage";
+        let abilityObjectSpellmaker = abilityObject as AbilitySpellmakerObject;
+        name = abilityObjectSpellmaker.toolChain.join();
+        damageBreakDown.push({
+            damage: damage,
+            name: name,
+        });
+    } else {
+        damageBreakDown.push({
+            damage: damage,
+            name: damageAbilityName,
+        });
+    }
+    return damageBreakDown;
+}
+
 
 function setUpAbilityForEnemy(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     const spellmaker = ability as AbilitySpellmaker;

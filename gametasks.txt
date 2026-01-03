@@ -3,13 +3,10 @@ increase version
 
 current tasks:     
 - new class spellmaker
+    - reset stage on spellmaker mode under more coditions
     - next steps
-        - big enemies
-            - should cast something
-        - kings:
-            - should cast a spell
-            - balance spell damage for kings
-        - check bosses and other stuff
+        - check other stuff
+            - damage meter
         - improve UX
             - display mana cost for spell in creation
             - visualize when in spellmake stage
@@ -21,6 +18,7 @@ current tasks:
     - remember: relative mouse position not used for holding mouse button down
     - hope explosion spell possible in the end: gets more expensive but explosion can get bigger and bigger
         - charge type spell
+    - achievements
 - speedrun my game
     - kill god as fast as possible
         - real Time: <12:07 (builder + ball)
