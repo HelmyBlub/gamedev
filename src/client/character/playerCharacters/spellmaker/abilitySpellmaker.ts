@@ -8,6 +8,7 @@ import { getPointPaintPosition, paintTextWithOutline } from "../../../gamePaint.
 import { PlayerAbilityActionData, playerInputBindingToDisplayValue } from "../../../input/playerInput.js";
 import { createMoreInfosPart, MoreInfoHoverTexts, MoreInfoPart, paintMoreInfosPart } from "../../../moreInfo.js";
 import { fixedRandom, nextRandom } from "../../../randomNumberGenerator.js";
+import { findMyCharacter } from "../../character.js";
 import { Character } from "../../characterModel.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../upgrade.js";
 import { CHARACTER_PET_TYPE_CLONE } from "../characterPetTypeClone.js";
@@ -103,6 +104,7 @@ export function addAbilitySpellmaker() {
         abilityUpgradeFunctions: ABILITY_SPELLMAKER_UPGRADE_FUNCTIONS,
         sendRelativeCastPosition: true,
         canBeUsedByBosses: true,
+        selfLatePaint: true,
     };
     addSpellmakerToolsDefault();
     addSpellmakerToolFireline();
@@ -320,6 +322,16 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
     const abilitySm = ability as AbilitySpellmaker;
     let ownerPaintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition, game.UI.zoom);
     if (abilitySm.mode === "spellmake") {
+        const myChar = findMyCharacter(game);
+        if (myChar === abilityOwner) {
+            const alphaChange = 0.5;
+            ctx.globalAlpha *= alphaChange;
+            ctx.fillStyle = "gray";
+            ctx.beginPath();
+            ctx.arc(ownerPaintPos.x, ownerPaintPos.y, MAX_CAST_RANGE, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.globalAlpha /= alphaChange;
+        }
         const currentSpell = abilitySm.spells[abilitySm.spellIndex];
         for (let createdObject of currentSpell.createdObjects) {
             paintToolObjectsRecusive(ctx, 0, createdObject, abilitySm, ownerPaintPos, game);
@@ -356,6 +368,9 @@ function paintAbilityUI(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwne
     abilitySm.createTools.position.y = drawStartY - abilitySm.createTools.size - 1 - abilitySm.createTools.spacing;
     abilitySm.createTools.position.x = ctx.canvas.width / 2 - ((abilitySm.createTools.createTools.length * (abilitySm.createTools.size + abilitySm.createTools.spacing) - abilitySm.createTools.spacing) / 2);
     if (abilitySm.mode === "spellmake") {
+        const headingFontSize = 60;
+        ctx.font = `bold ${headingFontSize}px Arial`;
+        paintTextWithOutline(ctx, "white", "black", "Mode: Spellmake", ctx.canvas.width / 2, 40 + headingFontSize, true, 1);
         for (let i = 0; i < abilitySm.createTools.createTools.length; i++) {
             ctx.font = fontSize + "px Arial";
             const toolPosition: Position = {

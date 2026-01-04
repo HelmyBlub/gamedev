@@ -4,14 +4,13 @@ increase version
 current tasks:     
 - new class spellmaker
     - next steps
-        - limit spell cost to 99
+        - bug: cast range limit breaks when starting in range and going over while holding mouse
         - improve UX
-            - no spellmake mode before selection of first tool
-                - on selection switch to spellmake mode
-            - "switch spell" ability added on adding second spell
-                - visualize spell number on switch spell
             - in spellmake mode
                 - visualize white background with title spellmake
+            - text explain popup
+                - not enough mana
+                - spell cost exceeds maximum
             - display mana cost for spell in creation
             - visualize when in spellmake stage
         - accessoire
