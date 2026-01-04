@@ -3,9 +3,6 @@ increase version
 
 current tasks:     
 - new class spellmaker
-    - reset stage on spellmaker mode under more coditions
-        - on delete
-        - on spell switch
     - check max range
     - next steps
         - improve UX

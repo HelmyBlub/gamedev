@@ -2,7 +2,7 @@ import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, DefaultAbili
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, upgradeAbility } from "../../../ability/abilityUpgrade.js";
 import { IMAGE_NAME_SWITCH } from "../../../ability/musician/abilityMusicSheetChangeInstrument.js";
 import { AbilityDamageBreakdown } from "../../../combatlog.js";
-import { autoSendMousePositionHandler, getNextId } from "../../../game.js";
+import { autoSendMousePositionHandler, calculateDistance, getNextId } from "../../../game.js";
 import { FACTION_PLAYER, Game, IdCounter, Position } from "../../../gameModel.js";
 import { getPointPaintPosition, paintTextWithOutline } from "../../../gamePaint.js";
 import { PlayerAbilityActionData, playerInputBindingToDisplayValue } from "../../../input/playerInput.js";
@@ -11,9 +11,6 @@ import { fixedRandom, nextRandom } from "../../../randomNumberGenerator.js";
 import { Character } from "../../characterModel.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../upgrade.js";
 import { CHARACTER_PET_TYPE_CLONE } from "../characterPetTypeClone.js";
-import { ABILITY_NAME_SPELLMAKER_EXPLODE } from "./abilitySpellmakerExplode.js";
-import { ABILITY_NAME_SPELLMAKER_FIRE_LINE } from "./abilitySpellmakerFireLine.js";
-import { ABILITY_NAME_SPELLMAKER_LIGHTNING } from "./abilitySpellmakerLightning.js";
 import { addAbilitySpellmakerUpgradeTools } from "./abilitySpellmakerUpgrades.js";
 import { addSpellmakerToolsDefault, SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOL_RESET, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateToolsData } from "./spellmakerTool.js";
 import { addSpellmakerToolExplosion, CreateToolObjectExplosionData, SPELLMAKER_TOOL_EXPLOSION } from "./spellmakerToolExplosion.js";
@@ -82,6 +79,7 @@ export const SPELLMAKER_SPELLTYPES: SpellmakerSpelltypeData[] = [
     { name: SPELLMAKER_SPELLTYPE_AUTOCAST, description: ["spell is cast automatically when mana full"] },
 ];
 export const ABILITY_SPELLMAKER_UPGRADE_FUNCTIONS: AbilityUpgradesFunctions = {};
+const MAX_CAST_RANGE = 1000;
 
 export function addAbilitySpellmaker() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_SPELLMAKER] = {
@@ -396,6 +394,8 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, data: PlayerA
     const abilitySm = ability as AbilitySpellmaker;
     if (abilitySm.mode === "spellmake") {
         if (castPositionRelativeToCharacter) {
+            const distance = calculateDistance({ x: 0, y: 0 }, castPositionRelativeToCharacter);
+            if (distance > MAX_CAST_RANGE) return;
             const tool = abilitySm.createTools.createTools[abilitySm.createTools.selectedToolIndex];
             if (isKeydown) {
                 if (spellmakerCastData[ABILITY_NAME_SPELLMAKER]) {
@@ -483,6 +483,8 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, data: PlayerA
     }
     if (abilitySm.mode === "spellcast") {
         if (isKeydown) {
+            const distance = calculateDistance(abilityOwner, castPosition);
+            if (distance > MAX_CAST_RANGE) return;
             spellCast(abilityOwner, abilitySm, abilitySm.spellIndex, castPosition, game);
         }
     }
