@@ -4,6 +4,7 @@ import { getNextId } from "../../../game.js";
 import { Game, IdCounter, Position } from "../../../gameModel.js";
 import { PlayerAbilityActionData, playerInputBindingToDisplayValue } from "../../../input/playerInput.js";
 import { MoreInfoPart, createMoreInfosPart } from "../../../moreInfo.js";
+import { Character } from "../../characterModel.js";
 import { ABILITY_NAME_SPELLMAKER, AbilitySpellmaker } from "./abilitySpellmaker.js";
 
 export type AbilitySpellmakerSwitchSpell = Ability & {
@@ -32,8 +33,12 @@ export function createAbility(idCounter: IdCounter, playerInputBinding?: string)
     }
 }
 
-function paintAbilityUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
-    paintAbilityUiDefault(ctx, ability, drawStartX, drawStartY, size, game, IMAGE_NAME_SWITCH);
+function paintAbilityUI(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
+    const char = abilityOwner as Character;
+    const abilitySmOpt = char.abilities.find(a => a.name === ABILITY_NAME_SPELLMAKER);
+    if (!abilitySmOpt) return;
+    const abilitySm = abilitySmOpt as AbilitySpellmaker;
+    paintAbilityUiDefault(ctx, ability, drawStartX, drawStartY, size, game, IMAGE_NAME_SWITCH, 0, abilitySm.spellIndex + 1);
 }
 
 function castAbility(abilityOwner: AbilityOwner, ability: Ability, data: PlayerAbilityActionData, game: Game) {

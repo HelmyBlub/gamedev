@@ -80,6 +80,7 @@ export const SPELLMAKER_SPELLTYPES: SpellmakerSpelltypeData[] = [
 ];
 export const ABILITY_SPELLMAKER_UPGRADE_FUNCTIONS: AbilityUpgradesFunctions = {};
 const MAX_CAST_RANGE = 1000;
+const MAX_SPELL_MANA_COST = 99;
 
 export function addAbilitySpellmaker() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_SPELLMAKER] = {
@@ -129,7 +130,7 @@ function createAbility(
         mana: 100,
         maxMana: 100,
         manaRegeneration: 0.1,
-        mode: "spellmake",
+        mode: "spellcast",
         spells: [{ createdObjects: [], spellManaCost: 0, spellType: SPELLMAKER_SPELLTYPE_INSTANT }],
         spellIndex: 0,
         createTools: {
@@ -348,9 +349,9 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
     }
 }
 
-function paintAbilityUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
+function paintAbilityUI(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
     const abilitySm = ability as AbilitySpellmaker;
-    paintAbilityUiDefault(ctx, ability, drawStartX, drawStartY, size, game, IMAGE_NAME_SWITCH, 0, abilitySm.spellIndex);
+    paintAbilityUiDefault(ctx, ability, drawStartX, drawStartY, size, game, IMAGE_NAME_SWITCH, 0);
     const fontSize = abilitySm.createTools.size * 0.8;
     abilitySm.createTools.position.y = drawStartY - abilitySm.createTools.size - 1 - abilitySm.createTools.spacing;
     abilitySm.createTools.position.x = ctx.canvas.width / 2 - ((abilitySm.createTools.createTools.length * (abilitySm.createTools.size + abilitySm.createTools.spacing) - abilitySm.createTools.spacing) / 2);
@@ -440,6 +441,10 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, data: PlayerA
                             if (abilitySm.spellmakeStage == 0) {
                                 currentSpell.createdObjects.push(result);
                                 abilitySpellmakerCalculateManaCostForSpellAndUpdateToolDisplay(abilitySm, currentSpell);
+                                if (currentSpell.spellManaCost > MAX_SPELL_MANA_COST) {
+                                    currentSpell.createdObjects.pop();
+                                    abilitySpellmakerCalculateManaCostForSpellAndUpdateToolDisplay(abilitySm, currentSpell);
+                                }
                             } else if (abilitySm.attachToIndex != undefined) {
                                 let currentObject = currentSpell.createdObjects[abilitySm.attachToIndex[0]];
                                 let currentStage = 0;
@@ -453,6 +458,10 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, data: PlayerA
                                 }
                                 currentObject.nextStage.push(result);
                                 abilitySpellmakerCalculateManaCostForSpellAndUpdateToolDisplay(abilitySm, currentSpell);
+                                if (currentSpell.spellManaCost > MAX_SPELL_MANA_COST) {
+                                    currentSpell.createdObjects.pop();
+                                    abilitySpellmakerCalculateManaCostForSpellAndUpdateToolDisplay(abilitySm, currentSpell);
+                                }
                             }
                         }
                     }

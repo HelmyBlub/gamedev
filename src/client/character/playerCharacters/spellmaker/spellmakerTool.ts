@@ -1,9 +1,12 @@
-import { AbilityObject, AbilityOwner } from "../../../ability/ability.js";
+import { AbilityObject, AbilityOwner, addAbilityToCharacter, createAbility } from "../../../ability/ability.js";
 import { deepCopy } from "../../../game.js";
 import { Game, Position } from "../../../gameModel.js";
 import { paintTextWithOutline } from "../../../gamePaint.js";
 import { createMoreInfosPart, MoreInfoPart } from "../../../moreInfo.js";
+import { Character } from "../../characterModel.js";
 import { AbilitySpellmaker, abilitySpellmakerCalculateManaCostForSpellAndUpdateToolDisplay, SPELLMAKER_SPELLTYPE_AUTOCAST, SPELLMAKER_SPELLTYPE_INSTANT, SPELLMAKER_SPELLTYPES, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
+import { ABILITY_NAME_SPELLMAKER_SWITCH_SPELL } from "./abilitySpellmakerSwitchSpell.js";
+import { CHARACTER_CLASS_SPELLMAKER } from "./characterClassSpellmaker.js";
 
 export type SpellmakerCreateToolsData = {
     selectedToolIndex: number,
@@ -256,7 +259,16 @@ function onToolSelectReset(tool: SpellmakerCreateTool, abilityOwner: AbilityOwne
 }
 
 function onToolSelectNew(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, game: Game): boolean {
+    if (ability.spells.length === 1) {
+        const char = abilityOwner as Character;
+        const switchAbility = char.abilities.findIndex((a) => a.name === ABILITY_NAME_SPELLMAKER_SWITCH_SPELL);
+        if (switchAbility === -1 && char.characterClasses) {
+            const charClass = char.characterClasses.find(c => c.className === CHARACTER_CLASS_SPELLMAKER);
+            addAbilityToCharacter(char, createAbility(ABILITY_NAME_SPELLMAKER_SWITCH_SPELL, game.state.idCounter, false, false, "ability3"), charClass);
+        }
+    }
     ability.spells.push({ createdObjects: [], spellManaCost: 0, spellType: SPELLMAKER_SPELLTYPE_INSTANT });
+
     return false;
 }
 

@@ -83,7 +83,7 @@ export function paintSniperRifle(ctx: CanvasRenderingContext2D, abilitySnipe: Ab
     }
 }
 
-export function paintAbilitySnipeUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
+export function paintAbilitySnipeUI(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
     const snipe = ability as AbilitySnipe;
     let heightFactor: number = 0;
     if (snipe.currentCharges < snipe.maxCharges) {

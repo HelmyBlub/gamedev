@@ -221,7 +221,7 @@ function autoCastAbility(abilityOwner: AbilityOwner, abilityFireCircle: AbilityF
     castFireCircle(abilityOwner, abilityFireCircle, defaultData, game);
 }
 
-function paintAbilityFireCircleUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
+function paintAbilityFireCircleUI(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
     const fireCircle = ability as AbilityFireCircle;
     const fontSize = size;
     const rectSize = size;

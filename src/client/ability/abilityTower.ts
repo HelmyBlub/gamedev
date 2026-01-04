@@ -617,7 +617,7 @@ function tickEffectConnected(abilityObjectTower: AbilityObjectTower, game: Game,
     }
 }
 
-function paintAbilityTowerUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
+function paintAbilityTowerUI(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
     const tower = ability as AbilityTower;
     const fontSize = 12;
     const rectSize = size;

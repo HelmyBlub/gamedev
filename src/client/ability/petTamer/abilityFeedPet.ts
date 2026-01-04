@@ -125,7 +125,7 @@ function paintAbilityObjectFeedPet(ctx: CanvasRenderingContext2D, abilityObject:
     }
 }
 
-function paintAbilityFeedPetUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
+function paintAbilityFeedPetUI(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
     const feedPet = ability as AbilityFeedPet;
     let heightFactor = 0;
     if (feedPet.nextRechargeTime !== undefined && game.state.time < feedPet.nextRechargeTime) {

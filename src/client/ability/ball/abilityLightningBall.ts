@@ -233,7 +233,7 @@ function setAbilityToBossLevel(ability: Ability, level: number) {
     abilityBall.firstJumpDelay = ENEMY_JUMP_DELAY;
 }
 
-function paintAbilityUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
+function paintAbilityUI(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
     const lightningBall = ability as AbilityLightningBall;
     let heightFactor = 0;
     if (lightningBall.nextRechargeTime !== undefined && game.state.time < lightningBall.nextRechargeTime) {

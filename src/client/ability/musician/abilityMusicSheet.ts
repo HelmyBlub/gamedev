@@ -677,7 +677,7 @@ function setAbilityToBossLevel(ability: Ability, level: number) {
     }
 }
 
-function paintAbilityUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
+function paintAbilityUI(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
     const musicSheet = ability as AbilityMusicSheets;
     const rectSize = size;
 

@@ -240,7 +240,7 @@ function setAbilityToBossLevel(ability: Ability, level: number) {
     abilityBall.damage = level * 10;
 }
 
-function paintAbilityUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
+function paintAbilityUI(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
     const bounceBall = ability as AbilityBounceBall;
     let heightFactor = 0;
     if (bounceBall.nextRechargeTime !== undefined && game.state.time < bounceBall.nextRechargeTime) {

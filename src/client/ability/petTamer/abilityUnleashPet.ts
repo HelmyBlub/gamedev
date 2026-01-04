@@ -55,7 +55,7 @@ function resetAbility(ability: Ability) {
     unleash.nextRechargeTime = undefined;
 }
 
-function paintAbilityUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
+function paintAbilityUI(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
     const unleashPet = ability as AbilityUnleashPet;
     let heightFactor = 0;
     if (unleashPet.nextRechargeTime !== undefined && game.state.time < unleashPet.nextRechargeTime) {

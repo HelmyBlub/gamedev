@@ -111,7 +111,7 @@ export type AbilityFunctions = {
     getMoreInfosText?: () => string[],
     paintAbility?: (ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) => void,
     paintAbilityObject?: (ctx: CanvasRenderingContext2D, abilityObject: AbilityObject, paintOrder: PaintOrderAbility, game: Game) => void,
-    paintAbilityUI?: (ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) => void,
+    paintAbilityUI?: (ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) => void,
     paintAbilityAccessoire?: (ctx: CanvasRenderingContext2D, ability: Ability, paintPosition: Position, game: Game) => void,
     onHit?: (ability: Ability, targetCharacter: Character, game: Game) => void,
     onObjectHit?: (abilityObject: AbilityObject, targetCharacter: Character, game: Game) => void,
@@ -645,7 +645,7 @@ export function paintUiForAbilities(ctx: CanvasRenderingContext2D, game: Game) {
         const paintY = rectangle.topLeft.y - yOffset;
         let abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
         if (abilityFunctions?.paintAbilityUI !== undefined) {
-            abilityFunctions.paintAbilityUI(ctx, ability, paintX, paintY, rectangle.height, game);
+            abilityFunctions.paintAbilityUI(ctx, player.character, ability, paintX, paintY, rectangle.height, game);
         } else if (ability.playerInputBinding) {
             paintKeyBindingUI(ctx, ability, paintX, paintY, rectangle.height, game);
         } else {

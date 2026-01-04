@@ -126,7 +126,7 @@ function paintAbilityObjectLovePet(ctx: CanvasRenderingContext2D, abilityObject:
     }
 }
 
-function paintAbilityLovePetUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
+function paintAbilityLovePetUI(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
     const lovePet = ability as AbilityLovePet;
     let heightFactor = 0;
     if (lovePet.nextRechargeTime !== undefined && game.state.time < lovePet.nextRechargeTime) {

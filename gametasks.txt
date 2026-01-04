@@ -3,11 +3,18 @@ increase version
 
 current tasks:     
 - new class spellmaker
-    - check max range
     - next steps
+        - limit spell cost to 99
         - improve UX
+            - no spellmake mode before selection of first tool
+                - on selection switch to spellmake mode
+            - "switch spell" ability added on adding second spell
+                - visualize spell number on switch spell
+            - in spellmake mode
+                - visualize white background with title spellmake
             - display mana cost for spell in creation
             - visualize when in spellmake stage
+        - accessoire
         - spelltype: fix charge, custom charge, instant, stationary custom charge
         - prevent: player deleting all spells before king defeated results in king without any spell
         - tool orbiter:

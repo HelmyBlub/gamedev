@@ -73,7 +73,6 @@ function changeCharacterToSpellmakerClass(
     addAbilityToCharacter(character, createAbilityHpRegen(idCounter, undefined, 5), charClass);
     addAbilityToCharacter(character, abilitySm, charClass);
     addAbilityToCharacter(character, createAbility(ABILITY_NAME_SPELLMAKER_CHANGE_MODE, idCounter, false, false, "ability2"), charClass);
-    addAbilityToCharacter(character, createAbility(ABILITY_NAME_SPELLMAKER_SWITCH_SPELL, idCounter, false, false, "ability3"), charClass);
 }
 
 function getLongUiText(): string[] {

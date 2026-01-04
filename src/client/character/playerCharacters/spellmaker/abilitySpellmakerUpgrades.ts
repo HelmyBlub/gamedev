@@ -92,6 +92,12 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption, character
     const spellmaker = ability as AbilitySpellmaker;
     if (!game.ctx || !option.additionalInfo) return;
     if (spellmaker.createTools.createTools.find(ct => ct.type === option.additionalInfo)) return;
+    if (spellmaker.bossSkillPoints?.used === -1) {
+        if (spellmaker.createTools.selectedToolIndex === 0) {
+            spellmaker.createTools.selectedToolIndex = spellmaker.createTools.createTools.length;
+        }
+        spellmaker.mode = "spellmake";
+    }
     if (SPELLMAKER_TOOLS_FUNCTIONS[option.additionalInfo]) {
         const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[option.additionalInfo];
         spellmaker.createTools.createTools.push(toolFunctions.createTool(game.ctx));

@@ -107,7 +107,7 @@ function castSpeedBoost(abilityOwner: AbilityOwner, ability: Ability, data: Play
     }
 }
 
-function paintAbilitySpeedBoostUI(ctx: CanvasRenderingContext2D, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
+function paintAbilitySpeedBoostUI(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
     const abilitySpeedBoost = ability as AbilitySpeedBoost;
     const upgrade: AbilitySpeedBoostUpgradeAddCharge = ability.upgrades[ABILITY_SPEED_BOOST_UPGRADE_ADD_CHARGE];
     let heightFactor = 0;
