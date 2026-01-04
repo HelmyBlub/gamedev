@@ -293,6 +293,7 @@ function onToolSelectDelete(tool: SpellmakerCreateTool, abilityOwner: AbilityOwn
     if (ability.spells.length <= ability.spellIndex) {
         ability.spellIndex = ability.spells.length - 1;
     }
+    ability.spellmakeStage = 0;
     return false;
 }
 
