@@ -4,10 +4,7 @@ increase version
 current tasks:     
 - new class spellmaker
     - next steps
-        - bug: cast range limit breaks when starting in range and going over while holding mouse
         - improve UX
-            - in spellmake mode
-                - visualize white background with title spellmake
             - text explain popup
                 - not enough mana
                 - spell cost exceeds maximum

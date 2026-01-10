@@ -2,6 +2,7 @@ import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, DefaultAbili
 import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, upgradeAbility } from "../../../ability/abilityUpgrade.js";
 import { IMAGE_NAME_SWITCH } from "../../../ability/musician/abilityMusicSheetChangeInstrument.js";
 import { AbilityDamageBreakdown } from "../../../combatlog.js";
+import { addPaintFloatingTextInfoForMyself } from "../../../floatingText.js";
 import { autoSendMousePositionHandler, calculateDistance, getNextId } from "../../../game.js";
 import { FACTION_PLAYER, Game, IdCounter, Position } from "../../../gameModel.js";
 import { getPointPaintPosition, paintTextWithOutline } from "../../../gamePaint.js";
@@ -459,6 +460,7 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, data: PlayerA
                                 if (currentSpell.spellManaCost > MAX_SPELL_MANA_COST) {
                                     currentSpell.createdObjects.pop();
                                     abilitySpellmakerCalculateManaCostForSpellAndUpdateToolDisplay(abilitySm, currentSpell);
+                                    addPaintFloatingTextInfoForMyself(`max mana exceeded`, game, undefined, abilityOwner.id, abilitySm.id, IMAGE_NAME_SWITCH);
                                 }
                             } else if (abilitySm.attachToIndex != undefined) {
                                 let currentObject = currentSpell.createdObjects[abilitySm.attachToIndex[0]];
@@ -476,6 +478,7 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, data: PlayerA
                                 if (currentSpell.spellManaCost > MAX_SPELL_MANA_COST) {
                                     currentSpell.createdObjects.pop();
                                     abilitySpellmakerCalculateManaCostForSpellAndUpdateToolDisplay(abilitySm, currentSpell);
+                                    addPaintFloatingTextInfoForMyself(`max mana exceeded`, game, undefined, abilityOwner.id, abilitySm.id, IMAGE_NAME_SWITCH);
                                 }
                             }
                         }
@@ -536,6 +539,9 @@ function spellCast(abilityOwner: AbilityOwner, abilitySm: AbilitySpellmaker, spe
             const damageFactor = abilityOwner.faction === FACTION_PLAYER ? abilitySm.damageLevelFactor : 1;
             if (toolFunctions.spellCast) toolFunctions.spellCast(createdObject, abilitySm.baseDamage, abilityOwner.faction, abilitySm.id, castPosition, damageFactor, abilitySm.manaLevelFactor, [createdObject.type], game);
         }
+    } else {
+        const missingMana = currentSpell.spellManaCost - abilitySm.mana;
+        addPaintFloatingTextInfoForMyself(`${missingMana.toFixed()} missing mana`, game, undefined, abilityOwner.id, abilitySm.id, IMAGE_NAME_SWITCH);
     }
 }
 
