@@ -1,7 +1,7 @@
 import { AbilityOwner } from "../../../ability/ability.js";
 import { calculateDistance, calculateDistancePointToLine, findClientInfoByCharacterId } from "../../../game.js";
 import { Position, Game, ClientInfo } from "../../../gameModel.js";
-import { AbilitySpellmaker, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
+import { AbilitySpellmaker, SPELLMAKER_MAX_CAST_RANGE, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
 import { createAbilityObjectSpellmakerFireLine } from "./abilitySpellmakerFireLine.js";
 import { createMoreInfosPart } from "../../../moreInfo.js";
@@ -97,7 +97,10 @@ function onKeyUp(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability
             }
         }
         if (calculateDistance(fireLine.positions[fireLine.positions.length - 1], castPositionRelativeToCharacter) > 5) {
-            fireLine.positions.push(castPositionRelativeToCharacter);
+            const distanceToCenter = calculateDistance({ x: 0, y: 0 }, castPositionRelativeToCharacter);
+            if (distanceToCenter < SPELLMAKER_MAX_CAST_RANGE) {
+                fireLine.positions.push(castPositionRelativeToCharacter);
+            }
         }
         toolFireLine.workInProgress = undefined;
         return fireLine;
@@ -115,7 +118,8 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
                 x: clientInfo.lastMousePosition.x - abilityOwner.x,
                 y: clientInfo.lastMousePosition.y - abilityOwner.y,
             };
-            if (calculateDistance(fireLine.positions[fireLine.positions.length - 1], end) > 10) {
+            const distanceToCenter = calculateDistance({ x: 0, y: 0 }, end);
+            if (distanceToCenter < SPELLMAKER_MAX_CAST_RANGE && calculateDistance(fireLine.positions[fireLine.positions.length - 1], end) > 10) {
                 fireLine.positions.push(end);
             }
         }

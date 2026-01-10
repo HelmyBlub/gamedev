@@ -80,7 +80,7 @@ export const SPELLMAKER_SPELLTYPES: SpellmakerSpelltypeData[] = [
     { name: SPELLMAKER_SPELLTYPE_AUTOCAST, description: ["spell is cast automatically when mana full"] },
 ];
 export const ABILITY_SPELLMAKER_UPGRADE_FUNCTIONS: AbilityUpgradesFunctions = {};
-const MAX_CAST_RANGE = 1000;
+export const SPELLMAKER_MAX_CAST_RANGE = 1000;
 const MAX_SPELL_MANA_COST = 99;
 
 export function addAbilitySpellmaker() {
@@ -328,7 +328,7 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
             ctx.globalAlpha *= alphaChange;
             ctx.fillStyle = "gray";
             ctx.beginPath();
-            ctx.arc(ownerPaintPos.x, ownerPaintPos.y, MAX_CAST_RANGE, 0, Math.PI * 2);
+            ctx.arc(ownerPaintPos.x, ownerPaintPos.y, SPELLMAKER_MAX_CAST_RANGE, 0, Math.PI * 2);
             ctx.fill();
             ctx.globalAlpha /= alphaChange;
         }
@@ -411,9 +411,9 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, data: PlayerA
     if (abilitySm.mode === "spellmake") {
         if (castPositionRelativeToCharacter) {
             const distance = calculateDistance({ x: 0, y: 0 }, castPositionRelativeToCharacter);
-            if (distance > MAX_CAST_RANGE) return;
             const tool = abilitySm.createTools.createTools[abilitySm.createTools.selectedToolIndex];
             if (isKeydown) {
+                if (distance > SPELLMAKER_MAX_CAST_RANGE) return;
                 if (spellmakerCastData[ABILITY_NAME_SPELLMAKER]) {
                     const tool = abilitySm.createTools.createTools[spellmakerCastData.Spellmaker.clickedToolRectangleIndex];
                     const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[tool.type];
@@ -508,7 +508,7 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, data: PlayerA
     if (abilitySm.mode === "spellcast") {
         if (isKeydown) {
             const distance = calculateDistance(abilityOwner, castPosition);
-            if (distance > MAX_CAST_RANGE) return;
+            if (distance > SPELLMAKER_MAX_CAST_RANGE) return;
             spellCast(abilityOwner, abilitySm, abilitySm.spellIndex, castPosition, game);
         }
     }
