@@ -6,6 +6,7 @@ import { addPaintFloatingTextInfoForMyself } from "../../../floatingText.js";
 import { autoSendMousePositionHandler, calculateDistance, getNextId } from "../../../game.js";
 import { FACTION_PLAYER, Game, IdCounter, Position } from "../../../gameModel.js";
 import { getPointPaintPosition, paintTextWithOutline } from "../../../gamePaint.js";
+import { GAME_IMAGES, loadImage } from "../../../imageLoad.js";
 import { PlayerAbilityActionData, playerInputBindingToDisplayValue } from "../../../input/playerInput.js";
 import { createMoreInfosPart, MoreInfoHoverTexts, MoreInfoPart, paintMoreInfosPart } from "../../../moreInfo.js";
 import { fixedRandom, nextRandom } from "../../../randomNumberGenerator.js";
@@ -73,6 +74,13 @@ type SpellmakerAbilityAdditionalCastData = {
     clickedToolRectangleIndex: number,
 }
 
+const IMAGE_NAME_WIZARD_HAT = "wizardHat";
+GAME_IMAGES[IMAGE_NAME_WIZARD_HAT] = {
+    imagePath: "/images/wizardHat.png",
+    spriteRowHeights: [50],
+    spriteRowWidths: [50],
+};
+
 export const ABILITY_NAME_SPELLMAKER = "Spellmaker";
 export const SPELLMAKER_SPELLTYPE_INSTANT = "instant";
 export const SPELLMAKER_SPELLTYPE_AUTOCAST = "autocast";
@@ -86,6 +94,7 @@ const MAX_SPELL_MANA_COST = 99;
 
 export function addAbilitySpellmaker() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_SPELLMAKER] = {
+        paintAbilityAccessoire: paintAbilityAccessoire,
         activeAbilityCast: castAbility,
         createAbility: createAbility,
         createAbilityMoreInfos: createAbilityMoreInfos,
@@ -149,6 +158,30 @@ function createAbility(
         manaLevelFactor: 1,
         baseDamage: 10,
     };
+}
+
+function paintAbilityAccessoire(ctx: CanvasRenderingContext2D, ability: Ability, paintPosition: Position, game: Game) {
+    paintWizardHat(ctx, paintPosition.x, paintPosition.y, game);
+}
+
+function paintWizardHat(ctx: CanvasRenderingContext2D, paintX: number, paintY: number, game: Game) {
+    const imageRef = GAME_IMAGES[IMAGE_NAME_WIZARD_HAT];
+    loadImage(imageRef);
+    if (imageRef.imageRef?.complete) {
+        const wizardHatImage: HTMLImageElement = imageRef.imageRef;
+        const hatSacle = 0.6;
+        ctx.drawImage(
+            wizardHatImage,
+            0,
+            0,
+            wizardHatImage.width,
+            wizardHatImage.height,
+            paintX - Math.floor(wizardHatImage.width / 2) * hatSacle,
+            paintY - Math.floor(wizardHatImage.height / 2) * hatSacle,
+            wizardHatImage.width * hatSacle,
+            wizardHatImage.height * hatSacle,
+        )
+    }
 }
 
 function createDamageBreakDown(damage: number, ability: Ability, abilityObject: AbilityObject | undefined, damageAbilityName: string, game: Game): AbilityDamageBreakdown[] {
@@ -319,9 +352,10 @@ function paintToolObjectsRecusive(ctx: CanvasRenderingContext2D, stage: number, 
 
 function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
     if (abilityOwner.type === CHARACTER_PET_TYPE_CLONE) return;
-    if (ability.disabled) return;
     const abilitySm = ability as AbilitySpellmaker;
     let ownerPaintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition, game.UI.zoom);
+    paintWizardHat(ctx, ownerPaintPos.x, ownerPaintPos.y - abilityOwner.height! * 0.75, game);
+    if (ability.disabled) return;
     if (abilitySm.mode === "spellmake") {
         const myChar = findMyCharacter(game);
         if (myChar === abilityOwner) {

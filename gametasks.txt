@@ -3,14 +3,25 @@ increase version
 
 current tasks:     
 - new class spellmaker
+    - change: player HP bar should be painted last, or after wizard hat accessoire
     - next steps
+        - images:
+            - accessoire
+                - caster hat
+            - icons for:
+                - ability
+                    - spellmaker
+                    - switch mode
+                    - switch spell slot
+                - tools
+                    - add
+                    - reset
+                    - delete
+                    - stage
+                    - etc...
+
         - improve UX
-            - text explain popup
-                - not enough mana
-                - spell cost exceeds maximum
-            - display mana cost for spell in creation
-            - visualize when in spellmake stage
-        - accessoire
+            - improve tool texts
         - spelltype: fix charge, custom charge, instant, stationary custom charge
         - prevent: player deleting all spells before king defeated results in king without any spell
         - tool orbiter:
