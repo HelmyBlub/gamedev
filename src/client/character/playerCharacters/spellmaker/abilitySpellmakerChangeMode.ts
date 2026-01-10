@@ -52,6 +52,7 @@ function createAbilityMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability,
     const textLines: string[] = getAbilityNameUiText(ability);
     textLines.push(
         `Key: ${playerInputBindingToDisplayValue(abilityChangeMode.playerInputBinding!, game)}`,
+        `Switch between spellmake mode and spellcast mode`,
     );
 
     return createMoreInfosPart(ctx, textLines, ABILITY_DEFAULT_SMALL_GROUP);
