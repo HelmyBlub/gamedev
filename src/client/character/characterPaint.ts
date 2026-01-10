@@ -298,7 +298,7 @@ function randomizedCharacterImagePaint(ctx: CanvasRenderingContext2D, character:
 
         const spriteWidth = characterImage.spriteRowWidths[0];
         const spriteHeight = 40;
-        const widthIndex = moveDirectionToSpriteIndex(character);
+        const widthIndex = moveDirectionToCharacterSpriteIndex(character);
         let animationY = 0;
         if (character.isMoving && (character.state === "alive" || character.state === "petPlayer")) {
             animationY = Math.floor(game.state.time / 150) % 4;
@@ -397,7 +397,7 @@ function paintPlayerName(ctx: CanvasRenderingContext2D, character: Character, pa
     );
 }
 
-function moveDirectionToSpriteIndex(character: Character): number {
+export function moveDirectionToCharacterSpriteIndex(character: Character): number {
     if (character.state === "dead" || character.state === "dying") return 1;
     return (Math.floor(character.moveDirection / Math.PI / 2 * 4) + 3) % 4;
 }

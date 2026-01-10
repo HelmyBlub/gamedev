@@ -12,6 +12,7 @@ import { createMoreInfosPart, MoreInfoHoverTexts, MoreInfoPart, paintMoreInfosPa
 import { fixedRandom, nextRandom } from "../../../randomNumberGenerator.js";
 import { findMyCharacter } from "../../character.js";
 import { Character } from "../../characterModel.js";
+import { moveDirectionToCharacterSpriteIndex } from "../../characterPaint.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../upgrade.js";
 import { CHARACTER_PET_TYPE_CLONE } from "../characterPetTypeClone.js";
 import { addAbilitySpellmakerUpgradeTools } from "./abilitySpellmakerUpgrades.js";
@@ -164,12 +165,18 @@ function paintAbilityAccessoire(ctx: CanvasRenderingContext2D, ability: Ability,
     paintWizardHat(ctx, paintPosition.x, paintPosition.y, game);
 }
 
-function paintWizardHat(ctx: CanvasRenderingContext2D, paintX: number, paintY: number, game: Game) {
+function paintWizardHat(ctx: CanvasRenderingContext2D, paintX: number, paintY: number, game: Game, mirrored: boolean = false) {
     const imageRef = GAME_IMAGES[IMAGE_NAME_WIZARD_HAT];
     loadImage(imageRef);
     if (imageRef.imageRef?.complete) {
         const wizardHatImage: HTMLImageElement = imageRef.imageRef;
         const hatSacle = 0.6;
+        ctx.save();
+        if (mirrored) {
+            ctx.translate(paintX, paintY + wizardHatImage.height * hatSacle / 2);
+            ctx.scale(-1, 1);
+            ctx.translate(-paintX, -paintY - wizardHatImage.height * hatSacle / 2);
+        }
         ctx.drawImage(
             wizardHatImage,
             0,
@@ -181,6 +188,8 @@ function paintWizardHat(ctx: CanvasRenderingContext2D, paintX: number, paintY: n
             wizardHatImage.width * hatSacle,
             wizardHatImage.height * hatSacle,
         )
+
+        ctx.restore();
     }
 }
 
@@ -354,7 +363,8 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
     if (abilityOwner.type === CHARACTER_PET_TYPE_CLONE) return;
     const abilitySm = ability as AbilitySpellmaker;
     let ownerPaintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition, game.UI.zoom);
-    paintWizardHat(ctx, ownerPaintPos.x, ownerPaintPos.y - abilityOwner.height! * 0.75, game);
+    const mirrored = moveDirectionToCharacterSpriteIndex(abilityOwner as Character) > 1;
+    paintWizardHat(ctx, ownerPaintPos.x, ownerPaintPos.y - abilityOwner.height! * 0.75, game, mirrored);
     if (ability.disabled) return;
     if (abilitySm.mode === "spellmake") {
         const myChar = findMyCharacter(game);
@@ -398,7 +408,7 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
 
 function paintAbilityUI(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, drawStartX: number, drawStartY: number, size: number, game: Game) {
     const abilitySm = ability as AbilitySpellmaker;
-    paintAbilityUiDefault(ctx, ability, drawStartX, drawStartY, size, game, IMAGE_NAME_SWITCH, 0);
+    paintAbilityUiDefault(ctx, ability, drawStartX, drawStartY, size, game, IMAGE_NAME_WIZARD_HAT, 0, undefined, false, 50);
     const fontSize = abilitySm.createTools.size * 0.8;
     abilitySm.createTools.position.y = drawStartY - abilitySm.createTools.size - 1 - abilitySm.createTools.spacing;
     abilitySm.createTools.position.x = ctx.canvas.width / 2 - ((abilitySm.createTools.createTools.length * (abilitySm.createTools.size + abilitySm.createTools.spacing) - abilitySm.createTools.spacing) / 2);
@@ -677,7 +687,9 @@ function createAbilityMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability,
     const textLines: string[] = getAbilityNameUiText(ability);
     textLines.push(
         `Key: ${playerInputBindingToDisplayValue(abilitySpellmaker.playerInputBinding!, game)}`,
-        `Work in Progress`,
+        `Create spells in spellmake mode and cast them in spellcast mode.`,
+        `On Boss kill unlock new tools.`,
+        `Base Damage: ${abilitySpellmaker.baseDamage}`,
     );
     if (abilitySpellmaker.level) {
         textLines.push(`Level: ${abilitySpellmaker.level.level}`);
@@ -685,13 +697,35 @@ function createAbilityMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability,
             textLines.push(
                 `XP: ${abilitySpellmaker.level.leveling.experience.toFixed(0)}/${abilitySpellmaker.level.leveling.experienceForLevelUp}`,
                 `  on level up you gain:`,
-                `    +<placeholder> damage per second`,
+                `    +10 Base Damage`,
             );
         }
     }
-    textLines.push(`<placeholder>`);
+    textLines.push(`Mana: ${abilitySpellmaker.mana.toFixed()}/${abilitySpellmaker.maxMana}`);
+    textLines.push(`Mana Regeneration: ${(abilitySpellmaker.manaRegeneration * game.gameSpeedSettings.desiredUpdatesPerSecond).toFixed()} mana per second`);
+    textLines.push(`Spell slots:`);
+    for (let i = 0; i < abilitySpellmaker.spells.length; i++) {
+        const spell = abilitySpellmaker.spells[i];
+        textLines.push(`  Slot ${i + 1}: ${getSpellToolChain(spell)}, manaCost: ${spell.spellManaCost.toFixed(1)}`);
+    }
+
     const upgradeHoverLines: MoreInfoHoverTexts = {};
     // pushAbilityUpgradesUiTexts(ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS, textLines, upgradeHoverLines, ability);
 
     return createMoreInfosPart(ctx, textLines, undefined, 14, upgradeHoverLines);
+}
+
+function getSpellToolChain(spell: SpellmakerSpell): string {
+    let toolChain: string[] = [];
+    getSpellToolChainRec(spell.createdObjects, toolChain);
+    return toolChain.join();
+}
+
+function getSpellToolChainRec(createdObjects: SpellmakerCreateToolObjectData[], toolChain: string[]) {
+    for (let createObject of createdObjects) {
+        if (!toolChain.includes(createObject.type)) {
+            toolChain.push(createObject.type);
+        }
+        getSpellToolChainRec(createObject.nextStage, toolChain);
+    }
 }

@@ -693,6 +693,7 @@ export function paintAbilityUiDefault(
     grayFillPercent: number = 0,
     counter: number | undefined = undefined,
     mirrorImage: boolean = false,
+    imageIconSize: number = 40,
 ) {
     const rectSize = size;
 
@@ -715,10 +716,10 @@ export function paintAbilityUiDefault(
                 ctx.save();
                 ctx.translate(drawStartX, 0);
                 ctx.scale(-1, 1);
-                ctx.drawImage(image, 0, 0, 40, 40, 0, drawStartY, -rectSize, rectSize);
+                ctx.drawImage(image, 0, 0, imageIconSize, imageIconSize, 0, drawStartY, -rectSize, rectSize);
                 ctx.restore();
             } else {
-                ctx.drawImage(image, 0, 0, 40, 40, drawStartX, drawStartY, rectSize, rectSize);
+                ctx.drawImage(image, 0, 0, imageIconSize, imageIconSize, drawStartX, drawStartY, rectSize, rectSize);
             }
         }
     }
