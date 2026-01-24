@@ -70,7 +70,7 @@ function addDebug(game: Game) {
     addSettingCheckbox("paintTileXYNumbers", game);
     addSettingCheckbox("paintMarkActiveChunks", game);
     addCheatCheckbox("allowCheats", game);
-    addCheatCheckbox("reducedBossHp", game);
+    addCheatCheckbox("reducedKingHp", game);
     addCheatCheckbox("closeKingArea", game);
     addCheatCheckbox("closeSpawnAreas", game);
     addCheatCheckbox("closeCurses", game);

@@ -143,7 +143,7 @@ export function kingEnemySpawnAtPosition(spawn: Position, kingCelestialDirection
             pet.y = spawn.y;
         }
     }
-    if (game.state.activeCheats && game.state.activeCheats.indexOf("reducedBossHp") !== -1) {
+    if (game.state.activeCheats && game.state.activeCheats.indexOf("reducedKingHp") !== -1) {
         king.hp = 500;
         king.maxHp = 500;
     }

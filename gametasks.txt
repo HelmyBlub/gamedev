@@ -3,7 +3,6 @@ increase version
 
 current tasks:     
 - new class spellmaker
-    - change: player HP bar should be painted last, or after wizard hat accessoire
     - check: king spellmaker with expesive spells but player had high mana reduce
     - moreInfo: display upgrade tool levels
     - next steps
