@@ -143,12 +143,15 @@ export function paintCharacterAbilties(ctx: CanvasRenderingContext2D, character:
 export function paintMyCharacterAbilitiesLate(ctx: CanvasRenderingContext2D, cameraPosition: Position, game: Game) {
     const myChar = findMyCharacter(game);
     if (!myChar) return;
+    let somethingPainted = false;
     for (let ability of myChar.abilities) {
         const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
         if (abilityFunctions.paintAbility !== undefined && abilityFunctions.selfLatePaint === true) {
             abilityFunctions.paintAbility(ctx, myChar, ability, cameraPosition, game);
+            somethingPainted = true;
         }
     }
+    if (somethingPainted && myChar.hp < myChar.maxHp) paintCharacterHpBarAboveCharacter(ctx, myChar, cameraPosition, game);
 }
 
 export function paintCharacterDefault(ctx: CanvasRenderingContext2D, character: Character, cameraPosition: Position, game: Game, preventDefaultCharacterPaint: boolean | undefined = undefined) {
