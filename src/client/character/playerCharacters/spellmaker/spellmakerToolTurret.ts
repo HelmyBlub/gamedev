@@ -4,7 +4,7 @@ import { Position, Game, ClientInfo, FACTION_PLAYER } from "../../../gameModel.j
 import { AbilitySpellmaker, abilitySpellmakerCalculateManaCost, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool, spellmakerNextStageSetup } from "./spellmakerTool.js";
 import { createMoreInfosPart } from "../../../moreInfo.js";
-import { createAbilityObjectSpellmakerTurret } from "./abilitySpellmakerTurret.js";
+import { createAbilityObjectSpellmakerTurret, IMAGE_TURRET } from "./abilitySpellmakerTurret.js";
 
 type CreateToolObjectTurretData = SpellmakerCreateToolObjectData & {
     mana: number,
@@ -61,6 +61,7 @@ function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
         description: createMoreInfosPart(ctx, SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_TURRET].description),
         level: 0,
         totalDamage: 0,
+        buttonImage: IMAGE_TURRET,
     };
 }
 

@@ -5,6 +5,7 @@ import { AbilitySpellmaker, SpellmakerCreateToolObjectData } from "./abilitySpel
 import { SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
 import { createMoreInfosPart } from "../../../moreInfo.js";
 import { createAbilityObjectSpellmakerLightning } from "./abilitySpellmakerLightning.js";
+import { IMAGE_NAME_LIGHTNING } from "../../../ability/ball/abilityLightningBall.js";
 
 export type CreateToolObjectLightningData = SpellmakerCreateToolObjectData & {
     jumps: number,
@@ -58,6 +59,7 @@ function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
         description: createMoreInfosPart(ctx, SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_LIGHTNING].description),
         level: 0,
         totalDamage: 0,
+        buttonImage: IMAGE_NAME_LIGHTNING,
     };
 }
 

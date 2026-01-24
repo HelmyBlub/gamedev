@@ -3,17 +3,14 @@ increase version
 
 current tasks:     
 - new class spellmaker
-    - moreInfo: display upgrade tool levels
     - next steps
+    - paint turret with image and direction
         - images:
             - icons for:
                 - tools
-                    - add
-                    - reset
-                    - delete
-                    - stage
-                    - etc...
-
+                    - move
+                    - orbit
+                    - proximity
         - improve UX
             - improve tool texts
         - spelltype: fix charge, custom charge, instant, stationary custom charge

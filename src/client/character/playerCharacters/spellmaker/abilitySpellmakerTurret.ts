@@ -2,6 +2,7 @@ import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityObjectCircle, detec
 import { getNextId, getCameraPosition, deepCopy } from "../../../game.js";
 import { Position, IdCounter, Game, FACTION_ENEMY, FACTION_PLAYER } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
+import { GAME_IMAGES } from "../../../imageLoad.js";
 import { determineCharactersInDistance } from "../../character.js";
 import { abilitySpellmakerCalculateManaCost, abilitySpellmakerCastNextStage, AbilitySpellmakerObject, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOLS_FUNCTIONS } from "./spellmakerTool.js";
@@ -22,6 +23,12 @@ type AbilityObjectSpellmakerTurret = AbilitySpellmakerObject & {
 }
 
 export const ABILITY_NAME_SPELLMAKER_TURRET = "SpellmakerTurret";
+export const IMAGE_TURRET = "turret";
+GAME_IMAGES[IMAGE_TURRET] = {
+    imagePath: "/images/turret.png",
+    spriteRowHeights: [],
+    spriteRowWidths: [],
+};
 
 export function addAbilitySpellmakerTurret() {
     ABILITIES_FUNCTIONS[ABILITY_NAME_SPELLMAKER_TURRET] = {

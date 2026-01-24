@@ -6,7 +6,7 @@ import { addPaintFloatingTextInfoForMyself } from "../../../floatingText.js";
 import { autoSendMousePositionHandler, calculateDistance, getNextId } from "../../../game.js";
 import { FACTION_PLAYER, Game, IdCounter, Position } from "../../../gameModel.js";
 import { getPointPaintPosition, paintTextWithOutline } from "../../../gamePaint.js";
-import { GAME_IMAGES, loadImage } from "../../../imageLoad.js";
+import { GAME_IMAGES, getImage, loadImage } from "../../../imageLoad.js";
 import { PlayerAbilityActionData, playerInputBindingToDisplayValue } from "../../../input/playerInput.js";
 import { createMoreInfosPart, MoreInfoHoverTexts, MoreInfoPart, paintMoreInfosPart } from "../../../moreInfo.js";
 import { fixedRandom, nextRandom } from "../../../randomNumberGenerator.js";
@@ -431,9 +431,19 @@ function paintAbilityUI(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwne
             ctx.stroke();
             const itTool = abilitySm.createTools.createTools[i];
             const itToolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[itTool.type];
+            let paintToolDefault = true;
+            if (itTool.buttonImage) {
+                const image = getImage(itTool.buttonImage);
+                if (image) {
+                    ctx.drawImage(image, 0, 0, image.width, image.height, toolPosition.x, toolPosition.y, abilitySm.createTools.size, abilitySm.createTools.size);
+                    paintToolDefault = false;
+                }
+            }
             if (itTool.subType == "default" && itToolFunctions && itToolFunctions.paintButton) {
                 itToolFunctions.paintButton(ctx, toolPosition, abilitySm, game);
-            } else {
+                paintToolDefault = false;
+            }
+            if (paintToolDefault) {
                 paintTextWithOutline(ctx, "white", "black", itTool.type.substring(0, 2), toolPosition.x + abilitySm.createTools.size / 2, toolPosition.y + abilitySm.createTools.size * 0.9, true, 1);
             }
             const mousePos = game.mouseRelativeCanvasPosition;

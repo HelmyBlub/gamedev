@@ -8,6 +8,7 @@ import { determineCharactersInDistance, determineClosestCharacter } from "../../
 import { nextRandom } from "../../../randomNumberGenerator.js";
 import { Character } from "../../characterModel.js";
 import { createMoreInfosPart } from "../../../moreInfo.js";
+import { IMAGE_EYE } from "../../enemy/god/abilitySeeker.js";
 
 export type SpellmakerCreateToolMoveAttachmentSeeker = SpellmakerCreateToolMoveAttachment & {
     direction: number,
@@ -63,6 +64,7 @@ function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
         description: createMoreInfosPart(ctx, SPELLMAKER_MOVE_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_SEEKER].description),
         level: 0,
         totalDamage: 0,
+        buttonImage: IMAGE_EYE,
     };
 }
 

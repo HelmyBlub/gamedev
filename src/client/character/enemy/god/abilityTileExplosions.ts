@@ -25,7 +25,7 @@ export type AbilityObjectTileExplosion = AbilityObject & {
     size: number,
 }
 
-const IMAGE_EXPLOSION = "explosion";
+export const IMAGE_EXPLOSION = "explosion";
 GAME_IMAGES[IMAGE_EXPLOSION] = {
     imagePath: "/images/explosion.png",
     spriteRowHeights: [],

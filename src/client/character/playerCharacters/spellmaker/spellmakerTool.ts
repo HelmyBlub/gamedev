@@ -1,7 +1,11 @@
 import { AbilityObject, AbilityOwner, addAbilityToCharacter, createAbility } from "../../../ability/ability.js";
+import { IMAGE_NAME_SWITCH } from "../../../ability/musician/abilityMusicSheetChangeInstrument.js";
+import { IMAGE_NAME_DELETE } from "../../../ability/musician/abilityMusicSheetDeleteNote.js";
+import { IMAGE_NAME_RELOAD } from "../../../ability/snipe/abilitySnipe.js";
 import { deepCopy } from "../../../game.js";
 import { Game, Position } from "../../../gameModel.js";
 import { paintTextWithOutline } from "../../../gamePaint.js";
+import { GAME_IMAGES } from "../../../imageLoad.js";
 import { createMoreInfosPart, MoreInfoPart } from "../../../moreInfo.js";
 import { Character } from "../../characterModel.js";
 import { AbilitySpellmaker, abilitySpellmakerCalculateManaCostForSpellAndUpdateToolDisplay, SPELLMAKER_SPELLTYPE_AUTOCAST, SPELLMAKER_SPELLTYPE_INSTANT, SPELLMAKER_SPELLTYPES, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
@@ -23,6 +27,7 @@ export type SpellmakerCreateTool = {
     description: MoreInfoPart,
     totalDamage: number,
     level: number,
+    buttonImage?: string,
 }
 
 export type SpellmakerMoveToolFunctions = {
@@ -73,6 +78,13 @@ export const SPELLMAKER_TOOL_RESET = "Reset";
 export const SPELLMAKER_TOOL_NEW = "New Spell";
 export const SPELLMAKER_TOOL_DELETE = "Delete Spell";
 export const SPELLMAKER_TOOL_SPELL_TYPE = "Change Spell Type";
+
+export const IMAGE_PLUS = "plusIcon";
+GAME_IMAGES[IMAGE_PLUS] = {
+    imagePath: "/images/plus.png",
+    spriteRowHeights: [],
+    spriteRowWidths: [],
+};
 
 export function addSpellmakerToolsDefault() {
     SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_SWITCH_STAGE] = {
@@ -178,6 +190,7 @@ function createToolStage(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
         description: createMoreInfosPart(ctx, SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_SWITCH_STAGE].description),
         level: 0,
         totalDamage: 0,
+        buttonImage: IMAGE_NAME_SWITCH,
     };
 }
 
@@ -188,6 +201,7 @@ function createToolReset(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
         description: createMoreInfosPart(ctx, SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_RESET].description),
         level: 0,
         totalDamage: 0,
+        buttonImage: IMAGE_NAME_RELOAD,
     };
 }
 
@@ -198,6 +212,7 @@ function createToolNew(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
         description: createMoreInfosPart(ctx, SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_NEW].description),
         level: 0,
         totalDamage: 0,
+        buttonImage: IMAGE_PLUS,
     };
 }
 function createToolDelete(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
@@ -207,6 +222,7 @@ function createToolDelete(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
         description: createMoreInfosPart(ctx, SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_DELETE].description),
         level: 0,
         totalDamage: 0,
+        buttonImage: IMAGE_NAME_DELETE,
     };
 }
 

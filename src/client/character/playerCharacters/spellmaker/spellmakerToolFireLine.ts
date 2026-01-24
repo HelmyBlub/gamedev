@@ -5,6 +5,7 @@ import { AbilitySpellmaker, SPELLMAKER_MAX_CAST_RANGE, SpellmakerCreateToolMoveA
 import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
 import { createAbilityObjectSpellmakerFireLine } from "./abilitySpellmakerFireLine.js";
 import { createMoreInfosPart } from "../../../moreInfo.js";
+import { GAME_IMAGES } from "../../../imageLoad.js";
 
 export type CreateToolObjectFireLineData = SpellmakerCreateToolObjectData & {
     positions: Position[],
@@ -15,6 +16,13 @@ export type SpellmakerCreateToolFireLine = SpellmakerCreateTool & {
 }
 
 export const SPELLMAKER_TOOL_FIRELINE = "FireLine";
+export const IMAGE_FIRE = "fireIcon";
+GAME_IMAGES[IMAGE_FIRE] = {
+    imagePath: "/images/fire.png",
+    spriteRowHeights: [],
+    spriteRowWidths: [],
+};
+
 
 export function addSpellmakerToolFireline() {
     SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_FIRELINE] = {
@@ -54,6 +62,7 @@ function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
         description: createMoreInfosPart(ctx, SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_FIRELINE].description),
         level: 0,
         totalDamage: 0,
+        buttonImage: IMAGE_FIRE,
     };
 }
 
