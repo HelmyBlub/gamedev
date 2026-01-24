@@ -1,5 +1,5 @@
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityOwner, DefaultAbilityCastData, getAbilityNameUiText, paintAbilityUiDefault } from "../../../ability/ability.js";
-import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, upgradeAbility } from "../../../ability/abilityUpgrade.js";
+import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgradesUiTexts, upgradeAbility } from "../../../ability/abilityUpgrade.js";
 import { IMAGE_NAME_SWITCH } from "../../../ability/musician/abilityMusicSheetChangeInstrument.js";
 import { AbilityDamageBreakdown } from "../../../combatlog.js";
 import { addPaintFloatingTextInfoForMyself } from "../../../floatingText.js";
@@ -710,7 +710,25 @@ function createAbilityMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability,
     }
 
     const upgradeHoverLines: MoreInfoHoverTexts = {};
-    // pushAbilityUpgradesUiTexts(ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS, textLines, upgradeHoverLines, ability);
+    if (ability.bossSkillPoints && ability.bossSkillPoints.used >= 0) {
+        textLines.push(``);
+        textLines.push(`Tools: Levels`);
+        upgradeHoverLines[textLines.length - 1] = [
+            "Tools get XP when a spell they are part of does damage",
+        ];
+        for (let tool of abilitySpellmaker.createTools.createTools) {
+            const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[tool.type];
+            if (toolFunctions && !toolFunctions.learnedThroughUpgrade) continue;
+            textLines.push(`  ${tool.type}: ${tool.level.toFixed(1)}`);
+        }
+        textLines.push(`Tool Level Gains:`);
+        upgradeHoverLines[textLines.length - 1] = [
+            "Based on the combined amount of Tool Levels",
+        ];
+        textLines.push(`  Mana Cost Reduction: ${((1 - abilitySpellmaker.manaLevelFactor) * 100).toFixed(2)}%`);
+        textLines.push(`  Damage Amplification: ${((abilitySpellmaker.damageLevelFactor - 1) * 100).toFixed(2)}%`);
+    }
+
 
     return createMoreInfosPart(ctx, textLines, undefined, 14, upgradeHoverLines);
 }

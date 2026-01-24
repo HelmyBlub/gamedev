@@ -15,7 +15,6 @@ export const ABILITY_SPELLMAKER_UPGRADE_TOOLS = "Upgrade Tools";
 
 export function addAbilitySpellmakerUpgradeTools() {
     ABILITY_SPELLMAKER_UPGRADE_FUNCTIONS[ABILITY_SPELLMAKER_UPGRADE_TOOLS] = {
-        getStatsDisplayText: getAbilityUpgradeUiText,
         getOptions: getOptions,
         executeOption: executeOption,
     }
@@ -125,9 +124,4 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption, character
             }
         }
     }
-}
-
-function getAbilityUpgradeUiText(ability: Ability): string {
-    const up: AbilitySpellmakerUpgradeTools = ability.upgrades[ABILITY_SPELLMAKER_UPGRADE_TOOLS];
-    return `${ABILITY_SPELLMAKER_UPGRADE_TOOLS}: ${(up.level)}`;
 }
