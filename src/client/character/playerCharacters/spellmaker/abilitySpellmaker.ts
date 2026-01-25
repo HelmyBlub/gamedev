@@ -698,6 +698,8 @@ function createAbilityMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability,
     textLines.push(
         `Key: ${playerInputBindingToDisplayValue(abilitySpellmaker.playerInputBinding!, game)}`,
         `Create spells in spellmake mode and cast them in spellcast mode.`,
+        `Spells which do damage give XP to all used tools.`,
+        `Tool level increases all damage and reduces all mana costs.`,
         `On Boss kill unlock new tools.`,
         `Base Damage: ${abilitySpellmaker.baseDamage}`,
     );

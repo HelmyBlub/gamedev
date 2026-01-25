@@ -78,6 +78,11 @@ function changeCharacterToSpellmakerClass(
 function getLongUiText(): string[] {
     let text: string[] = [];
     text.push("Create spells by drawing");
+    text.push("Two modes:");
+    text.push("  spellmake: draw spell");
+    text.push("  spellcast: cast spell");
+    text.push("Kill bosses to get more draw tools");
+    text.push("Using more tools makes all spells stronger");
     return text;
 }
 

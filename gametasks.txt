@@ -17,6 +17,7 @@ current tasks:
     - achievements
     - check "playerGlobalAlphaMultiplier" to be used in spellmaker
     - check: touch controlls for spellmake mode
+- moreInfo with hover text should have (i) indicator, so player knows there is more info
 - speedrun my game
     - kill god as fast as possible
         - real Time: <12:07 (builder + ball)
