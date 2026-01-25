@@ -95,7 +95,6 @@ function addTest(game: Game) {
     addLoadTestStateButton(game);
     addCopySaveToClipboardButton(game);
     addLoadFromClipboardButton(game);
-    addClassSpellmakerButton(game);
 }
 
 function setVersionNumberToSettingButton() {
@@ -428,24 +427,6 @@ function addButtonToTab(buttonName: string, tabCategory: string) {
             <button type="button" id="${buttonName}" name="${buttonName}">${buttonName}</button><br>
         `;
         settingsElement.insertAdjacentHTML("beforeend", canvasHTML);
-    }
-}
-
-function addClassSpellmakerButton(game: Game) {
-    const buttonName = "class spellmaker";
-    addButtonToTab(buttonName, "test");
-    const button = document.getElementById(buttonName) as HTMLButtonElement;
-    if (button) {
-        button.addEventListener('click', () => {
-            if (!game.multiplayer.websocket) {
-                const character = game.state.players[0].character;
-                if (character.upgradeChoices.choices.length > 0 && character.upgradeChoices.choices[0].type === "ChooseClass") {
-                    PLAYER_CHARACTER_CLASSES_FUNCTIONS[CHARACTER_CLASS_SPELLMAKER].changeCharacterToThisClass(character, game.state.idCounter, game);
-                    character.upgradeChoices.choices = [];
-                    fillRandomUpgradeOptionChoices(character, game);
-                }
-            }
-        });
     }
 }
 

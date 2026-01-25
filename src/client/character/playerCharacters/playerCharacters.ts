@@ -229,7 +229,7 @@ export function paintPlayerPetLevelUI(ctx: CanvasRenderingContext2D, pet: TamerP
 
 export function initPlayerCharacterChoiceOptions(character: Character) {
     const options: UpgradeOption[] = createCharacterChooseUpgradeOptions();
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 6; i++) {
         if (options.length > i) {
             character.upgradeChoices.choices.push(options[i]);
         }

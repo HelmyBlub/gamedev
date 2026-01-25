@@ -105,6 +105,7 @@ function upgradeInput(gamepad: Gamepad, game: Game) {
         { buttonIndex: 2, actionMapping: "upgrade3" },
         { buttonIndex: 3, actionMapping: "upgrade4" },
         { buttonIndex: 4, actionMapping: "upgrade5" },
+        { buttonIndex: 5, actionMapping: "upgrade6" },
     ];
     let action: string | undefined = undefined;
     for (let mapping of upgradeButtonsMapping) {

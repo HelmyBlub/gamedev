@@ -74,6 +74,7 @@ export function createDefaultKeyBindings1(): { keymap: KeyCodeToAction, moveKeys
     keyBindings.set("Digit3", { action: "upgrade3", uiDisplayInputValue: "3", isInputAlreadyDown: false });
     keyBindings.set("Digit4", { action: "upgrade4", uiDisplayInputValue: "4", isInputAlreadyDown: false });
     keyBindings.set("Digit5", { action: "upgrade5", uiDisplayInputValue: "5", isInputAlreadyDown: false });
+    keyBindings.set("Digit6", { action: "upgrade6", uiDisplayInputValue: "6", isInputAlreadyDown: false });
 
     keyBindings.set("Mouse0", { action: "ability1", uiDisplayInputValue: "Mouse Left", isInputAlreadyDown: false });
     keyBindings.set("KeyE", { action: "ability2", uiDisplayInputValue: "E", isInputAlreadyDown: false });

@@ -16,6 +16,7 @@ current tasks:
         - charge type spell
     - achievements
     - check "playerGlobalAlphaMultiplier" to be used in spellmaker
+    - check: touch controlls for spellmake mode
 - speedrun my game
     - kill god as fast as possible
         - real Time: <12:07 (builder + ball)
