@@ -3,8 +3,9 @@ increase version
 
 current tasks:     
 - new class spellmaker
-    - next steps
     - paint turret with image and direction
+    - check "playerGlobalAlphaMultiplier" to be used in spellmaker
+    - next steps
         - images:
             - icons for:
                 - tools

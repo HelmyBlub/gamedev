@@ -435,7 +435,7 @@ function paintAbilityUI(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwne
             if (itTool.buttonImage) {
                 const image = getImage(itTool.buttonImage);
                 if (image) {
-                    ctx.drawImage(image, 0, 0, image.width, image.height, toolPosition.x, toolPosition.y, abilitySm.createTools.size, abilitySm.createTools.size);
+                    ctx.drawImage(image, 0, 0, image.height, image.height, toolPosition.x, toolPosition.y, abilitySm.createTools.size, abilitySm.createTools.size);
                     paintToolDefault = false;
                 }
             }

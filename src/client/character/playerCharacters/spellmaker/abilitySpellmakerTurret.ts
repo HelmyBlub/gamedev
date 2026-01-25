@@ -1,8 +1,8 @@
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, AbilityObjectCircle, detectAbilityObjectCircleToCharacterHit, findAbilityOwnerByAbilityIdInPlayers, PaintOrderAbility } from "../../../ability/ability.js";
-import { getNextId, getCameraPosition, deepCopy } from "../../../game.js";
+import { getNextId, getCameraPosition, deepCopy, calculateDirection } from "../../../game.js";
 import { Position, IdCounter, Game, FACTION_ENEMY, FACTION_PLAYER } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
-import { GAME_IMAGES } from "../../../imageLoad.js";
+import { GAME_IMAGES, loadImage } from "../../../imageLoad.js";
 import { determineCharactersInDistance } from "../../character.js";
 import { abilitySpellmakerCalculateManaCost, abilitySpellmakerCastNextStage, AbilitySpellmakerObject, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOLS_FUNCTIONS } from "./spellmakerTool.js";
@@ -20,6 +20,7 @@ type AbilityObjectSpellmakerTurret = AbilitySpellmakerObject & {
     moveAttachment?: SpellmakerCreateToolMoveAttachment,
     nextStage: SpellmakerCreateToolObjectData[],
     radius: number,
+    lastShotAngle: number,
 }
 
 export const ABILITY_NAME_SPELLMAKER_TURRET = "SpellmakerTurret";
@@ -59,7 +60,7 @@ export function createAbilityObjectSpellmakerTurret(
         faction: faction,
         x: position.x,
         y: position.y,
-        radius: 10,
+        radius: 20,
         abilityIdRef: abilityIdRef,
         damage: 0,
         moveAttachment: deepCopy(moveAttachment),
@@ -72,6 +73,7 @@ export function createAbilityObjectSpellmakerTurret(
         damageFactor: damageFactor,
         manaFactor: manaFactor,
         toolChain: toolChain,
+        lastShotAngle: 0,
     };
 }
 
@@ -99,13 +101,28 @@ function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: Abilit
     const paintPos = getPointPaintPosition(ctx, abilityObject, cameraPosition, game.UI.zoom);
     ctx.fillStyle = abilityObject.faction === FACTION_ENEMY ? "black" : abilityObject.color;
     if (abilityObject.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
-    ctx.beginPath();
-    ctx.arc(
-        paintPos.x,
-        paintPos.y,
-        abilityObjectTurret.radius, 0, 2 * Math.PI
-    );
-    ctx.fill();
+
+    const turretImage = GAME_IMAGES[IMAGE_TURRET];
+    loadImage(turretImage);
+    if (turretImage.imageRef) {
+        ctx.save();
+        ctx.translate(paintPos.x, paintPos.y);
+        ctx.rotate(abilityObjectTurret.lastShotAngle);
+        ctx.translate(-paintPos.x, -paintPos.y);
+        if (abilityObject.faction === FACTION_PLAYER) {
+            ctx.drawImage(turretImage.imageRef, 0, 0, 40, turretImage.imageRef.height,
+                paintPos.x - abilityObjectTurret.radius, paintPos.y - abilityObjectTurret.radius,
+                abilityObjectTurret.radius * 2, abilityObjectTurret.radius * 2
+            );
+        } else {
+            ctx.drawImage(turretImage.imageRef, 40, 0, 40, turretImage.imageRef.height,
+                paintPos.x - abilityObjectTurret.radius, paintPos.y - abilityObjectTurret.radius,
+                abilityObjectTurret.radius * 3, abilityObjectTurret.radius * 3
+            );
+        }
+        ctx.restore();
+    }
+
     ctx.globalAlpha = 1;
 }
 
@@ -120,6 +137,7 @@ function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
 
         let targets = determineCharactersInDistance(abilityObject, game.state.map, game.state.players, game.state.bossStuff.bosses, abilityObjectTurret.triggerRadius, abilityObject.faction, true)
         if (targets.length > 0 || abilityObjectTurret.nextTriggerTime < game.state.time) {
+            abilityObjectTurret.lastShotAngle = calculateDirection(abilityObject, targets[0]) + Math.PI / 2;
             abilitySpellmakerCastNextStage(abilityObjectTurret.nextStage, abilityObjectTurret, game);
             abilityObjectTurret.mana -= abilityObjectTurret.triggerManaCost;
         }

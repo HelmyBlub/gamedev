@@ -5,6 +5,7 @@ import { AbilitySpellmaker, abilitySpellmakerCalculateManaCost, SpellmakerCreate
 import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool, spellmakerNextStageSetup } from "./spellmakerTool.js";
 import { createMoreInfosPart } from "../../../moreInfo.js";
 import { createAbilityObjectSpellmakerTurret, IMAGE_TURRET } from "./abilitySpellmakerTurret.js";
+import { GAME_IMAGES, getImage, loadImage } from "../../../imageLoad.js";
 
 type CreateToolObjectTurretData = SpellmakerCreateToolObjectData & {
     mana: number,
@@ -137,10 +138,13 @@ function paint(ctx: CanvasRenderingContext2D, createdObject: SpellmakerCreateToo
     const turret = createdObject as CreateToolObjectTurretData;
     ctx.strokeStyle = "red";
     ctx.fillStyle = "blue";
-    ctx.beginPath();
-    ctx.arc(turret.center.x + ownerPaintPos.x, turret.center.y + ownerPaintPos.y, 10, 0, Math.PI * 2);
-    ctx.fill();
+    const turretImage = getImage(IMAGE_TURRET);
 
+    if (turretImage) {
+        ctx.drawImage(turretImage, 0, 0, 40, turretImage.height,
+            turret.center.x + ownerPaintPos.x - 20, turret.center.y + ownerPaintPos.y - 20, 40, 40
+        );
+    }
     ctx.globalAlpha = 0.5;
     ctx.fillRect(turret.center.x + ownerPaintPos.x + 10, turret.center.y + ownerPaintPos.y - turret.mana, 10, 2 + turret.mana);
     ctx.globalAlpha = 1;
