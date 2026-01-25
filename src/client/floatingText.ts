@@ -149,7 +149,7 @@ export function paintStackTextData(ctx: CanvasRenderingContext2D, paintStackText
             if (data.image) {
                 const image = getImage(data.image);
                 if (image) {
-                    ctx.drawImage(image, 0, 0, 40, 40,
+                    ctx.drawImage(image, 0, 0, image.height, image.height,
                         paintPos.x,
                         paintPos.y - paintStackTextsData.fontSize + 1,
                         paintStackTextsData.fontSize,

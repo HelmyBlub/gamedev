@@ -4,12 +4,6 @@ increase version
 current tasks:     
 - new class spellmaker
     - next steps
-        - images:
-            - icons for:
-                - tools
-                    - move
-                    - orbit
-                    - proximity
         - improve UX
             - improve tool texts
         - spelltype: fix charge, custom charge, instant, stationary custom charge

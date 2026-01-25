@@ -595,7 +595,7 @@ function spellCast(abilityOwner: AbilityOwner, abilitySm: AbilitySpellmaker, spe
         }
     } else {
         const missingMana = currentSpell.spellManaCost - abilitySm.mana;
-        addPaintFloatingTextInfoForMyself(`${missingMana.toFixed()} missing mana`, game, undefined, abilityOwner.id, abilitySm.id, IMAGE_NAME_SWITCH);
+        addPaintFloatingTextInfoForMyself(`${missingMana.toFixed()} missing mana`, game, undefined, abilityOwner.id, abilitySm.id, IMAGE_NAME_WIZARD_HAT);
     }
 }
 
