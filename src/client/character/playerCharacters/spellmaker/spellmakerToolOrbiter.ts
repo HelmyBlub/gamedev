@@ -5,6 +5,7 @@ import { AbilitySpellmaker, SpellmakerCreateToolMoveAttachment, SpellmakerCreate
 import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
 import { calculateMovePosition } from "../../../map/map.js";
 import { createMoreInfosPart } from "../../../moreInfo.js";
+import { GAME_IMAGES } from "../../../imageLoad.js";
 
 export type SpellmakerCreateToolMoveAttachmentOrbiter = SpellmakerCreateToolMoveAttachment & {
     angle: number,
@@ -26,6 +27,12 @@ export type SpellmakerCreateToolOrbiter = SpellmakerCreateTool & {
 }
 
 export const SPELLMAKER_TOOL_ORBITER = "Orbiter";
+export const IMAGE_ORBIT = "orbitIcon";
+GAME_IMAGES[IMAGE_ORBIT] = {
+    imagePath: "/images/orbitIcon.png",
+    spriteRowHeights: [],
+    spriteRowWidths: [],
+};
 
 export function addSpellmakerToolOrbiter() {
     SPELLMAKER_MOVE_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_ORBITER] = {
@@ -53,6 +60,7 @@ function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
         description: createMoreInfosPart(ctx, SPELLMAKER_MOVE_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_ORBITER].description),
         level: 0,
         totalDamage: 0,
+        buttonImage: IMAGE_ORBIT,
     };
 }
 

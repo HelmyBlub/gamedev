@@ -3,8 +3,6 @@ increase version
 
 current tasks:     
 - new class spellmaker
-    - paint turret with image and direction
-    - check "playerGlobalAlphaMultiplier" to be used in spellmaker
     - next steps
         - images:
             - icons for:
@@ -23,6 +21,7 @@ current tasks:
     - hope explosion spell possible in the end: gets more expensive but explosion can get bigger and bigger
         - charge type spell
     - achievements
+    - check "playerGlobalAlphaMultiplier" to be used in spellmaker
 - speedrun my game
     - kill god as fast as possible
         - real Time: <12:07 (builder + ball)

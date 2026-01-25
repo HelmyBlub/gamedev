@@ -5,6 +5,7 @@ import { AbilitySpellmaker, SpellmakerCreateToolMoveAttachment, SpellmakerCreate
 import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool, spellmakerNextStageSetup } from "./spellmakerTool.js";
 import { createAbilityObjectSpellmakerProximity } from "./abilitySpellmakerProximity.js";
 import { createMoreInfosPart } from "../../../moreInfo.js";
+import { GAME_IMAGES } from "../../../imageLoad.js";
 
 type CreateToolObjectProximityData = SpellmakerCreateToolObjectData & {
     radius: number,
@@ -16,6 +17,12 @@ export type SpellmakerCreateToolProximity = SpellmakerCreateTool & {
 }
 
 export const SPELLMAKER_TOOL_PROXIMITY = "Proximity";
+export const IMAGE_PROXIMITY = "proximityIcon";
+GAME_IMAGES[IMAGE_PROXIMITY] = {
+    imagePath: "/images/proximityIcon.png",
+    spriteRowHeights: [],
+    spriteRowWidths: [],
+};
 
 export function addSpellmakerToolProximity() {
     SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_PROXIMITY] = {
@@ -57,6 +64,7 @@ function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
         description: createMoreInfosPart(ctx, SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_PROXIMITY].description),
         level: 0,
         totalDamage: 0,
+        buttonImage: IMAGE_PROXIMITY,
     };
 }
 

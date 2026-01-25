@@ -5,6 +5,7 @@ import { AbilitySpellmaker, SpellmakerCreateToolMoveAttachment, SpellmakerCreate
 import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
 import { moveByDirectionAndDistance } from "../../../map/map.js";
 import { createMoreInfosPart } from "../../../moreInfo.js";
+import { GAME_IMAGES } from "../../../imageLoad.js";
 
 export type SpellmakerCreateToolMoveAttachmentLine = SpellmakerCreateToolMoveAttachment & {
     moveTo: Position[],
@@ -16,6 +17,12 @@ export type SpellmakerCreateToolMove = SpellmakerCreateTool & {
 }
 
 export const SPELLMAKER_TOOL_MOVE = "Move";
+export const IMAGE_ICON_MOVE = "moveIcon";
+GAME_IMAGES[IMAGE_ICON_MOVE] = {
+    imagePath: "/images/moveIcon.png",
+    spriteRowHeights: [],
+    spriteRowWidths: [],
+};
 const SPEED = 2;
 export function addSpellmakerToolMove() {
     SPELLMAKER_MOVE_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_MOVE] = {
@@ -52,6 +59,7 @@ function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
         description: createMoreInfosPart(ctx, SPELLMAKER_MOVE_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_MOVE].description),
         level: 0,
         totalDamage: 0,
+        buttonImage: IMAGE_ICON_MOVE,
     };
 }
 
