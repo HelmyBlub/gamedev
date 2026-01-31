@@ -334,7 +334,7 @@ function getHighestStageRecusive(currentStage: SpellmakerCreateToolObjectData[])
         } else {
             const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[stageObject.type];
             if (toolFunctions.canHaveNextStage) {
-                currentHighest = 1;
+                if (currentHighest < 1) currentHighest = 1;
             }
         }
     }
