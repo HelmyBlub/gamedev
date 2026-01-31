@@ -3,14 +3,13 @@ increase version
 
 current tasks:     
 - new class spellmaker
-    - next steps
-        - improve UX
-            - improve tool texts
-        - spelltype: fix charge, custom charge, instant, stationary custom charge
-        - prevent: player deleting all spells before king defeated results in king without any spell
-        - tool orbiter:
-            - currently only handles to work for character as orbit target. Either make i the only option with explanation or work with other things
-            - if orbit target no longer exists, don't search each tick in all entities, bad for performance
+    - bug: two turrets differnt stage count -> can't access later stage if later turret has lower stage
+    - turret in a turret: check for turret mana cap when adding too turret stage
+    - tool orbiter:
+        - currently only handles to work for character as orbit target. Either make i the only option with explanation or work with other things
+        - if orbit target no longer exists, don't search each tick in all entities, bad for performance
+    - spelltype: fix charge, custom charge, instant, stationary custom charge
+    - prevent: player deleting all spells before king defeated results in king without any spell
     - remember: relative mouse position not used for holding mouse button down
     - hope explosion spell possible in the end: gets more expensive but explosion can get bigger and bigger
         - charge type spell

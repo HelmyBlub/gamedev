@@ -24,7 +24,7 @@ import { addSpellmakerToolMove } from "./spellmakerToolMove.js";
 import { addSpellmakerToolOrbiter } from "./spellmakerToolOrbiter.js";
 import { addSpellmakerToolSeeker } from "./spellmakerToolSeeker.js";
 import { addSpellmakerToolProximity } from "./spellmakerToolTriggerProximity.js";
-import { addSpellmakerToolTurret } from "./spellmakerToolTurret.js";
+import { addSpellmakerToolTurret, SPELLMAKER_TOOL_TURRET, SpellmakerCreateToolObjectTurretData, SpellmakerCreateToolTurret } from "./spellmakerToolTurret.js";
 
 export type AbilitySpellmaker = Ability & {
     mode: "spellmake" | "spellcast",
@@ -519,18 +519,30 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, data: PlayerA
                             } else if (abilitySm.attachToIndex != undefined) {
                                 let currentObject = currentSpell.createdObjects[abilitySm.attachToIndex[0]];
                                 let currentStage = 0;
+                                let turretObject: SpellmakerCreateToolObjectTurretData | undefined = currentObject.type === SPELLMAKER_TOOL_TURRET ? currentObject as SpellmakerCreateToolObjectTurretData : undefined;
                                 while (currentStage < abilitySm.spellmakeStage - 1) {
                                     if (currentObject.nextStage) {
                                         currentStage++;
                                         currentObject = currentObject.nextStage[abilitySm.attachToIndex[currentStage]];
+                                        if (currentObject.type === SPELLMAKER_TOOL_TURRET) {
+                                            turretObject = currentObject as SpellmakerCreateToolObjectTurretData;
+                                        }
                                     } else {
                                         return;
                                     }
                                 }
                                 currentObject.nextStage.push(result);
+                                if (turretObject) {
+                                    const manaCapStageObjectManaCost = abilitySpellmakerCalculateManaCost(turretObject.nextStage);
+                                    if (manaCapStageObjectManaCost > turretObject.mana) {
+                                        currentObject.nextStage.pop();
+                                        addPaintFloatingTextInfoForMyself(`turret max mana exceeded`, game, undefined, abilityOwner.id, abilitySm.id, IMAGE_NAME_SWITCH);
+                                        return;
+                                    }
+                                }
                                 abilitySpellmakerCalculateManaCostForSpellAndUpdateToolDisplay(abilitySm, currentSpell);
                                 if (currentSpell.spellManaCost > MAX_SPELL_MANA_COST) {
-                                    currentSpell.createdObjects.pop();
+                                    currentObject.nextStage.pop();
                                     abilitySpellmakerCalculateManaCostForSpellAndUpdateToolDisplay(abilitySm, currentSpell);
                                     addPaintFloatingTextInfoForMyself(`max mana exceeded`, game, undefined, abilityOwner.id, abilitySm.id, IMAGE_NAME_SWITCH);
                                 }

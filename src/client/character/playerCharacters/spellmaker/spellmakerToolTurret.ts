@@ -7,13 +7,13 @@ import { createMoreInfosPart } from "../../../moreInfo.js";
 import { createAbilityObjectSpellmakerTurret, IMAGE_TURRET } from "./abilitySpellmakerTurret.js";
 import { GAME_IMAGES, getImage, loadImage } from "../../../imageLoad.js";
 
-type CreateToolObjectTurretData = SpellmakerCreateToolObjectData & {
+export type SpellmakerCreateToolObjectTurretData = SpellmakerCreateToolObjectData & {
     mana: number,
     center: Position,
 }
 
 export type SpellmakerCreateToolTurret = SpellmakerCreateTool & {
-    workInProgress?: CreateToolObjectTurretData,
+    workInProgress?: SpellmakerCreateToolObjectTurretData,
 }
 
 export const SPELLMAKER_TOOL_TURRET = "Turret";
@@ -45,7 +45,7 @@ export function addSpellmakerToolTurret() {
     };
 }
 
-function createObjectProximity(center: Position): CreateToolObjectTurretData {
+function createObjectProximity(center: Position): SpellmakerCreateToolObjectTurretData {
     return {
         type: SPELLMAKER_TOOL_TURRET,
         center: center,
@@ -67,12 +67,12 @@ function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
 }
 
 function calculateDistanceTurret(relativePosition: Position, createObject: SpellmakerCreateToolObjectData): number {
-    const object = createObject as CreateToolObjectTurretData;
+    const object = createObject as SpellmakerCreateToolObjectTurretData;
     return calculateDistance(relativePosition, object.center);
 }
 
 function calculateManaCost(createObject: SpellmakerCreateToolObjectData): number {
-    const object = createObject as CreateToolObjectTurretData;
+    const object = createObject as SpellmakerCreateToolObjectTurretData;
     let manaCost = object.mana;
     let nextStageMana = abilitySpellmakerCalculateManaCost(createObject.nextStage);
     if (nextStageMana > 0) {
@@ -114,7 +114,7 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
 }
 
 function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, toolChain: string[], game: Game) {
-    const toolTurret = createObject as CreateToolObjectTurretData;
+    const toolTurret = createObject as SpellmakerCreateToolObjectTurretData;
     const center: Position = {
         x: toolTurret.center.x + castPosition.x,
         y: toolTurret.center.y + castPosition.y,
@@ -135,7 +135,7 @@ function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: num
 }
 
 function paint(ctx: CanvasRenderingContext2D, createdObject: SpellmakerCreateToolObjectData, ownerPaintPos: Position, ability: AbilitySpellmaker, game: Game) {
-    const turret = createdObject as CreateToolObjectTurretData;
+    const turret = createdObject as SpellmakerCreateToolObjectTurretData;
     ctx.strokeStyle = "red";
     ctx.fillStyle = "blue";
     const turretImage = getImage(IMAGE_TURRET);
