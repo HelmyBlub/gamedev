@@ -43,7 +43,7 @@ export function addSpellmakerToolMove() {
 }
 
 
-function onKeyDown(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game) {
+function onKeyDown(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, attachedToTarget: SpellmakerCreateToolObjectData, castPositionRelativeToCharacter: Position, game: Game) {
     const moveTool = tool as SpellmakerCreateToolMove;
     moveTool.workInProgress = {
         type: SPELLMAKER_TOOL_MOVE,

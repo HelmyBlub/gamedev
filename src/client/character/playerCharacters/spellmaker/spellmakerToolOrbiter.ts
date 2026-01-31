@@ -3,7 +3,7 @@ import { calculateDirection, calculateDistance, findClientInfoByCharacterId } fr
 import { Position, Game, ClientInfo } from "../../../gameModel.js";
 import { AbilitySpellmaker, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
-import { calculateMovePosition } from "../../../map/map.js";
+import { calculateMovePosition, moveByDirectionAndDistance } from "../../../map/map.js";
 import { createMoreInfosPart } from "../../../moreInfo.js";
 import { GAME_IMAGES } from "../../../imageLoad.js";
 
@@ -64,7 +64,7 @@ function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
     };
 }
 
-function onKeyDown(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game) {
+function onKeyDown(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, attachedToTarget: SpellmakerCreateToolObjectData, castPositionRelativeToCharacter: Position, game: Game) {
     const moveTool = tool as SpellmakerCreateToolOrbiter;
     const workInProgress: SpellmakerCreateToolMoveAttachmentOrbiter = {
         type: SPELLMAKER_TOOL_ORBITER,
@@ -110,12 +110,20 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
 function paint(ctx: CanvasRenderingContext2D, moveAttachment: SpellmakerCreateToolMoveAttachment, ownerPaintPos: Position, ability: AbilitySpellmaker, game: Game) {
     const orbiter = moveAttachment as SpellmakerCreateToolMoveAttachmentOrbiter;
     ctx.strokeStyle = "black";
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 2;
+    const radius = calculateDistance({ x: 0, y: 0 }, orbiter.startPos);
+    if (radius <= 0) return;
+    const startAngle = calculateDirection({ x: 0, y: 0 }, orbiter.startPos);
     ctx.beginPath();
-    const sign = orbiter.directionClockwise ? 1 : -1;
-    const moveTo = calculateMovePosition({ x: 0, y: 0 }, orbiter.angle + (sign * orbiter.speed / 10), orbiter.orbitRadius, false);
-    ctx.moveTo(ownerPaintPos.x + orbiter.startPos.x, ownerPaintPos.y + orbiter.startPos.y);
-    ctx.lineTo(ownerPaintPos.x + moveTo.x, ownerPaintPos.y + moveTo.y);
+    const angleReduction = Math.max(0.8, (2 * Math.PI * radius - 20) / (2 * Math.PI * radius));
+    const endAngle = startAngle + Math.PI * 2 * angleReduction;
+    ctx.arc(ownerPaintPos.x, ownerPaintPos.y, radius, startAngle, endAngle);
+    const orbitEnd = calculateMovePosition(ownerPaintPos, endAngle, radius, false);
+    const arrowPoint1 = calculateMovePosition(orbitEnd, endAngle + 0.5 - Math.PI / 2, 15, false);
+    const arrowPoint2 = calculateMovePosition(orbitEnd, endAngle - 0.5 - Math.PI / 2, 15, false);
+    ctx.lineTo(arrowPoint1.x, arrowPoint1.y);
+    ctx.moveTo(orbitEnd.x, orbitEnd.y);
+    ctx.lineTo(arrowPoint2.x, arrowPoint2.y);
     ctx.stroke();
 }
 

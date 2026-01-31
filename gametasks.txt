@@ -3,10 +3,17 @@ increase version
 
 current tasks:     
 - new class spellmaker
-    - bug: two turrets differnt stage count -> can't access later stage if later turret has lower stage
     - tool orbiter:
-        - currently only handles to work for character as orbit target. Either make i the only option with explanation or work with other things
-        - if orbit target no longer exists, don't search each tick in all entities, bad for performance
+        - on spellmake mode:
+            - when click, determine closest object to be the orbiting object
+                - visualize orbit and orbit center
+                    - orbit visualization is based on click position, but it should center somehow
+                        - turrets have center, fireLine does not, how to handle?
+            - allow orbit offset
+            - automatically find closest other object to be the center orbitet around
+            - can drag to change center
+            - make orbit speed constant, not modifyable
+        - 
     - spelltype: fix charge, custom charge, instant, stationary custom charge
     - prevent: player deleting all spells before king defeated results in king without any spell
     - remember: relative mouse position not used for holding mouse button down

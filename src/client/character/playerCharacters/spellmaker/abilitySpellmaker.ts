@@ -496,7 +496,18 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, data: PlayerA
                         abilitySm.attachToIndex = findClosestAttachToIndex(abilitySm, castPositionRelativeToCharacter, true);
                         if (abilitySm.attachToIndex != undefined) {
                             const toolFunctions = SPELLMAKER_MOVE_TOOLS_FUNCTIONS[tool.type];
-                            if (toolFunctions.onKeyDown) toolFunctions.onKeyDown(tool, abilityOwner, abilitySm, castPositionRelativeToCharacter, game);
+                            const currentSpell = abilitySm.spells[abilitySm.spellIndex];
+                            let currentObject = currentSpell.createdObjects[abilitySm.attachToIndex[0]];
+                            let currentStage = 0;
+                            while (currentStage < abilitySm.spellmakeStage - 1) {
+                                if (currentObject.nextStage) {
+                                    currentStage++;
+                                    currentObject = currentObject.nextStage[abilitySm.attachToIndex[currentStage]];
+                                } else {
+                                    return;
+                                }
+                            }
+                            if (toolFunctions.onKeyDown) toolFunctions.onKeyDown(tool, abilityOwner, abilitySm, currentObject, castPositionRelativeToCharacter, game);
                         }
                     }
                 }
