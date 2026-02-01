@@ -46,6 +46,7 @@ export type SpellmakerMoveToolFunctions = {
 export type SpellmakerToolFunctions = {
     calculateManaCost?: (createObject: SpellmakerCreateToolObjectData) => number,
     calculateDistance?: (relativePosition: Position, createObject: SpellmakerCreateToolObjectData) => number,
+    getClosestCenter?: (createObject: SpellmakerCreateToolObjectData, position: Position) => Position,
     createTool: (ctx: CanvasRenderingContext2D) => SpellmakerCreateTool,
     onKeyDown?: (tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game) => void,
     onKeyUp?: (tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game) => SpellmakerCreateToolObjectData | undefined,

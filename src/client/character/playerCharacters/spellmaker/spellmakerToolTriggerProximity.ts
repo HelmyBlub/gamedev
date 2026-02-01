@@ -29,6 +29,7 @@ export function addSpellmakerToolProximity() {
         calculateDistance: calculateDistanceProximity,
         calculateManaCost: calculateManaCost,
         createTool: createTool,
+        getClosestCenter: getClosestCenter,
         onKeyDown: onKeyDown,
         onKeyUp: onKeyUp,
         onTick: onTick,
@@ -71,6 +72,11 @@ function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
 function calculateDistanceProximity(relativePosition: Position, createObject: SpellmakerCreateToolObjectData): number {
     const object = createObject as CreateToolObjectProximityData;
     return Math.max(0, calculateDistance(relativePosition, object.center) - object.radius);
+}
+
+function getClosestCenter(createObject: SpellmakerCreateToolObjectData, position: Position): Position {
+    const object = createObject as CreateToolObjectProximityData;
+    return { x: object.center.x, y: object.center.y };
 }
 
 function calculateManaCost(createObject: SpellmakerCreateToolObjectData): number {

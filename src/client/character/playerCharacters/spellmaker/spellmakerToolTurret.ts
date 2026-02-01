@@ -24,6 +24,7 @@ export function addSpellmakerToolTurret() {
         calculateDistance: calculateDistanceTurret,
         calculateManaCost: calculateManaCost,
         createTool: createTool,
+        getClosestCenter: getClosestCenter,
         onKeyDown: onKeyDown,
         onKeyUp: onKeyUp,
         onTick: onTick,
@@ -64,6 +65,11 @@ function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
         totalDamage: 0,
         buttonImage: IMAGE_TURRET,
     };
+}
+
+function getClosestCenter(createObject: SpellmakerCreateToolObjectData, position: Position): Position {
+    const object = createObject as SpellmakerCreateToolObjectTurretData;
+    return { x: object.center.x, y: object.center.y };
 }
 
 function calculateDistanceTurret(relativePosition: Position, createObject: SpellmakerCreateToolObjectData): number {

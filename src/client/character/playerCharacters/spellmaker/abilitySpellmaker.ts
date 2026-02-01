@@ -499,7 +499,7 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, data: PlayerA
                             const currentSpell = abilitySm.spells[abilitySm.spellIndex];
                             let currentObject = currentSpell.createdObjects[abilitySm.attachToIndex[0]];
                             let currentStage = 0;
-                            while (currentStage < abilitySm.spellmakeStage - 1) {
+                            while (currentStage < abilitySm.spellmakeStage) {
                                 if (currentObject.nextStage) {
                                     currentStage++;
                                     currentObject = currentObject.nextStage[abilitySm.attachToIndex[currentStage]];

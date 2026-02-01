@@ -2,17 +2,14 @@ import { AbilityObject, AbilityOwner, findAbilityOwnerById } from "../../../abil
 import { calculateDirection, calculateDistance, findClientInfoByCharacterId } from "../../../game.js";
 import { Position, Game, ClientInfo } from "../../../gameModel.js";
 import { AbilitySpellmaker, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
-import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
-import { calculateMovePosition, moveByDirectionAndDistance } from "../../../map/map.js";
+import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
+import { calculateMovePosition } from "../../../map/map.js";
 import { createMoreInfosPart } from "../../../moreInfo.js";
 import { GAME_IMAGES } from "../../../imageLoad.js";
 
 export type SpellmakerCreateToolMoveAttachmentOrbiter = SpellmakerCreateToolMoveAttachment & {
-    angle: number,
-    orbitRadius: number,
-    directionClockwise: boolean,
-    speed: number,
     startPos: Position,
+    center: Position,
 }
 
 export type SpellmakerCreateObjectMoveAttachmentOrbiter = SpellmakerCreateToolMoveAttachment & {
@@ -66,16 +63,15 @@ function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
 
 function onKeyDown(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, attachedToTarget: SpellmakerCreateToolObjectData, castPositionRelativeToCharacter: Position, game: Game) {
     const moveTool = tool as SpellmakerCreateToolOrbiter;
+    let startPosition = { x: castPositionRelativeToCharacter.x, y: castPositionRelativeToCharacter.y };
+    const attachedTypeFunctions = SPELLMAKER_TOOLS_FUNCTIONS[attachedToTarget.type];
+    if (attachedTypeFunctions && attachedTypeFunctions.getClosestCenter) startPosition = attachedTypeFunctions.getClosestCenter(attachedToTarget, startPosition);
+
     const workInProgress: SpellmakerCreateToolMoveAttachmentOrbiter = {
         type: SPELLMAKER_TOOL_ORBITER,
-        speed: 1,
-        startPos: { x: castPositionRelativeToCharacter.x, y: castPositionRelativeToCharacter.y },
-        angle: 0,
-        directionClockwise: true,
-        orbitRadius: 0,
+        startPos: startPosition,
+        center: determineClosestOrbitCenter(tool, ability, castPositionRelativeToCharacter),
     }
-    workInProgress.orbitRadius = calculateDistance(workInProgress.startPos, { x: 0, y: 0 });
-    workInProgress.angle = calculateDirection({ x: 0, y: 0 }, workInProgress.startPos);
     moveTool.workInProgress = workInProgress;
 }
 
@@ -83,8 +79,6 @@ function onKeyUp(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability
     const moveTool = tool as SpellmakerCreateToolOrbiter;
     if (moveTool.workInProgress) {
         const orbiter = moveTool.workInProgress as SpellmakerCreateToolMoveAttachmentOrbiter;
-        orbiter.speed = Math.max(1, Math.min(10, calculateDistance(orbiter.startPos, castPositionRelativeToCharacter) / 10));
-        orbiter.directionClockwise = (orbiter.angle - calculateDirection({ x: 0, y: 0 }, orbiter.startPos)) < 0;
         moveTool.workInProgress = undefined;
         return orbiter;
     }
@@ -96,13 +90,11 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
     if (clientInfo) {
         const moveTool = tool as SpellmakerCreateToolOrbiter;
         if (moveTool.workInProgress) {
-            const orbiter = moveTool.workInProgress;
             const relativPos: Position = {
                 x: clientInfo.lastMousePosition.x - abilityOwner.x,
                 y: clientInfo.lastMousePosition.y - abilityOwner.y,
             };
-            orbiter.speed = Math.max(1, Math.min(10, calculateDistance(orbiter.startPos, relativPos) / 10));
-            orbiter.directionClockwise = (orbiter.angle - calculateDirection({ x: 0, y: 0 }, relativPos)) < 0;
+            moveTool.workInProgress.center = determineClosestOrbitCenter(tool, ability, relativPos);
         }
     }
 }
@@ -111,14 +103,18 @@ function paint(ctx: CanvasRenderingContext2D, moveAttachment: SpellmakerCreateTo
     const orbiter = moveAttachment as SpellmakerCreateToolMoveAttachmentOrbiter;
     ctx.strokeStyle = "black";
     ctx.lineWidth = 2;
-    const radius = calculateDistance({ x: 0, y: 0 }, orbiter.startPos);
+    const radius = calculateDistance(orbiter.center, orbiter.startPos);
     if (radius <= 0) return;
-    const startAngle = calculateDirection({ x: 0, y: 0 }, orbiter.startPos);
+    const startAngle = calculateDirection(orbiter.center, orbiter.startPos);
+    const paintPos: Position = {
+        x: ownerPaintPos.x + orbiter.center.x,
+        y: ownerPaintPos.y + orbiter.center.y,
+    }
     ctx.beginPath();
     const angleReduction = Math.max(0.8, (2 * Math.PI * radius - 20) / (2 * Math.PI * radius));
     const endAngle = startAngle + Math.PI * 2 * angleReduction;
-    ctx.arc(ownerPaintPos.x, ownerPaintPos.y, radius, startAngle, endAngle);
-    const orbitEnd = calculateMovePosition(ownerPaintPos, endAngle, radius, false);
+    ctx.arc(paintPos.x, paintPos.y, radius, startAngle, endAngle);
+    const orbitEnd = calculateMovePosition(paintPos, endAngle, radius, false);
     const arrowPoint1 = calculateMovePosition(orbitEnd, endAngle + 0.5 - Math.PI / 2, 15, false);
     const arrowPoint2 = calculateMovePosition(orbitEnd, endAngle - 0.5 - Math.PI / 2, 15, false);
     ctx.lineTo(arrowPoint1.x, arrowPoint1.y);
@@ -129,12 +125,13 @@ function paint(ctx: CanvasRenderingContext2D, moveAttachment: SpellmakerCreateTo
 
 function getMoveAttachment(createObject: SpellmakerCreateToolObjectData, castPosition: Position, game: Game): SpellmakerCreateObjectMoveAttachmentOrbiter {
     const orbiter = createObject.moveAttachment as SpellmakerCreateToolMoveAttachmentOrbiter;
-    const angleTickChange = orbiter.speed / (orbiter.orbitRadius * Math.PI) * (orbiter.directionClockwise ? 1 : -1);
+    const radius = calculateDistance(orbiter.center, orbiter.startPos);
+    const angleTickChange = 2 / (radius * Math.PI);
     const moveAttach: SpellmakerCreateObjectMoveAttachmentOrbiter = {
         type: SPELLMAKER_TOOL_ORBITER,
         angleTickChange: angleTickChange,
-        angle: orbiter.angle,
-        orbitRadius: orbiter.orbitRadius,
+        angle: calculateDirection(orbiter.center, orbiter.startPos),
+        orbitRadius: radius,
     };
     return moveAttach;
 }
@@ -149,4 +146,39 @@ function getMoveAttachmentNextMoveByAmount(moveAttach: SpellmakerCreateToolMoveA
     orbiter.angle += orbiter.angleTickChange;
     const newPosition: Position = calculateMovePosition(owner, orbiter.angle, orbiter.orbitRadius, false);
     return { x: newPosition.x - abilityObject.x, y: newPosition.y - abilityObject.y };
+}
+
+
+function determineClosestOrbitCenter(tool: SpellmakerCreateTool, ability: AbilitySpellmaker, relativePosition: Position): Position {
+    let orbitCenter: Position = { x: 0, y: 0 };
+    let currentObjects = ability.spells[ability.spellIndex].createdObjects;
+    if (ability.attachToIndex === undefined) return orbitCenter;
+    let currentStage = 0;
+    while (currentStage < ability.spellmakeStage) {
+        const attachedToObject = currentObjects[ability.attachToIndex[currentStage]];
+        const attachedTypeFunctions = SPELLMAKER_TOOLS_FUNCTIONS[attachedToObject.type];
+        if (attachedTypeFunctions && attachedTypeFunctions.getClosestCenter) {
+            orbitCenter = attachedTypeFunctions.getClosestCenter(attachedToObject, relativePosition);
+        }
+        currentObjects = attachedToObject.nextStage;
+        currentStage++;
+    }
+
+    let closestDistance = calculateDistance(orbitCenter, relativePosition);
+    for (let i = 0; i < currentObjects.length; i++) {
+        const object = currentObjects[i];
+        if (i === ability.attachToIndex[ability.attachToIndex.length - 1]) continue;
+        const objectFunctions = SPELLMAKER_TOOLS_FUNCTIONS[object.type];
+        if (!objectFunctions.calculateDistance) continue;
+        const tempDistance = objectFunctions.calculateDistance(relativePosition, object);
+        if (tempDistance < 30 && tempDistance < closestDistance) {
+            closestDistance = tempDistance;
+            if (objectFunctions.getClosestCenter) {
+                orbitCenter = objectFunctions.getClosestCenter(object, relativePosition);
+            } else {
+                orbitCenter = relativePosition;
+            }
+        }
+    }
+    return orbitCenter;
 }

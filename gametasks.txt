@@ -9,8 +9,9 @@ current tasks:
                 - visualize orbit and orbit center
                     - orbit visualization is based on click position, but it should center somehow
                         - turrets have center, fireLine does not, how to handle?
-            - allow orbit offset
+                - check if function "getClosestCenter" required for orbiter to work
             - automatically find closest other object to be the center orbitet around
+            - allow orbit offset
             - can drag to change center
             - make orbit speed constant, not modifyable
         - 
