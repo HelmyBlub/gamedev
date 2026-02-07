@@ -1,7 +1,7 @@
 import { AbilityObject, AbilityOwner } from "../../../ability/ability.js";
 import { calculateDirection, calculateDistance, findClientInfoByCharacterId } from "../../../game.js";
 import { Position, Game, ClientInfo, FACTION_PLAYER, FACTION_ENEMY } from "../../../gameModel.js";
-import { AbilitySpellmaker, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
+import { AbilitySpellmaker, AbilitySpellmakerObject, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
 import { calculateMovePosition, moveByDirectionAndDistance } from "../../../map/map.js";
 import { determineCharactersInDistance, determineClosestCharacter } from "../../character.js";
@@ -107,7 +107,7 @@ function paint(ctx: CanvasRenderingContext2D, moveAttachment: SpellmakerCreateTo
     ctx.stroke();
 }
 
-function getMoveAttachment(createObject: SpellmakerCreateToolObjectData, castPosition: Position, game: Game): SpellmakerCreateToolMoveAttachment {
+function getMoveAttachment(createObject: SpellmakerCreateToolObjectData, preStageAbilityObject: AbilitySpellmakerObject | undefined, stageId: number, castPosition: Position, game: Game): SpellmakerCreateToolMoveAttachment {
     const seeker = createObject.moveAttachment as SpellmakerCreateToolMoveAttachmentSeeker;
     const moveAttach: SpellmakerCreateToolMoveAttachmentSeeker = {
         type: SPELLMAKER_TOOL_SEEKER,
@@ -119,7 +119,7 @@ function getMoveAttachment(createObject: SpellmakerCreateToolObjectData, castPos
     return moveAttach;
 }
 
-function getMoveAttachmentNextMoveByAmount(moveAttach: SpellmakerCreateToolMoveAttachment, abilityObject: AbilityObject, game: Game): Position {
+function getMoveAttachmentNextMoveByAmount(moveAttach: SpellmakerCreateToolMoveAttachment, abilityObject: AbilitySpellmakerObject, game: Game): Position {
     const seeker = moveAttach as SpellmakerCreateToolMoveAttachmentSeeker;
     if (seeker.nextTargetAquireTickTime < game.state.time) {
         seeker.nextTargetAquireTickTime = game.state.time + TICK_INTERVAL;

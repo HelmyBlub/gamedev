@@ -43,9 +43,13 @@ export type AbilitySpellmaker = Ability & {
     baseDamage: number,
 }
 export type AbilitySpellmakerObject = AbilityObject & {
+    id: number,
+    stageId: number,
+    stageIndex: number,
     manaFactor: number,
     damageFactor: number,
     toolChain: string[],
+    nextStage?: SpellmakerCreateToolObjectData[],
 }
 
 export type SpellmakerSpell = {
@@ -609,12 +613,14 @@ function getCustomCastData(abilityOwner: AbilityOwner, ability: Ability, data: D
 
 function spellCast(abilityOwner: AbilityOwner, abilitySm: AbilitySpellmaker, spellIndex: number, castPosition: Position, game: Game) {
     const currentSpell = abilitySm.spells[spellIndex];
+    const stageId = getNextId(game.state.idCounter);
     if (abilitySm.mana > currentSpell.spellManaCost) {
         abilitySm.mana -= currentSpell.spellManaCost;
-        for (let createdObject of currentSpell.createdObjects) {
+        for (let stageIndex = 0; stageIndex < currentSpell.createdObjects.length; stageIndex++) {
+            const createdObject = currentSpell.createdObjects[stageIndex];
             const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[createdObject.type];
             const damageFactor = abilityOwner.faction === FACTION_PLAYER ? abilitySm.damageLevelFactor : 1;
-            if (toolFunctions.spellCast) toolFunctions.spellCast(createdObject, abilitySm.baseDamage, abilityOwner.faction, abilitySm.id, castPosition, damageFactor, abilitySm.manaLevelFactor, [createdObject.type], game);
+            if (toolFunctions.spellCast) toolFunctions.spellCast(createdObject, abilitySm.baseDamage, abilityOwner.faction, abilitySm.id, castPosition, damageFactor, abilitySm.manaLevelFactor, [createdObject.type], stageId, stageIndex, game);
         }
     } else {
         const missingMana = currentSpell.spellManaCost - abilitySm.mana;
@@ -623,7 +629,9 @@ function spellCast(abilityOwner: AbilityOwner, abilitySm: AbilitySpellmaker, spe
 }
 
 export function abilitySpellmakerCastNextStage(nextStage: SpellmakerCreateToolObjectData[], abilityObject: AbilitySpellmakerObject, game: Game) {
-    for (let stageObject of nextStage) {
+    const stageId = getNextId(game.state.idCounter);
+    for (let stageIndex = 0; stageIndex < nextStage.length; stageIndex++) {
+        const stageObject = nextStage[stageIndex];
         const spellmakerFunctions = SPELLMAKER_TOOLS_FUNCTIONS[stageObject.type];
         if (spellmakerFunctions.spellCast) {
             const pos: Position = { x: abilityObject.x, y: abilityObject.y };
@@ -633,7 +641,7 @@ export function abilitySpellmakerCastNextStage(nextStage: SpellmakerCreateToolOb
             }
             const toolChain = [...abilityObject.toolChain];
             if (!toolChain.includes(stageObject.type)) toolChain.push(stageObject.type);
-            spellmakerFunctions.spellCast(stageObject, stageObject.baseDamage, abilityObject.faction, abilityObject.abilityIdRef!, pos, abilityObject.damageFactor, abilityObject.manaFactor, toolChain, game);
+            spellmakerFunctions.spellCast(stageObject, stageObject.baseDamage, abilityObject.faction, abilityObject.abilityIdRef!, pos, abilityObject.damageFactor, abilityObject.manaFactor, toolChain, stageId, stageIndex, game, abilityObject);
         }
     }
 }

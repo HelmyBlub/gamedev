@@ -8,7 +8,7 @@ import { paintTextWithOutline } from "../../../gamePaint.js";
 import { GAME_IMAGES } from "../../../imageLoad.js";
 import { createMoreInfosPart, MoreInfoPart } from "../../../moreInfo.js";
 import { Character } from "../../characterModel.js";
-import { AbilitySpellmaker, abilitySpellmakerCalculateManaCostForSpellAndUpdateToolDisplay, SPELLMAKER_SPELLTYPE_AUTOCAST, SPELLMAKER_SPELLTYPE_INSTANT, SPELLMAKER_SPELLTYPES, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
+import { AbilitySpellmaker, abilitySpellmakerCalculateManaCostForSpellAndUpdateToolDisplay, AbilitySpellmakerObject, SPELLMAKER_SPELLTYPE_AUTOCAST, SPELLMAKER_SPELLTYPE_INSTANT, SPELLMAKER_SPELLTYPES, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 import { ABILITY_NAME_SPELLMAKER_SWITCH_SPELL } from "./abilitySpellmakerSwitchSpell.js";
 import { CHARACTER_CLASS_SPELLMAKER } from "./characterClassSpellmaker.js";
 
@@ -33,8 +33,8 @@ export type SpellmakerCreateTool = {
 export type SpellmakerMoveToolFunctions = {
     calculateManaCost?: (createObject: SpellmakerCreateToolObjectData) => number,
     createTool: (ctx: CanvasRenderingContext2D) => SpellmakerCreateTool,
-    getMoveAttachment: (createObject: SpellmakerCreateToolObjectData, castPosition: Position, game: Game) => SpellmakerCreateToolMoveAttachment,
-    getMoveAttachmentNextMoveByAmount: (moveAttach: SpellmakerCreateToolMoveAttachment, abilityObject: AbilityObject, game: Game) => Position,
+    getMoveAttachment: (createObject: SpellmakerCreateToolObjectData, preStageAbilityObject: AbilitySpellmakerObject | undefined, stageId: number, castPosition: Position, game: Game) => SpellmakerCreateToolMoveAttachment,
+    getMoveAttachmentNextMoveByAmount: (moveAttach: SpellmakerCreateToolMoveAttachment, abilityObject: AbilitySpellmakerObject, game: Game) => Position,
     onKeyDown: (tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, attachedToTarget: SpellmakerCreateToolObjectData, castPositionRelativeToCharacter: Position, game: Game) => void,
     onKeyUp: (tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game) => SpellmakerCreateToolMoveAttachment | undefined,
     onTick: (tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, game: Game) => void,
@@ -54,7 +54,7 @@ export type SpellmakerToolFunctions = {
     onToolSelect?: (tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, game: Game) => boolean, // return false if it should no be selectable
     paint?: (ctx: CanvasRenderingContext2D, createObject: SpellmakerCreateToolObjectData, ownerPaintPos: Position, ability: AbilitySpellmaker, game: Game) => void,
     paintButton?: (ctx: CanvasRenderingContext2D, buttonPaintPos: Position, ability: AbilitySpellmaker, game: Game) => void,
-    spellCast?: (createObject: SpellmakerCreateToolObjectData, baseDamage: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, toolChain: string[], game: Game) => void,
+    spellCast?: (createObject: SpellmakerCreateToolObjectData, baseDamage: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, toolChain: string[], stageId: number, stageIndex: number, game: Game, preStageAbilityObject?: AbilitySpellmakerObject) => void,
     calculateManaCostIncludesNextStage?: boolean,
     canHaveNextStage?: boolean,
     canHaveMoveAttachment?: boolean,

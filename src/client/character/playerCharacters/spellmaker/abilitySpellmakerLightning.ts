@@ -42,6 +42,8 @@ export function createAbilityObjectSpellmakerLightning(
     damageFactor: number,
     manaFactor: number,
     toolChain: string[],
+    stageId: number,
+    stageIndex: number,
     game: Game
 ): AbilityObjectSpellmakerLightning {
     return {
@@ -57,6 +59,9 @@ export function createAbilityObjectSpellmakerLightning(
         toolChain: toolChain,
         damageFactor: damageFactor,
         manaFactor: manaFactor,
+        stageId: stageId,
+        stageIndex: stageIndex,
+        id: getNextId(game.state.idCounter),
     };
 }
 

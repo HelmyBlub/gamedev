@@ -51,7 +51,9 @@ export function createAbilityObjectSpellmakerTurret(
     toolChain: string[],
     faction: string,
     abilityIdRef: number | undefined,
-    gametime: number,
+    stageId: number,
+    stageIndex: number,
+    game: Game,
 ): AbilityObjectSpellmakerTurret {
     const spellManaCost = abilitySpellmakerCalculateManaCost(nextStage) * manaFactor;
     return {
@@ -69,11 +71,14 @@ export function createAbilityObjectSpellmakerTurret(
         triggerManaCost: spellManaCost,
         triggerInterval: 250,
         triggerRadius: 200,
-        removeTime: gametime + maxDuration,
+        removeTime: game.state.time + maxDuration,
         damageFactor: damageFactor,
         manaFactor: manaFactor,
         toolChain: toolChain,
         lastShotAngle: 0,
+        stageId: stageId,
+        stageIndex: stageIndex,
+        id: getNextId(game.state.idCounter),
     };
 }
 
@@ -146,7 +151,7 @@ function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
     if (abilityObjectTurret.moveAttachment) {
         const toolFunctions = SPELLMAKER_MOVE_TOOLS_FUNCTIONS[abilityObjectTurret.moveAttachment.type];
         if (toolFunctions.getMoveAttachmentNextMoveByAmount) {
-            const moveXY: Position = toolFunctions.getMoveAttachmentNextMoveByAmount(abilityObjectTurret.moveAttachment, abilityObject, game);
+            const moveXY: Position = toolFunctions.getMoveAttachmentNextMoveByAmount(abilityObjectTurret.moveAttachment, abilityObjectTurret, game);
             abilityObjectTurret.x += moveXY.x;
             abilityObjectTurret.y += moveXY.y;
         }

@@ -1,7 +1,7 @@
 import { AbilityOwner } from "../../../ability/ability.js";
 import { calculateDistance, findClientInfoByCharacterId } from "../../../game.js";
 import { Position, Game, ClientInfo, FACTION_PLAYER } from "../../../gameModel.js";
-import { AbilitySpellmaker, abilitySpellmakerCalculateManaCost, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
+import { AbilitySpellmaker, abilitySpellmakerCalculateManaCost, AbilitySpellmakerObject, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool, spellmakerNextStageSetup } from "./spellmakerTool.js";
 import { createMoreInfosPart } from "../../../moreInfo.js";
 import { createAbilityObjectSpellmakerTurret, IMAGE_TURRET } from "./abilitySpellmakerTurret.js";
@@ -119,7 +119,7 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
     }
 }
 
-function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, toolChain: string[], game: Game) {
+function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, toolChain: string[], stageId: number, stageIndex: number, game: Game, preStageAbilityObject?: AbilitySpellmakerObject) {
     const toolTurret = createObject as SpellmakerCreateToolObjectTurretData;
     const center: Position = {
         x: toolTurret.center.x + castPosition.x,
@@ -131,12 +131,12 @@ function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: num
         const toolFunctions = SPELLMAKER_MOVE_TOOLS_FUNCTIONS[toolTurret.moveAttachment.type];
         if (toolFunctions.getMoveAttachment) {
             if (!newToolChain.includes(toolTurret.moveAttachment.type)) newToolChain.push(toolTurret.moveAttachment.type);
-            moveAttachment = toolFunctions.getMoveAttachment(createObject, castPosition, game);
+            moveAttachment = toolFunctions.getMoveAttachment(createObject, preStageAbilityObject, stageId, castPosition, game);
         }
     }
     const nextStage = spellmakerNextStageSetup(toolTurret.nextStage, baseDamage, toolTurret.center);
     const maxDuration = faction === FACTION_PLAYER ? MAX_DURATION : MAX_DURATION / 4;
-    const objectTurret = createAbilityObjectSpellmakerTurret(center, moveAttachment, nextStage, maxDuration, toolTurret.mana, damageFactor, manaFactor, newToolChain, faction, abilityId, game.state.time);
+    const objectTurret = createAbilityObjectSpellmakerTurret(center, moveAttachment, nextStage, maxDuration, toolTurret.mana, damageFactor, manaFactor, newToolChain, faction, abilityId, stageId, stageIndex, game);
     game.state.abilityObjects.push(objectTurret);
 }
 

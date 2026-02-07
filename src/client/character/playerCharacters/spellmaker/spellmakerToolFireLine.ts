@@ -1,7 +1,7 @@
 import { AbilityOwner } from "../../../ability/ability.js";
 import { calculateDistance, calculateDistancePointToLine, findClientInfoByCharacterId } from "../../../game.js";
 import { Position, Game, ClientInfo } from "../../../gameModel.js";
-import { AbilitySpellmaker, SPELLMAKER_MAX_CAST_RANGE, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
+import { AbilitySpellmaker, AbilitySpellmakerObject, SPELLMAKER_MAX_CAST_RANGE, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
 import { createAbilityObjectSpellmakerFireLine } from "./abilitySpellmakerFireLine.js";
 import { createMoreInfosPart } from "../../../moreInfo.js";
@@ -135,7 +135,7 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
     }
 }
 
-function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, toolChain: string[], game: Game) {
+function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, toolChain: string[], stageId: number, stageIndex: number, game: Game, preStageAbilityObject?: AbilitySpellmakerObject) {
     const fireline = createObject as CreateToolObjectFireLineData;
     if (fireline.positions.length < 2) return;
     const damage = baseDamage * damageFactor;
@@ -153,14 +153,14 @@ function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: num
         const toolFunctions = SPELLMAKER_MOVE_TOOLS_FUNCTIONS[fireline.moveAttachment.type];
         if (toolFunctions.getMoveAttachment) {
             if (!newToolChain.includes(fireline.moveAttachment.type)) newToolChain.push(fireline.moveAttachment.type);
-            moveAttachment = toolFunctions.getMoveAttachment(createObject, castPosition, game);
+            moveAttachment = toolFunctions.getMoveAttachment(createObject, preStageAbilityObject, stageId, castPosition, game);
         }
     }
     const moveSpeed = 2;
     const width = 10;
     const duration = 5000;
     const tickInterval = 250;
-    const objectFireLine = createAbilityObjectSpellmakerFireLine(faction, start, joints, moveAttachment, damage, width, duration, moveSpeed, tickInterval, "red", damageFactor, manaFactor, newToolChain, abilityId, game);
+    const objectFireLine = createAbilityObjectSpellmakerFireLine(faction, start, joints, moveAttachment, damage, width, duration, moveSpeed, tickInterval, "red", damageFactor, manaFactor, newToolChain, abilityId, stageId, stageIndex, game);
     game.state.abilityObjects.push(objectFireLine);
 }
 

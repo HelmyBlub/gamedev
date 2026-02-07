@@ -42,7 +42,9 @@ export function createAbilityObjectSpellmakerProximity(
     toolChain: string[],
     faction: string,
     abilityIdRef: number | undefined,
-    gametime: number,
+    stageId: number,
+    stageIndex: number,
+    game: Game,
 ): AbilityObjectSpellmakerProximity {
     return {
         type: ABILITY_NAME_SPELLMAKER_PROXIMITY,
@@ -57,10 +59,13 @@ export function createAbilityObjectSpellmakerProximity(
         triggerRadius: triggerRadius,
         moveAttachment: deepCopy(moveAttachment),
         nextStage: nextStage,
-        latestTriggerTime: gametime + 10_000,
+        latestTriggerTime: game.state.time + 10_000,
         damageFactor: damageFactor,
         manaFactor: manaFactor,
         toolChain: toolChain,
+        stageId: stageId,
+        stageIndex: stageIndex,
+        id: getNextId(game.state.idCounter),
     };
 }
 
@@ -116,7 +121,7 @@ function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
     if (abilityObjectProximity.moveAttachment) {
         const toolFunctions = SPELLMAKER_MOVE_TOOLS_FUNCTIONS[abilityObjectProximity.moveAttachment.type];
         if (toolFunctions.getMoveAttachmentNextMoveByAmount) {
-            const moveXY: Position = toolFunctions.getMoveAttachmentNextMoveByAmount(abilityObjectProximity.moveAttachment, abilityObject, game);
+            const moveXY: Position = toolFunctions.getMoveAttachmentNextMoveByAmount(abilityObjectProximity.moveAttachment, abilityObjectProximity, game);
             abilityObjectProximity.x += moveXY.x;
             abilityObjectProximity.y += moveXY.y;
         }

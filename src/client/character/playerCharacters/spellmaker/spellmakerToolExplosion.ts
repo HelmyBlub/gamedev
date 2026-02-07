@@ -108,7 +108,7 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
     }
 }
 
-function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, toolChain: string[], game: Game) {
+function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, toolChain: string[], stageId: number, stageIndex: number, game: Game) {
     const explode = createObject as CreateToolObjectExplosionData;
     const damage = baseDamage * explode.damageFactor * damageFactor;
     const center: Position = {
@@ -116,7 +116,7 @@ function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: num
         y: explode.center.y + castPosition.y,
     };
     let explodeDelay = faction === FACTION_ENEMY ? 2000 : 0;
-    const explodeObject = createAbilityObjectSpellmakerExplode(center, damage, explode.radius, faction, damageFactor, manaFactor, [...toolChain], abilityId, explodeDelay, game);
+    const explodeObject = createAbilityObjectSpellmakerExplode(center, damage, explode.radius, faction, damageFactor, manaFactor, [...toolChain], abilityId, explodeDelay, stageId, stageIndex, game);
     game.state.abilityObjects.push(explodeObject);
 }
 

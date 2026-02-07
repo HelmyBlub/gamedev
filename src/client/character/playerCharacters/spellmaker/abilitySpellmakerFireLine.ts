@@ -46,6 +46,8 @@ export function createAbilityObjectSpellmakerFireLine(
     manaFactor: number,
     toolChain: string[],
     abilityIdRef: number | undefined,
+    stageId: number,
+    stageIndex: number,
     game: Game
 ): AbilityObjectSpellmakerFireLine {
     return {
@@ -65,6 +67,9 @@ export function createAbilityObjectSpellmakerFireLine(
         damageFactor: damageFactor,
         manaFactor: manaFactor,
         toolChain: toolChain,
+        stageId: stageId,
+        stageIndex: stageIndex,
+        id: getNextId(game.state.idCounter),
     };
 }
 
@@ -119,7 +124,7 @@ function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
     if (objectFireLine.moveAttachment) {
         const toolFunctions = SPELLMAKER_MOVE_TOOLS_FUNCTIONS[objectFireLine.moveAttachment.type];
         if (toolFunctions.getMoveAttachmentNextMoveByAmount) {
-            const moveXY: Position = toolFunctions.getMoveAttachmentNextMoveByAmount(objectFireLine.moveAttachment, abilityObject, game);
+            const moveXY: Position = toolFunctions.getMoveAttachmentNextMoveByAmount(objectFireLine.moveAttachment, objectFireLine, game);
             objectFireLine.x += moveXY.x;
             objectFireLine.y += moveXY.y;
             for (let joint of objectFireLine.fireLineJoints) {

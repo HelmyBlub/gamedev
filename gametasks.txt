@@ -5,16 +5,16 @@ current tasks:
 - new class spellmaker
     - tool orbiter:
         - on spellmake mode:
+            - continue: spellcast: orbiter need to know what to rotate around
+                - orbiter tool Object: needs to remember what it is attached to
+                    - remember index: -1 => stage lower object, 0-x => object index
+                - cast object: position and refId
+                    - on creation, needs to know creaters object id and position
+                    - on tick, tries to find id, if not exists, rotate around position
             - when click, determine closest object to be the orbiting object
-                - visualize orbit and orbit center
-                    - orbit visualization is based on click position, but it should center somehow
-                        - turrets have center, fireLine does not, how to handle?
                 - check if function "getClosestCenter" required for orbiter to work
             - automatically find closest other object to be the center orbitet around
-            - allow orbit offset
             - can drag to change center
-            - make orbit speed constant, not modifyable
-        - 
     - spelltype: fix charge, custom charge, instant, stationary custom charge
     - prevent: player deleting all spells before king defeated results in king without any spell
     - remember: relative mouse position not used for holding mouse button down

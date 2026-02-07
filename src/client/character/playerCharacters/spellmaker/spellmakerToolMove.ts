@@ -1,7 +1,7 @@
 import { AbilityObject, AbilityOwner } from "../../../ability/ability.js";
 import { calculateDirection, calculateDistance, calculateDistancePointToLine, findClientInfoByCharacterId } from "../../../game.js";
 import { Position, Game, ClientInfo } from "../../../gameModel.js";
-import { AbilitySpellmaker, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
+import { AbilitySpellmaker, AbilitySpellmakerObject, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
 import { moveByDirectionAndDistance } from "../../../map/map.js";
 import { createMoreInfosPart } from "../../../moreInfo.js";
@@ -107,7 +107,7 @@ function paint(ctx: CanvasRenderingContext2D, moveAttachment: SpellmakerCreateTo
     }
 }
 
-function getMoveAttachment(createObject: SpellmakerCreateToolObjectData, castPosition: Position, game: Game): SpellmakerCreateToolMoveAttachment {
+function getMoveAttachment(createObject: SpellmakerCreateToolObjectData, preStageAbilityObject: AbilitySpellmakerObject | undefined, stageId: number, castPosition: Position, game: Game): SpellmakerCreateToolMoveAttachment {
     const moveTo: Position[] = [];
     const moveToPositions = createObject.moveAttachment as SpellmakerCreateToolMoveAttachmentLine;
     if (moveToPositions.moveTo.length >= 2) {
@@ -119,7 +119,7 @@ function getMoveAttachment(createObject: SpellmakerCreateToolObjectData, castPos
     return moveAttach;
 }
 
-function getMoveAttachmentNextMoveByAmount(moveAttach: SpellmakerCreateToolMoveAttachment, abilityObject: AbilityObject, game: Game): Position {
+function getMoveAttachmentNextMoveByAmount(moveAttach: SpellmakerCreateToolMoveAttachment, abilityObject: AbilitySpellmakerObject, game: Game): Position {
     const moveTo = moveAttach as SpellmakerCreateToolMoveAttachmentLine;
     if (moveTo.speed > 0 && moveTo.moveTo.length > 0) {
         const nextMoveTo = moveTo.moveTo[0];

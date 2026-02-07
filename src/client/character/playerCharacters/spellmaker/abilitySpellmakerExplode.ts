@@ -42,6 +42,8 @@ export function createAbilityObjectSpellmakerExplode(
     toolChain: string[],
     abilityIdRef: number | undefined,
     explodeDelay: number,
+    stageId: number,
+    stageIndex: number,
     game: Game
 ): AbilityObjectExplode {
     return {
@@ -59,6 +61,9 @@ export function createAbilityObjectSpellmakerExplode(
         damageFactor: damageFactor,
         manaFactor: manaFactor,
         toolChain: toolChain,
+        stageId: stageId,
+        stageIndex: stageIndex,
+        id: getNextId(game.state.idCounter),
     };
 }
 
