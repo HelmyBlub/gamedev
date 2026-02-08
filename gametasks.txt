@@ -3,24 +3,19 @@ increase version
 
 current tasks:     
 - new class spellmaker
-    - tool orbiter:
-        - on spellmake mode:
-            - continue: spellcast: orbiter need to know what to rotate around
-                - orbiter tool Object: needs to remember what it is attached to
-                    - remember index: -1 => stage lower object, 0-x => object index
-                - cast object: position and refId
-                    - on creation, needs to know creaters object id and position
-                    - on tick, tries to find id, if not exists, rotate around position
-            - when click, determine closest object to be the orbiting object
-                - check if function "getClosestCenter" required for orbiter to work
-            - automatically find closest other object to be the center orbitet around
-            - can drag to change center
-    - spelltype: fix charge, custom charge, instant, stationary custom charge
-    - prevent: player deleting all spells before king defeated results in king without any spell
-    - remember: relative mouse position not used for holding mouse button down
+    - instant cast should be able to level
+    - check: lightning scaling mana cost: 1 target one mana, 2 targets 1.5 mana?
+    - spelltype: charge
+        - slows down movement
+        - can charge as long as player want
+        - spell gets stronger the longer the charging
+        - button down, charge start, button up charge end
+        - should be more mana efficient than instant or auto
     - hope explosion spell possible in the end: gets more expensive but explosion can get bigger and bigger
-        - charge type spell
+
+    - remember: relative mouse position not used for holding mouse button down
     - achievements
+    - test run
     - check "playerGlobalAlphaMultiplier" to be used in spellmaker
     - check: touch controlls for spellmake mode
 - moreInfo with hover text should have (i) indicator, so player knows there is more info

@@ -37,11 +37,20 @@ export type AbilitySpellmaker = Ability & {
     autoCastSpellIndex?: number,
     createTools: SpellmakerCreateToolsData,
     spellmakeStage: number,
-    availableSpellTypes: string[],
+    availableSpellTypes: SpellmakerSpellTypesData[],
     manaLevelFactor: number,
     damageLevelFactor: number,
     baseDamage: number,
 }
+
+export type SpellmakerSpellTypesData = {
+    type: string,
+    data?: {
+        damage: number,
+        level: number,
+    },
+}
+
 export type AbilitySpellmakerObject = AbilityObject & {
     id: number,
     stageId: number,
@@ -158,7 +167,7 @@ function createAbility(
             spacing: 5,
         },
         spellmakeStage: 0,
-        availableSpellTypes: [SPELLMAKER_SPELLTYPE_INSTANT],
+        availableSpellTypes: [{ type: SPELLMAKER_SPELLTYPE_INSTANT }],
         damageLevelFactor: 1,
         manaLevelFactor: 1,
         baseDamage: 10,
@@ -620,7 +629,7 @@ function spellCast(abilityOwner: AbilityOwner, abilitySm: AbilitySpellmaker, spe
             const createdObject = currentSpell.createdObjects[stageIndex];
             const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[createdObject.type];
             const damageFactor = abilityOwner.faction === FACTION_PLAYER ? abilitySm.damageLevelFactor : 1;
-            if (toolFunctions.spellCast) toolFunctions.spellCast(createdObject, abilitySm.baseDamage, abilityOwner.faction, abilitySm.id, castPosition, damageFactor, abilitySm.manaLevelFactor, [createdObject.type], stageId, stageIndex, game);
+            if (toolFunctions.spellCast) toolFunctions.spellCast(createdObject, abilitySm.baseDamage, abilityOwner.faction, abilitySm.id, castPosition, damageFactor, abilitySm.manaLevelFactor, [currentSpell.spellType, createdObject.type], stageId, stageIndex, game);
         }
     } else {
         const missingMana = currentSpell.spellManaCost - abilitySm.mana;
@@ -777,7 +786,7 @@ function createAbilityMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability,
 }
 
 function getSpellToolChain(spell: SpellmakerSpell): string {
-    let toolChain: string[] = [];
+    let toolChain: string[] = [spell.spellType];
     getSpellToolChainRec(spell.createdObjects, toolChain);
     return toolChain.join();
 }

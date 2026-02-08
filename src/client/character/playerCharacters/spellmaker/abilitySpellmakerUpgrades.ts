@@ -64,7 +64,7 @@ function getOptions(ability: Ability): UpgradeOptionAndProbability[] {
             });
         }
         for (let spelltype of SPELLMAKER_SPELLTYPES) {
-            if (abilitySm.availableSpellTypes.includes(spelltype.name)) continue;
+            if (abilitySm.availableSpellTypes.find(st => st.type === spelltype.name)) continue;
             const option: AbilityUpgradeOption = {
                 displayText: spelltype.name,
                 identifier: ABILITY_SPELLMAKER_UPGRADE_TOOLS,
@@ -112,7 +112,7 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption, character
     } else {
         const spelltypeData = SPELLMAKER_SPELLTYPES.find(st => st.name === option.additionalInfo);
         if (spelltypeData) {
-            spellmaker.availableSpellTypes.push(option.additionalInfo);
+            spellmaker.availableSpellTypes.push({ type: option.additionalInfo, data: { damage: 0, level: 0 } });
             if (!spellmaker.createTools.createTools.find(ct => ct.type === SPELLMAKER_TOOL_SPELL_TYPE)) {
                 const toolSepllTypeFunctions = SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_SPELL_TYPE];
                 spellmaker.createTools.createTools.unshift(toolSepllTypeFunctions.createTool(game.ctx));

@@ -291,11 +291,11 @@ function onToolSelectNew(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner,
 
 function onToolSelectSpellType(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, game: Game): boolean {
     const currentSpell = ability.spells[ability.spellIndex];
-    const spellTypeIndex = ability.availableSpellTypes.findIndex(t => t === currentSpell.spellType);
+    const spellTypeIndex = ability.availableSpellTypes.findIndex(t => t.type === currentSpell.spellType);
     if (spellTypeIndex === -1) {
-        currentSpell.spellType = ability.availableSpellTypes[0];
+        currentSpell.spellType = ability.availableSpellTypes[0].type;
     } else {
-        currentSpell.spellType = ability.availableSpellTypes[(spellTypeIndex + 1) % ability.availableSpellTypes.length];
+        currentSpell.spellType = ability.availableSpellTypes[(spellTypeIndex + 1) % ability.availableSpellTypes.length].type;
     }
     if (currentSpell.spellType === SPELLMAKER_SPELLTYPE_AUTOCAST && ability.autoCastSpellIndex === undefined) {
         ability.autoCastSpellIndex = ability.spellIndex;
