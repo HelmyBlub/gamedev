@@ -58,6 +58,7 @@ function createAbilityMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability,
     const textLines: string[] = getAbilityNameUiText(ability);
     textLines.push(
         `Key: ${playerInputBindingToDisplayValue(abilitySwitch.playerInputBinding!, game)}`,
+        `Displays selected spell Index`,
     );
 
     return createMoreInfosPart(ctx, textLines, ABILITY_DEFAULT_SMALL_GROUP);

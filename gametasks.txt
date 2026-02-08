@@ -3,7 +3,6 @@ increase version
 
 current tasks:     
 - new class spellmaker
-    - instant cast should be able to level
     - improve: tooltips for what spell is selected
     - check: lightning scaling mana cost: 1 target one mana, 2 targets 1.5 mana?
     - spelltype: charge

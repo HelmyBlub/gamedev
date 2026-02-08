@@ -137,8 +137,9 @@ export function addSpellmakerToolsDefault() {
         availableFromTheStart: true,
     };
     SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_NEW] = {
-        onToolSelect: onToolSelectNew,
         createTool: createToolNew,
+        getHoverTooltip: getHoverTooltipNew,
+        onToolSelect: onToolSelectNew,
         paintButton: paintButtonNew,
         description: [
             "New Spell Tool",
@@ -369,6 +370,18 @@ function getHoverTooltipReset(ctx: CanvasRenderingContext2D, tool: SpellmakerCre
         "Displays current spells mana cost",
         `Mana cost of current spell: ${manaCost.toFixed(2)}`,
     );
+    const result = createMoreInfosPart(ctx, texts);
+    return result;
+}
+
+function getHoverTooltipNew(ctx: CanvasRenderingContext2D, tool: SpellmakerCreateTool, ability: AbilitySpellmaker): MoreInfoPart {
+    const texts = deepCopy(SPELLMAKER_TOOLS_FUNCTIONS[tool.type].description);
+    if (ability.spells.length > 1) {
+        texts.push(
+            `Selected spell index: ${ability.spellIndex + 1}`,
+            `switch index with ability Switch Spell`,
+        );
+    }
     const result = createMoreInfosPart(ctx, texts);
     return result;
 }
