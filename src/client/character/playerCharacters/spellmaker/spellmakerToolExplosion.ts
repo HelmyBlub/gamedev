@@ -3,7 +3,7 @@ import { calculateDistance, findClientInfoByCharacterId } from "../../../game.js
 import { Position, Game, ClientInfo, FACTION_ENEMY } from "../../../gameModel.js";
 import { AbilitySpellmaker, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 import { SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
-import { createMoreInfosPart } from "../../../moreInfo.js";
+import { createMoreInfosPart, MoreInfoPart } from "../../../moreInfo.js";
 import { createAbilityObjectSpellmakerExplode } from "./abilitySpellmakerExplode.js";
 import { IMAGE_EXPLOSION } from "../../enemy/god/abilityTileExplosions.js";
 
@@ -52,11 +52,10 @@ function createObjectExplosion(center: Position): CreateToolObjectExplosionData 
     }
 }
 
-function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
+function createTool(): SpellmakerCreateTool {
     return {
         type: SPELLMAKER_TOOL_EXPLOSION,
         subType: "default",
-        description: createMoreInfosPart(ctx, SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_EXPLOSION].description),
         level: 0,
         totalDamage: 0,
         buttonImage: IMAGE_EXPLOSION,

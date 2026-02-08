@@ -112,15 +112,10 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption, character
     } else {
         const spelltypeData = SPELLMAKER_SPELLTYPES.find(st => st.name === option.additionalInfo);
         if (spelltypeData) {
-            spellmaker.availableSpellTypes.push({ type: option.additionalInfo, data: { damage: 0, level: 0 } });
+            spellmaker.availableSpellTypes.push({ type: option.additionalInfo, data: { totalDamage: 0, level: 0 } });
             if (!spellmaker.createTools.createTools.find(ct => ct.type === SPELLMAKER_TOOL_SPELL_TYPE)) {
                 const toolSepllTypeFunctions = SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_SPELL_TYPE];
                 spellmaker.createTools.createTools.unshift(toolSepllTypeFunctions.createTool(game.ctx));
-            }
-            const tool = spellmaker.createTools.createTools.find(ct => ct.type === SPELLMAKER_TOOL_SPELL_TYPE);
-            if (tool) {
-                tool.description.texts.push(`${spelltypeData.name}: ${spelltypeData.description}`);
-                tool.description = createMoreInfosPart(game.ctx, tool.description.texts);
             }
         }
     }

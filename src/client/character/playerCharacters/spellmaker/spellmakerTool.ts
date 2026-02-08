@@ -8,7 +8,7 @@ import { paintTextWithOutline } from "../../../gamePaint.js";
 import { GAME_IMAGES } from "../../../imageLoad.js";
 import { createMoreInfosPart, MoreInfoPart } from "../../../moreInfo.js";
 import { Character } from "../../characterModel.js";
-import { AbilitySpellmaker, abilitySpellmakerCalculateManaCostForSpellAndUpdateToolDisplay, AbilitySpellmakerObject, SPELLMAKER_SPELLTYPE_AUTOCAST, SPELLMAKER_SPELLTYPE_INSTANT, SPELLMAKER_SPELLTYPES, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
+import { AbilitySpellmaker, abilitySpellmakerCalculateManaCostWithLevelFactor, AbilitySpellmakerObject, SPELLMAKER_SPELLTYPE_AUTOCAST, SPELLMAKER_SPELLTYPE_INSTANT, SPELLMAKER_SPELLTYPES, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 import { ABILITY_NAME_SPELLMAKER_SWITCH_SPELL } from "./abilitySpellmakerSwitchSpell.js";
 import { CHARACTER_CLASS_SPELLMAKER } from "./characterClassSpellmaker.js";
 
@@ -24,15 +24,19 @@ export type SpellmakerCreateTool = {
     type: string,
     subType: "default" | "move",
     workInProgress?: any,
-    description: MoreInfoPart,
     totalDamage: number,
     level: number,
     buttonImage?: string,
 }
 
-export type SpellmakerMoveToolFunctions = {
-    calculateManaCost?: (createObject: SpellmakerCreateToolObjectData) => number,
+export type SpellmakerToolFunctionsBase = {
     createTool: (ctx: CanvasRenderingContext2D) => SpellmakerCreateTool,
+    getHoverTooltip?: (ctx: CanvasRenderingContext2D, tool: SpellmakerCreateTool, ability: AbilitySpellmaker) => MoreInfoPart,
+}
+
+
+export type SpellmakerMoveToolFunctions = SpellmakerToolFunctionsBase & {
+    calculateManaCost?: (createObject: SpellmakerCreateToolObjectData) => number,
     getMoveAttachment: (createObject: SpellmakerCreateToolObjectData, preStageAbilityObject: AbilitySpellmakerObject | undefined, stageId: number, castPosition: Position, game: Game) => SpellmakerCreateToolMoveAttachment,
     getMoveAttachmentNextMoveByAmount: (moveAttach: SpellmakerCreateToolMoveAttachment, abilityObject: AbilitySpellmakerObject, game: Game) => Position,
     onKeyDown: (tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, attachedToTarget: SpellmakerCreateToolObjectData, castPositionRelativeToCharacter: Position, game: Game) => void,
@@ -43,11 +47,10 @@ export type SpellmakerMoveToolFunctions = {
     learnedThroughUpgrade?: boolean,
 }
 
-export type SpellmakerToolFunctions = {
-    calculateManaCost?: (createObject: SpellmakerCreateToolObjectData) => number,
+export type SpellmakerToolFunctions = SpellmakerToolFunctionsBase & {
     calculateDistance?: (relativePosition: Position, createObject: SpellmakerCreateToolObjectData) => number,
+    calculateManaCost?: (createObject: SpellmakerCreateToolObjectData) => number,
     getClosestCenter?: (createObject: SpellmakerCreateToolObjectData, position: Position) => Position,
-    createTool: (ctx: CanvasRenderingContext2D) => SpellmakerCreateTool,
     onKeyDown?: (tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game) => void,
     onKeyUp?: (tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game) => SpellmakerCreateToolObjectData | undefined,
     onTick?: (tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, game: Game) => void,
@@ -87,6 +90,29 @@ GAME_IMAGES[IMAGE_PLUS] = {
     spriteRowWidths: [],
 };
 
+export function getHoverTooltip(ctx: CanvasRenderingContext2D, tool: SpellmakerCreateTool, ability: AbilitySpellmaker): MoreInfoPart {
+    if (tool.subType === "default") {
+        const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[tool.type];
+        if (toolFunctions.getHoverTooltip) {
+            return toolFunctions.getHoverTooltip(ctx, tool, ability);
+        } else {
+            const result = createMoreInfosPart(ctx, toolFunctions.description);
+            if (tool.level > 0) result.texts[0] += ` (Level ${tool.level.toFixed(1)})`;
+            return result;
+        }
+    } else {
+        const toolFunctions = SPELLMAKER_MOVE_TOOLS_FUNCTIONS[tool.type];
+        if (toolFunctions.getHoverTooltip) {
+            return toolFunctions.getHoverTooltip(ctx, tool, ability);
+        } else {
+            const result = createMoreInfosPart(ctx, toolFunctions.description);
+            if (tool.level > 0) result.texts[0] += ` (Level ${tool.level.toFixed(1)})`;
+            return result;
+        }
+
+    }
+}
+
 export function addSpellmakerToolsDefault() {
     SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_SWITCH_STAGE] = {
         onToolSelect: onToolSelectStaging,
@@ -100,14 +126,13 @@ export function addSpellmakerToolsDefault() {
         ],
     };
     SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_RESET] = {
-        onToolSelect: onToolSelectReset,
         createTool: createToolReset,
+        getHoverTooltip: getHoverTooltipReset,
+        onToolSelect: onToolSelectReset,
         paintButton: paintButtonReset,
         description: [
             "Reset Tool",
             "Resets Current Spell",
-            "Displays current spells mana cost",
-            "Mana cost of current spell: 0",
         ],
         availableFromTheStart: true,
     };
@@ -132,8 +157,9 @@ export function addSpellmakerToolsDefault() {
         availableFromTheStart: true,
     };
     SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_SPELL_TYPE] = {
-        onToolSelect: onToolSelectSpellType,
         createTool: createToolSpellType,
+        getHoverTooltip: getHoverTooltipSpellType,
+        onToolSelect: onToolSelectSpellType,
         paintButton: paintButtonSpellType,
         description: [
             "Change Spell Type Tool",
@@ -146,16 +172,14 @@ export function addSpellmakerToolsDefault() {
 export function spellmakerAddToolDamage(ability: AbilitySpellmaker, damage: number, toolChain: string[], game: Game) {
     for (let toolKey of toolChain) {
         const tool = ability.createTools.createTools.find(t => t.type === toolKey);
-        if (!tool) continue;
-        tool.totalDamage += damage;
-        const beforeLevel = tool.level;
-        tool.level = Math.max(0, Math.log2(tool.totalDamage / 100));
-        if (Math.floor(beforeLevel * 10) < Math.floor(tool.level * 10)) {
-            const index = tool.description.texts[0].indexOf("(Level ");
-            if (index > - 1) {
-                tool.description.texts[0] = tool.description.texts[0].substring(0, index + 7) + `${tool.level.toFixed(1)})`;
-            } else {
-                tool.description.texts[0] += ` (Level ${tool.level.toFixed(1)})`;
+        if (tool) {
+            tool.totalDamage += damage;
+            tool.level = Math.max(0, Math.log2(tool.totalDamage / 100));
+        } else {
+            const spellType = ability.availableSpellTypes.find(t => t.type === toolKey);
+            if (spellType && spellType.data) {
+                spellType.data.totalDamage += damage;
+                spellType.data.level = Math.max(0, Math.log2(spellType.data.totalDamage / 100));
             }
         }
     }
@@ -177,10 +201,15 @@ function calculateManaFactorAndDamageFactor(ability: AbilitySpellmaker) {
     for (let toolKey of ability.createTools.createTools) {
         totalLevel += Math.floor(toolKey.level);
     }
+    for (let spellType of ability.availableSpellTypes) {
+        if (spellType.data) {
+            totalLevel += Math.floor(spellType.data.level);
+        }
+    }
     ability.manaLevelFactor = Math.pow(0.99, totalLevel);
     ability.damageLevelFactor = 1 + 0.1 * totalLevel;
     for (let spell of ability.spells) {
-        abilitySpellmakerCalculateManaCostForSpellAndUpdateToolDisplay(ability, spell);
+        abilitySpellmakerCalculateManaCostWithLevelFactor(ability, spell);
     }
 }
 
@@ -188,7 +217,6 @@ function createToolStage(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
     return {
         type: SPELLMAKER_TOOL_SWITCH_STAGE,
         subType: "default",
-        description: createMoreInfosPart(ctx, SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_SWITCH_STAGE].description),
         level: 0,
         totalDamage: 0,
         buttonImage: IMAGE_NAME_SWITCH,
@@ -199,7 +227,6 @@ function createToolReset(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
     return {
         type: SPELLMAKER_TOOL_RESET,
         subType: "default",
-        description: createMoreInfosPart(ctx, SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_RESET].description),
         level: 0,
         totalDamage: 0,
         buttonImage: IMAGE_NAME_RELOAD,
@@ -210,7 +237,6 @@ function createToolNew(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
     return {
         type: SPELLMAKER_TOOL_NEW,
         subType: "default",
-        description: createMoreInfosPart(ctx, SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_NEW].description),
         level: 0,
         totalDamage: 0,
         buttonImage: IMAGE_PLUS,
@@ -220,7 +246,6 @@ function createToolDelete(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
     return {
         type: SPELLMAKER_TOOL_DELETE,
         subType: "default",
-        description: createMoreInfosPart(ctx, SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_DELETE].description),
         level: 0,
         totalDamage: 0,
         buttonImage: IMAGE_NAME_DELETE,
@@ -231,7 +256,7 @@ function createToolSpellType(ctx: CanvasRenderingContext2D): SpellmakerCreateToo
     return {
         type: SPELLMAKER_TOOL_SPELL_TYPE,
         subType: "default",
-        description: createMoreInfosPart(ctx, deepCopy(SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_SPELL_TYPE].description)),
+        //        description: createMoreInfosPart(ctx, deepCopy(SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_SPELL_TYPE].description)),
         level: 0,
         totalDamage: 0,
     };
@@ -266,11 +291,6 @@ function onToolSelectStaging(tool: SpellmakerCreateTool, abilityOwner: AbilityOw
 function onToolSelectReset(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, game: Game): boolean {
     ability.spells[ability.spellIndex].createdObjects = [];
     ability.spells[ability.spellIndex].spellManaCost = 0;
-    const resetTool = ability.createTools.createTools.find(t => t.type === SPELLMAKER_TOOL_RESET);
-    if (resetTool) {
-        resetTool.description.texts[3] = resetTool.description.texts[3].substring(0, resetTool.description.texts[3].indexOf(":") + 1) + ` 0`;
-    }
-
     ability.spellmakeStage = 0;
     return false;
 }
@@ -340,4 +360,33 @@ function getHighestStageRecusive(currentStage: SpellmakerCreateToolObjectData[])
         }
     }
     return currentHighest;
+}
+
+function getHoverTooltipReset(ctx: CanvasRenderingContext2D, tool: SpellmakerCreateTool, ability: AbilitySpellmaker): MoreInfoPart {
+    const texts = deepCopy(SPELLMAKER_TOOLS_FUNCTIONS[tool.type].description);
+    const manaCost = ability.spells[ability.spellIndex].spellManaCost;
+    texts.push(
+        "Displays current spells mana cost",
+        `Mana cost of current spell: ${manaCost.toFixed(2)}`,
+    );
+    const result = createMoreInfosPart(ctx, texts);
+    return result;
+}
+
+function getHoverTooltipSpellType(ctx: CanvasRenderingContext2D, tool: SpellmakerCreateTool, ability: AbilitySpellmaker): MoreInfoPart {
+    const texts = deepCopy(SPELLMAKER_TOOLS_FUNCTIONS[tool.type].description);
+
+    for (let i = 1; i < ability.availableSpellTypes.length; i++) {
+        const currentSpellType = ability.availableSpellTypes[i];
+        const spellTypeData = SPELLMAKER_SPELLTYPES.find(t => t.name === currentSpellType.type);
+        if (spellTypeData) {
+            const levelText = currentSpellType.data ? ` (Level: ${currentSpellType.data.level.toFixed(1)})` : "";
+            texts.push(
+                `${spellTypeData.name}: ${spellTypeData.description}${levelText} `,
+            );
+        }
+    }
+
+    const result = createMoreInfosPart(ctx, texts);
+    return result;
 }

@@ -60,7 +60,6 @@ function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
     return {
         type: SPELLMAKER_TOOL_TURRET,
         subType: "default",
-        description: createMoreInfosPart(ctx, SPELLMAKER_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_TURRET].description),
         level: 0,
         totalDamage: 0,
         buttonImage: IMAGE_TURRET,

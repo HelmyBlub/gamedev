@@ -16,7 +16,7 @@ import { moveDirectionToCharacterSpriteIndex } from "../../characterPaint.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../upgrade.js";
 import { CHARACTER_PET_TYPE_CLONE } from "../characterPetTypeClone.js";
 import { addAbilitySpellmakerUpgradeTools } from "./abilitySpellmakerUpgrades.js";
-import { addSpellmakerToolsDefault, SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOL_RESET, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateToolsData } from "./spellmakerTool.js";
+import { addSpellmakerToolsDefault, getHoverTooltip, SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOL_RESET, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateToolsData } from "./spellmakerTool.js";
 import { addSpellmakerToolExplosion, CreateToolObjectExplosionData, SPELLMAKER_TOOL_EXPLOSION } from "./spellmakerToolExplosion.js";
 import { addSpellmakerToolFireline, CreateToolObjectFireLineData, SPELLMAKER_TOOL_FIRELINE } from "./spellmakerToolFireLine.js";
 import { addSpellmakerToolLightning, CreateToolObjectLightningData, SPELLMAKER_TOOL_LIGHTNING } from "./spellmakerToolLightning.js";
@@ -46,7 +46,7 @@ export type AbilitySpellmaker = Ability & {
 export type SpellmakerSpellTypesData = {
     type: string,
     data?: {
-        damage: number,
+        totalDamage: number,
         level: number,
     },
 }
@@ -332,12 +332,8 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     }
 }
 
-export function abilitySpellmakerCalculateManaCostForSpellAndUpdateToolDisplay(ability: AbilitySpellmaker, spell: SpellmakerSpell) {
+export function abilitySpellmakerCalculateManaCostWithLevelFactor(ability: AbilitySpellmaker, spell: SpellmakerSpell) {
     spell.spellManaCost = abilitySpellmakerCalculateManaCost(spell.createdObjects) * ability.manaLevelFactor;
-    const resetTool = ability.createTools.createTools.find(t => t.type === SPELLMAKER_TOOL_RESET);
-    if (resetTool) {
-        resetTool.description.texts[3] = resetTool.description.texts[3].substring(0, resetTool.description.texts[3].indexOf(":") + 1) + ` ${spell.spellManaCost.toFixed(2)}`;
-    }
 }
 
 export function abilitySpellmakerCalculateManaCost(createdObjects: SpellmakerCreateToolObjectData[]): number {
@@ -463,7 +459,7 @@ function paintAbilityUI(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwne
             if (mousePos.y > toolPosition.y && mousePos.y < toolPosition.y + abilitySm.createTools.size
                 && mousePos.x > toolPosition.x && mousePos.x < toolPosition.x + abilitySm.createTools.size
             ) {
-                const description = abilitySm.createTools.createTools[i].description;
+                const description = getHoverTooltip(ctx, itTool, abilitySm);
                 paintMoreInfosPart(ctx, description, toolPosition.x, toolPosition.y - description.height - 2);
             }
         }
@@ -534,10 +530,10 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, data: PlayerA
                         if (result) {
                             if (abilitySm.spellmakeStage == 0) {
                                 currentSpell.createdObjects.push(result);
-                                abilitySpellmakerCalculateManaCostForSpellAndUpdateToolDisplay(abilitySm, currentSpell);
+                                abilitySpellmakerCalculateManaCostWithLevelFactor(abilitySm, currentSpell);
                                 if (currentSpell.spellManaCost > MAX_SPELL_MANA_COST) {
                                     currentSpell.createdObjects.pop();
-                                    abilitySpellmakerCalculateManaCostForSpellAndUpdateToolDisplay(abilitySm, currentSpell);
+                                    abilitySpellmakerCalculateManaCostWithLevelFactor(abilitySm, currentSpell);
                                     addPaintFloatingTextInfoForMyself(`max mana exceeded`, game, undefined, abilityOwner.id, abilitySm.id, IMAGE_NAME_SWITCH);
                                 }
                             } else if (abilitySm.attachToIndex != undefined) {
@@ -564,10 +560,10 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, data: PlayerA
                                         return;
                                     }
                                 }
-                                abilitySpellmakerCalculateManaCostForSpellAndUpdateToolDisplay(abilitySm, currentSpell);
+                                abilitySpellmakerCalculateManaCostWithLevelFactor(abilitySm, currentSpell);
                                 if (currentSpell.spellManaCost > MAX_SPELL_MANA_COST) {
                                     currentObject.nextStage.pop();
-                                    abilitySpellmakerCalculateManaCostForSpellAndUpdateToolDisplay(abilitySm, currentSpell);
+                                    abilitySpellmakerCalculateManaCostWithLevelFactor(abilitySm, currentSpell);
                                     addPaintFloatingTextInfoForMyself(`max mana exceeded`, game, undefined, abilityOwner.id, abilitySm.id, IMAGE_NAME_SWITCH);
                                 }
                             }
@@ -590,7 +586,7 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, data: PlayerA
                                     }
                                 }
                                 currentObject.moveAttachment = result;
-                                abilitySpellmakerCalculateManaCostForSpellAndUpdateToolDisplay(abilitySm, currentSpell);
+                                abilitySpellmakerCalculateManaCostWithLevelFactor(abilitySm, currentSpell);
                             }
                         }
                     }
@@ -772,6 +768,10 @@ function createAbilityMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability,
             const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[tool.type];
             if (toolFunctions && !toolFunctions.learnedThroughUpgrade) continue;
             textLines.push(`  ${tool.type}: ${tool.level.toFixed(1)}`);
+        }
+        for (let spellType of abilitySpellmaker.availableSpellTypes) {
+            if (!spellType.data) continue;
+            textLines.push(`  ${spellType.type}: ${spellType.data.level.toFixed(1)}`);
         }
         textLines.push(`Tool Level Gains:`);
         upgradeHoverLines[textLines.length - 1] = [
