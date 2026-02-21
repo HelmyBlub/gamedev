@@ -107,18 +107,18 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
     }
 }
 
-function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, toolChain: string[], stageId: number, stageIndex: number, game: Game) {
+function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, chargeFactor: number, toolChain: string[], stageId: number, stageIndex: number, game: Game) {
     const lightning = createObject as CreateToolObjectLightningData;
     const damage = baseDamage * lightning.damageFactor * damageFactor;
     const center: Position = {
         x: lightning.center.x + castPosition.x,
         y: lightning.center.y + castPosition.y,
     };
-    const lightningObject = createAbilityObjectSpellmakerLightning(faction, center, lightning.jumps, damage, abilityId, damageFactor, manaFactor, [...toolChain], stageId, stageIndex, game);
+    const lightningObject = createAbilityObjectSpellmakerLightning(faction, center, lightning.jumps, damage, abilityId, damageFactor, manaFactor, chargeFactor, [...toolChain], stageId, stageIndex, game);
     game.state.abilityObjects.push(lightningObject);
 }
 
-function paint(ctx: CanvasRenderingContext2D, createdObject: SpellmakerCreateToolObjectData, ownerPaintPos: Position, ability: AbilitySpellmaker, game: Game) {
+function paint(ctx: CanvasRenderingContext2D, createdObject: SpellmakerCreateToolObjectData, ownerPaintPos: Position, ability: AbilitySpellmaker, chargeFactor: number, game: Game) {
     const lightning = createdObject as CreateToolObjectLightningData;
     ctx.globalAlpha = 0.3 + 0.07 * lightning.damageFactor;
     ctx.strokeStyle = "white";

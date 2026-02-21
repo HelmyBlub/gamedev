@@ -116,7 +116,7 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
     }
 }
 
-function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, toolChain: string[], stageId: number, stageIndex: number, game: Game) {
+function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, chargeFactor: number, toolChain: string[], stageId: number, stageIndex: number, game: Game) {
     const toolProximity = createObject as CreateToolObjectProximityData;
     const center: Position = {
         x: toolProximity.center.x + castPosition.x,
@@ -132,11 +132,11 @@ function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: num
         }
     }
     const nextStage = spellmakerNextStageSetup(toolProximity.nextStage, baseDamage, toolProximity.center);
-    const objectProximity = createAbilityObjectSpellmakerProximity(center, toolProximity.radius, moveAttachment, nextStage, damageFactor, manaFactor, newToolChain, faction, abilityId, stageId, stageIndex, game);
+    const objectProximity = createAbilityObjectSpellmakerProximity(center, toolProximity.radius, moveAttachment, nextStage, damageFactor, manaFactor, chargeFactor, newToolChain, faction, abilityId, stageId, stageIndex, game);
     game.state.abilityObjects.push(objectProximity);
 }
 
-function paint(ctx: CanvasRenderingContext2D, createdObject: SpellmakerCreateToolObjectData, ownerPaintPos: Position, ability: AbilitySpellmaker, game: Game) {
+function paint(ctx: CanvasRenderingContext2D, createdObject: SpellmakerCreateToolObjectData, ownerPaintPos: Position, ability: AbilitySpellmaker, chargeFactor: number, game: Game) {
     const proximity = createdObject as CreateToolObjectProximityData;
     ctx.strokeStyle = "red";
     ctx.fillStyle = "red";

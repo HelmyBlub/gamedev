@@ -118,7 +118,7 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
     }
 }
 
-function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, toolChain: string[], stageId: number, stageIndex: number, game: Game, preStageAbilityObject?: AbilitySpellmakerObject) {
+function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, chargeFactor: number, toolChain: string[], stageId: number, stageIndex: number, game: Game, preStageAbilityObject?: AbilitySpellmakerObject) {
     const toolTurret = createObject as SpellmakerCreateToolObjectTurretData;
     const center: Position = {
         x: toolTurret.center.x + castPosition.x,
@@ -135,11 +135,11 @@ function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: num
     }
     const nextStage = spellmakerNextStageSetup(toolTurret.nextStage, baseDamage, toolTurret.center);
     const maxDuration = faction === FACTION_PLAYER ? MAX_DURATION : MAX_DURATION / 4;
-    const objectTurret = createAbilityObjectSpellmakerTurret(center, moveAttachment, nextStage, maxDuration, toolTurret.mana, damageFactor, manaFactor, newToolChain, faction, abilityId, stageId, stageIndex, game);
+    const objectTurret = createAbilityObjectSpellmakerTurret(center, moveAttachment, nextStage, maxDuration, toolTurret.mana, damageFactor, manaFactor, chargeFactor, newToolChain, faction, abilityId, stageId, stageIndex, game);
     game.state.abilityObjects.push(objectTurret);
 }
 
-function paint(ctx: CanvasRenderingContext2D, createdObject: SpellmakerCreateToolObjectData, ownerPaintPos: Position, ability: AbilitySpellmaker, game: Game) {
+function paint(ctx: CanvasRenderingContext2D, createdObject: SpellmakerCreateToolObjectData, ownerPaintPos: Position, ability: AbilitySpellmaker, chargeFactor: number, game: Game) {
     const turret = createdObject as SpellmakerCreateToolObjectTurretData;
     ctx.strokeStyle = "red";
     ctx.fillStyle = "blue";

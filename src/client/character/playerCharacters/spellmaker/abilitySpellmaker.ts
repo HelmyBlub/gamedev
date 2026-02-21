@@ -3,8 +3,8 @@ import { AbilityUpgradesFunctions, pushAbilityUpgradesOptions, pushAbilityUpgrad
 import { IMAGE_NAME_SWITCH } from "../../../ability/musician/abilityMusicSheetChangeInstrument.js";
 import { AbilityDamageBreakdown } from "../../../combatlog.js";
 import { addPaintFloatingTextInfoForMyself } from "../../../floatingText.js";
-import { autoSendMousePositionHandler, calculateDistance, getNextId } from "../../../game.js";
-import { FACTION_PLAYER, Game, IdCounter, Position } from "../../../gameModel.js";
+import { autoSendMousePositionHandler, calculateDistance, findClientInfoByCharacterId, getNextId } from "../../../game.js";
+import { ClientInfo, FACTION_PLAYER, Game, IdCounter, Position } from "../../../gameModel.js";
 import { getPointPaintPosition, paintTextWithOutline } from "../../../gamePaint.js";
 import { GAME_IMAGES, getImage, loadImage } from "../../../imageLoad.js";
 import { PlayerAbilityActionData, playerInputBindingToDisplayValue } from "../../../input/playerInput.js";
@@ -35,6 +35,8 @@ export type AbilitySpellmaker = Ability & {
     spells: SpellmakerSpell[],
     spellIndex: number,
     autoCastSpellIndex?: number,
+    spelltypeChargeStart?: number,
+    spelltypeChargeManaStored: number,
     createTools: SpellmakerCreateToolsData,
     spellmakeStage: number,
     availableSpellTypes: SpellmakerSpellTypesData[],
@@ -57,6 +59,7 @@ export type AbilitySpellmakerObject = AbilityObject & {
     stageIndex: number,
     manaFactor: number,
     damageFactor: number,
+    chargeFactor: number,
     toolChain: string[],
     nextStage?: SpellmakerCreateToolObjectData[],
 }
@@ -98,9 +101,11 @@ GAME_IMAGES[IMAGE_NAME_WIZARD_HAT] = {
 export const ABILITY_NAME_SPELLMAKER = "Spellmaker";
 export const SPELLMAKER_SPELLTYPE_INSTANT = "instant";
 export const SPELLMAKER_SPELLTYPE_AUTOCAST = "autocast";
+export const SPELLMAKER_SPELLTYPE_CHARGE = "charge";
 export const SPELLMAKER_SPELLTYPES: SpellmakerSpelltypeData[] = [
     { name: SPELLMAKER_SPELLTYPE_INSTANT, description: ["spell is cast instantly"] },
     { name: SPELLMAKER_SPELLTYPE_AUTOCAST, description: ["spell is cast automatically when mana full"] },
+    { name: SPELLMAKER_SPELLTYPE_CHARGE, description: ["spell charges on keydown and is cast on keyup. The longer the charge, the stronger the spell"] },
 ];
 export const ABILITY_SPELLMAKER_UPGRADE_FUNCTIONS: AbilityUpgradesFunctions = {};
 export const SPELLMAKER_MAX_CAST_RANGE = 1000;
@@ -171,6 +176,7 @@ function createAbility(
         damageLevelFactor: 1,
         manaLevelFactor: 1,
         baseDamage: 10,
+        spelltypeChargeManaStored: 0,
     };
 }
 
@@ -270,6 +276,7 @@ function setUpAbilityForEnemy(abilityOwner: AbilityOwner, ability: Ability, game
 function resetAbility(ability: Ability) {
     const spellmaker = ability as AbilitySpellmaker;
     spellmaker.mana = spellmaker.maxMana;
+    spellmaker.spelltypeChargeStart = undefined;
 }
 
 function createAbilityBossUpgradeOptions(ability: Ability, character: Character, game: Game): UpgradeOptionAndProbability[] {
@@ -294,7 +301,11 @@ function tickAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
 
 function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     const abilitySm = ability as AbilitySpellmaker;
-    abilitySm.mana = Math.min(abilitySm.mana + abilitySm.manaRegeneration, abilitySm.maxMana);
+    if (abilitySm.spelltypeChargeStart !== undefined) {
+        abilitySm.spelltypeChargeManaStored += abilitySm.manaRegeneration;
+    } else {
+        abilitySm.mana = Math.min(abilitySm.mana + abilitySm.manaRegeneration, abilitySm.maxMana);
+    }
     if (abilitySm.mode === "spellmake") {
         const tool = abilitySm.createTools.createTools[abilitySm.createTools.selectedToolIndex];
         if (!tool) return;
@@ -350,11 +361,11 @@ export function abilitySpellmakerCalculateManaCost(createdObjects: SpellmakerCre
     return spellManaCost;
 }
 
-function paintToolObjectsRecusive(ctx: CanvasRenderingContext2D, stage: number, createdObject: SpellmakerCreateToolObjectData, ability: AbilitySpellmaker, ownerPaintPos: Position, game: Game) {
+function paintToolObjectsRecusive(ctx: CanvasRenderingContext2D, stage: number, createdObject: SpellmakerCreateToolObjectData, ability: AbilitySpellmaker, ownerPaintPos: Position, chargeFactor: number, game: Game) {
     const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[createdObject.type];
     if ((stage == ability.spellmakeStage - 1 && toolFunctions.canHaveNextStage) || stage == ability.spellmakeStage) {
         if (toolFunctions.paint) {
-            toolFunctions.paint(ctx, createdObject, ownerPaintPos, ability, game);
+            toolFunctions.paint(ctx, createdObject, ownerPaintPos, ability, chargeFactor, game);
             if (toolFunctions.canHaveMoveAttachment && createdObject.moveAttachment) {
                 const toolMoveFunctions = SPELLMAKER_MOVE_TOOLS_FUNCTIONS[createdObject.moveAttachment.type];
                 toolMoveFunctions.paint(ctx, createdObject.moveAttachment, ownerPaintPos, ability, game);
@@ -363,7 +374,7 @@ function paintToolObjectsRecusive(ctx: CanvasRenderingContext2D, stage: number, 
     }
     if (stage < ability.spellmakeStage) {
         for (let stageObjects of createdObject.nextStage) {
-            paintToolObjectsRecusive(ctx, stage + 1, stageObjects, ability, ownerPaintPos, game);
+            paintToolObjectsRecusive(ctx, stage + 1, stageObjects, ability, ownerPaintPos, chargeFactor, game);
         }
     }
 }
@@ -388,13 +399,13 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
         }
         const currentSpell = abilitySm.spells[abilitySm.spellIndex];
         for (let createdObject of currentSpell.createdObjects) {
-            paintToolObjectsRecusive(ctx, 0, createdObject, abilitySm, ownerPaintPos, game);
+            paintToolObjectsRecusive(ctx, 0, createdObject, abilitySm, ownerPaintPos, 1, game);
         }
         const tool = abilitySm.createTools.createTools[abilitySm.createTools.selectedToolIndex];
         if (tool && tool.workInProgress) {
             if (tool.subType == "default") {
                 const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[tool.type];
-                if (toolFunctions.paint) toolFunctions.paint(ctx, tool.workInProgress, ownerPaintPos, abilitySm, game);
+                if (toolFunctions.paint) toolFunctions.paint(ctx, tool.workInProgress, ownerPaintPos, abilitySm, 1, game);
             } else if (tool.subType == "move") {
                 const toolMoveFunctions = SPELLMAKER_MOVE_TOOLS_FUNCTIONS[tool.type];
                 toolMoveFunctions.paint(ctx, tool.workInProgress, ownerPaintPos, abilitySm, game);
@@ -412,6 +423,19 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
         ctx.beginPath();
         ctx.rect(manaBarPos.x, manaBarPos.y, sizeWidth, sizeHeight);
         ctx.stroke();
+        if (abilitySm.spelltypeChargeStart !== undefined) {
+            const currentSpell = abilitySm.spells[abilitySm.spellIndex];
+            const chargeFactor = getChargeFactor(abilitySm);
+            const clientInfo: ClientInfo | undefined = findClientInfoByCharacterId(abilityOwner.id, game);
+            let mapPositionForPaint: Position = { x: abilityOwner.x, y: abilityOwner.y };
+            if (clientInfo) {
+                mapPositionForPaint = clientInfo.lastMousePosition;
+            }
+            const paintPos: Position = getPointPaintPosition(ctx, mapPositionForPaint, cameraPosition, game.UI.zoom);
+            for (let createdObject of currentSpell.createdObjects) {
+                paintToolObjectsRecusive(ctx, 0, createdObject, abilitySm, paintPos, chargeFactor, game);
+            }
+        }
     }
 }
 
@@ -595,11 +619,39 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, data: PlayerA
         }
     }
     if (abilitySm.mode === "spellcast") {
-        if (isKeydown) {
-            const distance = calculateDistance(abilityOwner, castPosition);
-            if (distance > SPELLMAKER_MAX_CAST_RANGE) return;
-            spellCast(abilityOwner, abilitySm, abilitySm.spellIndex, castPosition, game);
+        const spell = abilitySm.spells[abilitySm.spellIndex];
+        if (spell.spellType === SPELLMAKER_SPELLTYPE_CHARGE) {
+            spellChargeStart(abilityOwner, abilitySm, castPosition, isKeydown, game);
+        } else {
+            if (isKeydown) {
+                const distance = calculateDistance(abilityOwner, castPosition);
+                if (distance > SPELLMAKER_MAX_CAST_RANGE) return;
+                spellCast(abilityOwner, abilitySm, abilitySm.spellIndex, castPosition, game);
+            }
         }
+    }
+}
+
+function spellChargeStart(abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPosition: Position, isKeydown: boolean, game: Game) {
+    const spell = ability.spells[ability.spellIndex];
+    if (isKeydown) {
+        autoSendMousePositionHandler(abilityOwner.id, `${ability.name}`, true, castPosition, game);
+        const initialManaCost = spell.spellManaCost / 2;
+        if (initialManaCost < ability.mana) {
+            ability.mana -= initialManaCost;
+            ability.spelltypeChargeManaStored = initialManaCost;
+            ability.spelltypeChargeStart = game.state.time;
+        } else {
+            const missingMana = initialManaCost - ability.mana;
+            addPaintFloatingTextInfoForMyself(`${missingMana.toFixed()} missing mana`, game, undefined, abilityOwner.id, ability.id, IMAGE_NAME_WIZARD_HAT);
+        }
+    } else if (ability.spelltypeChargeStart !== undefined) {
+        autoSendMousePositionHandler(abilityOwner.id, `${ability.name}`, false, castPosition, game);
+        const distance = calculateDistance(abilityOwner, castPosition);
+        if (distance > SPELLMAKER_MAX_CAST_RANGE) return;
+        spellCast(abilityOwner, ability, ability.spellIndex, castPosition, game);
+        ability.spelltypeChargeStart = undefined;
+        ability.spelltypeChargeManaStored = 0;
     }
 }
 
@@ -619,23 +671,29 @@ function getCustomCastData(abilityOwner: AbilityOwner, ability: Ability, data: D
 function spellCast(abilityOwner: AbilityOwner, abilitySm: AbilitySpellmaker, spellIndex: number, castPosition: Position, game: Game, isAutocast: boolean = false) {
     const currentSpell = abilitySm.spells[spellIndex];
     const stageId = getNextId(game.state.idCounter);
-    if (abilitySm.mana > currentSpell.spellManaCost) {
-        abilitySm.mana -= currentSpell.spellManaCost;
-        for (let stageIndex = 0; stageIndex < currentSpell.createdObjects.length; stageIndex++) {
-            const createdObject = currentSpell.createdObjects[stageIndex];
-            const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[createdObject.type];
-            const damageFactor = abilityOwner.faction === FACTION_PLAYER ? abilitySm.damageLevelFactor : 1;
-            if (toolFunctions.spellCast) {
-                const toolChain = [
-                    currentSpell.spellType === SPELLMAKER_SPELLTYPE_AUTOCAST && !isAutocast ? SPELLMAKER_SPELLTYPE_INSTANT : currentSpell.spellType,
-                    createdObject.type,
-                ];
-                toolFunctions.spellCast(createdObject, abilitySm.baseDamage, abilityOwner.faction, abilitySm.id, castPosition, damageFactor, abilitySm.manaLevelFactor, toolChain, stageId, stageIndex, game);
-            }
+    let chargeFactor = 1;
+    if (currentSpell.spellType !== SPELLMAKER_SPELLTYPE_CHARGE) {
+        if (abilitySm.mana > currentSpell.spellManaCost) {
+            abilitySm.mana -= currentSpell.spellManaCost;
+        } else {
+            const missingMana = currentSpell.spellManaCost - abilitySm.mana;
+            addPaintFloatingTextInfoForMyself(`${missingMana.toFixed()} missing mana`, game, undefined, abilityOwner.id, abilitySm.id, IMAGE_NAME_WIZARD_HAT);
+            return;
         }
     } else {
-        const missingMana = currentSpell.spellManaCost - abilitySm.mana;
-        addPaintFloatingTextInfoForMyself(`${missingMana.toFixed()} missing mana`, game, undefined, abilityOwner.id, abilitySm.id, IMAGE_NAME_WIZARD_HAT);
+        chargeFactor = getChargeFactor(abilitySm);
+    }
+    for (let stageIndex = 0; stageIndex < currentSpell.createdObjects.length; stageIndex++) {
+        const createdObject = currentSpell.createdObjects[stageIndex];
+        const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[createdObject.type];
+        const damageFactor = abilityOwner.faction === FACTION_PLAYER ? abilitySm.damageLevelFactor : 1;
+        if (toolFunctions.spellCast) {
+            const toolChain = [
+                currentSpell.spellType === SPELLMAKER_SPELLTYPE_AUTOCAST && !isAutocast ? SPELLMAKER_SPELLTYPE_INSTANT : currentSpell.spellType,
+                createdObject.type,
+            ];
+            toolFunctions.spellCast(createdObject, abilitySm.baseDamage, abilityOwner.faction, abilitySm.id, castPosition, damageFactor, abilitySm.manaLevelFactor, chargeFactor, toolChain, stageId, stageIndex, game);
+        }
     }
 }
 
@@ -652,9 +710,15 @@ export function abilitySpellmakerCastNextStage(nextStage: SpellmakerCreateToolOb
             }
             const toolChain = [...abilityObject.toolChain];
             if (!toolChain.includes(stageObject.type)) toolChain.push(stageObject.type);
-            spellmakerFunctions.spellCast(stageObject, stageObject.baseDamage, abilityObject.faction, abilityObject.abilityIdRef!, pos, abilityObject.damageFactor, abilityObject.manaFactor, toolChain, stageId, stageIndex, game, abilityObject);
+            spellmakerFunctions.spellCast(stageObject, stageObject.baseDamage, abilityObject.faction, abilityObject.abilityIdRef!, pos, abilityObject.damageFactor, abilityObject.manaFactor, abilityObject.chargeFactor, toolChain, stageId, stageIndex, game, abilityObject);
         }
     }
+}
+
+function getChargeFactor(ability: AbilitySpellmaker): number {
+    if (ability.spelltypeChargeStart === undefined) return 1;
+    const currentSpell = ability.spells[ability.spellIndex];
+    return ability.spelltypeChargeManaStored / currentSpell.spellManaCost;
 }
 
 function findClosestAttachToIndexRecursive(stage: number, currentStage: SpellmakerCreateToolObjectData[], ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, moveToAttach: boolean): { closestDistance: number, attachToIndexes: number[] } | undefined {

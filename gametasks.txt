@@ -3,13 +3,15 @@ increase version
 
 current tasks:     
 - new class spellmaker
-    - change: autocast gains level only for autocast not for manual instant cast
     - spelltype: charge
-        - slows down movement
-        - can charge as long as player want
-        - spell gets stronger the longer the charging
         - button down, charge start, button up charge end
-        - should be more mana efficient than instant or auto
+        - can charge as long as player want
+
+        - spell gets stronger the longer the charging
+            - continue: code spell charge to affect all tools
+        - should be more mana efficient than instant or auto when charging for longer,
+            - when doing instant should be weaker but same mana efficiency
+        - slows down movement
     - hope explosion spell possible in the end: gets more expensive but explosion can get bigger and bigger
 
     - remember: relative mouse position not used for holding mouse button down
