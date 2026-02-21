@@ -82,8 +82,8 @@ function onKeyDown(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, abili
 function onKeyUp(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game): SpellmakerCreateToolObjectData | undefined {
     const toolLightning = tool as SpellmakerCreateToolLightning;
     if (toolLightning.workInProgress) {
-        const lightning = toolLightning.workInProgress;
-        lightning.jumps = Math.min(20, Math.max(1, Math.abs((castPositionRelativeToCharacter.x - lightning.center.x) / 10)));
+        const lightning = toolLightning.workInProgress as CreateToolObjectLightningData;
+        lightning.jumps = Math.round(Math.min(20, Math.max(1, Math.abs((castPositionRelativeToCharacter.x - lightning.center.x) / 10))));
         lightning.damageFactor = Math.min(10, (Math.max(1, Math.abs(castPositionRelativeToCharacter.y - lightning.center.y) / 10)));
         toolLightning.workInProgress = undefined;
         return lightning;
@@ -100,8 +100,8 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
                 x: clientInfo.lastMousePosition.x - abilityOwner.x,
                 y: clientInfo.lastMousePosition.y - abilityOwner.y,
             };
-            const lightning = toolLightning.workInProgress;
-            lightning.jumps = Math.min(20, Math.max(1, Math.abs((relativePos.x - lightning.center.x) / 10)));
+            const lightning = toolLightning.workInProgress as CreateToolObjectLightningData;
+            lightning.jumps = Math.round(Math.min(20, Math.max(1, Math.abs((relativePos.x - lightning.center.x) / 10))));
             lightning.damageFactor = Math.min(10, (Math.max(1, Math.abs(relativePos.y - lightning.center.y) / 10)));
         }
     }
