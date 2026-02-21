@@ -3,7 +3,6 @@ increase version
 
 current tasks:     
 - new class spellmaker
-    - check: lightning scaling mana cost: 1 target one mana, 2 targets 1.5 mana?
     - change: autocast gains level only for autocast not for manual instant cast
     - spelltype: charge
         - slows down movement

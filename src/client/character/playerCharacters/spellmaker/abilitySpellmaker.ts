@@ -310,7 +310,7 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
         const currentAutoCast = abilitySm.spells[abilitySm.autoCastSpellIndex];
         if (currentAutoCast && currentAutoCast.spellType === SPELLMAKER_SPELLTYPE_AUTOCAST) {
             if (abilitySm.mana >= abilitySm.maxMana - 1 && currentAutoCast.spellManaCost < abilitySm.maxMana) {
-                spellCast(abilityOwner, abilitySm, abilitySm.autoCastSpellIndex, abilityOwner, game);
+                spellCast(abilityOwner, abilitySm, abilitySm.autoCastSpellIndex, abilityOwner, game, true);
                 for (let i = 1; i < abilitySm.spells.length; i++) {
                     const nextIndex = (abilitySm.autoCastSpellIndex + i) % abilitySm.spells.length;
                     const nextAutoCast = abilitySm.spells[nextIndex];
@@ -616,7 +616,7 @@ function getCustomCastData(abilityOwner: AbilityOwner, ability: Ability, data: D
     return undefined;
 }
 
-function spellCast(abilityOwner: AbilityOwner, abilitySm: AbilitySpellmaker, spellIndex: number, castPosition: Position, game: Game) {
+function spellCast(abilityOwner: AbilityOwner, abilitySm: AbilitySpellmaker, spellIndex: number, castPosition: Position, game: Game, isAutocast: boolean = false) {
     const currentSpell = abilitySm.spells[spellIndex];
     const stageId = getNextId(game.state.idCounter);
     if (abilitySm.mana > currentSpell.spellManaCost) {
@@ -625,7 +625,13 @@ function spellCast(abilityOwner: AbilityOwner, abilitySm: AbilitySpellmaker, spe
             const createdObject = currentSpell.createdObjects[stageIndex];
             const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[createdObject.type];
             const damageFactor = abilityOwner.faction === FACTION_PLAYER ? abilitySm.damageLevelFactor : 1;
-            if (toolFunctions.spellCast) toolFunctions.spellCast(createdObject, abilitySm.baseDamage, abilityOwner.faction, abilitySm.id, castPosition, damageFactor, abilitySm.manaLevelFactor, [currentSpell.spellType, createdObject.type], stageId, stageIndex, game);
+            if (toolFunctions.spellCast) {
+                const toolChain = [
+                    currentSpell.spellType === SPELLMAKER_SPELLTYPE_AUTOCAST && !isAutocast ? SPELLMAKER_SPELLTYPE_INSTANT : currentSpell.spellType,
+                    createdObject.type,
+                ];
+                toolFunctions.spellCast(createdObject, abilitySm.baseDamage, abilityOwner.faction, abilitySm.id, castPosition, damageFactor, abilitySm.manaLevelFactor, toolChain, stageId, stageIndex, game);
+            }
         }
     } else {
         const missingMana = currentSpell.spellManaCost - abilitySm.mana;
