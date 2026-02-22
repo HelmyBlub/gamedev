@@ -137,7 +137,9 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
 function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, chargeFactor: number, toolChain: string[], stageId: number, stageIndex: number, game: Game, preStageAbilityObject?: AbilitySpellmakerObject) {
     const fireline = createObject as CreateToolObjectFireLineData;
     if (fireline.positions.length < 2) return;
-    const damage = baseDamage * damageFactor;
+    const tickInterval = 200;
+    const chargedValues = getValuesWithCharge(chargeFactor);
+    const damage = baseDamage * damageFactor * tickInterval / 250 * chargedValues.damageFactor;
     const newToolChain: string[] = [...toolChain];
     const start: Position = {
         x: fireline.positions[0].x + castPosition.x,
@@ -157,8 +159,7 @@ function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: num
     }
     const moveSpeed = 2;
     const width = 10;
-    const duration = 5000;
-    const tickInterval = 250;
+    const duration = 5000 * chargedValues.durationFactor;
     const objectFireLine = createAbilityObjectSpellmakerFireLine(faction, start, joints, moveAttachment, damage, width, duration, moveSpeed, tickInterval, "red", damageFactor, manaFactor, chargeFactor, newToolChain, abilityId, stageId, stageIndex, game);
     game.state.abilityObjects.push(objectFireLine);
 }
@@ -166,7 +167,7 @@ function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: num
 function paint(ctx: CanvasRenderingContext2D, createdObject: SpellmakerCreateToolObjectData, ownerPaintPos: Position, ability: AbilitySpellmaker, chargeFactor: number, game: Game) {
     const fireline = createdObject as CreateToolObjectFireLineData;
     if (fireline.positions.length >= 2) {
-        ctx.globalAlpha = 0.50;
+        ctx.globalAlpha = Math.min(0.9, 0.50 * Math.sqrt(chargeFactor));
         ctx.strokeStyle = "red";
         ctx.lineWidth = 10;
         ctx.beginPath();
@@ -176,6 +177,14 @@ function paint(ctx: CanvasRenderingContext2D, createdObject: SpellmakerCreateToo
         }
         ctx.stroke();
         ctx.globalAlpha = 1;
-
     }
 }
+
+function getValuesWithCharge(chargeFactor: number): { durationFactor: number, damageFactor: number } {
+    const newDurationFactor = Math.min(12, Math.sqrt(chargeFactor));
+    return {
+        damageFactor: chargeFactor / newDurationFactor,
+        durationFactor: newDurationFactor,
+    };
+}
+

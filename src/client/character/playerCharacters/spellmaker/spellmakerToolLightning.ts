@@ -109,22 +109,34 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
 
 function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, chargeFactor: number, toolChain: string[], stageId: number, stageIndex: number, game: Game) {
     const lightning = createObject as CreateToolObjectLightningData;
-    const damage = baseDamage * lightning.damageFactor * damageFactor;
+    const chargedValues = getValuesWithCharge(lightning, chargeFactor);
+    const damage = baseDamage * chargedValues.damageFactor * damageFactor;
     const center: Position = {
         x: lightning.center.x + castPosition.x,
         y: lightning.center.y + castPosition.y,
     };
-    const lightningObject = createAbilityObjectSpellmakerLightning(faction, center, lightning.jumps, damage, abilityId, damageFactor, manaFactor, chargeFactor, [...toolChain], stageId, stageIndex, game);
+    const lightningObject = createAbilityObjectSpellmakerLightning(faction, center, chargedValues.jumps, damage, abilityId, damageFactor, manaFactor, chargeFactor, [...toolChain], stageId, stageIndex, game);
     game.state.abilityObjects.push(lightningObject);
 }
 
 function paint(ctx: CanvasRenderingContext2D, createdObject: SpellmakerCreateToolObjectData, ownerPaintPos: Position, ability: AbilitySpellmaker, chargeFactor: number, game: Game) {
     const lightning = createdObject as CreateToolObjectLightningData;
-    ctx.globalAlpha = 0.3 + 0.07 * lightning.damageFactor;
+    const chargedValues = getValuesWithCharge(lightning, chargeFactor);
+    ctx.globalAlpha = 0.3 + Math.min(0.6, 0.06 * chargedValues.damageFactor);
     ctx.strokeStyle = "white";
     ctx.fillStyle = "white";
     ctx.beginPath();
-    ctx.arc(lightning.center.x + ownerPaintPos.x, lightning.center.y + ownerPaintPos.y, 5 + lightning.jumps, 0, Math.PI * 2);
+    ctx.arc(lightning.center.x + ownerPaintPos.x, lightning.center.y + ownerPaintPos.y, 5 + chargedValues.jumps, 0, Math.PI * 2);
     ctx.fill();
     ctx.globalAlpha = 1;
 }
+
+function getValuesWithCharge(lightning: CreateToolObjectLightningData, chargeFactor: number): { jumps: number, damageFactor: number } {
+    const total = chargeFactor * lightning.jumps * lightning.damageFactor;
+    const newDamageFactor = Math.sqrt((total * lightning.damageFactor) / lightning.jumps);
+    return {
+        jumps: Math.round(total / newDamageFactor),
+        damageFactor: newDamageFactor,
+    };
+}
+

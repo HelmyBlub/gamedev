@@ -109,28 +109,35 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
 
 function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, chargeFactor: number, toolChain: string[], stageId: number, stageIndex: number, game: Game) {
     const explode = createObject as CreateToolObjectExplosionData;
-    const damage = baseDamage * explode.damageFactor * damageFactor;
+    const chargedValues = getValuesWithCharge(explode, chargeFactor);
+    const damage = baseDamage * damageFactor * chargedValues.damageFactor;
     const center: Position = {
         x: explode.center.x + castPosition.x,
         y: explode.center.y + castPosition.y,
     };
     let explodeDelay = faction === FACTION_ENEMY ? 2000 : 0;
-    const explodeObject = createAbilityObjectSpellmakerExplode(center, damage, getRadiusWithCharge(explode, chargeFactor), faction, damageFactor, manaFactor, chargeFactor, [...toolChain], abilityId, explodeDelay, stageId, stageIndex, game);
+    const explodeObject = createAbilityObjectSpellmakerExplode(center, damage, chargedValues.radius, faction, damageFactor, manaFactor, chargeFactor, [...toolChain], abilityId, explodeDelay, stageId, stageIndex, game);
     game.state.abilityObjects.push(explodeObject);
 }
 
 function paint(ctx: CanvasRenderingContext2D, createdObject: SpellmakerCreateToolObjectData, ownerPaintPos: Position, ability: AbilitySpellmaker, chargeFactor: number, game: Game) {
     const explode = createdObject as CreateToolObjectExplosionData;
-    ctx.globalAlpha = 0.1 + 0.09 * explode.damageFactor;
+    const chargedValues = getValuesWithCharge(explode, chargeFactor);
+    ctx.globalAlpha = 0.1 + Math.min(0.7, 0.07 * chargedValues.damageFactor);
     ctx.strokeStyle = "red";
     ctx.fillStyle = "red";
     ctx.beginPath();
-    ctx.arc(explode.center.x + ownerPaintPos.x, explode.center.y + ownerPaintPos.y, getRadiusWithCharge(explode, chargeFactor), 0, Math.PI * 2);
+    ctx.arc(explode.center.x + ownerPaintPos.x, explode.center.y + ownerPaintPos.y, chargedValues.radius, 0, Math.PI * 2);
     ctx.fill();
     ctx.globalAlpha = 1;
 }
 
-function getRadiusWithCharge(explode: CreateToolObjectExplosionData, chargeFactor: number): number {
-    const area = explode.radius * explode.radius * Math.PI * chargeFactor;
-    return Math.sqrt(area / Math.PI);
+function getValuesWithCharge(explode: CreateToolObjectExplosionData, chargeFactor: number): { radius: number, damageFactor: number } {
+    const radiusEx2 = explode.radius * explode.radius;
+    const total = chargeFactor * radiusEx2 * explode.damageFactor;
+    const newDamageFactor = Math.sqrt((total * explode.damageFactor) / radiusEx2);
+    return {
+        radius: Math.sqrt(total / newDamageFactor),
+        damageFactor: newDamageFactor,
+    };
 }

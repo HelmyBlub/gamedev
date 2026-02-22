@@ -361,9 +361,9 @@ export function abilitySpellmakerCalculateManaCost(createdObjects: SpellmakerCre
     return spellManaCost;
 }
 
-function paintToolObjectsRecusive(ctx: CanvasRenderingContext2D, stage: number, createdObject: SpellmakerCreateToolObjectData, ability: AbilitySpellmaker, ownerPaintPos: Position, chargeFactor: number, game: Game) {
+function paintToolObjectsRecusive(ctx: CanvasRenderingContext2D, currentStage: number, displayStage: number, createdObject: SpellmakerCreateToolObjectData, ability: AbilitySpellmaker, ownerPaintPos: Position, chargeFactor: number, game: Game) {
     const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[createdObject.type];
-    if ((stage == ability.spellmakeStage - 1 && toolFunctions.canHaveNextStage) || stage == ability.spellmakeStage) {
+    if ((currentStage === displayStage - 1 && toolFunctions.canHaveNextStage) || currentStage === displayStage) {
         if (toolFunctions.paint) {
             toolFunctions.paint(ctx, createdObject, ownerPaintPos, ability, chargeFactor, game);
             if (toolFunctions.canHaveMoveAttachment && createdObject.moveAttachment) {
@@ -372,12 +372,29 @@ function paintToolObjectsRecusive(ctx: CanvasRenderingContext2D, stage: number, 
             }
         }
     }
-    if (stage < ability.spellmakeStage) {
+    if (currentStage < ability.spellmakeStage) {
         for (let stageObjects of createdObject.nextStage) {
-            paintToolObjectsRecusive(ctx, stage + 1, stageObjects, ability, ownerPaintPos, chargeFactor, game);
+            paintToolObjectsRecusive(ctx, currentStage + 1, displayStage, stageObjects, ability, ownerPaintPos, chargeFactor, game);
         }
     }
 }
+
+function paintToolObjectsRecusiveForCharging(ctx: CanvasRenderingContext2D, currentStage: number, createdObject: SpellmakerCreateToolObjectData, ability: AbilitySpellmaker, ownerPaintPos: Position, chargeFactor: number, game: Game) {
+    const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[createdObject.type];
+    if (toolFunctions.paint) {
+        toolFunctions.paint(ctx, createdObject, ownerPaintPos, ability, chargeFactor, game);
+        if (toolFunctions.canHaveMoveAttachment && createdObject.moveAttachment) {
+            const toolMoveFunctions = SPELLMAKER_MOVE_TOOLS_FUNCTIONS[createdObject.moveAttachment.type];
+            toolMoveFunctions.paint(ctx, createdObject.moveAttachment, ownerPaintPos, ability, game);
+        }
+    }
+    if (currentStage < 1) {
+        for (let stageObjects of createdObject.nextStage) {
+            paintToolObjectsRecusiveForCharging(ctx, currentStage + 1, stageObjects, ability, ownerPaintPos, chargeFactor, game);
+        }
+    }
+}
+
 
 function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, ability: Ability, cameraPosition: Position, game: Game) {
     if (abilityOwner.type === CHARACTER_PET_TYPE_CLONE) return;
@@ -399,7 +416,7 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
         }
         const currentSpell = abilitySm.spells[abilitySm.spellIndex];
         for (let createdObject of currentSpell.createdObjects) {
-            paintToolObjectsRecusive(ctx, 0, createdObject, abilitySm, ownerPaintPos, 1, game);
+            paintToolObjectsRecusive(ctx, 0, abilitySm.spellmakeStage, createdObject, abilitySm, ownerPaintPos, 1, game);
         }
         const tool = abilitySm.createTools.createTools[abilitySm.createTools.selectedToolIndex];
         if (tool && tool.workInProgress) {
@@ -433,7 +450,7 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
             }
             const paintPos: Position = getPointPaintPosition(ctx, mapPositionForPaint, cameraPosition, game.UI.zoom);
             for (let createdObject of currentSpell.createdObjects) {
-                paintToolObjectsRecusive(ctx, 0, createdObject, abilitySm, paintPos, chargeFactor, game);
+                paintToolObjectsRecusiveForCharging(ctx, 0, createdObject, abilitySm, paintPos, chargeFactor, game);
             }
         }
     }
@@ -824,7 +841,7 @@ function createAbilityMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability,
     textLines.push(`Spell slots:`);
     for (let i = 0; i < abilitySpellmaker.spells.length; i++) {
         const spell = abilitySpellmaker.spells[i];
-        textLines.push(`  Slot ${i + 1}: ${getSpellToolChain(spell)}, manaCost: ${spell.spellManaCost.toFixed(1)}`);
+        textLines.push(`  Slot ${i + 1}: ${getSpellToolChain(spell)}, manaCost: ${spell.spellManaCost.toFixed(2)}`);
     }
 
     const upgradeHoverLines: MoreInfoHoverTexts = {};
