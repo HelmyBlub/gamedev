@@ -7,6 +7,7 @@ current tasks:
         - auto cast based on player
         - player orbit based on player
         - enemy based on character position
+        - continue: bug: orbiter can be locked to player, than it should not be moved
     - spelltype: charge
         - balancing:
             - should be more mana efficient than instant or auto when charging for longer,

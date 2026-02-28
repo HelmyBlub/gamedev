@@ -42,7 +42,7 @@ export type SpellmakerMoveToolFunctions = SpellmakerToolFunctionsBase & {
     onKeyDown: (tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, attachedToTarget: SpellmakerCreateToolObjectData, castPositionRelativeToCharacter: Position, game: Game) => void,
     onKeyUp: (tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game) => SpellmakerCreateToolMoveAttachment | undefined,
     onTick: (tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, game: Game) => void,
-    paint: (ctx: CanvasRenderingContext2D, moveAttachment: SpellmakerCreateToolMoveAttachment, ownerPaintPos: Position, ability: AbilitySpellmaker, game: Game) => void,
+    paint: (ctx: CanvasRenderingContext2D, moveAttachment: SpellmakerCreateToolMoveAttachment, paintPos: Position, ability: AbilitySpellmaker, game: Game) => void,
     description: string[],
     learnedThroughUpgrade?: boolean,
 }
@@ -51,11 +51,12 @@ export type SpellmakerToolFunctions = SpellmakerToolFunctionsBase & {
     calculateDistance?: (relativePosition: Position, createObject: SpellmakerCreateToolObjectData) => number,
     calculateManaCost?: (createObject: SpellmakerCreateToolObjectData) => number,
     getClosestCenter?: (createObject: SpellmakerCreateToolObjectData, position: Position) => Position,
+    getRelativeSpellmakePosition?: (createObject: SpellmakerCreateToolObjectData) => Position,
     onKeyDown?: (tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game) => void,
     onKeyUp?: (tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game) => SpellmakerCreateToolObjectData | undefined,
     onTick?: (tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, game: Game) => void,
     onToolSelect?: (tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, game: Game) => boolean, // return false if it should no be selectable
-    paint?: (ctx: CanvasRenderingContext2D, createObject: SpellmakerCreateToolObjectData, ownerPaintPos: Position, ability: AbilitySpellmaker, chargeFactor: number, game: Game) => void,
+    paint?: (ctx: CanvasRenderingContext2D, createObject: SpellmakerCreateToolObjectData, paintPos: Position, ability: AbilitySpellmaker, chargeFactor: number, game: Game) => void,
     paintButton?: (ctx: CanvasRenderingContext2D, buttonPaintPos: Position, ability: AbilitySpellmaker, game: Game) => void,
     spellCast?: (createObject: SpellmakerCreateToolObjectData, baseDamage: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, chargeFactor: number, toolChain: string[], stageId: number, stageIndex: number, game: Game, preStageAbilityObject?: AbilitySpellmakerObject) => void,
     calculateManaCostIncludesNextStage?: boolean,

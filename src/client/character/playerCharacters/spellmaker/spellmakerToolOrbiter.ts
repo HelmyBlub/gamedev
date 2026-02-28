@@ -109,22 +109,22 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
     }
 }
 
-function paint(ctx: CanvasRenderingContext2D, moveAttachment: SpellmakerCreateToolMoveAttachment, ownerPaintPos: Position, ability: AbilitySpellmaker, game: Game) {
+function paint(ctx: CanvasRenderingContext2D, moveAttachment: SpellmakerCreateToolMoveAttachment, paintPos: Position, ability: AbilitySpellmaker, game: Game) {
     const orbiter = moveAttachment as SpellmakerCreateToolMoveAttachmentOrbiter;
     ctx.strokeStyle = "black";
     ctx.lineWidth = 2;
     const radius = calculateDistance(orbiter.center, orbiter.startPos);
     if (radius <= 0) return;
     const startAngle = calculateDirection(orbiter.center, orbiter.startPos);
-    const paintPos: Position = {
-        x: ownerPaintPos.x + orbiter.center.x,
-        y: ownerPaintPos.y + orbiter.center.y,
+    const orbitPaintPos: Position = {
+        x: paintPos.x + orbiter.center.x,
+        y: paintPos.y + orbiter.center.y,
     }
     ctx.beginPath();
     const angleReduction = Math.max(0.8, (2 * Math.PI * radius - 20) / (2 * Math.PI * radius));
     const endAngle = startAngle + Math.PI * 2 * angleReduction;
-    ctx.arc(paintPos.x, paintPos.y, radius, startAngle, endAngle);
-    const orbitEnd = calculateMovePosition(paintPos, endAngle, radius, false);
+    ctx.arc(orbitPaintPos.x, orbitPaintPos.y, radius, startAngle, endAngle);
+    const orbitEnd = calculateMovePosition(orbitPaintPos, endAngle, radius, false);
     const arrowPoint1 = calculateMovePosition(orbitEnd, endAngle + 0.5 - Math.PI / 2, 15, false);
     const arrowPoint2 = calculateMovePosition(orbitEnd, endAngle - 0.5 - Math.PI / 2, 15, false);
     ctx.lineTo(arrowPoint1.x, arrowPoint1.y);

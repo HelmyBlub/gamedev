@@ -24,6 +24,7 @@ export function addSpellmakerToolExplosion() {
         calculateDistance: calculateDistanceExplosion,
         calculateManaCost: calculateManaCost,
         createTool: createTool,
+        getRelativeSpellmakePosition: getRelativeSpellmakePosition,
         onKeyDown: onKeyDown,
         onKeyUp: onKeyUp,
         onTick: onTick,
@@ -60,6 +61,11 @@ function createTool(): SpellmakerCreateTool {
         totalDamage: 0,
         buttonImage: IMAGE_EXPLOSION,
     };
+}
+
+function getRelativeSpellmakePosition(createObject: SpellmakerCreateToolObjectData): Position {
+    const object = createObject as CreateToolObjectExplosionData;
+    return { x: object.center.x, y: object.center.y };
 }
 
 function calculateDistanceExplosion(relativePosition: Position, createObject: SpellmakerCreateToolObjectData): number {
@@ -120,14 +126,14 @@ function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: num
     game.state.abilityObjects.push(explodeObject);
 }
 
-function paint(ctx: CanvasRenderingContext2D, createdObject: SpellmakerCreateToolObjectData, ownerPaintPos: Position, ability: AbilitySpellmaker, chargeFactor: number, game: Game) {
+function paint(ctx: CanvasRenderingContext2D, createdObject: SpellmakerCreateToolObjectData, paintPos: Position, ability: AbilitySpellmaker, chargeFactor: number, game: Game) {
     const explode = createdObject as CreateToolObjectExplosionData;
     const chargedValues = getValuesWithCharge(explode, chargeFactor);
     ctx.globalAlpha = 0.1 + Math.min(0.7, 0.07 * chargedValues.damageFactor);
     ctx.strokeStyle = "red";
     ctx.fillStyle = "red";
     ctx.beginPath();
-    ctx.arc(explode.center.x + ownerPaintPos.x, explode.center.y + ownerPaintPos.y, chargedValues.radius, 0, Math.PI * 2);
+    ctx.arc(explode.center.x + paintPos.x, explode.center.y + paintPos.y, chargedValues.radius, 0, Math.PI * 2);
     ctx.fill();
     ctx.globalAlpha = 1;
 }

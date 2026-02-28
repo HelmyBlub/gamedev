@@ -380,18 +380,18 @@ function paintToolObjectsRecusive(ctx: CanvasRenderingContext2D, currentStage: n
     }
 }
 
-function paintToolObjectsRecusiveForCharging(ctx: CanvasRenderingContext2D, currentStage: number, createdObject: SpellmakerCreateToolObjectData, ability: AbilitySpellmaker, ownerPaintPos: Position, chargeFactor: number, game: Game) {
+function paintToolObjectsRecusiveForCharging(ctx: CanvasRenderingContext2D, currentStage: number, createdObject: SpellmakerCreateToolObjectData, ability: AbilitySpellmaker, paintPos: Position, chargeFactor: number, game: Game) {
     const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[createdObject.type];
     if (toolFunctions.paint) {
-        toolFunctions.paint(ctx, createdObject, ownerPaintPos, ability, chargeFactor, game);
+        toolFunctions.paint(ctx, createdObject, paintPos, ability, chargeFactor, game);
         if (toolFunctions.canHaveMoveAttachment && createdObject.moveAttachment) {
             const toolMoveFunctions = SPELLMAKER_MOVE_TOOLS_FUNCTIONS[createdObject.moveAttachment.type];
-            toolMoveFunctions.paint(ctx, createdObject.moveAttachment, ownerPaintPos, ability, game);
+            toolMoveFunctions.paint(ctx, createdObject.moveAttachment, paintPos, ability, game);
         }
     }
     if (currentStage < 1) {
         for (let stageObjects of createdObject.nextStage) {
-            paintToolObjectsRecusiveForCharging(ctx, currentStage + 1, stageObjects, ability, ownerPaintPos, chargeFactor, game);
+            paintToolObjectsRecusiveForCharging(ctx, currentStage + 1, stageObjects, ability, paintPos, chargeFactor, game);
         }
     }
 }
@@ -449,6 +449,7 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
             if (clientInfo) {
                 mapPositionForPaint = clientInfo.lastMousePosition;
             }
+            mapPositionForPaint = getModCastPosition(abilityOwner.faction, currentSpell, mapPositionForPaint);
             const paintPos: Position = getPointPaintPosition(ctx, mapPositionForPaint, cameraPosition, game.UI.zoom);
             for (let createdObject of currentSpell.createdObjects) {
                 paintToolObjectsRecusiveForCharging(ctx, 0, createdObject, abilitySm, paintPos, chargeFactor, game);
@@ -701,6 +702,7 @@ function spellCast(abilityOwner: AbilityOwner, abilitySm: AbilitySpellmaker, spe
     } else {
         chargeFactor = getChargeFactor(abilitySm);
     }
+
     for (let stageIndex = 0; stageIndex < currentSpell.createdObjects.length; stageIndex++) {
         const createdObject = currentSpell.createdObjects[stageIndex];
         const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[createdObject.type];
@@ -710,9 +712,25 @@ function spellCast(abilityOwner: AbilityOwner, abilitySm: AbilitySpellmaker, spe
                 currentSpell.spellType === SPELLMAKER_SPELLTYPE_AUTOCAST && !isAutocast ? SPELLMAKER_SPELLTYPE_INSTANT : currentSpell.spellType,
                 createdObject.type,
             ];
-            toolFunctions.spellCast(createdObject, abilitySm.baseDamage, abilityOwner.faction, abilitySm.id, castPosition, damageFactor, abilitySm.manaLevelFactor, chargeFactor, toolChain, stageId, stageIndex, game);
+            const modCastPosition = getModCastPosition(abilityOwner.faction, currentSpell, castPosition, isAutocast);
+            toolFunctions.spellCast(createdObject, abilitySm.baseDamage, abilityOwner.faction, abilitySm.id, modCastPosition, damageFactor, abilitySm.manaLevelFactor, chargeFactor, toolChain, stageId, stageIndex, game);
         }
     }
+}
+
+function getModCastPosition(faction: string, currentSpell: SpellmakerSpell, castPosition: Position, isAutocast: boolean = false): Position {
+    const modCastPosition: Position = { x: castPosition.x, y: castPosition.y };
+    const firstToolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[currentSpell.createdObjects[0].type];
+    const doCastPosOffset = !isAutocast && faction === FACTION_PLAYER && firstToolFunctions.getRelativeSpellmakePosition !== undefined;
+    let firstObjectRelativePosition: Position = { x: 0, y: 0 };
+    if (doCastPosOffset && firstToolFunctions.getRelativeSpellmakePosition) {
+        firstObjectRelativePosition = firstToolFunctions.getRelativeSpellmakePosition(currentSpell.createdObjects[0]);
+    }
+    if (doCastPosOffset) {
+        modCastPosition.x -= firstObjectRelativePosition.x;
+        modCastPosition.y -= firstObjectRelativePosition.y;
+    }
+    return modCastPosition;
 }
 
 export function abilitySpellmakerCastNextStage(nextStage: SpellmakerCreateToolObjectData[], abilityObject: AbilitySpellmakerObject, game: Game) {

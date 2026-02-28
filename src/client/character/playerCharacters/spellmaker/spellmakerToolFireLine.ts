@@ -29,6 +29,7 @@ export function addSpellmakerToolFireline() {
         calculateDistance: calculateDistanceFireLine,
         calculateManaCost: calculateManaCost,
         createTool: createTool,
+        getRelativeSpellmakePosition: getRelativeSpellmakePosition,
         onKeyDown: onKeyDown,
         onKeyUp: onKeyUp,
         onTick: onTick,
@@ -63,6 +64,11 @@ function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
         totalDamage: 0,
         buttonImage: IMAGE_FIRE,
     };
+}
+
+function getRelativeSpellmakePosition(createObject: SpellmakerCreateToolObjectData): Position {
+    const object = createObject as CreateToolObjectFireLineData;
+    return { x: object.positions[0].x, y: object.positions[0].y };
 }
 
 function calculateDistanceFireLine(relativePosition: Position, createObject: SpellmakerCreateToolObjectData): number {
@@ -164,16 +170,16 @@ function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: num
     game.state.abilityObjects.push(objectFireLine);
 }
 
-function paint(ctx: CanvasRenderingContext2D, createdObject: SpellmakerCreateToolObjectData, ownerPaintPos: Position, ability: AbilitySpellmaker, chargeFactor: number, game: Game) {
+function paint(ctx: CanvasRenderingContext2D, createdObject: SpellmakerCreateToolObjectData, paintPos: Position, ability: AbilitySpellmaker, chargeFactor: number, game: Game) {
     const fireline = createdObject as CreateToolObjectFireLineData;
     if (fireline.positions.length >= 2) {
         ctx.globalAlpha = Math.min(0.9, 0.50 * Math.sqrt(chargeFactor));
         ctx.strokeStyle = "red";
         ctx.lineWidth = 10;
         ctx.beginPath();
-        ctx.moveTo(ownerPaintPos.x + fireline.positions[0].x, ownerPaintPos.y + fireline.positions[0].y);
+        ctx.moveTo(paintPos.x + fireline.positions[0].x, paintPos.y + fireline.positions[0].y);
         for (let i = 1; i < fireline.positions.length; i++) {
-            ctx.lineTo(ownerPaintPos.x + fireline.positions[i].x, ownerPaintPos.y + fireline.positions[i].y);
+            ctx.lineTo(paintPos.x + fireline.positions[i].x, paintPos.y + fireline.positions[i].y);
         }
         ctx.stroke();
         ctx.globalAlpha = 1;

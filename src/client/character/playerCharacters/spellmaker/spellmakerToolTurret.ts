@@ -25,6 +25,7 @@ export function addSpellmakerToolTurret() {
         calculateManaCost: calculateManaCost,
         createTool: createTool,
         getClosestCenter: getClosestCenter,
+        getRelativeSpellmakePosition: getClosestCenter,
         onKeyDown: onKeyDown,
         onKeyUp: onKeyUp,
         onTick: onTick,
@@ -66,7 +67,7 @@ function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
     };
 }
 
-function getClosestCenter(createObject: SpellmakerCreateToolObjectData, position: Position): Position {
+function getClosestCenter(createObject: SpellmakerCreateToolObjectData): Position {
     const object = createObject as SpellmakerCreateToolObjectTurretData;
     return { x: object.center.x, y: object.center.y };
 }
@@ -139,7 +140,7 @@ function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: num
     game.state.abilityObjects.push(objectTurret);
 }
 
-function paint(ctx: CanvasRenderingContext2D, createdObject: SpellmakerCreateToolObjectData, ownerPaintPos: Position, ability: AbilitySpellmaker, chargeFactor: number, game: Game) {
+function paint(ctx: CanvasRenderingContext2D, createdObject: SpellmakerCreateToolObjectData, paintPos: Position, ability: AbilitySpellmaker, chargeFactor: number, game: Game) {
     const turret = createdObject as SpellmakerCreateToolObjectTurretData;
     ctx.strokeStyle = "red";
     ctx.fillStyle = "blue";
@@ -147,10 +148,10 @@ function paint(ctx: CanvasRenderingContext2D, createdObject: SpellmakerCreateToo
 
     if (turretImage) {
         ctx.drawImage(turretImage, 0, 0, 40, turretImage.height,
-            turret.center.x + ownerPaintPos.x - 20, turret.center.y + ownerPaintPos.y - 20, 40, 40
+            turret.center.x + paintPos.x - 20, turret.center.y + paintPos.y - 20, 40, 40
         );
     }
     ctx.globalAlpha = 0.5;
-    ctx.fillRect(turret.center.x + ownerPaintPos.x + 10, turret.center.y + ownerPaintPos.y - turret.mana, 10, 2 + turret.mana);
+    ctx.fillRect(turret.center.x + paintPos.x + 10, turret.center.y + paintPos.y - turret.mana, 10, 2 + turret.mana);
     ctx.globalAlpha = 1;
 }

@@ -24,6 +24,7 @@ export function addSpellmakerToolLightning() {
         calculateDistance: calculateDistanceLightning,
         calculateManaCost: calculateManaCost,
         createTool: createTool,
+        getRelativeSpellmakePosition: getRelativeSpellmakePosition,
         onKeyDown: onKeyDown,
         onKeyUp: onKeyUp,
         onTick: onTick,
@@ -60,6 +61,11 @@ function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
         totalDamage: 0,
         buttonImage: IMAGE_NAME_LIGHTNING,
     };
+}
+
+function getRelativeSpellmakePosition(createObject: SpellmakerCreateToolObjectData): Position {
+    const object = createObject as CreateToolObjectLightningData;
+    return { x: object.center.x, y: object.center.y };
 }
 
 function calculateDistanceLightning(relativePosition: Position, createObject: SpellmakerCreateToolObjectData): number {
@@ -119,14 +125,14 @@ function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: num
     game.state.abilityObjects.push(lightningObject);
 }
 
-function paint(ctx: CanvasRenderingContext2D, createdObject: SpellmakerCreateToolObjectData, ownerPaintPos: Position, ability: AbilitySpellmaker, chargeFactor: number, game: Game) {
+function paint(ctx: CanvasRenderingContext2D, createdObject: SpellmakerCreateToolObjectData, paintPos: Position, ability: AbilitySpellmaker, chargeFactor: number, game: Game) {
     const lightning = createdObject as CreateToolObjectLightningData;
     const chargedValues = getValuesWithCharge(lightning, chargeFactor);
     ctx.globalAlpha = 0.3 + Math.min(0.6, 0.06 * chargedValues.damageFactor);
     ctx.strokeStyle = "white";
     ctx.fillStyle = "white";
     ctx.beginPath();
-    ctx.arc(lightning.center.x + ownerPaintPos.x, lightning.center.y + ownerPaintPos.y, 5 + chargedValues.jumps, 0, Math.PI * 2);
+    ctx.arc(lightning.center.x + paintPos.x, lightning.center.y + paintPos.y, 5 + chargedValues.jumps, 0, Math.PI * 2);
     ctx.fill();
     ctx.globalAlpha = 1;
 }

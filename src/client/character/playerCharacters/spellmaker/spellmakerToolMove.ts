@@ -92,15 +92,15 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
     }
 }
 
-function paint(ctx: CanvasRenderingContext2D, moveAttachment: SpellmakerCreateToolMoveAttachment, ownerPaintPos: Position, ability: AbilitySpellmaker, game: Game) {
+function paint(ctx: CanvasRenderingContext2D, moveAttachment: SpellmakerCreateToolMoveAttachment, paintPos: Position, ability: AbilitySpellmaker, game: Game) {
     const moveToPositions = moveAttachment as SpellmakerCreateToolMoveAttachmentLine;
     if (moveToPositions.moveTo.length >= 2) {
         ctx.strokeStyle = "black";
         ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.moveTo(ownerPaintPos.x + moveToPositions.moveTo[0].x, ownerPaintPos.y + moveToPositions.moveTo[0].y);
+        ctx.moveTo(paintPos.x + moveToPositions.moveTo[0].x, paintPos.y + moveToPositions.moveTo[0].y);
         for (let i = 1; i < moveToPositions.moveTo.length; i++) {
-            ctx.lineTo(ownerPaintPos.x + moveToPositions.moveTo[i].x, ownerPaintPos.y + moveToPositions.moveTo[i].y);
+            ctx.lineTo(paintPos.x + moveToPositions.moveTo[i].x, paintPos.y + moveToPositions.moveTo[i].y);
         }
         ctx.stroke();
     }

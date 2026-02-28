@@ -30,6 +30,7 @@ export function addSpellmakerToolProximity() {
         calculateManaCost: calculateManaCost,
         createTool: createTool,
         getClosestCenter: getClosestCenter,
+        getRelativeSpellmakePosition: getClosestCenter,
         onKeyDown: onKeyDown,
         onKeyUp: onKeyUp,
         onTick: onTick,
@@ -73,7 +74,7 @@ function calculateDistanceProximity(relativePosition: Position, createObject: Sp
     return Math.max(0, calculateDistance(relativePosition, object.center) - object.radius);
 }
 
-function getClosestCenter(createObject: SpellmakerCreateToolObjectData, position: Position): Position {
+function getClosestCenter(createObject: SpellmakerCreateToolObjectData): Position {
     const object = createObject as CreateToolObjectProximityData;
     return { x: object.center.x, y: object.center.y };
 }
@@ -136,17 +137,17 @@ function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: num
     game.state.abilityObjects.push(objectProximity);
 }
 
-function paint(ctx: CanvasRenderingContext2D, createdObject: SpellmakerCreateToolObjectData, ownerPaintPos: Position, ability: AbilitySpellmaker, chargeFactor: number, game: Game) {
+function paint(ctx: CanvasRenderingContext2D, createdObject: SpellmakerCreateToolObjectData, paintPos: Position, ability: AbilitySpellmaker, chargeFactor: number, game: Game) {
     const proximity = createdObject as CreateToolObjectProximityData;
     ctx.strokeStyle = "red";
     ctx.fillStyle = "red";
     ctx.beginPath();
-    ctx.arc(proximity.center.x + ownerPaintPos.x, proximity.center.y + ownerPaintPos.y, 10, 0, Math.PI * 2);
+    ctx.arc(proximity.center.x + paintPos.x, proximity.center.y + paintPos.y, 10, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.globalAlpha = 0.5;
     ctx.beginPath();
-    ctx.arc(proximity.center.x + ownerPaintPos.x, proximity.center.y + ownerPaintPos.y, proximity.radius, 0, Math.PI * 2);
+    ctx.arc(proximity.center.x + paintPos.x, proximity.center.y + paintPos.y, proximity.radius, 0, Math.PI * 2);
     ctx.fill();
     ctx.globalAlpha = 1;
 }
