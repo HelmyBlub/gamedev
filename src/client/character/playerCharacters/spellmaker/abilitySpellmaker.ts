@@ -302,7 +302,8 @@ function tickAI(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
 function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
     const abilitySm = ability as AbilitySpellmaker;
     if (abilitySm.spelltypeChargeStart !== undefined) {
-        abilitySm.spelltypeChargeManaStored += abilitySm.manaRegeneration;
+        const chargeTimeBonusFactor = Math.max(1, Math.min((game.state.time - abilitySm.spelltypeChargeStart) / 1000, 2));
+        abilitySm.spelltypeChargeManaStored += abilitySm.manaRegeneration * chargeTimeBonusFactor;
     } else {
         abilitySm.mana = Math.min(abilitySm.mana + abilitySm.manaRegeneration, abilitySm.maxMana);
     }

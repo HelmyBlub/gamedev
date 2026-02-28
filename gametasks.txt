@@ -3,15 +3,15 @@ increase version
 
 current tasks:     
 - new class spellmaker
+    - try change: spellcast center to made objects not to player for charge and instant casts
+        - auto cast based on player
+        - player orbit based on player
+        - enemy based on character position
     - spelltype: charge
-        - button down, charge start, button up charge end
-        - can charge as long as player want
-
-        - spell gets stronger the longer the charging
-            - continue: code spell charge to affect all tools
-        - should be more mana efficient than instant or auto when charging for longer,
-            - when doing instant should be weaker but same mana efficiency
-        - slows down movement
+        - balancing:
+            - should be more mana efficient than instant or auto when charging for longer,
+                - when doing instant should be weaker but same mana efficiency
+        - problem: i did not want to use it? mathematically it has just the same strength
     - hope explosion spell possible in the end: gets more expensive but explosion can get bigger and bigger
 
     - remember: relative mouse position not used for holding mouse button down
