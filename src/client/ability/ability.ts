@@ -236,7 +236,18 @@ export function addAbilityToCharacter(character: Character, ability: Ability, ch
         }
     }
     character.abilities.push(ability);
-    if (charClass) ability.classIdRef = charClass.id;
+    if (charClass) {
+        ability.classIdRef = charClass.id;
+        if (charClass.legendary) {
+            const otherLegendaryAbilityOfClass = character.abilities.find(a => a.classIdRef === charClass.id && a.legendary);
+            ability.legendary = {
+                blessings: [...charClass.legendary.blessings],
+                levelCap: charClass.legendary.levelCap,
+                buildingIdRef: otherLegendaryAbilityOfClass!.legendary!.buildingIdRef,
+                skillPointCap: otherLegendaryAbilityOfClass!.legendary!.skillPointCap,
+            };
+        }
+    }
 }
 
 export function paintAbilityObjects(ctx: CanvasRenderingContext2D, abilityObjects: AbilityObject[], game: Game, paintOrder: PaintOrderAbility) {
