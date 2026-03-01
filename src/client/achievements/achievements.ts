@@ -2,6 +2,7 @@ import { CHARACTER_CLASS_BALL } from "../character/playerCharacters/characterCla
 import { CHARACTER_CLASS_MUSICIAN } from "../character/playerCharacters/characterClassMusician.js"
 import { CHARACTER_CLASS_SNIPER } from "../character/playerCharacters/characterClassSniper.js"
 import { CHARACTER_CLASS_TOWER_BUILDER } from "../character/playerCharacters/characterClassTower.js"
+import { CHARACTER_CLASS_SPELLMAKER } from "../character/playerCharacters/spellmaker/characterClassSpellmaker.js"
 import { CHARACTER_CLASS_TAMER } from "../character/playerCharacters/tamer/characterClassTamer.js"
 import { Game } from "../gameModel.js"
 import { MoreInfoPart, MoreInfos, MoreInfosPartContainer, createDefaultMoreInfosContainer, createMoreInfosPart } from "../moreInfo.js"
@@ -103,6 +104,7 @@ export function createDefaultAchivements(): Achievements {
     achievements.open.push(createAchievementPlayClass(CHARACTER_CLASS_MUSICIAN));
     achievements.open.push(createAchievementPlayClass(CHARACTER_CLASS_TOWER_BUILDER));
     achievements.open.push(createAchievementPlayClass(CHARACTER_CLASS_TAMER));
+    achievements.open.push(createAchievementPlayClass(CHARACTER_CLASS_SPELLMAKER));
     achievements.open.push(createAchievementDistance(2000, 2));
     achievements.open.push(createAchievementDistance(10000, 20));
     achievements.open.push(createAchievementDistance(40000, 500));
@@ -112,12 +114,14 @@ export function createDefaultAchivements(): Achievements {
     achievements.open.push(createAchievementKingClass(CHARACTER_CLASS_MUSICIAN));
     achievements.open.push(createAchievementKingClass(CHARACTER_CLASS_TOWER_BUILDER));
     achievements.open.push(createAchievementKingClass(CHARACTER_CLASS_TAMER));
+    achievements.open.push(createAchievementKingClass(CHARACTER_CLASS_SPELLMAKER));
     achievements.open.push({ name: ACHIEVEMENT_NAME_UNLOCK_LEGENDARY });
     achievements.open.push(createAchievementUnlockLegendaryOfClass(CHARACTER_CLASS_SNIPER));
     achievements.open.push(createAchievementUnlockLegendaryOfClass(CHARACTER_CLASS_BALL));
     achievements.open.push(createAchievementUnlockLegendaryOfClass(CHARACTER_CLASS_MUSICIAN));
     achievements.open.push(createAchievementUnlockLegendaryOfClass(CHARACTER_CLASS_TOWER_BUILDER));
     achievements.open.push(createAchievementUnlockLegendaryOfClass(CHARACTER_CLASS_TAMER));
+    achievements.open.push(createAchievementUnlockLegendaryOfClass(CHARACTER_CLASS_SPELLMAKER));
     achievements.open.push({ name: ACHIEVEMENT_NAME_GAIN_LEGENDARY_BLESSING });
     achievements.open.push({ name: ACHIEVEMENT_NAME_CURSED });
     achievements.open.push({ name: ACHIEVEMENT_NAME_CURSE_KING_KILL });

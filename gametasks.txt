@@ -3,8 +3,12 @@ increase version
 
 current tasks:     
 - new class spellmaker
+    - achievements
     - 5 more upgrades
         - 2 more starting spells
+            - laser: long line instant damage
+                - always start from pre stage center
+                - define range and angle
             - fire circle
             - explosion rectangle
         - 3 more other
@@ -13,7 +17,6 @@ current tasks:
             - apply debuff: slow
             - apply buff: speed
     - remember: relative mouse position not used for holding mouse button down
-    - achievements
     - test run
     - check "playerGlobalAlphaMultiplier" to be used in spellmaker
     - check: touch controlls for spellmake mode
