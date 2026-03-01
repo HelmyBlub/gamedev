@@ -3,11 +3,6 @@ increase version
 
 current tasks:     
 - new class spellmaker
-    - try change: spellcast center to made objects not to player for charge and instant casts
-        - auto cast based on player
-        - player orbit based on player
-        - enemy based on character position
-        - continue: bug: orbiter can be locked to player, than it should not be moved
     - spelltype: charge
         - balancing:
             - should be more mana efficient than instant or auto when charging for longer,

@@ -139,7 +139,7 @@ function paint(ctx: CanvasRenderingContext2D, createdObject: SpellmakerCreateToo
 
 function getValuesWithCharge(lightning: CreateToolObjectLightningData, chargeFactor: number): { jumps: number, damageFactor: number } {
     const total = chargeFactor * lightning.jumps * lightning.damageFactor;
-    const newJumpCount = Math.round(Math.sqrt((total * lightning.jumps) / lightning.damageFactor));
+    const newJumpCount = lightning.jumps === 1 ? 1 : Math.round(Math.sqrt((total * lightning.jumps) / lightning.damageFactor));
     return {
         damageFactor: total / newJumpCount,
         jumps: newJumpCount,
