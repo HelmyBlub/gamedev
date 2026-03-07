@@ -1,13 +1,11 @@
-import { AbilityObject, AbilityOwner, findAbilityOwnerById } from "../../../ability/ability.js";
+import { AbilityOwner, findAbilityOwnerById } from "../../../ability/ability.js";
 import { calculateDirection, calculateDistance, findClientInfoByCharacterId } from "../../../game.js";
 import { Position, Game, ClientInfo } from "../../../gameModel.js";
 import { AbilitySpellmaker, AbilitySpellmakerObject, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
-import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
+import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOLS_FUNCTIONS, spellmakerCreateObjectDetermineClosestCenter, SpellmakerCreateTool } from "./spellmakerTool.js";
 import { calculateMovePosition } from "../../../map/map.js";
-import { createMoreInfosPart } from "../../../moreInfo.js";
 import { GAME_IMAGES } from "../../../imageLoad.js";
 
-const REF_BEFORE_INDEX = -1;
 export type SpellmakerCreateToolMoveAttachmentOrbiter = SpellmakerCreateToolMoveAttachment & {
     startPos: Position,
     center: Position,
@@ -72,12 +70,12 @@ function onKeyDown(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, abili
     const attachedTypeFunctions = SPELLMAKER_TOOLS_FUNCTIONS[attachedToTarget.type];
     if (attachedTypeFunctions && attachedTypeFunctions.getClosestCenter) startPosition = attachedTypeFunctions.getClosestCenter(attachedToTarget, startPosition);
 
-    const orbitCenter = determineClosestOrbitCenter(tool, ability, castPositionRelativeToCharacter);
+    const orbitCenter = spellmakerCreateObjectDetermineClosestCenter(tool, ability, castPositionRelativeToCharacter);
     const workInProgress: SpellmakerCreateToolMoveAttachmentOrbiter = {
         type: SPELLMAKER_TOOL_ORBITER,
         startPos: startPosition,
         center: orbitCenter.pos,
-        refIndex: orbitCenter.orbitIndex,
+        refIndex: orbitCenter.createObjectIndex,
     }
     moveTool.workInProgress = workInProgress;
 }
@@ -102,9 +100,9 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
                 x: clientInfo.lastMousePosition.x - abilityOwner.x,
                 y: clientInfo.lastMousePosition.y - abilityOwner.y,
             };
-            const orbitCenter = determineClosestOrbitCenter(tool, ability, relativPos);
+            const orbitCenter = spellmakerCreateObjectDetermineClosestCenter(tool, ability, relativPos);
             orbiter.center = orbitCenter.pos;
-            orbiter.refIndex = orbitCenter.orbitIndex;
+            orbiter.refIndex = orbitCenter.createObjectIndex;
         }
     }
 }
@@ -179,43 +177,4 @@ function getMoveAttachmentNextMoveByAmount(moveAttach: SpellmakerCreateToolMoveA
     orbiter.angle += orbiter.angleTickChange;
     const newPosition: Position = calculateMovePosition(orbiter.center, orbiter.angle, orbiter.orbitRadius, false);
     return { x: newPosition.x - abilityObject.x, y: newPosition.y - abilityObject.y };
-}
-
-
-function determineClosestOrbitCenter(tool: SpellmakerCreateTool, ability: AbilitySpellmaker, relativePosition: Position): { pos: Position, orbitIndex: number } {
-    let orbitCenter: Position = { x: 0, y: 0 };
-    let currentObjects = ability.spells[ability.spellIndex].createdObjects;
-    let orbitIndex = REF_BEFORE_INDEX;
-    if (ability.attachToIndex === undefined) {
-        return { pos: orbitCenter, orbitIndex };
-    }
-    let currentStage = 0;
-    while (currentStage < ability.spellmakeStage) {
-        const attachedToObject = currentObjects[ability.attachToIndex[currentStage]];
-        const attachedTypeFunctions = SPELLMAKER_TOOLS_FUNCTIONS[attachedToObject.type];
-        if (attachedTypeFunctions && attachedTypeFunctions.getClosestCenter) {
-            orbitCenter = attachedTypeFunctions.getClosestCenter(attachedToObject, relativePosition);
-        }
-        currentObjects = attachedToObject.nextStage;
-        currentStage++;
-    }
-
-    let closestDistance = calculateDistance(orbitCenter, relativePosition);
-    for (let i = 0; i < currentObjects.length; i++) {
-        const object = currentObjects[i];
-        if (i === ability.attachToIndex[ability.attachToIndex.length - 1]) continue;
-        const objectFunctions = SPELLMAKER_TOOLS_FUNCTIONS[object.type];
-        if (!objectFunctions.calculateDistance) continue;
-        const tempDistance = objectFunctions.calculateDistance(relativePosition, object);
-        if (tempDistance < 30 && tempDistance < closestDistance) {
-            closestDistance = tempDistance;
-            orbitIndex = i;
-            if (objectFunctions.getClosestCenter) {
-                orbitCenter = objectFunctions.getClosestCenter(object, relativePosition);
-            } else {
-                orbitCenter = relativePosition;
-            }
-        }
-    }
-    return { pos: orbitCenter, orbitIndex };
 }

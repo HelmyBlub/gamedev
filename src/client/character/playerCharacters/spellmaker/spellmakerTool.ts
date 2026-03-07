@@ -2,7 +2,7 @@ import { AbilityObject, AbilityOwner, addAbilityToCharacter, createAbility } fro
 import { IMAGE_NAME_SWITCH } from "../../../ability/musician/abilityMusicSheetChangeInstrument.js";
 import { IMAGE_NAME_DELETE } from "../../../ability/musician/abilityMusicSheetDeleteNote.js";
 import { IMAGE_NAME_RELOAD } from "../../../ability/snipe/abilitySnipe.js";
-import { deepCopy } from "../../../game.js";
+import { calculateDistance, deepCopy } from "../../../game.js";
 import { Game, Position } from "../../../gameModel.js";
 import { paintTextWithOutline } from "../../../gamePaint.js";
 import { GAME_IMAGES } from "../../../imageLoad.js";
@@ -83,6 +83,7 @@ export const SPELLMAKER_TOOL_RESET = "Reset";
 export const SPELLMAKER_TOOL_NEW = "New Spell";
 export const SPELLMAKER_TOOL_DELETE = "Delete Spell";
 export const SPELLMAKER_TOOL_SPELL_TYPE = "Change Spell Type";
+export const SPELLMAKER_REF_BEFORE_INDEX = -1;
 
 export const IMAGE_PLUS = "plusIcon";
 GAME_IMAGES[IMAGE_PLUS] = {
@@ -196,6 +197,53 @@ export function spellmakerNextStageSetup(nextStage: SpellmakerCreateToolObjectDa
         object.castPosOffset = { x: -castOffset.x, y: -castOffset.y };
     }
     return copy;
+}
+
+export function spellmakerCreateObjectDetermineClosestCenter(tool: SpellmakerCreateTool, ability: AbilitySpellmaker, relativePosition: Position): { pos: Position, createObjectIndex: number, startPos: Position } {
+    let closestCenter: Position = { x: 0, y: 0 };
+    let startPosition: Position = { x: 0, y: 0 };
+    let currentObjects = ability.spells[ability.spellIndex].createdObjects;
+    let orbitIndex = SPELLMAKER_REF_BEFORE_INDEX;
+    if (ability.attachToIndex === undefined) {
+        return { pos: closestCenter, createObjectIndex: orbitIndex, startPos: startPosition };
+    }
+    let currentStage = 0;
+    while (currentStage < ability.spellmakeStage) {
+        const attachedToObject = currentObjects[ability.attachToIndex[currentStage]];
+        const attachedTypeFunctions = SPELLMAKER_TOOLS_FUNCTIONS[attachedToObject.type];
+        if (attachedTypeFunctions) {
+            if (attachedTypeFunctions.getClosestCenter) {
+                closestCenter = attachedTypeFunctions.getClosestCenter(attachedToObject, relativePosition);
+            }
+            if (attachedTypeFunctions.getRelativeSpellmakePosition) {
+                startPosition = attachedTypeFunctions.getRelativeSpellmakePosition(attachedToObject);
+            }
+        }
+        currentObjects = attachedToObject.nextStage;
+        currentStage++;
+    }
+
+    let closestDistance = calculateDistance(closestCenter, relativePosition);
+    for (let i = 0; i < currentObjects.length; i++) {
+        const object = currentObjects[i];
+        if (i === ability.attachToIndex[ability.attachToIndex.length - 1]) continue;
+        const objectFunctions = SPELLMAKER_TOOLS_FUNCTIONS[object.type];
+        if (!objectFunctions.calculateDistance) continue;
+        const tempDistance = objectFunctions.calculateDistance(relativePosition, object);
+        if (tempDistance < 30 && tempDistance < closestDistance) {
+            closestDistance = tempDistance;
+            orbitIndex = i;
+            if (objectFunctions.getClosestCenter) {
+                closestCenter = objectFunctions.getClosestCenter(object, relativePosition);
+            } else {
+                closestCenter = relativePosition;
+            }
+            if (objectFunctions.getRelativeSpellmakePosition) {
+                startPosition = objectFunctions.getRelativeSpellmakePosition(object);
+            }
+        }
+    }
+    return { pos: closestCenter, createObjectIndex: orbitIndex, startPos: startPosition };
 }
 
 function calculateManaFactorAndDamageFactor(ability: AbilitySpellmaker) {
