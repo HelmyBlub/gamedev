@@ -4,9 +4,7 @@ increase version
 current tasks:     
 - new class spellmaker
     - move attach: do same movement as attached spell object
-        - bug: double attach to player incorrect spawn
         - bug: positioning slightly off, why?
-        - check: player attach +  charge
         - icon
     - 4 more upgrades
         - 2 more starting spells

@@ -8,9 +8,10 @@ import { GAME_IMAGES } from "../../../imageLoad.js";
 
 const REF_BEFORE_INDEX = -1;
 export type SpellmakerCreateToolMoveAttachmentAttach = SpellmakerCreateToolMoveAttachment & {
-    center: Position,
-    attachCenter: Position,
-    relativeOffset: Position,
+    pos1Center: Position,
+    pos1Start: Position,
+    pos2Center: Position,
+    relativeStartPosOffset: Position,
     refIndex: number,
 }
 
@@ -70,12 +71,18 @@ function onKeyDown(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, abili
     if (attachedTypeFunctions && attachedTypeFunctions.getClosestCenter) startPosition = attachedTypeFunctions.getClosestCenter(attachedToTarget, startPosition);
 
     const closest = spellmakerCreateObjectDetermineClosestCenter(tool, ability, castPositionRelativeToCharacter);
+
+    let pos1Start: Position = { x: startPosition.x, y: startPosition.y };
+    if (attachedTypeFunctions.getRelativeSpellmakePosition) {
+        pos1Start = attachedTypeFunctions.getRelativeSpellmakePosition(attachedToTarget);
+    }
     const workInProgress: SpellmakerCreateToolMoveAttachmentAttach = {
         type: SPELLMAKER_TOOL_ATTACH,
-        center: startPosition,
+        pos1Center: startPosition,
         refIndex: closest.createObjectIndex,
-        attachCenter: closest.pos,
-        relativeOffset: { x: startPosition.x - closest.startPos.x, y: startPosition.y - closest.startPos.y },
+        pos2Center: closest.pos,
+        pos1Start: pos1Start,
+        relativeStartPosOffset: { x: startPosition.x - closest.startPos.x, y: startPosition.y - closest.startPos.y },
     }
     moveTool.workInProgress = workInProgress;
 }
@@ -102,8 +109,8 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
             };
             const closest = spellmakerCreateObjectDetermineClosestCenter(tool, ability, relativPos);
             attach.refIndex = closest.createObjectIndex;
-            attach.attachCenter = closest.pos;
-            attach.relativeOffset = { x: closest.startPos.x - attach.center.x, y: closest.startPos.y - attach.center.y };
+            attach.pos2Center = closest.pos;
+            attach.relativeStartPosOffset = { x: closest.startPos.x - attach.pos1Start.x, y: closest.startPos.y - attach.pos1Start.y };
         }
     }
 }
@@ -113,12 +120,12 @@ function paint(ctx: CanvasRenderingContext2D, moveAttachment: SpellmakerCreateTo
     ctx.strokeStyle = "black";
     ctx.lineWidth = 2;
     const startPaintPos: Position = {
-        x: paintPos.x + attach.center.x,
-        y: paintPos.y + attach.center.y,
+        x: paintPos.x + attach.pos1Center.x,
+        y: paintPos.y + attach.pos1Center.y,
     }
     const endPaintPos: Position = {
-        x: paintPos.x + attach.attachCenter.x,
-        y: paintPos.y + attach.attachCenter.y,
+        x: paintPos.x + attach.pos2Center.x,
+        y: paintPos.y + attach.pos2Center.y,
     }
     ctx.beginPath();
     ctx.moveTo(startPaintPos.x, startPaintPos.y);
@@ -136,7 +143,7 @@ function getMoveAttachment(createObject: SpellmakerCreateToolObjectData, preStag
         type: SPELLMAKER_TOOL_ATTACH,
         stageIdRef: stageIdRef,
         stageIndexRef: stageIndexRef,
-        relativeOffset: { x: attach.relativeOffset.x, y: attach.relativeOffset.y },
+        relativeOffset: { x: attach.relativeStartPosOffset.x, y: attach.relativeStartPosOffset.y },
     };
     return moveAttach;
 }
