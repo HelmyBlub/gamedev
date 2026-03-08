@@ -143,6 +143,7 @@ function getMoveAttachment(createObject: SpellmakerCreateToolObjectData, preStag
 
 function getMoveAttachmentNextMoveByAmount(moveAttach: SpellmakerCreateToolMoveAttachment, abilityObject: AbilitySpellmakerObject, game: Game): Position {
     const attach = moveAttach as SpellmakerCreateObjectMoveAttachmentAttach;
+    if (attach.refNotFound) return { x: 0, y: 0 };
     let attachPosition: Position = { x: 0, y: 0 };
     if (attach.stageIdRef === undefined || attach.stageIndexRef === undefined) {
         if (abilityObject.abilityIdRef === undefined) return { x: 0, y: 0 };
@@ -163,6 +164,7 @@ function getMoveAttachmentNextMoveByAmount(moveAttach: SpellmakerCreateToolMoveA
         if (centerObject) attachPosition = { x: centerObject.x, y: centerObject.y }
         else {
             attach.refNotFound = true;
+            return { x: 0, y: 0 };
         };
     }
     const newPosition: Position = { x: attachPosition.x - attach.relativeOffset.x, y: attachPosition.y - attach.relativeOffset.y };

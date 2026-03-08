@@ -388,6 +388,7 @@ function paintToolObjectsRecusiveForCharging(ctx: CanvasRenderingContext2D, abil
     if (toolFunctions.paint) {
         if (currentStage === 0 && createdObject.moveAttachment) {
             let currentObject = createdObject;
+            const visited: number[] = [];
             while (currentObject.moveAttachment && (currentObject.moveAttachment.type === SPELLMAKER_TOOL_ORBITER || currentObject.moveAttachment.type === SPELLMAKER_TOOL_ATTACH)) {
                 const lockedObject = currentObject.moveAttachment as SpellmakerCreateToolMoveAttachmentOrbiter;
                 if (lockedObject.refIndex === SPELLMAKER_REF_BEFORE_INDEX) {
@@ -395,6 +396,8 @@ function paintToolObjectsRecusiveForCharging(ctx: CanvasRenderingContext2D, abil
                     modPaintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition, game.UI.zoom);
                     break;
                 }
+                if (visited.indexOf(lockedObject.refIndex) > -1) break;
+                visited.push(lockedObject.refIndex);
                 currentObject = spell.createdObjects[lockedObject.refIndex];
             }
         }
@@ -727,7 +730,24 @@ function spellCast(abilityOwner: AbilityOwner, abilitySm: AbilitySpellmaker, spe
                 currentSpell.spellType === SPELLMAKER_SPELLTYPE_AUTOCAST && !isAutocast ? SPELLMAKER_SPELLTYPE_INSTANT : currentSpell.spellType,
                 createdObject.type,
             ];
-            const modCastPosition = getModCastPosition(abilityOwner.faction, currentSpell, castPosition, isAutocast);
+            let modCastPosition = getModCastPosition(abilityOwner.faction, currentSpell, castPosition, isAutocast);
+            if (createdObject.moveAttachment) {
+                let currentObject = createdObject;
+                const visited: number[] = [stageIndex];
+                while (currentObject.moveAttachment && (currentObject.moveAttachment.type === SPELLMAKER_TOOL_ORBITER || currentObject.moveAttachment.type === SPELLMAKER_TOOL_ATTACH)) {
+                    const lockedObject = currentObject.moveAttachment as SpellmakerCreateToolMoveAttachmentOrbiter;
+                    if (lockedObject.refIndex === SPELLMAKER_REF_BEFORE_INDEX) {
+                        modCastPosition = {
+                            x: abilityOwner.x,
+                            y: abilityOwner.y,
+                        };
+                        break;
+                    }
+                    if (visited.indexOf(lockedObject.refIndex) > -1) break;
+                    visited.push(lockedObject.refIndex);
+                    currentObject = currentSpell.createdObjects[lockedObject.refIndex];
+                }
+            }
             toolFunctions.spellCast(createdObject, abilitySm.baseDamage, abilityOwner.faction, abilitySm.id, modCastPosition, damageFactor, abilitySm.manaLevelFactor, chargeFactor, toolChain, stageId, stageIndex, game);
         }
     }
