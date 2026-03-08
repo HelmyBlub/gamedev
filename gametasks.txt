@@ -6,6 +6,8 @@ current tasks:
     - move attach: do same movement as attached spell object
         - bug: double attach to player incorrect spawn
         - bug: positioning slightly off, why?
+        - check: player attach +  charge
+        - icon
     - 4 more upgrades
         - 2 more starting spells
             - laser: long line instant damage
@@ -14,6 +16,7 @@ current tasks:
             - fire circle
             - explosion rectangle
         - 3 more other
+            - repeater: like turret but shoots in intervals
             - move: follow
             - apply debuff: slow
             - apply buff: speed

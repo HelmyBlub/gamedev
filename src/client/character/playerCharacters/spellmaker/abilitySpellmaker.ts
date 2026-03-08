@@ -16,13 +16,13 @@ import { moveDirectionToCharacterSpriteIndex } from "../../characterPaint.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../upgrade.js";
 import { CHARACTER_PET_TYPE_CLONE } from "../characterPetTypeClone.js";
 import { addAbilitySpellmakerUpgradeTools } from "./abilitySpellmakerUpgrades.js";
-import { addSpellmakerToolsDefault, getHoverTooltip, SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOL_RESET, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateToolsData } from "./spellmakerTool.js";
-import { addSpellmakerToolAttach } from "./spellmakerToolAttach.js";
+import { addSpellmakerToolsDefault, getHoverTooltip, SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_REF_BEFORE_INDEX, SPELLMAKER_TOOL_RESET, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateToolsData } from "./spellmakerTool.js";
+import { addSpellmakerToolAttach, SPELLMAKER_TOOL_ATTACH } from "./spellmakerToolAttach.js";
 import { addSpellmakerToolExplosion, CreateToolObjectExplosionData, SPELLMAKER_TOOL_EXPLOSION } from "./spellmakerToolExplosion.js";
 import { addSpellmakerToolFireline, CreateToolObjectFireLineData, SPELLMAKER_TOOL_FIRELINE } from "./spellmakerToolFireLine.js";
 import { addSpellmakerToolLightning, CreateToolObjectLightningData, SPELLMAKER_TOOL_LIGHTNING } from "./spellmakerToolLightning.js";
 import { addSpellmakerToolMove } from "./spellmakerToolMove.js";
-import { addSpellmakerToolOrbiter, SPELLMAKER_TOOL_ORBITER, SpellmakerCreateObjectMoveAttachmentOrbiter } from "./spellmakerToolOrbiter.js";
+import { addSpellmakerToolOrbiter, SPELLMAKER_TOOL_ORBITER, SpellmakerCreateObjectMoveAttachmentOrbiter, SpellmakerCreateToolMoveAttachmentOrbiter } from "./spellmakerToolOrbiter.js";
 import { addSpellmakerToolSeeker } from "./spellmakerToolSeeker.js";
 import { addSpellmakerToolProximity } from "./spellmakerToolTriggerProximity.js";
 import { addSpellmakerToolTurret, SPELLMAKER_TOOL_TURRET, SpellmakerCreateToolObjectTurretData, SpellmakerCreateToolTurret } from "./spellmakerToolTurret.js";
@@ -382,15 +382,20 @@ function paintToolObjectsRecusive(ctx: CanvasRenderingContext2D, currentStage: n
     }
 }
 
-function paintToolObjectsRecusiveForCharging(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, currentStage: number, createdObject: SpellmakerCreateToolObjectData, ability: AbilitySpellmaker, paintPos: Position, chargeFactor: number, game: Game) {
+function paintToolObjectsRecusiveForCharging(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner, currentStage: number, createdObject: SpellmakerCreateToolObjectData, ability: AbilitySpellmaker, paintPos: Position, chargeFactor: number, spell: SpellmakerSpell, game: Game) {
     const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[createdObject.type];
     let modPaintPos: Position = { x: paintPos.x, y: paintPos.y };
     if (toolFunctions.paint) {
-        if (currentStage === 0 && createdObject.moveAttachment && createdObject.moveAttachment.type === SPELLMAKER_TOOL_ORBITER) {
-            const orbiter = createdObject.moveAttachment as SpellmakerCreateObjectMoveAttachmentOrbiter;
-            if (orbiter.stageIdRef === undefined) {
-                const cameraPosition = getCameraPosition(game);
-                modPaintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition, game.UI.zoom);
+        if (currentStage === 0 && createdObject.moveAttachment) {
+            let currentObject = createdObject;
+            while (currentObject.moveAttachment && (currentObject.moveAttachment.type === SPELLMAKER_TOOL_ORBITER || currentObject.moveAttachment.type === SPELLMAKER_TOOL_ATTACH)) {
+                const lockedObject = currentObject.moveAttachment as SpellmakerCreateToolMoveAttachmentOrbiter;
+                if (lockedObject.refIndex === SPELLMAKER_REF_BEFORE_INDEX) {
+                    const cameraPosition = getCameraPosition(game);
+                    modPaintPos = getPointPaintPosition(ctx, abilityOwner, cameraPosition, game.UI.zoom);
+                    break;
+                }
+                currentObject = spell.createdObjects[lockedObject.refIndex];
             }
         }
         toolFunctions.paint(ctx, createdObject, modPaintPos, ability, chargeFactor, game);
@@ -401,7 +406,7 @@ function paintToolObjectsRecusiveForCharging(ctx: CanvasRenderingContext2D, abil
     }
     if (currentStage < 1) {
         for (let stageObjects of createdObject.nextStage) {
-            paintToolObjectsRecusiveForCharging(ctx, abilityOwner, currentStage + 1, stageObjects, ability, modPaintPos, chargeFactor, game);
+            paintToolObjectsRecusiveForCharging(ctx, abilityOwner, currentStage + 1, stageObjects, ability, modPaintPos, chargeFactor, spell, game);
         }
     }
 }
@@ -462,7 +467,7 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
             mapPositionForPaint = getModCastPosition(abilityOwner.faction, currentSpell, mapPositionForPaint);
             const paintPos: Position = getPointPaintPosition(ctx, mapPositionForPaint, cameraPosition, game.UI.zoom);
             for (let createdObject of currentSpell.createdObjects) {
-                paintToolObjectsRecusiveForCharging(ctx, abilityOwner, 0, createdObject, abilitySm, paintPos, chargeFactor, game);
+                paintToolObjectsRecusiveForCharging(ctx, abilityOwner, 0, createdObject, abilitySm, paintPos, chargeFactor, currentSpell, game);
             }
         }
     }
