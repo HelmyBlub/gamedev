@@ -28,12 +28,12 @@ export type SpellmakerCreateToolAttach = SpellmakerCreateTool & {
 }
 
 export const SPELLMAKER_TOOL_ATTACH = "Attach";
-export const IMAGE_ATTACH = "orbitIcon";
-// GAME_IMAGES[IMAGE_ATTACH] = {
-//     imagePath: "/images/orbitIcon.png",
-//     spriteRowHeights: [],
-//     spriteRowWidths: [],
-// };
+export const IMAGE_ATTACH = "attachIcon";
+GAME_IMAGES[IMAGE_ATTACH] = {
+    imagePath: "/images/paperclipIcon.png",
+    spriteRowHeights: [],
+    spriteRowWidths: [],
+};
 
 export function addSpellmakerToolAttach() {
     SPELLMAKER_MOVE_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_ATTACH] = {

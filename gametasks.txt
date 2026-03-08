@@ -4,7 +4,6 @@ increase version
 current tasks:     
 - new class spellmaker
     - move attach: do same movement as attached spell object
-        - bug: positioning slightly off, why?
         - icon
     - 4 more upgrades
         - 2 more starting spells
