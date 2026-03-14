@@ -3,18 +3,19 @@ increase version
 
 current tasks:     
 - new class spellmaker
-    - move attach: do same movement as attached spell object
-        - icon
+    - spell idea: slow aura
+        - tool: fire circle
+        - tool: slow debuff
+        - fire circle + slow effect + repeater + attach to player
     - 4 more upgrades
         - 2 more starting spells
             - laser: long line instant damage
                 - always start from pre stage center
                 - define range and angle
-            - fire circle
+                - problem: how to aim?
             - explosion rectangle
         - 3 more other
             - repeater: like turret but shoots in intervals
-            - move: follow
             - apply debuff: slow
             - apply buff: speed
     - "undo" tool

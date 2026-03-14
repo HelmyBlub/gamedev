@@ -13,7 +13,6 @@ export type AbilitySpellmakerFireLine = Ability & {
 type AbilityObjectSpellmakerFireLine = AbilitySpellmakerObject & {
     fireLineJoints: Position[],
     moveAttachment?: SpellmakerCreateToolMoveAttachment,
-    moveSpeed: number,
     endTime: number,
     tickInterval: number,
     nextTickTime?: number,
@@ -39,7 +38,6 @@ export function createAbilityObjectSpellmakerFireLine(
     damage: number,
     width: number,
     duration: number,
-    moveSpeed: number,
     tickInterval: number,
     color: string,
     damageFactor: number,
@@ -60,7 +58,6 @@ export function createAbilityObjectSpellmakerFireLine(
         faction: faction,
         x: startPosition.x,
         y: startPosition.y,
-        moveSpeed: moveSpeed,
         fireLineJoints: deepCopy(fireLineJoints),
         moveAttachment: deepCopy(moveAttachment),
         endTime: game.state.time + duration,

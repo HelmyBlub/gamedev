@@ -87,7 +87,7 @@ function calculateManaCost(createObject: SpellmakerCreateToolObjectData): number
     const fireLine = createObject as CreateToolObjectFireLineData;
     let manaCost = 0;
     for (let i = 1; i < fireLine.positions.length; i++) {
-        const distance = calculateDistance(fireLine.positions[i - 1], fireLine.positions[i]) / 50;
+        const distance = calculateDistance(fireLine.positions[i - 1], fireLine.positions[i]) / 100;
         manaCost += distance;
     }
     return manaCost;
@@ -163,10 +163,9 @@ function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: num
             moveAttachment = toolFunctions.getMoveAttachment(createObject, preStageAbilityObject, stageId, castPosition, game);
         }
     }
-    const moveSpeed = 2;
     const width = 10;
     const duration = 5000 * chargedValues.durationFactor;
-    const objectFireLine = createAbilityObjectSpellmakerFireLine(faction, start, joints, moveAttachment, damage, width, duration, moveSpeed, tickInterval, "red", damageFactor, manaFactor, chargeFactor, newToolChain, abilityId, stageId, stageIndex, game);
+    const objectFireLine = createAbilityObjectSpellmakerFireLine(faction, start, joints, moveAttachment, damage, width, duration, tickInterval, "red", damageFactor, manaFactor, chargeFactor, newToolChain, abilityId, stageId, stageIndex, game);
     game.state.abilityObjects.push(objectFireLine);
 }
 

@@ -12,6 +12,7 @@ import { CharacterClass, paintPlayerAbilityLevelUI, PLAYER_CHARACTER_CLASSES_FUN
 import { ABILITY_NAME_SPELLMAKER, AbilitySpellmaker, addAbilitySpellmaker } from "./abilitySpellmaker.js";
 import { ABILITY_NAME_SPELLMAKER_CHANGE_MODE, addAbilitySpellmakerChangeMode } from "./abilitySpellmakerChangeMode.js";
 import { addAbilitySpellmakerExplode } from "./abilitySpellmakerExplode.js";
+import { addAbilitySpellmakerFireCircle } from "./abilitySpellmakerFireCircle.js";
 import { addAbilitySpellmakerFireLine } from "./abilitySpellmakerFireLine.js";
 import { addAbilitySpellmakerLightning } from "./abilitySpellmakerLightning.js";
 import { addAbilitySpellmakerProximity } from "./abilitySpellmakerProximity.js";
@@ -39,6 +40,7 @@ export function addSpellmakerClass() {
     addAbilitySpellmakerLightning();
     addAbilitySpellmakerExplode();
     addAbilitySpellmakerTurret();
+    addAbilitySpellmakerFireCircle();
 }
 
 function paintLevelUI(ctx: CanvasRenderingContext2D, character: Character, charClass: CharacterClass, topLeft: Position, width: number, height: number, game: Game) {

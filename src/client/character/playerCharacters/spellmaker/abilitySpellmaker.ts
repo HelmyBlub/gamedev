@@ -19,6 +19,7 @@ import { addAbilitySpellmakerUpgradeTools } from "./abilitySpellmakerUpgrades.js
 import { addSpellmakerToolsDefault, getHoverTooltip, SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_REF_BEFORE_INDEX, SPELLMAKER_TOOL_RESET, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateToolsData } from "./spellmakerTool.js";
 import { addSpellmakerToolAttach, SPELLMAKER_TOOL_ATTACH } from "./spellmakerToolAttach.js";
 import { addSpellmakerToolExplosion, CreateToolObjectExplosionData, SPELLMAKER_TOOL_EXPLOSION } from "./spellmakerToolExplosion.js";
+import { addSpellmakerToolFireCircle } from "./spellmakerToolFireCircle.js";
 import { addSpellmakerToolFireline, CreateToolObjectFireLineData, SPELLMAKER_TOOL_FIRELINE } from "./spellmakerToolFireLine.js";
 import { addSpellmakerToolLightning, CreateToolObjectLightningData, SPELLMAKER_TOOL_LIGHTNING } from "./spellmakerToolLightning.js";
 import { addSpellmakerToolMove } from "./spellmakerToolMove.js";
@@ -147,6 +148,7 @@ export function addAbilitySpellmaker() {
     addSpellmakerToolOrbiter();
     addSpellmakerToolAttach();
     addAbilitySpellmakerUpgradeTools();
+    addSpellmakerToolFireCircle();
 }
 
 function createAbility(
