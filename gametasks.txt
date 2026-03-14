@@ -3,10 +3,9 @@ increase version
 
 current tasks:     
 - new class spellmaker
+    - icon: fireLine vs fireCircle
     - spell idea: slow aura
-        - tool: fire circle
         - tool: slow debuff
-        - fire circle + slow effect + repeater + attach to player
     - 4 more upgrades
         - 2 more starting spells
             - laser: long line instant damage

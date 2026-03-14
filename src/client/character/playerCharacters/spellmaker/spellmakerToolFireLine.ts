@@ -16,9 +16,9 @@ export type SpellmakerCreateToolFireLine = SpellmakerCreateTool & {
 }
 
 export const SPELLMAKER_TOOL_FIRELINE = "FireLine";
-export const IMAGE_FIRE = "fireIcon";
-GAME_IMAGES[IMAGE_FIRE] = {
-    imagePath: "/images/fire.png",
+const IMAGE_FIRE_LINE = "fireLineIcon";
+GAME_IMAGES[IMAGE_FIRE_LINE] = {
+    imagePath: "/images/fireLineIcon.png",
     spriteRowHeights: [],
     spriteRowWidths: [],
 };
@@ -62,7 +62,7 @@ function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
         subType: "default",
         level: 0,
         totalDamage: 0,
-        buttonImage: IMAGE_FIRE,
+        buttonImage: IMAGE_FIRE_LINE,
     };
 }
 

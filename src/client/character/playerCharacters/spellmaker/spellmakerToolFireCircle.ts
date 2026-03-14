@@ -4,6 +4,7 @@ import { Position, Game, ClientInfo } from "../../../gameModel.js";
 import { AbilitySpellmaker, AbilitySpellmakerObject, SPELLMAKER_MAX_CAST_RANGE, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
 import { createAbilityObjectSpellmakerFireCircle } from "./abilitySpellmakerFireCircle.js";
+import { GAME_IMAGES } from "../../../imageLoad.js";
 
 export type CreateToolObjectFireCircleData = SpellmakerCreateToolObjectData & {
     center: Position,
@@ -17,12 +18,12 @@ export type SpellmakerCreateToolFireCircle = SpellmakerCreateTool & {
 }
 
 export const SPELLMAKER_TOOL_FIRECIRCLE = "FireCircle";
-export const IMAGE_FIRE_CIRCLE = "fireIcon";
-// GAME_IMAGES[IMAGE_FIRE] = {
-//     imagePath: "/images/fire.png",
-//     spriteRowHeights: [],
-//     spriteRowWidths: [],
-// };
+const IMAGE_FIRE_CIRCLE = "fireCircleIcon";
+GAME_IMAGES[IMAGE_FIRE_CIRCLE] = {
+    imagePath: "/images/fireCircleIcon.png",
+    spriteRowHeights: [],
+    spriteRowWidths: [],
+};
 
 
 export function addSpellmakerToolFireCircle() {
