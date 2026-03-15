@@ -1,11 +1,10 @@
 import { Ability } from "../../../ability/ability.js";
 import { AbilityUpgrade } from "../../../ability/abilityUpgrade.js";
 import { Game } from "../../../gameModel.js";
-import { createMoreInfosPart } from "../../../moreInfo.js";
 import { Character } from "../../characterModel.js";
 import { AbilityUpgradeOption, UpgradeOptionAndProbability } from "../../upgrade.js";
 import { ABILITY_SPELLMAKER_UPGRADE_FUNCTIONS, AbilitySpellmaker, SPELLMAKER_SPELLTYPES } from "./abilitySpellmaker.js";
-import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOL_SPELL_TYPE, SPELLMAKER_TOOL_SWITCH_STAGE, SPELLMAKER_TOOLS_FUNCTIONS } from "./spellmakerTool.js";
+import { SPELLMAKER_DEBUFF_TOOLS_FUNCTIONS, SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOL_SPELL_TYPE, SPELLMAKER_TOOL_SWITCH_STAGE, SPELLMAKER_TOOLS_FUNCTIONS } from "./spellmakerTool.js";
 
 
 type AbilitySpellmakerUpgradeTools = AbilityUpgrade & {
@@ -28,7 +27,7 @@ function getOptions(ability: Ability): UpgradeOptionAndProbability[] {
         if (abilitySm.createTools.createTools.find(ct => ct.type === key)) continue;
         const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[key];
         if (!toolFunctions.learnedThroughUpgrade) continue;
-        if (isFirstUpgradeChoice && !toolFunctions.availableOnFirstUpgradeChoice) continue;
+        if (isFirstUpgradeChoice && !toolFunctions.doesDamage) continue;
         const option: AbilityUpgradeOption = {
             displayText: key,
             identifier: ABILITY_SPELLMAKER_UPGRADE_TOOLS,
@@ -58,6 +57,25 @@ function getOptions(ability: Ability): UpgradeOptionAndProbability[] {
                 boss: true,
             }
             option.displayMoreInfoText = SPELLMAKER_MOVE_TOOLS_FUNCTIONS[key].description;
+            options.push({
+                option: option,
+                probability: 1,
+            });
+        }
+        for (let key of Object.keys(SPELLMAKER_DEBUFF_TOOLS_FUNCTIONS)) {
+            if (abilitySm.createTools.createTools.find(ct => ct.type === key)) continue;
+            const toolFunctions = SPELLMAKER_DEBUFF_TOOLS_FUNCTIONS[key];
+            if (!toolFunctions.learnedThroughUpgrade) continue;
+
+            const option: AbilityUpgradeOption = {
+                displayText: key,
+                identifier: ABILITY_SPELLMAKER_UPGRADE_TOOLS,
+                additionalInfo: key,
+                name: ability.name,
+                type: "Ability",
+                boss: true,
+            }
+            option.displayMoreInfoText = SPELLMAKER_DEBUFF_TOOLS_FUNCTIONS[key].description;
             options.push({
                 option: option,
                 probability: 1,
@@ -109,6 +127,8 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption, character
         }
     } else if (SPELLMAKER_MOVE_TOOLS_FUNCTIONS[option.additionalInfo]) {
         spellmaker.createTools.createTools.push(SPELLMAKER_MOVE_TOOLS_FUNCTIONS[option.additionalInfo].createTool(game.ctx));
+    } else if (SPELLMAKER_DEBUFF_TOOLS_FUNCTIONS[option.additionalInfo]) {
+        spellmaker.createTools.createTools.push(SPELLMAKER_DEBUFF_TOOLS_FUNCTIONS[option.additionalInfo].createTool(game.ctx));
     } else {
         const spelltypeData = SPELLMAKER_SPELLTYPES.find(st => st.name === option.additionalInfo);
         if (spelltypeData) {

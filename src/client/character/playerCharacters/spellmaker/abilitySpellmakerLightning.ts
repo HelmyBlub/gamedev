@@ -1,4 +1,5 @@
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, findAbilityAndOwnerInCharacterById, findAbilityById, PaintOrderAbility } from "../../../ability/ability.js";
+import { applyDebuff } from "../../../debuff/debuff.js";
 import { getNextId, getCameraPosition } from "../../../game.js";
 import { FACTION_ENEMY, FACTION_PLAYER, Game, IdCounter, Position } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
@@ -6,7 +7,7 @@ import { nextRandom } from "../../../randomNumberGenerator.js";
 import { characterTakeDamage, determineCharactersInDistance, getCharactersTouchingLine } from "../../character.js";
 import { Character } from "../../characterModel.js";
 import { AbilitySpellmaker, AbilitySpellmakerObject } from "./abilitySpellmaker.js";
-import { spellmakerAddToolDamage } from "./spellmakerTool.js";
+import { SPELLMAKER_DEBUFF_TOOLS_FUNCTIONS, spellmakerAddToolDamage } from "./spellmakerTool.js";
 
 export type AbilitySpellmakerLightning = Ability & {
 }
@@ -143,6 +144,11 @@ function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
                     const randomTargetIndex = Math.floor(nextRandom(game.state.randomSeed) * targets.length);
                     const target = targets[randomTargetIndex];
                     characterTakeDamage(target, objectLightning.damage, game, objectLightning.abilityIdRef, ABILITY_NAME_SPELLMAKER_LIGHTNING, abilityObject);
+                    if (objectLightning.debuffAttachment) {
+                        const debuffFunctions = SPELLMAKER_DEBUFF_TOOLS_FUNCTIONS[objectLightning.debuffAttachment.type];
+                        const debuff = debuffFunctions.getDebuff(objectLightning.debuffAttachment, objectLightning, game);
+                        applyDebuff(debuff, target, game);
+                    }
                     if (ability) spellmakerAddToolDamage(ability, objectLightning.damage, objectLightning.toolChain, game);
                     objectLightning.jumpPositions.push({ x: target.x, y: target.y });
                     targets.splice(randomTargetIndex, 1);
@@ -173,6 +179,11 @@ function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
                 const characters: Character[] = getCharactersTouchingLine(game, currentPos, objectLightning.jumpPositions[jump], abilityObject.faction, LIGHTNING_WIDTH);
                 for (let char of characters) {
                     characterTakeDamage(char, objectLightning.damage, game, objectLightning.abilityIdRef, ABILITY_NAME_SPELLMAKER_LIGHTNING, abilityObject);
+                    if (objectLightning.debuffAttachment) {
+                        const debuffFunctions = SPELLMAKER_DEBUFF_TOOLS_FUNCTIONS[objectLightning.debuffAttachment.type];
+                        const debuff = debuffFunctions.getDebuff(objectLightning.debuffAttachment, objectLightning, game);
+                        applyDebuff(debuff, char, game);
+                    }
                 }
             }
         }

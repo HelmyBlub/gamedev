@@ -1,10 +1,11 @@
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, detectAbilityObjectCircleToCharacterHit, findAbilityAndOwnerInCharacterById, PaintOrderAbility } from "../../../ability/ability.js";
+import { applyDebuff } from "../../../debuff/debuff.js";
 import { calculateDistance, getCameraPosition, getNextId } from "../../../game.js";
 import { FACTION_ENEMY, FACTION_PLAYER, Game, IdCounter, Position } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
 import { characterTakeDamage, determineCharactersInDistance } from "../../character.js";
 import { AbilitySpellmaker, AbilitySpellmakerObject } from "./abilitySpellmaker.js";
-import { spellmakerAddToolDamage } from "./spellmakerTool.js";
+import { SPELLMAKER_DEBUFF_TOOLS_FUNCTIONS, spellmakerAddToolDamage } from "./spellmakerTool.js";
 
 export type AbilitySpellmakerExplode = Ability & {
     radius: number,
@@ -153,6 +154,11 @@ function tickAbilityObjectExplode(abilityObject: AbilityObject, game: Game) {
                 if (distance < abilityObjectExplode.radius + c.width / 2) {
                     let takeDamage = abilityObjectExplode.damage;
                     characterTakeDamage(c, takeDamage, game, abilityObject.abilityIdRef, abilityObject.type, abilityObject);
+                    if (abilityObjectExplode.debuffAttachment) {
+                        const debuffFunctions = SPELLMAKER_DEBUFF_TOOLS_FUNCTIONS[abilityObjectExplode.debuffAttachment.type];
+                        const debuff = debuffFunctions.getDebuff(abilityObjectExplode.debuffAttachment, abilityObjectExplode, game);
+                        applyDebuff(debuff, c, game);
+                    }
                     if (ability) spellmakerAddToolDamage(ability, abilityObjectExplode.damage, abilityObjectExplode.toolChain, game);
                 }
             }

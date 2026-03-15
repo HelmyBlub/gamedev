@@ -1,5 +1,5 @@
 import { AbilityOwner } from "../../../ability/ability.js";
-import { calculateDistance, calculateDistancePointToLine, findClientInfoByCharacterId } from "../../../game.js";
+import { calculateDistance, calculateDistancePointToLine, deepCopy, findClientInfoByCharacterId } from "../../../game.js";
 import { Position, Game, ClientInfo } from "../../../gameModel.js";
 import { AbilitySpellmaker, AbilitySpellmakerObject, SPELLMAKER_MAX_CAST_RANGE, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
@@ -46,7 +46,7 @@ export function addSpellmakerToolFireCircle() {
             `can have next stage: No`,
         ],
         learnedThroughUpgrade: true,
-        availableOnFirstUpgradeChoice: true,
+        doesDamage: true,
     };
 }
 
@@ -116,7 +116,7 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
                 x: clientInfo.lastMousePosition.x - abilityOwner.x,
                 y: clientInfo.lastMousePosition.y - abilityOwner.y,
             };
-            const explode = toolFireCircle.workInProgress;
+            const explode = toolFireCircle.workInProgress as CreateToolObjectFireCircleData;
             explode.radius = Math.max(10, Math.abs(relativePos.x - explode.center.x))
             explode.damageFactor = Math.min(10, (Math.max(1, Math.abs(relativePos.y - explode.center.y) / 10)));
         }
@@ -142,8 +142,12 @@ function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: num
         y: fireCircle.center.y + castPosition.y,
     };
 
-    const objectFireLine = createAbilityObjectSpellmakerFireCircle(faction, center, moveAttachment, tickDamage, chargedValues.radius, fireCircle.duration, tickInterval, "red", damageFactor, manaFactor, chargeFactor, newToolChain, abilityId, stageId, stageIndex, game);
-    game.state.abilityObjects.push(objectFireLine);
+    const objectFireCircle = createAbilityObjectSpellmakerFireCircle(faction, center, moveAttachment, tickDamage, chargedValues.radius, fireCircle.duration, tickInterval, "red", damageFactor, manaFactor, chargeFactor, newToolChain, abilityId, stageId, stageIndex, game);
+    if (createObject.debuffAttachment) {
+        objectFireCircle.debuffAttachment = deepCopy(createObject.debuffAttachment);
+    }
+
+    game.state.abilityObjects.push(objectFireCircle);
 }
 
 function paint(ctx: CanvasRenderingContext2D, createdObject: SpellmakerCreateToolObjectData, paintPos: Position, ability: AbilitySpellmaker, chargeFactor: number, game: Game) {

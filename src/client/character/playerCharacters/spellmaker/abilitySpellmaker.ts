@@ -16,8 +16,9 @@ import { moveDirectionToCharacterSpriteIndex } from "../../characterPaint.js";
 import { AbilityUpgradeOption, UpgradeOption, UpgradeOptionAndProbability } from "../../upgrade.js";
 import { CHARACTER_PET_TYPE_CLONE } from "../characterPetTypeClone.js";
 import { addAbilitySpellmakerUpgradeTools } from "./abilitySpellmakerUpgrades.js";
-import { addSpellmakerToolsDefault, getHoverTooltip, SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_REF_BEFORE_INDEX, SPELLMAKER_TOOL_RESET, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateToolsData } from "./spellmakerTool.js";
+import { addSpellmakerToolsDefault, getHoverTooltip, SPELLMAKER_DEBUFF_TOOLS_FUNCTIONS, SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_REF_BEFORE_INDEX, SPELLMAKER_TOOL_RESET, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateToolsData } from "./spellmakerTool.js";
 import { addSpellmakerToolAttach, SPELLMAKER_TOOL_ATTACH } from "./spellmakerToolAttach.js";
+import { addSpellmakerToolDebuffSlow } from "./spellmakerToolDebuffSlow.js";
 import { addSpellmakerToolExplosion, CreateToolObjectExplosionData, SPELLMAKER_TOOL_EXPLOSION } from "./spellmakerToolExplosion.js";
 import { addSpellmakerToolFireCircle } from "./spellmakerToolFireCircle.js";
 import { addSpellmakerToolFireline, CreateToolObjectFireLineData, SPELLMAKER_TOOL_FIRELINE } from "./spellmakerToolFireLine.js";
@@ -64,6 +65,7 @@ export type AbilitySpellmakerObject = AbilityObject & {
     chargeFactor: number,
     toolChain: string[],
     nextStage?: SpellmakerCreateToolObjectData[],
+    debuffAttachment?: SpellmakerCreateToolDebuffAttachment,
 }
 
 export type SpellmakerSpell = {
@@ -77,10 +79,15 @@ export type SpellmakerCreateToolObjectData = {
     baseDamage: number,
     castPosOffset?: Position,
     moveAttachment?: SpellmakerCreateToolMoveAttachment,
+    debuffAttachment?: SpellmakerCreateToolDebuffAttachment,
     nextStage: SpellmakerCreateToolObjectData[],
 }
 
 export type SpellmakerCreateToolMoveAttachment = {
+    type: string,
+}
+
+export type SpellmakerCreateToolDebuffAttachment = {
     type: string,
 }
 
@@ -139,16 +146,21 @@ export function addAbilitySpellmaker() {
     };
     addSpellmakerToolsDefault();
     addSpellmakerToolFireline();
-    addSpellmakerToolMove();
-    addSpellmakerToolExplosion();
-    addSpellmakerToolSeeker();
-    addSpellmakerToolProximity();
-    addSpellmakerToolLightning();
-    addSpellmakerToolTurret();
-    addSpellmakerToolOrbiter();
-    addSpellmakerToolAttach();
-    addAbilitySpellmakerUpgradeTools();
     addSpellmakerToolFireCircle();
+    addSpellmakerToolExplosion();
+    addSpellmakerToolLightning();
+
+    addSpellmakerToolMove();
+    addSpellmakerToolSeeker();
+    addSpellmakerToolOrbiter();
+
+    addSpellmakerToolProximity();
+    addSpellmakerToolTurret();
+    addSpellmakerToolAttach();
+
+    addSpellmakerToolDebuffSlow();
+
+    addAbilitySpellmakerUpgradeTools();
 }
 
 function createAbility(
@@ -320,6 +332,9 @@ function tickAbility(abilityOwner: AbilityOwner, ability: Ability, game: Game) {
         } else if (tool.subType == "move") {
             const toolFunctions = SPELLMAKER_MOVE_TOOLS_FUNCTIONS[tool.type];
             if (toolFunctions.onTick) toolFunctions.onTick(tool, abilityOwner, abilitySm, game);
+        } else if (tool.subType == "debuff") {
+            const toolFunctions = SPELLMAKER_DEBUFF_TOOLS_FUNCTIONS[tool.type];
+            if (toolFunctions.onTick) toolFunctions.onTick(tool, abilityOwner, abilitySm, game);
         }
     }
     if (abilitySm.autoCastSpellIndex !== undefined) {
@@ -375,6 +390,10 @@ function paintToolObjectsRecusive(ctx: CanvasRenderingContext2D, currentStage: n
                 const toolMoveFunctions = SPELLMAKER_MOVE_TOOLS_FUNCTIONS[createdObject.moveAttachment.type];
                 toolMoveFunctions.paint(ctx, createdObject.moveAttachment, ownerPaintPos, ability, game);
             }
+            if (createdObject.debuffAttachment) {
+                const toolMoveFunctions = SPELLMAKER_DEBUFF_TOOLS_FUNCTIONS[createdObject.debuffAttachment.type];
+                toolMoveFunctions.paint(ctx, createdObject.debuffAttachment, ownerPaintPos, ability, game);
+            }
         }
     }
     if (currentStage < ability.spellmakeStage) {
@@ -407,6 +426,10 @@ function paintToolObjectsRecusiveForCharging(ctx: CanvasRenderingContext2D, abil
         if (toolFunctions.canHaveMoveAttachment && createdObject.moveAttachment) {
             const toolMoveFunctions = SPELLMAKER_MOVE_TOOLS_FUNCTIONS[createdObject.moveAttachment.type];
             toolMoveFunctions.paint(ctx, createdObject.moveAttachment, modPaintPos, ability, game);
+        }
+        if (createdObject.debuffAttachment) {
+            const toolMoveFunctions = SPELLMAKER_DEBUFF_TOOLS_FUNCTIONS[createdObject.debuffAttachment.type];
+            toolMoveFunctions.paint(ctx, createdObject.debuffAttachment, modPaintPos, ability, game);
         }
     }
     if (currentStage < 1) {
@@ -446,6 +469,9 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
                 if (toolFunctions.paint) toolFunctions.paint(ctx, tool.workInProgress, ownerPaintPos, abilitySm, 1, game);
             } else if (tool.subType == "move") {
                 const toolMoveFunctions = SPELLMAKER_MOVE_TOOLS_FUNCTIONS[tool.type];
+                toolMoveFunctions.paint(ctx, tool.workInProgress, ownerPaintPos, abilitySm, game);
+            } else if (tool.subType == "debuff") {
+                const toolMoveFunctions = SPELLMAKER_DEBUFF_TOOLS_FUNCTIONS[tool.type];
                 toolMoveFunctions.paint(ctx, tool.workInProgress, ownerPaintPos, abilitySm, game);
             }
         }
@@ -558,16 +584,33 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, data: PlayerA
                             const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[tool.type];
                             if (toolFunctions.onKeyDown) toolFunctions.onKeyDown(tool, abilityOwner, abilitySm, castPositionRelativeToCharacter, game);
                         } else {
-                            abilitySm.attachToIndex = findClosestAttachToIndex(abilitySm, castPositionRelativeToCharacter, false);
+                            abilitySm.attachToIndex = findClosestAttachToIndex(abilitySm, castPositionRelativeToCharacter, "stage");
                             if (abilitySm.attachToIndex != undefined) {
                                 const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[tool.type];
                                 if (toolFunctions.onKeyDown) toolFunctions.onKeyDown(tool, abilityOwner, abilitySm, castPositionRelativeToCharacter, game);
                             }
                         }
                     } else if (tool.subType == "move") {
-                        abilitySm.attachToIndex = findClosestAttachToIndex(abilitySm, castPositionRelativeToCharacter, true);
+                        abilitySm.attachToIndex = findClosestAttachToIndex(abilitySm, castPositionRelativeToCharacter, "move");
                         if (abilitySm.attachToIndex != undefined) {
                             const toolFunctions = SPELLMAKER_MOVE_TOOLS_FUNCTIONS[tool.type];
+                            const currentSpell = abilitySm.spells[abilitySm.spellIndex];
+                            let currentObject = currentSpell.createdObjects[abilitySm.attachToIndex[0]];
+                            let currentStage = 0;
+                            while (currentStage < abilitySm.spellmakeStage) {
+                                if (currentObject.nextStage) {
+                                    currentStage++;
+                                    currentObject = currentObject.nextStage[abilitySm.attachToIndex[currentStage]];
+                                } else {
+                                    return;
+                                }
+                            }
+                            if (toolFunctions.onKeyDown) toolFunctions.onKeyDown(tool, abilityOwner, abilitySm, currentObject, castPositionRelativeToCharacter, game);
+                        }
+                    } else if (tool.subType == "debuff") {
+                        abilitySm.attachToIndex = findClosestAttachToIndex(abilitySm, castPositionRelativeToCharacter, "debuff");
+                        if (abilitySm.attachToIndex != undefined) {
+                            const toolFunctions = SPELLMAKER_DEBUFF_TOOLS_FUNCTIONS[tool.type];
                             const currentSpell = abilitySm.spells[abilitySm.spellIndex];
                             let currentObject = currentSpell.createdObjects[abilitySm.attachToIndex[0]];
                             let currentStage = 0;
@@ -649,6 +692,27 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, data: PlayerA
                                     }
                                 }
                                 currentObject.moveAttachment = result;
+                                abilitySpellmakerCalculateManaCostWithLevelFactor(abilitySm, currentSpell);
+                            }
+                        }
+                    }
+                } else if (tool.subType == "debuff") {
+                    const toolFunctions = SPELLMAKER_DEBUFF_TOOLS_FUNCTIONS[tool.type];
+                    if (toolFunctions.onKeyUp) {
+                        if (abilitySm.attachToIndex != undefined) {
+                            const result = toolFunctions.onKeyUp(tool, abilityOwner, abilitySm, castPositionRelativeToCharacter, game);
+                            if (result) {
+                                let currentObject = currentSpell.createdObjects[abilitySm.attachToIndex[0]];
+                                let currentStage = 0;
+                                while (currentStage < abilitySm.spellmakeStage) {
+                                    if (currentObject.nextStage) {
+                                        currentStage++;
+                                        currentObject = currentObject.nextStage[abilitySm.attachToIndex[currentStage]];
+                                    } else {
+                                        return;
+                                    }
+                                }
+                                currentObject.debuffAttachment = result;
                                 abilitySpellmakerCalculateManaCostWithLevelFactor(abilitySm, currentSpell);
                             }
                         }
@@ -794,14 +858,14 @@ function getChargeFactor(ability: AbilitySpellmaker): number {
     return ability.spelltypeChargeManaStored / currentSpell.spellManaCost;
 }
 
-function findClosestAttachToIndexRecursive(stage: number, currentStage: SpellmakerCreateToolObjectData[], ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, moveToAttach: boolean): { closestDistance: number, attachToIndexes: number[] } | undefined {
+function findClosestAttachToIndexRecursive(stage: number, currentStage: SpellmakerCreateToolObjectData[], ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, attachType: "stage" | "move" | "debuff"): { closestDistance: number, attachToIndexes: number[] } | undefined {
     let closestDistance = 0;
     let attachToIndexes: number[] | undefined = undefined;
-    const stageToReach = moveToAttach ? ability.spellmakeStage : ability.spellmakeStage - 1;
+    const stageToReach = attachType !== "stage" ? ability.spellmakeStage : ability.spellmakeStage - 1;
     if (stageToReach > stage) {
         for (let objectIndex = 0; objectIndex < currentStage.length; objectIndex++) {
             const stageObject = currentStage[objectIndex];
-            const result = findClosestAttachToIndexRecursive(stage + 1, stageObject.nextStage, ability, castPositionRelativeToCharacter, moveToAttach);
+            const result = findClosestAttachToIndexRecursive(stage + 1, stageObject.nextStage, ability, castPositionRelativeToCharacter, attachType);
             if (result && (attachToIndexes === undefined || result.closestDistance < closestDistance)) {
                 closestDistance = result.closestDistance;
                 attachToIndexes = result.attachToIndexes;
@@ -813,8 +877,9 @@ function findClosestAttachToIndexRecursive(stage: number, currentStage: Spellmak
             const stageObject = currentStage[objectIndex];
             const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[stageObject.type];
             if (toolFunctions.calculateDistance && (
-                (moveToAttach && toolFunctions.canHaveMoveAttachment)
-                || (!moveToAttach && toolFunctions.canHaveNextStage))
+                (attachType === "move" && toolFunctions.canHaveMoveAttachment)
+                || (attachType === "stage" && toolFunctions.canHaveNextStage)
+                || attachType === "debuff")
             ) {
                 const tempDistance = toolFunctions.calculateDistance(castPositionRelativeToCharacter, stageObject);
                 if (attachToIndexes === undefined || tempDistance < closestDistance) {
@@ -833,9 +898,9 @@ function findClosestAttachToIndexRecursive(stage: number, currentStage: Spellmak
 }
 
 
-function findClosestAttachToIndex(ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, moveToAttach: boolean): number[] | undefined {
+function findClosestAttachToIndex(ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, attachType: "stage" | "move" | "debuff"): number[] | undefined {
     const currentSpell = ability.spells[ability.spellIndex];
-    const result = findClosestAttachToIndexRecursive(0, currentSpell.createdObjects, ability, castPositionRelativeToCharacter, moveToAttach);
+    const result = findClosestAttachToIndexRecursive(0, currentSpell.createdObjects, ability, castPositionRelativeToCharacter, attachType);
     if (result && result.closestDistance < 20) {
         return result.attachToIndexes;
     }

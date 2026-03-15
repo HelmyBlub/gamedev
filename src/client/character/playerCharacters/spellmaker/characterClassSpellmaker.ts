@@ -16,9 +16,9 @@ import { addAbilitySpellmakerFireCircle } from "./abilitySpellmakerFireCircle.js
 import { addAbilitySpellmakerFireLine } from "./abilitySpellmakerFireLine.js";
 import { addAbilitySpellmakerLightning } from "./abilitySpellmakerLightning.js";
 import { addAbilitySpellmakerProximity } from "./abilitySpellmakerProximity.js";
-import { ABILITY_NAME_SPELLMAKER_SWITCH_SPELL, addAbilitySpellmakerSwitchSpell } from "./abilitySpellmakerSwitchSpell.js";
+import { addAbilitySpellmakerSwitchSpell } from "./abilitySpellmakerSwitchSpell.js";
 import { addAbilitySpellmakerTurret } from "./abilitySpellmakerTurret.js";
-import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOLS_FUNCTIONS } from "./spellmakerTool.js";
+import { SPELLMAKER_TOOLS_FUNCTIONS } from "./spellmakerTool.js";
 
 export const CHARACTER_CLASS_SPELLMAKER = "Spellmaker";
 

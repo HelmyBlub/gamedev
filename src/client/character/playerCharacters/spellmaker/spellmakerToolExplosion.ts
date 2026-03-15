@@ -1,9 +1,8 @@
 import { AbilityOwner } from "../../../ability/ability.js";
-import { calculateDistance, findClientInfoByCharacterId } from "../../../game.js";
+import { calculateDistance, deepCopy, findClientInfoByCharacterId } from "../../../game.js";
 import { Position, Game, ClientInfo, FACTION_ENEMY } from "../../../gameModel.js";
 import { AbilitySpellmaker, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 import { SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
-import { createMoreInfosPart, MoreInfoPart } from "../../../moreInfo.js";
 import { createAbilityObjectSpellmakerExplode } from "./abilitySpellmakerExplode.js";
 import { IMAGE_EXPLOSION } from "../../enemy/god/abilityTileExplosions.js";
 
@@ -38,7 +37,7 @@ export function addSpellmakerToolExplosion() {
             `can have next stage: No`,
         ],
         learnedThroughUpgrade: true,
-        availableOnFirstUpgradeChoice: true,
+        doesDamage: true,
     };
 }
 
@@ -106,7 +105,7 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
                 x: clientInfo.lastMousePosition.x - abilityOwner.x,
                 y: clientInfo.lastMousePosition.y - abilityOwner.y,
             };
-            const explode = toolExplode.workInProgress;
+            const explode = toolExplode.workInProgress as CreateToolObjectExplosionData;
             explode.radius = Math.max(5, Math.abs(relativePos.x - explode.center.x))
             explode.damageFactor = Math.min(10, (Math.max(1, Math.abs(relativePos.y - explode.center.y) / 10)));
         }
@@ -123,6 +122,9 @@ function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: num
     };
     let explodeDelay = faction === FACTION_ENEMY ? 2000 : 0;
     const explodeObject = createAbilityObjectSpellmakerExplode(center, damage, chargedValues.radius, faction, damageFactor, manaFactor, chargeFactor, [...toolChain], abilityId, explodeDelay, stageId, stageIndex, game);
+    if (createObject.debuffAttachment) {
+        explodeObject.debuffAttachment = deepCopy(createObject.debuffAttachment);
+    }
     game.state.abilityObjects.push(explodeObject);
 }
 

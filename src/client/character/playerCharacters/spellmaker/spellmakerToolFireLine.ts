@@ -1,5 +1,5 @@
 import { AbilityOwner } from "../../../ability/ability.js";
-import { calculateDistance, calculateDistancePointToLine, findClientInfoByCharacterId } from "../../../game.js";
+import { calculateDistance, calculateDistancePointToLine, deepCopy, findClientInfoByCharacterId } from "../../../game.js";
 import { Position, Game, ClientInfo } from "../../../gameModel.js";
 import { AbilitySpellmaker, AbilitySpellmakerObject, SPELLMAKER_MAX_CAST_RANGE, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
@@ -43,7 +43,7 @@ export function addSpellmakerToolFireline() {
             `can have next stage: No`,
         ],
         learnedThroughUpgrade: true,
-        availableOnFirstUpgradeChoice: true,
+        doesDamage: true,
     };
 }
 
@@ -103,7 +103,7 @@ function onKeyDown(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, abili
 function onKeyUp(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game): SpellmakerCreateToolObjectData | undefined {
     const toolFireLine = tool as SpellmakerCreateToolFireLine;
     if (toolFireLine.workInProgress) {
-        const fireLine = toolFireLine.workInProgress;
+        const fireLine = toolFireLine.workInProgress as CreateToolObjectFireLineData;
         if (fireLine.positions.length == 1) {
             if (calculateDistance(castPositionRelativeToCharacter, fireLine.positions[0]) <= 5) {
                 toolFireLine.workInProgress = undefined;
@@ -127,7 +127,7 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
     if (clientInfo) {
         const toolFireLine = tool as SpellmakerCreateToolFireLine;
         if (toolFireLine.workInProgress) {
-            const fireLine = toolFireLine.workInProgress;
+            const fireLine = toolFireLine.workInProgress as CreateToolObjectFireLineData;
             const end: Position = {
                 x: clientInfo.lastMousePosition.x - abilityOwner.x,
                 y: clientInfo.lastMousePosition.y - abilityOwner.y,
@@ -166,6 +166,10 @@ function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: num
     const width = 10;
     const duration = 5000 * chargedValues.durationFactor;
     const objectFireLine = createAbilityObjectSpellmakerFireLine(faction, start, joints, moveAttachment, damage, width, duration, tickInterval, "red", damageFactor, manaFactor, chargeFactor, newToolChain, abilityId, stageId, stageIndex, game);
+    if (createObject.debuffAttachment) {
+        objectFireLine.debuffAttachment = deepCopy(createObject.debuffAttachment);
+    }
+
     game.state.abilityObjects.push(objectFireLine);
 }
 

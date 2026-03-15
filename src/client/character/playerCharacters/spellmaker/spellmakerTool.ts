@@ -2,13 +2,14 @@ import { AbilityObject, AbilityOwner, addAbilityToCharacter, createAbility } fro
 import { IMAGE_NAME_SWITCH } from "../../../ability/musician/abilityMusicSheetChangeInstrument.js";
 import { IMAGE_NAME_DELETE } from "../../../ability/musician/abilityMusicSheetDeleteNote.js";
 import { IMAGE_NAME_RELOAD } from "../../../ability/snipe/abilitySnipe.js";
+import { Debuff } from "../../../debuff/debuff.js";
 import { calculateDistance, deepCopy } from "../../../game.js";
 import { Game, Position } from "../../../gameModel.js";
 import { paintTextWithOutline } from "../../../gamePaint.js";
 import { GAME_IMAGES } from "../../../imageLoad.js";
 import { createMoreInfosPart, MoreInfoPart } from "../../../moreInfo.js";
 import { Character } from "../../characterModel.js";
-import { AbilitySpellmaker, abilitySpellmakerCalculateManaCostWithLevelFactor, AbilitySpellmakerObject, SPELLMAKER_SPELLTYPE_AUTOCAST, SPELLMAKER_SPELLTYPE_INSTANT, SPELLMAKER_SPELLTYPES, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
+import { AbilitySpellmaker, abilitySpellmakerCalculateManaCostWithLevelFactor, AbilitySpellmakerObject, SPELLMAKER_SPELLTYPE_AUTOCAST, SPELLMAKER_SPELLTYPE_INSTANT, SPELLMAKER_SPELLTYPES, SpellmakerCreateToolDebuffAttachment, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 import { ABILITY_NAME_SPELLMAKER_SWITCH_SPELL } from "./abilitySpellmakerSwitchSpell.js";
 import { CHARACTER_CLASS_SPELLMAKER } from "./characterClassSpellmaker.js";
 
@@ -22,7 +23,7 @@ export type SpellmakerCreateToolsData = {
 
 export type SpellmakerCreateTool = {
     type: string,
-    subType: "default" | "move",
+    subType: "default" | "move" | "debuff",
     workInProgress?: any,
     totalDamage: number,
     level: number,
@@ -32,8 +33,19 @@ export type SpellmakerCreateTool = {
 export type SpellmakerToolFunctionsBase = {
     createTool: (ctx: CanvasRenderingContext2D) => SpellmakerCreateTool,
     getHoverTooltip?: (ctx: CanvasRenderingContext2D, tool: SpellmakerCreateTool, ability: AbilitySpellmaker) => MoreInfoPart,
+    description: string[],
+    learnedThroughUpgrade?: boolean,
 }
 
+export type SpellmakerDebuffToolFunctions = SpellmakerToolFunctionsBase & {
+    calculateManaCost?: (createObject: SpellmakerCreateToolObjectData) => number,
+    getDebuffAttachment: (createObject: SpellmakerCreateToolObjectData, game: Game) => SpellmakerCreateToolDebuffAttachment,
+    getDebuff: (debuffAttach: SpellmakerCreateToolDebuffAttachment, abilityObject: AbilitySpellmakerObject, game: Game) => Debuff,
+    onKeyDown: (tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, attachedToTarget: SpellmakerCreateToolObjectData, castPositionRelativeToCharacter: Position, game: Game) => void,
+    onKeyUp: (tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game) => SpellmakerCreateToolMoveAttachment | undefined,
+    onTick: (tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, game: Game) => void,
+    paint: (ctx: CanvasRenderingContext2D, debuffAttachment: SpellmakerCreateToolDebuffAttachment, paintPos: Position, ability: AbilitySpellmaker, game: Game) => void,
+}
 
 export type SpellmakerMoveToolFunctions = SpellmakerToolFunctionsBase & {
     calculateManaCost?: (createObject: SpellmakerCreateToolObjectData) => number,
@@ -43,8 +55,6 @@ export type SpellmakerMoveToolFunctions = SpellmakerToolFunctionsBase & {
     onKeyUp: (tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game) => SpellmakerCreateToolMoveAttachment | undefined,
     onTick: (tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, game: Game) => void,
     paint: (ctx: CanvasRenderingContext2D, moveAttachment: SpellmakerCreateToolMoveAttachment, paintPos: Position, ability: AbilitySpellmaker, game: Game) => void,
-    description: string[],
-    learnedThroughUpgrade?: boolean,
 }
 
 export type SpellmakerToolFunctions = SpellmakerToolFunctionsBase & {
@@ -62,10 +72,8 @@ export type SpellmakerToolFunctions = SpellmakerToolFunctionsBase & {
     calculateManaCostIncludesNextStage?: boolean,
     canHaveNextStage?: boolean,
     canHaveMoveAttachment?: boolean,
-    description: string[],
-    learnedThroughUpgrade?: boolean,
     availableFromTheStart?: boolean,
-    availableOnFirstUpgradeChoice?: boolean,
+    doesDamage?: boolean,
 }
 
 export type SpellmakerToolsFunctions = {
@@ -76,8 +84,13 @@ export type SpellmakerMoveToolsFunctions = {
     [key: string]: SpellmakerMoveToolFunctions,
 }
 
+export type SpellmakerDebuffToolsFunctions = {
+    [key: string]: SpellmakerDebuffToolFunctions,
+}
+
 export const SPELLMAKER_TOOLS_FUNCTIONS: SpellmakerToolsFunctions = {};
 export const SPELLMAKER_MOVE_TOOLS_FUNCTIONS: SpellmakerMoveToolsFunctions = {};
+export const SPELLMAKER_DEBUFF_TOOLS_FUNCTIONS: SpellmakerDebuffToolsFunctions = {};
 export const SPELLMAKER_TOOL_SWITCH_STAGE = "Staging";
 export const SPELLMAKER_TOOL_RESET = "Reset";
 export const SPELLMAKER_TOOL_NEW = "New Spell";
@@ -93,25 +106,20 @@ GAME_IMAGES[IMAGE_PLUS] = {
 };
 
 export function getHoverTooltip(ctx: CanvasRenderingContext2D, tool: SpellmakerCreateTool, ability: AbilitySpellmaker): MoreInfoPart {
+    let toolFunctions = undefined;
     if (tool.subType === "default") {
-        const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[tool.type];
-        if (toolFunctions.getHoverTooltip) {
-            return toolFunctions.getHoverTooltip(ctx, tool, ability);
-        } else {
-            const result = createMoreInfosPart(ctx, toolFunctions.description);
-            if (tool.level > 0) result.texts[0] += ` (Level ${tool.level.toFixed(1)})`;
-            return result;
-        }
+        toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[tool.type];
+    } else if (tool.subType === "move") {
+        toolFunctions = SPELLMAKER_MOVE_TOOLS_FUNCTIONS[tool.type];
     } else {
-        const toolFunctions = SPELLMAKER_MOVE_TOOLS_FUNCTIONS[tool.type];
-        if (toolFunctions.getHoverTooltip) {
-            return toolFunctions.getHoverTooltip(ctx, tool, ability);
-        } else {
-            const result = createMoreInfosPart(ctx, toolFunctions.description);
-            if (tool.level > 0) result.texts[0] += ` (Level ${tool.level.toFixed(1)})`;
-            return result;
-        }
-
+        toolFunctions = SPELLMAKER_DEBUFF_TOOLS_FUNCTIONS[tool.type];
+    }
+    if (toolFunctions.getHoverTooltip) {
+        return toolFunctions.getHoverTooltip(ctx, tool, ability);
+    } else {
+        const result = createMoreInfosPart(ctx, toolFunctions.description);
+        if (tool.level > 0) result.texts[0] += ` (Level ${tool.level.toFixed(1)})`;
+        return result;
     }
 }
 

@@ -3,11 +3,13 @@ increase version
 
 current tasks:     
 - new class spellmaker
-    - icon: fireLine vs fireCircle
     - spell idea: slow aura
-        - tool: slow debuff
+        - tool: Slow
+            - icon
+            - mana cost calc
+            - slow amount visualization
     - 4 more upgrades
-        - 2 more starting spells
+        - 1 more starting spells
             - laser: long line instant damage
                 - always start from pre stage center
                 - define range and angle

@@ -1,11 +1,12 @@
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, findAbilityAndOwnerInCharacterById, PaintOrderAbility } from "../../../ability/ability.js";
+import { applyDebuff } from "../../../debuff/debuff.js";
 import { getNextId, getCameraPosition, deepCopy } from "../../../game.js";
 import { FACTION_ENEMY, FACTION_PLAYER, Game, IdCounter, Position } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
 import { getCharactersTouchingLine, characterTakeDamage } from "../../character.js";
 import { Character } from "../../characterModel.js";
 import { AbilitySpellmaker, AbilitySpellmakerObject, SpellmakerCreateToolMoveAttachment } from "./abilitySpellmaker.js";
-import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, spellmakerAddToolDamage } from "./spellmakerTool.js";
+import { SPELLMAKER_DEBUFF_TOOLS_FUNCTIONS, SPELLMAKER_MOVE_TOOLS_FUNCTIONS, spellmakerAddToolDamage } from "./spellmakerTool.js";
 
 export type AbilitySpellmakerFireLine = Ability & {
 }
@@ -145,6 +146,12 @@ function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
             const characters: Character[] = getCharactersTouchingLine(game, linePartStart, joint, abilityObject.faction, objectFireLine.width);
             for (let char of characters) {
                 characterTakeDamage(char, objectFireLine.damage, game, objectFireLine.abilityIdRef, abilityObject.type, objectFireLine);
+                if (objectFireLine.debuffAttachment) {
+                    const debuffFunctions = SPELLMAKER_DEBUFF_TOOLS_FUNCTIONS[objectFireLine.debuffAttachment.type];
+                    const debuff = debuffFunctions.getDebuff(objectFireLine.debuffAttachment, objectFireLine, game);
+                    applyDebuff(debuff, char, game);
+                }
+
                 if (ability) spellmakerAddToolDamage(ability, objectFireLine.damage, objectFireLine.toolChain, game);
             }
             linePartStart = joint;

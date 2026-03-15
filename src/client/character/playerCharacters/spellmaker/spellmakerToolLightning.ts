@@ -1,5 +1,5 @@
 import { AbilityOwner } from "../../../ability/ability.js";
-import { calculateDistance, findClientInfoByCharacterId } from "../../../game.js";
+import { calculateDistance, deepCopy, findClientInfoByCharacterId } from "../../../game.js";
 import { Position, Game, ClientInfo } from "../../../gameModel.js";
 import { AbilitySpellmaker, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 import { SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
@@ -38,7 +38,7 @@ export function addSpellmakerToolLightning() {
             `can have next stage: No`,
         ],
         learnedThroughUpgrade: true,
-        availableOnFirstUpgradeChoice: true,
+        doesDamage: true,
     };
 }
 
@@ -122,6 +122,10 @@ function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: num
         y: lightning.center.y + castPosition.y,
     };
     const lightningObject = createAbilityObjectSpellmakerLightning(faction, center, chargedValues.jumps, damage, abilityId, damageFactor, manaFactor, chargeFactor, [...toolChain], stageId, stageIndex, game);
+    if (createObject.debuffAttachment) {
+        lightningObject.debuffAttachment = deepCopy(createObject.debuffAttachment);
+    }
+
     game.state.abilityObjects.push(lightningObject);
 }
 

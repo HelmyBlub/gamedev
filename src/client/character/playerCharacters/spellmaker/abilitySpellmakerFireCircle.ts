@@ -1,11 +1,11 @@
 import { ABILITIES_FUNCTIONS, Ability, AbilityObject, findAbilityAndOwnerInCharacterById, PaintOrderAbility } from "../../../ability/ability.js";
+import { applyDebuff } from "../../../debuff/debuff.js";
 import { getNextId, getCameraPosition, deepCopy, calculateDistance } from "../../../game.js";
 import { FACTION_ENEMY, FACTION_PLAYER, Game, IdCounter, Position } from "../../../gameModel.js";
 import { getPointPaintPosition } from "../../../gamePaint.js";
-import { getCharactersTouchingLine, characterTakeDamage, determineCharactersInDistance } from "../../character.js";
-import { Character } from "../../characterModel.js";
+import { characterTakeDamage, determineCharactersInDistance } from "../../character.js";
 import { AbilitySpellmaker, AbilitySpellmakerObject, SpellmakerCreateToolMoveAttachment } from "./abilitySpellmaker.js";
-import { SPELLMAKER_MOVE_TOOLS_FUNCTIONS, spellmakerAddToolDamage } from "./spellmakerTool.js";
+import { SPELLMAKER_DEBUFF_TOOLS_FUNCTIONS, SPELLMAKER_MOVE_TOOLS_FUNCTIONS, spellmakerAddToolDamage } from "./spellmakerTool.js";
 
 export type AbilitySpellmakerFireCircle = Ability & {
 }
@@ -135,6 +135,12 @@ function tickAbilityObject(abilityObject: AbilityObject, game: Game) {
                 if (distance < objectFireCircle.radius + c.width / 2) {
                     let takeDamage = objectFireCircle.damage;
                     characterTakeDamage(c, takeDamage, game, abilityObject.abilityIdRef, abilityObject.type, abilityObject);
+                    if (objectFireCircle.debuffAttachment) {
+                        const debuffFunctions = SPELLMAKER_DEBUFF_TOOLS_FUNCTIONS[objectFireCircle.debuffAttachment.type];
+                        const debuff = debuffFunctions.getDebuff(objectFireCircle.debuffAttachment, objectFireCircle, game);
+                        applyDebuff(debuff, c, game);
+                    }
+
                     if (ability) spellmakerAddToolDamage(ability, objectFireCircle.damage, objectFireCircle.toolChain, game);
                 }
             }
