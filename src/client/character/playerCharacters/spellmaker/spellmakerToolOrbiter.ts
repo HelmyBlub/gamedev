@@ -37,6 +37,7 @@ GAME_IMAGES[IMAGE_ORBIT] = {
 
 export function addSpellmakerToolOrbiter() {
     SPELLMAKER_MOVE_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_ORBITER] = {
+        calculateManaCostFactor: calculateManaCostFactor,
         createTool: createTool,
         onKeyDown: onKeyDown,
         onKeyUp: onKeyUp,
@@ -53,6 +54,9 @@ export function addSpellmakerToolOrbiter() {
     };
 }
 
+function calculateManaCostFactor(createObject: SpellmakerCreateToolObjectData): number {
+    return 1.2;
+}
 
 function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
     return {

@@ -29,6 +29,7 @@ const SEEK_RANGE = 300;
 
 export function addSpellmakerToolSeeker() {
     SPELLMAKER_MOVE_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_SEEKER] = {
+        calculateManaCostFactor: calculateManaCostFactor,
         createTool: createTool,
         onKeyDown: onKeyDown,
         onKeyUp: onKeyUp,
@@ -45,6 +46,9 @@ export function addSpellmakerToolSeeker() {
     };
 }
 
+function calculateManaCostFactor(createObject: SpellmakerCreateToolObjectData): number {
+    return 1.2;
+}
 
 function onKeyDown(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, attachedToTarget: SpellmakerCreateToolObjectData, castPositionRelativeToCharacter: Position, game: Game) {
     const moveTool = tool as SpellmakerCreateToolSeeker;

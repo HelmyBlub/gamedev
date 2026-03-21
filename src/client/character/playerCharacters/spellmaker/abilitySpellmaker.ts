@@ -370,13 +370,19 @@ export function abilitySpellmakerCalculateManaCostWithLevelFactor(ability: Abili
 export function abilitySpellmakerCalculateManaCost(createdObjects: SpellmakerCreateToolObjectData[]): number {
     let spellManaCost = 0;
     for (let createdObject of createdObjects) {
+        let currentObjectManaCost = 0;
         const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[createdObject.type];
-        if (toolFunctions.calculateManaCost) spellManaCost += toolFunctions.calculateManaCost(createdObject);
+        if (toolFunctions.calculateManaCost) currentObjectManaCost += toolFunctions.calculateManaCost(createdObject);
         if (!toolFunctions.calculateManaCostIncludesNextStage) spellManaCost += abilitySpellmakerCalculateManaCost(createdObject.nextStage);
         if (createdObject.moveAttachment) {
             const moveToolFunctions = SPELLMAKER_MOVE_TOOLS_FUNCTIONS[createdObject.moveAttachment.type];
-            if (moveToolFunctions.calculateManaCost) spellManaCost += moveToolFunctions.calculateManaCost(createdObject);
+            if (moveToolFunctions.calculateManaCostFactor) currentObjectManaCost *= moveToolFunctions.calculateManaCostFactor(createdObject);
         }
+        if (createdObject.debuffAttachment) {
+            const debuffToolFunctions = SPELLMAKER_DEBUFF_TOOLS_FUNCTIONS[createdObject.debuffAttachment.type];
+            if (debuffToolFunctions.calculateManaCostFactor) currentObjectManaCost *= debuffToolFunctions.calculateManaCostFactor(createdObject);
+        }
+        spellManaCost += currentObjectManaCost;
     }
     return spellManaCost;
 }

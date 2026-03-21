@@ -5,19 +5,20 @@ current tasks:
 - new class spellmaker
     - spell idea: slow aura
         - tool: Slow
-            - icon
             - mana cost calc
             - slow amount visualization
-    - 4 more upgrades
+    - check turret multiple spells mana cost
+    - remove tool click
+    - 3 more upgrades
+        - idea: endless upgrades for damage tools
         - 1 more starting spells
             - laser: long line instant damage
                 - always start from pre stage center
                 - define range and angle
                 - problem: how to aim?
             - explosion rectangle
-        - 3 more other
+        - 2 more other
             - repeater: like turret but shoots in intervals
-            - apply debuff: slow
             - apply buff: speed
     - "undo" tool
     - remember: relative mouse position not used for holding mouse button down

@@ -1,11 +1,10 @@
 import { AbilityOwner } from "../../../ability/ability.js";
-import { calculateDirection, calculateDistance, findClientInfoByCharacterId } from "../../../game.js";
+import { calculateDistance, findClientInfoByCharacterId } from "../../../game.js";
 import { Position, Game, ClientInfo } from "../../../gameModel.js";
 import { AbilitySpellmaker, AbilitySpellmakerObject, SpellmakerCreateToolMoveAttachment as SpellmakerCreateToolDebuffAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
 import { SPELLMAKER_DEBUFF_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
-import { createDebuffSlow } from "../../../debuff/debuffSlow.js";
+import { createDebuffSlow, debuffSlowGetSlowAmountAsPerCentText } from "../../../debuff/debuffSlow.js";
 import { Debuff } from "../../../debuff/debuff.js";
-import { IMAGE_ATTACH } from "./spellmakerToolAttach.js";
 import { GAME_IMAGES } from "../../../imageLoad.js";
 
 export type SpellmakerCreateToolDebuffAttachmentSlow = SpellmakerCreateToolDebuffAttachment & {
@@ -27,6 +26,7 @@ GAME_IMAGES[IMAGE_SLOW_ICON] = {
 
 export function addSpellmakerToolDebuffSlow() {
     SPELLMAKER_DEBUFF_TOOLS_FUNCTIONS[SPELLMAKER_TOOL_DEBUFF_SLOW] = {
+        calculateManaCostFactor: calculateManaCostFactor,
         createTool: createTool,
         onKeyDown: onKeyDown,
         onKeyUp: onKeyUp,
@@ -43,6 +43,11 @@ export function addSpellmakerToolDebuffSlow() {
     };
 }
 
+
+function calculateManaCostFactor(createObject: SpellmakerCreateToolObjectData): number {
+    const slow = createObject.debuffAttachment as SpellmakerCreateToolDebuffAttachmentSlow;
+    return 1 + (slow.slowAmount - 1) / 2;
+}
 
 function onKeyDown(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, attachedToTarget: SpellmakerCreateToolObjectData, castPositionRelativeToCharacter: Position, game: Game) {
     const moveTool = tool as SpellmakerCreateToolDebuffSlow;
@@ -68,7 +73,7 @@ function onKeyUp(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability
     const moveTool = tool as SpellmakerCreateToolDebuffSlow;
     if (moveTool.workInProgress) {
         const slow = moveTool.workInProgress as SpellmakerCreateToolDebuffAttachmentSlow;
-        slow.slowAmount = Math.max(1.1, Math.min((1 + calculateDistance(slow.startPosition, castPositionRelativeToCharacter) / 200)), 3);
+        slow.slowAmount = Math.max(1.2, Math.min((1 + calculateDistance(slow.startPosition, castPositionRelativeToCharacter) / 200), 3));
         moveTool.workInProgress = undefined;
         return slow;
     }
@@ -85,7 +90,7 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
                 x: clientInfo.lastMousePosition.x - abilityOwner.x,
                 y: clientInfo.lastMousePosition.y - abilityOwner.y,
             };
-            slow.slowAmount = Math.max(1.1, Math.min((1 + calculateDistance(slow.startPosition, relativPos) / 200)), 3);
+            slow.slowAmount = Math.max(1.2, Math.min((1 + calculateDistance(slow.startPosition, relativPos) / 200), 3));
         }
     }
 }
@@ -94,7 +99,7 @@ function paint(ctx: CanvasRenderingContext2D, debuffAttachment: SpellmakerCreate
     const slow = debuffAttachment as SpellmakerCreateToolDebuffAttachmentSlow;
     ctx.fillStyle = "black";
     ctx.font = "20px Arial";
-    ctx.fillText("slow", paintPos.x + slow.startPosition.x, paintPos.y + slow.startPosition.y);
+    ctx.fillText(`slow ${debuffSlowGetSlowAmountAsPerCentText(slow.slowAmount)}%`, paintPos.x + slow.startPosition.x, paintPos.y + slow.startPosition.y);
 }
 
 function getDebuffAttachment(createObject: SpellmakerCreateToolObjectData, game: Game): SpellmakerCreateToolDebuffAttachment {

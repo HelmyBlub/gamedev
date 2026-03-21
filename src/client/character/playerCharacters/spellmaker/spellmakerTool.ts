@@ -1,4 +1,4 @@
-import { AbilityObject, AbilityOwner, addAbilityToCharacter, createAbility } from "../../../ability/ability.js";
+import { AbilityOwner, addAbilityToCharacter, createAbility } from "../../../ability/ability.js";
 import { IMAGE_NAME_SWITCH } from "../../../ability/musician/abilityMusicSheetChangeInstrument.js";
 import { IMAGE_NAME_DELETE } from "../../../ability/musician/abilityMusicSheetDeleteNote.js";
 import { IMAGE_NAME_RELOAD } from "../../../ability/snipe/abilitySnipe.js";
@@ -38,7 +38,7 @@ export type SpellmakerToolFunctionsBase = {
 }
 
 export type SpellmakerDebuffToolFunctions = SpellmakerToolFunctionsBase & {
-    calculateManaCost?: (createObject: SpellmakerCreateToolObjectData) => number,
+    calculateManaCostFactor?: (createObject: SpellmakerCreateToolObjectData) => number,
     getDebuffAttachment: (createObject: SpellmakerCreateToolObjectData, game: Game) => SpellmakerCreateToolDebuffAttachment,
     getDebuff: (debuffAttach: SpellmakerCreateToolDebuffAttachment, abilityObject: AbilitySpellmakerObject, game: Game) => Debuff,
     onKeyDown: (tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, attachedToTarget: SpellmakerCreateToolObjectData, castPositionRelativeToCharacter: Position, game: Game) => void,
@@ -48,7 +48,7 @@ export type SpellmakerDebuffToolFunctions = SpellmakerToolFunctionsBase & {
 }
 
 export type SpellmakerMoveToolFunctions = SpellmakerToolFunctionsBase & {
-    calculateManaCost?: (createObject: SpellmakerCreateToolObjectData) => number,
+    calculateManaCostFactor?: (createObject: SpellmakerCreateToolObjectData) => number,
     getMoveAttachment: (createObject: SpellmakerCreateToolObjectData, preStageAbilityObject: AbilitySpellmakerObject | undefined, stageId: number, castPosition: Position, game: Game) => SpellmakerCreateToolMoveAttachment,
     getMoveAttachmentNextMoveByAmount: (moveAttach: SpellmakerCreateToolMoveAttachment, abilityObject: AbilitySpellmakerObject, game: Game) => Position,
     onKeyDown: (tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, attachedToTarget: SpellmakerCreateToolObjectData, castPositionRelativeToCharacter: Position, game: Game) => void,
