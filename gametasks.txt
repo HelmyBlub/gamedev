@@ -3,23 +3,10 @@ increase version
 
 current tasks:     
 - new class spellmaker
-    - spell idea: slow aura
-        - tool: Slow
-            - mana cost calc
-            - slow amount visualization
-    - check turret multiple spells mana cost
-    - remove tool click
-    - 3 more upgrades
-        - idea: endless upgrades for damage tools
-        - 1 more starting spells
-            - laser: long line instant damage
-                - always start from pre stage center
-                - define range and angle
-                - problem: how to aim?
-            - explosion rectangle
-        - 2 more other
-            - repeater: like turret but shoots in intervals
-            - apply buff: speed
+    - remove/eraser tool
+        - first click try erase debuff, second move third createdObject
+    - check: debuff only onto damage spells
+    - idea: endless upgrades for damage tools
     - "undo" tool
     - remember: relative mouse position not used for holding mouse button down
     - test run
