@@ -51,10 +51,12 @@ export type AbilitySpellmaker = Ability & {
 
 export type SpellmakerSpellTypesData = {
     type: string,
-    data?: {
-        totalDamage: number,
-        level: number,
-    },
+    data?: SpellmakerTypeLevelData,
+}
+
+export type SpellmakerTypeLevelData = {
+    totalDamage: number,
+    level: number,
 }
 
 export type AbilitySpellmakerObject = AbilityObject & {

@@ -3,7 +3,6 @@ increase version
 
 current tasks:     
 - new class spellmaker
-    - idea: endless upgrades for damage tools
     - remember: relative mouse position not used for holding mouse button down
     - test multiplayer
     - test run

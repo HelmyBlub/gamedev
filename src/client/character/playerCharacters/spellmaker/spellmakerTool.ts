@@ -9,7 +9,7 @@ import { paintTextWithOutline } from "../../../gamePaint.js";
 import { GAME_IMAGES } from "../../../imageLoad.js";
 import { createMoreInfosPart, MoreInfoPart } from "../../../moreInfo.js";
 import { Character } from "../../characterModel.js";
-import { AbilitySpellmaker, abilitySpellmakerCalculateManaCostWithLevelFactor, AbilitySpellmakerObject, SPELLMAKER_SPELLTYPE_AUTOCAST, SPELLMAKER_SPELLTYPE_INSTANT, SPELLMAKER_SPELLTYPES, SpellmakerCreateToolDebuffAttachment, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
+import { AbilitySpellmaker, abilitySpellmakerCalculateManaCostWithLevelFactor, AbilitySpellmakerObject, SPELLMAKER_SPELLTYPE_AUTOCAST, SPELLMAKER_SPELLTYPE_INSTANT, SPELLMAKER_SPELLTYPES, SpellmakerCreateToolDebuffAttachment, SpellmakerCreateToolMoveAttachment, SpellmakerCreateToolObjectData, SpellmakerTypeLevelData } from "./abilitySpellmaker.js";
 import { ABILITY_NAME_SPELLMAKER_SWITCH_SPELL } from "./abilitySpellmakerSwitchSpell.js";
 import { CHARACTER_CLASS_SPELLMAKER } from "./characterClassSpellmaker.js";
 
@@ -186,15 +186,18 @@ export function addSpellmakerToolsDefault() {
 export function spellmakerAddToolDamage(ability: AbilitySpellmaker, damage: number, toolChain: string[], game: Game) {
     for (let toolKey of toolChain) {
         const tool = ability.createTools.createTools.find(t => t.type === toolKey);
+        let typeLevelData: SpellmakerTypeLevelData | undefined = undefined;
         if (tool) {
-            tool.totalDamage += damage;
-            tool.level = Math.max(0, Math.log2(tool.totalDamage / 100));
+            typeLevelData = tool;
         } else {
             const spellType = ability.availableSpellTypes.find(t => t.type === toolKey);
             if (spellType && spellType.data) {
-                spellType.data.totalDamage += damage;
-                spellType.data.level = Math.max(0, Math.log2(spellType.data.totalDamage / 100));
+                typeLevelData = spellType.data;
             }
+        }
+        if (typeLevelData) {
+            typeLevelData.totalDamage += damage;
+            typeLevelData.level = Math.max(0, Math.log10(typeLevelData.totalDamage / 100));
         }
     }
     calculateManaFactorAndDamageFactor(ability);
