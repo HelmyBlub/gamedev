@@ -27,6 +27,7 @@ export type SpellmakerCreateTool = {
     workInProgress?: any,
     totalDamage: number,
     level: number,
+    upgrades?: number,
     buttonImage?: string,
 }
 
@@ -119,6 +120,7 @@ export function getHoverTooltip(ctx: CanvasRenderingContext2D, tool: SpellmakerC
         return toolFunctions.getHoverTooltip(ctx, tool, ability);
     } else {
         const result = createMoreInfosPart(ctx, toolFunctions.description);
+        if (tool.upgrades) result.texts[0] += `+${tool.upgrades}`;
         if (tool.level > 0) result.texts[0] += ` (Level ${tool.level.toFixed(1)})`;
         return result;
     }

@@ -50,7 +50,7 @@ export function addSpellmakerToolFireCircle() {
     };
 }
 
-function createObjectFireLine(center: Position): CreateToolObjectFireCircleData {
+function createObjectFireLine(center: Position, typeUpgradedCount: number): CreateToolObjectFireCircleData {
     return {
         type: SPELLMAKER_TOOL_FIRECIRCLE,
         center: center,
@@ -59,6 +59,7 @@ function createObjectFireLine(center: Position): CreateToolObjectFireCircleData 
         baseDamage: 10,
         nextStage: [],
         duration: 5000,
+        typeUpgradedCount: typeUpgradedCount,
     }
 }
 
@@ -68,6 +69,7 @@ function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
         subType: "default",
         level: 0,
         totalDamage: 0,
+        upgrades: 0,
         buttonImage: IMAGE_FIRE_CIRCLE,
     };
 }
@@ -92,7 +94,7 @@ function calculateManaCost(createObject: SpellmakerCreateToolObjectData): number
 
 function onKeyDown(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game) {
     const toolFireLine = tool as SpellmakerCreateToolFireCircle;
-    toolFireLine.workInProgress = createObjectFireLine({ x: castPositionRelativeToCharacter.x, y: castPositionRelativeToCharacter.y });
+    toolFireLine.workInProgress = createObjectFireLine({ x: castPositionRelativeToCharacter.x, y: castPositionRelativeToCharacter.y }, tool.upgrades!);
 }
 
 function onKeyUp(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game): SpellmakerCreateToolObjectData | undefined {
@@ -127,7 +129,9 @@ function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: num
     const fireCircle = createObject as CreateToolObjectFireCircleData;
     const tickInterval = 200;
     const chargedValues = getValuesWithCharge(fireCircle, chargeFactor);
-    const tickDamage = baseDamage * damageFactor * tickInterval / 1000 * chargedValues.damageFactor;
+    const typeUpgradeCount = createObject.typeUpgradedCount ?? 0;
+    const typeUpgradeCountDamageFactor = 1 + typeUpgradeCount / 10;
+    const tickDamage = baseDamage * damageFactor * tickInterval / 1000 * chargedValues.damageFactor * typeUpgradeCountDamageFactor;
     const newToolChain: string[] = [...toolChain];
     let moveAttachment: SpellmakerCreateToolMoveAttachment | undefined = undefined;
     if (fireCircle.moveAttachment) {

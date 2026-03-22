@@ -1,10 +1,11 @@
 import { Ability } from "../../../ability/ability.js";
 import { AbilityUpgrade } from "../../../ability/abilityUpgrade.js";
+import { deepCopy } from "../../../game.js";
 import { Game } from "../../../gameModel.js";
 import { Character } from "../../characterModel.js";
 import { AbilityUpgradeOption, UpgradeOptionAndProbability } from "../../upgrade.js";
-import { ABILITY_SPELLMAKER_UPGRADE_FUNCTIONS, AbilitySpellmaker, SPELLMAKER_SPELLTYPES } from "./abilitySpellmaker.js";
-import { SPELLMAKER_DEBUFF_TOOLS_FUNCTIONS, SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOL_SPELL_TYPE, SPELLMAKER_TOOL_SWITCH_STAGE, SPELLMAKER_TOOLS_FUNCTIONS } from "./spellmakerTool.js";
+import { ABILITY_SPELLMAKER_UPGRADE_FUNCTIONS, AbilitySpellmaker, SPELLMAKER_SPELLTYPES, SpellmakerCreateToolObjectData } from "./abilitySpellmaker.js";
+import { SPELLMAKER_DEBUFF_TOOLS_FUNCTIONS, SPELLMAKER_MOVE_TOOLS_FUNCTIONS, SPELLMAKER_TOOL_SPELL_TYPE, SPELLMAKER_TOOL_SWITCH_STAGE, SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
 
 
 type AbilitySpellmakerUpgradeTools = AbilityUpgrade & {
@@ -24,22 +25,34 @@ function getOptions(ability: Ability): UpgradeOptionAndProbability[] {
     const abilitySm = ability as AbilitySpellmaker;
     const isFirstUpgradeChoice = (ability.bossSkillPoints && ability.bossSkillPoints.used < 0) ? true : false;
     for (let key of Object.keys(SPELLMAKER_TOOLS_FUNCTIONS)) {
-        if (abilitySm.createTools.createTools.find(ct => ct.type === key)) continue;
         const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[key];
+        const moreInfoText = deepCopy(SPELLMAKER_TOOLS_FUNCTIONS[key].description);
+        let probability = 1;
+        let displayText = key;
+        const tool = abilitySm.createTools.createTools.find(ct => ct.type === key);
+        if (tool) {
+            if (toolFunctions.doesDamage) {
+                displayText += `+${tool.upgrades! + 1}`;
+                moreInfoText.splice(1, 0, `Bonus Damage: ${(tool.upgrades! + 1) * 10}%, up from ${tool.upgrades! * 10}%`);
+                probability = 0.1;
+            } else {
+                continue;
+            }
+        }
         if (!toolFunctions.learnedThroughUpgrade) continue;
         if (isFirstUpgradeChoice && !toolFunctions.doesDamage) continue;
         const option: AbilityUpgradeOption = {
-            displayText: key,
+            displayText: displayText,
             identifier: ABILITY_SPELLMAKER_UPGRADE_TOOLS,
             additionalInfo: key,
             name: ability.name,
             type: "Ability",
             boss: true,
         }
-        option.displayMoreInfoText = SPELLMAKER_TOOLS_FUNCTIONS[key].description;
+        option.displayMoreInfoText = moreInfoText;
         options.push({
             option: option,
-            probability: 1,
+            probability: probability,
         });
     }
     if (!isFirstUpgradeChoice) {
@@ -108,7 +121,14 @@ function getOptions(ability: Ability): UpgradeOptionAndProbability[] {
 function executeOption(ability: Ability, option: AbilityUpgradeOption, character: Character, game: Game) {
     const spellmaker = ability as AbilitySpellmaker;
     if (!game.ctx || !option.additionalInfo) return;
-    if (spellmaker.createTools.createTools.find(ct => ct.type === option.additionalInfo)) return;
+    const tool = spellmaker.createTools.createTools.find(ct => ct.type === option.additionalInfo);
+    if (tool) {
+        if (tool.upgrades !== undefined) {
+            tool.upgrades++;
+            updateExistingCreatedObjectsUpgradeCounts(ability, tool);
+        }
+        return;
+    }
     if (spellmaker.bossSkillPoints?.used === -1) {
         if (spellmaker.createTools.selectedToolIndex === 0) {
             spellmaker.createTools.selectedToolIndex = spellmaker.createTools.createTools.length;
@@ -138,5 +158,20 @@ function executeOption(ability: Ability, option: AbilityUpgradeOption, character
                 spellmaker.createTools.createTools.unshift(toolSepllTypeFunctions.createTool(game.ctx));
             }
         }
+    }
+}
+
+
+function updateExistingCreatedObjectsUpgradeCounts(ability: Ability, tool: SpellmakerCreateTool) {
+    const spellmaker = ability as AbilitySpellmaker;
+    for (let spell of spellmaker.spells) {
+        recursiveUpdateExistingCreatedObjectsUpgradeCounts(spell.createdObjects, tool);
+    }
+}
+
+function recursiveUpdateExistingCreatedObjectsUpgradeCounts(createdObjects: SpellmakerCreateToolObjectData[], tool: SpellmakerCreateTool) {
+    for (let object of createdObjects) {
+        if (object.type === tool.type) object.typeUpgradedCount = tool.upgrades;
+        if (object.nextStage) recursiveUpdateExistingCreatedObjectsUpgradeCounts(object.nextStage, tool);
     }
 }

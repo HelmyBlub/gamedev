@@ -77,6 +77,7 @@ export type SpellmakerSpell = {
 
 export type SpellmakerCreateToolObjectData = {
     type: string,
+    typeUpgradedCount?: number,
     baseDamage: number,
     castPosOffset?: Position,
     moveAttachment?: SpellmakerCreateToolMoveAttachment,
@@ -115,7 +116,7 @@ export const SPELLMAKER_SPELLTYPE_CHARGE = "charge";
 export const SPELLMAKER_SPELLTYPES: SpellmakerSpelltypeData[] = [
     { name: SPELLMAKER_SPELLTYPE_INSTANT, description: ["spell is cast instantly"] },
     { name: SPELLMAKER_SPELLTYPE_AUTOCAST, description: ["spell is cast automatically when mana full"] },
-    { name: SPELLMAKER_SPELLTYPE_CHARGE, description: ["spell charges on keydown and is cast on keyup. The longer the charge, the stronger the spell"] },
+    { name: SPELLMAKER_SPELLTYPE_CHARGE, description: ["spell charges on keydown and is cast on keyup.", "The longer the charge, the stronger the spell"] },
 ];
 export const ABILITY_SPELLMAKER_UPGRADE_FUNCTIONS: AbilityUpgradesFunctions = {};
 export const SPELLMAKER_MAX_CAST_RANGE = 1000;
@@ -1004,7 +1005,8 @@ function createAbilityMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability,
         for (let tool of abilitySpellmaker.createTools.createTools) {
             const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[tool.type];
             if (toolFunctions && !toolFunctions.learnedThroughUpgrade) continue;
-            textLines.push(`  ${tool.type}: ${tool.level.toFixed(1)}`);
+            const toolUpgradesText = tool.upgrades ? `+${tool.upgrades.toFixed()}` : "";
+            textLines.push(`  ${tool.type}${toolUpgradesText}: ${tool.level.toFixed(1)}`);
         }
         for (let spellType of abilitySpellmaker.availableSpellTypes) {
             if (!spellType.data) continue;

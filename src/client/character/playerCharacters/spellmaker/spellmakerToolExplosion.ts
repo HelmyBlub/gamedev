@@ -41,7 +41,7 @@ export function addSpellmakerToolExplosion() {
     };
 }
 
-function createObjectExplosion(center: Position): CreateToolObjectExplosionData {
+function createObjectExplosion(center: Position, typeUpgradedCount: number): CreateToolObjectExplosionData {
     return {
         type: SPELLMAKER_TOOL_EXPLOSION,
         center: center,
@@ -49,6 +49,7 @@ function createObjectExplosion(center: Position): CreateToolObjectExplosionData 
         radius: 5,
         baseDamage: 10,
         nextStage: [],
+        typeUpgradedCount: typeUpgradedCount,
     }
 }
 
@@ -58,6 +59,7 @@ function createTool(): SpellmakerCreateTool {
         subType: "default",
         level: 0,
         totalDamage: 0,
+        upgrades: 0,
         buttonImage: IMAGE_EXPLOSION,
     };
 }
@@ -81,7 +83,7 @@ function calculateManaCost(createObject: SpellmakerCreateToolObjectData): number
 
 function onKeyDown(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game) {
     const toolExplode = tool as SpellmakerCreateToolExplosion;
-    toolExplode.workInProgress = createObjectExplosion({ x: castPositionRelativeToCharacter.x, y: castPositionRelativeToCharacter.y });
+    toolExplode.workInProgress = createObjectExplosion({ x: castPositionRelativeToCharacter.x, y: castPositionRelativeToCharacter.y }, tool.upgrades!);
 }
 
 function onKeyUp(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game): SpellmakerCreateToolObjectData | undefined {
@@ -115,7 +117,9 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
 function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, chargeFactor: number, toolChain: string[], stageId: number, stageIndex: number, game: Game) {
     const explode = createObject as CreateToolObjectExplosionData;
     const chargedValues = getValuesWithCharge(explode, chargeFactor);
-    const damage = baseDamage * damageFactor * chargedValues.damageFactor;
+    const typeUpgradeCount = createObject.typeUpgradedCount ?? 0;
+    const typeUpgradeCountDamageFactor = 1 + typeUpgradeCount / 10;
+    const damage = baseDamage * damageFactor * chargedValues.damageFactor * typeUpgradeCountDamageFactor;
     const center: Position = {
         x: explode.center.x + castPosition.x,
         y: explode.center.y + castPosition.y,

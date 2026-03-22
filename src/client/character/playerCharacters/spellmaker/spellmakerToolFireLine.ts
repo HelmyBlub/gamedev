@@ -47,12 +47,13 @@ export function addSpellmakerToolFireline() {
     };
 }
 
-function createObjectFireLine(): CreateToolObjectFireLineData {
+function createObjectFireLine(typeUpgradedCount: number): CreateToolObjectFireLineData {
     return {
         type: SPELLMAKER_TOOL_FIRELINE,
         positions: [],
         baseDamage: 10,
         nextStage: [],
+        typeUpgradedCount: typeUpgradedCount,
     }
 }
 
@@ -62,6 +63,7 @@ function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
         subType: "default",
         level: 0,
         totalDamage: 0,
+        upgrades: 0,
         buttonImage: IMAGE_FIRE_LINE,
     };
 }
@@ -96,7 +98,7 @@ function calculateManaCost(createObject: SpellmakerCreateToolObjectData): number
 
 function onKeyDown(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game) {
     const toolFireLine = tool as SpellmakerCreateToolFireLine;
-    toolFireLine.workInProgress = createObjectFireLine();
+    toolFireLine.workInProgress = createObjectFireLine(tool.upgrades!);
     toolFireLine.workInProgress.positions.push({ x: castPositionRelativeToCharacter.x, y: castPositionRelativeToCharacter.y });
 }
 
@@ -145,7 +147,9 @@ function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: num
     if (fireline.positions.length < 2) return;
     const tickInterval = 200;
     const chargedValues = getValuesWithCharge(chargeFactor);
-    const damage = baseDamage * damageFactor * tickInterval / 250 * chargedValues.damageFactor;
+    const typeUpgradeCount = createObject.typeUpgradedCount ?? 0;
+    const typeUpgradeCountDamageFactor = 1 + typeUpgradeCount / 10;
+    const damage = baseDamage * damageFactor * tickInterval / 250 * chargedValues.damageFactor * typeUpgradeCountDamageFactor;
     const newToolChain: string[] = [...toolChain];
     const start: Position = {
         x: fireline.positions[0].x + castPosition.x,

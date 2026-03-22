@@ -42,7 +42,7 @@ export function addSpellmakerToolLightning() {
     };
 }
 
-function createObjectLightning(center: Position): CreateToolObjectLightningData {
+function createObjectLightning(center: Position, typeUpgradedCount: number): CreateToolObjectLightningData {
     return {
         type: SPELLMAKER_TOOL_LIGHTNING,
         center: center,
@@ -50,6 +50,7 @@ function createObjectLightning(center: Position): CreateToolObjectLightningData 
         jumps: 1,
         baseDamage: 10,
         nextStage: [],
+        typeUpgradedCount: typeUpgradedCount,
     }
 }
 
@@ -59,6 +60,7 @@ function createTool(ctx: CanvasRenderingContext2D): SpellmakerCreateTool {
         subType: "default",
         level: 0,
         totalDamage: 0,
+        upgrades: 0,
         buttonImage: IMAGE_NAME_LIGHTNING,
     };
 }
@@ -82,7 +84,7 @@ function calculateManaCost(createObject: SpellmakerCreateToolObjectData): number
 
 function onKeyDown(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game) {
     const toolLightning = tool as SpellmakerCreateToolLightning;
-    toolLightning.workInProgress = createObjectLightning({ x: castPositionRelativeToCharacter.x, y: castPositionRelativeToCharacter.y });
+    toolLightning.workInProgress = createObjectLightning({ x: castPositionRelativeToCharacter.x, y: castPositionRelativeToCharacter.y }, tool.upgrades!);
 }
 
 function onKeyUp(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game): SpellmakerCreateToolObjectData | undefined {
@@ -116,7 +118,9 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
 function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: number, faction: string, abilityId: number, castPosition: Position, damageFactor: number, manaFactor: number, chargeFactor: number, toolChain: string[], stageId: number, stageIndex: number, game: Game) {
     const lightning = createObject as CreateToolObjectLightningData;
     const chargedValues = getValuesWithCharge(lightning, chargeFactor);
-    const damage = baseDamage * chargedValues.damageFactor * damageFactor;
+    const typeUpgradeCount = createObject.typeUpgradedCount ?? 0;
+    const typeUpgradeCountDamageFactor = 1 + typeUpgradeCount / 10;
+    const damage = baseDamage * chargedValues.damageFactor * damageFactor * typeUpgradeCountDamageFactor;
     const center: Position = {
         x: lightning.center.x + castPosition.x,
         y: lightning.center.y + castPosition.y,
