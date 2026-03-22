@@ -3,11 +3,8 @@ increase version
 
 current tasks:     
 - new class spellmaker
-    - bug: slow not getting xp/levels
-    - bug: crash on tool delete trying to remove slow from explosion
     - bug: delete tool on stage 1 not working correctly with overlapp?
         - turret which shoot big explosion, delete of explosion only happens on center click not overlapp click
-    - bug: delete does not update mana cost
     - idea: endless upgrades for damage tools
     - remember: relative mouse position not used for holding mouse button down
     - test multiplayer

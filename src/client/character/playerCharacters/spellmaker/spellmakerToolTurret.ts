@@ -74,7 +74,7 @@ function getClosestCenter(createObject: SpellmakerCreateToolObjectData): Positio
 
 function calculateDistanceTurret(relativePosition: Position, createObject: SpellmakerCreateToolObjectData): number {
     const object = createObject as SpellmakerCreateToolObjectTurretData;
-    return calculateDistance(relativePosition, object.center);
+    return Math.max(0, calculateDistance(relativePosition, object.center) - 15);
 }
 
 function calculateManaCost(createObject: SpellmakerCreateToolObjectData): number {

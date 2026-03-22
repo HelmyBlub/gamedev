@@ -74,6 +74,7 @@ export type SpellmakerToolFunctions = SpellmakerToolFunctionsBase & {
     canHaveMoveAttachment?: boolean,
     availableFromTheStart?: boolean,
     doesDamage?: boolean,
+    spellmakeStageWithoutAttachIndex?: boolean,
 }
 
 export type SpellmakerToolsFunctions = {

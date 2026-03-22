@@ -70,7 +70,7 @@ function getRelativeSpellmakePosition(createObject: SpellmakerCreateToolObjectDa
 
 function calculateDistanceLightning(relativePosition: Position, createObject: SpellmakerCreateToolObjectData): number {
     const object = createObject as CreateToolObjectLightningData;
-    return Math.max(0, calculateDistance(relativePosition, object.center));
+    return Math.max(0, calculateDistance(relativePosition, object.center) - (5 + object.jumps));
 }
 
 function calculateManaCost(createObject: SpellmakerCreateToolObjectData): number {

@@ -32,6 +32,7 @@ export function addSpellmakerToolDelete() {
         ],
         learnedThroughUpgrade: false,
         availableFromTheStart: true,
+        spellmakeStageWithoutAttachIndex: true,
     };
 }
 
@@ -51,7 +52,7 @@ function onKeyDown(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, abili
 
 function onKeyUp(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, game: Game): SpellmakerCreateToolObjectData | undefined {
     if (tool.workInProgress) {
-        const closest = spellmakerFindClosestAttachToIndex(ability, castPositionRelativeToCharacter, "any");
+        const closest = spellmakerFindClosestAttachToIndex(ability, castPositionRelativeToCharacter, "any", 5);
         if (closest) {
             let createdObjects = ability.spells[ability.spellIndex].createdObjects;
             for (let index = 0; index < closest.length - 1; index++) {

@@ -593,9 +593,13 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, data: PlayerA
                             const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[tool.type];
                             if (toolFunctions.onKeyDown) toolFunctions.onKeyDown(tool, abilityOwner, abilitySm, castPositionRelativeToCharacter, game);
                         } else {
-                            abilitySm.attachToIndex = spellmakerFindClosestAttachToIndex(abilitySm, castPositionRelativeToCharacter, "stage");
-                            if (abilitySm.attachToIndex != undefined) {
-                                const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[tool.type];
+                            const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[tool.type];
+                            let doOnKeyDown = true;
+                            if (!toolFunctions.spellmakeStageWithoutAttachIndex) {
+                                abilitySm.attachToIndex = spellmakerFindClosestAttachToIndex(abilitySm, castPositionRelativeToCharacter, "stage");
+                                doOnKeyDown = abilitySm.attachToIndex != undefined;
+                            }
+                            if (doOnKeyDown) {
                                 if (toolFunctions.onKeyDown) toolFunctions.onKeyDown(tool, abilityOwner, abilitySm, castPositionRelativeToCharacter, game);
                             }
                         }
@@ -923,10 +927,10 @@ function spellmakerFindClosestAttachToIndexRecursive(stage: number, currentStage
 }
 
 
-export function spellmakerFindClosestAttachToIndex(ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, attachType: "stage" | "move" | "debuff" | "any"): number[] | undefined {
+export function spellmakerFindClosestAttachToIndex(ability: AbilitySpellmaker, castPositionRelativeToCharacter: Position, attachType: "stage" | "move" | "debuff" | "any", maxDistance = 20): number[] | undefined {
     const currentSpell = ability.spells[ability.spellIndex];
     const result = spellmakerFindClosestAttachToIndexRecursive(0, currentSpell.createdObjects, ability, castPositionRelativeToCharacter, attachType);
-    if (result && result.closestDistance < 20) {
+    if (result && result.closestDistance < maxDistance) {
         return result.attachToIndexes;
     }
     return undefined;
