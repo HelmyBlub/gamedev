@@ -3,13 +3,16 @@ increase version
 
 current tasks:     
 - new class spellmaker
-    - remove/eraser tool
-        - first click try erase debuff, second move third createdObject
-    - check: debuff only onto damage spells
+    - bug: slow not getting xp/levels
+    - bug: crash on tool delete trying to remove slow from explosion
+    - bug: delete tool on stage 1 not working correctly with overlapp?
+        - turret which shoot big explosion, delete of explosion only happens on center click not overlapp click
+    - bug: delete does not update mana cost
     - idea: endless upgrades for damage tools
-    - "undo" tool
     - remember: relative mouse position not used for holding mouse button down
+    - test multiplayer
     - test run
+        - balancing: too strong currently?
     - check: touch controlls for spellmake mode
 - moreInfo with hover text should have (i) indicator, so player knows there is more info
 - speedrun my game

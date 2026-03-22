@@ -1,6 +1,6 @@
 import { AbilityOwner } from "../../../ability/ability.js";
 import { Position, Game } from "../../../gameModel.js";
-import { AbilitySpellmaker, SpellmakerCreateToolObjectData, spellmakerFindClosestAttachToIndex } from "./abilitySpellmaker.js";
+import { AbilitySpellmaker, abilitySpellmakerCalculateManaCostWithLevelFactor, SpellmakerCreateToolObjectData, spellmakerFindClosestAttachToIndex } from "./abilitySpellmaker.js";
 import { SPELLMAKER_TOOLS_FUNCTIONS, SpellmakerCreateTool } from "./spellmakerTool.js";
 import { IMAGE_EXPLOSION } from "../../enemy/god/abilityTileExplosions.js";
 import { GAME_IMAGES } from "../../../imageLoad.js";
@@ -55,7 +55,7 @@ function onKeyUp(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability
         if (closest) {
             let createdObjects = ability.spells[ability.spellIndex].createdObjects;
             for (let index = 0; index < closest.length - 1; index++) {
-                createdObjects = createdObjects[index].nextStage;
+                createdObjects = createdObjects[closest[index]].nextStage;
             }
             const currentObjectIndex = closest[closest.length - 1];
             const currentObject = createdObjects[currentObjectIndex];
@@ -66,6 +66,7 @@ function onKeyUp(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability
             } else {
                 createdObjects.splice(currentObjectIndex, 1);
             }
+            abilitySpellmakerCalculateManaCostWithLevelFactor(ability, ability.spells[ability.spellIndex]);
         }
         tool.workInProgress = undefined;
     }

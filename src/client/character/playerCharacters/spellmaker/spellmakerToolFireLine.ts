@@ -159,7 +159,6 @@ function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: num
     if (fireline.moveAttachment) {
         const toolFunctions = SPELLMAKER_MOVE_TOOLS_FUNCTIONS[fireline.moveAttachment.type];
         if (toolFunctions.getMoveAttachment) {
-            if (!newToolChain.includes(fireline.moveAttachment.type)) newToolChain.push(fireline.moveAttachment.type);
             moveAttachment = toolFunctions.getMoveAttachment(createObject, preStageAbilityObject, stageId, castPosition, game);
         }
     }

@@ -822,7 +822,14 @@ function spellCast(abilityOwner: AbilityOwner, abilitySm: AbilitySpellmaker, spe
                     visited.push(lockedObject.refIndex);
                     currentObject = currentSpell.createdObjects[lockedObject.refIndex];
                 }
+                if (!toolChain.includes(createdObject.moveAttachment.type)) {
+                    toolChain.push(createdObject.moveAttachment.type);
+                }
             }
+            if (createdObject.debuffAttachment && !toolChain.includes(createdObject.debuffAttachment.type)) {
+                toolChain.push(createdObject.debuffAttachment.type);
+            }
+
             toolFunctions.spellCast(createdObject, abilitySm.baseDamage, abilityOwner.faction, abilitySm.id, modCastPosition, damageFactor, abilitySm.manaLevelFactor, chargeFactor, toolChain, stageId, stageIndex, game);
         }
     }
@@ -856,6 +863,14 @@ export function abilitySpellmakerCastNextStage(nextStage: SpellmakerCreateToolOb
             }
             const toolChain = [...abilityObject.toolChain];
             if (!toolChain.includes(stageObject.type)) toolChain.push(stageObject.type);
+
+            if (stageObject.moveAttachment && !toolChain.includes(stageObject.moveAttachment.type)) {
+                toolChain.push(stageObject.moveAttachment.type);
+            }
+            if (stageObject.debuffAttachment && !toolChain.includes(stageObject.debuffAttachment.type)) {
+                toolChain.push(stageObject.debuffAttachment.type);
+            }
+
             spellmakerFunctions.spellCast(stageObject, stageObject.baseDamage, abilityObject.faction, abilityObject.abilityIdRef!, pos, abilityObject.damageFactor, abilityObject.manaFactor, abilityObject.chargeFactor, toolChain, stageId, stageIndex, game, abilityObject);
         }
     }

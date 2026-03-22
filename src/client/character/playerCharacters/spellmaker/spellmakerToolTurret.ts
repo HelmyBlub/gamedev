@@ -130,7 +130,6 @@ function spellCast(createObject: SpellmakerCreateToolObjectData, baseDamage: num
     if (toolTurret.moveAttachment) {
         const toolFunctions = SPELLMAKER_MOVE_TOOLS_FUNCTIONS[toolTurret.moveAttachment.type];
         if (toolFunctions.getMoveAttachment) {
-            if (!newToolChain.includes(toolTurret.moveAttachment.type)) newToolChain.push(toolTurret.moveAttachment.type);
             moveAttachment = toolFunctions.getMoveAttachment(createObject, preStageAbilityObject, stageId, castPosition, game);
         }
     }
