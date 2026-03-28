@@ -505,7 +505,10 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
             const clientInfo: ClientInfo | undefined = findClientInfoByCharacterId(abilityOwner.id, game);
             let mapPositionForPaint: Position = { x: abilityOwner.x, y: abilityOwner.y };
             if (clientInfo) {
-                mapPositionForPaint = clientInfo.lastMousePosition;
+                mapPositionForPaint = {
+                    x: abilityOwner.x + clientInfo.lastRelativeToCharacterMousePosition.x,
+                    y: abilityOwner.y + clientInfo.lastRelativeToCharacterMousePosition.y,
+                }
             }
             mapPositionForPaint = getModCastPosition(abilityOwner.faction, currentSpell, mapPositionForPaint);
             const paintPos: Position = getPointPaintPosition(ctx, mapPositionForPaint, cameraPosition, game.UI.zoom);
@@ -747,6 +750,13 @@ function castAbility(abilityOwner: AbilityOwner, ability: Ability, data: PlayerA
                 if (distance > SPELLMAKER_MAX_CAST_RANGE) return;
                 spellCast(abilityOwner, abilitySm, abilitySm.spellIndex, castPosition, game);
             }
+        }
+    }
+    const clientInfo: ClientInfo | undefined = findClientInfoByCharacterId(abilityOwner.id, game);
+    if (clientInfo) {
+        clientInfo.lastRelativeToCharacterMousePosition = {
+            x: castPosition.x - abilityOwner.x,
+            y: castPosition.y - abilityOwner.y,
         }
     }
 }

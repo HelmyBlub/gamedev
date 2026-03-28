@@ -462,7 +462,10 @@ function tickAbilitySnipe(abilityOwner: AbilityOwner, ability: Ability, game: Ga
         const clientInfo: ClientInfo | undefined = findClientInfoByCharacterId(abilityOwner.id, game);
         let castPosition: Position | undefined = { x: 0, y: 0 };
         if (clientInfo) {
-            castPosition = clientInfo.lastMousePosition;
+            castPosition = {
+                x: abilityOwner.x + clientInfo.lastRelativeToCharacterMousePosition.x,
+                y: abilityOwner.y + clientInfo.lastRelativeToCharacterMousePosition.y,
+            }
         } else {
             if (abilityOwner.faction === FACTION_ENEMY) {
                 const target = getRandomAlivePlayerCharacter(game.state.players, game.state.randomSeed);
@@ -492,7 +495,7 @@ function tickAbilitySnipe(abilityOwner: AbilityOwner, ability: Ability, game: Ga
     if (abilitySnipe.shotNextAllowedTime) {
         const clientInfo: ClientInfo | undefined = findClientInfoByCharacterId(abilityOwner.id, game);
         if (clientInfo) {
-            abilitySnipe.lastSniperRiflePaintDirection = calculateDirection(abilityOwner, clientInfo.lastMousePosition);
+            abilitySnipe.lastSniperRiflePaintDirection = calculateDirection({ x: 0, y: 0 }, clientInfo.lastRelativeToCharacterMousePosition);
         }
     }
     tickAbilityUpgradeMoreRifles(abilitySnipe, abilityOwner, game);

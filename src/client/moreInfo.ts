@@ -10,7 +10,7 @@ import { godCreateMoreInfos } from "./character/enemy/god/godEnemy.js";
 import { kingCreateMoreInfos } from "./character/enemy/kingEnemy.js";
 import { TAMER_PET_CHARACTER, TamerPetCharacter, createTamerPetsCharacterMoreInfos } from "./character/playerCharacters/tamer/tamerPetCharacter.js";
 import { createCombatLogMoreInfo, createDamageMeterMoreInfo } from "./combatlog.js";
-import { deepCopy, findClosestInteractable, getRelativeMousePoistion } from "./game.js";
+import { deepCopy, findClosestInteractable, getRelativeMousePosition } from "./game.js";
 import { Game, Position } from "./gameModel.js";
 import { createHighscoresMoreInfos } from "./highscores.js";
 import { createMoreInfosForMabObject } from "./map/mapObjects.js";
@@ -83,7 +83,7 @@ export function createDefaultEmptyMoreInfos(): MoreInfos {
 export function moreInfosHandleMouseClick(event: MouseEvent, game: Game): boolean {
     if (!game.UI.displayMoreInfos) return false;
     const moreInfos = game.UI.moreInfos;
-    let mouseClickPos = getRelativeMousePoistion(event);
+    let mouseClickPos = getRelativeMousePosition(event);
     if (moreInfos.paintStartY <= mouseClickPos.y
         && moreInfos.paintStartY + moreInfos.headingFontSize + moreInfos.headingBottomPadding >= mouseClickPos.y
     ) {

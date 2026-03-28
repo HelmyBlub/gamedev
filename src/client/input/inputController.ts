@@ -2,7 +2,7 @@ import { findMyCharacter } from "../character/character.js";
 import { handleCommand } from "../commands.js";
 import { calculateDirection } from "../game.js";
 import { Game, Position } from "../gameModel.js";
-import { executeUiAction, MOUSE_ACTION, MOVE_ACTION, MoveData } from "./playerInput.js";
+import { executeUiAction, MOUSE_ACTION, MouseActionData, MOVE_ACTION, MoveData } from "./playerInput.js";
 
 export type ControllerButtonsPressed = boolean[];
 
@@ -83,12 +83,13 @@ function autoSendAimStickPosition(gamepad: Gamepad, game: Game) {
     if (!character) return;
     if (game.multiplayer.autosendMousePosition.nextTime <= game.state.time) {
         const offset = axesToOffsetPosition(gamepad);
-        const castPosition = { x: character.x + offset.x, y: character.y + offset.y };
+        const relativeCastPosition = { x: offset.x, y: offset.y };
+        const mouseData: MouseActionData = { action: MOUSE_ACTION, charRelativePosition: relativeCastPosition };
 
         handleCommand(game, {
             command: "playerInput",
             clientId: game.multiplayer.myClientId,
-            data: { action: MOUSE_ACTION, mousePosition: castPosition },
+            data: mouseData,
         });
         game.multiplayer.autosendMousePosition.nextTime = game.state.time + game.multiplayer.autosendMousePosition.interval;
     }

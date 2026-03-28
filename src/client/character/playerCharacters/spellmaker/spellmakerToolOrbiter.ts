@@ -101,8 +101,8 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
         if (moveTool.workInProgress) {
             const orbiter = moveTool.workInProgress as SpellmakerCreateToolMoveAttachmentOrbiter;
             const relativPos: Position = {
-                x: clientInfo.lastMousePosition.x - abilityOwner.x,
-                y: clientInfo.lastMousePosition.y - abilityOwner.y,
+                x: clientInfo.lastRelativeToCharacterMousePosition.x,
+                y: clientInfo.lastRelativeToCharacterMousePosition.y,
             };
             const orbitCenter = spellmakerCreateObjectDetermineClosestCenter(tool, ability, relativPos);
             orbiter.center = orbitCenter.pos;

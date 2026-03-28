@@ -104,8 +104,8 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
         if (moveTool.workInProgress) {
             const attach = moveTool.workInProgress as SpellmakerCreateToolMoveAttachmentAttach;
             const relativPos: Position = {
-                x: clientInfo.lastMousePosition.x - abilityOwner.x,
-                y: clientInfo.lastMousePosition.y - abilityOwner.y,
+                x: clientInfo.lastRelativeToCharacterMousePosition.x,
+                y: clientInfo.lastRelativeToCharacterMousePosition.y,
             };
             const closest = spellmakerCreateObjectDetermineClosestCenter(tool, ability, relativPos);
             attach.refIndex = closest.createObjectIndex;

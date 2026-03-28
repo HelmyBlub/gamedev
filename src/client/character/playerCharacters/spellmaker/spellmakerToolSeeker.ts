@@ -90,8 +90,8 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
         if (moveTool.workInProgress) {
             const seeker = moveTool.workInProgress;
             const relativPos: Position = {
-                x: clientInfo.lastMousePosition.x - abilityOwner.x,
-                y: clientInfo.lastMousePosition.y - abilityOwner.y,
+                x: clientInfo.lastRelativeToCharacterMousePosition.x,
+                y: clientInfo.lastRelativeToCharacterMousePosition.y,
             };
             seeker.direction = calculateDirection(seeker.startPos, relativPos);
             seeker.speed = calculateDistance(seeker.startPos, relativPos);

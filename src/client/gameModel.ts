@@ -156,7 +156,7 @@ export type BossStuff = {
 export type ClientInfo = {
     id: number,
     name: string,
-    lastMousePosition: Position,
+    lastRelativeToCharacterMousePosition: Position,
     allowCheats?: boolean,
 }
 
@@ -360,7 +360,7 @@ export function createDefaultGameData(c?: HTMLCanvasElement, ctx?: CanvasRenderi
                 seed: Math.random(),
             },
             players: [],
-            clientInfos: [{ id: -1, name: "", lastMousePosition: { x: 0, y: 0 } }],
+            clientInfos: [{ id: -1, name: "", lastRelativeToCharacterMousePosition: { x: 0, y: 0 } }],
             map: createMap(),
             deathCircleCreated: false,
             bossStuff: {

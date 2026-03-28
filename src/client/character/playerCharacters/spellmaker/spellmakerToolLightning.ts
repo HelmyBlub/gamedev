@@ -105,8 +105,8 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
         const toolLightning = tool as SpellmakerCreateToolLightning;
         if (toolLightning.workInProgress) {
             const relativePos: Position = {
-                x: clientInfo.lastMousePosition.x - abilityOwner.x,
-                y: clientInfo.lastMousePosition.y - abilityOwner.y,
+                x: clientInfo.lastRelativeToCharacterMousePosition.x,
+                y: clientInfo.lastRelativeToCharacterMousePosition.y,
             };
             const lightning = toolLightning.workInProgress as CreateToolObjectLightningData;
             lightning.jumps = Math.round(Math.min(20, Math.max(1, Math.abs((relativePos.x - lightning.center.x) / 10))));

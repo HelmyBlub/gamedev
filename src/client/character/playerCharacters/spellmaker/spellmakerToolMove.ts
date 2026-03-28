@@ -79,8 +79,8 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
         const moveTool = tool as SpellmakerCreateToolMove;
         if (moveTool.workInProgress) {
             const end: Position = {
-                x: clientInfo.lastMousePosition.x - abilityOwner.x,
-                y: clientInfo.lastMousePosition.y - abilityOwner.y,
+                x: clientInfo.lastRelativeToCharacterMousePosition.x,
+                y: clientInfo.lastRelativeToCharacterMousePosition.y,
             };
             const moveTo = moveTool.workInProgress;
             const beforePos = moveTo.moveTo[moveTo.moveTo.length - 1];

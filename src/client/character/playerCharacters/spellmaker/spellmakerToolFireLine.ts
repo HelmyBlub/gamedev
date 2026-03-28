@@ -131,8 +131,8 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
         if (toolFireLine.workInProgress) {
             const fireLine = toolFireLine.workInProgress as CreateToolObjectFireLineData;
             const end: Position = {
-                x: clientInfo.lastMousePosition.x - abilityOwner.x,
-                y: clientInfo.lastMousePosition.y - abilityOwner.y,
+                x: clientInfo.lastRelativeToCharacterMousePosition.x,
+                y: clientInfo.lastRelativeToCharacterMousePosition.y,
             };
             const distanceToCenter = calculateDistance({ x: 0, y: 0 }, end);
             if (distanceToCenter < SPELLMAKER_MAX_CAST_RANGE && calculateDistance(fireLine.positions[fireLine.positions.length - 1], end) > 10) {

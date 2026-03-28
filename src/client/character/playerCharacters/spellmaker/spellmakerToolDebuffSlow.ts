@@ -87,8 +87,8 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
         if (moveTool.workInProgress) {
             const slow = moveTool.workInProgress as SpellmakerCreateToolDebuffAttachmentSlow;
             const relativPos: Position = {
-                x: clientInfo.lastMousePosition.x - abilityOwner.x,
-                y: clientInfo.lastMousePosition.y - abilityOwner.y,
+                x: clientInfo.lastRelativeToCharacterMousePosition.x,
+                y: clientInfo.lastRelativeToCharacterMousePosition.y,
             };
             slow.slowAmount = Math.max(1.2, Math.min((1 + calculateDistance(slow.startPosition, relativPos) / 200), 3));
         }

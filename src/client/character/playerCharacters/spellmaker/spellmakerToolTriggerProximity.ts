@@ -108,8 +108,8 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
         const toolProximity = tool as SpellmakerCreateToolProximity;
         if (toolProximity.workInProgress) {
             const relativePos: Position = {
-                x: clientInfo.lastMousePosition.x - abilityOwner.x,
-                y: clientInfo.lastMousePosition.y - abilityOwner.y,
+                x: clientInfo.lastRelativeToCharacterMousePosition.x,
+                y: clientInfo.lastRelativeToCharacterMousePosition.y,
             };
             const proximity = toolProximity.workInProgress;
             proximity.radius = Math.max(10, Math.abs(relativePos.x - proximity.center.x))

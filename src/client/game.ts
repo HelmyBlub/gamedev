@@ -1,7 +1,7 @@
 import { cappCharacter, changeCharacterId, countAlivePlayerCharacters, findAndSetNewCameraCharacterId, findCharacterById, findMyCharacter, getPlayerCharacters, resetCharacter, tickCharacters } from "./character/character.js";
 import { paintAll } from "./gamePaint.js";
 import { addPlayerMoney, createDefaultKeyBindings1, createDefaultUiKeyBindings, createPlayerWithPlayerCharacter, findNearesPastPlayerCharacter, findPlayerByCharacterId, gameInitPlayers, isAutoUpgradeActive } from "./player.js";
-import { MOUSE_ACTION, MouseActionData, PlayerAbilityActionData, RESTART_HOLD_TIME, UPGRADE_ACTIONS, executeUiAction, tickPlayerInputs } from "./input/playerInput.js";
+import { MOUSE_ACTION, MouseActionData, RESTART_HOLD_TIME, UPGRADE_ACTIONS, executeUiAction, tickPlayerInputs } from "./input/playerInput.js";
 import { Position, GameState, Game, IdCounter, Debugging, ClientInfo, GameVersion } from "./gameModel.js";
 import { changeTileIdOfMapChunk, createMap, determineMapKeysInDistance, GameMap, initKingArea, mapKeyToChunkXY, mousePositionToMapPosition, tickActiveMapChunks } from "./map/map.js";
 import { Character } from "./character/characterModel.js";
@@ -264,13 +264,13 @@ async function sleep(milliseconds: number) {
     });
 }
 
-export function getRelativeMousePoistion(event: MouseEvent): Position {
+export function getRelativeMousePosition(event: MouseEvent): Position {
     const target = event.currentTarget as HTMLElement;
     return { x: event.x - target.offsetLeft, y: event.y - target.offsetTop };
 }
 
 export function setRelativeMousePosition(event: MouseEvent, game: Game) {
-    game.mouseRelativeCanvasPosition = getRelativeMousePoistion(event);
+    game.mouseRelativeCanvasPosition = getRelativeMousePosition(event);
 }
 
 export function findClientInfo(clientId: number, game: Game): ClientInfo | undefined {
@@ -490,7 +490,7 @@ export function autoSendMousePositionHandler(ownerId: number, identifier: string
             }
         }
     }
-    if (castPosition) clientInfo.lastMousePosition = castPosition;
+    if (castPosition) clientInfo.lastRelativeToCharacterMousePosition = castPosition;
 }
 
 export function findClosestInteractable(character: Character | undefined, game: Game): { pastCharacter?: Character, mapObject?: MapTileObject } | undefined {
@@ -743,7 +743,7 @@ function endGameReplayStuff(game: Game, newScore: number) {
         replayGameEndAssert(game, newScore);
         const myClientId = game.multiplayer.myClientId;
         if (replay.data?.multiplayerData) {
-            game.state.clientInfos = [{ id: myClientId, lastMousePosition: { x: 0, y: 0 }, name: "" }];
+            game.state.clientInfos = [{ id: myClientId, lastRelativeToCharacterMousePosition: { x: 0, y: 0 }, name: "" }];
             const player = createPlayerWithPlayerCharacter(game.state.idCounter, myClientId, { x: 0, y: 0 }, game.state.randomSeed, game);
             game.state.players = [player];
         }
@@ -824,9 +824,8 @@ function autoSendMyMousePosition(game: Game) {
     if (game.UI.inputType !== "keyboard") return;
     if (game.multiplayer.autosendMousePosition.sendForOwners.length === 0) return;
     if (game.multiplayer.autosendMousePosition.nextTime <= game.state.time) {
-        const cameraPosition = getCameraPosition(game);
-        const castPosition = mousePositionToMapPosition(game, cameraPosition);
-        const mouseData: MouseActionData = { action: MOUSE_ACTION, mousePosition: castPosition };
+        const relativeMousePosition = mousePositionToMapPosition(game, { x: 0, y: 0 });
+        const mouseData: MouseActionData = { action: MOUSE_ACTION, charRelativePosition: relativeMousePosition };
         handleCommand(game, {
             command: "playerInput",
             clientId: game.multiplayer.myClientId,

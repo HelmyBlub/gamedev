@@ -202,7 +202,12 @@ function castLightningBall(abilityOwner: AbilityOwner, ability: Ability, data: P
     lightningBallUpgradeBounceBonusSetBonusDamageFactor(abilityLightningBall, abilityOwner);
     lightningBallUpgradeLightningStirkesExecute(abilityLightningBall, abilityOwner, game);
     const clientInfo: ClientInfo | undefined = findClientInfoByCharacterId(abilityOwner.id, game);
-    if (clientInfo) clientInfo.lastMousePosition = castPosition;
+    if (clientInfo) {
+        clientInfo.lastRelativeToCharacterMousePosition = {
+            x: castPosition.x - abilityOwner.x,
+            y: castPosition.y - abilityOwner.y,
+        }
+    }
 }
 
 function createAbilityBossSpeedBoostUpgradeOptions(ability: Ability, character: Character, game: Game): UpgradeOptionAndProbability[] {

@@ -115,8 +115,8 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
         const toolFireCircle = tool as SpellmakerCreateToolFireCircle;
         if (toolFireCircle.workInProgress) {
             const relativePos: Position = {
-                x: clientInfo.lastMousePosition.x - abilityOwner.x,
-                y: clientInfo.lastMousePosition.y - abilityOwner.y,
+                x: clientInfo.lastRelativeToCharacterMousePosition.x,
+                y: clientInfo.lastRelativeToCharacterMousePosition.y,
             };
             const explode = toolFireCircle.workInProgress as CreateToolObjectFireCircleData;
             explode.radius = Math.max(10, Math.abs(relativePos.x - explode.center.x))

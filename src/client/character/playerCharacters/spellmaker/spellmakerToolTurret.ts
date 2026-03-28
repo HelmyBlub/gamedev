@@ -110,8 +110,8 @@ function onTick(tool: SpellmakerCreateTool, abilityOwner: AbilityOwner, ability:
         const toolTurret = tool as SpellmakerCreateToolTurret;
         if (toolTurret.workInProgress) {
             const relativePos: Position = {
-                x: clientInfo.lastMousePosition.x - abilityOwner.x,
-                y: clientInfo.lastMousePosition.y - abilityOwner.y,
+                x: clientInfo.lastRelativeToCharacterMousePosition.x,
+                y: clientInfo.lastRelativeToCharacterMousePosition.y,
             };
             const turret = toolTurret.workInProgress;
             turret.mana = Math.max(1, Math.abs(relativePos.x - turret.center.x))

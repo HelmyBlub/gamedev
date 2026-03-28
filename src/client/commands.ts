@@ -168,14 +168,14 @@ function compareStateHash(game: Game, data: StateCompareHash) {
 }
 
 function playerJoined(game: Game, data: PlayerJoined) {
-    game.state.clientInfos.push({ id: data.clientId, name: data.clientName, lastMousePosition: { x: 0, y: 0 } });
+    game.state.clientInfos.push({ id: data.clientId, name: data.clientName, lastRelativeToCharacterMousePosition: { x: 0, y: 0 } });
     pushStackPaintTextData(game.UI.stackTextsData, `${data.clientName} joined`, game.state.time);
 }
 
 function connectInfo(game: Game, data: ConnectInfo) {
     const oldId = game.multiplayer.myClientId;
     game.multiplayer.myClientId = data.clientId;
-    game.state.clientInfos = [{ id: data.clientId, name: data.clientName, lastMousePosition: { x: 0, y: 0 } }];
+    game.state.clientInfos = [{ id: data.clientId, name: data.clientName, lastRelativeToCharacterMousePosition: { x: 0, y: 0 } }];
     game.multiplayer.updateInterval = data.updateInterval;
     if (data.numberConnections === 0) {
         game.multiplayer.awaitingGameState.waiting = false;

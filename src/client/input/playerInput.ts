@@ -4,14 +4,14 @@ import { Character } from "../character/characterModel.js";
 import { ClientKeyBindings, Game, Position, RecordExtendendInformation } from "../gameModel.js";
 import { websocketConnect } from "../multiplayerConenction.js";
 import { ABILITIES_FUNCTIONS, DefaultAbilityCastData } from "../ability/ability.js";
-import { calculateDirection, getCameraPosition, findClientInfo, resetGameNonStateData, takeTimeMeasure, findClosestInteractable, concedePlayerFightRetries, retryFight, calculateFightRetryCounter, getRelativeMousePoistion, calculateDistance, getTickInterval } from "../game.js";
+import { calculateDirection, getCameraPosition, findClientInfo, resetGameNonStateData, takeTimeMeasure, findClosestInteractable, concedePlayerFightRetries, retryFight, calculateFightRetryCounter, getTickInterval } from "../game.js";
 import { executeUpgradeOptionChoice } from "../character/upgrade.js";
 import { canCharacterTradeAbilityOrPets, characterTradeAbilityAndPets } from "../character/character.js";
 import { shareCharactersTradeablePreventedMultipleClass } from "../character/playerCharacters/playerCharacters.js";
 import { findNearesInteractableMapChunkObject, interactWithMapObject } from "../map/mapObjects.js";
 import { localStorageLoad } from "../permanentData.js";
 import { createRequiredMoreInfos, moreInfosHandleMouseClick } from "../moreInfo.js";
-import { chunkXYToMapKey, mousePositionToMapPosition, positionToChunkXY } from "../map/map.js";
+import { mousePositionToMapPosition } from "../map/map.js";
 import { CHEAT_ACTIONS, executeCheatAction } from "../cheat.js";
 import { pushStackPaintTextData } from "../floatingText.js";
 import { GAME_MODE_BASE_DEFENSE } from "../gameModeBaseDefense.js";
@@ -36,7 +36,7 @@ export type PlayerAbilityActionData = PlayerActionData & {
 }
 
 export type MouseActionData = PlayerActionData & {
-    mousePosition: Position,
+    charRelativePosition: Position,
 }
 
 export type MoveData = PlayerActionData & {
@@ -507,7 +507,7 @@ export function playerAction(clientId: number, data: PlayerActionData, game: Gam
         } else if (MOUSE_ACTION === action) {
             const client = findClientInfo(clientId, game);
             if (client) {
-                client.lastMousePosition = (data as MouseActionData).mousePosition;
+                client.lastRelativeToCharacterMousePosition = (data as MouseActionData).charRelativePosition;
             }
         } else if (CHEAT_ACTIONS.indexOf(action) !== -1) {
             const isKeydown: boolean = (data as PlayerAbilityActionData).isKeydown;

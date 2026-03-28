@@ -210,7 +210,12 @@ function castBounceBall(abilityOwner: AbilityOwner, ability: Ability, data: Play
         abilityBounceBall.nextRechargeTime = game.state.time + abilityBounceBall.baseRechargeTime;
     }
     const clientInfo: ClientInfo | undefined = findClientInfoByCharacterId(abilityOwner.id, game);
-    if (clientInfo) clientInfo.lastMousePosition = castPosition;
+    if (clientInfo) {
+        clientInfo.lastRelativeToCharacterMousePosition = {
+            x: castPosition.x - abilityOwner.x,
+            y: castPosition.y - abilityOwner.y,
+        }
+    }
 }
 
 function createAbilityBossUpgradeOptions(ability: Ability, character: Character, game: Game): UpgradeOptionAndProbability[] {
@@ -395,7 +400,7 @@ function rollDirectionInfluenceTick(abilityBounceBall: AbilityBounceBall, abilit
         if (abilityOwner.isMoving && abilityOwner.moveDirection !== undefined) {
             influenceDirection = abilityOwner.moveDirection;
         } else {
-            influenceDirection = calculateDirection(abilityOwner, clientInfo.lastMousePosition);
+            influenceDirection = calculateDirection({ x: 0, y: 0 }, clientInfo.lastRelativeToCharacterMousePosition);
         }
     } else {
         const target = getRandomAlivePlayerCharacter(game.state.players, game.state.randomSeed);
