@@ -312,6 +312,7 @@ function randomizedCharacterImagePaint(ctx: CanvasRenderingContext2D, character:
         if (character.state === "petPlayer") heightFactor = 0.5;
         const characterPaintX = Math.floor(paintPos.x - character.width / 2);
         const characterPaintY = Math.floor(paintPos.y - character.height / 2 * heightFactor);
+        ctx.save();
         ctx.translate(characterPaintX, characterPaintY + Math.floor(character.height / 2));
         ctx.rotate(rotation);
         ctx.translate(-characterPaintX, -characterPaintY - Math.floor(character.height / 2));
@@ -327,9 +328,7 @@ function randomizedCharacterImagePaint(ctx: CanvasRenderingContext2D, character:
             character.width,
             character.height * heightFactor
         );
-        ctx.translate(characterPaintX, characterPaintY + Math.floor(character.height / 2));
-        ctx.rotate(-rotation);
-        ctx.translate(-characterPaintX, -characterPaintY - Math.floor(character.height / 2));
+        ctx.restore();
     }
 }
 

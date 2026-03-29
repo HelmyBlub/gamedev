@@ -267,14 +267,13 @@ function paintAbility(ctx: CanvasRenderingContext2D, abilityOwner: AbilityOwner,
     if (!findBallBuff(abilityOwner, abilityBall)) {
         paintPos.y -= 10;
     } else {
+        ctx.save();
         ctx.strokeStyle = color;
         ctx.translate(paintPos.x, paintPos.y);
         ctx.rotate(abilityBall.visualizeBallAngle);
         ctx.translate(-paintPos.x, -paintPos.y);
         paintCharacterDefault(ctx, abilityOwner as Character, cameraPosition, game, false);
-        ctx.translate(paintPos.x, paintPos.y);
-        ctx.rotate(-abilityBall.visualizeBallAngle);
-        ctx.translate(-paintPos.x, -paintPos.y);
+        ctx.restore();
     }
     paintBall(ctx, abilityBall, abilityOwner.faction, paintPos);
     abilityBounceBallUpgradeBounceBonusDamagePaintStacks(ctx, abilityBall, abilityOwner, cameraPosition, game);

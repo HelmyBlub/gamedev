@@ -163,6 +163,7 @@ function paintAbilitySword(ctx: CanvasRenderingContext2D, abilityOwner: AbilityO
 
     if (abilityOwner.faction === FACTION_PLAYER) ctx.globalAlpha *= game.UI.playerGlobalAlphaMultiplier;
     for (let i = 0; i < abilitySword.swordCount; i++) {
+        ctx.save();
         ctx.translate(paintPos.x, paintPos.y);
         const rotation = abilitySword.currentSwordAngle + Math.PI / 2 + abilitySword.angleChangePerSword * i;
         ctx.rotate(rotation);
@@ -186,9 +187,7 @@ function paintAbilitySword(ctx: CanvasRenderingContext2D, abilityOwner: AbilityO
                 abilitySword.swordLength
             );
         }
-        ctx.translate(paintPos.x, paintPos.y);
-        ctx.rotate(-rotation);
-        ctx.translate(-paintPos.x, -paintPos.y);
+        ctx.restore();
     }
     ctx.globalAlpha = 1;
 }

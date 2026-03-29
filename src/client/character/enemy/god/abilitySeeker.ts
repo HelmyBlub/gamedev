@@ -175,6 +175,7 @@ function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: Abilit
         }
         if (eyeImageRef.imageRef?.complete) {
             const eyeImage: HTMLImageElement = eyeImageRef.imageRef;
+            ctx.save();
             ctx.translate(paintPos.x, paintPos.y);
             ctx.rotate(direction);
             ctx.translate(-paintPos.x, -paintPos.y);
@@ -191,9 +192,7 @@ function paintAbilityObject(ctx: CanvasRenderingContext2D, abilityObject: Abilit
                 width,
                 height
             )
-            ctx.translate(paintPos.x, paintPos.y);
-            ctx.rotate(-direction);
-            ctx.translate(-paintPos.x, -paintPos.y);
+            ctx.restore()
         }
     }
 }
