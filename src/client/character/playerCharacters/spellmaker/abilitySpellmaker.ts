@@ -1008,29 +1008,27 @@ function createAbilityMoreInfos(ctx: CanvasRenderingContext2D, ability: Ability,
     }
 
     const upgradeHoverLines: MoreInfoHoverTexts = {};
-    if (ability.bossSkillPoints && ability.bossSkillPoints.used >= 0) {
-        textLines.push(``);
-        textLines.push(`Tools: Levels`);
-        upgradeHoverLines[textLines.length - 1] = [
-            "Tools get XP when a spell they are part of does damage",
-        ];
-        for (let tool of abilitySpellmaker.createTools.createTools) {
-            const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[tool.type];
-            if (toolFunctions && !toolFunctions.learnedThroughUpgrade) continue;
-            const toolUpgradesText = tool.upgrades ? `+${tool.upgrades.toFixed()}` : "";
-            textLines.push(`  ${tool.type}${toolUpgradesText}: ${tool.level.toFixed(1)}`);
-        }
-        for (let spellType of abilitySpellmaker.availableSpellTypes) {
-            if (!spellType.data) continue;
-            textLines.push(`  ${spellType.type}: ${spellType.data.level.toFixed(1)}`);
-        }
-        textLines.push(`Tool Level Gains:`);
-        upgradeHoverLines[textLines.length - 1] = [
-            "Based on the combined amount of Tool Levels",
-        ];
-        textLines.push(`  Mana Cost Reduction: ${((1 - abilitySpellmaker.manaLevelFactor) * 100).toFixed(2)}%`);
-        textLines.push(`  Damage Amplification: ${((abilitySpellmaker.damageLevelFactor - 1) * 100).toFixed(2)}%`);
+    textLines.push(``);
+    textLines.push(`Tools: Levels`);
+    upgradeHoverLines[textLines.length - 1] = [
+        "Tools get XP when a spell they are part of does damage",
+    ];
+    for (let tool of abilitySpellmaker.createTools.createTools) {
+        const toolFunctions = SPELLMAKER_TOOLS_FUNCTIONS[tool.type];
+        if (toolFunctions && !toolFunctions.learnedThroughUpgrade) continue;
+        const toolUpgradesText = tool.upgrades ? `+${tool.upgrades.toFixed()}` : "";
+        textLines.push(`  ${tool.type}${toolUpgradesText}: ${tool.level.toFixed(1)}`);
     }
+    for (let spellType of abilitySpellmaker.availableSpellTypes) {
+        if (!spellType.data) continue;
+        textLines.push(`  ${spellType.type}: ${spellType.data.level.toFixed(1)}`);
+    }
+    textLines.push(`Tool Level Gains:`);
+    upgradeHoverLines[textLines.length - 1] = [
+        "Based on the combined amount of Tool Levels",
+    ];
+    textLines.push(`  Mana Cost Reduction: ${((1 - abilitySpellmaker.manaLevelFactor) * 100).toFixed(2)}%`);
+    textLines.push(`  Damage Amplification: ${((abilitySpellmaker.damageLevelFactor - 1) * 100).toFixed(2)}%`);
 
 
     return createMoreInfosPart(ctx, textLines, undefined, 14, upgradeHoverLines);

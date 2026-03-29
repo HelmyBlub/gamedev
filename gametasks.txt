@@ -3,8 +3,7 @@ increase version
 
 current tasks:     
 - new class spellmaker
-    - test multiplayer
-    - check: touch controlls for spellmake mode
+    - moreInfo missing spell tool move info
     - playtest, what is max dps?
 - moreInfo with hover text should have (i) indicator, so player knows there is more info
 - speedrun my game
