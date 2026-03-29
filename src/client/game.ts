@@ -821,7 +821,7 @@ function restartHoldDown(game: Game) {
 
 function autoSendMyMousePosition(game: Game) {
     if (game.testing.replay) return;
-    if (game.UI.inputType !== "keyboard") return;
+    if (game.UI.inputType !== "keyboard" && game.UI.inputType !== "touch") return;
     if (game.multiplayer.autosendMousePosition.sendForOwners.length === 0) return;
     if (game.multiplayer.autosendMousePosition.nextTime <= game.state.time) {
         const relativeMousePosition = mousePositionToMapPosition(game, { x: 0, y: 0 });

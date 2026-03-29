@@ -1,4 +1,4 @@
-import { ABILITIES_FUNCTIONS } from "../ability/ability.js";
+import { ABILITIES_FUNCTIONS, DefaultAbilityCastData } from "../ability/ability.js";
 import { handleCommand } from "../commands.js";
 import { calculateDirection, calculateDistance, getCameraPosition } from "../game.js";
 import { Game, Position } from "../gameModel.js";
@@ -357,10 +357,17 @@ function touchEndActionAbility(touch: Touch, game: Game) {
         y: castPosition.y - player.character.y,
     };
     game.UI.touchInfo.touchIdAbility = undefined;
+    const defaultData: DefaultAbilityCastData = { action: ability.playerInputBinding!, isKeydown: false, castPosition: castPosition, castPositionRelativeToCharacter: castPositionRelativeToCharacter };
+    const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+    if (abilityFunctions.getCustomCastData) {
+        const customData = abilityFunctions.getCustomCastData(player.character, ability, defaultData, game);
+        if (customData !== undefined) (defaultData as any)[ability.name] = customData;
+    }
+
     handleCommand(game, {
         command: "playerInput",
         clientId: clientId,
-        data: { action: ability.playerInputBinding, isKeydown: false, castPosition: castPosition, castPositionRelativeToCharacter: castPositionRelativeToCharacter },
+        data: defaultData,
     });
 }
 
@@ -387,9 +394,16 @@ function touchAbilityAction(touch: Touch, game: Game) {
         y: castPosition.y - player.character.y,
     };
     game.UI.touchInfo.touchIdAbility = touch.identifier;
+    const defaultData: DefaultAbilityCastData = { action: ability.playerInputBinding!, isKeydown: true, castPosition: castPosition, castPositionRelativeToCharacter: castPositionRelativeToCharacter };
+    const abilityFunctions = ABILITIES_FUNCTIONS[ability.name];
+    if (abilityFunctions.getCustomCastData) {
+        const customData = abilityFunctions.getCustomCastData(player.character, ability, defaultData, game);
+        if (customData !== undefined) (defaultData as any)[ability.name] = customData;
+    }
+
     handleCommand(game, {
         command: "playerInput",
         clientId: clientId,
-        data: { action: ability.playerInputBinding, isKeydown: true, castPosition: castPosition, castPositionRelativeToCharacter: castPositionRelativeToCharacter },
+        data: defaultData,
     });
 }
