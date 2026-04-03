@@ -197,7 +197,7 @@ export function spellmakerAddToolDamage(ability: AbilitySpellmaker, damage: numb
         }
         if (typeLevelData) {
             typeLevelData.totalDamage += damage;
-            typeLevelData.level = Math.max(0, Math.log10(typeLevelData.totalDamage / 100));
+            typeLevelData.level = Math.max(0, Math.log10(typeLevelData.totalDamage / 100) * 1.8);
         }
     }
     calculateManaFactorAndDamageFactor(ability);
