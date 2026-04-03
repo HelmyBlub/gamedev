@@ -2,13 +2,13 @@ next test run:
 increase version
 
 current tasks:     
-- new class spellmaker
-    - playtest, what is max dps?
 - moreInfo with hover text should have (i) indicator, so player knows there is more info
+- check itch.io, do i want my game on there?
 - speedrun my game
     - kill god as fast as possible
         - real Time: <12:07 (builder + ball)
         - real time: <18:20 (builder + tamer)
+        - real time: <18:47 (builder + spellmaker)
         - to squishy (builder + sniper)
     - kill hard mode god as fast as possible:
         - strategy:

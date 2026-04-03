@@ -110,16 +110,16 @@ export function paintAbilityUpgradeMoreInfosIfMouseHovered(ctx: CanvasRenderingC
     if (game.UI.moreInfos.containers.selected === undefined) return;
     const mousePos = game.mouseRelativeCanvasPosition;
     const selectedContainer = game.UI.moreInfos.containers.containers[game.UI.moreInfos.containers.selected];
-
     for (let moreInfosPart of selectedContainer.moreInfoParts) {
         if (moreInfosPart.lastPaintedPos === undefined || moreInfosPart.hoverText === undefined) continue;
         if (moreInfosPart.lastPaintedPos.x < mousePos.x && mousePos.x < moreInfosPart.lastPaintedPos.x + moreInfosPart.width
             && moreInfosPart.lastPaintedPos.y < mousePos.y && mousePos.y < moreInfosPart.lastPaintedPos.y + moreInfosPart.height
         ) {
-            const mouseHoverIndex = Math.floor((mousePos.y - moreInfosPart.lastPaintedPos.y) / moreInfosPart.fontSize);
+            const spacingEstimate = moreInfosPart.height / moreInfosPart.texts.length;
+            const mouseHoverIndex = Math.floor((mousePos.y - moreInfosPart.lastPaintedPos.y) / spacingEstimate);
             const hoverText = moreInfosPart.hoverText[mouseHoverIndex];
             if (hoverText !== undefined) {
-                const boundingBox = paintTextLinesWithKeys(ctx, hoverText, mousePos, 14, false, true, 1);
+                const boundingBox = paintTextLinesWithKeys(ctx, hoverText, { x: mousePos.x, y: mousePos.y - 10 }, 14, false, true, 1);
                 ctx.strokeStyle = "black";
                 ctx.lineWidth = 2;
                 ctx.beginPath();

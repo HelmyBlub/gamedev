@@ -431,8 +431,13 @@ export function paintMoreInfosPart(ctx: CanvasRenderingContext2D, moreInfosPart:
     ctx.fillStyle = "white";
     ctx.fillRect(drawStartX, drawStartY, moreInfosPart.width, moreInfosPart.height);
     ctx.fillStyle = "black";
+    let postFixText = "";
     for (let i = 0; i < moreInfosPart.texts.length; i++) {
-        ctx.fillText(moreInfosPart.texts[i], drawStartX + 2, drawStartY + moreInfosPart.fontSize * (i + verticalSpacing) + 2);
+
+        if (moreInfosPart.hoverText && moreInfosPart.hoverText[i]) {
+            postFixText = "(ℹ)";
+        }
+        ctx.fillText(moreInfosPart.texts[i] + postFixText, drawStartX + 2, drawStartY + moreInfosPart.fontSize * (i + verticalSpacing) + 2);
     }
 }
 
