@@ -1045,6 +1045,12 @@ function getSpellToolChainRec(createdObjects: SpellmakerCreateToolObjectData[], 
         if (!toolChain.includes(createObject.type)) {
             toolChain.push(createObject.type);
         }
+        if (createObject.moveAttachment && !toolChain.includes(createObject.moveAttachment.type)) {
+            toolChain.push(createObject.moveAttachment.type);
+        }
+        if (createObject.debuffAttachment && !toolChain.includes(createObject.debuffAttachment.type)) {
+            toolChain.push(createObject.debuffAttachment.type);
+        }
         getSpellToolChainRec(createObject.nextStage, toolChain);
     }
 }
