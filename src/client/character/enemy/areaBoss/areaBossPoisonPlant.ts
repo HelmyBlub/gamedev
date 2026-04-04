@@ -21,7 +21,7 @@ export type AreaBossEnemyPoisonPlant = AreaBossEnemy & {
 export const AREA_BOSS_TYPE_POISON_PLANT = "Poison Plant";
 export const IMAGE_AREA_BOSS_TYPE_POISON_PLANT = "PoisonPlant";
 GAME_IMAGES[IMAGE_AREA_BOSS_TYPE_POISON_PLANT] = {
-    imagePath: "/images/poisonPlant.png",
+    imagePath: "images/poisonPlant.png",
     spriteRowHeights: [80],
     spriteRowWidths: [80],
 };

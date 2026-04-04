@@ -30,7 +30,7 @@ export type SpellmakerCreateToolOrbiter = SpellmakerCreateTool & {
 export const SPELLMAKER_TOOL_ORBITER = "Orbiter";
 export const IMAGE_ORBIT = "orbitIcon";
 GAME_IMAGES[IMAGE_ORBIT] = {
-    imagePath: "/images/orbitIcon.png",
+    imagePath: "images/orbitIcon.png",
     spriteRowHeights: [],
     spriteRowWidths: [],
 };

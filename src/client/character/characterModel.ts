@@ -54,7 +54,7 @@ export const PLAYER_BASE_MOVE_SPEED = 2;
 
 GAME_IMAGES[IMAGE_SLIME] = {
     properties: { baseColor: "green" },
-    imagePath: "/images/slimeEnemy.png",
+    imagePath: "images/slimeEnemy.png",
     spriteRowHeights: [20],
     spriteRowWidths: [20]
 };
@@ -72,7 +72,7 @@ const playerImageProperties: CharacterImageLoadProperties = {
 }
 
 GAME_IMAGES[IMAGE_PLAYER_PARTS] = {
-    imagePath: "/images/player.png",
+    imagePath: "images/player.png",
     spriteRowHeights: [13, 14, 13],
     spriteRowWidths: [20, 20, 20],
     properties: playerImageProperties,

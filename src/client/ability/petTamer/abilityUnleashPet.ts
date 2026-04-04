@@ -16,7 +16,7 @@ export type AbilityUnleashPet = Ability & {
 export const ABILITY_NAME_UNLEASH_PET = "Unleash Pet";
 export const IMAGE_NAME_LEASH = "leash";
 GAME_IMAGES[IMAGE_NAME_LEASH] = {
-    imagePath: "/images/leash.png",
+    imagePath: "images/leash.png",
     spriteRowHeights: [40],
     spriteRowWidths: [40],
 };

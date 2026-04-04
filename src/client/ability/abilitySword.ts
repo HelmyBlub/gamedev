@@ -21,7 +21,7 @@ type AbilitySword = Ability & {
 export const ABILITY_NAME_SWORD = "Sword";
 
 GAME_IMAGES[ABILITY_NAME_SWORD] = {
-    imagePath: "/images/sword.png",
+    imagePath: "images/sword.png",
     spriteRowHeights: [38],
     spriteRowWidths: [11],
 };

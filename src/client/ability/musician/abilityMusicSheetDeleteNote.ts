@@ -12,7 +12,7 @@ export type AbilityMusicSheetDeleteNote = Ability & {
 export const ABILITY_NAME_MUSIC_SHEET_DELETE_NOTE = "Delete Note";
 export const IMAGE_NAME_DELETE = "delete";
 GAME_IMAGES[IMAGE_NAME_DELETE] = {
-    imagePath: "/images/delete.png",
+    imagePath: "images/delete.png",
     spriteRowHeights: [40],
     spriteRowWidths: [40],
 };

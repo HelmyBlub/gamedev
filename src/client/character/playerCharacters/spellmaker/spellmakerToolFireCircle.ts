@@ -20,7 +20,7 @@ export type SpellmakerCreateToolFireCircle = SpellmakerCreateTool & {
 export const SPELLMAKER_TOOL_FIRECIRCLE = "FireCircle";
 const IMAGE_FIRE_CIRCLE = "fireCircleIcon";
 GAME_IMAGES[IMAGE_FIRE_CIRCLE] = {
-    imagePath: "/images/fireCircleIcon.png",
+    imagePath: "images/fireCircleIcon.png",
     spriteRowHeights: [],
     spriteRowWidths: [],
 };

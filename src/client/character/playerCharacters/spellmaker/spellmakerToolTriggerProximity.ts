@@ -19,7 +19,7 @@ export type SpellmakerCreateToolProximity = SpellmakerCreateTool & {
 export const SPELLMAKER_TOOL_PROXIMITY = "Proximity";
 export const IMAGE_PROXIMITY = "proximityIcon";
 GAME_IMAGES[IMAGE_PROXIMITY] = {
-    imagePath: "/images/proximityIcon.png",
+    imagePath: "images/proximityIcon.png",
     spriteRowHeights: [],
     spriteRowWidths: [],
 };

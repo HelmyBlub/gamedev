@@ -19,7 +19,7 @@ export const AREA_BOSS_TYPE_SNOWMAN = "Snowman";
 export const IMAGE_AREA_BOSS_TYPE_SNOWMAN = "Snowman";
 
 GAME_IMAGES[IMAGE_AREA_BOSS_TYPE_SNOWMAN] = {
-    imagePath: "/images/snowman.png",
+    imagePath: "images/snowman.png",
     spriteRowHeights: [40],
     spriteRowWidths: [40],
 };

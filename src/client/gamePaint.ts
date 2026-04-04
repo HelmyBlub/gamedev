@@ -20,13 +20,13 @@ import { paintAdditionalPaints } from "./additionalPaint.js";
 import { GAME_MODE_BASE_DEFENSE } from "./gameModeBaseDefense.js";
 
 GAME_IMAGES["blankKey"] = {
-    imagePath: "/images/singleBlankKey.png",
+    imagePath: "images/singleBlankKey.png",
     spriteRowHeights: [],
     spriteRowWidths: [],
 };
 
 GAME_IMAGES["mouse0Key"] = {
-    imagePath: "/images/leftMouse.png",
+    imagePath: "images/leftMouse.png",
     spriteRowHeights: [],
     spriteRowWidths: [],
 };

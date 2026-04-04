@@ -26,7 +26,7 @@ type AbilityObjectSpellmakerTurret = AbilitySpellmakerObject & {
 export const ABILITY_NAME_SPELLMAKER_TURRET = "SpellmakerTurret";
 export const IMAGE_TURRET = "turret";
 GAME_IMAGES[IMAGE_TURRET] = {
-    imagePath: "/images/turret.png",
+    imagePath: "images/turret.png",
     spriteRowHeights: [],
     spriteRowWidths: [],
 };

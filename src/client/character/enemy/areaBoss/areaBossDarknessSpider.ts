@@ -40,7 +40,7 @@ type NearesPlayerToSpiderInArea = { playerCharacter: Character, distanceToModifi
 
 const IMAGE_SPIDER_COCON = "Spider Cocon";
 GAME_IMAGES[IMAGE_SPIDER_COCON] = {
-    imagePath: "/images/spiderCocon.png",
+    imagePath: "images/spiderCocon.png",
     spriteRowHeights: [40],
     spriteRowWidths: [40],
 };

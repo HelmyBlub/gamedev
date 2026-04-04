@@ -106,7 +106,7 @@ type SpellmakerAbilityAdditionalCastData = {
 
 const IMAGE_NAME_WIZARD_HAT = "wizardHat";
 GAME_IMAGES[IMAGE_NAME_WIZARD_HAT] = {
-    imagePath: "/images/wizardHat.png",
+    imagePath: "images/wizardHat.png",
     spriteRowHeights: [50],
     spriteRowWidths: [50],
 };

@@ -34,7 +34,7 @@ export type AbilityObjectSeekerFollow = AbilityObjectCircle & {
 
 export const IMAGE_EYE = "eye";
 GAME_IMAGES[IMAGE_EYE] = {
-    imagePath: "/images/eye.png",
+    imagePath: "images/eye.png",
     spriteRowHeights: [],
     spriteRowWidths: [],
 };

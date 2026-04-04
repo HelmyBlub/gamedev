@@ -30,7 +30,7 @@ export type SpellmakerCreateToolAttach = SpellmakerCreateTool & {
 export const SPELLMAKER_TOOL_ATTACH = "Attach";
 export const IMAGE_ATTACH = "attachIcon";
 GAME_IMAGES[IMAGE_ATTACH] = {
-    imagePath: "/images/paperclipIcon.png",
+    imagePath: "images/paperclipIcon.png",
     spriteRowHeights: [],
     spriteRowWidths: [],
 };

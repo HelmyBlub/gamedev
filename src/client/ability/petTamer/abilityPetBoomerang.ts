@@ -45,7 +45,7 @@ export type AbilityObjectPetBoomerang = AbilityObject & {
 export const ABILITY_PET_BOOMERANG_UPGRADE_FUNCTIONS: AbilityUpgradesFunctions = {};
 export const ABILITY_NAME_PET_BOOMERANG = "Boomerang";
 GAME_IMAGES[ABILITY_NAME_PET_BOOMERANG] = {
-    imagePath: "/images/boomerang.png",
+    imagePath: "images/boomerang.png",
     spriteRowHeights: [40],
     spriteRowWidths: [40],
 };

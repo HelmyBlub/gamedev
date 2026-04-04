@@ -19,7 +19,7 @@ export const AREA_BOSS_TYPE_LIGHTNING_CLOUD_MACHINE = "CloudMachine";
 export const IMAGE_AREA_BOSS_TYPE_LIGHTNING_CLOUD_MACHINE = "CloudMachine";
 
 GAME_IMAGES[IMAGE_AREA_BOSS_TYPE_LIGHTNING_CLOUD_MACHINE] = {
-    imagePath: "/images/cloudMachineBoss.png",
+    imagePath: "images/cloudMachineBoss.png",
     spriteRowHeights: [100],
     spriteRowWidths: [100],
 };

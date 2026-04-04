@@ -18,7 +18,7 @@ export type MapTileObjectCleanseFountain = MapTileObject & {
 export const MAP_OBJECT_CLEANSE_FOUNTAIN = "CleanseFountain";
 export const IMAGE_FOUNTAIN = "FOuntain";
 GAME_IMAGES[IMAGE_FOUNTAIN] = {
-    imagePath: "/images/fountain.png",
+    imagePath: "images/fountain.png",
     spriteRowHeights: [100],
     spriteRowWidths: [100],
 };

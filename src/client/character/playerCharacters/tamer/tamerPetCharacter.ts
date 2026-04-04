@@ -71,17 +71,17 @@ const VERY_UNHAPPY_TIMER = 5000;
 export const TAMER_PET_CHARACTER = "tamerPet";
 GAME_IMAGES[TAMER_PET_CHARACTER] = {
     properties: { baseColor: "green" },
-    imagePath: "/images/slime.png",
+    imagePath: "images/slime.png",
     spriteRowHeights: [20],
     spriteRowWidths: [20],
 };
 GAME_IMAGES["HAPPY"] = {
-    imagePath: "/images/happy.png",
+    imagePath: "images/happy.png",
     spriteRowHeights: [40],
     spriteRowWidths: [40],
 };
 GAME_IMAGES["UNHAPPY"] = {
-    imagePath: "/images/unhappy.png",
+    imagePath: "images/unhappy.png",
     spriteRowHeights: [40],
     spriteRowWidths: [40],
 };

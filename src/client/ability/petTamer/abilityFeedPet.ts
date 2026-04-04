@@ -25,7 +25,7 @@ export type AbilityObjectFeedPet = AbilityObject & {
 
 export const ABILITY_NAME_FEED_PET = "FeedPet";
 GAME_IMAGES[ABILITY_NAME_FEED_PET] = {
-    imagePath: "/images/meat.png",
+    imagePath: "images/meat.png",
     spriteRowHeights: [40],
     spriteRowWidths: [40],
 };

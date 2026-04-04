@@ -34,7 +34,7 @@ export const CHARACTER_TYPE_KING_ENEMY = "KingEnemyCharacter";
 export const IMAGE_CROWN = "Crown";
 export const KING_BASE_HP = 50000000;
 GAME_IMAGES[IMAGE_CROWN] = {
-    imagePath: "/images/crown.png",
+    imagePath: "images/crown.png",
     spriteRowHeights: [20],
     spriteRowWidths: [20],
 };

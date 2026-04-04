@@ -27,7 +27,7 @@ export type AbilityObjectMovingFire = AbilityObject & {
 
 const IMAGE_GROUND_FIRE_ANIMATION = "groundFireAnimation";
 GAME_IMAGES[IMAGE_GROUND_FIRE_ANIMATION] = {
-    imagePath: "/images/groundFireAnimation.png",
+    imagePath: "images/groundFireAnimation.png",
     spriteRowHeights: [],
     spriteRowWidths: [40],
 };

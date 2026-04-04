@@ -13,7 +13,7 @@ export const IMAGE_FIRE_ANIMATION = "FireAnimation";
 export const MAP_OBJECT_FIRE_ANIMATION = IMAGE_FIRE_ANIMATION;
 
 GAME_IMAGES[IMAGE_FIRE_ANIMATION] = {
-    imagePath: "/images/firepitFireAnimation.png",
+    imagePath: "images/firepitFireAnimation.png",
     spriteRowHeights: [40],
     spriteRowWidths: [40],
 };

@@ -28,7 +28,7 @@ export const IMAGE_NAME_RUN_SPEED = "run speed";
 export const ABILITY_NAME_SPEED_BOOST = "SpeedBoost";
 export const ABILITY_SPEED_BOOST_UPGRADE_FUNCTIONS: AbilityUpgradesFunctions = {};
 GAME_IMAGES[IMAGE_NAME_RUN_SPEED] = {
-    imagePath: "/images/runspeed.png",
+    imagePath: "images/runspeed.png",
     spriteRowHeights: [40],
     spriteRowWidths: [40],
 };

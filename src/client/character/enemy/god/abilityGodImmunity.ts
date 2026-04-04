@@ -12,7 +12,7 @@ import { GAME_IMAGES, loadImage } from "../../../imageLoad.js";
 export const ABILITY_NAME_GOD_IMMUNITY = "God Immunity";
 const IMAGE_SHIELD = "shield";
 GAME_IMAGES[IMAGE_SHIELD] = {
-    imagePath: "/images/shield.png",
+    imagePath: "images/shield.png",
     spriteRowHeights: [],
     spriteRowWidths: [40],
 };

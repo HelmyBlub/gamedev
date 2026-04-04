@@ -49,7 +49,7 @@ export type AbilityBounceBall = Ability & {
 export const ABILITY_NAME_BOUNCE_BALL = "Bounce Ball";
 export const ABILITY_BOUNCE_BALL_UPGRADE_FUNCTIONS: AbilityUpgradesFunctions = {};
 GAME_IMAGES[ABILITY_NAME_BOUNCE_BALL] = {
-    imagePath: "/images/bounceBall.png",
+    imagePath: "images/bounceBall.png",
     spriteRowHeights: [40],
     spriteRowWidths: [40],
 };

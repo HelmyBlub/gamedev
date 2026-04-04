@@ -24,7 +24,7 @@ export type ClassBuilding = Building & {
 export const IMAGE_BUILDING1 = "Building1";
 
 GAME_IMAGES[IMAGE_BUILDING1] = {
-    imagePath: "/images/building1.png",
+    imagePath: "images/building1.png",
     spriteRowHeights: [40],
     spriteRowWidths: [40],
 };

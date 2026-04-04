@@ -19,7 +19,7 @@ export const MAP_OBJECT_KING_SIGN = "KingSign";
 export const IMAGE_SIGN = "Sign";
 
 GAME_IMAGES[IMAGE_SIGN] = {
-    imagePath: "/images/sign.png",
+    imagePath: "images/sign.png",
     spriteRowHeights: [40],
     spriteRowWidths: [40],
 };

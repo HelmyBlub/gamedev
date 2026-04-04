@@ -25,7 +25,7 @@ export type AbilityObjectLovePet = AbilityObject & {
 
 export const ABILITY_NAME_LOVE_PET = "LovePet";
 GAME_IMAGES[ABILITY_NAME_LOVE_PET] = {
-    imagePath: "/images/heart.png",
+    imagePath: "images/heart.png",
     spriteRowHeights: [40],
     spriteRowWidths: [40],
 };

@@ -92,12 +92,12 @@ export const ABILITY_MUSIC_SHEET_UPGRADE_FUNCTIONS: AbilityUpgradesFunctionsMusi
 export const IMAGE_TREBLE_CLEF = "treble";
 export const IMAGE_TREBLE_BASS = "bass";
 GAME_IMAGES[IMAGE_TREBLE_CLEF] = {
-    imagePath: "/images/trebleClef.png",
+    imagePath: "images/trebleClef.png",
     spriteRowHeights: [100],
     spriteRowWidths: [30],
 };
 GAME_IMAGES[IMAGE_TREBLE_BASS] = {
-    imagePath: "/images/bassClef.png",
+    imagePath: "images/bassClef.png",
     spriteRowHeights: [100],
     spriteRowWidths: [30],
 };

@@ -19,7 +19,7 @@ export type SpellmakerCreateToolDebuffSlow = SpellmakerCreateTool & {
 export const SPELLMAKER_TOOL_DEBUFF_SLOW = "Slow";
 const IMAGE_SLOW_ICON = "slugIcon";
 GAME_IMAGES[IMAGE_SLOW_ICON] = {
-    imagePath: "/images/slugIcon.png",
+    imagePath: "images/slugIcon.png",
     spriteRowHeights: [],
     spriteRowWidths: [],
 };

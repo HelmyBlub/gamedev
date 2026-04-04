@@ -66,7 +66,7 @@ const SUBTYPE_STATIONARY = "Stationary";
 const SUBTYPE_ATTACHED = "Attached";
 
 GAME_IMAGES[ABILITY_NAME_TOWER] = {
-    imagePath: "/images/hammer.png",
+    imagePath: "images/hammer.png",
     spriteRowHeights: [20],
     spriteRowWidths: [20],
 };

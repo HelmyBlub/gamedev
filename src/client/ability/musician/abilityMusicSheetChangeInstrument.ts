@@ -12,7 +12,7 @@ export type AbilityMusicSheetChangeInstrument = Ability & {
 export const ABILITY_NAME_MUSIC_SHEET_CHANGE_INSTRUMENT = "Change Instrument";
 export const IMAGE_NAME_SWITCH = "switch";
 GAME_IMAGES[IMAGE_NAME_SWITCH] = {
-    imagePath: "/images/switch.png",
+    imagePath: "images/switch.png",
     spriteRowHeights: [40],
     spriteRowWidths: [40],
 };

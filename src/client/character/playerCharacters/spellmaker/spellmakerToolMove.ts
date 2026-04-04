@@ -19,7 +19,7 @@ export type SpellmakerCreateToolMove = SpellmakerCreateTool & {
 export const SPELLMAKER_TOOL_MOVE = "Move";
 export const IMAGE_ICON_MOVE = "moveIcon";
 GAME_IMAGES[IMAGE_ICON_MOVE] = {
-    imagePath: "/images/moveIcon.png",
+    imagePath: "images/moveIcon.png",
     spriteRowHeights: [],
     spriteRowWidths: [],
 };

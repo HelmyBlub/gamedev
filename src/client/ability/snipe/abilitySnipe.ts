@@ -72,17 +72,17 @@ export const ABILITY_SNIPE_UPGRADE_FUNCTIONS: AbilityUpgradesFunctions = {};
 const EMEMY_SNIPE_DAMAGE_DELAY = 750;
 
 GAME_IMAGES[ABILITY_NAME_SNIPE] = {
-    imagePath: "/images/sniperRifle.png",
+    imagePath: "images/sniperRifle.png",
     spriteRowHeights: [40],
     spriteRowWidths: [40],
 };
 GAME_IMAGES[IMAGE_NAME_SNIPE_AIM] = {
-    imagePath: "/images/aim.png",
+    imagePath: "images/aim.png",
     spriteRowHeights: [40],
     spriteRowWidths: [40],
 };
 GAME_IMAGES[IMAGE_NAME_RELOAD] = {
-    imagePath: "/images/reload.png",
+    imagePath: "images/reload.png",
     spriteRowHeights: [40],
     spriteRowWidths: [40],
 };

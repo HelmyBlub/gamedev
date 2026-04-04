@@ -102,7 +102,7 @@ export const SPELLMAKER_REF_BEFORE_INDEX = -1;
 
 export const IMAGE_PLUS = "plusIcon";
 GAME_IMAGES[IMAGE_PLUS] = {
-    imagePath: "/images/plus.png",
+    imagePath: "images/plus.png",
     spriteRowHeights: [],
     spriteRowWidths: [],
 };

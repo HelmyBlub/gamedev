@@ -69,14 +69,14 @@ export type GameMap = {
 }
 
 export function onDomLoadMapTiles() {
-    TILE_VALUES[TILE_ID_GRASS] = { name: "grass", imagePath: "/images/grass.png", blocking: false, layer: "Layer1" };
-    TILE_VALUES[TILE_ID_TREE] = { name: "tree", imagePath: "/images/tree.png", blocking: true, layer: "Layer2" };
-    TILE_VALUES[TILE_ID_ROCK] = { name: "rock", imagePath: "/images/rock.png", blocking: true, layer: "Layer2" };
-    TILE_VALUES[TILE_ID_PATH1_HORIZONTAL] = { name: "path1", imagePath: "/images/path1.png", blocking: false, layer: "Layer1" };
-    TILE_VALUES[TILE_ID_PATH2_VERTICAL] = { name: "path2", imagePath: "/images/path2.png", blocking: false, layer: "Layer1" };
-    TILE_VALUES[TILE_ID_LOG_HORIZONTAL] = { name: "logHorizontal", imagePath: "/images/log_Horizontal.png", blocking: false, layer: "Layer2" };
-    TILE_VALUES[TILE_ID_LOG_VERTICAL] = { name: "logVertical", imagePath: "/images/log_Vertical.png", blocking: false, layer: "Layer2" };
-    TILE_VALUES[TILE_ID_FIREPIT] = { name: "firepit", imagePath: "/images/firepit.png", blocking: false, layer: "Layer2" };
+    TILE_VALUES[TILE_ID_GRASS] = { name: "grass", imagePath: "images/grass.png", blocking: false, layer: "Layer1" };
+    TILE_VALUES[TILE_ID_TREE] = { name: "tree", imagePath: "images/tree.png", blocking: true, layer: "Layer2" };
+    TILE_VALUES[TILE_ID_ROCK] = { name: "rock", imagePath: "images/rock.png", blocking: true, layer: "Layer2" };
+    TILE_VALUES[TILE_ID_PATH1_HORIZONTAL] = { name: "path1", imagePath: "images/path1.png", blocking: false, layer: "Layer1" };
+    TILE_VALUES[TILE_ID_PATH2_VERTICAL] = { name: "path2", imagePath: "images/path2.png", blocking: false, layer: "Layer1" };
+    TILE_VALUES[TILE_ID_LOG_HORIZONTAL] = { name: "logHorizontal", imagePath: "images/log_Horizontal.png", blocking: false, layer: "Layer2" };
+    TILE_VALUES[TILE_ID_LOG_VERTICAL] = { name: "logVertical", imagePath: "images/log_Vertical.png", blocking: false, layer: "Layer2" };
+    TILE_VALUES[TILE_ID_FIREPIT] = { name: "firepit", imagePath: "images/firepit.png", blocking: false, layer: "Layer2" };
     TILE_VALUES[TILE_ID_ICE] = { name: "ice", color: "lightblue", blocking: false, slide: true, layer: "Layer1" };
     TILE_VALUES[TILE_ID_POISON] = { name: "poison", color: "purple", blocking: false, layer: "Layer1", tickCharacter: tickPoisonTile };
 }

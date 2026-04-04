@@ -12,7 +12,7 @@ export type CreateToolObjectDeleteData = SpellmakerCreateToolObjectData & {
 export const SPELLMAKER_TOOL_DELETE = "Delete";
 const IMAGE_ICON_ERASER = "iconEraser";
 GAME_IMAGES[IMAGE_ICON_ERASER] = {
-    imagePath: "/images/eraser.png",
+    imagePath: "images/eraser.png",
     spriteRowHeights: [],
     spriteRowWidths: [],
 };

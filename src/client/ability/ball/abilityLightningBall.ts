@@ -41,7 +41,7 @@ export const ABILITY_NAME_LIGHTNING_BALL = "Lighning Ball";
 export const IMAGE_NAME_LIGHTNING = "lightning";
 export const ABILITY_LIGHTNING_BALL_UPGRADE_FUNCTIONS: AbilityUpgradesFunctions = {};
 GAME_IMAGES[IMAGE_NAME_LIGHTNING] = {
-    imagePath: "/images/lightning.png",
+    imagePath: "images/lightning.png",
     spriteRowHeights: [40],
     spriteRowWidths: [40],
 };
