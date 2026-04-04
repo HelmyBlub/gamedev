@@ -4,9 +4,11 @@ increase version
 current tasks:     
 - check itch.io, do i want my game on there?
     - make a single player build
-        - hide test and cheat menu
-        - disable/hide multiplayer
-        - remove earliest eary access
+        - custom mouse icon does not work in iFrame of itchIo?
+        - check other itchIo options
+        - maybe make discussion forum
+        - check if itchIo has something for multiplayer
+        
 
 - speedrun my game
     - kill god as fast as possible
@@ -57,3 +59,9 @@ refactor possibilities:
 possible future tasks:
 - improvement: getChunksTouchingLine2 does not work, still needs to improve
 
+
+
+
+​A roguelike game stuffed with a lot of different ideas.
+
+​This was a playground for me, the developer, to try out different ideas for games. It is rough around a lot of edges but hopefully still fun for people who don't mind this.
