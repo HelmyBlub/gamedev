@@ -2,8 +2,12 @@ next test run:
 increase version
 
 current tasks:     
-- moreInfo with hover text should have (i) indicator, so player knows there is more info
 - check itch.io, do i want my game on there?
+    - make a single player build
+        - hide test and cheat menu
+        - disable/hide multiplayer
+        - remove earliest eary access
+
 - speedrun my game
     - kill god as fast as possible
         - real Time: <12:07 (builder + ball)
