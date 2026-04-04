@@ -426,6 +426,7 @@ function paintKeyInfo(ctx: CanvasRenderingContext2D, game: Game) {
 
     ctx.fillStyle = "black";
     game.clientKeyBindings.keyCodeToUiAction.forEach((e) => {
+        if (game.multiplayer.disabled && e.action === "Multiplayer") return;
         paintKey(ctx, e.uiDisplayInputValue, { x: paintX, y: paintY - 30 });
         ctx.font = fontSize + "px Arial";
         let text = e.action;

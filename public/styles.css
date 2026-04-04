@@ -34,6 +34,10 @@
     display: none;
 }
 
+.visibilityHidden {
+    visibility: hidden;
+}
+
 .iconInTextInput {
     margin-left: -30px;
     cursor: pointer;

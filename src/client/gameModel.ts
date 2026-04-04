@@ -213,6 +213,7 @@ export type SkillPoints = {
 }
 
 export type Multiplayer = {
+    disabled?: boolean,
     myClientId: number,
     lastClientWhoRestartedId?: number,
     websocket: WebSocket | null,

@@ -223,6 +223,7 @@ export function executeUiAction(action: string, isInputDown: boolean, game: Game
             break;
         case "Multiplayer":
             if (!isInputDown) return;
+            if (game.multiplayer.disabled) return;
             multiplayerConnectMenu(game);
             break;
         case "Pause":

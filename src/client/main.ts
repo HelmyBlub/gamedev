@@ -83,6 +83,19 @@ export function createGame(canvasElementId: string | undefined, forTesting: bool
     return game;
 }
 
+function toggleTestMenu(display: boolean) {
+    const debugElement = document.getElementById("tab-debug")!;
+    const testElement = document.getElementById("tab-test")!;
+    if (display) {
+        if (debugElement && debugElement.classList.contains("visibilityHidden")) debugElement.classList.remove("visibilityHidden");
+        if (testElement && testElement.classList.contains("visibilityHidden")) testElement.classList.remove("visibilityHidden");
+
+    } else {
+        if (debugElement && !debugElement.classList.contains("visibilityHidden")) debugElement.classList.add("visibilityHidden");
+        if (testElement && !testElement.classList.contains("visibilityHidden")) testElement.classList.add("visibilityHidden");
+    }
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     onDomLoadMapTiles();
     onDomLoadSetCharacterClasses();
