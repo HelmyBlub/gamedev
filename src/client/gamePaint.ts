@@ -34,8 +34,6 @@ GAME_IMAGES["mouse0Key"] = {
 
 export function paintAll(ctx: CanvasRenderingContext2D | undefined, game: Game) {
     if (!ctx) return;
-    paintGameTitle(ctx);
-    return;
     if (game.performance.mapChunkPaintCache === undefined) game.performance.mapChunkPaintCache = {};
     ctx.scale(game.UI.zoom.factor, game.UI.zoom.factor);
     const cameraPosition: Position = getCameraPosition(game);
@@ -559,10 +557,8 @@ function paintEndScreen(ctx: CanvasRenderingContext2D, highscores: Highscores, g
 function paintGameTitle(ctx: CanvasRenderingContext2D) {
     const middleX = ctx.canvas.width / 2;
 
-    ctx.fillStyle = "lightgreen";
-    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    ctx.font = "bold 120px Arial";
-    paintTextWithOutline(ctx, "white", "black", "Helmys Game", middleX, 180, true, 3);
+    ctx.font = "bold 60px Arial";
+    paintTextWithOutline(ctx, "white", "black", "Helmys Game", middleX, 80, true, 3);
 }
 
 function paintMyCharacterStats(ctx: CanvasRenderingContext2D, game: Game) {
