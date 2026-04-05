@@ -4,10 +4,9 @@ increase version
 current tasks:     
 - check itch.io, do i want my game on there?
     - make a single player build
-        - custom mouse icon does not work in iFrame of itchIo?
         - check other itchIo options
         - maybe make discussion forum
-        - check if itchIo has something for multiplayer
+- bring changes of itchIo over to main branch?
         
 
 - speedrun my game

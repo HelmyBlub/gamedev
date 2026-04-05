@@ -48,9 +48,9 @@ function getSettingsFromLocalStorage(): SettingsLocalStorage {
         disableDamageNumbers: false,
         aimCursor: false,
         playerAlpha: 100,
-        sliderVolume: 10,
+        sliderVolume: 40,
         soundDelay: 0,
-        maxPaintPlayerObjects: 500,
+        maxPaintPlayerObjects: 1000,
     };
 }
 
