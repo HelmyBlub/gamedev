@@ -3,6 +3,7 @@ https://github.com/HelmyBlub/gamedev
 
 # public hosted / deployed to url
 https://helmys-game.onrender.com/
+https://helmyblub.itch.io/helmys-game
 
 # Development Environment Setup Steps
 1. install GIT
