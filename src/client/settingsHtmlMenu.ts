@@ -100,7 +100,7 @@ function addTest(game: Game) {
 function setVersionNumberToSettingButton() {
     const settingsButtonElement = document.getElementById("settingButton");
     if (!settingsButtonElement) return;
-    settingsButtonElement.innerHTML = `Version: ${getGameVersionString(GAME_VERSION)}`;
+    settingsButtonElement.innerHTML = `Settings, v.${getGameVersionString(GAME_VERSION)}`;
 }
 
 function addCheatCheckbox(checkboxName: CheatCheckboxes, game: Game) {
