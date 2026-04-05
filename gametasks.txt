@@ -2,10 +2,6 @@ next test run:
 increase version
 
 current tasks:     
-- check itch.io, do i want my game on there?
-    - make a single player build
-        - check other itchIo options
-        - maybe make discussion forum
 - bring changes of itchIo over to main branch?
         
 

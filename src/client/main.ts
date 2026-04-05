@@ -79,8 +79,8 @@ export function createGame(canvasElementId: string | undefined, forTesting: bool
     } else {
         game = createDefaultGameData(undefined, undefined);
     }
-    toggleTestMenu(false);
-    game.multiplayer.disabled = true;
+    // toggleTestMenu(false);
+    // game.multiplayer.disabled = true;
     runner(game);
     return game;
 }
